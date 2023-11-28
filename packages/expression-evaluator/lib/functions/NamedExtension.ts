@@ -1,9 +1,11 @@
 // TODO: this thing will be it's own actor but it's just a little special.
 //  It will also be the only consumer of the context items:
 //  KeysInitQuery.extensionFunctions and KeysInitQuery.extensionFunctionCreator
+import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import type { IEvalContext } from '@comunica/types';
-import type { AsyncExtensionFunction } from '../evaluators/MaterializedEvaluatorContext';
+import type { AsyncExtensionFunction } from '../evaluators/InternalEvaluator';
 import type * as E from '../expressions';
+import { TermTransformer } from '../transformers/TermTransformer';
 import { ExtensionFunctionError } from '../util/Errors';
 import { BaseFunctionDefinition } from './Core';
 
@@ -18,11 +20,12 @@ export class NamedExtension extends BaseFunctionDefinition {
   }
 
   public apply = async({ args, exprEval, mapping }: IEvalContext): Promise<E.TermExpression> => {
-    const evaluatedArgs: E.Term[] = await Promise.all(args.map(arg => exprEval.evaluateAsInternal(arg, mapping)));
+    const evaluatedArgs: E.Term[] = await Promise.all(args.map(arg => exprEval.internalEvaluation(arg, mapping)));
     try {
-      return exprEval.transformer.transformRDFTermUnsafe(
-        await this.functionDefinition(evaluatedArgs.map(term => term.toRDF())),
-      );
+      return new TermTransformer(exprEval.context.getSafe(KeysExpressionEvaluator.superTypeProvider))
+        .transformRDFTermUnsafe(
+          await this.functionDefinition(evaluatedArgs.map(term => term.toRDF())),
+        );
     } catch (error: unknown) {
       throw new ExtensionFunctionError(this.name, error);
     }

@@ -1,6 +1,7 @@
 import type { MediatorBindingsAggregatorFactory } from '@comunica/bus-bindings-aggeregator-factory';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
+import { ActionContext } from '@comunica/core';
 import type {
   FunctionBusType,
   IActionContext,
@@ -12,15 +13,18 @@ import type {
   TermComparatorBus,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import { LRUCache } from 'lru-cache';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 import { namedFunctions, regularFunctions, specialFunctions } from '../functions';
 import { NamedExtension } from '../functions/NamedExtension';
+import { AlgebraTransformer } from '../transformers/AlgebraTransformer';
 import type * as C from '../util/Consts';
 import { RegularOperator } from '../util/Consts';
+import { extractTimeZone } from '../util/DateTimeHelpers';
 import { ExpressionEvaluator } from './ExpressionEvaluator';
-import type { IAsyncEvaluatorContext } from './MaterializedEvaluatorContext';
-import { MaterializedEvaluatorContext } from './MaterializedEvaluatorContext';
+import type { AsyncExtensionFunction } from './InternalEvaluator';
+import { InternalEvaluator } from './InternalEvaluator';
 import { TermComparator } from './TermComparator';
 
 // TODO: This should be a single actor on a bus, and the utils should be classes with that bus.
@@ -57,37 +61,70 @@ export class ExpressionEvaluatorFactory implements IExpressionEvaluatorFactory {
     throw new Error('No Function Actor Replied');
   });
 
+  private prepareEvaluatorActionContext(orgContext: IActionContext): IActionContext {
+    const context = new ActionContext(orgContext);
+
+    context.set(KeysExpressionEvaluator.now, context.get(KeysInitQuery.queryTimestamp) || new Date(Date.now()));
+
+    context.set(KeysExpressionEvaluator.baseIRI, context.get(KeysInitQuery.baseIRI));
+    context.set(
+      KeysExpressionEvaluator.functionArgumentsCache,
+      context.get(KeysInitQuery.functionArgumentsCache) || {},
+    );
+
+    // Handle two variants of providing extension functions
+    if (context.has(KeysInitQuery.extensionFunctionCreator) && context.has(KeysInitQuery.extensionFunctions)) {
+      throw new Error('Illegal simultaneous usage of extensionFunctionCreator and extensionFunctions in context');
+    }
+    if (context.has(KeysInitQuery.extensionFunctionCreator)) {
+      context.set(
+        KeysExpressionEvaluator.extensionFunctionCreator,
+        context.get(KeysInitQuery.extensionFunctionCreator),
+      );
+    } else if (context.has(KeysInitQuery.extensionFunctions)) {
+      const extensionFunctions: Record<string, AsyncExtensionFunction> = context.getSafe(
+        KeysInitQuery.extensionFunctions,
+      );
+      context.set(KeysExpressionEvaluator.extensionFunctionCreator,
+        async(functionNamedNode: RDF.NamedNode) => extensionFunctions[functionNamedNode.value]);
+    }
+
+    context.set(
+      KeysExpressionEvaluator.defaultTimeZone,
+      context.get(KeysExpressionEvaluator.defaultTimeZone ||
+        extractTimeZone(context.getSafe(KeysExpressionEvaluator.now))),
+    );
+
+    context.set(KeysExpressionEvaluator.mediatorQueryOperation, this.mediatorQueryOperation);
+    context.set(KeysExpressionEvaluator.mediatorFunction, this.functionsBus);
+
+    context.set(KeysExpressionEvaluator.superTypeProvider, {
+      cache: new LRUCache({ max: 1_000 }),
+      discoverer: () => 'term',
+    });
+
+    return context;
+  }
+
   public readonly termComparatorBus: TermComparatorBus = async({ context, getSuperType }) =>
-    new TermComparator(new MaterializedEvaluatorContext({
-      now: context.get(KeysInitQuery.queryTimestamp),
-      baseIRI: context.get(KeysInitQuery.baseIRI),
-      functionArgumentsCache: context.get(KeysInitQuery.functionArgumentsCache),
-      actionContext: context,
-      mediatorQueryOperation: this.mediatorQueryOperation,
-      mediatorFunction: this.functionsBus,
-      getSuperType,
-    }),
-    await this.createFunction({ functionName: RegularOperator.EQUAL, context, requireTermExpression: true }),
-    await this.createFunction({ functionName: RegularOperator.LT, context, requireTermExpression: true }));
+    new TermComparator(new InternalEvaluator(this.prepareEvaluatorActionContext(context)),
+      await this.createFunction({ functionName: RegularOperator.EQUAL, context, requireTermExpression: true }),
+      await this.createFunction({ functionName: RegularOperator.LT, context, requireTermExpression: true }));
 
   public constructor(args: IExpressionEvaluatorFactoryArgs) {
     this.mediatorBindingsAggregatorFactory = args.mediatorBindingsAggregatorFactory;
     this.mediatorQueryOperation = args.mediatorQueryOperation;
   }
 
-  // TODO: remove legacyContext in *final* update (probably when preparing the EE for function bussification)
-  public async createEvaluator(algExpr: Alg.Expression, context: IActionContext,
-    legacyContext: Partial<IAsyncEvaluatorContext> = {}): Promise<IExpressionEvaluator> {
-    const defContextEval = new MaterializedEvaluatorContext({
-      now: context.get(KeysInitQuery.queryTimestamp),
-      baseIRI: context.get(KeysInitQuery.baseIRI),
-      functionArgumentsCache: context.get(KeysInitQuery.functionArgumentsCache),
-      actionContext: context,
-      mediatorQueryOperation: this.mediatorQueryOperation,
-      mediatorFunction: this.functionsBus,
-      ...legacyContext,
-    });
-    return new ExpressionEvaluator(defContextEval, await defContextEval.transformer.transformAlgebra(algExpr));
+  public async createEvaluator(algExpr: Alg.Expression, context: IActionContext): Promise<IExpressionEvaluator> {
+    const fullContext = this.prepareEvaluatorActionContext(context);
+    return new ExpressionEvaluator(
+      fullContext,
+      await new AlgebraTransformer(
+        context.getSafe(KeysExpressionEvaluator.superTypeProvider),
+        this.functionsBus,
+      ).transformAlgebra(algExpr),
+    );
   }
 
   public async createAggregator(algExpr: Alg.AggregateExpression, context: IActionContext):

@@ -1,11 +1,11 @@
 import type { ITermFunction } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type * as E from '../expressions';
-import type { MaterializedEvaluatorContext } from './MaterializedEvaluatorContext';
+import type { InternalEvaluator } from './InternalEvaluator';
 
 // TODO: this is its own actor!
 export class TermComparator {
-  public constructor(private readonly contextualizedEvaluator: MaterializedEvaluatorContext,
+  public constructor(private readonly contextualizedEvaluator: InternalEvaluator,
     private readonly equalityFunction: ITermFunction,
     private readonly lessThanFunction: ITermFunction) {
   }

@@ -1,4 +1,10 @@
+import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContextKey, CONTEXT_KEY_LOGGER } from '@comunica/core';
+import type { AsyncExtensionFunctionCreator } from '@comunica/expression-evaluator/lib/evaluators/InternalEvaluator';
+import type { ITimeZoneRepresentation } from '@comunica/expression-evaluator/lib/util/DateTimeHelpers';
+import type {
+  ISuperTypeProvider,
+} from '@comunica/expression-evaluator/lib/util/TypeHandling';
 import type { Bindings,
   IPhysicalQueryPlanLogger,
   QueryExplainMode,
@@ -8,7 +14,7 @@ import type { Bindings,
   IDataSource,
   IDataDestination,
   MetadataBindings, FunctionArgumentsCache,
-  IAggregatedStore } from '@comunica/types';
+  IAggregatedStore, FunctionBusType, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { IDocumentLoader } from 'jsonld-context-parser';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -136,10 +142,9 @@ export const KeysInitQuery = {
    *
    * The dictionary-based extensionFunctions context entry may be used instead, but not simultaneously.
    */
-  extensionFunctionCreator: new ActionContextKey<
-  (functionNamedNode: RDF.NamedNode) => Promise<((args: RDF.Term[]) => Promise<RDF.Term>) | undefined>
-  // eslint-disable-next-line @typescript-eslint/no-extra-parens
-  >('@comunica/actor-init-query:extensionFunctionCreator'),
+  extensionFunctionCreator: new ActionContextKey<AsyncExtensionFunctionCreator>(
+    '@comunica/actor-init-query:extensionFunctionCreator',
+  ),
   /**
    * Dictionary of extension functions.
    * Key is the IRI of the function, and value is the async function implementation.
@@ -173,6 +178,24 @@ export const KeysInitQuery = {
    * A JSON-LD context
    */
   jsonLdContext: new ActionContextKey<any>('@context'),
+};
+
+export const KeysExpressionEvaluator = {
+  extensionFunctionCreator: new ActionContextKey<AsyncExtensionFunctionCreator | undefined>(
+    '@comunica/expression-evaluator:extensionFunctionCreator',
+  ),
+  now: new ActionContextKey<Date>('@comunica/expression-evaluator:now'),
+  baseIRI: new ActionContextKey<string | undefined>('@comunica/expression-evaluator:baseIRI'),
+  functionArgumentsCache: new ActionContextKey<FunctionArgumentsCache>(
+    '@comunica/expression-evaluator:functionArgumentsCache',
+  ),
+  superTypeProvider: new ActionContextKey<ISuperTypeProvider>('@comunica/expression-evaluator:superTypeProvider'),
+  defaultTimeZone: new ActionContextKey<ITimeZoneRepresentation>('@comunica/expression-evaluator:defaultTimeZone'),
+  actionContext: new ActionContextKey<IActionContext>('@comunica/expression-evaluator:actionContext'),
+  mediatorQueryOperation: new ActionContextKey<MediatorQueryOperation>(
+    '@comunica/expression-evaluator:mediatorQueryOperation',
+  ),
+  mediatorFunction: new ActionContextKey<FunctionBusType>('@comunica/expression-evaluator:mediatorFunction'),
 };
 
 export const KeysQueryOperation = {

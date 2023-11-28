@@ -1,38 +1,21 @@
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, materializeOperation } from '@comunica/bus-query-operation';
+import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import type { FunctionBusType, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { LRUCache } from 'lru-cache';
 import * as E from '../expressions';
 import { expressionToVar } from '../functions/Helpers';
-import type { FunctionArgumentsCache } from '../functions/OverloadTree';
 import { AlgebraTransformer } from '../transformers/AlgebraTransformer';
-import type { ITimeZoneRepresentation } from '../util/DateTimeHelpers';
-import { extractTimeZone } from '../util/DateTimeHelpers';
 import * as Err from '../util/Errors';
-import type { SuperTypeCallback, TypeCache, ISuperTypeProvider } from '../util/TypeHandling';
 
 export type AsyncExtensionFunction = (args: RDF.Term[]) => Promise<RDF.Term>;
 export type AsyncExtensionFunctionCreator = (functionNamedNode: RDF.NamedNode) =>
 Promise<AsyncExtensionFunction | undefined>;
 
-export interface IAsyncEvaluatorContext {
-  now?: Date;
-  baseIRI?: string;
-  typeCache?: TypeCache;
-  getSuperType?: SuperTypeCallback;
-  functionArgumentsCache?: FunctionArgumentsCache;
-  defaultTimeZone?: ITimeZoneRepresentation;
-  actionContext: IActionContext;
-  mediatorQueryOperation: MediatorQueryOperation;
-  mediatorFunction: FunctionBusType;
-}
-
 /**
  * This class provides evaluation functionality to already transformed expressions.
- * It also holds all context items needed for evaluating functions.
  */
-export class MaterializedEvaluatorContext {
+export class InternalEvaluator {
   public readonly transformer: AlgebraTransformer;
 
   private readonly subEvaluators: Record<E.ExpressionType,
@@ -47,37 +30,17 @@ export class MaterializedEvaluatorContext {
         [E.ExpressionType.Aggregate]: this.evalAggregate.bind(this),
       };
 
-  // Context items
-  public readonly extensionFunctionCreator?: AsyncExtensionFunctionCreator;
-  public readonly now: Date;
-  public readonly baseIRI?: string;
-  public readonly functionArgumentsCache: FunctionArgumentsCache;
-  public readonly superTypeProvider: ISuperTypeProvider;
-  public readonly defaultTimeZone: ITimeZoneRepresentation;
-  public readonly actionContext: IActionContext;
-  public readonly mediatorQueryOperation: MediatorQueryOperation;
-  public readonly mediatorFunction: FunctionBusType;
-
-  public constructor(context: IAsyncEvaluatorContext) {
-    this.now = context.now || new Date(Date.now());
-    this.baseIRI = context.baseIRI || undefined;
-    this.functionArgumentsCache = context.functionArgumentsCache || {};
-    this.superTypeProvider = {
-      cache: context.typeCache || new LRUCache({ max: 1_000 }),
-      discoverer: context.getSuperType || (() => 'term'),
-    };
-    this.defaultTimeZone = context.defaultTimeZone || extractTimeZone(this.now);
-    this.actionContext = context.actionContext;
-    this.mediatorQueryOperation = context.mediatorQueryOperation;
-    this.mediatorFunction = context.mediatorFunction;
-
+  public constructor(public readonly context: IActionContext) {
     this.transformer = new AlgebraTransformer(
-      this.superTypeProvider,
-      args => this.mediatorFunction({ ...args, context: this.actionContext }),
+      context.getSafe(KeysExpressionEvaluator.superTypeProvider),
+      args => {
+        const mediator: FunctionBusType = context.getSafe(KeysExpressionEvaluator.mediatorFunction);
+        return mediator({ ...args, context });
+      },
     );
   }
 
-  public async evaluateAsInternal(expr: E.Expression, mapping: RDF.Bindings): Promise<E.Term> {
+  public async internalEvaluation(expr: E.Expression, mapping: RDF.Bindings): Promise<E.Term> {
     const evaluator = this.subEvaluators[expr.expressionType];
     return evaluator.bind(this)(expr, mapping);
   }
@@ -106,7 +69,8 @@ export class MaterializedEvaluatorContext {
   private async evalExistence(expr: E.Existence, mapping: RDF.Bindings): Promise<E.Term> {
     const operation = materializeOperation(expr.expression.input, mapping);
 
-    const outputRaw = await this.mediatorQueryOperation.mediate({ operation, context: this.actionContext });
+    const mediator: MediatorQueryOperation = this.context.getSafe(KeysExpressionEvaluator.mediatorQueryOperation);
+    const outputRaw = await mediator.mediate({ operation, context: this.context });
     const output = ActorQueryOperation.getSafeBindings(outputRaw);
 
     return await new Promise(

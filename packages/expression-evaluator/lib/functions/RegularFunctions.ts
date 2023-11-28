@@ -1,3 +1,5 @@
+import { KeysExpressionEvaluator } from '@comunica/context-entries';
+import type { IInternalEvaluator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { BigNumber } from 'bignumber.js';
 import { sha1, sha256, sha384, sha512 } from 'hash.js';
@@ -6,7 +8,7 @@ import { resolve as resolveRelativeIri } from 'relative-to-absolute-iri';
 import { hash as md5 } from 'spark-md5';
 import * as uuid from 'uuid';
 
-import type { MaterializedEvaluatorContext } from '../evaluators/MaterializedEvaluatorContext';
+import type { InternalEvaluator } from '../evaluators/InternalEvaluator';
 import * as E from '../expressions';
 import type { Quad } from '../expressions';
 import { TermTransformer } from '../transformers/TermTransformer';
@@ -157,7 +159,7 @@ class Subtraction extends RegularFunction {
       ([ date1, date2 ]: [ E.DateTimeLiteral, E.DateTimeLiteral ]) =>
         // https://www.w3.org/TR/xpath-functions/#func-subtract-dateTimes;
         new E.DayTimeDurationLiteral(elapsedDuration(
-          date1.typedValue, date2.typedValue, exprEval.defaultTimeZone,
+          date1.typedValue, date2.typedValue, exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone),
         )))
     .copy({ from: [ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DATE_TIME ], to: [ TypeURL.XSD_DATE, TypeURL.XSD_DATE ]})
     .copy({ from: [ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DATE_TIME ], to: [ TypeURL.XSD_TIME, TypeURL.XSD_TIME ]})
@@ -206,8 +208,8 @@ class Equality extends RegularFunction {
     .booleanTest(() => (left, right) => left === right)
     .dateTimeTest(exprEval => (left, right) =>
       toUTCDate(
-        left, exprEval.defaultTimeZone,
-      ).getTime() === toUTCDate(right, exprEval.defaultTimeZone).getTime())
+        left, exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone),
+      ).getTime() === toUTCDate(right, exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone)).getTime())
     .copy({
       // https://www.w3.org/TR/xpath-functions/#func-date-equal
       from: [ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DATE_TIME ],
@@ -252,8 +254,10 @@ class Equality extends RegularFunction {
       ([ time1, time2 ]: [E.TimeLiteral, E.TimeLiteral]) =>
         // https://www.w3.org/TR/xpath-functions/#func-time-equal
         bool(
-          toUTCDate(defaultedDateTimeRepresentation(time1.typedValue), exprEval.defaultTimeZone).getTime() ===
-          toUTCDate(defaultedDateTimeRepresentation(time2.typedValue), exprEval.defaultTimeZone).getTime(),
+          toUTCDate(defaultedDateTimeRepresentation(time1.typedValue),
+            exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone)).getTime() ===
+          toUTCDate(defaultedDateTimeRepresentation(time2.typedValue),
+            exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone)).getTime(),
         ))
     .collect();
 }
@@ -281,7 +285,7 @@ class LesserThan extends RegularFunction {
 
   public operator = C.RegularOperator.LT;
 
-  private quadComponentTest(left: E.Term, right: E.Term, exprEval: MaterializedEvaluatorContext): boolean | undefined {
+  private quadComponentTest(left: E.Term, right: E.Term, exprEval: IInternalEvaluator): boolean | undefined {
     // If components are equal, we don't have an answer
     const componentEqual = this.equalityFunction.applyOnTerms(
       [ left, right ], exprEval,
@@ -301,8 +305,8 @@ class LesserThan extends RegularFunction {
     .stringTest(() => (left, right) => left.localeCompare(right) === -1)
     .booleanTest(() => (left, right) => left < right)
     .dateTimeTest(exprEval => (left, right) =>
-      toUTCDate(left, exprEval.defaultTimeZone).getTime() <
-      toUTCDate(right, exprEval.defaultTimeZone).getTime())
+      toUTCDate(left, exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone)).getTime() <
+      toUTCDate(right, exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone)).getTime())
     .copy({
       // https://www.w3.org/TR/xpath-functions/#func-date-less-than
       from: [ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DATE_TIME ],
@@ -321,8 +325,10 @@ class LesserThan extends RegularFunction {
     .set([ TypeURL.XSD_TIME, TypeURL.XSD_TIME ], exprEval =>
       ([ time1, time2 ]: [E.TimeLiteral, E.TimeLiteral]) =>
         // https://www.w3.org/TR/xpath-functions/#func-time-less-than
-        bool(toUTCDate(defaultedDateTimeRepresentation(time1.typedValue), exprEval.defaultTimeZone).getTime() <
-          toUTCDate(defaultedDateTimeRepresentation(time2.typedValue), exprEval.defaultTimeZone).getTime()))
+        bool(toUTCDate(defaultedDateTimeRepresentation(time1.typedValue),
+          exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone)).getTime() <
+          toUTCDate(defaultedDateTimeRepresentation(time2.typedValue),
+            exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone)).getTime()))
     .set(
       [ 'quad', 'quad' ],
       exprEval => ([ left, right ]: [E.Quad, E.Quad]) => {
@@ -485,11 +491,13 @@ class IRI extends RegularFunction {
   protected overloads = declare(C.RegularOperator.IRI)
     .set([ 'namedNode' ], exprEval => args => {
       const lit = <E.NamedNode> args[0];
-      const iri = resolveRelativeIri(lit.str(), exprEval.baseIRI || '');
+      const iri = resolveRelativeIri(lit.str(),
+        exprEval.context.getSafe(KeysExpressionEvaluator.baseIRI) || '');
       return new E.NamedNode(iri);
     })
     .onString1(exprEval => lit => {
-      const iri = resolveRelativeIri(lit.str(), exprEval.baseIRI || '');
+      const iri = resolveRelativeIri(lit.str(),
+        exprEval.context.getSafe(KeysExpressionEvaluator.baseIRI) || '');
       return new E.NamedNode(iri);
     })
     .collect();
@@ -509,7 +517,8 @@ class STRDT extends RegularFunction {
     [ TypeURL.XSD_STRING, 'namedNode' ],
     exprEval => ([ str, iri ]: [E.StringLiteral, E.NamedNode]) => {
       const lit = DF.literal(str.typedValue, DF.namedNode(iri.value));
-      return new TermTransformer(exprEval.superTypeProvider).transformLiteral(lit);
+      return new TermTransformer(exprEval.context.getSafe(KeysExpressionEvaluator.superTypeProvider))
+        .transformLiteral(lit);
     },
   ).collect();
 }
@@ -796,9 +805,9 @@ class Langmatches extends RegularFunction {
     ).collect();
 }
 
-const regex2: (exprEval: MaterializedEvaluatorContext) => (text: string, pattern: string) => E.BooleanLiteral =
+const regex2: (exprEval: InternalEvaluator) => (text: string, pattern: string) => E.BooleanLiteral =
   () => (text: string, pattern: string) => bool(X.matches(text, pattern));
-const regex3: (exprEval: MaterializedEvaluatorContext) => (text: string, pattern: string, flags: string) =>
+const regex3: (exprEval: InternalEvaluator) => (text: string, pattern: string, flags: string) =>
 E.BooleanLiteral = () => (text: string, pattern: string, flags: string) => bool(X.matches(text, pattern, flags));
 /**
  * https://www.w3.org/TR/sparql11-query/#func-regex
@@ -928,7 +937,8 @@ class Now extends RegularFunction {
 
   protected overloads = declare(C.RegularOperator.NOW).set([], exprEval => () =>
     new E.DateTimeLiteral(toDateTimeRepresentation(
-      { date: exprEval.now, timeZone: exprEval.defaultTimeZone },
+      { date: exprEval.context.getSafe(KeysExpressionEvaluator.now),
+        timeZone: exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone) },
     ))).collect();
 }
 

@@ -1,5 +1,10 @@
-import type { IEvalContext, IExpressionFunction, ITermFunction } from '@comunica/types';
-import type { MaterializedEvaluatorContext } from '../evaluators/MaterializedEvaluatorContext';
+import { KeysExpressionEvaluator } from '@comunica/context-entries';
+import type {
+  IEvalContext,
+  IExpressionFunction,
+  ITermFunction,
+  IInternalEvaluator,
+} from '@comunica/types';
 import type * as E from '../expressions';
 import type * as C from '../util/Consts';
 import * as Err from '../util/Errors';
@@ -50,15 +55,18 @@ export abstract class TermSparqlFunction<O extends C.RegularOperator | C.NamedOp
   protected abstract readonly overloads: OverloadTree;
   public abstract operator: O;
 
-  public applyOnTerms(args: E.TermExpression[], exprEval: MaterializedEvaluatorContext): E.TermExpression {
+  public applyOnTerms(args: E.TermExpression[], exprEval: IInternalEvaluator): E.TermExpression {
     const concreteFunction =
-      this.overloads.search(args, exprEval.superTypeProvider, exprEval.functionArgumentsCache) ||
-      this.handleInvalidTypes(args);
+      this.overloads.search(
+        args,
+        exprEval.context.getSafe(KeysExpressionEvaluator.superTypeProvider),
+        exprEval.context.getSafe(KeysExpressionEvaluator.functionArgumentsCache),
+      ) || this.handleInvalidTypes(args);
     return concreteFunction(exprEval)(args);
   }
 
   public apply = async({ args, exprEval, mapping }: IEvalContext): Promise<E.TermExpression> => this.applyOnTerms(
-    await Promise.all(args.map(arg => exprEval.evaluateAsInternal(arg, mapping))),
+    await Promise.all(args.map(arg => exprEval.internalEvaluation(arg, mapping))),
     exprEval,
   );
 

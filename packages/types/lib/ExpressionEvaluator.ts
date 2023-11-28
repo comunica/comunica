@@ -1,9 +1,8 @@
 import type { IAction } from '@comunica/core';
-import type { MaterializedEvaluatorContext } from
-  '@comunica/expression-evaluator/lib/evaluators/MaterializedEvaluatorContext';
 import type * as E from '@comunica/expression-evaluator/lib/expressions';
 import type { SuperTypeCallback } from '@comunica/expression-evaluator/lib/util/TypeHandling';
 import type * as RDF from '@rdfjs/types';
+
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 import type { IActionContext } from './IActionContext';
 
@@ -49,10 +48,16 @@ export interface IExpressionEvaluatorFactory {
   createFunction: FunctionBusType;
 }
 
+export interface IInternalEvaluator {
+  internalEvaluation: (expr: E.Expression, mapping: RDF.Bindings) => Promise<E.Term>;
+
+  context: IActionContext;
+}
+
 /**
  * An evaluator for RDF expressions.
  */
-export interface IExpressionEvaluator {
+export interface IExpressionEvaluator extends IInternalEvaluator {
   /**
    * Evaluates the provided bindings in terms of the context the evaluator was created.
    * @param mapping the RDF bindings to evaluate against.
@@ -67,8 +72,6 @@ export interface IExpressionEvaluator {
   evaluateAsEBV: (mapping: RDF.Bindings) => Promise<boolean>;
 
   evaluateAsInternal: (mapping: RDF.Bindings) => Promise<E.Expression>;
-
-  // TODO: context: IActionContext;
 }
 
 export interface IOrderByEvaluator {
@@ -83,7 +86,7 @@ export interface IOrderByEvaluator {
 export interface IEvalContext {
   args: E.Expression[];
   mapping: RDF.Bindings;
-  exprEval: MaterializedEvaluatorContext;
+  exprEval: IInternalEvaluator;
 }
 
 export type FunctionApplication = (evalContext: IEvalContext) => Promise<E.TermExpression>;
@@ -98,7 +101,7 @@ export interface IExpressionFunction {
 
 export interface ITermFunction extends IExpressionFunction{
   supportsTermExpressions: true;
-  applyOnTerms: (args: E.TermExpression[], exprEval: MaterializedEvaluatorContext) => E.TermExpression;
+  applyOnTerms: (args: E.TermExpression[], exprEval: IInternalEvaluator) => E.TermExpression;
 }
 
 export interface IFunctionBusActionContext {

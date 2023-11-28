@@ -4,7 +4,7 @@ import type { IActionContext } from '@comunica/types';
 import { LRUCache } from 'lru-cache';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 import { translate } from 'sparqlalgebrajs';
-import type { IAsyncEvaluatorContext } from '../../lib/evaluators/MaterializedEvaluatorContext';
+import type { IAsyncEvaluatorContext } from '../../lib/evaluators/InternalEvaluator';
 import type { GeneralSuperTypeDict, ISuperTypeProvider } from '../../lib/util/TypeHandling';
 import type { AliasMap } from './Aliases';
 import type { Notation } from './TestTable';

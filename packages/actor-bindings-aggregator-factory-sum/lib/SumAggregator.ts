@@ -1,5 +1,4 @@
 import { AggregateEvaluator } from '@comunica/bus-bindings-aggeregator-factory';
-import type { ExpressionEvaluator } from '@comunica/expression-evaluator';
 import { typedLiteral, TypeURL } from '@comunica/expression-evaluator';
 import type * as E from '@comunica/expression-evaluator/lib/expressions';
 import type { IExpressionEvaluator, ITermFunction } from '@comunica/types';
@@ -27,7 +26,7 @@ export class SumAggregator extends AggregateEvaluator {
     } else {
       const internalTerm = this.termToNumericOrError(term);
       this.state = <E.NumericLiteral> this.additionFunction.applyOnTerms([ this.state, internalTerm ],
-        (<ExpressionEvaluator> this.evaluator).materializedEvaluatorContext);
+        this.evaluator);
     }
   }
 

@@ -1,6 +1,7 @@
-import type { ExpressionEvaluator } from '@comunica/expression-evaluator';
+import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import { isSubTypeOf, EmptyAggregateError, TermTransformer, TypeAlias } from '@comunica/expression-evaluator';
 import type * as E from '@comunica/expression-evaluator/lib/expressions';
+import type { ISuperTypeProvider } from '@comunica/expression-evaluator/lib/util/TypeHandling';
 import type { IExpressionEvaluator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import * as RdfString from 'rdf-string';
@@ -14,10 +15,15 @@ export abstract class AggregateEvaluator {
 
   protected readonly variableValues: Set<string>;
 
+  protected readonly superTypeProvider: ISuperTypeProvider;
+  protected readonly termTransformer: TermTransformer;
+
   protected constructor(protected readonly evaluator: IExpressionEvaluator,
     protected readonly distinct: boolean,
     private readonly throwError: boolean = false) {
     this.errorOccurred = false;
+    this.superTypeProvider = evaluator.context.getSafe(KeysExpressionEvaluator.superTypeProvider);
+    this.termTransformer = new TermTransformer(this.superTypeProvider);
 
     this.variableValues = new Set();
   }
@@ -89,13 +95,11 @@ export abstract class AggregateEvaluator {
     if (term.termType !== 'Literal') {
       throw new Error(`Term with value ${term.value} has type ${term.termType} and is not a numeric literal`);
     } else if (
-      !isSubTypeOf(term.datatype.value, TypeAlias.SPARQL_NUMERIC, (<ExpressionEvaluator> this.evaluator)
-        .materializedEvaluatorContext
-        .superTypeProvider)
-    ) {
+      !isSubTypeOf(term.datatype.value,
+        TypeAlias.SPARQL_NUMERIC,
+        this.superTypeProvider)) {
       throw new Error(`Term datatype ${term.datatype.value} with value ${term.value} has type ${term.termType} and is not a numeric literal`);
     }
-    return <E.NumericLiteral> new TermTransformer((
-      <ExpressionEvaluator> this.evaluator).materializedEvaluatorContext.superTypeProvider).transformLiteral(term);
+    return <E.NumericLiteral> this.termTransformer.transformLiteral(term);
   }
 }

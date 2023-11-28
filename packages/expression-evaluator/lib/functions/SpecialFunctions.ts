@@ -1,3 +1,4 @@
+import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import { BlankNodeBindingsScoped } from '@comunica/data-factory';
 import type { IEvalContext } from '@comunica/types';
 import * as E from '../expressions';
@@ -42,11 +43,11 @@ class IfSPARQL extends BaseFunctionDefinition {
   protected arity = 3;
 
   public apply = async({ args, mapping, exprEval }: IEvalContext): Promise<E.TermExpression> => {
-    const valFirst = await exprEval.evaluateAsInternal(args[0], mapping);
+    const valFirst = await exprEval.internalEvaluation(args[0], mapping);
     const ebv = valFirst.coerceEBV();
     return ebv ?
-      exprEval.evaluateAsInternal(args[1], mapping) :
-      exprEval.evaluateAsInternal(args[2], mapping);
+      exprEval.internalEvaluation(args[1], mapping) :
+      exprEval.internalEvaluation(args[2], mapping);
   };
 }
 
@@ -63,7 +64,7 @@ class Coalesce extends BaseFunctionDefinition {
     const errors: Error[] = [];
     for (const expr of args) {
       try {
-        return await exprEval.evaluateAsInternal(expr, mapping);
+        return await exprEval.internalEvaluation(expr, mapping);
       } catch (error: unknown) {
         errors.push(<Error> error);
       }
@@ -83,16 +84,16 @@ class LogicalOr extends BaseFunctionDefinition {
   public apply = async({ args, mapping, exprEval }: IEvalContext): Promise<E.TermExpression> => {
     const [ leftExpr, rightExpr ] = args;
     try {
-      const leftTerm = await exprEval.evaluateAsInternal(leftExpr, mapping);
+      const leftTerm = await exprEval.internalEvaluation(leftExpr, mapping);
       const left = leftTerm.coerceEBV();
       if (left) {
         return bool(true);
       }
-      const rightTerm = await exprEval.evaluateAsInternal(rightExpr, mapping);
+      const rightTerm = await exprEval.internalEvaluation(rightExpr, mapping);
       const right = rightTerm.coerceEBV();
       return bool(right);
     } catch (error: unknown) {
-      const rightErrorTerm = await exprEval.evaluateAsInternal(rightExpr, mapping);
+      const rightErrorTerm = await exprEval.internalEvaluation(rightExpr, mapping);
       const rightError = rightErrorTerm.coerceEBV();
       if (!rightError) {
         throw error;
@@ -114,16 +115,16 @@ class LogicalAnd extends BaseFunctionDefinition {
   public apply = async({ args, mapping, exprEval }: IEvalContext): Promise<E.TermExpression> => {
     const [ leftExpr, rightExpr ] = args;
     try {
-      const leftTerm = await exprEval.evaluateAsInternal(leftExpr, mapping);
+      const leftTerm = await exprEval.internalEvaluation(leftExpr, mapping);
       const left = leftTerm.coerceEBV();
       if (!left) {
         return bool(false);
       }
-      const rightTerm = await exprEval.evaluateAsInternal(rightExpr, mapping);
+      const rightTerm = await exprEval.internalEvaluation(rightExpr, mapping);
       const right = rightTerm.coerceEBV();
       return bool(right);
     } catch (error: unknown) {
-      const rightErrorTerm = await exprEval.evaluateAsInternal(rightExpr, mapping);
+      const rightErrorTerm = await exprEval.internalEvaluation(rightExpr, mapping);
       const rightError = rightErrorTerm.coerceEBV();
       if (rightError) {
         throw error;
@@ -143,7 +144,7 @@ class LogicalAnd extends BaseFunctionDefinition {
 class SameTerm extends BaseFunctionDefinition {
   protected arity = 2;
   public apply = async({ args, mapping, exprEval }: IEvalContext): Promise<E.TermExpression> => {
-    const [ leftExpr, rightExpr ] = args.map(arg => exprEval.evaluateAsInternal(arg, mapping));
+    const [ leftExpr, rightExpr ] = args.map(arg => exprEval.internalEvaluation(arg, mapping));
     const [ left, right ] = await Promise.all([ leftExpr, rightExpr ]);
     return bool(left.toRDF().equals(right.toRDF()));
   };
@@ -170,7 +171,7 @@ class InSPARQL extends BaseFunctionDefinition {
   public apply = async(context: IEvalContext): Promise<E.TermExpression> => {
     const { args, mapping, exprEval } = context;
     const [ leftExpr, ...remaining ] = args;
-    const left = await exprEval.evaluateAsInternal(leftExpr, mapping);
+    const left = await exprEval.internalEvaluation(leftExpr, mapping);
     return await this.inRecursive(left, { ...context, args: remaining }, []);
   };
 
@@ -188,7 +189,7 @@ class InSPARQL extends BaseFunctionDefinition {
     try {
       // We know this will not be undefined because we check args.length === 0
       const nextExpression = args.shift()!;
-      const next = await exprEval.evaluateAsInternal(nextExpression, mapping);
+      const next = await exprEval.internalEvaluation(nextExpression, mapping);
       if ((<E.BooleanLiteral> this.equalityFunction.applyOnTerms([ needle, next ], exprEval)).typedValue) {
         return bool(true);
       }
@@ -240,12 +241,12 @@ class Concat extends BaseFunctionDefinition {
   public apply = async(context: IEvalContext): Promise<E.TermExpression> => {
     const { args, mapping, exprEval } = context;
     const pLits: Promise<E.Literal<string>>[] = args
-      .map(async expr => exprEval.evaluateAsInternal(expr, mapping))
+      .map(async expr => exprEval.internalEvaluation(expr, mapping))
       .map(async pTerm => {
         const operation = concatTree.search(
           [ await pTerm ],
-          exprEval.superTypeProvider,
-          exprEval.functionArgumentsCache,
+          exprEval.context.getSafe(KeysExpressionEvaluator.superTypeProvider),
+          exprEval.context.getSafe(KeysExpressionEvaluator.functionArgumentsCache),
         );
         if (!operation) {
           throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.CONCAT);
@@ -294,15 +295,15 @@ class BNode extends BaseFunctionDefinition {
   public apply = async(context: IEvalContext): Promise<E.TermExpression> => {
     const { args, mapping, exprEval } = context;
     const input = args.length === 1 ?
-      await exprEval.evaluateAsInternal(args[0], mapping) :
+      await exprEval.internalEvaluation(args[0], mapping) :
       undefined;
 
     let strInput: string | undefined;
     if (input) {
       const operation = BNode.bnodeTree.search(
         [ input ],
-        exprEval.superTypeProvider,
-        exprEval.functionArgumentsCache,
+        exprEval.context.getSafe(KeysExpressionEvaluator.superTypeProvider),
+        exprEval.context.getSafe(KeysExpressionEvaluator.functionArgumentsCache),
       );
       if (!operation) {
         throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.BNODE);
