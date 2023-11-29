@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-inner-multi-empty",
-  "version": "2.10.0",
+  "version": "2.10.1",
   "description": "A multi-empty rdf-join actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,7 +32,7 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-rdf-join": "^2.10.0",
+    "@comunica/bus-rdf-join": "^2.10.1",
     "@comunica/mediatortype-join-coefficients": "^2.10.0",
     "@comunica/metadata": "^2.10.0",
     "@comunica/types": "^2.10.0",

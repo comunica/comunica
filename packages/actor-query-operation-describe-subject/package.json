@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-describe-subject",
-  "version": "2.10.0",
+  "version": "2.10.1",
   "description": "A describe-subject query-operation actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,8 +32,8 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/actor-query-operation-union": "^2.10.0",
-    "@comunica/bus-query-operation": "^2.10.0",
+    "@comunica/actor-query-operation-union": "^2.10.1",
+    "@comunica/bus-query-operation": "^2.10.1",
     "@comunica/core": "^2.10.0",
     "@comunica/types": "^2.10.0",
     "asynciterator": "^3.8.1",
