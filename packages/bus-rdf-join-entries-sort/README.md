@@ -24,4 +24,4 @@ $ yarn add @comunica/bus-rdf-join-entries-sort
 
 ## Creating actors on this bus
 
-Actors extending [`ActorRdfJoinEntriesSort`](https://comunica.github.io/comunica/classes/bus_rdf_join_entries_sort.actorrdfjoinentriessort.html) are automatically subscribed to this bus.
+Actors extending [`ActorRdfJoinEntriesSort`](https://comunica.github.io/comunica/classes/_comunica_bus_rdf_join_entries_sort.ActorRdfJoinEntriesSort.html) are automatically subscribed to this bus.
