@@ -20,13 +20,13 @@ $ yarn add @comunica/expression-evaluator
 ## Exposed classes
 
 * [`AsyncEvaluator`](https://comunica.github.io/comunica/classes/_comunica_expression_evaluator.AsyncEvaluator.html): An evaluator for SPARQL expressions working with Promises.
-* [`IAsyncEvaluatorContext`](https://comunica.github.io/comunica/classes/_comunica_expression_evaluator.IAsyncEvaluatorContext.html): Context used to configure the `AsyncEvaluator`. See [Config](https://comunica.dev/docs/modify/advanced/expression-evaluator/#config). 
+* [`IAsyncEvaluatorContext`](https://comunica.github.io/comunica/interfaces/_comunica_expression_evaluator.IAsyncEvaluatorContext.html): Context used to configure the `AsyncEvaluator`. See [Config](https://comunica.dev/docs/modify/advanced/expression-evaluator/#config). 
 * [`SyncEvaluator`](https://comunica.github.io/comunica/classes/_comunica_expression_evaluator.SyncEvaluator.html): An evaluator for SPARQL expressions working without Promises.
-* [`ISyncEvaluatorContext`](https://comunica.github.io/comunica/classes/_comunica_expression_evaluator.ISyncEvaluatorContext.html): Context used to configure the `SyncEvaluator`. See [Config](https://comunica.dev/docs/modify/advanced/expression-evaluator/#config).
+* [`ISyncEvaluatorContext`](https://comunica.github.io/comunica/interfaces/_comunica_expression_evaluator.ISyncEvaluatorContext.html): Context used to configure the `SyncEvaluator`. See [Config](https://comunica.dev/docs/modify/advanced/expression-evaluator/#config).
 * [`AggregateEvaluator`](https://comunica.github.io/comunica/classes/_comunica_expression_evaluator.AggregateEvaluator.html): An evaluator for SPARQL aggregate expressions working without promises. See [Aggregates](https://comunica.dev/docs/modify/advanced/expression-evaluator/#aggregates).
 * [`ExpressionError`](https://comunica.github.io/comunica/classes/_comunica_expression_evaluator.ExpressionError.html): An error class for SPARQL expression errors as defined in the [error section](https://comunica.dev/docs/modify/advanced/expression-evaluator/#errors).
-* [`isExpressionError`](https://comunica.github.io/comunica/classes/_comunica_expression_evaluator.isExpressionError.html): A way to check if an error is of type `ExpressionError`.
-* [`orderTypes`](https://comunica.github.io/comunica/classes/_comunica_expression_evaluator.orderTypes.html): A function to order types according to the [SPARQL ORDER BY specification](https://www.w3.org/TR/sparql11-query/#modOrderBy).
+* [`isExpressionError`](https://comunica.github.io/comunica/functions/_comunica_expression_evaluator.isExpressionError.html): A way to check if an error is of type `ExpressionError`.
+* [`orderTypes`](https://comunica.github.io/comunica/functions/_comunica_expression_evaluator.orderTypes.html): A function to order types according to the [SPARQL ORDER BY specification](https://www.w3.org/TR/sparql11-query/#modOrderBy).
 * [`AsyncAggregateEvaluator`](https://comunica.github.io/comunica/classes/_comunica_expression_evaluator.AsyncAggregateEvaluator.html): An evaluator for SPARQL aggregate expressions working with promises. See [Aggregates](https://comunica.dev/docs/modify/advanced/expression-evaluator/#aggregates).
 
 

@@ -18,5 +18,5 @@ $ yarn add @comunica/actor-abstract-path
 
 ## Usage
 
-This package exposes [`ActorAbstractPath`](https://comunica.github.io/comunica/classes/actor_abstract_path.actorabstractpath.html)
+This package exposes [`ActorAbstractPath`](https://comunica.github.io/comunica/classes/_comunica_actor_abstract_path.ActorAbstractPath.html)
 that provides utility methods for actors that implement property path operations.

@@ -22,5 +22,5 @@ $ yarn add @comunica/bus-rdf-join
 
 ## Creating actors on this bus
 
-Actors extending [`ActorRdfJoin`](https://comunica.github.io/comunica/classes/bus_rdf_join.actorrdfjoin.html) are automatically subscribed to this bus.
+Actors extending [`ActorRdfJoin`](https://comunica.github.io/comunica/classes/_comunica_bus_rdf_join.ActorRdfJoin.html) are automatically subscribed to this bus.
 
