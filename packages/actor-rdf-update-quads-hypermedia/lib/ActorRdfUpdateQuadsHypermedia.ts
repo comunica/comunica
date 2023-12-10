@@ -13,6 +13,7 @@ import type { IActionRdfUpdateQuads,
 import type { IActorTest } from '@comunica/core';
 import type { IActionContext, IDataDestination } from '@comunica/types';
 import { LRUCache } from 'lru-cache';
+import { KeysInitQuery } from '@comunica/context-entries';
 
 /**
  * A comunica Hypermedia RDF Update Quads Actor.
@@ -50,7 +51,7 @@ export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestinatio
     let url: string = getContextDestinationUrl(dataDestination)!;
 
     // Try to read from cache
-    if (this.cache && this.cache.has(url)) {
+    if (! context.get(KeysInitQuery.disableHttpCache) && this.cache && this.cache.has(url)) {
       return this.cache.get(url)!;
     }
 
