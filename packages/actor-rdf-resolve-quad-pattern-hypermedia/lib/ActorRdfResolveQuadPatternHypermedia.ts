@@ -14,6 +14,7 @@ import {
   getContextSourceUrl,
   getDataSourceType, hasContextSingleSource,
 } from '@comunica/bus-rdf-resolve-quad-pattern';
+import { KeysHttp, KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { LRUCache } from 'lru-cache';
@@ -73,7 +74,7 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
     let source: MediatedQuadSource;
 
     // Try to read from cache
-    if (this.cache && this.cache.has(url)) {
+    if (!context.get(KeysInitQuery.disableHttpCache) && this.cache && this.cache.has(url)) {
       source = this.cache.get(url)!;
     } else {
       // If not in cache, create a new source
