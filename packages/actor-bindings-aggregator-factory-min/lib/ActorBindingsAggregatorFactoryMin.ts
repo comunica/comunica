@@ -28,7 +28,7 @@ export class ActorBindingsAggregatorFactoryMin extends ActorBindingsAggregatorFa
   Promise<IActorBindingsAggregatorFactoryOutput> {
     return {
       aggregator: new MinAggregator(
-        await factory.createEvaluator(expr.expression, context),
+        (await factory.run({ algExpr: expr.expression, context })).expressionEvaluator,
         expr.distinct,
         await factory.createTermComparator({ context }),
       ),

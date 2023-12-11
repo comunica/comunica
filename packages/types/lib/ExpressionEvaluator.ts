@@ -22,32 +22,6 @@ export interface IBindingsAggregator {
   result: () => Promise<RDF.Term | undefined>;
 }
 
-/**
- * A factory able to create objects for handling expressions.
- */
-export interface IExpressionEvaluatorFactory {
-  /**
-   * Create an Expression Evaluator given an expression and the action context,
-   * additional configs will be extracted from the context.
-   * @param algExpr The SPARQL expression.
-   * @param context the actionContext to extract engine config settings from.
-   */
-  createEvaluator: (algExpr: Alg.Expression, context: IActionContext) => Promise<IExpressionEvaluator>;
-
-  /**
-   * Creates a bindings aggregator given an expression and the action context,
-   * additional configs will be extracted from the context.
-   * @param algExpr The SPARQL expression.
-   * @param context the actionContext to extract engine config settings from.
-   */
-  createAggregator: (algExpr: Alg.AggregateExpression, context: IActionContext) => Promise<IBindingsAggregator>;
-
-  createTermComparator: (orderAction: ITermComparatorBusActionContext) => Promise<IOrderByEvaluator>;
-
-  createFunction: <T extends IFunctionBusActionContext>(arg: T & IAction) =>
-  Promise<T extends { requireTermExpression: true } ? ITermFunction : IExpressionFunction>;
-}
-
 export interface IInternalEvaluator {
   internalEvaluation: (expr: E.Expression, mapping: RDF.Bindings) => Promise<E.Term>;
 

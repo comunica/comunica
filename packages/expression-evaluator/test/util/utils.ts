@@ -1,3 +1,4 @@
+import { prepareEvaluatorActionContext } from '@comunica/actor-expression-evaluator-factory-base';
 import { ActionContext } from '@comunica/core';
 import { getMockEEFactory } from '@comunica/jest';
 import type { IActionContext } from '@comunica/types';
@@ -20,7 +21,9 @@ export function getMockExpression(expr = '1+1'): Alg.Expression {
 export function getMockEvaluatorContext(): IActionContext {
   const factory = getMockEEFactory();
 
-  return factory.prepareEvaluatorActionContext(getMockEEActionContext());
+  return prepareEvaluatorActionContext(getMockEEActionContext(),
+    factory.mediatorQueryOperation,
+    factory.mediatorFunctions);
 }
 
 export function getMockSuperTypeProvider(): ISuperTypeProvider {

@@ -1,6 +1,7 @@
+import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
-import type { IBindingsAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
+import type { IBindingsAggregator } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -26,7 +27,7 @@ IActionBindingsAggregatorFactory, IActorTest, IActorBindingsAggregatorFactoryOut
 
 export interface IActionBindingsAggregatorFactory extends IAction {
   expr: Algebra.AggregateExpression;
-  factory: IExpressionEvaluatorFactory;
+  factory: ActorExpressionEvaluatorFactory;
 }
 
 export interface IActorBindingsAggregatorFactoryOutput extends IActorOutput {

@@ -29,7 +29,7 @@ export class ActorBindingsAggregatorFactorySum extends ActorBindingsAggregatorFa
   Promise<IActorBindingsAggregatorFactoryOutput> {
     return {
       aggregator: new SumAggregator(
-        await factory.createEvaluator(expr.expression, context),
+        (await factory.run({ algExpr: expr.expression, context })).expressionEvaluator,
         expr.distinct,
         await factory.createFunction({
           functionName: RegularOperator.ADDITION,

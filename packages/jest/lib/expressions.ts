@@ -1,7 +1,9 @@
+import { ActorExpressionEvaluatorFactoryBase } from '@comunica/actor-expression-evaluator-factory-base';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorBindingsAggregatorFactory } from '@comunica/bus-bindings-aggeregator-factory';
+import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
-import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
+import { Bus } from '@comunica/core';
 import type { IMediatorFunctions, IMediatorTermComparator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Quad } from 'rdf-data-factory';
@@ -72,8 +74,10 @@ export function getMockEEFactory({ mediatorQueryOperation,
   mediatorBindingsAggregatorFactory?: MediatorBindingsAggregatorFactory;
   mediatorFunctions?: IMediatorFunctions;
   mediatorTermComparator?: IMediatorTermComparator;
-} = {}): ExpressionEvaluatorFactory {
-  return new ExpressionEvaluatorFactory({
+} = {}): ActorExpressionEvaluatorFactory {
+  return new ActorExpressionEvaluatorFactoryBase({
+    bus: new Bus({ name: 'testBusMock' }),
+    name: 'mockEEFactory',
     mediatorQueryOperation: mediatorQueryOperation || <any> {
       async mediate(arg: any) {
         throw new Error('mediatorQueryOperation mock of mockEEFactory not implemented');

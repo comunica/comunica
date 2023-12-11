@@ -28,7 +28,7 @@ export class ActorBindingsAggregatorFactoryMax extends ActorBindingsAggregatorFa
   Promise<IActorBindingsAggregatorFactoryOutput> {
     return {
       aggregator: new MaxAggregator(
-        await factory.createEvaluator(expr.expression, context),
+        (await factory.run({ algExpr: expr.expression, context })).expressionEvaluator,
         expr.distinct,
         await factory.createTermComparator({ context }),
       ),

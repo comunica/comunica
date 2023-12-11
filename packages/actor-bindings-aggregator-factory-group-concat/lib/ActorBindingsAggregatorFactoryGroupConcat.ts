@@ -24,12 +24,12 @@ export class ActorBindingsAggregatorFactoryGroupConcat extends ActorBindingsAggr
     return {};
   }
 
-  public async run(action: IActionBindingsAggregatorFactory): Promise<IActorBindingsAggregatorFactoryOutput> {
+  public async run({ factory, context, expr }: IActionBindingsAggregatorFactory): Promise<IActorBindingsAggregatorFactoryOutput> {
     return {
       aggregator: new GroupConcatAggregator(
-        await action.factory.createEvaluator(action.expr.expression, action.context),
-        action.expr.distinct,
-        action.expr.separator,
+        (await factory.run({ algExpr: expr.expression, context })).expressionEvaluator,
+        expr.distinct,
+        expr.separator,
       ),
     };
   }

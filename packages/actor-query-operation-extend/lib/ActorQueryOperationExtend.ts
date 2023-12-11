@@ -1,10 +1,10 @@
 import { bindingsToString } from '@comunica/bindings-factory';
+import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
-import type { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
 import { isExpressionError } from '@comunica/expression-evaluator';
 import type { Bindings, IActionContext, IQueryOperationResult, IQueryOperationResultBindings } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -15,7 +15,7 @@ import type { Algebra } from 'sparqlalgebrajs';
  * See https://www.w3.org/TR/sparql11-query/#sparqlAlgebra;
  */
 export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<Algebra.Extend> {
-  private readonly expressionEvaluatorFactory: ExpressionEvaluatorFactory;
+  private readonly expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
 
   public constructor(args: IActorQueryOperationExtendArgs) {
     super(args, 'extend');
@@ -24,7 +24,9 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
 
   public async testOperation(operation: Algebra.Extend, context: IActionContext): Promise<IActorTest> {
     // Will throw error for unsupported operations
-    const _ = Boolean(await this.expressionEvaluatorFactory.createEvaluator(operation.expression, context));
+    const _ = Boolean(
+      (await this.expressionEvaluatorFactory.run({ algExpr: operation.expression, context })).expressionEvaluator,
+    );
     return true;
   }
 
@@ -41,7 +43,8 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
       throw new Error(`Illegal binding to variable '${variable.value}' that has already been bound`);
     }
 
-    const evaluator = await this.expressionEvaluatorFactory.createEvaluator(operation.expression, context);
+    const evaluator = (await this.expressionEvaluatorFactory
+      .run({ algExpr: operation.expression, context })).expressionEvaluator;
 
     // Transform the stream by extending each Bindings with the expression result
     const transform = async(bindings: Bindings, next: any, push: (pusbBindings: Bindings) => void): Promise<void> => {
@@ -77,5 +80,5 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
 }
 
 interface IActorQueryOperationExtendArgs extends IActorQueryOperationTypedMediatedArgs {
-  expressionEvaluatorFactory: ExpressionEvaluatorFactory;
+  expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
 }

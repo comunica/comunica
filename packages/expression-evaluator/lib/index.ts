@@ -1,4 +1,3 @@
-export { ExpressionEvaluatorFactory } from './evaluators/ExpressionEvaluatorFactory';
 export { ExpressionEvaluator } from './evaluators/ExpressionEvaluator';
 
 export { TermTransformer } from './transformers/TermTransformer';

@@ -1,8 +1,8 @@
+import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { MediatorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActorTest } from '@comunica/core';
-import type { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
 import { isExpressionError } from '@comunica/expression-evaluator';
 import type { IQueryOperationResult, Bindings, IActionContext, IJoinEntry } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -12,7 +12,7 @@ import type { Algebra } from 'sparqlalgebrajs';
  */
 export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediated<Algebra.LeftJoin> {
   public readonly mediatorJoin: MediatorRdfJoin;
-  private readonly expressionEvaluatorFactory: ExpressionEvaluatorFactory;
+  private readonly expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
 
   public constructor(args: IActorQueryOperationLeftJoinArgs) {
     super(args, 'leftjoin');
@@ -41,7 +41,8 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
     if (operationOriginal.expression) {
       const rightMetadata = await entries[1].output.metadata();
       const expressionVariables = rightMetadata.variables;
-      const evaluator = await this.expressionEvaluatorFactory.createEvaluator(operationOriginal.expression, context);
+      const evaluator = (await this.expressionEvaluatorFactory
+        .run({ algExpr: operationOriginal.expression, context })).expressionEvaluator;
       const bindingsStream = joined.bindingsStream
         .transform({
           autoStart: false,
@@ -85,5 +86,5 @@ export interface IActorQueryOperationLeftJoinArgs extends IActorQueryOperationTy
    * A mediator for joining Bindings streams
    */
   mediatorJoin: MediatorRdfJoin;
-  expressionEvaluatorFactory: ExpressionEvaluatorFactory;
+  expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
 }

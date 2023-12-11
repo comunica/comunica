@@ -26,11 +26,11 @@ export class ActorBindingsAggregatorFactoryCount extends ActorBindingsAggregator
     return {};
   }
 
-  public async run(action: IActionBindingsAggregatorFactory): Promise<IActorBindingsAggregatorFactoryOutput> {
+  public async run({ factory, context, expr }: IActionBindingsAggregatorFactory): Promise<IActorBindingsAggregatorFactoryOutput> {
     return {
       aggregator: new CountAggregator(
-        await action.factory.createEvaluator(action.expr.expression, action.context),
-        action.expr.distinct,
+        (await factory.run({ algExpr: expr.expression, context })).expressionEvaluator,
+        expr.distinct,
       ),
     };
   }

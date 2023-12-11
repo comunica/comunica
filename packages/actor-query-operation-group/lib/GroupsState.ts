@@ -1,6 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
+import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { HashFunction } from '@comunica/bus-hash-bindings';
-import type { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
 import type { Bindings, IActionContext, IBindingsAggregator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -42,7 +42,7 @@ export class GroupsState {
   public constructor(
     private readonly hashFunction: HashFunction,
     private readonly pattern: Algebra.Group,
-    private readonly expressionEvaluatorFactory: ExpressionEvaluatorFactory,
+    private readonly expressionEvaluatorFactory: ActorExpressionEvaluatorFactory,
     private readonly context: IActionContext,
   ) {
     this.groups = new Map();

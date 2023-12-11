@@ -1,9 +1,9 @@
+import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
-import type { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
 import { isExpressionError } from '@comunica/expression-evaluator';
 import type { Bindings, IActionContext, IQueryOperationResult } from '@comunica/types';
 import type { Term } from '@rdfjs/types';
@@ -15,7 +15,7 @@ import { SortIterator } from './SortIterator';
  */
 export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTypedMediated<Algebra.OrderBy> {
   private readonly window: number;
-  private readonly expressionEvaluatorFactory: ExpressionEvaluatorFactory;
+  private readonly expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
 
   public constructor(args: IActorQueryOperationOrderBySparqleeArgs) {
     super(args, 'orderby');
@@ -27,7 +27,8 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
     // Will throw error for unsupported operators
     for (let expr of operation.expressions) {
       expr = this.extractSortExpression(expr);
-      const _ = await this.expressionEvaluatorFactory.createEvaluator(expr, context);
+      const _ = (await this.expressionEvaluatorFactory
+        .run({ algExpr: operation.expression, context })).expressionEvaluator;
     }
     return true;
   }
@@ -48,7 +49,8 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
       const isAscending = this.isAscending(expr);
       expr = this.extractSortExpression(expr);
       // Transform the stream by annotating it with the expr result
-      const evaluator = await this.expressionEvaluatorFactory.createEvaluator(expr, context);
+      const evaluator = (await this.expressionEvaluatorFactory
+        .run({ algExpr: operation.expression, context })).expressionEvaluator;
       interface IAnnotatedBinding {
         bindings: Bindings; result: Term | undefined;
       }
@@ -122,5 +124,5 @@ export interface IActorQueryOperationOrderBySparqleeArgs extends IActorQueryOper
    * @range {integer}
    */
   window?: number;
-  expressionEvaluatorFactory: ExpressionEvaluatorFactory;
+  expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
 }
