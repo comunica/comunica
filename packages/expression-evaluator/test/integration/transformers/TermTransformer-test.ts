@@ -86,6 +86,24 @@ describe('TermTransformer', () => {
       expect(termTransformer.transformRDFTermUnsafe(DF.defaultGraph())).toEqual(new E.DefaultGraph());
     });
 
+    it('Quad', () => {
+      const quad = DF.quad(
+        DF.namedNode('foo'),
+        DF.namedNode('foo'),
+        DF.namedNode('foo'),
+        DF.defaultGraph(),
+      );
+      expect(termTransformer.transformRDFTermUnsafe(quad))
+        .toEqual(new E.Quad(
+          new E.NamedNode('foo'),
+          new E.NamedNode('foo'),
+          new E.NamedNode('foo'),
+          new E.DefaultGraph(),
+        ));
+      expect(termTransformer.transformRDFTermUnsafe(quad).str())
+        .toEqual('Quad: [foo, foo, foo, DefaultGraph]');
+    });
+
     it('null', () => {
       expect(() => {
         // @ts-expect-error

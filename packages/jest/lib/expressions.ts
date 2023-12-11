@@ -76,12 +76,12 @@ export function getMockEEFactory({ mediatorQueryOperation,
   return new ExpressionEvaluatorFactory({
     mediatorQueryOperation: mediatorQueryOperation || <any> {
       async mediate(arg: any) {
-        return {};
+        throw new Error('mediatorQueryOperation mock of mockEEFactory not implemented');
       },
     },
     mediatorBindingsAggregatorFactory: mediatorBindingsAggregatorFactory || <any> {
       async mediate(arg: any) {
-        return {};
+        throw new Error('mediatorBindingsAggregatorFactory mock of mockEEFactory not implemented');
       },
     },
     mediatorFunctions,

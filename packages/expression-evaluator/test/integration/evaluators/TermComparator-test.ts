@@ -49,15 +49,16 @@ async function orderTestIsLower(litA: RDF.Term | undefined, litB: RDF.Term | und
   expect(evaluator.orderTypes(litB, litA)).toEqual(1);
 }
 
-async function genericOrderTestLower(litA: RDF.Term | undefined, litB: RDF.Term | undefined,
+async function orderTestIsEqual(litA: RDF.Term | undefined, litB: RDF.Term | undefined,
   typeDiscoveryCallback?: SuperTypeCallback) {
-  await orderTestIsLower(litA, litB, typeDiscoveryCallback);
-}
-
-async function orderTestIsEqual(litA: RDF.Term | undefined, litB: RDF.Term | undefined) {
   const evaluator = await getMockEEFactory()
     .createTermComparator({
-      context: getMockEEActionContext(),
+      context: typeDiscoveryCallback ?
+        getMockEEActionContext().set(KeysExpressionEvaluator.superTypeProvider, {
+          discoverer: typeDiscoveryCallback,
+          cache: new LRUCache<string, any>({ max: 1_000 }),
+        }) :
+        getMockEEActionContext(),
     });
   expect(evaluator.orderTypes(litA, litB)).toEqual(0);
   expect(evaluator.orderTypes(litB, litA)).toEqual(0);
@@ -69,28 +70,28 @@ describe('terms order', () => {
   });
 
   it('undefined is lower than everything else', async() => {
-    await genericOrderTestLower(undefined, DF.blankNode());
-    await genericOrderTestLower(undefined, DF.namedNode('http://example.com'));
-    await genericOrderTestLower(undefined, DF.literal('foo'));
+    await orderTestIsLower(undefined, DF.blankNode());
+    await orderTestIsLower(undefined, DF.namedNode('http://example.com'));
+    await orderTestIsLower(undefined, DF.literal('foo'));
   });
 
   it('blank nodes are ordered based on their ids', async() => {
     await orderTestIsEqual(DF.blankNode('a'), DF.blankNode('a'));
-    await genericOrderTestLower(DF.blankNode('a'), DF.blankNode('b'));
+    await orderTestIsLower(DF.blankNode('a'), DF.blankNode('b'));
   });
 
   it('blank nodes are lower than other terms', async() => {
-    await genericOrderTestLower(DF.blankNode(), DF.namedNode('http://example.com'));
-    await genericOrderTestLower(DF.blankNode(), DF.literal('foo'));
+    await orderTestIsLower(DF.blankNode(), DF.namedNode('http://example.com'));
+    await orderTestIsLower(DF.blankNode(), DF.literal('foo'));
   });
 
   it('named nodes are ordered based on their IRI strings', async() => {
     await orderTestIsEqual(DF.namedNode('http://example.com/a'), DF.namedNode('http://example.com/a'));
-    await genericOrderTestLower(DF.namedNode('http://example.com/a'), DF.namedNode('http://example.com/b'));
+    await orderTestIsLower(DF.namedNode('http://example.com/a'), DF.namedNode('http://example.com/b'));
   });
 
   it('named nodes are lower than literals', async() => {
-    await genericOrderTestLower(DF.namedNode('http://example.com'), DF.literal('foo'));
+    await orderTestIsLower(DF.namedNode('http://example.com'), DF.literal('foo'));
   });
 
   it('integers type identical', async() => {
@@ -102,83 +103,87 @@ describe('terms order', () => {
   });
 
   it('string type comparison', async() => {
-    await genericOrderTestLower(string('11'), string('2'));
+    await orderTestIsLower(string('11'), string('2'));
   });
   it('integer type comparison', async() => {
-    await genericOrderTestLower(int('2'), int('11'));
+    await orderTestIsLower(int('2'), int('11'));
   });
   it('double type comparison', async() => {
-    await genericOrderTestLower(double('2'), double('11'));
+    await orderTestIsLower(double('2'), double('11'));
   });
   it('decimal type comparison', async() => {
-    await genericOrderTestLower(decimal('2'), decimal('11'));
+    await orderTestIsLower(decimal('2'), decimal('11'));
   });
   it('float type comparison', async() => {
-    await genericOrderTestLower(float('2'), float('11'));
+    await orderTestIsLower(float('2'), float('11'));
   });
   it('dateTime type comparison', async() => {
-    await genericOrderTestLower(dateTime('2000-01-01T00:00:00Z'), dateTime('2001-01-01T00:00:00Z'));
+    await orderTestIsLower(dateTime('2000-01-01T00:00:00Z'), dateTime('2001-01-01T00:00:00Z'));
   });
   it('langString type comparison', async() => {
-    // Spec does not say anything about order of langStrings, but we use Operator Extensibility to define it.
     await orderTestIsEqual(DF.literal('a', 'de'), DF.literal('a', 'en'));
-    await genericOrderTestLower(DF.literal('a', 'en'), DF.literal('b', 'en'));
+    await orderTestIsLower(DF.literal('a', 'en'), DF.literal('b', 'en'));
   });
   it('boolean type comparison', async() => {
     const bool = DF.namedNode(DT.XSD_BOOLEAN);
-    await genericOrderTestLower(DF.literal('false', bool), DF.literal('true', bool));
+    await orderTestIsLower(DF.literal('false', bool), DF.literal('true', bool));
   });
 
   it('mixed string integer comparison', async() => {
-    await genericOrderTestLower(int('11'), string('11'));
-    await genericOrderTestLower(int('2'), string('11'));
+    await orderTestIsLower(int('11'), string('11'));
+    await orderTestIsLower(int('2'), string('11'));
   });
 
   it('mixed string dateTime comparison', async() => {
-    await genericOrderTestLower(dateTime('2000-01-01T00:00:00Z'), string('2000-01-01T00:00:00Z'));
-    await genericOrderTestLower(dateTime('2001-01-01T00:00:00Z'), string('2000-01-01T00:00:00Z'));
+    await orderTestIsLower(dateTime('2000-01-01T00:00:00Z'), string('2000-01-01T00:00:00Z'));
+    await orderTestIsLower(dateTime('2001-01-01T00:00:00Z'), string('2000-01-01T00:00:00Z'));
   });
 
   it('mixed unknown integer comparison', async() => {
-    // GenericOrderTestLower(int('1'), decimal('011'));
-    await genericOrderTestLower(DF.literal('011', DF.namedNode(DT.XSD_ENTITY)), int('1'));
-    await genericOrderTestLower(DF.literal('011', DF.namedNode(DT.XSD_ENTITY)), decimal('011'));
+    // OrderTestIsLower(int('1'), decimal('011'));
+    await orderTestIsLower(DF.literal('011', DF.namedNode(DT.XSD_ENTITY)), int('1'));
+    await orderTestIsLower(DF.literal('011', DF.namedNode(DT.XSD_ENTITY)), decimal('011'));
   });
 
   it('handles unknown extended types as basic literals', async() => {
     const someType = DF.namedNode('https://example.org/some-decimal');
-    await genericOrderTestLower(DF.literal('11', someType), DF.literal('2', someType));
+    await orderTestIsLower(DF.literal('11', someType), DF.literal('2', someType));
   });
 
   it('handles extended types', async() => {
     const discover: SuperTypeCallback = _ => TypeURL.XSD_DECIMAL;
     const someType = DF.namedNode('https://example.org/some-decimal');
+    await orderTestIsEqual(DF.literal('2', TypeURL.XSD_DECIMAL), DF.literal('2', someType), discover);
     await orderTestIsLower(DF.literal('2', someType), DF.literal('11', someType), discover);
   });
 
   it('custom literals comparison', async() => {
     const dt1 = DF.namedNode('http://example.org/dt1');
     const dt2 = DF.namedNode('http://example.org/dt2');
-    await genericOrderTestLower(DF.literal('a', dt1), DF.literal('b', dt1));
-    await genericOrderTestLower(DF.literal('b', dt1), DF.literal('a', dt2));
+    await orderTestIsLower(DF.literal('a', dt1), DF.literal('b', dt1));
+    await orderTestIsLower(DF.literal('b', dt1), DF.literal('a', dt2));
   });
 
   it('invalid literals comparison', async() => {
-    await genericOrderTestLower(dateTime('a'), dateTime('b'));
+    await orderTestIsLower(dateTime('a'), dateTime('b'));
   });
 
   it('quoted triples comparison', async() => {
-    await genericOrderTestLower(
+    await orderTestIsLower(
       DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
       DF.quad(DF.namedNode('ex:b'), DF.namedNode('ex:b'), DF.namedNode('ex:b')),
     );
-    await genericOrderTestLower(
+    await orderTestIsLower(
       DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
       DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:b'), DF.namedNode('ex:b')),
     );
-    await genericOrderTestLower(
+    await orderTestIsLower(
       DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
       DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:b')),
+    );
+    await orderTestIsLower(
+      DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
+      DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:b')),
     );
   });
 });

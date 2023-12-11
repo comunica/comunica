@@ -1,5 +1,4 @@
 import type * as RDF from '@rdfjs/types';
-import type { Algebra } from 'sparqlalgebrajs';
 import type * as E from '../expressions';
 import type * as C from './Consts';
 
@@ -104,15 +103,6 @@ export class InvalidArgumentTypes extends ExpressionError {
 }
 
 /**
- * Terms were being compared that are not supported.
- */
-export class InvalidCompareArgumentTypes extends ExpressionError {
-  public constructor(public arg0: RDF.Term, public arg1: RDF.Term) {
-    super(`Compared argument types are supported: '${arg0.termType}' and '${arg1.termType}'`);
-  }
-}
-
-/**
  * An invalid typecast happened.
  */
 export class CastError<T> extends ExpressionError {
@@ -167,18 +157,6 @@ export class InvalidArity extends Error {
 export class InvalidExpression<T> extends Error {
   public constructor(expr: T) {
     super(`Invalid SPARQL Expression '${pp(expr)}'`);
-  }
-}
-
-export class InvalidExpressionType<T> extends Error {
-  public constructor(public expr: T) {
-    super(`Invalid expression type for SPARQL Expression '${pp(expr)}'`);
-  }
-}
-
-export class InvalidTermType extends Error {
-  public constructor(public term: Algebra.TermExpression) {
-    super(`Invalid term type for term '${pp(term)}'`);
   }
 }
 

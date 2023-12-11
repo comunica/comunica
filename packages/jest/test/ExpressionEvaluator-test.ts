@@ -1,7 +1,21 @@
+import { describe } from 'node:test';
+import type { IActionBindingsAggregatorFactory } from '@comunica/bus-bindings-aggeregator-factory';
+import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { Algebra } from 'sparqlalgebrajs';
 import { Wildcard } from 'sparqljs';
-import { date, decimal, DF, double, float, int, makeAggregate, nonLiteral, string } from '../lib/expressions';
+import {
+  date,
+  decimal,
+  DF,
+  double,
+  float,
+  getMockEEFactory,
+  int,
+  makeAggregate,
+  nonLiteral,
+  string,
+} from '../lib/expressions';
 
 describe('The Expression evaluator util function', () => {
   describe('makeAggregate', () => {
@@ -124,6 +138,16 @@ describe('The Expression evaluator util function', () => {
     it('returns something that is not a literal', () => {
       const value = nonLiteral();
       expect(value.termType === 'Literal').toBeFalsy();
+    });
+  });
+
+  describe('getMockEEFactory', () => {
+    it('Throws an error on mediator calls when not provided', async() => {
+      await expect(() => getMockEEFactory().mediatorQueryOperation.mediate(<IActionQueryOperation> {}))
+        .rejects.toThrow('mediatorQueryOperation mock of mockEEFactory not implemented');
+      await expect(() =>
+        getMockEEFactory().mediatorBindingsAggregatorFactory.mediate(<IActionBindingsAggregatorFactory> {}))
+        .rejects.toThrow('mediatorBindingsAggregatorFactory mock of mockEEFactory not implemented');
     });
   });
 });
