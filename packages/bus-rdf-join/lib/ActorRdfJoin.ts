@@ -36,9 +36,6 @@ export abstract class ActorRdfJoin
    * If this actor will be logged in the debugger and physical query plan logger
    */
   public includeInLogs = true;
-  /**
-   * Merge handlers for context of bindings, this will be initialised once in first execution of this actor
-   */
   public readonly logicalType: LogicalJoinType;
   public readonly physicalName: string;
   /**
