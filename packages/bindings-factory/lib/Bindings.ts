@@ -13,13 +13,13 @@ export class Bindings implements RDF.Bindings {
   public readonly type = 'bindings';
 
   public context: IActionContext | undefined;
-  private readonly contextMergeHandlers: Record<string, IMergeHandler<any>>;
+  private readonly contextMergeHandlers: Record<string, IMergeHandler<any>> | undefined;
 
   private readonly dataFactory: RDF.DataFactory;
   private readonly entries: Map<string, RDF.Term>;
 
   public constructor(dataFactory: RDF.DataFactory, entries: Map<string, RDF.Term>,
-    contextMergeHandlers: Record<string, IMergeHandler<any>>,
+    contextMergeHandlers?: Record<string, IMergeHandler<any>>,
     context?: IActionContext) {
     this.dataFactory = dataFactory;
     this.entries = entries;
@@ -154,7 +154,7 @@ export class Bindings implements RDF.Bindings {
     }
 
     // If any context is empty we skip merging contexts
-    if (this.context) {
+    if (this.context && this.contextMergeHandlers) {
       let mergedContext = this.context;
       // Only merge if the other has a context
       if ('context' in other && other.context) {
@@ -191,7 +191,7 @@ export class Bindings implements RDF.Bindings {
       entries.push([ key, value ]);
     }
 
-    if (this.context) {
+    if (this.context && this.contextMergeHandlers) {
       let mergedContext = this.context;
       // Only merge if the other has a context
       if ('context' in other && other.context) {
@@ -216,15 +216,15 @@ export class Bindings implements RDF.Bindings {
     for (const key of keysContext) {
       const keyString = key.name;
       const occursInBoth = keysBothContext.some(x => x.name === key.name);
-
-      if (this.contextMergeHandlers[keyString] && occursInBoth) {
-        context = context.set(key, this.contextMergeHandlers[keyString]
+      // If we execute this function, we already check for existence of context merge handlers
+      if (this.contextMergeHandlers![keyString] && occursInBoth) {
+        context = context.set(key, this.contextMergeHandlers![keyString]
           .run(context.get(key), otherContext.get(key)));
         continue;
       }
       // For keys in both bindings we require a mergehandler. If no mergehandler is supplied the keys
       // are removed in the result
-      if (!this.contextMergeHandlers[keyString] && occursInBoth) {
+      if (!this.contextMergeHandlers![keyString] && occursInBoth) {
         context = context.delete(key);
         continue;
       }

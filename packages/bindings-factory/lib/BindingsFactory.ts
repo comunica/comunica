@@ -9,9 +9,9 @@ import { Bindings } from './Bindings';
  */
 export class BindingsFactory implements RDF.BindingsFactory {
   private readonly dataFactory: RDF.DataFactory;
-  private readonly contextMergeHandlers: Record<string, IMergeHandler<any>>;
+  private readonly contextMergeHandlers: Record<string, IMergeHandler<any>> | undefined;
 
-  public constructor(contextMergeHandlers: Record<string, IMergeHandler<any>>,
+  public constructor(contextMergeHandlers?: Record<string, IMergeHandler<any>>,
     dataFactory: RDF.DataFactory = new DataFactory()) {
     this.dataFactory = dataFactory;
     this.contextMergeHandlers = contextMergeHandlers;
