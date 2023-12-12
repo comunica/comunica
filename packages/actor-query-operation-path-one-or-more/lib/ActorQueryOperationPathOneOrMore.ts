@@ -18,7 +18,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
   }
 
   public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryOperationResult> {
-    const BF = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
+    const bindingsFactory = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
     const distinct = await this.isPathArbitraryLengthDistinct(context, operation);
     if (distinct.operation) {
       return distinct.operation;
@@ -37,7 +37,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
         operation.graph,
         context,
         false,
-        BF,
+        bindingsFactory,
       );
       const variables = operation.graph.termType === 'Variable' ? [ objectVar, operation.graph ] : [ objectVar ];
       return {
@@ -82,7 +82,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
                   {},
                   it,
                   { count: 0 },
-                  BF,
+                  bindingsFactory,
                 );
                 return it.transform<Bindings>({
                   transform(item, next, push) {
@@ -131,8 +131,8 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
       filter: item => operation.object.equals(item.get(variable)),
       transform(item, next, push) {
         const binding = operation.graph.termType === 'Variable' ?
-          BF.bindings([[ operation.graph, item.get(operation.graph)! ]]) :
-          BF.bindings();
+          bindingsFactory.bindings([[ operation.graph, item.get(operation.graph)! ]]) :
+          bindingsFactory.bindings();
         push(binding);
         next();
       },

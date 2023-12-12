@@ -24,7 +24,7 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
     operation: Algebra.Path,
     context: IActionContext,
   ): Promise<IQueryOperationResult> {
-    const BF = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
+    const bindingsFactory = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
     const predicate = <Algebra.ZeroOrOnePath> operation.predicate;
 
     const extra: Bindings[] = [];
@@ -35,7 +35,7 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
       operation.subject.equals(operation.object)) {
       return {
         type: 'bindings',
-        bindingsStream: new SingletonIterator(BF.bindings()),
+        bindingsStream: new SingletonIterator(bindingsFactory.bindings()),
         metadata: () => Promise.resolve({
           state: new MetadataValidationState(),
           cardinality: { type: 'exact', value: 1 },
@@ -91,10 +91,10 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
     } else {
       // If subject or object is not a variable, then determining the "Zero" part is simple.
       if (operation.subject.termType === 'Variable') {
-        extra.push(BF.bindings([[ operation.subject, operation.object ]]));
+        extra.push(bindingsFactory.bindings([[ operation.subject, operation.object ]]));
       }
       if (operation.object.termType === 'Variable') {
-        extra.push(BF.bindings([[ operation.object, operation.subject ]]));
+        extra.push(bindingsFactory.bindings([[ operation.object, operation.subject ]]));
       }
 
       bindingsStream = bindingsOne.bindingsStream.prepend(extra);

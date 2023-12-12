@@ -268,10 +268,12 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
           return true;
         });
       }
-      const BF = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
+      const bindingsFactory = new BindingsFactory(
+        (await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers,
+      );
       return filteredOutput.map(quad => {
         if (!this.addSourceToBindingContext) {
-          return BF.bindings(Object.keys(elementVariables).map(key => {
+          return bindingsFactory.bindings(Object.keys(elementVariables).map(key => {
             const keys: QuadTermName[] = <any>key.split('_');
             const variable = elementVariables[key];
             const term = getValueNestedPath(quad, keys);
@@ -279,7 +281,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
           }));
         }
         // Add the quad graph source to context of binding
-        const binding = BF.bindings(Object.keys(elementVariables).map(key => {
+        const binding = bindingsFactory.bindings(Object.keys(elementVariables).map(key => {
           const keys: QuadTermName[] = <any>key.split('_');
           const variable = elementVariables[key];
           const term = getValueNestedPath(quad, keys);

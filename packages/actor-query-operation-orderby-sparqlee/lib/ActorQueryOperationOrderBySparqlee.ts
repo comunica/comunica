@@ -25,13 +25,13 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
 
   public async testOperation(operation: Algebra.OrderBy, context: IActionContext): Promise<IActorTest> {
     // Will throw error for unsupported operators
-    const BF = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
+    const bindingsFactory = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
 
     for (let expr of operation.expressions) {
       expr = this.extractSortExpression(expr);
       const _ = new AsyncEvaluator(
         expr,
-        ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation, BF),
+        ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation, bindingsFactory),
       );
     }
     return true;
@@ -43,10 +43,10 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
     const output = ActorQueryOperation.getSafeBindings(outputRaw);
 
     const options = { window: this.window };
-    const BF = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
+    const bindingsFactory = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
     const sparqleeConfig = { ...ActorQueryOperation.getAsyncExpressionContext(context,
       this.mediatorQueryOperation,
-      BF) };
+      bindingsFactory) };
     let { bindingsStream } = output;
 
     // Sorting backwards since the first one is the most important therefore should be ordered last.

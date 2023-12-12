@@ -22,8 +22,12 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
 
   public async testOperation(operation: Algebra.Filter, context: IActionContext): Promise<IActorTest> {
     // Will throw error for unsupported operators
-    const BF = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
-    const config = { ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation, BF) };
+    const bindingsFactory = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
+    const config = { ...ActorQueryOperation.getAsyncExpressionContext(
+      context,
+      this.mediatorQueryOperation,
+      bindingsFactory,
+    ) };
     const _ = new AsyncEvaluator(operation.expression, config);
     return true;
   }
@@ -34,8 +38,12 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
     const output = ActorQueryOperation.getSafeBindings(outputRaw);
     ActorQueryOperation.validateQueryOutput(output, 'bindings');
 
-    const BF = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
-    const config = { ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation, BF) };
+    const bindingsFactory = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
+    const config = { ...ActorQueryOperation.getAsyncExpressionContext(
+      context,
+      this.mediatorQueryOperation,
+      bindingsFactory,
+    ) };
     const evaluator = new AsyncEvaluator(operation.expression, config);
 
     const transform = async(item: Bindings, next: any, push: (bindings: Bindings) => void): Promise<void> => {

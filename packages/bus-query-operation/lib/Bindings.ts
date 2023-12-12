@@ -43,7 +43,7 @@ export function materializeTerm(term: RDF.Term, bindings: Bindings): RDF.Term {
 export function materializeOperation(
   operation: Algebra.Operation,
   bindings: Bindings,
-  BF: BindingsFactory,
+  bindingsFactory: BindingsFactory,
   options: {
     /**
      * If target variable bindings (such as on SELECT or BIND) should not be allowed.
@@ -96,7 +96,7 @@ export function materializeOperation(
         } else {
           return {
             recurse: true,
-            result: materializeOperation(op.input, bindings, BF, options),
+            result: materializeOperation(op.input, bindings, bindingsFactory, options),
           };
         }
       }
@@ -150,7 +150,7 @@ export function materializeOperation(
 
       // Only include projected variables in the sub-bindings that will be passed down recursively.
       // If we don't do this, we may be binding variables that may have the same label, but are not considered equal.
-      const subBindings = BF.bindings(<[RDF.Variable, RDF.Term][]> op.variables.map(variable => {
+      const subBindings = bindingsFactory.bindings(<[RDF.Variable, RDF.Term][]> op.variables.map(variable => {
         const binding = bindings.get(variable);
         if (binding) {
           return [ variable, binding ];
@@ -165,7 +165,7 @@ export function materializeOperation(
           materializeOperation(
             op.input,
             subBindings,
-            BF,
+            bindingsFactory,
             options,
           ),
           variables,

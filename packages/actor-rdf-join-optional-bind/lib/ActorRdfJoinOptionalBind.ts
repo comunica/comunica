@@ -31,7 +31,7 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
     // Create BindingsFactory and context handlers
-    const BF = new BindingsFactory(
+    const bindingsFactory = new BindingsFactory(
       (await this.mediatorMergeHandlers.mediate({ context: action.context })).mergeHandlers,
     );
     // Close the right stream, since we don't need that one
@@ -55,7 +55,7 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
         return output.bindingsStream;
       },
       true,
-      BF,
+      bindingsFactory,
     );
 
     return {

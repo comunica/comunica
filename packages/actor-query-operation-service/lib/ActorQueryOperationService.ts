@@ -31,7 +31,7 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
   public async runOperation(operation: Algebra.Service, context: IActionContext):
   Promise<IQueryOperationResult> {
     const endpoint: string = operation.name.value;
-    const BF = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
+    const bindingsFactory = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
     // Adjust our context to only have the endpoint as source
     let subContext: IActionContext = context
       .delete(KeysRdfResolveQuadPattern.source)
@@ -49,7 +49,7 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
       if (operation.silent) {
         // Emit a single empty binding
         output = {
-          bindingsStream: new SingletonIterator(BF.bindings()),
+          bindingsStream: new SingletonIterator(bindingsFactory.bindings()),
           type: 'bindings',
           metadata: async() => ({
             state: new MetadataValidationState(),

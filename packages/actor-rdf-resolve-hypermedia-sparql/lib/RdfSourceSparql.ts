@@ -25,10 +25,10 @@ export class RdfSourceSparql implements IQuadSource {
   private readonly endpointFetcher: SparqlEndpointFetcher;
   private readonly cache: LRUCache<string, RDF.QueryResultCardinality> | undefined;
 
-  private readonly BF: BindingsFactory;
+  private readonly bindingsFactory: BindingsFactory;
 
   public constructor(url: string, context: IActionContext, mediatorHttp: MediatorHttp, forceHttpGet: boolean,
-    cacheSize: number, BF: BindingsFactory) {
+    cacheSize: number, bindingsFactory: BindingsFactory) {
     this.url = url;
     this.context = context;
     this.mediatorHttp = mediatorHttp;
@@ -42,7 +42,7 @@ export class RdfSourceSparql implements IQuadSource {
     this.cache = cacheSize > 0 ?
       new LRUCache<string, RDF.QueryResultCardinality>({ max: cacheSize }) :
       undefined;
-    this.BF = BF;
+    this.bindingsFactory = bindingsFactory;
   }
 
   /**
@@ -141,7 +141,7 @@ export class RdfSourceSparql implements IQuadSource {
   public async queryBindings(endpoint: string, query: string): Promise<BindingsStream> {
     const rawStream = this.endpointFetcher.fetchBindings(endpoint, query);
     return wrap<any>(rawStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY })
-      .map((rawData: Record<string, RDF.Term>) => this.BF.bindings(Object.entries(rawData)
+      .map((rawData: Record<string, RDF.Term>) => this.bindingsFactory.bindings(Object.entries(rawData)
         .map(([ key, value ]) => [ DF.variable(key.slice(1)), value ])));
   }
 

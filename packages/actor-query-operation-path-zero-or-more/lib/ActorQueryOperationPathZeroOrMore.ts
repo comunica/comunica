@@ -20,7 +20,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
   }
 
   public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryOperationResult> {
-    const BF = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
+    const bindingsFactory = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
 
     const distinct = await this.isPathArbitraryLengthDistinct(context, operation);
     if (distinct.operation) {
@@ -87,7 +87,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
                     {},
                     it,
                     counter,
-                    BF,
+                    bindingsFactory,
                   );
                 }
                 // If not started from this namedNode (object in triple) in this graph, start a search
@@ -105,7 +105,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
                     {},
                     it,
                     counter,
-                    BF,
+                    bindingsFactory,
                   );
                 }
                 return it.transform<Bindings>({
@@ -141,7 +141,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
         operation.graph,
         context,
         true,
-        BF,
+        bindingsFactory,
       );
       // Check this
       const bindingsStream = starEval.bindingsStream.transform<Bindings>({
@@ -149,8 +149,8 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
         transform(item, next, push) {
           // Return graph binding if graph was a variable, otherwise empty binding
           const binding = operation.graph.termType === 'Variable' ?
-            BF.bindings([[ operation.graph, item.get(operation.graph)! ]]) :
-            BF.bindings();
+            bindingsFactory.bindings([[ operation.graph, item.get(operation.graph)! ]]) :
+            bindingsFactory.bindings();
           push(binding);
           next();
         },
@@ -175,7 +175,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
       operation.graph,
       context,
       true,
-      BF,
+      bindingsFactory,
     );
     const variables: RDF.Variable[] = operation.graph.termType === 'Variable' ? [ value, operation.graph ] : [ value ];
     return {

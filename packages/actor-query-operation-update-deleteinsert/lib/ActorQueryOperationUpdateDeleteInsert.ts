@@ -36,12 +36,12 @@ export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTy
 
   public async runOperation(operation: Algebra.DeleteInsert, context: IActionContext):
   Promise<IQueryOperationResult> {
-    const BF = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
+    const bindingsFactory = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
     // Evaluate the where clause
     const whereBindings: BindingsStream = operation.where ?
       ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation
         .mediate({ operation: operation.where, context })).bindingsStream :
-      new ArrayIterator([ BF.bindings() ], { autoStart: false });
+      new ArrayIterator([ bindingsFactory.bindings() ], { autoStart: false });
 
     // Construct triples using the result based on the pattern.
     let quadStreamInsert: AsyncIterator<RDF.Quad> | undefined;

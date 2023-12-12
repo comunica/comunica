@@ -31,9 +31,9 @@ export class ActorQueryOperationValues extends ActorQueryOperationTyped<Algebra.
 
   public async runOperation(operation: Algebra.Values, context: IActionContext):
   Promise<IQueryOperationResult> {
-    const BF = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
+    const bindingsFactory = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
     const bindingsStream: BindingsStream = new ArrayIterator<Bindings>(operation.bindings
-      .map(x => BF.bindings(Object.entries(x)
+      .map(x => bindingsFactory.bindings(Object.entries(x)
         .map(([ key, value ]) => [ DF.variable(key.slice(1)), value ]))));
     const variables = operation.variables;
     const metadata = (): Promise<MetadataBindings> => Promise.resolve({

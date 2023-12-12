@@ -34,7 +34,7 @@ export class GroupsState {
   private readonly groupsInitializer: Map<BindingsHash, Promise<IGroup>>;
   private readonly groupVariables: Set<string>;
   private readonly distinctHashes: null | Map<BindingsHash, Set<BindingsHash>>;
-  private readonly BF: BindingsFactory;
+  private readonly bindingsFactory: BindingsFactory;
   private waitCounter: number;
   // Function that resolves the promise given by collectResults
   private waitResolver: (bindings: Bindings[]) => void;
@@ -44,7 +44,7 @@ export class GroupsState {
     private readonly hashFunction: HashFunction,
     private readonly pattern: Algebra.Group,
     private readonly sparqleeConfig: AsyncEvaluatorConfig,
-    BF: BindingsFactory,
+    bindingsFactory: BindingsFactory,
   ) {
     this.groups = new Map();
     this.groupsInitializer = new Map();
@@ -54,7 +54,7 @@ export class GroupsState {
       null;
     this.waitCounter = 1;
     this.resultHasBeenCalled = false;
-    this.BF = BF;
+    this.bindingsFactory = bindingsFactory;
   }
 
   /**
@@ -164,7 +164,7 @@ export class GroupsState {
           single.push([ key, value ]);
         }
       }
-      rows = [ this.BF.bindings(single) ];
+      rows = [ this.bindingsFactory.bindings(single) ];
     }
     this.waitResolver(rows);
   }

@@ -116,7 +116,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     const canContainUndefs = this.canOperationContainUndefs(action.operation);
 
     // Execute the query against the endpoint depending on the type
-    const BF = new BindingsFactory(
+    const bindingsFactory = new BindingsFactory(
       (await this.mediatorMergeHandlers.mediate({ context: action.context })).mergeHandlers,
     );
     switch (type) {
@@ -124,9 +124,9 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
         if (!variables) {
           variables = Util.inScopeVariables(action.operation);
         }
-        return this.executeQuery(endpoint, query!, false, variables, canContainUndefs, BF);
+        return this.executeQuery(endpoint, query!, false, variables, canContainUndefs, bindingsFactory);
       case 'CONSTRUCT':
-        return this.executeQuery(endpoint, query!, true, undefined, false, BF);
+        return this.executeQuery(endpoint, query!, true, undefined, false, bindingsFactory);
       case 'ASK':
         return <IQueryOperationResultBoolean>{
           type: 'boolean',
@@ -154,7 +154,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     quads: boolean,
     variables: RDF.Variable[] | undefined,
     canContainUndefs: boolean,
-    BF: BindingsFactory,
+    bindingsFactory: BindingsFactory,
   ): IQueryOperationResult {
     const inputStream: Promise<NodeJS.EventEmitter> = quads ?
       this.endpointFetcher.fetchTriples(endpoint, query) :
@@ -162,7 +162,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
 
     const stream = wrap<any>(inputStream, { autoStart: false }).map(rawData => quads ?
       rawData :
-      BF.bindings(Object.entries(rawData)
+      bindingsFactory.bindings(Object.entries(rawData)
         .map(([ key, value ]: [string, RDF.Term]) => [ DF.variable(key.slice(1)), value ])));
 
     const resultStream = new LazyCardinalityIterator(stream);

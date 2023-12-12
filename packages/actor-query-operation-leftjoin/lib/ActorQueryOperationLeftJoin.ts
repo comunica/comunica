@@ -42,8 +42,14 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
       const rightMetadata = await entries[1].output.metadata();
       const expressionVariables = rightMetadata.variables;
 
-      const BF = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
-      const config = { ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation, BF) };
+      const bindingsFactory = new BindingsFactory(
+        (await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers,
+      );
+      const config = { ...ActorQueryOperation.getAsyncExpressionContext(
+        context,
+        this.mediatorQueryOperation,
+        bindingsFactory,
+      ) };
       const evaluator = new AsyncEvaluator(operationOriginal.expression, config);
       const bindingsStream = joined.bindingsStream
         .transform({

@@ -22,10 +22,10 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
   }
 
   public async testOperation(operation: Algebra.Extend, context: IActionContext): Promise<IActorTest> {
-    const BF = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
+    const bindingsFactory = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
     // Will throw error for unsupported opperations
     const _ = Boolean(new AsyncEvaluator(operation.expression,
-      ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation, BF)));
+      ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation, bindingsFactory)));
     return true;
   }
 
@@ -36,8 +36,12 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
     const output: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: input, context }),
     );
-    const BF = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
-    const config = { ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation, BF) };
+    const bindingsFactory = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
+    const config = { ...ActorQueryOperation.getAsyncExpressionContext(
+      context,
+      this.mediatorQueryOperation,
+      bindingsFactory,
+    ) };
     const evaluator = new AsyncEvaluator(expression, config);
 
     // Transform the stream by extending each Bindings with the expression result

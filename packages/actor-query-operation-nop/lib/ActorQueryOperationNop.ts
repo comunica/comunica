@@ -24,10 +24,10 @@ export class ActorQueryOperationNop extends ActorQueryOperationTypedMediated<Alg
   }
 
   public async runOperation(operation: Algebra.Nop, context: IActionContext): Promise<IQueryOperationResult> {
-    const BF = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
+    const bindingsFactory = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
 
     return {
-      bindingsStream: new SingletonIterator(BF.bindings()),
+      bindingsStream: new SingletonIterator(bindingsFactory.bindings()),
       metadata: () => Promise.resolve({
         state: new MetadataValidationState(),
         cardinality: { type: 'exact', value: 1 },

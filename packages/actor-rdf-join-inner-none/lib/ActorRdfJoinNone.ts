@@ -29,12 +29,12 @@ export class ActorRdfJoinNone extends ActorRdfJoin {
   }
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
-    const BF = new BindingsFactory(
+    const bindingsFactory = new BindingsFactory(
       (await this.mediatorMergeHandlers.mediate({ context: action.context })).mergeHandlers,
     );
     return {
       result: {
-        bindingsStream: new ArrayIterator([ BF.bindings() ], { autoStart: false }),
+        bindingsStream: new ArrayIterator([ bindingsFactory.bindings() ], { autoStart: false }),
         metadata: () => Promise.resolve({
           state: new MetadataValidationState(),
           cardinality: { type: 'exact', value: 1 },

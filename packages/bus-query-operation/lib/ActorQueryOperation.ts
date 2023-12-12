@@ -164,12 +164,12 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    */
   public static getAsyncExpressionContext(context: IActionContext,
     mediatorQueryOperation: MediatorQueryOperation,
-    BF: BindingsFactory):
+    bindingsFactory: BindingsFactory):
     IAsyncExpressionContext {
     return {
       ...this.getBaseExpressionContext(context),
       bnode: (input?: string) => Promise.resolve(new BlankNodeBindingsScoped(input || `BNODE_${bnodeCounter++}`)),
-      exists: ActorQueryOperation.createExistenceResolver(context, mediatorQueryOperation, BF),
+      exists: ActorQueryOperation.createExistenceResolver(context, mediatorQueryOperation, bindingsFactory),
     };
   }
 
@@ -180,10 +180,10 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    */
   public static createExistenceResolver(context: IActionContext,
     mediatorQueryOperation: MediatorQueryOperation,
-    BF: BindingsFactory):
+    bindingsFactory: BindingsFactory):
     (expr: Algebra.ExistenceExpression, bindings: Bindings) => Promise<boolean> {
     return async(expr, bindings) => {
-      const operation = materializeOperation(expr.input, bindings, BF);
+      const operation = materializeOperation(expr.input, bindings, bindingsFactory);
 
       const outputRaw = await mediatorQueryOperation.mediate({ operation, context });
       const output = ActorQueryOperation.getSafeBindings(outputRaw);
