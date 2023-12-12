@@ -138,7 +138,7 @@ export class RdfSourceSparql implements IQuadSource {
    * @param {string} query A SPARQL query string.
    * @return {BindingsStream} A stream of bindings.
    */
-  public async queryBindings(endpoint: string, query: string): Promise<BindingsStream> {
+  public queryBindings(endpoint: string, query: string): BindingsStream {
     const rawStream = this.endpointFetcher.fetchBindings(endpoint, query);
     return wrap<any>(rawStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY })
       .map((rawData: Record<string, RDF.Term>) => this.bindingsFactory.bindings(Object.entries(rawData)
@@ -163,7 +163,7 @@ export class RdfSourceSparql implements IQuadSource {
         return resolve(cachedCardinality);
       }
 
-      const bindingsStream: BindingsStream = await this.queryBindings(this.url, countQuery);
+      const bindingsStream: BindingsStream = this.queryBindings(this.url, countQuery);
       bindingsStream.on('data', (bindings: Bindings) => {
         const count = bindings.get(VAR_COUNT);
         const cardinality: RDF.QueryResultCardinality = { type: 'estimate', value: Number.POSITIVE_INFINITY };
@@ -183,7 +183,7 @@ export class RdfSourceSparql implements IQuadSource {
       .then(cardinality => quads.setProperty('metadata', { cardinality, canContainUndefs: false }));
 
     // Materialize the queried pattern using each found binding.
-    const quads: AsyncIterator<RDF.Quad> & RDF.Stream = new TransformIterator(async() => await this
+    const quads: AsyncIterator<RDF.Quad> & RDF.Stream = new TransformIterator(async() => this
       .queryBindings(this.url, selectQuery), { autoStart: false })
       .transform({
         map: (bindings: Bindings) => <RDF.Quad> mapTermsNested(pattern, (value: RDF.Term) => {
