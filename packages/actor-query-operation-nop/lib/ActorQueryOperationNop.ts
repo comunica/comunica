@@ -13,7 +13,7 @@ import type { Algebra } from 'sparqlalgebrajs';
  * actor that handles SPARQL nop operations.
  */
 export class ActorQueryOperationNop extends ActorQueryOperationTypedMediated<Algebra.Nop> {
-  public readonly mediatorMergeHandlers: MediatorMergeBindingFactory;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingFactory;
 
   public constructor(args: IActorQueryOperationNopArgs) {
     super(args, 'nop');
@@ -24,7 +24,9 @@ export class ActorQueryOperationNop extends ActorQueryOperationTypedMediated<Alg
   }
 
   public async runOperation(operation: Algebra.Nop, context: IActionContext): Promise<IQueryOperationResult> {
-    const bindingsFactory = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
+    const bindingsFactory = new BindingsFactory(
+      (await this.mediatorMergeBindingsContext.mediate({ context })).mergeHandlers,
+    );
 
     return {
       bindingsStream: new SingletonIterator(bindingsFactory.bindings()),
@@ -43,5 +45,5 @@ export interface IActorQueryOperationNopArgs extends IActorQueryOperationTypedMe
   /**
    * A mediator for creating binding context merge handlers
    */
-  mediatorMergeHandlers: MediatorMergeBindingFactory;
+  mediatorMergeBindingsContext: MediatorMergeBindingFactory;
 }

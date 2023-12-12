@@ -45,7 +45,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
 
   protected lastContext: IActionContext;
 
-  public readonly mediatorMergeHandlers: MediatorMergeBindingFactory;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingFactory;
 
   public constructor(args: IActorQueryOperationSparqlEndpointArgs) {
     super(args);
@@ -117,7 +117,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
 
     // Execute the query against the endpoint depending on the type
     const bindingsFactory = new BindingsFactory(
-      (await this.mediatorMergeHandlers.mediate({ context: action.context })).mergeHandlers,
+      (await this.mediatorMergeBindingsContext.mediate({ context: action.context })).mergeHandlers,
     );
     switch (type) {
       case 'SELECT':
@@ -241,6 +241,6 @@ export interface IActorQueryOperationSparqlEndpointArgs
   /**
    * A mediator for creating binding context merge handlers
    */
-  mediatorMergeHandlers: MediatorMergeBindingFactory;
+  mediatorMergeBindingsContext: MediatorMergeBindingFactory;
 
 }

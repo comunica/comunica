@@ -18,7 +18,7 @@ const BF = new BindingsFactory();
 describe('ActorQueryOperationPathZeroOrOne', () => {
   let bus: any;
   let mediatorQueryOperation: any;
-  let mediatorMergeHandlers: any;
+  let mediatorMergeBindingsContext: any;
   const factory: Factory = new Factory();
 
   beforeEach(() => {
@@ -65,7 +65,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
       },
     };
     // Mediator with no actors attached to it
-    mediatorMergeHandlers = {
+    mediatorMergeBindingsContext = {
       mediate(arg: any) {
         return {};
       },
@@ -96,7 +96,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
       actor = new ActorQueryOperationPathZeroOrOne({ name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeHandlers });
+        mediatorMergeBindingsContext });
     });
 
     it('should test on ZeroOrOne paths', () => {

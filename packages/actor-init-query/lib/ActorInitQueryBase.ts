@@ -25,7 +25,7 @@ export class ActorInitQueryBase<QueryContext extends IQueryContextCommon = IQuer
   public readonly mediatorQueryResultSerializeMediaTypeFormatCombiner: MediatorQueryResultSerializeMediaTypeFormats;
   public readonly mediatorContextPreprocess: MediatorContextPreprocess;
   public readonly mediatorHttpInvalidate: MediatorHttpInvalidate;
-  public readonly mediatorMergeHandlers: MediatorMergeBindingFactory;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingFactory;
 
   public readonly logger: Logger;
   public readonly queryString?: string;
@@ -102,7 +102,7 @@ export interface IActorInitQueryBaseArgs<QueryContext extends IQueryContextCommo
   /**
    * A mediator for creating binding context merge handlers
    */
-  mediatorMergeHandlers: MediatorMergeBindingFactory;
+  mediatorMergeBindingsContext: MediatorMergeBindingFactory;
 
   /**
    * The logger of this actor

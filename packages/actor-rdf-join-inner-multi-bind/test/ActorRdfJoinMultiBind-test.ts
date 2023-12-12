@@ -18,7 +18,7 @@ import '@comunica/jest';
 const DF = new DataFactory();
 const BF = new BindingsFactory();
 const FACTORY = new Factory();
-const mediatorMergeHandlers: any = {
+const mediatorMergeBindingsContext: any = {
   mediate(arg: any) {
     return {};
   },
@@ -86,7 +86,7 @@ describe('ActorRdfJoinMultiBind', () => {
         mediatorQueryOperation,
         mediatorJoinSelectivity,
         mediatorJoinEntriesSort,
-        mediatorMergeHandlers,
+        mediatorMergeBindingsContext,
       });
       logSpy = (<any> actor).logDebug = jest.fn();
     });
@@ -1075,7 +1075,7 @@ describe('ActorRdfJoinMultiBind', () => {
           mediatorQueryOperation,
           mediatorJoinSelectivity,
           mediatorJoinEntriesSort,
-          mediatorMergeHandlers,
+          mediatorMergeBindingsContext,
         });
 
         const action: IActionRdfJoin = {

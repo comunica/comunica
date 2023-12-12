@@ -13,7 +13,7 @@ import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory({}, DF);
-const mediatorMergeHandlers: any = {
+const mediatorMergeBindingsContext: any = {
   mediate(arg: any) {
     return {};
   },
@@ -130,7 +130,7 @@ function constructCase(
     bus,
     mediatorQueryOperation,
     mediatorHashBindings,
-    mediatorMergeHandlers });
+    mediatorMergeBindingsContext });
   return { actor, bus, mediatorQueryOperation, op };
 }
 
@@ -610,7 +610,7 @@ describe('ActorQueryOperationGroup', () => {
         bus,
         mediatorHashBindings,
         mediatorQueryOperation: <any> myMediatorQueryOperation,
-        mediatorMergeHandlers,
+        mediatorMergeBindingsContext,
       });
 
       await expect(async() => arrayifyStream((<any> await actor.run(op)).bindingsStream))

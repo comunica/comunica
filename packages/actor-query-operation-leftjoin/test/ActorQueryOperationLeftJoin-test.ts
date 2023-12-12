@@ -16,9 +16,9 @@ describe('ActorQueryOperationLeftJoin', () => {
   let bus: any;
   let mediatorQueryOperation: any;
   let mediatorJoin: any;
-  let mediatorMergeHandlers: any;
+  let mediatorMergeBindingsContext: any;
   beforeEach(() => {
-    mediatorMergeHandlers = {
+    mediatorMergeBindingsContext = {
       mediate(arg: any) {
         return {};
       },
@@ -75,7 +75,7 @@ describe('ActorQueryOperationLeftJoin', () => {
         bus,
         mediatorQueryOperation,
         mediatorJoin,
-        mediatorMergeHandlers });
+        mediatorMergeBindingsContext });
     });
 
     it('should test on leftjoin', () => {

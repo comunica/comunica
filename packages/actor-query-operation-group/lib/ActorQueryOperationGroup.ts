@@ -15,14 +15,16 @@ import { GroupsState } from './GroupsState';
  */
 export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<Algebra.Group> {
   public readonly mediatorHashBindings: MediatorHashBindings;
-  public readonly mediatorMergeHandlers: MediatorMergeBindingFactory;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingFactory;
 
   public constructor(args: IActorQueryOperationGroupArgs) {
     super(args, 'group');
   }
 
   public async testOperation(operation: Algebra.Group, context: IActionContext): Promise<IActorTest> {
-    const bindingsFactory = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
+    const bindingsFactory = new BindingsFactory(
+      (await this.mediatorMergeBindingsContext.mediate({ context })).mergeHandlers,
+    );
     for (const aggregate of operation.aggregates) {
       // Will throw for unsupported expressions
       const _ = new AsyncEvaluator(
@@ -36,7 +38,9 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
   public async runOperation(operation: Algebra.Group, context: IActionContext):
   Promise<IQueryOperationResult> {
     // Create bindingFactory with handlers
-    const bindingsFactory = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
+    const bindingsFactory = new BindingsFactory(
+      (await this.mediatorMergeBindingsContext.mediate({ context })).mergeHandlers,
+    );
     // Create a hash function
     const { hashFunction } = await this.mediatorHashBindings.mediate({ allowHashCollisions: true, context });
 
@@ -100,5 +104,5 @@ export interface IActorQueryOperationGroupArgs extends IActorQueryOperationTyped
   /**
   * A mediator for creating binding context merge handlers
   */
-  mediatorMergeHandlers: MediatorMergeBindingFactory;
+  mediatorMergeBindingsContext: MediatorMergeBindingFactory;
 }

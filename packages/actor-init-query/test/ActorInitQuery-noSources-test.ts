@@ -80,10 +80,10 @@ describe('ActorInitQuery', () => {
     let actorAllowNoSources: ActorInitQuery;
     let spyResultToString: any;
     let spyQueryOrExplain: any;
-    let mediatorMergeHandlers: any;
+    let mediatorMergeBindingsContext: any;
     beforeEach(() => {
       const factory = new Factory();
-      mediatorMergeHandlers = {
+      mediatorMergeBindingsContext = {
         mediate(arg: any) {
           return {};
         },
@@ -133,7 +133,7 @@ describe('ActorInitQuery', () => {
         mediatorQueryResultSerialize: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-        mediatorMergeHandlers,
+        mediatorMergeBindingsContext,
         name: 'actor',
         allowNoSources: true,
       });

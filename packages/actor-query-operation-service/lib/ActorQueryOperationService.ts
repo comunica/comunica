@@ -15,7 +15,7 @@ import type { Algebra } from 'sparqlalgebrajs';
  */
 export class ActorQueryOperationService extends ActorQueryOperationTypedMediated<Algebra.Service> {
   public readonly forceSparqlEndpoint: boolean;
-  public readonly mediatorMergeHandlers: MediatorMergeBindingFactory;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingFactory;
 
   public constructor(args: IActorQueryOperationServiceArgs) {
     super(args, 'service');
@@ -31,7 +31,9 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
   public async runOperation(operation: Algebra.Service, context: IActionContext):
   Promise<IQueryOperationResult> {
     const endpoint: string = operation.name.value;
-    const bindingsFactory = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
+    const bindingsFactory = new BindingsFactory(
+      (await this.mediatorMergeBindingsContext.mediate({ context })).mergeHandlers,
+    );
     // Adjust our context to only have the endpoint as source
     let subContext: IActionContext = context
       .delete(KeysRdfResolveQuadPattern.source)
@@ -76,6 +78,6 @@ export interface IActorQueryOperationServiceArgs extends IActorQueryOperationTyp
   /**
    * A mediator for creating binding context merge handlers
    */
-  mediatorMergeHandlers: MediatorMergeBindingFactory;
+  mediatorMergeBindingsContext: MediatorMergeBindingFactory;
 
 }

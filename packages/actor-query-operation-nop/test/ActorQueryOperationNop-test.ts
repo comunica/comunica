@@ -8,7 +8,7 @@ import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
-const mediatorMergeHandlers: any = {
+const mediatorMergeBindingsContext: any = {
   mediate(arg: any) {
     return {};
   },
@@ -40,7 +40,7 @@ describe('ActorQueryOperationNop', () => {
     let actor: ActorQueryOperationNop;
 
     beforeEach(() => {
-      actor = new ActorQueryOperationNop({ name: 'actor', bus, mediatorQueryOperation, mediatorMergeHandlers });
+      actor = new ActorQueryOperationNop({ name: 'actor', bus, mediatorQueryOperation, mediatorMergeBindingsContext });
     });
 
     it('should test on nop', () => {

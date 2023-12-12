@@ -85,10 +85,10 @@ describe('ActorQueryOperationFilterSparqlee', () => {
   describe('An ActorQueryOperationFilterSparqlee instance', () => {
     let actor: ActorQueryOperationFilterSparqlee;
     let factory: Factory;
-    let mediatorMergeHandlers: any;
+    let mediatorMergeBindingsContext: any;
 
     beforeEach(() => {
-      mediatorMergeHandlers = {
+      mediatorMergeBindingsContext = {
         mediate(arg: any) {
           return {};
         },
@@ -97,7 +97,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       actor = new ActorQueryOperationFilterSparqlee({ name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeHandlers });
+        mediatorMergeBindingsContext });
       factory = new Factory();
     });
 

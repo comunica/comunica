@@ -18,7 +18,7 @@ import type { Algebra } from 'sparqlalgebrajs';
  */
 export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTypedMediated<Algebra.DeleteInsert> {
   public readonly mediatorUpdateQuads: MediatorRdfUpdateQuads;
-  public readonly mediatorMergeHandlers: MediatorMergeBindingFactory;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingFactory;
 
   protected blankNodeCounter = 0;
 
@@ -36,7 +36,9 @@ export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTy
 
   public async runOperation(operation: Algebra.DeleteInsert, context: IActionContext):
   Promise<IQueryOperationResult> {
-    const bindingsFactory = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
+    const bindingsFactory = new BindingsFactory(
+      (await this.mediatorMergeBindingsContext.mediate({ context })).mergeHandlers,
+    );
     // Evaluate the where clause
     const whereBindings: BindingsStream = operation.where ?
       ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation
@@ -85,6 +87,6 @@ export interface IActorQueryOperationUpdateDeleteInsertArgs extends IActorQueryO
   /**
    * A mediator for creating binding context merge handlers
    */
-  mediatorMergeHandlers: MediatorMergeBindingFactory;
+  mediatorMergeBindingsContext: MediatorMergeBindingFactory;
 
 }

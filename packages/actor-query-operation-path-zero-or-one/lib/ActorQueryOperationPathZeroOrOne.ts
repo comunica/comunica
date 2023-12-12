@@ -14,7 +14,7 @@ import { Algebra } from 'sparqlalgebrajs';
  * A comunica Path ZeroOrOne Query Operation Actor.
  */
 export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
-  public readonly mediatorMergeHandlers: MediatorMergeBindingFactory;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingFactory;
 
   public constructor(args: IActorQueryOperationPathZeroOrOneArgs) {
     super(args, Algebra.types.ZERO_OR_ONE_PATH);
@@ -24,7 +24,9 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
     operation: Algebra.Path,
     context: IActionContext,
   ): Promise<IQueryOperationResult> {
-    const bindingsFactory = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
+    const bindingsFactory = new BindingsFactory(
+      (await this.mediatorMergeBindingsContext.mediate({ context })).mergeHandlers,
+    );
     const predicate = <Algebra.ZeroOrOnePath> operation.predicate;
 
     const extra: Bindings[] = [];
@@ -111,5 +113,5 @@ export interface IActorQueryOperationPathZeroOrOneArgs extends IActorQueryOperat
   /**
    * A mediator for creating binding context merge handlers
    */
-  mediatorMergeHandlers: MediatorMergeBindingFactory;
+  mediatorMergeBindingsContext: MediatorMergeBindingFactory;
 }

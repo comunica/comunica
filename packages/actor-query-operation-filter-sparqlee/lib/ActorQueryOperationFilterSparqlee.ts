@@ -14,7 +14,7 @@ import { AsyncEvaluator, isExpressionError } from 'sparqlee';
  * A comunica Filter Sparqlee Query Operation Actor.
  */
 export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedMediated<Algebra.Filter> {
-  public readonly mediatorMergeHandlers: MediatorMergeBindingFactory;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingFactory;
 
   public constructor(args: IActorQueryOperationFilterSparqleeArgs) {
     super(args, 'filter');
@@ -22,7 +22,9 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
 
   public async testOperation(operation: Algebra.Filter, context: IActionContext): Promise<IActorTest> {
     // Will throw error for unsupported operators
-    const bindingsFactory = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
+    const bindingsFactory = new BindingsFactory(
+      (await this.mediatorMergeBindingsContext.mediate({ context })).mergeHandlers,
+    );
     const config = { ...ActorQueryOperation.getAsyncExpressionContext(
       context,
       this.mediatorQueryOperation,
@@ -38,7 +40,9 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
     const output = ActorQueryOperation.getSafeBindings(outputRaw);
     ActorQueryOperation.validateQueryOutput(output, 'bindings');
 
-    const bindingsFactory = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
+    const bindingsFactory = new BindingsFactory(
+      (await this.mediatorMergeBindingsContext.mediate({ context })).mergeHandlers,
+    );
     const config = { ...ActorQueryOperation.getAsyncExpressionContext(
       context,
       this.mediatorQueryOperation,
@@ -82,5 +86,5 @@ export interface IActorQueryOperationFilterSparqleeArgs extends IActorQueryOpera
   /**
    * A mediator for creating binding context merge handlers
    */
-  mediatorMergeHandlers: MediatorMergeBindingFactory;
+  mediatorMergeBindingsContext: MediatorMergeBindingFactory;
 }

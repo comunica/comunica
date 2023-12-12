@@ -16,7 +16,7 @@ describe('ActorInitQueryBase', () => {
   const mediatorContextPreprocess: any = {
     mediate: (action: any) => Promise.resolve(action),
   };
-  const mediatorMergeHandlers: any = {
+  const mediatorMergeBindingsContext: any = {
     mediate(arg: any) {
       return {};
     },
@@ -96,7 +96,7 @@ describe('ActorInitQueryBase', () => {
         mediatorQueryResultSerialize: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-        mediatorMergeHandlers,
+        mediatorMergeBindingsContext,
         name: 'actor',
       });
     });
@@ -133,7 +133,7 @@ describe('ActorInitQueryBase', () => {
         mediatorQueryResultSerialize: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-        mediatorMergeHandlers,
+        mediatorMergeBindingsContext,
         name: 'actor',
       })).toThrow('Duplicate keys found while adding `contextKeyShortcutsExtensions`.');
     });
@@ -156,7 +156,7 @@ describe('ActorInitQueryBase', () => {
         mediatorQueryResultSerialize: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-        mediatorMergeHandlers,
+        mediatorMergeBindingsContext,
         name: 'actor',
       });
 

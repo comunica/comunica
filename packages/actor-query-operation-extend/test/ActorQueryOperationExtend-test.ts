@@ -102,15 +102,17 @@ describe('ActorQueryOperationExtend', () => {
 
   describe('An ActorQueryOperationExtend instance', () => {
     let actor: ActorQueryOperationExtend;
-    let mediatorMergeHandlers: any;
+    let mediatorMergeBindingsContext: any;
     beforeEach(() => {
-      mediatorMergeHandlers = {
+      mediatorMergeBindingsContext = {
         mediate(arg: any) {
           return {};
         },
       };
 
-      actor = new ActorQueryOperationExtend({ name: 'actor', bus, mediatorQueryOperation, mediatorMergeHandlers });
+      actor = new ActorQueryOperationExtend(
+        { name: 'actor', bus, mediatorQueryOperation, mediatorMergeBindingsContext },
+      );
     });
 
     it('should test on extend', () => {

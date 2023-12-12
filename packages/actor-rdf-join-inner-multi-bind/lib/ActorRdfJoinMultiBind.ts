@@ -24,7 +24,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
   public readonly selectivityModifier: number;
   public readonly mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort;
   public readonly mediatorQueryOperation: MediatorQueryOperation;
-  public readonly mediatorMergeHandlers: MediatorMergeBindingFactory;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingFactory;
 
   public static readonly FACTORY = new Factory();
 
@@ -156,7 +156,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
   public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
     // Create BindingsFactory and binding context handlers
     const bindingsFactory = new BindingsFactory(
-      (await this.mediatorMergeHandlers.mediate({ context: action.context })).mergeHandlers,
+      (await this.mediatorMergeBindingsContext.mediate({ context: action.context })).mergeHandlers,
     );
 
     // Order the entries so we can pick the first one (usually the one with the lowest cardinality)
@@ -313,7 +313,7 @@ export interface IActorRdfJoinMultiBindArgs extends IActorRdfJoinArgs {
   /**
    * A mediator for creating binding context merge handlers
    */
-  mediatorMergeHandlers: MediatorMergeBindingFactory;
+  mediatorMergeBindingsContext: MediatorMergeBindingFactory;
 }
 
 export type BindOrder = 'depth-first' | 'breadth-first';

@@ -13,7 +13,7 @@ import { AsyncEvaluator, isExpressionError } from 'sparqlee';
  */
 export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediated<Algebra.LeftJoin> {
   public readonly mediatorJoin: MediatorRdfJoin;
-  public readonly mediatorMergeHandlers: MediatorMergeBindingFactory;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingFactory;
 
   public constructor(args: IActorQueryOperationLeftJoinArgs) {
     super(args, 'leftjoin');
@@ -43,7 +43,7 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
       const expressionVariables = rightMetadata.variables;
 
       const bindingsFactory = new BindingsFactory(
-        (await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers,
+        (await this.mediatorMergeBindingsContext.mediate({ context })).mergeHandlers,
       );
       const config = { ...ActorQueryOperation.getAsyncExpressionContext(
         context,
@@ -97,5 +97,5 @@ export interface IActorQueryOperationLeftJoinArgs extends IActorQueryOperationTy
   /**
    * A mediator for creating binding context merge handlers
    */
-  mediatorMergeHandlers: MediatorMergeBindingFactory;
+  mediatorMergeBindingsContext: MediatorMergeBindingFactory;
 }

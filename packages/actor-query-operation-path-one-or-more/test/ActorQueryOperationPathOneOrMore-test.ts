@@ -94,9 +94,9 @@ describe('ActorQueryOperationPathOneOrMore', () => {
 
   describe('An ActorQueryOperationPathOneOrMore instance', () => {
     let actor: ActorQueryOperationPathOneOrMore;
-    let mediatorMergeHandlers: any;
+    let mediatorMergeBindingsContext: any;
     beforeEach(() => {
-      mediatorMergeHandlers = {
+      mediatorMergeBindingsContext = {
         mediate(arg: any) {
           return {};
         },
@@ -105,7 +105,7 @@ describe('ActorQueryOperationPathOneOrMore', () => {
       actor = new ActorQueryOperationPathOneOrMore({ name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeHandlers });
+        mediatorMergeBindingsContext });
     });
 
     it('should test on OneOrMore paths', () => {

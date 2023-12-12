@@ -10,7 +10,7 @@ import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
-const mediatorMergeHandlers: any = {
+const mediatorMergeBindingsContext: any = {
   mediate(arg: any) {
     return {};
   },
@@ -65,7 +65,7 @@ describe('ActorQueryOperationService', () => {
 
     beforeEach(() => {
       actor = new ActorQueryOperationService(
-        { name: 'actor', bus, mediatorQueryOperation, forceSparqlEndpoint, mediatorMergeHandlers },
+        { name: 'actor', bus, mediatorQueryOperation, forceSparqlEndpoint, mediatorMergeBindingsContext },
       );
     });
 
@@ -138,7 +138,7 @@ describe('ActorQueryOperationService', () => {
       const op: any = { operation: { type: 'service', silent: false, name: DF.literal('dummy') },
         context: new ActionContext() };
       const actorThis = new ActorQueryOperationService(
-        { bus, forceSparqlEndpoint: false, mediatorQueryOperation, name: 'actor', mediatorMergeHandlers },
+        { bus, forceSparqlEndpoint: false, mediatorQueryOperation, name: 'actor', mediatorMergeBindingsContext },
       );
 
       return actorThis.run(op).then(async(output: IQueryOperationResultBindings) => {
@@ -158,7 +158,7 @@ describe('ActorQueryOperationService', () => {
       const op: any = { operation: { type: 'service', silent: false, name: DF.literal('dummy') },
         context: new ActionContext() };
       const actorThis = new ActorQueryOperationService(
-        { bus, forceSparqlEndpoint: true, mediatorQueryOperation, name: 'actor', mediatorMergeHandlers },
+        { bus, forceSparqlEndpoint: true, mediatorQueryOperation, name: 'actor', mediatorMergeBindingsContext },
       );
 
       return actorThis.run(op).then(async(output: IQueryOperationResultBindings) => {

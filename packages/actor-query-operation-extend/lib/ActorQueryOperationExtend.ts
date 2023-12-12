@@ -15,14 +15,16 @@ import { AsyncEvaluator, isExpressionError } from 'sparqlee';
  * See https://www.w3.org/TR/sparql11-query/#sparqlAlgebra;
  */
 export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<Algebra.Extend> {
-  public readonly mediatorMergeHandlers: MediatorMergeBindingFactory;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingFactory;
 
   public constructor(args: IActorQueryOperationExtendArgs) {
     super(args, 'extend');
   }
 
   public async testOperation(operation: Algebra.Extend, context: IActionContext): Promise<IActorTest> {
-    const bindingsFactory = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
+    const bindingsFactory = new BindingsFactory(
+      (await this.mediatorMergeBindingsContext.mediate({ context })).mergeHandlers,
+    );
     // Will throw error for unsupported opperations
     const _ = Boolean(new AsyncEvaluator(operation.expression,
       ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation, bindingsFactory)));
@@ -36,7 +38,9 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
     const output: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: input, context }),
     );
-    const bindingsFactory = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
+    const bindingsFactory = new BindingsFactory(
+      (await this.mediatorMergeBindingsContext.mediate({ context })).mergeHandlers,
+    );
     const config = { ...ActorQueryOperation.getAsyncExpressionContext(
       context,
       this.mediatorQueryOperation,
@@ -81,5 +85,5 @@ export interface IActorQueryOperationExtendArgs extends IActorQueryOperationType
   /**
    * A mediator for creating binding context merge handlers
    */
-  mediatorMergeHandlers: MediatorMergeBindingFactory;
+  mediatorMergeBindingsContext: MediatorMergeBindingFactory;
 }

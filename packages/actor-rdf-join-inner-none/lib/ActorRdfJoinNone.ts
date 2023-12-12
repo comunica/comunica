@@ -10,7 +10,7 @@ import { ArrayIterator } from 'asynciterator';
  * A comunica None RDF Join Actor.
  */
 export class ActorRdfJoinNone extends ActorRdfJoin {
-  public readonly mediatorMergeHandlers: MediatorMergeBindingFactory;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingFactory;
 
   public constructor(args: IActorRdfJoinNoneArgs) {
     super(args, {
@@ -30,7 +30,7 @@ export class ActorRdfJoinNone extends ActorRdfJoin {
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
     const bindingsFactory = new BindingsFactory(
-      (await this.mediatorMergeHandlers.mediate({ context: action.context })).mergeHandlers,
+      (await this.mediatorMergeBindingsContext.mediate({ context: action.context })).mergeHandlers,
     );
     return {
       result: {
@@ -60,5 +60,5 @@ export interface IActorRdfJoinNoneArgs extends IActorRdfJoinArgs {
   /**
    * A mediator for creating binding context merge handlers
    */
-  mediatorMergeHandlers: MediatorMergeBindingFactory;
+  mediatorMergeBindingsContext: MediatorMergeBindingFactory;
 }

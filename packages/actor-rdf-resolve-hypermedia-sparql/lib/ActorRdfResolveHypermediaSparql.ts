@@ -11,7 +11,7 @@ import { RdfSourceSparql } from './RdfSourceSparql';
  */
 export class ActorRdfResolveHypermediaSparql extends ActorRdfResolveHypermedia {
   public readonly mediatorHttp: MediatorHttp;
-  public readonly mediatorMergeHandlers: MediatorMergeBindingFactory;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingFactory;
 
   public readonly checkUrlSuffix: boolean;
   public readonly forceHttpGet: boolean;
@@ -32,7 +32,7 @@ export class ActorRdfResolveHypermediaSparql extends ActorRdfResolveHypermedia {
   public async run(action: IActionRdfResolveHypermedia): Promise<IActorRdfResolveHypermediaOutput> {
     // Create bindingsfactory with handlers
     const bindingsFactory = new BindingsFactory(
-      (await this.mediatorMergeHandlers.mediate({ context: action.context })).mergeHandlers,
+      (await this.mediatorMergeBindingsContext.mediate({ context: action.context })).mergeHandlers,
     );
     this.logInfo(action.context, `Identified as sparql source: ${action.url}`);
     const source = new RdfSourceSparql(
@@ -65,7 +65,7 @@ export interface IActorRdfResolveHypermediaSparqlArgs extends IActorRdfResolveHy
   /**
    * A mediator for creating binding context merge handlers
    */
-  mediatorMergeHandlers: MediatorMergeBindingFactory;
+  mediatorMergeBindingsContext: MediatorMergeBindingFactory;
   /**
    * The cache size for COUNT queries.
    * @range {integer}

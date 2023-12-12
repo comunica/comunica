@@ -31,7 +31,7 @@ const AF = new Factory();
 export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Algebra.Pattern>
   implements IActorQueryOperationQuadpatternArgs {
   public readonly mediatorResolveQuadPattern: MediatorRdfResolveQuadPattern;
-  public readonly mediatorMergeHandlers: MediatorMergeBindingFactory;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingFactory;
   public readonly addSourceToBindingContext: boolean;
   public readonly unionDefaultGraph: boolean;
 
@@ -269,7 +269,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
         });
       }
       const bindingsFactory = new BindingsFactory(
-        (await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers,
+        (await this.mediatorMergeBindingsContext.mediate({ context })).mergeHandlers,
       );
       return filteredOutput.map(quad => {
         if (!this.addSourceToBindingContext) {
@@ -317,5 +317,5 @@ export interface IActorQueryOperationQuadpatternArgs extends
   /**
    * A mediator for creating binding context merge handlers
    */
-  mediatorMergeHandlers: MediatorMergeBindingFactory;
+  mediatorMergeBindingsContext: MediatorMergeBindingFactory;
 }

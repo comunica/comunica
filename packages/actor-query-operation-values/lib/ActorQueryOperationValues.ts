@@ -19,7 +19,7 @@ const DF = new DataFactory();
  * A comunica Values Query Operation Actor.
  */
 export class ActorQueryOperationValues extends ActorQueryOperationTyped<Algebra.Values> {
-  public readonly mediatorMergeHandlers: MediatorMergeBindingFactory;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingFactory;
 
   public constructor(args: IActorQueryOperationUpdateDeleteInsertArgs) {
     super(args, 'values');
@@ -31,7 +31,9 @@ export class ActorQueryOperationValues extends ActorQueryOperationTyped<Algebra.
 
   public async runOperation(operation: Algebra.Values, context: IActionContext):
   Promise<IQueryOperationResult> {
-    const bindingsFactory = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
+    const bindingsFactory = new BindingsFactory(
+      (await this.mediatorMergeBindingsContext.mediate({ context })).mergeHandlers,
+    );
     const bindingsStream: BindingsStream = new ArrayIterator<Bindings>(operation.bindings
       .map(x => bindingsFactory.bindings(Object.entries(x)
         .map(([ key, value ]) => [ DF.variable(key.slice(1)), value ]))));
@@ -51,5 +53,5 @@ export interface IActorQueryOperationUpdateDeleteInsertArgs extends
   /**
    * A mediator for creating binding context merge handlers
    */
-  mediatorMergeHandlers: MediatorMergeBindingFactory;
+  mediatorMergeBindingsContext: MediatorMergeBindingFactory;
 }

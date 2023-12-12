@@ -16,7 +16,7 @@ import '@comunica/jest';
 const DF = new DataFactory();
 const BF = new BindingsFactory();
 const FACTORY = new Factory();
-const mediatorMergeHandlers: any = {
+const mediatorMergeBindingsContext: any = {
   mediate(arg: any) {
     return {};
   },
@@ -83,7 +83,7 @@ describe('ActorRdfJoinOptionalBind', () => {
         selectivityModifier: 0.1,
         mediatorQueryOperation,
         mediatorJoinSelectivity,
-        mediatorMergeHandlers,
+        mediatorMergeBindingsContext,
       });
     });
 

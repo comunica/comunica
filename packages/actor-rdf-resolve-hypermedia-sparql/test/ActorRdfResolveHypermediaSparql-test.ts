@@ -4,7 +4,7 @@ import type { IActionContext } from '@comunica/types';
 import { ActorRdfResolveHypermediaSparql } from '../lib/ActorRdfResolveHypermediaSparql';
 import { RdfSourceSparql } from '../lib/RdfSourceSparql';
 
-const mediatorMergeHandlers: any = {
+const mediatorMergeBindingsContext: any = {
   mediate(arg: any) {
     return {};
   },
@@ -47,7 +47,7 @@ describe('ActorRdfResolveHypermediaSparql', () => {
         checkUrlSuffix: true,
         forceHttpGet: false,
         cacheSize: 1_024,
-        mediatorMergeHandlers,
+        mediatorMergeBindingsContext,
       });
     });
 
@@ -84,7 +84,7 @@ describe('ActorRdfResolveHypermediaSparql', () => {
             mediatorHttp: <any> 'mediator',
             checkUrlSuffix: false,
             forceHttpGet: false,
-            mediatorMergeHandlers },
+            mediatorMergeBindingsContext },
         );
         await expect(actor.test({ url: 'URL/sparql', metadata: {}, quads: <any> null, context })).rejects
           .toThrow(new Error('Actor actor could not detect a SPARQL service description or URL ending on /sparql.'));
@@ -97,7 +97,7 @@ describe('ActorRdfResolveHypermediaSparql', () => {
             mediatorHttp: <any> 'mediator',
             checkUrlSuffix: false,
             forceHttpGet: false,
-            mediatorMergeHandlers },
+            mediatorMergeBindingsContext },
         );
         await expect(actor
           .test({ url: 'URL/sparql', metadata: {}, quads: <any> null, forceSourceType: 'file', context }))

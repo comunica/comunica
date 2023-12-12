@@ -49,9 +49,9 @@ describe('ActorQueryOperationOrderBySparqlee with mixed term types', () => {
     let actor: ActorQueryOperationOrderBySparqlee;
     let orderA: Algebra.TermExpression;
     let descOrderA: Algebra.OperatorExpression;
-    let mediatorMergeHandlers: any;
+    let mediatorMergeBindingsContext: any;
     beforeEach(() => {
-      mediatorMergeHandlers = {
+      mediatorMergeBindingsContext = {
         mediate(arg: any) {
           return {};
         },
@@ -59,7 +59,7 @@ describe('ActorQueryOperationOrderBySparqlee with mixed term types', () => {
       actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeHandlers });
+        mediatorMergeBindingsContext });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.types.EXPRESSION,
@@ -125,10 +125,10 @@ describe('ActorQueryOperationOrderBySparqlee with mixed term types', () => {
 describe('ActorQueryOperationOrderBySparqlee', () => {
   let bus: any;
   let mediatorQueryOperation: any;
-  let mediatorMergeHandlers: any;
+  let mediatorMergeBindingsContext: any;
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    mediatorMergeHandlers = {
+    mediatorMergeBindingsContext = {
       mediate(arg: any) {
         return {};
       },
@@ -162,7 +162,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
       expect(new ActorQueryOperationOrderBySparqlee({ name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeHandlers }))
+        mediatorMergeBindingsContext }))
         .toBeInstanceOf(ActorQueryOperation);
     });
 
@@ -179,7 +179,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     let orderA1: Algebra.OperatorExpression;
 
     beforeEach(() => {
-      mediatorMergeHandlers = {
+      mediatorMergeBindingsContext = {
         mediate(arg: any) {
           return {};
         },
@@ -188,7 +188,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
       actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeHandlers });
+        mediatorMergeBindingsContext });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       orderB = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('b') };
       descOrderA = {
@@ -245,7 +245,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
         bus,
         mediatorQueryOperation,
         window: 1,
-        mediatorMergeHandlers });
+        mediatorMergeBindingsContext });
       const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
         context: new ActionContext() };
       const output = await actor.run(op);
@@ -352,10 +352,10 @@ describe('ActorQueryOperationOrderBySparqlee with multiple comparators', () => {
     let descOrderB: Algebra.OperatorExpression;
     let orderA1: Algebra.OperatorExpression;
     let orderB1: Algebra.OperatorExpression;
-    let mediatorMergeHandlers: any;
+    let mediatorMergeBindingsContext: any;
 
     beforeEach(() => {
-      mediatorMergeHandlers = {
+      mediatorMergeBindingsContext = {
         mediate(arg: any) {
           return {};
         },
@@ -364,7 +364,7 @@ describe('ActorQueryOperationOrderBySparqlee with multiple comparators', () => {
       actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeHandlers });
+        mediatorMergeBindingsContext });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       orderB = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('b') };
       descOrderA = {
@@ -553,10 +553,10 @@ describe('ActorQueryOperationOrderBySparqlee with integer type', () => {
     let actor: ActorQueryOperationOrderBySparqlee;
     let orderA: Algebra.TermExpression;
     let descOrderA: Algebra.OperatorExpression;
-    let mediatorMergeHandlers: any;
+    let mediatorMergeBindingsContext: any;
 
     beforeEach(() => {
-      mediatorMergeHandlers = {
+      mediatorMergeBindingsContext = {
         mediate(arg: any) {
           return {};
         },
@@ -565,7 +565,7 @@ describe('ActorQueryOperationOrderBySparqlee with integer type', () => {
       actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeHandlers });
+        mediatorMergeBindingsContext });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.types.EXPRESSION,
@@ -644,10 +644,10 @@ describe('ActorQueryOperationOrderBySparqlee with double type', () => {
     let actor: ActorQueryOperationOrderBySparqlee;
     let orderA: Algebra.TermExpression;
     let descOrderA: Algebra.OperatorExpression;
-    let mediatorMergeHandlers: any;
+    let mediatorMergeBindingsContext: any;
 
     beforeEach(() => {
-      mediatorMergeHandlers = {
+      mediatorMergeBindingsContext = {
         mediate(arg: any) {
           return {};
         },
@@ -656,7 +656,7 @@ describe('ActorQueryOperationOrderBySparqlee with double type', () => {
       actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeHandlers });
+        mediatorMergeBindingsContext });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.types.EXPRESSION,
@@ -735,10 +735,10 @@ describe('ActorQueryOperationOrderBySparqlee with decimal type', () => {
     let actor: ActorQueryOperationOrderBySparqlee;
     let orderA: Algebra.TermExpression;
     let descOrderA: Algebra.OperatorExpression;
-    let mediatorMergeHandlers: any;
+    let mediatorMergeBindingsContext: any;
 
     beforeEach(() => {
-      mediatorMergeHandlers = {
+      mediatorMergeBindingsContext = {
         mediate(arg: any) {
           return {};
         },
@@ -747,7 +747,7 @@ describe('ActorQueryOperationOrderBySparqlee with decimal type', () => {
       actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeHandlers });
+        mediatorMergeBindingsContext });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.types.EXPRESSION,
@@ -826,10 +826,10 @@ describe('ActorQueryOperationOrderBySparqlee with float type', () => {
     let actor: ActorQueryOperationOrderBySparqlee;
     let orderA: Algebra.TermExpression;
     let descOrderA: Algebra.OperatorExpression;
-    let mediatorMergeHandlers: any;
+    let mediatorMergeBindingsContext: any;
 
     beforeEach(() => {
-      mediatorMergeHandlers = {
+      mediatorMergeBindingsContext = {
         mediate(arg: any) {
           return {};
         },
@@ -838,7 +838,7 @@ describe('ActorQueryOperationOrderBySparqlee with float type', () => {
       actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeHandlers });
+        mediatorMergeBindingsContext });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.types.EXPRESSION,
@@ -917,10 +917,10 @@ describe('ActorQueryOperationOrderBySparqlee with mixed literal types', () => {
     let actor: ActorQueryOperationOrderBySparqlee;
     let orderA: Algebra.TermExpression;
     let descOrderA: Algebra.OperatorExpression;
-    let mediatorMergeHandlers: any;
+    let mediatorMergeBindingsContext: any;
 
     beforeEach(() => {
-      mediatorMergeHandlers = {
+      mediatorMergeBindingsContext = {
         mediate(arg: any) {
           return {};
         },
@@ -929,7 +929,7 @@ describe('ActorQueryOperationOrderBySparqlee with mixed literal types', () => {
       actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeHandlers });
+        mediatorMergeBindingsContext });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.types.EXPRESSION,
@@ -1008,10 +1008,10 @@ describe('Another ActorQueryOperationOrderBySparqlee with mixed types', () => {
     let actor: ActorQueryOperationOrderBySparqlee;
     let orderA: Algebra.TermExpression;
     let descOrderA: Algebra.OperatorExpression;
-    let mediatorMergeHandlers: any;
+    let mediatorMergeBindingsContext: any;
 
     beforeEach(() => {
-      mediatorMergeHandlers = {
+      mediatorMergeBindingsContext = {
         mediate(arg: any) {
           return {};
         },
@@ -1020,7 +1020,7 @@ describe('Another ActorQueryOperationOrderBySparqlee with mixed types', () => {
       actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeHandlers });
+        mediatorMergeBindingsContext });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.types.EXPRESSION,

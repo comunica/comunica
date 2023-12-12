@@ -93,11 +93,11 @@ describe('ActorInitQuery', () => {
     let actorFixedQueryAndContext: ActorInitQuery;
     let spyResultToString: any;
     let spyQueryOrExplain: any;
-    let mediatorMergeHandlers: any;
+    let mediatorMergeBindingsContext: any;
 
     beforeEach(() => {
       const factory = new Factory();
-      mediatorMergeHandlers = {
+      mediatorMergeBindingsContext = {
         mediate(arg: any) {
           return {};
         },
@@ -148,7 +148,7 @@ describe('ActorInitQuery', () => {
         mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
         name: 'actor',
-        mediatorMergeHandlers,
+        mediatorMergeBindingsContext,
       });
       actorFixedQuery = new ActorInitQuery(
         { bus,
@@ -164,7 +164,7 @@ describe('ActorInitQuery', () => {
           mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
           mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
           name: 'actor',
-          mediatorMergeHandlers,
+          mediatorMergeBindingsContext,
           queryString },
       );
       actorFixedContext = new ActorInitQuery(
@@ -181,7 +181,7 @@ describe('ActorInitQuery', () => {
           mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
           mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
           name: 'actor',
-          mediatorMergeHandlers,
+          mediatorMergeBindingsContext,
           context: contextString },
       );
       actorFixedQueryAndContext = new ActorInitQuery(
@@ -197,7 +197,7 @@ describe('ActorInitQuery', () => {
           mediatorQueryResultSerialize: mediatorSparqlSerialize,
           mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
           mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-          mediatorMergeHandlers,
+          mediatorMergeBindingsContext,
           name: 'actor',
           queryString,
           context: contextString },
@@ -849,7 +849,7 @@ LIMIT 100
               mediatorQueryResultSerializeMediaTypeCombiner: m2,
               mediatorQueryResultSerializeMediaTypeFormatCombiner: m2,
               name: 'actor',
-              mediatorMergeHandlers,
+              mediatorMergeBindingsContext,
               queryString },
           );
           expect((await actorThis.run({
@@ -881,7 +881,7 @@ LIMIT 100
               mediatorQueryResultSerializeMediaTypeCombiner: m2,
               mediatorQueryResultSerializeMediaTypeFormatCombiner: m2,
               name: 'actor',
-              mediatorMergeHandlers,
+              mediatorMergeBindingsContext,
               queryString },
           );
           expect((await actorThis.run({
@@ -913,7 +913,7 @@ LIMIT 100
               mediatorQueryResultSerializeMediaTypeCombiner: m2,
               mediatorQueryResultSerializeMediaTypeFormatCombiner: m2,
               name: 'actor',
-              mediatorMergeHandlers,
+              mediatorMergeBindingsContext,
               queryString },
           );
           expect((await actorThis.run({
@@ -982,7 +982,7 @@ LIMIT 100
               mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
               mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
               name: 'actor',
-              mediatorMergeHandlers,
+              mediatorMergeBindingsContext,
               queryString: <any> null },
           );
 

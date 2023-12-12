@@ -18,7 +18,7 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
   public readonly bindOrder: BindOrder;
   public readonly selectivityModifier: number;
   public readonly mediatorQueryOperation: MediatorQueryOperation;
-  public readonly mediatorMergeHandlers: MediatorMergeBindingFactory;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingFactory;
 
   public constructor(args: IActorRdfJoinOptionalBindArgs) {
     super(args, {
@@ -32,7 +32,7 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
     // Create BindingsFactory and context handlers
     const bindingsFactory = new BindingsFactory(
-      (await this.mediatorMergeHandlers.mediate({ context: action.context })).mergeHandlers,
+      (await this.mediatorMergeBindingsContext.mediate({ context: action.context })).mergeHandlers,
     );
     // Close the right stream, since we don't need that one
     action.entries[1].output.bindingsStream.close();
@@ -124,6 +124,6 @@ export interface IActorRdfJoinOptionalBindArgs extends IActorRdfJoinArgs {
   /**
    * A mediator for creating binding context merge handlers
    */
-  mediatorMergeHandlers: MediatorMergeBindingFactory;
+  mediatorMergeBindingsContext: MediatorMergeBindingFactory;
 
 }

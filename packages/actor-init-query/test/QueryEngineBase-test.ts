@@ -43,7 +43,7 @@ describe('QueryEngineBase', () => {
   let mediatorHttpInvalidate: any;
   let actorInitQuery: ActorInitQuery;
   let context: IActionContext;
-  const mediatorMergeHandlers: any = {
+  const mediatorMergeBindingsContext: any = {
     mediate(arg: any) {
       return {};
     },
@@ -163,7 +163,7 @@ describe('QueryEngineBase', () => {
           mediatorQueryResultSerialize: mediatorSparqlSerialize,
           mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
           mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-          mediatorMergeHandlers,
+          mediatorMergeBindingsContext,
           name: 'actor' },
       );
       queryEngine = new QueryEngineBase(actor);
@@ -363,7 +363,7 @@ describe('QueryEngineBase', () => {
             mediatorQueryResultSerializeMediaTypeCombiner: med,
             mediatorQueryResultSerializeMediaTypeFormatCombiner: med,
             name: 'actor',
-            mediatorMergeHandlers,
+            mediatorMergeBindingsContext,
             queryString },
         );
         queryEngine = new QueryEngineBase(actor);
@@ -467,7 +467,7 @@ describe('QueryEngineBase', () => {
           mediatorQueryResultSerialize: mediatorSparqlSerialize,
           mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
           mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-          mediatorMergeHandlers,
+          mediatorMergeBindingsContext,
           name: 'actor' },
       );
       queryEngine = new QueryEngineBase<ICustomQueryContext2>(actor);
@@ -539,7 +539,7 @@ describe('QueryEngineBase', () => {
           mediatorQueryResultSerialize: mediatorSparqlSerialize,
           mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
           mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-          mediatorMergeHandlers,
+          mediatorMergeBindingsContext,
           name: 'actor' },
       );
       queryEngine = new QueryEngineBase(actor);

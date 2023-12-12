@@ -11,14 +11,16 @@ import { Algebra } from 'sparqlalgebrajs';
  * A comunica Path OneOrMore Query Operation Actor.
  */
 export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
-  public readonly mediatorMergeHandlers: MediatorMergeBindingFactory;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingFactory;
 
   public constructor(args: IActorQueryOperationPathOneOrMoreArgs) {
     super(args, Algebra.types.ONE_OR_MORE_PATH);
   }
 
   public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryOperationResult> {
-    const bindingsFactory = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
+    const bindingsFactory = new BindingsFactory(
+      (await this.mediatorMergeBindingsContext.mediate({ context })).mergeHandlers,
+    );
     const distinct = await this.isPathArbitraryLengthDistinct(context, operation);
     if (distinct.operation) {
       return distinct.operation;
@@ -152,5 +154,5 @@ export interface IActorQueryOperationPathOneOrMoreArgs extends IActorQueryOperat
   /**
    * A mediator for creating binding context merge handlers
    */
-  mediatorMergeHandlers: MediatorMergeBindingFactory;
+  mediatorMergeBindingsContext: MediatorMergeBindingFactory;
 }

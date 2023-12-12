@@ -16,7 +16,7 @@ import { SortIterator } from './SortIterator';
  */
 export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTypedMediated<Algebra.OrderBy> {
   private readonly window: number;
-  public readonly mediatorMergeHandlers: MediatorMergeBindingFactory;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingFactory;
 
   public constructor(args: IActorQueryOperationOrderBySparqleeArgs) {
     super(args, 'orderby');
@@ -25,7 +25,9 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
 
   public async testOperation(operation: Algebra.OrderBy, context: IActionContext): Promise<IActorTest> {
     // Will throw error for unsupported operators
-    const bindingsFactory = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
+    const bindingsFactory = new BindingsFactory(
+      (await this.mediatorMergeBindingsContext.mediate({ context })).mergeHandlers,
+    );
 
     for (let expr of operation.expressions) {
       expr = this.extractSortExpression(expr);
@@ -43,7 +45,9 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
     const output = ActorQueryOperation.getSafeBindings(outputRaw);
 
     const options = { window: this.window };
-    const bindingsFactory = new BindingsFactory((await this.mediatorMergeHandlers.mediate({ context })).mergeHandlers);
+    const bindingsFactory = new BindingsFactory(
+      (await this.mediatorMergeBindingsContext.mediate({ context })).mergeHandlers,
+    );
     const sparqleeConfig = { ...ActorQueryOperation.getAsyncExpressionContext(context,
       this.mediatorQueryOperation,
       bindingsFactory) };
@@ -127,7 +131,7 @@ export interface IActorQueryOperationOrderBySparqleeArgs extends IActorQueryOper
   /**
    * A mediator for creating binding context merge handlers
    */
-  mediatorMergeHandlers: MediatorMergeBindingFactory;
+  mediatorMergeBindingsContext: MediatorMergeBindingFactory;
   /**
    * The size of the window for the sort iterator.
    * @range {integer}

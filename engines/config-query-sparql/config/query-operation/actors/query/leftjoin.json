@@ -12,7 +12,7 @@
       "@type": "ActorQueryOperationLeftJoin",
       "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
       "mediatorJoin": { "@id": "urn:comunica:default:rdf-join/mediators#main" },
-      "mediatorMergeHandlers": { "@id": "urn:comunica:default:merge-binding-factory/mediators#main"}
+      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-binding-factory/mediators#main"}
     }
   ]
 }
