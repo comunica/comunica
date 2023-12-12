@@ -16,7 +16,7 @@ const quad = require('rdf-quad');
 const streamifyString = require('streamify-string');
 
 const DF = new DataFactory();
-const BF = new BindingsFactory({});
+const BF = new BindingsFactory();
 
 const factory = new Factory();
 

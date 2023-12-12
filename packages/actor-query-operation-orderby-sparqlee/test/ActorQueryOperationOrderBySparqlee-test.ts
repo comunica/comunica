@@ -9,7 +9,7 @@ import * as sparqlee from 'sparqlee';
 import { ActorQueryOperationOrderBySparqlee } from '../lib/ActorQueryOperationOrderBySparqlee';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory({});
+const BF = new BindingsFactory();
 
 describe('ActorQueryOperationOrderBySparqlee with mixed term types', () => {
   let bus: any;

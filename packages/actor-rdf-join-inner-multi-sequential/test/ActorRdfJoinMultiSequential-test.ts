@@ -13,7 +13,7 @@ import { ActorRdfJoinMultiSequential } from '../lib/ActorRdfJoinMultiSequential'
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory({});
+const BF = new BindingsFactory();
 
 describe('ActorRdfJoinMultiSequential', () => {
   let bus: any;

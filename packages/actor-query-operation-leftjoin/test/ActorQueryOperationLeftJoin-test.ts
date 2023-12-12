@@ -10,7 +10,7 @@ import { ActorQueryOperationLeftJoin } from '../lib/ActorQueryOperationLeftJoin'
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory({});
+const BF = new BindingsFactory();
 
 describe('ActorQueryOperationLeftJoin', () => {
   let bus: any;

@@ -6,7 +6,7 @@ import type { IActionContext } from '@comunica/types';
 import { ActorRdfJoinNone } from '../lib/ActorRdfJoinNone';
 import '@comunica/jest';
 
-const BF = new BindingsFactory({});
+const BF = new BindingsFactory();
 const mediatorMergeHandlers: any = {
   mediate(arg: any) {
     return {};

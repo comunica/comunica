@@ -14,7 +14,7 @@ import { ActorRdfJoinOptionalBind } from '../lib/ActorRdfJoinOptionalBind';
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory({});
+const BF = new BindingsFactory();
 const FACTORY = new Factory();
 const mediatorMergeHandlers: any = {
   mediate(arg: any) {

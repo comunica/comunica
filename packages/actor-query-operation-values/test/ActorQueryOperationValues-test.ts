@@ -7,7 +7,7 @@ import { ActorQueryOperationValues } from '../lib/ActorQueryOperationValues';
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory({});
+const BF = new BindingsFactory();
 const mediatorMergeHandlers: any = {
   mediate(arg: any) {
     return {};

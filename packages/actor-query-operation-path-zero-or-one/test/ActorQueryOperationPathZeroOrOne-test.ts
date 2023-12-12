@@ -13,7 +13,7 @@ import { ActorQueryOperationPathZeroOrOne } from '../lib/ActorQueryOperationPath
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory({});
+const BF = new BindingsFactory();
 
 describe('ActorQueryOperationPathZeroOrOne', () => {
   let bus: any;

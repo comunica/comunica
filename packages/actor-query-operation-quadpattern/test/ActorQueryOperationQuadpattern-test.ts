@@ -14,7 +14,7 @@ import '@comunica/jest';
 const quad = require('rdf-quad');
 
 const DF = new DataFactory();
-const BF = new BindingsFactory({});
+const BF = new BindingsFactory();
 const AF = new Factory();
 
 const mediatorMergeHandlers: any = {

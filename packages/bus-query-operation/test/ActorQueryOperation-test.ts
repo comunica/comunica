@@ -8,7 +8,7 @@ import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperation } from '..';
 
-const BF = new BindingsFactory({});
+const BF = new BindingsFactory();
 
 describe('ActorQueryOperation', () => {
   const bus = new Bus({ name: 'bus' });
