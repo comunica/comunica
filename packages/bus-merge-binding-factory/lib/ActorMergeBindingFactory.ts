@@ -35,7 +35,7 @@ export interface IActorMergeBindingFactoryOutput extends IActorOutput {
    * the merge handler works on, and the value contains the constructed merge handler function
    * interface
    */
-  mergeHandlers: Record<string, IMergeHandler<any>>;
+  mergeHandlers: Record<string, IBindingsContextMergeHandler<any>>;
 }
 
 export type IActorMergeBindingFactoryArgs = IActorArgs<
@@ -50,7 +50,7 @@ IActionMergeBindingFactory, IActorMergeBindingFactoryOutput>;
  * merge functions.
  * @V denotes the type associated with the context key the merge handler operates on.
  */
-export interface IMergeHandler<V> {
+export interface IBindingsContextMergeHandler<V> {
   run: (...args: V[]) => V[];
 }
 

@@ -1,6 +1,6 @@
-import type { IMergeHandler } from '@comunica/bus-merge-binding-factory';
+import type { IBindingsContextMergeHandler } from '@comunica/bus-merge-binding-factory';
 
-export class SetUnionContext implements IMergeHandler<any> {
+export class SetUnionContext implements IBindingsContextMergeHandler<any> {
   public name: string;
 
   public constructor() {

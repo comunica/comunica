@@ -1,6 +1,6 @@
 import type { IActionMergeBindingFactory,
   IActorMergeBindingFactoryOutput, IActorMergeBindingFactoryArgs,
-  IMergeHandler } from '@comunica/bus-merge-binding-factory';
+  IBindingsContextMergeHandler } from '@comunica/bus-merge-binding-factory';
 import { ActorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
 import type { IActorTest } from '@comunica/core';
 import { SetUnionContext } from './SetUnionContext';
@@ -21,7 +21,7 @@ export class ActorMergeBindingFactoryContextUnion extends ActorMergeBindingFacto
 
   public async run(action: IActionMergeBindingFactory): Promise<IActorMergeBindingFactoryOutput> {
     // Merge function: Union with set semantics
-    const mergeHandlers: Record<string, IMergeHandler<any>> = {};
+    const mergeHandlers: Record<string, IBindingsContextMergeHandler<any>> = {};
     mergeHandlers[this.contextKey] = new SetUnionContext();
 
     return { mergeHandlers };

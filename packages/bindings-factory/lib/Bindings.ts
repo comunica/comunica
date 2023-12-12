@@ -1,4 +1,4 @@
-import type { IMergeHandler } from '@comunica/bus-merge-binding-factory';
+import type { IBindingsContextMergeHandler } from '@comunica/bus-merge-binding-factory';
 import type { ActionContextKey } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext, IActionContextKey } from '@comunica/types';
@@ -13,13 +13,13 @@ export class Bindings implements RDF.Bindings {
   public readonly type = 'bindings';
 
   public context: IActionContext | undefined;
-  private readonly contextMergeHandlers: Record<string, IMergeHandler<any>> | undefined;
+  private readonly contextMergeHandlers: Record<string, IBindingsContextMergeHandler<any>> | undefined;
 
   private readonly dataFactory: RDF.DataFactory;
   private readonly entries: Map<string, RDF.Term>;
 
   public constructor(dataFactory: RDF.DataFactory, entries: Map<string, RDF.Term>,
-    contextMergeHandlers?: Record<string, IMergeHandler<any>>,
+    contextMergeHandlers?: Record<string, IBindingsContextMergeHandler<any>>,
     context?: IActionContext) {
     this.dataFactory = dataFactory;
     this.entries = entries;
