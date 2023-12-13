@@ -74,30 +74,33 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
     let source: MediatedQuadSource;
 
     // Try to read from cache
-    if (!context.get(KeysInitQuery.disableHttpCache) && this.cache && this.cache.has(url)) {
+    if (this.cache && this.cache.has(url)) {
       source = this.cache.get(url)!;
     } else {
       // If not in cache, create a new source
-      source = new MediatedQuadSource(
-        this.cacheSize,
-        url,
-        getDataSourceType(contextSource),
-        this.maxIterators,
-        this.aggregateStore,
-        {
-          mediatorMetadata: this.mediatorMetadata,
-          mediatorMetadataExtract: this.mediatorMetadataExtract,
-          mediatorMetadataAccumulate: this.mediatorMetadataAccumulate,
-          mediatorDereferenceRdf: this.mediatorDereferenceRdf,
-          mediatorRdfResolveHypermedia: this.mediatorRdfResolveHypermedia,
-          mediatorRdfResolveHypermediaLinks: this.mediatorRdfResolveHypermediaLinks,
-          mediatorRdfResolveHypermediaLinksQueue: this.mediatorRdfResolveHypermediaLinksQueue,
-        },
-      );
+      if (!context.get(KeysInitQuery.disableHttpCache)) {
+        // If cache is not disabled
+        source = new MediatedQuadSource(
+          this.cacheSize,
+          url,
+          getDataSourceType(contextSource),
+          this.maxIterators,
+          this.aggregateStore,
+          {
+            mediatorMetadata: this.mediatorMetadata,
+            mediatorMetadataExtract: this.mediatorMetadataExtract,
+            mediatorMetadataAccumulate: this.mediatorMetadataAccumulate,
+            mediatorDereferenceRdf: this.mediatorDereferenceRdf,
+            mediatorRdfResolveHypermedia: this.mediatorRdfResolveHypermedia,
+            mediatorRdfResolveHypermediaLinks: this.mediatorRdfResolveHypermediaLinks,
+            mediatorRdfResolveHypermediaLinksQueue: this.mediatorRdfResolveHypermediaLinksQueue,
+          },
+        );
 
-      // Set in cache
-      if (this.cache) {
-        this.cache.set(url, source);
+        // Set in cache
+        if (this.cache) {
+          this.cache.set(url, source);
+        }
       }
     }
 

@@ -51,7 +51,7 @@ export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestinatio
     let url: string = getContextDestinationUrl(dataDestination)!;
 
     // Try to read from cache
-    if (! context.get(KeysInitQuery.disableHttpCache) && this.cache && this.cache.has(url)) {
+    if (this.cache && this.cache.has(url)) {
       return this.cache.get(url)!;
     }
 
