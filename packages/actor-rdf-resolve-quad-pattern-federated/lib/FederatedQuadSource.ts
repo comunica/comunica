@@ -6,7 +6,7 @@ import type {
   MediatorRdfResolveQuadPattern,
 } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { getDataSourceContext } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
+import { KeysInitQuery, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { BlankNodeScoped } from '@comunica/data-factory';
 import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext, DataSources, IDataSource, MetadataQuads } from '@comunica/types';
@@ -53,11 +53,13 @@ export class FederatedQuadSource implements IQuadSource {
     this.skipEmptyPatterns = skipEmptyPatterns;
     this.algebraFactory = new Factory();
 
-    // Initialize sources in the emptyPatterns datastructure
-    if (this.skipEmptyPatterns) {
-      for (const source of this.sources) {
-        if (!this.emptyPatterns.has(source)) {
-          this.emptyPatterns.set(source, []);
+    if (!this.contextDefault.get(KeysInitQuery.disableHttpCache)){
+      // Initialize sources in the emptyPatterns datastructure
+      if (this.skipEmptyPatterns) {
+        for (const source of this.sources) {
+          if (!this.emptyPatterns.has(source)) {
+            this.emptyPatterns.set(source, []);
+          }
         }
       }
     }
@@ -166,7 +168,7 @@ export class FederatedQuadSource implements IQuadSource {
    * @return {boolean}
    */
   public isSourceEmpty(source: IDataSource, pattern: RDF.BaseQuad): boolean {
-    if (!this.skipEmptyPatterns) {
+    if (!this.skipEmptyPatterns || this.contextDefault.get(KeysInitQuery.disableHttpCache)) {
       return false;
     }
     const emptyPatterns: RDF.BaseQuad[] | undefined = this.emptyPatterns.get(source);
@@ -267,12 +269,14 @@ export class FederatedQuadSource implements IQuadSource {
         output.data.getProperty('metadata', (subMetadata: MetadataQuads) => {
           accumulatingMetadata.set(`${sourceIndex}`, subMetadata);
 
-          // Save empty patterns
-          if (this.skipEmptyPatterns &&
-            !subMetadata.cardinality?.value &&
-            pattern &&
-            !this.isSourceEmpty(source, pattern)) {
-            this.emptyPatterns.get(source)!.push(pattern);
+          if (!this.contextDefault.get(KeysInitQuery.disableHttpCache)){
+            // Save empty patterns
+            if (this.skipEmptyPatterns &&
+              !subMetadata.cardinality?.value &&
+              pattern &&
+              !this.isSourceEmpty(source, pattern)) {
+              this.emptyPatterns.get(source)!.push(pattern);
+            }
           }
 
           // Accumulate metadata
