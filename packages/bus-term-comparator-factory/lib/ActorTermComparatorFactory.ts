@@ -1,7 +1,7 @@
+import type { MediatorFunctions } from '@comunica/bus-functions';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
-import type { IMediatorFunctions } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 
 /**
@@ -43,7 +43,7 @@ export interface IActorTermComparatorFactoryOutput extends IActorOutput, ITermCo
 export type IActorTermComparatorFactoryArgs = IActorArgs<
 IActionTermComparatorFactory, IActorTest, IActorTermComparatorFactoryOutput> & {
   mediatorQueryOperation: MediatorQueryOperation;
-  mediatorFunctions: IMediatorFunctions;
+  mediatorFunctions: MediatorFunctions;
 };
 
 export type MediatorTermComparatorFactory = Mediate<

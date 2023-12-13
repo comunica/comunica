@@ -9,7 +9,6 @@ import * as E from '../../../lib/expressions';
 import { namedFunctions, regularFunctions, specialFunctions } from '../../../lib/functions';
 import { NamedExtension } from '../../../lib/functions/NamedExtension';
 import { AlgebraTransformer } from '../../../lib/transformers/AlgebraTransformer';
-import type { IExpressionFunction } from '../../../lib/types';
 import type * as C from '../../../lib/util/Consts';
 import * as Err from '../../../lib/util/Errors';
 

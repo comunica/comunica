@@ -1,15 +1,24 @@
-import type { IBindingsAggregator, MediatorBindingsAggregatorFactory } from '@comunica/bus-bindings-aggeregator-factory';
+import type {
+  IBindingsAggregator,
+  MediatorBindingsAggregatorFactory,
+} from '@comunica/bus-bindings-aggeregator-factory';
 import type {
   IActionExpressionEvaluatorFactory,
   IActorExpressionEvaluatorFactoryArgs,
   IActorExpressionEvaluatorFactoryOutput,
 } from '@comunica/bus-expression-evaluator-factory';
 import { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
+import type {
+  IExpressionFunction,
+  MediatorFunctions,
+  IActionFunctions,
+  IActorFunctionsOutput,
+  IActorFunctionsOutputTerm,
+} from '@comunica/bus-functions';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import type { MediatorTermComparatorFactory, ITermComparator } from '@comunica/bus-term-comparator-factory';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import type { IAction, IActorTest } from '@comunica/core';
-import type { IExpressionFunction } from '@comunica/expression-evaluator';
 import {
   ExpressionEvaluator,
 } from '@comunica/expression-evaluator';
@@ -21,7 +30,7 @@ import { extractTimeZone } from '@comunica/expression-evaluator/lib/util/DateTim
 import type {
   AsyncExtensionFunction,
   AsyncExtensionFunctionCreator,
-  IActionContext, IFunctionBusActionContext, IMediatorFunctions, ITermFunction,
+  IActionContext,
 
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -31,7 +40,7 @@ import type { Algebra as Alg } from 'sparqlalgebrajs';
 
 export function prepareEvaluatorActionContext(orgContext: IActionContext,
   mediatorQueryOperation: MediatorQueryOperation,
-  mediatorFunctions: IMediatorFunctions): IActionContext {
+  mediatorFunctions: MediatorFunctions): IActionContext {
   let context = orgContext;
 
   context =
@@ -79,7 +88,7 @@ export function prepareEvaluatorActionContext(orgContext: IActionContext,
   return context;
 }
 
-export const MockFunctionMediator = <IMediatorFunctions> {
+export const MockFunctionMediator = <MediatorFunctions> {
   async mediate({ functionName, context }) {
     const res: IExpressionFunction | undefined = {
       ...regularFunctions,
@@ -107,7 +116,7 @@ export class ActorExpressionEvaluatorFactoryBase extends ActorExpressionEvaluato
   public readonly mediatorQueryOperation: MediatorQueryOperation;
   public readonly mediatorTermComparatorFactory: MediatorTermComparatorFactory;
   // TODO: should become readonly after bussification.
-  public mediatorFunctions: IMediatorFunctions;
+  public mediatorFunctions: MediatorFunctions;
 
   public constructor(args: IActorExpressionEvaluatorFactoryArgs) {
     super(args);
@@ -147,8 +156,8 @@ export class ActorExpressionEvaluatorFactoryBase extends ActorExpressionEvaluato
     return this.mediatorTermComparatorFactory.mediate(context);
   }
 
-  public createFunction<T extends IFunctionBusActionContext>(arg: T & IAction):
-  Promise<T extends { requireTermExpression: true } ? ITermFunction : IExpressionFunction> {
-    return this.mediatorFunctions.mediate(arg);
+  public createFunction<T extends IActionFunctions>(action: T):
+  Promise<T extends { requireTermExpression: true } ? IActorFunctionsOutputTerm : IActorFunctionsOutput> {
+    return this.mediatorFunctions.mediate(action);
   }
 }

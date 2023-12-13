@@ -1,25 +1,5 @@
-import type { IAction } from '@comunica/core';
-import type { IExpressionFunction, IInternalEvaluator } from '@comunica/expression-evaluator';
-import type * as E from '@comunica/expression-evaluator/lib/expressions';
 import type * as RDF from '@rdfjs/types';
 import type { LRUCache } from 'lru-cache';
-import type { Algebra as Alg } from 'sparqlalgebrajs';
-
-export interface ITermFunction extends IExpressionFunction {
-  supportsTermExpressions: true;
-  applyOnTerms: (args: E.TermExpression[], exprEval: IInternalEvaluator) => E.TermExpression;
-}
-
-export interface IFunctionBusActionContext {
-  functionName: string;
-  arguments?: Alg.Expression[];
-  requireTermExpression?: boolean;
-}
-
-export interface IMediatorFunctions {
-  mediate: <T extends IFunctionBusActionContext>(arg: T & IAction) =>
-  Promise<T extends { requireTermExpression: true } ? ITermFunction : IExpressionFunction>;
-}
 
 export interface ITimeZoneRepresentation {
   // https://www.w3.org/TR/xpath-functions/#func-implicit-timezone

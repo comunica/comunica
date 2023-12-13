@@ -2,10 +2,10 @@ import { ActorExpressionEvaluatorFactoryBase } from '@comunica/actor-expression-
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorBindingsAggregatorFactory } from '@comunica/bus-bindings-aggeregator-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
+import type { MediatorFunctions } from '@comunica/bus-functions';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import { Bus } from '@comunica/core';
-import type { IMediatorFunctions } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Quad } from 'rdf-data-factory';
 import { DataFactory } from 'rdf-data-factory';
@@ -74,7 +74,7 @@ export function getMockEEFactory({ mediatorQueryOperation,
   mediatorQueryOperation?: MediatorQueryOperation;
   mediatorBindingsAggregatorFactory?: MediatorBindingsAggregatorFactory;
   mediatorTermComparatorFactory?: MediatorTermComparatorFactory;
-  mediatorFunctions?: IMediatorFunctions;
+  mediatorFunctions?: MediatorFunctions;
 } = {}): ActorExpressionEvaluatorFactory {
   return new ActorExpressionEvaluatorFactoryBase({
     bus: new Bus({ name: 'testBusMock' }),

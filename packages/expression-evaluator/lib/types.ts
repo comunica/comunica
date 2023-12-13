@@ -36,11 +36,3 @@ export interface IEvalContext {
 
 export type FunctionApplication = (evalContext: IEvalContext) => Promise<E.TermExpression>;
 
-export interface IExpressionFunction {
-  apply: (evalContext: IEvalContext) => Promise<E.TermExpression>;
-  /**
-   * Makes you able to error in the termTransformer.
-   */
-  checkArity: (args: E.Expression[]) => boolean;
-}
-

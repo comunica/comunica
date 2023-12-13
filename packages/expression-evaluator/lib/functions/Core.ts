@@ -1,7 +1,7 @@
+import type { IExpressionFunction, ITermFunction } from '@comunica/bus-functions';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
-import type { ITermFunction } from '@comunica/types';
 import type * as E from '../expressions';
-import type { IEvalContext, IExpressionFunction, IInternalEvaluator } from '../types';
+import type { IEvalContext, IInternalEvaluator } from '../types';
 import type * as C from '../util/Consts';
 import * as Err from '../util/Errors';
 import type { OverloadTree } from './OverloadTree';

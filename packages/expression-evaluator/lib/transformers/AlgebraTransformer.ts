@@ -1,5 +1,6 @@
+import type { MediatorFunctions } from '@comunica/bus-functions';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
-import type { IActionContext, IMediatorFunctions } from '@comunica/types';
+import type { IActionContext } from '@comunica/types';
 import { Algebra as Alg } from 'sparqlalgebrajs';
 
 import * as E from '../expressions';
@@ -43,7 +44,7 @@ export class AlgebraTransformer extends TermTransformer {
     if (!C.Operators.has(operator)) {
       throw new Err.UnknownOperator(expr.operator);
     }
-    const mediator: IMediatorFunctions = await this.context.getSafe(KeysExpressionEvaluator.mediatorFunction);
+    const mediator: MediatorFunctions = await this.context.getSafe(KeysExpressionEvaluator.mediatorFunction);
     const operatorFunc =
       await mediator.mediate({ functionName: operator, arguments: expr.args, context: this.context });
     const operatorArgs = await Promise.all(expr.args.map(arg => this.transformAlgebra(arg)));
@@ -60,7 +61,7 @@ export class AlgebraTransformer extends TermTransformer {
     const namedArgs = await Promise.all(expr.args.map(arg => this.transformAlgebra(arg)));
     // Return a basic named expression
     const op = <C.NamedOperator>expr.name.value;
-    const mediator: IMediatorFunctions = await this.context.getSafe(KeysExpressionEvaluator.mediatorFunction);
+    const mediator: MediatorFunctions = await this.context.getSafe(KeysExpressionEvaluator.mediatorFunction);
     const namedFunc = await mediator.mediate({ functionName: op, arguments: expr.args, context: this.context });
     if (!namedFunc) {
       throw new Err.UnknownNamedOperator(expr.name.value);

@@ -1,3 +1,4 @@
+import type { MediatorFunctions } from '@comunica/bus-functions';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContextKey, CONTEXT_KEY_LOGGER } from '@comunica/core';
 import type {
@@ -13,7 +14,6 @@ import type {
   FunctionArgumentsCache,
   IAggregatedStore,
   IActionContext,
-  IMediatorFunctions,
   ITimeZoneRepresentation,
   AsyncExtensionFunctionCreator,
   ISuperTypeProvider,
@@ -198,7 +198,7 @@ export const KeysExpressionEvaluator = {
   mediatorQueryOperation: new ActionContextKey<MediatorQueryOperation>(
     '@comunica/expression-evaluator:mediatorQueryOperation',
   ),
-  mediatorFunction: new ActionContextKey<IMediatorFunctions>('@comunica/expression-evaluator:mediatorFunction'),
+  mediatorFunction: new ActionContextKey<MediatorFunctions>('@comunica/expression-evaluator:mediatorFunction'),
 };
 
 export const KeysQueryOperation = {

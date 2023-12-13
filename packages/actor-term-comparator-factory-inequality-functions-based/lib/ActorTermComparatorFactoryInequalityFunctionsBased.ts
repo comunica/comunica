@@ -2,6 +2,7 @@ import {
   MockFunctionMediator,
   prepareEvaluatorActionContext,
 } from '@comunica/actor-expression-evaluator-factory-base';
+import type { MediatorFunctions } from '@comunica/bus-functions';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import type {
   IActionTermComparatorFactory,
@@ -12,7 +13,6 @@ import { ActorTermComparatorFactory } from '@comunica/bus-term-comparator-factor
 import type { IActorTest } from '@comunica/core';
 import { RegularOperator } from '@comunica/expression-evaluator';
 import { InternalEvaluator } from '@comunica/expression-evaluator/lib/evaluators/InternalEvaluator';
-import type { IMediatorFunctions } from '@comunica/types';
 import { InequalityFunctionBasedComparator } from './InequalityFunctionBasedComparator';
 
 /**
@@ -20,7 +20,7 @@ import { InequalityFunctionBasedComparator } from './InequalityFunctionBasedComp
  */
 export class ActorTermComparatorFactoryInequalityFunctionsBased extends ActorTermComparatorFactory {
   private readonly mediatorQueryOperation: MediatorQueryOperation;
-  private readonly mediatorFunctions: IMediatorFunctions;
+  private readonly mediatorFunctions: MediatorFunctions;
   public constructor(args: IActorTermComparatorFactoryArgs) {
     super(args);
     this.mediatorQueryOperation = args.mediatorQueryOperation;

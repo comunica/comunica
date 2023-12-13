@@ -1,7 +1,7 @@
+import type { ITermFunction } from '@comunica/bus-functions';
 import type { ITermComparator } from '@comunica/bus-term-comparator-factory';
 import type { InternalEvaluator } from '@comunica/expression-evaluator/lib/evaluators/InternalEvaluator';
 import type * as E from '@comunica/expression-evaluator/lib/expressions';
-import type { ITermFunction } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 
 export class InequalityFunctionBasedComparator implements ITermComparator {
