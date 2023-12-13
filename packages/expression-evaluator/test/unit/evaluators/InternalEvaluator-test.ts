@@ -1,9 +1,10 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
+import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
+import { getMockEEFactory } from '@comunica/jest';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
-import { ExpressionEvaluatorFactory } from '../../../lib';
 import { getMockEEActionContext } from '../../util/utils';
 
 const BF = new BindingsFactory();
@@ -12,7 +13,7 @@ const DF = new DataFactory();
 describe('MaterializedEvaluatorContext', () => {
   let mediatorQueryOperation: any;
 
-  let expressionEvaluatorFactory: ExpressionEvaluatorFactory;
+  let expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
   let factory: Factory;
 
   beforeEach(() => {
@@ -28,13 +29,8 @@ describe('MaterializedEvaluatorContext', () => {
         type: 'bindings',
       }),
     };
-    expressionEvaluatorFactory = new ExpressionEvaluatorFactory({
+    expressionEvaluatorFactory = getMockEEFactory({
       mediatorQueryOperation,
-      mediatorBindingsAggregatorFactory: <any> {
-        mediate(arg: any) {
-          throw new Error('Not implemented');
-        },
-      },
     });
     factory = new Factory();
   });
@@ -45,7 +41,10 @@ describe('MaterializedEvaluatorContext', () => {
         false,
         factory.createBgp([]),
       );
-      const evaluator = await expressionEvaluatorFactory.createEvaluator(expr, getMockEEActionContext());
+      const evaluator = (await expressionEvaluatorFactory.run({
+        algExpr: expr,
+        context: getMockEEActionContext(),
+      })).expressionEvaluator;
       const result = evaluator.evaluateAsEBV(BF.bindings());
       expect(await result).toBe(true);
     });
@@ -62,7 +61,10 @@ describe('MaterializedEvaluatorContext', () => {
         false,
         factory.createBgp([]),
       );
-      const evaluator = await expressionEvaluatorFactory.createEvaluator(expr, getMockEEActionContext());
+      const evaluator = (await expressionEvaluatorFactory.run({
+        algExpr: expr,
+        context: getMockEEActionContext(),
+      })).expressionEvaluator;
       const result = evaluator.evaluateAsEBV(BF.bindings());
       expect(await result).toBe(false);
     });
@@ -79,7 +81,10 @@ describe('MaterializedEvaluatorContext', () => {
         true,
         factory.createBgp([]),
       );
-      const evaluator = await expressionEvaluatorFactory.createEvaluator(expr, getMockEEActionContext());
+      const evaluator = (await expressionEvaluatorFactory.run({
+        algExpr: expr,
+        context: getMockEEActionContext(),
+      })).expressionEvaluator;
       const result = evaluator.evaluateAsEBV(BF.bindings());
       expect(await result).toBe(true);
     });
@@ -104,7 +109,10 @@ describe('MaterializedEvaluatorContext', () => {
         false,
         factory.createBgp([]),
       );
-      const evaluator = await expressionEvaluatorFactory.createEvaluator(expr, getMockEEActionContext());
+      const evaluator = (await expressionEvaluatorFactory.run({
+        algExpr: expr,
+        context: getMockEEActionContext(),
+      })).expressionEvaluator;
       await expect(evaluator.evaluateAsEBV(BF.bindings())).rejects.toBeTruthy();
     });
   });

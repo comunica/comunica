@@ -36,7 +36,6 @@
     "@comunica/bus-hash-bindings": "^2.8.2",
     "@comunica/bus-query-operation": "^2.9.0",
     "@comunica/core": "^2.8.2",
-    "@comunica/expression-evaluator": "^2.9.0",
     "@comunica/types": "^2.8.2",
     "@rdfjs/types": "*",
     "asynciterator": "^3.8.1",

@@ -1,9 +1,9 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
+import type { AsyncExtensionFunctionCreator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
-import type { AsyncExtensionFunctionCreator } from '../../../lib/evaluators/InternalEvaluator';
 import { bool, merge, numeric } from '../../util/Aliases';
 import { generalEvaluate } from '../../util/generalEvaluation';
 import { Notation } from '../../util/TestTable';

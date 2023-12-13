@@ -3,8 +3,9 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorBindingsAggregatorFactory } from '@comunica/bus-bindings-aggeregator-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
+import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import { Bus } from '@comunica/core';
-import type { IMediatorFunctions, IMediatorTermComparator } from '@comunica/types';
+import type { IMediatorFunctions } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Quad } from 'rdf-data-factory';
 import { DataFactory } from 'rdf-data-factory';
@@ -69,11 +70,11 @@ export function nonLiteral(): RDF.Term {
 export function getMockEEFactory({ mediatorQueryOperation,
   mediatorBindingsAggregatorFactory,
   mediatorFunctions,
-  mediatorTermComparator }: {
+  mediatorTermComparatorFactory }: {
   mediatorQueryOperation?: MediatorQueryOperation;
   mediatorBindingsAggregatorFactory?: MediatorBindingsAggregatorFactory;
+  mediatorTermComparatorFactory?: MediatorTermComparatorFactory;
   mediatorFunctions?: IMediatorFunctions;
-  mediatorTermComparator?: IMediatorTermComparator;
 } = {}): ActorExpressionEvaluatorFactory {
   return new ActorExpressionEvaluatorFactoryBase({
     bus: new Bus({ name: 'testBusMock' }),
@@ -88,7 +89,11 @@ export function getMockEEFactory({ mediatorQueryOperation,
         throw new Error('mediatorBindingsAggregatorFactory mock of mockEEFactory not implemented');
       },
     },
+    mediatorTermComparatorFactory: mediatorTermComparatorFactory || <any> {
+      async mediate(arg: any) {
+        throw new Error('mediatorTermComparatorFactory mock of mockEEFactory not implemented');
+      },
+    },
     mediatorFunctions,
-    mediatorTermComparator,
   });
 }

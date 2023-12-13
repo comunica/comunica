@@ -1,16 +1,14 @@
-import type { MediatorBindingsAggregatorFactory } from '@comunica/bus-bindings-aggeregator-factory';
+import type { IBindingsAggregator, MediatorBindingsAggregatorFactory } from '@comunica/bus-bindings-aggeregator-factory';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
+import type { MediatorTermComparatorFactory, ITermComparator } from '@comunica/bus-term-comparator-factory';
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
-import type { IMediatorFunctions,
-  IMediatorTermComparator,
-  IExpressionFunction,
-  IFunctionBusActionContext,
-  ITermFunction,
-  IOrderByEvaluator,
-  ITermComparatorBusActionContext,
+import type {
   IExpressionEvaluator,
-  IActionContext, IBindingsAggregator } from '@comunica/types';
+  IExpressionFunction,
+
+} from '@comunica/expression-evaluator';
+import type { IActionContext, IFunctionBusActionContext, IMediatorFunctions, ITermFunction } from '@comunica/types';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 
 /**
@@ -26,10 +24,10 @@ import type { Algebra as Alg } from 'sparqlalgebrajs';
  */
 export abstract class ActorExpressionEvaluatorFactory extends
   Actor<IActionExpressionEvaluatorFactory, IActorTest, IActorExpressionEvaluatorFactoryOutput> {
-  public mediatorBindingsAggregatorFactory: MediatorBindingsAggregatorFactory;
   public mediatorQueryOperation: MediatorQueryOperation;
+  public mediatorBindingsAggregatorFactory: MediatorBindingsAggregatorFactory;
+  public mediatorTermComparatorFactory: MediatorTermComparatorFactory;
   public mediatorFunctions: IMediatorFunctions;
-  public mediatorTermComparator: IMediatorTermComparator;
 
   /**
   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
@@ -41,8 +39,8 @@ export abstract class ActorExpressionEvaluatorFactory extends
   public abstract createFunction<T extends IFunctionBusActionContext>(arg: T & IAction):
   Promise<T extends { requireTermExpression: true } ? ITermFunction : IExpressionFunction>;
 
-  public abstract createTermComparator(orderAction: ITermComparatorBusActionContext):
-  Promise<IOrderByEvaluator>;
+  public abstract createTermComparator(action: IAction):
+  Promise<ITermComparator>;
 
   public abstract createAggregator(algExpr: Alg.AggregateExpression, context: IActionContext):
   Promise<IBindingsAggregator>;
@@ -50,7 +48,6 @@ export abstract class ActorExpressionEvaluatorFactory extends
 
 export interface IActionExpressionEvaluatorFactory extends IAction {
   mediatorFunctions?: IMediatorFunctions;
-  mediatorTermComparator?: IMediatorTermComparator;
   algExpr: Alg.Expression;
 }
 
@@ -60,10 +57,10 @@ export interface IActorExpressionEvaluatorFactoryOutput extends IActorOutput {
 
 export type IActorExpressionEvaluatorFactoryArgs = IActorArgs<
 IActionExpressionEvaluatorFactory, IActorTest, IActorExpressionEvaluatorFactoryOutput> & {
-  mediatorBindingsAggregatorFactory: MediatorBindingsAggregatorFactory;
   mediatorQueryOperation: MediatorQueryOperation;
+  mediatorBindingsAggregatorFactory: MediatorBindingsAggregatorFactory;
+  mediatorTermComparatorFactory: MediatorTermComparatorFactory;
   mediatorFunctions?: IMediatorFunctions;
-  mediatorTermComparator?: IMediatorTermComparator;
 };
 
 export type MediatorExpressionEvaluatorFactory = Mediate<

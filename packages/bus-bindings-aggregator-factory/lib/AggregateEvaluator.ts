@@ -1,8 +1,15 @@
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
-import { isSubTypeOf, EmptyAggregateError, TermTransformer, TypeAlias } from '@comunica/expression-evaluator';
+import type {
+  IExpressionEvaluator,
+} from '@comunica/expression-evaluator';
+import {
+  isSubTypeOf,
+  EmptyAggregateError,
+  TermTransformer,
+  TypeAlias,
+} from '@comunica/expression-evaluator';
 import type * as E from '@comunica/expression-evaluator/lib/expressions';
-import type { ISuperTypeProvider } from '@comunica/expression-evaluator/lib/util/TypeHandling';
-import type { IExpressionEvaluator } from '@comunica/types';
+import type { ISuperTypeProvider } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import * as RdfString from 'rdf-string';
 

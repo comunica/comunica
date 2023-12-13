@@ -1,7 +1,7 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActionContext } from '@comunica/core';
+import type { IExpressionEvaluator } from '@comunica/expression-evaluator';
 import { getMockEEFactory, int, makeAggregate } from '@comunica/jest';
-import type { IExpressionEvaluator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { AggregateEvaluator } from '../lib';
 

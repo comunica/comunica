@@ -1,11 +1,10 @@
 import { prepareEvaluatorActionContext } from '@comunica/actor-expression-evaluator-factory-base';
 import { ActionContext } from '@comunica/core';
 import { getMockEEFactory } from '@comunica/jest';
-import type { IActionContext } from '@comunica/types';
+import type { GeneralSuperTypeDict, IActionContext, ISuperTypeProvider } from '@comunica/types';
 import { LRUCache } from 'lru-cache';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 import { translate } from 'sparqlalgebrajs';
-import type { GeneralSuperTypeDict, ISuperTypeProvider } from '../../lib/util/TypeHandling';
 import type { AliasMap } from './Aliases';
 import type { Notation } from './TestTable';
 import { ArrayTable, BinaryTable, UnaryTable, VariableTable } from './TestTable';

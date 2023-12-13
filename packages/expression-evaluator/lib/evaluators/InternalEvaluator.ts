@@ -8,10 +8,6 @@ import { expressionToVar } from '../functions/Helpers';
 import { AlgebraTransformer } from '../transformers/AlgebraTransformer';
 import * as Err from '../util/Errors';
 
-export type AsyncExtensionFunction = (args: RDF.Term[]) => Promise<RDF.Term>;
-export type AsyncExtensionFunctionCreator = (functionNamedNode: RDF.NamedNode) =>
-Promise<AsyncExtensionFunction | undefined>;
-
 /**
  * This class provides evaluation functionality to already transformed expressions.
  */

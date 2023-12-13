@@ -5,10 +5,10 @@ import { TypeURL } from '../../../lib';
 import type { Builder } from '../../../lib/functions/Helpers';
 import { bool, declare } from '../../../lib/functions/Helpers';
 import type { FunctionArgumentsCache } from '../../../lib/functions/OverloadTree';
-import type { ISuperTypeProvider } from '../../../lib/util/TypeHandling';
 import { getMockEEActionContext, getMockExpression } from '../../util/utils';
 
 import fn = jest.fn;
+import type { ISuperTypeProvider } from '@comunica/types';
 
 describe('The function helper file', () => {
   describe('has a builder', () => {
@@ -18,9 +18,10 @@ describe('The function helper file', () => {
     let functionArgumentsCache: FunctionArgumentsCache;
     beforeEach(async() => {
       builder = declare('non cacheable');
-      expressionEvaluator = <ExpressionEvaluator> await getMockEEFactory().createEvaluator(
-        getMockExpression('1+1'), getMockEEActionContext(),
-      );
+      expressionEvaluator = <ExpressionEvaluator> (await getMockEEFactory().run({
+        algExpr: getMockExpression('1 + 1'),
+        context: getMockEEActionContext(),
+      })).expressionEvaluator;
       superTypeProvider = expressionEvaluator.context.getSafe(KeysExpressionEvaluator.superTypeProvider);
       functionArgumentsCache = expressionEvaluator.context.getSafe(KeysExpressionEvaluator.functionArgumentsCache);
     });

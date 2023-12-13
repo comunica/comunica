@@ -1,7 +1,8 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
+import type { IBindingsAggregator } from '@comunica/bus-bindings-aggeregator-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { HashFunction } from '@comunica/bus-hash-bindings';
-import type { Bindings, IActionContext, IBindingsAggregator } from '@comunica/types';
+import type { Bindings, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';

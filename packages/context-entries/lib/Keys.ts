@@ -1,11 +1,7 @@
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContextKey, CONTEXT_KEY_LOGGER } from '@comunica/core';
-import type { AsyncExtensionFunctionCreator } from '@comunica/expression-evaluator/lib/evaluators/InternalEvaluator';
-import type { ITimeZoneRepresentation } from '@comunica/expression-evaluator/lib/util/DateTimeHelpers';
 import type {
-  ISuperTypeProvider,
-} from '@comunica/expression-evaluator/lib/util/TypeHandling';
-import type { Bindings,
+  Bindings,
   IPhysicalQueryPlanLogger,
   QueryExplainMode,
   IProxyHandler,
@@ -13,8 +9,15 @@ import type { Bindings,
   DataSources,
   IDataSource,
   IDataDestination,
-  MetadataBindings, FunctionArgumentsCache,
-  IAggregatedStore, IMediatorFunctions, IActionContext } from '@comunica/types';
+  MetadataBindings,
+  FunctionArgumentsCache,
+  IAggregatedStore,
+  IActionContext,
+  IMediatorFunctions,
+  ITimeZoneRepresentation,
+  AsyncExtensionFunctionCreator,
+  ISuperTypeProvider,
+} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { IDocumentLoader } from 'jsonld-context-parser';
 import type { Algebra } from 'sparqlalgebrajs';

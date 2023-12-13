@@ -6,6 +6,7 @@ import type {
 import {
   ActorBindingsAggregatorFactory,
 } from '@comunica/bus-bindings-aggeregator-factory';
+import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { IActorTest } from '@comunica/core';
 import { GroupConcatAggregator } from './GroupConcatAggregator';
 
@@ -13,8 +14,11 @@ import { GroupConcatAggregator } from './GroupConcatAggregator';
  * A comunica Group Concat Expression Evaluator Aggregate Actor.
  */
 export class ActorBindingsAggregatorFactoryGroupConcat extends ActorBindingsAggregatorFactory {
-  public constructor(args: IActorBindingsAggregatorFactoryArgs) {
+  private readonly factory: ActorExpressionEvaluatorFactory;
+
+  public constructor(args: IActorBindingsAggregatorFactoryArgs & { factory: ActorExpressionEvaluatorFactory }) {
     super(args);
+    this.factory = args.factory;
   }
 
   public async test(action: IActionBindingsAggregatorFactory): Promise<IActorTest> {
@@ -24,10 +28,10 @@ export class ActorBindingsAggregatorFactoryGroupConcat extends ActorBindingsAggr
     return {};
   }
 
-  public async run({ factory, context, expr }: IActionBindingsAggregatorFactory): Promise<IActorBindingsAggregatorFactoryOutput> {
+  public async run({ context, expr }: IActionBindingsAggregatorFactory): Promise<IActorBindingsAggregatorFactoryOutput> {
     return {
       aggregator: new GroupConcatAggregator(
-        (await factory.run({ algExpr: expr.expression, context })).expressionEvaluator,
+        (await this.factory.run({ algExpr: expr.expression, context })).expressionEvaluator,
         expr.distinct,
         expr.separator,
       ),

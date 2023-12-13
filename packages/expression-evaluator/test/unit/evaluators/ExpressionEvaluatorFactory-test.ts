@@ -1,17 +1,16 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
+import { ActorExpressionEvaluatorFactoryBase } from '@comunica/actor-expression-evaluator-factory-base';
+import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
+import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
-import { ActionContext } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
 import type { FunctionArgumentsCache } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
-import { ExpressionEvaluatorFactory } from '../../../lib';
 import { getMockExpression } from '../../util/utils';
-
-const BF = new BindingsFactory();
 
 describe('The ExpressionEvaluatorFactory', () => {
   let mediatorQueryOperation: any;
   let mediatorBindingsAggregatorFactory: any;
-  let expressionEvaluatorFactory: ExpressionEvaluatorFactory;
+  let expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
 
   beforeEach(() => {
     mediatorQueryOperation = {
@@ -28,9 +27,12 @@ describe('The ExpressionEvaluatorFactory', () => {
       mediate: (arg: any) => Promise.reject(new Error('Not implemented')),
     };
 
-    expressionEvaluatorFactory = new ExpressionEvaluatorFactory({
-      mediatorBindingsAggregatorFactory,
+    expressionEvaluatorFactory = new ActorExpressionEvaluatorFactoryBase({
+      name: 'ActorExpressionEvaluatorFactoryBase',
+      bus: new Bus({ name: 'ExpressionEvaluatorFactoryBus' }),
       mediatorQueryOperation,
+      mediatorBindingsAggregatorFactory,
+      mediatorTermComparatorFactory: <MediatorTermComparatorFactory> mediatorQueryOperation,
     });
   });
 
@@ -42,7 +44,10 @@ describe('The ExpressionEvaluatorFactory', () => {
       [KeysInitQuery.baseIRI.name]: 'http://base.org/',
       [KeysInitQuery.functionArgumentsCache.name]: functionArgumentsCache,
     });
-    const evaluator = await expressionEvaluatorFactory.createEvaluator(getMockExpression('1+1'), actionContext);
+    const evaluator = (await expressionEvaluatorFactory.run({
+      algExpr: getMockExpression('1 + 1'),
+      context: actionContext,
+    })).expressionEvaluator;
     expect(evaluator.context.toJS()).toMatchObject({
       [KeysExpressionEvaluator.now.name]: date,
       [KeysExpressionEvaluator.baseIRI.name]: 'http://base.org/',

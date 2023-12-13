@@ -1,8 +1,9 @@
-import type { IInternalEvaluator } from '@comunica/types';
+import type { GeneralSuperTypeDict, ISuperTypeProvider } from '@comunica/types';
 import { isLiteralTermExpression } from '../expressions';
 import type * as E from '../expressions';
+import type { IInternalEvaluator } from '../types';
 import type * as C from '../util/Consts';
-import type { GeneralSuperTypeDict, ISuperTypeProvider, OverrideType } from '../util/TypeHandling';
+import type { OverrideType } from '../util/TypeHandling';
 import {
   asGeneralType,
   asKnownLiteralType,

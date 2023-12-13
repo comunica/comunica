@@ -1,7 +1,7 @@
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import { BlankNodeBindingsScoped } from '@comunica/data-factory';
-import type { IEvalContext } from '@comunica/types';
 import * as E from '../expressions';
+import type { IEvalContext } from '../types';
 import * as C from '../util/Consts';
 import * as Err from '../util/Errors';
 import type { RegularFunction } from './Core';

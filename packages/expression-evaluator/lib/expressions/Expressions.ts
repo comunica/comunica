@@ -1,6 +1,6 @@
-import type { FunctionApplication } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
+import type { FunctionApplication } from '../types';
 
 export enum ExpressionType {
   Aggregate = 'aggregate',

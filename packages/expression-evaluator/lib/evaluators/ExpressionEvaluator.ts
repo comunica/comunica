@@ -1,6 +1,7 @@
-import type { IActionContext, IExpressionEvaluator } from '@comunica/types';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type * as E from '../expressions';
+import type { IExpressionEvaluator } from '../types';
 import { InternalEvaluator } from './InternalEvaluator';
 
 export class ExpressionEvaluator implements IExpressionEvaluator {

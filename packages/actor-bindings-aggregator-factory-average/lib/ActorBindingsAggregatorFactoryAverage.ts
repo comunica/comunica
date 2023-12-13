@@ -3,6 +3,7 @@ import type {
   IActorBindingsAggregatorFactoryArgs, IActorBindingsAggregatorFactoryOutput,
 } from '@comunica/bus-bindings-aggeregator-factory';
 import { ActorBindingsAggregatorFactory } from '@comunica/bus-bindings-aggeregator-factory';
+import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { IActorTest } from '@comunica/core';
 import { RegularOperator } from '@comunica/expression-evaluator';
 import { AverageAggregator } from './AverageAggregator';
@@ -11,8 +12,10 @@ import { AverageAggregator } from './AverageAggregator';
  * A comunica Average Expression Evaluator Aggregate Actor.
  */
 export class ActorBindingsAggregatorFactoryAverage extends ActorBindingsAggregatorFactory {
-  public constructor(args: IActorBindingsAggregatorFactoryArgs) {
+  private readonly factory: ActorExpressionEvaluatorFactory;
+  public constructor(args: IActorBindingsAggregatorFactoryArgs & { factory: ActorExpressionEvaluatorFactory }) {
     super(args);
+    this.factory = args.factory;
   }
 
   public async test(action: IActionBindingsAggregatorFactory): Promise<IActorTest> {
@@ -22,18 +25,18 @@ export class ActorBindingsAggregatorFactoryAverage extends ActorBindingsAggregat
     return {};
   }
 
-  public async run({ factory, context, expr }: IActionBindingsAggregatorFactory):
+  public async run({ context, expr }: IActionBindingsAggregatorFactory):
   Promise<IActorBindingsAggregatorFactoryOutput> {
     return {
       aggregator: new AverageAggregator(
-        (await factory.run({ algExpr: expr.expression, context })).expressionEvaluator,
+        (await this.factory.run({ algExpr: expr.expression, context })).expressionEvaluator,
         expr.distinct,
-        await factory.createFunction({
+        await this.factory.createFunction({
           functionName: RegularOperator.ADDITION,
           context,
           requireTermExpression: true,
         }),
-        await factory.createFunction({
+        await this.factory.createFunction({
           functionName: RegularOperator.DIVISION,
           context,
           requireTermExpression: true,

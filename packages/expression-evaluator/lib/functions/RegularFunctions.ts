@@ -1,5 +1,5 @@
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
-import type { IInternalEvaluator } from '@comunica/types';
+import type { IDayTimeDurationRepresentation } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { BigNumber } from 'bignumber.js';
 import { sha1, sha256, sha384, sha512 } from 'hash.js';
@@ -12,9 +12,9 @@ import type { InternalEvaluator } from '../evaluators/InternalEvaluator';
 import * as E from '../expressions';
 import type { Quad } from '../expressions';
 import { TermTransformer } from '../transformers/TermTransformer';
+import type { IInternalEvaluator } from '../types';
 import * as C from '../util/Consts';
 import { TypeAlias, TypeURL } from '../util/Consts';
-import type { IDayTimeDurationRepresentation } from '../util/DateTimeHelpers';
 import {
   dayTimeDurationsToSeconds,
   defaultedDateTimeRepresentation,

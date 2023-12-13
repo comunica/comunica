@@ -1,0 +1,44 @@
+{
+  "name": "@comunica/bus-term-comparator-factory",
+  "version": "1.0.0",
+  "description": "A comunica bus for term-comparator-factory events.",
+  "lsd:module": true,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/bus-term-comparator-factory"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false,
+  "keywords": [
+    "comunica",
+    "bus",
+    "term-comparator-factory"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
+  "homepage": "https://comunica.dev/",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.js.map"
+  ],
+  "dependencies": {
+    "@comunica/core": "^2.8.2",
+    "@comunica/bus-query-operation":  "^2.9.0",
+    "@comunica/expression-evaluator": "^2.9.0",
+    "@rdfjs/types":  "^1.1.0"
+  },
+  "scripts": {
+    "build": "npm run build:ts && npm run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
+  }
+}

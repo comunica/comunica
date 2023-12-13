@@ -1,5 +1,6 @@
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import { getMockEEFactory } from '@comunica/jest';
+import type { ISuperTypeProvider } from '@comunica/types';
 import type { ExpressionEvaluator } from '../../../lib';
 import type { ISerializable } from '../../../lib/expressions';
 import { IntegerLiteral, isLiteralTermExpression, Literal, StringLiteral } from '../../../lib/expressions';
@@ -7,7 +8,6 @@ import { OverloadTree, regularFunctions } from '../../../lib/functions';
 import type { FunctionArgumentsCache } from '../../../lib/functions/OverloadTree';
 import type { KnownLiteralTypes } from '../../../lib/util/Consts';
 import { TypeURL } from '../../../lib/util/Consts';
-import type { ISuperTypeProvider } from '../../../lib/util/TypeHandling';
 import { getMockEEActionContext, getMockExpression } from '../../util/utils';
 
 describe('OverloadTree', () => {
@@ -18,9 +18,9 @@ describe('OverloadTree', () => {
   let functionArgumentsCache: FunctionArgumentsCache;
   beforeEach(async() => {
     emptyTree = new OverloadTree(emptyID);
-    expressionEvaluator = <ExpressionEvaluator> await getMockEEFactory().createEvaluator(
-      getMockExpression('1+1'), getMockEEActionContext(),
-    );
+    expressionEvaluator = <ExpressionEvaluator> (await getMockEEFactory().run(
+      { algExpr: getMockExpression('1+1'), context: getMockEEActionContext() },
+    )).expressionEvaluator;
     superTypeProvider = expressionEvaluator.context.getSafe(KeysExpressionEvaluator.superTypeProvider);
     functionArgumentsCache = expressionEvaluator.context.getSafe(KeysExpressionEvaluator.functionArgumentsCache);
   });

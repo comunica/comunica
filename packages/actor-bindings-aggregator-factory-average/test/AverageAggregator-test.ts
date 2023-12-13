@@ -1,7 +1,8 @@
+import type { IBindingsAggregator } from '@comunica/bus-bindings-aggeregator-factory';
 import { ActionContext } from '@comunica/core';
 import { ExpressionEvaluatorFactory, RegularOperator } from '@comunica/expression-evaluator';
 import { BF, decimal, DF, double, float, int, makeAggregate } from '@comunica/jest';
-import type { IActionContext, IBindingsAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
+import type { IActionContext, IExpressionEvaluatorFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { AverageAggregator } from '../lib/AverageAggregator';

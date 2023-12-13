@@ -1,3 +1,4 @@
+import type { GeneralSuperTypeDict, ISuperTypeProvider } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import * as RDFString from 'rdf-string';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
@@ -16,8 +17,6 @@ import {
 } from '../util/Parsing';
 import * as P from '../util/Parsing';
 import { getSuperTypeDict } from '../util/TypeHandling';
-import type { ISuperTypeProvider,
-  GeneralSuperTypeDict } from '../util/TypeHandling';
 
 export interface ITermTransformer {
   transformRDFTermUnsafe: (term: RDF.Term) => E.Term;

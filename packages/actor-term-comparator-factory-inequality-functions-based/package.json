@@ -1,0 +1,47 @@
+{
+  "name": "@comunica/actor-term-comparator-factory-inequality-functions-based",
+  "version": "1.0.0",
+  "description": "A inequality-functions-based term-comparator-factory actor",
+  "lsd:module": true,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/actor-term-comparator-factory-inequality-functions-based"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false,
+  "keywords": [
+    "comunica",
+    "actor",
+    "term-comparator-factory",
+    "inequality-functions-based"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
+  "homepage": "https://comunica.dev/",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.js.map"
+  ],
+  "dependencies": {
+    "@comunica/bus-query-operation": "^2.9.0",
+    "@comunica/bus-term-comparator-factory": "^1.0.0",
+    "@comunica/core": "^2.8.2",
+    "@comunica/expression-evaluator": "^2.9.0",
+    "@comunica/types": "^2.8.2",
+    "@rdfjs/types": "*"
+  },
+  "scripts": {
+    "build": "npm run build:ts && npm run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
+  }
+}

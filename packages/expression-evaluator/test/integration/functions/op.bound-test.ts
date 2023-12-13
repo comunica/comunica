@@ -30,16 +30,19 @@ describe('evaluation of \'bound\'', () => {
   });
 
   it('\'bound\' on term returns error', async() => {
-    const evaluator = await getMockEEFactory().createEvaluator({
-      type: types.EXPRESSION,
-      expressionType: expressionTypes.OPERATOR,
-      operator: 'bound',
-      args: [{
+    const evaluator = (await getMockEEFactory().run({
+      algExpr: {
         type: types.EXPRESSION,
-        expressionType: expressionTypes.TERM,
-        term: DF.namedNode('http://example.com'),
-      }],
-    }, getMockEEActionContext());
+        expressionType: expressionTypes.OPERATOR,
+        operator: 'bound',
+        args: [{
+          type: types.EXPRESSION,
+          expressionType: expressionTypes.TERM,
+          term: DF.namedNode('http://example.com'),
+        }],
+      },
+      context: getMockEEActionContext(),
+    })).expressionEvaluator;
     await expect(evaluator.evaluate(BF.bindings())).rejects.toThrow(Err.InvalidArgumentTypes);
   });
 });

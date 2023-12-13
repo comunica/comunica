@@ -2,15 +2,15 @@
  * These helpers provide a (albeit inflexible) DSL for writing function
  * definitions for the SPARQL functions.
  */
-import type { IInternalEvaluator } from '@comunica/types';
+import type { IDateTimeRepresentation } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import type { Literal, TermExpression, Quad, ISerializable } from '../expressions';
 import * as E from '../expressions';
 import { NonLexicalLiteral } from '../expressions';
+import type { IInternalEvaluator } from '../types';
 import * as C from '../util/Consts';
 import { TypeURL } from '../util/Consts';
-import type { IDateTimeRepresentation } from '../util/DateTimeHelpers';
 import * as Err from '../util/Errors';
 import type { ArgumentType, ImplementationFunction } from './OverloadTree';
 import { OverloadTree } from './OverloadTree';

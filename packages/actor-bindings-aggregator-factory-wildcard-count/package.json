@@ -37,8 +37,7 @@
     "@comunica/expression-evaluator": "^2.9.0",
     "@comunica/types": "^2.8.2",
     "@rdfjs/types": "*",
-    "rdf-string": "^1.6.3",
-    "sparqlalgebrajs": "^4.2.0"
+    "rdf-string": "^1.6.3"
   },
   "devDependencies": {},
   "scripts": {

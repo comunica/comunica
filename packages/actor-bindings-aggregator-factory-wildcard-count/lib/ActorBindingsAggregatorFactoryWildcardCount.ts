@@ -6,6 +6,7 @@ import type {
 import {
   ActorBindingsAggregatorFactory,
 } from '@comunica/bus-bindings-aggeregator-factory';
+import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { IActorTest } from '@comunica/core';
 import { WildcardCountAggregator } from './WildcardCountAggregator';
 
@@ -13,8 +14,11 @@ import { WildcardCountAggregator } from './WildcardCountAggregator';
  * A comunica Wildcard Count Expression Evaluator Aggregate Actor.
  */
 export class ActorBindingsAggregatorFactoryWildcardCount extends ActorBindingsAggregatorFactory {
-  public constructor(args: IActorBindingsAggregatorFactoryArgs) {
+  private readonly factory: ActorExpressionEvaluatorFactory;
+
+  public constructor(args: IActorBindingsAggregatorFactoryArgs & { factory: ActorExpressionEvaluatorFactory }) {
     super(args);
+    this.factory = args.factory;
   }
 
   public async test(action: IActionBindingsAggregatorFactory): Promise<IActorTest> {
@@ -24,11 +28,11 @@ export class ActorBindingsAggregatorFactoryWildcardCount extends ActorBindingsAg
     return {};
   }
 
-  public async run({ factory, context, expr }: IActionBindingsAggregatorFactory):
+  public async run({ context, expr }: IActionBindingsAggregatorFactory):
   Promise<IActorBindingsAggregatorFactoryOutput> {
     return {
       aggregator: new WildcardCountAggregator(
-        (await factory.run({ algExpr: expr.expression, context })).expressionEvaluator,
+        (await this.factory.run({ algExpr: expr.expression, context })).expressionEvaluator,
         expr.distinct,
       ),
     };

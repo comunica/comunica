@@ -1,6 +1,6 @@
-import type { FunctionApplication } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 
+import type { FunctionApplication } from '../types';
 import type { Expression,
   NamedExpression } from './Expressions';
 import {

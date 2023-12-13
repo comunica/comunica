@@ -1,10 +1,10 @@
+import type { ITermComparator } from '@comunica/bus-term-comparator-factory';
+import type { InternalEvaluator } from '@comunica/expression-evaluator/lib/evaluators/InternalEvaluator';
+import type * as E from '@comunica/expression-evaluator/lib/expressions';
 import type { ITermFunction } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import type * as E from '../expressions';
-import type { InternalEvaluator } from './InternalEvaluator';
 
-// TODO: this is its own actor!
-export class TermComparator {
+export class InequalityFunctionBasedComparator implements ITermComparator {
   public constructor(private readonly internalEvaluator: InternalEvaluator,
     private readonly equalityFunction: ITermFunction,
     private readonly lessThanFunction: ITermFunction) {

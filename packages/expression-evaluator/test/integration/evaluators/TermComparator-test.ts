@@ -1,11 +1,22 @@
+import { prepareEvaluatorActionContext } from '@comunica/actor-expression-evaluator-factory-base';
+import {
+  InequalityFunctionBasedComparator,
+} from '@comunica/actor-term-comparator-factory-inequality-functions-based/lib/InequalityFunctionBasedComparator';
+import type {
+  ITermComparator,
+} from '@comunica/bus-term-comparator-factory';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import { getMockEEFactory } from '@comunica/jest';
+import type { SuperTypeCallback } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
 import { DataFactory } from 'rdf-data-factory';
 
+import { InternalEvaluator } from '../../../lib/evaluators/InternalEvaluator';
+import type { TermSparqlFunction } from '../../../lib/functions';
+import { regularFunctions } from '../../../lib/functions';
 import { TypeURL, TypeURL as DT } from '../../../lib/util/Consts';
-import type { SuperTypeCallback } from '../../../lib/util/TypeHandling';
+import type * as C from '../../../lib/util/Consts';
 import { getMockEEActionContext } from '../../util/utils';
 
 const DF = new DataFactory();
@@ -34,32 +45,33 @@ function dateTime(value: string): RDF.Literal {
   return DF.literal(value, DF.namedNode(DT.XSD_DATE_TIME));
 }
 
+function orderByFactory(typeDiscoveryCallback?: SuperTypeCallback): ITermComparator {
+  const context = typeDiscoveryCallback ?
+    getMockEEActionContext().set(KeysExpressionEvaluator.superTypeProvider, {
+      discoverer: typeDiscoveryCallback,
+      cache: new LRUCache<string, any>({ max: 1_000 }),
+    }) :
+    getMockEEActionContext();
+  const factory = getMockEEFactory();
+  return new InequalityFunctionBasedComparator(
+    new InternalEvaluator(
+      prepareEvaluatorActionContext(context, factory.mediatorQueryOperation, factory.mediatorFunctions),
+    ),
+    <TermSparqlFunction<C.RegularOperator>> regularFunctions['='],
+    <TermSparqlFunction<C.RegularOperator>> regularFunctions['<'],
+  );
+}
+
 async function orderTestIsLower(litA: RDF.Term | undefined, litB: RDF.Term | undefined,
   typeDiscoveryCallback?: SuperTypeCallback) {
-  const evaluator = await getMockEEFactory()
-    .createTermComparator({
-      context: typeDiscoveryCallback ?
-        getMockEEActionContext().set(KeysExpressionEvaluator.superTypeProvider, {
-          discoverer: typeDiscoveryCallback,
-          cache: new LRUCache<string, any>({ max: 1_000 }),
-        }) :
-        getMockEEActionContext(),
-    });
+  const evaluator = orderByFactory(typeDiscoveryCallback);
   expect(evaluator.orderTypes(litA, litB)).toEqual(-1);
   expect(evaluator.orderTypes(litB, litA)).toEqual(1);
 }
 
 async function orderTestIsEqual(litA: RDF.Term | undefined, litB: RDF.Term | undefined,
   typeDiscoveryCallback?: SuperTypeCallback) {
-  const evaluator = await getMockEEFactory()
-    .createTermComparator({
-      context: typeDiscoveryCallback ?
-        getMockEEActionContext().set(KeysExpressionEvaluator.superTypeProvider, {
-          discoverer: typeDiscoveryCallback,
-          cache: new LRUCache<string, any>({ max: 1_000 }),
-        }) :
-        getMockEEActionContext(),
-    });
+  const evaluator = orderByFactory(typeDiscoveryCallback);
   expect(evaluator.orderTypes(litA, litB)).toEqual(0);
   expect(evaluator.orderTypes(litB, litA)).toEqual(0);
 }
@@ -153,7 +165,11 @@ describe('terms order', () => {
   it('handles extended types', async() => {
     const discover: SuperTypeCallback = _ => TypeURL.XSD_DECIMAL;
     const someType = DF.namedNode('https://example.org/some-decimal');
-    await orderTestIsEqual(DF.literal('2', TypeURL.XSD_DECIMAL), DF.literal('2', someType), discover);
+    await orderTestIsEqual(
+      DF.literal('2', DF.namedNode(TypeURL.XSD_DECIMAL)),
+      DF.literal('2', someType),
+      discover,
+    );
     await orderTestIsLower(DF.literal('2', someType), DF.literal('11', someType), discover);
   });
 

@@ -1,17 +1,17 @@
+import type {
+  IDateRepresentation,
+  IDateTimeRepresentation,
+  IDurationRepresentation, ISuperTypeProvider,
+  ITimeRepresentation,
+  IYearMonthDurationRepresentation,
+} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import * as C from '../util/Consts';
 import { TypeAlias, TypeURL } from '../util/Consts';
 
-import type {
-  IDateRepresentation,
-  IDateTimeRepresentation,
-  IDurationRepresentation,
-  ITimeRepresentation, IYearMonthDurationRepresentation,
-} from '../util/DateTimeHelpers';
 import * as Err from '../util/Errors';
 import { serializeDateTime, serializeDuration, serializeTime, serializeDate } from '../util/Serialization';
-import type { ISuperTypeProvider } from '../util/TypeHandling';
 import { isSubTypeOf } from '../util/TypeHandling';
 import type { TermExpression, TermType } from './Expressions';
 import { ExpressionType } from './Expressions';
