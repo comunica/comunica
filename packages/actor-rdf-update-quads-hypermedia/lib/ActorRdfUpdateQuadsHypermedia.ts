@@ -13,7 +13,6 @@ import type { IActionRdfUpdateQuads,
 import type { IActorTest } from '@comunica/core';
 import type { IActionContext, IDataDestination } from '@comunica/types';
 import { LRUCache } from 'lru-cache';
-import { KeysInitQuery } from '@comunica/context-entries';
 
 /**
  * A comunica Hypermedia RDF Update Quads Actor.
