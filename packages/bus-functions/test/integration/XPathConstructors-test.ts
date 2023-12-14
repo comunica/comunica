@@ -1,4 +1,8 @@
-import { dayTimeDurationTyped, durationTyped, yearMonthDurationTyped } from '@comunica/expression-evaluator/test/util/Aliases';
+import {
+  dayTimeDurationTyped,
+  durationTyped,
+  yearMonthDurationTyped,
+} from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
 import { runTestTable } from '@comunica/expression-evaluator/test/util/utils';
 

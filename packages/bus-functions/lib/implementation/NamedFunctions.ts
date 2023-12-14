@@ -1,10 +1,22 @@
 import type { DateLiteral, DateTimeLiteral, TimeLiteral } from '@comunica/expression-evaluator/lib/expressions';
 import * as E from '@comunica/expression-evaluator/lib/expressions';
 import { DurationLiteral } from '@comunica/expression-evaluator/lib/expressions';
-import { bool, dateTime, decimal, declare, double, float, integer, string } from '@comunica/expression-evaluator/lib/functions/Helpers';
+import {
+  bool,
+  dateTime,
+  decimal,
+  declare,
+  double,
+  float,
+  integer,
+  string,
+} from '@comunica/expression-evaluator/lib/functions/Helpers';
 import type * as C from '@comunica/expression-evaluator/lib/util/Consts';
 import { TypeURL } from '@comunica/expression-evaluator/lib/util/Consts';
-import { trimToDayTimeDuration, trimToYearMonthDuration } from '@comunica/expression-evaluator/lib/util/DateTimeHelpers';
+import {
+  trimToDayTimeDuration,
+  trimToYearMonthDuration,
+} from '@comunica/expression-evaluator/lib/util/DateTimeHelpers';
 import * as Err from '@comunica/expression-evaluator/lib/util/Errors';
 import { parseDate,
   parseDateTime,

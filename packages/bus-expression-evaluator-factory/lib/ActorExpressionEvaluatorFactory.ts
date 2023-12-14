@@ -1,4 +1,7 @@
-import type { IBindingsAggregator, MediatorBindingsAggregatorFactory } from '@comunica/bus-bindings-aggeregator-factory';
+import type {
+  IBindingsAggregator,
+  MediatorBindingsAggregatorFactory,
+} from '@comunica/bus-bindings-aggeregator-factory';
 import type {
   IActionFunctions,
   IActorFunctionsOutput,

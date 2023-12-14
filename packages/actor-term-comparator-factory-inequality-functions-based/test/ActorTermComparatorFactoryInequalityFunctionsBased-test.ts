@@ -1,5 +1,7 @@
 import { Bus } from '@comunica/core';
-import { ActorTermComparatorFactoryInequalityFunctionsBased } from '../lib/ActorTermComparatorFactoryInequalityFunctionsBased';
+import {
+  ActorTermComparatorFactoryInequalityFunctionsBased,
+} from '../lib/ActorTermComparatorFactoryInequalityFunctionsBased';
 
 describe('ActorTermComparatorFactoryInequalityFunctionsBased', () => {
   let bus: any;

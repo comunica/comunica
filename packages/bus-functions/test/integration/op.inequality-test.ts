@@ -1,4 +1,13 @@
-import { bool, dateTime, dateTyped, durationTyped, merge, numeric, str, timeTyped } from '@comunica/expression-evaluator/test/util/Aliases';
+import {
+  bool,
+  dateTime,
+  dateTyped,
+  durationTyped,
+  merge,
+  numeric,
+  str,
+  timeTyped,
+} from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
 import type { ITestTableConfigBase } from '@comunica/expression-evaluator/test/util/utils';
 import { runTestTable } from '@comunica/expression-evaluator/test/util/utils';

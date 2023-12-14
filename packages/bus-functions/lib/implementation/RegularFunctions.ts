@@ -4,7 +4,15 @@ import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import type { IInternalEvaluator } from '@comunica/expression-evaluator';
 import * as E from '@comunica/expression-evaluator/lib/expressions';
 import type { Quad } from '@comunica/expression-evaluator/lib/expressions';
-import { bool, decimal, declare, double, integer, langString, string } from '@comunica/expression-evaluator/lib/functions/Helpers';
+import {
+  bool,
+  decimal,
+  declare,
+  double,
+  integer,
+  langString,
+  string,
+} from '@comunica/expression-evaluator/lib/functions/Helpers';
 import { TermTransformer } from '@comunica/expression-evaluator/lib/transformers/TermTransformer';
 import * as C from '@comunica/expression-evaluator/lib/util/Consts';
 import { TypeAlias, TypeURL } from '@comunica/expression-evaluator/lib/util/Consts';

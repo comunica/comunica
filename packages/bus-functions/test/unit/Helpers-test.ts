@@ -1,14 +1,14 @@
+import type { ExpressionEvaluator } from '@comunica/actor-expression-evaluator-factory-base/lib/ExpressionEvaluator';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
-import type { ExpressionEvaluator } from '@comunica/expression-evaluator';
 import { TypeURL } from '@comunica/expression-evaluator';
+import { bool, declare } from '@comunica/expression-evaluator/lib/functions/Helpers';
+import type { Builder } from '@comunica/expression-evaluator/lib/functions/Helpers';
+import type { FunctionArgumentsCache } from '@comunica/expression-evaluator/lib/functions/OverloadTree';
 import { getMockEEActionContext, getMockExpression } from '@comunica/expression-evaluator/test/util/utils';
 import { getMockEEFactory } from '@comunica/jest';
-import { bool, declare } from 'packages/expression-evaluator/lib/functions/Helpers';
-import type { Builder } from 'packages/expression-evaluator/lib/functions/Helpers';
-import type { FunctionArgumentsCache } from 'packages/expression-evaluator/lib/functions/OverloadTree';
+import type { ISuperTypeProvider } from '@comunica/types';
 
 import fn = jest.fn;
-import type { ISuperTypeProvider } from '@comunica/types';
 
 describe('The function helper file', () => {
   describe('has a builder', () => {

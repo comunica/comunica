@@ -3,8 +3,8 @@ import { InternalEvaluator } from '@comunica/actor-expression-evaluator-factory-
 import {
   InequalityFunctionBasedComparator,
 } from '@comunica/actor-term-comparator-factory-inequality-functions-based/lib/InequalityFunctionBasedComparator';
-import type { TermSparqlFunction } from '@comunica/bus-functions/lib/implementation/implementation';
-import { regularFunctions } from '@comunica/bus-functions/lib/implementation/implementation';
+import type { TermSparqlFunction } from '@comunica/bus-functions/lib/implementation';
+import { regularFunctions } from '@comunica/bus-functions/lib/implementation';
 import type {
   ITermComparator,
 } from '@comunica/bus-term-comparator-factory';
@@ -55,7 +55,9 @@ function orderByFactory(typeDiscoveryCallback?: SuperTypeCallback): ITermCompara
   const factory = getMockEEFactory();
   return new InequalityFunctionBasedComparator(
     new InternalEvaluator(
-      prepareEvaluatorActionContext(context, factory.mediatorQueryOperation, factory.mediatorFunctions),
+      prepareEvaluatorActionContext(context),
+      factory.mediatorFunctions,
+      factory.mediatorQueryOperation,
     ),
     <TermSparqlFunction<C.RegularOperator>> regularFunctions['='],
     <TermSparqlFunction<C.RegularOperator>> regularFunctions['<'],

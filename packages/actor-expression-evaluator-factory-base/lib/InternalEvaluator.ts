@@ -27,7 +27,7 @@ export class InternalEvaluator {
       };
 
   public constructor(public readonly context: IActionContext,
-    private readonly mediatorFunctions: MediatorFunctions,
+    mediatorFunctions: MediatorFunctions,
     private readonly mediatorQueryOperation: MediatorQueryOperation) {
     this.transformer = new AlgebraTransformer(
       context,
