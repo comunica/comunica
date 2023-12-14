@@ -9,7 +9,8 @@
   "actors": [
     {
       "@id": "urn:comunica:default:bindings-aggregator-factory/actors#group-concat",
-      "@type": "ActorBindingsAggregatorFactoryGroupConcat"
+      "@type": "ActorBindingsAggregatorFactoryGroupConcat",
+      "factory": "urn:comunica:default:expression-evaluator-factory/actors#base"
     }
   ]
 }

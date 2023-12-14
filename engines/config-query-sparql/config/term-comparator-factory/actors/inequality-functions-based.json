@@ -1,0 +1,17 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^2.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-term-comparator-factory-inequality-functions-based/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:default:Runner",
+  "@type": "Runner",
+  "actors": [
+    {
+      "@id": "urn:comunica:default:term-comparator-factory/actors#inequality-functions-based",
+      "@type": "ActorTermComparatorFactoryInequalityFunctionsBased",
+      "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
+      "mediatorFunctions": { "@id": "urn:comunica:default:functions/mediators#main" }
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^2.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-expression-evaluator-factory-base/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:default:Runner",
+  "@type": "Runner",
+  "actors": [
+    {
+      "@id": "urn:comunica:default:expression-evaluator-factory/actors#base",
+      "@type": "ActorExpressionEvaluatorFactoryBase",
+      "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
+      "mediatorBindingsAggregatorFactory": { "@id": "urn:comunica:default:bindings-aggregator-factory/mediators#main" },
+      "mediatorTermComparatorFactory": { "@id": "urn:comunica:default:term-comparator-factory/mediators#main" },
+      "mediatorFunctions": { "@id": "urn:comunica:default:functions/mediators#main" }
+    }
+  ]
+}

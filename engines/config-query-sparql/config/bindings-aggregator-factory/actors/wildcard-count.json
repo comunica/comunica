@@ -9,7 +9,8 @@
   "actors": [
     {
       "@id": "urn:comunica:default:bindings-aggregator-factory/actors#wildcard-count",
-      "@type": "ActorBindingsAggregatorFactoryWildcardCount"
+      "@type": "ActorBindingsAggregatorFactoryWildcardCount",
+      "factory": "urn:comunica:default:expression-evaluator-factory/actors#base"
     }
   ]
 }

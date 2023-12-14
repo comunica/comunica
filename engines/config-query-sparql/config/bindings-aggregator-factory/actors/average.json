@@ -9,7 +9,8 @@
   "actors": [
     {
       "@id": "urn:comunica:default:bindings-aggregator-factory/actors#average",
-      "@type": "ActorBindingsAggregatorFactoryAverage"
+      "@type": "ActorBindingsAggregatorFactoryAverage",
+      "factory": "urn:comunica:default:expression-evaluator-factory/actors#base"
     }
   ]
 }
