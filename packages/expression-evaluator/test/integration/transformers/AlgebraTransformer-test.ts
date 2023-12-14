@@ -2,9 +2,9 @@ import { prepareEvaluatorActionContext } from '@comunica/actor-expression-evalua
 import { AlgebraTransformer } from '@comunica/actor-expression-evaluator-factory-base/lib/AlgebraTransformer';
 import type { IExpressionFunction, MediatorFunctions } from '@comunica/bus-functions';
 import { namedFunctions, regularFunctions, specialFunctions } from '@comunica/bus-functions/lib/implementation';
-import { NamedExtension } from '@comunica/bus-functions/lib/implementation/NamedExtension';
 import { ActionContext } from '@comunica/core';
 import { getMockEEFactory } from '@comunica/jest';
+import { NamedExtension } from 'packages/actor-functions-wrapper-all/lib/implementation/NamedExtension';
 import { DataFactory } from 'rdf-data-factory';
 import { expressionTypes, types } from 'sparqlalgebrajs/lib/algebra';
 import { Wildcard } from 'sparqljs';

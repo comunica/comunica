@@ -1,5 +1,4 @@
 import {
-  MockFunctionMediator,
   prepareEvaluatorActionContext,
 } from '@comunica/actor-expression-evaluator-factory-base';
 import { InternalEvaluator } from '@comunica/actor-expression-evaluator-factory-base/lib/InternalEvaluator';
@@ -26,7 +25,7 @@ export class ActorTermComparatorFactoryInequalityFunctionsBased extends ActorTer
     this.mediatorQueryOperation = args.mediatorQueryOperation;
 
     // TODO: the or should be removed after bussification
-    this.mediatorFunctions = args.mediatorFunctions || MockFunctionMediator;
+    this.mediatorFunctions = args.mediatorFunctions;
   }
 
   public async test(action: IActionTermComparatorFactory): Promise<IActorTest> {

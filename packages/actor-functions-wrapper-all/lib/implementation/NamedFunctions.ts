@@ -1,3 +1,4 @@
+import { NamedFunction } from '@comunica/bus-functions/lib/implementation/Core';
 import type { DateLiteral, DateTimeLiteral, TimeLiteral } from '@comunica/expression-evaluator/lib/expressions';
 import * as E from '@comunica/expression-evaluator/lib/expressions';
 import { DurationLiteral } from '@comunica/expression-evaluator/lib/expressions';
@@ -25,8 +26,6 @@ import { parseDate,
   parseTime,
   parseYearMonthDuration,
   parseXSDDecimal, parseXSDFloat, parseXSDInteger } from '@comunica/expression-evaluator/lib/util/Parsing';
-
-import { NamedFunction } from './Core';
 
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------

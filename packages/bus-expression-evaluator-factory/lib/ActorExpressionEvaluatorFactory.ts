@@ -52,7 +52,6 @@ export abstract class ActorExpressionEvaluatorFactory extends
 }
 
 export interface IActionExpressionEvaluatorFactory extends IAction {
-  mediatorFunctions?: MediatorFunctions;
   algExpr: Alg.Expression;
 }
 
@@ -65,7 +64,7 @@ IActionExpressionEvaluatorFactory, IActorTest, IActorExpressionEvaluatorFactoryO
   mediatorQueryOperation: MediatorQueryOperation;
   mediatorBindingsAggregatorFactory: MediatorBindingsAggregatorFactory;
   mediatorTermComparatorFactory: MediatorTermComparatorFactory;
-  mediatorFunctions?: MediatorFunctions;
+  mediatorFunctions: MediatorFunctions;
 };
 
 export type MediatorExpressionEvaluatorFactory = Mediate<

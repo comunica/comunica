@@ -1,4 +1,5 @@
 import type { InternalEvaluator } from '@comunica/actor-expression-evaluator-factory-base/lib/InternalEvaluator';
+import { RegularFunction } from '@comunica/bus-functions/lib/implementation/Core';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 
 import type { IInternalEvaluator } from '@comunica/expression-evaluator';
@@ -38,7 +39,6 @@ import { DataFactory } from 'rdf-data-factory';
 import { resolve as resolveRelativeIri } from 'relative-to-absolute-iri';
 import { hash as md5 } from 'spark-md5';
 import * as uuid from 'uuid';
-import { RegularFunction } from './Core';
 import * as X from './XPathFunctions';
 
 const DF = new DataFactory<RDF.BaseQuad>();

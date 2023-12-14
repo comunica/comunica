@@ -1,13 +1,13 @@
 // TODO: this thing will be it's own actor but it's just a little special.
 //  It will also be the only consumer of the context items:
 //  KeysInitQuery.extensionFunctions and KeysInitQuery.extensionFunctionCreator
+import { BaseFunctionDefinition } from '@comunica/bus-functions/lib/implementation/Core';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import type { IEvalContext } from '@comunica/expression-evaluator';
 import type * as E from '@comunica/expression-evaluator/lib/expressions';
 import { TermTransformer } from '@comunica/expression-evaluator/lib/transformers/TermTransformer';
 import { ExtensionFunctionError } from '@comunica/expression-evaluator/lib/util/Errors';
 import type { AsyncExtensionFunction } from '@comunica/types';
-import { BaseFunctionDefinition } from './Core';
 
 export class NamedExtension extends BaseFunctionDefinition {
   // TODO: the context should be checked in the test part of the actor.

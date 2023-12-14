@@ -94,6 +94,10 @@ export function getMockEEFactory({ mediatorQueryOperation,
         throw new Error('mediatorTermComparatorFactory mock of mockEEFactory not implemented');
       },
     },
-    mediatorFunctions,
+    mediatorFunctions: mediatorFunctions || <any> {
+      async mediate(arg: any) {
+        throw new Error('mediatorFunctions mock of mockEEFactory not implemented');
+      },
+    },
   });
 }

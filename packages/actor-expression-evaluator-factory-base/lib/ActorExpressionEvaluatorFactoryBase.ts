@@ -9,29 +9,23 @@ import type {
 } from '@comunica/bus-expression-evaluator-factory';
 import { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type {
-  IExpressionFunction,
   MediatorFunctions,
   IActionFunctions,
   IActorFunctionsOutput,
   IActorFunctionsOutputTerm,
 } from '@comunica/bus-functions';
-import { namedFunctions, regularFunctions, specialFunctions } from '@comunica/bus-functions/lib/implementation';
-import { NamedExtension } from '@comunica/bus-functions/lib/implementation/NamedExtension';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import type { MediatorTermComparatorFactory, ITermComparator } from '@comunica/bus-term-comparator-factory';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import type { IAction, IActorTest } from '@comunica/core';
-import type * as C from '@comunica/expression-evaluator/lib/util/Consts';
 import { extractTimeZone } from '@comunica/expression-evaluator/lib/util/DateTimeHelpers';
 import type {
   AsyncExtensionFunction,
-  AsyncExtensionFunctionCreator,
   IActionContext,
 
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
-import { DataFactory } from 'rdf-data-factory';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 import { AlgebraTransformer } from './AlgebraTransformer';
 import { ExpressionEvaluator } from './ExpressionEvaluator';
@@ -81,26 +75,6 @@ export function prepareEvaluatorActionContext(orgContext: IActionContext): IActi
   return context;
 }
 
-export const MockFunctionMediator = <MediatorFunctions> {
-  async mediate({ functionName, context }) {
-    const res: IExpressionFunction | undefined = {
-      ...regularFunctions,
-      ...specialFunctions,
-      ...namedFunctions,
-    }[<C.NamedOperator | C.Operator> functionName];
-    if (res) {
-      return res;
-    }
-
-    const extensionFinder: AsyncExtensionFunctionCreator =
-      context.getSafe(KeysExpressionEvaluator.extensionFunctionCreator);
-    const definition = await extensionFinder(new DataFactory<RDF.Quad>().namedNode(functionName));
-    if (definition) {
-      return new NamedExtension(functionName, definition);
-    }
-  },
-};
-
 /**
  * A comunica Base Expression Evaluator Factory Actor.
  */
@@ -116,7 +90,7 @@ export class ActorExpressionEvaluatorFactoryBase extends ActorExpressionEvaluato
     this.mediatorQueryOperation = args.mediatorQueryOperation;
     this.mediatorBindingsAggregatorFactory = args.mediatorBindingsAggregatorFactory;
     this.mediatorTermComparatorFactory = args.mediatorTermComparatorFactory;
-    this.mediatorFunctions = args.mediatorFunctions || MockFunctionMediator;
+    this.mediatorFunctions = args.mediatorFunctions;
   }
 
   public async test(action: IActionExpressionEvaluatorFactory): Promise<IActorTest> {

@@ -1,3 +1,5 @@
+import type { RegularFunction } from '@comunica/bus-functions/lib/implementation/Core';
+import { BaseFunctionDefinition } from '@comunica/bus-functions/lib/implementation/Core';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import { BlankNodeBindingsScoped } from '@comunica/data-factory';
 import * as E from '@comunica/expression-evaluator/lib/expressions';
@@ -11,8 +13,6 @@ import {
 import type { IEvalContext, OverloadTree } from '@comunica/expression-evaluator/lib/functions/OverloadTree';
 import * as C from '@comunica/expression-evaluator/lib/util/Consts';
 import * as Err from '@comunica/expression-evaluator/lib/util/Errors';
-import type { RegularFunction } from './Core';
-import { BaseFunctionDefinition } from './Core';
 import { regularFunctions } from './RegularFunctions';
 
 // ----------------------------------------------------------------------------

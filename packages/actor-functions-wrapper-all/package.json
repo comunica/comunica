@@ -1,0 +1,58 @@
+{
+  "name": "@comunica/actor-functions-wrapper-all",
+  "version": "1.0.0",
+  "description": "A wrapper-all functions actor",
+  "lsd:module": true,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/actor-functions-wrapper-all"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false,
+  "keywords": [
+    "comunica",
+    "actor",
+    "functions",
+    "wrapper-all"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
+  "homepage": "https://comunica.dev/",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.js.map"
+  ],
+  "dependencies": {
+    "@comunica/core": "^2.8.2",
+    "@comunica/bus-functions": "^1.0.0",
+    "@comunica/context-entries": "^2.8.2",
+    "@comunica/data-factory": "^2.7.0",
+    "@comunica/expression-evaluator": "^2.9.0",
+    "@comunica/types": "^2.8.2",
+    "@types/spark-md5": "^3.0.2",
+    "@types/uuid": "^9.0.0",
+    "bignumber.js": "^9.0.1",
+    "hash.js": "^1.1.7",
+    "lru-cache": "^10.0.0",
+    "rdf-data-factory": "^1.1.2",
+    "rdf-string": "^1.6.3",
+    "relative-to-absolute-iri": "^1.0.6",
+    "spark-md5": "^3.0.1",
+    "sparqlalgebrajs": "^4.2.0",
+    "uuid": "^9.0.0"
+  },
+  "scripts": {
+    "build": "npm run build:ts && npm run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
+  }
+}
