@@ -64,8 +64,7 @@ export class InternalEvaluator {
   private async evalExistence(expr: E.Existence, mapping: RDF.Bindings): Promise<E.Term> {
     const operation = materializeOperation(expr.expression.input, mapping);
 
-    const mediator: MediatorQueryOperation = this.context.getSafe(this.mediatorQueryOperation);
-    const outputRaw = await mediator.mediate({ operation, context: this.context });
+    const outputRaw = await this.mediatorQueryOperation.mediate({ operation, context: this.context });
     const output = ActorQueryOperation.getSafeBindings(outputRaw);
 
     return await new Promise(
