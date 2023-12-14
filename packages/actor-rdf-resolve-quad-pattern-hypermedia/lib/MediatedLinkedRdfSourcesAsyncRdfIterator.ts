@@ -7,7 +7,7 @@ import type { ILink,
   MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { ILinkQueue,
   MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
-import { KeysHttp, KeysInitQuery } from '@comunica/context-entries';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActionContext, IAggregatedStore, MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -122,7 +122,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   }
 
   protected shouldStoreSourcesStates(): boolean {
-    return this.aggregatedStore === undefined || ! this.context.get(KeysInitQuery.disableHttpCache);
+    return this.aggregatedStore === undefined && !this.context.get(KeysInitQuery.disableCaching);
   }
 
   public getLinkQueue(): Promise<ILinkQueue> {

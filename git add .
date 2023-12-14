@@ -1,0 +1,83 @@
+[1mdiff --git a/packages/actor-init-query/lib/cli/CliArgsHandlerBase.ts b/packages/actor-init-query/lib/cli/CliArgsHandlerBase.ts[m
+[1mindex 0c7532ec..e07d91f6 100644[m
+[1m--- a/packages/actor-init-query/lib/cli/CliArgsHandlerBase.ts[m
+[1m+++ b/packages/actor-init-query/lib/cli/CliArgsHandlerBase.ts[m
+[36m@@ -254,7 +254,7 @@[m [mexport class CliArgsHandlerBase implements ICliArgsHandler {[m
+ [m
+     // Define union default graph[m
+     if (args.cache === false) {[m
+[31m-      context[KeysInitQuery.disableHttpCache.name] = true;[m
+[32m+[m[32m      context[KeysInitQuery.disableCaching.name] = true;[m
+     }[m
+   }[m
+ }[m
+[1mdiff --git a/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts b/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts[m
+[1mindex 3e847284..8d0ef6ba 100644[m
+[1m--- a/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts[m
+[1m+++ b/packages/actor-rdf-resolve-quad-pattern-federated/lib/FederatedQuadSource.ts[m
+[36m@@ -53,7 +53,7 @@[m [mexport class FederatedQuadSource implements IQuadSource {[m
+     this.skipEmptyPatterns = skipEmptyPatterns;[m
+     this.algebraFactory = new Factory();[m
+ [m
+[31m-    if (!this.contextDefault.get(KeysInitQuery.disableHttpCache)){[m
+[32m+[m[32m    if (!this.contextDefault.get(KeysInitQuery.disableCaching)){[m
+       // Initialize sources in the emptyPatterns datastructure[m
+       if (this.skipEmptyPatterns) {[m
+         for (const source of this.sources) {[m
+[36m@@ -168,7 +168,7 @@[m [mexport class FederatedQuadSource implements IQuadSource {[m
+    * @return {boolean}[m
+    */[m
+   public isSourceEmpty(source: IDataSource, pattern: RDF.BaseQuad): boolean {[m
+[31m-    if (!this.skipEmptyPatterns || this.contextDefault.get(KeysInitQuery.disableHttpCache)) {[m
+[32m+[m[32m    if (!this.skipEmptyPatterns || this.contextDefault.get(KeysInitQuery.disableCaching)) {[m
+       return false;[m
+     }[m
+     const emptyPatterns: RDF.BaseQuad[] | undefined = this.emptyPatterns.get(source);[m
+[36m@@ -269,7 +269,7 @@[m [mexport class FederatedQuadSource implements IQuadSource {[m
+         output.data.getProperty('metadata', (subMetadata: MetadataQuads) => {[m
+           accumulatingMetadata.set(`${sourceIndex}`, subMetadata);[m
+ [m
+[31m-          if (!this.contextDefault.get(KeysInitQuery.disableHttpCache)){[m
+[32m+[m[32m          if (!this.contextDefault.get(KeysInitQuery.disableCaching)){[m
+             // Save empty patterns[m
+             if (this.skipEmptyPatterns &&[m
+               !subMetadata.cardinality?.value &&[m
+[1mdiff --git a/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/ActorRdfResolveQuadPatternHypermedia.ts b/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/ActorRdfResolveQuadPatternHypermedia.ts[m
+[1mindex 3e47d6a3..22a5d574 100644[m
+[1m--- a/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/ActorRdfResolveQuadPatternHypermedia.ts[m
+[1m+++ b/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/ActorRdfResolveQuadPatternHypermedia.ts[m
+[36m@@ -95,7 +95,7 @@[m [mexport class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat[m
+         },[m
+       );[m
+ [m
+[31m-      if (!context.get(KeysInitQuery.disableHttpCache)) {[m
+[32m+[m[32m      if (!context.get(KeysInitQuery.disableCaching)) {[m
+         // If cache is not disabled  [m
+         // Set in cache[m
+         if (this.cache) {[m
+[1mdiff --git a/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts b/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts[m
+[1mindex 63653b0d..bd0cc3b9 100644[m
+[1m--- a/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts[m
+[1m+++ b/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedLinkedRdfSourcesAsyncRdfIterator.ts[m
+[36m@@ -122,7 +122,7 @@[m [mexport class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs[m
+   }[m
+ [m
+   protected shouldStoreSourcesStates(): boolean {[m
+[31m-    return this.aggregatedStore === undefined || ! this.context.get(KeysInitQuery.disableHttpCache);[m
+[32m+[m[32m    return this.aggregatedStore === undefined || ! this.context.get(KeysInitQuery.disableCaching);[m
+   }[m
+ [m
+   public getLinkQueue(): Promise<ILinkQueue> {[m
+[1mdiff --git a/packages/context-entries/lib/Keys.ts b/packages/context-entries/lib/Keys.ts[m
+[1mindex a958d7bd..631589a8 100644[m
+[1m--- a/packages/context-entries/lib/Keys.ts[m
+[1m+++ b/packages/context-entries/lib/Keys.ts[m
+[36m@@ -173,7 +173,7 @@[m [mexport const KeysInitQuery = {[m
+    * A JSON-LD context[m
+    */[m
+   jsonLdContext: new ActionContextKey<any>('@context'),[m
+[31m-  disableHttpCache: new ActionContextKey<boolean>('@comunica/actor-init-query:disableHttpCache')[m
+[32m+[m[32m  disableCaching: new ActionContextKey<boolean>('@comunica/actor-init-query:disableCaching')[m
+ };[m
+ [m
+ export const KeysQueryOperation = {[m
