@@ -11,13 +11,17 @@ import type { IActorTest } from '@comunica/core';
 import { Algebra } from 'sparqlalgebrajs';
 import { CountAggregator } from './CountAggregator';
 
+export interface IActorBindingsAggregatorFactoryCountArgs extends IActorBindingsAggregatorFactoryArgs {
+  factory: ActorExpressionEvaluatorFactory;
+}
+
 /**
  * A comunica Count Expression Evaluator Aggregate Actor.
  */
 export class ActorBindingsAggregatorFactoryCount extends ActorBindingsAggregatorFactory {
   private readonly factory: ActorExpressionEvaluatorFactory;
 
-  public constructor(args: IActorBindingsAggregatorFactoryArgs & { factory: ActorExpressionEvaluatorFactory }) {
+  public constructor(args: IActorBindingsAggregatorFactoryCountArgs) {
     super(args);
     this.factory = args.factory;
   }

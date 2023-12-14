@@ -7,7 +7,10 @@
     "ccqs:config/bindings-aggregator-factory/mediators.json",
     "ccqs:config/context-preprocess/actors.json",
     "ccqs:config/context-preprocess/mediators.json",
-    "ccqs:config/expression-evaluator/evaluators.json",
+    "ccqs:config/expression-evaluator-factory/actors.json",
+    "ccqs:config/expression-evaluator-factory/mediators.json",
+    "ccqs:config/functions/actors.json",
+    "ccqs:config/functions/mediators.json",
     "ccqs:config/hash-bindings/actors.json",
     "ccqs:config/hash-bindings/mediators.json",
 
@@ -40,6 +43,8 @@
     "ccqs:config/rdf-serialize/mediators.json",
 
     "ccqs:config/rdf-update-quads/actors-rdfjs.json",
-    "ccqs:config/rdf-update-quads/mediators.json"
+    "ccqs:config/rdf-update-quads/mediators.json",
+    "ccqs:config/term-comparator-factory/actors.json",
+    "ccqs:config/term-comparator-factory/mediators.json"
   ]
 }

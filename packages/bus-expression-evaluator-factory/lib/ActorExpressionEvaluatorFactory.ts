@@ -2,12 +2,11 @@ import type {
   IBindingsAggregator,
   MediatorBindingsAggregatorFactory,
 } from '@comunica/bus-bindings-aggeregator-factory';
-import type {
-  IActionFunctions,
+import type { IActionFunctions,
   IActorFunctionsOutput,
   IActorFunctionsOutputTerm,
   MediatorFunctions,
-} from '@comunica/bus-functions';
+  MediatorFunctionsUnsafe } from '@comunica/bus-functions';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import type { ITermComparator, MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
@@ -59,13 +58,13 @@ export interface IActorExpressionEvaluatorFactoryOutput extends IActorOutput {
   expressionEvaluator: IExpressionEvaluator;
 }
 
-export type IActorExpressionEvaluatorFactoryArgs = IActorArgs<
-IActionExpressionEvaluatorFactory, IActorTest, IActorExpressionEvaluatorFactoryOutput> & {
+export interface IActorExpressionEvaluatorFactoryArgs extends IActorArgs<
+IActionExpressionEvaluatorFactory, IActorTest, IActorExpressionEvaluatorFactoryOutput> {
   mediatorQueryOperation: MediatorQueryOperation;
   mediatorBindingsAggregatorFactory: MediatorBindingsAggregatorFactory;
   mediatorTermComparatorFactory: MediatorTermComparatorFactory;
-  mediatorFunctions: MediatorFunctions;
-};
+  mediatorFunctions: MediatorFunctionsUnsafe;
+}
 
 export type MediatorExpressionEvaluatorFactory = Mediate<
 IActionExpressionEvaluatorFactory, IActorExpressionEvaluatorFactoryOutput>;

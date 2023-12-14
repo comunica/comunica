@@ -10,13 +10,17 @@ import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-e
 import type { IActorTest } from '@comunica/core';
 import { WildcardCountAggregator } from './WildcardCountAggregator';
 
+export interface IActorBindingsAggregatorFactoryWildcardCountArgs extends IActorBindingsAggregatorFactoryArgs {
+  factory: ActorExpressionEvaluatorFactory;
+}
+
 /**
  * A comunica Wildcard Count Expression Evaluator Aggregate Actor.
  */
 export class ActorBindingsAggregatorFactoryWildcardCount extends ActorBindingsAggregatorFactory {
   private readonly factory: ActorExpressionEvaluatorFactory;
 
-  public constructor(args: IActorBindingsAggregatorFactoryArgs & { factory: ActorExpressionEvaluatorFactory }) {
+  public constructor(args: IActorBindingsAggregatorFactoryWildcardCountArgs) {
     super(args);
     this.factory = args.factory;
   }

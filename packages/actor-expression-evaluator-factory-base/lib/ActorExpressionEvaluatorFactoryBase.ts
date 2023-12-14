@@ -90,7 +90,7 @@ export class ActorExpressionEvaluatorFactoryBase extends ActorExpressionEvaluato
     this.mediatorQueryOperation = args.mediatorQueryOperation;
     this.mediatorBindingsAggregatorFactory = args.mediatorBindingsAggregatorFactory;
     this.mediatorTermComparatorFactory = args.mediatorTermComparatorFactory;
-    this.mediatorFunctions = args.mediatorFunctions;
+    this.mediatorFunctions = <MediatorFunctions> args.mediatorFunctions;
   }
 
   public async test(action: IActionExpressionEvaluatorFactory): Promise<IActorTest> {

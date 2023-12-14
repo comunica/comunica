@@ -10,13 +10,17 @@ import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-e
 import type { IActorTest } from '@comunica/core';
 import { SampleAggregator } from './SampleAggregator';
 
+export interface IActorBindingsAggregatorFactorySampleArgs extends IActorBindingsAggregatorFactoryArgs {
+  factory: ActorExpressionEvaluatorFactory;
+}
+
 /**
  * A comunica Sample Expression Evaluator Aggregate Actor.
  */
 export class ActorBindingsAggregatorFactorySample extends ActorBindingsAggregatorFactory {
   private readonly factory: ActorExpressionEvaluatorFactory;
 
-  public constructor(args: IActorBindingsAggregatorFactoryArgs & { factory: ActorExpressionEvaluatorFactory }) {
+  public constructor(args: IActorBindingsAggregatorFactorySampleArgs) {
     super(args);
     this.factory = args.factory;
   }

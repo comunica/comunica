@@ -1,4 +1,4 @@
-import type { MediatorFunctions } from '@comunica/bus-functions';
+import type { MediatorFunctionsUnsafe } from '@comunica/bus-functions';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
@@ -40,11 +40,11 @@ export interface ITermComparator {
 
 export interface IActorTermComparatorFactoryOutput extends IActorOutput, ITermComparator {}
 
-export type IActorTermComparatorFactoryArgs = IActorArgs<
-IActionTermComparatorFactory, IActorTest, IActorTermComparatorFactoryOutput> & {
+export interface IActorTermComparatorFactoryArgs extends IActorArgs<
+IActionTermComparatorFactory, IActorTest, IActorTermComparatorFactoryOutput> {
   mediatorQueryOperation: MediatorQueryOperation;
-  mediatorFunctions: MediatorFunctions;
-};
+  mediatorFunctions: MediatorFunctionsUnsafe;
+}
 
 export type MediatorTermComparatorFactory = Mediate<
 IActionTermComparatorFactory, IActorTermComparatorFactoryOutput>;

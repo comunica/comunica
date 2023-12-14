@@ -23,9 +23,7 @@ export class ActorTermComparatorFactoryInequalityFunctionsBased extends ActorTer
   public constructor(args: IActorTermComparatorFactoryArgs) {
     super(args);
     this.mediatorQueryOperation = args.mediatorQueryOperation;
-
-    // TODO: the or should be removed after bussification
-    this.mediatorFunctions = args.mediatorFunctions;
+    this.mediatorFunctions = <MediatorFunctions> args.mediatorFunctions;
   }
 
   public async test(action: IActionTermComparatorFactory): Promise<IActorTest> {

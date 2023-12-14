@@ -1,4 +1,4 @@
-import type { IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor, Mediator } from '@comunica/core';
 import type { IEvalContext, IInternalEvaluator } from '@comunica/expression-evaluator';
 import type * as E from '@comunica/expression-evaluator/lib/expressions';
@@ -52,6 +52,8 @@ export interface IActorFunctionsOutputTerm extends IActorOutput, ITermFunction {
 
 export type IActorFunctionsArgs = IActorArgs<
 IActionFunctions, IActorTest, IActorFunctionsOutput>;
+
+export type MediatorFunctionsUnsafe = Mediate<IActionFunctions, IActorFunctionsOutput>;
 
 export abstract class MediatorFunctions extends Mediator<
 Actor<IActionFunctions, IActorTest, IActorFunctionsOutput>,

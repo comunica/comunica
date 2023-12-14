@@ -8,12 +8,16 @@ import type { IActorTest } from '@comunica/core';
 import { RegularOperator } from '@comunica/expression-evaluator';
 import { AverageAggregator } from './AverageAggregator';
 
+export interface IActorBindingsAggregatorFactoryAverageArgs extends IActorBindingsAggregatorFactoryArgs {
+  factory: ActorExpressionEvaluatorFactory;
+}
+
 /**
  * A comunica Average Expression Evaluator Aggregate Actor.
  */
 export class ActorBindingsAggregatorFactoryAverage extends ActorBindingsAggregatorFactory {
   private readonly factory: ActorExpressionEvaluatorFactory;
-  public constructor(args: IActorBindingsAggregatorFactoryArgs & { factory: ActorExpressionEvaluatorFactory }) {
+  public constructor(args: IActorBindingsAggregatorFactoryAverageArgs) {
     super(args);
     this.factory = args.factory;
   }

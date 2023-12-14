@@ -10,13 +10,17 @@ import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-e
 import type { IActorTest } from '@comunica/core';
 import { GroupConcatAggregator } from './GroupConcatAggregator';
 
+export interface IActorBindingsAggregatorFactoryGroupConcatArgs extends IActorBindingsAggregatorFactoryArgs {
+  factory: ActorExpressionEvaluatorFactory;
+}
+
 /**
  * A comunica Group Concat Expression Evaluator Aggregate Actor.
  */
 export class ActorBindingsAggregatorFactoryGroupConcat extends ActorBindingsAggregatorFactory {
   private readonly factory: ActorExpressionEvaluatorFactory;
 
-  public constructor(args: IActorBindingsAggregatorFactoryArgs & { factory: ActorExpressionEvaluatorFactory }) {
+  public constructor(args: IActorBindingsAggregatorFactoryGroupConcatArgs) {
     super(args);
     this.factory = args.factory;
   }

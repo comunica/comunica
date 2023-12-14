@@ -11,13 +11,17 @@ import type { IActorTest } from '@comunica/core';
 import { RegularOperator } from '@comunica/expression-evaluator';
 import { SumAggregator } from './SumAggregator';
 
+export interface IActorBindingsAggregatorFactorySumArgs extends IActorBindingsAggregatorFactoryArgs {
+  factory: ActorExpressionEvaluatorFactory;
+}
+
 /**
  * A comunica Sum Expression Evaluator Aggregate Actor.
  */
 export class ActorBindingsAggregatorFactorySum extends ActorBindingsAggregatorFactory {
   private readonly factory: ActorExpressionEvaluatorFactory;
 
-  public constructor(args: IActorBindingsAggregatorFactoryArgs & { factory: ActorExpressionEvaluatorFactory }) {
+  public constructor(args: IActorBindingsAggregatorFactorySumArgs) {
     super(args);
     this.factory = args.factory;
   }
