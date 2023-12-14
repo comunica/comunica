@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.10.1"></a>
+## [v2.10.1](https://github.com/comunica/comunica/compare/v2.10.0...v2.10.1) - 2023-11-29
+
+### Fixed
+* [Fix updates with body streams failing in Node >= 18](https://github.com/comunica/comunica/commit/6cb01741c01c493e96fea3ff3e3ed295bbcff333)
+* [Generalize fromBindings in BindingsFactory](https://github.com/comunica/comunica/commit/3cc20f76e6be0f83f13e2a349fef9cd5c37e6b64)
+
 <a name="v2.10.0"></a>
 ## [v2.10.0](https://github.com/comunica/comunica/compare/v2.9.0...v2.10.0) - 2023-10-27
 

@@ -22,8 +22,8 @@ $ yarn add @comunica/bus-rdf-resolve-quad-pattern
 
 ## Creating actors on this bus
 
-Actors extending [`ActorRdfResolveQuadPattern`](https://comunica.github.io/comunica/classes/bus_rdf_resolve_quad_pattern.ActorRdfResolveQuadPattern.html) are automatically subscribed to this bus.
+Actors extending [`ActorRdfResolveQuadPattern`](https://comunica.github.io/comunica/classes/_comunica_bus_rdf_resolve_quad_pattern.ActorRdfResolveQuadPattern.html) are automatically subscribed to this bus.
 
-[`ActorRdfResolveQuadPatternSource`](https://comunica.github.io/comunica/classes/bus_rdf_resolve_quad_pattern.ActorRdfResolveQuadPatternSource.html) is an extension of `ActorRdfResolveQuadPattern`
-that delegates quad pattern stream creation to an [`IQuadSource`](https://comunica.github.io/comunica/interfaces/bus_rdf_resolve_quad_pattern.IQuadSource.html).
+[`ActorRdfResolveQuadPatternSource`](https://comunica.github.io/comunica/classes/_comunica_bus_rdf_resolve_quad_pattern.ActorRdfResolveQuadPatternSource.html) is an extension of `ActorRdfResolveQuadPattern`
+that delegates quad pattern stream creation to an [`IQuadSource`](https://comunica.github.io/comunica/interfaces/_comunica_bus_rdf_resolve_quad_pattern.IQuadSource.html).
 

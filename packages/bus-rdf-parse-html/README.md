@@ -22,5 +22,5 @@ $ yarn add @comunica/bus-rdf-parse-html
 
 ## Creating actors on this bus
 
-Actors extending [`ActorRdfParseHtml`](https://comunica.github.io/comunica/classes/bus_rdf_parse_html.actorrdfparsehtml.html) are automatically subscribed to this bus.
+Actors extending [`ActorRdfParseHtml`](https://comunica.github.io/comunica/classes/_comunica_bus_rdf_parse_html.ActorRdfParseHtml.html) are automatically subscribed to this bus.
 

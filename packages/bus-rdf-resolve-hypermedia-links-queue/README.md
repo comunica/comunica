@@ -2,7 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Fbus-rdf-resolve-hypermedia-links-queue.svg)](https://www.npmjs.com/package/@comunica/bus-rdf-resolve-hypermedia-links-queue)
 
-A bus for creating [`ILinkQueue`](https://comunica.github.io/comunica/interfaces/bus_rdf_resolve_hypermedia_links_queue.ilinkqueue.html) instances,
+A bus for creating [`ILinkQueue`](https://comunica.github.io/comunica/interfaces/_comunica_bus_rdf_resolve_hypermedia_links_queue.ILinkQueue.html) instances,
 which enable different strategies for queueing links.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica).
@@ -22,4 +22,4 @@ $ yarn add @comunica/bus-rdf-resolve-hypermedia-links-queue
 
 ## Creating actors on this bus
 
-Actors extending [`ActorRdfResolveHypermediaLinksQueue`](https://comunica.github.io/comunica/classes/bus_rdf_resolve_hypermedia_links_queue.actorrdfresolvehypermedialinksqueue.html) are automatically subscribed to this bus.
+Actors extending [`ActorRdfResolveHypermediaLinksQueue`](https://comunica.github.io/comunica/classes/_comunica_bus_rdf_resolve_hypermedia_links_queue.ActorRdfResolveHypermediaLinksQueue.html) are automatically subscribed to this bus.

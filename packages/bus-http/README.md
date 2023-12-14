@@ -22,4 +22,4 @@ $ yarn add @comunica/bus-http
 
 ## Creating actors on this bus
 
-Actors extending [`ActorHttp`](https://comunica.github.io/comunica/classes/bus_http.actorhttp.html) are automatically subscribed to this bus.
+Actors extending [`ActorHttp`](https://comunica.github.io/comunica/classes/_comunica_bus_http.ActorHttp.html) are automatically subscribed to this bus.

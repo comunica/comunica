@@ -22,4 +22,4 @@ $ yarn add @comunica/bus-dereference
 
 ## Creating actors on this bus
 
-Actors extending [`ActorDereference`](https://comunica.github.io/comunica/classes/bus_dereference.actordereference.html) are automatically subscribed to this bus.
+Actors extending [`ActorDereference`](https://comunica.github.io/comunica/classes/_comunica_bus_dereference.ActorDereference.html) are automatically subscribed to this bus.

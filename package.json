@@ -39,7 +39,7 @@
     "lerna": "^7.3.0",
     "lerna-script": "^1.4.0",
     "manual-git-changelog": "^1.0.2",
-    "node-polyfill-webpack-plugin": "^2.0.1",
+    "node-polyfill-webpack-plugin": "^3.0.0",
     "nodemon": "^3.0.0",
     "npm-check-updates": "^16.4.1",
     "pre-commit": "^1.2.2",
