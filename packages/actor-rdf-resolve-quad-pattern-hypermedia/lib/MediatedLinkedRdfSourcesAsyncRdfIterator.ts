@@ -122,7 +122,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   }
 
   protected shouldStoreSourcesStates(): boolean {
-    return this.aggregatedStore === undefined || !this.context.get(KeysInitQuery.disableCaching);
+    return this.aggregatedStore === undefined && !this.context.get(KeysInitQuery.disableCaching);
   }
 
   public getLinkQueue(): Promise<ILinkQueue> {
