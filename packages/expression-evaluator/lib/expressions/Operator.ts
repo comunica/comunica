@@ -1,4 +1,4 @@
-import type { FunctionApplication } from '@comunica/bus-functions';
+import type { FunctionApplication } from '../functions/OverloadTree';
 import type { Expression,
   OperatorExpression } from './Expressions';
 import {

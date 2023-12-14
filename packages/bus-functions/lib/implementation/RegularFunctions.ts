@@ -1,9 +1,10 @@
 import type { InternalEvaluator } from '@comunica/actor-expression-evaluator-factory-base/lib/InternalEvaluator';
-import type { IInternalEvaluator } from '@comunica/bus-expression-evaluator-factory';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 
+import type { IInternalEvaluator } from '@comunica/expression-evaluator';
 import * as E from '@comunica/expression-evaluator/lib/expressions';
 import type { Quad } from '@comunica/expression-evaluator/lib/expressions';
+import { bool, decimal, declare, double, integer, langString, string } from '@comunica/expression-evaluator/lib/functions/Helpers';
 import { TermTransformer } from '@comunica/expression-evaluator/lib/transformers/TermTransformer';
 import * as C from '@comunica/expression-evaluator/lib/util/Consts';
 import { TypeAlias, TypeURL } from '@comunica/expression-evaluator/lib/util/Consts';
@@ -30,7 +31,6 @@ import { resolve as resolveRelativeIri } from 'relative-to-absolute-iri';
 import { hash as md5 } from 'spark-md5';
 import * as uuid from 'uuid';
 import { RegularFunction } from './Core';
-import { bool, decimal, declare, double, integer, langString, string } from './Helpers';
 import * as X from './XPathFunctions';
 
 const DF = new DataFactory<RDF.BaseQuad>();

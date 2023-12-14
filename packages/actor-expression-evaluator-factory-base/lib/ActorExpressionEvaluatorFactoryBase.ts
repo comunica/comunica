@@ -1,3 +1,4 @@
+import { AlgebraTransformer } from '@comunica/actor-expression-evaluator-factory-base/lib/AlgebraTransformer';
 import type {
   IBindingsAggregator,
   MediatorBindingsAggregatorFactory,
@@ -21,9 +22,6 @@ import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import type { MediatorTermComparatorFactory, ITermComparator } from '@comunica/bus-term-comparator-factory';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import type { IAction, IActorTest } from '@comunica/core';
-import {
-  ExpressionEvaluator,
-} from '@comunica/expression-evaluator';
 import type * as C from '@comunica/expression-evaluator/lib/util/Consts';
 import { extractTimeZone } from '@comunica/expression-evaluator/lib/util/DateTimeHelpers';
 import type {
@@ -34,9 +32,9 @@ import type {
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
-import { AlgebraTransformer } from 'packages/bus-functions/lib/AlgebraTransformer';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
+import { ExpressionEvaluator } from './ExpressionEvaluator';
 
 export function prepareEvaluatorActionContext(orgContext: IActionContext): IActionContext {
   let context = orgContext;

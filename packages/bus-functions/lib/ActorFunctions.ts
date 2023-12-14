@@ -1,8 +1,7 @@
-import type { IInternalEvaluator, IInternalEvaluator } from '@comunica/bus-expression-evaluator-factory';
 import type { IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
 import { Actor, Mediator } from '@comunica/core';
+import type { IEvalContext, IInternalEvaluator } from '@comunica/expression-evaluator';
 import type * as E from '@comunica/expression-evaluator/lib/expressions';
-import type * as RDF from '@rdfjs/types';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 
 /**
@@ -28,14 +27,6 @@ export abstract class ActorFunctions extends
   public abstract run<T extends IActionFunctions>(action: T):
   Promise<T extends { requireTermExpression: true } ? IActorFunctionsOutputTerm : IActorFunctionsOutput>;
 }
-
-export interface IEvalContext {
-  args: E.Expression[];
-  mapping: RDF.Bindings;
-  exprEval: IInternalEvaluator;
-}
-
-export type FunctionApplication = (evalContext: IEvalContext) => Promise<E.TermExpression>;
 
 export interface IExpressionFunction {
   apply: (evalContext: IEvalContext) => Promise<E.TermExpression>;

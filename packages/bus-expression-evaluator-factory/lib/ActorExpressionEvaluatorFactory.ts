@@ -1,7 +1,4 @@
-import type {
-  IBindingsAggregator,
-  MediatorBindingsAggregatorFactory,
-} from '@comunica/bus-bindings-aggeregator-factory';
+import type { IBindingsAggregator, MediatorBindingsAggregatorFactory } from '@comunica/bus-bindings-aggeregator-factory';
 import type {
   IActionFunctions,
   IActorFunctionsOutput,
@@ -12,9 +9,8 @@ import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import type { ITermComparator, MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
-import type * as E from '@comunica/expression-evaluator/lib/expressions';
+import type { IExpressionEvaluator } from '@comunica/expression-evaluator';
 import type { IActionContext } from '@comunica/types';
-import type * as RDF from '@rdfjs/types';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 
 /**
@@ -55,32 +51,6 @@ export abstract class ActorExpressionEvaluatorFactory extends
 export interface IActionExpressionEvaluatorFactory extends IAction {
   mediatorFunctions?: MediatorFunctions;
   algExpr: Alg.Expression;
-}
-
-export interface IInternalEvaluator {
-  internalEvaluation: (expr: E.Expression, mapping: RDF.Bindings) => Promise<E.Term>;
-
-  context: IActionContext;
-}
-
-/**
- * An evaluator for RDF expressions.
- */
-export interface IExpressionEvaluator extends IInternalEvaluator {
-  /**
-   * Evaluates the provided bindings in terms of the context the evaluator was created.
-   * @param mapping the RDF bindings to evaluate against.
-   */
-  evaluate: (mapping: RDF.Bindings) => Promise<RDF.Term>;
-
-  /**
-   * Evaluates the provided bindings in terms of the context the evaluator was created,
-   * returning the effective boolean value.
-   * @param mapping the RDF bindings to evaluate against.
-   */
-  evaluateAsEBV: (mapping: RDF.Bindings) => Promise<boolean>;
-
-  evaluateAsInternal: (mapping: RDF.Bindings) => Promise<E.Expression>;
 }
 
 export interface IActorExpressionEvaluatorFactoryOutput extends IActorOutput {

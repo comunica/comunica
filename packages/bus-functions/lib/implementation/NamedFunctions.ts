@@ -1,6 +1,7 @@
 import type { DateLiteral, DateTimeLiteral, TimeLiteral } from '@comunica/expression-evaluator/lib/expressions';
 import * as E from '@comunica/expression-evaluator/lib/expressions';
 import { DurationLiteral } from '@comunica/expression-evaluator/lib/expressions';
+import { bool, dateTime, decimal, declare, double, float, integer, string } from '@comunica/expression-evaluator/lib/functions/Helpers';
 import type * as C from '@comunica/expression-evaluator/lib/util/Consts';
 import { TypeURL } from '@comunica/expression-evaluator/lib/util/Consts';
 import { trimToDayTimeDuration, trimToYearMonthDuration } from '@comunica/expression-evaluator/lib/util/DateTimeHelpers';
@@ -14,7 +15,6 @@ import { parseDate,
   parseXSDDecimal, parseXSDFloat, parseXSDInteger } from '@comunica/expression-evaluator/lib/util/Parsing';
 
 import { NamedFunction } from './Core';
-import { bool, dateTime, decimal, declare, double, float, integer, string } from './Helpers';
 
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------

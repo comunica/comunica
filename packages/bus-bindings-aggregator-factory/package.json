@@ -35,7 +35,9 @@
     "@comunica/types": "^2.8.2",
     "sparqlalgebrajs": "^4.2.0",
     "rdf-string": "^1.6.3",
-    "@comunica/expression-evaluator": "^2.9.0"
+    "@comunica/expression-evaluator": "^2.9.0",
+    "@rdfjs/types": "*",
+    "@comunica/context-entries": "^2.8.2"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

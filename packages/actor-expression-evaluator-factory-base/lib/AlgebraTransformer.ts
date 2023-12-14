@@ -1,3 +1,4 @@
+import type { MediatorFunctions } from '@comunica/bus-functions/lib';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 
 import * as E from '@comunica/expression-evaluator/lib/expressions';
@@ -5,7 +6,6 @@ import { TermTransformer } from '@comunica/expression-evaluator/lib/transformers
 import * as C from '@comunica/expression-evaluator/lib/util/Consts';
 import * as Err from '@comunica/expression-evaluator/lib/util/Errors';
 import type { IActionContext } from '@comunica/types';
-import type { MediatorFunctions } from 'packages/bus-functions/lib/index';
 import { Algebra as Alg } from 'sparqlalgebrajs';
 
 export class AlgebraTransformer extends TermTransformer {

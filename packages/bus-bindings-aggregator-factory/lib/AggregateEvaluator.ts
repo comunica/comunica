@@ -1,5 +1,5 @@
-import type { IExpressionEvaluator } from '@comunica/bus-expression-evaluator-factory';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
+import type { IExpressionEvaluator } from '@comunica/expression-evaluator';
 import {
   isSubTypeOf,
   EmptyAggregateError,

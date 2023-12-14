@@ -1,6 +1,6 @@
-import type { FunctionApplication } from '@comunica/bus-functions';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
+import type { FunctionApplication } from '../functions/OverloadTree';
 
 export enum ExpressionType {
   Aggregate = 'aggregate',
