@@ -1,4 +1,3 @@
-import { AlgebraTransformer } from '@comunica/actor-expression-evaluator-factory-base/lib/AlgebraTransformer';
 import type {
   IBindingsAggregator,
   MediatorBindingsAggregatorFactory,
@@ -34,6 +33,7 @@ import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
+import { AlgebraTransformer } from './AlgebraTransformer';
 import { ExpressionEvaluator } from './ExpressionEvaluator';
 
 export function prepareEvaluatorActionContext(orgContext: IActionContext): IActionContext {

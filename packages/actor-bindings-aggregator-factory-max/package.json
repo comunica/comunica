@@ -38,7 +38,8 @@
   },
   "devDependencies": {
     "@comunica/bus-expression-evaluator-factory":  "^1.0.0",
-    "@comunica/bus-functions": "^1.0.0"
+    "@comunica/bus-term-comparator-factory": "^1.0.0",
+    "@comunica/expression-evaluator": "^2.9.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

@@ -36,7 +36,7 @@
     "@comunica/core": "^2.8.2",
     "@comunica/expression-evaluator": "^2.9.0",
     "@rdfjs/types": "*",
-    "@comunica/bus-expression-evaluator-factory":  "^1.0.0",
+    "@comunica/bus-expression-evaluator-factory": "^1.0.0",
     "@comunica/bus-functions": "^1.0.0"
   },
   "devDependencies": {},

@@ -37,7 +37,7 @@
     "@comunica/core": "^2.8.2",
     "@comunica/expression-evaluator": "^2.9.0",
     "@rdfjs/types": "*",
-    "@comunica/actor-expression-evaluator-factory-base":  "^1.0.0",
+    "@comunica/actor-expression-evaluator-factory-base": "^1.0.0",
     "@comunica/bus-functions": "^1.0.0"
   },
   "scripts": {

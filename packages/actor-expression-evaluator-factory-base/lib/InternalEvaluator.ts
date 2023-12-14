@@ -1,4 +1,3 @@
-import { AlgebraTransformer } from '@comunica/actor-expression-evaluator-factory-base/lib/AlgebraTransformer';
 import type { MediatorFunctions } from '@comunica/bus-functions';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, materializeOperation } from '@comunica/bus-query-operation';
@@ -7,6 +6,7 @@ import { expressionToVar } from '@comunica/expression-evaluator/lib/functions/He
 import * as Err from '@comunica/expression-evaluator/lib/util/Errors';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import { AlgebraTransformer } from './AlgebraTransformer';
 
 /**
  * This class provides evaluation functionality to already transformed expressions.
