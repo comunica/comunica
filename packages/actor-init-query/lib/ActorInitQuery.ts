@@ -46,11 +46,8 @@ export class ActorInitQuery<QueryContext extends IQueryContextCommon = IQueryCon
 
     // Extract raw argument values from parsed yargs object, so that we can handle each of them hereafter
     let args: Record<string, any>;
-    console.log("DOING ARGS");
     try {
       args = await argumentsBuilder.parse(action.argv);
-      console.log("ARGS FOUND");
-      console.log(args);  
     } catch (error: unknown) {
       return {
         stderr: require('streamify-string')(`${await argumentsBuilder.getHelp()}\n\n${(<Error> error).message}\n`),

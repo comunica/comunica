@@ -7,7 +7,6 @@ import type {
 import {
   ActorRdfResolveQuadPatternSource, getContextSources,
 } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import type { IActionContext, IDataSource } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';

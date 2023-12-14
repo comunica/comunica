@@ -254,7 +254,7 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
 
     // Define union default graph
     if (args.cache === false) {
-      context[KeysInitQuery.disableHttpCache.name] = true;
+      context[KeysInitQuery.disableCaching.name] = true;
     }
   }
 }

@@ -173,7 +173,7 @@ export const KeysInitQuery = {
    * A JSON-LD context
    */
   jsonLdContext: new ActionContextKey<any>('@context'),
-  disableHttpCache: new ActionContextKey<boolean>('@comunica/actor-init-query:disableHttpCache')
+  disableCaching: new ActionContextKey<boolean>('@comunica/actor-init-query:disableCaching'),
 };
 
 export const KeysQueryOperation = {
