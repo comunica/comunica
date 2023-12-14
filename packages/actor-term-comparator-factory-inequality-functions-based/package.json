@@ -36,7 +36,9 @@
     "@comunica/bus-term-comparator-factory": "^1.0.0",
     "@comunica/core": "^2.8.2",
     "@comunica/expression-evaluator": "^2.9.0",
-    "@rdfjs/types": "*"
+    "@rdfjs/types": "*",
+    "@comunica/actor-expression-evaluator-factory-base":  "^1.0.0",
+    "@comunica/bus-functions": "^1.0.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

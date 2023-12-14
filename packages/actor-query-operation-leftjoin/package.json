@@ -37,7 +37,8 @@
     "@comunica/core": "^2.8.2",
     "@comunica/expression-evaluator": "^2.9.0",
     "@comunica/types": "^2.8.2",
-    "sparqlalgebrajs": "^4.2.0"
+    "sparqlalgebrajs": "^4.2.0",
+    "@comunica/bus-expression-evaluator-factory": "^1.0.0x"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

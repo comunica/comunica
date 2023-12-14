@@ -38,7 +38,10 @@
     "@rdfjs/types": "*",
     "rdf-string": "^1.6.3"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@comunica/bus-expression-evaluator-factory":  "^1.0.0",
+    "@comunica/bus-functions": "^1.0.0"
+  },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
