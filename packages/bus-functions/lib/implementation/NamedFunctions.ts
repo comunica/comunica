@@ -1,17 +1,17 @@
-import type { DateLiteral, DateTimeLiteral, TimeLiteral } from '../expressions';
-import * as E from '../expressions';
-import { DurationLiteral } from '../expressions';
-import type * as C from '../util/Consts';
-import { TypeURL } from '../util/Consts';
-import { trimToDayTimeDuration, trimToYearMonthDuration } from '../util/DateTimeHelpers';
-import * as Err from '../util/Errors';
+import type { DateLiteral, DateTimeLiteral, TimeLiteral } from '@comunica/expression-evaluator/lib/expressions';
+import * as E from '@comunica/expression-evaluator/lib/expressions';
+import { DurationLiteral } from '@comunica/expression-evaluator/lib/expressions';
+import type * as C from '@comunica/expression-evaluator/lib/util/Consts';
+import { TypeURL } from '@comunica/expression-evaluator/lib/util/Consts';
+import { trimToDayTimeDuration, trimToYearMonthDuration } from '@comunica/expression-evaluator/lib/util/DateTimeHelpers';
+import * as Err from '@comunica/expression-evaluator/lib/util/Errors';
 import { parseDate,
   parseDateTime,
   parseDayTimeDuration,
   parseDuration,
   parseTime,
   parseYearMonthDuration,
-  parseXSDDecimal, parseXSDFloat, parseXSDInteger } from '../util/Parsing';
+  parseXSDDecimal, parseXSDFloat, parseXSDInteger } from '@comunica/expression-evaluator/lib/util/Parsing';
 
 import { NamedFunction } from './Core';
 import { bool, dateTime, decimal, declare, double, float, integer, string } from './Helpers';

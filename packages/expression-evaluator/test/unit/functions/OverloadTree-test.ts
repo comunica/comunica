@@ -1,11 +1,11 @@
+import { OverloadTree, regularFunctions } from '@comunica/bus-functions/lib/implementation/implementation';
+import type { FunctionArgumentsCache } from '@comunica/bus-functions/lib/implementation/OverloadTree';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import { getMockEEFactory } from '@comunica/jest';
 import type { ISuperTypeProvider } from '@comunica/types';
 import type { ExpressionEvaluator } from '../../../lib';
 import type { ISerializable } from '../../../lib/expressions';
 import { IntegerLiteral, isLiteralTermExpression, Literal, StringLiteral } from '../../../lib/expressions';
-import { OverloadTree, regularFunctions } from '../../../lib/functions';
-import type { FunctionArgumentsCache } from '../../../lib/functions/OverloadTree';
 import type { KnownLiteralTypes } from '../../../lib/util/Consts';
 import { TypeURL } from '../../../lib/util/Consts';
 import { getMockEEActionContext, getMockExpression } from '../../util/utils';

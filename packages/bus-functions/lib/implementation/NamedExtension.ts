@@ -2,11 +2,11 @@
 //  It will also be the only consumer of the context items:
 //  KeysInitQuery.extensionFunctions and KeysInitQuery.extensionFunctionCreator
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
+import type * as E from '@comunica/expression-evaluator/lib/expressions';
+import { TermTransformer } from '@comunica/expression-evaluator/lib/transformers/TermTransformer';
+import type { IEvalContext } from '@comunica/expression-evaluator/lib/types';
+import { ExtensionFunctionError } from '@comunica/expression-evaluator/lib/util/Errors';
 import type { AsyncExtensionFunction } from '@comunica/types';
-import type * as E from '../expressions';
-import { TermTransformer } from '../transformers/TermTransformer';
-import type { IEvalContext } from '../types';
-import { ExtensionFunctionError } from '../util/Errors';
 import { BaseFunctionDefinition } from './Core';
 
 export class NamedExtension extends BaseFunctionDefinition {

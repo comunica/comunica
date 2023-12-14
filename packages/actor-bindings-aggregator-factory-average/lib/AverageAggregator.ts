@@ -1,7 +1,7 @@
 import type { IBindingsAggregator } from '@comunica/bus-bindings-aggeregator-factory';
 import { AggregateEvaluator } from '@comunica/bus-bindings-aggeregator-factory';
+import type { IExpressionEvaluator } from '@comunica/bus-expression-evaluator-factory';
 import type { ITermFunction } from '@comunica/bus-functions';
-import type { IExpressionEvaluator } from '@comunica/expression-evaluator';
 import { typedLiteral, TypeURL } from '@comunica/expression-evaluator';
 import * as E from '@comunica/expression-evaluator/lib/expressions';
 import type * as RDF from '@rdfjs/types';

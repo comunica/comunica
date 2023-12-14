@@ -1,8 +1,8 @@
+import { double, float, string } from '@comunica/bus-functions/lib/implementation/Helpers';
+import type { ArgumentType } from '@comunica/bus-functions/lib/implementation/OverloadTree';
 import type { GeneralSuperTypeDict, ISuperTypeProvider } from '@comunica/types';
 import type * as E from '../expressions';
 import { asTermType } from '../expressions';
-import { double, float, string } from '../functions/Helpers';
-import type { ArgumentType } from '../functions/OverloadTree';
 import type { KnownLiteralTypes } from './Consts';
 import { TypeAlias, TypeURL } from './Consts';
 

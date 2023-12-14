@@ -1,20 +1,12 @@
+import type { InternalEvaluator } from '@comunica/actor-expression-evaluator-factory-base/lib/InternalEvaluator';
+import type { IInternalEvaluator } from '@comunica/bus-expression-evaluator-factory';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
-import type { IDayTimeDurationRepresentation } from '@comunica/types';
-import type * as RDF from '@rdfjs/types';
-import { BigNumber } from 'bignumber.js';
-import { sha1, sha256, sha384, sha512 } from 'hash.js';
-import { DataFactory } from 'rdf-data-factory';
-import { resolve as resolveRelativeIri } from 'relative-to-absolute-iri';
-import { hash as md5 } from 'spark-md5';
-import * as uuid from 'uuid';
 
-import type { InternalEvaluator } from '../evaluators/InternalEvaluator';
-import * as E from '../expressions';
-import type { Quad } from '../expressions';
-import { TermTransformer } from '../transformers/TermTransformer';
-import type { IInternalEvaluator } from '../types';
-import * as C from '../util/Consts';
-import { TypeAlias, TypeURL } from '../util/Consts';
+import * as E from '@comunica/expression-evaluator/lib/expressions';
+import type { Quad } from '@comunica/expression-evaluator/lib/expressions';
+import { TermTransformer } from '@comunica/expression-evaluator/lib/transformers/TermTransformer';
+import * as C from '@comunica/expression-evaluator/lib/util/Consts';
+import { TypeAlias, TypeURL } from '@comunica/expression-evaluator/lib/util/Consts';
 import {
   dayTimeDurationsToSeconds,
   defaultedDateTimeRepresentation,
@@ -26,9 +18,17 @@ import {
   toDateTimeRepresentation,
   toUTCDate,
   yearMonthDurationsToMonths,
-} from '../util/DateTimeHelpers';
-import * as Err from '../util/Errors';
-import { addDurationToDateTime, elapsedDuration } from '../util/SpecAlgos';
+} from '@comunica/expression-evaluator/lib/util/DateTimeHelpers';
+import * as Err from '@comunica/expression-evaluator/lib/util/Errors';
+import { addDurationToDateTime, elapsedDuration } from '@comunica/expression-evaluator/lib/util/SpecAlgos';
+import type { IDayTimeDurationRepresentation } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
+import { BigNumber } from 'bignumber.js';
+import { sha1, sha256, sha384, sha512 } from 'hash.js';
+import { DataFactory } from 'rdf-data-factory';
+import { resolve as resolveRelativeIri } from 'relative-to-absolute-iri';
+import { hash as md5 } from 'spark-md5';
+import * as uuid from 'uuid';
 import { RegularFunction } from './Core';
 import { bool, decimal, declare, double, integer, langString, string } from './Helpers';
 import * as X from './XPathFunctions';

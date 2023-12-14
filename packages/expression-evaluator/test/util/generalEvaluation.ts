@@ -1,9 +1,9 @@
+import type { InternalEvaluator } from '@comunica/actor-expression-evaluator-factory-base/lib/InternalEvaluator';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { getMockEEFactory } from '@comunica/jest';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { translate } from 'sparqlalgebrajs';
-import type { InternalEvaluator } from '../../lib/evaluators/InternalEvaluator';
 import { getMockEEActionContext } from './utils';
 
 const BF = new BindingsFactory();

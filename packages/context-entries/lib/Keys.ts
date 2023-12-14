@@ -1,5 +1,3 @@
-import type { MediatorFunctions } from '@comunica/bus-functions';
-import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContextKey, CONTEXT_KEY_LOGGER } from '@comunica/core';
 import type {
   Bindings,
@@ -195,10 +193,6 @@ export const KeysExpressionEvaluator = {
   superTypeProvider: new ActionContextKey<ISuperTypeProvider>('@comunica/expression-evaluator:superTypeProvider'),
   defaultTimeZone: new ActionContextKey<ITimeZoneRepresentation>('@comunica/expression-evaluator:defaultTimeZone'),
   actionContext: new ActionContextKey<IActionContext>('@comunica/expression-evaluator:actionContext'),
-  mediatorQueryOperation: new ActionContextKey<MediatorQueryOperation>(
-    '@comunica/expression-evaluator:mediatorQueryOperation',
-  ),
-  mediatorFunction: new ActionContextKey<MediatorFunctions>('@comunica/expression-evaluator:mediatorFunction'),
 };
 
 export const KeysQueryOperation = {

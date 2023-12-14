@@ -1,8 +1,8 @@
+import { InternalEvaluator } from '@comunica/actor-expression-evaluator-factory-base/lib/InternalEvaluator';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { DataFactory } from 'rdf-data-factory';
 import { expressionTypes, types } from 'sparqlalgebrajs/lib/algebra';
 import { Wildcard } from 'sparqljs';
-import { InternalEvaluator } from '../../../lib/evaluators/InternalEvaluator';
 import * as E from '../../../lib/expressions';
 import * as Err from '../../../lib/util/Errors';
 import { getMockEvaluatorContext } from '../../util/utils';

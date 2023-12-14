@@ -1,12 +1,12 @@
+import type { MediatorFunctions } from '@comunica/bus-functions';
+import { expressionToVar } from '@comunica/bus-functions/lib/implementation/Helpers';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, materializeOperation } from '@comunica/bus-query-operation';
-import { KeysExpressionEvaluator } from '@comunica/context-entries';
+import * as E from '@comunica/expression-evaluator/lib/expressions';
+import { AlgebraTransformer } from '@comunica/expression-evaluator/lib/transformers/AlgebraTransformer';
+import * as Err from '@comunica/expression-evaluator/lib/util/Errors';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import * as E from '../expressions';
-import { expressionToVar } from '../functions/Helpers';
-import { AlgebraTransformer } from '../transformers/AlgebraTransformer';
-import * as Err from '../util/Errors';
 
 /**
  * This class provides evaluation functionality to already transformed expressions.
@@ -26,9 +26,12 @@ export class InternalEvaluator {
         [E.ExpressionType.Aggregate]: this.evalAggregate.bind(this),
       };
 
-  public constructor(public readonly context: IActionContext) {
+  public constructor(public readonly context: IActionContext,
+    private readonly mediatorFunctions: MediatorFunctions,
+    private readonly mediatorQueryOperation: MediatorQueryOperation) {
     this.transformer = new AlgebraTransformer(
       context,
+      mediatorFunctions,
     );
   }
 
@@ -61,7 +64,7 @@ export class InternalEvaluator {
   private async evalExistence(expr: E.Existence, mapping: RDF.Bindings): Promise<E.Term> {
     const operation = materializeOperation(expr.expression.input, mapping);
 
-    const mediator: MediatorQueryOperation = this.context.getSafe(KeysExpressionEvaluator.mediatorQueryOperation);
+    const mediator: MediatorQueryOperation = this.context.getSafe(this.mediatorQueryOperation);
     const outputRaw = await mediator.mediate({ operation, context: this.context });
     const output = ActorQueryOperation.getSafeBindings(outputRaw);
 

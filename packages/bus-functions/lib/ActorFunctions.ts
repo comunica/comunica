@@ -1,6 +1,7 @@
+import type { IInternalEvaluator } from '@comunica/bus-expression-evaluator-factory';
 import type { IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
 import { Actor, Mediator } from '@comunica/core';
-import type { IEvalContext, IInternalEvaluator } from '@comunica/expression-evaluator';
+import type { IEvalContext } from '@comunica/expression-evaluator';
 import type * as E from '@comunica/expression-evaluator/lib/expressions';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 

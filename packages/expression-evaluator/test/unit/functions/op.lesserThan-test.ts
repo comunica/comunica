@@ -1,7 +1,7 @@
+import { regularFunctions } from '@comunica/bus-functions/lib/implementation/implementation';
 import { getMockEEFactory } from '@comunica/jest';
 import { RegularOperator } from '../../../lib';
 import * as E from '../../../lib/expressions';
-import { regularFunctions } from '../../../lib/functions';
 import { getMockEEActionContext, getMockExpression } from '../../util/utils';
 
 describe('lesser than', () => {

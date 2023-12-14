@@ -1,13 +1,13 @@
 import { prepareEvaluatorActionContext } from '@comunica/actor-expression-evaluator-factory-base';
+import type { IExpressionFunction, MediatorFunctions } from '@comunica/bus-functions';
+import { namedFunctions, regularFunctions, specialFunctions } from '@comunica/bus-functions/lib/implementation/implementation';
+import { NamedExtension } from '@comunica/bus-functions/lib/implementation/NamedExtension';
 import { ActionContext } from '@comunica/core';
 import { getMockEEFactory } from '@comunica/jest';
-import type { IMediatorFunctions } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { expressionTypes, types } from 'sparqlalgebrajs/lib/algebra';
 import { Wildcard } from 'sparqljs';
 import * as E from '../../../lib/expressions';
-import { namedFunctions, regularFunctions, specialFunctions } from '../../../lib/functions';
-import { NamedExtension } from '../../../lib/functions/NamedExtension';
 import { AlgebraTransformer } from '../../../lib/transformers/AlgebraTransformer';
 import type * as C from '../../../lib/util/Consts';
 import * as Err from '../../../lib/util/Errors';
@@ -17,7 +17,7 @@ const DF = new DataFactory();
 describe('AlgebraTransformer', () => {
   let algebraTransformer: AlgebraTransformer;
   beforeEach(() => {
-    const factory = getMockEEFactory({ mediatorFunctions: <IMediatorFunctions> {
+    const factory = getMockEEFactory({ mediatorFunctions: <MediatorFunctions> {
       async mediate({ functionName }) {
         const res: IExpressionFunction | undefined = {
           ...regularFunctions,

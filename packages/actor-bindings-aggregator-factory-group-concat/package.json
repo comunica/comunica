@@ -35,7 +35,6 @@
     "@comunica/bus-bindings-aggeregator-factory": "^1.0.0",
     "@comunica/core": "^2.8.2",
     "@comunica/expression-evaluator": "^2.9.0",
-    "@comunica/types": "^2.8.2",
     "@rdfjs/types": "*"
   },
   "devDependencies": {},

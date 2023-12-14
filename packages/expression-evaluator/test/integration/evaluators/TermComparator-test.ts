@@ -1,7 +1,10 @@
 import { prepareEvaluatorActionContext } from '@comunica/actor-expression-evaluator-factory-base';
+import { InternalEvaluator } from '@comunica/actor-expression-evaluator-factory-base/lib/InternalEvaluator';
 import {
   InequalityFunctionBasedComparator,
 } from '@comunica/actor-term-comparator-factory-inequality-functions-based/lib/InequalityFunctionBasedComparator';
+import type { TermSparqlFunction } from '@comunica/bus-functions/lib/implementation/implementation';
+import { regularFunctions } from '@comunica/bus-functions/lib/implementation/implementation';
 import type {
   ITermComparator,
 } from '@comunica/bus-term-comparator-factory';
@@ -12,9 +15,6 @@ import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
 import { DataFactory } from 'rdf-data-factory';
 
-import { InternalEvaluator } from '../../../lib/evaluators/InternalEvaluator';
-import type { TermSparqlFunction } from '../../../lib/functions';
-import { regularFunctions } from '../../../lib/functions';
 import { TypeURL, TypeURL as DT } from '../../../lib/util/Consts';
 import type * as C from '../../../lib/util/Consts';
 import { getMockEEActionContext } from '../../util/utils';

@@ -33,8 +33,8 @@
   "dependencies": {
     "@comunica/core": "^2.8.2",
     "@comunica/bus-bindings-aggeregator-factory": "^1.0.0",
-    "@comunica/bus-query-operation":  "^2.8.2",
-    "@comunica/bus-term-comparator-factory":  "^1.0.0",
+    "@comunica/bus-query-operation": "^2.8.2",
+    "@comunica/bus-term-comparator-factory": "^1.0.0",
     "sparqlalgebrajs": "^4.2.0",
     "@comunica/expression-evaluator": "^2.8.2"
   },

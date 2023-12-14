@@ -43,7 +43,7 @@ $ yarn add @comunica/expression-evaluator
 ### Adding or fixing functions
 
 Functions are defined in the [functions directory](lib/functions), and you can add or fix them there.
-All definitions are defined using a builder model defined in [Helpers.ts](lib/functions/Helpers.ts).
+All definitions are defined using a builder model defined in [Helpers.ts](../bus-functions/lib/implementation/Helpers.ts).
 
 Three kinds exists:
 

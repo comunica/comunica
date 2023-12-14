@@ -11,6 +11,7 @@ import { TermTransformer } from './TermTransformer';
 export class AlgebraTransformer extends TermTransformer {
   public constructor(
     private readonly context: IActionContext,
+    private readonly mediatorFunctions: MediatorFunctions,
   ) {
     super(context.getSafe(KeysExpressionEvaluator.superTypeProvider));
   }
@@ -44,7 +45,7 @@ export class AlgebraTransformer extends TermTransformer {
     if (!C.Operators.has(operator)) {
       throw new Err.UnknownOperator(expr.operator);
     }
-    const mediator: MediatorFunctions = await this.context.getSafe(KeysExpressionEvaluator.mediatorFunction);
+    const mediator: MediatorFunctions = await this.context.getSafe(this.mediatorFunctions);
     const operatorFunc =
       await mediator.mediate({ functionName: operator, arguments: expr.args, context: this.context });
     const operatorArgs = await Promise.all(expr.args.map(arg => this.transformAlgebra(arg)));
@@ -61,7 +62,7 @@ export class AlgebraTransformer extends TermTransformer {
     const namedArgs = await Promise.all(expr.args.map(arg => this.transformAlgebra(arg)));
     // Return a basic named expression
     const op = <C.NamedOperator>expr.name.value;
-    const mediator: MediatorFunctions = await this.context.getSafe(KeysExpressionEvaluator.mediatorFunction);
+    const mediator: MediatorFunctions = await this.context.getSafe(this.mediatorFunctions);
     const namedFunc = await mediator.mediate({ functionName: op, arguments: expr.args, context: this.context });
     if (!namedFunc) {
       throw new Err.UnknownNamedOperator(expr.name.value);

@@ -1,16 +1,16 @@
-import type { GeneralSuperTypeDict, ISuperTypeProvider } from '@comunica/types';
-import { isLiteralTermExpression } from '../expressions';
-import type * as E from '../expressions';
-import type { IInternalEvaluator } from '../types';
-import type * as C from '../util/Consts';
-import type { OverrideType } from '../util/TypeHandling';
+import type { IInternalEvaluator } from '@comunica/bus-expression-evaluator-factory';
+import { isLiteralTermExpression } from '@comunica/expression-evaluator/lib/expressions';
+import type * as E from '@comunica/expression-evaluator/lib/expressions';
+import type * as C from '@comunica/expression-evaluator/lib/util/Consts';
+import type { OverrideType } from '@comunica/expression-evaluator/lib/util/TypeHandling';
 import {
   asGeneralType,
   asKnownLiteralType,
   asOverrideType,
   getSuperTypes,
   superTypeDictTable, typePromotion,
-} from '../util/TypeHandling';
+} from '@comunica/expression-evaluator/lib/util/TypeHandling';
+import type { GeneralSuperTypeDict, ISuperTypeProvider } from '@comunica/types';
 
 // Function and operator arguments are 'flattened' in the SPARQL spec.
 // If the argument is a literal, the datatype often also matters.

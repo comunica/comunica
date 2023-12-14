@@ -15,6 +15,8 @@ import type {
   IActorFunctionsOutput,
   IActorFunctionsOutputTerm,
 } from '@comunica/bus-functions';
+import { namedFunctions, regularFunctions, specialFunctions } from '@comunica/bus-functions/lib/implementation';
+import { NamedExtension } from '@comunica/bus-functions/lib/implementation/NamedExtension';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import type { MediatorTermComparatorFactory, ITermComparator } from '@comunica/bus-term-comparator-factory';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
@@ -22,8 +24,6 @@ import type { IAction, IActorTest } from '@comunica/core';
 import {
   ExpressionEvaluator,
 } from '@comunica/expression-evaluator';
-import { namedFunctions, regularFunctions, specialFunctions } from '@comunica/expression-evaluator/lib/functions';
-import { NamedExtension } from '@comunica/expression-evaluator/lib/functions/NamedExtension';
 import { AlgebraTransformer } from '@comunica/expression-evaluator/lib/transformers/AlgebraTransformer';
 import type * as C from '@comunica/expression-evaluator/lib/util/Consts';
 import { extractTimeZone } from '@comunica/expression-evaluator/lib/util/DateTimeHelpers';
@@ -38,9 +38,7 @@ import { LRUCache } from 'lru-cache';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 
-export function prepareEvaluatorActionContext(orgContext: IActionContext,
-  mediatorQueryOperation: MediatorQueryOperation,
-  mediatorFunctions: MediatorFunctions): IActionContext {
+export function prepareEvaluatorActionContext(orgContext: IActionContext): IActionContext {
   let context = orgContext;
 
   context =
@@ -76,9 +74,6 @@ export function prepareEvaluatorActionContext(orgContext: IActionContext,
     KeysExpressionEvaluator.defaultTimeZone,
     extractTimeZone(context.getSafe(KeysExpressionEvaluator.now)),
   );
-
-  context = context.set(KeysExpressionEvaluator.mediatorQueryOperation, mediatorQueryOperation);
-  context = context.set(KeysExpressionEvaluator.mediatorFunction, mediatorFunctions);
 
   context = context.setDefault(KeysExpressionEvaluator.superTypeProvider, {
     cache: new LRUCache({ max: 1_000 }),
@@ -131,15 +126,16 @@ export class ActorExpressionEvaluatorFactoryBase extends ActorExpressionEvaluato
   }
 
   public async run(action: IActionExpressionEvaluatorFactory): Promise<IActorExpressionEvaluatorFactoryOutput> {
-    const fullContext = prepareEvaluatorActionContext(action.context,
-      this.mediatorQueryOperation,
-      this.mediatorFunctions);
+    const fullContext = prepareEvaluatorActionContext(action.context);
     return {
       expressionEvaluator: new ExpressionEvaluator(
         fullContext,
         await new AlgebraTransformer(
           fullContext,
+          this.mediatorFunctions,
         ).transformAlgebra(action.algExpr),
+        this.mediatorFunctions,
+        this.mediatorQueryOperation,
       ),
     };
   }

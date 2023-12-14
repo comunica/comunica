@@ -1,10 +1,10 @@
+import { bool, declare } from '@comunica/bus-functions/lib/implementation/Helpers';
+import type { Builder } from '@comunica/bus-functions/lib/implementation/Helpers';
+import type { FunctionArgumentsCache } from '@comunica/bus-functions/lib/implementation/OverloadTree';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import { getMockEEFactory } from '@comunica/jest';
 import type { ExpressionEvaluator } from '../../../lib';
 import { TypeURL } from '../../../lib';
-import type { Builder } from '../../../lib/functions/Helpers';
-import { bool, declare } from '../../../lib/functions/Helpers';
-import type { FunctionArgumentsCache } from '../../../lib/functions/OverloadTree';
 import { getMockEEActionContext, getMockExpression } from '../../util/utils';
 
 import fn = jest.fn;
