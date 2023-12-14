@@ -1,4 +1,4 @@
-import type { FunctionApplication } from '../types';
+import type { FunctionApplication } from '@comunica/bus-functions';
 import type { Expression,
   OperatorExpression } from './Expressions';
 import {

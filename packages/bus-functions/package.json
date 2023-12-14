@@ -34,7 +34,6 @@
     "@comunica/core": "^2.8.2",
     "@comunica/expression-evaluator": "^2.9.0",
     "sparqlalgebrajs": "^4.2.0",
-
     "@rdfjs/types": "*",
     "@types/spark-md5": "^3.0.2",
     "@types/uuid": "^9.0.0",

@@ -24,7 +24,6 @@ import type { IAction, IActorTest } from '@comunica/core';
 import {
   ExpressionEvaluator,
 } from '@comunica/expression-evaluator';
-import { AlgebraTransformer } from '@comunica/expression-evaluator/lib/transformers/AlgebraTransformer';
 import type * as C from '@comunica/expression-evaluator/lib/util/Consts';
 import { extractTimeZone } from '@comunica/expression-evaluator/lib/util/DateTimeHelpers';
 import type {
@@ -35,6 +34,7 @@ import type {
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
+import { AlgebraTransformer } from 'packages/bus-functions/lib/AlgebraTransformer';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 

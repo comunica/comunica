@@ -3,10 +3,10 @@ import { expressionToVar } from '@comunica/bus-functions/lib/implementation/Help
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, materializeOperation } from '@comunica/bus-query-operation';
 import * as E from '@comunica/expression-evaluator/lib/expressions';
-import { AlgebraTransformer } from '@comunica/expression-evaluator/lib/transformers/AlgebraTransformer';
 import * as Err from '@comunica/expression-evaluator/lib/util/Errors';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import { AlgebraTransformer } from 'packages/bus-functions/lib/AlgebraTransformer';
 
 /**
  * This class provides evaluation functionality to already transformed expressions.

@@ -4,9 +4,9 @@
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import type * as E from '@comunica/expression-evaluator/lib/expressions';
 import { TermTransformer } from '@comunica/expression-evaluator/lib/transformers/TermTransformer';
-import type { IEvalContext } from '@comunica/expression-evaluator/lib/types';
 import { ExtensionFunctionError } from '@comunica/expression-evaluator/lib/util/Errors';
 import type { AsyncExtensionFunction } from '@comunica/types';
+import type { IEvalContext } from '../ActorFunctions';
 import { BaseFunctionDefinition } from './Core';
 
 export class NamedExtension extends BaseFunctionDefinition {

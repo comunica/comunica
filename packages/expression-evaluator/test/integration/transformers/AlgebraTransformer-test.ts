@@ -4,11 +4,11 @@ import { namedFunctions, regularFunctions, specialFunctions } from '@comunica/bu
 import { NamedExtension } from '@comunica/bus-functions/lib/implementation/NamedExtension';
 import { ActionContext } from '@comunica/core';
 import { getMockEEFactory } from '@comunica/jest';
+import { AlgebraTransformer } from 'packages/actor-expression-evaluator-factory-base/lib/AlgebraTransformer';
 import { DataFactory } from 'rdf-data-factory';
 import { expressionTypes, types } from 'sparqlalgebrajs/lib/algebra';
 import { Wildcard } from 'sparqljs';
 import * as E from '../../../lib/expressions';
-import { AlgebraTransformer } from '../../../lib/transformers/AlgebraTransformer';
 import type * as C from '../../../lib/util/Consts';
 import * as Err from '../../../lib/util/Errors';
 

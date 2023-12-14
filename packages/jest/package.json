@@ -41,7 +41,13 @@
     "arrayify-stream": "^2.0.1",
     "rdf-data-factory": "^1.1.2",
     "sparqlalgebrajs": "^4.2.0",
-    "sparqljs": "^3.7.1"
+    "sparqljs": "^3.7.1",
+    "@comunica/bus-bindings-aggeregator-factory":  "^1.0.0",
+    "@comunica/bus-expression-evaluator-factory":  "^1.0.0",
+    "@comunica/bus-functions":  "^1.0.0",
+    "@comunica/bus-query-operation":  "^2.9.0",
+    "@comunica/bus-term-comparator-factory":  "^1.0.0",
+    "@comunica/actor-expression-evaluator-factory-base":  "^1.0.0"
   },
   "scripts": {
     "build": "npm run build:ts",
