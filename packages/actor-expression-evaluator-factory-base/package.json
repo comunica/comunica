@@ -42,8 +42,8 @@
     "lru-cache": "^10.0.0",
     "rdf-data-factory": "^1.1.2",
     "sparqlalgebrajs": "^4.2.0",
-    "@comunica/bus-functions":  "^1.0.0",
-    "@comunica/bus-term-comparator-factory":  "^1.0.0",
+    "@comunica/bus-functions": "^1.0.0",
+    "@comunica/bus-term-comparator-factory": "^1.0.0",
     "@rdfjs/types": "*"
   },
   "scripts": {
