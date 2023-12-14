@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-distinct-hash",
-  "version": "2.10.0",
+  "version": "2.10.1",
   "description": "A distinct-hash query-operation actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -33,7 +33,7 @@
   ],
   "dependencies": {
     "@comunica/bus-hash-bindings": "^2.10.0",
-    "@comunica/bus-query-operation": "^2.10.0",
+    "@comunica/bus-query-operation": "^2.10.1",
     "@comunica/core": "^2.10.0",
     "@comunica/types": "^2.10.0",
     "sparqlalgebrajs": "^4.2.0"

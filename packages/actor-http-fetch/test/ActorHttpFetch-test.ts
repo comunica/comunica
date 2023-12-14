@@ -318,7 +318,8 @@ describe('ActorHttpFetch', () => {
           body: expect.any(ReadableWebToNodeStream),
           agent: expect.anything(),
           headers: expect.anything(),
-          keepalive: true,
+          keepalive: undefined,
+          duplex: 'half',
         },
       );
     });

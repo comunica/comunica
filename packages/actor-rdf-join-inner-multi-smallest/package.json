@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-inner-multi-smallest",
-  "version": "2.10.0",
+  "version": "2.10.1",
   "description": "A multi-smallest rdf-join actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,8 +32,8 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-query-operation": "^2.10.0",
-    "@comunica/bus-rdf-join": "^2.10.0",
+    "@comunica/bus-query-operation": "^2.10.1",
+    "@comunica/bus-rdf-join": "^2.10.1",
     "@comunica/bus-rdf-join-entries-sort": "^2.10.0",
     "@comunica/mediatortype-join-coefficients": "^2.10.0",
     "@comunica/types": "^2.10.0",

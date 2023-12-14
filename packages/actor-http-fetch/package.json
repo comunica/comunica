@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-http-fetch",
-  "version": "2.10.0",
+  "version": "2.10.1",
   "description": "A node-fetch http actor",
   "lsd:module": true,
   "main": "lib/index.js",

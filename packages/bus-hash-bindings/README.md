@@ -24,4 +24,4 @@ $ yarn add @comunica/bus-hash-bindings
 
 ## Creating actors on this bus
 
-Actors extending [`ActorHashBindings`](https://comunica.github.io/comunica/classes/bus_hash_bindings.actorhashbindings.html) are automatically subscribed to this bus.
+Actors extending [`ActorHashBindings`](https://comunica.github.io/comunica/classes/_comunica_bus_hash_bindings.ActorHashBindings.html) are automatically subscribed to this bus.

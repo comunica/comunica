@@ -22,7 +22,7 @@ $ yarn add @comunica/bus-query-operation
 
 ## Creating actors on this bus
 
-Actors extending [`ActorQueryOperation`](https://comunica.github.io/comunica/classes/bus_query_operation.actorqueryoperation.html) or [`ActorQueryOperationTyped`](https://comunica.github.io/comunica/classes/bus_query_operation.actorqueryoperationtyped.html) are automatically subscribed to this bus.
+Actors extending [`ActorQueryOperation`](https://comunica.github.io/comunica/classes/_comunica_bus_query_operation.ActorQueryOperation.html) or [`ActorQueryOperationTyped`](https://comunica.github.io/comunica/classes/_comunica_bus_query_operation.ActorQueryOperationTyped.html) are automatically subscribed to this bus.
 
 It is recommended to extend from `ActorQueryOperationTyped` if your actor supports a single query operation,
 as the bus will be able to handle this actor more efficiently.
