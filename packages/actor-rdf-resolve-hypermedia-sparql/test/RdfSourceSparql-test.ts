@@ -555,7 +555,7 @@ describe('RdfSourceSparql', () => {
     });
 
     it('should allow multiple read calls on query bindings', async() => {
-      const data = await source.queryBindings('http://ex', '');
+      const data = source.queryBindings('http://ex', '');
       const r1 = data.read();
       const r2 = data.read();
       expect(r1).toEqual(null);
