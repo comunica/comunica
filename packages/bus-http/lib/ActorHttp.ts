@@ -1,6 +1,6 @@
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
-import { ReadableWebToNodeStream } from 'readable-web-to-node-stream';
+import { ReadableWebToNodeStream } from '@smessie/readable-web-to-node-stream';
 
 /* istanbul ignore next */
 if (!globalThis.ReadableStream) {
