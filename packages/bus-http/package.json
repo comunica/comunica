@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-http",
-  "version": "2.10.0",
+  "version": "2.10.2",
   "description": "A comunica bus for 'http' events.",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,9 +32,9 @@
   ],
   "dependencies": {
     "@comunica/core": "^2.10.0",
+    "@smessie/readable-web-to-node-stream": "^3.0.3",
     "is-stream": "^2.0.1",
     "readable-stream-node-to-web": "^1.0.1",
-    "@smessie/readable-web-to-node-stream": "^3.0.3",
     "web-streams-ponyfill": "^1.4.2"
   },
   "scripts": {

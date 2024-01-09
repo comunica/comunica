@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-update-quads-hypermedia",
-  "version": "2.10.1",
+  "version": "2.10.2",
   "description": "A hypermedia rdf-update-quads actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -36,8 +36,8 @@
     "@comunica/bus-http-invalidate": "^2.10.0",
     "@comunica/bus-rdf-metadata": "^2.10.0",
     "@comunica/bus-rdf-metadata-extract": "^2.10.0",
-    "@comunica/bus-rdf-update-hypermedia": "^2.10.1",
-    "@comunica/bus-rdf-update-quads": "^2.10.1",
+    "@comunica/bus-rdf-update-hypermedia": "^2.10.2",
+    "@comunica/bus-rdf-update-quads": "^2.10.2",
     "@comunica/core": "^2.10.0",
     "@comunica/types": "^2.10.0",
     "lru-cache": "^10.0.0"

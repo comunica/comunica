@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.10.2"></a>
+## [v2.10.2](https://github.com/comunica/comunica/compare/v2.10.1...v2.10.2) - 2024-01-09
+
+### Fixed
+* [Migrate to @smessie/readable-web-to-node-stream](https://github.com/comunica/comunica/commit/309284eb98ad919da81d9d373517b24fa877a608)
+
 <a name="v2.10.1"></a>
 ## [v2.10.1](https://github.com/comunica/comunica/compare/v2.10.0...v2.10.1) - 2023-11-29
 

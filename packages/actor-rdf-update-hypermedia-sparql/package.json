@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-update-hypermedia-sparql",
-  "version": "2.10.1",
+  "version": "2.10.2",
   "description": "A sparql rdf-update-hypermedia actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,9 +32,9 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-http": "^2.10.0",
-    "@comunica/bus-rdf-update-hypermedia": "^2.10.1",
-    "@comunica/bus-rdf-update-quads": "^2.10.1",
+    "@comunica/bus-http": "^2.10.2",
+    "@comunica/bus-rdf-update-hypermedia": "^2.10.2",
+    "@comunica/bus-rdf-update-quads": "^2.10.2",
     "@comunica/core": "^2.10.0",
     "@comunica/types": "^2.10.0",
     "@rdfjs/types": "*",

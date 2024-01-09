@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-update-deleteinsert",
-  "version": "2.10.1",
+  "version": "2.10.2",
   "description": "A update-deleteinsert query-operation actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -31,7 +31,7 @@
     "@comunica/actor-query-operation-construct": "^2.10.1",
     "@comunica/bindings-factory": "^2.10.1",
     "@comunica/bus-query-operation": "^2.10.1",
-    "@comunica/bus-rdf-update-quads": "^2.10.1",
+    "@comunica/bus-rdf-update-quads": "^2.10.2",
     "@comunica/core": "^2.10.0",
     "@comunica/types": "^2.10.0",
     "@rdfjs/types": "*",
