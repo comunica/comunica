@@ -1,8 +1,8 @@
 # Comunica Context Union Merge Binding Factory Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-merge-binding-factory-context-union.svg)](https://www.npmjs.com/package/@comunica/actor-merge-binding-factory-context-union)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-merge-binding-factory-context-union.svg)](https://www.npmjs.com/package/@comunica/actor-merge-bindings-context-union)
 
-A Comunica Merge Binding Factory Source Binding Union Actor. This actors creates union functions for prespecified binding context keys.
+A Comunica Merge Bindings Context Union Actor. This actors creates union functions for prespecified binding context keys.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).

@@ -1,14 +1,14 @@
 {
-  "name": "@comunica/actor-merge-binding-factory-context-union",
+  "name": "@comunica/actor-merge-bindings-context-union",
   "version": "2.0.0",
-  "description": "A context-union merge-binding-factory actor",
+  "description": "A union merge-bindings-context actor",
   "lsd:module": true,
   "main": "lib/index.js",
   "typings": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-merge-binding-factory-context-union"
+    "directory": "packages/actor-merge-bindings-context-union"
   },
   "publishConfig": {
     "access": "public"
@@ -17,7 +17,7 @@
   "keywords": [
     "comunica",
     "actor",
-    "merge-binding-factory",
+    "merge-bindings-context",
     "context-union"
   ],
   "license": "MIT",

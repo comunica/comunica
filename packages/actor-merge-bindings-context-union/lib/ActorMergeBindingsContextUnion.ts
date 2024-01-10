@@ -6,11 +6,11 @@ import type { IActorTest } from '@comunica/core';
 import { SetUnionContext } from './SetUnionContext';
 
 /**
- * A comunica Context Union Merge Binding Factory Actor.
+ * A comunica Union Merge Bindings Context Actor.
  */
-export class ActorMergeBindingFactoryContextUnion extends ActorMergeBindingsContext {
+export class ActorMergeBindingsContextUnion extends ActorMergeBindingsContext {
   private readonly contextKey: string;
-  public constructor(args: IActorMergeBindingFactoryContextUnionArgs) {
+  public constructor(args: IActorMergeBindingsContextUnionArgs) {
     super(args);
     this.contextKey = args.contextKey;
   }
@@ -28,7 +28,7 @@ export class ActorMergeBindingFactoryContextUnion extends ActorMergeBindingsCont
   }
 }
 
-export interface IActorMergeBindingFactoryContextUnionArgs extends IActorMergeBindingsContextArgs{
+export interface IActorMergeBindingsContextUnionArgs extends IActorMergeBindingsContextArgs{
   /**
    * The keys the mergehandler created by this actor should merge over. With the key of the record being the key name
    * and the value the expected type of the context entry

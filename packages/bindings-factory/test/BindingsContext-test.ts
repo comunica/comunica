@@ -1,4 +1,4 @@
-import { SetUnionContext } from '@comunica/actor-merge-binding-factory-context-union';
+import { SetUnionContext } from '@comunica/actor-merge-bindings-context-union';
 import { ActionContext, ActionContextKey } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 import { Map } from 'immutable';

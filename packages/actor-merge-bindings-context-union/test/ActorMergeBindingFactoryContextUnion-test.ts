@@ -1,6 +1,6 @@
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
-import { ActorMergeBindingFactoryContextUnion } from '../lib/ActorMergeBindingFactoryContextUnion';
+import { ActorMergeBindingsContextUnion } from '../lib/ActorMergeBindingsContextUnion';
 import { SetUnionContext } from '../lib/SetUnionContext';
 
 describe('ActorMergeBindingFactoryContextUnion', () => {
@@ -12,12 +12,12 @@ describe('ActorMergeBindingFactoryContextUnion', () => {
 
   describe('An ActorMergeBindingFactoryContextUnion instance', () => {
     let setUnionMergeHandler: SetUnionContext;
-    let actor: ActorMergeBindingFactoryContextUnion;
+    let actor: ActorMergeBindingsContextUnion;
     let context: IActionContext;
 
     beforeEach(() => {
       setUnionMergeHandler = new SetUnionContext();
-      actor = new ActorMergeBindingFactoryContextUnion({ name: 'actor', bus, contextKey: 'sources' });
+      actor = new ActorMergeBindingsContextUnion({ name: 'actor', bus, contextKey: 'sources' });
       context = new ActionContext();
     });
 
