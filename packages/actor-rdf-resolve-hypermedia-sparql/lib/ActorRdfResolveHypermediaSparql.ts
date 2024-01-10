@@ -1,6 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorHttp } from '@comunica/bus-http';
-import type { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
+import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActionRdfResolveHypermedia, IActorRdfResolveHypermediaOutput,
   IActorRdfResolveHypermediaTest, IActorRdfResolveHypermediaArgs } from '@comunica/bus-rdf-resolve-hypermedia';
 import { ActorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
@@ -11,7 +11,7 @@ import { RdfSourceSparql } from './RdfSourceSparql';
  */
 export class ActorRdfResolveHypermediaSparql extends ActorRdfResolveHypermedia {
   public readonly mediatorHttp: MediatorHttp;
-  public readonly mediatorMergeBindingsContext: MediatorMergeBindingFactory;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   public readonly checkUrlSuffix: boolean;
   public readonly forceHttpGet: boolean;
@@ -65,7 +65,7 @@ export interface IActorRdfResolveHypermediaSparqlArgs extends IActorRdfResolveHy
   /**
    * A mediator for creating binding context merge handlers
    */
-  mediatorMergeBindingsContext: MediatorMergeBindingFactory;
+  mediatorMergeBindingsContext: MediatorMergeBindingsContext;
   /**
    * The cache size for COUNT queries.
    * @range {integer}

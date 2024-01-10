@@ -1,4 +1,4 @@
-import type { IBindingsContextMergeHandler } from '@comunica/bus-merge-binding-factory';
+import type { IBindingsContextMergeHandler } from '@comunica/bus-merge-bindings-context';
 import type { ActionContextKey } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext, IActionContextKey } from '@comunica/types';
@@ -228,7 +228,8 @@ export class Bindings implements RDF.Bindings {
         context = context.delete(key);
         continue;
       }
-      // If it doesn't occur in both contexts, we simply copy the context entry into the new binding
+      // If a key doesn't occur in both contexts (but does in atleast one),
+      // we simply copy the context entry into the new binding
       if (!occursInBoth && !context.get(key)) {
         context = context.set(key, otherContext.get(key));
       }

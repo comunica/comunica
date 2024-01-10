@@ -1,6 +1,6 @@
 import { BindingsToQuadsIterator } from '@comunica/actor-query-operation-construct';
 import { BindingsFactory } from '@comunica/bindings-factory';
-import type { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
+import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
@@ -18,7 +18,7 @@ import type { Algebra } from 'sparqlalgebrajs';
  */
 export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTypedMediated<Algebra.DeleteInsert> {
   public readonly mediatorUpdateQuads: MediatorRdfUpdateQuads;
-  public readonly mediatorMergeBindingsContext: MediatorMergeBindingFactory;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   protected blankNodeCounter = 0;
 
@@ -87,6 +87,6 @@ export interface IActorQueryOperationUpdateDeleteInsertArgs extends IActorQueryO
   /**
    * A mediator for creating binding context merge handlers
    */
-  mediatorMergeBindingsContext: MediatorMergeBindingFactory;
+  mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
 }

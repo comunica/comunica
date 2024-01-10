@@ -1,6 +1,6 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import { BindingsFactory } from '@comunica/bindings-factory';
-import type { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
+import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { IQueryOperationResultBindings, Bindings, IQueryOperationResult, IActionContext } from '@comunica/types';
@@ -11,7 +11,7 @@ import { Algebra } from 'sparqlalgebrajs';
  * A comunica Path OneOrMore Query Operation Actor.
  */
 export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
-  public readonly mediatorMergeBindingsContext: MediatorMergeBindingFactory;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   public constructor(args: IActorQueryOperationPathOneOrMoreArgs) {
     super(args, Algebra.types.ONE_OR_MORE_PATH);
@@ -154,5 +154,5 @@ export interface IActorQueryOperationPathOneOrMoreArgs extends IActorQueryOperat
   /**
    * A mediator for creating binding context merge handlers
    */
-  mediatorMergeBindingsContext: MediatorMergeBindingFactory;
+  mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 }

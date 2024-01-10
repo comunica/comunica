@@ -1,5 +1,5 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
-import type { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
+import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { MediatorRdfJoin } from '@comunica/bus-rdf-join';
@@ -13,7 +13,7 @@ import { AsyncEvaluator, isExpressionError } from 'sparqlee';
  */
 export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediated<Algebra.LeftJoin> {
   public readonly mediatorJoin: MediatorRdfJoin;
-  public readonly mediatorMergeBindingsContext: MediatorMergeBindingFactory;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   public constructor(args: IActorQueryOperationLeftJoinArgs) {
     super(args, 'leftjoin');
@@ -97,5 +97,5 @@ export interface IActorQueryOperationLeftJoinArgs extends IActorQueryOperationTy
   /**
    * A mediator for creating binding context merge handlers
    */
-  mediatorMergeBindingsContext: MediatorMergeBindingFactory;
+  mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 }

@@ -1,5 +1,5 @@
 import { BindingsFactory, bindingsToString } from '@comunica/bindings-factory';
-import type { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
+import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
@@ -14,7 +14,7 @@ import { AsyncEvaluator, isExpressionError } from 'sparqlee';
  * A comunica Filter Sparqlee Query Operation Actor.
  */
 export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedMediated<Algebra.Filter> {
-  public readonly mediatorMergeBindingsContext: MediatorMergeBindingFactory;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   public constructor(args: IActorQueryOperationFilterSparqleeArgs) {
     super(args, 'filter');
@@ -86,5 +86,5 @@ export interface IActorQueryOperationFilterSparqleeArgs extends IActorQueryOpera
   /**
    * A mediator for creating binding context merge handlers
    */
-  mediatorMergeBindingsContext: MediatorMergeBindingFactory;
+  mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 }

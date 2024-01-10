@@ -7,7 +7,7 @@
     "@type": "Runner",
     "actors": [
       {
-        "@id": "urn:comunica:default:merge-binding-factory/actors#source-binding-union",
+        "@id": "urn:comunica:default:merge-bindings-context/actors#source-binding-union",
         "@type": "ActorMergeBindingFactoryContextUnion",
         "contextKey": "sources"
       }

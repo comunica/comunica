@@ -1,14 +1,14 @@
 {
-  "name": "@comunica/bus-merge-binding-factory",
+  "name": "@comunica/bus-merge-bindings-context",
   "version": "2.0.0",
-  "description": "A comunica bus for merge-binding-factory events.",
+  "description": "A comunica bus for merge-bindings-context events.",
   "lsd:module": true,
   "main": "lib/index.js",
   "typings": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/bus-merge-binding-factory"
+    "directory": "packages/bus-merge-bindings-context"
   },
   "publishConfig": {
     "access": "public"
@@ -17,7 +17,7 @@
   "keywords": [
     "comunica",
     "bus",
-    "merge-binding-factory"
+    "merge-bindings-context"
   ],
   "license": "MIT",
   "bugs": {

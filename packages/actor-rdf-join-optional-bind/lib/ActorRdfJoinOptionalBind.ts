@@ -1,7 +1,7 @@
 import type { BindOrder } from '@comunica/actor-rdf-join-inner-multi-bind';
 import { ActorRdfJoinMultiBind } from '@comunica/actor-rdf-join-inner-multi-bind';
 import { BindingsFactory } from '@comunica/bindings-factory';
-import type { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
+import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
@@ -18,7 +18,7 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
   public readonly bindOrder: BindOrder;
   public readonly selectivityModifier: number;
   public readonly mediatorQueryOperation: MediatorQueryOperation;
-  public readonly mediatorMergeBindingsContext: MediatorMergeBindingFactory;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   public constructor(args: IActorRdfJoinOptionalBindArgs) {
     super(args, {
@@ -124,6 +124,6 @@ export interface IActorRdfJoinOptionalBindArgs extends IActorRdfJoinArgs {
   /**
    * A mediator for creating binding context merge handlers
    */
-  mediatorMergeBindingsContext: MediatorMergeBindingFactory;
+  mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
 }

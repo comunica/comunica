@@ -1,5 +1,5 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
-import type { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
+import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
@@ -13,7 +13,7 @@ import type { Algebra } from 'sparqlalgebrajs';
  * actor that handles SPARQL nop operations.
  */
 export class ActorQueryOperationNop extends ActorQueryOperationTypedMediated<Algebra.Nop> {
-  public readonly mediatorMergeBindingsContext: MediatorMergeBindingFactory;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   public constructor(args: IActorQueryOperationNopArgs) {
     super(args, 'nop');
@@ -45,5 +45,5 @@ export interface IActorQueryOperationNopArgs extends IActorQueryOperationTypedMe
   /**
    * A mediator for creating binding context merge handlers
    */
-  mediatorMergeBindingsContext: MediatorMergeBindingFactory;
+  mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 }

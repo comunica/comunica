@@ -1,4 +1,4 @@
-import type { IBindingsContextMergeHandler } from '@comunica/bus-merge-binding-factory';
+import type { IBindingsContextMergeHandler } from '@comunica/bus-merge-bindings-context';
 import type * as RDF from '@rdfjs/types';
 import { Map } from 'immutable';
 import { DataFactory } from 'rdf-data-factory';

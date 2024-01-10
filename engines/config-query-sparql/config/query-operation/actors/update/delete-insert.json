@@ -12,7 +12,7 @@
       "@type": "ActorQueryOperationUpdateDeleteInsert",
       "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
       "mediatorUpdateQuads": { "@id": "urn:comunica:default:rdf-update-quads/mediators#main" },
-      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-binding-factory/mediators#main"}
+      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main"}
     }
   ]
 }

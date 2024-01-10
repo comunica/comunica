@@ -1,5 +1,5 @@
 import { BindingsFactory, bindingsToString } from '@comunica/bindings-factory';
-import type { MediatorMergeBindingFactory } from '@comunica/bus-merge-binding-factory';
+import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
@@ -15,7 +15,7 @@ import { AsyncEvaluator, isExpressionError } from 'sparqlee';
  * See https://www.w3.org/TR/sparql11-query/#sparqlAlgebra;
  */
 export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<Algebra.Extend> {
-  public readonly mediatorMergeBindingsContext: MediatorMergeBindingFactory;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   public constructor(args: IActorQueryOperationExtendArgs) {
     super(args, 'extend');
@@ -85,5 +85,5 @@ export interface IActorQueryOperationExtendArgs extends IActorQueryOperationType
   /**
    * A mediator for creating binding context merge handlers
    */
-  mediatorMergeBindingsContext: MediatorMergeBindingFactory;
+  mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 }
