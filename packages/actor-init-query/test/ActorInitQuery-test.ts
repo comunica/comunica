@@ -772,6 +772,22 @@ LIMIT 100
         });
       });
 
+      it('handles the --cache flag', async() => {
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-q', queryString, '--cache', 'false' ],
+          env: {},
+          stdin: <Readable><any> new PassThrough(),
+          context,
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
+          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
+          [KeysCore.log.name]: expect.any(LoggerPretty),
+          [KeysQueryOperation.unionDefaultGraph.name]: true,
+        });
+      });
+
       it('handles the destination --to option', async() => {
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermedia, '-q', queryString, '--to', 'http://target.com/' ],

@@ -145,7 +145,7 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
         noCache: {
           type: 'boolean',
           describe: 'If the cache should be disabled',
-        }
+        },
       })
       .exitProcess(false)
       .fail(false)
@@ -257,7 +257,7 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
     }
 
     // Define if cache should be disabled
-    if (args.cache === false) {
+    if (args.cache === 'false') {
       context[KeysInitQuery.noCache.name] = true;
     }
   }
