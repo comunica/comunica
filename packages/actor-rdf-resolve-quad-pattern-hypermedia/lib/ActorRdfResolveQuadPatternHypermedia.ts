@@ -97,7 +97,7 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
 
       // If cache is not disabled
       // Set in cache
-      if (this.cache && !context.get(KeysInitQuery.disableCaching)) {
+      if (this.cache && !context.get(KeysInitQuery.noCache)) {
         this.cache.set(url, source);
       }
     }

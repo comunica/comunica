@@ -53,7 +53,7 @@ export class FederatedQuadSource implements IQuadSource {
     this.skipEmptyPatterns = skipEmptyPatterns;
     this.algebraFactory = new Factory();
 
-    if (!this.contextDefault.get(KeysInitQuery.disableCaching) && this.skipEmptyPatterns) {
+    if (!this.contextDefault.get(KeysInitQuery.noCache) && this.skipEmptyPatterns) {
       // Initialize sources in the emptyPatterns datastructure
       for (const source of this.sources) {
         if (!this.emptyPatterns.has(source)) {
@@ -166,7 +166,7 @@ export class FederatedQuadSource implements IQuadSource {
    * @return {boolean}
    */
   public isSourceEmpty(source: IDataSource, pattern: RDF.BaseQuad): boolean {
-    if (!this.skipEmptyPatterns || this.contextDefault.get(KeysInitQuery.disableCaching)) {
+    if (!this.skipEmptyPatterns || this.contextDefault.get(KeysInitQuery.noCache)) {
       return false;
     }
     const emptyPatterns: RDF.BaseQuad[] | undefined = this.emptyPatterns.get(source);
@@ -272,7 +272,7 @@ export class FederatedQuadSource implements IQuadSource {
             !subMetadata.cardinality?.value &&
             pattern &&
             !this.isSourceEmpty(source, pattern) &&
-            !this.contextDefault.get(KeysInitQuery.disableCaching)) {
+            !this.contextDefault.get(KeysInitQuery.noCache)) {
             this.emptyPatterns.get(source)!.push(pattern);
           }
 
