@@ -249,6 +249,11 @@ implements IQueryEngine<QueryContext, QueryStringContextInner, QueryAlgebraConte
       };
     }
 
+    // Invalidate caches if cache argument is set to false
+    if (actionContext.get(KeysInitQuery.noCache)) {
+      await this.invalidateHttpCache();
+    }
+
     return finalOutput;
   }
 
