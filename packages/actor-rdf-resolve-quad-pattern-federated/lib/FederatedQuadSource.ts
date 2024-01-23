@@ -6,7 +6,7 @@ import type {
   MediatorRdfResolveQuadPattern,
 } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { getDataSourceContext } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { KeysInitQuery, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
+import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { BlankNodeScoped } from '@comunica/data-factory';
 import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext, DataSources, IDataSource, MetadataQuads } from '@comunica/types';
@@ -53,7 +53,7 @@ export class FederatedQuadSource implements IQuadSource {
     this.skipEmptyPatterns = skipEmptyPatterns;
     this.algebraFactory = new Factory();
 
-    if (!this.contextDefault.get(KeysInitQuery.noCache) && this.skipEmptyPatterns) {
+    if (this.skipEmptyPatterns) {
       // Initialize sources in the emptyPatterns datastructure
       for (const source of this.sources) {
         if (!this.emptyPatterns.has(source)) {
@@ -166,7 +166,7 @@ export class FederatedQuadSource implements IQuadSource {
    * @return {boolean}
    */
   public isSourceEmpty(source: IDataSource, pattern: RDF.BaseQuad): boolean {
-    if (!this.skipEmptyPatterns || this.contextDefault.get(KeysInitQuery.noCache)) {
+    if (!this.skipEmptyPatterns) {
       return false;
     }
     const emptyPatterns: RDF.BaseQuad[] | undefined = this.emptyPatterns.get(source);
@@ -271,8 +271,7 @@ export class FederatedQuadSource implements IQuadSource {
           if (this.skipEmptyPatterns &&
             !subMetadata.cardinality?.value &&
             pattern &&
-            !this.isSourceEmpty(source, pattern) &&
-            !this.contextDefault.get(KeysInitQuery.noCache)) {
+            !this.isSourceEmpty(source, pattern)) {
             this.emptyPatterns.get(source)!.push(pattern);
           }
 
