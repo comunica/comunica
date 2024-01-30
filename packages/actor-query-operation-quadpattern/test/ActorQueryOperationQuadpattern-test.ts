@@ -1,6 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import { KeysBindingContext, KeysQueryOperation } from '@comunica/context-entries';
+import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultBindings, IActionContext, MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -228,7 +228,6 @@ describe('ActorQueryOperationQuadpattern', () => {
         bus,
         mediatorResolveQuadPattern,
         unionDefaultGraph: false,
-        addSourceToBindingContext: false,
         mediatorMergeBindingsContext,
       });
     });
@@ -326,45 +325,6 @@ describe('ActorQueryOperationQuadpattern', () => {
             BF.bindings([[ DF.variable('p'), DF.namedNode('p1') ]]),
             BF.bindings([[ DF.variable('p'), DF.namedNode('p2') ]]),
             BF.bindings([[ DF.variable('p'), DF.namedNode('p3') ]]),
-          ],
-        );
-      });
-    });
-
-    it('should run s ?p o g and add graph to action context of binding if addSourceToBindingContext is set', () => {
-      actor = new ActorQueryOperationQuadpattern({
-        name: 'actor',
-        bus,
-        mediatorResolveQuadPattern,
-        unionDefaultGraph: false,
-        addSourceToBindingContext: true,
-        mediatorMergeBindingsContext,
-      });
-
-      const operation: any = {
-        graph: DF.namedNode('g'),
-        object: DF.namedNode('o'),
-        predicate: DF.variable('p'),
-        subject: DF.namedNode('s'),
-        type: 'pattern',
-      };
-      return actor.run({ operation, context }).then(async(output: IQueryOperationResultBindings) => {
-        expect(await output.metadata()).toEqual({
-          cardinality: { type: 'estimate', value: 3 },
-          order: [
-            { term: DF.variable('p'), direction: 'asc' },
-          ],
-          canContainUndefs: false,
-          variables: [ DF.variable('p') ],
-        });
-        await expect(output.bindingsStream).toEqualBindingsStream(
-          [
-            BF.bindings([[ DF.variable('p'), DF.namedNode('p1') ]])
-              .setContextEntry(KeysBindingContext.sourceBinding, 'g1'),
-            BF.bindings([[ DF.variable('p'), DF.namedNode('p2') ]])
-              .setContextEntry(KeysBindingContext.sourceBinding, 'g2'),
-            BF.bindings([[ DF.variable('p'), DF.namedNode('p3') ]])
-              .setContextEntry(KeysBindingContext.sourceBinding, 'g3'),
           ],
         );
       });
@@ -556,7 +516,6 @@ describe('ActorQueryOperationQuadpattern', () => {
         bus,
         mediatorResolveQuadPattern,
         unionDefaultGraph: false,
-        addSourceToBindingContext: false,
         mediatorMergeBindingsContext,
       });
 
@@ -643,7 +602,6 @@ describe('ActorQueryOperationQuadpattern', () => {
         bus,
         mediatorResolveQuadPattern,
         unionDefaultGraph: true,
-        addSourceToBindingContext: false,
         mediatorMergeBindingsContext,
       });
 
@@ -724,7 +682,6 @@ describe('ActorQueryOperationQuadpattern', () => {
         bus,
         mediatorResolveQuadPattern,
         unionDefaultGraph: true,
-        addSourceToBindingContext: false,
         mediatorMergeBindingsContext,
       });
 
