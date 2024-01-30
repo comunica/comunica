@@ -1,0 +1,51 @@
+{
+  "name": "@comunica/bus-query-source-identify",
+  "version": "1.0.0",
+  "description": "A comunica bus for query-source-identify events.",
+  "lsd:module": true,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/bus-query-source-identify"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false,
+  "keywords": [
+    "comunica",
+    "bus",
+    "query-source-identify"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
+  "homepage": "https://comunica.dev/",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.js.map"
+  ],
+  "dependencies": {
+    "@comunica/core": "^2.8.0",
+    "@comunica/metadata": "^2.8.0",
+    "@comunica/bindings-factory": "^2.7.0",
+    "@comunica/bus-query-operation": "^2.8.0",
+    "@comunica/types": "^2.8.0",
+    "rdf-terms": "^1.11.0",
+    "asynciterator": "^3.8.1",
+    "rdf-string": "^1.6.3",
+    "sparqlalgebrajs": "^4.3.0",
+    "@rdfjs/types": "*",
+    "rdf-data-factory": "^1.1.2"
+  },
+  "scripts": {
+    "build": "npm run build:ts && npm run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
+  }
+}

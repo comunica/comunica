@@ -2,6 +2,7 @@ import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import { ActorQueryOperationUnion } from '@comunica/actor-query-operation-union';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
 import type { IQueryOperationResultBindings, IQueryOperationResult,
   IActionContext, MetadataBindings } from '@comunica/types';
 import { UnionIterator } from 'asynciterator';
@@ -11,7 +12,9 @@ import { Algebra } from 'sparqlalgebrajs';
  * A comunica Path Alt Query Operation Actor.
  */
 export class ActorQueryOperationPathAlt extends ActorAbstractPath {
-  public constructor(args: IActorQueryOperationTypedMediatedArgs) {
+  public readonly mediatorRdfMetadataAccumulate: MediatorRdfMetadataAccumulate;
+
+  public constructor(args: IActorQueryOperationPathAltArgs) {
     super(args, Algebra.types.ALT);
   }
 
@@ -29,7 +32,8 @@ export class ActorQueryOperationPathAlt extends ActorAbstractPath {
     const bindingsStream = new UnionIterator(subOperations.map(op => op.bindingsStream), { autoStart: false });
     const metadata: (() => Promise<MetadataBindings>) = () =>
       Promise.all(subOperations.map(output => output.metadata()))
-        .then(subMeta => ActorQueryOperationUnion.unionMetadata(subMeta, true));
+        .then(subMeta => ActorQueryOperationUnion
+          .unionMetadata(subMeta, true, context, this.mediatorRdfMetadataAccumulate));
 
     return {
       type: 'bindings',
@@ -37,4 +41,8 @@ export class ActorQueryOperationPathAlt extends ActorAbstractPath {
       metadata,
     };
   }
+}
+
+export interface IActorQueryOperationPathAltArgs extends IActorQueryOperationTypedMediatedArgs {
+  mediatorRdfMetadataAccumulate: MediatorRdfMetadataAccumulate;
 }

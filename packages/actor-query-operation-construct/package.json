@@ -39,7 +39,7 @@
     "asynciterator": "^3.8.1",
     "rdf-data-factory": "^1.1.1",
     "rdf-terms": "^1.11.0",
-    "sparqlalgebrajs": "^4.2.0"
+    "sparqlalgebrajs": "^4.3.3"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

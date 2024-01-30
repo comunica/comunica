@@ -1,10 +1,15 @@
 import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { Bindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import { mapTermsNested, someTermsNested } from 'rdf-terms';
 import type { Algebra, Factory } from 'sparqlalgebrajs';
 import { Util } from 'sparqlalgebrajs';
+
+const DF = new DataFactory();
+
+const TRUE = DF.literal('true', DF.namedNode('http://www.w3.org/2001/XMLSchema#boolean'));
 
 /**
  * Materialize a term with the given binding.
@@ -66,24 +71,24 @@ export function materializeOperation(
       // The predicate expression will be recursed.
       return {
         recurse: false,
-        result: factory.createPath(
+        result: Object.assign(factory.createPath(
           materializeTerm(op.subject, bindings),
           op.predicate,
           materializeTerm(op.object, bindings),
           materializeTerm(op.graph, bindings),
-        ),
+        ), { metadata: op.metadata }),
       };
     },
     pattern(op: Algebra.Pattern, factory: Factory) {
       // Materialize variables in the quad pattern.
       return {
         recurse: false,
-        result: factory.createPattern(
+        result: Object.assign(factory.createPattern(
           materializeTerm(op.subject, bindings),
           materializeTerm(op.predicate, bindings),
           materializeTerm(op.object, bindings),
           materializeTerm(op.graph, bindings),
-        ),
+        ), { metadata: op.metadata }),
       };
     },
     extend(op: Algebra.Extend) {
@@ -225,6 +230,19 @@ export function materializeOperation(
         return {
           recurse: false,
           result: factory.createTermExpression(materializeTerm(op.term, bindings)),
+        };
+      }
+      if (op.expressionType === 'operator') {
+        if (op.operator === 'bound' && op.args.length === 1 && op.args[0].expressionType === 'term' &&
+          [ ...bindings.keys() ].some(variable => op.args[0].term.equals(variable))) {
+          return {
+            recurse: false,
+            result: factory.createTermExpression(TRUE),
+          };
+        }
+        return {
+          recurse: true,
+          result: op,
         };
       }
       if (op.expressionType === 'aggregate' &&

@@ -60,8 +60,11 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
             return ActorQueryOperationFromQuad.FACTORY.createBgp([ pattern ]);
           }
           const bgps = defaultGraphs.map((graph: RDF.Term) =>
-            ActorQueryOperationFromQuad.FACTORY.createBgp([ ActorQueryOperationFromQuad.FACTORY
-              .createPattern(pattern.subject, pattern.predicate, pattern.object, graph) ]));
+            ActorQueryOperationFromQuad.FACTORY.createBgp([ Object.assign(
+              ActorQueryOperationFromQuad.FACTORY
+                .createPattern(pattern.subject, pattern.predicate, pattern.object, graph),
+              { metadata: pattern.metadata },
+            ) ]));
           return ActorQueryOperationFromQuad.unionOperations(bgps);
         }));
       }
@@ -74,8 +77,9 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
             return ActorQueryOperationFromQuad.FACTORY
               .createPath(operation.subject, operation.predicate, operation.object, graph);
           }
-          return ActorQueryOperationFromQuad.FACTORY
-            .createPattern(operation.subject, operation.predicate, operation.object, graph);
+          return Object.assign(ActorQueryOperationFromQuad.FACTORY
+            .createPattern(operation.subject, operation.predicate, operation.object, graph),
+          { metadata: operation.metadata });
         },
       );
       return ActorQueryOperationFromQuad.unionOperations(paths);

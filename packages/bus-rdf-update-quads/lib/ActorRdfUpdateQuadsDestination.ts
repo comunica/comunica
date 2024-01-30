@@ -1,5 +1,5 @@
-import { FederatedQuadSource } from '@comunica/actor-rdf-resolve-quad-pattern-federated';
-import { KeysRdfResolveQuadPattern, KeysRdfUpdateQuads } from '@comunica/context-entries';
+import { deskolemizeQuad } from '@comunica/actor-context-preprocess-query-source-skolemize';
+import { KeysQuerySourceIdentify, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -10,12 +10,12 @@ import type { IQuadDestination } from './IQuadDestination';
 
 export function deskolemizeStream(stream: AsyncIterator<RDF.Quad> | undefined, id: string):
 AsyncIterator<RDF.Quad> | undefined {
-  return stream?.map(quad => FederatedQuadSource.deskolemizeQuad(quad, id));
+  return stream?.map(quad => deskolemizeQuad(quad, id));
 }
 
 export function deskolemize(action: IActionRdfUpdateQuads): IActionRdfUpdateQuads {
   const destination = action.context.get(KeysRdfUpdateQuads.destination);
-  const id = action.context.get<Map<any, string>>(KeysRdfResolveQuadPattern.sourceIds)?.get(destination);
+  const id = action.context.get<Map<any, string>>(KeysQuerySourceIdentify.sourceIds)?.get(destination);
   if (!id) {
     return action;
   }

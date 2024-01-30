@@ -1,5 +1,7 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import type { IActionRdfMetadataAccumulate,
+  MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
 import { ActionContext, Bus } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
 import { ArrayIterator } from 'asynciterator';
@@ -14,6 +16,7 @@ const BF = new BindingsFactory();
 describe('ActorQueryOperationPathAlt', () => {
   let bus: any;
   let mediatorQueryOperation: any;
+  let mediatorRdfMetadataAccumulate: MediatorRdfMetadataAccumulate;
   const factory: Factory = new Factory();
 
   beforeEach(() => {
@@ -34,6 +37,41 @@ describe('ActorQueryOperationPathAlt', () => {
         operated: arg,
         type: 'bindings',
       }),
+    };
+    mediatorRdfMetadataAccumulate = <any> {
+      async mediate(action: IActionRdfMetadataAccumulate) {
+        if (action.mode === 'initialize') {
+          return { metadata: { cardinality: { type: 'exact', value: 0 }, canContainUndefs: false }};
+        }
+
+        const metadata = { ...action.accumulatedMetadata };
+        const subMetadata = action.appendingMetadata;
+        if (!subMetadata.cardinality || !Number.isFinite(subMetadata.cardinality.value)) {
+          // We're already at infinite, so ignore any later metadata
+          metadata.cardinality.type = 'estimate';
+          metadata.cardinality.value = Number.POSITIVE_INFINITY;
+        } else {
+          if (subMetadata.cardinality.type === 'estimate') {
+            metadata.cardinality.type = 'estimate';
+          }
+          metadata.cardinality.value += subMetadata.cardinality.value;
+        }
+        if (metadata.requestTime || subMetadata.requestTime) {
+          metadata.requestTime = metadata.requestTime || 0;
+          subMetadata.requestTime = subMetadata.requestTime || 0;
+          metadata.requestTime += subMetadata.requestTime;
+        }
+        if (metadata.pageSize || subMetadata.pageSize) {
+          metadata.pageSize = metadata.pageSize || 0;
+          subMetadata.pageSize = subMetadata.pageSize || 0;
+          metadata.pageSize += subMetadata.pageSize;
+        }
+        if (subMetadata.canContainUndefs) {
+          metadata.canContainUndefs = true;
+        }
+
+        return { metadata };
+      },
     };
   });
 
@@ -58,7 +96,9 @@ describe('ActorQueryOperationPathAlt', () => {
     let actor: ActorQueryOperationPathAlt;
 
     beforeEach(() => {
-      actor = new ActorQueryOperationPathAlt({ name: 'actor', bus, mediatorQueryOperation });
+      actor = new ActorQueryOperationPathAlt(
+        { name: 'actor', bus, mediatorQueryOperation, mediatorRdfMetadataAccumulate },
+      );
     });
 
     it('should test on Alt paths', () => {

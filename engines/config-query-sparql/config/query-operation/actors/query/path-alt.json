@@ -10,7 +10,8 @@
     {
       "@id": "urn:comunica:default:query-operation/actors#path-alt",
       "@type": "ActorQueryOperationPathAlt",
-      "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" }
+      "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
+      "mediatorRdfMetadataAccumulate": { "@id": "urn:comunica:default:rdf-metadata-accumulate/mediators#main" }
     }
   ]
 }

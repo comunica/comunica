@@ -1,6 +1,6 @@
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
-import type { MetadataQuads } from '@comunica/types';
+import type { MetadataBindings } from '@comunica/types';
 
 /**
  * A comunica actor for rdf-metadata-accumulate events.
@@ -43,12 +43,12 @@ export interface IActionRdfMetadataAccumulateAppend extends IAction {
    * The metadata object that already has some accumulated fields.
    * This object should not be mutated.
    */
-  accumulatedMetadata: MetadataQuads;
+  accumulatedMetadata: MetadataBindings;
   /**
    * The metadata object with fields to append.
    * This object should not be mutated.
    */
-  appendingMetadata: MetadataQuads;
+  appendingMetadata: MetadataBindings;
 }
 
 export interface IActorRdfMetadataAccumulateOutput extends IActorOutput {
@@ -56,7 +56,7 @@ export interface IActorRdfMetadataAccumulateOutput extends IActorOutput {
    * The initialized or accumulated metadata object.
    * This should only contain those fields that are applicable to this actor.
    */
-  metadata: Partial<MetadataQuads>;
+  metadata: Partial<MetadataBindings>;
 }
 
 export type IActorRdfMetadataAccumulateArgs = IActorArgs<

@@ -3,6 +3,7 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
+import type { IQuerySourceWrapper } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -14,11 +15,14 @@ import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
+const AF = new Factory();
 
 describe('ActorQueryOperationPathZeroOrMore', () => {
   let bus: any;
   let mediatorQueryOperation: any;
   let mediatorMergeBindingsContext: any;
+  let source1: IQuerySourceWrapper;
+  let source2: IQuerySourceWrapper;
   const factory: Factory = new Factory();
 
   beforeEach(() => {
@@ -30,7 +34,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
     };
 
     mediatorQueryOperation = {
-      mediate(arg: any) {
+      mediate: jest.fn((arg: any) => {
         const vars: RDF.Variable[] = [];
         const distinct: boolean = arg.operation.type === 'distinct';
 
@@ -48,10 +52,10 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
         } else {
           for (const name of QUAD_TERM_NAMES) {
             if (arg.operation.input && (arg.operation.input[name].termType === 'Variable' ||
-          arg.operation.input[name].termType === 'BlankNode')) {
+            arg.operation.input[name].termType === 'BlankNode')) {
               vars.push(arg.operation.input[name]);
             } else if (arg.operation[name] && (arg.operation[name].termType === 'Variable' ||
-          arg.operation[name].termType === 'BlankNode')) {
+            arg.operation[name].termType === 'BlankNode')) {
               vars.push(arg.operation[name]);
             }
           }
@@ -86,8 +90,10 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
           operated: arg,
           type: 'bindings',
         });
-      },
+      }),
     };
+    source1 = <any> {};
+    source2 = <any> {};
   });
 
   describe('The ActorQueryOperationPathZeroOrMore module', () => {
@@ -162,7 +168,9 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
     it('should support ZeroOrMore paths (:s :p* ?o)', async() => {
       const op: any = { operation: factory.createPath(
         DF.namedNode('s'),
-        factory.createZeroOrMorePath(factory.createLink(DF.namedNode('p'))),
+        factory.createZeroOrMorePath(
+          ActorQueryOperation.assignOperationSource(factory.createLink(DF.namedNode('p')), source1),
+        ),
         DF.variable('x'),
       ),
       context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
@@ -180,7 +188,9 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
     it('should support ZeroOrMore paths (?s :p* :o)', async() => {
       const op: any = { operation: factory.createPath(
         DF.variable('x'),
-        factory.createZeroOrMorePath(factory.createLink(DF.namedNode('p'))),
+        factory.createZeroOrMorePath(
+          ActorQueryOperation.assignOperationSource(factory.createLink(DF.namedNode('p')), source1),
+        ),
         DF.namedNode('o'),
       ),
       context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
@@ -198,7 +208,9 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
     it('should support ZeroOrMore paths (:s :p* :o)', async() => {
       const op: any = { operation: factory.createPath(
         DF.namedNode('s'),
-        factory.createZeroOrMorePath(factory.createLink(DF.namedNode('p'))),
+        factory.createZeroOrMorePath(
+          ActorQueryOperation.assignOperationSource(factory.createLink(DF.namedNode('p')), source1),
+        ),
         DF.namedNode('1'),
       ),
       context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
@@ -213,7 +225,9 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
     it('should support ZeroOrMore paths (:s :p* :o) with variable graph', async() => {
       const op: any = { operation: factory.createPath(
         DF.namedNode('s'),
-        factory.createZeroOrMorePath(factory.createLink(DF.namedNode('p'))),
+        factory.createZeroOrMorePath(
+          ActorQueryOperation.assignOperationSource(factory.createLink(DF.namedNode('p')), source1),
+        ),
         DF.namedNode('1'),
         DF.variable('g'),
       ),
@@ -231,7 +245,9 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
     it('should support ZeroOrMore paths (:s :p* ?o) with variable graph', async() => {
       const op: any = { operation: factory.createPath(
         DF.namedNode('s'),
-        factory.createZeroOrMorePath(factory.createLink(DF.namedNode('p'))),
+        factory.createZeroOrMorePath(
+          ActorQueryOperation.assignOperationSource(factory.createLink(DF.namedNode('p')), source1),
+        ),
         DF.variable('x'),
         DF.variable('g'),
       ),
@@ -297,7 +313,9 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
     it('should support zeroOrMore paths with 2 variables', async() => {
       const op: any = { operation: factory.createPath(
         DF.variable('x'),
-        factory.createZeroOrMorePath(factory.createLink(DF.namedNode('p'))),
+        factory.createZeroOrMorePath(
+          ActorQueryOperation.assignOperationSource(factory.createLink(DF.namedNode('p')), source1),
+        ),
         DF.variable('y'),
       ),
       context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
@@ -382,7 +400,9 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
     it('should support zeroOrMore paths with 2 variables with variable graph', async() => {
       const op: any = { operation: factory.createPath(
         DF.variable('x'),
-        factory.createZeroOrMorePath(factory.createLink(DF.namedNode('p'))),
+        factory.createZeroOrMorePath(
+          ActorQueryOperation.assignOperationSource(factory.createLink(DF.namedNode('p')), source1),
+        ),
         DF.variable('y'),
         DF.variable('g'),
       ),
@@ -495,6 +515,39 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
           [ DF.variable('g'), DF.namedNode('6') ],
         ]),
       ]);
+    });
+
+    it('should support zeroOrMore paths with 2 variables with multiple sources on links', async() => {
+      const op: any = { operation: factory.createPath(
+        DF.variable('x'),
+        factory.createZeroOrMorePath(factory.createAlt([
+          ActorQueryOperation.assignOperationSource(factory.createLink(DF.namedNode('p')), source1),
+          ActorQueryOperation.assignOperationSource(factory.createLink(DF.namedNode('p')), source2),
+        ])),
+        DF.variable('y'),
+      ),
+      context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      expect(await output.metadata()).toEqual({
+        cardinality: { value: 3 },
+        canContainUndefs: false,
+        variables: [ DF.variable('x'), DF.variable('y') ],
+      });
+      expect(await output.bindingsStream.toArray()).toHaveLength(22);
+
+      expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
+        context: expect.any(ActionContext),
+        operation: AF.createUnion([
+          ActorQueryOperation.assignOperationSource(
+            AF.createPattern(DF.variable('x'), DF.variable('b'), DF.variable('y')),
+            source1,
+          ),
+          ActorQueryOperation.assignOperationSource(
+            AF.createPattern(DF.variable('x'), DF.variable('b'), DF.variable('y')),
+            source2,
+          ),
+        ]),
+      });
     });
   });
 });

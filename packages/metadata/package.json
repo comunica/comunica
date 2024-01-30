@@ -33,7 +33,9 @@
     "bin/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/types": "^2.10.0"
+    "@comunica/types": "^2.10.0",
+    "@rdfjs/types": "*",
+    "asynciterator": "^3.8.1"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

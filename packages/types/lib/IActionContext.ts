@@ -34,8 +34,8 @@ export interface IActionContext {
  *
  * To avoid entry conflicts, all keys must be properly namespaced using the following convention:
  * Each key name must be prefixed with the package name followed by a `:`.
- * For example, the `rdf-resolve-quad-pattern` bus declares the `sources` entry,
- * which should be named as `@comunica/bus-rdf-resolve-quad-pattern:sources`.
+ * For example, the `query-operation` bus declares the `operation` entry,
+ * which should be named as `@comunica/bus-query-operation:operation`.
  */
 export interface IActionContextKey<V> {
   readonly name: string;

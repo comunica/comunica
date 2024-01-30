@@ -44,10 +44,10 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
     it('should get no links for empty hydra properties', () => {
       const hydraProperties = {};
       return expect(actor.getLinks('myPage', hydraProperties)).toEqual({
-        first: null,
-        last: null,
-        next: null,
-        previous: null,
+        first: [],
+        last: [],
+        next: [],
+        previous: [],
       });
     });
 
@@ -60,10 +60,10 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
         somethingElse: { myPage: [ 'next1' ]},
       };
       return expect(actor.getLinks('myPage', hydraProperties)).toEqual({
-        first: 'first1',
-        last: 'last1',
-        next: 'next1',
-        previous: 'previous1',
+        first: [ 'first1' ],
+        last: [ 'last1' ],
+        next: [ 'next1' ],
+        previous: [ 'previous1' ],
       });
     });
 
@@ -406,10 +406,10 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
       url: 'mypage',
       requestTime: 0,
       context })).resolves.toMatchObject({ metadata: {
-        first: 'first',
-        last: 'last',
-        next: 'next',
-        previous: 'previous',
+        first: [ 'first' ],
+        last: [ 'last' ],
+        next: [ 'next' ],
+        previous: [ 'previous' ],
         searchForms: {
           values: [
             {

@@ -1,17 +1,21 @@
-import { KeysInitQuery, KeysQueryOperation, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultVoid } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import { Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationLoad } from '../lib/ActorQueryOperationLoad';
 
 const DF = new DataFactory();
+const AF = new Factory();
 
 describe('ActorQueryOperationLoad', () => {
   let bus: any;
   let mediatorQueryOperation: any;
   let mediatorUpdateQuads: any;
+  let mediatorQuerySourceIdentify: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -29,13 +33,20 @@ describe('ActorQueryOperationLoad', () => {
         execute: () => Promise.resolve(),
       })),
     };
+    mediatorQuerySourceIdentify = {
+      mediate: jest.fn(() => Promise.resolve({
+        querySource: 'SRC',
+      })),
+    };
   });
 
   describe('An ActorQueryOperationLoad instance', () => {
     let actor: ActorQueryOperationLoad;
 
     beforeEach(() => {
-      actor = new ActorQueryOperationLoad({ name: 'actor', bus, mediatorQueryOperation, mediatorUpdateQuads });
+      actor = new ActorQueryOperationLoad(
+        { name: 'actor', bus, mediatorQueryOperation, mediatorUpdateQuads, mediatorQuerySourceIdentify },
+      );
     });
 
     it('should test on load', () => {
@@ -72,9 +83,14 @@ describe('ActorQueryOperationLoad', () => {
       ]);
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamDeleted).toBeUndefined();
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
-        operation: expect.anything(),
+        operation: AF.createConstruct(
+          ActorQueryOperation.assignOperationSource(
+            AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+            <any> 'SRC',
+          ),
+          [ AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')) ],
+        ),
         context: new ActionContext({
-          [KeysRdfResolveQuadPattern.sources.name]: [ 'URL' ],
           [KeysQueryOperation.operation.name]: expect.anything(),
         }),
       });
@@ -86,9 +102,7 @@ describe('ActorQueryOperationLoad', () => {
           type: 'load',
           source: DF.namedNode('URL'),
         },
-        context: new ActionContext({
-          [KeysRdfResolveQuadPattern.sources.name]: [ 'SOMETHINGELSE' ],
-        }),
+        context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toEqual('void');
@@ -100,7 +114,6 @@ describe('ActorQueryOperationLoad', () => {
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
         operation: expect.anything(),
         context: new ActionContext({
-          [KeysRdfResolveQuadPattern.sources.name]: [ 'URL' ],
           '@comunica/bus-query-operation:operation': expect.anything(),
         }),
       });
@@ -180,7 +193,6 @@ describe('ActorQueryOperationLoad', () => {
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
         operation: expect.anything(),
         context: new ActionContext({
-          [KeysRdfResolveQuadPattern.sources.name]: [ 'URL' ],
           [KeysInitQuery.lenient.name]: true,
           [KeysQueryOperation.operation.name]: expect.anything(),
         }),

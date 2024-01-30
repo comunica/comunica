@@ -46,7 +46,7 @@ describe('ActorRdfResolveHypermediaLinksNext', () => {
     });
 
     it('should run', () => {
-      return expect(actor.run({ metadata: { next: 'NEXT' }, context }))
+      return expect(actor.run({ metadata: { next: [ 'NEXT' ]}, context }))
         .resolves.toMatchObject({ links: [{ url: 'NEXT' }]});
     });
   });

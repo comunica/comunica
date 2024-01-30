@@ -1,4 +1,4 @@
-import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import type { MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
 import type {
   MediatorRdfJoinSelectivity,
 } from '@comunica/bus-rdf-join-selectivity';
@@ -6,7 +6,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IAction, IActorArgs, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import { MetadataValidationState } from '@comunica/metadata';
+import { cachifyMetadata, MetadataValidationState } from '@comunica/metadata';
 import type {
   IQueryOperationResultBindings, MetadataBindings,
   IPhysicalQueryPlanLogger, Bindings, IActionContext, IJoinEntry, IJoinEntryWithMetadata,
@@ -222,6 +222,80 @@ export abstract class ActorRdfJoin
   }
 
   /**
+   * Order the given join entries using the join-entries-sort bus.
+   * @param {MediatorRdfJoinEntriesSort} mediatorJoinEntriesSort A mediator for sorting join entries.
+   * @param {IJoinEntryWithMetadata[]} entries An array of join entries.
+   * @param context The action context.
+   * @return {IJoinEntryWithMetadata[]} The sorted join entries.
+   */
+  public static async sortJoinEntries(
+    mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort,
+    entries: IJoinEntryWithMetadata[],
+    context: IActionContext,
+  ): Promise<IJoinEntryWithMetadata[]> {
+    // If there is a stream that can contain undefs, we don't modify the join order.
+    const canContainUndefs = entries.some(entry => entry.metadata.canContainUndefs);
+    if (canContainUndefs) {
+      return entries;
+    }
+
+    // Calculate number of occurrences of each variable
+    const variableOccurrences: Record<string, number> = {};
+    for (const entry of entries) {
+      for (const variable of entry.metadata.variables) {
+        let counter = variableOccurrences[variable.value];
+        if (!counter) {
+          counter = 0;
+        }
+        variableOccurrences[variable.value] = ++counter;
+      }
+    }
+
+    // Determine variables that occur in at least two join entries
+    const multiOccurrenceVariables: string[] = [];
+    for (const [ variable, count ] of Object.entries(variableOccurrences)) {
+      if (count >= 2) {
+        multiOccurrenceVariables.push(variable);
+      }
+    }
+
+    // Reject if no entries have common variables
+    if (multiOccurrenceVariables.length === 0) {
+      throw new Error(`Bind join can only join entries with at least one common variable`);
+    }
+
+    // Determine entries without common variables
+    // These will be placed in the back of the sorted array
+    const entriesWithoutCommonVariables: IJoinEntryWithMetadata[] = [];
+    for (const entry of entries) {
+      let hasCommon = false;
+      for (const variable of entry.metadata.variables) {
+        if (multiOccurrenceVariables.includes(variable.value)) {
+          hasCommon = true;
+          break;
+        }
+      }
+      if (!hasCommon) {
+        entriesWithoutCommonVariables.push(entry);
+      }
+    }
+
+    return (await mediatorJoinEntriesSort.mediate({ entries, context })).entries
+      .sort((entryLeft, entryRight) => {
+        // Sort to make sure that entries without common variables come last in the array.
+        // For all other entries, the original order is kept.
+        const leftWithoutCommonVariables = entriesWithoutCommonVariables.includes(entryLeft);
+        const rightWithoutCommonVariables = entriesWithoutCommonVariables.includes(entryRight);
+        if (leftWithoutCommonVariables === rightWithoutCommonVariables) {
+          return 0;
+        }
+        return leftWithoutCommonVariables ?
+          1 :
+          -1;
+      });
+  }
+
+  /**
    * Default test function for join actors.
    * Checks whether all iterators have metadata.
    * If yes: call the abstract getIterations method, if not: return Infinity.
@@ -309,7 +383,7 @@ export abstract class ActorRdfJoin
     }
 
     // Cache metadata
-    result.metadata = ActorQueryOperation.cachifyMetadata(result.metadata);
+    result.metadata = cachifyMetadata(result.metadata);
 
     return result;
   }

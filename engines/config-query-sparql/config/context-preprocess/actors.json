@@ -2,7 +2,9 @@
   "@context": [
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^2.0.0/components/context.jsonld",
 
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-context-preprocess-source-to-destination/^2.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-context-preprocess-source-to-destination/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-context-preprocess-query-source-identify/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-context-preprocess-query-source-skolemize/^1.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:default:Runner",
   "@type": "Runner",
@@ -10,6 +12,16 @@
     {
       "@id": "urn:comunica:default:context-preprocess/actors#source-to-destination",
       "@type": "ActorContextPreprocessSourceToDestination"
+    },
+    {
+      "@id": "urn:comunica:default:context-preprocess/actors#query-source-identify",
+      "@type": "ActorContextPreprocessQuerySourceIdentify",
+      "mediatorQuerySourceIdentify": { "@id": "urn:comunica:default:query-source-identify/mediators#main" },
+      "beforeActors": { "@id": "urn:comunica:default:context-preprocess/actors#query-source-skolemize" }
+    },
+    {
+      "@id": "urn:comunica:default:context-preprocess/actors#query-source-skolemize",
+      "@type": "ActorContextPreprocessQuerySourceSkolemize"
     }
   ]
 }

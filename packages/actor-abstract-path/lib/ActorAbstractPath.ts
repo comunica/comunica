@@ -6,7 +6,8 @@ import {
 } from '@comunica/bus-query-operation';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
-import type { IQueryOperationResultBindings, Bindings, IActionContext, MetadataBindings } from '@comunica/types';
+import type { IQueryOperationResultBindings, Bindings, IActionContext, MetadataBindings,
+  IQuerySourceWrapper } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import {
@@ -15,8 +16,7 @@ import {
 } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
-import type { Algebra } from 'sparqlalgebrajs';
-import { Factory } from 'sparqlalgebrajs';
+import { Algebra, Factory } from 'sparqlalgebrajs';
 import { PathVariableObjectIterator } from './PathVariableObjectIterator';
 
 const DF = new DataFactory();
@@ -84,13 +84,14 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     context: IActionContext,
     bindingsFactory: BindingsFactory,
   ): Promise<IPathResultStream> {
+    const sources = this.getPathSources(predicate);
     // TODO: refactor this with an iterator just like PathVariableObjectIterator so we handle backpressure correctly
     // Construct path to obtain all graphs where subject exists
     const predVar = this.generateVariable(ActorAbstractPath.FACTORY
       .createPath(subject, predicate, object, graph));
     const findGraphs = ActorAbstractPath.FACTORY.createUnion([
-      ActorAbstractPath.FACTORY.createPattern(subject, predVar, object, graph),
-      ActorAbstractPath.FACTORY.createPattern(object, predVar, subject, graph),
+      this.assignPatternSources(ActorAbstractPath.FACTORY.createPattern(subject, predVar, object, graph), sources),
+      this.assignPatternSources(ActorAbstractPath.FACTORY.createPattern(object, predVar, subject, graph), sources),
     ]);
     const results = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ context, operation: findGraphs }),
@@ -350,6 +351,43 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
 
     // Set it in the termHashesGlobal when this object occurs again they can wait for this promise
     termHashesGlobal[termString] = promise;
+  }
+
+  /**
+   * Find all sources recursively contained in the given path operation.
+   * @param operation
+   */
+  public getPathSources(operation: Algebra.PropertyPathSymbol): IQuerySourceWrapper[] {
+    switch (operation.type) {
+      case Algebra.types.ALT:
+      case Algebra.types.SEQ:
+        return operation.input
+          .flatMap((subOp: Algebra.PropertyPathSymbol) => this.getPathSources(subOp));
+      case Algebra.types.INV:
+      case Algebra.types.ONE_OR_MORE_PATH:
+      case Algebra.types.ZERO_OR_MORE_PATH:
+      case Algebra.types.ZERO_OR_ONE_PATH:
+        return this.getPathSources(operation.path);
+      case Algebra.types.LINK:
+      case Algebra.types.NPS: {
+        const source = ActorQueryOperation.getOperationSource(operation);
+        if (!source) {
+          throw new Error(`Could not find a required source on a link path operation`);
+        }
+        return [ source ];
+      }
+    }
+  }
+
+  public assignPatternSources(pattern: Algebra.Pattern, sources: IQuerySourceWrapper[]): Algebra.Operation {
+    if (sources.length === 0) {
+      throw new Error(`Attempted to assign zero sources to a pattern during property path handling`);
+    }
+    if (sources.length === 1) {
+      return ActorQueryOperation.assignOperationSource(pattern, sources[0]);
+    }
+    return ActorAbstractPath.FACTORY.createUnion(sources
+      .map(source => ActorQueryOperation.assignOperationSource(pattern, source)), true);
   }
 }
 

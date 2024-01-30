@@ -238,7 +238,9 @@ describe('ActorQueryOperationPathOneOrMore', () => {
     it('should support OneOrMore paths (:s :p+ ?o) with variable graph', async() => {
       const op: any = { operation: factory.createPath(
         DF.namedNode('s'),
-        factory.createOneOrMorePath(factory.createLink(DF.namedNode('p'))),
+        factory.createOneOrMorePath(
+          ActorQueryOperation.assignOperationSource(factory.createLink(DF.namedNode('p')), <any> {}),
+        ),
         DF.variable('o'),
         DF.variable('g'),
       ),

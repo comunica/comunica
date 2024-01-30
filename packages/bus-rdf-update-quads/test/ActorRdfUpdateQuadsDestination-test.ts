@@ -1,6 +1,6 @@
 import type { EventEmitter } from 'stream';
-import { FederatedQuadSource } from '@comunica/actor-rdf-resolve-quad-pattern-federated';
-import { KeysRdfResolveQuadPattern, KeysRdfUpdateQuads } from '@comunica/context-entries';
+import { skolemizeQuad } from '@comunica/actor-context-preprocess-query-source-skolemize';
+import { KeysQuerySourceIdentify, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -88,12 +88,12 @@ describe('ActorRdfUpdateQuadsDestination', () => {
       const store = new Store();
       const context: IActionContext = new ActionContext({
         [KeysRdfUpdateQuads.destination.name]: store,
-        [KeysRdfResolveQuadPattern.sourceIds.name]: new Map([[ store, '1' ]]),
+        [KeysQuerySourceIdentify.sourceIds.name]: new Map([[ store, '1' ]]),
       });
 
       const output: IActorRdfUpdateQuadsOutput = await actor.run({
         quadStreamInsert: new ArrayIterator([
-          FederatedQuadSource.skolemizeQuad(q, '1'),
+          skolemizeQuad(q, '1'),
         ], { autoStart: false }),
         quadStreamDelete: new ArrayIterator([], { autoStart: false }),
         context,
@@ -113,12 +113,12 @@ describe('ActorRdfUpdateQuadsDestination', () => {
       const store = new Store();
       const context: IActionContext = new ActionContext({
         [KeysRdfUpdateQuads.destination.name]: store,
-        [KeysRdfResolveQuadPattern.sourceIds.name]: new Map([[ store, '2' ]]),
+        [KeysQuerySourceIdentify.sourceIds.name]: new Map([[ store, '2' ]]),
       });
 
       const output: IActorRdfUpdateQuadsOutput = await actor.run({
         quadStreamInsert: new ArrayIterator([
-          FederatedQuadSource.skolemizeQuad(q, '1'),
+          skolemizeQuad(q, '1'),
         ], { autoStart: false }),
         quadStreamDelete: new ArrayIterator([], { autoStart: false }),
         context,

@@ -55,6 +55,9 @@
     "PathVariableObjectIterator",
     "ClosableTransformIterator",
     "MetadataValidationState",
+    "FragmentSelectorShape",
+    "ChunkedIterator",
+    "IQuerySource",
 
     "RDF.Stream",
     "Omit",

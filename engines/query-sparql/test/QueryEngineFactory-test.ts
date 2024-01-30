@@ -17,7 +17,7 @@ describe('Query with engine from QueryEngineFactory', () => {
   it('should return the valid result with a turtle data source', async() => {
     const value = '<ex:s> <ex:p> <ex:o>. <ex:s> <ex:p2> <ex:o2>.';
     const context: QueryStringContext = { sources: [
-      { type: 'stringSource',
+      { type: 'serialized',
         value,
         mediaType: 'text/turtle',
         baseIRI: 'http://example.org/' },

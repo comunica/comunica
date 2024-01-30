@@ -4,11 +4,10 @@ import type { Bindings,
   QueryExplainMode,
   IProxyHandler,
   ICliArgsHandler,
-  DataSources,
-  IDataSource,
   IDataDestination,
   MetadataBindings, FunctionArgumentsCache,
-  IAggregatedStore } from '@comunica/types';
+  IAggregatedStore,
+  QuerySourceUnidentified, IQuerySourceWrapper, QuerySourceReference } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { IDocumentLoader } from 'jsonld-context-parser';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -87,6 +86,12 @@ export const KeysHttpProxy = {
 };
 
 export const KeysInitQuery = {
+  /**
+   * The unidentified sources to query over.
+   */
+  querySourcesUnidentified: new ActionContextKey<QuerySourceUnidentified[]>(
+    '@comunica/actor-init-query:querySourcesUnidentified',
+  ),
   /**
    * Variables that have to be pre-bound to values in the query.
    */
@@ -210,6 +215,10 @@ export const KeysQueryOperation = {
    * If the default graph should also contain the union of all named graphs.
    */
   unionDefaultGraph: new ActionContextKey<boolean>('@comunica/bus-query-operation:unionDefaultGraph'),
+  /**
+   * The sources to query over.
+   */
+  querySources: new ActionContextKey<IQuerySourceWrapper[]>('@comunica/bus-query-operation:querySources'),
 };
 
 export const KeysRdfParseJsonLd = {
@@ -238,24 +247,18 @@ export const KeysRdfParseHtmlScript = {
   extractAllScripts: new ActionContextKey<boolean>('extractAllScripts'),
 };
 
-export const KeysRdfResolveQuadPattern = {
-  /**
-   * Data sources.
-   */
-  sources: new ActionContextKey<DataSources>('@comunica/bus-rdf-resolve-quad-pattern:sources'),
-  /**
-   * A data source.
-   */
-  source: new ActionContextKey<IDataSource>('@comunica/bus-rdf-resolve-quad-pattern:source'),
+export const KeysQuerySourceIdentify = {
   /**
    * A map containing unique IDs for each source
    */
-  sourceIds: new ActionContextKey<Map<IDataSource, string>>('@comunica/bus-rdf-resolve-quad-pattern:sourceIds'),
+  sourceIds: new ActionContextKey<Map<QuerySourceReference, string>>(
+    '@comunica/bus-query-source-identify:sourceIds',
+  ),
   /**
    * Hypermedia sources mapping to their aggregated store.
    */
   hypermediaSourcesAggregatedStores: new ActionContextKey<Map<string, IAggregatedStore>>(
-    '@comunica/bus-rdf-resolve-quad-pattern:hypermediaSourcesAggregatedStores',
+    '@comunica/bus-query-source-identify:hypermediaSourcesAggregatedStores',
   ),
 };
 
@@ -264,4 +267,11 @@ export const KeysRdfUpdateQuads = {
    * A data destination.
    */
   destination: new ActionContextKey<IDataDestination>('@comunica/bus-rdf-update-quads:destination'),
+};
+
+export const KeysRdfJoin = {
+  /**
+   * The last physical join actor that was executed.
+   */
+  lastPhysicalJoin: new ActionContextKey<string>('@comunica/bus-rdf-join:lastPhysicalJoin'),
 };

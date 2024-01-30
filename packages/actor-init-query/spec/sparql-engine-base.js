@@ -8,9 +8,15 @@ module.exports = function(engine) {
       return engine.actorInitQuery.mediatorQueryParse.mediate({ query: query, baseIRI: options.baseIRI });
     },
     query: function(data, queryString, options) {
-      return this.queryLdf([{ type: 'rdfjsSource', value: source(data) }], null, queryString, options);
+      return this.queryLdf([{ type: 'rdfjs', value: source(data) }], null, queryString, options);
     },
     queryLdf: async function(sources, proxyUrl, queryString, options) {
+      sources = sources.map(source => {
+        if (source.type === 'rdfjsSource') {
+          source.type = 'rdfjs';
+        }
+        return source;
+      });
       const result = await engine.query(queryString, {
         baseIRI: options.baseIRI,
         sources,
@@ -38,7 +44,7 @@ module.exports = function(engine) {
       const store = await source(data);
       const result = await engine.query(queryString, {
         baseIRI: options.baseIRI,
-        source: { type: 'rdfjsSource', value: store },
+        sources: [{ type: 'rdfjs', value: store }],
         destination: store,
       });
       await result.execute();

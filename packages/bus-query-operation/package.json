@@ -36,11 +36,13 @@
     "@comunica/core": "^2.10.0",
     "@comunica/data-factory": "^2.7.0",
     "@comunica/types": "^2.10.0",
+    "@comunica/metadata": "^2.10.0",
     "@rdfjs/types": "*",
     "asynciterator": "^3.8.1",
+    "rdf-data-factory": "^1.1.2",
     "rdf-string": "^1.6.1",
     "rdf-terms": "^1.11.0",
-    "sparqlalgebrajs": "^4.2.0"
+    "sparqlalgebrajs": "^4.3.3"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

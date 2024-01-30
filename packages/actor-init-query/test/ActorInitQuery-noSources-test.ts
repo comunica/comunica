@@ -1,8 +1,4 @@
-import {
-  KeysCore,
-  KeysInitQuery,
-  KeysRdfResolveQuadPattern,
-} from '@comunica/context-entries';
+import { KeysCore, KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
 import type { IActionContext, IPhysicalQueryPlanLogger } from '@comunica/types';
@@ -35,8 +31,7 @@ describe('ActorInitQuery', () => {
     initialBindings: '@comunica/actor-init-query:initialBindings',
     log: '@comunica/core:log',
     queryFormat: '@comunica/actor-init-query:queryFormat',
-    source: '@comunica/bus-rdf-resolve-quad-pattern:source',
-    sources: '@comunica/bus-rdf-resolve-quad-pattern:sources',
+    sources: '@comunica/actor-init-query:querySourcesUnidentified',
   };
   const defaultQueryInputFormat = 'sparql';
   const sourceHypermedia = 'http://example.org/';
@@ -155,7 +150,7 @@ describe('ActorInitQuery', () => {
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          [KeysRdfResolveQuadPattern.sources.name]: [{ value: 'SOURCE' }],
+          [KeysInitQuery.querySourcesUnidentified.name]: [{ value: 'SOURCE' }],
           [KeysCore.log.name]: expect.any(LoggerPretty),
         });
       });

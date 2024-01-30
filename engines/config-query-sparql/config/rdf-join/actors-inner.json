@@ -3,8 +3,10 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^2.0.0/components/context.jsonld",
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-inner-multi-bind/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-inner-multi-bind-source/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-inner-multi-empty/^2.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-inner-multi-smallest/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-inner-multi-smallest-filter-bindings/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-inner-hash/^2.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-inner-symmetrichash/^2.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-inner-nestedloop/^2.0.0/components/context.jsonld",
@@ -29,6 +31,12 @@
       "@id": "urn:comunica:default:rdf-join/actors#inner-multi-empty",
       "@type": "ActorRdfJoinMultiEmpty",
       "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" }
+    },
+    {
+      "@id": "urn:comunica:default:rdf-join/actors#inner-multi-bind-source",
+      "@type": "ActorRdfJoinMultiBindSource",
+      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
+      "mediatorJoinEntriesSort": { "@id": "urn:comunica:default:rdf-join-entries-sort/mediators#main" }
     },
     {
       "@id": "urn:comunica:default:rdf-join/actors#inner-multi-bind",
@@ -56,6 +64,13 @@
     {
       "@id": "urn:comunica:default:rdf-join/actors#inner-multi-smallest",
       "@type": "ActorRdfJoinMultiSmallest",
+      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
+      "mediatorJoinEntriesSort": { "@id": "urn:comunica:default:rdf-join-entries-sort/mediators#main" },
+      "mediatorJoin": { "@id": "urn:comunica:default:rdf-join/mediators#main" }
+    },
+    {
+      "@id": "urn:comunica:default:rdf-join/actors#inner-multi-smallest-filter-bindings",
+      "@type": "ActorRdfJoinMultiSmallestFilterBindings",
       "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
       "mediatorJoinEntriesSort": { "@id": "urn:comunica:default:rdf-join-entries-sort/mediators#main" },
       "mediatorJoin": { "@id": "urn:comunica:default:rdf-join/mediators#main" }

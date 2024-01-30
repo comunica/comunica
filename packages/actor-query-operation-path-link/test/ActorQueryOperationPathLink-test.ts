@@ -79,5 +79,24 @@ describe('ActorQueryOperationPathLink', () => {
         BF.bindings([[ DF.variable('x'), DF.literal('3') ]]),
       ]);
     });
+
+    it('should support Link paths with metadata', async() => {
+      const op: any = {
+        operation: factory
+          .createPath(DF.namedNode('s'), factory.createLink(DF.namedNode('p')), DF.variable('x')),
+        context: new ActionContext(),
+      };
+      op.operation.predicate.metadata = { a: 'b' };
+
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('3') ]]),
+      ]);
+
+      expect((<any> output).operated.operation.metadata).toEqual({ a: 'b' });
+    });
   });
 });

@@ -18,8 +18,8 @@ export class ActorQueryOperationPathNps extends ActorAbstractPath {
     const predicate = <Algebra.Nps> operation.predicate;
     const blank = this.generateVariable(operation);
 
-    const pattern = ActorAbstractPath.FACTORY
-      .createPattern(operation.subject, blank, operation.object, operation.graph);
+    const pattern = Object.assign(ActorAbstractPath.FACTORY
+      .createPattern(operation.subject, blank, operation.object, operation.graph), { metadata: predicate.metadata });
     const output = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: pattern, context }),
     );

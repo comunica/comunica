@@ -60,6 +60,17 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.patterns[0].equals(quad('s', 'p', 'o', 'g'))).toBeTruthy();
     });
 
+    it('should transform a BGP with a default graph pattern and keep metadata', () => {
+      const metadata = { a: 'b' };
+      const result = ActorQueryOperationFromQuad.applyOperationDefaultGraph(
+        { patterns: [ Object.assign(quad('s', 'p', 'o'), { type: 'pattern', metadata }) ], type: Algebra.types.BGP },
+        [ DF.namedNode('g') ],
+      );
+      expect(result.type).toEqual('bgp');
+      expect(result.patterns[0].equals(quad('s', 'p', 'o', 'g'))).toBeTruthy();
+      expect(result.patterns[0].metadata).toBe(metadata);
+    });
+
     it('should not transform a BGP with a non-default graph pattern', () => {
       const result = ActorQueryOperationFromQuad.applyOperationDefaultGraph(
         { patterns: [ Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }) ], type: Algebra.types.BGP },

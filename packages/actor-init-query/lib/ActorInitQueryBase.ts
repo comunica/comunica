@@ -131,8 +131,7 @@ export interface IActorInitQueryBaseArgs<QueryContext extends IQueryContextCommo
    * A record of context shortcuts to full context keys (as defined in @comunica/context-entries).
    * @range {json}
    * @default {{
-   *   "source": "@comunica/bus-rdf-resolve-quad-pattern:source",
-   *   "sources": "@comunica/bus-rdf-resolve-quad-pattern:sources",
+   *   "sources": "@comunica/actor-init-query:querySourcesUnidentified",
    *   "destination": "@comunica/bus-rdf-update-quads:destination",
    *   "initialBindings": "@comunica/actor-init-query:initialBindings",
    *   "queryFormat": "@comunica/actor-init-query:queryFormat",

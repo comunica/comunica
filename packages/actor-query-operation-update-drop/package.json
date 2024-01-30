@@ -38,7 +38,7 @@
     "@comunica/types": "^2.10.0",
     "@rdfjs/types": "*",
     "rdf-data-factory": "^1.1.1",
-    "sparqlalgebrajs": "^4.2.0"
+    "sparqlalgebrajs": "^4.3.3"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",

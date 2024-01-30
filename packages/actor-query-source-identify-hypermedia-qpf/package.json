@@ -1,0 +1,58 @@
+{
+  "name": "@comunica/actor-query-source-identify-hypermedia-qpf",
+  "version": "1.0.0",
+  "description": "A qpf query-source-identify-hypermedia actor",
+  "lsd:module": true,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/actor-query-source-identify-hypermedia-qpf"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false,
+  "keywords": [
+    "comunica",
+    "actor",
+    "query-source-identify-hypermedia",
+    "qpf"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
+  "homepage": "https://comunica.dev/",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.js.map"
+  ],
+  "dependencies": {
+    "@comunica/context-entries": "^2.8.0",
+    "@comunica/actor-rdf-metadata-extract-hydra-controls": "^2.8.0",
+    "@comunica/bus-dereference-rdf": "^2.8.0",
+    "@comunica/bus-rdf-metadata": "^2.8.0",
+    "@comunica/bus-rdf-metadata-extract": "^2.8.0",
+    "@comunica/bus-query-source-identify": "^1.0.0",
+    "@comunica/bus-query-source-identify-hypermedia": "^1.0.0",
+    "@comunica/bus-merge-bindings-context": "^2.0.0",
+    "@comunica/bindings-factory": "^2.7.0",
+    "@comunica/types": "^2.8.0",
+    "@rdfjs/types": "*",
+    "asynciterator": "^3.8.1",
+    "rdf-data-factory": "^1.1.1",
+    "rdf-string": "^1.6.1",
+    "rdf-string-ttl": "^1.3.2",
+    "rdf-terms": "^1.11.0",
+    "sparqlalgebrajs": "^4.3.3"
+  },
+  "scripts": {
+    "build": "npm run build:ts && npm run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
+  }
+}

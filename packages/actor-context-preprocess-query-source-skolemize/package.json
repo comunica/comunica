@@ -1,0 +1,52 @@
+{
+  "name": "@comunica/actor-context-preprocess-query-source-skolemize",
+  "version": "1.0.0",
+  "description": "A query-source-skolemize context-preprocess actor",
+  "lsd:module": true,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/actor-context-preprocess-query-source-skolemize"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false,
+  "keywords": [
+    "comunica",
+    "actor",
+    "context-preprocess",
+    "query-source-skolemize"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
+  "homepage": "https://comunica.dev/",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.js.map"
+  ],
+  "dependencies": {
+    "@comunica/core": "^2.8.0",
+    "@comunica/bus-context-preprocess": "^2.8.0",
+    "@comunica/context-entries": "^2.8.0",
+    "@comunica/metadata": "^2.8.0",
+    "@comunica/data-factory": "^2.7.0",
+    "@comunica/types": "^2.8.0",
+    "@rdfjs/types": "*",
+    "rdf-data-factory": "^1.1.2",
+    "rdf-terms": "^1.11.0",
+    "asynciterator": "^3.8.1",
+    "sparqlalgebrajs": "^4.3.0"
+  },
+  "scripts": {
+    "build": "npm run build:ts && npm run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
+  }
+}

@@ -1,33 +1,95 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import type { IActionRdfMetadataAccumulate,
+  MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
 import { ActionContext, Bus } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
-import type { IQueryOperationResultBindings } from '@comunica/types';
+import type {
+  IActionContext,
+  IQueryOperationResultBindings,
+  IQueryOperationResultQuads, MetadataQuads,
+} from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationUnion } from '../lib/ActorQueryOperationUnion';
 import '@comunica/jest';
+import 'jest-rdf';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
 
 describe('ActorQueryOperationUnion', () => {
+  let context: IActionContext;
   let bus: any;
   let mediatorQueryOperation: any;
+  let mediatorRdfMetadataAccumulate: MediatorRdfMetadataAccumulate;
   let op3: () => any;
   let op2: () => any;
   let op2Undef: () => any;
+  let opq1: () => any;
+  let opq2: () => any;
+  let opb1: () => any;
 
   beforeEach(() => {
+    context = new ActionContext();
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: (arg: any) => Promise.resolve({
-        bindingsStream: arg.operation.stream,
-        metadata: arg.operation.metadata,
-        type: 'bindings',
-        variables: arg.operation.variables,
-        canContainUndefs: arg.operation.canContainUndefs,
-      }),
+      async mediate(arg: any) {
+        if (arg.operation.type === 'quads') {
+          return {
+            quadStream: arg.operation.stream,
+            metadata: arg.operation.metadata,
+            type: 'quads',
+          };
+        }
+        if (arg.operation.type === 'boolean') {
+          return {
+            type: 'boolean',
+          };
+        }
+        return {
+          bindingsStream: arg.operation.stream,
+          metadata: arg.operation.metadata,
+          type: 'bindings',
+          variables: arg.operation.variables,
+          canContainUndefs: arg.operation.canContainUndefs,
+        };
+      },
+    };
+    mediatorRdfMetadataAccumulate = <any> {
+      async mediate(action: IActionRdfMetadataAccumulate) {
+        if (action.mode === 'initialize') {
+          return { metadata: { cardinality: { type: 'exact', value: 0 }, canContainUndefs: false }};
+        }
+
+        const metadata = { ...action.accumulatedMetadata };
+        const subMetadata = action.appendingMetadata;
+        if (!subMetadata.cardinality || !Number.isFinite(subMetadata.cardinality.value)) {
+          // We're already at infinite, so ignore any later metadata
+          metadata.cardinality.type = 'estimate';
+          metadata.cardinality.value = Number.POSITIVE_INFINITY;
+        } else {
+          if (subMetadata.cardinality.type === 'estimate') {
+            metadata.cardinality.type = 'estimate';
+          }
+          metadata.cardinality.value += subMetadata.cardinality.value;
+        }
+        if (metadata.requestTime || subMetadata.requestTime) {
+          metadata.requestTime = metadata.requestTime || 0;
+          subMetadata.requestTime = subMetadata.requestTime || 0;
+          metadata.requestTime += subMetadata.requestTime;
+        }
+        if (metadata.pageSize || subMetadata.pageSize) {
+          metadata.pageSize = metadata.pageSize || 0;
+          subMetadata.pageSize = subMetadata.pageSize || 0;
+          metadata.pageSize += subMetadata.pageSize;
+        }
+        if (subMetadata.canContainUndefs) {
+          metadata.canContainUndefs = true;
+        }
+
+        return { metadata };
+      },
     };
     op3 = () => ({
       metadata: () => Promise.resolve({
@@ -68,6 +130,31 @@ describe('ActorQueryOperationUnion', () => {
         BF.bindings([[ DF.variable('b'), DF.literal('2') ]]),
       ]),
       type: 'bindings',
+    });
+    opq1 = () => ({
+      metadata: () => Promise.resolve({
+        state: new MetadataValidationState(),
+        cardinality: { type: 'estimate', value: 2 },
+      }),
+      stream: new ArrayIterator([
+        DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
+        DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
+      ], { autoStart: false }),
+      type: 'quads',
+    });
+    opq2 = () => ({
+      metadata: () => Promise.resolve({
+        state: new MetadataValidationState(),
+        cardinality: { type: 'estimate', value: 2 },
+      }),
+      stream: new ArrayIterator([
+        DF.quad(DF.namedNode('s3'), DF.namedNode('p3'), DF.namedNode('o3')),
+        DF.quad(DF.namedNode('s4'), DF.namedNode('p4'), DF.namedNode('o4')),
+      ], { autoStart: false }),
+      type: 'quads',
+    });
+    opb1 = () => ({
+      type: 'boolean',
     });
   });
 
@@ -142,62 +229,79 @@ describe('ActorQueryOperationUnion', () => {
   });
 
   describe('ActorQueryOperationUnion#unionMetadata', () => {
-    it('should return 0 items for an empty input', () => {
-      return expect(ActorQueryOperationUnion.unionMetadata([], false))
+    it('should return 0 items for an empty input', async() => {
+      expect(await ActorQueryOperationUnion.unionMetadata([], false, context, mediatorRdfMetadataAccumulate))
         .toMatchObject({ cardinality: { type: 'exact', value: 0 }, canContainUndefs: false });
     });
 
-    it('should return 1 items for a single input with 1', () => {
-      return expect(ActorQueryOperationUnion.unionMetadata([
-        { state: new MetadataValidationState(), cardinality: { type: 'estimate', value: 1 }, canContainUndefs: false },
-      ], false))
+    it('should return 1 items for a single input with 1', async() => {
+      expect(await ActorQueryOperationUnion.unionMetadata([{
+        state: new MetadataValidationState(),
+        cardinality: { type: 'estimate', value: 1 },
+        canContainUndefs: false,
+      }], false, context, mediatorRdfMetadataAccumulate))
         .toMatchObject({ cardinality: { type: 'estimate', value: 1 }, canContainUndefs: false });
     });
 
-    it('should return 0 items for a single input with 0', () => {
-      return expect(ActorQueryOperationUnion.unionMetadata([
-        { state: new MetadataValidationState(), cardinality: { type: 'estimate', value: 0 }, canContainUndefs: false },
-      ], false))
+    it('should return 0 items for a single input with 0', async() => {
+      expect(await ActorQueryOperationUnion.unionMetadata([{
+        state: new MetadataValidationState(),
+        cardinality: { type: 'estimate', value: 0 },
+        canContainUndefs: false,
+      }], false, context, mediatorRdfMetadataAccumulate))
         .toMatchObject({ cardinality: { type: 'estimate', value: 0 }, canContainUndefs: false });
     });
 
-    it('should return infinite items for a single input with Infinity', () => {
-      return expect(ActorQueryOperationUnion.unionMetadata([
+    it('should return infinite items for a single input with Infinity', async() => {
+      expect(await ActorQueryOperationUnion.unionMetadata([
         {
           state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
           canContainUndefs: false,
         },
-      ], false))
-        .toMatchObject({ cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }, canContainUndefs: false });
+      ], false, context, mediatorRdfMetadataAccumulate)).toMatchObject(
+        { cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }, canContainUndefs: false },
+      );
     });
 
-    it('should return 3 items for inputs with 1 and 2 as estimate', () => {
-      return expect(ActorQueryOperationUnion.unionMetadata([
-        { state: new MetadataValidationState(), cardinality: { type: 'estimate', value: 1 }, canContainUndefs: false },
-        { state: new MetadataValidationState(), cardinality: { type: 'estimate', value: 2 }, canContainUndefs: false },
-      ], false))
+    it('should return 3 items for inputs with 1 and 2 as estimate', async() => {
+      expect(await ActorQueryOperationUnion.unionMetadata([
+        { state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 1 },
+          canContainUndefs: false },
+        { state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 2 },
+          canContainUndefs: false },
+      ], false, context, mediatorRdfMetadataAccumulate))
         .toMatchObject({ cardinality: { type: 'estimate', value: 3 }, canContainUndefs: false });
     });
 
-    it('should return 3 items for inputs with 1 and 2 as exact', () => {
-      return expect(ActorQueryOperationUnion.unionMetadata([
-        { state: new MetadataValidationState(), cardinality: { type: 'exact', value: 1 }, canContainUndefs: false },
-        { state: new MetadataValidationState(), cardinality: { type: 'exact', value: 2 }, canContainUndefs: false },
-      ], false))
+    it('should return 3 items for inputs with 1 and 2 as exact', async() => {
+      expect(await ActorQueryOperationUnion.unionMetadata([
+        { state: new MetadataValidationState(),
+          cardinality: { type: 'exact', value: 1 },
+          canContainUndefs: false },
+        { state: new MetadataValidationState(),
+          cardinality: { type: 'exact', value: 2 },
+          canContainUndefs: false },
+      ], false, context, mediatorRdfMetadataAccumulate))
         .toMatchObject({ cardinality: { type: 'exact', value: 3 }, canContainUndefs: false });
     });
 
-    it('should return 3 items for inputs with 1 and 2 as exact and estimate', () => {
-      return expect(ActorQueryOperationUnion.unionMetadata([
-        { state: new MetadataValidationState(), cardinality: { type: 'exact', value: 1 }, canContainUndefs: false },
-        { state: new MetadataValidationState(), cardinality: { type: 'estimate', value: 2 }, canContainUndefs: false },
-      ], false))
+    it('should return 3 items for inputs with 1 and 2 as exact and estimate', async() => {
+      expect(await ActorQueryOperationUnion.unionMetadata([
+        { state: new MetadataValidationState(),
+          cardinality: { type: 'exact', value: 1 },
+          canContainUndefs: false },
+        { state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 2 },
+          canContainUndefs: false },
+      ], false, context, mediatorRdfMetadataAccumulate))
         .toMatchObject({ cardinality: { type: 'estimate', value: 3 }, canContainUndefs: false });
     });
 
-    it('should return infinite items for inputs with Infinity and 2', () => {
-      return expect(ActorQueryOperationUnion
+    it('should return infinite items for inputs with Infinity and 2', async() => {
+      expect(await ActorQueryOperationUnion
         .unionMetadata([
           {
             state: new MetadataValidationState(),
@@ -209,12 +313,13 @@ describe('ActorQueryOperationUnion', () => {
             cardinality: { type: 'estimate', value: 2 },
             canContainUndefs: false,
           },
-        ], false))
-        .toMatchObject({ cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }, canContainUndefs: false });
+        ], false, context, mediatorRdfMetadataAccumulate)).toMatchObject(
+        { cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }, canContainUndefs: false },
+      );
     });
 
-    it('should return infinite items for inputs with 1 and Infinity', () => {
-      return expect(ActorQueryOperationUnion
+    it('should return infinite items for inputs with 1 and Infinity', async() => {
+      expect(await ActorQueryOperationUnion
         .unionMetadata([
           {
             state: new MetadataValidationState(),
@@ -226,12 +331,13 @@ describe('ActorQueryOperationUnion', () => {
             cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
             canContainUndefs: false,
           },
-        ], false))
-        .toMatchObject({ cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }, canContainUndefs: false });
+        ], false, context, mediatorRdfMetadataAccumulate)).toMatchObject(
+        { cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }, canContainUndefs: false },
+      );
     });
 
-    it('should return infinite items for inputs with Infinity and Infinity', () => {
-      return expect(ActorQueryOperationUnion
+    it('should return infinite items for inputs with Infinity and Infinity', async() => {
+      expect(await ActorQueryOperationUnion
         .unionMetadata([
           {
             state: new MetadataValidationState(),
@@ -243,12 +349,13 @@ describe('ActorQueryOperationUnion', () => {
             cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
             canContainUndefs: false,
           },
-        ], false))
-        .toMatchObject({ cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }, canContainUndefs: false });
+        ], false, context, mediatorRdfMetadataAccumulate)).toMatchObject(
+        { cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }, canContainUndefs: false },
+      );
     });
 
-    it('should union variables if bindings is true', () => {
-      return expect(ActorQueryOperationUnion.unionMetadata([
+    it('should union variables if bindings is true', async() => {
+      expect(await ActorQueryOperationUnion.unionMetadata([
         {
           state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 1 },
@@ -261,12 +368,33 @@ describe('ActorQueryOperationUnion', () => {
           canContainUndefs: false,
           variables: [ DF.variable('a'), DF.variable('b') ],
         },
-      ], true))
+      ], true, context, mediatorRdfMetadataAccumulate))
         .toMatchObject({
           cardinality: { type: 'estimate', value: 3 },
           canContainUndefs: false,
           variables: [ DF.variable('a'), DF.variable('b') ],
         });
+    });
+
+    it('should become invalid once a sub-metadata becomes invalid', async() => {
+      const metadatas: MetadataQuads[] = [
+        { state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 1 },
+          canContainUndefs: false },
+        { state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 2 },
+          canContainUndefs: false },
+      ];
+
+      const metadata = await ActorQueryOperationUnion
+        .unionMetadata(metadatas, false, context, mediatorRdfMetadataAccumulate);
+      const invalidListener = jest.fn();
+      metadata.state.addInvalidateListener(invalidListener);
+      expect(metadata.state.valid).toBeTruthy();
+
+      metadatas[0].state.invalidate();
+      expect(metadata.state.valid).toBeFalsy();
+      expect(invalidListener).toHaveBeenCalled();
     });
   });
 
@@ -274,7 +402,9 @@ describe('ActorQueryOperationUnion', () => {
     let actor: ActorQueryOperationUnion;
 
     beforeEach(() => {
-      actor = new ActorQueryOperationUnion({ name: 'actor', bus, mediatorQueryOperation });
+      actor = new ActorQueryOperationUnion(
+        { name: 'actor', bus, mediatorQueryOperation, mediatorRdfMetadataAccumulate },
+      );
     });
 
     it('should test on union', async() => {
@@ -294,7 +424,20 @@ describe('ActorQueryOperationUnion', () => {
       input.forEach(op => op.stream.destroy());
     });
 
-    it('should run on two streams', () => {
+    it('should run on zero bindings streams', () => {
+      const op: any = { operation: { type: 'union', input: []}, context: new ActionContext() };
+      return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
+        expect(await output.metadata()).toMatchObject({
+          cardinality: { type: 'exact', value: 0 },
+          canContainUndefs: false,
+          variables: [],
+        });
+        expect(output.type).toEqual('bindings');
+        await expect(output.bindingsStream).toEqualBindingsStream([]);
+      });
+    });
+
+    it('should run on two bindings streams', () => {
       const op: any = { operation: { type: 'union', input: [ op3(), op2() ]}, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toMatchObject({
@@ -313,7 +456,7 @@ describe('ActorQueryOperationUnion', () => {
       });
     });
 
-    it('should run on three streams', () => {
+    it('should run on three bindings streams', () => {
       return actor.run(<any> {
         operation: { type: 'union', input: [ op3(), op2(), op2Undef() ]},
         context: new ActionContext(),
@@ -337,7 +480,7 @@ describe('ActorQueryOperationUnion', () => {
       });
     });
 
-    it('should run with a right stream with undefs', () => {
+    it('should run with a right bindings stream with undefs', () => {
       const op: any = { operation: { type: 'union', input: [ op3(), op2Undef() ]}, context: new ActionContext() };
       return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
         expect(await output.metadata()).toMatchObject({
@@ -356,7 +499,7 @@ describe('ActorQueryOperationUnion', () => {
       });
     });
 
-    it('should run on two streams with metadata invalidation', async() => {
+    it('should run on two bindings streams with metadata invalidation', async() => {
       // An operation in which we can access the metadata state
       const state = new MetadataValidationState();
       const opCustom = {
@@ -397,6 +540,32 @@ describe('ActorQueryOperationUnion', () => {
         canContainUndefs: false,
         variables: [ DF.variable('a') ],
       });
+    });
+
+    it('should run on two quad streams', () => {
+      const op: any = { operation: { type: 'union', input: [ opq1(), opq2() ]}, context: new ActionContext() };
+      return actor.run(op).then(async(output: IQueryOperationResultQuads) => {
+        expect(await output.metadata()).toMatchObject({
+          cardinality: { type: 'estimate', value: 4 },
+        });
+        expect(output.type).toEqual('quads');
+        expect(await output.quadStream.toArray()).toBeRdfIsomorphic([
+          DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
+          DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
+          DF.quad(DF.namedNode('s3'), DF.namedNode('p3'), DF.namedNode('o3')),
+          DF.quad(DF.namedNode('s4'), DF.namedNode('p4'), DF.namedNode('o4')),
+        ]);
+      });
+    });
+
+    it('should throw on different stream types', async() => {
+      const op: any = { operation: { type: 'union', input: [ op2(), opq2() ]}, context: new ActionContext() };
+      await expect(actor.run(op)).rejects.toThrow(`Unable to union bindings and quads`);
+    });
+
+    it('should throw on unsupported stream types', async() => {
+      const op: any = { operation: { type: 'union', input: [ opb1() ]}, context: new ActionContext() };
+      await expect(actor.run(op)).rejects.toThrow(`Unable to union boolean`);
     });
   });
 });

@@ -30,6 +30,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
     context = distinct.context;
 
     const predicate = <Algebra.ZeroOrMorePath> operation.predicate;
+    const sources = this.getPathSources(predicate);
 
     const sVar = operation.subject.termType === 'Variable';
     const oVar = operation.object.termType === 'Variable';
@@ -37,8 +38,8 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
     if (operation.subject.termType === 'Variable' && operation.object.termType === 'Variable') {
       // Query ?s ?p ?o, to get all possible namedNodes in de the db
       const predVar = this.generateVariable(operation);
-      const single = ActorAbstractPath.FACTORY
-        .createPattern(operation.subject, predVar, operation.object, operation.graph);
+      const single = this.assignPatternSources(ActorAbstractPath.FACTORY
+        .createPattern(operation.subject, predVar, operation.object, operation.graph), sources);
       const results = ActorQueryOperation.getSafeBindings(
         await this.mediatorQueryOperation.mediate({ context, operation: single }),
       );

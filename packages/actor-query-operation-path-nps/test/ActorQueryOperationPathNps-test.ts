@@ -11,6 +11,7 @@ import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
+const AF = new Factory();
 
 describe('ActorQueryOperationPathNps', () => {
   let bus: any;
@@ -20,7 +21,7 @@ describe('ActorQueryOperationPathNps', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate(arg: any) {
+      mediate: jest.fn((arg: any) => {
         const vars: RDF.Variable[] = [];
         for (const name of QUAD_TERM_NAMES) {
           if (arg.operation[name].termType === 'Variable' || arg.operation[name].termType === 'BlankNode') {
@@ -48,7 +49,7 @@ describe('ActorQueryOperationPathNps', () => {
           type: 'bindings',
           variables: vars,
         });
-      },
+      }),
     };
   });
 
@@ -101,6 +102,29 @@ describe('ActorQueryOperationPathNps', () => {
         BF.bindings([[ DF.variable('x'), DF.namedNode('2') ]]),
         BF.bindings([[ DF.variable('x'), DF.namedNode('4') ]]),
       ]);
+    });
+
+    it('should support Nps paths with metadata', async() => {
+      const op: any = { operation: factory.createPath(
+        DF.namedNode('s'),
+        factory.createNps([ DF.namedNode('2') ]),
+        DF.variable('x'),
+      ),
+      context: new ActionContext() };
+      op.operation.predicate.metadata = { a: 'b' };
+
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('x'), DF.namedNode('2') ]]),
+        BF.bindings([[ DF.variable('x'), DF.namedNode('4') ]]),
+      ]);
+
+      expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
+        operation: Object.assign(AF
+          .createPattern(DF.namedNode('s'), DF.variable('b'), DF.variable('x')), { metadata: { a: 'b' }}),
+        context: expect.any(ActionContext),
+      });
     });
   });
 });

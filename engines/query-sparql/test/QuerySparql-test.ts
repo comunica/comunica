@@ -1,6 +1,7 @@
 /** @jest-environment setup-polly-jest/jest-environment-node */
 
-import { KeysHttpWayback, KeysInitQuery, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
+import { QuerySourceSkolemized } from '@comunica/actor-context-preprocess-query-source-skolemize';
+import { KeysHttpWayback, KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { BlankNodeScoped } from '@comunica/data-factory';
 import type { IActionContext, QueryBindings, QueryStringContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -93,7 +94,7 @@ describe('System test: QuerySparql', () => {
         it('should return the valid result with a turtle data source', async() => {
           const value = '<ex:s> <ex:p> <ex:o>. <ex:s> <ex:p2> <ex:o2>.';
           const context: QueryStringContext = { sources: [
-            { type: 'stringSource',
+            { type: 'serialized',
               value,
               mediaType: 'text/turtle',
               baseIRI: 'http://example.org/' },
@@ -117,7 +118,7 @@ describe('System test: QuerySparql', () => {
           }
           `;
           const context: QueryStringContext = { sources: [
-            { type: 'stringSource',
+            { type: 'serialized',
               value,
               mediaType: 'application/ld+json',
               baseIRI: 'http://example.org/' },
@@ -140,7 +141,7 @@ describe('System test: QuerySparql', () => {
             "ex:p2":{"@id":"ex:o2"}
           }`;
           const context: QueryStringContext = { sources: [
-            { type: 'stringSource',
+            { type: 'serialized',
               value,
               mediaType: 'application/ld+json' },
           ]};
@@ -155,7 +156,7 @@ describe('System test: QuerySparql', () => {
           expect(result).toMatchObject(expectedResult);
         });
 
-        it('should return the valid result with multiple stringSource', async() => {
+        it('should return the valid result with multiple serialized', async() => {
           const value1 = `{
             "@id":"ex:s",
             "ex:p":{"@id":"ex:o"},
@@ -163,8 +164,8 @@ describe('System test: QuerySparql', () => {
           }`;
           const value2 = '<ex:s> <ex:p3> <ex:o3>. <ex:s> <ex:p4> <ex:o4>.';
           const context: QueryStringContext = { sources: [
-            { type: 'stringSource', value: value1, mediaType: 'application/ld+json' },
-            { type: 'stringSource', value: value2, mediaType: 'text/turtle' },
+            { type: 'serialized', value: value1, mediaType: 'application/ld+json' },
+            { type: 'serialized', value: value2, mediaType: 'text/turtle' },
           ]};
 
           const expectedResult: RDF.Quad[] = [
@@ -193,22 +194,17 @@ describe('System test: QuerySparql', () => {
           }`;
           const value2 = '<ex:s> <ex:p3> <ex:o3>. <ex:s> <ex:p4> <ex:o4>.';
           const context: QueryStringContext = { sources: [
-            { type: 'stringSource', value: value1, mediaType: 'application/ld+json' },
-            { type: 'stringSource', value: value2, mediaType: 'text/turtle' },
+            { type: 'serialized', value: value1, mediaType: 'application/ld+json' },
+            { type: 'serialized', value: value2, mediaType: 'text/turtle' },
             store,
           ]};
-
-          const expectedResult: RDF.Quad[] = [
+          expect(await arrayifyStream(await engine.queryQuads(query, context))).toBeRdfIsomorphic([
             DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o')),
             DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p3'), DF.namedNode('ex:o3')),
             DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p5'), DF.namedNode('ex:o5')),
             DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')),
             DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p4'), DF.namedNode('ex:o4')),
-          ];
-
-          const result = await arrayifyStream(await engine.queryQuads(query, context));
-          expect(result.length).toBe(expectedResult.length);
-          expect(result).toMatchObject(expectedResult);
+          ]);
         });
       });
 
@@ -527,7 +523,7 @@ describe('System test: QuerySparql', () => {
             (arg: { context: IActionContext }) => {
               firstFuncArgCache = arg.context.get(KeysInitQuery.functionArgumentsCache);
               expect(firstFuncArgCache).toEqual({});
-              return original_function(arg);
+              return original_function.call((<any> alternativeEngine).actorInitQuery.mediatorContextPreprocess, arg);
             };
 
           // Evaluate query once
@@ -541,7 +537,7 @@ describe('System test: QuerySparql', () => {
               secondFuncArgCache = arg.context.get(KeysInitQuery.functionArgumentsCache);
               expect(secondFuncArgCache).not.toBeUndefined();
               expect(Object.keys(secondFuncArgCache!)).toContain('strlen');
-              return original_function(arg);
+              return original_function.call((<any> alternativeEngine).actorInitQuery.mediatorContextPreprocess, arg);
             };
           // Evaluate query a second time
           const secondBindingsStream = await alternativeEngine.queryBindings(query, context);
@@ -783,7 +779,7 @@ SELECT * WHERE {
         const context: QueryStringContext = {
           sources: [
             {
-              type: 'stringSource',
+              type: 'serialized',
               value: `
 PREFIX fhir: <http://hl7.org/fhir/>
 
@@ -944,7 +940,7 @@ SELECT ?obsId {
         } WHERE { ?s ?p ?o }`, {
           sources: [ store, store2 ],
           destination: store,
-          [KeysRdfResolveQuadPattern.sourceIds.name]: new Map(),
+          [KeysQuerySourceIdentify.sourceIds.name]: new Map(),
         });
         await result.execute();
 
@@ -1224,16 +1220,25 @@ SELECT ?obsId {
     }`, {
           sources: [ 'https://www.rubensworks.net/' ],
         }, 'logical');
-        expect(result).toEqual({
+        expect(result).toMatchObject({
           explain: true,
           type: 'logical',
           data: {
             input: {
               input: [
-                factory.createPattern(
-                  DF.variable('s'),
-                  DF.variable('p'),
-                  DF.variable('o'),
+                Object.assign(
+                  factory.createPattern(
+                    DF.variable('s'),
+                    DF.variable('p'),
+                    DF.variable('o'),
+                  ),
+                  {
+                    metadata: {
+                      scopedSource: {
+                        source: expect.any(QuerySourceSkolemized),
+                      },
+                    },
+                  },
                 ),
               ],
               type: 'join',

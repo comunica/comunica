@@ -2,7 +2,7 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
-import { KeysInitQuery, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
+import type { MediatorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
 import type { IActorTest } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext, IQueryOperationResult, IQueryOperationResultBindings } from '@comunica/types';
@@ -16,6 +16,7 @@ import type { Algebra } from 'sparqlalgebrajs';
 export class ActorQueryOperationService extends ActorQueryOperationTypedMediated<Algebra.Service> {
   public readonly forceSparqlEndpoint: boolean;
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+  public readonly mediatorQuerySourceIdentify: MediatorQuerySourceIdentify;
 
   public constructor(args: IActorQueryOperationServiceArgs) {
     super(args, 'service');
@@ -30,24 +31,26 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
 
   public async runOperation(operation: Algebra.Service, context: IActionContext):
   Promise<IQueryOperationResult> {
-    const endpoint: string = operation.name.value;
-    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context);
-    // Adjust our context to only have the endpoint as source
-    let subContext: IActionContext = context
-      .delete(KeysRdfResolveQuadPattern.source)
-      .delete(KeysRdfResolveQuadPattern.sources)
-      .delete(KeysInitQuery.queryString);
-    const sourceType = this.forceSparqlEndpoint ? 'sparql' : undefined;
-    subContext = subContext.set(KeysRdfResolveQuadPattern.sources, [{ type: sourceType, value: endpoint }]);
-    // Query the source
+    // Identify the SERVICE target as query source
+    const { querySource } = await this.mediatorQuerySourceIdentify.mediate({
+      querySourceUnidentified: {
+        value: operation.name.value,
+        type: this.forceSparqlEndpoint ? 'sparql' : undefined,
+      },
+      context,
+    });
+
+    // Attach the source to the operation, and execute
     let output: IQueryOperationResultBindings;
     try {
-      output = ActorQueryOperation.getSafeBindings(
-        await this.mediatorQueryOperation.mediate({ operation: operation.input, context: subContext }),
-      );
+      output = ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
+        operation: ActorQueryOperation.assignOperationSource(operation.input, querySource),
+        context,
+      }));
     } catch (error: unknown) {
       if (operation.silent) {
         // Emit a single empty binding
+        const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context);
         output = {
           bindingsStream: new SingletonIterator(bindingsFactory.bindings()),
           type: 'bindings',
@@ -58,6 +61,7 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
             variables: [],
           }),
         };
+        this.logWarn(context, `An error occurred when executing a SERVICE clause: ${(<Error> error).message}`);
       } else {
         throw error;
       }
@@ -77,5 +81,8 @@ export interface IActorQueryOperationServiceArgs extends IActorQueryOperationTyp
    * A mediator for creating binding context merge handlers
    */
   mediatorMergeBindingsContext: MediatorMergeBindingsContext;
-
+  /**
+   * The mediator for identifying query sources.
+   */
+  mediatorQuerySourceIdentify: MediatorQuerySourceIdentify;
 }
