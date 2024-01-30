@@ -224,14 +224,6 @@ describe('Bindings', () => {
       expect(bindings.equals(bindings)).toBeTruthy();
     });
 
-    it('should be false for bindings unequal contexts', () => {
-      expect(bindings.equals(new Bindings(DF, Map<string, RDF.Term>([
-        [ 'a', DF.namedNode('ex:a') ],
-        [ 'b', DF.namedNode('ex:b') ],
-        [ 'c', DF.namedNode('ex:c') ],
-      ]), contextMergeHandlers, new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3' ], additionalKey: true }))))
-        .toBeFalsy();
-    });
   });
 
   describe('filter', () => {

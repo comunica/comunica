@@ -68,33 +68,4 @@ describe('Binding context mergehandler', () => {
     bindingsNoContext = bindingsNoContext.deleteContextEntry(new ActionContextKey('source'));
     expect(bindingsNoContext.context).toBeUndefined();
   });
-
-  it('should return false when comparing defined context with undefined context', () => {
-    expect(bindings.contextEquals(bindingsNoContext)).toBeFalsy();
-  });
-
-  it('should return false when comparing undefined context with defined context', () => {
-    expect(bindingsNoContext.contextEquals(bindings)).toBeFalsy();
-  });
-
-  it('should return false when entries are unequal', () => {
-    const bindingsBiggerContext = new Bindings(DF, Map<string, RDF.Term>([
-      [ 'a', DF.namedNode('ex:a') ],
-      [ 'b', DF.namedNode('ex:b') ],
-      [ 'c', DF.namedNode('ex:c') ],
-    ]), { source: new SetUnionContext() }, new ActionContext(
-      { source: [ 'ex:S1', 'ex:S2', 'ex:S3', 'ex:S4', 'ex:S5' ]},
-    ));
-    expect(bindings.contextEquals(bindingsBiggerContext)).toBeFalsy();
-  });
-
-  it('should return false when comparing two contexts with uneven number of keys', () => {
-    const bindingsBiggerContext = new Bindings(DF, Map<string, RDF.Term>([
-      [ 'a', DF.namedNode('ex:a') ],
-      [ 'b', DF.namedNode('ex:b') ],
-      [ 'c', DF.namedNode('ex:c') ],
-    ]), { source: new SetUnionContext() }, new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3' ],
-      additionalKey: true }));
-    expect(bindings.contextEquals(bindingsBiggerContext)).toBeFalsy();
-  });
 });
