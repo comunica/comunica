@@ -6,6 +6,9 @@ An [Context Preprocess](https://github.com/comunica/comunica/tree/master/package
 that identifies all query sources in the context using
 the [Query Source Identify bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-source-identify).
 
+This actor also contains a cache so that identical sources will be reused across multiple query executions.
+This cache can be invalidated via `engine.invalidateHttpCache()`.
+
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
 
@@ -39,4 +42,6 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
+* `cacheSize`: The maximum number of entries in the LRU cache, set to 0 to disable, defaults to 100.
+* `httpInvalidator`: An optional actor that listens to HTTP invalidation events.
 * `mediatorQuerySourceIdentify`: A mediator over the [Query Source Identify bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-source-identify).

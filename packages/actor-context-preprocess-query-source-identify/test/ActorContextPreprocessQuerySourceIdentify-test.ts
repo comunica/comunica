@@ -1,6 +1,8 @@
+import type { ActorHttpInvalidateListenable } from '@comunica/bus-http-invalidate';
 import type { IActionQuerySourceIdentify, MediatorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import type { IQuerySourceWrapper } from '@comunica/types';
 import { RdfStore } from 'rdf-stores';
 import { ActorContextPreprocessQuerySourceIdentify } from '../lib/ActorContextPreprocessQuerySourceIdentify';
 
@@ -14,6 +16,8 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
   describe('An ActorContextPreprocessQuerySourceIdentify instance', () => {
     let actor: ActorContextPreprocessQuerySourceIdentify;
     let mediatorQuerySourceIdentify: MediatorQuerySourceIdentify;
+    let httpInvalidator: ActorHttpInvalidateListenable;
+    let listener: any = null;
 
     beforeEach(() => {
       mediatorQuerySourceIdentify = <any> {
@@ -21,7 +25,16 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
           return { querySource: <any> { ofUnidentified: action.querySourceUnidentified }};
         },
       };
-      actor = new ActorContextPreprocessQuerySourceIdentify({ name: 'actor', bus, mediatorQuerySourceIdentify });
+      httpInvalidator = <any>{
+        addInvalidateListener: (l: any) => listener = l,
+      };
+      actor = new ActorContextPreprocessQuerySourceIdentify({
+        name: 'actor',
+        bus,
+        cacheSize: 10,
+        httpInvalidator,
+        mediatorQuerySourceIdentify,
+      });
     });
 
     it('should test', () => {
@@ -59,6 +72,147 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
           { ofUnidentified: { value: source3 }},
         ]);
       });
+
+      it('should cache 2 identical sources in one call', async() => {
+        const source1 = 'source1';
+        const contextIn = new ActionContext()
+          .set(KeysInitQuery.querySourcesUnidentified, [
+            source1,
+            source1,
+          ]);
+        const { context: contextOut } = await actor.run({ context: contextIn });
+        expect(contextOut).not.toBe(contextIn);
+        expect(contextOut.get(KeysQueryOperation.querySources)).toEqual([
+          { ofUnidentified: { value: 'source1' }},
+          { ofUnidentified: { value: 'source1' }},
+        ]);
+        expect(contextOut.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0])
+          .toBe(contextOut.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![1]);
+      });
+
+      it('should cache identical sources in separate calls', async() => {
+        const source1 = 'source1';
+        const contextIn = new ActionContext()
+          .set(KeysInitQuery.querySourcesUnidentified, [
+            source1,
+          ]);
+        const { context: contextOut1 } = await actor.run({ context: contextIn });
+        const { context: contextOut2 } = await actor.run({ context: contextIn });
+        expect(contextOut1.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0])
+          .toBe(contextOut2.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0]);
+      });
+
+      it('should allow cache invalidation for a specific url', async() => {
+        const source1 = 'source1';
+        const source2 = 'source2';
+        const contextIn = new ActionContext()
+          .set(KeysInitQuery.querySourcesUnidentified, [
+            source1,
+            source2,
+          ]);
+
+        const { context: contextOut1 } = await actor.run({ context: contextIn });
+        expect(contextOut1.get(KeysQueryOperation.querySources)).toEqual([
+          { ofUnidentified: { value: 'source1' }},
+          { ofUnidentified: { value: 'source2' }},
+        ]);
+
+        listener({ url: 'source1' });
+
+        const { context: contextOut2 } = await actor.run({ context: contextIn });
+        expect(contextOut2.get(KeysQueryOperation.querySources)).toEqual([
+          { ofUnidentified: { value: 'source1' }},
+          { ofUnidentified: { value: 'source2' }},
+        ]);
+
+        expect(contextOut1.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0])
+          .not.toBe(contextOut2.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0]);
+        expect(contextOut1.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![1])
+          .toBe(contextOut2.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![1]);
+      });
+
+      it('should allow cache invalidation for all url', async() => {
+        const source1 = 'source1';
+        const source2 = 'source2';
+        const contextIn = new ActionContext()
+          .set(KeysInitQuery.querySourcesUnidentified, [
+            source1,
+            source2,
+          ]);
+
+        const { context: contextOut1 } = await actor.run({ context: contextIn });
+        expect(contextOut1.get(KeysQueryOperation.querySources)).toEqual([
+          { ofUnidentified: { value: 'source1' }},
+          { ofUnidentified: { value: 'source2' }},
+        ]);
+
+        listener({});
+
+        const { context: contextOut2 } = await actor.run({ context: contextIn });
+        expect(contextOut2.get(KeysQueryOperation.querySources)).toEqual([
+          { ofUnidentified: { value: 'source1' }},
+          { ofUnidentified: { value: 'source2' }},
+        ]);
+
+        expect(contextOut1.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0])
+          .not.toBe(contextOut2.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0]);
+        expect(contextOut1.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![1])
+          .not.toBe(contextOut2.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![1]);
+      });
+    });
+  });
+
+  describe('An ActorContextPreprocessQuerySourceIdentify instance without cache', () => {
+    let actor: ActorContextPreprocessQuerySourceIdentify;
+    let mediatorQuerySourceIdentify: MediatorQuerySourceIdentify;
+    let httpInvalidator: ActorHttpInvalidateListenable;
+    let listener = null;
+
+    beforeEach(() => {
+      mediatorQuerySourceIdentify = <any> {
+        async mediate(action: IActionQuerySourceIdentify) {
+          return { querySource: <any> { ofUnidentified: action.querySourceUnidentified }};
+        },
+      };
+      httpInvalidator = <any>{
+        addInvalidateListener: (l: any) => listener = l,
+      };
+      actor = new ActorContextPreprocessQuerySourceIdentify({
+        name: 'actor',
+        bus,
+        cacheSize: 0,
+        httpInvalidator,
+        mediatorQuerySourceIdentify,
+      });
+    });
+
+    it('should not cache 2 identical sources in one call', async() => {
+      const source1 = 'source1';
+      const contextIn = new ActionContext()
+        .set(KeysInitQuery.querySourcesUnidentified, [
+          source1,
+          source1,
+        ]);
+      const { context: contextOut } = await actor.run({ context: contextIn });
+      expect(contextOut).not.toBe(contextIn);
+      expect(contextOut.get(KeysQueryOperation.querySources)).toEqual([
+        { ofUnidentified: { value: 'source1' }},
+        { ofUnidentified: { value: 'source1' }},
+      ]);
+      expect(contextOut.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0])
+        .not.toBe(contextOut.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![1]);
+    });
+
+    it('should not cache identical sources in separate calls', async() => {
+      const source1 = 'source1';
+      const contextIn = new ActionContext()
+        .set(KeysInitQuery.querySourcesUnidentified, [
+          source1,
+        ]);
+      const { context: contextOut1 } = await actor.run({ context: contextIn });
+      const { context: contextOut2 } = await actor.run({ context: contextIn });
+      expect(contextOut1.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0])
+        .not.toBe(contextOut2.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0]);
     });
   });
 });

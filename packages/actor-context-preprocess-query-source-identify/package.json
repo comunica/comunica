@@ -36,7 +36,9 @@
     "@comunica/core": "^2.8.0",
     "@comunica/bus-context-preprocess": "^2.8.0",
     "@comunica/bus-query-source-identify": "^1.0.0",
-    "@comunica/types": "^2.8.0"
+    "@comunica/types": "^2.8.0",
+    "@comunica/bus-http-invalidate": "^2.8.0",
+    "lru-cache": "^10.0.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
