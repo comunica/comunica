@@ -22,6 +22,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
   public readonly forceHttpGet: boolean;
   public readonly cacheSize: number;
   public readonly bindMethod: BindMethod;
+  public readonly countTimeout: number;
 
   public constructor(args: IActorQuerySourceIdentifyHypermediaSparqlArgs) {
     super(args, 'sparql');
@@ -47,6 +48,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
       await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context),
       this.forceHttpGet,
       this.cacheSize,
+      this.countTimeout,
     );
     return { source };
   }
@@ -82,6 +84,12 @@ export interface IActorQuerySourceIdentifyHypermediaSparqlArgs extends IActorQue
    * @default {values}
    */
   bindMethod: BindMethod;
+  /**
+   * Timeout in ms of how long count queries are allowed to take.
+   * If the timeout is reached, an infinity cardinality is returned.
+   * @default {3000}
+   */
+  countTimeout: number;
 }
 
 export type BindMethod = 'values' | 'union' | 'filter';

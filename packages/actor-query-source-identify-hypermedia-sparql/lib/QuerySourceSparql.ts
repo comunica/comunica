@@ -18,6 +18,7 @@ import type { BindMethod } from './ActorQuerySourceIdentifyHypermediaSparql';
 const AF = new Factory();
 const DF = new DataFactory<RDF.BaseQuad>();
 const VAR_COUNT = DF.variable('count');
+const COUNT_INFINITY: RDF.QueryResultCardinality = { type: 'estimate', value: Number.POSITIVE_INFINITY };
 
 export class QuerySourceSparql implements IQuerySource {
   protected static readonly SELECTOR_SHAPE: FragmentSelectorShape = {
@@ -52,6 +53,7 @@ export class QuerySourceSparql implements IQuerySource {
   private readonly context: IActionContext;
   private readonly mediatorHttp: MediatorHttp;
   private readonly bindMethod: BindMethod;
+  private readonly countTimeout: number;
   private readonly bindingsFactory: BindingsFactory;
 
   private readonly endpointFetcher: SparqlEndpointFetcher;
@@ -67,6 +69,7 @@ export class QuerySourceSparql implements IQuerySource {
     bindingsFactory: BindingsFactory,
     forceHttpGet: boolean,
     cacheSize: number,
+    countTimeout: number,
   ) {
     this.referenceValue = url;
     this.url = url;
@@ -84,6 +87,7 @@ export class QuerySourceSparql implements IQuerySource {
     this.cache = cacheSize > 0 ?
       new LRUCache<string, RDF.QueryResultCardinality>({ max: cacheSize }) :
       undefined;
+    this.countTimeout = countTimeout;
   }
 
   public async getSelectorShape(): Promise<FragmentSelectorShape> {
@@ -118,9 +122,11 @@ export class QuerySourceSparql implements IQuerySource {
           return resolve(cachedCardinality);
         }
 
+        const timeoutHandler = setTimeout(() => resolve(COUNT_INFINITY), this.countTimeout);
         const bindingsStream: BindingsStream = await this
           .queryBindingsRemote(this.url, countQuery, [ VAR_COUNT ], context);
         bindingsStream.on('data', (bindings: Bindings) => {
+          clearTimeout(timeoutHandler);
           const count = bindings.get(VAR_COUNT);
           const cardinality: RDF.QueryResultCardinality = { type: 'estimate', value: Number.POSITIVE_INFINITY };
           if (count) {
@@ -133,8 +139,14 @@ export class QuerySourceSparql implements IQuerySource {
           }
           return resolve(cardinality);
         });
-        bindingsStream.on('error', () => resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY }));
-        bindingsStream.on('end', () => resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY }));
+        bindingsStream.on('error', () => {
+          clearTimeout(timeoutHandler);
+          resolve(COUNT_INFINITY);
+        });
+        bindingsStream.on('end', () => {
+          clearTimeout(timeoutHandler);
+          resolve(COUNT_INFINITY);
+        });
       } catch (error: unknown) {
         return reject(error);
       }
@@ -145,7 +157,7 @@ export class QuerySourceSparql implements IQuerySource {
         variables: variablesCount,
       }))
       .catch(() => quads.setProperty('metadata', {
-        cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
+        cardinality: COUNT_INFINITY,
         canContainUndefs: false,
         variables: variablesCount,
       }));

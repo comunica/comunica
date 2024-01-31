@@ -44,3 +44,4 @@ After installing, this package can be added to your engine's configuration as fo
 * `forceHttpGet`: If queries should be sent via HTTP GET instead of POST, defaults to `false`.
 * `cacheSize`: The cache size for COUNT queries, defaults to `1024`.
 * `bindMethod`: The query operation for communicating bindings, defaults to `'values'`, alt: `'union'` or `'filter'`.
+* `countTimeout`: Timeout in ms of how long count queries are allowed to take. If the timeout is reached, an infinity cardinality is returned. Defaults to `3000`.

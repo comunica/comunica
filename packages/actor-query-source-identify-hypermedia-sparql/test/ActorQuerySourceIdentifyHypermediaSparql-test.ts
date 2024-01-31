@@ -49,6 +49,7 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
         cacheSize: 1_024,
         mediatorMergeBindingsContext,
         bindMethod: 'values',
+        countTimeout: 3_000,
       });
     });
 
@@ -86,6 +87,7 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           checkUrlSuffix: false,
           forceHttpGet: false,
           bindMethod: 'values',
+          countTimeout: 3_000,
           mediatorMergeBindingsContext,
         });
         await expect(actor.test({ url: 'URL/sparql', metadata: {}, quads: <any> null, context })).rejects
@@ -100,6 +102,7 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           checkUrlSuffix: false,
           forceHttpGet: false,
           bindMethod: 'values',
+          countTimeout: 3_000,
           mediatorMergeBindingsContext,
         });
         await expect(actor
