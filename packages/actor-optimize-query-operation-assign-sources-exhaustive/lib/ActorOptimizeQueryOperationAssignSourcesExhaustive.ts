@@ -3,7 +3,7 @@ import type { IActionOptimizeQueryOperation, IActorOptimizeQueryOperationOutput,
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { getDataDestinationValue } from '@comunica/bus-rdf-update-quads';
-import { KeysQueryOperation, KeysRdfUpdateQuads } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import type { IDataDestination, IQuerySourceWrapper } from '@comunica/types';
 import { Algebra, Factory, Util } from 'sparqlalgebrajs';
@@ -40,7 +40,13 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
         }
       }
     }
-    return { operation: this.assignExhaustive(action.operation, sources), context: action.context };
+    return {
+      operation: this.assignExhaustive(action.operation, sources),
+      // We only keep queryString in the context if we only have a single source that accepts the full operation.
+      // In that case, the queryString can be sent to the source as-is.
+      context: action.context
+        .delete(KeysInitQuery.queryString),
+    };
   }
 
   /**

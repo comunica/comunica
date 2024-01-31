@@ -1,5 +1,6 @@
 import { PassThrough } from 'stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { ArrayIterator, wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -127,6 +128,16 @@ describe('QuerySourceSparql', () => {
             p: DF.namedNode('p3'),
           }),
         ]);
+
+      expect(mediatorHttp.mediate).toHaveBeenCalledWith({
+        context: ctx,
+        init: {
+          body: new URLSearchParams({ query: 'SELECT (COUNT(*) AS ?count) WHERE { undefined:s ?p undefined:o. }' }),
+          headers: expect.anything(),
+          method: 'POST',
+        },
+        input: 'http://example.org/sparql',
+      });
     });
 
     it('should return data with quoted triples', async() => {
@@ -686,6 +697,61 @@ describe('QuerySourceSparql', () => {
           }),
         ]);
       expect(lastQuery).toEqual(`query=SELECT+%3Fp+WHERE+%7B%0A++VALUES+%28%29+%7B%0A++%0A++%7D%0A++undefined%3As+%3Fp+undefined%3Ao.%0A%7D`);
+
+      expect(mediatorHttp.mediate).toHaveBeenCalledWith({
+        context: ctx,
+        init: {
+          body: new URLSearchParams({ query: `SELECT (COUNT(*) AS ?count) WHERE {
+  VALUES () {
+  
+  }
+  undefined:s ?p undefined:o.
+}` }),
+          headers: expect.anything(),
+          method: 'POST',
+        },
+        input: 'http://example.org/sparql',
+      });
+    });
+
+    it('ignores queryString for joinBindings', async() => {
+      await expect(source.queryBindings(
+        AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')),
+        ctx.set(KeysInitQuery.queryString, 'abc'), // This must be ignored
+        {
+          joinBindings: {
+            bindings: new ArrayIterator([], { autoStart: false }),
+            metadata: <any> { variables: []},
+          },
+        },
+      ))
+        .toEqualBindingsStream([
+          BF.fromRecord({
+            p: DF.namedNode('p1'),
+          }),
+          BF.fromRecord({
+            p: DF.namedNode('p2'),
+          }),
+          BF.fromRecord({
+            p: DF.namedNode('p3'),
+          }),
+        ]);
+      expect(lastQuery).toEqual(`query=SELECT+%3Fp+WHERE+%7B%0A++VALUES+%28%29+%7B%0A++%0A++%7D%0A++undefined%3As+%3Fp+undefined%3Ao.%0A%7D`);
+
+      expect(mediatorHttp.mediate).toHaveBeenCalledWith({
+        context: ctx.set(KeysInitQuery.queryString, 'abc'),
+        init: {
+          body: new URLSearchParams({ query: `SELECT (COUNT(*) AS ?count) WHERE {
+  VALUES () {
+  
+  }
+  undefined:s ?p undefined:o.
+}` }),
+          headers: expect.anything(),
+          method: 'POST',
+        },
+        input: 'http://example.org/sparql',
+      });
     });
 
     it('should emit an error if an error occurs when joining bindings', async() => {
@@ -753,6 +819,34 @@ describe('QuerySourceSparql', () => {
 
       jest.useRealTimers();
     });
+
+    it('should pass the original queryString if defined', async() => {
+      await expect(source.queryBindings(
+        AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')),
+        ctx.set(KeysInitQuery.queryString, 'abc'),
+      ))
+        .toEqualBindingsStream([
+          BF.fromRecord({
+            p: DF.namedNode('p1'),
+          }),
+          BF.fromRecord({
+            p: DF.namedNode('p2'),
+          }),
+          BF.fromRecord({
+            p: DF.namedNode('p3'),
+          }),
+        ]);
+
+      expect(mediatorHttp.mediate).toHaveBeenCalledWith({
+        context: ctx.set(KeysInitQuery.queryString, 'abc'),
+        init: {
+          body: new URLSearchParams({ query: 'abc' }),
+          headers: expect.anything(),
+          method: 'POST',
+        },
+        input: 'http://example.org/sparql',
+      });
+    });
   });
 
   describe('queryQuads', () => {
@@ -776,6 +870,49 @@ describe('QuerySourceSparql', () => {
           DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
           DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
         ]);
+
+      expect(thisMediator.mediate).toHaveBeenCalledWith({
+        context: ctx,
+        init: {
+          body: new URLSearchParams({ query: `CONSTRUCT {  }
+WHERE { undefined:s ?p undefined:o. }` }),
+          headers: expect.anything(),
+          method: 'POST',
+        },
+        input: 'http://example.org/sparql',
+      });
+    });
+
+    it('should pass the original queryString if defined', async() => {
+      const thisMediator: any = {
+        mediate: jest.fn((action: any) => {
+          return {
+            headers: new Headers({ 'Content-Type': 'text/turtle' }),
+            body: streamifyString(`<s1> <p1> <o1>. <s2> <p2> <o2>.`),
+            ok: true,
+          };
+        }),
+      };
+      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', false, 64, 10);
+
+      expect(await source.queryQuads(
+        AF.createConstruct(AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')), []),
+        ctx.set(KeysInitQuery.queryString, 'abc'),
+      ).toArray())
+        .toBeRdfIsomorphic([
+          DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
+          DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
+        ]);
+
+      expect(thisMediator.mediate).toHaveBeenCalledWith({
+        context: ctx.set(KeysInitQuery.queryString, 'abc'),
+        init: {
+          body: new URLSearchParams({ query: 'abc' }),
+          headers: expect.anything(),
+          method: 'POST',
+        },
+        input: 'http://example.org/sparql',
+      });
     });
   });
 
@@ -800,6 +937,48 @@ describe('QuerySourceSparql', () => {
         AF.createAsk(AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'))),
         ctx,
       )).toEqual(true);
+
+      expect(thisMediator.mediate).toHaveBeenCalledWith({
+        context: ctx,
+        init: {
+          body: new URLSearchParams({ query: 'ASK WHERE { undefined:s ?p undefined:o. }' }),
+          headers: expect.anything(),
+          method: 'POST',
+        },
+        input: 'http://example.org/sparql',
+      });
+    });
+
+    it('should pass the original queryString if defined', async() => {
+      const thisMediator: any = {
+        mediate: jest.fn((action: any) => {
+          return {
+            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+            body: streamifyString(`{
+  "head": { "vars": [ "p" ]
+  } ,
+  "boolean": true
+}`),
+            ok: true,
+          };
+        }),
+      };
+      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', false, 64, 10);
+
+      expect(await source.queryBoolean(
+        AF.createAsk(AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'))),
+        ctx.set(KeysInitQuery.queryString, 'abc'),
+      )).toEqual(true);
+
+      expect(thisMediator.mediate).toHaveBeenCalledWith({
+        context: ctx.set(KeysInitQuery.queryString, 'abc'),
+        init: {
+          body: new URLSearchParams({ query: 'abc' }),
+          headers: expect.anything(),
+          method: 'POST',
+        },
+        input: 'http://example.org/sparql',
+      });
     });
   });
 
@@ -820,6 +999,50 @@ describe('QuerySourceSparql', () => {
         AF.createDrop(DF.namedNode('s')),
         ctx,
       );
+
+      expect(thisMediator.mediate).toHaveBeenCalledWith({
+        context: ctx,
+        init: {
+          body: 'DROP GRAPH undefined:s',
+          headers: {
+            'content-type': 'application/sparql-update',
+          },
+          method: 'POST',
+          signal: expect.anything(),
+        },
+        input: 'http://example.org/sparql',
+      });
+    });
+
+    it('should pass the original queryString if defined', async() => {
+      const thisMediator: any = {
+        mediate: jest.fn((action: any) => {
+          return {
+            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+            body: streamifyString(`OK`),
+            ok: true,
+          };
+        }),
+      };
+      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', false, 64, 10);
+
+      await source.queryVoid(
+        AF.createDrop(DF.namedNode('s')),
+        ctx.set(KeysInitQuery.queryString, 'abc'),
+      );
+
+      expect(thisMediator.mediate).toHaveBeenCalledWith({
+        context: ctx.set(KeysInitQuery.queryString, 'abc'),
+        init: {
+          body: 'abc',
+          headers: {
+            'content-type': 'application/sparql-update',
+          },
+          method: 'POST',
+          signal: expect.anything(),
+        },
+        input: 'http://example.org/sparql',
+      });
     });
   });
 

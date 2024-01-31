@@ -1,5 +1,5 @@
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import { KeysQueryOperation, KeysRdfUpdateQuads } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -141,6 +141,31 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
         expect(ActorQueryOperation.getOperationSource(operationOut.patterns[0].input[1])).toBe(sourcePattern);
         expect(ActorQueryOperation.getOperationSource(operationOut.patterns[1].input[0])).toBe(source1);
         expect(ActorQueryOperation.getOperationSource(operationOut.patterns[1].input[1])).toBe(sourcePattern);
+      });
+
+      it('should keep the queryString for a single source', async() => {
+        const operationIn = AF.createNop();
+        const { operation: operationOut, context: contextOut } = await actor.run({
+          operation: operationIn,
+          context: new ActionContext()
+            .set(KeysQueryOperation.querySources, [ source1 ])
+            .set(KeysInitQuery.queryString, 'abc'),
+        });
+        expect(operationOut).not.toBe(operationIn);
+        expect(ActorQueryOperation.getOperationSource(operationOut)).toBe(source1);
+        expect(contextOut.get(KeysInitQuery.queryString)).toEqual('abc');
+      });
+
+      it('should not keep the queryString for two sources', async() => {
+        const operationIn = AF.createNop();
+        const { operation: operationOut, context: contextOut } = await actor.run({
+          operation: operationIn,
+          context: new ActionContext()
+            .set(KeysQueryOperation.querySources, [ source1, source1 ])
+            .set(KeysInitQuery.queryString, 'abc'),
+        });
+        expect(operationOut).not.toBe(operationIn);
+        expect(contextOut.get(KeysInitQuery.queryString)).toBeUndefined();
       });
     });
 
