@@ -883,6 +883,50 @@ WHERE { undefined:s ?p undefined:o. }` }),
       });
     });
 
+    it('should emit metadata', async() => {
+      const thisMediator: any = {
+        mediate: jest.fn((action: any) => {
+          const query = action.init.body.toString();
+          lastQuery = query;
+          return {
+            headers: new Headers({ 'Content-Type': query.indexOf('COUNT') > 0 ?
+              'application/sparql-results+json' :
+              'text/turtle' }),
+            body: query.indexOf('COUNT') > 0 ?
+              streamifyString(`{
+  "head": { "vars": [ "count" ]
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "count": { "type": "literal" , "value": "3" }
+      }
+    ]
+  }
+}`) :
+              streamifyString(`<s1> <p1> <o1>. <s2> <p2> <o2>.`),
+            ok: true,
+          };
+        }),
+      };
+      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', false, 64, 10);
+
+      const stream = source.queryQuads(
+        AF.createConstruct(AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')), []),
+        ctx,
+      );
+      expect(await new Promise(resolve => stream.getProperty('metadata', resolve)))
+        .toEqual({
+          cardinality: { type: 'exact', value: 3 },
+          canContainUndefs: false,
+          variables: [ DF.variable('p') ],
+        });
+      expect(await stream.toArray()).toBeRdfIsomorphic([
+        DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
+        DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
+      ]);
+    });
+
     it('should pass the original queryString if defined', async() => {
       const thisMediator: any = {
         mediate: jest.fn((action: any) => {

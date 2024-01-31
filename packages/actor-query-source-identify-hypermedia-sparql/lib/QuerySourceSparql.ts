@@ -108,7 +108,60 @@ export class QuerySourceSparql implements IQuerySource {
       operationPromise = Promise.resolve(operationIn);
     }
 
-    // Emit metadata containing the estimated count (reject is never called)
+    const bindings: BindingsStream = new TransformIterator(async() => {
+      // Prepare queries
+      const operation = await operationPromise;
+      const variables: RDF.Variable[] = Util.inScopeVariables(operation);
+      const queryString = context.get<string>(KeysInitQuery.queryString);
+      const selectQuery: string = !options?.joinBindings && queryString ?
+        queryString :
+        QuerySourceSparql.operationToSelectQuery(operation, variables);
+
+      return this.queryBindingsRemote(this.url, selectQuery, variables, context);
+    }, { autoStart: false });
+    this.attachMetadata(bindings, context, operationPromise);
+
+    return bindings;
+  }
+
+  public queryQuads(operation: Algebra.Construct, context: IActionContext): AsyncIterator<RDF.Quad> {
+    this.lastSourceContext = this.context.merge(context);
+    const rawStream = this.endpointFetcher.fetchTriples(
+      this.url,
+      context.get(KeysInitQuery.queryString) || QuerySourceSparql.operationToQuery(operation),
+    );
+    this.lastSourceContext = undefined;
+    const quads = wrap<any>(rawStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY });
+    this.attachMetadata(quads, context, Promise.resolve(operation.input));
+    return quads;
+  }
+
+  public queryBoolean(operation: Algebra.Ask, context: IActionContext): Promise<boolean> {
+    this.lastSourceContext = this.context.merge(context);
+    const promise = this.endpointFetcher.fetchAsk(
+      this.url,
+      context.get(KeysInitQuery.queryString) || QuerySourceSparql.operationToQuery(operation),
+    );
+    this.lastSourceContext = undefined;
+    return promise;
+  }
+
+  public queryVoid(operation: Algebra.Update, context: IActionContext): Promise<void> {
+    this.lastSourceContext = this.context.merge(context);
+    const promise = this.endpointFetcher.fetchUpdate(
+      this.url,
+      context.get(KeysInitQuery.queryString) || QuerySourceSparql.operationToQuery(operation),
+    );
+    this.lastSourceContext = undefined;
+    return promise;
+  }
+
+  protected attachMetadata(
+    target: AsyncIterator<any>,
+    context: IActionContext,
+    operationPromise: Promise<Algebra.Operation>,
+  ): void {
+    // Emit metadata containing the estimated count
     let variablesCount: RDF.Variable[] = [];
     new Promise<RDF.QueryResultCardinality>(async(resolve, reject) => {
       // Prepare queries
@@ -152,60 +205,16 @@ export class QuerySourceSparql implements IQuerySource {
         return reject(error);
       }
     })
-      .then(cardinality => bindings.setProperty('metadata', {
+      .then(cardinality => target.setProperty('metadata', {
         cardinality,
         canContainUndefs: false,
         variables: variablesCount,
       }))
-      .catch(() => bindings.setProperty('metadata', {
+      .catch(() => target.setProperty('metadata', {
         cardinality: COUNT_INFINITY,
         canContainUndefs: false,
         variables: variablesCount,
       }));
-
-    const bindings: BindingsStream = new TransformIterator(async() => {
-      // Prepare queries
-      const operation = await operationPromise;
-      const variables: RDF.Variable[] = Util.inScopeVariables(operation);
-      const queryString = context.get<string>(KeysInitQuery.queryString);
-      const selectQuery: string = !options?.joinBindings && queryString ?
-        queryString :
-        QuerySourceSparql.operationToSelectQuery(operation, variables);
-
-      return this.queryBindingsRemote(this.url, selectQuery, variables, context);
-    }, { autoStart: false });
-
-    return bindings;
-  }
-
-  public queryQuads(operation: Algebra.Construct, context: IActionContext): AsyncIterator<RDF.Quad> {
-    this.lastSourceContext = this.context.merge(context);
-    const rawStream = this.endpointFetcher.fetchTriples(
-      this.url,
-      context.get(KeysInitQuery.queryString) || QuerySourceSparql.operationToQuery(operation),
-    );
-    this.lastSourceContext = undefined;
-    return wrap<any>(rawStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY });
-  }
-
-  public queryBoolean(operation: Algebra.Ask, context: IActionContext): Promise<boolean> {
-    this.lastSourceContext = this.context.merge(context);
-    const promise = this.endpointFetcher.fetchAsk(
-      this.url,
-      context.get(KeysInitQuery.queryString) || QuerySourceSparql.operationToQuery(operation),
-    );
-    this.lastSourceContext = undefined;
-    return promise;
-  }
-
-  public queryVoid(operation: Algebra.Update, context: IActionContext): Promise<void> {
-    this.lastSourceContext = this.context.merge(context);
-    const promise = this.endpointFetcher.fetchUpdate(
-      this.url,
-      context.get(KeysInitQuery.queryString) || QuerySourceSparql.operationToQuery(operation),
-    );
-    this.lastSourceContext = undefined;
-    return promise;
   }
 
   /**
