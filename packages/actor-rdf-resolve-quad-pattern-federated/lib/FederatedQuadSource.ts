@@ -53,8 +53,8 @@ export class FederatedQuadSource implements IQuadSource {
     this.skipEmptyPatterns = skipEmptyPatterns;
     this.algebraFactory = new Factory();
 
+    // Initialize sources in the emptyPatterns datastructure
     if (this.skipEmptyPatterns) {
-      // Initialize sources in the emptyPatterns datastructure
       for (const source of this.sources) {
         if (!this.emptyPatterns.has(source)) {
           this.emptyPatterns.set(source, []);

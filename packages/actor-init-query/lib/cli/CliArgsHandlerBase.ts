@@ -257,7 +257,7 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
     }
 
     // Define if cache should be disabled
-    if (args.cache === 'false') {
+    if (args.noCache) {
       context[KeysInitQuery.noCache.name] = true;
     }
   }
