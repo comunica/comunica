@@ -156,8 +156,7 @@ export interface IActorInitQueryBaseArgs<QueryContext extends IQueryContextCommo
    *   "extensionFunctionCreator": "@comunica/actor-init-query:extensionFunctionCreator",
    *   "functionArgumentsCache": "@comunica/actor-init-query:functionArgumentsCache",
    *   "explain": "@comunica/actor-init-query:explain",
-   *   "unionDefaultGraph": "@comunica/bus-query-operation:unionDefaultGraph",
-   *   "sourceBinding": "@comunica/bus-merge-bindings-context:sourceBinding"
+   *   "unionDefaultGraph": "@comunica/bus-query-operation:unionDefaultGraph"
    * }}
    */
   contextKeyShortcuts: Record<string, string> | Partial<Record<keyof QueryContext, string>>;

@@ -190,7 +190,7 @@ export class Bindings implements RDF.Bindings {
     const keysBothContext = context.keys().filter(
       key => keysSetOtherContext.has(key.name),
     );
-    
+
     for (const key of allKeys) {
       // If duplicate key, we continue iterating
       if (handledKeys[key.name] === 1) {
