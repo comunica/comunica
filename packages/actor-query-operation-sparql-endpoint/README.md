@@ -30,7 +30,8 @@ After installing, this package can be added to your engine's configuration as fo
     {
       "@id": "urn:comunica:default:query-operation/actors#sparql-endpoint",
       "@type": "ActorQueryOperationSparqlEndpoint",
-      "mediatorHttp": { "@id": "urn:comunica:default:http/mediators#main" }
+      "mediatorHttp": { "@id": "urn:comunica:default:http/mediators#main" },
+      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" }
     }
   ]
 }
@@ -39,4 +40,5 @@ After installing, this package can be added to your engine's configuration as fo
 ### Config Parameters
 
 * `mediatorHttp`: A mediator over the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http).
+* `mediatorMergeBindingsContext`: A mediator over the [Merge Bindings Context bus](https://github.com/comunica/comunica/tree/master/packages/bus-merge-bindings-context).
 * `forceHttpGet`: If queries should be sent via HTTP GET instead of POST, defaults to `false`.

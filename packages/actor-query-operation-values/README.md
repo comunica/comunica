@@ -28,8 +28,13 @@ After installing, this package can be added to your engine's configuration as fo
     ...
     {
       "@id": "urn:comunica:default:query-operation/actors#values",
-      "@type": "ActorQueryOperationValues"
+      "@type": "ActorQueryOperationValues",
+      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" }
     }
   ]
 }
 ```
+
+### Config Parameters
+
+* `mediatorMergeBindingsContext`: A mediator over the [Merge Bindings Context bus](https://github.com/comunica/comunica/tree/master/packages/bus-merge-bindings-context).

@@ -2,7 +2,9 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-merge-binding-factory-context-union.svg)](https://www.npmjs.com/package/@comunica/actor-merge-bindings-context-union)
 
-A Comunica Merge Bindings Context Union Actor. This actors creates union functions for prespecified binding context keys.
+An [Merge Bindings Context](https://github.com/comunica/comunica/tree/master/packages/bus-merge-bindings-context) actor
+that merges context entry values by taking the set-union.
+Values are compared using JavaScript's Set equality semantics.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
@@ -28,7 +30,8 @@ After installing, this package can be added to your engine's configuration as fo
     ...
     {
       "@id": "urn:comunica:default:merge-binding-factory/actors#context-union",
-      "@type": "ActorMergeBindingFactoryContextUnion"
+      "@type": "ActorMergeBindingFactoryContextUnion",
+      "contextKey": "sources"
     }
   ]
 }
@@ -36,6 +39,4 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-TODO: fill in parameters (this section can be removed if there are none)
-
-* `someParam`: Description of the param
+* `contextKey`: The context key name to merge over.

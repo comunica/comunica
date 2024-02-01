@@ -30,7 +30,8 @@ After installing, this package can be added to your engine's configuration as fo
     {
       "@id": "urn:comunica:default:rdf-join/actors#inner-none",
       "@type": "ActorRdfJoinNone",
-      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" }
+      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
+      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" }
     }
   ]
 }
@@ -39,3 +40,4 @@ After installing, this package can be added to your engine's configuration as fo
 ### Config Parameters
 
 * `mediatorJoinSelectivity`: A mediator over the [RDF Join Selectivity bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join-selectivity).
+* `mediatorMergeBindingsContext`: A mediator over the [Merge Bindings Context bus](https://github.com/comunica/comunica/tree/master/packages/bus-merge-bindings-context).

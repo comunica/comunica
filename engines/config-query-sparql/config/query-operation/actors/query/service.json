@@ -12,7 +12,7 @@
       "@type": "ActorQueryOperationService",
       "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
       "forceSparqlEndpoint": false,
-      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main"}
+      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" }
     }
   ]
 }

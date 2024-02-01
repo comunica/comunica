@@ -1,6 +1,7 @@
 {
   "@context": [
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^2.0.0/components/context.jsonld",
+
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-query/^2.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/config-query-sparql/^2.0.0/components/context.jsonld"
   ],
@@ -18,7 +19,7 @@
       "mediatorQueryResultSerializeMediaTypeFormatCombiner": { "@id": "urn:comunica:default:query-result-serialize/mediators#mediaTypeFormat" },
       "mediatorContextPreprocess": { "@id": "urn:comunica:default:context-preprocess/mediators#main" },
       "mediatorHttpInvalidate": { "@id": "urn:comunica:default:http-invalidate/mediators#main" },
-      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main"}
+      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" }
     }
   ]
 }

@@ -3,7 +3,7 @@ import type { IActionMergeBindingsContext,
   IBindingsContextMergeHandler } from '@comunica/bus-merge-bindings-context';
 import { ActorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorTest } from '@comunica/core';
-import { SetUnionContext } from './SetUnionContext';
+import { SetUnionBindingsContextMergeHandler } from './SetUnionBindingsContextMergeHandler';
 
 /**
  * A comunica Union Merge Bindings Context Actor.
@@ -22,7 +22,7 @@ export class ActorMergeBindingsContextUnion extends ActorMergeBindingsContext {
   public async run(action: IActionMergeBindingsContext): Promise<IActorMergeBindingsContextOutput> {
     // Merge function: Union with set semantics
     const mergeHandlers: Record<string, IBindingsContextMergeHandler<any>> = {};
-    mergeHandlers[this.contextKey] = new SetUnionContext();
+    mergeHandlers[this.contextKey] = new SetUnionBindingsContextMergeHandler();
 
     return { mergeHandlers };
   }
@@ -30,8 +30,7 @@ export class ActorMergeBindingsContextUnion extends ActorMergeBindingsContext {
 
 export interface IActorMergeBindingsContextUnionArgs extends IActorMergeBindingsContextArgs{
   /**
-   * The keys the mergehandler created by this actor should merge over. With the key of the record being the key name
-   * and the value the expected type of the context entry
+   * The context key name to merge over.
    */
   contextKey: string;
 }

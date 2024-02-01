@@ -40,7 +40,8 @@ After installing, this package can be added to your engine's configuration as fo
       "@type": "ActorRdfJoinMultiBind",
       "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
       "mediatorJoinEntriesSort": { "@id": "urn:comunica:default:rdf-join-entries-sort/mediators#main" },
-      "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" }
+      "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
+      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" }
     }
   ]
 }
@@ -52,3 +53,4 @@ After installing, this package can be added to your engine's configuration as fo
 * `mediatorJoinEntriesSort`: A mediator over the [RDF Join Entries Sort bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join-entries-sort).
 * `bindOrder`: The order in which elements should be bound. _(defaults to `depth-first`, but can also be `breadth-first`)_
 * `mediatorQueryOperation`: A mediator over the [Query Operation bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation).
+* `mediatorMergeBindingsContext`: A mediator over the [Merge Bindings Context bus](https://github.com/comunica/comunica/tree/master/packages/bus-merge-bindings-context).

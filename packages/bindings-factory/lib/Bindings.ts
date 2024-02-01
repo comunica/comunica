@@ -11,7 +11,7 @@ import { bindingsToString } from './bindingsToString';
 export class Bindings implements RDF.Bindings {
   public readonly type = 'bindings';
 
-  public context: IActionContext | undefined;
+  public readonly context: IActionContext | undefined;
   private readonly contextMergeHandlers: Record<string, IBindingsContextMergeHandler<any>> | undefined;
 
   private readonly dataFactory: RDF.DataFactory;
@@ -94,6 +94,7 @@ export class Bindings implements RDF.Bindings {
         return false;
       }
     }
+
     return true;
   }
 
@@ -126,7 +127,7 @@ export class Bindings implements RDF.Bindings {
       entries.push([ key, value ]);
     }
 
-    // If any context is empty we skip merging contexts
+    // If any context is empty, we skip merging contexts
     if (this.context && this.contextMergeHandlers) {
       let mergedContext = this.context;
       // Only merge if the other has a context
@@ -135,8 +136,10 @@ export class Bindings implements RDF.Bindings {
       }
       return new Bindings(this.dataFactory, Map(entries), this.contextMergeHandlers, mergedContext);
     }
+
+    // Otherwise, use optional context from other
     const castOther = <Bindings>other;
-    return new Bindings(this.dataFactory, Map(entries), this.contextMergeHandlers, castOther.context);
+    return new Bindings(this.dataFactory, Map(entries), castOther.contextMergeHandlers, castOther.context);
   }
 
   public mergeWith(
@@ -172,8 +175,9 @@ export class Bindings implements RDF.Bindings {
       }
       return new Bindings(this.dataFactory, Map(entries), this.contextMergeHandlers, mergedContext);
     }
+
     const castOther = <Bindings> other;
-    return new Bindings(this.dataFactory, Map(entries), this.contextMergeHandlers, castOther.context);
+    return new Bindings(this.dataFactory, Map(entries), castOther.contextMergeHandlers, castOther.context);
   }
 
   private mergeContext(context: IActionContext, otherContext: IActionContext): IActionContext {
@@ -225,7 +229,6 @@ export class Bindings implements RDF.Bindings {
       // This could likely be else statement, but don't want to risk it
       if (!otherContext.get(key)) {
         newContextData[key.name] = context.get(key);
-        continue;
       }
     }
     return new ActionContext(newContextData);

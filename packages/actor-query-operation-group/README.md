@@ -30,7 +30,7 @@ After installing, this package can be added to your engine's configuration as fo
       "@id": "urn:comunica:default:query-operation/actors#group",
       "@type": "ActorQueryOperationGroup",
       "mediatorQueryOperation": { "@id": "#mediatorQueryOperation" },
-      "mediatorHashBindings": { "@id": "#mediatorHashBindings" }
+      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" }
     }
   ]
 }
@@ -39,4 +39,4 @@ After installing, this package can be added to your engine's configuration as fo
 ### Config Parameters
 
 * `mediatorQueryOperation`: A mediator over the [Query Operation bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation).
-* `mediatorHashBindings`: A mediator over the [Hash Bindings bus](https://github.com/comunica/comunica/tree/master/packages/bus-hash-bindings).
+* `mediatorMergeBindingsContext`: A mediator over the [Merge Bindings Context bus](https://github.com/comunica/comunica/tree/master/packages/bus-merge-bindings-context).

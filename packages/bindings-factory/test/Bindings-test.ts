@@ -5,7 +5,6 @@ import { Bindings } from '../lib/Bindings';
 import 'jest-rdf';
 
 const DF = new DataFactory();
-// Empty merge handlers, should implement specific ones when done
 const contextMergeHandlers = {};
 describe('Bindings', () => {
   let bindings: Bindings;
