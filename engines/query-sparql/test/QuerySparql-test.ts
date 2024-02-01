@@ -516,14 +516,14 @@ describe('System test: QuerySparql', () => {
 
           // This cumbersome way is needed because evaluating with mock with isCalledWith gives you the reference
           // to the cache and will make it seem like it was filled in from the beginning.
-          const original_function = (<any> alternativeEngine).actorInitQuery.mediatorContextPreprocess.mediate;
+          const original_function = (<any> alternativeEngine).actorInitQuery.mediatorQueryProcess.mediate;
           let firstFuncArgCache: object | undefined;
           let secondFuncArgCache: object | undefined;
-          (<any> alternativeEngine).actorInitQuery.mediatorContextPreprocess.mediate =
+          (<any> alternativeEngine).actorInitQuery.mediatorQueryProcess.mediate =
             (arg: { context: IActionContext }) => {
               firstFuncArgCache = arg.context.get(KeysInitQuery.functionArgumentsCache);
               expect(firstFuncArgCache).toEqual({});
-              return original_function.call((<any> alternativeEngine).actorInitQuery.mediatorContextPreprocess, arg);
+              return original_function.call((<any> alternativeEngine).actorInitQuery.mediatorQueryProcess, arg);
             };
 
           // Evaluate query once
@@ -532,12 +532,12 @@ describe('System test: QuerySparql', () => {
             quads.map(q => String(q.object.value.length)),
           );
 
-          (<any> alternativeEngine).actorInitQuery.mediatorContextPreprocess.mediate =
+          (<any> alternativeEngine).actorInitQuery.mediatorQueryProcess.mediate =
             (arg: { context: IActionContext }) => {
               secondFuncArgCache = arg.context.get(KeysInitQuery.functionArgumentsCache);
               expect(secondFuncArgCache).not.toBeUndefined();
               expect(Object.keys(secondFuncArgCache!)).toContain('strlen');
-              return original_function.call((<any> alternativeEngine).actorInitQuery.mediatorContextPreprocess, arg);
+              return original_function.call((<any> alternativeEngine).actorInitQuery.mediatorQueryProcess, arg);
             };
           // Evaluate query a second time
           const secondBindingsStream = await alternativeEngine.queryBindings(query, context);
@@ -548,7 +548,7 @@ describe('System test: QuerySparql', () => {
           expect(firstFuncArgCache).toBe(secondFuncArgCache);
 
           // Reset the function again!
-          (<any> alternativeEngine).actorInitQuery.mediatorContextPreprocess.mediate = original_function;
+          (<any> alternativeEngine).actorInitQuery.mediatorQueryProcess.mediate = original_function;
         });
       });
     });

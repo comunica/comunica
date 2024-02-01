@@ -1,11 +1,7 @@
-import type { MediatorContextPreprocess } from '@comunica/bus-context-preprocess';
 import type { MediatorHttpInvalidate } from '@comunica/bus-http-invalidate';
 import type { IActionInit, IActorInitArgs, IActorOutputInit } from '@comunica/bus-init';
 import { ActorInit } from '@comunica/bus-init';
-import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
-import type { MediatorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
-import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
-import type { MediatorQueryParse } from '@comunica/bus-query-parse';
+import type { MediatorQueryProcess } from '@comunica/bus-query-process';
 import type { MediatorQueryResultSerializeHandle,
   MediatorQueryResultSerializeMediaTypes,
   MediatorQueryResultSerializeMediaTypeFormats } from '@comunica/bus-query-result-serialize';
@@ -17,15 +13,11 @@ import type { IQueryContextCommon, Logger } from '@comunica/types';
  */
 export class ActorInitQueryBase<QueryContext extends IQueryContextCommon = IQueryContextCommon>
   extends ActorInit implements IActorInitQueryBaseArgs<QueryContext> {
-  public readonly mediatorOptimizeQueryOperation: MediatorOptimizeQueryOperation;
-  public readonly mediatorQueryOperation: MediatorQueryOperation;
-  public readonly mediatorQueryParse: MediatorQueryParse;
   public readonly mediatorQueryResultSerialize: MediatorQueryResultSerializeHandle;
   public readonly mediatorQueryResultSerializeMediaTypeCombiner: MediatorQueryResultSerializeMediaTypes;
   public readonly mediatorQueryResultSerializeMediaTypeFormatCombiner: MediatorQueryResultSerializeMediaTypeFormats;
-  public readonly mediatorContextPreprocess: MediatorContextPreprocess;
   public readonly mediatorHttpInvalidate: MediatorHttpInvalidate;
-  public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+  public readonly mediatorQueryProcess: MediatorQueryProcess;
 
   public readonly logger: Logger;
   public readonly queryString?: string;
@@ -68,17 +60,9 @@ export class ActorInitQueryBase<QueryContext extends IQueryContextCommon = IQuer
 export interface IActorInitQueryBaseArgs<QueryContext extends IQueryContextCommon = IQueryContextCommon>
   extends IActorInitArgs {
   /**
-   * The query operation optimize mediator
+   * The query process mediator
    */
-  mediatorOptimizeQueryOperation: MediatorOptimizeQueryOperation;
-  /**
-   * The query operation mediator
-   */
-  mediatorQueryOperation: MediatorQueryOperation;
-  /**
-   * The query parse mediator
-   */
-  mediatorQueryParse: MediatorQueryParse;
+  mediatorQueryProcess: MediatorQueryProcess;
   /**
    * The query serialize mediator
    */
@@ -92,17 +76,9 @@ export interface IActorInitQueryBaseArgs<QueryContext extends IQueryContextCommo
    */
   mediatorQueryResultSerializeMediaTypeFormatCombiner: MediatorQueryResultSerializeMediaTypeFormats;
   /**
-   * The context processing combinator
-   */
-  mediatorContextPreprocess: MediatorContextPreprocess;
-  /**
    * The HTTP cache invalidation mediator
    */
   mediatorHttpInvalidate: MediatorHttpInvalidate;
-  /**
-   * A mediator for creating binding context merge handlers
-   */
-  mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   /**
    * The logger of this actor

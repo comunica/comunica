@@ -1,10 +1,8 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
-import { materializeOperation } from '@comunica/bus-query-operation';
 import type { IActionSparqlSerialize, IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
 import { KeysCore, KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type {
-  IActionContext, IPhysicalQueryPlanLogger,
+  IActionContext,
   IQueryOperationResult,
   IQueryEngine, IQueryExplained,
   QueryFormatType,
@@ -14,9 +12,7 @@ import type {
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import type { Algebra } from 'sparqlalgebrajs';
 import type { ActorInitQueryBase } from './ActorInitQueryBase';
-import { MemoryPhysicalQueryPlanLogger } from './MemoryPhysicalQueryPlanLogger';
 
 /**
  * Base implementation of a Comunica query engine.
@@ -94,7 +90,7 @@ implements IQueryEngine<QueryContext, QueryStringContextInner, QueryAlgebraConte
 
   /**
    * Explain the given query
-   * @param {string | Algebra.Operation} query A query string or algebra.
+   * @param query A query string or algebra.
    * @param context An optional query context.
    * @param explainMode The explain mode.
    * @return {Promise<QueryType | IQueryExplained>} A promise that resolves to
@@ -112,7 +108,7 @@ implements IQueryEngine<QueryContext, QueryStringContextInner, QueryAlgebraConte
 
   /**
    * Evaluate or explain the given query
-   * @param {string | Algebra.Operation} query A query string or algebra.
+   * @param query A query string or algebra.
    * @param context An optional query context.
    * @return {Promise<QueryType | IQueryExplained>} A promise that resolves to
    *                                                               the query output or explanation.
@@ -131,126 +127,19 @@ implements IQueryEngine<QueryContext, QueryStringContextInner, QueryAlgebraConte
       }
     }
 
-    // Prepare context
-    let actionContext: IActionContext = new ActionContext(context);
-    let queryFormat: RDF.QueryFormat = { language: 'sparql', version: '1.1' };
-    if (actionContext.has(KeysInitQuery.queryFormat)) {
-      queryFormat = actionContext.get(KeysInitQuery.queryFormat)!;
-      actionContext = actionContext.delete(KeysInitQuery.queryFormat);
-      if (queryFormat.language === 'graphql') {
-        actionContext = actionContext.setDefault(KeysInitQuery.graphqlSingularizeVariables, {});
-      }
-    }
-    const baseIRI: string | undefined = actionContext.get(KeysInitQuery.baseIRI);
-
-    actionContext = actionContext
+    // Set default values in context
+    const actionContext: IActionContext = new ActionContext(context)
       .setDefault(KeysInitQuery.queryTimestamp, new Date())
       .setDefault(KeysQuerySourceIdentify.sourceIds, new Map())
       .setDefault(KeysCore.log, this.actorInitQuery.logger)
       .setDefault(KeysInitQuery.functionArgumentsCache, this.defaultFunctionArgumentsCache);
 
-    // Pre-processing the context
-    actionContext = (await this.actorInitQuery.mediatorContextPreprocess.mediate({ context: actionContext })).context;
-
-    // Determine explain mode
-    const explainMode: QueryExplainMode = actionContext.get(KeysInitQuery.explain)!;
-
-    // Parse query
-    let operation: Algebra.Operation;
-    if (typeof query === 'string') {
-      // Save the original query string in the context
-      actionContext = actionContext.set(KeysInitQuery.queryString, query);
-
-      const queryParseOutput = await this.actorInitQuery.mediatorQueryParse
-        .mediate({ context: actionContext, query, queryFormat, baseIRI });
-      operation = queryParseOutput.operation;
-      // Update the baseIRI in the context if the query modified it.
-      if (queryParseOutput.baseIRI) {
-        actionContext = actionContext.set(KeysInitQuery.baseIRI, queryParseOutput.baseIRI);
-      }
-    } else {
-      operation = query;
+    // Invoke query process
+    const { result } = await this.actorInitQuery.mediatorQueryProcess.mediate({ query, context: actionContext });
+    if ('explain' in result) {
+      return result;
     }
-
-    // Print parsed query
-    if (explainMode === 'parsed') {
-      return {
-        explain: true,
-        type: explainMode,
-        data: operation,
-      };
-    }
-
-    // Apply initial bindings in context
-    if (actionContext.has(KeysInitQuery.initialBindings)) {
-      const bindingsFactory = await BindingsFactory
-        .create(this.actorInitQuery.mediatorMergeBindingsContext, actionContext);
-      operation = materializeOperation(operation, actionContext.get(KeysInitQuery.initialBindings)!, bindingsFactory);
-
-      // Delete the query string from the context, since our initial query might have changed
-      actionContext = actionContext.delete(KeysInitQuery.queryString);
-    }
-
-    // Optimize the query operation
-    const mediatorResult = await this.actorInitQuery.mediatorOptimizeQueryOperation
-      .mediate({ context: actionContext, operation });
-    operation = mediatorResult.operation;
-    actionContext = mediatorResult.context || actionContext;
-
-    // Print logical query plan
-    if (explainMode === 'logical') {
-      return {
-        explain: true,
-        type: explainMode,
-        data: operation,
-      };
-    }
-
-    // Save original query in context
-    actionContext = actionContext.set(KeysInitQuery.query, operation);
-
-    // If we need a physical query plan, store a physical query plan logger in the context, and collect it after exec
-    let physicalQueryPlanLogger: IPhysicalQueryPlanLogger | undefined;
-    if (explainMode === 'physical') {
-      physicalQueryPlanLogger = new MemoryPhysicalQueryPlanLogger();
-      actionContext = actionContext.set(KeysInitQuery.physicalQueryPlanLogger, physicalQueryPlanLogger);
-    }
-
-    // Execute query
-    const output = await this.actorInitQuery.mediatorQueryOperation.mediate({
-      context: actionContext,
-      operation,
-    });
-    output.context = actionContext;
-
-    const finalOutput = QueryEngineBase.internalToFinalResult(output);
-
-    // Output physical query plan after query exec if needed
-    if (physicalQueryPlanLogger) {
-      // Make sure the whole result is produced
-      switch (finalOutput.resultType) {
-        case 'bindings':
-          await (await finalOutput.execute()).toArray();
-          break;
-        case 'quads':
-          await (await finalOutput.execute()).toArray();
-          break;
-        case 'boolean':
-          await finalOutput.execute();
-          break;
-        case 'void':
-          await finalOutput.execute();
-          break;
-      }
-
-      return {
-        explain: true,
-        type: explainMode,
-        data: physicalQueryPlanLogger.toJson(),
-      };
-    }
-
-    return finalOutput;
+    return QueryEngineBase.internalToFinalResult(result);
   }
 
   /**

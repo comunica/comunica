@@ -1,11 +1,13 @@
 const ProxyHandlerStatic = require('@comunica/actor-http-proxy').ProxyHandlerStatic;
 const RdfTestSuite = require('rdf-test-suite');
+const { ActionContext } = require('@comunica/core');
+const { KeysInitQuery } = require('@comunica/context-entries');
 const RdfStore = require('rdf-stores').RdfStore;
 
 module.exports = function(engine) {
   return {
     parse: function (query, options) {
-      return engine.actorInitQuery.mediatorQueryParse.mediate({ query: query, baseIRI: options.baseIRI });
+      return engine.actorInitQuery.mediatorQueryProcess.bus.actors[0].parse(query, new ActionContext({ [KeysInitQuery.baseIRI.name]: options.baseIRI }));
     },
     query: function(data, queryString, options) {
       return this.queryLdf([{ type: 'rdfjs', value: source(data) }], null, queryString, options);

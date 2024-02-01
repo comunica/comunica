@@ -7,20 +7,10 @@ import { ActorInitQueryBase } from '../lib/ActorInitQueryBase';
 describe('ActorInitQueryBase', () => {
   let bus: any;
   let logger: any;
-  let mediatorOptimizeQueryOperation: any;
-  let mediatorQueryOperation: any;
-  let mediatorSparqlParse: any;
+  let mediatorQueryProcess: any;
   let mediatorSparqlSerialize: any;
   let mediatorHttpInvalidate: any;
   let context: IActionContext;
-  const mediatorContextPreprocess: any = {
-    mediate: (action: any) => Promise.resolve(action),
-  };
-  const mediatorMergeBindingsContext: any = {
-    mediate(arg: any) {
-      return {};
-    },
-  };
 
   const contextKeyShortcuts = {
     initialBindings: '@comunica/actor-init-query:initialBindings',
@@ -34,11 +24,11 @@ describe('ActorInitQueryBase', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     logger = null;
-    mediatorOptimizeQueryOperation = {
-      mediate: (arg: any) => Promise.resolve(arg),
+    mediatorQueryProcess = <any>{
+      mediate: jest.fn((action: any) => {
+        return Promise.reject(new Error('Invalid query'));
+      }),
     };
-    mediatorQueryOperation = {};
-    mediatorSparqlParse = {};
     mediatorSparqlSerialize = {
       mediate: (arg: any) => Promise.resolve(arg.mediaTypes ?
         { mediaTypes: arg } :
@@ -65,11 +55,11 @@ describe('ActorInitQueryBase', () => {
 
     it('should be a ActorInitQueryBase constructor', () => {
       expect(new (<any> ActorInitQueryBase)(
-        { name: 'actor', bus, logger, mediatorQueryOperation, mediatorSparqlParse, mediatorSparqlSerialize },
+        { name: 'actor', bus, logger, mediatorQueryProcess, mediatorSparqlSerialize },
       ))
         .toBeInstanceOf(ActorInitQueryBase);
       expect(new (<any> ActorInitQueryBase)(
-        { name: 'actor', bus, logger, mediatorQueryOperation, mediatorSparqlParse, mediatorSparqlSerialize },
+        { name: 'actor', bus, logger, mediatorQueryProcess, mediatorSparqlSerialize },
       ))
         .toBeInstanceOf(ActorInit);
     });
@@ -88,15 +78,11 @@ describe('ActorInitQueryBase', () => {
         contextKeyShortcuts,
         defaultQueryInputFormat,
         logger,
-        mediatorContextPreprocess,
         mediatorHttpInvalidate,
-        mediatorOptimizeQueryOperation,
-        mediatorQueryOperation,
-        mediatorQueryParse: mediatorSparqlParse,
+        mediatorQueryProcess,
         mediatorQueryResultSerialize: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-        mediatorMergeBindingsContext,
         name: 'actor',
       });
     });
@@ -125,15 +111,11 @@ describe('ActorInitQueryBase', () => {
         contextKeyShortcuts,
         defaultQueryInputFormat,
         logger,
-        mediatorContextPreprocess,
         mediatorHttpInvalidate,
-        mediatorOptimizeQueryOperation,
-        mediatorQueryOperation,
-        mediatorQueryParse: mediatorSparqlParse,
+        mediatorQueryProcess,
         mediatorQueryResultSerialize: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-        mediatorMergeBindingsContext,
         name: 'actor',
       })).toThrow('Duplicate keys found while adding `contextKeyShortcutsExtensions`.');
     });
@@ -148,15 +130,11 @@ describe('ActorInitQueryBase', () => {
         contextKeyShortcuts,
         defaultQueryInputFormat,
         logger,
-        mediatorContextPreprocess,
         mediatorHttpInvalidate,
-        mediatorOptimizeQueryOperation,
-        mediatorQueryOperation,
-        mediatorQueryParse: mediatorSparqlParse,
+        mediatorQueryProcess,
         mediatorQueryResultSerialize: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-        mediatorMergeBindingsContext,
         name: 'actor',
       });
 

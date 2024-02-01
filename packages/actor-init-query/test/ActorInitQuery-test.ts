@@ -1,5 +1,5 @@
 import { ProxyHandlerStatic } from '@comunica/actor-http-proxy';
-import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import type { MediatorQueryProcess } from '@comunica/bus-query-process';
 import {
   KeysCore,
   KeysHttp,
@@ -9,10 +9,8 @@ import {
 } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
-import type { IActionContext, ICliArgsHandler, IPhysicalQueryPlanLogger } from '@comunica/types';
-import { DataFactory } from 'rdf-data-factory';
+import type { IActionContext, ICliArgsHandler } from '@comunica/types';
 import { PassThrough, Readable, Transform } from 'readable-stream';
-import { Factory } from 'sparqlalgebrajs';
 
 import { CliArgsHandlerBase } from '../lib';
 import { ActorInitQuery } from '../lib/ActorInitQuery';
@@ -20,22 +18,15 @@ import { QueryEngineBase } from '../lib/QueryEngineBase';
 // Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
 const stringifyStream = require('stream-to-string');
 
-const DF = new DataFactory();
-
 describe('ActorInitQuery', () => {
   let bus: any;
   let logger: any;
-  let mediatorOptimizeQueryOperation: any;
-  let mediatorQueryOperation: any;
-  let mediatorSparqlParse: any;
+  let mediatorQueryProcess: MediatorQueryProcess;
   let mediatorSparqlSerialize: any;
   let mediatorHttpInvalidate: any;
   let context: IActionContext;
   let input: Readable;
 
-  const mediatorContextPreprocess: any = {
-    mediate: (action: any) => Promise.resolve(action),
-  };
   const contextKeyShortcuts = {
     initialBindings: '@comunica/actor-init-query:initialBindings',
     log: '@comunica/core:log',
@@ -54,11 +45,23 @@ describe('ActorInitQuery', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     logger = null;
-    mediatorOptimizeQueryOperation = {
-      mediate: (arg: any) => Promise.resolve(arg),
+    mediatorQueryProcess = <any>{
+      mediate: jest.fn((action: any) => {
+        if (action.context.has(KeysInitQuery.explain)) {
+          return Promise.resolve({
+            result: {
+              explain: 'true',
+              data: 'EXPLAINED',
+            },
+          });
+        }
+        return action.query !== 'INVALID' ?
+          Promise.resolve({
+            result: { type: 'bindings', bindingsStream: input, metadata: () => ({}), context: action.context },
+          }) :
+          Promise.reject(new Error('Invalid query'));
+      }),
     };
-    mediatorQueryOperation = {};
-    mediatorSparqlParse = {};
     mediatorSparqlSerialize = {
       mediate(arg: any) {
         return Promise.resolve(arg.mediaTypes ?
@@ -94,81 +97,31 @@ describe('ActorInitQuery', () => {
     let actorFixedQueryAndContext: ActorInitQuery;
     let spyResultToString: any;
     let spyQueryOrExplain: any;
-    let mediatorMergeBindingsContext: any;
 
     beforeEach(() => {
-      const factory = new Factory();
-      mediatorMergeBindingsContext = {
-        mediate(arg: any) {
-          return {};
-        },
-      };
-
-      mediatorQueryOperation.mediate = jest.fn((action: any) => {
-        if (action.context.has(KeysInitQuery.physicalQueryPlanLogger)) {
-          (<IPhysicalQueryPlanLogger> action.context.get(KeysInitQuery.physicalQueryPlanLogger))
-            .logOperation(
-              'logicalOp',
-              'physicalOp',
-              {},
-              undefined,
-              'actor',
-              {},
-            );
-        }
-        return action.operation !== 'INVALID' ?
-          Promise.resolve({ type: 'bindings', bindingsStream: input, metadata: () => ({}) }) :
-          Promise.reject(new Error('Invalid query'));
-      });
-      mediatorSparqlParse.mediate = (action: any) => action.query === 'INVALID' ?
-        Promise.resolve({ operation: action.query }) :
-        Promise.resolve({
-          baseIRI: action.query.includes('BASE') ? 'myBaseIRI' : null,
-          operation: factory.createProject(
-            factory.createBgp([
-              ActorQueryOperation.assignOperationSource(
-                factory.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
-                <any> { source: { toString: () => 'SRC' }},
-              ),
-            ]),
-            [
-              DF.variable('s'),
-              DF.variable('p'),
-              DF.variable('o'),
-            ],
-          ),
-        });
       actor = new ActorInitQuery({
         bus,
         contextKeyShortcuts,
         defaultQueryInputFormat,
         logger,
-        mediatorContextPreprocess,
+        mediatorQueryProcess,
         mediatorHttpInvalidate,
-        mediatorOptimizeQueryOperation,
-        mediatorQueryOperation,
-        mediatorQueryParse: mediatorSparqlParse,
         mediatorQueryResultSerialize: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
         name: 'actor',
-        mediatorMergeBindingsContext,
       });
       actorFixedQuery = new ActorInitQuery(
         { bus,
           contextKeyShortcuts,
           defaultQueryInputFormat: 'sparql',
           logger,
-          mediatorContextPreprocess,
+          mediatorQueryProcess,
           mediatorHttpInvalidate,
-          mediatorOptimizeQueryOperation,
-          mediatorQueryOperation,
-          mediatorQueryParse: mediatorSparqlParse,
           mediatorQueryResultSerialize: mediatorSparqlSerialize,
           mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
           mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
           name: 'actor',
-          mediatorMergeBindingsContext,
           queryString },
       );
       actorFixedContext = new ActorInitQuery(
@@ -176,16 +129,12 @@ describe('ActorInitQuery', () => {
           contextKeyShortcuts,
           defaultQueryInputFormat: 'sparql',
           logger,
-          mediatorContextPreprocess,
+          mediatorQueryProcess,
           mediatorHttpInvalidate,
-          mediatorOptimizeQueryOperation,
-          mediatorQueryOperation,
-          mediatorQueryParse: mediatorSparqlParse,
           mediatorQueryResultSerialize: mediatorSparqlSerialize,
           mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
           mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
           name: 'actor',
-          mediatorMergeBindingsContext,
           context: contextString },
       );
       actorFixedQueryAndContext = new ActorInitQuery(
@@ -193,15 +142,11 @@ describe('ActorInitQuery', () => {
           contextKeyShortcuts,
           defaultQueryInputFormat: 'sparql',
           logger,
-          mediatorContextPreprocess,
+          mediatorQueryProcess,
           mediatorHttpInvalidate,
-          mediatorOptimizeQueryOperation,
-          mediatorQueryOperation,
-          mediatorQueryParse: mediatorSparqlParse,
           mediatorQueryResultSerialize: mediatorSparqlSerialize,
           mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
           mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-          mediatorMergeBindingsContext,
           name: 'actor',
           queryString,
           context: contextString },
@@ -844,16 +789,12 @@ LIMIT 100
             { bus,
               contextKeyShortcuts,
               logger,
-              mediatorContextPreprocess,
+              mediatorQueryProcess,
               mediatorHttpInvalidate,
-              mediatorOptimizeQueryOperation,
-              mediatorQueryOperation: m1,
-              mediatorQueryParse: mediatorSparqlParse,
               mediatorQueryResultSerialize: m2,
               mediatorQueryResultSerializeMediaTypeCombiner: m2,
               mediatorQueryResultSerializeMediaTypeFormatCombiner: m2,
               name: 'actor',
-              mediatorMergeBindingsContext,
               queryString },
           );
           expect((await actorThis.run({
@@ -867,7 +808,7 @@ LIMIT 100
 
         it('defaults to application/trig for quadStream', async() => {
           const m1: any = {
-            mediate: (arg: any) => Promise.resolve({ type: 'quads', quadStream: true }),
+            mediate: (arg: any) => Promise.resolve({ result: { type: 'quads', quadStream: true }}),
           };
           const m2: any = {
             mediate: (arg: any) => Promise.resolve({ handle: { data: arg.handleMediaType }}),
@@ -876,16 +817,12 @@ LIMIT 100
             { bus,
               contextKeyShortcuts,
               logger,
-              mediatorContextPreprocess,
+              mediatorQueryProcess: m1,
               mediatorHttpInvalidate,
-              mediatorOptimizeQueryOperation,
-              mediatorQueryOperation: m1,
-              mediatorQueryParse: mediatorSparqlParse,
               mediatorQueryResultSerialize: m2,
               mediatorQueryResultSerializeMediaTypeCombiner: m2,
               mediatorQueryResultSerializeMediaTypeFormatCombiner: m2,
               name: 'actor',
-              mediatorMergeBindingsContext,
               queryString },
           );
           expect((await actorThis.run({
@@ -899,7 +836,9 @@ LIMIT 100
 
         it('defaults to simple for boolean', async() => {
           const m1: any = {
-            mediate: (arg: any) => Promise.resolve({ type: 'boolean', booleanResult: Promise.resolve(true) }),
+            mediate: (arg: any) => Promise.resolve({
+              result: { type: 'boolean', booleanResult: Promise.resolve(true) },
+            }),
           };
           const m2: any = {
             mediate: (arg: any) => Promise.resolve({ handle: { data: arg.handleMediaType }}),
@@ -908,16 +847,12 @@ LIMIT 100
             { bus,
               contextKeyShortcuts,
               logger,
-              mediatorContextPreprocess,
+              mediatorQueryProcess: m1,
               mediatorHttpInvalidate,
-              mediatorOptimizeQueryOperation,
-              mediatorQueryOperation: m1,
-              mediatorQueryParse: mediatorSparqlParse,
               mediatorQueryResultSerialize: m2,
               mediatorQueryResultSerializeMediaTypeCombiner: m2,
               mediatorQueryResultSerializeMediaTypeFormatCombiner: m2,
               name: 'actor',
-              mediatorMergeBindingsContext,
               queryString },
           );
           expect((await actorThis.run({
@@ -977,16 +912,12 @@ LIMIT 100
             { bus,
               contextKeyShortcuts,
               logger,
-              mediatorContextPreprocess,
+              mediatorQueryProcess,
               mediatorHttpInvalidate,
-              mediatorOptimizeQueryOperation,
-              mediatorQueryOperation,
-              mediatorQueryParse: mediatorSparqlParse,
               mediatorQueryResultSerialize: mediatorSparqlSerialize,
               mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
               mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
               name: 'actor',
-              mediatorMergeBindingsContext,
               queryString: <any> null },
           );
 
@@ -1039,52 +970,7 @@ LIMIT 100
             stdin: <Readable><any> new PassThrough(),
             context,
           })).stdout);
-          expect(stdout).toContain(`{
-  "type": "project",
-  "input": {
-    "type": "bgp",
-    "patterns": [
-      {
-        "termType": "Quad",
-        "value": "",
-        "subject": {
-          "termType": "Variable",
-          "value": "s"
-        },
-        "predicate": {
-          "termType": "Variable",
-          "value": "p"
-        },
-        "object": {
-          "termType": "Variable",
-          "value": "o"
-        },
-        "graph": {
-          "termType": "DefaultGraph",
-          "value": ""
-        },
-        "type": "pattern",
-        "metadata": {
-          "scopedSource": "SRC"
-        }
-      }
-    ]
-  },
-  "variables": [
-    {
-      "termType": "Variable",
-      "value": "s"
-    },
-    {
-      "termType": "Variable",
-      "value": "p"
-    },
-    {
-      "termType": "Variable",
-      "value": "o"
-    }
-  ]
-}`);
+          expect(stdout).toContain(`"EXPLAINED"`);
           expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
             [KeysInitQuery.explain.name]: 'parsed',
             [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
@@ -1100,52 +986,7 @@ LIMIT 100
             stdin: <Readable><any> new PassThrough(),
             context,
           })).stdout);
-          expect(stdout).toContain(`{
-  "type": "project",
-  "input": {
-    "type": "bgp",
-    "patterns": [
-      {
-        "termType": "Quad",
-        "value": "",
-        "subject": {
-          "termType": "Variable",
-          "value": "s"
-        },
-        "predicate": {
-          "termType": "Variable",
-          "value": "p"
-        },
-        "object": {
-          "termType": "Variable",
-          "value": "o"
-        },
-        "graph": {
-          "termType": "DefaultGraph",
-          "value": ""
-        },
-        "type": "pattern",
-        "metadata": {
-          "scopedSource": "SRC"
-        }
-      }
-    ]
-  },
-  "variables": [
-    {
-      "termType": "Variable",
-      "value": "s"
-    },
-    {
-      "termType": "Variable",
-      "value": "p"
-    },
-    {
-      "termType": "Variable",
-      "value": "o"
-    }
-  ]
-}`);
+          expect(stdout).toContain(`"EXPLAINED"`);
           expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
             [KeysInitQuery.explain.name]: 'logical',
             [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
@@ -1154,111 +995,47 @@ LIMIT 100
           });
         });
 
-        describe('in physical mode', () => {
-          it('for a bindings response', async() => {
-            const stdout = await stringifyStream(<any> (await actor.run({
-              argv: [ 'SOURCE', '-q', queryString, '--explain', 'physical' ],
-              env: {},
-              stdin: <Readable><any> new PassThrough(),
-              context,
-            })).stdout);
-            expect(stdout).toContain(`{
-  "logical": "logicalOp",
-  "physical": "physicalOp"
-}`);
+        it('in physical mode', async() => {
+          const stdout = await stringifyStream(<any> (await actor.run({
+            argv: [ 'SOURCE', '-q', queryString, '--explain', 'physical' ],
+            env: {},
+            stdin: <Readable><any> new PassThrough(),
+            context,
+          })).stdout);
+          expect(stdout).toContain(`"EXPLAINED"`);
+          expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
+            [KeysInitQuery.explain.name]: 'physical',
+            [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
+            [KeysInitQuery.querySourcesUnidentified.name]: [{ value: 'SOURCE' }],
+            [KeysCore.log.name]: expect.any(LoggerPretty),
           });
+        });
 
-          it('for a quads response', async() => {
-            mediatorQueryOperation.mediate = jest.fn((action: any) => {
-              if (action.context.has(KeysInitQuery.physicalQueryPlanLogger)) {
-                (<IPhysicalQueryPlanLogger> action.context.get(KeysInitQuery.physicalQueryPlanLogger))
-                  .logOperation(
-                    'logicalOp',
-                    'physicalOp',
-                    {},
-                    undefined,
-                    'actor',
-                    {},
-                  );
-              }
-              return Promise.resolve({
-                type: 'quads',
-                quadStream: input,
-              });
+        it('in physical mode for scoped sources', async() => {
+          (<any> mediatorQueryProcess).mediate = () => {
+            return Promise.resolve({
+              result: {
+                explain: 'true',
+                data: { bla: 'bla', scopedSource: { source: { toString: () => 'SRCSTR' }}},
+              },
             });
+          };
 
-            const stdout = await stringifyStream(<any> (await actor.run({
-              argv: [ 'SOURCE', '-q', queryString, '--explain', 'physical' ],
-              env: {},
-              stdin: <Readable><any> new PassThrough(),
-              context,
-            })).stdout);
-            expect(stdout).toContain(`{
-  "logical": "logicalOp",
-  "physical": "physicalOp"
+          const stdout = await stringifyStream(<any> (await actor.run({
+            argv: [ 'SOURCE', '-q', queryString, '--explain', 'physical' ],
+            env: {},
+            stdin: <Readable><any> new PassThrough(),
+            context,
+          })).stdout);
+          expect(stdout).toContain(`{
+  "bla": "bla",
+  "scopedSource": "SRCSTR"
 }`);
-          });
-
-          it('for a boolean', async() => {
-            mediatorQueryOperation.mediate = jest.fn((action: any) => {
-              if (action.context.has(KeysInitQuery.physicalQueryPlanLogger)) {
-                (<IPhysicalQueryPlanLogger> action.context.get(KeysInitQuery.physicalQueryPlanLogger))
-                  .logOperation(
-                    'logicalOp',
-                    'physicalOp',
-                    {},
-                    undefined,
-                    'actor',
-                    {},
-                  );
-              }
-              return Promise.resolve({
-                type: 'boolean',
-                execute: () => Promise.resolve(true),
-              });
-            });
-
-            const stdout = await stringifyStream(<any> (await actor.run({
-              argv: [ 'SOURCE', '-q', queryString, '--explain', 'physical' ],
-              env: {},
-              stdin: <Readable><any> new PassThrough(),
-              context,
-            })).stdout);
-            expect(stdout).toContain(`{
-  "logical": "logicalOp",
-  "physical": "physicalOp"
-}`);
-          });
-
-          it('for an update', async() => {
-            mediatorQueryOperation.mediate = jest.fn((action: any) => {
-              if (action.context.has(KeysInitQuery.physicalQueryPlanLogger)) {
-                (<IPhysicalQueryPlanLogger> action.context.get(KeysInitQuery.physicalQueryPlanLogger))
-                  .logOperation(
-                    'logicalOp',
-                    'physicalOp',
-                    {},
-                    undefined,
-                    'actor',
-                    {},
-                  );
-              }
-              return Promise.resolve({
-                type: 'void',
-                execute: () => Promise.resolve(true),
-              });
-            });
-
-            const stdout = await stringifyStream(<any> (await actor.run({
-              argv: [ 'SOURCE', '-q', queryString, '--explain', 'physical' ],
-              env: {},
-              stdin: <Readable><any> new PassThrough(),
-              context,
-            })).stdout);
-            expect(stdout).toContain(`{
-  "logical": "logicalOp",
-  "physical": "physicalOp"
-}`);
+          expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
+            [KeysInitQuery.explain.name]: 'physical',
+            [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
+            [KeysInitQuery.querySourcesUnidentified.name]: [{ value: 'SOURCE' }],
+            [KeysCore.log.name]: expect.any(LoggerPretty),
           });
         });
       });

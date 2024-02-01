@@ -20,6 +20,8 @@
     "ccqs:config/query-operation/mediators.json",
     "ccqs:config/query-parse/actors.json",
     "ccqs:config/query-parse/mediators.json",
+    "ccqs:config/query-process/actors.json",
+    "ccqs:config/query-process/mediators.json",
     "ccqs:config/query-result-serialize/actors.json",
     "ccqs:config/query-result-serialize/mediators.json",
     "ccqs:config/query-source-identify/actors.json",

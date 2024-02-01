@@ -909,7 +909,7 @@ WHERE { undefined:s ?p undefined:o. }` }),
           };
         }),
       };
-      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', false, 64, 10);
+      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', BF, false, 64, 10);
 
       const stream = source.queryQuads(
         AF.createConstruct(AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')), []),
@@ -937,7 +937,7 @@ WHERE { undefined:s ?p undefined:o. }` }),
           };
         }),
       };
-      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', false, 64, 10);
+      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', BF, false, 64, 10);
 
       expect(await source.queryQuads(
         AF.createConstruct(AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')), []),
@@ -1007,7 +1007,7 @@ WHERE { undefined:s ?p undefined:o. }` }),
           };
         }),
       };
-      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', false, 64, 10);
+      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', BF, false, 64, 10);
 
       expect(await source.queryBoolean(
         AF.createAsk(AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'))),
@@ -1068,7 +1068,7 @@ WHERE { undefined:s ?p undefined:o. }` }),
           };
         }),
       };
-      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', false, 64, 10);
+      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', BF, false, 64, 10);
 
       await source.queryVoid(
         AF.createDrop(DF.namedNode('s')),

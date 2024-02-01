@@ -1,32 +1,23 @@
+import type { MediatorQueryProcess } from '@comunica/bus-query-process';
 import { KeysCore, KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
-import type { IActionContext, IPhysicalQueryPlanLogger } from '@comunica/types';
-import { DataFactory } from 'rdf-data-factory';
+import type { IActionContext } from '@comunica/types';
 import { PassThrough, Readable, Transform } from 'readable-stream';
-import { Factory } from 'sparqlalgebrajs';
-
 import { ActorInitQuery } from '../lib/ActorInitQuery';
 import { QueryEngineBase } from '../lib/QueryEngineBase';
 // Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
 const stringifyStream = require('stream-to-string');
 
-const DF = new DataFactory();
-
 describe('ActorInitQuery', () => {
   let bus: any;
   let logger: any;
-  let mediatorOptimizeQueryOperation: any;
-  let mediatorQueryOperation: any;
-  let mediatorSparqlParse: any;
+  let mediatorQueryProcess: MediatorQueryProcess;
   let mediatorSparqlSerialize: any;
   let mediatorHttpInvalidate: any;
   let context: IActionContext;
   let input: Readable;
 
-  const mediatorContextPreprocess: any = {
-    mediate: (action: any) => Promise.resolve(action),
-  };
   const contextKeyShortcuts = {
     initialBindings: '@comunica/actor-init-query:initialBindings',
     log: '@comunica/core:log',
@@ -40,11 +31,23 @@ describe('ActorInitQuery', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     logger = null;
-    mediatorOptimizeQueryOperation = {
-      mediate: (arg: any) => Promise.resolve(arg),
+    mediatorQueryProcess = <any>{
+      mediate: jest.fn((action: any) => {
+        if (action.context.has(KeysInitQuery.explain)) {
+          return Promise.resolve({
+            result: {
+              explain: 'true',
+              data: 'EXPLAINED',
+            },
+          });
+        }
+        return action.query !== 'INVALID' ?
+          Promise.resolve({
+            result: { type: 'bindings', bindingsStream: input, metadata: () => ({}), context: action.context },
+          }) :
+          Promise.reject(new Error('Invalid query'));
+      }),
     };
-    mediatorQueryOperation = {};
-    mediatorSparqlParse = {};
     mediatorSparqlSerialize = {
       mediate(arg: any) {
         return Promise.resolve(arg.mediaTypes ?
@@ -77,60 +80,17 @@ describe('ActorInitQuery', () => {
     let actorAllowNoSources: ActorInitQuery;
     let spyResultToString: any;
     let spyQueryOrExplain: any;
-    let mediatorMergeBindingsContext: any;
     beforeEach(() => {
-      const factory = new Factory();
-      mediatorMergeBindingsContext = {
-        mediate(arg: any) {
-          return {};
-        },
-      };
-
-      mediatorQueryOperation.mediate = jest.fn((action: any) => {
-        if (action.context.has(KeysInitQuery.physicalQueryPlanLogger)) {
-          (<IPhysicalQueryPlanLogger> action.context.get(KeysInitQuery.physicalQueryPlanLogger))
-            .logOperation(
-              'logicalOp',
-              'physicalOp',
-              {},
-              undefined,
-              'actor',
-              {},
-            );
-        }
-        return action.operation !== 'INVALID' ?
-          Promise.resolve({ type: 'bindings', bindingsStream: input, metadata: () => ({}) }) :
-          Promise.reject(new Error('Invalid query'));
-      });
-      mediatorSparqlParse.mediate = (action: any) => action.query === 'INVALID' ?
-        Promise.resolve({ operation: action.query }) :
-        Promise.resolve({
-          baseIRI: action.query.includes('BASE') ? 'myBaseIRI' : null,
-          operation: factory.createProject(
-            factory.createBgp([
-              factory.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
-            ]),
-            [
-              DF.variable('s'),
-              DF.variable('p'),
-              DF.variable('o'),
-            ],
-          ),
-        });
       actorAllowNoSources = new ActorInitQuery({
         bus,
         contextKeyShortcuts,
         defaultQueryInputFormat,
         logger,
-        mediatorContextPreprocess,
         mediatorHttpInvalidate,
-        mediatorOptimizeQueryOperation,
-        mediatorQueryOperation,
-        mediatorQueryParse: mediatorSparqlParse,
+        mediatorQueryProcess,
         mediatorQueryResultSerialize: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-        mediatorMergeBindingsContext,
         name: 'actor',
         allowNoSources: true,
       });

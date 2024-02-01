@@ -6,15 +6,10 @@ import { ActorInitQuery } from '../lib/ActorInitQuery-browser';
 describe('ActorInitQuery', () => {
   let bus: any;
   let logger: any;
-  let mediatorOptimizeQueryOperation: any;
-  let mediatorQueryOperation: any;
-  let mediatorSparqlParse: any;
+  let mediatorQueryProcess: any;
   let mediatorSparqlSerialize: any;
   let mediatorHttpInvalidate: any;
   let context: IActionContext;
-  const mediatorContextPreprocess: any = {
-    mediate: (action: any) => Promise.resolve(action),
-  };
   const contextKeyShortcuts = {
     initialBindings: '@comunica/actor-init-query:initialBindings',
     log: '@comunica/core:log',
@@ -27,11 +22,11 @@ describe('ActorInitQuery', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     logger = null;
-    mediatorOptimizeQueryOperation = {
-      mediate: (arg: any) => Promise.resolve(arg),
+    mediatorQueryProcess = <any>{
+      mediate: jest.fn((action: any) => {
+        return Promise.reject(new Error('Invalid query'));
+      }),
     };
-    mediatorQueryOperation = {};
-    mediatorSparqlParse = {};
     mediatorSparqlSerialize = {
       mediate: (arg: any) => Promise.resolve(arg.mediaTypes ?
         { mediaTypes: arg } :
@@ -53,28 +48,17 @@ describe('ActorInitQuery', () => {
 
   describe('An ActorInitQuery instance', () => {
     let actor: ActorInitQuery;
-    let mediatorMergeBindingsContext: any;
     beforeEach(() => {
-      mediatorMergeBindingsContext = {
-        mediate(arg: any) {
-          return {};
-        },
-      };
-
       actor = new ActorInitQuery({
         bus,
         contextKeyShortcuts,
         defaultQueryInputFormat,
         logger,
-        mediatorContextPreprocess,
         mediatorHttpInvalidate,
-        mediatorOptimizeQueryOperation,
-        mediatorQueryOperation,
-        mediatorQueryParse: mediatorSparqlParse,
+        mediatorQueryProcess,
         mediatorQueryResultSerialize: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-        mediatorMergeBindingsContext,
         name: 'actor',
       });
     });
