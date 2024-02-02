@@ -23,7 +23,7 @@ import '@comunica/jest';
 import 'jest-rdf';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory({}, DF);
+const BF = new BindingsFactory(DF, {});
 
 describe('ActorInitQueryBase', () => {
   it('should not allow invoking its run method', () => {

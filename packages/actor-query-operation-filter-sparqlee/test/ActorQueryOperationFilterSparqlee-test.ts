@@ -13,7 +13,7 @@ import { ActorQueryOperationFilterSparqlee } from '../lib/ActorQueryOperationFil
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory({}, DF);
+const BF = new BindingsFactory(DF, {});
 
 function template(expr: string) {
   return `

@@ -30,10 +30,6 @@ export class ActorRdfResolveHypermediaSparql extends ActorRdfResolveHypermedia {
   }
 
   public async run(action: IActionRdfResolveHypermedia): Promise<IActorRdfResolveHypermediaOutput> {
-    // Create bindingsfactory with handlers
-    const bindingsFactory = new BindingsFactory(
-      (await this.mediatorMergeBindingsContext.mediate({ context: action.context })).mergeHandlers,
-    );
     this.logInfo(action.context, `Identified as sparql source: ${action.url}`);
     const source = new RdfSourceSparql(
       action.metadata.sparqlService || action.url,
@@ -41,7 +37,7 @@ export class ActorRdfResolveHypermediaSparql extends ActorRdfResolveHypermedia {
       this.mediatorHttp,
       this.forceHttpGet,
       this.cacheSize,
-      bindingsFactory,
+      await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context),
     );
     return { source };
   }

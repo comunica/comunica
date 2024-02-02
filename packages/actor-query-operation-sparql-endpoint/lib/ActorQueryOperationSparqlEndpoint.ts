@@ -114,11 +114,9 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     }
 
     const canContainUndefs = this.canOperationContainUndefs(action.operation);
+    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context);
 
     // Execute the query against the endpoint depending on the type
-    const bindingsFactory = new BindingsFactory(
-      (await this.mediatorMergeBindingsContext.mediate({ context: action.context })).mergeHandlers,
-    );
     switch (type) {
       case 'SELECT':
         if (!variables) {

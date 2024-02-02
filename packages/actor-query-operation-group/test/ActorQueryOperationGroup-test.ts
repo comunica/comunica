@@ -12,7 +12,7 @@ import { GroupsState } from '../lib/GroupsState';
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory({}, DF);
+const BF = new BindingsFactory(DF, {});
 const mediatorMergeBindingsContext: any = {
   mediate(arg: any) {
     return {};

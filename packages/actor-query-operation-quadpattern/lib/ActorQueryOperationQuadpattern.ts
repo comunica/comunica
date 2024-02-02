@@ -267,9 +267,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
           return true;
         });
       }
-      const bindingsFactory = new BindingsFactory(
-        (await this.mediatorMergeBindingsContext.mediate({ context })).mergeHandlers,
-      );
+      const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context);
       return filteredOutput.map(quad => bindingsFactory.bindings(Object.keys(elementVariables).map(key => {
         const keys: QuadTermName[] = <any>key.split('_');
         const variable = elementVariables[key];
