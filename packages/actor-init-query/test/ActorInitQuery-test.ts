@@ -772,9 +772,9 @@ LIMIT 100
         });
       });
 
-      it('handles the --cache flag', async() => {
+      it('handles the --noCache flag', async() => {
         const stdout = await stringifyStream(<any> (await actor.run({
-          argv: [ sourceHypermedia, '-q', queryString, '--cache', 'false' ],
+          argv: [ sourceHypermedia, '-q', queryString, '--noCache' ],
           env: {},
           stdin: <Readable><any> new PassThrough(),
           context,
@@ -784,7 +784,7 @@ LIMIT 100
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
           [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
           [KeysCore.log.name]: expect.any(LoggerPretty),
-          [KeysQueryOperation.unionDefaultGraph.name]: true,
+          [KeysInitQuery.noCache.name]: true,
         });
       });
 
