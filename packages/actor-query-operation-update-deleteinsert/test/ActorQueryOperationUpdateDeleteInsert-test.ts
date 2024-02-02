@@ -14,6 +14,12 @@ const factory = new Factory();
 const DF = new DataFactory();
 const BF = new BindingsFactory();
 
+const mediatorMergeBindingsContext: any = {
+  mediate(arg: any) {
+    return {};
+  },
+};
+
 describe('ActorQueryOperationUpdateDeleteInsert', () => {
   let bus: any;
   let mediatorQueryOperation: any;
@@ -67,6 +73,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
         bus,
         mediatorQueryOperation,
         mediatorUpdateQuads,
+        mediatorMergeBindingsContext,
       });
     });
 

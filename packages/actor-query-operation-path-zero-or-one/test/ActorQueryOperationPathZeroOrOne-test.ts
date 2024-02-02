@@ -1,3 +1,4 @@
+import type { Bindings } from '@comunica/bindings-factory';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysQueryOperation } from '@comunica/context-entries';
@@ -17,6 +18,7 @@ const BF = new BindingsFactory();
 describe('ActorQueryOperationPathZeroOrOne', () => {
   let bus: any;
   let mediatorQueryOperation: any;
+  let mediatorMergeBindingsContext: any;
   const factory: Factory = new Factory();
 
   beforeEach(() => {
@@ -36,7 +38,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
           }
         }
 
-        const bindings = [];
+        const bindings: Bindings[] = [];
         if (vars.length > 0) {
           for (let i = 0; i < 3; ++i) {
             const bind: [RDF.Variable, RDF.Term][] = [];
@@ -62,6 +64,12 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
         });
       },
     };
+    // Mediator with no actors attached to it
+    mediatorMergeBindingsContext = {
+      mediate(arg: any) {
+        return {};
+      },
+    };
   });
 
   describe('The ActorQueryOperationPathZeroOrOne module', () => {
@@ -85,7 +93,10 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
     let actor: ActorQueryOperationPathZeroOrOne;
 
     beforeEach(() => {
-      actor = new ActorQueryOperationPathZeroOrOne({ name: 'actor', bus, mediatorQueryOperation });
+      actor = new ActorQueryOperationPathZeroOrOne({ name: 'actor',
+        bus,
+        mediatorQueryOperation,
+        mediatorMergeBindingsContext });
     });
 
     it('should test on ZeroOrOne paths', () => {

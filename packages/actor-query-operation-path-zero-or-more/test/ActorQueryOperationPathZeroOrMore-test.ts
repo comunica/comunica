@@ -1,3 +1,4 @@
+import type { Bindings } from '@comunica/bindings-factory';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysQueryOperation } from '@comunica/context-entries';
@@ -17,10 +18,17 @@ const BF = new BindingsFactory();
 describe('ActorQueryOperationPathZeroOrMore', () => {
   let bus: any;
   let mediatorQueryOperation: any;
+  let mediatorMergeBindingsContext: any;
   const factory: Factory = new Factory();
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    mediatorMergeBindingsContext = {
+      mediate(arg: any) {
+        return {};
+      },
+    };
+
     mediatorQueryOperation = {
       mediate(arg: any) {
         const vars: RDF.Variable[] = [];
@@ -49,7 +57,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
           }
         }
 
-        const bindings = [];
+        const bindings: Bindings[] = [];
         if (vars.length > 0) {
           for (let i = 0; i < 3; ++i) {
             const bind: [RDF.Variable, RDF.Term][] = [];
@@ -103,7 +111,10 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
     let actor: ActorQueryOperationPathZeroOrMore;
 
     beforeEach(() => {
-      actor = new ActorQueryOperationPathZeroOrMore({ name: 'actor', bus, mediatorQueryOperation });
+      actor = new ActorQueryOperationPathZeroOrMore({ name: 'actor',
+        bus,
+        mediatorQueryOperation,
+        mediatorMergeBindingsContext });
     });
 
     it('should test on ZeroOrMore paths', () => {

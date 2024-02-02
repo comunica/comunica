@@ -17,6 +17,12 @@ const DF = new DataFactory();
 const BF = new BindingsFactory();
 const AF = new Factory();
 
+const mediatorMergeBindingsContext: any = {
+  mediate(arg: any) {
+    return {};
+  },
+};
+
 describe('ActorQueryOperationQuadpattern', () => {
   let bus: any;
   let context: IActionContext;
@@ -222,6 +228,7 @@ describe('ActorQueryOperationQuadpattern', () => {
         bus,
         mediatorResolveQuadPattern,
         unionDefaultGraph: false,
+        mediatorMergeBindingsContext,
       });
     });
 
@@ -509,6 +516,7 @@ describe('ActorQueryOperationQuadpattern', () => {
         bus,
         mediatorResolveQuadPattern,
         unionDefaultGraph: false,
+        mediatorMergeBindingsContext,
       });
 
       return actor.run({ operation, context }).then(async(output: IQueryOperationResultBindings) => {
@@ -594,6 +602,7 @@ describe('ActorQueryOperationQuadpattern', () => {
         bus,
         mediatorResolveQuadPattern,
         unionDefaultGraph: true,
+        mediatorMergeBindingsContext,
       });
 
       const operation = AF.createPattern(
@@ -673,6 +682,7 @@ describe('ActorQueryOperationQuadpattern', () => {
         bus,
         mediatorResolveQuadPattern,
         unionDefaultGraph: true,
+        mediatorMergeBindingsContext,
       });
 
       const operation = AF.createPattern(

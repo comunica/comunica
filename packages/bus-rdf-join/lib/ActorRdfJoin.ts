@@ -110,6 +110,7 @@ export abstract class ActorRdfJoin
    * @param {Bindings[]} bindings
    * @returns {Bindings}
    */
+
   public static joinBindings(...bindings: Bindings[]): Bindings | null {
     if (bindings.length === 0) {
       return null;

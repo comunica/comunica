@@ -16,8 +16,13 @@ describe('ActorQueryOperationLeftJoin', () => {
   let bus: any;
   let mediatorQueryOperation: any;
   let mediatorJoin: any;
-
+  let mediatorMergeBindingsContext: any;
   beforeEach(() => {
+    mediatorMergeBindingsContext = {
+      mediate(arg: any) {
+        return {};
+      },
+    };
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
@@ -66,7 +71,11 @@ describe('ActorQueryOperationLeftJoin', () => {
     let actor: ActorQueryOperationLeftJoin;
 
     beforeEach(() => {
-      actor = new ActorQueryOperationLeftJoin({ name: 'actor', bus, mediatorQueryOperation, mediatorJoin });
+      actor = new ActorQueryOperationLeftJoin({ name: 'actor',
+        bus,
+        mediatorQueryOperation,
+        mediatorJoin,
+        mediatorMergeBindingsContext });
     });
 
     it('should test on leftjoin', () => {

@@ -1,4 +1,4 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
+import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { HashFunction } from '@comunica/bus-hash-bindings';
 import type { IAsyncEvaluatorContext } from '@comunica/expression-evaluator';
 import { AsyncAggregateEvaluator } from '@comunica/expression-evaluator';
@@ -8,7 +8,6 @@ import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
 
 /**
  * A simple type alias for strings that should be hashes of Bindings
@@ -44,6 +43,7 @@ export class GroupsState {
     private readonly hashFunction: HashFunction,
     private readonly pattern: Algebra.Group,
     private readonly sparqleeConfig: IAsyncEvaluatorContext,
+    private readonly bindingsFactory: BindingsFactory,
   ) {
     this.groups = new Map();
     this.groupsInitializer = new Map();
@@ -117,7 +117,7 @@ export class GroupsState {
           const variable = aggregate.variable.value;
           await group.aggregators[variable].put(bindings);
         }));
-      })().then(() => {
+      })().then(async() => {
         this.subtractWaitCounterAndCollect();
       });
     }
@@ -162,7 +162,7 @@ export class GroupsState {
           single.push([ key, value ]);
         }
       }
-      rows = [ BF.bindings(single) ];
+      rows = [ this.bindingsFactory.bindings(single) ];
     }
     this.waitResolver(rows);
   }

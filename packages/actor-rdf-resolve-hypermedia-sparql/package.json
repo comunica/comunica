@@ -36,6 +36,7 @@
     "@comunica/bus-http": "^2.10.2",
     "@comunica/bus-rdf-resolve-hypermedia": "^2.10.0",
     "@comunica/bus-rdf-resolve-quad-pattern": "^2.10.0",
+    "@comunica/bus-merge-bindings-context": "^2.0.0",
     "@comunica/types": "^2.10.0",
     "@rdfjs/types": "*",
     "asynciterator": "^3.8.1",

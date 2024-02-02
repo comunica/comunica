@@ -1,4 +1,4 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
+import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
@@ -20,7 +20,6 @@ import { Factory } from 'sparqlalgebrajs';
 import { PathVariableObjectIterator } from './PathVariableObjectIterator';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
 
 /**
  * An abstract actor that handles Path operations.
@@ -83,6 +82,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     predicate: Algebra.PropertyPathSymbol,
     graph: RDF.Variable,
     context: IActionContext,
+    bindingsFactory: BindingsFactory,
   ): Promise<IPathResultStream> {
     // TODO: refactor this with an iterator just like PathVariableObjectIterator so we handle backpressure correctly
     // Construct path to obtain all graphs where subject exists
@@ -114,7 +114,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
               await this.getObjectsPredicateStar(subject, predicate, graphValue, context, {}, it, { count: 0 });
               return it.transform<Bindings>({
                 transform(item, next, push) {
-                  push(BF.bindings([
+                  push(bindingsFactory.bindings([
                     [ object, item ],
                     [ graph, graphValue ],
                   ]));
@@ -152,9 +152,10 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     graph: RDF.Term,
     context: IActionContext,
     emitFirstSubject: boolean,
+    bindingsFactory: BindingsFactory,
   ): Promise<IPathResultStream> {
     if (graph.termType === 'Variable') {
-      return this.predicateStarGraphVariable(subject, object, predicate, graph, context);
+      return this.predicateStarGraphVariable(subject, object, predicate, graph, context, bindingsFactory);
     }
 
     const it = new PathVariableObjectIterator(
@@ -169,7 +170,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     const bindingsStream = it.transform<Bindings>({
       autoStart: false,
       transform(item, next, push) {
-        push(BF.bindings([[ object, item ]]));
+        push(bindingsFactory.bindings([[ object, item ]]));
         next();
       },
     });
@@ -266,6 +267,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     termHashesCurrentSubject: Record<string, boolean>,
     it: BufferedIterator<Bindings>,
     counter: any,
+    bindingsFactory: BindingsFactory,
   ): Promise<void> {
     const termString = termToString(objectVal) + termToString(graph);
 
@@ -276,7 +278,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
 
     counter.count++;
     termHashesCurrentSubject[termString] = true;
-    (<any> it)._push(BF.bindings([
+    (<any> it)._push(bindingsFactory.bindings([
       [ subjectVar, subjectVal ],
       [ objectVar, objectVal ],
     ]));
@@ -297,6 +299,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
           termHashesCurrentSubject,
           it,
           counter,
+          bindingsFactory,
         );
       }
       if (--counter.count === 0) {
@@ -333,6 +336,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
           termHashesCurrentSubject,
           it,
           counter,
+          bindingsFactory,
         );
       });
       results.bindingsStream.on('error', reject);

@@ -4,6 +4,12 @@ import type { IActionContext } from '@comunica/types';
 import { ActorRdfResolveHypermediaSparql } from '../lib/ActorRdfResolveHypermediaSparql';
 import { RdfSourceSparql } from '../lib/RdfSourceSparql';
 
+const mediatorMergeBindingsContext: any = {
+  mediate(arg: any) {
+    return {};
+  },
+};
+
 describe('ActorRdfResolveHypermediaSparql', () => {
   let bus: any;
   let context: IActionContext;
@@ -41,6 +47,7 @@ describe('ActorRdfResolveHypermediaSparql', () => {
         checkUrlSuffix: true,
         forceHttpGet: false,
         cacheSize: 1_024,
+        mediatorMergeBindingsContext,
       });
     });
 
@@ -72,7 +79,12 @@ describe('ActorRdfResolveHypermediaSparql', () => {
 
       it('should not test with an URL ending with /sparql if checkUrlSuffix is false', async() => {
         actor = new ActorRdfResolveHypermediaSparql(
-          { name: 'actor', bus, mediatorHttp: <any> 'mediator', checkUrlSuffix: false, forceHttpGet: false },
+          { name: 'actor',
+            bus,
+            mediatorHttp: <any> 'mediator',
+            checkUrlSuffix: false,
+            forceHttpGet: false,
+            mediatorMergeBindingsContext },
         );
         await expect(actor.test({ url: 'URL/sparql', metadata: {}, quads: <any> null, context })).rejects
           .toThrow(new Error('Actor actor could not detect a SPARQL service description or URL ending on /sparql.'));
@@ -80,7 +92,12 @@ describe('ActorRdfResolveHypermediaSparql', () => {
 
       it('should not test with an URL ending with /sparql if the type is forced to something else', async() => {
         actor = new ActorRdfResolveHypermediaSparql(
-          { name: 'actor', bus, mediatorHttp: <any> 'mediator', checkUrlSuffix: false, forceHttpGet: false },
+          { name: 'actor',
+            bus,
+            mediatorHttp: <any> 'mediator',
+            checkUrlSuffix: false,
+            forceHttpGet: false,
+            mediatorMergeBindingsContext },
         );
         await expect(actor
           .test({ url: 'URL/sparql', metadata: {}, quads: <any> null, forceSourceType: 'file', context }))

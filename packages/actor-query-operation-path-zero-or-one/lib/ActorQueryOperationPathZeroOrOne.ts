@@ -1,5 +1,6 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import { BindingsFactory } from '@comunica/bindings-factory';
+import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { MetadataValidationState } from '@comunica/metadata';
@@ -9,13 +10,13 @@ import {
 } from 'asynciterator';
 import { Algebra } from 'sparqlalgebrajs';
 
-const BF = new BindingsFactory();
-
 /**
  * A comunica Path ZeroOrOne Query Operation Actor.
  */
 export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
-  public constructor(args: IActorQueryOperationTypedMediatedArgs) {
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+
+  public constructor(args: IActorQueryOperationPathZeroOrOneArgs) {
     super(args, Algebra.types.ZERO_OR_ONE_PATH);
   }
 
@@ -23,6 +24,7 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
     operation: Algebra.Path,
     context: IActionContext,
   ): Promise<IQueryOperationResult> {
+    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context);
     const predicate = <Algebra.ZeroOrOnePath> operation.predicate;
 
     const extra: Bindings[] = [];
@@ -33,7 +35,7 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
       operation.subject.equals(operation.object)) {
       return {
         type: 'bindings',
-        bindingsStream: new SingletonIterator(BF.bindings()),
+        bindingsStream: new SingletonIterator(bindingsFactory.bindings()),
         metadata: () => Promise.resolve({
           state: new MetadataValidationState(),
           cardinality: { type: 'exact', value: 1 },
@@ -89,10 +91,10 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
     } else {
       // If subject or object is not a variable, then determining the "Zero" part is simple.
       if (operation.subject.termType === 'Variable') {
-        extra.push(BF.bindings([[ operation.subject, operation.object ]]));
+        extra.push(bindingsFactory.bindings([[ operation.subject, operation.object ]]));
       }
       if (operation.object.termType === 'Variable') {
-        extra.push(BF.bindings([[ operation.object, operation.subject ]]));
+        extra.push(bindingsFactory.bindings([[ operation.object, operation.subject ]]));
       }
 
       bindingsStream = bindingsOne.bindingsStream.prepend(extra);
@@ -104,4 +106,10 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
       metadata: bindingsOne.metadata,
     };
   }
+}
+export interface IActorQueryOperationPathZeroOrOneArgs extends IActorQueryOperationTypedMediatedArgs {
+  /**
+   * A mediator for creating binding context merge handlers
+   */
+  mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 }

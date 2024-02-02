@@ -1,3 +1,5 @@
+import { BindingsFactory } from '@comunica/bindings-factory';
+import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
@@ -14,6 +16,7 @@ import { SortIterator } from './SortIterator';
  */
 export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTypedMediated<Algebra.OrderBy> {
   private readonly window: number;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   public constructor(args: IActorQueryOperationOrderBySparqleeArgs) {
     super(args, 'orderby');
@@ -22,11 +25,13 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
 
   public async testOperation(operation: Algebra.OrderBy, context: IActionContext): Promise<IActorTest> {
     // Will throw error for unsupported operators
+    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context);
+
     for (let expr of operation.expressions) {
       expr = this.extractSortExpression(expr);
       const _ = new AsyncEvaluator(
         expr,
-        ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation),
+        ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation, bindingsFactory),
       );
     }
     return true;
@@ -38,7 +43,10 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
     const output = ActorQueryOperation.getSafeBindings(outputRaw);
 
     const options = { window: this.window };
-    const sparqleeConfig = { ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation) };
+    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context);
+    const sparqleeConfig = { ...ActorQueryOperation.getAsyncExpressionContext(context,
+      this.mediatorQueryOperation,
+      bindingsFactory) };
     let { bindingsStream } = output;
 
     // Sorting backwards since the first one is the most important therefore should be ordered last.
@@ -116,6 +124,10 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
  * The window parameter determines how many of the elements to consider when sorting.
  */
 export interface IActorQueryOperationOrderBySparqleeArgs extends IActorQueryOperationTypedMediatedArgs {
+  /**
+   * A mediator for creating binding context merge handlers
+   */
+  mediatorMergeBindingsContext: MediatorMergeBindingsContext;
   /**
    * The size of the window for the sort iterator.
    * @range {integer}

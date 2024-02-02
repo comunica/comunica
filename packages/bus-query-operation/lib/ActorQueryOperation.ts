@@ -1,3 +1,4 @@
+import type { BindingsFactory } from '@comunica/bindings-factory';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorArgs, IActorTest, IAction, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
@@ -161,12 +162,14 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    * @param context An action context.
    * @param mediatorQueryOperation A query query operation mediator for resolving `exists`.
    */
-  public static getAsyncExpressionContext(context: IActionContext, mediatorQueryOperation: MediatorQueryOperation):
-  IAsyncExpressionContext {
+  public static getAsyncExpressionContext(context: IActionContext,
+    mediatorQueryOperation: MediatorQueryOperation,
+    bindingsFactory: BindingsFactory):
+    IAsyncExpressionContext {
     return {
       ...this.getBaseExpressionContext(context),
       bnode: (input?: string) => Promise.resolve(new BlankNodeBindingsScoped(input || `BNODE_${bnodeCounter++}`)),
-      exists: ActorQueryOperation.createExistenceResolver(context, mediatorQueryOperation),
+      exists: ActorQueryOperation.createExistenceResolver(context, mediatorQueryOperation, bindingsFactory),
     };
   }
 
@@ -175,10 +178,12 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    * @param context An action context.
    * @param mediatorQueryOperation A query operation mediator.
    */
-  public static createExistenceResolver(context: IActionContext, mediatorQueryOperation: MediatorQueryOperation):
-  (expr: Algebra.ExistenceExpression, bindings: Bindings) => Promise<boolean> {
+  public static createExistenceResolver(context: IActionContext,
+    mediatorQueryOperation: MediatorQueryOperation,
+    bindingsFactory: BindingsFactory):
+    (expr: Algebra.ExistenceExpression, bindings: Bindings) => Promise<boolean> {
     return async(expr, bindings) => {
-      const operation = materializeOperation(expr.input, bindings);
+      const operation = materializeOperation(expr.input, bindings, bindingsFactory);
 
       const outputRaw = await mediatorQueryOperation.mediate({ operation, context });
       const output = ActorQueryOperation.getSafeBindings(outputRaw);

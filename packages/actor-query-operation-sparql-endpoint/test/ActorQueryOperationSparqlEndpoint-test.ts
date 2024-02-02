@@ -20,6 +20,12 @@ const BF = new BindingsFactory();
 
 const factory = new Factory();
 
+const mediatorMergeBindingsContext: any = {
+  mediate(arg: any) {
+    return {};
+  },
+};
+
 describe('ActorQueryOperationSparqlEndpoint', () => {
   let bus: any;
   let mediatorHttp: any;
@@ -92,6 +98,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         forceHttpGet: false,
         checkUrlSuffixSparql: true,
         checkUrlSuffixUpdate: true,
+        mediatorMergeBindingsContext,
       });
     });
 
@@ -288,6 +295,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         forceHttpGet: true,
         checkUrlSuffixSparql: true,
         checkUrlSuffixUpdate: true,
+        mediatorMergeBindingsContext,
       });
       const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-select' },
@@ -322,6 +330,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         forceHttpGet: true,
         checkUrlSuffixSparql: true,
         checkUrlSuffixUpdate: true,
+        mediatorMergeBindingsContext,
       });
       const context = new ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-select' },
@@ -458,6 +467,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         forceHttpGet: false,
         checkUrlSuffixSparql: true,
         checkUrlSuffixUpdate: true,
+        mediatorMergeBindingsContext,
       });
       const x = ActorQueryOperation.getSafeBindings(await thisActor.run(op)).bindingsStream;
       await expect(arrayifyStream(x))

@@ -1,3 +1,4 @@
+import { BindingsFactory } from '@comunica/bindings-factory';
 import { materializeOperation } from '@comunica/bus-query-operation';
 import type { IActionSparqlSerialize, IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
 import { KeysCore, KeysInitQuery, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
@@ -184,7 +185,9 @@ implements IQueryEngine<QueryContext, QueryStringContextInner, QueryAlgebraConte
 
     // Apply initial bindings in context
     if (actionContext.has(KeysInitQuery.initialBindings)) {
-      operation = materializeOperation(operation, actionContext.get(KeysInitQuery.initialBindings)!);
+      const bindingsFactory = await BindingsFactory
+        .create(this.actorInitQuery.mediatorMergeBindingsContext, actionContext);
+      operation = materializeOperation(operation, actionContext.get(KeysInitQuery.initialBindings)!, bindingsFactory);
 
       // Delete the query string from the context, since our initial query might have changed
       actionContext = actionContext.delete(KeysInitQuery.queryString);

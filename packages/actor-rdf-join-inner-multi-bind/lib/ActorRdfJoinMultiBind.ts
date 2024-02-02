@@ -1,3 +1,5 @@
+import { BindingsFactory } from '@comunica/bindings-factory';
+import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, materializeOperation } from '@comunica/bus-query-operation';
 import type {
@@ -22,6 +24,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
   public readonly selectivityModifier: number;
   public readonly mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort;
   public readonly mediatorQueryOperation: MediatorQueryOperation;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   public static readonly FACTORY = new Factory();
 
@@ -51,13 +54,14 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
     operationBinder: (boundOperations: Algebra.Operation[], operationBindings: Bindings)
     => Promise<BindingsStream>,
     optional: boolean,
+    bindingsFactory: BindingsFactory,
   ): BindingsStream {
     // Create bindings function
     const binder = (bindings: Bindings): BindingsStream => {
       // We don't bind the filter because filters are always handled last,
       // and we need to avoid binding filters of sub-queries, which are to be handled first. (see spec test bind10)
       const subOperations = operations
-        .map(operation => materializeOperation(operation, bindings, { bindFilter: false }));
+        .map(operation => materializeOperation(operation, bindings, bindingsFactory, { bindFilter: false }));
       const bindingsMerger = (subBindings: Bindings): Bindings | undefined => subBindings.merge(bindings);
       return new TransformIterator(async() => (await operationBinder(subOperations, bindings))
         .transform({ map: bindingsMerger }), { maxBufferSize: 128, autoStart: false });
@@ -150,6 +154,8 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
   }
 
   public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
+    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context);
+
     // Order the entries so we can pick the first one (usually the one with the lowest cardinality)
     const entriesUnsorted = await ActorRdfJoin.getEntriesWithMetadatas(action.entries);
     const entries = await this.sortJoinEntries(entriesUnsorted, action.context);
@@ -189,6 +195,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
         return output.bindingsStream;
       },
       false,
+      bindingsFactory,
     );
 
     return {
@@ -300,6 +307,10 @@ export interface IActorRdfJoinMultiBindArgs extends IActorRdfJoinArgs {
    * The query operation mediator
    */
   mediatorQueryOperation: MediatorQueryOperation;
+  /**
+   * A mediator for creating binding context merge handlers
+   */
+  mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 }
 
 export type BindOrder = 'depth-first' | 'breadth-first';

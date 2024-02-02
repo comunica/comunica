@@ -1,4 +1,5 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
+import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTyped, ClosableTransformIterator } from '@comunica/bus-query-operation';
 import type { MediatorRdfResolveQuadPattern } from '@comunica/bus-rdf-resolve-quad-pattern';
@@ -21,7 +22,6 @@ import { forEachTermsNested,
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
 
-const BF = new BindingsFactory();
 const DF = new DataFactory();
 const AF = new Factory();
 
@@ -31,6 +31,7 @@ const AF = new Factory();
 export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Algebra.Pattern>
   implements IActorQueryOperationQuadpatternArgs {
   public readonly mediatorResolveQuadPattern: MediatorRdfResolveQuadPattern;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
   public readonly unionDefaultGraph: boolean;
 
   public constructor(args: IActorQueryOperationQuadpatternArgs) {
@@ -219,7 +220,6 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
 
     // Resolve the quad pattern
     const result = await this.mediatorResolveQuadPattern.mediate({ pattern: patternInner, context });
-
     // Collect all variables from the pattern
     const variables = ActorQueryOperationQuadpattern.getVariables(pattern);
 
@@ -267,8 +267,8 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
           return true;
         });
       }
-
-      return filteredOutput.map(quad => BF.bindings(Object.keys(elementVariables).map(key => {
+      const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context);
+      return filteredOutput.map(quad => bindingsFactory.bindings(Object.keys(elementVariables).map(key => {
         const keys: QuadTermName[] = <any>key.split('_');
         const variable = elementVariables[key];
         const term = getValueNestedPath(quad, keys);
@@ -278,7 +278,6 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
       autoStart: false,
       onClose: () => result.data.destroy(),
     });
-
     return { type: 'bindings', bindingsStream, metadata };
   }
 }
@@ -295,4 +294,8 @@ export interface IActorQueryOperationQuadpatternArgs extends
    * @default {false}
    */
   unionDefaultGraph: boolean;
+  /**
+   * A mediator for creating binding context merge handlers
+   */
+  mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 }

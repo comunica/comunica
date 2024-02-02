@@ -32,6 +32,8 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
+    "@comunica/bindings-factory": "^2.10.1",
+    "@comunica/bus-merge-bindings-context": "^2.0.0",
     "@comunica/bus-query-operation": "^2.10.1",
     "@comunica/bus-rdf-join": "^2.10.1",
     "@comunica/bus-rdf-join-entries-sort": "^2.10.0",

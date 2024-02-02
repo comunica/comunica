@@ -1,4 +1,5 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
+import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import { KeysInitQuery, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
@@ -8,14 +9,13 @@ import type { IActionContext, IQueryOperationResult, IQueryOperationResultBindin
 import { SingletonIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 
-const BF = new BindingsFactory();
-
 /**
  * A comunica Service Query Operation Actor.
  * It unwraps the SERVICE operation and executes it on the given source.
  */
 export class ActorQueryOperationService extends ActorQueryOperationTypedMediated<Algebra.Service> {
   public readonly forceSparqlEndpoint: boolean;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   public constructor(args: IActorQueryOperationServiceArgs) {
     super(args, 'service');
@@ -31,7 +31,7 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
   public async runOperation(operation: Algebra.Service, context: IActionContext):
   Promise<IQueryOperationResult> {
     const endpoint: string = operation.name.value;
-
+    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context);
     // Adjust our context to only have the endpoint as source
     let subContext: IActionContext = context
       .delete(KeysRdfResolveQuadPattern.source)
@@ -49,7 +49,7 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
       if (operation.silent) {
         // Emit a single empty binding
         output = {
-          bindingsStream: new SingletonIterator(BF.bindings()),
+          bindingsStream: new SingletonIterator(bindingsFactory.bindings()),
           type: 'bindings',
           metadata: async() => ({
             state: new MetadataValidationState(),
@@ -73,4 +73,9 @@ export interface IActorQueryOperationServiceArgs extends IActorQueryOperationTyp
    * @default {false}
    */
   forceSparqlEndpoint: boolean;
+  /**
+   * A mediator for creating binding context merge handlers
+   */
+  mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+
 }

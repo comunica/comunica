@@ -1,4 +1,4 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
+import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorHttp } from '@comunica/bus-http';
 import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 import type { Bindings, BindingsStream, IActionContext } from '@comunica/types';
@@ -13,7 +13,6 @@ import type { Algebra } from 'sparqlalgebrajs';
 import { Factory, toSparql } from 'sparqlalgebrajs';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
 const VAR_COUNT = DF.variable('count');
 
 export class RdfSourceSparql implements IQuadSource {
@@ -26,8 +25,10 @@ export class RdfSourceSparql implements IQuadSource {
   private readonly endpointFetcher: SparqlEndpointFetcher;
   private readonly cache: LRUCache<string, RDF.QueryResultCardinality> | undefined;
 
+  private readonly bindingsFactory: BindingsFactory;
+
   public constructor(url: string, context: IActionContext, mediatorHttp: MediatorHttp, forceHttpGet: boolean,
-    cacheSize: number) {
+    cacheSize: number, bindingsFactory: BindingsFactory) {
     this.url = url;
     this.context = context;
     this.mediatorHttp = mediatorHttp;
@@ -41,6 +42,7 @@ export class RdfSourceSparql implements IQuadSource {
     this.cache = cacheSize > 0 ?
       new LRUCache<string, RDF.QueryResultCardinality>({ max: cacheSize }) :
       undefined;
+    this.bindingsFactory = bindingsFactory;
   }
 
   /**
@@ -139,7 +141,7 @@ export class RdfSourceSparql implements IQuadSource {
   public async queryBindings(endpoint: string, query: string): Promise<BindingsStream> {
     const rawStream = await this.endpointFetcher.fetchBindings(endpoint, query);
     return wrap<any>(rawStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY })
-      .map((rawData: Record<string, RDF.Term>) => BF.bindings(Object.entries(rawData)
+      .map((rawData: Record<string, RDF.Term>) => this.bindingsFactory.bindings(Object.entries(rawData)
         .map(([ key, value ]) => [ DF.variable(key.slice(1)), value ])));
   }
 

@@ -30,6 +30,7 @@
   "dependencies": {
     "@comunica/actor-query-operation-construct": "^2.10.1",
     "@comunica/bindings-factory": "^2.10.1",
+    "@comunica/bus-merge-bindings-context": "^2.0.0",
     "@comunica/bus-query-operation": "^2.10.1",
     "@comunica/bus-rdf-update-quads": "^2.10.2",
     "@comunica/core": "^2.10.0",

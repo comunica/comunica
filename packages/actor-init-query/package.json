@@ -33,9 +33,11 @@
   ],
   "dependencies": {
     "@comunica/actor-http-proxy": "^2.10.2",
+    "@comunica/bindings-factory": "^2.10.1",
     "@comunica/bus-context-preprocess": "^2.10.0",
     "@comunica/bus-http-invalidate": "^2.10.0",
     "@comunica/bus-init": "^2.10.0",
+    "@comunica/bus-merge-bindings-context": "^2.0.0",
     "@comunica/bus-optimize-query-operation": "^2.10.0",
     "@comunica/bus-query-operation": "^2.10.1",
     "@comunica/bus-query-parse": "^2.10.0",

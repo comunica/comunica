@@ -1,17 +1,18 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
+import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import { MetadataValidationState } from '@comunica/metadata';
 import { ArrayIterator } from 'asynciterator';
 
-const BF = new BindingsFactory();
-
 /**
  * A comunica None RDF Join Actor.
  */
 export class ActorRdfJoinNone extends ActorRdfJoin {
-  public constructor(args: IActorRdfJoinArgs) {
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+
+  public constructor(args: IActorRdfJoinNoneArgs) {
     super(args, {
       logicalType: 'inner',
       physicalName: 'none',
@@ -28,9 +29,10 @@ export class ActorRdfJoinNone extends ActorRdfJoin {
   }
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
+    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context);
     return {
       result: {
-        bindingsStream: new ArrayIterator([ BF.bindings() ], { autoStart: false }),
+        bindingsStream: new ArrayIterator([ bindingsFactory.bindings() ], { autoStart: false }),
         metadata: () => Promise.resolve({
           state: new MetadataValidationState(),
           cardinality: { type: 'exact', value: 1 },
@@ -50,4 +52,11 @@ export class ActorRdfJoinNone extends ActorRdfJoin {
       requestTime: 0,
     };
   }
+}
+
+export interface IActorRdfJoinNoneArgs extends IActorRdfJoinArgs {
+  /**
+   * A mediator for creating binding context merge handlers
+   */
+  mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 }

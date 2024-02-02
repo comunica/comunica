@@ -7,6 +7,11 @@ import { ActorRdfJoinNone } from '../lib/ActorRdfJoinNone';
 import '@comunica/jest';
 
 const BF = new BindingsFactory();
+const mediatorMergeBindingsContext: any = {
+  mediate(arg: any) {
+    return {};
+  },
+};
 
 describe('ActorRdfJoinNone', () => {
   let bus: any;
@@ -26,7 +31,7 @@ describe('ActorRdfJoinNone', () => {
       mediatorJoinSelectivity = <any> {
         mediate: async() => ({ selectivity: 1 }),
       };
-      actor = new ActorRdfJoinNone({ name: 'actor', bus, mediatorJoinSelectivity });
+      actor = new ActorRdfJoinNone({ name: 'actor', bus, mediatorJoinSelectivity, mediatorMergeBindingsContext });
       context = new ActionContext();
     });
 

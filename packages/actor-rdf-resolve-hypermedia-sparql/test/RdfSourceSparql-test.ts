@@ -1,4 +1,5 @@
 import { PassThrough } from 'stream';
+import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActionContext } from '@comunica/core';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'rdf-data-factory';
@@ -127,7 +128,8 @@ describe('RdfSourceSparql', () => {
     let source: RdfSourceSparql;
 
     beforeEach(() => {
-      source = new RdfSourceSparql('http://example.org/sparql', context, mediatorHttp, false, 64);
+      const BF = new BindingsFactory();
+      source = new RdfSourceSparql('http://example.org/sparql', context, mediatorHttp, false, 64, BF);
     });
 
     it('should return data', async() => {
@@ -180,7 +182,8 @@ describe('RdfSourceSparql', () => {
           };
         }),
       };
-      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false, 64);
+      const BF = new BindingsFactory();
+      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false, 64, BF);
       expect(await arrayifyStream(
         source.match(DF.variable('s'), DF.namedNode('p'), DF.namedNode('o'), DF.defaultGraph()),
       ))
@@ -230,7 +233,8 @@ describe('RdfSourceSparql', () => {
           };
         }),
       };
-      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false, 64);
+      const BF = new BindingsFactory();
+      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false, 64, BF);
       expect(await arrayifyStream(
         source.match(
           DF.quad(DF.variable('s'), DF.namedNode('p'), DF.namedNode('o')),
@@ -285,7 +289,8 @@ describe('RdfSourceSparql', () => {
           };
         },
       };
-      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false, 64);
+      const BF = new BindingsFactory();
+      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false, 64, BF);
       expect(await arrayifyStream(
         source.match(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph()),
       ))
@@ -350,7 +355,8 @@ describe('RdfSourceSparql', () => {
     });
 
     it('should not cache if cache is disabled', async() => {
-      source = new RdfSourceSparql('http://example.org/sparql', context, mediatorHttp, false, 0);
+      const BF = new BindingsFactory();
+      source = new RdfSourceSparql('http://example.org/sparql', context, mediatorHttp, false, 0, BF);
 
       const stream1 = source.match(
         DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph(),
@@ -396,7 +402,8 @@ describe('RdfSourceSparql', () => {
           };
         },
       };
-      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false, 64);
+      const BF = new BindingsFactory();
+      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false, 64, BF);
       await expect(arrayifyStream(
         source.match(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph()),
       ))
@@ -434,7 +441,9 @@ describe('RdfSourceSparql', () => {
           };
         },
       };
-      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false, 64);
+      source = new RdfSourceSparql(
+        'http://example.org/sparql', context, thisMediator, false, 64, new BindingsFactory(),
+      );
 
       const stream = source.match(
         DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph(),
@@ -487,7 +496,8 @@ describe('RdfSourceSparql', () => {
           };
         },
       };
-      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false, 64);
+      const BF = new BindingsFactory();
+      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false, 64, BF);
       await expect(arrayifyStream(source
         .match(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph())))
         .rejects.toThrow(new Error('The endpoint http://example.org/sparql failed to provide a binding for p.'));
@@ -505,7 +515,8 @@ describe('RdfSourceSparql', () => {
           };
         },
       };
-      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false, 64);
+      const BF = new BindingsFactory();
+      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false, 64, BF);
       await expect(arrayifyStream(source
         .match(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph())))
         .rejects.toThrow(new Error('Some stream error'));
@@ -550,7 +561,8 @@ describe('RdfSourceSparql', () => {
           };
         },
       };
-      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false, 64);
+      const BF = new BindingsFactory();
+      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false, 64, BF);
       const stream = source.match(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph());
       expect(await new Promise(resolve => stream.getProperty('metadata', resolve)))
         .toEqual({ cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }, canContainUndefs: false });
@@ -595,7 +607,8 @@ describe('RdfSourceSparql', () => {
           };
         },
       };
-      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false, 64);
+      const BF = new BindingsFactory();
+      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false, 64, BF);
       const stream = source.match(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph());
       expect(await new Promise(resolve => stream.getProperty('metadata', resolve)))
         .toEqual({ cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }, canContainUndefs: false });
@@ -648,7 +661,8 @@ describe('RdfSourceSparql', () => {
           };
         },
       };
-      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, true, 64);
+      const BF = new BindingsFactory();
+      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, true, 64, BF);
       expect(await arrayifyStream(
         source.match(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph()),
       ))

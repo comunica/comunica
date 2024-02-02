@@ -1,12 +1,10 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
+import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { Bindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { termToString } from 'rdf-string';
 import { mapTermsNested, someTermsNested } from 'rdf-terms';
 import type { Algebra, Factory } from 'sparqlalgebrajs';
 import { Util } from 'sparqlalgebrajs';
-
-const BF = new BindingsFactory();
 
 /**
  * Materialize a term with the given binding.
@@ -45,6 +43,7 @@ export function materializeTerm(term: RDF.Term, bindings: Bindings): RDF.Term {
 export function materializeOperation(
   operation: Algebra.Operation,
   bindings: Bindings,
+  bindingsFactory: BindingsFactory,
   options: {
     /**
      * If target variable bindings (such as on SELECT or BIND) should not be allowed.
@@ -97,7 +96,7 @@ export function materializeOperation(
         } else {
           return {
             recurse: true,
-            result: materializeOperation(op.input, bindings, options),
+            result: materializeOperation(op.input, bindings, bindingsFactory, options),
           };
         }
       }
@@ -151,7 +150,7 @@ export function materializeOperation(
 
       // Only include projected variables in the sub-bindings that will be passed down recursively.
       // If we don't do this, we may be binding variables that may have the same label, but are not considered equal.
-      const subBindings = BF.bindings(<[RDF.Variable, RDF.Term][]> op.variables.map(variable => {
+      const subBindings = bindingsFactory.bindings(<[RDF.Variable, RDF.Term][]> op.variables.map(variable => {
         const binding = bindings.get(variable);
         if (binding) {
           return [ variable, binding ];
@@ -166,6 +165,7 @@ export function materializeOperation(
           materializeOperation(
             op.input,
             subBindings,
+            bindingsFactory,
             options,
           ),
           variables,

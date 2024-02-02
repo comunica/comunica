@@ -1,4 +1,5 @@
-import { bindingsToString } from '@comunica/bindings-factory';
+import { BindingsFactory, bindingsToString } from '@comunica/bindings-factory';
+import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
@@ -13,13 +14,20 @@ import type { Algebra } from 'sparqlalgebrajs';
  * A comunica Filter Sparqlee Query Operation Actor.
  */
 export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedMediated<Algebra.Filter> {
-  public constructor(args: IActorQueryOperationTypedMediatedArgs) {
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+
+  public constructor(args: IActorQueryOperationFilterSparqleeArgs) {
     super(args, 'filter');
   }
 
   public async testOperation(operation: Algebra.Filter, context: IActionContext): Promise<IActorTest> {
     // Will throw error for unsupported operators
-    const config = { ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation) };
+    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context);
+    const config = { ...ActorQueryOperation.getAsyncExpressionContext(
+      context,
+      this.mediatorQueryOperation,
+      bindingsFactory,
+    ) };
     const _ = new AsyncEvaluator(operation.expression, config);
     return true;
   }
@@ -30,7 +38,12 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
     const output = ActorQueryOperation.getSafeBindings(outputRaw);
     ActorQueryOperation.validateQueryOutput(output, 'bindings');
 
-    const config = { ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation) };
+    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context);
+    const config = { ...ActorQueryOperation.getAsyncExpressionContext(
+      context,
+      this.mediatorQueryOperation,
+      bindingsFactory,
+    ) };
     const evaluator = new AsyncEvaluator(operation.expression, config);
 
     const transform = async(item: Bindings, next: any, push: (bindings: Bindings) => void): Promise<void> => {
@@ -63,4 +76,11 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
     const bindingsStream = output.bindingsStream.transform<Bindings>({ transform, autoStart: false });
     return { type: 'bindings', bindingsStream, metadata: output.metadata };
   }
+}
+
+export interface IActorQueryOperationFilterSparqleeArgs extends IActorQueryOperationTypedMediatedArgs{
+  /**
+   * A mediator for creating binding context merge handlers
+   */
+  mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 }
