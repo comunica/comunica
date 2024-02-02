@@ -119,24 +119,7 @@ export class Bindings implements RDF.Bindings {
       entries.push([ key, value ]);
     }
 
-    // If any context is empty, we skip merging contexts
-    if (this.contextHolder && this.contextHolder.context) {
-      let mergedContext = this.contextHolder.context;
-      // Only merge if the other has a context
-      if ('contextHolder' in other && other.contextHolder && other.contextHolder.context) {
-        mergedContext = Bindings
-          .mergeContext(this.contextHolder.contextMergeHandlers, mergedContext, other.contextHolder.context);
-      }
-      return new Bindings(
-        this.dataFactory,
-        Map(entries),
-        { contextMergeHandlers: this.contextHolder.contextMergeHandlers, context: mergedContext },
-      );
-    }
-
-    // Otherwise, use optional context from other
-    const castOther = <Bindings>other;
-    return new Bindings(this.dataFactory, Map(entries), castOther.contextHolder);
+    return this.createBindingsWithContexts(entries, other);
   }
 
   public mergeWith(
@@ -164,6 +147,10 @@ export class Bindings implements RDF.Bindings {
       entries.push([ key, value ]);
     }
 
+    return this.createBindingsWithContexts(entries, other);
+  }
+
+  protected createBindingsWithContexts(entries: [string, RDF.Term][], other: RDF.Bindings | Bindings): Bindings {
     // If any context is empty, we skip merging contexts
     if (this.contextHolder && this.contextHolder.context) {
       let mergedContext = this.contextHolder.context;
@@ -179,8 +166,8 @@ export class Bindings implements RDF.Bindings {
       );
     }
 
-    const castOther = <Bindings> other;
-    return new Bindings(this.dataFactory, Map(entries), castOther.contextHolder);
+    // Otherwise, use optional context from other
+    return new Bindings(this.dataFactory, Map(entries), (<Bindings> other).contextHolder);
   }
 
   private static mergeContext(
