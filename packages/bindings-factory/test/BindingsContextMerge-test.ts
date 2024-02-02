@@ -20,8 +20,10 @@ describe('Binding context mergehandler', () => {
         [ 'b', DF.namedNode('ex:b') ],
         [ 'c', DF.namedNode('ex:c') ],
       ]),
-      { source: new SetUnionBindingsContextMergeHandler() },
-      new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3' ]}),
+      {
+        contextMergeHandlers: { source: new SetUnionBindingsContextMergeHandler() },
+        context: new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3' ]}),
+      },
     );
     bindingsNoContext = new Bindings(
       DF,
@@ -30,7 +32,6 @@ describe('Binding context mergehandler', () => {
         [ 'b', DF.namedNode('ex:b') ],
         [ 'd', DF.namedNode('ex:d') ],
       ]),
-      {},
     );
   });
 
@@ -42,12 +43,14 @@ describe('Binding context mergehandler', () => {
         [ 'a', DF.namedNode('ex:a') ],
         [ 'b', DF.namedNode('ex:b') ],
       ]),
-      { source: new SetUnionBindingsContextMergeHandler() },
-      new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S5' ]}),
+      {
+        contextMergeHandlers: { source: new SetUnionBindingsContextMergeHandler() },
+        context: new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S5' ]}),
+      },
     );
     const bindingsNew: Bindings = bindings.merge(bindingsOther)!;
     expect(bindingsNew).toBeDefined();
-    expect(bindingsNew.context).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3', 'ex:S5' ]}));
+    expect(bindingsNew.getContext()).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3', 'ex:S5' ]}));
   });
 
   it('should merge own binding context with extra key by adding to result context without change', () => {
@@ -58,13 +61,17 @@ describe('Binding context mergehandler', () => {
         [ 'a', DF.namedNode('ex:a') ],
         [ 'b', DF.namedNode('ex:b') ],
       ]),
-      { source: new SetUnionBindingsContextMergeHandler() },
-      new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S5' ],
-        extraKey: [ 'ex:T1', 'ex:T2' ]}),
+      {
+        contextMergeHandlers: { source: new SetUnionBindingsContextMergeHandler() },
+        context: new ActionContext({
+          source: [ 'ex:S1', 'ex:S2', 'ex:S5' ],
+          extraKey: [ 'ex:T1', 'ex:T2' ],
+        }),
+      },
     );
     const bindingsNew: Bindings = bindingsExtraKey.merge(bindings)!;
     expect(bindingsNew).toBeDefined();
-    expect(bindingsNew.context).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S5', 'ex:S3' ],
+    expect(bindingsNew.getContext()).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S5', 'ex:S3' ],
       extraKey: [ 'ex:T1', 'ex:T2' ]}));
   });
 
@@ -76,13 +83,17 @@ describe('Binding context mergehandler', () => {
         [ 'a', DF.namedNode('ex:a') ],
         [ 'b', DF.namedNode('ex:b') ],
       ]),
-      { source: new SetUnionBindingsContextMergeHandler() },
-      new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S5' ],
-        extraKey: [ 'ex:T1', 'ex:T2' ]}),
+      {
+        contextMergeHandlers: { source: new SetUnionBindingsContextMergeHandler() },
+        context: new ActionContext({
+          source: [ 'ex:S1', 'ex:S2', 'ex:S5' ],
+          extraKey: [ 'ex:T1', 'ex:T2' ],
+        }),
+      },
     );
     const bindingsNew: Bindings = bindings.merge(bindingsExtraKey)!;
     expect(bindingsNew).toBeDefined();
-    expect(bindingsNew.context).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3', 'ex:S5' ],
+    expect(bindingsNew.getContext()).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3', 'ex:S5' ],
       extraKey: [ 'ex:T1', 'ex:T2' ]}));
   });
 
@@ -94,17 +105,21 @@ describe('Binding context mergehandler', () => {
         [ 'a', DF.namedNode('ex:a') ],
         [ 'b', DF.namedNode('ex:b') ],
       ]),
-      {},
-      new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S5' ]}),
+      {
+        contextMergeHandlers: {},
+        context: new ActionContext({
+          source: [ 'ex:S1', 'ex:S2', 'ex:S5' ],
+        }),
+      },
     );
     const bindingsNew: Bindings = bindingsNoMergeHandler.merge(bindings)!;
     expect(bindingsNew).toBeDefined();
-    expect(bindingsNew.context).toEqual(new ActionContext({}));
+    expect(bindingsNew.getContext()).toEqual(new ActionContext({}));
   });
   it('should merge with itself with context', () => {
     const bindingsNew = bindings.merge(bindings)!;
     expect(bindingsNew).toBeDefined();
-    expect(bindingsNew.context).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3' ]}));
+    expect(bindingsNew.getContext()).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3' ]}));
   });
 
   it('should merge overlapping compatible bindings', () => {
@@ -115,26 +130,30 @@ describe('Binding context mergehandler', () => {
         [ 'a', DF.namedNode('ex:a') ],
         [ 'b', DF.namedNode('ex:b') ],
       ]),
-      { source: new SetUnionBindingsContextMergeHandler() },
-      new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S5' ]}),
+      {
+        contextMergeHandlers: { source: new SetUnionBindingsContextMergeHandler() },
+        context: new ActionContext({
+          source: [ 'ex:S1', 'ex:S2', 'ex:S5' ],
+        }),
+      },
     );
 
     const cb = jest.fn();
     const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
     expect(bindingsNew).toBeDefined();
-    expect(bindingsNew.context).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3', 'ex:S5' ]}));
+    expect(bindingsNew.getContext()).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3', 'ex:S5' ]}));
   });
 
   it('should merge with only left side merge context', () => {
     const bindingsNew = bindings.merge(bindingsNoContext)!;
     expect(bindingsNew).toBeDefined();
-    expect(bindingsNew.context).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3' ]}));
+    expect(bindingsNew.getContext()).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3' ]}));
   });
 
   it('should merge with only right side merge context', () => {
     const bindingsNew = bindingsNoContext.merge(bindings)!;
     expect(bindingsNew).toBeDefined();
-    expect(bindingsNew.context).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3' ]}));
+    expect(bindingsNew.getContext()).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3' ]}));
   });
 
   it('should merge with undefined context', () => {
@@ -145,18 +164,18 @@ describe('Binding context mergehandler', () => {
         [ 'b', DF.namedNode('ex:b') ],
         [ 'd', DF.namedNode('ex:d') ],
       ]),
-      {},
+      { contextMergeHandlers: {}},
     );
 
     const bindingsNew = bindingsNoContext.merge(bindingsNoContextOther)!;
     expect(bindingsNew).toBeDefined();
-    expect(bindingsNew.context).toEqual(undefined);
+    expect(bindingsNew.getContext()).toEqual(undefined);
   });
 
   it('should merge with itself with no context', () => {
     const bindingsNew = bindingsNoContext.merge(bindingsNoContext)!;
     expect(bindingsNew).toBeDefined();
-    expect(bindingsNew.context).toEqual(undefined);
+    expect(bindingsNew.getContext()).toEqual(undefined);
   });
 
   describe('calling merge twice on same binding should give correct results', () => {
@@ -170,8 +189,12 @@ describe('Binding context mergehandler', () => {
           [ 'a', DF.namedNode('ex:a') ],
           [ 'b', DF.namedNode('ex:b') ],
         ]),
-        { source: new SetUnionBindingsContextMergeHandler() },
-        new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S5' ]}),
+        {
+          contextMergeHandlers: { source: new SetUnionBindingsContextMergeHandler() },
+          context: new ActionContext({
+            source: [ 'ex:S1', 'ex:S2', 'ex:S5' ],
+          }),
+        },
       );
       bindingsOther2 = new Bindings(
         DF,
@@ -180,28 +203,32 @@ describe('Binding context mergehandler', () => {
           [ 'a', DF.namedNode('ex:a') ],
           [ 'b', DF.namedNode('ex:b') ],
         ]),
-        { source: new SetUnionBindingsContextMergeHandler() },
-        new ActionContext({ source: [ 'ex:S2', 'ex:S9' ]}),
+        {
+          contextMergeHandlers: { source: new SetUnionBindingsContextMergeHandler() },
+          context: new ActionContext({
+            source: [ 'ex:S2', 'ex:S9' ],
+          }),
+        },
       );
     });
 
     it('calling merge twice with different bindings should give correct results', () => {
       const bindingsNew1: Bindings = bindings.merge(bindingsOther1)!;
       expect(bindingsNew1).toBeDefined();
-      expect(bindingsNew1.context).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3', 'ex:S5' ]}));
+      expect(bindingsNew1.getContext()).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3', 'ex:S5' ]}));
       const bindingsNew2: Bindings = bindings.merge(bindingsOther2)!;
       expect(bindingsNew2).toBeDefined();
-      expect(bindingsNew2.context).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3', 'ex:S9' ]}));
+      expect(bindingsNew2.getContext()).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3', 'ex:S9' ]}));
     });
 
     it('calling mergeWith twice with different bindings should give correct results', () => {
       const cb = jest.fn();
       const bindingsNew1: Bindings = bindings.mergeWith(cb, bindingsOther1)!;
       expect(bindingsNew1).toBeDefined();
-      expect(bindingsNew1.context).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3', 'ex:S5' ]}));
+      expect(bindingsNew1.getContext()).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3', 'ex:S5' ]}));
       const bindingsNew2: Bindings = bindings.mergeWith(cb, bindingsOther2)!;
       expect(bindingsNew2).toBeDefined();
-      expect(bindingsNew2.context).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3', 'ex:S9' ]}));
+      expect(bindingsNew2.getContext()).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3', 'ex:S9' ]}));
     });
   });
 });

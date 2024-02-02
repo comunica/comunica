@@ -20,8 +20,10 @@ describe('Binding context mergehandler', () => {
         [ 'b', DF.namedNode('ex:b') ],
         [ 'c', DF.namedNode('ex:c') ],
       ]),
-      { source: new SetUnionBindingsContextMergeHandler() },
-      new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3' ]}),
+      {
+        contextMergeHandlers: { source: new SetUnionBindingsContextMergeHandler() },
+        context: new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3' ]}),
+      },
     );
     bindingsNoContext = new Bindings(
       DF,
@@ -30,25 +32,25 @@ describe('Binding context mergehandler', () => {
         [ 'b', DF.namedNode('ex:b') ],
         [ 'd', DF.namedNode('ex:d') ],
       ]),
-      {},
     );
   });
   it('Should set context when key is not in context and context exists', () => {
     bindings = bindings.setContextEntry(new ActionContextKey('testEntry'), true);
-    expect(bindings.context).toBeDefined();
-    expect(bindings.context).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3' ], testEntry: true }));
+    expect(bindings.getContext()).toBeDefined();
+    expect(bindings.getContext())
+      .toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3' ], testEntry: true }));
   });
 
   it('Should create context with new entry if context does not exist ', () => {
     bindingsNoContext = bindingsNoContext.setContextEntry(new ActionContextKey('testEntry'), true);
-    expect(bindingsNoContext.context).toBeDefined();
-    expect(bindingsNoContext.context).toEqual(new ActionContext({ testEntry: true }));
+    expect(bindingsNoContext.getContext()).toBeDefined();
+    expect(bindingsNoContext.getContext()).toEqual(new ActionContext({ testEntry: true }));
   });
 
   it('Should override context entry when setting existing entry', () => {
     bindings = bindings.setContextEntry(new ActionContextKey('source'), [ 'ex:S1O', 'ex:S2O' ]);
-    expect(bindings.context).toBeDefined();
-    expect(bindings.context).toEqual(new ActionContext({ source: [ 'ex:S1O', 'ex:S2O' ]}));
+    expect(bindings.getContext()).toBeDefined();
+    expect(bindings.getContext()).toEqual(new ActionContext({ source: [ 'ex:S1O', 'ex:S2O' ]}));
   });
 
   it('Should return correct value', () => {
@@ -69,12 +71,12 @@ describe('Binding context mergehandler', () => {
 
   it('Should delete appropriate context key', () => {
     bindings = bindings.deleteContextEntry(new ActionContextKey('source'));
-    expect(bindings.context).toBeDefined();
-    expect(bindings.context).toEqual(new ActionContext());
+    expect(bindings.getContext()).toBeDefined();
+    expect(bindings.getContext()).toEqual(new ActionContext());
   });
 
   it('Should work on undefined context', () => {
     bindingsNoContext = bindingsNoContext.deleteContextEntry(new ActionContextKey('source'));
-    expect(bindingsNoContext.context).toBeUndefined();
+    expect(bindingsNoContext.getContext()).toBeUndefined();
   });
 });

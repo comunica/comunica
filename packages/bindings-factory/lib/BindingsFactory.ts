@@ -33,7 +33,7 @@ export class BindingsFactory implements RDF.BindingsFactory {
   public bindings(entries: [RDF.Variable, RDF.Term][] = []): Bindings {
     return new Bindings(this.dataFactory,
       Map(entries.map(([ key, value ]) => [ key.value, value ])),
-      this.contextMergeHandlers);
+      this.contextMergeHandlers ? { contextMergeHandlers: this.contextMergeHandlers } : undefined);
   }
 
   public fromBindings(bindings: Bindings): Bindings {
