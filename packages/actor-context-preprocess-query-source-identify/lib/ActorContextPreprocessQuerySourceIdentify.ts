@@ -4,8 +4,9 @@ import type { ActorHttpInvalidateListenable, IActionHttpInvalidate } from '@comu
 import type { MediatorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { IAction, IActorTest } from '@comunica/core';
+import { ActionContext } from '@comunica/core';
 import type { IQuerySourceWrapper, QuerySourceUnidentified,
-  QuerySourceUnidentifiedExpanded, IActionContext } from '@comunica/types';
+  QuerySourceUnidentifiedExpanded, IActionContext, IQuerySourceUnidentifiedExpanded } from '@comunica/types';
 import { LRUCache } from 'lru-cache';
 
 /**
@@ -55,7 +56,14 @@ export class ActorContextPreprocessQuerySourceIdentify extends ActorContextPrepr
     if (typeof querySource === 'string' || 'match' in querySource) {
       return { value: querySource };
     }
-    return querySource;
+    return {
+      ...<Omit<IQuerySourceUnidentifiedExpanded, 'context'>>querySource,
+      ...querySource.context ?
+        {
+          context: ActionContext.ensureActionContext(querySource.context),
+        } :
+        {},
+    };
   }
 
   public identifySource(

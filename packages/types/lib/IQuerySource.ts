@@ -18,8 +18,15 @@ export interface IQuerySourceUnidentifiedExpanded {
   context?: IActionContext;
 }
 
+export interface IQuerySourceUnidentifiedExpandedRawContext {
+  type?: string;
+  value: string | RDF.Source | RDF.Store;
+  context?: Record<string, any>;
+}
+
 export type QuerySourceUnidentifiedExpanded = IQuerySourceUnidentifiedExpanded | IQuerySourceSerialized;
-export type QuerySourceUnidentified = string | RDF.Source | RDF.Store | QuerySourceUnidentifiedExpanded;
+export type QuerySourceUnidentified = string | RDF.Source | RDF.Store | QuerySourceUnidentifiedExpanded |
+IQuerySourceUnidentifiedExpandedRawContext;
 
 /**
  * Attaches a context to a query target.

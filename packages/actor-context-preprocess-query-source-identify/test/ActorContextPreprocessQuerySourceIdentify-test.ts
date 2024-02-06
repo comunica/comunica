@@ -159,6 +159,32 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
         expect(contextOut1.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![1])
           .not.toBe(contextOut2.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![1]);
       });
+
+      it('with an unidentified source with proper context', async() => {
+        const contextSource = new ActionContext({ a: 'b' });
+        const contextIn = new ActionContext()
+          .set(KeysInitQuery.querySourcesUnidentified, [
+            { value: 'source2', context: contextSource },
+          ]);
+        const { context: contextOut } = await actor.run({ context: contextIn });
+        expect(contextOut).not.toBe(contextIn);
+        expect(contextOut.get(KeysQueryOperation.querySources)).toEqual([
+          { ofUnidentified: { value: 'source2', context: contextSource }},
+        ]);
+      });
+
+      it('with an unidentified source with raw context', async() => {
+        const contextSource = { a: 'b' };
+        const contextIn = new ActionContext()
+          .set(KeysInitQuery.querySourcesUnidentified, [
+            { value: 'source2', context: contextSource },
+          ]);
+        const { context: contextOut } = await actor.run({ context: contextIn });
+        expect(contextOut).not.toBe(contextIn);
+        expect(contextOut.get(KeysQueryOperation.querySources)).toEqual([
+          { ofUnidentified: { value: 'source2', context: new ActionContext(contextSource) }},
+        ]);
+      });
     });
   });
 
