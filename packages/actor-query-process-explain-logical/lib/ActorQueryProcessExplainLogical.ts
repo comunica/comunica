@@ -9,6 +9,7 @@ import {
 } from '@comunica/bus-query-process';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
+import { ActionContextKey } from '@comunica/core';
 
 /**
  * A comunica Explain Logical Query Process Actor.
@@ -21,7 +22,8 @@ export class ActorQueryProcessExplainLogical extends ActorQueryProcess {
   }
 
   public async test(action: IActionQueryProcess): Promise<IActorTest> {
-    if (action.context.get(KeysInitQuery.explain) !== 'logical') {
+    if ((action.context.get(KeysInitQuery.explain) ||
+      action.context.get(new ActionContextKey('explain'))) !== 'logical') {
       throw new Error(`${this.name} can only explain in 'logical' mode.`);
     }
     return true;

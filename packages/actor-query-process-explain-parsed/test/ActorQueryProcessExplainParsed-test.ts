@@ -38,6 +38,11 @@ describe('ActorQueryProcessExplainParsed', () => {
         expect(await actor.test({ query: 'q', context: new ActionContext().set(KeysInitQuery.explain, 'parsed') }))
           .toBeTruthy();
       });
+
+      it('handles parsed explain in raw context', async() => {
+        expect(await actor.test({ query: 'q', context: new ActionContext().setRaw('explain', 'parsed') }))
+          .toBeTruthy();
+      });
     });
 
     describe('run', () => {

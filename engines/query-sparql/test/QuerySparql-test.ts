@@ -1,9 +1,9 @@
 /** @jest-environment setup-polly-jest/jest-environment-node */
 
 import { QuerySourceSkolemized } from '@comunica/actor-context-preprocess-query-source-skolemize';
-import { KeysHttpWayback, KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
+import { KeysHttpWayback, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { BlankNodeScoped } from '@comunica/data-factory';
-import type { IActionContext, QueryBindings, QueryStringContext } from '@comunica/types';
+import type { QueryBindings, QueryStringContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import 'jest-rdf';
 import arrayifyStream from 'arrayify-stream';
@@ -508,47 +508,6 @@ describe('System test: QuerySparql', () => {
             quads.map(q => String(q.object.value.length)),
           );
           expect(Object.keys(functionArgumentsCache)).toContain('strlen');
-        });
-
-        it('is used when defaulted', async() => {
-          const alternativeEngine = new QueryEngine();
-          const context = <any> { sources: [ store ]};
-
-          // This cumbersome way is needed because evaluating with mock with isCalledWith gives you the reference
-          // to the cache and will make it seem like it was filled in from the beginning.
-          const original_function = (<any> alternativeEngine).actorInitQuery.mediatorQueryProcess.mediate;
-          let firstFuncArgCache: object | undefined;
-          let secondFuncArgCache: object | undefined;
-          (<any> alternativeEngine).actorInitQuery.mediatorQueryProcess.mediate =
-            (arg: { context: IActionContext }) => {
-              firstFuncArgCache = arg.context.get(KeysInitQuery.functionArgumentsCache);
-              expect(firstFuncArgCache).toEqual({});
-              return original_function.call((<any> alternativeEngine).actorInitQuery.mediatorQueryProcess, arg);
-            };
-
-          // Evaluate query once
-          const firstBindingsStream = await alternativeEngine.queryBindings(query, context);
-          expect((await firstBindingsStream.toArray()).map(res => res.get(DF.variable('len'))!.value)).toEqual(
-            quads.map(q => String(q.object.value.length)),
-          );
-
-          (<any> alternativeEngine).actorInitQuery.mediatorQueryProcess.mediate =
-            (arg: { context: IActionContext }) => {
-              secondFuncArgCache = arg.context.get(KeysInitQuery.functionArgumentsCache);
-              expect(secondFuncArgCache).not.toBeUndefined();
-              expect(Object.keys(secondFuncArgCache!)).toContain('strlen');
-              return original_function.call((<any> alternativeEngine).actorInitQuery.mediatorQueryProcess, arg);
-            };
-          // Evaluate query a second time
-          const secondBindingsStream = await alternativeEngine.queryBindings(query, context);
-          expect((await secondBindingsStream.toArray()).map(res => res.get(DF.variable('len'))!.value)).toEqual(
-            quads.map(q => String(q.object.value.length)),
-          );
-
-          expect(firstFuncArgCache).toBe(secondFuncArgCache);
-
-          // Reset the function again!
-          (<any> alternativeEngine).actorInitQuery.mediatorQueryProcess.mediate = original_function;
         });
       });
     });

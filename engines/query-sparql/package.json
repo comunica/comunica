@@ -46,6 +46,8 @@
     "engine-default.js"
   ],
   "dependencies": {
+    "@comunica/actor-context-preprocess-convert-shortcuts": "^1.0.0",
+    "@comunica/actor-context-preprocess-set-defaults": "^1.0.0",
     "@comunica/actor-context-preprocess-query-source-identify": "^2.8.0",
     "@comunica/actor-context-preprocess-query-source-skolemize": "^1.0.0",
     "@comunica/actor-context-preprocess-source-to-destination": "^2.10.0",

@@ -1,12 +1,12 @@
 import { Readable, Transform } from 'stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
-import { Bus, ActionContext, ActionContextKey } from '@comunica/core';
+import { Bus, ActionContext } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
 import type {
   IActionContext, QueryStringContext, IQueryBindingsEnhanced, IQueryQuadsEnhanced,
   QueryType, IQueryOperationResultQuads, IQueryOperationResultBindings,
-  IQueryOperationResultBoolean, IQueryOperationResultVoid, IQueryEngine, IQueryContextCommon,
+  IQueryOperationResultBoolean, IQueryOperationResultVoid, IQueryEngine,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
@@ -15,7 +15,6 @@ import { DataFactory } from 'rdf-data-factory';
 import { translate } from 'sparqlalgebrajs';
 import { QueryEngineBase } from '../lib';
 import { ActorInitQuery } from '../lib/ActorInitQuery';
-import type { IActorInitQueryBaseArgs } from '../lib/ActorInitQueryBase';
 import { ActorInitQueryBase } from '../lib/ActorInitQueryBase';
 import '@comunica/jest';
 import 'jest-rdf';
@@ -32,7 +31,6 @@ describe('ActorInitQueryBase', () => {
 // eslint-disable-next-line mocha/max-top-level-suites
 describe('QueryEngineBase', () => {
   let bus: any;
-  let logger: any;
   let mediatorQueryProcess: any;
   let mediatorSparqlSerialize: any;
   let mediatorHttpInvalidate: any;
@@ -40,17 +38,8 @@ describe('QueryEngineBase', () => {
   let context: IActionContext;
   let input: any;
 
-  const contextKeyShortcuts = {
-    initialBindings: '@comunica/actor-init-query:initialBindings',
-    log: '@comunica/core:log',
-    queryFormat: '@comunica/actor-init-query:queryFormat',
-    source: '@comunica/bus-rdf-resolve-quad-pattern:source',
-    sources: '@comunica/bus-rdf-resolve-quad-pattern:sources',
-  };
-
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    logger = null;
     input = new Readable({ objectMode: true });
     input._read = () => {
       const triple = { a: 'triple' };
@@ -118,9 +107,7 @@ describe('QueryEngineBase', () => {
 
       actor = new ActorInitQuery(
         { bus,
-          contextKeyShortcuts,
           defaultQueryInputFormat,
-          logger,
           mediatorHttpInvalidate,
           mediatorQueryProcess,
           mediatorQueryResultSerialize: mediatorSparqlSerialize,
@@ -305,8 +292,6 @@ describe('QueryEngineBase', () => {
         };
         actor = new ActorInitQuery(
           { bus,
-            contextKeyShortcuts,
-            logger,
             mediatorHttpInvalidate,
             mediatorQueryProcess,
             mediatorQueryResultSerialize: med,
@@ -322,77 +307,6 @@ describe('QueryEngineBase', () => {
     });
   });
 
-  describe('An QueryEngineBase instance with custom QueryContext', () => {
-    interface ICustomQueryContext1 extends IQueryContextCommon {
-      customField1: string;
-    }
-    interface ICustomQueryContext2 extends ICustomQueryContext1 {
-      customField2: string;
-    }
-    const KeysCustom1 = {
-      customField1: new ActionContextKey<string>('@comunica/actor-custom1:custom1'),
-    };
-    const KeysCustom2 = {
-      customField2: new ActionContextKey<string>('@comunica/actor-custom2:custom2'),
-    };
-    class ActorInitQueryCustom1<QueryContext extends ICustomQueryContext1> extends ActorInitQuery<QueryContext> {
-      public constructor(init: IActorInitQueryBaseArgs<QueryContext>) {
-        if (!init.contextKeyShortcutsExtensions) {
-          init.contextKeyShortcutsExtensions = [];
-        }
-        init.contextKeyShortcutsExtensions.push({ customField1: KeysCustom1.customField1.name });
-        super(init);
-      }
-    }
-    class ActorInitQueryCustom2<QueryContext extends ICustomQueryContext2 = ICustomQueryContext2>
-      extends ActorInitQueryCustom1<QueryContext> {
-      public constructor(init: IActorInitQueryBaseArgs<QueryContext>) {
-        if (!init.contextKeyShortcutsExtensions) {
-          init.contextKeyShortcutsExtensions = [];
-        }
-        init.contextKeyShortcutsExtensions.push({ customField2: KeysCustom2.customField2.name });
-        super(init);
-      }
-    }
-
-    let actor: ActorInitQueryCustom2;
-    let queryEngine: QueryEngineBase<ICustomQueryContext2>;
-
-    beforeEach(() => {
-      const defaultQueryInputFormat = 'sparql';
-      actor = new ActorInitQueryCustom2(
-        { bus,
-          contextKeyShortcuts,
-          defaultQueryInputFormat,
-          logger,
-          mediatorHttpInvalidate,
-          mediatorQueryProcess,
-          mediatorQueryResultSerialize: mediatorSparqlSerialize,
-          mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
-          mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-          name: 'actor' },
-      );
-      queryEngine = new QueryEngineBase<ICustomQueryContext2>(actor);
-    });
-
-    it('should query and pass custom context fields to action context', async() => {
-      const ctx: QueryStringContext & ICustomQueryContext2 = {
-        sources: [ 'dummy' ],
-        customField1: 'custom value 1',
-        customField2: 'custom value 2',
-      };
-
-      await expect(queryEngine.query('SELECT * WHERE { ?s ?p ?o }', ctx))
-        .resolves.toBeTruthy();
-
-      expect(mediatorQueryProcess.mediate).toHaveBeenCalledTimes(1);
-
-      const actionContext: IActionContext = mediatorQueryProcess.mediate.mock.calls[0][0].context;
-      expect(actionContext.get(KeysCustom1.customField1)).toBe('custom value 1');
-      expect(actionContext.get(KeysCustom2.customField2)).toBe('custom value 2');
-    });
-  });
-
   describe('An QueryEngineBase instance for quads', () => {
     let actor: ActorInitQuery;
     let queryEngine: QueryEngineBase;
@@ -404,9 +318,7 @@ describe('QueryEngineBase', () => {
       const defaultQueryInputFormat = 'sparql';
       actor = new ActorInitQuery(
         { bus,
-          contextKeyShortcuts,
           defaultQueryInputFormat,
-          logger,
           mediatorHttpInvalidate,
           mediatorQueryProcess,
           mediatorQueryResultSerialize: mediatorSparqlSerialize,

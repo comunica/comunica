@@ -16,6 +16,7 @@ import {
 } from '@comunica/bus-query-process';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
+import { ActionContextKey } from '@comunica/core';
 import type {
   IActionContext,
   IQueryOperationResult,
@@ -40,7 +41,7 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
   }
 
   public async test(action: IActionQueryProcess): Promise<IActorTest> {
-    if (action.context.get(KeysInitQuery.explain)) {
+    if (action.context.get(KeysInitQuery.explain) || action.context.get(new ActionContextKey('explain'))) {
       throw new Error(`${this.name} is not able to explain queries.`);
     }
     return true;
@@ -56,17 +57,6 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
   }
 
   public async parse(query: QueryFormatType, context: IActionContext): Promise<IQueryProcessSequentialOutput> {
-    // Handle default query format in context
-    let queryFormat: RDF.QueryFormat = { language: 'sparql', version: '1.1' };
-    if (context.has(KeysInitQuery.queryFormat)) {
-      queryFormat = context.get(KeysInitQuery.queryFormat)!;
-      if (queryFormat.language === 'graphql') {
-        context = context.setDefault(KeysInitQuery.graphqlSingularizeVariables, {});
-      }
-    } else {
-      context = context.set(KeysInitQuery.queryFormat, queryFormat);
-    }
-
     // Pre-processing the context
     context = (await this.mediatorContextPreprocess.mediate({ context })).context;
 
@@ -77,6 +67,7 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
       context = context.set(KeysInitQuery.queryString, query);
 
       const baseIRI: string | undefined = context.get(KeysInitQuery.baseIRI);
+      const queryFormat: RDF.QueryFormat = context.get(KeysInitQuery.queryFormat)!;
       const queryParseOutput = await this.mediatorQueryParse.mediate({ context, query, queryFormat, baseIRI });
       operation = queryParseOutput.operation;
       // Update the baseIRI in the context if the query modified it.

@@ -2,28 +2,20 @@ import { Transform } from 'stream';
 import { ActorInit } from '@comunica/bus-init';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import type { IActorInitQueryBaseArgs } from '../lib/ActorInitQueryBase';
 import { ActorInitQueryBase } from '../lib/ActorInitQueryBase';
 
 describe('ActorInitQueryBase', () => {
   let bus: any;
-  let logger: any;
   let mediatorQueryProcess: any;
   let mediatorSparqlSerialize: any;
   let mediatorHttpInvalidate: any;
   let context: IActionContext;
 
-  const contextKeyShortcuts = {
-    initialBindings: '@comunica/actor-init-query:initialBindings',
-    log: '@comunica/core:log',
-    queryFormat: '@comunica/actor-init-query:queryFormat',
-    source: '@comunica/bus-rdf-resolve-quad-pattern:source',
-    sources: '@comunica/bus-rdf-resolve-quad-pattern:sources',
-  };
   const defaultQueryInputFormat = 'sparql';
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    logger = null;
     mediatorQueryProcess = <any>{
       mediate: jest.fn((action: any) => {
         return Promise.reject(new Error('Invalid query'));
@@ -55,11 +47,11 @@ describe('ActorInitQueryBase', () => {
 
     it('should be a ActorInitQueryBase constructor', () => {
       expect(new (<any> ActorInitQueryBase)(
-        { name: 'actor', bus, logger, mediatorQueryProcess, mediatorSparqlSerialize },
+        { name: 'actor', bus, mediatorQueryProcess, mediatorSparqlSerialize },
       ))
         .toBeInstanceOf(ActorInitQueryBase);
       expect(new (<any> ActorInitQueryBase)(
-        { name: 'actor', bus, logger, mediatorQueryProcess, mediatorSparqlSerialize },
+        { name: 'actor', bus, mediatorQueryProcess, mediatorSparqlSerialize },
       ))
         .toBeInstanceOf(ActorInit);
     });
@@ -73,11 +65,9 @@ describe('ActorInitQueryBase', () => {
     let actor: ActorInitQueryBase;
 
     beforeEach(() => {
-      actor = new ActorInitQueryBase({
+      actor = new ActorInitQueryBase(<IActorInitQueryBaseArgs> {
         bus,
-        contextKeyShortcuts,
         defaultQueryInputFormat,
-        logger,
         mediatorHttpInvalidate,
         mediatorQueryProcess,
         mediatorQueryResultSerialize: mediatorSparqlSerialize,
@@ -98,48 +88,6 @@ describe('ActorInitQueryBase', () => {
         await expect(actor.run(<any> {})).rejects
           .toThrow('ActorInitSparql#run is not supported in the browser.');
       });
-    });
-  });
-
-  describe('An ActorInitQueryBase instance with extended contextKeyShortcuts', () => {
-    it('should throw with duplicate shortcut extensions', async() => {
-      expect(() => new ActorInitQueryBase({
-        bus,
-        contextKeyShortcutsExtensions: [
-          { log: 'customKey' },
-        ],
-        contextKeyShortcuts,
-        defaultQueryInputFormat,
-        logger,
-        mediatorHttpInvalidate,
-        mediatorQueryProcess,
-        mediatorQueryResultSerialize: mediatorSparqlSerialize,
-        mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
-        mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-        name: 'actor',
-      })).toThrow('Duplicate keys found while adding `contextKeyShortcutsExtensions`.');
-    });
-
-    it('should create context shortcuts with two additional keys', async() => {
-      const actor = new ActorInitQueryBase({
-        bus,
-        contextKeyShortcutsExtensions: [
-          { customField1: 'exampleShortcut1' },
-          { customField2: 'exampleShortcut2' },
-        ],
-        contextKeyShortcuts,
-        defaultQueryInputFormat,
-        logger,
-        mediatorHttpInvalidate,
-        mediatorQueryProcess,
-        mediatorQueryResultSerialize: mediatorSparqlSerialize,
-        mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
-        mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-        name: 'actor',
-      });
-
-      expect(actor.contextKeyShortcuts.customField1).toBe('exampleShortcut1');
-      expect(actor.contextKeyShortcuts.customField2).toBe('exampleShortcut2');
     });
   });
 });

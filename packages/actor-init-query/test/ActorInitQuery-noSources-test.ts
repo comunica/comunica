@@ -1,5 +1,5 @@
 import type { MediatorQueryProcess } from '@comunica/bus-query-process';
-import { KeysCore, KeysInitQuery } from '@comunica/context-entries';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
 import type { IActionContext } from '@comunica/types';
@@ -11,26 +11,18 @@ const stringifyStream = require('stream-to-string');
 
 describe('ActorInitQuery', () => {
   let bus: any;
-  let logger: any;
   let mediatorQueryProcess: MediatorQueryProcess;
   let mediatorSparqlSerialize: any;
   let mediatorHttpInvalidate: any;
   let context: IActionContext;
   let input: Readable;
 
-  const contextKeyShortcuts = {
-    initialBindings: '@comunica/actor-init-query:initialBindings',
-    log: '@comunica/core:log',
-    queryFormat: '@comunica/actor-init-query:queryFormat',
-    sources: '@comunica/actor-init-query:querySourcesUnidentified',
-  };
   const defaultQueryInputFormat = 'sparql';
   const sourceHypermedia = 'http://example.org/';
   const queryString = 'SELECT * WHERE { ?s ?p ?o } LIMIT 100';
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    logger = null;
     mediatorQueryProcess = <any>{
       mediate: jest.fn((action: any) => {
         if (action.context.has(KeysInitQuery.explain)) {
@@ -83,9 +75,7 @@ describe('ActorInitQuery', () => {
     beforeEach(() => {
       actorAllowNoSources = new ActorInitQuery({
         bus,
-        contextKeyShortcuts,
         defaultQueryInputFormat,
-        logger,
         mediatorHttpInvalidate,
         mediatorQueryProcess,
         mediatorQueryResultSerialize: mediatorSparqlSerialize,
@@ -110,8 +100,8 @@ describe('ActorInitQuery', () => {
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          [KeysInitQuery.querySourcesUnidentified.name]: [{ value: 'SOURCE' }],
-          [KeysCore.log.name]: expect.any(LoggerPretty),
+          sources: [{ value: 'SOURCE' }],
+          log: expect.any(LoggerPretty),
         });
       });
 
@@ -125,7 +115,7 @@ describe('ActorInitQuery', () => {
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          [KeysCore.log.name]: expect.any(LoggerPretty),
+          log: expect.any(LoggerPretty),
         });
       });
 

@@ -78,6 +78,11 @@ describe('ActorQueryProcessSequential', () => {
           .rejects.toThrow(`actor is not able to explain queries.`);
       });
 
+      it('rejects on raw explain in context', async() => {
+        await expect(actor.test({ query: 'q', context: new ActionContext().setRaw('explain', 'parsed') }))
+          .rejects.toThrow(`actor is not able to explain queries.`);
+      });
+
       it('handles no explain in context', async() => {
         expect(await actor.test({ query: 'q', context: new ActionContext() }))
           .toBeTruthy();
@@ -96,7 +101,6 @@ describe('ActorQueryProcessSequential', () => {
           context: ctx,
         });
         expect((<any> result).context).toEqual(new ActionContext()
-          .set(KeysInitQuery.queryFormat, { language: 'sparql', version: '1.1' })
           .set(KeysInitQuery.query, AF.createJoin([
             op,
           ], false)));
@@ -105,21 +109,18 @@ describe('ActorQueryProcessSequential', () => {
         ], false));
 
         expect(mediatorContextPreprocess.mediate).toHaveBeenCalledWith({
-          context: new ActionContext()
-            .set(KeysInitQuery.queryFormat, { language: 'sparql', version: '1.1' }),
+          context: new ActionContext(),
         });
         expect(mediatorQueryParse.mediate).not.toHaveBeenCalled();
         expect(mediatorOptimizeQueryOperation.mediate).toHaveBeenCalledWith({
           operation: op,
-          context: new ActionContext()
-            .set(KeysInitQuery.queryFormat, { language: 'sparql', version: '1.1' }),
+          context: new ActionContext(),
         });
         expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
           operation: AF.createJoin([
             op,
           ], false),
           context: new ActionContext()
-            .set(KeysInitQuery.queryFormat, { language: 'sparql', version: '1.1' })
             .set(KeysInitQuery.query, AF.createJoin([
               op,
             ], false)),
@@ -131,45 +132,33 @@ describe('ActorQueryProcessSequential', () => {
       it('parses a query', async() => {
         const output = await actor.parse('query', ctx);
         expect(output.context).toEqual(new ActionContext()
-          .set(KeysInitQuery.queryString, 'query')
-          .set(KeysInitQuery.queryFormat, { language: 'sparql', version: '1.1' }));
+          .set(KeysInitQuery.queryString, 'query'));
         expect(output.operation).toEqual('PARSED');
 
         expect(mediatorContextPreprocess.mediate).toHaveBeenCalledWith({
-          context: new ActionContext()
-            .set(KeysInitQuery.queryFormat, { language: 'sparql', version: '1.1' }),
+          context: new ActionContext(),
         });
         expect(mediatorQueryParse.mediate).toHaveBeenCalledWith({
           context: new ActionContext()
-            .set(KeysInitQuery.queryString, 'query')
-            .set(KeysInitQuery.queryFormat, { language: 'sparql', version: '1.1' }),
+            .set(KeysInitQuery.queryString, 'query'),
           query: 'query',
-          queryFormat: { language: 'sparql', version: '1.1' },
           baseIRI: undefined,
         });
       });
 
       it('parses a query with query format', async() => {
-        const output = await actor.parse('query', ctx
-          .set(KeysInitQuery.queryFormat, { language: 'graphql', version: '1.1' }));
+        const output = await actor.parse('query', ctx);
         expect(output.context).toEqual(new ActionContext()
-          .set(KeysInitQuery.queryString, 'query')
-          .set(KeysInitQuery.queryFormat, { language: 'graphql', version: '1.1' })
-          .set(KeysInitQuery.graphqlSingularizeVariables, {}));
+          .set(KeysInitQuery.queryString, 'query'));
         expect(output.operation).toEqual('PARSED');
 
         expect(mediatorContextPreprocess.mediate).toHaveBeenCalledWith({
-          context: new ActionContext()
-            .set(KeysInitQuery.queryFormat, { language: 'graphql', version: '1.1' })
-            .set(KeysInitQuery.graphqlSingularizeVariables, {}),
+          context: new ActionContext(),
         });
         expect(mediatorQueryParse.mediate).toHaveBeenCalledWith({
           context: new ActionContext()
-            .set(KeysInitQuery.queryString, 'query')
-            .set(KeysInitQuery.queryFormat, { language: 'graphql', version: '1.1' })
-            .set(KeysInitQuery.graphqlSingularizeVariables, {}),
+            .set(KeysInitQuery.queryString, 'query'),
           query: 'query',
-          queryFormat: { language: 'graphql', version: '1.1' },
           baseIRI: undefined,
         });
       });
@@ -184,20 +173,16 @@ describe('ActorQueryProcessSequential', () => {
         const output = await actor.parse('query', ctx);
         expect(output.context).toEqual(new ActionContext()
           .set(KeysInitQuery.queryString, 'query')
-          .set(KeysInitQuery.queryFormat, { language: 'sparql', version: '1.1' })
           .set(KeysInitQuery.baseIRI, 'BASE'));
         expect(output.operation).toEqual('PARSED');
 
         expect(mediatorContextPreprocess.mediate).toHaveBeenCalledWith({
-          context: new ActionContext()
-            .set(KeysInitQuery.queryFormat, { language: 'sparql', version: '1.1' }),
+          context: new ActionContext(),
         });
         expect(mediatorQueryParse.mediate).toHaveBeenCalledWith({
           context: new ActionContext()
-            .set(KeysInitQuery.queryString, 'query')
-            .set(KeysInitQuery.queryFormat, { language: 'sparql', version: '1.1' }),
+            .set(KeysInitQuery.queryString, 'query'),
           query: 'query',
-          queryFormat: { language: 'sparql', version: '1.1' },
           baseIRI: undefined,
         });
       });
@@ -209,13 +194,11 @@ describe('ActorQueryProcessSequential', () => {
           DF.namedNode('o'),
         );
         const output = await actor.parse(op, ctx);
-        expect(output.context).toEqual(new ActionContext()
-          .set(KeysInitQuery.queryFormat, { language: 'sparql', version: '1.1' }));
+        expect(output.context).toEqual(new ActionContext());
         expect(output.operation).toEqual(op);
 
         expect(mediatorContextPreprocess.mediate).toHaveBeenCalledWith({
-          context: new ActionContext()
-            .set(KeysInitQuery.queryFormat, { language: 'sparql', version: '1.1' }),
+          context: new ActionContext(),
         });
         expect(mediatorQueryParse.mediate).not.toHaveBeenCalled();
       });
@@ -229,7 +212,6 @@ describe('ActorQueryProcessSequential', () => {
         const output = await actor.parse(op, ctx
           .set(KeysInitQuery.initialBindings, BF.fromRecord({ vo: DF.namedNode('o') })));
         expect(output.context).toEqual(new ActionContext()
-          .set(KeysInitQuery.queryFormat, { language: 'sparql', version: '1.1' })
           .set(KeysInitQuery.initialBindings, BF.fromRecord({ vo: DF.namedNode('o') })));
         expect(output.operation).toEqual(AF.createPattern(
           DF.namedNode('s'),
@@ -239,7 +221,6 @@ describe('ActorQueryProcessSequential', () => {
 
         expect(mediatorContextPreprocess.mediate).toHaveBeenCalledWith({
           context: new ActionContext()
-            .set(KeysInitQuery.queryFormat, { language: 'sparql', version: '1.1' })
             .set(KeysInitQuery.initialBindings, BF.fromRecord({ vo: DF.namedNode('o') })),
         });
         expect(mediatorQueryParse.mediate).not.toHaveBeenCalled();

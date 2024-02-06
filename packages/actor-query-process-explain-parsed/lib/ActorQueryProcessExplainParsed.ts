@@ -7,6 +7,7 @@ import {
 } from '@comunica/bus-query-process';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
+import { ActionContextKey } from '@comunica/core';
 
 /**
  * A comunica Explain Parsed Query Process Actor.
@@ -19,7 +20,8 @@ export class ActorQueryProcessExplainParsed extends ActorQueryProcess {
   }
 
   public async test(action: IActionQueryProcess): Promise<IActorTest> {
-    if (action.context.get(KeysInitQuery.explain) !== 'parsed') {
+    if ((action.context.get(KeysInitQuery.explain) ||
+      action.context.get(new ActionContextKey('explain'))) !== 'parsed') {
       throw new Error(`${this.name} can only explain in 'parsed' mode.`);
     }
     return true;

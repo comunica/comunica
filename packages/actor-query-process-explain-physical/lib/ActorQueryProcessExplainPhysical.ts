@@ -9,6 +9,7 @@ import {
 } from '@comunica/bus-query-process';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
+import { ActionContextKey } from '@comunica/core';
 import { MemoryPhysicalQueryPlanLogger } from './MemoryPhysicalQueryPlanLogger';
 
 /**
@@ -22,7 +23,8 @@ export class ActorQueryProcessExplainPhysical extends ActorQueryProcess {
   }
 
   public async test(action: IActionQueryProcess): Promise<IActorTest> {
-    if (action.context.get(KeysInitQuery.explain) !== 'physical') {
+    if ((action.context.get(KeysInitQuery.explain) ||
+      action.context.get(new ActionContextKey('explain'))) !== 'physical') {
       throw new Error(`${this.name} can only explain in 'physical' mode.`);
     }
     return true;

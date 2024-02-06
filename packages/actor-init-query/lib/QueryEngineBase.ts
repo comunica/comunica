@@ -1,5 +1,4 @@
 import type { IActionSparqlSerialize, IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
-import { KeysCore, KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type {
   IActionContext,
@@ -8,7 +7,7 @@ import type {
   QueryFormatType,
   QueryType, QueryExplainMode, BindingsStream,
   QueryAlgebraContext, QueryStringContext, IQueryBindingsEnhanced,
-  IQueryQuadsEnhanced, QueryEnhanced, IQueryContextCommon, FunctionArgumentsCache,
+  IQueryQuadsEnhanced, QueryEnhanced, IQueryContextCommon,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -23,11 +22,9 @@ export class QueryEngineBase<
   QueryAlgebraContextInner extends RDF.QueryAlgebraContext = QueryAlgebraContext>
 implements IQueryEngine<QueryContext, QueryStringContextInner, QueryAlgebraContextInner> {
   private readonly actorInitQuery: ActorInitQueryBase;
-  private readonly defaultFunctionArgumentsCache: FunctionArgumentsCache;
 
   public constructor(actorInitQuery: ActorInitQueryBase<QueryContext>) {
     this.actorInitQuery = actorInitQuery;
-    this.defaultFunctionArgumentsCache = {};
   }
 
   public async queryBindings<QueryFormatTypeInner extends QueryFormatType>(
@@ -117,24 +114,8 @@ implements IQueryEngine<QueryContext, QueryStringContextInner, QueryAlgebraConte
     query: QueryFormatTypeInner,
     context?: QueryFormatTypeInner extends string ? QueryStringContextInner : QueryAlgebraContextInner,
   ): Promise<QueryType | IQueryExplained> {
-    context = context || <any>{};
-
-    // Expand shortcuts
-    for (const key in context) {
-      if (this.actorInitQuery.contextKeyShortcuts[key]) {
-        context[this.actorInitQuery.contextKeyShortcuts[key]] = context[key];
-        delete context[key];
-      }
-    }
-
-    // Set default values in context
-    const actionContext: IActionContext = new ActionContext(context)
-      .setDefault(KeysInitQuery.queryTimestamp, new Date())
-      .setDefault(KeysQuerySourceIdentify.sourceIds, new Map())
-      .setDefault(KeysCore.log, this.actorInitQuery.logger)
-      .setDefault(KeysInitQuery.functionArgumentsCache, this.defaultFunctionArgumentsCache);
-
     // Invoke query process
+    const actionContext: IActionContext = ActionContext.ensureActionContext(context);
     const { result } = await this.actorInitQuery.mediatorQueryProcess.mediate({ query, context: actionContext });
     if ('explain' in result) {
       return result;
