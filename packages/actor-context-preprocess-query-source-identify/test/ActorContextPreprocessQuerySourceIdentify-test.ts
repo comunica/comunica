@@ -1,16 +1,24 @@
+import type { MediatorContextPreprocess } from '@comunica/bus-context-preprocess';
 import type { ActorHttpInvalidateListenable } from '@comunica/bus-http-invalidate';
 import type { IActionQuerySourceIdentify, MediatorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
-import { ActionContext, Bus } from '@comunica/core';
+import type { IAction } from '@comunica/core';
+import { ActionContext, ActionContextKey, Bus } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
 import { RdfStore } from 'rdf-stores';
 import { ActorContextPreprocessQuerySourceIdentify } from '../lib/ActorContextPreprocessQuerySourceIdentify';
 
 describe('ActorContextPreprocessQuerySourceIdentify', () => {
   let bus: any;
+  let mediatorContextPreprocess: MediatorContextPreprocess;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    mediatorContextPreprocess = <any> {
+      async mediate(action: IAction) {
+        return { context: action.context.set(new ActionContextKey('processed'), true) };
+      },
+    };
   });
 
   describe('An ActorContextPreprocessQuerySourceIdentify instance', () => {
@@ -34,6 +42,7 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
         cacheSize: 10,
         httpInvalidator,
         mediatorQuerySourceIdentify,
+        mediatorContextPreprocess,
       });
     });
 
@@ -169,7 +178,12 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
         const { context: contextOut } = await actor.run({ context: contextIn });
         expect(contextOut).not.toBe(contextIn);
         expect(contextOut.get(KeysQueryOperation.querySources)).toEqual([
-          { ofUnidentified: { value: 'source2', context: contextSource }},
+          {
+            ofUnidentified: {
+              value: 'source2',
+              context: contextSource.set(new ActionContextKey('processed'), true),
+            },
+          },
         ]);
       });
 
@@ -182,7 +196,12 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
         const { context: contextOut } = await actor.run({ context: contextIn });
         expect(contextOut).not.toBe(contextIn);
         expect(contextOut.get(KeysQueryOperation.querySources)).toEqual([
-          { ofUnidentified: { value: 'source2', context: new ActionContext(contextSource) }},
+          {
+            ofUnidentified: {
+              value: 'source2',
+              context: new ActionContext(contextSource).set(new ActionContextKey('processed'), true),
+            },
+          },
         ]);
       });
     });
@@ -209,6 +228,7 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
         cacheSize: 0,
         httpInvalidator,
         mediatorQuerySourceIdentify,
+        mediatorContextPreprocess,
       });
     });
 

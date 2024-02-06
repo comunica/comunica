@@ -34,7 +34,8 @@ After installing, this package can be added to your engine's configuration as fo
     {
       "@id": "urn:comunica:default:context-preprocess/actors#query-source-identify",
       "@type": "ActorContextPreprocessQuerySourceIdentify",
-      "mediatorQuerySourceIdentify": { "@id": "urn:comunica:default:query-source-identify/mediators#main" }
+      "mediatorQuerySourceIdentify": { "@id": "urn:comunica:default:query-source-identify/mediators#main" },
+      "mediatorContextPreprocess": { "@id": "urn:comunica:default:context-preprocess/mediators#main" }
     }
   ]
 }
@@ -45,3 +46,4 @@ After installing, this package can be added to your engine's configuration as fo
 * `cacheSize`: The maximum number of entries in the LRU cache, set to 0 to disable, defaults to 100.
 * `httpInvalidator`: An optional actor that listens to HTTP invalidation events.
 * `mediatorQuerySourceIdentify`: A mediator over the [Query Source Identify bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-source-identify).
+* `mediatorContextPreprocess`: A mediator over the [context preprocess bus](https://github.com/comunica/comunica/tree/master/packages/bus-context-preprocess).

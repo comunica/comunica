@@ -1,4 +1,5 @@
-import type { IActorContextPreprocessOutput, IActorContextPreprocessArgs } from '@comunica/bus-context-preprocess';
+import type { IActorContextPreprocessOutput, IActorContextPreprocessArgs,
+  MediatorContextPreprocess } from '@comunica/bus-context-preprocess';
 import { ActorContextPreprocess } from '@comunica/bus-context-preprocess';
 import type { ActorHttpInvalidateListenable, IActionHttpInvalidate } from '@comunica/bus-http-invalidate';
 import type { MediatorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
@@ -16,6 +17,7 @@ export class ActorContextPreprocessQuerySourceIdentify extends ActorContextPrepr
   public readonly cacheSize: number;
   public readonly httpInvalidator: ActorHttpInvalidateListenable;
   public readonly mediatorQuerySourceIdentify: MediatorQuerySourceIdentify;
+  public readonly mediatorContextPreprocess: MediatorContextPreprocess;
   public readonly cache?: LRUCache<string, Promise<IQuerySourceWrapper>>;
 
   public constructor(args: IActorContextPreprocessQuerySourceIdentifyArgs) {
@@ -40,8 +42,8 @@ export class ActorContextPreprocessQuerySourceIdentify extends ActorContextPrepr
     if (context.has(KeysInitQuery.querySourcesUnidentified)) {
       const querySourcesUnidentified: QuerySourceUnidentified[] = action.context
         .get(KeysInitQuery.querySourcesUnidentified)!;
-      const querySourcesUnidentifiedExpanded = querySourcesUnidentified
-        .map(querySource => this.expandSource(querySource));
+      const querySourcesUnidentifiedExpanded = await Promise.all(querySourcesUnidentified
+        .map(querySource => this.expandSource(querySource)));
       const querySources: IQuerySourceWrapper[] = await Promise.all(querySourcesUnidentifiedExpanded
         .map(async querySourceUnidentified => this.identifySource(querySourceUnidentified, action.context)));
       context = action.context
@@ -52,7 +54,7 @@ export class ActorContextPreprocessQuerySourceIdentify extends ActorContextPrepr
     return { context };
   }
 
-  public expandSource(querySource: QuerySourceUnidentified): QuerySourceUnidentifiedExpanded {
+  public async expandSource(querySource: QuerySourceUnidentified): Promise<QuerySourceUnidentifiedExpanded> {
     if (typeof querySource === 'string' || 'match' in querySource) {
       return { value: querySource };
     }
@@ -60,7 +62,9 @@ export class ActorContextPreprocessQuerySourceIdentify extends ActorContextPrepr
       ...<Omit<IQuerySourceUnidentifiedExpanded, 'context'>>querySource,
       ...querySource.context ?
         {
-          context: ActionContext.ensureActionContext(querySource.context),
+          context: (await this.mediatorContextPreprocess.mediate({
+            context: ActionContext.ensureActionContext(querySource.context),
+          })).context,
         } :
         {},
     };
@@ -111,4 +115,8 @@ export interface IActorContextPreprocessQuerySourceIdentifyArgs extends IActorCo
    * Mediator for identifying query sources.
    */
   mediatorQuerySourceIdentify: MediatorQuerySourceIdentify;
+  /**
+   * The context processing combinator
+   */
+  mediatorContextPreprocess: MediatorContextPreprocess;
 }
