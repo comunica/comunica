@@ -7,6 +7,7 @@ import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-a
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { ILink, MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
+import { KeysQuerySourceIdentify } from '@comunica/context-entries';
 import type {
   BindingsStream,
   FragmentSelectorShape,
@@ -22,11 +23,13 @@ import { Readable } from 'readable-stream';
 import type { Algebra } from 'sparqlalgebrajs';
 import type { ISourceState } from './LinkedRdfSourcesAsyncRdfIterator';
 import { MediatedLinkedRdfSourcesAsyncRdfIterator } from './MediatedLinkedRdfSourcesAsyncRdfIterator';
+import { StreamingStoreMetadata } from './StreamingStoreMetadata';
 
 export class QuerySourceHypermedia implements IQuerySource {
   public readonly referenceValue: string;
   public readonly firstUrl: string;
   public readonly forceSourceType?: string;
+  public readonly aggregateStore: boolean;
   public readonly mediators: IMediatorArgs;
   public readonly logWarning: (warningMessage: string) => void;
   public readonly bindingsFactory: BindingsFactory;
@@ -35,7 +38,6 @@ export class QuerySourceHypermedia implements IQuerySource {
    * A cache for source URLs to source states.
    */
   public sourcesState: LRUCache<string, Promise<ISourceState>>;
-  public aggregatedStore: IAggregatedStore | undefined;
 
   private readonly cacheSize: number;
   private readonly maxIterators: number;
@@ -45,7 +47,7 @@ export class QuerySourceHypermedia implements IQuerySource {
     firstUrl: string,
     forceSourceType: string | undefined,
     maxIterators: number,
-    aggregatedStore: IAggregatedStore | undefined,
+    aggregateStore: boolean,
     mediators: IMediatorArgs,
     logWarning: (warningMessage: string) => void,
     bindingsFactory: BindingsFactory,
@@ -55,15 +57,15 @@ export class QuerySourceHypermedia implements IQuerySource {
     this.firstUrl = firstUrl;
     this.forceSourceType = forceSourceType;
     this.maxIterators = maxIterators;
-    this.aggregatedStore = aggregatedStore;
     this.mediators = mediators;
+    this.aggregateStore = aggregateStore;
     this.logWarning = logWarning;
     this.bindingsFactory = bindingsFactory;
     this.sourcesState = new LRUCache<string, Promise<ISourceState>>({ max: this.cacheSize });
   }
 
   public async getSelectorShape(context: IActionContext): Promise<FragmentSelectorShape> {
-    const source = await this.getSourceCached({ url: this.firstUrl }, {}, context);
+    const source = await this.getSourceCached({ url: this.firstUrl }, {}, context, this.getAggregateStore(context));
     return source.source.getSelectorShape(context);
   }
 
@@ -73,13 +75,14 @@ export class QuerySourceHypermedia implements IQuerySource {
     options?: IQueryBindingsOptions,
   ): BindingsStream {
     // Optimized match with aggregated store if enabled and started.
-    if (this.aggregatedStore && this.aggregatedStore.started && operation.type === 'pattern') {
-      return new QuerySourceRdfJs(this.aggregatedStore, this.bindingsFactory).queryBindings(operation, context);
+    const aggregatedStore: IAggregatedStore | undefined = this.getAggregateStore(context);
+    if (aggregatedStore && operation.type === 'pattern' && aggregatedStore.started) {
+      return new QuerySourceRdfJs(aggregatedStore, this.bindingsFactory).queryBindings(operation, context);
     }
 
     // Initialize the sources state on first call
     if (this.sourcesState.size === 0) {
-      this.getSourceCached({ url: this.firstUrl }, {}, context)
+      this.getSourceCached({ url: this.firstUrl }, {}, context, aggregatedStore)
         .catch(error => it.destroy(error));
     }
 
@@ -91,14 +94,14 @@ export class QuerySourceHypermedia implements IQuerySource {
       this.forceSourceType,
       this.firstUrl,
       this.maxIterators,
-      (link, handledDatasets) => this.getSourceCached(link, handledDatasets, context),
-      this.aggregatedStore,
+      (link, handledDatasets) => this.getSourceCached(link, handledDatasets, context, aggregatedStore),
+      aggregatedStore,
       this.mediators.mediatorMetadataAccumulate,
       this.mediators.mediatorRdfResolveHypermediaLinks,
       this.mediators.mediatorRdfResolveHypermediaLinksQueue,
     );
-    if (this.aggregatedStore) {
-      this.aggregatedStore.started = true;
+    if (aggregatedStore) {
+      aggregatedStore.started = true;
     }
 
     return it;
@@ -106,18 +109,18 @@ export class QuerySourceHypermedia implements IQuerySource {
 
   public queryQuads(operation: Algebra.Construct, context: IActionContext): AsyncIterator<RDF.Quad> {
     return new TransformIterator(async() => {
-      const source = await this.getSourceCached({ url: this.firstUrl }, {}, context);
+      const source = await this.getSourceCached({ url: this.firstUrl }, {}, context, this.getAggregateStore(context));
       return source.source.queryQuads(operation, context);
     });
   }
 
   public async queryBoolean(operation: Algebra.Ask, context: IActionContext): Promise<boolean> {
-    const source = await this.getSourceCached({ url: this.firstUrl }, {}, context);
+    const source = await this.getSourceCached({ url: this.firstUrl }, {}, context, this.getAggregateStore(context));
     return await source.source.queryBoolean(operation, context);
   }
 
   public async queryVoid(operation: Algebra.Update, context: IActionContext): Promise<void> {
-    const source = await this.getSourceCached({ url: this.firstUrl }, {}, context);
+    const source = await this.getSourceCached({ url: this.firstUrl }, {}, context, this.getAggregateStore(context));
     return await source.source.queryVoid(operation, context);
   }
 
@@ -126,11 +129,13 @@ export class QuerySourceHypermedia implements IQuerySource {
    * @param link A source link.
    * @param handledDatasets A hash of dataset identifiers that have already been handled.
    * @param context The action context.
+   * @param aggregatedStore An optional aggregated store.
    */
   public async getSource(
     link: ILink,
     handledDatasets: Record<string, boolean>,
     context: IActionContext,
+    aggregatedStore: IAggregatedStore | undefined,
   ): Promise<ISourceState> {
     // Include context entries from link
     if (link.context) {
@@ -188,9 +193,9 @@ export class QuerySourceHypermedia implements IQuerySource {
     }
 
     // Aggregate all discovered quads into a store.
-    this.aggregatedStore?.setBaseMetadata(<MetadataBindings> metadata, false);
-    this.aggregatedStore?.containedSources.add(link.url);
-    this.aggregatedStore?.import(quads);
+    aggregatedStore?.setBaseMetadata(<MetadataBindings> metadata, false);
+    aggregatedStore?.containedSources.add(link.url);
+    aggregatedStore?.import(quads);
 
     // Determine the source
     const { source, dataset } = await this.mediators.mediatorQuerySourceIdentifyHypermedia.mediate({
@@ -218,21 +223,48 @@ export class QuerySourceHypermedia implements IQuerySource {
    * @param link A source ILink.
    * @param handledDatasets A hash of dataset identifiers that have already been handled.
    * @param context The action context.
+   * @param aggregatedStore An optional aggregated store.
    */
   protected getSourceCached(
     link: ILink,
     handledDatasets: Record<string, boolean>,
     context: IActionContext,
+    aggregatedStore: IAggregatedStore | undefined,
   ): Promise<ISourceState> {
     let source = this.sourcesState.get(link.url);
     if (source) {
       return source;
     }
-    source = this.getSource(link, handledDatasets, context);
-    if (link.url === this.firstUrl || this.aggregatedStore === undefined) {
+    source = this.getSource(link, handledDatasets, context, aggregatedStore);
+    if (link.url === this.firstUrl || aggregatedStore === undefined) {
       this.sourcesState.set(link.url, source);
     }
     return source;
+  }
+
+  public getAggregateStore(context: IActionContext): IAggregatedStore | undefined {
+    let aggregatedStore: IAggregatedStore | undefined;
+    if (this.aggregateStore) {
+      const aggregatedStores: Map<string, IAggregatedStore> | undefined = context
+        .get(KeysQuerySourceIdentify.hypermediaSourcesAggregatedStores);
+      if (aggregatedStores) {
+        aggregatedStore = aggregatedStores.get(this.firstUrl);
+        if (!aggregatedStore) {
+          aggregatedStore = new StreamingStoreMetadata(
+            undefined,
+            async(accumulatedMetadata, appendingMetadata) => <MetadataBindings>
+              (await this.mediators.mediatorMetadataAccumulate.mediate({
+                mode: 'append',
+                accumulatedMetadata,
+                appendingMetadata,
+                context,
+              })).metadata,
+          );
+          aggregatedStores.set(this.firstUrl, aggregatedStore);
+        }
+        return aggregatedStore;
+      }
+    }
   }
 
   public toString(): string {

@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/no-useless-undefined */
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorDereferenceRdf, IActionDereferenceRdf,
   IActorDereferenceRdfOutput } from '@comunica/bus-dereference-rdf';
@@ -5,7 +6,7 @@ import type { IActionQuerySourceIdentifyHypermedia } from '@comunica/bus-query-s
 import { KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
-import type { IActionContext, MetadataQuads, MetadataBindings } from '@comunica/types';
+import type { IActionContext, MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
@@ -18,7 +19,6 @@ import { Factory } from 'sparqlalgebrajs';
 import type { ISourceState } from '../lib/LinkedRdfSourcesAsyncRdfIterator';
 import { MediatedLinkedRdfSourcesAsyncRdfIterator } from '../lib/MediatedLinkedRdfSourcesAsyncRdfIterator';
 import { QuerySourceHypermedia } from '../lib/QuerySourceHypermedia';
-import { StreamingStoreMetadata } from '../lib/StreamingStoreMetadata';
 import { mediators as utilMediators } from './MediatorDereferenceRdf-util';
 import '@comunica/jest';
 
@@ -71,7 +71,7 @@ describe('QuerySourceHypermedia', () => {
     let source: QuerySourceHypermedia;
 
     beforeEach(() => {
-      source = new QuerySourceHypermedia(10, 'firstUrl', 'forcedType', 64, undefined, mediators, logWarning, BF);
+      source = new QuerySourceHypermedia(10, 'firstUrl', 'forcedType', 64, false, mediators, logWarning, BF);
     });
 
     describe('getSelectorShape', () => {
@@ -324,7 +324,7 @@ describe('QuerySourceHypermedia', () => {
             });
           },
         };
-        source = new QuerySourceHypermedia(10, 'firstUrl', 'forcedType', 64, undefined, mediatorsThis, logWarning, BF);
+        source = new QuerySourceHypermedia(10, 'firstUrl', 'forcedType', 64, false, mediatorsThis, logWarning, BF);
         await expect(source.queryBindings(operation, context)).toEqualBindingsStream([
           BF.fromRecord({
             s: DF.namedNode('s11'),
@@ -366,7 +366,7 @@ describe('QuerySourceHypermedia', () => {
             throw new Error(`mediatorQuerySourceIdentifyHypermedia error`);
           },
         };
-        source = new QuerySourceHypermedia(10, 'firstUrl', 'forcedType', 64, undefined, mediatorsThis, logWarning, BF);
+        source = new QuerySourceHypermedia(10, 'firstUrl', 'forcedType', 64, false, mediatorsThis, logWarning, BF);
 
         await expect(source.queryBindings(operation, context).toArray()).rejects.toThrowError(`mediatorQuerySourceIdentifyHypermedia error`);
       });
@@ -397,7 +397,7 @@ describe('QuerySourceHypermedia', () => {
 
     describe('getSource', () => {
       it('should get urls based on mediatorQuerySourceIdentifyHypermedia', async() => {
-        expect(await source.getSource({ url: 'startUrl' }, {}, context)).toMatchObject({
+        expect(await source.getSource({ url: 'startUrl' }, {}, context, undefined)).toMatchObject({
           link: { url: 'startUrl' },
           handledDatasets: { MYDATASET: true },
           metadata: { a: 1 },
@@ -412,8 +412,8 @@ describe('QuerySourceHypermedia', () => {
             source: { sourceContents: (await (<any> quads).toArray())[0].object.value },
           }),
         };
-        source = new QuerySourceHypermedia(10, 'firstUrl', 'forcedType', 64, undefined, mediatorsThis, logWarning, BF);
-        expect(await source.getSource({ url: 'startUrl' }, {}, context)).toEqual({
+        source = new QuerySourceHypermedia(10, 'firstUrl', 'forcedType', 64, false, mediatorsThis, logWarning, BF);
+        expect(await source.getSource({ url: 'startUrl' }, {}, context, undefined)).toEqual({
           link: { url: 'startUrl' },
           handledDatasets: {},
           metadata: { a: 1 },
@@ -424,7 +424,7 @@ describe('QuerySourceHypermedia', () => {
       it('should apply the link transformation', async() => {
         const transform = jest.fn(inputQuads => inputQuads
           .map((q: RDF.Quad) => DF.quad(q.subject, q.predicate, DF.literal(`TRANSFORMED(${q.object.value})`))));
-        expect(await source.getSource({ url: 'startUrl', transform }, {}, context)).toEqual({
+        expect(await source.getSource({ url: 'startUrl', transform }, {}, context, undefined)).toEqual({
           link: { url: 'startUrl', transform },
           handledDatasets: { MYDATASET: true },
           metadata: { a: 1 },
@@ -438,7 +438,12 @@ describe('QuerySourceHypermedia', () => {
         jest.spyOn(mediatorMetadata, 'mediate');
         jest.spyOn(mediatorMetadataExtract, 'mediate');
         jest.spyOn(mediatorQuerySourceIdentifyHypermedia, 'mediate');
-        expect(await source.getSource({ url: 'startUrl', context: new ActionContext({ a: 'b' }) }, {}, context))
+        expect(await source.getSource(
+          { url: 'startUrl', context: new ActionContext({ a: 'b' }) },
+          {},
+          context,
+          undefined,
+        ))
           .toEqual({
             link: { url: 'startUrl', context: new ActionContext({ a: 'b' }) },
             handledDatasets: { MYDATASET: true },
@@ -500,8 +505,8 @@ describe('QuerySourceHypermedia', () => {
             throw error;
           },
         };
-        source = new QuerySourceHypermedia(10, 'firstUrl', 'forcedType', 64, undefined, mediatorsThis, logWarning, BF);
-        const ret = await source.getSource({ url: 'startUrl' }, {}, context);
+        source = new QuerySourceHypermedia(10, 'firstUrl', 'forcedType', 64, false, mediatorsThis, logWarning, BF);
+        const ret = await source.getSource({ url: 'startUrl' }, {}, context, undefined);
         expect(ret).toEqual({
           link: { url: 'startUrl' },
           handledDatasets: { MYDATASET: true },
@@ -536,9 +541,9 @@ describe('QuerySourceHypermedia', () => {
               });
           }),
         };
-        source = new QuerySourceHypermedia(10, 'firstUrl', 'forcedType', 64, undefined, mediatorsThis, logWarning, BF);
+        source = new QuerySourceHypermedia(10, 'firstUrl', 'forcedType', 64, false, mediatorsThis, logWarning, BF);
 
-        await source.getSource({ url: 'startUrl' }, {}, context);
+        await source.getSource({ url: 'startUrl' }, {}, context, undefined);
         await new Promise(setImmediate);
       });
     });
@@ -546,20 +551,11 @@ describe('QuerySourceHypermedia', () => {
 
   describe('A QuerySourceHypermedia instance with aggregated store', () => {
     let source: QuerySourceHypermedia;
-    let aggregateStore: StreamingStoreMetadata;
 
     beforeEach(() => {
-      aggregateStore = new StreamingStoreMetadata(
-        undefined,
-        async(accumulatedMetadata, appendingMetadata) => <MetadataBindings>
-          (await mediators.mediatorMetadataAccumulate.mediate({
-            mode: 'append',
-            accumulatedMetadata,
-            appendingMetadata,
-            context,
-          })).metadata,
-      );
-      source = new QuerySourceHypermedia(10, 'firstUrl', 'forcedType', 64, aggregateStore, mediators, logWarning, BF);
+      source = new QuerySourceHypermedia(10, 'firstUrl', 'forcedType', 64, true, mediators, logWarning, BF);
+      const aggregateStores = new Map();
+      context = context.set(KeysQuerySourceIdentify.hypermediaSourcesAggregatedStores, aggregateStores);
     });
 
     describe('queryBindings', () => {
@@ -619,7 +615,7 @@ describe('QuerySourceHypermedia', () => {
           },
         };
         source = new QuerySourceHypermedia(
-          10, 'firstUrl', 'forcedType', 64, aggregateStore, mediatorsThis, logWarning, BF,
+          10, 'firstUrl', 'forcedType', 64, true, mediatorsThis, logWarning, BF,
         );
         const it1 = source.queryBindings(operation, context);
         const it2 = source.queryBindings(operation, context);
@@ -843,7 +839,7 @@ describe('QuerySourceHypermedia', () => {
           },
         };
         source = new QuerySourceHypermedia(
-          10, 'firstUrl', 'forcedType', 64, aggregateStore, mediatorsThis, logWarning, BF,
+          10, 'firstUrl', 'forcedType', 64, true, mediatorsThis, logWarning, BF,
         );
         const expected = [
           BF.fromRecord({
@@ -891,6 +887,110 @@ describe('QuerySourceHypermedia', () => {
         ]);
         expect(mediatorsThis.mediatorQuerySourceIdentifyHypermedia.mediate).toHaveBeenCalledTimes(3);
       });
+
+      it('should match three chained sources when queried multiple times in different query contexts', async() => {
+        let i = 0;
+        const mediatorsThis = { ...mediators };
+        mediatorsThis.mediatorRdfResolveHypermediaLinks = {
+          mediate: () => Promise.resolve({ links: i < 3 ? [{ url: `next${i}` }] : []}),
+        };
+        mediatorsThis.mediatorQuerySourceIdentifyHypermedia = {
+          mediate: jest.fn((args: any) => {
+            if (i < 3) {
+              i++;
+            }
+            return Promise.resolve({
+              dataset: `MYDATASET${i}`,
+              source: {
+                queryBindings() {
+                  const it = new ArrayIterator([
+                    BF.fromRecord({
+                      s: DF.namedNode(`s1${i}`),
+                      p: DF.namedNode(`p1${i}`),
+                      o: DF.namedNode(`o1${i}`),
+                    }),
+                    BF.fromRecord({
+                      s: DF.namedNode(`s2${i}`),
+                      p: DF.namedNode(`p2${i}`),
+                      o: DF.namedNode(`o2${i}`),
+                    }),
+                  ], { autoStart: false });
+                  it.setProperty('metadata', { firstMeta: true });
+                  return it;
+                },
+              },
+            });
+          }),
+        };
+        let j = 0;
+        mediatorsThis.mediatorDereferenceRdf = {
+          async mediate({ url }: IActionDereferenceRdf) {
+            if (j < 3) {
+              j++;
+            }
+            const data: IActorDereferenceRdfOutput = {
+              data: <any> new ArrayIterator<RDF.Quad>([
+                quad(`s1${j}`, `p1${j}`, `o1${j}`),
+                quad(`s2${j}`, `p2${j}`, `o2${j}`),
+              ], { autoStart: false }),
+              metadata: { triples: true },
+              exists: true,
+              requestTime: 0,
+              url,
+            };
+            // @ts-expect-error
+            data.data.setProperty('metadata', { firstMeta: true });
+            return data;
+          },
+        };
+        source = new QuerySourceHypermedia(
+          10, 'firstUrl', 'forcedType', 64, true, mediatorsThis, logWarning, BF,
+        );
+        const expected = [
+          BF.fromRecord({
+            s: DF.namedNode('s11'),
+            p: DF.namedNode('p11'),
+            o: DF.namedNode('o11'),
+          }),
+          BF.fromRecord({
+            s: DF.namedNode('s21'),
+            p: DF.namedNode('p21'),
+            o: DF.namedNode('o21'),
+          }),
+          BF.fromRecord({
+            s: DF.namedNode('s12'),
+            p: DF.namedNode('p12'),
+            o: DF.namedNode('o12'),
+          }),
+          BF.fromRecord({
+            s: DF.namedNode('s22'),
+            p: DF.namedNode('p22'),
+            o: DF.namedNode('o22'),
+          }),
+          BF.fromRecord({
+            s: DF.namedNode('s13'),
+            p: DF.namedNode('p13'),
+            o: DF.namedNode('o13'),
+          }),
+          BF.fromRecord({
+            s: DF.namedNode('s23'),
+            p: DF.namedNode('p23'),
+            o: DF.namedNode('o23'),
+          }),
+        ];
+        await expect(source.queryBindings(operation, new ActionContext({
+          [KeysInitQuery.query.name]: {},
+          [KeysQuerySourceIdentify.hypermediaSourcesAggregatedStores.name]: new Map(),
+        }))).toEqualBindingsStream(expected);
+        expect(mediatorsThis.mediatorQuerySourceIdentifyHypermedia.mediate).toHaveBeenCalledTimes(3);
+        i = 1;
+        j = 1;
+        await expect(source.queryBindings(operation, new ActionContext({
+          [KeysInitQuery.query.name]: {},
+          [KeysQuerySourceIdentify.hypermediaSourcesAggregatedStores.name]: new Map(),
+        }))).toEqualBindingsStream(expected);
+      });
     });
   });
 });
+/* eslint-enable unicorn/no-useless-undefined */

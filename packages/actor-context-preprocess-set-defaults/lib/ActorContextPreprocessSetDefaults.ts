@@ -29,7 +29,8 @@ export class ActorContextPreprocessSetDefaults extends ActorContextPreprocess {
       .setDefault(KeysInitQuery.queryTimestamp, new Date())
       .setDefault(KeysQuerySourceIdentify.sourceIds, new Map())
       .setDefault(KeysCore.log, this.logger)
-      .setDefault(KeysInitQuery.functionArgumentsCache, this.defaultFunctionArgumentsCache);
+      .setDefault(KeysInitQuery.functionArgumentsCache, this.defaultFunctionArgumentsCache)
+      .setDefault(KeysQuerySourceIdentify.hypermediaSourcesAggregatedStores, new Map());
 
     // Handle default query format
     let queryFormat: RDF.QueryFormat = { language: 'sparql', version: '1.1' };

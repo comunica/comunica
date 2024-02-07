@@ -3,6 +3,7 @@ import type { ILink,
   MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { ILinkQueue,
   MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
+import { KeysQueryOperation } from '@comunica/context-entries';
 import type { IActionContext, IAggregatedStore, IQueryBindingsOptions, MetadataBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -148,34 +149,34 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   }
 
   protected startIterator(startSource: ISourceState): void {
-    // TODO: re-enable if (this.aggregatedStore && !this.aggregatedStore.containedSources.has(startSource.link.url)) {
-    //   // A source that has been cached due to earlier query executions may not be part of the aggregated store yet.
-    //   // In that case, we add all quads from that source to the aggregated store.
-    //   this.aggregatedStore?.containedSources.add(startSource.link.url);
-    //   const stream = startSource.source.queryBindings(
-    //     AF.createPattern(
-    //       DF.variable('s'),
-    //       DF.variable('p'),
-    //       DF.variable('o'),
-    //       DF.variable('g'),
-    //     ),
-    //     this.context.set(KeysQueryOperation.unionDefaultGraph, true),
-    //   ).transform({
-    //     map: bindings => DF.quad(
-    //       bindings.get('s')!,
-    //       bindings.get('p')!,
-    //       bindings.get('o')!,
-    //       bindings.get('g'),
-    //     ),
-    //     autoStart: false,
-    //   });
-    //   this.aggregatedStore.import(<RDF.Stream> stream)
-    //     .on('end', () => {
-    //       super.startIterator(startSource);
-    //     });
-    // } else {
-    super.startIterator(startSource);
-    // }
+    if (this.aggregatedStore && !this.aggregatedStore.containedSources.has(startSource.link.url)) {
+      // A source that has been cached due to earlier query executions may not be part of the aggregated store yet.
+      // In that case, we add all quads from that source to the aggregated store.
+      this.aggregatedStore?.containedSources.add(startSource.link.url);
+      const stream = startSource.source.queryBindings(
+        AF.createPattern(
+          DF.variable('s'),
+          DF.variable('p'),
+          DF.variable('o'),
+          DF.variable('g'),
+        ),
+        this.context.set(KeysQueryOperation.unionDefaultGraph, true),
+      ).transform({
+        map: bindings => DF.quad(
+          bindings.get('s')!,
+          bindings.get('p')!,
+          bindings.get('o')!,
+          bindings.get('g'),
+        ),
+        autoStart: false,
+      });
+      this.aggregatedStore.import(<RDF.Stream> stream)
+        .on('end', () => {
+          super.startIterator(startSource);
+        });
+    } else {
+      super.startIterator(startSource);
+    }
   }
 
   public async accumulateMetadata(

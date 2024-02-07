@@ -10,12 +10,9 @@ import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-a
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
-import { KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IActorTest } from '@comunica/core';
-import type { IAggregatedStore, MetadataBindings } from '@comunica/types';
 import { QuerySourceHypermedia } from './QuerySourceHypermedia';
-import { StreamingStoreMetadata } from './StreamingStoreMetadata';
 
 /**
  * A comunica Hypermedia Query Source Identify Actor.
@@ -45,39 +42,14 @@ export class ActorQuerySourceIdentifyHypermedia extends ActorQuerySourceIdentify
   }
 
   public async run(action: IActionQuerySourceIdentify): Promise<IActorQuerySourceIdentifyOutput> {
-    const url = <string> action.querySourceUnidentified.value;
-
-    // Create an aggregate store if enabled
-    let aggregatedStore: IAggregatedStore | undefined;
-    if (this.aggregateStore) {
-      const aggregatedStores: Map<string, IAggregatedStore> | undefined = action.context
-        .get(KeysQuerySourceIdentify.hypermediaSourcesAggregatedStores);
-      if (aggregatedStores) {
-        aggregatedStore = aggregatedStores.get(url);
-        if (!aggregatedStore) {
-          aggregatedStore = new StreamingStoreMetadata(
-            undefined,
-            async(accumulatedMetadata, appendingMetadata) => <MetadataBindings>
-              (await this.mediatorMetadataAccumulate.mediate({
-                mode: 'append',
-                accumulatedMetadata,
-                appendingMetadata,
-                context: action.context,
-              })).metadata,
-          );
-          aggregatedStores.set(url, aggregatedStore);
-        }
-      }
-    }
-
     return {
       querySource: {
         source: new QuerySourceHypermedia(
           this.cacheSize,
-          url,
+          <string> action.querySourceUnidentified.value,
           action.querySourceUnidentified.type,
           this.maxIterators,
-          aggregatedStore,
+          this.aggregateStore,
           {
             mediatorMetadata: this.mediatorMetadata,
             mediatorMetadataExtract: this.mediatorMetadataExtract,
