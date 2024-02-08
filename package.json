@@ -36,7 +36,7 @@
     "karma-jasmine-html-reporter": "^2.0.0",
     "karma-sourcemap-loader": "^0.4.0",
     "karma-webpack": "^5.0.0",
-    "lerna": "^7.3.0",
+    "lerna": "^8.0.0",
     "lerna-script": "^1.4.0",
     "manual-git-changelog": "^1.0.2",
     "node-polyfill-webpack-plugin": "^3.0.0",
