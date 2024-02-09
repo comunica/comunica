@@ -1,6 +1,29 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v3.0.0"></a>
+## [v3.0.0](https://github.com/comunica/comunica/compare/v2.10.2...v3.0.0) - 2024-02-09
+
+### BREAKING CHANGES
+* [Rename sparqlee-specific package names](https://github.com/comunica/comunica/commit/8a035723e210d2d08fee279638151af0eeeb1fbe)
+  * `@comunica/actor-query-operation-filter-sparqlee` -> `@comunica/actor-query-operation-filter`
+  * `@comunica/actor-query-operation-orderby-sparqlee` -> `@comunica/actor-query-operation-orderby`
+* [Generalize sources to accept all query operations](https://github.com/comunica/comunica/commit/8fc4be58db42ceef7137462940b2b3a6585bef09)
+  * The `rdf-resolve-quad-pattern` bus has been removed in favor of the new `query-source-identify` bus. This bus enables identification of `IQuerySource`'s which can accept any kind of query operation, not just quad patterns like before.
+  * brTPF support is added.
+  * Bound joins are supported: pushing bindings into sources (FedX)
+  * Several context-preprocess actors are added due to this, which offer:
+    * Grouping operations into sources during federated querying (FedX)
+    * Pushing down filters into sources
+    * Skolemization of blank nodes
+* [Move sequential query process steps to separate bus and actor](https://github.com/comunica/comunica/commit/00bdcc09c5e7b90324141bfa4c10802d55ddb83a)
+* [Move context shortcut handling to preprocess actor](https://github.com/comunica/comunica/commit/98e0b678fe47ec4eecc54002240b01b05a7db43e)
+
+### Added
+* [Allow Bindings to have contexts](https://github.com/comunica/comunica/commit/aeaa306bb06caeea480be31229287b753e84600a)
+* [Add timeout for sparql endpoint count queries](https://github.com/comunica/comunica/commit/323ab493e9ee7cf7675228cfab5faf069e46304b)
+* [Process source contexts to support shortcuts](https://github.com/comunica/comunica/commit/4a475fbb3409552b7b6a02a53826851ebdb9ad55)
+
 <a name="v2.10.2"></a>
 ## [v2.10.2](https://github.com/comunica/comunica/compare/v2.10.1...v2.10.2) - 2024-01-09
 

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-source-identify-hypermedia-none",
-  "version": "1.0.0",
+  "version": "3.0.0",
   "description": "A none query-source-identify-hypermedia actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,10 +32,10 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/actor-query-source-identify-rdfjs": "^1.0.0",
-    "@comunica/bus-query-source-identify-hypermedia": "^1.0.0",
-    "@comunica/bus-merge-bindings-context": "^2.0.0",
-    "@comunica/bindings-factory": "^2.7.0",
+    "@comunica/actor-query-source-identify-rdfjs": "^3.0.0",
+    "@comunica/bindings-factory": "^3.0.0",
+    "@comunica/bus-merge-bindings-context": "^3.0.0",
+    "@comunica/bus-query-source-identify-hypermedia": "^3.0.0",
     "rdf-store-stream": "^2.0.0"
   },
   "scripts": {

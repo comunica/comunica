@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-init-sparql",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "Deprecated: A SPARQL query engine for querying over decentralized RDF knowledge graphs on the Web",
   "repository": {
     "type": "git",

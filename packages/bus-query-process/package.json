@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-query-process",
-  "version": "1.0.0",
+  "version": "3.0.0",
   "description": "A comunica bus for query-process events.",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -31,8 +31,8 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/core": "^2.8.0",
-    "@comunica/types": "^2.8.0",
+    "@comunica/core": "^3.0.0",
+    "@comunica/types": "^3.0.0",
     "sparqlalgebrajs": "^4.3.0"
   },
   "scripts": {

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/metadata",
-  "version": "2.10.0",
+  "version": "3.0.0",
   "description": "Metadata helpers for Comunica",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -33,7 +33,7 @@
     "bin/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/types": "^2.10.0",
+    "@comunica/types": "^3.0.0",
     "@rdfjs/types": "*",
     "asynciterator": "^3.8.1"
   },

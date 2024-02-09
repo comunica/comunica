@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-path-nps",
-  "version": "2.10.1",
+  "version": "3.0.0",
   "description": "A path-nps query-operation actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,9 +32,9 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/actor-abstract-path": "^2.10.1",
-    "@comunica/bus-query-operation": "^2.10.1",
-    "@comunica/types": "^2.10.0",
+    "@comunica/actor-abstract-path": "^3.0.0",
+    "@comunica/bus-query-operation": "^3.0.0",
+    "@comunica/types": "^3.0.0",
     "sparqlalgebrajs": "^4.3.3"
   },
   "scripts": {

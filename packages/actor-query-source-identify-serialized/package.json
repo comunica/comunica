@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-source-identify-serialized",
-  "version": "1.0.0",
+  "version": "3.0.0",
   "description": "A serialized query-source-identify actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -32,13 +32,13 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/core": "^2.8.0",
-    "@comunica/bus-query-source-identify": "^1.0.0",
-    "@comunica/bus-rdf-parse": "^2.8.0",
-    "@comunica/types": "^2.8.0",
+    "@comunica/bus-query-source-identify": "^3.0.0",
+    "@comunica/bus-rdf-parse": "^3.0.0",
+    "@comunica/core": "^3.0.0",
+    "@comunica/types": "^3.0.0",
     "@rdfjs/types": "*",
-    "readable-stream": "^4.2.0",
-    "rdf-store-stream": "^2.0.0"
+    "rdf-store-stream": "^2.0.0",
+    "readable-stream": "^4.2.0"
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
