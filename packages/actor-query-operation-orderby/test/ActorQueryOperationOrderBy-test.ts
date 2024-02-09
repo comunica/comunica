@@ -6,12 +6,12 @@ import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra } from 'sparqlalgebrajs';
-import { ActorQueryOperationOrderBySparqlee } from '../lib/ActorQueryOperationOrderBySparqlee';
+import { ActorQueryOperationOrderBy } from '../lib/ActorQueryOperationOrderBy';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
 
-describe('ActorQueryOperationOrderBySparqlee with mixed term types', () => {
+describe('ActorQueryOperationOrderBy with mixed term types', () => {
   let bus: any;
   let mediatorQueryOperation: any;
 
@@ -45,8 +45,8 @@ describe('ActorQueryOperationOrderBySparqlee with mixed term types', () => {
     };
   });
 
-  describe('An ActorQueryOperationOrderBySparqlee instance', () => {
-    let actor: ActorQueryOperationOrderBySparqlee;
+  describe('An ActorQueryOperationOrderBy instance', () => {
+    let actor: ActorQueryOperationOrderBy;
     let orderA: Algebra.TermExpression;
     let descOrderA: Algebra.OperatorExpression;
     let mediatorMergeBindingsContext: any;
@@ -56,7 +56,7 @@ describe('ActorQueryOperationOrderBySparqlee with mixed term types', () => {
           return {};
         },
       };
-      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor',
+      actor = new ActorQueryOperationOrderBy({ name: 'actor',
         bus,
         mediatorQueryOperation,
         mediatorMergeBindingsContext });
@@ -149,30 +149,30 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     };
   });
 
-  describe('The ActorQueryOperationOrderBySparqlee module', () => {
+  describe('The ActorQueryOperationOrderBy module', () => {
     it('should be a function', () => {
-      expect(ActorQueryOperationOrderBySparqlee).toBeInstanceOf(Function);
+      expect(ActorQueryOperationOrderBy).toBeInstanceOf(Function);
     });
 
-    it('should be a ActorQueryOperationOrderBySparqlee constructor', () => {
-      expect(new (<any> ActorQueryOperationOrderBySparqlee)({ name: 'actor',
+    it('should be a ActorQueryOperationOrderBy constructor', () => {
+      expect(new (<any> ActorQueryOperationOrderBy)({ name: 'actor',
         bus,
         mediatorQueryOperation }))
-        .toBeInstanceOf(<any> ActorQueryOperationOrderBySparqlee);
-      expect(new ActorQueryOperationOrderBySparqlee({ name: 'actor',
+        .toBeInstanceOf(<any> ActorQueryOperationOrderBy);
+      expect(new ActorQueryOperationOrderBy({ name: 'actor',
         bus,
         mediatorQueryOperation,
         mediatorMergeBindingsContext }))
         .toBeInstanceOf(ActorQueryOperation);
     });
 
-    it('should not be able to create new ActorQueryOperationOrderBySparqlee objects without \'new\'', () => {
-      expect(() => { (<any> ActorQueryOperationOrderBySparqlee)(); }).toThrow();
+    it('should not be able to create new ActorQueryOperationOrderBy objects without \'new\'', () => {
+      expect(() => { (<any> ActorQueryOperationOrderBy)(); }).toThrow();
     });
   });
 
-  describe('An ActorQueryOperationOrderBySparqlee instance', () => {
-    let actor: ActorQueryOperationOrderBySparqlee;
+  describe('An ActorQueryOperationOrderBy instance', () => {
+    let actor: ActorQueryOperationOrderBy;
     let orderA: Algebra.TermExpression;
     let orderB: Algebra.TermExpression;
     let descOrderA: Algebra.OperatorExpression;
@@ -185,7 +185,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
         },
       };
 
-      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor',
+      actor = new ActorQueryOperationOrderBy({ name: 'actor',
         bus,
         mediatorQueryOperation,
         mediatorMergeBindingsContext });
@@ -241,7 +241,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     });
 
     it('should run with a window', async() => {
-      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor',
+      actor = new ActorQueryOperationOrderBy({ name: 'actor',
         bus,
         mediatorQueryOperation,
         window: 1,
@@ -314,7 +314,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
   });
 });
 
-describe('ActorQueryOperationOrderBySparqlee with multiple comparators', () => {
+describe('ActorQueryOperationOrderBy with multiple comparators', () => {
   let bus: any;
   let mediatorQueryOperation: any;
 
@@ -344,8 +344,8 @@ describe('ActorQueryOperationOrderBySparqlee with multiple comparators', () => {
     };
   });
 
-  describe('An ActorQueryOperationOrderBySparqlee instance multiple comparators', () => {
-    let actor: ActorQueryOperationOrderBySparqlee;
+  describe('An ActorQueryOperationOrderBy instance multiple comparators', () => {
+    let actor: ActorQueryOperationOrderBy;
     let orderA: Algebra.TermExpression;
     let orderB: Algebra.TermExpression;
     let descOrderA: Algebra.OperatorExpression;
@@ -361,7 +361,7 @@ describe('ActorQueryOperationOrderBySparqlee with multiple comparators', () => {
         },
       };
 
-      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor',
+      actor = new ActorQueryOperationOrderBy({ name: 'actor',
         bus,
         mediatorQueryOperation,
         mediatorMergeBindingsContext });
@@ -522,7 +522,7 @@ describe('ActorQueryOperationOrderBySparqlee with multiple comparators', () => {
   });
 });
 
-describe('ActorQueryOperationOrderBySparqlee with integer type', () => {
+describe('ActorQueryOperationOrderBy with integer type', () => {
   let bus: any;
   let mediatorQueryOperation: any;
 
@@ -549,8 +549,8 @@ describe('ActorQueryOperationOrderBySparqlee with integer type', () => {
     };
   });
 
-  describe('An ActorQueryOperationOrderBySparqlee instance', () => {
-    let actor: ActorQueryOperationOrderBySparqlee;
+  describe('An ActorQueryOperationOrderBy instance', () => {
+    let actor: ActorQueryOperationOrderBy;
     let orderA: Algebra.TermExpression;
     let descOrderA: Algebra.OperatorExpression;
     let mediatorMergeBindingsContext: any;
@@ -562,7 +562,7 @@ describe('ActorQueryOperationOrderBySparqlee with integer type', () => {
         },
       };
 
-      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor',
+      actor = new ActorQueryOperationOrderBy({ name: 'actor',
         bus,
         mediatorQueryOperation,
         mediatorMergeBindingsContext });
@@ -613,7 +613,7 @@ describe('ActorQueryOperationOrderBySparqlee with integer type', () => {
   });
 });
 
-describe('ActorQueryOperationOrderBySparqlee with double type', () => {
+describe('ActorQueryOperationOrderBy with double type', () => {
   let bus: any;
   let mediatorQueryOperation: any;
 
@@ -640,8 +640,8 @@ describe('ActorQueryOperationOrderBySparqlee with double type', () => {
     };
   });
 
-  describe('An ActorQueryOperationOrderBySparqlee instance', () => {
-    let actor: ActorQueryOperationOrderBySparqlee;
+  describe('An ActorQueryOperationOrderBy instance', () => {
+    let actor: ActorQueryOperationOrderBy;
     let orderA: Algebra.TermExpression;
     let descOrderA: Algebra.OperatorExpression;
     let mediatorMergeBindingsContext: any;
@@ -653,7 +653,7 @@ describe('ActorQueryOperationOrderBySparqlee with double type', () => {
         },
       };
 
-      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor',
+      actor = new ActorQueryOperationOrderBy({ name: 'actor',
         bus,
         mediatorQueryOperation,
         mediatorMergeBindingsContext });
@@ -704,7 +704,7 @@ describe('ActorQueryOperationOrderBySparqlee with double type', () => {
   });
 });
 
-describe('ActorQueryOperationOrderBySparqlee with decimal type', () => {
+describe('ActorQueryOperationOrderBy with decimal type', () => {
   let bus: any;
   let mediatorQueryOperation: any;
 
@@ -731,8 +731,8 @@ describe('ActorQueryOperationOrderBySparqlee with decimal type', () => {
     };
   });
 
-  describe('An ActorQueryOperationOrderBySparqlee instance', () => {
-    let actor: ActorQueryOperationOrderBySparqlee;
+  describe('An ActorQueryOperationOrderBy instance', () => {
+    let actor: ActorQueryOperationOrderBy;
     let orderA: Algebra.TermExpression;
     let descOrderA: Algebra.OperatorExpression;
     let mediatorMergeBindingsContext: any;
@@ -744,7 +744,7 @@ describe('ActorQueryOperationOrderBySparqlee with decimal type', () => {
         },
       };
 
-      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor',
+      actor = new ActorQueryOperationOrderBy({ name: 'actor',
         bus,
         mediatorQueryOperation,
         mediatorMergeBindingsContext });
@@ -795,7 +795,7 @@ describe('ActorQueryOperationOrderBySparqlee with decimal type', () => {
   });
 });
 
-describe('ActorQueryOperationOrderBySparqlee with float type', () => {
+describe('ActorQueryOperationOrderBy with float type', () => {
   let bus: any;
   let mediatorQueryOperation: any;
 
@@ -822,8 +822,8 @@ describe('ActorQueryOperationOrderBySparqlee with float type', () => {
     };
   });
 
-  describe('An ActorQueryOperationOrderBySparqlee instance', () => {
-    let actor: ActorQueryOperationOrderBySparqlee;
+  describe('An ActorQueryOperationOrderBy instance', () => {
+    let actor: ActorQueryOperationOrderBy;
     let orderA: Algebra.TermExpression;
     let descOrderA: Algebra.OperatorExpression;
     let mediatorMergeBindingsContext: any;
@@ -835,7 +835,7 @@ describe('ActorQueryOperationOrderBySparqlee with float type', () => {
         },
       };
 
-      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor',
+      actor = new ActorQueryOperationOrderBy({ name: 'actor',
         bus,
         mediatorQueryOperation,
         mediatorMergeBindingsContext });
@@ -886,7 +886,7 @@ describe('ActorQueryOperationOrderBySparqlee with float type', () => {
   });
 });
 
-describe('ActorQueryOperationOrderBySparqlee with mixed literal types', () => {
+describe('ActorQueryOperationOrderBy with mixed literal types', () => {
   let bus: any;
   let mediatorQueryOperation: any;
 
@@ -913,8 +913,8 @@ describe('ActorQueryOperationOrderBySparqlee with mixed literal types', () => {
     };
   });
 
-  describe('An ActorQueryOperationOrderBySparqlee instance', () => {
-    let actor: ActorQueryOperationOrderBySparqlee;
+  describe('An ActorQueryOperationOrderBy instance', () => {
+    let actor: ActorQueryOperationOrderBy;
     let orderA: Algebra.TermExpression;
     let descOrderA: Algebra.OperatorExpression;
     let mediatorMergeBindingsContext: any;
@@ -926,7 +926,7 @@ describe('ActorQueryOperationOrderBySparqlee with mixed literal types', () => {
         },
       };
 
-      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor',
+      actor = new ActorQueryOperationOrderBy({ name: 'actor',
         bus,
         mediatorQueryOperation,
         mediatorMergeBindingsContext });
@@ -977,7 +977,7 @@ describe('ActorQueryOperationOrderBySparqlee with mixed literal types', () => {
   });
 });
 
-describe('Another ActorQueryOperationOrderBySparqlee with mixed types', () => {
+describe('Another ActorQueryOperationOrderBy with mixed types', () => {
   let bus: any;
   let mediatorQueryOperation: any;
 
@@ -1004,8 +1004,8 @@ describe('Another ActorQueryOperationOrderBySparqlee with mixed types', () => {
     };
   });
 
-  describe('An ActorQueryOperationOrderBySparqlee instance', () => {
-    let actor: ActorQueryOperationOrderBySparqlee;
+  describe('An ActorQueryOperationOrderBy instance', () => {
+    let actor: ActorQueryOperationOrderBy;
     let orderA: Algebra.TermExpression;
     let descOrderA: Algebra.OperatorExpression;
     let mediatorMergeBindingsContext: any;
@@ -1017,7 +1017,7 @@ describe('Another ActorQueryOperationOrderBySparqlee with mixed types', () => {
         },
       };
 
-      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor',
+      actor = new ActorQueryOperationOrderBy({ name: 'actor',
         bus,
         mediatorQueryOperation,
         mediatorMergeBindingsContext });

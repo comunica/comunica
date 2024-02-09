@@ -13,7 +13,7 @@ import type { Algebra } from 'sparqlalgebrajs';
 /**
  * A comunica Filter Sparqlee Query Operation Actor.
  */
-export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedMediated<Algebra.Filter> {
+export class ActorQueryOperationFilter extends ActorQueryOperationTypedMediated<Algebra.Filter> {
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   public constructor(args: IActorQueryOperationFilterSparqleeArgs) {

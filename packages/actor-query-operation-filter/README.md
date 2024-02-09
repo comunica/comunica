@@ -1,6 +1,6 @@
 # Comunica Filter Sparqlee Query Operation Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-query-operation-filter-sparqlee.svg)](https://www.npmjs.com/package/@comunica/actor-query-operation-filter-sparqlee)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-query-operation-filter.svg)](https://www.npmjs.com/package/@comunica/actor-query-operation-filter)
 
 A [Query Operation](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation) actor that handles [SPARQL `FILTER`](https://www.w3.org/TR/sparql11-query/#evaluation) operations.
 
@@ -12,7 +12,7 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/actor-query-operation-filter-sparqlee
+$ yarn add @comunica/actor-query-operation-filter
 ```
 
 ## Configure
@@ -22,13 +22,13 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-filter-sparqlee/^2.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-filter/^2.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
       "@id": "urn:comunica:default:query-operation/actors#filter",
-      "@type": "ActorQueryOperationFilterSparqlee",
+      "@type": "ActorQueryOperationFilter",
       "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
       "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" }
     }

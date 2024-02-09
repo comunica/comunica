@@ -1,14 +1,14 @@
 {
-  "name": "@comunica/actor-query-operation-filter-sparqlee",
+  "name": "@comunica/actor-query-operation-filter",
   "version": "2.10.1",
-  "description": "A filter-sparqlee query-operation actor",
+  "description": "A filter query-operation actor",
   "lsd:module": true,
   "main": "lib/index.js",
   "typings": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-query-operation-filter-sparqlee"
+    "directory": "packages/actor-query-operation-filter"
   },
   "publishConfig": {
     "access": "public"

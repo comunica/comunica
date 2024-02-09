@@ -14,7 +14,7 @@ import { SortIterator } from './SortIterator';
 /**
  * A comunica OrderBy Sparqlee Query Operation Actor.
  */
-export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTypedMediated<Algebra.OrderBy> {
+export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated<Algebra.OrderBy> {
   private readonly window: number;
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 

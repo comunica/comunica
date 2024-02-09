@@ -9,7 +9,7 @@ import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory, translate } from 'sparqlalgebrajs';
-import { ActorQueryOperationFilterSparqlee } from '../lib';
+import { ActorQueryOperationFilter } from '../lib';
 import '@comunica/jest';
 
 const DF = new DataFactory();
@@ -32,7 +32,7 @@ function parse(query: string): Algebra.Expression {
   return sparqlQuery.input.expression;
 }
 
-describe('ActorQueryOperationFilterSparqlee', () => {
+describe('ActorQueryOperationFilter', () => {
   let bus: any;
   let mediatorQueryOperation: any;
   const simpleSPOInput = new Factory().createBgp([ new Factory().createPattern(
@@ -65,25 +65,25 @@ describe('ActorQueryOperationFilterSparqlee', () => {
     };
   });
 
-  describe('The ActorQueryOperationFilterSparqlee module', () => {
+  describe('The ActorQueryOperationFilter module', () => {
     it('should be a function', () => {
-      expect(ActorQueryOperationFilterSparqlee).toBeInstanceOf(Function);
+      expect(ActorQueryOperationFilter).toBeInstanceOf(Function);
     });
 
-    it('should be a ActorQueryOperationFilterSparqlee constructor', () => {
-      expect(new (<any> ActorQueryOperationFilterSparqlee)({ name: 'actor', bus, mediatorQueryOperation }))
-        .toBeInstanceOf(ActorQueryOperationFilterSparqlee);
-      expect(new (<any> ActorQueryOperationFilterSparqlee)({ name: 'actor', bus, mediatorQueryOperation }))
+    it('should be a ActorQueryOperationFilter constructor', () => {
+      expect(new (<any> ActorQueryOperationFilter)({ name: 'actor', bus, mediatorQueryOperation }))
+        .toBeInstanceOf(ActorQueryOperationFilter);
+      expect(new (<any> ActorQueryOperationFilter)({ name: 'actor', bus, mediatorQueryOperation }))
         .toBeInstanceOf(ActorQueryOperation);
     });
 
-    it('should not be able to create new ActorQueryOperationFilterSparqlee objects without \'new\'', () => {
-      expect(() => { (<any> ActorQueryOperationFilterSparqlee)(); }).toThrow();
+    it('should not be able to create new ActorQueryOperationFilter objects without \'new\'', () => {
+      expect(() => { (<any> ActorQueryOperationFilter)(); }).toThrow();
     });
   });
 
-  describe('An ActorQueryOperationFilterSparqlee instance', () => {
-    let actor: ActorQueryOperationFilterSparqlee;
+  describe('An ActorQueryOperationFilter instance', () => {
+    let actor: ActorQueryOperationFilter;
     let factory: Factory;
     let mediatorMergeBindingsContext: any;
 
@@ -94,7 +94,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
         },
       };
 
-      actor = new ActorQueryOperationFilterSparqlee({ name: 'actor',
+      actor = new ActorQueryOperationFilter({ name: 'actor',
         bus,
         mediatorQueryOperation,
         mediatorMergeBindingsContext });
