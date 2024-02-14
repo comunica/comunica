@@ -8,6 +8,7 @@ import { Mediator } from '@comunica/core';
  */
 export class MediatorCombineUnion<A extends Actor<I, T, O>, I extends IAction, T extends IActorTest,
   O extends IActorOutput> extends Mediator<A, I, T, O> implements IMediatorCombineUnionArgs<A, I, T, O> {
+  public readonly filterErrors: boolean | undefined;
   public readonly field: string;
   public readonly combiner: (results: O[]) => O;
 
@@ -22,6 +23,19 @@ export class MediatorCombineUnion<A extends Actor<I, T, O>, I extends IAction, T
       testResults = this.publish(action);
     } catch {
       testResults = [];
+    }
+
+    if (this.filterErrors) {
+      const _testResults: IActorReply<A, I, T, O>[] = [];
+      for (const result of testResults) {
+        try {
+          await result.reply;
+          _testResults.push(result);
+        } catch {
+          // Ignore errors
+        }
+      }
+      testResults = _testResults;
     }
 
     // Delegate test errors.
@@ -54,6 +68,10 @@ export class MediatorCombineUnion<A extends Actor<I, T, O>, I extends IAction, T
 
 export interface IMediatorCombineUnionArgs<A extends Actor<I, T, O>, I extends IAction, T extends IActorTest,
   O extends IActorOutput> extends IMediatorArgs<A, I, T, O> {
+  /**
+   * If actors that throw test errors should be ignored
+   */
+  filterErrors?: boolean;
   /**
    * The field name of the test result field over which must be mediated.
    */

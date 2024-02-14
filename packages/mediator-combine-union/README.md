@@ -43,4 +43,5 @@ After installing, this mediator can be instantiated as follows:
 
 * `bus`: Identifier of the bus to mediate over.
 * `field`: The field name to mediate over.
+* `filterErrors`: Optional flag to indicate if actors that throw test errors should be filtered out of the pipeline, defaults to false.
 

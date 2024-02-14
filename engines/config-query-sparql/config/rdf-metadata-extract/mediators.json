@@ -6,5 +6,6 @@
   "@id": "urn:comunica:default:rdf-metadata-extract/mediators#main",
   "@type": "MediatorCombineUnion",
   "bus": { "@id": "ActorRdfMetadataExtract:_default_bus" },
-  "field": "metadata"
+  "field": "metadata",
+  "filterErrors": true
 }
