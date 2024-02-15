@@ -114,7 +114,8 @@ describe('ActorQueryProcessSequential', () => {
         expect(mediatorQueryParse.mediate).not.toHaveBeenCalled();
         expect(mediatorOptimizeQueryOperation.mediate).toHaveBeenCalledWith({
           operation: op,
-          context: new ActionContext(),
+          context: new ActionContext()
+            .set(KeysInitQuery.query, op),
         });
         expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
           operation: AF.createJoin([
@@ -246,7 +247,8 @@ describe('ActorQueryProcessSequential', () => {
 
         expect(mediatorOptimizeQueryOperation.mediate).toHaveBeenCalledWith({
           operation: op,
-          context: new ActionContext(),
+          context: new ActionContext()
+            .set(KeysInitQuery.query, op),
         });
       });
     });

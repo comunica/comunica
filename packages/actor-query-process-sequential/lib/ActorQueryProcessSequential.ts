@@ -92,6 +92,9 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
   }
 
   public async optimize(operation: Algebra.Operation, context: IActionContext): Promise<IQueryProcessSequentialOutput> {
+    // Save initial query in context
+    context = context.set(KeysInitQuery.query, operation);
+
     ({ operation, context } = await this.mediatorOptimizeQueryOperation.mediate({ context, operation }));
 
     // Save original query in context
