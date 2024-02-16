@@ -45,6 +45,17 @@ export interface IAggregatedStore<Q extends RDF.BaseQuad = RDF.Quad, S extends R
    */
   setBaseMetadata: (metadata: MetadataBindings, updateStates: boolean) => void;
 
+  /**
+   * Register a listener that will be invoked when a new iterator is returned from match().
+   * @param listener A listener.
+   */
+  addIteratorCreatedListener: (listener: () => void) => void;
+  /**
+   * Remove the given iterator creation listener.
+   * @param listener A listener.
+   */
+  removeIteratorCreatedListener: (listener: () => void) => void;
+
   match: (
     subject?: RDF.Term | null,
     predicate?: RDF.Term | null,

@@ -618,6 +618,7 @@ describe('QuerySourceHypermedia', () => {
           10, 'firstUrl', 'forcedType', 64, true, mediatorsThis, logWarning, BF,
         );
         const it1 = source.queryBindings(operation, context);
+        const spy = jest.spyOn((<any> it1), 'kickstart');
         const it2 = source.queryBindings(operation, context);
         const it3 = source.queryBindings(
           AF.createPattern(DF.namedNode('s11'), DF.variable('p'), DF.variable('o')),
@@ -781,6 +782,8 @@ describe('QuerySourceHypermedia', () => {
           canContainUndefs: false,
           variables: [ DF.variable('p'), DF.variable('o') ],
         });
+
+        expect(spy).toHaveBeenCalledTimes(2);
       });
 
       it('should match three chained sources when queried multiple times', async() => {

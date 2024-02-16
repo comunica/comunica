@@ -17,7 +17,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
   private readonly maxIterators: number;
   private readonly sourceStateGetter: SourceStateGetter;
 
-  private started = false;
+  protected started = false;
   private readonly currentIterators: AsyncIterator<RDF.Bindings>[] = [];
   private iteratorsPendingCreation = 0;
   private iteratorsPendingTermination = 0;
@@ -47,6 +47,15 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
 
     if (this.maxIterators <= 0) {
       throw new Error(`LinkedRdfSourcesAsyncRdfIterator.maxIterators must be larger than zero, but got ${this.maxIterators}`);
+    }
+  }
+
+  /**
+   * Start filling the buffer of this iterator.
+   */
+  public kickstart(): void {
+    if (!this.started) {
+      this._fillBufferAsync();
     }
   }
 

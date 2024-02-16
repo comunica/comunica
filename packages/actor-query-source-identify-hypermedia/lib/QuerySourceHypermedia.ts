@@ -102,6 +102,12 @@ export class QuerySourceHypermedia implements IQuerySource {
     );
     if (aggregatedStore) {
       aggregatedStore.started = true;
+
+      // Kickstart this iterator when derived iterators are created from the aggregatedStore,
+      // otherwise the traversal process will not start if this iterator is not the first one to be consumed.
+      const listener = (): void => it.kickstart();
+      aggregatedStore.addIteratorCreatedListener(listener);
+      it.on('end', () => aggregatedStore.removeIteratorCreatedListener(listener));
     }
 
     return it;

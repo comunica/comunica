@@ -14,6 +14,7 @@ export class StreamingStoreMetadata extends StreamingStore implements IAggregate
   public started = false;
   public containedSources = new Set<string>();
   public readonly runningIterators: Set<AsyncIterator<RDF.Quad>> = new Set<AsyncIterator<RDF.Quad>>();
+  protected readonly iteratorCreatedListeners: Set<() => void> = new Set();
   protected readonly metadataAccumulator:
   (accumulatedMetadata: MetadataBindings, appendingMetadata: MetadataBindings) => Promise<MetadataBindings>;
 
@@ -84,6 +85,11 @@ export class StreamingStoreMetadata extends StreamingStore implements IAggregate
     // Store all running iterators until they close or are destroyed
     this.runningIterators.add(iterator);
 
+    // Invoke creation listeners
+    for (const listener of this.iteratorCreatedListeners) {
+      listener();
+    }
+
     return iterator;
   }
 
@@ -123,5 +129,13 @@ export class StreamingStoreMetadata extends StreamingStore implements IAggregate
       .catch(() => {
         // Void errors
       });
+  }
+
+  public addIteratorCreatedListener(listener: () => void): void {
+    this.iteratorCreatedListeners.add(listener);
+  }
+
+  public removeIteratorCreatedListener(listener: () => void): void {
+    this.iteratorCreatedListeners.delete(listener);
   }
 }
