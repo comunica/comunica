@@ -20,6 +20,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
   private started = false;
   private readonly currentIterators: AsyncIterator<RDF.Bindings>[] = [];
   private iteratorsPendingCreation = 0;
+  private iteratorsPendingTermination = 0;
   // eslint-disable-next-line unicorn/no-useless-undefined
   private accumulatedMetadata: Promise<MetadataBindings | undefined> = Promise.resolve(undefined);
   private preflightMetadata: Promise<MetadataBindings> | undefined;
@@ -145,11 +146,12 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
   }
 
   protected canStartNewIterator(): boolean {
-    return (this.currentIterators.length + this.iteratorsPendingCreation) < this.maxIterators && !this.readable;
+    return (this.currentIterators.length + this.iteratorsPendingCreation + this.iteratorsPendingTermination) <
+      this.maxIterators && !this.readable;
   }
 
   protected areIteratorsRunning(): boolean {
-    return (this.currentIterators.length + this.iteratorsPendingCreation) > 0;
+    return (this.currentIterators.length + this.iteratorsPendingCreation + this.iteratorsPendingTermination) > 0;
   }
 
   /**
@@ -173,6 +175,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
     try {
       const iterator = startSource.source.queryBindings(this.operation, this.context, this.queryBindingsOptions);
       this.currentIterators.push(iterator);
+      let receivedEndEvent = false;
       let receivedMetadata = false;
 
       // Attach readers to the newly created iterator
@@ -182,6 +185,13 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
       iterator.on('readable', () => this._fillBuffer());
       iterator.on('end', () => {
         this.currentIterators.splice(this.currentIterators.indexOf(iterator), 1);
+
+        // Indicate that this iterator still needs to flush its next-links.
+        // Without this, the linked iterator could sometimes be closed before next-links are obtained.
+        receivedEndEvent = true;
+        if (!receivedMetadata) {
+          this.iteratorsPendingTermination++;
+        }
 
         // If the metadata was already received, handle the next URL in the queue
         if (receivedMetadata) {
@@ -230,6 +240,10 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
                   }
 
                   receivedMetadata = true;
+                  if (receivedEndEvent) {
+                    this.iteratorsPendingTermination--;
+                  }
+
                   this.startIteratorsForNextUrls(startSource.handledDatasets, true);
                 }).catch(error => this.destroy(error));
 

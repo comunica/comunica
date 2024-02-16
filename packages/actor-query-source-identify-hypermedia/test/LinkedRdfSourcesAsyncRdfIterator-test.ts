@@ -334,7 +334,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
           [ 'g', 'h', '3' ],
         ],
       ]).flat());
-      expect((<any> it).startIteratorsForNextUrls).toHaveBeenCalledTimes(8);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenCalledTimes(11);
       expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(1, { first: true }, false);
       expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(2, { first: true }, true);
       expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(3, { first: true }, false);
