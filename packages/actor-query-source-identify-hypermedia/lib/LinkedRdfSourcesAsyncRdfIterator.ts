@@ -304,14 +304,14 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
         }
 
         // Close, only if no other iterators are still running
-        if (canClose && this.isCloseable(linkQueue)) {
+        if (canClose && this.isCloseable(linkQueue, true)) {
           this.close();
         }
       })
       .catch(error => this.destroy(error));
   }
 
-  protected isCloseable(linkQueue: ILinkQueue): boolean {
+  protected isCloseable(linkQueue: ILinkQueue, requireQueueEmpty: boolean): boolean {
     return linkQueue.isEmpty() && !this.areIteratorsRunning();
   }
 }

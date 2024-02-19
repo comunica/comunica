@@ -77,7 +77,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
 
     this.getLinkQueue()
       .then(linkQueue => {
-        if (this.isCloseable(linkQueue)) {
+        if (this.isCloseable(linkQueue, false)) {
           this.aggregatedStore?.end();
           super.close();
         } else {
@@ -95,7 +95,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
 
     this.getLinkQueue()
       .then(linkQueue => {
-        if (cause || this.isCloseable(linkQueue)) {
+        if (cause || this.isCloseable(linkQueue, false)) {
           this.aggregatedStore?.end();
           super.destroy(cause);
         } else {
@@ -105,8 +105,9 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
       .catch(error => super.destroy(error));
   }
 
-  protected isCloseable(linkQueue: ILinkQueue): boolean {
-    return (this.wasForcefullyClosed || linkQueue.isEmpty()) && !this.areIteratorsRunning();
+  protected isCloseable(linkQueue: ILinkQueue, requireQueueEmpty: boolean): boolean {
+    return (requireQueueEmpty ? linkQueue.isEmpty() : this.wasForcefullyClosed || linkQueue.isEmpty()) &&
+      !this.areIteratorsRunning();
   }
 
   protected override canStartNewIterator(): boolean {
