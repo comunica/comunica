@@ -45,7 +45,7 @@ After installing, this package can be added to your engine's configuration as fo
 
 * `cacheSize`: The maximum number of entries in the LRU cache, set to 0 to disable, defaults to 100.
 * `maxIterators`: The maximum number of links that can be followed in parallel, defaults to 64.
-* `aggregateStore`: If all discovered quads across all links from a seed source should be indexed in an aggregated store, to speed up later calls. This should only be used for sources without filter factor. Defaults to false.
+* `aggregateTraversalStore`: If all discovered quads across all links from a traversal source should be indexed in an aggregated store, to speed up later calls. This only applies to sources annotated with KeysQuerySourceIdentify.traverse. Defaults to true.
 * `httpInvalidator`: An optional actor that listens to HTTP invalidation events.
 * `mediatorDereferenceRdf`: A mediator over the [RDF Dereference bus](https://github.com/comunica/comunica/tree/master/packages/bus-dereference-rdf).
 * `mediatorMetadata`: A mediator over the [RDF Metadata bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata).

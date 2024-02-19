@@ -10,6 +10,7 @@ import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-a
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
+import { KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IActorTest } from '@comunica/core';
 import { QuerySourceHypermedia } from './QuerySourceHypermedia';
@@ -28,7 +29,7 @@ export class ActorQuerySourceIdentifyHypermedia extends ActorQuerySourceIdentify
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
   public readonly cacheSize: number;
   public readonly maxIterators: number;
-  public readonly aggregateStore: boolean;
+  public readonly aggregateTraversalStore: boolean;
 
   public constructor(args: IActorQuerySourceIdentifyHypermediaArgs) {
     super(args);
@@ -49,7 +50,8 @@ export class ActorQuerySourceIdentifyHypermedia extends ActorQuerySourceIdentify
           <string> action.querySourceUnidentified.value,
           action.querySourceUnidentified.type,
           this.maxIterators,
-          this.aggregateStore,
+          this.aggregateTraversalStore &&
+          Boolean(action.querySourceUnidentified.context?.get(KeysQuerySourceIdentify.traverse)),
           {
             mediatorMetadata: this.mediatorMetadata,
             mediatorMetadataExtract: this.mediatorMetadataExtract,
@@ -81,12 +83,12 @@ export interface IActorQuerySourceIdentifyHypermediaArgs extends IActorQuerySour
    */
   maxIterators: number;
   /**
-   * If all discovered quads across all links from a seed source should be indexed in an aggregated store,
+   * If all discovered quads across all links from a traversal source should be indexed in an aggregated store,
    * to speed up later calls.
-   * This should only be used for sources without filter factor.
-   * @default {false}
+   * This only applies to sources annotated with KeysQuerySourceIdentify.traverse.
+   * @default {true}
    */
-  aggregateStore: boolean;
+  aggregateTraversalStore: boolean;
   /**
    * The RDF dereference mediator
    */

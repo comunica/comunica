@@ -1,4 +1,5 @@
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import { KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
@@ -524,6 +525,16 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
         it('should not wrap the operation', async() => {
           await actor.hasSourceResults(source1, AF.createNop(), ctx);
           expect(source1.source.queryBindings).toBeCalledWith(AF.createNop(), ctx);
+        });
+
+        it('should be true for cardinality = 0 on a traversal source', async() => {
+          source1.context = new ActionContext().set(KeysQuerySourceIdentify.traverse, true);
+          source1.source.queryBindings = () => {
+            const bindingsStream = new ArrayIterator([], { autoStart: false });
+            bindingsStream.setProperty('metadata', { cardinality: { value: 0 }});
+            return bindingsStream;
+          };
+          expect(await actor.hasSourceResults(source1, AF.createNop(), ctx)).toBeTruthy();
         });
       });
 

@@ -2,6 +2,7 @@ import type { IActionOptimizeQueryOperation,
   IActorOptimizeQueryOperationOutput, IActorOptimizeQueryOperationArgs } from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import { KeysQuerySourceIdentify } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import type { IActionContext, IQuerySourceWrapper, MetadataBindings } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -128,6 +129,11 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     input: Algebra.Operation,
     context: IActionContext,
   ): Promise<boolean> {
+    // Traversal sources should never be considered empty at optimization time.
+    if (source.context?.get(KeysQuerySourceIdentify.traverse)) {
+      return true;
+    }
+
     // Send an ASK query
     if (this.useAskIfSupported) {
       const askOperation = AF.createAsk(input);

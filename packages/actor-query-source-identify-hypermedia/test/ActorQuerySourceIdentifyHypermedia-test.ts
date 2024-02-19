@@ -78,7 +78,7 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
           bus,
           cacheSize: 10,
           maxIterators: 64,
-          aggregateStore: false,
+          aggregateTraversalStore: false,
           mediatorMetadata,
           mediatorMetadataExtract,
           mediatorMetadataAccumulate,
@@ -199,7 +199,7 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
             bus,
             cacheSize: 10,
             maxIterators: 64,
-            aggregateStore: false,
+            aggregateTraversalStore: false,
             mediatorMetadata,
             mediatorMetadataExtract: mediatorMetadataExtractThis,
             mediatorMetadataAccumulate,
@@ -232,7 +232,7 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
             bus,
             cacheSize: 10,
             maxIterators: 64,
-            aggregateStore: false,
+            aggregateTraversalStore: false,
             mediatorMetadata,
             mediatorMetadataExtract: mediatorMetadataExtractThis,
             mediatorMetadataAccumulate,
@@ -263,7 +263,7 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
       });
     });
 
-    describe('An ActorQuerySourceIdentifyHypermedia instance with aggregateStore enabled', () => {
+    describe('An ActorQuerySourceIdentifyHypermedia instance with aggregateTraversalStore on a traverse source', () => {
       let actor: ActorQuerySourceIdentifyHypermedia;
       let context: IActionContext;
       let operation: Algebra.Operation;
@@ -274,7 +274,7 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
           bus,
           cacheSize: 10,
           maxIterators: 64,
-          aggregateStore: true,
+          aggregateTraversalStore: true,
           mediatorMetadata,
           mediatorMetadataExtract,
           mediatorMetadataAccumulate,
@@ -286,7 +286,10 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
           name: 'actor',
         });
         operation = <any> {};
-        querySourceUnidentified = { value: 'firstUrl' };
+        querySourceUnidentified = {
+          value: 'firstUrl',
+          context: new ActionContext().set(KeysQuerySourceIdentify.traverse, true),
+        };
       });
 
       describe('run without hypermediaSourcesAggregatedStores', () => {

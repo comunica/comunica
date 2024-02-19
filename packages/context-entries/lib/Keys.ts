@@ -260,6 +260,11 @@ export const KeysQuerySourceIdentify = {
   hypermediaSourcesAggregatedStores: new ActionContextKey<Map<string, IAggregatedStore>>(
     '@comunica/bus-query-source-identify:hypermediaSourcesAggregatedStores',
   ),
+  /**
+   * If links may be traversed from this source.
+   * This means that sources annotated with this flag are considered incomplete until all links have been traversed.
+   */
+  traverse: new ActionContextKey<boolean>('@comunica/bus-query-source-identify:traverse'),
 };
 
 export const KeysRdfUpdateQuads = {
