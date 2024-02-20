@@ -123,6 +123,10 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
       (this.aggregatedStore && this.aggregatedStore.hasRunningIterators()) || super.canStartNewIterator();
   }
 
+  protected canStartNewIteratorConsiderReadable(): boolean {
+    return !this.aggregatedStore;
+  }
+
   protected override isRunning(): boolean {
     // Same as above
     return (this.aggregatedStore && this.aggregatedStore.hasRunningIterators()) || !this.done;

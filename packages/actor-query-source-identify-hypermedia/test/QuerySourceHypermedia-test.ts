@@ -26,6 +26,7 @@ const DF = new DataFactory();
 const AF = new Factory();
 const BF = new BindingsFactory();
 const quad = require('rdf-quad');
+const streamifyArray = require('streamify-array');
 
 const v = DF.variable('v');
 
@@ -566,11 +567,12 @@ describe('QuerySourceHypermedia', () => {
           mediate: () => Promise.resolve({ links: i < 3 ? [{ url: `next${i}` }] : []}),
         };
         mediatorsThis.mediatorQuerySourceIdentifyHypermedia = {
-          mediate: jest.fn((args: any) => {
+          mediate: jest.fn(async(args: any) => {
             if (i < 3) {
               i++;
             }
-            return Promise.resolve({
+            await args.quads.toArray(); // Wait until the quads are fully consumed
+            return {
               dataset: `MYDATASET${i}`,
               source: {
                 queryBindings() {
@@ -590,7 +592,7 @@ describe('QuerySourceHypermedia', () => {
                   return it;
                 },
               },
-            });
+            };
           }),
         };
         let j = 0;
@@ -600,17 +602,15 @@ describe('QuerySourceHypermedia', () => {
               j++;
             }
             const data: IActorDereferenceRdfOutput = {
-              data: <any> new ArrayIterator<RDF.Quad>([
+              data: streamifyArray([
                 quad(`s1${j}`, `p1${j}`, `o1${j}`),
                 quad(`s2${j}`, `p2${j}`, `o2${j}`),
-              ], { autoStart: false }),
+              ]),
               metadata: { triples: true },
               exists: true,
               requestTime: 0,
               url,
             };
-            // @ts-expect-error
-            data.data.setProperty('metadata', { firstMeta: true });
             return data;
           },
         };
@@ -740,7 +740,7 @@ describe('QuerySourceHypermedia', () => {
           firstMeta: true,
           cardinality: { type: 'exact', value: 6 },
         });
-        expect(it2Meta).toHaveBeenCalledTimes(7);
+        expect(it2Meta).toHaveBeenCalledTimes(8);
         expect(it2Meta).toHaveBeenNthCalledWith(1, {
           state: expect.any(MetadataValidationState),
           canContainUndefs: false,
@@ -750,25 +750,26 @@ describe('QuerySourceHypermedia', () => {
         expect(it2Meta).toHaveBeenNthCalledWith(2, {
           state: expect.any(MetadataValidationState),
           a: 1,
-          cardinality: { type: 'estimate', value: 2 },
+          firstMeta: true,
+          cardinality: { type: 'estimate', value: 0 },
           canContainUndefs: false,
           variables: [ DF.variable('s'), DF.variable('p'), DF.variable('o') ],
         });
         expect(it2Meta).toHaveBeenNthCalledWith(4, {
           state: expect.any(MetadataValidationState),
           a: 1,
-          cardinality: { type: 'estimate', value: 4 },
+          cardinality: { type: 'estimate', value: 2 },
           canContainUndefs: false,
           variables: [ DF.variable('s'), DF.variable('p'), DF.variable('o') ],
         });
         expect(it2Meta).toHaveBeenNthCalledWith(6, {
           state: expect.any(MetadataValidationState),
           a: 1,
-          cardinality: { type: 'estimate', value: 6 },
+          cardinality: { type: 'estimate', value: 3 },
           canContainUndefs: false,
           variables: [ DF.variable('s'), DF.variable('p'), DF.variable('o') ],
         });
-        expect(it3Meta).toHaveBeenCalledTimes(5);
+        expect(it3Meta).toHaveBeenCalledTimes(4);
         expect(it3Meta).toHaveBeenNthCalledWith(1, {
           state: expect.any(MetadataValidationState),
           canContainUndefs: false,
@@ -778,7 +779,16 @@ describe('QuerySourceHypermedia', () => {
         expect(it3Meta).toHaveBeenNthCalledWith(2, {
           state: expect.any(MetadataValidationState),
           a: 1,
-          cardinality: { type: 'estimate', value: 1 },
+          cardinality: { type: 'estimate', value: 0 },
+          firstMeta: true,
+          canContainUndefs: false,
+          variables: [ DF.variable('p'), DF.variable('o') ],
+        });
+        expect(it3Meta).toHaveBeenNthCalledWith(4, {
+          state: expect.any(MetadataValidationState),
+          a: 1,
+          cardinality: { type: 'estimate', value: 0 },
+          firstMeta: true,
           canContainUndefs: false,
           variables: [ DF.variable('p'), DF.variable('o') ],
         });

@@ -156,7 +156,11 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
 
   protected canStartNewIterator(): boolean {
     return (this.currentIterators.length + this.iteratorsPendingCreation + this.iteratorsPendingTermination) <
-      this.maxIterators && !this.readable;
+      this.maxIterators && (!this.canStartNewIteratorConsiderReadable() || !this.readable);
+  }
+
+  protected canStartNewIteratorConsiderReadable(): boolean {
+    return true;
   }
 
   protected areIteratorsRunning(): boolean {

@@ -10654,10 +10654,10 @@ rdf-stores@^1.0.0:
     rdf-string "^1.6.2"
     rdf-terms "^1.9.1"
 
-rdf-streaming-store@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/rdf-streaming-store/-/rdf-streaming-store-1.1.0.tgz#a00be02eeb1616e577a095dad9afe96d9106fcfa"
-  integrity sha512-C/5NTKGpKrNJ5VUo42DtGFsXYDlP3rx/u4C6gEBuSn+6eVFahjFdUDgNGcPtVyhCQkctRCj3GT1lX9UeyoXWtw==
+rdf-streaming-store@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/rdf-streaming-store/-/rdf-streaming-store-1.1.4.tgz#2a68bca9fb5e0ea6ce240f13873518308b2530a4"
+  integrity sha512-Bq98GHHvmdJRTxZBH5TKYuWLAHEXiLTd/F6OeuLtWC6tQydxp7smMnYyoRtztc9p+jBsA9z9HmzQsGfEE2mj4w==
   dependencies:
     "@rdfjs/types" "*"
     "@types/n3" "^1.10.4"

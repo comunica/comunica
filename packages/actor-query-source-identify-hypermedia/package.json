@@ -52,7 +52,7 @@
     "asynciterator": "^3.8.1",
     "lru-cache": "^10.0.0",
     "rdf-data-factory": "^1.1.2",
-    "rdf-streaming-store": "^1.1.0",
+    "rdf-streaming-store": "^1.1.4",
     "readable-stream": "^4.4.2",
     "sparqlalgebrajs": "^4.3.3"
   },
