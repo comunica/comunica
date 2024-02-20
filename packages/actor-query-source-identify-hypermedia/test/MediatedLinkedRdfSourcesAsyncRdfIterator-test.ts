@@ -95,7 +95,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         );
 
         source.close();
-        await new Promise(setImmediate);
+        await new Promise(resolve => setTimeout(resolve, 10));
         expect(aggregatedStore.end).toHaveBeenCalledTimes(1);
       });
 
@@ -130,7 +130,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         );
 
         source.close();
-        await new Promise(setImmediate);
+        await new Promise(resolve => setTimeout(resolve, 10));
         expect(source.closed).toEqual(true);
         expect(aggregatedStore.end).toHaveBeenCalled();
         expect(source.wasForcefullyClosed).toEqual(false);
@@ -188,7 +188,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         );
 
         source.destroy();
-        await new Promise(setImmediate);
+        await new Promise(resolve => setTimeout(resolve, 10));
         expect(aggregatedStore.end).toHaveBeenCalledTimes(1);
       });
 
@@ -222,7 +222,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         );
 
         source.destroy();
-        await new Promise(setImmediate);
+        await new Promise(resolve => setTimeout(resolve, 10));
         expect(source.closed).toEqual(true);
         expect(aggregatedStore.end).toHaveBeenCalled();
         expect(source.wasForcefullyClosed).toEqual(false);
