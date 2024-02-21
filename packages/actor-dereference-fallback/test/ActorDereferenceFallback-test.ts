@@ -29,7 +29,7 @@ describe('ActorDereferenceFallback', () => {
 
     it('should run and log on lenient mode', async() => {
       const context = new ActionContext({ [KeysInitQuery.lenient.name]: true });
-      const spy = jest.spyOn(actor, <any> 'logError');
+      const spy = jest.spyOn(actor, <any> 'logWarn');
       const output = await actor.run({ url: 'URL', context });
       expect(output.url).toEqual('URL');
       expect(await arrayifyStream(output.data)).toEqual([]);

@@ -115,7 +115,7 @@ describe('ActorAbstractDereferenceParse', () => {
 
   it('should run and ignore parse errors in lenient mode', async() => {
     context = new ActionContext({ emitParseError: true, [KeysInitQuery.lenient.name]: true });
-    const spy = jest.spyOn(actor, <any> 'logError');
+    const spy = jest.spyOn(actor, <any> 'logWarn');
     const output = await actor.run({ url: 'https://www.google.com/', context });
     expect(output.url).toEqual('https://www.google.com/index.html');
     expect(await arrayifyStream(output.data)).toEqual([]);
@@ -124,7 +124,7 @@ describe('ActorAbstractDereferenceParse', () => {
 
   it('should run and ignore parse errors in lenient mode and log them', async() => {
     const logger = new LoggerVoid();
-    const spy = jest.spyOn(logger, 'error');
+    const spy = jest.spyOn(logger, 'warn');
     context = new ActionContext({
       emitParseError: true,
       [KeysInitQuery.lenient.name]: true,
@@ -146,7 +146,7 @@ describe('ActorAbstractDereferenceParse', () => {
 
   it('should run and ignore parse rejects in lenient mode', async() => {
     context = new ActionContext({ parseReject: true, [KeysInitQuery.lenient.name]: true });
-    const spy = jest.spyOn(actor, <any> 'logError');
+    const spy = jest.spyOn(actor, <any> 'logWarn');
     const output = await actor.run({ url: 'https://www.google.com/', context });
     expect(output.url).toEqual('https://www.google.com/index.html');
     expect(await arrayifyStream(output.data)).toEqual([]);
@@ -155,7 +155,7 @@ describe('ActorAbstractDereferenceParse', () => {
 
   it('should run and ignore parse rejects in lenient mode and log them', async() => {
     const logger = new LoggerVoid();
-    const spy = jest.spyOn(logger, 'error');
+    const spy = jest.spyOn(logger, 'warn');
     context = new ActionContext({
       parseReject: true,
       [KeysInitQuery.lenient.name]: true,

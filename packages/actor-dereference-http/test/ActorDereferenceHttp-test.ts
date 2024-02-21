@@ -231,7 +231,7 @@ describe('ActorDereferenceHttp', () => {
 
     it('should run on a 404 in lenient mode', async() => {
       context = new ActionContext({ [KeysInitQuery.lenient.name]: true });
-      const spy = jest.spyOn(actor, <any> 'logError');
+      const spy = jest.spyOn(actor, <any> 'logWarn');
       const output = await actor.run({ url: 'https://www.nogoogle.com/notfound', context });
       expect(output.url).toEqual('https://www.nogoogle.com/notfound');
       expect(spy).toHaveBeenCalledTimes(1);
@@ -272,7 +272,7 @@ describe('ActorDereferenceHttp', () => {
 
     it('should run and ignore http rejects in lenient mode', async() => {
       context = new ActionContext({ httpReject: true, [KeysInitQuery.lenient.name]: true });
-      const spy = jest.spyOn(actor, <any> 'logError');
+      const spy = jest.spyOn(actor, <any> 'logWarn');
       const output = await actor.run({ url: 'https://www.google.com/', context });
       expect(output.url).toEqual('https://www.google.com/');
       expect(spy).toHaveBeenCalledTimes(1);
@@ -280,7 +280,7 @@ describe('ActorDereferenceHttp', () => {
 
     it('should run and ignore http rejects in lenient mode and log them', async() => {
       const logger = new LoggerVoid();
-      const spy = jest.spyOn(logger, 'error');
+      const spy = jest.spyOn(logger, 'warn');
       context = new ActionContext({
         httpReject: true,
         [KeysInitQuery.lenient.name]: true,

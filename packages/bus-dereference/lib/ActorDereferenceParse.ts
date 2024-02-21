@@ -75,7 +75,7 @@ export abstract class ActorDereferenceParse<
     // If we don't emit hard errors, make parsing error events log instead, and silence them downstream.
     if (!isHardError(action.context)) {
       data.on('error', error => {
-        this.logError(action.context, error.message, () => ({ url: action.url }));
+        this.logWarn(action.context, error.message, () => ({ url: action.url }));
         // Make sure the errored stream is ended.
         data.push(null);
       });

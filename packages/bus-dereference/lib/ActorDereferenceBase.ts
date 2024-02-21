@@ -52,7 +52,7 @@ export abstract class ActorDereferenceBase<I extends IAction, T extends IActorTe
     if (isHardError(action.context)) {
       throw error;
     }
-    this.logError(action.context, (<Error> error).message);
+    this.logWarn(action.context, (<Error> error).message);
     return { ...output, data: emptyReadable<M>() };
   }
 }
