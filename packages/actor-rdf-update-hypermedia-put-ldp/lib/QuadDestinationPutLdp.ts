@@ -42,7 +42,7 @@ export class QuadDestinationPutLdp implements IQuadDestination {
     return this.wrapRdfUpdateRequest('INSERT', quads);
   }
 
-  public async delete(quads: AsyncIterator<RDF.Quad>): Promise<void> {
+  public async delete(_quads: AsyncIterator<RDF.Quad>): Promise<void> {
     throw new Error(`Put-based LDP destinations don't support deletions`);
   }
 
@@ -81,14 +81,14 @@ export class QuadDestinationPutLdp implements IQuadDestination {
   }
 
   public async deleteGraphs(
-    graphs: RDF.DefaultGraph | 'NAMED' | 'ALL' | RDF.NamedNode[],
-    requireExistence: boolean,
-    dropGraphs: boolean,
+    _graphs: RDF.DefaultGraph | 'NAMED' | 'ALL' | RDF.NamedNode[],
+    _requireExistence: boolean,
+    _dropGraphs: boolean,
   ): Promise<void> {
     throw new Error(`Put-based LDP destinations don't support named graphs`);
   }
 
-  public async createGraphs(graphs: RDF.NamedNode[], requireNonExistence: boolean): Promise<void> {
+  public async createGraphs(_graphs: RDF.NamedNode[], _requireNonExistence: boolean): Promise<void> {
     throw new Error(`Put-based LDP destinations don't support named graphs`);
   }
 }

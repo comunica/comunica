@@ -61,8 +61,8 @@ describe('ActorQuerySourceIdentifySerialized', () => {
     });
 
     describe('test', () => {
-      it('should test', () => {
-        return expect(actor.test({
+      it('should test', async() => {
+        await expect(actor.test({
           querySourceUnidentified: {
             type: 'serialized',
             value: sourceValue,
@@ -73,8 +73,8 @@ describe('ActorQuerySourceIdentifySerialized', () => {
         })).resolves.toBeTruthy();
       });
 
-      it('should test without type and baseIRI', () => {
-        return expect(actor.test({
+      it('should test without type and baseIRI', async() => {
+        await expect(actor.test({
           querySourceUnidentified: {
             value: sourceValue,
             mediaType: sourceMediaType,
@@ -83,8 +83,8 @@ describe('ActorQuerySourceIdentifySerialized', () => {
         })).resolves.toBeTruthy();
       });
 
-      it('should not test on no media type', () => {
-        return expect(actor.test({
+      it('should not test on no media type', async() => {
+        await expect(actor.test({
           querySourceUnidentified: {
             value: sourceValue,
             baseIRI: sourceBaseIri,
@@ -93,8 +93,8 @@ describe('ActorQuerySourceIdentifySerialized', () => {
         })).rejects.toThrow(`actor requires a single query source with serialized type to be present in the context.`);
       });
 
-      it('should not test on non-string', () => {
-        return expect(actor.test({
+      it('should not test on non-string', async() => {
+        await expect(actor.test({
           querySourceUnidentified: {
             value: <any> {},
             mediaType: sourceMediaType,
@@ -103,8 +103,8 @@ describe('ActorQuerySourceIdentifySerialized', () => {
         })).rejects.toThrow(`actor requires a single query source with serialized type to be present in the context.`);
       });
 
-      it('should not test on the sparql type', () => {
-        return expect(actor.test({
+      it('should not test on the sparql type', async() => {
+        await expect(actor.test({
           querySourceUnidentified: {
             type: 'sparql',
             value: sourceValue,

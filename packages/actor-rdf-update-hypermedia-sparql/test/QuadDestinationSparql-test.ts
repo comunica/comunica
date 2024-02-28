@@ -1,3 +1,4 @@
+/* eslint-disable jest/prefer-spy-on */
 import { KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';

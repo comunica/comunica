@@ -93,15 +93,16 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
                     next();
                   },
                 });
-              }, { maxBufferSize: 128 },
+              },
+              { maxBufferSize: 128 },
             );
           },
           autoStart: false,
         },
       );
       const variables = operation.graph.termType === 'Variable' ?
-        [ subjectVar, objectVar, operation.graph ] :
-        [ subjectVar, objectVar ];
+          [ subjectVar, objectVar, operation.graph ] :
+          [ subjectVar, objectVar ];
       return {
         type: 'bindings',
         bindingsStream,

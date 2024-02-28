@@ -16,19 +16,28 @@ describe('OverloadTree', () => {
     sharedContext = { ...getDefaultSharedContext() };
   });
 
-  function typePromotionTest<T extends ISerializable>(tree: OverloadTree, promoteFrom: KnownLiteralTypes,
-    promoteTo: KnownLiteralTypes, value: T, valueToEqual?: T) {
+  function typePromotionTest<T extends ISerializable>(
+    tree: OverloadTree,
+    promoteFrom: KnownLiteralTypes,
+    promoteTo: KnownLiteralTypes,
+    value: T,
+    valueToEqual?: T,
+  ) {
     tree.addOverload([ promoteTo ], () => ([ arg ]) => arg);
     const arg = new Literal<T>(value, promoteFrom);
     const res = isLiteralTermExpression(tree
       .search([ arg ], sharedContext.superTypeProvider, sharedContext.functionArgumentsCache)!(sharedContext)([ arg ]));
     expect(res).toBeTruthy();
     expect(res!.dataType).toEqual(promoteTo);
-    expect(res!.typedValue).toEqual(valueToEqual || value);
+    expect(res!.typedValue).toEqual(valueToEqual ?? value);
   }
 
-  function subtypeSubstitutionTest<T extends ISerializable>(tree: OverloadTree, argumentType: KnownLiteralTypes,
-    expectedType: KnownLiteralTypes, value: T) {
+  function subtypeSubstitutionTest<T extends ISerializable>(
+    tree: OverloadTree,
+    argumentType: KnownLiteralTypes,
+    expectedType: KnownLiteralTypes,
+    value: T,
+  ) {
     tree.addOverload([ expectedType ], () => ([ arg ]) => arg);
     const arg = new Literal<T>(value, argumentType);
     const res = isLiteralTermExpression(tree
@@ -74,7 +83,7 @@ describe('OverloadTree', () => {
       .search([ arg ], sharedContext.superTypeProvider, sharedContext.functionArgumentsCache)!(sharedContext)([ arg ]));
     expect(res).toBeTruthy();
     expect(res!.dataType).toEqual(TypeURL.XSD_DOUBLE);
-    expect(res!.typedValue).toEqual(0);
+    expect(res!.typedValue).toBe(0);
   });
 
   it('can handle unknown literal dataType', () => {
@@ -94,17 +103,17 @@ describe('OverloadTree', () => {
     const two = new IntegerLiteral(2);
     expect(sharedContext.functionArgumentsCache['+']).toBeUndefined();
     const res = regularFunctions['+'].apply([ one, two ], sharedContext);
-    expect(res.str()).toEqual('3');
+    expect(res.str()).toBe('3');
     // One time lookup + one time add
-    expect(sharedContext.functionArgumentsCache['+']).not.toBeUndefined();
+    expect(sharedContext.functionArgumentsCache['+']).toBeDefined();
     regularFunctions['+'].apply([ two, one ], sharedContext);
 
     const innerSpy = jest.fn();
     const spy = jest.fn(() => innerSpy);
-    sharedContext.functionArgumentsCache['+']!.cache![TypeURL.XSD_INTEGER].cache![TypeURL.XSD_INTEGER]!.func = spy;
+    sharedContext.functionArgumentsCache['+'].cache![TypeURL.XSD_INTEGER].cache![TypeURL.XSD_INTEGER].func = spy;
     regularFunctions['+'].apply([ one, two ], sharedContext);
-    expect(spy).toHaveBeenCalled();
-    expect(innerSpy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(innerSpy).toHaveBeenCalledTimes(1);
   });
 
   it('searches the cache arity aware', () => {

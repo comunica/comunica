@@ -26,38 +26,38 @@ describe('ActorRdfMetadataAccumulatePageSize', () => {
 
     describe('run', () => {
       it('should handle initialization', async() => {
-        expect(await actor.run({ context, mode: 'initialize' }))
+        await expect(actor.run({ context, mode: 'initialize' })).resolves
           .toEqual({ metadata: {}});
       });
 
       it('should handle appending with two entries', async() => {
-        expect(await actor.run({
+        await expect(actor.run({
           context,
           mode: 'append',
           accumulatedMetadata: <any> { pageSize: 2 },
           appendingMetadata: <any> { pageSize: 3 },
-        })).toEqual({ metadata: { pageSize: 5 }});
+        })).resolves.toEqual({ metadata: { pageSize: 5 }});
       });
 
       it('should handle appending with undefined entries', async() => {
-        expect(await actor.run({
+        await expect(actor.run({
           context,
           mode: 'append',
           accumulatedMetadata: <any> {},
           appendingMetadata: <any> { pageSize: 3 },
-        })).toEqual({ metadata: { pageSize: 3 }});
-        expect(await actor.run({
+        })).resolves.toEqual({ metadata: { pageSize: 3 }});
+        await expect(actor.run({
           context,
           mode: 'append',
           accumulatedMetadata: <any> { pageSize: 2 },
           appendingMetadata: <any> {},
-        })).toEqual({ metadata: { pageSize: 2 }});
-        expect(await actor.run({
+        })).resolves.toEqual({ metadata: { pageSize: 2 }});
+        await expect(actor.run({
           context,
           mode: 'append',
           accumulatedMetadata: <any> {},
           appendingMetadata: <any> {},
-        })).toEqual({ metadata: {}});
+        })).resolves.toEqual({ metadata: {}});
       });
     });
   });

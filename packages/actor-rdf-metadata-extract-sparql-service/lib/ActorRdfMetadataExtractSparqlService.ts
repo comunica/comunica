@@ -1,5 +1,8 @@
-import type { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput,
-  IActorRdfMetadataExtractArgs } from '@comunica/bus-rdf-metadata-extract';
+import type {
+  IActionRdfMetadataExtract,
+  IActorRdfMetadataExtractOutput,
+  IActorRdfMetadataExtractArgs,
+} from '@comunica/bus-rdf-metadata-extract';
 import { ActorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { IActorTest } from '@comunica/core';
 import { resolve as resolveIri } from 'relative-to-absolute-iri';
@@ -14,7 +17,7 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
     super(args);
   }
 
-  public async test(action: IActionRdfMetadataExtract): Promise<IActorTest> {
+  public async test(_action: IActionRdfMetadataExtract): Promise<IActorTest> {
     return true;
   }
 
@@ -25,7 +28,7 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
 
       // Immediately resolve when a SPARQL service endpoint URL has been found
       const metadata: any = {};
-      action.metadata.on('data', quad => {
+      action.metadata.on('data', (quad) => {
         if (quad.predicate.value === 'http://www.w3.org/ns/sparql-service-description#endpoint' &&
           (quad.subject.termType === 'BlankNode' || quad.subject.value === action.url)) {
           metadata.sparqlService = quad.object.termType === 'Literal' ?

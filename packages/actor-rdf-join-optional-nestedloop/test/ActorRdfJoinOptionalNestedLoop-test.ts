@@ -25,7 +25,10 @@ describe('ActorRdfJoinOptionalNestedLoop', () => {
   describe('An ActorRdfJoinOptionalNestedLoop instance', () => {
     let mediatorJoinSelectivity: Mediator<
     Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
-    IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>;
+    IActionRdfJoinSelectivity,
+IActorTest,
+IActorRdfJoinSelectivityOutput
+>;
     let actor: ActorRdfJoinOptionalNestedLoop;
 
     beforeEach(() => {
@@ -69,7 +72,7 @@ describe('ActorRdfJoinOptionalNestedLoop', () => {
       });
 
       it('should test on two entries', async() => {
-        expect(await actor.test({
+        await expect(actor.test({
           type: 'optional',
           entries: <any> [
             {
@@ -94,7 +97,7 @@ describe('ActorRdfJoinOptionalNestedLoop', () => {
             },
           ],
           context,
-        })).toEqual({
+        })).resolves.toEqual({
           iterations: 16,
           blockingItems: 0,
           persistedItems: 0,
@@ -157,8 +160,8 @@ describe('ActorRdfJoinOptionalNestedLoop', () => {
         const result = await actor.run(action);
 
         // Validate output
-        expect(result.type).toEqual('bindings');
-        expect(await result.metadata())
+        expect(result.type).toBe('bindings');
+        await expect(result.metadata()).resolves
           .toEqual({
             state: expect.any(MetadataValidationState),
             cardinality: { type: 'estimate', value: 9 },

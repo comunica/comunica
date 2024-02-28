@@ -95,17 +95,17 @@ export class CliArgsHandlerQuery implements ICliArgsHandler {
           default: false,
         },
       })
-      .check(args => {
+      .check((args) => {
         if (args.version || args.listformats) {
           return true;
         }
         if (this.allowNoSources) {
-          if (!this.queryString && !(args.query || args.file) && args.sources.length === 0) {
+          if (!this.queryString && !(args.query ?? args.file) && args.sources.length === 0) {
             throw new Error('A query must be provided');
           }
-        } else if (!this.queryString ?
-          !(args.query || args.file) && args.sources.length < (args.context ? 1 : 2) :
-          args.sources.length < (args.context ? 0 : 1)) {
+        } else if (this.queryString ?
+          args.sources.length < (args.context ? 0 : 1) :
+            !(args.query ?? args.file) && args.sources.length < (args.context ? 1 : 2)) {
           throw new Error('At least one source and query must be provided');
         }
         return true;

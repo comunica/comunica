@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-nodejs-modules
-import type { EventEmitter } from 'events';
+import type { EventEmitter } from 'node:events';
 import { ClosableTransformIterator } from '@comunica/bus-query-operation';
 import { MetadataValidationState } from '@comunica/metadata';
 import type { MetadataQuads, IAggregatedStore, MetadataBindings } from '@comunica/types';
@@ -54,7 +54,8 @@ export class StreamingStoreMetadata extends StreamingStore implements IAggregate
     // Wrap the raw stream in an AsyncIterator
     const rawStream = super.match(subject, predicate, object, graph);
     const iterator = new ClosableTransformIterator<RDF.Quad, RDF.Quad>(
-      <any> rawStream, {
+      <any> rawStream,
+      {
         autoStart: false,
         onClose: () => {
           // Running iterators are deleted once closed or destroyed
@@ -118,7 +119,7 @@ export class StreamingStoreMetadata extends StreamingStore implements IAggregate
     };
 
     this.metadataAccumulator(this.baseMetadata, metadataNew)
-      .then(accumulatedMetadata => {
+      .then((accumulatedMetadata) => {
         accumulatedMetadata.state = new MetadataValidationState();
 
         // Set the new metadata, and invalidate the previous state

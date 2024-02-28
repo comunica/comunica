@@ -24,4 +24,3 @@ $ yarn add @comunica/bus-init
 ## Creating actors on this bus
 
 Actors extending [`ActorInit`](https://comunica.github.io/comunica/classes/_comunica_bus_init.ActorInit.html) are automatically subscribed to this bus.
-

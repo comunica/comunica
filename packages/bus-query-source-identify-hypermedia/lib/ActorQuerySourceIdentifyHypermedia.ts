@@ -15,8 +15,11 @@ import type * as RDF from '@rdfjs/types';
  * @see IActorQuerySourceIdentifyHypermediaOutput
  */
 export abstract class ActorQuerySourceIdentifyHypermedia
-  extends Actor<IActionQuerySourceIdentifyHypermedia, IActorQuerySourceIdentifyHypermediaTest,
-  IActorQuerySourceIdentifyHypermediaOutput> {
+  extends Actor<
+    IActionQuerySourceIdentifyHypermedia,
+IActorQuerySourceIdentifyHypermediaTest,
+IActorQuerySourceIdentifyHypermediaOutput
+> {
   protected readonly sourceType: string;
 
   /**
@@ -87,8 +90,12 @@ export interface IActorQuerySourceIdentifyHypermediaOutput extends IActorOutput 
 
 export type IActorQuerySourceIdentifyHypermediaArgs = IActorArgs<
 IActionQuerySourceIdentifyHypermedia,
-IActorQuerySourceIdentifyHypermediaTest, IActorQuerySourceIdentifyHypermediaOutput>;
+IActorQuerySourceIdentifyHypermediaTest,
+IActorQuerySourceIdentifyHypermediaOutput
+>;
 
 export type MediatorQuerySourceIdentifyHypermedia = Mediate<
 IActionQuerySourceIdentifyHypermedia,
-IActorQuerySourceIdentifyHypermediaOutput, IActorQuerySourceIdentifyHypermediaTest>;
+IActorQuerySourceIdentifyHypermediaOutput,
+IActorQuerySourceIdentifyHypermediaTest
+>;

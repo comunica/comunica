@@ -23,4 +23,3 @@ $ yarn add @comunica/bus-query-result-serialize
 ## Creating actors on this bus
 
 Actors extending [`ActorQueryResultSerialize`](https://comunica.github.io/comunica/classes/_comunica_bus_query_result_serialize.ActorQueryResultSerialize.html) are automatically subscribed to this bus.
-

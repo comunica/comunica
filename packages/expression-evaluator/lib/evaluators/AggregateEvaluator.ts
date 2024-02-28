@@ -9,7 +9,7 @@ export class AggregateEvaluator extends BaseAggregateEvaluator {
   private readonly evaluator: SyncEvaluator;
 
   public constructor(expr: Algebra.AggregateExpression, context?: ISyncEvaluatorContext, throwError?: boolean) {
-    super(expr, SyncEvaluator.completeContext(context || {}), throwError);
+    super(expr, SyncEvaluator.completeContext(context ?? {}), throwError);
     this.evaluator = new SyncEvaluator(expr.expression, context);
   }
 
@@ -37,4 +37,3 @@ export class AggregateEvaluator extends BaseAggregateEvaluator {
     }
   }
 }
-

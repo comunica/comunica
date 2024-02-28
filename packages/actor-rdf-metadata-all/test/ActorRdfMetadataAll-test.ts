@@ -1,4 +1,4 @@
-import type { Readable } from 'stream';
+import type { Readable } from 'node:stream';
 import { ActorRdfMetadata } from '@comunica/bus-rdf-metadata';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
@@ -31,7 +31,9 @@ describe('ActorRdfMetadataAll', () => {
     });
 
     it('should not be able to create new ActorRdfMetadataAll objects without \'new\'', () => {
-      expect(() => { (<any> ActorRdfMetadataAll)(); }).toThrow();
+      expect(() => {
+        (<any> ActorRdfMetadataAll)();
+      }).toThrow(`Class constructor ActorRdfMetadataAll cannot be invoked without 'new'`);
     });
   });
 
@@ -58,17 +60,17 @@ describe('ActorRdfMetadataAll', () => {
       ]);
     });
 
-    it('should test on a triple stream', () => {
-      return expect(actor.test({ url: '', quads: input, triples: true, context })).resolves.toBeTruthy();
+    it('should test on a triple stream', async() => {
+      await expect(actor.test({ url: '', quads: input, triples: true, context })).resolves.toBeTruthy();
     });
 
-    it('should test on a quad stream', () => {
-      return expect(actor.test({ url: '', quads: input, context })).resolves.toBeTruthy();
+    it('should test on a quad stream', async() => {
+      await expect(actor.test({ url: '', quads: input, context })).resolves.toBeTruthy();
     });
 
-    it('should run', () => {
-      return actor.run({ url: 'o1?param', quads: input, context })
-        .then(async output => {
+    it('should run', async() => {
+      await actor.run({ url: 'o1?param', quads: input, context })
+        .then(async(output) => {
           const data: RDF.Quad[] = await arrayifyStream(output.data);
           const metadata: RDF.Quad[] = await arrayifyStream(output.metadata);
           expect(data).toEqual([
@@ -88,9 +90,9 @@ describe('ActorRdfMetadataAll', () => {
         });
     });
 
-    it('should run and delegate errors', () => {
-      return actor.run({ url: '', quads: input, context })
-        .then(output => {
+    it('should run and delegate errors', async() => {
+      await actor.run({ url: '', quads: input, context })
+        .then((output) => {
           setImmediate(() => input.emit('error', new Error('RDF Meta Primary Topic error')));
           output.data.on('data', () => {
             // Do nothing
@@ -99,29 +101,29 @@ describe('ActorRdfMetadataAll', () => {
             output.data.on('error', resolve);
           }), new Promise((resolve, reject) => {
             output.metadata.on('error', resolve);
-          }) ]).then(errors => {
-            return expect(errors).toHaveLength(2);
+          }) ]).then((errors) => {
+            expect(errors).toHaveLength(2);
           });
         });
     });
 
-    it('should run and delegate errors without data listener being attached', () => {
-      return actor.run({ url: '', quads: input, context })
-        .then(output => {
+    it('should run and delegate errors without data listener being attached', async() => {
+      await actor.run({ url: '', quads: input, context })
+        .then((output) => {
           setImmediate(() => input.emit('error', new Error('RDF Meta Primary Topic error')));
           return Promise.all([ new Promise((resolve, reject) => {
             output.data.on('error', resolve);
           }), new Promise((resolve, reject) => {
             output.metadata.on('error', resolve);
-          }) ]).then(errors => {
-            return expect(errors).toHaveLength(2);
+          }) ]).then((errors) => {
+            expect(errors).toHaveLength(2);
           });
         });
     });
 
-    it('should run and not re-attach listeners after calling .read again', () => {
-      return actor.run({ url: 'o1?param', quads: inputDifferent, context })
-        .then(async output => {
+    it('should run and not re-attach listeners after calling .read again', async() => {
+      await actor.run({ url: 'o1?param', quads: inputDifferent, context })
+        .then(async(output) => {
           const data: RDF.Quad[] = await arrayifyStream(output.data);
           expect(data).toEqual([
             quad('s1', 'p1', 'o1', ''),

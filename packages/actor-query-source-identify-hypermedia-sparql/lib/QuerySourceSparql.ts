@@ -1,12 +1,15 @@
 import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorHttp } from '@comunica/bus-http';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IQuerySource,
+import type {
+  IQuerySource,
   BindingsStream,
   IActionContext,
   FragmentSelectorShape,
-  Bindings, MetadataBindings,
-  IQueryBindingsOptions } from '@comunica/types';
+  Bindings,
+  MetadataBindings,
+  IQueryBindingsOptions,
+} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { wrap, TransformIterator } from 'asynciterator';
@@ -128,7 +131,7 @@ export class QuerySourceSparql implements IQuerySource {
     this.lastSourceContext = this.context.merge(context);
     const rawStream = this.endpointFetcher.fetchTriples(
       this.url,
-      context.get(KeysInitQuery.queryString) || QuerySourceSparql.operationToQuery(operation),
+      context.get(KeysInitQuery.queryString) ?? QuerySourceSparql.operationToQuery(operation),
     );
     this.lastSourceContext = undefined;
     const quads = wrap<any>(rawStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY });
@@ -140,7 +143,7 @@ export class QuerySourceSparql implements IQuerySource {
     this.lastSourceContext = this.context.merge(context);
     const promise = this.endpointFetcher.fetchAsk(
       this.url,
-      context.get(KeysInitQuery.queryString) || QuerySourceSparql.operationToQuery(operation),
+      context.get(KeysInitQuery.queryString) ?? QuerySourceSparql.operationToQuery(operation),
     );
     this.lastSourceContext = undefined;
     return promise;
@@ -150,7 +153,7 @@ export class QuerySourceSparql implements IQuerySource {
     this.lastSourceContext = this.context.merge(context);
     const promise = this.endpointFetcher.fetchUpdate(
       this.url,
-      context.get(KeysInitQuery.queryString) || QuerySourceSparql.operationToQuery(operation),
+      context.get(KeysInitQuery.queryString) ?? QuerySourceSparql.operationToQuery(operation),
     );
     this.lastSourceContext = undefined;
     return promise;
@@ -163,6 +166,7 @@ export class QuerySourceSparql implements IQuerySource {
   ): void {
     // Emit metadata containing the estimated count
     let variablesCount: RDF.Variable[] = [];
+    // eslint-disable-next-line no-async-promise-executor,ts/no-misused-promises
     new Promise<RDF.QueryResultCardinality>(async(resolve, reject) => {
       // Prepare queries
       let countQuery: string;
@@ -222,6 +226,8 @@ export class QuerySourceSparql implements IQuerySource {
    * @param bindMethod A method for adding bindings to an operation.
    * @param operation The operation to bind to.
    * @param addBindings The bindings to add.
+   * @param addBindings.bindings The bindings stream.
+   * @param addBindings.metadata The bindings metadata.
    */
   public static async addBindingsToOperation(
     bindMethod: BindMethod,
@@ -309,7 +315,7 @@ export class QuerySourceSparql implements IQuerySource {
 
     const it = wrap<any>(rawStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY })
       .map((rawData: Record<string, RDF.Term>) => this.bindingsFactory.bindings(variables
-        .map(variable => {
+        .map((variable) => {
           const value = rawData[`?${variable.value}`];
           if (!value) {
             it.emit('error', new Error(`The endpoint ${endpoint} failed to provide a binding for ${variable.value}.`));

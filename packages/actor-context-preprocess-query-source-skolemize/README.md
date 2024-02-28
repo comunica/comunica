@@ -5,7 +5,7 @@
 An [Context Preprocess](https://github.com/comunica/comunica/tree/master/packages/bus-context-preprocess) actor
 that places all identified query sources in a skolemization wrapper.
 This ensures that blank nodes are deterministically available as IRIs,
-and that blank nodes across multiple sources with shared do not get confused. 
+and that blank nodes across multiple sources with shared do not get confused.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
@@ -25,7 +25,7 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-context-preprocess-query-source-skolemize/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-context-preprocess-query-source-skolemize/^1.0.0/components/context.jsonld"
   ],
   "actors": [
     ...

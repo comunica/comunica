@@ -44,7 +44,13 @@ export interface IActorRdfJoinSelectivityOutput extends IActorOutput {
 }
 
 export type IActorRdfJoinSelectivityArgs = IActorArgs<
-IActionRdfJoinSelectivity, IMediatorTypeAccuracy, IActorRdfJoinSelectivityOutput>;
+IActionRdfJoinSelectivity,
+IMediatorTypeAccuracy,
+IActorRdfJoinSelectivityOutput
+>;
 
 export type MediatorRdfJoinSelectivity = Mediate<
-IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput, IMediatorTypeAccuracy>;
+IActionRdfJoinSelectivity,
+IActorRdfJoinSelectivityOutput,
+IMediatorTypeAccuracy
+>;

@@ -69,31 +69,39 @@ describe('ActorQuerySourceIdentifyHypermediaQpf', () => {
 
   describe('#constructor', () => {
     it('should be a function', () => {
-      return expect(ActorQuerySourceIdentifyHypermediaQpf).toBeInstanceOf(Function);
+      expect(ActorQuerySourceIdentifyHypermediaQpf).toBeInstanceOf(Function);
     });
 
     it('should be a ActorQuerySourceIdentifyHypermediaQpf constructor', () => {
-      expect(new (<any> ActorQuerySourceIdentifyHypermediaQpf)({ bus,
+      expect(new (<any> ActorQuerySourceIdentifyHypermediaQpf)({
+        bus,
         mediatorMetadata,
         mediatorMetadataExtract,
         mediatorDereferenceRdf,
         name: 'actor',
         objectUri: 'o',
         predicateUri: 'p',
-        subjectUri: 's' }))
+        subjectUri: 's',
+      }))
         .toBeInstanceOf(ActorQuerySourceIdentifyHypermediaQpf);
     });
 
     it('should not be able to create new ActorQuerySourceIdentifyHypermediaQpf objects without \'new\'', () => {
-      return expect(() => { (<any> ActorQuerySourceIdentifyHypermediaQpf)(); }).toThrow();
+      expect(() => {
+        (<any> ActorQuerySourceIdentifyHypermediaQpf)();
+      }).toThrow(`Class constructor ActorQuerySourceIdentifyHypermediaQpf cannot be invoked without 'new'`);
     });
 
     it('should not throw an error when constructed without optional graph uri', () => {
-      return expect(() => { new (<any> ActorQuerySourceIdentifyHypermediaQpf)({ bus,
-        name: 'actor',
-        objectUri: 'o',
-        predicateUri: 'p',
-        subjectUri: 's' }); }).not.toThrow();
+      expect(() => {
+        new (<any> ActorQuerySourceIdentifyHypermediaQpf)({
+          bus,
+          name: 'actor',
+          objectUri: 'o',
+          predicateUri: 'p',
+          subjectUri: 's',
+        });
+      }).not.toThrow('TODO');
     });
   });
 
@@ -106,17 +114,17 @@ describe('ActorQuerySourceIdentifyHypermediaQpf', () => {
       expect(source.mediatorMetadata).toBe(mediatorMetadata);
       expect(source.mediatorMetadataExtract).toBe(mediatorMetadataExtract);
       expect(source.mediatorDereferenceRdf).toBe(mediatorDereferenceRdf);
-      expect(source.subjectUri).toEqual('s');
-      expect(source.predicateUri).toEqual('p');
-      expect(source.objectUri).toEqual('o');
-      expect(source.graphUri).toEqual('g');
+      expect(source.subjectUri).toBe('s');
+      expect(source.predicateUri).toBe('p');
+      expect(source.objectUri).toBe('o');
+      expect(source.graphUri).toBe('g');
       expect(source.getCachedQuads(v1, v2, v3, v4)).toBeInstanceOf(TransformIterator);
     });
   });
 
   describe('#test', () => {
-    it('should test with a single source', () => {
-      return expect(actor.test({
+    it('should test with a single source', async() => {
+      await expect(actor.test({
         quads: <any> null,
         url: '',
         metadata,
@@ -126,8 +134,8 @@ describe('ActorQuerySourceIdentifyHypermediaQpf', () => {
       })).resolves.toEqual({ filterFactor: 1 });
     });
 
-    it('should test with a single source and empty handledDatasets', () => {
-      return expect(actor.test({
+    it('should test with a single source and empty handledDatasets', async() => {
+      await expect(actor.test({
         quads: <any> null,
         url: '',
         metadata,
@@ -138,8 +146,8 @@ describe('ActorQuerySourceIdentifyHypermediaQpf', () => {
       })).resolves.toEqual({ filterFactor: 1 });
     });
 
-    it('should test with a single source forced to qpf', () => {
-      return expect(actor.test({
+    it('should test with a single source forced to qpf', async() => {
+      await expect(actor.test({
         quads: <any> null,
         url: '',
         metadata,
@@ -150,8 +158,8 @@ describe('ActorQuerySourceIdentifyHypermediaQpf', () => {
       })).resolves.toEqual({ filterFactor: 1 });
     });
 
-    it('should not test with a single source forced to non-qpf', () => {
-      return expect(actor.test({
+    it('should not test with a single source forced to non-qpf', async() => {
+      await expect(actor.test({
         quads: <any> null,
         url: '',
         metadata,
@@ -163,9 +171,9 @@ describe('ActorQuerySourceIdentifyHypermediaQpf', () => {
         .toThrow(new Error('Actor actor is not able to handle source type non-qpf.'));
     });
 
-    it('should not test without a search form', () => {
+    it('should not test without a search form', async() => {
       metadata = {};
-      return expect(actor.test({
+      await expect(actor.test({
         quads: <any> null,
         url: '',
         metadata,
@@ -175,8 +183,8 @@ describe('ActorQuerySourceIdentifyHypermediaQpf', () => {
       })).rejects.toThrow(new Error('Illegal state: found no TPF/QPF search form anymore in metadata.'));
     });
 
-    it('should when the dataset has already been handled', () => {
-      return expect(actor.test({
+    it('should when the dataset has already been handled', async() => {
+      await expect(actor.test({
         quads: <any> null,
         url: '',
         metadata,
@@ -201,7 +209,7 @@ describe('ActorQuerySourceIdentifyHypermediaQpf', () => {
         }),
       });
       expect(output.source).toBeInstanceOf(QuerySourceQpf);
-      expect(output.dataset).toEqual('DATASET');
+      expect(output.dataset).toBe('DATASET');
     });
   });
 });

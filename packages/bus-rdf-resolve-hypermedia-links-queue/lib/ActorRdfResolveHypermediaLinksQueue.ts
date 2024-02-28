@@ -32,7 +32,12 @@ export interface IActorRdfResolveHypermediaLinksQueueOutput extends IActorOutput
 }
 
 export type IActorRdfResolveHypermediaLinksQueueArgs = IActorArgs<
-IActionRdfResolveHypermediaLinksQueue, IActorTest, IActorRdfResolveHypermediaLinksQueueOutput>;
+IActionRdfResolveHypermediaLinksQueue,
+IActorTest,
+IActorRdfResolveHypermediaLinksQueueOutput
+>;
 
 export type MediatorRdfResolveHypermediaLinksQueue = Mediate<
-IActionRdfResolveHypermediaLinksQueue, IActorRdfResolveHypermediaLinksQueueOutput>;
+IActionRdfResolveHypermediaLinksQueue,
+IActorRdfResolveHypermediaLinksQueueOutput
+>;

@@ -35,7 +35,7 @@ export class ActorRdfMetadataPrimaryTopic extends ActorRdfMetadata {
       };
 
       // Forward errors
-      action.quads.on('error', error => {
+      action.quads.on('error', (error) => {
         data.emit('error', error);
         metadata.emit('error', error);
       });
@@ -45,7 +45,7 @@ export class ActorRdfMetadataPrimaryTopic extends ActorRdfMetadata {
       const graphs: Record<string, RDF.Quad[]> = {};
       let endpointIdentifier: string | undefined;
       const primaryTopics: Record<string, string> = {};
-      action.quads.on('data', quad => {
+      action.quads.on('data', (quad) => {
         if (quad.predicate.value === 'http://rdfs.org/ns/void#subset' &&
           quad.object.value === action.url) {
           endpointIdentifier = quad.subject.value;

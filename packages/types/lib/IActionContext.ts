@@ -37,6 +37,7 @@ export interface IActionContext {
  * For example, the `query-operation` bus declares the `operation` entry,
  * which should be named as `@comunica/bus-query-operation:operation`.
  */
+// eslint-disable-next-line unused-imports/no-unused-vars
 export interface IActionContextKey<V> {
   readonly name: string;
 }

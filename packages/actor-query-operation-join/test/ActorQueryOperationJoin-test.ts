@@ -56,7 +56,9 @@ describe('ActorQueryOperationJoin', () => {
     });
 
     it('should not be able to create new ActorQueryOperationJoin objects without \'new\'', () => {
-      expect(() => { (<any> ActorQueryOperationJoin)(); }).toThrow();
+      expect(() => {
+        (<any> ActorQueryOperationJoin)();
+      }).toThrow(`Class constructor ActorQueryOperationJoin cannot be invoked without 'new'`);
     });
   });
 
@@ -67,21 +69,21 @@ describe('ActorQueryOperationJoin', () => {
       actor = new ActorQueryOperationJoin({ name: 'actor', bus, mediatorQueryOperation, mediatorJoin });
     });
 
-    it('should test on join', () => {
+    it('should test on join', async() => {
       const op: any = { operation: { type: 'join' }};
-      return expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toBeTruthy();
     });
 
-    it('should not test on non-join', () => {
+    it('should not test on non-join', async() => {
       const op: any = { operation: { type: 'some-other-type' }};
-      return expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).rejects.toBeTruthy();
     });
 
-    it('should run', () => {
+    it('should run', async() => {
       const op: any = { operation: { type: 'join', input: [{}, {}, {}]}, context: new ActionContext() };
-      return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        expect(output.type).toEqual('bindings');
-        expect(await output.metadata()).toEqual({
+      await actor.run(op).then(async(output: IQueryOperationResultBindings) => {
+        expect(output.type).toBe('bindings');
+        await expect(output.metadata()).resolves.toEqual({
           cardinality: 100,
           canContainUndefs: false,
           variables: [ DF.variable('a'), DF.variable('b') ],

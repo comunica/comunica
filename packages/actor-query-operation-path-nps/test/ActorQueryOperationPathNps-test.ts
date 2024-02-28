@@ -66,7 +66,9 @@ describe('ActorQueryOperationPathNps', () => {
     });
 
     it('should not be able to create new ActorQueryOperationPathNps objects without \'new\'', () => {
-      expect(() => { (<any> ActorQueryOperationPathNps)(); }).toThrow();
+      expect(() => {
+        (<any> ActorQueryOperationPathNps)();
+      }).toThrow(`Class constructor ActorQueryOperationPathNps cannot be invoked without 'new'`);
     });
   });
 
@@ -77,16 +79,20 @@ describe('ActorQueryOperationPathNps', () => {
       actor = new ActorQueryOperationPathNps({ name: 'actor', bus, mediatorQueryOperation });
     });
 
-    it('should test on Nps paths', () => {
-      const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.NPS }},
-        context: new ActionContext() };
-      return expect(actor.test(op)).resolves.toBeTruthy();
+    it('should test on Nps paths', async() => {
+      const op: any = {
+        operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.NPS }},
+        context: new ActionContext(),
+      };
+      await expect(actor.test(op)).resolves.toBeTruthy();
     });
 
-    it('should test on different paths', () => {
-      const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }},
-        context: new ActionContext() };
-      return expect(actor.test(op)).rejects.toBeTruthy();
+    it('should test on different paths', async() => {
+      const op: any = {
+        operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }},
+        context: new ActionContext(),
+      };
+      await expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should support Nps paths', async() => {
@@ -94,10 +100,9 @@ describe('ActorQueryOperationPathNps', () => {
         DF.namedNode('s'),
         factory.createNps([ DF.namedNode('2') ]),
         DF.variable('x'),
-      ),
-      context: new ActionContext() };
+      ), context: new ActionContext() };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
+      await expect(output.metadata()).resolves.toEqual({ cardinality: 3, canContainUndefs: false });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('x'), DF.namedNode('2') ]]),
         BF.bindings([[ DF.variable('x'), DF.namedNode('4') ]]),
@@ -109,12 +114,11 @@ describe('ActorQueryOperationPathNps', () => {
         DF.namedNode('s'),
         factory.createNps([ DF.namedNode('2') ]),
         DF.variable('x'),
-      ),
-      context: new ActionContext() };
+      ), context: new ActionContext() };
       op.operation.predicate.metadata = { a: 'b' };
 
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
+      await expect(output.metadata()).resolves.toEqual({ cardinality: 3, canContainUndefs: false });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('x'), DF.namedNode('2') ]]),
         BF.bindings([[ DF.variable('x'), DF.namedNode('4') ]]),

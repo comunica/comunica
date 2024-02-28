@@ -1,5 +1,8 @@
-import type { IActionOptimizeQueryOperation,
-  IActorOptimizeQueryOperationOutput, IActorOptimizeQueryOperationArgs } from '@comunica/bus-optimize-query-operation';
+import type {
+  IActionOptimizeQueryOperation,
+  IActorOptimizeQueryOperationOutput,
+  IActorOptimizeQueryOperationArgs,
+} from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
@@ -36,7 +39,7 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
    */
   public async groupOperation(operation: Algebra.Operation, context: IActionContext): Promise<Algebra.Operation> {
     // Return operation as-is if the operation already has a single source, or if the operation has no children.
-    if (ActorQueryOperation.getOperationSource(operation) || !('input' in operation)) {
+    if (ActorQueryOperation.getOperationSource(operation) ?? !('input' in operation)) {
       return operation;
     }
 
@@ -108,7 +111,7 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
     context: IActionContext,
   ): Promise<Algebra.Operation> {
     let flatten = true;
-    const nestedMerges = await Promise.all(clusters.map(async cluster => {
+    const nestedMerges = await Promise.all(clusters.map(async(cluster) => {
       const source = ActorQueryOperation.getOperationSource(cluster[0])!;
       const merged = await this
         .moveSourceAnnotationUpwardsIfPossible(factoryMethod(cluster, true), cluster, source, context);

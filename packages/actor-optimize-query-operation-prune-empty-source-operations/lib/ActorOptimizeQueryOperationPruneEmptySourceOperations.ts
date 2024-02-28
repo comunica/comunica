@@ -1,5 +1,8 @@
-import type { IActionOptimizeQueryOperation,
-  IActorOptimizeQueryOperationOutput, IActorOptimizeQueryOperationArgs } from '@comunica/bus-optimize-query-operation';
+import type {
+  IActionOptimizeQueryOperation,
+  IActorOptimizeQueryOperationOutput,
+  IActorOptimizeQueryOperationArgs,
+} from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysQuerySourceIdentify } from '@comunica/context-entries';
@@ -34,7 +37,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     // Collect all operations with source types
     // Only consider unions of patterns or alts of links, since these are created during exhaustive source assignment.
     const collectedOperations: (Algebra.Pattern | Algebra.Link)[] = [];
-    // eslint-disable-next-line @typescript-eslint/no-this-alias,consistent-this
+    // eslint-disable-next-line ts/no-this-alias
     const self = this;
     Util.recurseOperation(operation, {
       [Algebra.types.UNION](subOperation) {
@@ -45,14 +48,14 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
         self.collectMultiOperationInputs(subOperation.input, collectedOperations, Algebra.types.LINK);
         return false;
       },
-      [Algebra.types.SERVICE](subOperation) {
+      [Algebra.types.SERVICE]() {
         return false;
       },
     });
 
     // Determine in an async manner whether or not these sources return non-empty results
     const emptyOperations: Set<Algebra.Operation> = new Set();
-    await Promise.all(collectedOperations.map(async collectedOperation => {
+    await Promise.all(collectedOperations.map(async(collectedOperation) => {
       const checkOperation = collectedOperation.type === 'link' ?
         AF.createPattern(DF.variable('?s'), collectedOperation.iri, DF.variable('?o')) :
         collectedOperation;

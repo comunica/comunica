@@ -1,5 +1,7 @@
 import { Logger } from '@comunica/types';
+
 // Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
+// eslint-disable-next-line ts/no-require-imports
 import objectInspect = require('object-inspect');
 
 const process: NodeJS.Process = require('process/');

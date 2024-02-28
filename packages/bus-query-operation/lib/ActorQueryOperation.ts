@@ -3,14 +3,18 @@ import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorArgs, IActorTest, IAction, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import { BlankNodeBindingsScoped } from '@comunica/data-factory';
-import type { IQueryOperationResult,
+import type {
+  IQueryOperationResult,
   IQueryOperationResultBindings,
   IQueryOperationResultBoolean,
   IQueryOperationResultQuads,
   IQueryOperationResultVoid,
-  Bindings, IActionContext,
-  FunctionArgumentsCache, IQuerySourceWrapper,
-  FragmentSelectorShape } from '@comunica/types';
+  Bindings,
+  IActionContext,
+  FunctionArgumentsCache,
+  IQuerySourceWrapper,
+  FragmentSelectorShape,
+} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import { materializeOperation } from './Bindings';
@@ -100,7 +104,7 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
   protected static getBaseExpressionContext(context: IActionContext): IBaseExpressionContext {
     const now: Date | undefined = context.get(KeysInitQuery.queryTimestamp);
     const baseIRI: string | undefined = context.get(KeysInitQuery.baseIRI);
-    const functionArgumentsCache: FunctionArgumentsCache = context.get(KeysInitQuery.functionArgumentsCache) || {};
+    const functionArgumentsCache: FunctionArgumentsCache = context.get(KeysInitQuery.functionArgumentsCache) ?? {};
 
     // Handle two variants of providing extension functions
     if (context.has(KeysInitQuery.extensionFunctionCreator) && context.has(KeysInitQuery.extensionFunctions)) {
@@ -122,14 +126,14 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
   /**
    * Create an options object that can be used to construct a expression-evaluator synchronous evaluator.
    * @param context An action context.
-   * @param mediatorQueryOperation An optional query query operation mediator.
-   *                               If defined, the existence resolver will be defined as `exists`.
+   * @param _mediatorQueryOperation An optional query query operation mediator.
+   *                                If defined, the existence resolver will be defined as `exists`.
    */
-  public static getExpressionContext(context: IActionContext, mediatorQueryOperation?: MediatorQueryOperation):
+  public static getExpressionContext(context: IActionContext, _mediatorQueryOperation?: MediatorQueryOperation):
   ISyncExpressionContext {
     return {
       ...this.getBaseExpressionContext(context),
-      bnode: (input?: string) => new BlankNodeBindingsScoped(input || `BNODE_${bnodeCounter++}`),
+      bnode: (input?: string) => new BlankNodeBindingsScoped(input ?? `BNODE_${bnodeCounter++}`),
     };
   }
 
@@ -137,14 +141,17 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    * Create an options object that can be used to construct a expression-evaluator asynchronous evaluator.
    * @param context An action context.
    * @param mediatorQueryOperation A query query operation mediator for resolving `exists`.
+   * @param bindingsFactory The bindings factory.
    */
-  public static getAsyncExpressionContext(context: IActionContext,
+  public static getAsyncExpressionContext(
+    context: IActionContext,
     mediatorQueryOperation: MediatorQueryOperation,
-    bindingsFactory: BindingsFactory):
+    bindingsFactory: BindingsFactory,
+  ):
     IAsyncExpressionContext {
     return {
       ...this.getBaseExpressionContext(context),
-      bnode: (input?: string) => Promise.resolve(new BlankNodeBindingsScoped(input || `BNODE_${bnodeCounter++}`)),
+      bnode: (input?: string) => Promise.resolve(new BlankNodeBindingsScoped(input ?? `BNODE_${bnodeCounter++}`)),
       exists: ActorQueryOperation.createExistenceResolver(context, mediatorQueryOperation, bindingsFactory),
     };
   }
@@ -153,10 +160,13 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    * Create an existence resolver for usage within an expression context.
    * @param context An action context.
    * @param mediatorQueryOperation A query operation mediator.
+   * @param bindingsFactory The bindings factory.
    */
-  public static createExistenceResolver(context: IActionContext,
+  public static createExistenceResolver(
+    context: IActionContext,
     mediatorQueryOperation: MediatorQueryOperation,
-    bindingsFactory: BindingsFactory):
+    bindingsFactory: BindingsFactory,
+  ):
     (expr: Algebra.ExistenceExpression, bindings: Bindings) => Promise<boolean> {
     return async(expr, bindings) => {
       const operation = materializeOperation(expr.input, bindings, bindingsFactory);
@@ -230,18 +240,14 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    * @param shape A shape to test the query operation against.
    * @param operation A query operation to test.
    * @param options Additional options to consider.
+   * @param options.joinBindings If additional bindings will be pushed down to the source for joining.
+   * @param options.filterBindings If additional bindings will be pushed down to the source for filtering.
    */
   public static doesShapeAcceptOperation(
     shape: FragmentSelectorShape,
     operation: Algebra.Operation,
     options?: {
-      /**
-       * If additional bindings will be pushed down to the source for joining.
-       */
       joinBindings?: boolean;
-      /**
-       * If additional bindings will be pushed down to the source for filtering.
-       */
       filterBindings?: boolean;
     },
   ): boolean {
@@ -255,7 +261,7 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
       return ActorQueryOperation.doesShapeAcceptOperation(shape.child, operation, options);
     }
 
-    if ((options?.joinBindings && !shape.joinBindings) || options?.filterBindings && !shape.filterBindings) {
+    if ((options?.joinBindings && !shape.joinBindings) ?? (options?.filterBindings && !shape.filterBindings)) {
       return false;
     }
 

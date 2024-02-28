@@ -4,7 +4,7 @@
 
 An [RDF Join](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join) actor that inner-joins 2 or more streams
 by joining the smallest two, and joining the result with the remaining streams by delegating back to the [RDF Join bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join).
-While joining the smallest two, the first stream is pushed down as filter into the second stream. 
+While joining the smallest two, the first stream is pushed down as filter into the second stream.
 
 This actor can only work if the source of second join entry accept filtering (selector shape must allow `filterBindings`).
 
@@ -28,7 +28,7 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-inner-multi-smallest-filter-bindings/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-inner-multi-smallest-filter-bindings/^1.0.0/components/context.jsonld"
   ],
   "actors": [
     ...

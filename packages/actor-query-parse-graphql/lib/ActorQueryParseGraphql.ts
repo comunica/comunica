@@ -25,7 +25,7 @@ export class ActorQueryParseGraphql extends ActorQueryParse {
   public async run(action: IActionQueryParse): Promise<IActorQueryParseOutput> {
     const context: any = action.context.get(KeysInitQuery.jsonLdContext) || {};
     const options = {
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+      // eslint-disable-next-line ts/no-unnecessary-type-assertion
       singularizeVariables: <any> action.context.get(KeysInitQuery.graphqlSingularizeVariables),
     };
     return { operation: await this.graphqlToSparql.graphqlToSparqlAlgebra(action.query, context, options) };

@@ -1,8 +1,6 @@
 import type * as RDF from '@rdfjs/types';
 
-import type { Expression,
-  NamedExpression,
-  SimpleApplication } from './Expressions';
+import type { Expression, NamedExpression, SimpleApplication } from './Expressions';
 import {
   ExpressionType,
 } from './Expressions';
@@ -14,5 +12,5 @@ export class Named implements NamedExpression {
     public name: RDF.NamedNode,
     public args: Expression[],
     public apply: SimpleApplication,
-  ) { }
+  ) {}
 }

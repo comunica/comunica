@@ -6,13 +6,20 @@ import {
 } from '@comunica/bus-query-operation';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
-import type { IQueryOperationResultBindings, Bindings, IActionContext, MetadataBindings,
-  IQuerySourceWrapper } from '@comunica/types';
+import type {
+  IQueryOperationResultBindings,
+  Bindings,
+  IActionContext,
+  MetadataBindings,
+  IQuerySourceWrapper,
+} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import {
-  BufferedIterator, MultiTransformIterator,
-  TransformIterator, EmptyIterator,
+  BufferedIterator,
+  MultiTransformIterator,
+  TransformIterator,
+  EmptyIterator,
 } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
@@ -36,7 +43,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     this.predicateType = predicateType;
   }
 
-  public async testOperation(operation: Algebra.Path, context: IActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Path, _context: IActionContext): Promise<IActorTest> {
     if (operation.predicate.type !== this.predicateType) {
       throw new Error(`This Actor only supports ${this.predicateType} Path operations.`);
     }
@@ -65,11 +72,10 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
   Promise<{ context: IActionContext; operation: IQueryOperationResultBindings | undefined }> {
     if (!context.get(KeysQueryOperation.isPathArbitraryLengthDistinctKey)) {
       context = context.set(KeysQueryOperation.isPathArbitraryLengthDistinctKey, true);
-      return { context,
-        operation: ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
-          operation: ActorAbstractPath.FACTORY.createDistinct(path),
-          context,
-        })) };
+      return { context, operation: ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
+        operation: ActorAbstractPath.FACTORY.createDistinct(path),
+        context,
+      })) };
     }
 
     context = context.set(KeysQueryOperation.isPathArbitraryLengthDistinctKey, false);
@@ -122,7 +128,8 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
                   next();
                 },
               });
-            }, { maxBufferSize: 128 },
+            },
+            { maxBufferSize: 128 },
           );
         },
         autoStart: false,
@@ -179,7 +186,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     return {
       bindingsStream,
       async metadata() {
-        const metadata: MetadataBindings = await new Promise(resolve => {
+        const metadata: MetadataBindings = await new Promise((resolve) => {
           it.getProperty('metadata', (metadataInner: any) => resolve(metadataInner()));
         });
         // Increment cardinality by one, because we always have at least one result once we reach this stage.
@@ -191,16 +198,16 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
   }
 
   /**
-     * Pushes all terms to iterator `it` that are a solution of object predicate* ?o.
-     * @param {Term} object Term of where we start the predicate* search.
-     * @param {Algebra.PropertyPathSymbol} predicate Predicate of the *-path.
-     * @param {Term} graph The graph in which we search for the pattern.
-     * @param {ActionContext} context
-     * @param {Record<string, Term>} termHashes Remembers the objects we've already searched for.
-     * @param {BufferedIterator<Term>} it Iterator to push terms to.
-     * @param {any} counter Counts how many searches are in progress to close it when needed (when counter == 0).
-     * @return {Promise<IPathResultStream['metadata']>} The results metadata.
-     */
+   * Pushes all terms to iterator `it` that are a solution of object predicate* ?o.
+   * @param {Term} object Term of where we start the predicate* search.
+   * @param {Algebra.PropertyPathSymbol} predicate Predicate of the *-path.
+   * @param {Term} graph The graph in which we search for the pattern.
+   * @param {ActionContext} context
+   * @param {Record<string, Term>} termHashes Remembers the objects we've already searched for.
+   * @param {BufferedIterator<Term>} it Iterator to push terms to.
+   * @param {any} counter Counts how many searches are in progress to close it when needed (when counter == 0).
+   * @return {Promise<IPathResultStream['metadata']>} The results metadata.
+   */
   public async getObjectsPredicateStar(
     object: RDF.Term,
     predicate: Algebra.PropertyPathSymbol,
@@ -224,6 +231,8 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     const results = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: path, context }),
     );
+    // TODO: fixme
+    // eslint-disable-next-line ts/no-misused-promises
     results.bindingsStream.on('data', async(bindings: Bindings) => {
       const result = bindings.get(thisVariable);
       await this.getObjectsPredicateStar(result!, predicate, graph, context, termHashes, it, counter);
@@ -238,22 +247,22 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
   }
 
   /**
-     * Pushes all terms to iterator `it` that are a solution of ?s predicate* ?o.
-     * @param {string} subjectVar String representation of subjectVariable
-     * @param {string} objectVar String representation of objectVariable
-     * @param {Term} subjectVal Term of where we start the predicate* search.
-     * @param {Term} objectVal Found solution for an object, start for the new step.
-     * @param {Algebra.PropertyPathSymbol} predicate Predicate of the *-path.
-     * @param {Term} graph The graph in which we search for the pattern.
-     * @param {ActionContext} context
-     * @param {{[id: string]: Promise<Term[]>}} termHashesGlobal
-     * Remembers solutions for when objectVal is already been calculated, can be reused when same objectVal occurs
-     * @param {{[id: string]: Term}} termHashesCurrentSubject
-     * Remembers the pairs we've already searched for, can stop searching if so.
-     * @param {BufferedIterator<Bindings>} it Iterator to push terms to.
-     * @param {any} counter Counts how many searches are in progress to close it when needed (when counter == 0).
-     * @return {Promise<void>} All solutions of query should have been pushed to it by then.
-     */
+   * Pushes all terms to iterator `it` that are a solution of ?s predicate* ?o.
+   * @param {string} subjectVar String representation of subjectVariable
+   * @param {string} objectVar String representation of objectVariable
+   * @param {Term} subjectVal Term of where we start the predicate* search.
+   * @param {Term} objectVal Found solution for an object, start for the new step.
+   * @param {Algebra.PropertyPathSymbol} predicate Predicate of the *-path.
+   * @param {Term} graph The graph in which we search for the pattern.
+   * @param {ActionContext} context
+   * @param {{[id: string]: Promise<Term[]>}} termHashesGlobal
+   * Remembers solutions for when objectVal is already been calculated, can be reused when same objectVal occurs
+   * @param {{[id: string]: Term}} termHashesCurrentSubject
+   * Remembers the pairs we've already searched for, can stop searching if so.
+   * @param {BufferedIterator<Bindings>} it Iterator to push terms to.
+   * @param {any} counter Counts how many searches are in progress to close it when needed (when counter == 0).
+   * @return {Promise<void>} All solutions of query should have been pushed to it by then.
+   */
   // Let the iterator `it` emit all bindings of size 2, with subjectStringVariable as value subjectVal
   // and objectStringVariable as value all nodes reachable through predicate* beginning at objectVal
   public async getSubjectAndObjectBindingsPredicateStar(
@@ -311,6 +320,8 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     }
 
     // Construct promise to calculate all reachable nodes from this object
+    // TODO: fixme
+    // eslint-disable-next-line no-async-promise-executor,ts/no-misused-promises
     const promise = new Promise<RDF.Term[]>(async(resolve, reject) => {
       const objectsArray: RDF.Term[] = [];
 
@@ -322,6 +333,8 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
       );
 
       // Recursive call on all neighbours
+      // TODO: fixme
+      // eslint-disable-next-line ts/no-misused-promises
       results.bindingsStream.on('data', async(bindings: RDF.Bindings) => {
         const result: RDF.Term = bindings.get(thisVariable)!;
         objectsArray.push(result);

@@ -56,10 +56,12 @@ describe('ActorQueryOperationOrderBy with mixed term types', () => {
           return {};
         },
       };
-      actor = new ActorQueryOperationOrderBy({ name: 'actor',
+      actor = new ActorQueryOperationOrderBy({
+        name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeBindingsContext });
+        mediatorMergeBindingsContext,
+      });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.types.EXPRESSION,
@@ -70,8 +72,10 @@ describe('ActorQueryOperationOrderBy with mixed term types', () => {
     });
 
     it('should sort as an ascending undefined < blank node < named node < literal', async() => {
-      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
-        context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
+        context: new ActionContext(),
+      };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -95,8 +99,10 @@ describe('ActorQueryOperationOrderBy with mixed term types', () => {
     });
 
     it('should sort as an descending undefined < blank node < named node < literal', async() => {
-      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
-        context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
+        context: new ActionContext(),
+      };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -121,7 +127,6 @@ describe('ActorQueryOperationOrderBy with mixed term types', () => {
   });
 });
 
-// eslint-disable-next-line mocha/max-top-level-suites
 describe('ActorQueryOperationOrderBySparqlee', () => {
   let bus: any;
   let mediatorQueryOperation: any;
@@ -155,19 +160,21 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     });
 
     it('should be a ActorQueryOperationOrderBy constructor', () => {
-      expect(new (<any> ActorQueryOperationOrderBy)({ name: 'actor',
-        bus,
-        mediatorQueryOperation }))
+      expect(new (<any> ActorQueryOperationOrderBy)({ name: 'actor', bus, mediatorQueryOperation }))
         .toBeInstanceOf(<any> ActorQueryOperationOrderBy);
-      expect(new ActorQueryOperationOrderBy({ name: 'actor',
+      expect(new ActorQueryOperationOrderBy({
+        name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeBindingsContext }))
+        mediatorMergeBindingsContext,
+      }))
         .toBeInstanceOf(ActorQueryOperation);
     });
 
     it('should not be able to create new ActorQueryOperationOrderBy objects without \'new\'', () => {
-      expect(() => { (<any> ActorQueryOperationOrderBy)(); }).toThrow();
+      expect(() => {
+        (<any> ActorQueryOperationOrderBy)();
+      }).toThrow(`Class constructor ActorQueryOperationOrderBy cannot be invoked without 'new'`);
     });
   });
 
@@ -185,10 +192,12 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
         },
       };
 
-      actor = new ActorQueryOperationOrderBy({ name: 'actor',
+      actor = new ActorQueryOperationOrderBy({
+        name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeBindingsContext });
+        mediatorMergeBindingsContext,
+      });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       orderB = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('b') };
       descOrderA = {
@@ -205,32 +214,36 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
       };
     });
 
-    it('should test on orderby', () => {
+    it('should test on orderby', async() => {
       const op: any = { operation: { type: 'orderby', expressions: []}, context: new ActionContext() };
-      return expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toBeTruthy();
     });
 
-    it('should test on a descending orderby', () => {
+    it('should test on a descending orderby', async() => {
       const op: any = { operation: { type: 'orderby', expressions: [ descOrderA ]}, context: new ActionContext() };
-      return expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toBeTruthy();
     });
 
-    it('should test on multiple expressions', () => {
-      const op: any = { operation: { type: 'orderby', expressions: [ orderA, descOrderA, orderA1 ]},
-        context: new ActionContext() };
-      return expect(actor.test(op)).resolves.toBeTruthy();
+    it('should test on multiple expressions', async() => {
+      const op: any = {
+        operation: { type: 'orderby', expressions: [ orderA, descOrderA, orderA1 ]},
+        context: new ActionContext(),
+      };
+      await expect(actor.test(op)).resolves.toBeTruthy();
     });
 
-    it('should not test on non-orderby', () => {
+    it('should not test on non-orderby', async() => {
       const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
-      return expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run', async() => {
-      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
-        context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
+        context: new ActionContext(),
+      };
       const output = await actor.run(op);
-      expect(await ActorQueryOperation.getSafeBindings(output).metadata())
+      await expect(ActorQueryOperation.getSafeBindings(output).metadata()).resolves
         .toEqual({ cardinality: 3, canContainUndefs: false });
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -241,15 +254,19 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     });
 
     it('should run with a window', async() => {
-      actor = new ActorQueryOperationOrderBy({ name: 'actor',
+      actor = new ActorQueryOperationOrderBy({
+        name: 'actor',
         bus,
         mediatorQueryOperation,
         window: 1,
-        mediatorMergeBindingsContext });
-      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
-        context: new ActionContext() };
+        mediatorMergeBindingsContext,
+      });
+      const op: any = {
+        operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
+        context: new ActionContext(),
+      };
       const output = await actor.run(op);
-      expect(await ActorQueryOperation.getSafeBindings(output).metadata())
+      await expect(ActorQueryOperation.getSafeBindings(output).metadata()).resolves
         .toEqual({ cardinality: 3, canContainUndefs: false });
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -260,10 +277,12 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     });
 
     it('should run operator expressions', async() => {
-      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderA1 ]},
-        context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'orderby', input: {}, expressions: [ orderA1 ]},
+        context: new ActionContext(),
+      };
       const output = await actor.run(op);
-      expect(await ActorQueryOperation.getSafeBindings(output).metadata())
+      await expect(ActorQueryOperation.getSafeBindings(output).metadata()).resolves
         .toEqual({ cardinality: 3, canContainUndefs: false });
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -274,10 +293,12 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     });
 
     it('should run descend', async() => {
-      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
-        context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
+        context: new ActionContext(),
+      };
       const output = await actor.run(op);
-      expect(await ActorQueryOperation.getSafeBindings(output).metadata())
+      await expect(ActorQueryOperation.getSafeBindings(output).metadata()).resolves
         .toEqual({ cardinality: 3, canContainUndefs: false });
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -288,10 +309,12 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     });
 
     it('should ignore undefined results', async() => {
-      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderB ]},
-        context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'orderby', input: {}, expressions: [ orderB ]},
+        context: new ActionContext(),
+      };
       const output = await actor.run(op);
-      expect(await ActorQueryOperation.getSafeBindings(output).metadata())
+      await expect(ActorQueryOperation.getSafeBindings(output).metadata()).resolves
         .toEqual({ cardinality: 3, canContainUndefs: false });
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -303,11 +326,14 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
 
     it('should emit an error on a hard erroring expression', async() => {
       // Mock the expression error test so we can force 'a programming error' and test the branch
-      // eslint-disable-next-line no-import-assign
+
       Object.defineProperty(sparqlee, 'isExpressionError', { writable: true });
+      // eslint-disable-next-line jest/prefer-spy-on
       (<any> sparqlee).isExpressionError = jest.fn(() => false);
-      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderB ]},
-        context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'orderby', input: {}, expressions: [ orderB ]},
+        context: new ActionContext(),
+      };
       const output = <any> await actor.run(op);
       await new Promise<void>(resolve => output.bindingsStream.on('error', () => resolve()));
     });
@@ -361,10 +387,12 @@ describe('ActorQueryOperationOrderBy with multiple comparators', () => {
         },
       };
 
-      actor = new ActorQueryOperationOrderBy({ name: 'actor',
+      actor = new ActorQueryOperationOrderBy({
+        name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeBindingsContext });
+        mediatorMergeBindingsContext,
+      });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       orderB = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('b') };
       descOrderA = {
@@ -394,8 +422,10 @@ describe('ActorQueryOperationOrderBy with multiple comparators', () => {
     });
 
     it('should order A', async() => {
-      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
-        context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
+        context: new ActionContext(),
+      };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -415,8 +445,10 @@ describe('ActorQueryOperationOrderBy with multiple comparators', () => {
     });
 
     it('should order B', async() => {
-      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderB ]},
-        context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'orderby', input: {}, expressions: [ orderB ]},
+        context: new ActionContext(),
+      };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -436,8 +468,10 @@ describe('ActorQueryOperationOrderBy with multiple comparators', () => {
     });
 
     it('should order priority B and secondary A, ascending', async() => {
-      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderB, orderA ]},
-        context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'orderby', input: {}, expressions: [ orderB, orderA ]},
+        context: new ActionContext(),
+      };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -457,8 +491,10 @@ describe('ActorQueryOperationOrderBy with multiple comparators', () => {
     });
 
     it('descending order A multiple orderby', async() => {
-      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
-        context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
+        context: new ActionContext(),
+      };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -478,8 +514,10 @@ describe('ActorQueryOperationOrderBy with multiple comparators', () => {
     });
 
     it('descending order B multiple orderby', async() => {
-      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ descOrderB ]},
-        context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'orderby', input: {}, expressions: [ descOrderB ]},
+        context: new ActionContext(),
+      };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -500,8 +538,10 @@ describe('ActorQueryOperationOrderBy with multiple comparators', () => {
 
     it('strlen orderby with multiple comparators', async() => {
       // Priority goes to orderB1 then we secondarily sort by orderA1
-      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderB1, orderA1 ]},
-        context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'orderby', input: {}, expressions: [ orderB1, orderA1 ]},
+        context: new ActionContext(),
+      };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -562,10 +602,12 @@ describe('ActorQueryOperationOrderBy with integer type', () => {
         },
       };
 
-      actor = new ActorQueryOperationOrderBy({ name: 'actor',
+      actor = new ActorQueryOperationOrderBy({
+        name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeBindingsContext });
+        mediatorMergeBindingsContext,
+      });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.types.EXPRESSION,
@@ -576,8 +618,10 @@ describe('ActorQueryOperationOrderBy with integer type', () => {
     });
 
     it('should sort as an ascending integer', async() => {
-      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
-        context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
+        context: new ActionContext(),
+      };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -594,8 +638,10 @@ describe('ActorQueryOperationOrderBy with integer type', () => {
     });
 
     it('should sort as an descending integer', async() => {
-      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
-        context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
+        context: new ActionContext(),
+      };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -653,10 +699,12 @@ describe('ActorQueryOperationOrderBy with double type', () => {
         },
       };
 
-      actor = new ActorQueryOperationOrderBy({ name: 'actor',
+      actor = new ActorQueryOperationOrderBy({
+        name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeBindingsContext });
+        mediatorMergeBindingsContext,
+      });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.types.EXPRESSION,
@@ -667,8 +715,10 @@ describe('ActorQueryOperationOrderBy with double type', () => {
     });
 
     it('should sort as an ascending double', async() => {
-      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
-        context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
+        context: new ActionContext(),
+      };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -685,8 +735,10 @@ describe('ActorQueryOperationOrderBy with double type', () => {
     });
 
     it('should sort as an descending double', async() => {
-      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
-        context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
+        context: new ActionContext(),
+      };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -744,10 +796,12 @@ describe('ActorQueryOperationOrderBy with decimal type', () => {
         },
       };
 
-      actor = new ActorQueryOperationOrderBy({ name: 'actor',
+      actor = new ActorQueryOperationOrderBy({
+        name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeBindingsContext });
+        mediatorMergeBindingsContext,
+      });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.types.EXPRESSION,
@@ -758,8 +812,10 @@ describe('ActorQueryOperationOrderBy with decimal type', () => {
     });
 
     it('should sort as an ascending decimal', async() => {
-      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
-        context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
+        context: new ActionContext(),
+      };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -776,8 +832,10 @@ describe('ActorQueryOperationOrderBy with decimal type', () => {
     });
 
     it('should sort as an descending decimal', async() => {
-      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
-        context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
+        context: new ActionContext(),
+      };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -835,10 +893,12 @@ describe('ActorQueryOperationOrderBy with float type', () => {
         },
       };
 
-      actor = new ActorQueryOperationOrderBy({ name: 'actor',
+      actor = new ActorQueryOperationOrderBy({
+        name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeBindingsContext });
+        mediatorMergeBindingsContext,
+      });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.types.EXPRESSION,
@@ -849,8 +909,10 @@ describe('ActorQueryOperationOrderBy with float type', () => {
     });
 
     it('should sort as an ascending float', async() => {
-      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
-        context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
+        context: new ActionContext(),
+      };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -867,8 +929,10 @@ describe('ActorQueryOperationOrderBy with float type', () => {
     });
 
     it('should sort as an descending float', async() => {
-      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
-        context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
+        context: new ActionContext(),
+      };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -926,10 +990,12 @@ describe('ActorQueryOperationOrderBy with mixed literal types', () => {
         },
       };
 
-      actor = new ActorQueryOperationOrderBy({ name: 'actor',
+      actor = new ActorQueryOperationOrderBy({
+        name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeBindingsContext });
+        mediatorMergeBindingsContext,
+      });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.types.EXPRESSION,
@@ -940,8 +1006,10 @@ describe('ActorQueryOperationOrderBy with mixed literal types', () => {
     });
 
     it('should sort as an ascending integer', async() => {
-      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
-        context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
+        context: new ActionContext(),
+      };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -958,8 +1026,10 @@ describe('ActorQueryOperationOrderBy with mixed literal types', () => {
     });
 
     it('should sort as an descending integer', async() => {
-      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
-        context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
+        context: new ActionContext(),
+      };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -1017,10 +1087,12 @@ describe('Another ActorQueryOperationOrderBy with mixed types', () => {
         },
       };
 
-      actor = new ActorQueryOperationOrderBy({ name: 'actor',
+      actor = new ActorQueryOperationOrderBy({
+        name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeBindingsContext });
+        mediatorMergeBindingsContext,
+      });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.types.EXPRESSION,
@@ -1032,8 +1104,10 @@ describe('Another ActorQueryOperationOrderBy with mixed types', () => {
 
     it('should not sort since its not a literal ascending', async() => {
       try {
-        const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
-          context: new ActionContext() };
+        const op: any = {
+          operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
+          context: new ActionContext(),
+        };
         const output = await actor.run(op);
         const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
         expect(array).toBeFalsy();

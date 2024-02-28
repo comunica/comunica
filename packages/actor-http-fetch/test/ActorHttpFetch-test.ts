@@ -1,6 +1,6 @@
-import { Agent as HttpAgent } from 'http';
-import { Agent as HttpsAgent } from 'https';
-import { Readable } from 'stream';
+import { Agent as HttpAgent } from 'node:http';
+import { Agent as HttpsAgent } from 'node:https';
+import { Readable } from 'node:stream';
 import { ActorHttp } from '@comunica/bus-http';
 import { KeysCore, KeysHttp } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
@@ -12,7 +12,7 @@ import { ActorHttpFetch } from '../lib/ActorHttpFetch';
 const streamifyString = require('streamify-string');
 
 // Mock fetch
-(<any> globalThis).fetch = jest.fn((input: any, init: any) => {
+jest.spyOn((<any> globalThis), 'fetch').mockImplementation((input: any, init: any) => {
   return Promise.resolve({
     status: input.url === 'https://www.google.com/' ? 200 : 404,
     ...input.url === 'NOBODY' ? {} : { body: { destroy: jest.fn(), on: jest.fn() }},
@@ -40,21 +40,23 @@ describe('ActorHttpFetch', () => {
     });
 
     it('should not be able to create new ActorHttpFetch objects without \'new\'', () => {
-      expect(() => { (<any> ActorHttpFetch)(); }).toThrow();
+      expect(() => {
+        (<any> ActorHttpFetch)();
+      }).toThrow(`Class constructor ActorHttpFetch cannot be invoked without 'new'`);
     });
   });
 
   describe('#createUserAgent', () => {
     it('should create a user agent in the browser', () => {
       (<any> globalThis).navigator = { userAgent: 'Dummy' };
-      return expect(ActorHttpFetch.createUserAgent())
-        .toEqual(`Comunica/actor-http-fetch (Browser-${globalThis.navigator.userAgent})`);
+      expect(ActorHttpFetch.createUserAgent())
+        .toBe(`Comunica/actor-http-fetch (Browser-${globalThis.navigator.userAgent})`);
     });
 
     it('should create a user agent in Node.js', () => {
       delete (<any> globalThis).navigator;
-      return expect(ActorHttpFetch.createUserAgent())
-        .toEqual(`Comunica/actor-http-fetch (Node.js ${process.version}; ${process.platform})`);
+      expect(ActorHttpFetch.createUserAgent())
+        .toBe(`Comunica/actor-http-fetch (Node.js ${process.version}; ${process.platform})`);
     });
   });
 
@@ -65,13 +67,13 @@ describe('ActorHttpFetch', () => {
       actor = new ActorHttpFetch({ name: 'actor', bus });
     });
 
-    it('should test', () => {
-      return expect(actor.test({ input: <Request> { url: 'https://www.google.com/' }, context })).resolves
+    it('should test', async() => {
+      await expect(actor.test({ input: <Request> { url: 'https://www.google.com/' }, context })).resolves
         .toEqual({ time: Number.POSITIVE_INFINITY });
     });
 
-    it('should run on an existing URI', () => {
-      return expect(actor.run({ input: <Request> { url: 'https://www.google.com/' }, context })).resolves
+    it('should run on an existing URI', async() => {
+      await expect(actor.run({ input: <Request> { url: 'https://www.google.com/' }, context })).resolves
         .toMatchObject({ status: 200 });
     });
 
@@ -99,13 +101,13 @@ describe('ActorHttpFetch', () => {
         .toBeInstanceOf(HttpAgent);
     });
 
-    it('should run without body response', () => {
-      return expect(actor.run({ input: <Request> { url: 'NOBODY' }, context })).resolves
+    it('should run without body response', async() => {
+      await expect(actor.run({ input: <Request> { url: 'NOBODY' }, context })).resolves
         .toMatchObject({ status: 404 });
     });
 
-    it('should run on an non-existing URI', () => {
-      return expect(actor.run({ input: <Request> { url: 'https://www.google.com/notfound' }, context })).resolves
+    it('should run on an non-existing URI', async() => {
+      await expect(actor.run({ input: <Request> { url: 'https://www.google.com/notfound' }, context })).resolves
         .toMatchObject({ status: 404 });
     });
 
@@ -127,8 +129,7 @@ describe('ActorHttpFetch', () => {
         input: <Request> { url: 'https://www.google.com/' },
         context: new ActionContext({}),
       });
-      expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' },
-        { headers: new Headers({ 'user-agent': (<any> actor).userAgent }), agent: expect.anything(), keepalive: true });
+      expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' }, { headers: new Headers({ 'user-agent': (<any> actor).userAgent }), agent: expect.anything(), keepalive: true });
     });
 
     it('should run with KeysHttp.includeCredentials', async() => {
@@ -265,8 +266,7 @@ describe('ActorHttpFetch', () => {
         init: { headers: new Headers({ 'user-agent': 'b' }) },
         context,
       });
-      expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' },
-        { headers: new Headers({ 'user-agent': 'b' }), agent: expect.anything(), keepalive: true });
+      expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' }, { headers: new Headers({ 'user-agent': 'b' }), agent: expect.anything(), keepalive: true });
     });
 
     it('should set a user agent if none has been set', async() => {
@@ -276,8 +276,7 @@ describe('ActorHttpFetch', () => {
         init: { headers: new Headers({}) },
         context,
       });
-      expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' },
-        { headers: new Headers({ 'user-agent': (<any> actor).userAgent }), agent: expect.anything(), keepalive: true });
+      expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' }, { headers: new Headers({ 'user-agent': (<any> actor).userAgent }), agent: expect.anything(), keepalive: true });
     });
 
     it('should run and expose body.cancel', async() => {
@@ -332,7 +331,7 @@ describe('ActorHttpFetch', () => {
       });
 
       expect(fetch).not.toHaveBeenCalled();
-      expect(customFetch).toHaveBeenCalled();
+      expect(customFetch).toHaveBeenCalledTimes(1);
     });
 
     it('should run with headers and a custom fetch function to trigger temporary workaround', async() => {
@@ -343,7 +342,7 @@ describe('ActorHttpFetch', () => {
       });
 
       expect(fetch).not.toHaveBeenCalled();
-      expect(customFetch).toHaveBeenCalled();
+      expect(customFetch).toHaveBeenCalledTimes(1);
     });
 
     it('should work with a large timeout', async() => {
@@ -352,7 +351,7 @@ describe('ActorHttpFetch', () => {
         input: <Request> { url: 'https://www.google.com/' },
         context: new ActionContext({ [KeysHttp.httpTimeout.name]: 100_000 }),
       })).resolves.toMatchObject({ status: 200 });
-      expect(clearTimeout).toHaveBeenCalled();
+      expect(clearTimeout).toHaveBeenCalledTimes(1);
     });
 
     it('should work with a large timeout with an error', async() => {
@@ -364,16 +363,16 @@ describe('ActorHttpFetch', () => {
         input: <Request> { url: 'https://www.google.com/' },
         context: new ActionContext({ [KeysHttp.fetch.name]: customFetch, [KeysHttp.httpTimeout.name]: 100_000 }),
       })).rejects.toBeInstanceOf(Error);
-      expect(clearTimeout).toHaveBeenCalled();
+      expect(clearTimeout).toHaveBeenCalledTimes(1);
     });
 
     it('should abort properly with a timeout', async() => {
       jest.useFakeTimers();
       const customFetch = jest.fn(async(_, init) => {
-        expect(init.signal.constructor.name).toEqual('AbortSignal');
-        expect(init.signal.aborted).toEqual(false);
+        expect(init.signal.constructor.name).toBe('AbortSignal');
+        expect(init.signal.aborted).toBe(false);
         jest.runAllTimers();
-        expect(init.signal.aborted).toEqual(true);
+        expect(init.signal.aborted).toBe(true);
         throw new Error('foo');
       });
       await expect(actor.run({
@@ -389,16 +388,16 @@ describe('ActorHttpFetch', () => {
         input: <Request> { url: 'NOBODY' },
         context: new ActionContext({ [KeysHttp.httpTimeout.name]: 100_000, [KeysHttp.httpBodyTimeout.name]: true }),
       })).resolves.toMatchObject({ status: 404 });
-      expect(clearTimeout).toHaveBeenCalled();
+      expect(clearTimeout).toHaveBeenCalledTimes(1);
     });
 
     it('should work with a large timeout including body if the body is consumed', async() => {
       jest.spyOn(globalThis, 'clearTimeout');
       const customFetch = jest.fn(async(_, _init) => {
         const body = Readable.from('foo');
-        return Promise.resolve({
+        return {
           body,
-        });
+        };
       });
       const response = await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
@@ -412,16 +411,16 @@ describe('ActorHttpFetch', () => {
       for await (const chunk of body) {
         // We just want to consume everything
       }
-      expect(clearTimeout).toHaveBeenCalled();
+      expect(clearTimeout).toHaveBeenCalledTimes(1);
     });
 
     it('should work with a large timeout including body if the body is cancelled', async() => {
       jest.spyOn(globalThis, 'clearTimeout');
       const customFetch = jest.fn(async(_, _init) => {
         const body = Readable.from('foo');
-        return Promise.resolve({
+        return {
           body,
-        });
+        };
       });
       const response = await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
@@ -432,7 +431,7 @@ describe('ActorHttpFetch', () => {
         }),
       });
       await response.body?.cancel();
-      expect(clearTimeout).toHaveBeenCalled();
+      expect(clearTimeout).toHaveBeenCalledTimes(1);
     });
 
     it('should abort properly with a timeout including body', async() => {
@@ -471,7 +470,7 @@ This error can be disabled by modifying the 'httpBodyTimeout' and/or 'httpTimeou
         }),
       });
 
-      expect(customFetch).toBeCalledTimes(3);
+      expect(customFetch).toHaveBeenCalledTimes(3);
     });
 
     it('should abort, if retry count was exceeded', async() => {
@@ -488,7 +487,7 @@ This error can be disabled by modifying the 'httpBodyTimeout' and/or 'httpTimeou
         }),
       })).rejects.toThrow(`Number of fetch retries (${2}) exceeded. Last error: ${String(error)}`);
 
-      expect(customFetch).toBeCalledTimes(3);
+      expect(customFetch).toHaveBeenCalledTimes(3);
     });
 
     it('should abort retry delay on timeout', async() => {
@@ -504,7 +503,7 @@ This error can be disabled by modifying the 'httpBodyTimeout' and/or 'httpTimeou
           [KeysHttp.httpRetryDelay.name]: 500,
         }),
       })).rejects.toThrow(`Fetch aborted by timeout.`);
-      expect(customFetch).toBeCalledTimes(1);
+      expect(customFetch).toHaveBeenCalledTimes(1);
     });
 
     it('should retry, when server replies with an internal server error 5xx response', async() => {
@@ -522,7 +521,7 @@ This error can be disabled by modifying the 'httpBodyTimeout' and/or 'httpTimeou
         }),
       })).rejects.toThrow(`Server replied with response code ${response.status}: ${response.statusText}`);
 
-      expect(customFetch).toBeCalledTimes(2);
+      expect(customFetch).toHaveBeenCalledTimes(2);
     });
   });
 });

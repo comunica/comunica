@@ -5,13 +5,17 @@ import type * as C from '../util/Consts';
 import { TypeURL } from '../util/Consts';
 import { trimToDayTimeDuration, trimToYearMonthDuration } from '../util/DateTimeHelpers';
 import * as Err from '../util/Errors';
-import { parseDate,
+import {
+  parseDate,
   parseDateTime,
   parseDayTimeDuration,
   parseDuration,
   parseTime,
   parseYearMonthDuration,
-  parseXSDDecimal, parseXSDFloat, parseXSDInteger } from '../util/Parsing';
+  parseXSDDecimal,
+  parseXSDFloat,
+  parseXSDInteger,
+} from '../util/Parsing';
 
 import type { IOverloadedDefinition } from './Core';
 import { bool, dateTime, decimal, declare, double, float, integer, string } from './Helpers';

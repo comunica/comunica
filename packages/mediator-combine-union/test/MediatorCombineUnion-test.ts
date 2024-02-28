@@ -30,12 +30,12 @@ describe('MediatorCombineUnion', () => {
     });
 
     it('should throw an error when mediateWith is called', () => {
-      return expect(() => (<any> mediator).mediateWith({}, [])).toThrow();
+      expect(() => (<any> mediator).mediateWith({}, [])).toThrow('Method not supported.');
     });
 
     describe('without actors', () => {
-      it('should mediate', () => {
-        return expect(mediator.mediate({ context: new ActionContext() })).resolves.toEqual({ field: {}});
+      it('should mediate', async() => {
+        await expect(mediator.mediate({ context: new ActionContext() })).resolves.toEqual({ field: {}});
       });
     });
 
@@ -48,8 +48,8 @@ describe('MediatorCombineUnion', () => {
         );
       });
 
-      it('should mediate', () => {
-        return expect(mediator.mediate({ context: new ActionContext() })).resolves
+      it('should mediate', async() => {
+        await expect(mediator.mediate({ context: new ActionContext() })).resolves
           .toEqual({ field: { a: '10', b: { a: '1' }, c: [ 3, 2, 1 ], d: '123', e: { b: '1' }}});
       });
     });
@@ -63,12 +63,12 @@ describe('MediatorCombineUnion', () => {
     });
 
     it('should throw an error when mediateWith is called', () => {
-      return expect(() => (<any> mediator).mediateWith({}, [])).toThrow();
+      expect(() => (<any> mediator).mediateWith({}, [])).toThrow('Method not supported.');
     });
 
     describe('without actors', () => {
-      it('should mediate', () => {
-        return expect(mediator.mediate({ context: new ActionContext() })).resolves.toEqual({ field: {}});
+      it('should mediate', async() => {
+        await expect(mediator.mediate({ context: new ActionContext() })).resolves.toEqual({ field: {}});
       });
     });
 
@@ -82,8 +82,8 @@ describe('MediatorCombineUnion', () => {
         );
       });
 
-      it('should mediate', () => {
-        return expect(mediator.mediate({ context: new ActionContext() })).resolves
+      it('should mediate', async() => {
+        await expect(mediator.mediate({ context: new ActionContext() })).resolves
           .toEqual({ field: { a: '10', b: { a: '1' }, c: [ 3, 2, 1 ], d: '123', e: { b: '1' }}});
       });
     });

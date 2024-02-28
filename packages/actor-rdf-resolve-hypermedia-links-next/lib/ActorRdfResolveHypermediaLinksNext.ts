@@ -1,5 +1,6 @@
 import type {
-  IActionRdfResolveHypermediaLinks, IActorRdfResolveHypermediaLinksArgs,
+  IActionRdfResolveHypermediaLinks,
+  IActorRdfResolveHypermediaLinksArgs,
   IActorRdfResolveHypermediaLinksOutput,
 } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import { ActorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';

@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActionContext, Bus } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
@@ -42,8 +42,8 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
       context = new ActionContext();
     });
 
-    it('should test', () => {
-      return expect(actor.test({ metadata: <any> null, quads: <any> null, url: '', context }))
+    it('should test', async() => {
+      await expect(actor.test({ metadata: <any> null, quads: <any> null, url: '', context }))
         .resolves.toEqual({ filterFactor: 0 });
     });
 
@@ -54,7 +54,7 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
       ]);
       const { source } = await actor.run({ metadata: <any> null, quads, url: 'URL', context });
       expect(source.queryBindings).toBeTruthy();
-      expect(source.toString()).toEqual(`QuerySourceRdfJs(URL)`);
+      expect(source.toString()).toBe(`QuerySourceRdfJs(URL)`);
       const stream: BindingsStream = source.queryBindings(AF.createPattern(v1, v2, v3), new ActionContext());
       await expect(new Promise((resolve, reject) => {
         stream.getProperty('metadata', resolve);
@@ -113,6 +113,7 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
         quad('s1', 'p1', 'o1'),
         quad('s2', 'p2', 'o2'),
       ]);
+      // eslint-disable-next-line no-async-promise-executor,ts/no-misused-promises
       await expect(new Promise(async(resolve, reject) => {
         const { source } = await actor.run({ metadata: <any> null, quads, url: '', context });
         (<any> source).source.match = () => {

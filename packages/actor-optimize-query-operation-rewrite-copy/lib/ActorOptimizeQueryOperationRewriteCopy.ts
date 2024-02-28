@@ -1,5 +1,8 @@
-import type { IActionOptimizeQueryOperation, IActorOptimizeQueryOperationOutput,
-  IActorOptimizeQueryOperationArgs } from '@comunica/bus-optimize-query-operation';
+import type {
+  IActionOptimizeQueryOperation,
+  IActorOptimizeQueryOperationOutput,
+  IActorOptimizeQueryOperationArgs,
+} from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import type { IActorTest } from '@comunica/core';
 import { Algebra, Util } from 'sparqlalgebrajs';
@@ -12,7 +15,7 @@ export class ActorOptimizeQueryOperationRewriteCopy extends ActorOptimizeQueryOp
     super(args);
   }
 
-  public async test(action: IActionOptimizeQueryOperation): Promise<IActorTest> {
+  public async test(_action: IActionOptimizeQueryOperation): Promise<IActorTest> {
     return true;
   }
 

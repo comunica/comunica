@@ -24,26 +24,26 @@ export class SyncEvaluator {
   private readonly evaluator: IExpressionEvaluator<E.Expression, E.TermExpression>;
 
   public static completeContext(context: ISyncEvaluatorContext): ICompleteSyncEvaluatorContext {
-    const now = context.now || new Date(Date.now());
+    const now = context.now ?? new Date(Date.now());
     return {
       now,
-      baseIRI: context.baseIRI || undefined,
-      functionArgumentsCache: context.functionArgumentsCache || {},
+      baseIRI: context.baseIRI ?? undefined,
+      functionArgumentsCache: context.functionArgumentsCache ?? {},
       superTypeProvider: {
-        cache: context.typeCache || new LRUCache({ max: 1_000 }),
-        discoverer: context.getSuperType || (() => 'term'),
+        cache: context.typeCache ?? new LRUCache({ max: 1_000 }),
+        discoverer: context.getSuperType ?? (() => 'term'),
       },
       extensionFunctionCreator: context.extensionFunctionCreator,
       exists: context.exists,
       aggregate: context.aggregate,
       bnode: context.bnode,
-      defaultTimeZone: context.defaultTimeZone || extractTimeZone(now),
+      defaultTimeZone: context.defaultTimeZone ?? extractTimeZone(now),
     };
   }
 
   public constructor(public algExpr: Alg.Expression, public context: ISyncEvaluatorContext = {}) {
     // eslint-disable-next-line unicorn/no-useless-undefined
-    const creator = context.extensionFunctionCreator || (() => undefined);
+    const creator = context.extensionFunctionCreator ?? (() => undefined);
     const baseContext = SyncEvaluator.completeContext(context);
 
     const transformer = new AlgebraTransformer({

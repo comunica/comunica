@@ -12,8 +12,10 @@ import type {
   BindingsStream,
   FragmentSelectorShape,
   IActionContext,
-  IAggregatedStore, IQueryBindingsOptions,
-  IQuerySource, MetadataBindings,
+  IAggregatedStore,
+  IQueryBindingsOptions,
+  IQuerySource,
+  MetadataBindings,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';

@@ -1,6 +1,6 @@
 /* eslint-disable import/no-nodejs-modules */
-import { Agent as HttpAgent } from 'http';
-import { Agent as HttpsAgent } from 'https';
+import { Agent as HttpAgent } from 'node:http';
+import { Agent as HttpsAgent } from 'node:https';
 import { ActorHttp } from '@comunica/bus-http';
 import type { IFetchInitPreprocessor } from './IFetchInitPreprocessor';
 
@@ -30,7 +30,7 @@ export class FetchInitPreprocessor implements IFetchInitPreprocessor {
     return <any> {
       ...init,
       agent: this.agent,
-      keepalive: !halfDuplex ? true : undefined,
+      keepalive: halfDuplex ? undefined : true,
       duplex: halfDuplex ? 'half' : undefined,
     };
   }

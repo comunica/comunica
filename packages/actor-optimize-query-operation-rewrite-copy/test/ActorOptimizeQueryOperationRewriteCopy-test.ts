@@ -24,8 +24,8 @@ describe('ActorOptimizeQueryOperationRewriteCopy', () => {
       actor = new ActorOptimizeQueryOperationRewriteCopy({ name: 'actor', bus });
     });
 
-    it('should always test', () => {
-      return expect(actor.test({ operation: <any> null, context })).resolves.toBeTruthy();
+    it('should always test', async() => {
+      await expect(actor.test({ operation: <any> null, context })).resolves.toBeTruthy();
     });
 
     it('should run with different named source and named dest', async() => {

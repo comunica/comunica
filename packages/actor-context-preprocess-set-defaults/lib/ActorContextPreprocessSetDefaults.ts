@@ -17,7 +17,7 @@ export class ActorContextPreprocessSetDefaults extends ActorContextPreprocess {
     this.defaultFunctionArgumentsCache = {};
   }
 
-  public async test(action: IAction): Promise<IActorTest> {
+  public async test(_action: IAction): Promise<IActorTest> {
     return true;
   }
 

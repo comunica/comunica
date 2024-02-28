@@ -8,7 +8,10 @@ import { AggregateEvaluator, AsyncAggregateEvaluator } from '../../../lib';
 const DF = new DataFactory();
 const BF = new BindingsFactory();
 
-interface IBaseTestCaseArgs { expr: Algebra.AggregateExpression; evalTogether?: boolean }
+interface IBaseTestCaseArgs {
+  expr: Algebra.AggregateExpression;
+  evalTogether?: boolean;
+}
 type TestCaseArgs = IBaseTestCaseArgs & { input: RDF.Bindings[] };
 
 async function testCase({ expr, input, evalTogether }: TestCaseArgs): Promise<RDF.Term> {
@@ -43,6 +46,7 @@ async function testCase({ expr, input, evalTogether }: TestCaseArgs): Promise<RD
   if (!equalCheck) {
     let message = 'Not all results are equal.';
     if (evalTogether) {
+      // eslint-disable-next-line ts/restrict-template-expressions
       message += `This might be because the given aggregator can not reliably be evaluated together.\nGot ${results.map(value => JSON.stringify(value))}`;
     }
     throw new Error(message);
@@ -135,7 +139,7 @@ describe('an aggregate evaluator should be able to', () => {
           BF.bindings([[ DF.variable('x'), int('4') ]]),
         ],
       });
-      expect(await result).toEqual(int('4'));
+      await expect(result).resolves.toEqual(int('4'));
     });
 
     it('with respect to empty input', async() => {
@@ -143,7 +147,7 @@ describe('an aggregate evaluator should be able to', () => {
         ...baseTestCaseArgs,
         input: [],
       });
-      expect(await result).toEqual(int('0'));
+      await expect(result).resolves.toEqual(int('0'));
     });
   });
 
@@ -163,7 +167,7 @@ describe('an aggregate evaluator should be able to', () => {
           BF.bindings([[ DF.variable('x'), int('1') ], [ DF.variable('y'), int('1') ]]),
         ],
       });
-      expect(await result).toEqual(int('2'));
+      await expect(result).resolves.toEqual(int('2'));
     });
 
     it('with respect to empty input', async() => {
@@ -171,7 +175,7 @@ describe('an aggregate evaluator should be able to', () => {
         ...baseTestCaseArgs,
         input: [],
       });
-      expect(await result).toEqual(int('0'));
+      await expect(result).resolves.toEqual(int('0'));
     });
   });
 
@@ -190,8 +194,7 @@ describe('an aggregate evaluator should be able to', () => {
           expressionType: Algebra.expressionTypes.WILDCARD,
           wildcard: new Wildcard(),
         },
-      },
-      evalTogether: true };
+      }, evalTogether: true };
     });
 
     it('a list of bindings', async() => {
@@ -204,7 +207,7 @@ describe('an aggregate evaluator should be able to', () => {
           BF.bindings([]),
         ],
       });
-      expect(await result).toEqual(int('4'));
+      await expect(result).resolves.toEqual(int('4'));
     });
 
     it('with respect to empty input', async() => {
@@ -212,7 +215,7 @@ describe('an aggregate evaluator should be able to', () => {
         ...baseTestCaseArgs,
         input: [],
       });
-      expect(await result).toEqual(int('0'));
+      await expect(result).resolves.toEqual(int('0'));
     });
   });
 
@@ -231,8 +234,7 @@ describe('an aggregate evaluator should be able to', () => {
           expressionType: Algebra.expressionTypes.WILDCARD,
           wildcard: new Wildcard(),
         },
-      },
-      evalTogether: true };
+      }, evalTogether: true };
     });
 
     it('a list of bindings 1', async() => {
@@ -246,7 +248,7 @@ describe('an aggregate evaluator should be able to', () => {
           BF.bindings([]),
         ],
       });
-      expect(await result).toEqual(int('4'));
+      await expect(result).resolves.toEqual(int('4'));
     });
 
     it('a list of bindings containing 2 empty', async() => {
@@ -260,7 +262,7 @@ describe('an aggregate evaluator should be able to', () => {
           BF.bindings([]),
         ],
       });
-      expect(await result).toEqual(int('4'));
+      await expect(result).resolves.toEqual(int('4'));
     });
 
     it('a list of bindings 2', async() => {
@@ -274,7 +276,7 @@ describe('an aggregate evaluator should be able to', () => {
           BF.bindings([[ DF.variable('x'), int('1') ], [ DF.variable('y'), int('1') ]]),
         ],
       });
-      expect(await result).toEqual(int('4'));
+      await expect(result).resolves.toEqual(int('4'));
     });
 
     it('a list of bindings 3', async() => {
@@ -288,7 +290,7 @@ describe('an aggregate evaluator should be able to', () => {
           BF.bindings([]),
         ],
       });
-      expect(await result).toEqual(int('4'));
+      await expect(result).resolves.toEqual(int('4'));
     });
 
     it('with respect to empty input', async() => {
@@ -296,7 +298,7 @@ describe('an aggregate evaluator should be able to', () => {
         ...baseTestCaseArgs,
         input: [],
       });
-      expect(await result).toEqual(int('0'));
+      await expect(result).resolves.toEqual(int('0'));
     });
   });
 
@@ -315,7 +317,7 @@ describe('an aggregate evaluator should be able to', () => {
           BF.bindings([[ DF.variable('x'), int('4') ]]),
         ],
       });
-      expect(await result).toEqual(int('10'));
+      await expect(result).resolves.toEqual(int('10'));
     });
 
     it('with respect to empty input', async() => {
@@ -323,22 +325,20 @@ describe('an aggregate evaluator should be able to', () => {
         ...baseTestCaseArgs,
         input: [],
       });
-      expect(await result).toEqual(int('0'));
+      await expect(result).resolves.toEqual(int('0'));
     });
 
     it('with respect to type promotion', async() => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [
-          BF.bindings([[ DF.variable('x'),
-            DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#byte')) ]]),
+          BF.bindings([[ DF.variable('x'), DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#byte')) ]]),
           BF.bindings([[ DF.variable('x'), int('2') ]]),
           BF.bindings([[ DF.variable('x'), float('3') ]]),
-          BF.bindings([[ DF.variable('x'),
-            DF.literal('4', DF.namedNode('http://www.w3.org/2001/XMLSchema#nonNegativeInteger')) ]]),
+          BF.bindings([[ DF.variable('x'), DF.literal('4', DF.namedNode('http://www.w3.org/2001/XMLSchema#nonNegativeInteger')) ]]),
         ],
       });
-      expect(await result).toEqual(float('10'));
+      await expect(result).resolves.toEqual(float('10'));
     });
 
     it('with accurate results', async() => {
@@ -352,7 +352,7 @@ describe('an aggregate evaluator should be able to', () => {
           BF.bindings([[ DF.variable('x'), decimal('3.5') ]]),
         ],
       });
-      expect(await result).toEqual(decimal('11.1'));
+      await expect(result).resolves.toEqual(decimal('11.1'));
     });
   });
 
@@ -373,7 +373,7 @@ describe('an aggregate evaluator should be able to', () => {
           BF.bindings([[ DF.variable('x'), int('1') ]]),
         ],
       });
-      expect(await result).toEqual(int('1'));
+      await expect(result).resolves.toEqual(int('1'));
     });
 
     it('a list of string bindings', async() => {
@@ -386,7 +386,7 @@ describe('an aggregate evaluator should be able to', () => {
           BF.bindings([[ DF.variable('x'), string('3') ]]),
         ],
       });
-      expect(await result).toEqual(string('1'));
+      await expect(result).resolves.toEqual(string('1'));
     });
 
     it('a list of date bindings', async() => {
@@ -399,7 +399,7 @@ describe('an aggregate evaluator should be able to', () => {
           BF.bindings([[ DF.variable('x'), date('2010-06-21+09:00') ]]),
         ],
       });
-      expect(await result).toEqual(date('2001-07-23'));
+      await expect(result).resolves.toEqual(date('2001-07-23'));
     });
 
     it('passing a non-literal to max should not be accepted', async() => {
@@ -412,7 +412,7 @@ describe('an aggregate evaluator should be able to', () => {
         ],
         evalTogether: true,
       });
-      expect(await result).toEqual(undefined);
+      await expect(result).resolves.toBeUndefined();
     });
 
     it('passing a non-literal to max should not be accepted even in non-first place', async() => {
@@ -425,7 +425,7 @@ describe('an aggregate evaluator should be able to', () => {
         ],
         evalTogether: true,
       });
-      expect(await result).toEqual(undefined);
+      await expect(result).resolves.toBeUndefined();
     });
 
     it('with respect to empty input', async() => {
@@ -433,7 +433,7 @@ describe('an aggregate evaluator should be able to', () => {
         ...baseTestCaseArgs,
         input: [],
       });
-      expect(await result).toEqual(undefined);
+      await expect(result).resolves.toBeUndefined();
     });
   });
 
@@ -452,7 +452,7 @@ describe('an aggregate evaluator should be able to', () => {
           BF.bindings([[ DF.variable('x'), int('4') ]]),
         ],
       });
-      expect(await result).toEqual(int('4'));
+      await expect(result).resolves.toEqual(int('4'));
     });
 
     it('a list of string bindings', async() => {
@@ -465,7 +465,7 @@ describe('an aggregate evaluator should be able to', () => {
           BF.bindings([[ DF.variable('x'), string('3') ]]),
         ],
       });
-      expect(await result).toEqual(string('3'));
+      await expect(result).resolves.toEqual(string('3'));
     });
 
     it('a list of date bindings', async() => {
@@ -478,7 +478,7 @@ describe('an aggregate evaluator should be able to', () => {
           BF.bindings([[ DF.variable('x'), date('2010-06-21+09:00') ]]),
         ],
       });
-      expect(await result).toEqual(date('2010-06-21-08:00'));
+      await expect(result).resolves.toEqual(date('2010-06-21-08:00'));
     });
 
     it('with respect to empty input', async() => {
@@ -486,7 +486,7 @@ describe('an aggregate evaluator should be able to', () => {
         ...baseTestCaseArgs,
         input: [],
       });
-      expect(await result).toEqual(undefined);
+      await expect(result).resolves.toBeUndefined();
     });
   });
 
@@ -505,7 +505,7 @@ describe('an aggregate evaluator should be able to', () => {
           BF.bindings([[ DF.variable('x'), int('4') ]]),
         ],
       });
-      expect(await result).toEqual(float('2.5'));
+      await expect(result).resolves.toEqual(float('2.5'));
     });
 
     it('with respect to empty input', async() => {
@@ -513,22 +513,20 @@ describe('an aggregate evaluator should be able to', () => {
         ...baseTestCaseArgs,
         input: [],
       });
-      expect(await result).toEqual(int('0'));
+      await expect(result).resolves.toEqual(int('0'));
     });
 
     it('with respect to type promotion and subtype substitution', async() => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [
-          BF.bindings([[ DF.variable('x'),
-            DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#byte')) ]]),
+          BF.bindings([[ DF.variable('x'), DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#byte')) ]]),
           BF.bindings([[ DF.variable('x'), int('2') ]]),
           BF.bindings([[ DF.variable('x'), float('3') ]]),
-          BF.bindings([[ DF.variable('x'), DF.literal('4',
-            DF.namedNode('http://www.w3.org/2001/XMLSchema#nonNegativeInteger')) ]]),
+          BF.bindings([[ DF.variable('x'), DF.literal('4', DF.namedNode('http://www.w3.org/2001/XMLSchema#nonNegativeInteger')) ]]),
         ],
       });
-      expect(await result).toEqual(float('2.5'));
+      await expect(result).resolves.toEqual(float('2.5'));
     });
 
     it('with respect to type preservation', async() => {
@@ -541,7 +539,7 @@ describe('an aggregate evaluator should be able to', () => {
           BF.bindings([[ DF.variable('x'), int('4') ]]),
         ],
       });
-      expect(await result).toEqual(decimal('2.5'));
+      await expect(result).resolves.toEqual(decimal('2.5'));
     });
 
     it('with respect to type promotion 2', async() => {
@@ -554,7 +552,7 @@ describe('an aggregate evaluator should be able to', () => {
           BF.bindings([[ DF.variable('x'), double('4000') ]]),
         ],
       });
-      expect(await result).toEqual(double('2.5E3'));
+      await expect(result).resolves.toEqual(double('2.5E3'));
     });
   });
 
@@ -573,7 +571,7 @@ describe('an aggregate evaluator should be able to', () => {
           BF.bindings([[ DF.variable('x'), int('4') ]]),
         ],
       });
-      expect(await result).toEqual(int('1'));
+      await expect(result).resolves.toEqual(int('1'));
     });
 
     it('with respect to empty input', async() => {
@@ -581,7 +579,7 @@ describe('an aggregate evaluator should be able to', () => {
         ...baseTestCaseArgs,
         input: [],
       });
-      expect(await result).toEqual(undefined);
+      await expect(result).resolves.toBeUndefined();
     });
   });
 
@@ -600,7 +598,7 @@ describe('an aggregate evaluator should be able to', () => {
           BF.bindings([[ DF.variable('x'), int('4') ]]),
         ],
       });
-      expect(await result).toEqual(DF.literal('1 2 3 4'));
+      await expect(result).resolves.toEqual(DF.literal('1 2 3 4'));
     });
 
     it('with respect to empty input', async() => {
@@ -608,7 +606,7 @@ describe('an aggregate evaluator should be able to', () => {
         ...baseTestCaseArgs,
         input: [],
       });
-      expect(await result).toEqual(DF.literal(''));
+      await expect(result).resolves.toEqual(DF.literal(''));
     });
 
     it('custom separator', async() => {
@@ -621,7 +619,7 @@ describe('an aggregate evaluator should be able to', () => {
           BF.bindings([[ DF.variable('x'), int('4') ]]),
         ],
       });
-      expect(await result).toEqual(DF.literal('1;2;3;4'));
+      await expect(result).resolves.toEqual(DF.literal('1;2;3;4'));
     });
   });
 
@@ -634,7 +632,7 @@ describe('an aggregate evaluator should be able to', () => {
       ],
       evalTogether: true,
     };
-    expect(await testCase(testCaseArg)).toEqual(undefined);
+    await expect(testCase(testCaseArg)).resolves.toBeUndefined();
   });
 
   it('min should work with different types', async() => {
@@ -647,7 +645,7 @@ describe('an aggregate evaluator should be able to', () => {
       ],
       evalTogether: true,
     });
-    expect(await result).toEqual(int('2'));
+    await expect(result).resolves.toEqual(int('2'));
   });
 
   it('max should work with different types', async() => {
@@ -660,7 +658,7 @@ describe('an aggregate evaluator should be able to', () => {
       ],
       evalTogether: true,
     });
-    expect(await result).toEqual(double('11.0'));
+    await expect(result).resolves.toEqual(double('11.0'));
   });
 
   it('passing a non-literal to max should not be accepted', async() => {
@@ -673,7 +671,7 @@ describe('an aggregate evaluator should be able to', () => {
       ],
       evalTogether: true,
     });
-    expect(await result).toEqual(undefined);
+    await expect(result).resolves.toBeUndefined();
   });
 
   it('passing a non-literal to max should not be accepted even in non-first place', async() => {
@@ -686,7 +684,7 @@ describe('an aggregate evaluator should be able to', () => {
       ],
       evalTogether: true,
     });
-    expect(await result).toEqual(undefined);
+    await expect(result).resolves.toBeUndefined();
   });
 
   it('passing a non-literal to sum should not be accepted', async() => {
@@ -700,7 +698,7 @@ describe('an aggregate evaluator should be able to', () => {
       ],
       evalTogether: true,
     };
-    expect(await testCase(testCaseArg)).toBeUndefined();
+    await expect(testCase(testCaseArg)).resolves.toBeUndefined();
   });
 
   describe('when we ask for throwing errors', () => {

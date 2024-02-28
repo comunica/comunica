@@ -13,7 +13,6 @@ import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory, Algebra } from 'sparqlalgebrajs';
 import { ActorRdfJoinMultiBind } from '../lib/ActorRdfJoinMultiBind';
-import Mock = jest.Mock;
 import '@comunica/jest';
 
 const DF = new DataFactory();
@@ -35,13 +34,20 @@ describe('ActorRdfJoinMultiBind', () => {
   describe('An ActorRdfJoinMultiBind instance', () => {
     let mediatorJoinSelectivity: Mediator<
     Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
-    IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>;
+    IActionRdfJoinSelectivity,
+IActorTest,
+IActorRdfJoinSelectivityOutput
+>;
     let mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort;
     let context: IActionContext;
-    let mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IQueryOperationResultBindings>,
-    IActionQueryOperation, IActorTest, IQueryOperationResultBindings>;
+    let mediatorQueryOperation: Mediator<
+      Actor<IActionQueryOperation, IActorTest, IQueryOperationResultBindings>,
+IActionQueryOperation,
+IActorTest,
+IQueryOperationResultBindings
+>;
     let actor: ActorRdfJoinMultiBind;
-    let logSpy: Mock;
+    let logSpy: jest.SpyInstance;
 
     beforeEach(() => {
       mediatorJoinSelectivity = <any> {
@@ -89,12 +95,12 @@ describe('ActorRdfJoinMultiBind', () => {
         mediatorJoinEntriesSort,
         mediatorMergeBindingsContext,
       });
-      logSpy = (<any> actor).logDebug = jest.fn();
+      logSpy = jest.spyOn((<any> actor), 'logDebug').mockImplementation();
     });
 
     describe('getJoinCoefficients', () => {
       it('should handle three entries', async() => {
-        expect(await actor.getJoinCoefficients(
+        await expect(actor.getJoinCoefficients(
           {
             type: 'inner',
             entries: [
@@ -139,7 +145,7 @@ describe('ActorRdfJoinMultiBind', () => {
               variables: [ DF.variable('a') ],
             },
           ],
-        )).toEqual({
+        )).resolves.toEqual({
           iterations: 1.280_000_000_000_000_2,
           persistedItems: 0,
           blockingItems: 0,
@@ -148,7 +154,7 @@ describe('ActorRdfJoinMultiBind', () => {
       });
 
       it('should handle three entries with a lower variable overlap', async() => {
-        expect(await actor.getJoinCoefficients(
+        await expect(actor.getJoinCoefficients(
           {
             type: 'inner',
             entries: [
@@ -193,7 +199,7 @@ describe('ActorRdfJoinMultiBind', () => {
               variables: [ DF.variable('a'), DF.variable('b') ],
             },
           ],
-        )).toEqual({
+        )).resolves.toEqual({
           iterations: 1.280_000_000_000_000_2,
           persistedItems: 0,
           blockingItems: 0,
@@ -246,7 +252,7 @@ describe('ActorRdfJoinMultiBind', () => {
               variables: [ DF.variable('a') ],
             },
           ],
-        )).rejects.toThrowError('Actor actor can not bind on Extend and Group operations');
+        )).rejects.toThrow('Actor actor can not bind on Extend and Group operations');
       });
 
       it('should reject on a right stream of type group', async() => {
@@ -283,7 +289,7 @@ describe('ActorRdfJoinMultiBind', () => {
               variables: [ DF.variable('a') ],
             },
           ],
-        )).rejects.toThrowError('Actor actor can not bind on Extend and Group operations');
+        )).rejects.toThrow('Actor actor can not bind on Extend and Group operations');
       });
 
       it('should reject on a right stream containing group', async() => {
@@ -320,11 +326,11 @@ describe('ActorRdfJoinMultiBind', () => {
               variables: [ DF.variable('a') ],
             },
           ],
-        )).rejects.toThrowError('Actor actor can not bind on Extend and Group operations');
+        )).rejects.toThrow('Actor actor can not bind on Extend and Group operations');
       });
 
       it('should not reject on a left stream of type group', async() => {
-        expect(await actor.getJoinCoefficients(
+        await expect(actor.getJoinCoefficients(
           {
             type: 'inner',
             entries: [
@@ -357,7 +363,7 @@ describe('ActorRdfJoinMultiBind', () => {
               variables: [ DF.variable('a') ],
             },
           ],
-        )).toEqual({
+        )).resolves.toEqual({
           iterations: 0.480_000_000_000_000_1,
           persistedItems: 0,
           blockingItems: 0,
@@ -400,7 +406,7 @@ describe('ActorRdfJoinMultiBind', () => {
               variables: [ DF.variable('a') ],
             },
           ],
-        )).rejects.toThrowError('Actor actor can not be used over remaining entries with modified operations');
+        )).rejects.toThrow('Actor actor can not be used over remaining entries with modified operations');
       });
     });
 
@@ -412,13 +418,13 @@ describe('ActorRdfJoinMultiBind', () => {
           }),
         )
           .rejects
-          .toThrowError(`Received request for unknown bind order: unknown`);
+          .toThrow(`Received request for unknown bind order: unknown`);
       });
     });
 
     describe('sortJoinEntries', () => {
       it('sorts 2 entries', async() => {
-        expect(await ActorRdfJoin.sortJoinEntries(
+        await expect(ActorRdfJoin.sortJoinEntries(
           mediatorJoinEntriesSort,
           [
             {
@@ -443,7 +449,7 @@ describe('ActorRdfJoinMultiBind', () => {
             },
           ],
           context,
-        )).toEqual([
+        )).resolves.toEqual([
           {
             output: <any> {},
             operation: <any> {},
@@ -468,7 +474,7 @@ describe('ActorRdfJoinMultiBind', () => {
       });
 
       it('sorts 3 entries', async() => {
-        expect(await ActorRdfJoin.sortJoinEntries(mediatorJoinEntriesSort, [
+        await expect(ActorRdfJoin.sortJoinEntries(mediatorJoinEntriesSort, [
           {
             output: <any> {},
             operation: <any> {},
@@ -499,7 +505,7 @@ describe('ActorRdfJoinMultiBind', () => {
               variables: [ DF.variable('a') ],
             },
           },
-        ], context)).toEqual([
+        ], context)).resolves.toEqual([
           {
             output: <any> {},
             operation: <any> {},
@@ -534,7 +540,7 @@ describe('ActorRdfJoinMultiBind', () => {
       });
 
       it('sorts 3 equal entries', async() => {
-        expect(await ActorRdfJoin.sortJoinEntries(
+        await expect(ActorRdfJoin.sortJoinEntries(
           mediatorJoinEntriesSort,
           [
             {
@@ -569,7 +575,7 @@ describe('ActorRdfJoinMultiBind', () => {
             },
           ],
           context,
-        )).toEqual([
+        )).resolves.toEqual([
           {
             output: <any> {},
             operation: <any> {},
@@ -604,7 +610,7 @@ describe('ActorRdfJoinMultiBind', () => {
       });
 
       it('does not sort if there is an undef', async() => {
-        expect(await ActorRdfJoin.sortJoinEntries(
+        await expect(ActorRdfJoin.sortJoinEntries(
           mediatorJoinEntriesSort,
           [
             {
@@ -639,7 +645,7 @@ describe('ActorRdfJoinMultiBind', () => {
             },
           ],
           context,
-        )).toEqual([
+        )).resolves.toEqual([
           {
             output: <any> {},
             operation: <any> {},
@@ -703,7 +709,7 @@ describe('ActorRdfJoinMultiBind', () => {
       });
 
       it('sorts entries without common variables in the back', async() => {
-        expect(await ActorRdfJoin.sortJoinEntries(
+        await expect(ActorRdfJoin.sortJoinEntries(
           mediatorJoinEntriesSort,
           [
             {
@@ -738,7 +744,7 @@ describe('ActorRdfJoinMultiBind', () => {
             },
           ],
           context,
-        )).toEqual([
+        )).resolves.toEqual([
           {
             output: <any> {},
             operation: <any> {},
@@ -773,7 +779,7 @@ describe('ActorRdfJoinMultiBind', () => {
       });
 
       it('sorts several entries without variables in the back', async() => {
-        expect(await ActorRdfJoin.sortJoinEntries(
+        await expect(ActorRdfJoin.sortJoinEntries(
           mediatorJoinEntriesSort,
           [
             {
@@ -848,7 +854,7 @@ describe('ActorRdfJoinMultiBind', () => {
             },
           ],
           context,
-        )).toEqual([
+        )).resolves.toEqual([
           {
             output: <any> {},
             operation: <any> {},
@@ -977,7 +983,7 @@ describe('ActorRdfJoinMultiBind', () => {
         const { result, physicalPlanMetadata } = await actor.getOutput(action);
 
         // Validate output
-        expect(result.type).toEqual('bindings');
+        expect(result.type).toBe('bindings');
         await expect(result.bindingsStream).toEqualBindingsStream([
           BF.bindings([
             [ DF.variable('bound'), DF.namedNode('ex:bound1') ],
@@ -1004,7 +1010,7 @@ describe('ActorRdfJoinMultiBind', () => {
             [ DF.variable('a'), DF.namedNode('ex:a2') ],
           ]),
         ]);
-        expect(await result.metadata()).toEqual({
+        await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: 2.400_000_000_000_000_4 },
           canContainUndefs: false,
@@ -1137,7 +1143,7 @@ describe('ActorRdfJoinMultiBind', () => {
         const { result } = await actor.getOutput(action);
 
         // Validate output
-        expect(result.type).toEqual('bindings');
+        expect(result.type).toBe('bindings');
         await expect(result.bindingsStream).toEqualBindingsStream([
           BF.bindings([
             [ DF.variable('bound'), DF.namedNode('ex:bound1') ],
@@ -1164,7 +1170,7 @@ describe('ActorRdfJoinMultiBind', () => {
             [ DF.variable('a'), DF.namedNode('ex:a2') ],
           ]),
         ]);
-        expect(await result.metadata()).toEqual({
+        await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: 2.400_000_000_000_000_4 },
           canContainUndefs: false,
@@ -1225,7 +1231,7 @@ describe('ActorRdfJoinMultiBind', () => {
         const { result } = await actor.getOutput(action);
 
         // Validate output
-        expect(result.type).toEqual('bindings');
+        expect(result.type).toBe('bindings');
         await expect(result.bindingsStream).toEqualBindingsStream([
           BF.bindings([
             [ DF.variable('bound'), DF.namedNode('ex:bound1') ],
@@ -1252,7 +1258,7 @@ describe('ActorRdfJoinMultiBind', () => {
             [ DF.variable('a'), DF.namedNode('ex:a2') ],
           ]),
         ]);
-        expect(await result.metadata()).toEqual({
+        await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: 2.400_000_000_000_000_4 },
           canContainUndefs: false,
@@ -1336,7 +1342,7 @@ describe('ActorRdfJoinMultiBind', () => {
         const { result } = await actor.getOutput(action);
 
         // Validate output
-        expect(result.type).toEqual('bindings');
+        expect(result.type).toBe('bindings');
         await expect(result.bindingsStream).toEqualBindingsStream([
           BF.bindings([
             [ DF.variable('bound'), DF.namedNode('ex:bound1') ],
@@ -1363,7 +1369,7 @@ describe('ActorRdfJoinMultiBind', () => {
             [ DF.variable('a'), DF.namedNode('ex:a2') ],
           ]),
         ]);
-        expect(await result.metadata()).toEqual({
+        await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: 9.600_000_000_000_001 },
           canContainUndefs: false,

@@ -50,5 +50,5 @@ export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
   }
 }
 
-export interface IActorRdfJoinSymmetricHashArgs extends IActorRdfJoinArgs{
+export interface IActorRdfJoinSymmetricHashArgs extends IActorRdfJoinArgs {
 }

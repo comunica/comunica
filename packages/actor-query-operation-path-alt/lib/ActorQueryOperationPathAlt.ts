@@ -3,8 +3,12 @@ import { ActorQueryOperationUnion } from '@comunica/actor-query-operation-union'
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
-import type { IQueryOperationResultBindings, IQueryOperationResult,
-  IActionContext, MetadataBindings } from '@comunica/types';
+import type {
+  IQueryOperationResultBindings,
+  IQueryOperationResult,
+  IActionContext,
+  MetadataBindings,
+} from '@comunica/types';
 import { UnionIterator } from 'asynciterator';
 import { Algebra } from 'sparqlalgebrajs';
 

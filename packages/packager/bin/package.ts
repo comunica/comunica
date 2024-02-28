@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-import * as fs from 'fs';
-import * as Path from 'path';
-
+import * as fs from 'node:fs';
+import * as Path from 'node:path';
 import { compileConfig } from 'componentsjs';
 import type { ParsedArgs } from 'minimist';
+
 import minimist = require('minimist');
 
 const process: NodeJS.Process = require('process/');
@@ -44,13 +44,14 @@ if (packageName) {
     throw new Error('The target package already exists, but it is not a directory!');
   } else if (fs.existsSync(`${packageName}/package.json`)) {
     // Reuse contents if a package.json file already exists
+
     packageJson = require(`${process.cwd()}/${packageName}/package.json`);
   }
 }
 
 const configPath: string = args.c ? args.c : '.';
 
-const mainModulePath: string = args.p ? Path.resolve(process.cwd(), args.p) : `${__dirname}/../`;
+const mainModulePath: string = args.p ? Path.resolve(process.cwd(), args.p) : Path.join(__dirname, '..');
 
 let exportVariableName: string | undefined;
 if (args.e) {
@@ -59,7 +60,7 @@ if (args.e) {
 
 const dependencyRegex = /require\('([^']*)'\)/ug;
 
-const referencePackageJson = require(`${__dirname}/../package.json`);
+const referencePackageJson = require(Path.join(__dirname, '..', 'package.json'));
 compileConfig(mainModulePath, configPath, 'urn:comunica:default:Runner', exportVariableName, false, true)
   .then((document: string) => {
     // Find dependency package names
@@ -70,7 +71,6 @@ compileConfig(mainModulePath, configPath, 'urn:comunica:default:Runner', exportV
     while (match = dependencyRegex.exec(document)) {
       dependencyNames.push(match[1]);
     }
-    // eslint-disable-next-line @typescript-eslint/require-array-sort-compare
     for (const dependencyName of dependencyNames.sort()) {
       const packageJsonDependency = require(`${dependencyName}/package.json`);
       dependencies[dependencyName] = `^${packageJsonDependency.version}`;

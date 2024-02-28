@@ -9,7 +9,8 @@ import type {
   IActionQueryProcess,
   IActorQueryProcessOutput,
   IActorQueryProcessArgs,
-  IQueryProcessSequential, IQueryProcessSequentialOutput,
+  IQueryProcessSequential,
+  IQueryProcessSequentialOutput,
 } from '@comunica/bus-query-process';
 import {
   ActorQueryProcess,

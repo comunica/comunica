@@ -2,17 +2,17 @@ import type { MediatorHttpInvalidate } from '@comunica/bus-http-invalidate';
 import type { IActionInit, IActorInitArgs, IActorOutputInit } from '@comunica/bus-init';
 import { ActorInit } from '@comunica/bus-init';
 import type { MediatorQueryProcess } from '@comunica/bus-query-process';
-import type { MediatorQueryResultSerializeHandle,
+import type {
+  MediatorQueryResultSerializeHandle,
   MediatorQueryResultSerializeMediaTypes,
-  MediatorQueryResultSerializeMediaTypeFormats } from '@comunica/bus-query-result-serialize';
+  MediatorQueryResultSerializeMediaTypeFormats,
+} from '@comunica/bus-query-result-serialize';
 import type { IActorTest } from '@comunica/core';
-import type { IQueryContextCommon } from '@comunica/types';
 
 /**
  * A browser-safe comunica Query Init Actor.
  */
-export class ActorInitQueryBase<QueryContext extends IQueryContextCommon = IQueryContextCommon>
-  extends ActorInit implements IActorInitQueryBaseArgs<QueryContext> {
+export class ActorInitQueryBase extends ActorInit implements IActorInitQueryBaseArgs {
   public readonly mediatorQueryResultSerialize: MediatorQueryResultSerializeHandle;
   public readonly mediatorQueryResultSerializeMediaTypeCombiner: MediatorQueryResultSerializeMediaTypes;
   public readonly mediatorQueryResultSerializeMediaTypeFormatCombiner: MediatorQueryResultSerializeMediaTypeFormats;
@@ -24,17 +24,16 @@ export class ActorInitQueryBase<QueryContext extends IQueryContextCommon = IQuer
   public readonly allowNoSources?: boolean;
   public readonly context?: string;
 
-  public async test(action: IActionInit): Promise<IActorTest> {
+  public async test(_action: IActionInit): Promise<IActorTest> {
     return true;
   }
 
-  public async run(action: IActionInit): Promise<IActorOutputInit> {
+  public async run(_action: IActionInit): Promise<IActorOutputInit> {
     throw new Error('ActorInitSparql#run is not supported in the browser.');
   }
 }
 
-export interface IActorInitQueryBaseArgs<QueryContext extends IQueryContextCommon = IQueryContextCommon>
-  extends IActorInitArgs {
+export interface IActorInitQueryBaseArgs extends IActorInitArgs {
   /**
    * The query process mediator
    */

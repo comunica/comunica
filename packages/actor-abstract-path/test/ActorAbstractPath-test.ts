@@ -26,7 +26,9 @@ describe('ActorAbstractPath', () => {
     });
 
     it('should not be able to create new ActorAbstractPath objects without \'new\'', () => {
-      expect(() => { (<any> ActorAbstractPath)(); }).toThrow();
+      expect(() => {
+        (<any> ActorAbstractPath)();
+      }).toThrow(`Class constructor ActorAbstractPath cannot be invoked without 'new'`);
     });
   });
 
@@ -41,7 +43,7 @@ describe('ActorAbstractPath', () => {
         factory.createLink(DF.namedNode('p')),
         DF.variable('b'),
       );
-      return expect(termToString(actor.generateVariable(path))).not.toEqual(path.object.value);
+      expect(termToString(actor.generateVariable(path))).not.toEqual(path.object.value);
     });
 
     describe('getPathSources', () => {

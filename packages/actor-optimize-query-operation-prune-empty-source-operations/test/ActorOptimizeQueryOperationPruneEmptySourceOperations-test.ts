@@ -50,7 +50,7 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
             },
           ],
         }),
-        queryBindings: jest.fn(op => {
+        queryBindings: jest.fn((op) => {
           const bindingsStream = new ArrayIterator([], { autoStart: false });
           let card = 0;
           switch (op.type) {
@@ -98,12 +98,12 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
     });
 
     describe('test', () => {
-      it('should handle operations without top-level source', () => {
-        return expect(actor.test({ context: new ActionContext(), operation: AF.createNop() })).resolves.toBeTruthy();
+      it('should handle operations without top-level source', async() => {
+        await expect(actor.test({ context: new ActionContext(), operation: AF.createNop() })).resolves.toBeTruthy();
       });
 
-      it('should not handle operations with top-level source', () => {
-        return expect(actor.test({
+      it('should not handle operations with top-level source', async() => {
+        await expect(actor.test({
           context: new ActionContext(),
           operation: ActorQueryOperation.assignOperationSource(AF.createNop(), <any>{}),
         })).rejects.toThrow(`Actor actor does not work with top-level operation sources.`);
@@ -500,7 +500,7 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
     describe('hasSourceResults', () => {
       describe('for ask false', () => {
         it('should be true for cardinality > 0', async() => {
-          expect(await actor.hasSourceResults(source1, AF.createNop(), ctx)).toBeTruthy();
+          await expect(actor.hasSourceResults(source1, AF.createNop(), ctx)).resolves.toBeTruthy();
         });
 
         it('should be false for cardinality === 0', async() => {
@@ -509,7 +509,7 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
             bindingsStream.setProperty('metadata', { cardinality: { value: 0 }});
             return bindingsStream;
           };
-          expect(await actor.hasSourceResults(source1, AF.createNop(), ctx)).toBeFalsy();
+          await expect(actor.hasSourceResults(source1, AF.createNop(), ctx)).resolves.toBeFalsy();
         });
 
         it('should reject for an erroring query', async() => {
@@ -524,7 +524,7 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
 
         it('should not wrap the operation', async() => {
           await actor.hasSourceResults(source1, AF.createNop(), ctx);
-          expect(source1.source.queryBindings).toBeCalledWith(AF.createNop(), ctx);
+          expect(source1.source.queryBindings).toHaveBeenCalledWith(AF.createNop(), ctx);
         });
 
         it('should be true for cardinality = 0 on a traversal source', async() => {
@@ -534,7 +534,7 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
             bindingsStream.setProperty('metadata', { cardinality: { value: 0 }});
             return bindingsStream;
           };
-          expect(await actor.hasSourceResults(source1, AF.createNop(), ctx)).toBeTruthy();
+          await expect(actor.hasSourceResults(source1, AF.createNop(), ctx)).resolves.toBeTruthy();
         });
       });
 
@@ -548,22 +548,22 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
         });
 
         it('should be true for a source supporting ask and returning true', async() => {
-          expect(await actor.hasSourceResults(sourceAsk, AF.createNop(), ctx)).toBeTruthy();
+          await expect(actor.hasSourceResults(sourceAsk, AF.createNop(), ctx)).resolves.toBeTruthy();
         });
 
         it('should be false for a source supporting ask and returning false', async() => {
           sourceAsk.source.queryBoolean = async() => false;
-          expect(await actor.hasSourceResults(sourceAsk, AF.createNop(), ctx)).toBeFalsy();
+          await expect(actor.hasSourceResults(sourceAsk, AF.createNop(), ctx)).resolves.toBeFalsy();
         });
 
         it('should wrap the operation in an ask operation', async() => {
-          sourceAsk.source.queryBoolean = jest.fn(async() => true);
+          jest.spyOn(sourceAsk.source, 'queryBoolean').mockImplementation(async() => true);
           await actor.hasSourceResults(sourceAsk, AF.createNop(), ctx);
-          expect(sourceAsk.source.queryBoolean).toBeCalledWith(AF.createAsk(AF.createNop()), ctx);
+          expect(sourceAsk.source.queryBoolean).toHaveBeenCalledWith(AF.createAsk(AF.createNop()), ctx);
         });
 
         it('should fallback to queryBindings if the source does not accept ask', async() => {
-          expect(await actor.hasSourceResults(source1, AF.createNop(), ctx)).toBeTruthy();
+          await expect(actor.hasSourceResults(source1, AF.createNop(), ctx)).resolves.toBeTruthy();
           expect(source1.source.queryBindings).toHaveBeenCalledTimes(1);
         });
       });

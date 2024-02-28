@@ -32,7 +32,7 @@ IQuerySourceUnidentifiedExpandedRawContext;
  * Attaches a context to a query target.
  */
 export interface IQuerySourceWrapper<Q extends IQuerySource = IQuerySource> {
-  source: IQuerySource;
+  source: Q;
   context?: IActionContext;
 }
 

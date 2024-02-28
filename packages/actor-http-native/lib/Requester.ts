@@ -2,10 +2,10 @@
 /* Single-function HTTP(S) request module */
 /* Translated from https://github.com/LinkedDataFragments/Client.js/blob/master/lib/util/Request.js */
 
-import { EventEmitter } from 'events';
-import type { AgentOptions, ClientRequest, IncomingMessage, IncomingHttpHeaders } from 'http';
-import * as url from 'url';
-import * as zlib from 'zlib';
+import { EventEmitter } from 'node:events';
+import type { AgentOptions, ClientRequest, IncomingMessage, IncomingHttpHeaders } from 'node:http';
+import * as url from 'node:url';
+import * as zlib from 'node:zlib';
 import 'cross-fetch/polyfill';
 import { ActorHttp } from '@comunica/bus-http';
 
@@ -29,6 +29,7 @@ export default class Requester {
   public createRequest(settings: any): EventEmitter {
     // Parse the request URL
     if (settings.url) {
+      // eslint-disable-next-line node/no-deprecated-api
       settings = { ...url.parse(settings.url), ...settings };
     }
 
@@ -40,6 +41,7 @@ export default class Requester {
     // Unpacking headers object into a plain object
     const headersObject: any = {};
     if (settings.headers) {
+      // eslint-disable-next-line unicorn/no-array-for-each
       (<Headers> settings.headers).forEach((value, key) => {
         headersObject[key] = value;
       });

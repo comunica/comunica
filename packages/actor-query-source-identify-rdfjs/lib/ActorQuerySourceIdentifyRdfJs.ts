@@ -1,7 +1,10 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
-import type { IActionQuerySourceIdentify, IActorQuerySourceIdentifyOutput,
-  IActorQuerySourceIdentifyArgs } from '@comunica/bus-query-source-identify';
+import type {
+  IActionQuerySourceIdentify,
+  IActorQuerySourceIdentifyOutput,
+  IActorQuerySourceIdentifyArgs,
+} from '@comunica/bus-query-source-identify';
 import { ActorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
 import type { IActorTest } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
@@ -36,7 +39,7 @@ export class ActorQuerySourceIdentifyRdfJs extends ActorQuerySourceIdentify {
           <RDF.Source> action.querySourceUnidentified.value,
           await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context),
         ),
-        context: action.querySourceUnidentified.context || new ActionContext(),
+        context: action.querySourceUnidentified.context ?? new ActionContext(),
       },
     };
   }

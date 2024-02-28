@@ -24,8 +24,8 @@ describe('ActorOptimizeQueryOperationRewriteAdd', () => {
       actor = new ActorOptimizeQueryOperationRewriteAdd({ name: 'actor', bus });
     });
 
-    it('should always test', () => {
-      return expect(actor.test({ operation: <any> null, context })).resolves.toBeTruthy();
+    it('should always test', async() => {
+      await expect(actor.test({ operation: <any> null, context })).resolves.toBeTruthy();
     });
 
     it('should run with named source and named destination', async() => {

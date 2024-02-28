@@ -2,7 +2,7 @@ import { parseDate, parseDateTime } from '../../../lib/util/Parsing';
 
 describe('util/parsing', () => {
   describe('parseXSDDateTime', () => {
-    test('should parse dates correctly', () => {
+    it('should parse dates correctly', () => {
       expect(parseDateTime('2010-06-21T11:28:01Z')).toEqual({
         year: 2_010,
         month: 6,

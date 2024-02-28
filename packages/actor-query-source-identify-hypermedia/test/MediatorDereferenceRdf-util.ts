@@ -114,7 +114,7 @@ const mediatorQuerySourceIdentifyHypermedia: MediatorQuerySourceIdentifyHypermed
           };
         },
         queryBindings() {
-          quads.on('error', (error: Error) => {
+          quads.on('error', () => {
             setImmediate(() => {
               it.close();
             });

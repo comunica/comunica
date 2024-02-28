@@ -1,10 +1,14 @@
+import * as Path from 'node:path';
 import { ProxyHandlerStatic } from '@comunica/actor-http-proxy';
 import type { MediatorQueryProcess } from '@comunica/bus-query-process';
 import {
   KeysHttp,
-  KeysHttpMemento, KeysHttpProxy,
+  KeysHttpMemento,
+  KeysHttpProxy,
   KeysHttpWayback,
-  KeysInitQuery, KeysQueryOperation, KeysRdfUpdateQuads,
+  KeysInitQuery,
+  KeysQueryOperation,
+  KeysRdfUpdateQuads,
 } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
@@ -14,6 +18,7 @@ import { PassThrough, Readable, Transform } from 'readable-stream';
 import { CliArgsHandlerBase } from '../lib';
 import { ActorInitQuery } from '../lib/ActorInitQuery';
 import { QueryEngineBase } from '../lib/QueryEngineBase';
+
 // Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
 const stringifyStream = require('stream-to-string');
 
@@ -46,26 +51,26 @@ describe('ActorInitQuery', () => {
             },
           });
         }
-        return action.query !== 'INVALID' ?
+        return action.query === 'INVALID' ?
+          Promise.reject(new Error('Invalid query')) :
           Promise.resolve({
             result: { type: 'bindings', bindingsStream: input, metadata: () => ({}), context: action.context },
-          }) :
-          Promise.reject(new Error('Invalid query'));
+          });
       }),
     };
     mediatorSparqlSerialize = {
       mediate(arg: any) {
         return Promise.resolve(arg.mediaTypes ?
-          { mediaTypes: arg } :
-          {
-            handle: {
-              data: arg.handle.bindingsStream
-                .pipe(new Transform({
-                  objectMode: true,
-                  transform: (e: any, enc: any, cb: any) => cb(null, JSON.stringify(e)),
-                })),
-            },
-          });
+            { mediaTypes: arg } :
+            {
+              handle: {
+                data: arg.handle.bindingsStream
+                  .pipe(new Transform({
+                    objectMode: true,
+                    transform: (e: any, enc: any, cb: any) => cb(null, JSON.stringify(e)),
+                  })),
+              },
+            });
       },
     };
     mediatorHttpInvalidate = {
@@ -100,40 +105,40 @@ describe('ActorInitQuery', () => {
         mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
         name: 'actor',
       });
-      actorFixedQuery = new ActorInitQuery(
-        { bus,
-          defaultQueryInputFormat: 'sparql',
-          mediatorQueryProcess,
-          mediatorHttpInvalidate,
-          mediatorQueryResultSerialize: mediatorSparqlSerialize,
-          mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
-          mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-          name: 'actor',
-          queryString },
-      );
-      actorFixedContext = new ActorInitQuery(
-        { bus,
-          defaultQueryInputFormat: 'sparql',
-          mediatorQueryProcess,
-          mediatorHttpInvalidate,
-          mediatorQueryResultSerialize: mediatorSparqlSerialize,
-          mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
-          mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-          name: 'actor',
-          context: contextString },
-      );
-      actorFixedQueryAndContext = new ActorInitQuery(
-        { bus,
-          defaultQueryInputFormat: 'sparql',
-          mediatorQueryProcess,
-          mediatorHttpInvalidate,
-          mediatorQueryResultSerialize: mediatorSparqlSerialize,
-          mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
-          mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-          name: 'actor',
-          queryString,
-          context: contextString },
-      );
+      actorFixedQuery = new ActorInitQuery({
+        bus,
+        defaultQueryInputFormat: 'sparql',
+        mediatorQueryProcess,
+        mediatorHttpInvalidate,
+        mediatorQueryResultSerialize: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+        name: 'actor',
+        queryString,
+      });
+      actorFixedContext = new ActorInitQuery({
+        bus,
+        defaultQueryInputFormat: 'sparql',
+        mediatorQueryProcess,
+        mediatorHttpInvalidate,
+        mediatorQueryResultSerialize: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+        name: 'actor',
+        context: contextString,
+      });
+      actorFixedQueryAndContext = new ActorInitQuery({
+        bus,
+        defaultQueryInputFormat: 'sparql',
+        mediatorQueryProcess,
+        mediatorHttpInvalidate,
+        mediatorQueryResultSerialize: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+        name: 'actor',
+        queryString,
+        context: contextString,
+      });
 
       spyResultToString = jest.spyOn(QueryEngineBase.prototype, 'resultToString');
       spyQueryOrExplain = jest.spyOn(QueryEngineBase.prototype, 'queryOrExplain');
@@ -141,7 +146,7 @@ describe('ActorInitQuery', () => {
 
     describe('test', () => {
       it('should be true', async() => {
-        expect(await actor.test(<any> {})).toBeTruthy();
+        await expect(actor.test(<any> {})).resolves.toBeTruthy();
       });
     });
 
@@ -282,7 +287,7 @@ describe('ActorInitQuery', () => {
           env: {},
           stdin: <Readable><any> new PassThrough(),
           context,
-        })).rejects.toThrowError('Invalid query');
+        })).rejects.toThrow('Invalid query');
       });
 
       it('handles a hypermedia source and query option', async() => {
@@ -313,7 +318,7 @@ describe('ActorInitQuery', () => {
 
       it('handles a hypermedia source and query file option', async() => {
         const stdout = await stringifyStream(<any> (await actor.run({
-          argv: [ sourceHypermedia, '-f', `${__dirname}/assets/all-100.sparql` ],
+          argv: [ sourceHypermedia, '-f', Path.join(__dirname, `assets/all-100.sparql`) ],
           env: {},
           stdin: <Readable><any> new PassThrough(),
           context,
@@ -347,7 +352,7 @@ LIMIT 100
           env: {},
           stdin: <Readable><any> new PassThrough(),
           context,
-        })).rejects.toThrowError('no such file or directory');
+        })).rejects.toThrow('no such file or directory');
       });
 
       it('handles a tagged sparql source and query option', async() => {
@@ -456,7 +461,7 @@ LIMIT 100
 
       it('handles query and a config file option', async() => {
         const stdout = await stringifyStream(<any> (await actor.run({
-          argv: [ queryString, '-c', `${__dirname}/assets/config.json` ],
+          argv: [ queryString, '-c', Path.join(__dirname, `/assets/config.json`) ],
           env: {},
           stdin: <Readable><any> new PassThrough(),
           context,
@@ -768,23 +773,23 @@ LIMIT 100
           const m2: any = {
             mediate: (arg: any) => Promise.resolve({ handle: { data: arg.handleMediaType }}),
           };
-          const actorThis = new ActorInitQuery(
-            { bus,
-              mediatorQueryProcess,
-              mediatorHttpInvalidate,
-              mediatorQueryResultSerialize: m2,
-              mediatorQueryResultSerializeMediaTypeCombiner: m2,
-              mediatorQueryResultSerializeMediaTypeFormatCombiner: m2,
-              name: 'actor',
-              queryString },
-          );
+          const actorThis = new ActorInitQuery({
+            bus,
+            mediatorQueryProcess,
+            mediatorHttpInvalidate,
+            mediatorQueryResultSerialize: m2,
+            mediatorQueryResultSerializeMediaTypeCombiner: m2,
+            mediatorQueryResultSerializeMediaTypeFormatCombiner: m2,
+            name: 'actor',
+            queryString,
+          });
           expect((await actorThis.run({
             argv: [ 'S' ],
             env: {},
             stdin: <Readable><any> new PassThrough(),
             context,
           })).stdout)
-            .toEqual('application/json');
+            .toBe('application/json');
         });
 
         it('defaults to application/trig for quadStream', async() => {
@@ -794,23 +799,23 @@ LIMIT 100
           const m2: any = {
             mediate: (arg: any) => Promise.resolve({ handle: { data: arg.handleMediaType }}),
           };
-          const actorThis = new ActorInitQuery(
-            { bus,
-              mediatorQueryProcess: m1,
-              mediatorHttpInvalidate,
-              mediatorQueryResultSerialize: m2,
-              mediatorQueryResultSerializeMediaTypeCombiner: m2,
-              mediatorQueryResultSerializeMediaTypeFormatCombiner: m2,
-              name: 'actor',
-              queryString },
-          );
+          const actorThis = new ActorInitQuery({
+            bus,
+            mediatorQueryProcess: m1,
+            mediatorHttpInvalidate,
+            mediatorQueryResultSerialize: m2,
+            mediatorQueryResultSerializeMediaTypeCombiner: m2,
+            mediatorQueryResultSerializeMediaTypeFormatCombiner: m2,
+            name: 'actor',
+            queryString,
+          });
           expect((await actorThis.run({
             argv: [ 'S' ],
             env: {},
             stdin: <Readable><any> new PassThrough(),
             context,
           })).stdout)
-            .toEqual('application/trig');
+            .toBe('application/trig');
         });
 
         it('defaults to simple for boolean', async() => {
@@ -822,23 +827,23 @@ LIMIT 100
           const m2: any = {
             mediate: (arg: any) => Promise.resolve({ handle: { data: arg.handleMediaType }}),
           };
-          const actorThis = new ActorInitQuery(
-            { bus,
-              mediatorQueryProcess: m1,
-              mediatorHttpInvalidate,
-              mediatorQueryResultSerialize: m2,
-              mediatorQueryResultSerializeMediaTypeCombiner: m2,
-              mediatorQueryResultSerializeMediaTypeFormatCombiner: m2,
-              name: 'actor',
-              queryString },
-          );
+          const actorThis = new ActorInitQuery({
+            bus,
+            mediatorQueryProcess: m1,
+            mediatorHttpInvalidate,
+            mediatorQueryResultSerialize: m2,
+            mediatorQueryResultSerializeMediaTypeCombiner: m2,
+            mediatorQueryResultSerializeMediaTypeFormatCombiner: m2,
+            name: 'actor',
+            queryString,
+          });
           expect((await actorThis.run({
             argv: [ 'S' ],
             env: {},
             stdin: <Readable><any> new PassThrough(),
             context,
           })).stdout)
-            .toEqual('simple');
+            .toBe('simple');
         });
       });
 
@@ -885,16 +890,16 @@ LIMIT 100
         });
 
         it('emits to stderr for no argv when the default query is falsy', async() => {
-          const actorThis = new ActorInitQuery(
-            { bus,
-              mediatorQueryProcess,
-              mediatorHttpInvalidate,
-              mediatorQueryResultSerialize: mediatorSparqlSerialize,
-              mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
-              mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-              name: 'actor',
-              queryString: <any> null },
-          );
+          const actorThis = new ActorInitQuery({
+            bus,
+            mediatorQueryProcess,
+            mediatorHttpInvalidate,
+            mediatorQueryResultSerialize: mediatorSparqlSerialize,
+            mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
+            mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+            name: 'actor',
+            queryString: <any> null,
+          });
 
           const stderr = await stringifyStream(<any> (await actorThis.run({
             argv: [],

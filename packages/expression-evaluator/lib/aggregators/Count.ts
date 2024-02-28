@@ -8,7 +8,7 @@ export class Count extends AggregatorComponent {
     return integer(0).toRDF();
   }
 
-  public put(_: RDF.Term): void {
+  public put(): void {
     if (this.state === undefined) {
       this.state = 0;
     }

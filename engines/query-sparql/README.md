@@ -63,7 +63,6 @@ Show all triples from http://dbpedia.org/resource/Belgium:
 $ comunica-sparql https://dbpedia.org/resource/Belgium "CONSTRUCT WHERE { ?s ?p ?o }"
 ```
 
-
 Combine multiple sources:
 
 ```bash

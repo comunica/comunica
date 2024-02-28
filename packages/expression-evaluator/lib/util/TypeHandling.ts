@@ -163,7 +163,7 @@ export function asKnownLiteralType(type: string): KnownLiteralTypes | undefined 
 }
 
 export function asOverrideType(type: string): OverrideType | undefined {
-  if (asKnownLiteralType(type) || type === 'term') {
+  if (asKnownLiteralType(type) ?? type === 'term') {
     return <OverrideType> type;
   }
   return undefined;
@@ -216,8 +216,11 @@ export function getSuperTypeDict(baseType: string, superTypeProvider: ISuperType
  * @param argumentType type you want to provide @param baseType to.
  * @param superTypeProvider the enabler to discover super types of unknown types.
  */
-export function isSubTypeOf(baseType: string, argumentType: KnownLiteralTypes,
-  superTypeProvider: ISuperTypeProvider): boolean {
+export function isSubTypeOf(
+  baseType: string,
+  argumentType: KnownLiteralTypes,
+  superTypeProvider: ISuperTypeProvider,
+): boolean {
   if (baseType === 'term') {
     return false;
   }
@@ -226,8 +229,10 @@ export function isSubTypeOf(baseType: string, argumentType: KnownLiteralTypes,
 
 // Defined by https://www.w3.org/TR/xpath-31/#promotion .
 // e.g. When a function takes a string, it can also accept a XSD_ANY_URI if it's cast first.
-export const typePromotion: Partial<Record<ArgumentType,
-{ typeToPromote: KnownLiteralTypes; conversionFunction: (arg: E.TermExpression) => E.TermExpression }[]>> = {
+export const typePromotion: Partial<Record<ArgumentType, {
+  typeToPromote: KnownLiteralTypes;
+  conversionFunction: (arg: E.TermExpression) => E.TermExpression;
+}[]>> = {
   [TypeURL.XSD_STRING]: [
     { typeToPromote: TypeURL.XSD_ANY_URI, conversionFunction: arg => string(arg.str()) },
   ],

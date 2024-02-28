@@ -3,30 +3,35 @@
   "version": "3.0.0",
   "description": "A update-deleteinsert query-operation actor",
   "lsd:module": true,
-  "main": "lib/index.js",
-  "typings": "lib/index",
+  "license": "MIT",
+  "homepage": "https://github.com/comunica/comunica#readme",
   "repository": "https://github.com/comunica/comunica/tree/master/packages/actor-query-operation-update-deleteinsert",
-  "publishConfig": {
-    "access": "public"
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
   },
-  "sideEffects": false,
   "keywords": [
     "comunica",
     "actor",
     "query-operation",
     "update-deleteinsert"
   ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/comunica/comunica/issues"
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "publishConfig": {
+    "access": "public"
   },
-  "homepage": "https://github.com/comunica/comunica#readme",
   "files": [
     "components",
     "lib/**/*.d.ts",
     "lib/**/*.js",
     "lib/**/*.js.map"
   ],
+  "scripts": {
+    "build": "npm run build:ts && npm run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
+  },
   "dependencies": {
     "@comunica/actor-query-operation-construct": "^3.0.0",
     "@comunica/bindings-factory": "^3.0.0",
@@ -38,10 +43,5 @@
     "@rdfjs/types": "*",
     "asynciterator": "^3.8.1",
     "sparqlalgebrajs": "^4.3.3"
-  },
-  "scripts": {
-    "build": "npm run build:ts && npm run build:components",
-    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
-    "build:components": "componentsjs-generator"
   }
 }

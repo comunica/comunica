@@ -1,5 +1,5 @@
-import { Readable } from 'stream';
-import * as zlib from 'zlib';
+import { Readable } from 'node:stream';
+import * as zlib from 'node:zlib';
 import { ActorHttp } from '@comunica/bus-http';
 import { KeysCore, KeysHttp } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
@@ -9,6 +9,7 @@ import { AbortController } from 'abort-controller';
 import arrayifyStream from 'arrayify-stream';
 import { ActorHttpNative } from '../lib/ActorHttpNative';
 
+// eslint-disable-next-line jest/no-mocks-import
 const mockSetup = require('./__mocks__/follow-redirects').mockSetup;
 
 describe('ActorHttpNative', () => {
@@ -31,21 +32,23 @@ describe('ActorHttpNative', () => {
     });
 
     it('should not be able to create new ActorHttpNative objects without \'new\'', () => {
-      expect(() => { (<any> ActorHttpNative)(); }).toThrow();
+      expect(() => {
+        (<any> ActorHttpNative)();
+      }).toThrow(`Class constructor ActorHttpNative cannot be invoked without 'new'`);
     });
   });
 
   describe('#createUserAgent', () => {
     it('should create a user agent in the browser', () => {
       (<any> globalThis).navigator = { userAgent: 'Dummy' };
-      return expect(ActorHttpNative.createUserAgent())
-        .toEqual(`Comunica/actor-http-native (Browser-${globalThis.navigator.userAgent})`);
+      expect(ActorHttpNative.createUserAgent())
+        .toBe(`Comunica/actor-http-native (Browser-${globalThis.navigator.userAgent})`);
     });
 
     it('should create a user agent in Node.js', () => {
       delete (<any> globalThis).navigator;
-      return expect(ActorHttpNative.createUserAgent())
-        .toEqual(`Comunica/actor-http-native (Node.js ${process.version}; ${process.platform})`);
+      expect(ActorHttpNative.createUserAgent())
+        .toBe(`Comunica/actor-http-native (Node.js ${process.version}; ${process.platform})`);
     });
   });
 
@@ -56,8 +59,8 @@ describe('ActorHttpNative', () => {
       actor = new ActorHttpNative({ name: 'actor', bus });
     });
 
-    it('should test', () => {
-      return expect(actor.test({ context, input: new Request('https://www.google.com/') }))
+    it('should test', async() => {
+      await expect(actor.test({ context, input: new Request('https://www.google.com/') }))
         .resolves.toEqual({ time: Number.POSITIVE_INFINITY });
     });
 
@@ -72,25 +75,25 @@ describe('ActorHttpNative', () => {
       }
       expect(res[0]).toStrictEqual([ 'accept-language', 'en-US,en;q=0.5' ]);
       expect(res[1]).toStrictEqual([ 'content-type', 'application/json' ]);
-      expect(res[2][0]).toStrictEqual('user-agent');
+      expect(res[2][0]).toBe('user-agent');
     });
 
-    it('should run', () => {
+    it('should run', async() => {
       mockSetup({ statusCode: 404 });
-      return expect(actor.run({ context, input: new Request('http://example.com') })).resolves
+      await expect(actor.run({ context, input: new Request('http://example.com') })).resolves
         .toMatchObject({ status: 404 });
     });
 
-    it('should run https', () => {
+    it('should run https', async() => {
       mockSetup({ statusCode: 404 });
-      return expect(actor.run({ context, input: new Request('https://example.com') })).resolves
+      await expect(actor.run({ context, input: new Request('https://example.com') })).resolves
         .toMatchObject({ status: 404 });
     });
 
-    it('should run with agent options', () => {
+    it('should run with agent options', async() => {
       actor = new ActorHttpNative({ name: 'actor', bus, agentOptions: { name: '007' }});
       mockSetup({ statusCode: 404 });
-      return expect(actor.run({ context, input: new Request('http://example.com') })).resolves
+      await expect(actor.run({ context, input: new Request('http://example.com') })).resolves
         .toMatchObject({ status: 404 });
     });
 
@@ -100,7 +103,7 @@ describe('ActorHttpNative', () => {
         { context, input: new Request('http://example.com', { headers: new Headers({ a: 'b' }) }) },
       );
       expect(result).toMatchObject({ status: 200 });
-      expect(result.body.input.headers.get('a')).toStrictEqual('b');
+      expect(result.body.input.headers.get('a')).toBe('b');
       expect(result.body.input.headers.get('user-agent')).toBeTruthy();
     });
 
@@ -112,24 +115,20 @@ describe('ActorHttpNative', () => {
         init: { headers: new Headers({ a: 'b' }) },
       });
       expect(result).toMatchObject({ status: 200 });
-      expect(result.body.input.headers.get('a')).toStrictEqual('b');
+      expect(result.body.input.headers.get('a')).toBe('b');
       expect(result.body.input.headers.get('user-agent')).toBeTruthy();
     });
 
     it('uses Content-Location header as URL when set with init', async() => {
       const result: any = await actor.run(
-        { context,
-          input: 'http://example.com',
-          init: { headers: new Headers({ 'content-location': 'http://example.com/contentlocation' }) }},
+        { context, input: 'http://example.com', init: { headers: new Headers({ 'content-location': 'http://example.com/contentlocation' }) }},
       );
       expect(result).toMatchObject({ url: 'http://example.com/contentlocation' });
     });
 
     it('uses Content-Location header as URL when set with input', async() => {
       const result: any = await actor.run(
-        { context,
-          input: new Request('http://example.com',
-            { headers: new Headers({ 'content-location': 'http://example.com/contentlocation' }) }) },
+        { context, input: new Request('http://example.com', { headers: new Headers({ 'content-location': 'http://example.com/contentlocation' }) }) },
       );
       expect(result).toMatchObject({ url: 'http://example.com/contentlocation' });
     });
@@ -163,20 +162,18 @@ describe('ActorHttpNative', () => {
       expect(output).toContain('apple');
     });
 
-    it('errors on invalid encoding', () => {
+    it('errors on invalid encoding', async() => {
       const body = new Readable();
       body.push(zlib.gzipSync('apple'));
       body.push(null);
       mockSetup({ statusCode: 200, body, headers: { 'content-encoding': 'invalid' }});
-      return expect(actor.run({ context, input: new Request('http://example.com') })).rejects
+      await expect(actor.run({ context, input: new Request('http://example.com') })).rejects
         .toMatchObject(new Error('Unsupported encoding: invalid'));
     });
 
     it('can have headers in the init object with HEAD', async() => {
       mockSetup({ statusCode: 200 });
-      const result: any = await actor.run({ context,
-        init: { headers: new Headers({ a: 'b' }), method: 'HEAD' },
-        input: 'http://example.com' });
+      const result: any = await actor.run({ context, init: { headers: new Headers({ a: 'b' }), method: 'HEAD' }, input: 'http://example.com' });
       expect(result).toMatchObject({ status: 200 });
     });
 
@@ -217,7 +214,7 @@ describe('ActorHttpNative', () => {
           [KeysHttp.auth.name]: 'user:pass',
         }),
       });
-      expect(results.body.input.auth).toEqual('user:pass');
+      expect(results.body.input.auth).toBe('user:pass');
     });
 
     it('should run with a logger', async() => {
@@ -238,8 +235,7 @@ describe('ActorHttpNative', () => {
     it('should throw when the given body via input', async() => {
       await expect(actor.run({
         context,
-        input: new Request('http://example.com',
-          <any>{ body: new ReadableStream(), method: 'POST', duplex: 'half' }),
+        input: new Request('http://example.com', <any>{ body: new ReadableStream(), method: 'POST', duplex: 'half' }),
       })).rejects.toThrow(new Error('ActorHttpNative does not support passing body via input, use init instead.'));
     });
 
@@ -267,10 +263,10 @@ describe('ActorHttpNative', () => {
       expect(result).toMatchObject({ status: 200 });
     });
 
-    it('should handle an abort controller signal that does nothing', () => {
+    it('should handle an abort controller signal that does nothing', async() => {
       mockSetup({ statusCode: 200 });
       const abortController = new AbortController();
-      return expect(actor.run({
+      await expect(actor.run({
         context,
         input: new Request('http://example.com'),
         init: { signal: <any> abortController.signal },
@@ -286,8 +282,8 @@ describe('ActorHttpNative', () => {
         input: new Request('http://example.com'),
         init: { signal: <any> abortController.signal },
       });
-      expect(response.status).toEqual(200);
-      expect((<any> response).body.destroy).toHaveBeenCalled();
+      expect(response.status).toBe(200);
+      expect((<any> response).body.destroy).toHaveBeenCalledTimes(1);
     });
 
     it('should handle an abort controller signal that is aborted later', async() => {
@@ -299,11 +295,11 @@ describe('ActorHttpNative', () => {
         init: { signal: <any> abortController.signal },
       });
       expect((<any> response).body.destroy).not.toHaveBeenCalled();
-      expect(response.status).toEqual(200);
+      expect(response.status).toBe(200);
 
       abortController.abort();
 
-      expect((<any> response).body.destroy).toHaveBeenCalled();
+      expect((<any> response).body.destroy).toHaveBeenCalledTimes(1);
     });
   });
 });

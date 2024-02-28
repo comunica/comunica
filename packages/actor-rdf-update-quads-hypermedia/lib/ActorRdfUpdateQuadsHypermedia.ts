@@ -4,12 +4,12 @@ import type { IActorRdfMetadataOutput, MediatorRdfMetadata } from '@comunica/bus
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { MediatorRdfUpdateHypermedia } from '@comunica/bus-rdf-update-hypermedia';
 import {
-  ActorRdfUpdateQuadsDestination, getContextDestination,
+  ActorRdfUpdateQuadsDestination,
+  getContextDestination,
   getContextDestinationUrl,
   getDataDestinationType,
 } from '@comunica/bus-rdf-update-quads';
-import type { IActionRdfUpdateQuads,
-  IQuadDestination, IActorRdfUpdateQuadsArgs } from '@comunica/bus-rdf-update-quads';
+import type { IActionRdfUpdateQuads, IQuadDestination, IActorRdfUpdateQuadsArgs } from '@comunica/bus-rdf-update-quads';
 import type { IActorTest } from '@comunica/core';
 import type { IActionContext, IDataDestination } from '@comunica/types';
 import { LRUCache } from 'lru-cache';

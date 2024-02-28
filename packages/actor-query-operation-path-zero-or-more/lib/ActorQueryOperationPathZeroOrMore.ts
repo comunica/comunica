@@ -125,8 +125,8 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
         },
       );
       const variables: RDF.Variable[] = operation.graph.termType === 'Variable' ?
-        [ subjectVar, operation.object, operation.graph ] :
-        [ subjectVar, operation.object ];
+          [ subjectVar, operation.object, operation.graph ] :
+          [ subjectVar, operation.object ];
       return {
         type: 'bindings',
         bindingsStream,

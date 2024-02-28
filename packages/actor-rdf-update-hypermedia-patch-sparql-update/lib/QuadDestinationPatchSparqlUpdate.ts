@@ -41,10 +41,10 @@ export class QuadDestinationPatchSparqlUpdate implements IQuadDestination {
     const dataWrapped = quads
       .map((quad: RDF.Quad) => {
         let stringQuad = `${termToString(quad.subject)} ${termToString(quad.predicate)} ${termToString(quad.object)} .`;
-        if (quad.graph.termType !== 'DefaultGraph') {
-          stringQuad = `  GRAPH ${termToString(quad.graph)} { ${stringQuad} }\n`;
-        } else {
+        if (quad.graph.termType === 'DefaultGraph') {
           stringQuad = `  ${stringQuad}\n`;
+        } else {
+          stringQuad = `  GRAPH ${termToString(quad.graph)} { ${stringQuad} }\n`;
         }
         return stringQuad;
       })
@@ -71,14 +71,14 @@ export class QuadDestinationPatchSparqlUpdate implements IQuadDestination {
   }
 
   public async deleteGraphs(
-    graphs: RDF.DefaultGraph | 'NAMED' | 'ALL' | RDF.NamedNode[],
-    requireExistence: boolean,
-    dropGraphs: boolean,
+    _graphs: RDF.DefaultGraph | 'NAMED' | 'ALL' | RDF.NamedNode[],
+    _requireExistence: boolean,
+    _dropGraphs: boolean,
   ): Promise<void> {
     throw new Error(`Patch-based SPARQL Update destinations don't support named graphs`);
   }
 
-  public async createGraphs(graphs: RDF.NamedNode[], requireNonExistence: boolean): Promise<void> {
+  public async createGraphs(_graphs: RDF.NamedNode[], _requireNonExistence: boolean): Promise<void> {
     throw new Error(`Patch-based SPARQL Update destinations don't support named graphs`);
   }
 }

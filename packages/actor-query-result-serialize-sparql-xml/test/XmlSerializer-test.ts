@@ -12,7 +12,7 @@ describe('XmlSerializer', () => {
   it('should support opening and closing tags', () => {
     serializer.open('foo', { bar: 'baz' });
     serializer.close();
-    return expect(data.join('')).toEqual(`<?xml version="1.0" encoding="UTF-8"?>
+    expect(data.join('')).toBe(`<?xml version="1.0" encoding="UTF-8"?>
 <foo bar="baz">
 </foo>
 `);
@@ -27,7 +27,7 @@ describe('XmlSerializer', () => {
         { name: 'baz', attributes: { bar: 'baz' }},
       ],
     });
-    return expect(data.join('')).toEqual(`<?xml version="1.0" encoding="UTF-8"?>
+    expect(data.join('')).toBe(`<?xml version="1.0" encoding="UTF-8"?>
 <foo bar="baz">
   <bar bar="baz">test</bar>
   <baz bar="baz"/>
@@ -37,14 +37,14 @@ describe('XmlSerializer', () => {
 
   it('should escape text', () => {
     serializer.add({ name: 'bar', children: '\'&<>"' });
-    return expect(data.join('')).toEqual(`<?xml version="1.0" encoding="UTF-8"?>
+    expect(data.join('')).toBe(`<?xml version="1.0" encoding="UTF-8"?>
 <bar>&apos;&amp;&lt;&gt;&quot;</bar>
 `);
   });
 
   it('should escape attributes', () => {
     serializer.add({ name: 'bar', attributes: { baz: '\'&<>"' }});
-    return expect(data.join('')).toEqual(`<?xml version="1.0" encoding="UTF-8"?>
+    expect(data.join('')).toBe(`<?xml version="1.0" encoding="UTF-8"?>
 <bar baz="&apos;&amp;&lt;&gt;&quot;"/>
 `);
   });
@@ -52,6 +52,6 @@ describe('XmlSerializer', () => {
   it('should check extra close calls', () => {
     serializer.open('foo');
     serializer.close();
-    return expect(() => serializer.close()).toThrow(Error);
+    expect(() => serializer.close()).toThrow(Error);
   });
 });

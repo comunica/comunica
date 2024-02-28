@@ -2,17 +2,16 @@
   "name": "@comunica/query-sparql-rdfjs",
   "version": "3.0.0",
   "description": "A SPARQL query engine for querying over RDF/JS sources",
-  "main": "lib/index.js",
-  "typings": "lib/index",
+  "license": "MIT",
+  "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
     "directory": "engines/query-sparql-rdfjs"
   },
-  "publishConfig": {
-    "access": "public"
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
   },
-  "sideEffects": false,
   "keywords": [
     "comunica",
     "sparql",
@@ -26,18 +25,26 @@
     "rdfjs",
     "rdf/js"
   ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/comunica/comunica/issues"
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "publishConfig": {
+    "access": "public"
   },
-  "homepage": "https://comunica.dev/",
   "files": [
     "config",
+    "engine-default.js",
     "lib/**/*.d.ts",
     "lib/**/*.js",
-    "lib/**/*.js.map",
-    "engine-default.js"
+    "lib/**/*.js.map"
   ],
+  "scripts": {
+    "build": "npm run build:ts",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "prepare": "comunica-compile-config config/config-default.json > engine-default.js",
+    "browser": "npm run prepare && \"../../node_modules/webpack/bin/webpack.js\" --config webpack.config.js --mode production",
+    "integration": "rdf-test-suite-ldf spec/sparql-engine.js https://comunica.github.io/manifest-ldf-tests/sparql-rdfjs/rdfjs-manifest.ttl -d 200000 -c ../../.rdf-test-suite-ldf-cache/"
+  },
   "dependencies": {
     "@comunica/actor-context-preprocess-convert-shortcuts": "^3.0.0",
     "@comunica/actor-context-preprocess-query-source-identify": "^3.0.0",
@@ -147,13 +154,6 @@
     "@comunica/mediator-race": "^3.0.0",
     "@comunica/runner": "^3.0.0",
     "@comunica/types": "^3.0.0"
-  },
-  "scripts": {
-    "build": "npm run build:ts",
-    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
-    "prepare": "comunica-compile-config config/config-default.json > engine-default.js",
-    "browser": "npm run prepare && \"../../node_modules/webpack/bin/webpack.js\" --config webpack.config.js --mode production",
-    "integration": "rdf-test-suite-ldf spec/sparql-engine.js https://comunica.github.io/manifest-ldf-tests/sparql-rdfjs/rdfjs-manifest.ttl -d 200000 -c ../../.rdf-test-suite-ldf-cache/"
   },
   "browser": {
     "./lib/index.js": "./lib/index-browser.js"

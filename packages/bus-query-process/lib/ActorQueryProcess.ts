@@ -16,8 +16,8 @@ import type { Algebra } from 'sparqlalgebrajs';
  */
 export abstract class ActorQueryProcess extends Actor<IActionQueryProcess, IActorTest, IActorQueryProcessOutput> {
   /**
-  * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
-  */
+   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   */
   public constructor(args: IActorQueryProcessArgs) {
     super(args);
   }
@@ -38,10 +38,15 @@ export interface IActorQueryProcessOutput extends IActorOutput {
 }
 
 export type IActorQueryProcessArgs = IActorArgs<
-IActionQueryProcess, IActorTest, IActorQueryProcessOutput>;
+IActionQueryProcess,
+IActorTest,
+IActorQueryProcessOutput
+>;
 
 export type MediatorQueryProcess = Mediate<
-IActionQueryProcess, IActorQueryProcessOutput>;
+IActionQueryProcess,
+IActorQueryProcessOutput
+>;
 
 export interface IQueryProcessSequential {
   parse: (query: QueryFormatType, context: IActionContext) => Promise<IQueryProcessSequentialOutput>;

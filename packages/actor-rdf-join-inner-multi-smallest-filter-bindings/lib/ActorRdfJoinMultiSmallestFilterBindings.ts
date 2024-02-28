@@ -3,10 +3,10 @@ import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type {
   IActionRdfJoin,
   IActorRdfJoinArgs,
-  MediatorRdfJoin, IActorRdfJoinOutputInner,
+  MediatorRdfJoin,
+  IActorRdfJoinOutputInner,
 } from '@comunica/bus-rdf-join';
-import { ChunkedIterator,
-  ActorRdfJoin } from '@comunica/bus-rdf-join';
+import { ChunkedIterator, ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
 import { KeysRdfJoin } from '@comunica/context-entries';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
@@ -122,7 +122,7 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
         // Filter out duplicates
         filter(binding) {
           const hash: string = bindingsToString(binding);
-          // eslint-disable-next-line no-return-assign
+
           return !(hash in hashes) && (hashes[hash] = true);
         },
         autoStart: false,

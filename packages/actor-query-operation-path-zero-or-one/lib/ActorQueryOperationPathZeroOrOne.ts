@@ -6,7 +6,8 @@ import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { MetadataValidationState } from '@comunica/metadata';
 import type { Bindings, IQueryOperationResult, IActionContext, BindingsStream } from '@comunica/types';
 import {
-  SingletonIterator, UnionIterator,
+  SingletonIterator,
+  UnionIterator,
 } from 'asynciterator';
 import { Algebra } from 'sparqlalgebrajs';
 

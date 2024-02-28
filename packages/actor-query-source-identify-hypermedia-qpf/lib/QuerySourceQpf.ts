@@ -5,8 +5,14 @@ import { filterMatchingQuotedQuads, quadsToBindings } from '@comunica/bus-query-
 import type { MediatorRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import { KeysQueryOperation } from '@comunica/context-entries';
-import type { IQuerySource, BindingsStream, IActionContext,
-  FragmentSelectorShape, IQueryBindingsOptions, MetadataBindings } from '@comunica/types';
+import type {
+  IQuerySource,
+  BindingsStream,
+  IActionContext,
+  FragmentSelectorShape,
+  IQueryBindingsOptions,
+  MetadataBindings,
+} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, TransformIterator, wrap } from 'asynciterator';
@@ -76,9 +82,13 @@ export class QuerySourceQpf implements IQuerySource {
     mediatorMetadataExtract: MediatorRdfMetadataExtract,
     mediatorDereferenceRdf: MediatorDereferenceRdf,
     bindingsFactory: BindingsFactory,
-    subjectUri: string, predicateUri: string, objectUri: string, graphUri: string | undefined,
+    subjectUri: string,
+    predicateUri: string,
+    objectUri: string,
+    graphUri: string | undefined,
     url: string,
-    metadata: Record<string, any>, bindingsRestricted: boolean,
+    metadata: Record<string, any>,
+    bindingsRestricted: boolean,
     initialQuads?: RDF.Stream,
   ) {
     this.referenceValue = url;
@@ -178,8 +188,13 @@ export class QuerySourceQpf implements IQuerySource {
    * @param {Term} graph A term.
    * @return {string} A URI.
    */
-  public createFragmentUri(searchForm: ISearchForm,
-    subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): string {
+  public createFragmentUri(
+    searchForm: ISearchForm,
+    subject: RDF.Term,
+    predicate: RDF.Term,
+    object: RDF.Term,
+    graph: RDF.Term,
+  ): string {
     const entries: Record<string, string> = {};
     const input = [
       { uri: this.subjectUri, term: subject },
@@ -247,7 +262,7 @@ export class QuerySourceQpf implements IQuerySource {
     }
 
     // Kickstart metadata collection, because the quads iterator is lazy
-    // eslint-disable-next-line @typescript-eslint/no-this-alias,consistent-this
+    // eslint-disable-next-line ts/no-this-alias
     const self = this;
     let quads: AsyncIterator<RDF.Quad>;
     const dataStreamPromise = (async function() {
@@ -270,10 +285,7 @@ export class QuerySourceQpf implements IQuerySource {
 
       // Determine the metadata
       const rdfMetadataOuput: IActorRdfMetadataOutput = await self.mediatorMetadata.mediate(
-        { context,
-          url,
-          quads: dereferenceRdfOutput.data,
-          triples: dereferenceRdfOutput.metadata?.triples },
+        { context, url, quads: dereferenceRdfOutput.data, triples: dereferenceRdfOutput.metadata?.triples },
       );
 
       // Extract the metadata
@@ -335,6 +347,8 @@ export class QuerySourceQpf implements IQuerySource {
    * @param graph The graph.
    * @param url The original QPF URL.
    * @param filterBindings The bindings to restrict with.
+   * @param filterBindings.bindings The bindings stream.
+   * @param filterBindings.metadata The bindings metadata.
    * @protected
    */
   public async getBindingsRestrictedLink(
@@ -372,24 +386,29 @@ export class QuerySourceQpf implements IQuerySource {
   protected reverseMapQuadsToDefaultGraph(quads: AsyncIterator<RDF.Quad>): AsyncIterator<RDF.Quad> {
     const actualDefaultGraph = DF.defaultGraph();
     return quads.map(
-      quad => mapTerms(quad,
-        (term, key) => key === 'graph' && term.equals(this.defaultGraph) ? actualDefaultGraph : term),
+      quad => mapTerms(
+        quad,
+        (term, key) => key === 'graph' && term.equals(this.defaultGraph) ? actualDefaultGraph : term,
+      ),
     );
   }
 
   public getPatternId(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): string {
-    /* eslint-disable id-length */
     return JSON.stringify({
       s: subject.termType === 'Variable' ? '' : _termToString(subject),
       p: predicate.termType === 'Variable' ? '' : _termToString(predicate),
       o: object.termType === 'Variable' ? '' : _termToString(object),
       g: graph.termType === 'Variable' ? '' : _termToString(graph),
     });
-    /* eslint-enable id-length */
   }
 
-  protected cacheQuads(quads: AsyncIterator<RDF.Quad>,
-    subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): void {
+  protected cacheQuads(
+    quads: AsyncIterator<RDF.Quad>,
+    subject: RDF.Term,
+    predicate: RDF.Term,
+    object: RDF.Term,
+    graph: RDF.Term,
+  ): void {
     const patternId = this.getPatternId(subject, predicate, object, graph);
     this.cachedQuads[patternId] = quads.clone();
   }
@@ -403,15 +422,24 @@ export class QuerySourceQpf implements IQuerySource {
     }
   }
 
-  public queryQuads(operation: Algebra.Construct, context: IActionContext): AsyncIterator<RDF.Quad> {
+  public queryQuads(
+    _operation: Algebra.Construct,
+    _context: IActionContext,
+  ): AsyncIterator<RDF.Quad> {
     throw new Error('queryQuads is not implemented in QuerySourceQpf');
   }
 
-  public queryBoolean(operation: Algebra.Ask, context: IActionContext): Promise<boolean> {
+  public queryBoolean(
+    _operation: Algebra.Ask,
+    _context: IActionContext,
+  ): Promise<boolean> {
     throw new Error('queryBoolean is not implemented in QuerySourceQpf');
   }
 
-  public queryVoid(operation: Algebra.Update, context: IActionContext): Promise<void> {
+  public queryVoid(
+    _operation: Algebra.Update,
+    _context: IActionContext,
+  ): Promise<void> {
     throw new Error('queryVoid is not implemented in QuerySourceQpf');
   }
 }

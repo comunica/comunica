@@ -30,7 +30,7 @@ describe('QuerySourceSkolemized', () => {
         it.setProperty('metadata', { state: new MetadataValidationState() });
         return it;
       }),
-      queryBoolean: <any> jest.fn(() => true),
+      queryBoolean: <any> jest.fn(async() => true),
       queryQuads: <any> jest.fn(() => {
         const it = new ArrayIterator([
           DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.blankNode('o1')),
@@ -48,7 +48,7 @@ describe('QuerySourceSkolemized', () => {
 
   it('should delegate getSelectorShape', async() => {
     const context = new ActionContext();
-    expect(await source.getSelectorShape(context)).toEqual('SHAPE');
+    await expect(source.getSelectorShape(context)).resolves.toBe('SHAPE');
     expect(sourceInner.getSelectorShape).toHaveBeenCalledWith(context);
   });
 
@@ -126,7 +126,7 @@ describe('QuerySourceSkolemized', () => {
     const opts: any = {};
     const it = source.queryBindings(op, context, opts);
     await expect(it).toEqualBindingsStream([]);
-    expect(await new Promise(resolve => it.getProperty('metadata', resolve))).toEqual({
+    await expect(new Promise(resolve => it.getProperty('metadata', resolve))).resolves.toEqual({
       state: expect.any(MetadataValidationState),
       cardinality: { type: 'exact', value: 0 },
       canContainUndefs: false,
@@ -149,7 +149,7 @@ describe('QuerySourceSkolemized', () => {
     const opts: any = {};
     const it = source.queryBindings(op, context, opts);
     await expect(it).toEqualBindingsStream([]);
-    expect(await new Promise(resolve => it.getProperty('metadata', resolve))).toEqual({
+    await expect(new Promise(resolve => it.getProperty('metadata', resolve))).resolves.toEqual({
       state: expect.any(MetadataValidationState),
       cardinality: { type: 'exact', value: 0 },
       canContainUndefs: false,
@@ -161,7 +161,7 @@ describe('QuerySourceSkolemized', () => {
   it('should delegate queryBoolean', async() => {
     const op: any = {};
     const context = new ActionContext();
-    expect(await source.queryBoolean(op, context)).toEqual(true);
+    await expect(source.queryBoolean(op, context)).resolves.toBe(true);
     expect(sourceInner.queryBoolean).toHaveBeenCalledWith(op, context);
   });
 
@@ -171,7 +171,7 @@ describe('QuerySourceSkolemized', () => {
       [],
     );
     const context = new ActionContext();
-    expect(await source.queryQuads(op, context).toArray()).toEqual([
+    await expect(source.queryQuads(op, context).toArray()).resolves.toEqual([
       DF.quad(
         DF.namedNode('s1'),
         DF.namedNode('p1'),
@@ -196,7 +196,7 @@ describe('QuerySourceSkolemized', () => {
       [],
     );
     const context = new ActionContext();
-    expect(await source.queryQuads(op, context).toArray()).toEqual([
+    await expect(source.queryQuads(op, context).toArray()).resolves.toEqual([
       DF.quad(
         DF.namedNode('s1'),
         DF.namedNode('p1'),
@@ -229,8 +229,8 @@ describe('QuerySourceSkolemized', () => {
     );
     const context = new ActionContext();
     const it = source.queryQuads(op, context);
-    expect(await source.queryQuads(op, context).toArray()).toEqual([]);
-    expect(await new Promise(resolve => it.getProperty('metadata', resolve))).toEqual({
+    await expect(source.queryQuads(op, context).toArray()).resolves.toEqual([]);
+    await expect(new Promise(resolve => it.getProperty('metadata', resolve))).resolves.toEqual({
       state: expect.any(MetadataValidationState),
       cardinality: { type: 'exact', value: 0 },
     });
@@ -245,11 +245,11 @@ describe('QuerySourceSkolemized', () => {
   });
 
   it('should delegate referenceValue', async() => {
-    expect(source.referenceValue).toEqual('REF');
+    expect(source.referenceValue).toBe('REF');
   });
 
   it('should delegate toString', async() => {
-    expect(source.toString()).toEqual(`STR(SkolemID:0)`);
+    expect(source.toString()).toBe(`STR(SkolemID:0)`);
     expect(sourceInner.toString).toHaveBeenCalledTimes(1);
   });
 });

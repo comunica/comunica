@@ -11,7 +11,9 @@ import type {
   IQueryOperationResultBindings,
   IActionContext,
   IQueryOperationResult,
-  MetadataBindings, MetadataQuads, IQueryOperationResultQuads,
+  MetadataBindings,
+  MetadataQuads,
+  IQueryOperationResultQuads,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { UnionIterator } from 'asynciterator';
@@ -49,12 +51,14 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
    */
   public static async unionMetadata<
     Bindings extends boolean,
-    M extends (Bindings extends true ? MetadataBindings : MetadataQuads)
+    M extends (Bindings extends true ? MetadataBindings : MetadataQuads),
   >(
     metadatas: M[],
     bindings: Bindings,
     context: IActionContext,
-    mediatorRdfMetadataAccumulate: MediatorRdfMetadataAccumulate): Promise<M> {
+    mediatorRdfMetadataAccumulate: MediatorRdfMetadataAccumulate,
+    // eslint-disable-next-line function-paren-newline
+  ): Promise<M> {
     let accumulatedMetadata: M = <M> (await mediatorRdfMetadataAccumulate
       .mediate({ mode: 'initialize', context })).metadata;
 
@@ -90,7 +94,7 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
     return accumulatedMetadata;
   }
 
-  public async testOperation(operation: Algebra.Union, context: IActionContext): Promise<IActorTest> {
+  public async testOperation(_operation: Algebra.Union, _context: IActionContext): Promise<IActorTest> {
     return true;
   }
 

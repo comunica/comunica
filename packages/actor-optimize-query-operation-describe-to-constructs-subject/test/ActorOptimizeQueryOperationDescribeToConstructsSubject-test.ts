@@ -22,14 +22,14 @@ describe('ActorOptimizeQueryOperationDescribeToConstructsSubject', () => {
       actor = new ActorOptimizeQueryOperationDescribeToConstructsSubject({ name: 'actor', bus });
     });
 
-    it('should test on describe', () => {
+    it('should test on describe', async() => {
       const op: any = { operation: { type: 'describe' }};
-      return expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toBeTruthy();
     });
 
-    it('should not test on non-describe', () => {
+    it('should not test on non-describe', async() => {
       const op: any = { operation: { type: 'some-other-type' }};
-      return expect(actor.test(op)).rejects
+      await expect(actor.test(op)).rejects
         .toThrow(`Actor actor only supports describe operations, but got some-other-type`);
     });
 
@@ -67,10 +67,9 @@ describe('ActorOptimizeQueryOperationDescribeToConstructsSubject', () => {
       const op: any = {
         context: new ActionContext({ name: 'context' }),
         operation: {
-          input: { type: 'bgp',
-            patterns: [
-              AF.createPattern(DF.variable('a'), DF.variable('b'), DF.namedNode('dummy')),
-            ]},
+          input: { type: 'bgp', patterns: [
+            AF.createPattern(DF.variable('a'), DF.variable('b'), DF.namedNode('dummy')),
+          ]},
           terms: [ DF.variable('a'), DF.variable('b') ],
           type: 'describe',
         },
@@ -99,8 +98,10 @@ describe('ActorOptimizeQueryOperationDescribeToConstructsSubject', () => {
       const op: any = {
         context: new ActionContext({ name: 'context' }),
         operation: {
-          input: { type: 'bgp',
-            patterns: [ AF.createPattern(DF.variable('a'), DF.variable('b'), DF.namedNode('dummy')) ]},
+          input: {
+            type: 'bgp',
+            patterns: [ AF.createPattern(DF.variable('a'), DF.variable('b'), DF.namedNode('dummy')) ],
+          },
           terms: [ DF.variable('a'), DF.variable('b'), DF.namedNode('c') ],
           type: 'describe',
         },

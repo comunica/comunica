@@ -1,5 +1,6 @@
 import type {
-  IActionRdfUpdateQuads, IActorRdfUpdateQuadsArgs,
+  IActionRdfUpdateQuads,
+  IActorRdfUpdateQuadsArgs,
   IQuadDestination,
 } from '@comunica/bus-rdf-update-quads';
 import { ActorRdfUpdateQuadsDestination, getContextDestination } from '@comunica/bus-rdf-update-quads';

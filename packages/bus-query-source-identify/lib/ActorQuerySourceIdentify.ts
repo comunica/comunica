@@ -16,8 +16,8 @@ import type { IQuerySourceWrapper, QuerySourceUnidentifiedExpanded } from '@comu
 export abstract class ActorQuerySourceIdentify
   extends Actor<IActionQuerySourceIdentify, IActorTest, IActorQuerySourceIdentifyOutput> {
   /**
-  * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
-  */
+   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   */
   public constructor(args: IActorQuerySourceIdentifyArgs) {
     super(args);
   }
@@ -38,7 +38,12 @@ export interface IActorQuerySourceIdentifyOutput extends IActorOutput {
 }
 
 export type IActorQuerySourceIdentifyArgs = IActorArgs<
-IActionQuerySourceIdentify, IActorTest, IActorQuerySourceIdentifyOutput>;
+IActionQuerySourceIdentify,
+IActorTest,
+IActorQuerySourceIdentifyOutput
+>;
 
 export type MediatorQuerySourceIdentify = Mediate<
-IActionQuerySourceIdentify, IActorQuerySourceIdentifyOutput>;
+IActionQuerySourceIdentify,
+IActorQuerySourceIdentifyOutput
+>;

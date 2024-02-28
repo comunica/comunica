@@ -16,7 +16,7 @@ type FunctionCreatorConfig = { type: 'sync'; creator: SyncExtensionFunctionCreat
 
 type AlgebraTransformConfig = ICompleteSharedContext & FunctionCreatorConfig;
 
-export interface IAlgebraTransformer extends ITermTransformer{
+export interface IAlgebraTransformer extends ITermTransformer {
   transformAlgebra: (expr: Alg.Expression) => E.Expression;
 }
 
@@ -74,7 +74,7 @@ export class AlgebraTransformer extends TermTransformer implements IAlgebraTrans
   }
 
   private wrapSyncFunction(func: SyncExtensionFunction, name: string): SimpleApplication {
-    return args => {
+    return (args) => {
       try {
         const res = func(args.map(arg => arg.toRDF()));
         return this.transformRDFTermUnsafe(res);
@@ -85,7 +85,7 @@ export class AlgebraTransformer extends TermTransformer implements IAlgebraTrans
   }
 
   private wrapAsyncFunction(func: AsyncExtensionFunction, name: string): AsyncExtensionApplication {
-    return async args => {
+    return async(args) => {
       try {
         const res = await func(args.map(arg => arg.toRDF()));
         return this.transformRDFTermUnsafe(res);

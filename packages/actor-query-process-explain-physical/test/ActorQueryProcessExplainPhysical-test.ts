@@ -46,19 +46,25 @@ describe('ActorQueryProcessExplainPhysical', () => {
       });
 
       it('handles physical explain in context', async() => {
-        expect(await actor.test({ query: 'q', context: new ActionContext().set(KeysInitQuery.explain, 'physical') }))
+        await expect(actor.test({
+          query: 'q',
+          context: new ActionContext().set(KeysInitQuery.explain, 'physical'),
+        })).resolves
           .toBeTruthy();
       });
 
       it('handles physical explain in raw context', async() => {
-        expect(await actor.test({ query: 'q', context: new ActionContext().setRaw('explain', 'physical') }))
+        await expect(actor.test({ query: 'q', context: new ActionContext().setRaw('explain', 'physical') })).resolves
           .toBeTruthy();
       });
     });
 
     describe('run', () => {
       it('handles physical explain in context', async() => {
-        expect(await actor.run({ query: 'q', context: new ActionContext().set(KeysInitQuery.explain, 'physical') }))
+        await expect(actor.run({
+          query: 'q',
+          context: new ActionContext().set(KeysInitQuery.explain, 'physical'),
+        })).resolves
           .toEqual({
             result: {
               explain: true,
@@ -79,7 +85,10 @@ describe('ActorQueryProcessExplainPhysical', () => {
           };
         };
 
-        expect(await actor.run({ query: 'q', context: new ActionContext().set(KeysInitQuery.explain, 'physical') }))
+        await expect(actor.run({
+          query: 'q',
+          context: new ActionContext().set(KeysInitQuery.explain, 'physical'),
+        })).resolves
           .toEqual({
             result: {
               explain: true,
@@ -97,7 +106,10 @@ describe('ActorQueryProcessExplainPhysical', () => {
           };
         };
 
-        expect(await actor.run({ query: 'q', context: new ActionContext().set(KeysInitQuery.explain, 'physical') }))
+        await expect(actor.run({
+          query: 'q',
+          context: new ActionContext().set(KeysInitQuery.explain, 'physical'),
+        })).resolves
           .toEqual({
             result: {
               explain: true,
@@ -115,7 +127,10 @@ describe('ActorQueryProcessExplainPhysical', () => {
           };
         };
 
-        expect(await actor.run({ query: 'q', context: new ActionContext().set(KeysInitQuery.explain, 'physical') }))
+        await expect(actor.run({
+          query: 'q',
+          context: new ActionContext().set(KeysInitQuery.explain, 'physical'),
+        })).resolves
           .toEqual({
             result: {
               explain: true,

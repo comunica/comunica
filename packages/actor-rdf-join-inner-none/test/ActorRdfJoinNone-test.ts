@@ -23,7 +23,10 @@ describe('ActorRdfJoinNone', () => {
   describe('An ActorRdfJoinNone instance', () => {
     let mediatorJoinSelectivity: Mediator<
     Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
-    IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>;
+    IActionRdfJoinSelectivity,
+IActorTest,
+IActorRdfJoinSelectivityOutput
+>;
     let actor: ActorRdfJoinNone;
     let context: IActionContext;
 
@@ -49,15 +52,15 @@ describe('ActorRdfJoinNone', () => {
             },
           ],
           context,
-        })).rejects.toThrowError('Actor actor can only join zero entries');
+        })).rejects.toThrow('Actor actor can only join zero entries');
       });
 
       it('should test on zero entries', async() => {
-        expect(await actor.test({
+        await expect(actor.test({
           type: 'inner',
           entries: [],
           context,
-        })).toEqual({
+        })).resolves.toEqual({
           iterations: 0,
           persistedItems: 0,
           blockingItems: 0,
@@ -73,7 +76,7 @@ describe('ActorRdfJoinNone', () => {
           context,
         });
         await expect(output.bindingsStream).toEqualBindingsStream([ BF.bindings() ]);
-        expect(await output.metadata())
+        await expect(output.metadata()).resolves
           .toMatchObject({ cardinality: { type: 'exact', value: 1 }, canContainUndefs: false, variables: []});
       });
     });

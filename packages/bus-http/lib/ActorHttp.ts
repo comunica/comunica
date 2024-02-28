@@ -34,7 +34,7 @@ export abstract class ActorHttp extends Actor<IActionHttp, IActorTest, IActorHtt
    * Converts WhatWG streams to Node streams if required.
    * Returns the input in case the stream already is a Node stream.
    * @param {ReadableStream} body
-   * @returns {NodeJS.ReadableStream}
+   * @returns {NodeJS.ReadableStream} A node stream.
    */
   public static toNodeReadable(body: ReadableStream | null): NodeJS.ReadableStream {
     return isStream(body) || body === null ?
@@ -45,7 +45,7 @@ export abstract class ActorHttp extends Actor<IActionHttp, IActorTest, IActorHtt
   /**
    * Converts Node streams to WhatWG streams.
    * @param {NodeJS.ReadableStream} body
-   * @returns {ReadableStream}
+   * @returns {ReadableStream} A web stream.
    */
   public static toWebReadableStream(body: NodeJS.ReadableStream | null): ReadableStream {
     return toWebReadableStream(body);
@@ -57,6 +57,7 @@ export abstract class ActorHttp extends Actor<IActionHttp, IActorTest, IActorHtt
    */
   public static headersToHash(headers: Headers): Record<string, string> {
     const hash: Record<string, string> = {};
+    // eslint-disable-next-line unicorn/no-array-for-each
     headers.forEach((value, key) => {
       hash[key] = value;
     });

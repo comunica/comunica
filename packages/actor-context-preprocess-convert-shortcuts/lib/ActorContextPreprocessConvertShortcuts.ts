@@ -14,7 +14,7 @@ export class ActorContextPreprocessConvertShortcuts extends ActorContextPreproce
     super(args);
   }
 
-  public async test(action: IAction): Promise<IActorTest> {
+  public async test(_action: IAction): Promise<IActorTest> {
     return true;
   }
 

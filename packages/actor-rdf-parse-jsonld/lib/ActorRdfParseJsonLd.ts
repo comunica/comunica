@@ -1,6 +1,5 @@
 import type { MediatorHttp } from '@comunica/bus-http';
-import type { IActionRdfParse,
-  IActorRdfParseFixedMediaTypesArgs, IActorRdfParseOutput } from '@comunica/bus-rdf-parse';
+import type { IActionRdfParse, IActorRdfParseFixedMediaTypesArgs, IActorRdfParseOutput } from '@comunica/bus-rdf-parse';
 import { ActorRdfParseFixedMediaTypes } from '@comunica/bus-rdf-parse';
 import { KeysRdfParseHtmlScript, KeysRdfParseJsonLd } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
@@ -46,7 +45,7 @@ export class ActorRdfParseJsonLd extends ActorRdfParseFixedMediaTypes {
   public async runHandle(action: IActionRdfParse, mediaType: string, actionContext: IActionContext):
   Promise<IActorRdfParseOutput> {
     const parser = JsonLdParser.fromHttpResponse(action.metadata?.baseIRI ?? '', mediaType, action.headers, {
-      documentLoader: actionContext.get(KeysRdfParseJsonLd.documentLoader) ||
+      documentLoader: actionContext.get(KeysRdfParseJsonLd.documentLoader) ??
         new DocumentLoaderMediated(this.mediatorHttp, actionContext),
       strictValues: actionContext.get(KeysRdfParseJsonLd.strictValues),
       ...actionContext.get(KeysRdfParseJsonLd.parserOptions),

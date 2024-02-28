@@ -28,7 +28,6 @@ export class ActorQuerySourceIdentifySerialized extends ActorQuerySourceIdentify
   }
 
   public async test(action: IActionQuerySourceIdentify): Promise<IActorTest> {
-    const source = action.querySourceUnidentified;
     if (!this.isStringSource(action.querySourceUnidentified)) {
       throw new Error(`${this.name} requires a single query source with serialized type to be present in the context.`);
     }

@@ -23,4 +23,3 @@ $ yarn add @comunica/bus-optimize-query-operation
 ## Creating actors on this bus
 
 Actors extending [`ActorOptimizeQueryOperation`](https://comunica.github.io/comunica/classes/_comunica_bus_optimize_query_operation.ActorOptimizeQueryOperation.html) are automatically subscribed to this bus.
-

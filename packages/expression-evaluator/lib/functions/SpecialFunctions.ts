@@ -336,7 +336,7 @@ const concat: ISpecialDefinition = {
     const { args, mapping, evaluate, functionArgumentsCache, superTypeProvider } = context;
     const pLits: Promise<E.Literal<string>>[] = args
       .map(async expr => evaluate(expr, mapping))
-      .map(async pTerm => {
+      .map(async(pTerm) => {
         const operation = concatTree.search([ await pTerm ], superTypeProvider, functionArgumentsCache);
         if (!operation) {
           throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.CONCAT);
@@ -354,7 +354,7 @@ const concat: ISpecialDefinition = {
     const { args, mapping, evaluate, superTypeProvider, functionArgumentsCache } = context;
     const lits = args
       .map(expr => evaluate(expr, mapping))
-      .map(pTerm => {
+      .map((pTerm) => {
         const operation = concatTree.search([ pTerm ], superTypeProvider, functionArgumentsCache);
         if (!operation) {
           throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.CONCAT);
@@ -439,7 +439,7 @@ const BNODE: ISpecialDefinition = {
 };
 
 function BNODE_(input?: string): E.BlankNode {
-  return new E.BlankNode(input || uuid.v4());
+  return new E.BlankNode(input ?? uuid.v4());
 }
 
 // ----------------------------------------------------------------------------

@@ -8,7 +8,9 @@ import type {
   IQueryOperationResult,
   IQueryOperationResultBindings,
   IQueryOperationResultQuads,
-  IQueryOperationResultStream, IMetadata, IActionContext,
+  IQueryOperationResultStream,
+  IMetadata,
+  IActionContext,
 } from '@comunica/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -21,7 +23,7 @@ export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<A
     super(args, 'slice');
   }
 
-  public async testOperation(operation: Algebra.Slice, context: IActionContext): Promise<IActorTest> {
+  public async testOperation(_operation: Algebra.Slice, _context: IActionContext): Promise<IActorTest> {
     return true;
   }
 
@@ -75,7 +77,7 @@ export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<A
     // eslint-disable-next-line unicorn/explicit-length-check
     const hasLength: boolean = Boolean(pattern.length) || pattern.length === 0;
     return () => (<() => Promise<IMetadata<any>>>output.metadata)()
-      .then(subMetadata => {
+      .then((subMetadata) => {
         const cardinality = { ...subMetadata.cardinality };
         if (Number.isFinite(cardinality.value)) {
           cardinality.value = Math.max(0, cardinality.value - pattern.start);

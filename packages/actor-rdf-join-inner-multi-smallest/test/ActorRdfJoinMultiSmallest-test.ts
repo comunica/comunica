@@ -38,14 +38,19 @@ describe('ActorRdfJoinMultiSmallest', () => {
     });
 
     it('should not be able to create new ActorRdfJoinMultiSmallest objects without \'new\'', () => {
-      expect(() => { (<any> ActorRdfJoinMultiSmallest)(); }).toThrow();
+      expect(() => {
+        (<any> ActorRdfJoinMultiSmallest)();
+      }).toThrow(`Class constructor ActorRdfJoinMultiSmallest cannot be invoked without 'new'`);
     });
   });
 
   describe('An ActorRdfJoinMultiSmallest instance', () => {
     let mediatorJoinSelectivity: Mediator<
     Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
-    IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>;
+    IActionRdfJoinSelectivity,
+IActorTest,
+IActorRdfJoinSelectivityOutput
+>;
     let mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort;
     let mediatorJoin: any;
     let actor: ActorRdfJoinMultiSmallest;
@@ -276,18 +281,18 @@ describe('ActorRdfJoinMultiSmallest', () => {
       });
     });
 
-    it('should not test on 0 streams', () => {
-      return expect(actor.test({ type: 'inner', entries: [], context })).rejects
+    it('should not test on 0 streams', async() => {
+      await expect(actor.test({ type: 'inner', entries: [], context })).rejects
         .toThrow(new Error('actor requires at least two join entries.'));
     });
 
-    it('should not test on 1 stream', () => {
-      return expect(actor.test({ type: 'inner', entries: [ <any> null ], context })).rejects
+    it('should not test on 1 stream', async() => {
+      await expect(actor.test({ type: 'inner', entries: [ <any> null ], context })).rejects
         .toThrow(new Error('actor requires at least two join entries.'));
     });
 
-    it('should not test on 2 streams', () => {
-      return expect(actor.test({ type: 'inner', entries: [ <any> null, <any> null ], context })).rejects
+    it('should not test on 2 streams', async() => {
+      await expect(actor.test({ type: 'inner', entries: [ <any> null, <any> null ], context })).rejects
         .toThrow(new Error('actor requires 3 join entries at least. The input contained 2.'));
     });
 
@@ -299,7 +304,9 @@ describe('ActorRdfJoinMultiSmallest', () => {
         blockingItems: 0,
         requestTime: 2,
       });
-      action.entries.forEach(entry => entry.output.bindingsStream.destroy());
+      for (const entry of action.entries) {
+        entry.output.bindingsStream.destroy();
+      }
     });
 
     it('should test on 4 streams', async() => {
@@ -310,14 +317,16 @@ describe('ActorRdfJoinMultiSmallest', () => {
         blockingItems: 0,
         requestTime: 2.8,
       });
-      action.entries.forEach(entry => entry.output.bindingsStream.destroy());
+      for (const entry of action.entries) {
+        entry.output.bindingsStream.destroy();
+      }
     });
 
     it('should run on 3 streams', async() => {
       const action = action3();
       const output = await actor.run(action);
-      expect(output.type).toEqual('bindings');
-      expect(await (<any> output).metadata()).toEqual({
+      expect(output.type).toBe('bindings');
+      await expect((<any> output).metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 40 },
         canContainUndefs: false,
@@ -345,8 +354,8 @@ describe('ActorRdfJoinMultiSmallest', () => {
     it('should run on 4 streams', async() => {
       const action = action4();
       const output = await actor.run(action);
-      expect(output.type).toEqual('bindings');
-      expect(await (<any> output).metadata()).toEqual({
+      expect(output.type).toBe('bindings');
+      await expect((<any> output).metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 80 },
         canContainUndefs: false,

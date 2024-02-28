@@ -86,12 +86,12 @@ describe('ActorOptimizeQueryOperationGroupSources', () => {
     });
 
     describe('test', () => {
-      it('should handle operations without top-level source', () => {
-        return expect(actor.test({ context: new ActionContext(), operation: AF.createNop() })).resolves.toBeTruthy();
+      it('should handle operations without top-level source', async() => {
+        await expect(actor.test({ context: new ActionContext(), operation: AF.createNop() })).resolves.toBeTruthy();
       });
 
-      it('should not handle operations with top-level source', () => {
-        return expect(actor.test({
+      it('should not handle operations with top-level source', async() => {
+        await expect(actor.test({
           context: new ActionContext(),
           operation: ActorQueryOperation.assignOperationSource(AF.createNop(), <any>{}),
         })).rejects.toThrow(`Actor actor does not work with top-level operation sources.`);
@@ -136,12 +136,12 @@ describe('ActorOptimizeQueryOperationGroupSources', () => {
     describe('groupOperation', () => {
       it('should return the original operation if annotated with a source', async() => {
         const opIn = ActorQueryOperation.assignOperationSource(AF.createNop(), source1);
-        expect(await actor.groupOperation(opIn, ctx)).toBe(opIn);
+        await expect(actor.groupOperation(opIn, ctx)).resolves.toBe(opIn);
       });
 
       it('should return the original operation if it has no input', async() => {
         const opIn = AF.createNop();
-        expect(await actor.groupOperation(opIn, ctx)).toBe(opIn);
+        await expect(actor.groupOperation(opIn, ctx)).resolves.toBe(opIn);
       });
 
       describe('for a singular operation', () => {
@@ -620,22 +620,22 @@ describe('ActorOptimizeQueryOperationGroupSources', () => {
     describe('moveSourceAnnotationUpwardsIfPossible', () => {
       it('should return the grouped operation for a undefined source', async() => {
         const grouped = AF.createUnion([]);
-        expect(await actor.moveSourceAnnotationUpwardsIfPossible(
+        await expect(actor.moveSourceAnnotationUpwardsIfPossible(
           grouped,
           [],
           undefined,
           new ActionContext(),
-        )).toBe(grouped);
+        )).resolves.toBe(grouped);
       });
 
       it('should return the grouped operation for a source that does not accept it', async() => {
         const grouped = AF.createUnion([]);
-        expect(await actor.moveSourceAnnotationUpwardsIfPossible(
+        await expect(actor.moveSourceAnnotationUpwardsIfPossible(
           grouped,
           [],
           sourcePattern,
           new ActionContext(),
-        )).toBe(grouped);
+        )).resolves.toBe(grouped);
       });
 
       it('should return the grouped operation for a source that does accept it', async() => {

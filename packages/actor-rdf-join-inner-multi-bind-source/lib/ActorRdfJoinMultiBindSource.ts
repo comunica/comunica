@@ -1,15 +1,15 @@
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import type { IActionRdfJoin,
-  IActorRdfJoinArgs,
-  IActorRdfJoinOutputInner } from '@comunica/bus-rdf-join';
+import type { IActionRdfJoin, IActorRdfJoinArgs, IActorRdfJoinOutputInner } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin, ChunkedIterator } from '@comunica/bus-rdf-join';
 import type { MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { IJoinEntryWithMetadata,
+import type {
+  IJoinEntryWithMetadata,
   IQueryOperationResultBindings,
   IQuerySourceWrapper,
   MetadataBindings,
-  IActionContext } from '@comunica/types';
+  IActionContext,
+} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { UnionIterator } from 'asynciterator';
@@ -39,9 +39,11 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin {
     const entriesUnsorted = await ActorRdfJoin.getEntriesWithMetadatas(action.entries);
     const entries = await this.sortJoinEntries(entriesUnsorted, action.context);
 
-    this.logDebug(action.context,
+    this.logDebug(
+      action.context,
       'First entry for Bind Join Source: ',
-      () => ({ entry: entries[0].operation, metadata: entries[0].metadata }));
+      () => ({ entry: entries[0].operation, metadata: entries[0].metadata }),
+    );
 
     // Close the non-smallest streams
     for (const [ i, element ] of entries.entries()) {

@@ -45,14 +45,16 @@ export function quadsToBindings(
   const duplicateElementLinks: Record<string, QuadTermName[][]> | undefined = getDuplicateElementLinks(pattern);
 
   // Convenience datastructure for mapping quad elements to variables
-  const elementVariables: Record<string, string> = reduceTermsNested(pattern,
+  const elementVariables: Record<string, string> = reduceTermsNested(
+    pattern,
     (acc: Record<string, string>, term: RDF.Term, keys: QuadTermName[]) => {
       if (term.termType === 'Variable') {
         acc[keys.join('_')] = term.value;
       }
       return acc;
     },
-    {});
+    {},
+  );
 
   // Optionally filter, and construct bindings
   const it = new ClosableTransformIterator(async() => {
@@ -68,7 +70,7 @@ export function quadsToBindings(
     // make sure that we filter out the triples that don't have equal values for those triple elements,
     // as the rdf-resolve-quad-pattern bus ignores variable names.
     if (duplicateElementLinks) {
-      filteredOutput = filteredOutput.filter(quad => {
+      filteredOutput = filteredOutput.filter((quad) => {
         for (const keyLeft in duplicateElementLinks) {
           const keysLeft: QuadTermName[] = <QuadTermName[]> keyLeft.split('_');
           const valueLeft = getValueNestedPath(quad, keysLeft);
@@ -82,7 +84,7 @@ export function quadsToBindings(
       });
     }
 
-    return filteredOutput.map(quad => bindingsFactory.bindings(Object.keys(elementVariables).map(key => {
+    return filteredOutput.map(quad => bindingsFactory.bindings(Object.keys(elementVariables).map((key) => {
       const keys: QuadTermName[] = <any>key.split('_');
       const variable = elementVariables[key];
       const term = getValueNestedPath(quad, keys);
@@ -193,8 +195,10 @@ export function setMetadata(
     if (forceEstimateCardinality) {
       metadataRaw.cardinality.type = 'estimate';
     }
-    bindings.setProperty('metadata',
-      quadsMetadataToBindingsMetadata(validateMetadataQuads(metadataRaw), elementVariables, variables));
+    bindings.setProperty(
+      'metadata',
+      quadsMetadataToBindingsMetadata(validateMetadataQuads(metadataRaw), elementVariables, variables),
+    );
 
     // Propagate metadata invalidations
     if (metadataRaw.state) {
@@ -251,15 +255,17 @@ export function quadsOrderToBindingsOrder(
   elementVariables: Record<string, string>,
 ): TermsOrder<RDF.Variable> {
   const mappedVariables: Record<string, boolean> = {};
-  return <TermsOrder<RDF.Variable>> quadsOrder.map(entry => {
+  return <TermsOrder<RDF.Variable>> quadsOrder.map((entry) => {
     // Omit entries that do not map to a variable
     const variableName = elementVariables[entry.term];
     if (!variableName) {
+      // eslint-disable-next-line array-callback-return
       return;
     }
 
     // Omit entries that have been mapped already
     if (mappedVariables[variableName]) {
+      // eslint-disable-next-line array-callback-return
       return;
     }
 
@@ -268,7 +274,7 @@ export function quadsOrderToBindingsOrder(
       term: DF.variable(variableName),
       direction: entry.direction,
     };
-  }).filter(entry => Boolean(entry));
+  }).filter(Boolean);
 }
 
 /**

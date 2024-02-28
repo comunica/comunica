@@ -18,7 +18,7 @@ export class ActorQueryOperationMinus extends ActorQueryOperationTypedMediated<A
     super(args, 'minus');
   }
 
-  public async testOperation(operation: Algebra.Minus, context: IActionContext): Promise<IActorTest> {
+  public async testOperation(_operation: Algebra.Minus, _context: IActionContext): Promise<IActorTest> {
     return true;
   }
 

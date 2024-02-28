@@ -23,7 +23,7 @@ describe('BusIndexed', () => {
     const observer3 = new (<any> ActionObserver)({ name: 'observer3', bus: new Bus({ name: 'bus3' }) });
 
     const actorTest = (action: any) => {
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         resolve({ type: 'test', sent: action });
       });
     };
@@ -55,7 +55,7 @@ describe('BusIndexed', () => {
     });
 
     it('should have a \'name\' field', () => {
-      expect(bus.name).toEqual('bus');
+      expect(bus.name).toBe('bus');
     });
 
     it('should allow an actor to be subscribed', () => {
@@ -142,10 +142,10 @@ describe('BusIndexed', () => {
         expect(bus.publish({})).toHaveLength(1);
       });
 
-      it('should receive a correct publication reply', () => {
+      it('should receive a correct publication reply', async() => {
         expect(bus.publish({ a: 'b' })[0].actor).toEqual(actor1);
         expect(bus.publish({ a: 'b' })[0].reply).toBeInstanceOf(Promise);
-        return expect(bus.publish({ a: 'b' })[0].reply).resolves.toEqual({ type: 'test', sent: { a: 'b' }});
+        await expect(bus.publish({ a: 'b' })[0].reply).resolves.toEqual({ type: 'test', sent: { a: 'b' }});
       });
     });
 
@@ -208,7 +208,7 @@ describe('BusIndexed', () => {
     const observer3 = new (<any> ActionObserver)({ name: 'observer3', bus: new Bus({ name: 'bus3' }) });
 
     const actorTest = (action: any) => {
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         resolve({ type: 'test', sent: action });
       });
     };
@@ -242,7 +242,7 @@ describe('BusIndexed', () => {
     });
 
     it('should have a \'name\' field', () => {
-      expect(bus.name).toEqual('bus');
+      expect(bus.name).toBe('bus');
     });
 
     it('should allow an actor to be subscribed', () => {
@@ -404,8 +404,8 @@ describe('BusIndexed', () => {
         expect(bus.publish({ a: '1' })[0].reply).toBeInstanceOf(Promise);
         expect(bus.publish({ a: '1' })[1].actor).toEqual(actor3);
         expect(bus.publish({ a: '1' })[1].reply).toBeInstanceOf(Promise);
-        expect(await bus.publish({ a: '1' })[0].reply).toEqual({ type: 'test', sent: { a: '1' }});
-        expect(await bus.publish({ a: '1' })[1].reply).toEqual({ type: 'test', sent: { a: '1' }});
+        await expect(bus.publish({ a: '1' })[0].reply).resolves.toEqual({ type: 'test', sent: { a: '1' }});
+        await expect(bus.publish({ a: '1' })[1].reply).resolves.toEqual({ type: 'test', sent: { a: '1' }});
       });
     });
 
@@ -438,8 +438,8 @@ describe('BusIndexed', () => {
         expect(bus.publish({ a: '1' })[0].reply).toBeInstanceOf(Promise);
         expect(bus.publish({ a: '1' })[1].actor).toEqual(actor4);
         expect(bus.publish({ a: '1' })[1].reply).toBeInstanceOf(Promise);
-        expect(await bus.publish({ a: '1' })[0].reply).toEqual({ type: 'test', sent: { a: '1' }});
-        expect(await bus.publish({ a: '1' })[1].reply).toEqual({ type: 'test', sent: { a: '1' }});
+        await expect(bus.publish({ a: '1' })[0].reply).resolves.toEqual({ type: 'test', sent: { a: '1' }});
+        await expect(bus.publish({ a: '1' })[1].reply).resolves.toEqual({ type: 'test', sent: { a: '1' }});
       });
     });
   });

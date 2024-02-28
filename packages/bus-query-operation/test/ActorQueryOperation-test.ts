@@ -24,7 +24,9 @@ describe('ActorQueryOperation', () => {
     });
 
     it('should not be able to create new ActorQueryOperation objects without \'new\'', () => {
-      expect(() => { (<any> ActorQueryOperation)(); }).toThrow();
+      expect(() => {
+        (<any> ActorQueryOperation)();
+      }).toThrow(`Class constructor ActorQueryOperation cannot be invoked without 'new'`);
     });
   });
 
@@ -34,7 +36,8 @@ describe('ActorQueryOperation', () => {
     });
 
     it('should error for non-bindings', () => {
-      expect(() => ActorQueryOperation.getSafeBindings(<any>{ type: 'no-bindings' })).toThrow();
+      expect(() => ActorQueryOperation.getSafeBindings(<any>{ type: 'no-bindings' }))
+        .toThrow(`Invalid query output type: Expected 'bindings' but got 'no-bindings'`);
     });
   });
 
@@ -44,7 +47,8 @@ describe('ActorQueryOperation', () => {
     });
 
     it('should error for non-quads', () => {
-      expect(() => ActorQueryOperation.getSafeQuads(<any>{ type: 'no-quads' })).toThrow();
+      expect(() => ActorQueryOperation.getSafeQuads(<any>{ type: 'no-quads' }))
+        .toThrow(`Invalid query output type: Expected 'quads' but got 'no-quads'`);
     });
   });
 
@@ -54,7 +58,8 @@ describe('ActorQueryOperation', () => {
     });
 
     it('should error for non-boolean', () => {
-      expect(() => ActorQueryOperation.getSafeBoolean(<any>{ type: 'no-boolean' })).toThrow();
+      expect(() => ActorQueryOperation.getSafeBoolean(<any>{ type: 'no-boolean' }))
+        .toThrow(`Invalid query output type: Expected 'boolean' but got 'no-boolean'`);
     });
   });
 
@@ -63,8 +68,8 @@ describe('ActorQueryOperation', () => {
       let counter = 0;
       const cb = jest.fn(async() => ({ state: new MetadataValidationState(), value: counter++ }));
       const cached = cachifyMetadata(<any> cb);
-      expect((await cached()).value).toEqual(0);
-      expect((await cached()).value).toEqual(0);
+      expect((await cached()).value).toBe(0);
+      expect((await cached()).value).toBe(0);
       expect(cb).toHaveBeenCalledTimes(1);
     });
 
@@ -73,13 +78,13 @@ describe('ActorQueryOperation', () => {
       const state = new MetadataValidationState();
       const cb = jest.fn(async() => ({ state, value: counter++ }));
       const cached = cachifyMetadata(<any> cb);
-      expect((await cached()).value).toEqual(0);
-      expect((await cached()).value).toEqual(0);
+      expect((await cached()).value).toBe(0);
+      expect((await cached()).value).toBe(0);
       expect(cb).toHaveBeenCalledTimes(1);
 
       state.invalidate();
-      expect((await cached()).value).toEqual(1);
-      expect((await cached()).value).toEqual(1);
+      expect((await cached()).value).toBe(1);
+      expect((await cached()).value).toBe(1);
       expect(cb).toHaveBeenCalledTimes(2);
     });
   });
@@ -90,7 +95,8 @@ describe('ActorQueryOperation', () => {
     });
 
     it('should error for non-boolean', () => {
-      expect(() => ActorQueryOperation.validateQueryOutput(<any>{ type: 'no-boolean' }, 'boolean')).toThrow();
+      expect(() => ActorQueryOperation.validateQueryOutput(<any>{ type: 'no-boolean' }, 'boolean'))
+        .toThrow(`Invalid query output type: Expected 'boolean' but got 'no-boolean'`);
     });
   });
 
@@ -106,7 +112,7 @@ describe('ActorQueryOperation', () => {
         const blankNode = context.bnode();
         expect(blankNode).toBeDefined();
         expect(blankNode).toHaveProperty('termType');
-        expect(blankNode.termType).toEqual('BlankNode');
+        expect(blankNode.termType).toBe('BlankNode');
       });
     });
   });
@@ -138,7 +144,7 @@ describe('ActorQueryOperation', () => {
       const blankNode = await blankNodePromise;
       expect(blankNode).toBeDefined();
       expect(blankNode).toHaveProperty('termType');
-      expect(blankNode.termType).toEqual('BlankNode');
+      expect(blankNode.termType).toBe('BlankNode');
     });
 
     it('should create an non-empty object for a filled context', () => {
@@ -172,7 +178,7 @@ describe('ActorQueryOperation', () => {
         factory.createBgp([]),
       );
       const result = resolver(expr, BF.bindings());
-      expect(await result).toBe(true);
+      await expect(result).resolves.toBe(true);
     });
   });
 

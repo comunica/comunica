@@ -37,7 +37,7 @@ export class SyncRecursiveEvaluator extends BaseExpressionEvaluator
   };
 
   public constructor(private readonly context: ICompleteSyncEvaluatorContext, termTransformer?: ITermTransformer) {
-    super(termTransformer || new TermTransformer(context.superTypeProvider));
+    super(termTransformer ?? new TermTransformer(context.superTypeProvider));
   }
 
   public evaluate(expr: E.Expression, mapping: RDF.Bindings): E.Term {
@@ -89,7 +89,7 @@ export class SyncRecursiveEvaluator extends BaseExpressionEvaluator
     return new E.BooleanLiteral(this.context.exists(expr.expression, mapping));
   }
 
-  private evalAggregate(expr: E.Aggregate, _: RDF.Bindings): E.Term {
+  private evalAggregate(expr: E.Aggregate): E.Term {
     if (!this.context.aggregate) {
       throw new Err.NoAggregator();
     }

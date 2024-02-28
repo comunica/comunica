@@ -1,4 +1,4 @@
-import type { Readable } from 'stream';
+import type { Readable } from 'node:stream';
 import { ActorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
@@ -27,7 +27,9 @@ describe('ActorRdfMetadataExtractHydraCount', () => {
     });
 
     it('should not be able to create new ActorRdfMetadataExtractHydraCount objects without \'new\'', () => {
-      expect(() => { (<any> ActorRdfMetadataExtractHydraCount)(); }).toThrow();
+      expect(() => {
+        (<any> ActorRdfMetadataExtractHydraCount)();
+      }).toThrow(`Class constructor ActorRdfMetadataExtractHydraCount cannot be invoked without 'new'`);
     });
   });
 
@@ -51,17 +53,17 @@ describe('ActorRdfMetadataExtractHydraCount', () => {
       context = new ActionContext();
     });
 
-    it('should test', () => {
-      return expect(actor.test({ url: '', metadata: input, requestTime: 0, context })).resolves.toBeTruthy();
+    it('should test', async() => {
+      await expect(actor.test({ url: '', metadata: input, requestTime: 0, context })).resolves.toBeTruthy();
     });
 
-    it('should run on a stream where count is given', () => {
-      return expect(actor.run({ url: '', metadata: input, requestTime: 0, context })).resolves
+    it('should run on a stream where count is given', async() => {
+      await expect(actor.run({ url: '', metadata: input, requestTime: 0, context })).resolves
         .toEqual({ metadata: { cardinality: { type: 'estimate', value: 12_345, dataset: 'g1' }}});
     });
 
-    it('should run on a stream where count is not given', () => {
-      return expect(actor.run({ url: '', metadata: inputNone, requestTime: 0, context })).resolves
+    it('should run on a stream where count is not given', async() => {
+      await expect(actor.run({ url: '', metadata: inputNone, requestTime: 0, context })).resolves
         .toEqual({ metadata: { cardinality: { type: 'estimate', value: 0 }}});
     });
   });

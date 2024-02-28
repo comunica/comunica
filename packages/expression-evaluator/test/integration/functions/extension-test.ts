@@ -32,10 +32,9 @@ describe('extension functions:', () => {
     };
 
     describe('Can be evaluated', () => {
-      const generalEvaluationConfig: GeneralEvaluationConfig = { type: 'sync',
-        config: {
-          extensionFunctionCreator: extensionFunctions,
-        }};
+      const generalEvaluationConfig: GeneralEvaluationConfig = { type: 'sync', config: {
+        extensionFunctionCreator: extensionFunctions,
+      }};
       runTestTable({
         arity: 2,
         notation: Notation.Function,
@@ -102,10 +101,9 @@ describe('extension functions:', () => {
     });
 
     describe('throws error when providing a failing implementation', () => {
-      const generalEvaluationConfig: GeneralEvaluationConfig = { type: 'sync',
-        config: {
-          extensionFunctionCreator: extensionFunctions,
-        }};
+      const generalEvaluationConfig: GeneralEvaluationConfig = { type: 'sync', config: {
+        extensionFunctionCreator: extensionFunctions,
+      }};
       runTestTable({
         arity: 1,
         notation: Notation.Function,
@@ -141,7 +139,10 @@ describe('extension functions:', () => {
         config: { extensionFunctionCreator: creator },
       };
       const evaluated = await generalEvaluate({
-        expression: complexQuery, expectEquality: true, generalEvaluationConfig, bindings,
+        expression: complexQuery,
+        expectEquality: true,
+        generalEvaluationConfig,
+        bindings,
       });
       expect(evaluated.asyncResult).toEqual(DF.literal('APPLE', stringType));
     });

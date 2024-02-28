@@ -21,7 +21,7 @@ export function getMetadataBindings(data: BindingsStream): () => Promise<Metadat
   return cachifyMetadata(() => new Promise<Record<string, any>>((resolve, reject) => {
     data.getProperty('metadata', (metadata: Record<string, any>) => resolve(metadata));
     data.on('error', reject);
-  }).then(metadataRaw => {
+  }).then((metadataRaw) => {
     if (!('canContainUndefs' in metadataRaw)) {
       metadataRaw.canContainUndefs = false;
     }

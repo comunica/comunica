@@ -19,7 +19,7 @@ export class ActorQueryOperationNop extends ActorQueryOperationTypedMediated<Alg
     super(args, 'nop');
   }
 
-  public async testOperation(operation: Algebra.Nop, context: IActionContext): Promise<IActorTest> {
+  public async testOperation(_operation: Algebra.Nop, _context: IActionContext): Promise<IActorTest> {
     return true;
   }
 

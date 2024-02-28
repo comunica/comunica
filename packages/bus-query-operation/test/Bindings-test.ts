@@ -38,87 +38,87 @@ const bindingsAB = BF.bindings([
 
 describe('materializeTerm', () => {
   it('should not materialize a named node with empty bindings', () => {
-    return expect(materializeTerm(termNamedNode, bindingsEmpty))
+    expect(materializeTerm(termNamedNode, bindingsEmpty))
       .toEqual(termNamedNode);
   });
 
   it('should not materialize a named node with bindings for a', () => {
-    return expect(materializeTerm(termNamedNode, bindingsA))
+    expect(materializeTerm(termNamedNode, bindingsA))
       .toEqual(termNamedNode);
   });
 
   it('should not materialize a named node with bindings for c', () => {
-    return expect(materializeTerm(termNamedNode, bindingsC))
+    expect(materializeTerm(termNamedNode, bindingsC))
       .toEqual(termNamedNode);
   });
 
   it('should not materialize a named node with bindings for a and c', () => {
-    return expect(materializeTerm(termNamedNode, bindingsAC))
+    expect(materializeTerm(termNamedNode, bindingsAC))
       .toEqual(termNamedNode);
   });
 
   it('should not materialize a literal with empty bindings', () => {
-    return expect(materializeTerm(termLiteral, bindingsEmpty))
+    expect(materializeTerm(termLiteral, bindingsEmpty))
       .toEqual(termLiteral);
   });
 
   it('should not materialize a literal with bindings for a', () => {
-    return expect(materializeTerm(termLiteral, bindingsA))
+    expect(materializeTerm(termLiteral, bindingsA))
       .toEqual(termLiteral);
   });
 
   it('should not materialize a literal with bindings for c', () => {
-    return expect(materializeTerm(termLiteral, bindingsC))
+    expect(materializeTerm(termLiteral, bindingsC))
       .toEqual(termLiteral);
   });
 
   it('should not materialize a literal with bindings for a and c', () => {
-    return expect(materializeTerm(termLiteral, bindingsAC))
+    expect(materializeTerm(termLiteral, bindingsAC))
       .toEqual(termLiteral);
   });
 
   it('should not materialize a variable with empty bindings', () => {
-    return expect(materializeTerm(termVariableC, bindingsEmpty))
+    expect(materializeTerm(termVariableC, bindingsEmpty))
       .toEqual(termVariableC);
   });
 
   it('should not materialize a variable with bindings for a', () => {
-    return expect(materializeTerm(termVariableC, bindingsA))
+    expect(materializeTerm(termVariableC, bindingsA))
       .toEqual(termVariableC);
   });
 
   it('should not materialize a blank node with bindings for c', () => {
-    return expect(materializeTerm(termVariableC, bindingsC))
+    expect(materializeTerm(termVariableC, bindingsC))
       .toEqual(termVariableC);
   });
 
   it('should not materialize a blank node with bindings for a and c', () => {
-    return expect(materializeTerm(termVariableC, bindingsAC))
+    expect(materializeTerm(termVariableC, bindingsAC))
       .toEqual(termVariableC);
   });
 
   it('should not materialize a default graph with empty bindings', () => {
-    return expect(materializeTerm(termDefaultGraph, bindingsEmpty))
+    expect(materializeTerm(termDefaultGraph, bindingsEmpty))
       .toEqual(termDefaultGraph);
   });
 
   it('should not materialize a default graph with bindings for a', () => {
-    return expect(materializeTerm(termDefaultGraph, bindingsA))
+    expect(materializeTerm(termDefaultGraph, bindingsA))
       .toEqual(termDefaultGraph);
   });
 
   it('should not materialize a default graph with bindings for c', () => {
-    return expect(materializeTerm(termDefaultGraph, bindingsC))
+    expect(materializeTerm(termDefaultGraph, bindingsC))
       .toEqual(termDefaultGraph);
   });
 
   it('should not materialize a default graph with bindings for a and c', () => {
-    return expect(materializeTerm(termDefaultGraph, bindingsAC))
+    expect(materializeTerm(termDefaultGraph, bindingsAC))
       .toEqual(termDefaultGraph);
   });
 
   it('should not materialize a quoted triple without variables', () => {
-    return expect(materializeTerm(DF.quad(
+    expect(materializeTerm(DF.quad(
       termNamedNode,
       termNamedNode,
       termNamedNode,
@@ -131,7 +131,7 @@ describe('materializeTerm', () => {
   });
 
   it('should materialize a quoted triple with variables', () => {
-    return expect(materializeTerm(DF.quad(
+    expect(materializeTerm(DF.quad(
       termVariableA,
       termNamedNode,
       termVariableB,
@@ -144,7 +144,7 @@ describe('materializeTerm', () => {
   });
 
   it('should materialize a nested quoted triple with variables', () => {
-    return expect(materializeTerm(DF.quad(
+    expect(materializeTerm(DF.quad(
       termVariableA,
       termNamedNode,
       DF.quad(
@@ -165,10 +165,9 @@ describe('materializeTerm', () => {
   });
 });
 
-// eslint-disable-next-line mocha/max-top-level-suites
 describe('materializeOperation', () => {
   it('should materialize a quad pattern with empty bindings', () => {
-    return expect(materializeOperation(
+    expect(materializeOperation(
       factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
       bindingsEmpty,
       BF,
@@ -177,7 +176,7 @@ describe('materializeOperation', () => {
   });
 
   it('should materialize a quad pattern with non-empty bindings', () => {
-    return expect(materializeOperation(
+    expect(materializeOperation(
       factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
       bindingsA,
       BF,
@@ -187,7 +186,7 @@ describe('materializeOperation', () => {
 
   it('should materialize a quad pattern with non-empty bindings and keep metadata', () => {
     const metadata = { a: 'b' };
-    return expect(materializeOperation(
+    expect(materializeOperation(
       Object.assign(factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode), { metadata }),
       bindingsA,
       BF,
@@ -196,7 +195,7 @@ describe('materializeOperation', () => {
   });
 
   it('should materialize a BGP with non-empty bindings', () => {
-    return expect(materializeOperation(
+    expect(materializeOperation(
       factory.createBgp([
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
         factory.createPattern(termNamedNode, termVariableB, termVariableC, termNamedNode),
@@ -211,7 +210,7 @@ describe('materializeOperation', () => {
   });
 
   it('should materialize a path expression with non-empty bindings', () => {
-    return expect(materializeOperation(
+    expect(materializeOperation(
       factory.createPath(termVariableA, <any> null, termVariableC, termNamedNode),
       bindingsA,
       BF,
@@ -221,7 +220,7 @@ describe('materializeOperation', () => {
 
   it('should materialize a path expression with non-empty bindings and keep metadata', () => {
     const metadata = { a: 'b' };
-    return expect(materializeOperation(
+    expect(materializeOperation(
       Object.assign(factory.createPath(termVariableA, <any> null, termVariableC, termNamedNode), { metadata }),
       bindingsA,
       BF,
@@ -230,7 +229,7 @@ describe('materializeOperation', () => {
   });
 
   it('should materialize a nested path expression with non-empty bindings', () => {
-    return expect(materializeOperation(
+    expect(materializeOperation(
       factory.createPath(
         termVariableA,
         factory.createAlt([
@@ -255,7 +254,7 @@ describe('materializeOperation', () => {
   });
 
   it('should not modify an extend operation without matching variables', () => {
-    return expect(materializeOperation(
+    expect(materializeOperation(
       factory.createExtend(
         factory.createPattern(termVariableB, termNamedNode, termVariableC, termNamedNode),
         termVariableB,
@@ -272,7 +271,7 @@ describe('materializeOperation', () => {
   });
 
   it('should modify an extend operation with matching variables', () => {
-    return expect(materializeOperation(
+    expect(materializeOperation(
       factory.createExtend(
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
         termVariableB,
@@ -290,7 +289,7 @@ describe('materializeOperation', () => {
 
   it('should error on an extend operation with ' +
     'a binding variable equal to the target variable for strictTargetVariables', () => {
-    return expect(() => materializeOperation(
+    expect(() => materializeOperation(
       factory.createExtend(
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
         termVariableA,
@@ -303,7 +302,7 @@ describe('materializeOperation', () => {
   });
 
   it('should modify an extend operation with binding variable equal to the target variable', () => {
-    return expect(materializeOperation(
+    expect(materializeOperation(
       factory.createExtend(
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
         termVariableA,
@@ -316,7 +315,7 @@ describe('materializeOperation', () => {
   });
 
   it('should not modify a group operation without matching variables', () => {
-    return expect(materializeOperation(
+    expect(materializeOperation(
       factory.createGroup(
         factory.createPattern(termVariableB, termNamedNode, termVariableC, termNamedNode),
         [ termVariableB, termVariableD ],
@@ -343,7 +342,7 @@ describe('materializeOperation', () => {
   });
 
   it('should modify a group operation with matching variables', () => {
-    return expect(materializeOperation(
+    expect(materializeOperation(
       factory.createGroup(
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
         [ termVariableB, termVariableD ],
@@ -371,7 +370,7 @@ describe('materializeOperation', () => {
 
   it('should error on a group operation with ' +
     'a binding variable equal to the target variable for strictTargetVariables', () => {
-    return expect(() => materializeOperation(
+    expect(() => materializeOperation(
       factory.createGroup(
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
         [ termVariableA, termVariableD ],
@@ -389,7 +388,7 @@ describe('materializeOperation', () => {
   });
 
   it('should modify a group operation with a binding variable equal to the target variable', () => {
-    return expect(materializeOperation(
+    expect(materializeOperation(
       factory.createGroup(
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
         [ termVariableA, termVariableD ],
@@ -417,7 +416,7 @@ describe('materializeOperation', () => {
 
   it('should error on a group operation with ' +
     'a binding variable equal to the bound aggregate variable for strictTargetVariables', () => {
-    return expect(() => materializeOperation(
+    expect(() => materializeOperation(
       factory.createGroup(
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
         [ termVariableB, termVariableD ],
@@ -435,7 +434,7 @@ describe('materializeOperation', () => {
   });
 
   it('should modify a group operation with aa binding variable equal to the bound aggregate variable', () => {
-    return expect(materializeOperation(
+    expect(materializeOperation(
       factory.createGroup(
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
         [ termVariableB, termVariableD ],
@@ -462,7 +461,7 @@ describe('materializeOperation', () => {
   });
 
   it('should not modify a project operation without matching variables', () => {
-    return expect(materializeOperation(
+    expect(materializeOperation(
       factory.createProject(
         factory.createPattern(termVariableB, termNamedNode, termVariableC, termNamedNode),
         [ termVariableB, termVariableD ],
@@ -477,7 +476,7 @@ describe('materializeOperation', () => {
   });
 
   it('should modify a project operation with matching variables', () => {
-    return expect(materializeOperation(
+    expect(materializeOperation(
       factory.createProject(
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
         [ termVariableA, termVariableB, termVariableD ],
@@ -492,7 +491,7 @@ describe('materializeOperation', () => {
   });
 
   it('should modify a project operation with matching variables for strictTargetVariables', () => {
-    return expect(materializeOperation(
+    expect(materializeOperation(
       factory.createProject(
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
         [ termVariableB, termVariableD ],
@@ -509,7 +508,7 @@ describe('materializeOperation', () => {
 
   it('should error on a project operation with ' +
     'a binding variable equal to the target variable for strictTargetVariables', () => {
-    return expect(() => materializeOperation(
+    expect(() => materializeOperation(
       factory.createProject(
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
         [ termVariableA, termVariableD ],
@@ -521,7 +520,7 @@ describe('materializeOperation', () => {
   });
 
   it('should modify a project operation with a binding variable equal to the target variable', () => {
-    return expect(materializeOperation(
+    expect(materializeOperation(
       factory.createProject(
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
         [ termVariableA, termVariableD ],
@@ -536,7 +535,7 @@ describe('materializeOperation', () => {
   });
 
   it('should only modify variables in the project operation that are present in the projection range', () => {
-    return expect(materializeOperation(
+    expect(materializeOperation(
       factory.createProject(
         factory.createPattern(termVariableA, termNamedNode, termVariableB, termNamedNode),
         [ termVariableD, termVariableB ],
@@ -551,7 +550,7 @@ describe('materializeOperation', () => {
   });
 
   it('should not modify a values operation without matching variables', () => {
-    return expect(materializeOperation(
+    expect(materializeOperation(
       factory.createValues(
         [ termVariableB, termVariableD ],
         [{ '?b': valueC }],
@@ -566,7 +565,7 @@ describe('materializeOperation', () => {
   });
 
   it('should not modify a values operation without matching variables for strictTargetVariables', () => {
-    return expect(materializeOperation(
+    expect(materializeOperation(
       factory.createValues(
         [ termVariableB, termVariableD ],
         [{ '?b': valueC }],
@@ -583,7 +582,7 @@ describe('materializeOperation', () => {
 
   it('should error on a values operation with ' +
     'a binding variable equal to the target variable for strictTargetVariables', () => {
-    return expect(() => materializeOperation(
+    expect(() => materializeOperation(
       factory.createValues(
         [ termVariableA, termVariableD ],
         [{ '?a': valueC, '?d': valueC }],
@@ -595,7 +594,7 @@ describe('materializeOperation', () => {
   });
 
   it('should modify a values operation with a binding variable equal to the target variable', () => {
-    return expect(materializeOperation(
+    expect(materializeOperation(
       factory.createValues(
         [ termVariableA, termVariableD ],
         [{ '?a': valueA, '?d': valueC }],
@@ -611,7 +610,7 @@ describe('materializeOperation', () => {
 
   it('should modify a values operation with a binding variable equal to the target variable, ' +
     'and a non-matching binding value', () => {
-    return expect(materializeOperation(
+    expect(materializeOperation(
       factory.createValues(
         [ termVariableA, termVariableD ],
         [
@@ -629,7 +628,7 @@ describe('materializeOperation', () => {
   });
 
   it('should not modify a filter expression without matching variables', () => {
-    return expect(materializeOperation(
+    expect(materializeOperation(
       factory.createFilter(
         factory.createBgp([
           factory.createPattern(termVariableB, termNamedNode, termVariableC, termNamedNode),
@@ -656,7 +655,7 @@ describe('materializeOperation', () => {
   });
 
   it('should modify a filter expression with matching variables', () => {
-    return expect(materializeOperation(
+    expect(materializeOperation(
       factory.createFilter(
         factory.createBgp([
           factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
@@ -683,7 +682,7 @@ describe('materializeOperation', () => {
   });
 
   it('should modify a filter expression with BOUND with matching variables', () => {
-    return expect(materializeOperation(
+    expect(materializeOperation(
       factory.createFilter(
         factory.createBgp([
           factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
@@ -710,7 +709,7 @@ describe('materializeOperation', () => {
   });
 
   it('should modify a not filter expression with invalid BOUND argument count', () => {
-    return expect(materializeOperation(
+    expect(materializeOperation(
       factory.createFilter(
         factory.createBgp([
           factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
@@ -743,7 +742,7 @@ describe('materializeOperation', () => {
   });
 
   it('should modify a not filter expression with invalid BOUND argument type', () => {
-    return expect(materializeOperation(
+    expect(materializeOperation(
       factory.createFilter(
         factory.createBgp([
           factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
@@ -778,7 +777,7 @@ describe('materializeOperation', () => {
   });
 
   it('should not modify a filter expression with matching variables with bindFilter: false', () => {
-    return expect(materializeOperation(
+    expect(materializeOperation(
       factory.createFilter(
         factory.createBgp([
           factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),

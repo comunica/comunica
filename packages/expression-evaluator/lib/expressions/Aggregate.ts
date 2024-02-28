@@ -11,5 +11,5 @@ export class Aggregate implements AggregateExpression {
   public constructor(
     public name: string,
     public expression: Alg.AggregateExpression,
-  ) { }
+  ) {}
 }

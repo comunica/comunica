@@ -6,12 +6,12 @@ describe('ChunkedIterator', () => {
   describe('for blockSize 1', () => {
     it('should handle an empty iterator', async() => {
       itr = new ChunkedIterator<number>(new ArrayIterator([]), 1);
-      expect(await flattenIterator(itr)).toEqual([]);
+      await expect(flattenIterator(itr)).resolves.toEqual([]);
     });
 
     it('should split up into blocks of 1', async() => {
       itr = new ChunkedIterator<number>(new ArrayIterator([ 0, 1, 2, 3 ]), 1);
-      expect(await flattenIterator(itr)).toEqual([
+      await expect(flattenIterator(itr)).resolves.toEqual([
         [ 0 ],
         [ 1 ],
         [ 2 ],
@@ -23,7 +23,7 @@ describe('ChunkedIterator', () => {
   describe('for blockSize 2', () => {
     it('should split up into blocks of 2', async() => {
       itr = new ChunkedIterator<number>(new ArrayIterator([ 0, 1, 2, 3 ]), 2);
-      expect(await flattenIterator(itr)).toEqual([
+      await expect(flattenIterator(itr)).resolves.toEqual([
         [ 0, 1 ],
         [ 2, 3 ],
       ]);
@@ -31,7 +31,7 @@ describe('ChunkedIterator', () => {
 
     it('should split up into blocks of 2 with an uneven input count', async() => {
       itr = new ChunkedIterator<number>(new ArrayIterator([ 0, 1, 2, 3, 4 ]), 2);
-      expect(await flattenIterator(itr)).toEqual([
+      await expect(flattenIterator(itr)).resolves.toEqual([
         [ 0, 1 ],
         [ 2, 3 ],
         [ 4 ],
@@ -42,7 +42,7 @@ describe('ChunkedIterator', () => {
   describe('for blockSize 3', () => {
     it('should split up into blocks of 3', async() => {
       itr = new ChunkedIterator<number>(new ArrayIterator([ 0, 1, 2, 3, 4 ]), 3);
-      expect(await flattenIterator(itr)).toEqual([
+      await expect(flattenIterator(itr)).resolves.toEqual([
         [ 0, 1, 2 ],
         [ 3, 4 ],
       ]);

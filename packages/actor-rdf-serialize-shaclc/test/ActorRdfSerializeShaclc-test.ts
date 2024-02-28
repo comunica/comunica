@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { union, fromArray } from 'asynciterator';
@@ -26,7 +26,9 @@ describe('ActorRdfSerializeShaclc', () => {
     });
 
     it('should not be able to create new ActorRdfSerializeShaclc objects without \'new\'', () => {
-      expect(() => { (<any> ActorRdfSerializeShaclc)(); }).toThrow();
+      expect(() => {
+        (<any> ActorRdfSerializeShaclc)();
+      }).toThrow(`Class constructor ActorRdfSerializeShaclc cannot be invoked without 'new'`);
     });
   });
 
@@ -36,13 +38,10 @@ describe('ActorRdfSerializeShaclc', () => {
     let quadsError: any;
 
     beforeEach(() => {
-      actor = new ActorRdfSerializeShaclc({ bus,
-        mediaTypePriorities: {
-          'text/shaclc': 1,
-          'text/shaclc-ext': 0.5,
-        },
-        mediaTypeFormats: {},
-        name: 'actor' });
+      actor = new ActorRdfSerializeShaclc({ bus, mediaTypePriorities: {
+        'text/shaclc': 1,
+        'text/shaclc-ext': 0.5,
+      }, mediaTypeFormats: {}, name: 'actor' });
     });
 
     describe('for serializing', () => {
@@ -68,28 +67,28 @@ describe('ActorRdfSerializeShaclc', () => {
           quadStream.destroy();
         });
 
-        it('should test on text/shaclc', () => {
-          return expect(actor.test({ handle: { quadStream, context }, handleMediaType: 'text/shaclc', context }))
+        it('should test on text/shaclc', async() => {
+          await expect(actor.test({ handle: { quadStream, context }, handleMediaType: 'text/shaclc', context }))
             .resolves.toBeTruthy();
         });
 
-        it('should test on text/shaclc-ext', () => {
-          return expect(actor.test({ handle: { quadStream, context }, handleMediaType: 'text/shaclc-ext', context }))
+        it('should test on text/shaclc-ext', async() => {
+          await expect(actor.test({ handle: { quadStream, context }, handleMediaType: 'text/shaclc-ext', context }))
             .resolves.toBeTruthy();
         });
 
-        it('should not test on application/trig', () => {
-          return expect(actor.test({ handle: { quadStream, context }, handleMediaType: 'application/trig', context }))
+        it('should not test on application/trig', async() => {
+          await expect(actor.test({ handle: { quadStream, context }, handleMediaType: 'application/trig', context }))
             .rejects.toBeTruthy();
         });
 
-        it('should not test on text/turtle', () => {
-          return expect(actor.test({ handle: { quadStream, context }, handleMediaType: 'text/turtle', context }))
+        it('should not test on text/turtle', async() => {
+          await expect(actor.test({ handle: { quadStream, context }, handleMediaType: 'text/turtle', context }))
             .rejects.toBeTruthy();
         });
 
-        it('should not test on application/json', () => {
-          return expect(actor.test({ handle: { quadStream, context }, handleMediaType: 'application/json', context }))
+        it('should not test on application/json', async() => {
+          await expect(actor.test({ handle: { quadStream, context }, handleMediaType: 'application/json', context }))
             .rejects.toBeTruthy();
         });
       });
@@ -97,7 +96,7 @@ describe('ActorRdfSerializeShaclc', () => {
       it('should run', async() => {
         const output: any = await actor
           .run({ handle: { quadStream, context }, handleMediaType: 'text/shaclc', context });
-        expect(await stringifyStream(output.handle.data)).toEqual(
+        await expect(stringifyStream(output.handle.data)).resolves.toEqual(
           'BASE <http://example.org/basic-shape-iri>\n\n' +
           'shape <http://example.org/test#TestShape> {\n' +
           '}\n',
@@ -116,7 +115,7 @@ describe('ActorRdfSerializeShaclc', () => {
 
         const output: any = await actor
           .run({ handle: { quadStream, context }, handleMediaType: 'text/shaclc', context });
-        expect(await stringifyStream(output.handle.data)).toEqual(
+        await expect(stringifyStream(output.handle.data)).resolves.toEqual(
           'BASE <http://example.org/basic-shape-iri>\n' +
           'PREFIX ext: <http://example.org/test#>\n\n' +
           'shape ext:TestShape {\n' +
@@ -136,13 +135,14 @@ describe('ActorRdfSerializeShaclc', () => {
         it('should reject on extended syntax with text/shaclc mediatype', async() => {
           const output: any = await actor
             .run({ handle: { quadStream, context }, handleMediaType: 'text/shaclc', context });
-          await expect(stringifyStream(output.handle.data)).rejects.toThrow();
+          await expect(stringifyStream(output.handle.data))
+            .rejects.toThrow(`Dataset contains quads that cannot be written in SHACLC`);
         });
 
         it('should run on extended syntax with text/shaclc-ext', async() => {
           const output: any = await actor
             .run({ handle: { quadStream, context }, handleMediaType: 'text/shaclc-ext', context });
-          expect((await stringifyStream(output.handle.data)).replace(/([\t\n ])/ug, '')).toEqual(
+          expect((await stringifyStream(output.handle.data)).replaceAll(/([\t\n ])/ug, '')).toEqual(
             'BASE<http://example.org/basic-shape-iri>' +
           'shape<http://example.org/test#TestShape>;' +
           '<http://example.org/p><http://example.org/p>{' +
@@ -155,10 +155,10 @@ describe('ActorRdfSerializeShaclc', () => {
         const output: any = await actor
           .run({ handle: { quadStream, context }, handleMediaType: 'text/shaclc', context });
 
-        expect(output.handle.data._read()).toEqual(undefined);
-        expect(output.handle.data._read()).toEqual(undefined);
+        expect(output.handle.data._read()).toBeUndefined();
+        expect(output.handle.data._read()).toBeUndefined();
 
-        expect(await stringifyStream(output.handle.data)).toEqual(
+        await expect(stringifyStream(output.handle.data)).resolves.toEqual(
           'BASE <http://example.org/basic-shape-iri>\n\n' +
           'shape <http://example.org/test#TestShape> {\n' +
           '}\n',
@@ -182,12 +182,12 @@ describe('ActorRdfSerializeShaclc', () => {
     });
 
     describe('for getting media types', () => {
-      it('should test', () => {
-        return expect(actor.test({ mediaTypes: true, context })).resolves.toBeTruthy();
+      it('should test', async() => {
+        await expect(actor.test({ mediaTypes: true, context })).resolves.toBeTruthy();
       });
 
-      it('should run', () => {
-        return expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({ mediaTypes: {
+      it('should run', async() => {
+        await expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({ mediaTypes: {
           'text/shaclc': 1,
           'text/shaclc-ext': 0.5,
         }});

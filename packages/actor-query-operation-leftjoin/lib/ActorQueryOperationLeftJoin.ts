@@ -19,7 +19,7 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
     super(args, 'leftjoin');
   }
 
-  public async testOperation(operation: Algebra.LeftJoin, context: IActionContext): Promise<IActorTest> {
+  public async testOperation(_operation: Algebra.LeftJoin, _context: IActionContext): Promise<IActorTest> {
     return true;
   }
 
@@ -52,6 +52,7 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
       const bindingsStream = joined.bindingsStream
         .transform({
           autoStart: false,
+          // eslint-disable-next-line ts/no-misused-promises
           transform: async(bindings: Bindings, done: () => void, push: (item: Bindings) => void) => {
             // If variables of the right-hand entry are missing, we skip expression evaluation
             if (!expressionVariables.every(variable => bindings.has(variable.value))) {

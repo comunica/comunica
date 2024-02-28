@@ -38,7 +38,7 @@ export class AsyncRecursiveEvaluator extends BaseExpressionEvaluator
     };
 
   public constructor(private readonly context: ICompleteAsyncEvaluatorContext, termTransformer?: ITermTransformer) {
-    super(termTransformer || new TermTransformer(context.superTypeProvider));
+    super(termTransformer ?? new TermTransformer(context.superTypeProvider));
   }
 
   public async evaluate(expr: E.Expression, mapping: RDF.Bindings): Promise<E.Term> {
@@ -95,7 +95,7 @@ export class AsyncRecursiveEvaluator extends BaseExpressionEvaluator
   }
 
   // TODO: Remove?
-  private async evalAggregate(expr: E.Aggregate, _mapping: RDF.Bindings): Promise<E.Term> {
+  private async evalAggregate(expr: E.Aggregate): Promise<E.Term> {
     if (!this.context.aggregate) {
       throw new Err.NoAggregator();
     }

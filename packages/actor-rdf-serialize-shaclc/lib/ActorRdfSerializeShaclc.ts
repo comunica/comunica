@@ -1,10 +1,11 @@
-import type { IActionRdfSerialize,
+import type {
+  IActionRdfSerialize,
   IActorRdfSerializeFixedMediaTypesArgs,
-  IActorRdfSerializeOutput } from '@comunica/bus-rdf-serialize';
+  IActorRdfSerializeOutput,
+} from '@comunica/bus-rdf-serialize';
 import {
   ActorRdfSerializeFixedMediaTypes,
 } from '@comunica/bus-rdf-serialize';
-import type { IActionContext } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
 import { Readable } from 'readable-stream';
 import { write } from 'shaclc-write';
@@ -28,8 +29,7 @@ export class ActorRdfSerializeShaclc extends ActorRdfSerializeFixedMediaTypes {
     super(args);
   }
 
-  public async runHandle(action: IActionRdfSerialize, mediaType: string, context: IActionContext):
-  Promise<IActorRdfSerializeOutput> {
+  public async runHandle(action: IActionRdfSerialize, mediaType: string): Promise<IActorRdfSerializeOutput> {
     const data = new Readable();
     data._read = () => {
       // Do nothing

@@ -6,8 +6,14 @@ import { Mediator } from '@comunica/core';
  *
  * The actors that are registered first will have priority on setting overlapping fields.
  */
-export class MediatorCombineUnion<A extends Actor<I, T, O>, I extends IAction, T extends IActorTest,
-  O extends IActorOutput> extends Mediator<A, I, T, O> implements IMediatorCombineUnionArgs<A, I, T, O> {
+export class MediatorCombineUnion<
+  A extends Actor<I, T, O>,
+I extends IAction,
+T extends IActorTest,
+O extends IActorOutput,
+>
+  extends Mediator<A, I, T, O>
+  implements IMediatorCombineUnionArgs<A, I, T, O> {
   public readonly filterErrors: boolean | undefined;
   public readonly field: string;
   public readonly combiner: (results: O[]) => O;
@@ -58,7 +64,8 @@ export class MediatorCombineUnion<A extends Actor<I, T, O>, I extends IAction, T
       data[this.field] = {};
       // eslint-disable-next-line unicorn/prefer-spread
       [{}].concat(results.map((result: any) => result[this.field]))
-        .forEach((value, index, arr) => {
+        // eslint-disable-next-line unicorn/no-array-for-each
+        .forEach((value) => {
           data[this.field] = { ...value, ...data[this.field] };
         });
       return data;
@@ -66,8 +73,13 @@ export class MediatorCombineUnion<A extends Actor<I, T, O>, I extends IAction, T
   }
 }
 
-export interface IMediatorCombineUnionArgs<A extends Actor<I, T, O>, I extends IAction, T extends IActorTest,
-  O extends IActorOutput> extends IMediatorArgs<A, I, T, O> {
+export interface IMediatorCombineUnionArgs<
+  A extends Actor<I, T, O>,
+I extends IAction,
+T extends IActorTest,
+O extends IActorOutput,
+>
+  extends IMediatorArgs<A, I, T, O> {
   /**
    * If actors that throw test errors should be ignored
    */

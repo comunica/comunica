@@ -3,7 +3,7 @@
   "description": "Counts the amount of subject in the database",
   "result": {
     "type": "project",
-    "input": {  
+    "input": {
       "type": "extend",
       "input": {
         "type": "group",

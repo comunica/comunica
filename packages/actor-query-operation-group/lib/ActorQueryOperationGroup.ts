@@ -66,6 +66,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
       // We can only return when the binding stream ends, when that happens
       // we return the identified groups. Which are nothing more than Bindings
       // of the grouping variables merged with the aggregate variables
+      // eslint-disable-next-line ts/no-misused-promises
       output.bindingsStream.on('end', async() => {
         try {
           const bindingsStreamInner = new ArrayIterator(await groups.collectResults(), { autoStart: false });
@@ -81,7 +82,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
       // Phase 1: Consume the stream, identify the groups and populate the aggregators.
       // We need to bind this after the 'error' and 'end' listeners to avoid the
       // stream having ended before those listeners are bound.
-      output.bindingsStream.on('data', bindings => {
+      output.bindingsStream.on('data', (bindings) => {
         groups.consumeBindings(bindings).catch(reject);
       });
     }), { autoStart: false });
@@ -97,7 +98,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
 export interface IActorQueryOperationGroupArgs extends IActorQueryOperationTypedMediatedArgs {
   mediatorHashBindings: MediatorHashBindings;
   /**
-  * A mediator for creating binding context merge handlers
-  */
+   * A mediator for creating binding context merge handlers
+   */
   mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 }

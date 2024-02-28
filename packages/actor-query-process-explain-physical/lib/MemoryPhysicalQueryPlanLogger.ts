@@ -32,12 +32,7 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
     };
     this.children.set(node, planNode.children);
 
-    if (!this.rootNode) {
-      if (parentNode) {
-        throw new Error(`No root node has been set yet, while a parent is being referenced`);
-      }
-      this.rootNode = planNode;
-    } else {
+    if (this.rootNode) {
       if (!parentNode) {
         throw new Error(`Detected more than one parent-less node`);
       }
@@ -46,6 +41,11 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
         throw new Error(`Could not find parent node`);
       }
       children.push(planNode);
+    } else {
+      if (parentNode) {
+        throw new Error(`No root node has been set yet, while a parent is being referenced`);
+      }
+      this.rootNode = planNode;
     }
   }
 
@@ -66,7 +66,7 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
   private getLogicalMetadata(rawNode: any): any {
     if ('type' in rawNode) {
       const operation: Algebra.Operation = rawNode;
-      // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
+      // eslint-disable-next-line ts/switch-exhaustiveness-check
       switch (operation.type) {
         case 'pattern':
           return {

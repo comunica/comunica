@@ -17,8 +17,8 @@ import type { MetadataBindings } from '@comunica/types';
 export abstract class ActorRdfMetadataAccumulate
   extends Actor<IActionRdfMetadataAccumulate, IActorTest, IActorRdfMetadataAccumulateOutput> {
   /**
-  * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
-  */
+   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   */
   public constructor(args: IActorRdfMetadataAccumulateArgs) {
     super(args);
   }
@@ -60,7 +60,12 @@ export interface IActorRdfMetadataAccumulateOutput extends IActorOutput {
 }
 
 export type IActorRdfMetadataAccumulateArgs = IActorArgs<
-IActionRdfMetadataAccumulate, IActorTest, IActorRdfMetadataAccumulateOutput>;
+IActionRdfMetadataAccumulate,
+IActorTest,
+IActorRdfMetadataAccumulateOutput
+>;
 
 export type MediatorRdfMetadataAccumulate = Mediate<
-IActionRdfMetadataAccumulate, IActorRdfMetadataAccumulateOutput>;
+IActionRdfMetadataAccumulate,
+IActorRdfMetadataAccumulateOutput
+>;

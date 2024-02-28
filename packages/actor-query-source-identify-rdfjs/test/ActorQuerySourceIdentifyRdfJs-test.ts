@@ -33,7 +33,9 @@ describe('ActorQuerySourceIdentifyRdfJs', () => {
     });
 
     it('should not be able to create new ActorQuerySourceIdentifyRdfJs objects without \'new\'', () => {
-      expect(() => { (<any> ActorQuerySourceIdentifyRdfJs)(); }).toThrow();
+      expect(() => {
+        (<any> ActorQuerySourceIdentifyRdfJs)();
+      }).toThrow(`Class constructor ActorQuerySourceIdentifyRdfJs cannot be invoked without 'new'`);
     });
   });
 
@@ -47,29 +49,29 @@ describe('ActorQuerySourceIdentifyRdfJs', () => {
     });
 
     describe('test', () => {
-      it('should test', () => {
-        return expect(actor.test({
+      it('should test', async() => {
+        await expect(actor.test({
           querySourceUnidentified: { type: 'rdfjs', value: source },
           context: new ActionContext(),
         })).resolves.toBeTruthy();
       });
 
-      it('should not test with sparql type', () => {
-        return expect(actor.test({
+      it('should not test with sparql type', async() => {
+        await expect(actor.test({
           querySourceUnidentified: { type: 'sparql', value: source },
           context: new ActionContext(),
         })).rejects.toThrow(`actor requires a single query source with rdfjs type to be present in the context.`);
       });
 
-      it('should not test with string value', () => {
-        return expect(actor.test({
+      it('should not test with string value', async() => {
+        await expect(actor.test({
           querySourceUnidentified: { type: 'rdfjs', value: 'abc' },
           context: new ActionContext(),
         })).rejects.toThrow(`actor received an invalid rdfjs query source.`);
       });
 
-      it('should not test with invalid source value', () => {
-        return expect(actor.test({
+      it('should not test with invalid source value', async() => {
+        await expect(actor.test({
           querySourceUnidentified: { type: 'rdfjs', value: <any>{}},
           context: new ActionContext(),
         })).rejects.toThrow(`actor received an invalid rdfjs query source.`);

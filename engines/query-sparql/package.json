@@ -2,17 +2,16 @@
   "name": "@comunica/query-sparql",
   "version": "3.0.0",
   "description": "A SPARQL query engine for querying over decentralized RDF knowledge graphs on the Web",
-  "main": "lib/index.js",
-  "typings": "lib/index",
+  "license": "MIT",
+  "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
     "directory": "engines/query-sparql"
   },
-  "publishConfig": {
-    "access": "public"
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
   },
-  "sideEffects": false,
   "keywords": [
     "comunica",
     "sparql",
@@ -24,27 +23,50 @@
     "sparql update",
     "sparql 1.1"
   ],
-  "license": "MIT",
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "publishConfig": {
+    "access": "public"
+  },
   "bin": {
     "comunica-sparql": "bin/query.js",
     "comunica-sparql-http": "bin/http.js",
     "comunica-dynamic-sparql": "bin/query-dynamic.js"
   },
-  "bugs": {
-    "url": "https://github.com/comunica/comunica/issues"
-  },
-  "homepage": "https://comunica.dev/",
   "files": [
-    "components",
-    "config",
-    "lib/**/*.d.ts",
-    "lib/**/*.js",
-    "lib/**/*.js.map",
     "bin/**/*.d.ts",
     "bin/**/*.js",
     "bin/**/*.js.map",
-    "engine-default.js"
+    "components",
+    "config",
+    "engine-default.js",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.js.map"
   ],
+  "scripts": {
+    "build": "npm run build:ts",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "prepare": "comunica-compile-config config/config-default.json > engine-default.js",
+    "browser": "npm run prepare && \"../../node_modules/webpack/bin/webpack.js\" --config webpack.config.js --mode production",
+    "browser-profile": "\"../../node_modules/webpack/bin/webpack.js\" --config webpack.config.js --profile --mode production --json > stats.json && webpack-bundle-analyzer stats.json && rm stats.json",
+    "spec:base": "node ../../node_modules/rdf-test-suite/bin/Runner.js spec/sparql-engine.js http://w3c.github.io/rdf-tests/sparql/sparql11/manifest-all.ttl -c ../../.rdf-test-suite-cache/",
+    "spec:query": "yarn run spec:base -s http://www.w3.org/TR/sparql11-query/",
+    "spec:update": "yarn run spec:base -s http://www.w3.org/TR/sparql11-update/",
+    "spec:csv-tsv": "yarn run spec:base -s http://www.w3.org/TR/sparql11-results-csv-tsv/",
+    "spec:json": "yarn run spec:base -s http://www.w3.org/TR/sparql11-results-json/",
+    "spec:fed": "yarn run spec:base -s http://www.w3.org/TR/sparql11-federated-query/",
+    "spec:sd": "yarn run spec:base -s http://www.w3.org/TR/sparql11-service-description/",
+    "spec:prot": "yarn run spec:base -s http://www.w3.org/TR/sparql11-protocol/",
+    "spec:graphstore": "yarn run spec:base -s http://www.w3.org/TR/sparql11-http-rdf-update/",
+    "spec:sparql12-xsd-datetime-duration": "node ../../node_modules/rdf-test-suite/bin/Runner.js spec/sparql-engine.js https://raw.githubusercontent.com/kasei/sparql-12/xsd_datetime_duration/tests/xsd_functions/manifest.ttl -c ../../.rdf-test-suite-cache/ --skip \"http://www.w3.org/2009/sparql/docs/tests/data-sparql11/functions/manifest#adjust_.*\"",
+    "spec:sparql-star-syntax": "node ../../node_modules/rdf-test-suite/bin/Runner.js spec/sparql-engine.js https://w3c.github.io/rdf-star/tests/sparql/syntax/manifest.ttl -c ../../.rdf-test-suite-cache/",
+    "spec:sparql-star-evaluation": "node ../../node_modules/rdf-test-suite/bin/Runner.js spec/sparql-engine.js https://w3c.github.io/rdf-star/tests/sparql/eval/manifest.ttl -c ../../.rdf-test-suite-cache/",
+    "spec": "yarn run spec:query && yarn run spec:update && yarn run spec:sparql12-xsd-datetime-duration && yarn run spec:sparql-star-syntax && yarn run spec:sparql-star-evaluation",
+    "spec-earl": "yarn run spec:query -o earl -p spec/earl-meta.json > earl.ttl",
+    "integration": "rdf-test-suite-ldf spec/sparql-engine.js https://comunica.github.io/manifest-ldf-tests/next/sparql/sparql-manifest.ttl -d 200000 -c ../../.rdf-test-suite-ldf-cache/"
+  },
   "dependencies": {
     "@comunica/actor-context-preprocess-convert-shortcuts": "^3.0.0",
     "@comunica/actor-context-preprocess-query-source-identify": "^3.0.0",
@@ -190,28 +212,6 @@
     "@comunica/runner-cli": "^3.0.0",
     "@comunica/types": "^3.0.0",
     "process": "^0.11.10"
-  },
-  "scripts": {
-    "build": "npm run build:ts",
-    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
-    "prepare": "comunica-compile-config config/config-default.json > engine-default.js",
-    "browser": "npm run prepare && \"../../node_modules/webpack/bin/webpack.js\" --config webpack.config.js --mode production",
-    "browser-profile": "\"../../node_modules/webpack/bin/webpack.js\" --config webpack.config.js --profile --mode production --json > stats.json && webpack-bundle-analyzer stats.json && rm stats.json",
-    "spec:base": "node ../../node_modules/rdf-test-suite/bin/Runner.js spec/sparql-engine.js http://w3c.github.io/rdf-tests/sparql/sparql11/manifest-all.ttl -c ../../.rdf-test-suite-cache/",
-    "spec:query": "yarn run spec:base -s http://www.w3.org/TR/sparql11-query/",
-    "spec:update": "yarn run spec:base -s http://www.w3.org/TR/sparql11-update/",
-    "spec:csv-tsv": "yarn run spec:base -s http://www.w3.org/TR/sparql11-results-csv-tsv/",
-    "spec:json": "yarn run spec:base -s http://www.w3.org/TR/sparql11-results-json/",
-    "spec:fed": "yarn run spec:base -s http://www.w3.org/TR/sparql11-federated-query/",
-    "spec:sd": "yarn run spec:base -s http://www.w3.org/TR/sparql11-service-description/",
-    "spec:prot": "yarn run spec:base -s http://www.w3.org/TR/sparql11-protocol/",
-    "spec:graphstore": "yarn run spec:base -s http://www.w3.org/TR/sparql11-http-rdf-update/",
-    "spec:sparql12-xsd-datetime-duration": "node ../../node_modules/rdf-test-suite/bin/Runner.js spec/sparql-engine.js https://raw.githubusercontent.com/kasei/sparql-12/xsd_datetime_duration/tests/xsd_functions/manifest.ttl -c ../../.rdf-test-suite-cache/ --skip \"http://www.w3.org/2009/sparql/docs/tests/data-sparql11/functions/manifest#adjust_.*\"",
-    "spec:sparql-star-syntax": "node ../../node_modules/rdf-test-suite/bin/Runner.js spec/sparql-engine.js https://w3c.github.io/rdf-star/tests/sparql/syntax/manifest.ttl -c ../../.rdf-test-suite-cache/",
-    "spec:sparql-star-evaluation": "node ../../node_modules/rdf-test-suite/bin/Runner.js spec/sparql-engine.js https://w3c.github.io/rdf-star/tests/sparql/eval/manifest.ttl -c ../../.rdf-test-suite-cache/",
-    "spec": "yarn run spec:query && yarn run spec:update && yarn run spec:sparql12-xsd-datetime-duration && yarn run spec:sparql-star-syntax && yarn run spec:sparql-star-evaluation",
-    "spec-earl": "yarn run spec:query -o earl -p spec/earl-meta.json > earl.ttl",
-    "integration": "rdf-test-suite-ldf spec/sparql-engine.js https://comunica.github.io/manifest-ldf-tests/next/sparql/sparql-manifest.ttl -d 200000 -c ../../.rdf-test-suite-ldf-cache/"
   },
   "browser": {
     "./lib/index.js": "./lib/index-browser.js"

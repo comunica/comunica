@@ -46,7 +46,6 @@
     "RequestInfo",
     "RequestInit",
 
-
     "IQueryableResultStream",
     "IQueryableResultBindings",
     "IQueryableResultQuads",

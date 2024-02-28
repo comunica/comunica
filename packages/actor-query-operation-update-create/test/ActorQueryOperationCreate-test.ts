@@ -27,22 +27,22 @@ describe('ActorQueryOperationCreate', () => {
       actor = new ActorQueryOperationCreate({ name: 'actor', bus, mediatorQueryOperation, mediatorUpdateQuads });
     });
 
-    it('should test on create', () => {
+    it('should test on create', async() => {
       const op: any = { operation: { type: 'create' }, context: new ActionContext() };
-      return expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toBeTruthy();
     });
 
-    it('should not test on readOnly', () => {
+    it('should not test on readOnly', async() => {
       const op: any = {
         operation: { type: 'create' },
         context: new ActionContext({ [KeysQueryOperation.readOnly.name]: true }),
       };
-      return expect(actor.test(op)).rejects.toThrowError(`Attempted a write operation in read-only mode`);
+      await expect(actor.test(op)).rejects.toThrow(`Attempted a write operation in read-only mode`);
     });
 
-    it('should not test on non-create', () => {
+    it('should not test on non-create', async() => {
       const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
-      return expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run in normal mode', async() => {
@@ -55,7 +55,7 @@ describe('ActorQueryOperationCreate', () => {
         context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
-      expect(output.type).toEqual('void');
+      expect(output.type).toBe('void');
       await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].createGraphs).toEqual({
         graphs: [ DF.namedNode('g1') ],
@@ -73,7 +73,7 @@ describe('ActorQueryOperationCreate', () => {
         context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
-      expect(output.type).toEqual('void');
+      expect(output.type).toBe('void');
       await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].createGraphs).toEqual({
         graphs: [ DF.namedNode('g1') ],

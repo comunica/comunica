@@ -76,6 +76,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
           optional,
         }), { autoStart: false });
       default:
+        // eslint-disable-next-line ts/restrict-template-expressions
         throw new Error(`Received request for unknown bind order: ${bindOrder}`);
     }
   }
@@ -87,9 +88,11 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
     const entriesUnsorted = await ActorRdfJoin.getEntriesWithMetadatas(action.entries);
     const entries = await ActorRdfJoin.sortJoinEntries(this.mediatorJoinEntriesSort, entriesUnsorted, action.context);
 
-    this.logDebug(action.context,
+    this.logDebug(
+      action.context,
       'First entry for Bind Join: ',
-      () => ({ entry: entries[0].operation, metadata: entries[0].metadata }));
+      () => ({ entry: entries[0].operation, metadata: entries[0].metadata }),
+    );
 
     // Close the non-smallest streams
     for (const [ i, element ] of entries.entries()) {
@@ -198,9 +201,9 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
       .map((entry, i) => entry.metadata.cardinality.value * selectivities[i])
       .reduce((sum, element) => sum + element, 0);
     const receiveInitialCostRemaining = remainingRequestInitialTimes
-      .reduce((sum, element, i) => sum + element, 0);
+      .reduce((sum, element) => sum + element, 0);
     const receiveItemCostRemaining = remainingRequestItemTimes
-      .reduce((sum, element, i) => sum + element, 0);
+      .reduce((sum, element) => sum + element, 0);
 
     return {
       iterations: metadatas[0].cardinality.value * cardinalityRemaining,

@@ -95,22 +95,22 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
       });
 
       describe('test', () => {
-        it('should test', () => {
-          return expect(actor.test({
+        it('should test', async() => {
+          await expect(actor.test({
             querySourceUnidentified: { value: 'abc' },
             context,
           })).resolves.toBeTruthy();
         });
 
-        it('should not test on a null value', () => {
-          return expect(actor.test({
+        it('should not test on a null value', async() => {
+          await expect(actor.test({
             querySourceUnidentified: { value: <any> null },
             context,
           })).rejects.toThrow(`actor requires a single query source with a URL value to be present in the context.`);
         });
 
-        it('should not test on an invalid value', () => {
-          return expect(actor.test({
+        it('should not test on an invalid value', async() => {
+          await expect(actor.test({
             querySourceUnidentified: { value: <any> { bla: true }},
             context,
           })).rejects.toThrow(`actor requires a single query source with a URL value to be present in the context.`);
@@ -147,17 +147,19 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
               g: DF.defaultGraph(),
             }),
           ]);
-          expect(await new Promise(resolve => bindings.getProperty('metadata', resolve)))
-            .toEqual({ state: expect.any(MetadataValidationState),
+          await expect(new Promise(resolve => bindings.getProperty('metadata', resolve))).resolves
+            .toEqual({
+              state: expect.any(MetadataValidationState),
               cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
               firstMeta: true,
-              a: 1 });
+              a: 1,
+            });
         });
 
         it('should return a source that can produce metadata and a bindings stream', async() => {
           const { querySource } = await actor.run({ context, querySourceUnidentified });
           const bindings = querySource.source.queryBindings(operation, context);
-          expect(await new Promise(resolve => bindings.getProperty('metadata', resolve)))
+          await expect(new Promise(resolve => bindings.getProperty('metadata', resolve))).resolves
             .toEqual({
               state: expect.any(MetadataValidationState),
               firstMeta: true,
@@ -214,9 +216,8 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
 
           const { querySource } = await actor.run({ context, querySourceUnidentified });
           const bindings = querySource.source.queryBindings(operation, context);
-          expect(await new Promise(resolve => bindings.getProperty('metadata', resolve)))
-            .toEqual({ state: expect.any(MetadataValidationState),
-              firstMeta: true });
+          await expect(new Promise(resolve => bindings.getProperty('metadata', resolve))).resolves
+            .toEqual({ state: expect.any(MetadataValidationState), firstMeta: true });
 
           expect(spy).toHaveBeenCalledWith({
             map: expect.anything(),
@@ -248,10 +249,12 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
           const { querySource } = await actor.run({ context, querySourceUnidentified });
           const bindings = querySource.source.queryBindings(operation, context);
           await expect(bindings.toArray()).rejects.toThrow('mediatorMetadataExtractThis error');
-          expect(await new Promise(resolve => bindings.getProperty('metadata', resolve)))
-            .toEqual({ state: expect.any(MetadataValidationState),
+          await expect(new Promise(resolve => bindings.getProperty('metadata', resolve))).resolves
+            .toEqual({
+              state: expect.any(MetadataValidationState),
               cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
-              firstMeta: true });
+              firstMeta: true,
+            });
 
           expect(spy).toHaveBeenCalledWith({
             map: expect.anything(),
@@ -326,17 +329,19 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
               g: DF.defaultGraph(),
             }),
           ]);
-          expect(await new Promise(resolve => bindings.getProperty('metadata', resolve)))
-            .toEqual({ state: expect.any(MetadataValidationState),
+          await expect(new Promise(resolve => bindings.getProperty('metadata', resolve))).resolves
+            .toEqual({
+              state: expect.any(MetadataValidationState),
               cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
               firstMeta: true,
-              a: 1 });
+              a: 1,
+            });
         });
 
         it('should return a source that can produce metadata and a bindings stream', async() => {
           const { querySource } = await actor.run({ context, querySourceUnidentified });
           const bindings = querySource.source.queryBindings(operation, context);
-          expect(await new Promise(resolve => bindings.getProperty('metadata', resolve)))
+          await expect(new Promise(resolve => bindings.getProperty('metadata', resolve))).resolves
             .toEqual({
               state: expect.any(MetadataValidationState),
               firstMeta: true,
@@ -406,17 +411,19 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
               g: DF.defaultGraph(),
             }),
           ]);
-          expect(await new Promise(resolve => bindings.getProperty('metadata', resolve)))
-            .toEqual({ state: expect.any(MetadataValidationState),
+          await expect(new Promise(resolve => bindings.getProperty('metadata', resolve))).resolves
+            .toEqual({
+              state: expect.any(MetadataValidationState),
               cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
               firstMeta: true,
-              a: 1 });
+              a: 1,
+            });
         });
 
         it('should return a source that can produce metadata and a bindings stream', async() => {
           const { querySource } = await actor.run({ context, querySourceUnidentified });
           const bindings = querySource.source.queryBindings(operation, context);
-          expect(await new Promise(resolve => bindings.getProperty('metadata', resolve)))
+          await expect(new Promise(resolve => bindings.getProperty('metadata', resolve))).resolves
             .toEqual({
               state: expect.any(MetadataValidationState),
               firstMeta: true,
@@ -619,7 +626,7 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
           expect(mediatorQuerySourceIdentifyHypermedia.mediate).toHaveBeenCalledTimes(2);
 
           // TODO: remove the limit once https://github.com/comunica/rdf-streaming-store.js/issues/6 is fixed
-          expect(await it2.toArray({ limit: 4 })).toEqualBindingsArray([
+          await expect(it2.toArray({ limit: 4 })).resolves.toEqualBindingsArray([
             BF.fromRecord({
               s: DF.namedNode('s1'),
               p: DF.namedNode('p1'),

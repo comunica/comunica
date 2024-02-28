@@ -50,8 +50,8 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
       actor = new ActorOptimizeQueryOperationAssignSourcesExhaustive({ name: 'actor', bus });
     });
 
-    it('should test', () => {
-      return expect(actor.test({ operation: AF.createNop(), context: new ActionContext() })).resolves.toBeTruthy();
+    it('should test', async() => {
+      await expect(actor.test({ operation: AF.createNop(), context: new ActionContext() })).resolves.toBeTruthy();
     });
 
     describe('run', () => {
@@ -153,7 +153,7 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
         });
         expect(operationOut).not.toBe(operationIn);
         expect(ActorQueryOperation.getOperationSource(operationOut)).toBe(source1);
-        expect(contextOut.get(KeysInitQuery.queryString)).toEqual('abc');
+        expect(contextOut.get(KeysInitQuery.queryString)).toBe('abc');
       });
 
       it('should not keep the queryString for two sources', async() => {
@@ -181,7 +181,7 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
         const operationIn = AF.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'));
         const operationOut = actor.assignExhaustive(operationIn, [ source1, sourcePattern ]);
         expect(operationOut.type).toEqual(Algebra.types.UNION);
-        expect(operationOut.input.length).toEqual(2);
+        expect(operationOut.input).toHaveLength(2);
         expect(operationOut.input[0].type).toEqual(Algebra.types.PATTERN);
         expect(operationOut.input[1].type).toEqual(Algebra.types.PATTERN);
         expect(ActorQueryOperation.getOperationSource(operationOut.input[0])).toBe(source1);
@@ -199,7 +199,7 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
         const operationIn = AF.createLink(DF.namedNode('p1'));
         const operationOut = actor.assignExhaustive(operationIn, [ source1, sourcePattern ]);
         expect(operationOut.type).toEqual(Algebra.types.ALT);
-        expect(operationOut.input.length).toEqual(2);
+        expect(operationOut.input).toHaveLength(2);
         expect(operationOut.input[0].type).toEqual(Algebra.types.LINK);
         expect(operationOut.input[1].type).toEqual(Algebra.types.LINK);
         expect(ActorQueryOperation.getOperationSource(operationOut.input[0])).toBe(source1);
@@ -217,7 +217,7 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
         const operationIn = AF.createNps([ DF.namedNode('p1'), DF.namedNode('p2') ]);
         const operationOut = actor.assignExhaustive(operationIn, [ source1, sourcePattern ]);
         expect(operationOut.type).toEqual(Algebra.types.ALT);
-        expect(operationOut.input.length).toEqual(2);
+        expect(operationOut.input).toHaveLength(2);
         expect(operationOut.input[0].type).toEqual(Algebra.types.NPS);
         expect(operationOut.input[1].type).toEqual(Algebra.types.NPS);
         expect(ActorQueryOperation.getOperationSource(operationOut.input[0])).toBe(source1);
@@ -264,4 +264,3 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
     });
   });
 });
-

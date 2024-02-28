@@ -1,5 +1,4 @@
-import type { IActionRdfParse, IActorRdfParseFixedMediaTypesArgs,
-  IActorRdfParseOutput } from '@comunica/bus-rdf-parse';
+import type { IActionRdfParse, IActorRdfParseFixedMediaTypesArgs, IActorRdfParseOutput } from '@comunica/bus-rdf-parse';
 import { ActorRdfParseFixedMediaTypes } from '@comunica/bus-rdf-parse';
 import type { IActionContext } from '@comunica/types';
 import { RdfaParser } from 'rdfa-streaming-parser';
@@ -26,7 +25,7 @@ export class ActorRdfParseXmlRdfa extends ActorRdfParseFixedMediaTypes {
     super(args);
   }
 
-  public async runHandle(action: IActionRdfParse, mediaType: string, context: IActionContext):
+  public async runHandle(action: IActionRdfParse, _mediaType: string, _context: IActionContext):
   Promise<IActorRdfParseOutput> {
     const language = (action.headers && action.headers.get('content-language')) ?? undefined;
     action.data.on('error', error => data.emit('error', error));

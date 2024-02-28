@@ -1,4 +1,4 @@
-name: "Publish GitHub release on version tags"
+name: Publish GitHub release on version tags
 on:
   push:
     tags:

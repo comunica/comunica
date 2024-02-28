@@ -35,19 +35,25 @@ describe('ActorQueryProcessExplainParsed', () => {
       });
 
       it('handles parsed explain in context', async() => {
-        expect(await actor.test({ query: 'q', context: new ActionContext().set(KeysInitQuery.explain, 'parsed') }))
+        await expect(actor.test({
+          query: 'q',
+          context: new ActionContext().set(KeysInitQuery.explain, 'parsed'),
+        })).resolves
           .toBeTruthy();
       });
 
       it('handles parsed explain in raw context', async() => {
-        expect(await actor.test({ query: 'q', context: new ActionContext().setRaw('explain', 'parsed') }))
+        await expect(actor.test({ query: 'q', context: new ActionContext().setRaw('explain', 'parsed') })).resolves
           .toBeTruthy();
       });
     });
 
     describe('run', () => {
       it('handles parsed explain in context', async() => {
-        expect(await actor.run({ query: 'q', context: new ActionContext().set(KeysInitQuery.explain, 'parsed') }))
+        await expect(actor.run({
+          query: 'q',
+          context: new ActionContext().set(KeysInitQuery.explain, 'parsed'),
+        })).resolves
           .toEqual({
             result: {
               explain: true,

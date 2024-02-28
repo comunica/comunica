@@ -1,4 +1,4 @@
-name: "Label new issues"
+name: Label new issues
 on:
   issues:
     types: [opened, edited]
@@ -7,8 +7,8 @@ jobs:
   triage:
     runs-on: ubuntu-latest
     steps:
-    - uses: github/issue-labeler@v2.5
-      with:
-        repo-token: "${{ secrets.PAT }}"
-        configuration-path: .github/labeler.yml
-        enable-versioned-regex: 0
+      - uses: github/issue-labeler@v2.5
+        with:
+          repo-token: '${{ secrets.PAT }}'
+          configuration-path: .github/labeler.yml
+          enable-versioned-regex: 0

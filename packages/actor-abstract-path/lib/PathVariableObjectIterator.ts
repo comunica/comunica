@@ -71,7 +71,7 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
   }
 
   protected _read(count: number, done: () => void): void {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias,consistent-this
+    // eslint-disable-next-line ts/no-this-alias
     const self = this;
     (async function() {
       // Open as many operations as possible

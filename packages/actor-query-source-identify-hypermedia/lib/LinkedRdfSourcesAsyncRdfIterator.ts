@@ -66,7 +66,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
       if (!this.preflightMetadata) {
         this.preflightMetadata = new Promise((resolve, reject) => {
           this.sourceStateGetter({ url: this.firstUrl }, {})
-            .then(sourceState => {
+            .then((sourceState) => {
               // Don't pass query options, as we don't want to consume any passed iterators
               const bindingsStream = sourceState.source.queryBindings(this.operation, this.context);
               bindingsStream.getProperty('metadata', (metadata: MetadataBindings) => {
@@ -109,28 +109,16 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
   protected abstract getSourceLinks(metadata: Record<string, any>): Promise<ILink[]>;
 
   public _read(count: number, done: () => void): void {
-    if (!this.started) {
-      // The first time this is called, prepare the first source
-      this.started = true;
-
-      // Await the source to be set, and start the source iterator
-      this.sourceStateGetter({ url: this.firstUrl }, {})
-        .then(sourceState => {
-          this.startIterator(sourceState);
-          done();
-        })
-        // Destroy should be async because it can be called before it is listened to
-        .catch(error => setTimeout(() => this.destroy(error)));
-    } else {
+    if (this.started) {
       // Read from all current iterators
       for (const iterator of this.currentIterators) {
         while (count > 0) {
           const read = iterator.read();
-          if (read !== null) {
+          if (read === null) {
+            break;
+          } else {
             count--;
             this._push(read);
-          } else {
-            break;
           }
         }
         if (count <= 0) {
@@ -142,15 +130,27 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
       if (count >= 0 && this.canStartNewIterator()) {
         // We can safely ignore skip catching the error, since we are guaranteed to have
         // successfully got the source for this.firstUrl before.
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        // eslint-disable-next-line ts/no-floating-promises
         this.sourceStateGetter({ url: this.firstUrl }, {})
-          .then(sourceState => {
+          .then((sourceState) => {
             this.startIteratorsForNextUrls(sourceState.handledDatasets, false);
             done();
           });
       } else {
         done();
       }
+    } else {
+      // The first time this is called, prepare the first source
+      this.started = true;
+
+      // Await the source to be set, and start the source iterator
+      this.sourceStateGetter({ url: this.firstUrl }, {})
+        .then((sourceState) => {
+          this.startIterator(sourceState);
+          done();
+        })
+        // Destroy should be async because it can be called before it is listened to
+        .catch(error => setTimeout(() => this.destroy(error)));
     }
   }
 
@@ -192,7 +192,6 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
       let receivedMetadata = false;
 
       // Attach readers to the newly created iterator
-      // eslint-disable-next-line @typescript-eslint/no-this-alias
       (<any>iterator)._destination = this;
       iterator.on('error', (error: Error) => this.destroy(error));
       iterator.on('readable', () => this._fillBuffer());
@@ -223,7 +222,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
             }
             return this.accumulateMetadata(previousMetadata, metadata);
           })()
-            .then(accumulatedMetadata => {
+            .then((accumulatedMetadata) => {
               // Also merge fields that were not explicitly accumulated
               const returnMetadata = { ...startSource.metadata, ...metadata, ...accumulatedMetadata };
 
@@ -261,7 +260,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
                 }).catch(error => this.destroy(error));
 
               return returnMetadata;
-            })).catch(error => {
+            })).catch((error) => {
             this.destroy(error);
             return <MetadataBindings>{};
           });
@@ -290,14 +289,14 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
    */
   protected startIteratorsForNextUrls(handledDatasets: Record<string, boolean>, canClose: boolean): void {
     this.getLinkQueue()
-      .then(linkQueue => {
+      .then((linkQueue) => {
         // Create as many new iterators as possible
         while (this.canStartNewIterator() && this.isRunning()) {
           const nextLink = linkQueue.pop();
           if (nextLink) {
             this.iteratorsPendingCreation++;
             this.sourceStateGetter(nextLink, handledDatasets)
-              .then(nextSourceState => {
+              .then((nextSourceState) => {
                 this.iteratorsPendingCreation--;
                 this.startIterator(nextSourceState);
               })
@@ -315,7 +314,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
       .catch(error => this.destroy(error));
   }
 
-  protected isCloseable(linkQueue: ILinkQueue, requireQueueEmpty: boolean): boolean {
+  protected isCloseable(linkQueue: ILinkQueue, _requireQueueEmpty: boolean): boolean {
     return linkQueue.isEmpty() && !this.areIteratorsRunning();
   }
 }

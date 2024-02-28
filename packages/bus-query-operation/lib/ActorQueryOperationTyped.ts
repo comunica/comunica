@@ -4,7 +4,8 @@ import { cachifyMetadata } from '@comunica/metadata';
 import type {
   IQueryOperationResult,
   IPhysicalQueryPlanLogger,
-  IActionContext, IMetadata,
+  IActionContext,
+  IMetadata,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';

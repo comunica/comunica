@@ -1,14 +1,15 @@
-import type { IActionOptimizeQueryOperation, IActorOptimizeQueryOperationOutput,
-  IActorOptimizeQueryOperationArgs } from '@comunica/bus-optimize-query-operation';
+import type {
+  IActionOptimizeQueryOperation,
+  IActorOptimizeQueryOperationOutput,
+  IActorOptimizeQueryOperationArgs,
+} from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { getDataDestinationValue } from '@comunica/bus-rdf-update-quads';
 import { KeysInitQuery, KeysQueryOperation, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import type { IDataDestination, IQuerySourceWrapper } from '@comunica/types';
-import { Algebra, Factory, Util } from 'sparqlalgebrajs';
-
-const AF = new Factory();
+import { Algebra, Util } from 'sparqlalgebrajs';
 
 /**
  * A comunica Assign Sources Exhaustive Optimize Query Operation Actor.
@@ -18,12 +19,12 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
     super(args);
   }
 
-  public async test(action: IActionOptimizeQueryOperation): Promise<IActorTest> {
+  public async test(_action: IActionOptimizeQueryOperation): Promise<IActorTest> {
     return true;
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
-    const sources: IQuerySourceWrapper[] = action.context.get(KeysQueryOperation.querySources) || [];
+    const sources: IQuerySourceWrapper[] = action.context.get(KeysQueryOperation.querySources) ?? [];
     if (sources.length === 0) {
       return { operation: action.operation, context: action.context };
     }
@@ -57,7 +58,7 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
    * @param sources The sources to assign.
    */
   public assignExhaustive(operation: Algebra.Operation, sources: IQuerySourceWrapper[]): Algebra.Operation {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias,consistent-this
+    // eslint-disable-next-line ts/no-this-alias
     const self = this;
     return Util.mapOperation(operation, {
       [Algebra.types.PATTERN](subOperation, factory) {

@@ -29,7 +29,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
     let mediatorJoinSelectivity: MediatorRdfJoinSelectivity;
     let mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort;
     let actor: ActorRdfJoinMultiBindSource;
-    let logSpy: jest.Mock;
+    let logSpy: jest.SpyInstance;
     let source1: IQuerySourceWrapper;
     let source2: IQuerySourceWrapper;
     let source3TriplePattern: IQuerySourceWrapper;
@@ -55,7 +55,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
         mediatorJoinSelectivity,
         mediatorJoinEntriesSort,
       });
-      logSpy = (<any> actor).logDebug = jest.fn();
+      logSpy = jest.spyOn((<any> actor), 'logDebug').mockImplementation();
       source1 = <IQuerySourceWrapper> <any> {
         source: {
           getSelectorShape() {
@@ -186,7 +186,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
         const { result, physicalPlanMetadata } = await actor.getOutput(action);
 
         // Validate output
-        expect(result.type).toEqual('bindings');
+        expect(result.type).toBe('bindings');
         await expect(result.bindingsStream).toEqualBindingsStream([
           BF.bindings([
             [ DF.variable('bound'), DF.namedNode('ex:bound') ],
@@ -201,7 +201,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
             [ DF.variable('a'), DF.namedNode('ex:a3') ],
           ]),
         ]);
-        expect(await result.metadata()).toEqual({
+        await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: 9.600_000_000_000_001 },
           canContainUndefs: false,
@@ -300,7 +300,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
         const { result, physicalPlanMetadata } = await actor.getOutput(action);
 
         // Validate output
-        expect(result.type).toEqual('bindings');
+        expect(result.type).toBe('bindings');
         await expect(result.bindingsStream).toEqualBindingsStream([
           BF.bindings([
             [ DF.variable('bound'), DF.namedNode('ex:bound') ],
@@ -315,7 +315,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
             [ DF.variable('a'), DF.namedNode('ex:a3') ],
           ]),
         ]);
-        expect(await result.metadata()).toEqual({
+        await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: 9.600_000_000_000_001 },
           canContainUndefs: false,
@@ -355,7 +355,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
 
     describe('getJoinCoefficients', () => {
       it('should handle three entries', async() => {
-        expect(await actor.getJoinCoefficients(
+        await expect(actor.getJoinCoefficients(
           {
             type: 'inner',
             entries: [
@@ -400,7 +400,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
               variables: [ DF.variable('a') ],
             },
           ],
-        )).toEqual({
+        )).resolves.toEqual({
           iterations: 1,
           persistedItems: 2,
           blockingItems: 2,
@@ -409,7 +409,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
       });
 
       it('should handle three entries and prioritize modified operations', async() => {
-        expect(await actor.getJoinCoefficients(
+        await expect(actor.getJoinCoefficients(
           {
             type: 'inner',
             entries: [
@@ -456,7 +456,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
               variables: [ DF.variable('a') ],
             },
           ],
-        )).toEqual({
+        )).resolves.toEqual({
           iterations: 1,
           persistedItems: 3,
           blockingItems: 3,
@@ -510,7 +510,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
               variables: [ DF.variable('a') ],
             },
           ],
-        )).rejects.toThrowError('Actor actor can not bind on remaining operations without source annotation');
+        )).rejects.toThrow('Actor actor can not bind on remaining operations without source annotation');
       });
 
       it('should reject when remaining entries have unequal sources', async() => {
@@ -559,7 +559,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
               variables: [ DF.variable('a') ],
             },
           ],
-        )).rejects.toThrowError('Actor actor can not bind on remaining operations with non-equal source annotation');
+        )).rejects.toThrow('Actor actor can not bind on remaining operations with non-equal source annotation');
       });
 
       it('should reject when remaining entries do not accept the operation', async() => {
@@ -608,7 +608,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
               variables: [ DF.variable('a') ],
             },
           ],
-        )).rejects.toThrowError('Actor actor detected a source that can not handle passing down join bindings');
+        )).rejects.toThrow('Actor actor detected a source that can not handle passing down join bindings');
       });
     });
 

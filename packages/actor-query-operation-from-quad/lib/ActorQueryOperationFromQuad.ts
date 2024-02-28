@@ -22,8 +22,10 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
    * @param {(subOperation: Operation) => Operation} recursiveCb A callback for recursive operation calls.
    * @return {Operation} The copied operation.
    */
-  public static copyOperation(operation: Algebra.Operation,
-    recursiveCb: (subOperation: Algebra.Operation) => Algebra.Operation): Algebra.Operation {
+  public static copyOperation(
+    operation: Algebra.Operation,
+    recursiveCb: (subOperation: Algebra.Operation) => Algebra.Operation,
+  ): Algebra.Operation {
     const copiedOperation: Algebra.Operation = <any> {};
     for (const key of Object.keys(operation)) {
       if (Array.isArray(operation[key]) && key !== 'template') {
@@ -78,15 +80,21 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
               .createPath(operation.subject, operation.predicate, operation.object, graph);
           }
           return Object.assign(ActorQueryOperationFromQuad.FACTORY
-            .createPattern(operation.subject, operation.predicate, operation.object, graph),
-          { metadata: operation.metadata });
+            .createPattern(
+              operation.subject,
+              operation.predicate,
+              operation.object,
+              graph,
+            ), { metadata: operation.metadata });
         },
       );
       return ActorQueryOperationFromQuad.unionOperations(paths);
     }
 
-    return ActorQueryOperationFromQuad.copyOperation(operation,
-      (subOperation: Algebra.Operation) => this.applyOperationDefaultGraph(subOperation, defaultGraphs));
+    return ActorQueryOperationFromQuad.copyOperation(
+      operation,
+      (subOperation: Algebra.Operation) => this.applyOperationDefaultGraph(subOperation, defaultGraphs),
+    );
   }
 
   /**
@@ -97,8 +105,11 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
    * @param {RDF.Term[]} defaultGraphs Default graph terms.
    * @return {Operation} A new operation.
    */
-  public static applyOperationNamedGraph(operation: Algebra.Operation, namedGraphs: RDF.NamedNode[],
-    defaultGraphs: RDF.Term[]): Algebra.Operation {
+  public static applyOperationNamedGraph(
+    operation: Algebra.Operation,
+    namedGraphs: RDF.NamedNode[],
+    defaultGraphs: RDF.Term[],
+  ): Algebra.Operation {
     // If the operation is a BGP or Path, change the graph.
     if ((operation.type === 'bgp' && operation.patterns.length > 0) ||
       operation.type === 'path' ||
@@ -136,7 +147,9 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
         // If the pattern graph is a variable, take the union of the pattern applied to each available named graph
         return ActorQueryOperationFromQuad.unionOperations(namedGraphs.map(
           (graph: RDF.NamedNode) => ActorQueryOperationFromQuad.applyOperationNamedGraph(
-            operation, [ graph ], defaultGraphs,
+            operation,
+            [ graph ],
+            defaultGraphs,
           ),
         ));
       }
@@ -152,8 +165,10 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
       return { type: Algebra.types.BGP, patterns: []};
     }
 
-    return ActorQueryOperationFromQuad.copyOperation(operation,
-      (subOperation: Algebra.Operation) => this.applyOperationNamedGraph(subOperation, namedGraphs, defaultGraphs));
+    return ActorQueryOperationFromQuad.copyOperation(
+      operation,
+      (subOperation: Algebra.Operation) => this.applyOperationNamedGraph(subOperation, namedGraphs, defaultGraphs),
+    );
   }
 
   /**
@@ -209,7 +224,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
     return operation;
   }
 
-  public async testOperation(operation: Algebra.From, context: IActionContext): Promise<IActorTest> {
+  public async testOperation(_operation: Algebra.From, _context: IActionContext): Promise<IActorTest> {
     return true;
   }
 

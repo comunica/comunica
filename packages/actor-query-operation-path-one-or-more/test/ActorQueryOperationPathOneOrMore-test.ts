@@ -92,7 +92,9 @@ describe('ActorQueryOperationPathOneOrMore', () => {
     });
 
     it('should not be able to create new ActorQueryOperationPathOneOrMore objects without \'new\'', () => {
-      expect(() => { (<any> ActorQueryOperationPathOneOrMore)(); }).toThrow();
+      expect(() => {
+        (<any> ActorQueryOperationPathOneOrMore)();
+      }).toThrow(`Class constructor ActorQueryOperationPathOneOrMore cannot be invoked without 'new'`);
     });
   });
 
@@ -106,20 +108,22 @@ describe('ActorQueryOperationPathOneOrMore', () => {
         },
       };
 
-      actor = new ActorQueryOperationPathOneOrMore({ name: 'actor',
+      actor = new ActorQueryOperationPathOneOrMore({
+        name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeBindingsContext });
+        mediatorMergeBindingsContext,
+      });
     });
 
-    it('should test on OneOrMore paths', () => {
+    it('should test on OneOrMore paths', async() => {
       const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.ONE_OR_MORE_PATH }}};
-      return expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toBeTruthy();
     });
 
-    it('should test on different paths', () => {
+    it('should test on different paths', async() => {
       const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }}};
-      return expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should mediate with distinct if not yet in context', async() => {
@@ -127,10 +131,9 @@ describe('ActorQueryOperationPathOneOrMore', () => {
         DF.namedNode('s'),
         factory.createOneOrMorePath(factory.createLink(DF.namedNode('p'))),
         DF.variable('x'),
-      ),
-      context: new ActionContext() };
+      ), context: new ActionContext() };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(await output.metadata()).toEqual({
+      await expect(output.metadata()).resolves.toEqual({
         cardinality: { value: 1 },
         canContainUndefs: false,
         variables: [ DF.variable('x') ],
@@ -145,10 +148,9 @@ describe('ActorQueryOperationPathOneOrMore', () => {
         DF.namedNode('s'),
         factory.createOneOrMorePath(factory.createLink(DF.namedNode('p'))),
         DF.variable('x'),
-      ),
-      context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: false }) };
+      ), context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: false }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(await output.metadata()).toEqual({
+      await expect(output.metadata()).resolves.toEqual({
         cardinality: { value: 1 },
         canContainUndefs: false,
         variables: [ DF.variable('x') ],
@@ -163,10 +165,9 @@ describe('ActorQueryOperationPathOneOrMore', () => {
         DF.namedNode('s'),
         factory.createOneOrMorePath(factory.createLink(DF.namedNode('p'))),
         DF.variable('x'),
-      ),
-      context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
+      ), context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(await output.metadata()).toEqual({
+      await expect(output.metadata()).resolves.toEqual({
         cardinality: { value: 4 },
         canContainUndefs: false,
         variables: [ DF.variable('x') ],
@@ -183,10 +184,9 @@ describe('ActorQueryOperationPathOneOrMore', () => {
         DF.variable('x'),
         factory.createOneOrMorePath(factory.createLink(DF.namedNode('p'))),
         DF.namedNode('o'),
-      ),
-      context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
+      ), context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(await output.metadata()).toEqual({
+      await expect(output.metadata()).resolves.toEqual({
         cardinality: { value: 3 },
         canContainUndefs: false,
         variables: [ DF.variable('x') ],
@@ -203,10 +203,9 @@ describe('ActorQueryOperationPathOneOrMore', () => {
         DF.namedNode('s'),
         factory.createOneOrMorePath(factory.createLink(DF.namedNode('p'))),
         DF.namedNode('1'),
-      ),
-      context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
+      ), context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(await output.metadata()).toEqual({
+      await expect(output.metadata()).resolves.toEqual({
         cardinality: { value: 3 },
         canContainUndefs: false,
         variables: [],
@@ -222,10 +221,9 @@ describe('ActorQueryOperationPathOneOrMore', () => {
         factory.createZeroOrMorePath(factory.createLink(DF.namedNode('p'))),
         DF.namedNode('1'),
         DF.variable('g'),
-      ),
-      context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
+      ), context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(await output.metadata()).toEqual({
+      await expect(output.metadata()).resolves.toEqual({
         cardinality: { value: 3 },
         canContainUndefs: false,
         variables: [ DF.variable('g') ],
@@ -243,10 +241,9 @@ describe('ActorQueryOperationPathOneOrMore', () => {
         ),
         DF.variable('o'),
         DF.variable('g'),
-      ),
-      context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
+      ), context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(await output.metadata()).toEqual({
+      await expect(output.metadata()).resolves.toEqual({
         cardinality: { value: 3 },
         canContainUndefs: false,
         variables: [ DF.variable('o'), DF.variable('g') ],
@@ -313,10 +310,9 @@ describe('ActorQueryOperationPathOneOrMore', () => {
           factory.createLink(DF.namedNode('p')),
         ])),
         DF.variable('y'),
-      ),
-      context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
+      ), context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(await output.metadata()).toEqual({
+      await expect(output.metadata()).resolves.toEqual({
         cardinality: { value: 1 },
         canContainUndefs: false,
         variables: [ DF.variable('x'), DF.variable('y') ],
@@ -346,10 +342,9 @@ describe('ActorQueryOperationPathOneOrMore', () => {
         ])),
         DF.variable('y'),
         DF.variable('g'),
-      ),
-      context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
+      ), context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(await output.metadata()).toEqual({
+      await expect(output.metadata()).resolves.toEqual({
         cardinality: { value: 1 },
         canContainUndefs: false,
         variables: [ DF.variable('x'), DF.variable('y'), DF.variable('g') ],

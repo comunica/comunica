@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-nodejs-modules
-import type { EventEmitter } from 'events';
+import type { EventEmitter } from 'node:events';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { MetadataBindings } from './IMetadata';
@@ -13,7 +13,7 @@ import type { MetadataBindings } from './IMetadata';
  *
  * WARNING: `end()` MUST be called at some point, otherwise all `match` streams will remain unended.
  */
-export interface IAggregatedStore<Q extends RDF.BaseQuad = RDF.Quad, S extends RDF.Store<Q> = RDF.Store<Q>>
+export interface IAggregatedStore<Q extends RDF.BaseQuad = RDF.Quad>
   extends RDF.Source<Q>, RDF.Sink<RDF.Stream<Q>, EventEmitter> {
   /**
    * If this aggregated has started processing.

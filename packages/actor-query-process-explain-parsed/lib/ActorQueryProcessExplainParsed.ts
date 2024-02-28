@@ -1,7 +1,9 @@
-import type { IActionQueryProcess,
+import type {
+  IActionQueryProcess,
   IActorQueryProcessOutput,
   IActorQueryProcessArgs,
-  IQueryProcessSequential } from '@comunica/bus-query-process';
+  IQueryProcessSequential,
+} from '@comunica/bus-query-process';
 import {
   ActorQueryProcess,
 } from '@comunica/bus-query-process';

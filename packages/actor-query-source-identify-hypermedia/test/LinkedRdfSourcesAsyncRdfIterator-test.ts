@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { ILink } from '@comunica/bus-rdf-resolve-hypermedia-links';
@@ -16,7 +16,7 @@ import { LinkedRdfSourcesAsyncRdfIterator } from '../lib/LinkedRdfSourcesAsyncRd
 import '@comunica/jest';
 
 // Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
-const EventEmitter = require('events');
+const EventEmitter = require('node:events');
 
 const DF = new DataFactory();
 const AF = new Factory();
@@ -149,7 +149,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
     };
   });
 
-  describe('A LinkedRdfSourcesAsyncRdfIterator instance with negative maxIterators', () => {
+  it('A LinkedRdfSourcesAsyncRdfIterator instance with negative maxIterators', () => {
     expect(() => new DummyIterator(operation, queryBindingsOptions, context, 'first', sourceStateGetter, -64))
       .toThrow('LinkedRdfSourcesAsyncRdfIterator.maxIterators must be larger than zero, but got -64');
   });
@@ -181,7 +181,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       const it = new DummyIterator(operation, queryBindingsOptions, context, 'first', sourceStateGetter);
       jest.spyOn(<any> it, 'startIteratorsForNextUrls');
 
-      expect(await new Promise(resolve => it.getProperty('metadata', resolve))).toEqual({
+      await expect(new Promise(resolve => it.getProperty('metadata', resolve))).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         next: 'P1',
         subseq: true,
@@ -228,7 +228,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
 
       await expect(it).toEqualBindingsStream(data.flat());
 
-      expect(await new Promise(resolve => it.getProperty('metadata', resolve))).toEqual({
+      await expect(new Promise(resolve => it.getProperty('metadata', resolve))).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         firstPageToken: true,
         next: undefined,
@@ -249,7 +249,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       const it = new DummyIterator(operation, queryBindingsOptions, context, 'first', sourceStateGetter);
       jest.spyOn(<any> it, 'startIteratorsForNextUrls');
 
-      expect(await new Promise(resolve => it.getProperty('metadata', resolve))).toEqual({
+      await expect(new Promise(resolve => it.getProperty('metadata', resolve))).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         next: 'P1',
         subseq: true,
@@ -265,7 +265,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
 
       await expect(it).toEqualBindingsStream(data.flat());
 
-      expect(await new Promise(resolve => it.getProperty('metadata', resolve))).toEqual({
+      await expect(new Promise(resolve => it.getProperty('metadata', resolve))).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         firstPageToken: true,
         next: undefined,
@@ -373,14 +373,14 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       const destroySpy = jest.spyOn(<any> subIt, 'destroy');
 
       // Sanity check to make sure sub-iterator has been created
-      expect((<any> it).currentIterators.length).toEqual(1);
+      expect((<any> it).currentIterators).toHaveLength(1);
       expect(destroySpy).not.toHaveBeenCalled();
 
       // Close the main iterator
       it.destroy();
 
       // Check if sub-iterator has been closed as well
-      expect(destroySpy).toHaveBeenCalled();
+      expect(destroySpy).toHaveBeenCalledTimes(1);
     });
 
     it('rejects on invalid sourceStateGetter results', async() => {
@@ -409,13 +409,13 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         return sourceStateGetter(link, handledDatasets);
       };
       const it = new DummyIterator(operation, queryBindingsOptions, context, 'first', sourceStateGetterThis);
-      expect(await new Promise((resolve, reject) => {
+      await expect(new Promise((resolve, reject) => {
         it.on('error', resolve);
         it.on('end', () => reject(new Error('No NextSourceSecond error was emitted')));
         it.on('data', () => {
           // Do nothing
         });
-      })).toEqual(new Error('sourceStateGetter error'));
+      })).resolves.toEqual(new Error('sourceStateGetter error'));
     });
 
     it('catches invalid sourceStateGetter results on next page', async() => {
@@ -427,13 +427,13 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         return sourceStateGetter(link, handledDatasets);
       };
       const it = new DummyIterator(operation, queryBindingsOptions, context, 'first', sourceStateGetterThis);
-      expect(await new Promise((resolve, reject) => {
+      await expect(new Promise((resolve, reject) => {
         it.on('error', resolve);
         it.on('end', reject);
         it.on('data', () => {
           // Do nothing
         });
-      })).toEqual(new Error('sourceStateGetter error'));
+      })).resolves.toEqual(new Error('sourceStateGetter error'));
     });
 
     it('handles metadata overriding on first page', async() => {
@@ -560,7 +560,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
           source: <any> {
             queryBindings() {
               const quads = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
-              quads.on('newListener', event => {
+              quads.on('newListener', (event) => {
                 if (event === 'end') {
                   quads.emit('error', new Error('Emitted error!'));
                 }

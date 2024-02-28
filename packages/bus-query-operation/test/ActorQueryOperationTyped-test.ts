@@ -17,11 +17,15 @@ describe('ActorQueryOperationTyped', () => {
     });
 
     it('should not be able to create new ActorQueryOperationTyped objects without \'new\'', () => {
-      expect(() => { (<any> ActorQueryOperationTyped)(); }).toThrow();
+      expect(() => {
+        (<any> ActorQueryOperationTyped)();
+      }).toThrow(`Class constructor ActorQueryOperationTyped cannot be invoked without 'new'`);
     });
 
     it('should not be able to create new ActorQueryOperationTyped objects without an operation name', () => {
-      expect(() => { new (<any> ActorQueryOperationTyped)({ name: 'actor', bus }, null); }).toThrow();
+      expect(() => {
+        new (<any> ActorQueryOperationTyped)({ name: 'actor', bus }, null);
+      }).toThrow(`A valid "operationName" argument must be provided.`);
     });
   });
 
@@ -30,20 +34,20 @@ describe('ActorQueryOperationTyped', () => {
     actor.testOperation = () => Promise.resolve({ metadata: {}});
     actor.runOperation = () => Promise.resolve({ metadata: {}});
 
-    it('should not test without operation', () => {
-      return expect(actor.test({ context: new ActionContext() })).rejects.toBeTruthy();
+    it('should not test without operation', async() => {
+      await expect(actor.test({ context: new ActionContext() })).rejects.toBeTruthy();
     });
 
-    it('should not test with an invalid operation', () => {
-      return expect(actor.test({ operation: { type: 'other-op' }, context: new ActionContext() })).rejects.toBeTruthy();
+    it('should not test with an invalid operation', async() => {
+      await expect(actor.test({ operation: { type: 'other-op' }, context: new ActionContext() })).rejects.toBeTruthy();
     });
 
-    it('should test with a valid operation', () => {
-      return expect(actor.test({ operation: { type: 'op' }, context: new ActionContext() })).resolves.toBeTruthy();
+    it('should test with a valid operation', async() => {
+      await expect(actor.test({ operation: { type: 'op' }, context: new ActionContext() })).resolves.toBeTruthy();
     });
 
-    it('should run', () => {
-      return expect(actor.run({ operation: { type: 'op' }, context: new ActionContext() })).resolves.toBeTruthy();
+    it('should run', async() => {
+      await expect(actor.run({ operation: { type: 'op' }, context: new ActionContext() })).resolves.toBeTruthy();
     });
 
     it('should run and invoke the physicalQueryPlanLogger', async() => {

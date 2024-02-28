@@ -30,15 +30,19 @@ export class Bindings implements RDF.Bindings {
   }
 
   public set(key: RDF.Variable | string, value: RDF.Term): Bindings {
-    return new Bindings(this.dataFactory,
+    return new Bindings(
+      this.dataFactory,
       this.entries.set(typeof key === 'string' ? key : key.value, value),
-      this.contextHolder);
+      this.contextHolder,
+    );
   }
 
   public delete(key: RDF.Variable | string): Bindings {
-    return new Bindings(this.dataFactory,
+    return new Bindings(
+      this.dataFactory,
       this.entries.delete(typeof key === 'string' ? key : key.value),
-      this.contextHolder);
+      this.contextHolder,
+    );
   }
 
   public keys(): Iterable<RDF.Variable> {
@@ -53,7 +57,9 @@ export class Bindings implements RDF.Bindings {
   }
 
   public forEach(fn: (value: RDF.Term, key: RDF.Variable) => any): void {
-    this.entries.forEach((value, key) => fn(value, this.dataFactory.variable!(key)));
+    for (const [ key, value ] of this.entries.entries()) {
+      fn(value, this.dataFactory.variable!(key));
+    }
   }
 
   public get size(): number {
@@ -247,7 +253,7 @@ export class Bindings implements RDF.Bindings {
       this.dataFactory,
       this.entries,
       {
-        contextMergeHandlers: this.contextHolder?.contextMergeHandlers || {},
+        contextMergeHandlers: this.contextHolder?.contextMergeHandlers ?? {},
         context: new ActionContext().set(key, value),
       },
     );
@@ -283,9 +289,8 @@ export class Bindings implements RDF.Bindings {
     return bindingsToString(this);
   }
 
-  protected * mapIterable<T, U>(iterable: Iterable<T>, callback: (value: T) => U): Iterable<U> {
+  protected* mapIterable<T, U>(iterable: Iterable<T>, callback: (value: T) => U): Iterable<U> {
     for (const x of iterable) {
-      // eslint-disable-next-line callback-return
       yield callback(x);
     }
   }

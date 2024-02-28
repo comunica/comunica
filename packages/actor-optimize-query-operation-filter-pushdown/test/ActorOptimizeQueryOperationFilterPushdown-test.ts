@@ -21,8 +21,8 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
       actor = new ActorOptimizeQueryOperationFilterPushdown({ name: 'actor', bus });
     });
 
-    it('should test', () => {
-      return expect(actor.test({ context: new ActionContext(), operation: AF.createNop() })).resolves.toBeTruthy();
+    it('should test', async() => {
+      await expect(actor.test({ context: new ActionContext(), operation: AF.createNop() })).resolves.toBeTruthy();
     });
 
     describe('run', () => {
@@ -141,7 +141,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
       ) {
         return actor.filterPushdown(
           expression,
-          actor.getExpressionVariables(expression)!,
+          actor.getExpressionVariables(expression),
           operation,
           AF,
           new ActionContext(),

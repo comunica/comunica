@@ -56,7 +56,9 @@ describe('ActorQueryOperationMinus', () => {
     });
 
     it('should not be able to create new ActorQueryOperationMinus objects without \'new\'', () => {
-      expect(() => { (<any> ActorQueryOperationMinus)(); }).toThrow();
+      expect(() => {
+        (<any> ActorQueryOperationMinus)();
+      }).toThrow(`Class constructor ActorQueryOperationMinus cannot be invoked without 'new'`);
     });
   });
 
@@ -67,21 +69,21 @@ describe('ActorQueryOperationMinus', () => {
       actor = new ActorQueryOperationMinus({ name: 'actor', bus, mediatorQueryOperation, mediatorJoin });
     });
 
-    it('should test on minus', () => {
+    it('should test on minus', async() => {
       const op: any = { operation: { type: 'minus' }};
-      return expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toBeTruthy();
     });
 
-    it('should not test on non-minus', () => {
+    it('should not test on non-minus', async() => {
       const op: any = { operation: { type: 'some-other-type' }};
-      return expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).rejects.toBeTruthy();
     });
 
-    it('should run', () => {
+    it('should run', async() => {
       const op: any = { operation: { type: 'minus', input: [{}, {}, {}]}, context: new ActionContext() };
-      return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        expect(output.type).toEqual('bindings');
-        expect(await output.metadata()).toEqual({
+      await actor.run(op).then(async(output: IQueryOperationResultBindings) => {
+        expect(output.type).toBe('bindings');
+        await expect(output.metadata()).resolves.toEqual({
           cardinality: 100,
           canContainUndefs: false,
           variables: [ DF.variable('x'), DF.variable('y') ],

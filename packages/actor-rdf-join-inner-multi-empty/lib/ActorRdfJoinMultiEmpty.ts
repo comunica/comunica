@@ -46,8 +46,8 @@ export class ActorRdfJoinMultiEmpty extends ActorRdfJoin {
   }
 
   protected async getJoinCoefficients(
-    action: IActionRdfJoin,
-    metadatas: MetadataBindings[],
+    _action: IActionRdfJoin,
+    _metadatas: MetadataBindings[],
   ): Promise<IMediatorTypeJoinCoefficients> {
     return {
       iterations: 0,

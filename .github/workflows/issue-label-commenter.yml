@@ -1,4 +1,4 @@
-name: "Comment on issues by label"
+name: Comment on issues by label
 on:
   issues:
     types: [labeled]
@@ -7,18 +7,18 @@ jobs:
   comment:
     runs-on: ubuntu-latest
     steps:
-    - name: get comment count
-      id: getCommentCount
-      env:
-        comments: ${{ github.event.issue.comments }}
-      run: |
-        echo "$comments"
-        CL=$(echo $comments | jq '. | length' )
-        echo "::set-output name=comments_length::$CL"
-    - uses: actions/checkout@v3
-      if: steps.getCommentCount.outputs.comments_length == 0
-    - uses: peaceiris/actions-label-commenter@v1
-      if: steps.getCommentCount.outputs.comments_length == 0
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        config_file: .github/issue-commenter.yml
+      - name: get comment count
+        id: getCommentCount
+        env:
+          comments: ${{ github.event.issue.comments }}
+        run: |
+          echo "$comments"
+          CL=$(echo $comments | jq '. | length' )
+          echo "::set-output name=comments_length::$CL"
+      - uses: actions/checkout@v3
+        if: steps.getCommentCount.outputs.comments_length == 0
+      - uses: peaceiris/actions-label-commenter@v1
+        if: steps.getCommentCount.outputs.comments_length == 0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          config_file: .github/issue-commenter.yml

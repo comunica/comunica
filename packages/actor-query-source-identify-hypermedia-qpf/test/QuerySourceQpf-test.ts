@@ -1,5 +1,5 @@
 import 'jest-rdf';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActorDereferenceRdfOutput } from '@comunica/bus-dereference-rdf';
 import { KeysQueryOperation } from '@comunica/context-entries';
@@ -124,7 +124,7 @@ describe('QuerySourceQpf', () => {
 
     describe('#constructor', () => {
       it('should be a function', () => {
-        return expect(QuerySourceQpf).toBeInstanceOf(Function);
+        expect(QuerySourceQpf).toBeInstanceOf(Function);
       });
 
       it('should be constructable without initialQuads', () => {
@@ -165,7 +165,7 @@ describe('QuerySourceQpf', () => {
           ]),
         );
         expect(s).toBeInstanceOf(QuerySourceQpf);
-        expect(await arrayifyStream((<any> s).getCachedQuads(v1, v1, v1, v1))).toBeRdfIsomorphic([
+        await expect(arrayifyStream((<any> s).getCachedQuads(v1, v1, v1, v1))).resolves.toBeRdfIsomorphic([
           quad('s1', 'p1', 'o1'),
           quad('s2', 'p2', 'o2'),
         ]);
@@ -174,7 +174,7 @@ describe('QuerySourceQpf', () => {
 
     describe('getSelectorShape', () => {
       it('should return a tpf shape', async() => {
-        expect(await source.getSelectorShape()).toEqual({
+        await expect(source.getSelectorShape()).resolves.toEqual({
           type: 'operation',
           operation: {
             operationType: 'pattern',
@@ -192,7 +192,7 @@ describe('QuerySourceQpf', () => {
 
     describe('getSearchForm', () => {
       it('should return a searchForm', () => {
-        return expect(source.getSearchForm(metadata)).toEqual(metadata.searchForms.values[0]);
+        expect(source.getSearchForm(metadata)).toEqual(metadata.searchForms.values[0]);
       });
 
       it('should return a searchForm without graph', () => {
@@ -211,7 +211,7 @@ describe('QuerySourceQpf', () => {
             ],
           },
         };
-        return expect(source.getSearchForm(metadata)).toEqual(metadata.searchForms.values[0]);
+        expect(source.getSearchForm(metadata)).toEqual(metadata.searchForms.values[0]);
       });
 
       it('should return null when no valid mappings are present', () => {
@@ -224,73 +224,62 @@ describe('QuerySourceQpf', () => {
             ],
           },
         };
-        return expect(source.getSearchForm(metadata)).toBe(undefined);
+        expect(source.getSearchForm(metadata)).toBeUndefined();
       });
 
       it('should return null when no values are present', () => {
         metadata = {
           searchForms: {},
         };
-        return expect(source.getSearchForm(metadata)).toBe(undefined);
+        expect(source.getSearchForm(metadata)).toBeUndefined();
       });
 
       it('should return null when no search forms are present', () => {
-        metadata = {
-        };
-        return expect(source.getSearchForm(metadata)).toBe(undefined);
+        metadata = {};
+        expect(source.getSearchForm(metadata)).toBeUndefined();
       });
     });
 
     describe('getPatternId', () => {
       it('for default graph', () => {
         expect(source.getPatternId(DF.defaultGraph(), DF.defaultGraph(), DF.defaultGraph(), DF.defaultGraph()))
-          .toEqual(`{"s":"|","p":"|","o":"|","g":"|"}`);
+          .toBe(`{"s":"|","p":"|","o":"|","g":"|"}`);
       });
     });
 
     describe('createFragmentUri', () => {
       it('should create a valid fragment URI with materialized terms', () => {
-        return expect(source.createFragmentUri(metadata.searchForms.values[0],
+        expect(source.createFragmentUri(
+          metadata.searchForms.values[0],
           DF.namedNode('S'),
           DF.namedNode('P'),
           DF.namedNode('O'),
-          DF.namedNode('G')))
-          .toEqual('S,P,O,G');
+          DF.namedNode('G'),
+        ))
+          .toBe('S,P,O,G');
       });
 
       it('should create a valid fragment URI with materialized quoted triple terms', () => {
-        return expect(source.createFragmentUri(metadata.searchForms.values[0],
-          DF.quad(
-            DF.namedNode('S'),
-            DF.namedNode('P'),
-            DF.namedNode('O'),
-          ),
+        expect(source.createFragmentUri(metadata.searchForms.values[0], DF.quad(
+          DF.namedNode('S'),
           DF.namedNode('P'),
           DF.namedNode('O'),
-          DF.namedNode('G')))
-          .toEqual('<<S P O>>,P,O,G');
+        ), DF.namedNode('P'), DF.namedNode('O'), DF.namedNode('G')))
+          .toBe('<<S P O>>,P,O,G');
       });
 
       it('should create a valid fragment URI with only a few materialized terms', () => {
-        return expect(source.createFragmentUri(metadata.searchForms.values[0],
-          v1,
-          DF.namedNode('P'),
-          v1,
-          DF.namedNode('G')))
-          .toEqual('_,P,_,G');
+        expect(source.createFragmentUri(metadata.searchForms.values[0], v1, DF.namedNode('P'), v1, DF.namedNode('G')))
+          .toBe('_,P,_,G');
       });
 
       it('should create a valid fragment URI with quoted triple terms with variables', () => {
-        return expect(source.createFragmentUri(metadata.searchForms.values[0],
-          DF.quad(
-            DF.namedNode('S'),
-            v1,
-            DF.namedNode('O'),
-          ),
-          DF.namedNode('P'),
+        expect(source.createFragmentUri(metadata.searchForms.values[0], DF.quad(
+          DF.namedNode('S'),
+          v1,
           DF.namedNode('O'),
-          DF.namedNode('G')))
-          .toEqual('_,P,O,G');
+        ), DF.namedNode('P'), DF.namedNode('O'), DF.namedNode('G')))
+          .toBe('_,P,O,G');
       });
     });
 
@@ -341,7 +330,7 @@ describe('QuerySourceQpf', () => {
         ctx = ctx.set(KeysQueryOperation.unionDefaultGraph, true);
         const output = source.queryBindings(pAllQuad, ctx);
         const metadataPromise = new Promise(resolve => output.getProperty('metadata', resolve));
-        expect(await metadataPromise).toEqual({
+        await expect(metadataPromise).resolves.toEqual({
           availableOrders: undefined,
           order: undefined,
           canContainUndefs: false,
@@ -371,7 +360,7 @@ describe('QuerySourceQpf', () => {
       it('should emit metadata for the empty quad pattern without union default graph', async() => {
         const output = source.queryBindings(pAllQuad, ctx);
         const metadataPromise = new Promise(resolve => output.getProperty('metadata', resolve));
-        expect(await metadataPromise).toEqual({
+        await expect(metadataPromise).resolves.toEqual({
           availableOrders: undefined,
           order: undefined,
           canContainUndefs: false,
@@ -402,7 +391,7 @@ describe('QuerySourceQpf', () => {
         ctx = ctx.set(KeysQueryOperation.unionDefaultGraph, true);
         const output = source.queryBindings(pAllTriple, ctx);
         const metadataPromise = new Promise(resolve => output.getProperty('metadata', resolve));
-        expect(await metadataPromise).toEqual({
+        await expect(metadataPromise).resolves.toEqual({
           availableOrders: undefined,
           order: undefined,
           canContainUndefs: false,
@@ -431,7 +420,7 @@ describe('QuerySourceQpf', () => {
       it('should emit metadata for the empty triple pattern without union default graph', async() => {
         const output = source.queryBindings(pAllTriple, ctx);
         const metadataPromise = new Promise(resolve => output.getProperty('metadata', resolve));
-        expect(await metadataPromise).toEqual({
+        await expect(metadataPromise).resolves.toEqual({
           availableOrders: undefined,
           order: undefined,
           canContainUndefs: false,
@@ -499,7 +488,8 @@ describe('QuerySourceQpf', () => {
 
       it('[QPF] should not return any quads if defaultGraph URI is not provided', async() => {
         await expect(source.queryBindings(
-          AF.createPattern(v1, v2, v3), ctx,
+          AF.createPattern(v1, v2, v3),
+          ctx,
         )).toEqualBindingsStream([]);
       });
 
@@ -552,7 +542,8 @@ describe('QuerySourceQpf', () => {
       it('should handle a non-empty pattern and filter only matching quads', async() => {
         ctx = ctx.set(KeysQueryOperation.unionDefaultGraph, true);
         await expect(source.queryBindings(
-          AF.createPattern(DF.namedNode('s1'), v1, DF.namedNode('o1'), v2), ctx,
+          AF.createPattern(DF.namedNode('s1'), v1, DF.namedNode('o1'), v2),
+          ctx,
         ))
           .toEqualBindingsStream([
             BF.fromRecord({
@@ -561,7 +552,8 @@ describe('QuerySourceQpf', () => {
             }),
           ]);
         await expect(source.queryBindings(
-          AF.createPattern(DF.namedNode('s2'), v1, DF.namedNode('o2'), v2), ctx,
+          AF.createPattern(DF.namedNode('s2'), v1, DF.namedNode('o2'), v2),
+          ctx,
         ))
           .toEqualBindingsStream([
             BF.fromRecord({
@@ -570,7 +562,8 @@ describe('QuerySourceQpf', () => {
             }),
           ]);
         await expect(source.queryBindings(
-          AF.createPattern(DF.namedNode('s3'), v1, DF.namedNode('o3'), v2), ctx,
+          AF.createPattern(DF.namedNode('s3'), v1, DF.namedNode('o3'), v2),
+          ctx,
         ))
           .toEqualBindingsStream([]);
       });
@@ -579,7 +572,7 @@ describe('QuerySourceQpf', () => {
         ctx = ctx.set(KeysQueryOperation.unionDefaultGraph, true);
         const output = source.queryBindings(AF.createPattern(DF.namedNode('s1'), v1, DF.namedNode('o1'), v2), ctx);
         const metadataPromise = new Promise(resolve => output.getProperty('metadata', resolve));
-        expect(await metadataPromise).toEqual({
+        await expect(metadataPromise).resolves.toEqual({
           availableOrders: undefined,
           next: 'NEXT',
           canContainUndefs: false,
@@ -593,7 +586,7 @@ describe('QuerySourceQpf', () => {
       it('should emit metadata for an non-empty pattern without union default graph', async() => {
         const output = source.queryBindings(AF.createPattern(DF.namedNode('s1'), v1, DF.namedNode('o1'), v2), ctx);
         const metadataPromise = new Promise(resolve => output.getProperty('metadata', resolve));
-        expect(await metadataPromise).toEqual({
+        await expect(metadataPromise).resolves.toEqual({
           availableOrders: undefined,
           next: 'NEXT',
           canContainUndefs: false,
@@ -620,7 +613,8 @@ describe('QuerySourceQpf', () => {
 
         ctx = ctx.set(KeysQueryOperation.unionDefaultGraph, true);
         await expect(source.queryBindings(
-          AF.createPattern(v1, v2, v1, v4), ctx,
+          AF.createPattern(v1, v2, v1, v4),
+          ctx,
         )).toEqualBindingsStream([
           BF.fromRecord({
             v1: DF.namedNode('t'),
@@ -646,7 +640,8 @@ describe('QuerySourceQpf', () => {
 
         ctx = ctx.set(KeysQueryOperation.unionDefaultGraph, true);
         await expect(source.queryBindings(
-          AF.createPattern(v1, v2, v1), ctx,
+          AF.createPattern(v1, v2, v1),
+          ctx,
         )).toEqualBindingsStream([
           BF.fromRecord({
             v1: DF.namedNode('t'),
@@ -655,7 +650,7 @@ describe('QuerySourceQpf', () => {
         ]);
       });
 
-      it('should delegate errors from the RDF dereference stream', () => {
+      it('should delegate errors from the RDF dereference stream', async() => {
         const quads = new Readable();
         quads._read = () => {
           quads.emit('error', error);
@@ -667,9 +662,9 @@ describe('QuerySourceQpf', () => {
         });
 
         const error = new Error('a');
-        return new Promise<void>((resolve, reject) => {
+        await new Promise<void>((resolve, reject) => {
           const output = source.queryBindings(AF.createPattern(S, P, O, G), ctx);
-          output.on('error', e => {
+          output.on('error', (e) => {
             expect(e).toEqual(error);
             resolve();
           });
@@ -678,7 +673,7 @@ describe('QuerySourceQpf', () => {
         });
       });
 
-      it('should delegate errors from the metadata split stream', () => {
+      it('should delegate errors from the metadata split stream', async() => {
         const quads = new Readable();
         quads._read = () => {
           quads.emit('error', error);
@@ -689,9 +684,9 @@ describe('QuerySourceQpf', () => {
         });
 
         const error = new Error('a');
-        return new Promise<void>((resolve, reject) => {
+        await new Promise<void>((resolve, reject) => {
           const output = source.queryBindings(AF.createPattern(S, P, O, G), ctx);
-          output.on('error', e => {
+          output.on('error', (e) => {
             expect(e).toEqual(error);
             resolve();
           });
@@ -807,7 +802,8 @@ describe('QuerySourceQpf', () => {
     describe('queryBindings', () => {
       it('should return quads in the overridden default graph', async() => {
         await expect(source.queryBindings(
-          AF.createPattern(DF.namedNode('s1'), v1, DF.namedNode('o1'), DF.defaultGraph()), ctx,
+          AF.createPattern(DF.namedNode('s1'), v1, DF.namedNode('o1'), DF.defaultGraph()),
+          ctx,
         ))
           .toEqualBindingsStream([
             BF.fromRecord({
@@ -815,7 +811,8 @@ describe('QuerySourceQpf', () => {
             }),
           ]);
         await expect(source.queryBindings(
-          AF.createPattern(DF.namedNode('s2'), v1, DF.namedNode('o2'), DF.defaultGraph()), ctx,
+          AF.createPattern(DF.namedNode('s2'), v1, DF.namedNode('o2'), DF.defaultGraph()),
+          ctx,
         ))
           .toEqualBindingsStream([
             BF.fromRecord({
@@ -823,7 +820,8 @@ describe('QuerySourceQpf', () => {
             }),
           ]);
         await expect(source.queryBindings(
-          AF.createPattern(DF.namedNode('s3'), v1, DF.namedNode('o3'), DF.defaultGraph()), ctx,
+          AF.createPattern(DF.namedNode('s3'), v1, DF.namedNode('o3'), DF.defaultGraph()),
+          ctx,
         ))
           .toEqualBindingsStream([]);
       });
@@ -832,7 +830,8 @@ describe('QuerySourceQpf', () => {
         ctx = ctx.set(KeysQueryOperation.unionDefaultGraph, true);
 
         await expect(source.queryBindings(
-          AF.createPattern(DF.namedNode('s1'), v1, DF.namedNode('o1'), v2), ctx,
+          AF.createPattern(DF.namedNode('s1'), v1, DF.namedNode('o1'), v2),
+          ctx,
         ))
           .toEqualBindingsStream([
             BF.fromRecord({
@@ -845,7 +844,8 @@ describe('QuerySourceQpf', () => {
             }),
           ]);
         await expect(source.queryBindings(
-          AF.createPattern(DF.namedNode('s2'), v1, DF.namedNode('o2'), v2), ctx,
+          AF.createPattern(DF.namedNode('s2'), v1, DF.namedNode('o2'), v2),
+          ctx,
         ))
           .toEqualBindingsStream([
             BF.fromRecord({
@@ -858,14 +858,16 @@ describe('QuerySourceQpf', () => {
             }),
           ]);
         await expect(source.queryBindings(
-          AF.createPattern(DF.namedNode('s3'), v1, DF.namedNode('o3'), v2), ctx,
+          AF.createPattern(DF.namedNode('s3'), v1, DF.namedNode('o3'), v2),
+          ctx,
         ))
           .toEqualBindingsStream([]);
       });
 
       it('should return quads in the non-default graphs without union default graph', async() => {
         await expect(source.queryBindings(
-          AF.createPattern(DF.namedNode('s1'), v1, DF.namedNode('o1'), v2), ctx,
+          AF.createPattern(DF.namedNode('s1'), v1, DF.namedNode('o1'), v2),
+          ctx,
         ))
           .toEqualBindingsStream([
             BF.fromRecord({
@@ -874,7 +876,8 @@ describe('QuerySourceQpf', () => {
             }),
           ]);
         await expect(source.queryBindings(
-          AF.createPattern(DF.namedNode('s2'), v1, DF.namedNode('o2'), v2), ctx,
+          AF.createPattern(DF.namedNode('s2'), v1, DF.namedNode('o2'), v2),
+          ctx,
         ))
           .toEqualBindingsStream([
             BF.fromRecord({
@@ -883,14 +886,16 @@ describe('QuerySourceQpf', () => {
             }),
           ]);
         await expect(source.queryBindings(
-          AF.createPattern(DF.namedNode('s3'), v1, DF.namedNode('o3'), v2), ctx,
+          AF.createPattern(DF.namedNode('s3'), v1, DF.namedNode('o3'), v2),
+          ctx,
         ))
           .toEqualBindingsStream([]);
       });
 
       it('should return quads in the default graph without union default graph', async() => {
         await expect(source.queryBindings(
-          AF.createPattern(DF.namedNode('s1'), v1, DF.namedNode('o1'), DF.defaultGraph()), ctx,
+          AF.createPattern(DF.namedNode('s1'), v1, DF.namedNode('o1'), DF.defaultGraph()),
+          ctx,
         ))
           .toEqualBindingsStream([
             BF.fromRecord({
@@ -898,7 +903,8 @@ describe('QuerySourceQpf', () => {
             }),
           ]);
         await expect(source.queryBindings(
-          AF.createPattern(DF.namedNode('s2'), v1, DF.namedNode('o2'), DF.defaultGraph()), ctx,
+          AF.createPattern(DF.namedNode('s2'), v1, DF.namedNode('o2'), DF.defaultGraph()),
+          ctx,
         ))
           .toEqualBindingsStream([
             BF.fromRecord({
@@ -906,14 +912,16 @@ describe('QuerySourceQpf', () => {
             }),
           ]);
         await expect(source.queryBindings(
-          AF.createPattern(DF.namedNode('s3'), v1, DF.namedNode('o3'), DF.defaultGraph()), ctx,
+          AF.createPattern(DF.namedNode('s3'), v1, DF.namedNode('o3'), DF.defaultGraph()),
+          ctx,
         ))
           .toEqualBindingsStream([]);
       });
 
       it('should return quads in a custom graph', async() => {
         await expect(source.queryBindings(
-          AF.createPattern(DF.namedNode('s1'), v1, DF.namedNode('o1'), DF.namedNode('CUSTOM_GRAPH')), ctx,
+          AF.createPattern(DF.namedNode('s1'), v1, DF.namedNode('o1'), DF.namedNode('CUSTOM_GRAPH')),
+          ctx,
         ))
           .toEqualBindingsStream([
             BF.fromRecord({
@@ -921,7 +929,8 @@ describe('QuerySourceQpf', () => {
             }),
           ]);
         await expect(source.queryBindings(
-          AF.createPattern(DF.namedNode('s2'), v1, DF.namedNode('o2'), DF.namedNode('CUSTOM_GRAPH')), ctx,
+          AF.createPattern(DF.namedNode('s2'), v1, DF.namedNode('o2'), DF.namedNode('CUSTOM_GRAPH')),
+          ctx,
         ))
           .toEqualBindingsStream([
             BF.fromRecord({
@@ -929,7 +938,8 @@ describe('QuerySourceQpf', () => {
             }),
           ]);
         await expect(source.queryBindings(
-          AF.createPattern(DF.namedNode('s3'), v1, DF.namedNode('o3'), DF.namedNode('CUSTOM_GRAPH')), ctx,
+          AF.createPattern(DF.namedNode('s3'), v1, DF.namedNode('o3'), DF.namedNode('CUSTOM_GRAPH')),
+          ctx,
         ))
           .toEqualBindingsStream([]);
       });
@@ -938,7 +948,8 @@ describe('QuerySourceQpf', () => {
         ctx = ctx.set(KeysQueryOperation.unionDefaultGraph, true);
 
         await expect(source.queryBindings(
-          AF.createPattern(v1, DF.namedNode('defaultInSubject'), v2, v3), ctx,
+          AF.createPattern(v1, DF.namedNode('defaultInSubject'), v2, v3),
+          ctx,
         ))
           .toEqualBindingsStream([
             BF.fromRecord({
@@ -953,7 +964,8 @@ describe('QuerySourceQpf', () => {
         ctx = ctx.set(KeysQueryOperation.unionDefaultGraph, true);
 
         await expect(source.queryBindings(
-          AF.createPattern(v1, DF.namedNode('actualDefaultGraph'), v2, v3), ctx,
+          AF.createPattern(v1, DF.namedNode('actualDefaultGraph'), v2, v3),
+          ctx,
         ))
           .toEqualBindingsStream([
             BF.fromRecord({
@@ -963,7 +975,8 @@ describe('QuerySourceQpf', () => {
             }),
           ]);
         await expect(source.queryBindings(
-          AF.createPattern(v1, DF.namedNode('actualDefaultGraph'), v2, DF.defaultGraph()), ctx,
+          AF.createPattern(v1, DF.namedNode('actualDefaultGraph'), v2, DF.defaultGraph()),
+          ctx,
         ))
           .toEqualBindingsStream([
             BF.fromRecord({
@@ -1072,7 +1085,7 @@ describe('QuerySourceQpf', () => {
 
     describe('getSelectorShape', () => {
       it('should return a br filter', async() => {
-        expect(await source.getSelectorShape()).toEqual({
+        await expect(source.getSelectorShape()).resolves.toEqual({
           type: 'operation',
           operation: {
             operationType: 'pattern',
@@ -1091,7 +1104,7 @@ describe('QuerySourceQpf', () => {
 
     describe('getBindingsRestrictedLink', () => {
       it('handles an empty filter', async() => {
-        expect(await source.getBindingsRestrictedLink(
+        await expect(source.getBindingsRestrictedLink(
           DF.namedNode('s'),
           DF.namedNode('p'),
           DF.namedNode('o'),
@@ -1101,11 +1114,11 @@ describe('QuerySourceQpf', () => {
             bindings: new ArrayIterator([], { autoStart: false }),
             metadata: <any> { variables: [ DF.variable('f1'), DF.variable('f2') ]},
           },
-        )).toEqual(`url&values=(%3Ff1%20%3Ff2)%20%7B%20(%3Cex%3Acomunica%3Aunknown%3E)%20%7D`);
+        )).resolves.toBe(`url&values=(%3Ff1%20%3Ff2)%20%7B%20(%3Cex%3Acomunica%3Aunknown%3E)%20%7D`);
       });
 
       it('handles a non-empty filter', async() => {
-        expect(await source.getBindingsRestrictedLink(
+        await expect(source.getBindingsRestrictedLink(
           DF.namedNode('s'),
           DF.namedNode('p'),
           DF.namedNode('o'),
@@ -1122,53 +1135,43 @@ describe('QuerySourceQpf', () => {
             ], { autoStart: false }),
             metadata: <any> { variables: [ DF.variable('f1'), DF.variable('f2') ]},
           },
-        )).toEqual(`url&values=(%3Ff1%20%3Ff2)%20%7B%20(%3Ca1%3E%20UNDEF%20)%20(UNDEF%20%3Ca2%3E%20)%20%7D`);
+        )).resolves.toBe(`url&values=(%3Ff1%20%3Ff2)%20%7B%20(%3Ca1%3E%20UNDEF%20)%20(UNDEF%20%3Ca2%3E%20)%20%7D`);
       });
     });
 
     describe('createFragmentUri', () => {
       it('should create a valid fragment URI with materialized terms', () => {
-        return expect(source.createFragmentUri(metadata.searchForms.values[0],
+        expect(source.createFragmentUri(
+          metadata.searchForms.values[0],
           DF.namedNode('S'),
           DF.namedNode('P'),
           DF.namedNode('O'),
-          DF.namedNode('G')))
-          .toEqual('S,P,O,G');
+          DF.namedNode('G'),
+        ))
+          .toBe('S,P,O,G');
       });
 
       it('should create a valid fragment URI with materialized quoted triple terms', () => {
-        return expect(source.createFragmentUri(metadata.searchForms.values[0],
-          DF.quad(
-            DF.namedNode('S'),
-            DF.namedNode('P'),
-            DF.namedNode('O'),
-          ),
+        expect(source.createFragmentUri(metadata.searchForms.values[0], DF.quad(
+          DF.namedNode('S'),
           DF.namedNode('P'),
           DF.namedNode('O'),
-          DF.namedNode('G')))
-          .toEqual('<<S P O>>,P,O,G');
+        ), DF.namedNode('P'), DF.namedNode('O'), DF.namedNode('G')))
+          .toBe('<<S P O>>,P,O,G');
       });
 
       it('should create a valid fragment URI with only a few materialized terms', () => {
-        return expect(source.createFragmentUri(metadata.searchForms.values[0],
-          v1,
-          DF.namedNode('P'),
-          v1,
-          DF.namedNode('G')))
-          .toEqual('?v1,P,?v1,G');
+        expect(source.createFragmentUri(metadata.searchForms.values[0], v1, DF.namedNode('P'), v1, DF.namedNode('G')))
+          .toBe('?v1,P,?v1,G');
       });
 
       it('should create a valid fragment URI with quoted triple terms with variables', () => {
-        return expect(source.createFragmentUri(metadata.searchForms.values[0],
-          DF.quad(
-            DF.namedNode('S'),
-            v1,
-            DF.namedNode('O'),
-          ),
-          DF.namedNode('P'),
+        expect(source.createFragmentUri(metadata.searchForms.values[0], DF.quad(
+          DF.namedNode('S'),
+          v1,
           DF.namedNode('O'),
-          DF.namedNode('G')))
-          .toEqual('<<S ?v1 O>>,P,O,G');
+        ), DF.namedNode('P'), DF.namedNode('O'), DF.namedNode('G')))
+          .toBe('<<S ?v1 O>>,P,O,G');
       });
     });
 
@@ -1191,7 +1194,7 @@ describe('QuerySourceQpf', () => {
         ]);
       });
 
-      it('should delegate errors from the RDF dereference stream', () => {
+      it('should delegate errors from the RDF dereference stream', async() => {
         const quads = new Readable();
         quads._read = () => {
           quads.emit('error', error);
@@ -1203,9 +1206,9 @@ describe('QuerySourceQpf', () => {
         });
 
         const error = new Error('a');
-        return new Promise<void>((resolve, reject) => {
+        await new Promise<void>((resolve, reject) => {
           const output = source.queryBindings(AF.createPattern(S, P, O, G), ctx);
-          output.on('error', e => {
+          output.on('error', (e) => {
             expect(e).toEqual(error);
             resolve();
           });
@@ -1214,7 +1217,7 @@ describe('QuerySourceQpf', () => {
         });
       });
 
-      it('should delegate errors from the metadata split stream', () => {
+      it('should delegate errors from the metadata split stream', async() => {
         const quads = new Readable();
         quads._read = () => {
           quads.emit('error', error);
@@ -1225,9 +1228,9 @@ describe('QuerySourceQpf', () => {
         });
 
         const error = new Error('a');
-        return new Promise<void>((resolve, reject) => {
+        await new Promise<void>((resolve, reject) => {
           const output = source.queryBindings(AF.createPattern(S, P, O, G), ctx);
-          output.on('error', e => {
+          output.on('error', (e) => {
             expect(e).toEqual(error);
             resolve();
           });

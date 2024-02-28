@@ -1,13 +1,21 @@
-import type { IActorContextPreprocessOutput, IActorContextPreprocessArgs,
-  MediatorContextPreprocess } from '@comunica/bus-context-preprocess';
+import type {
+  IActorContextPreprocessOutput,
+  IActorContextPreprocessArgs,
+  MediatorContextPreprocess,
+} from '@comunica/bus-context-preprocess';
 import { ActorContextPreprocess } from '@comunica/bus-context-preprocess';
 import type { ActorHttpInvalidateListenable, IActionHttpInvalidate } from '@comunica/bus-http-invalidate';
 import type { MediatorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { IAction, IActorTest } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
-import type { IQuerySourceWrapper, QuerySourceUnidentified,
-  QuerySourceUnidentifiedExpanded, IActionContext, IQuerySourceUnidentifiedExpanded } from '@comunica/types';
+import type {
+  IQuerySourceWrapper,
+  QuerySourceUnidentified,
+  QuerySourceUnidentifiedExpanded,
+  IActionContext,
+  IQuerySourceUnidentifiedExpanded,
+} from '@comunica/types';
 import { LRUCache } from 'lru-cache';
 
 /**
@@ -31,7 +39,7 @@ export class ActorContextPreprocessQuerySourceIdentify extends ActorContextPrepr
     }
   }
 
-  public async test(action: IAction): Promise<IActorTest> {
+  public async test(_action: IAction): Promise<IActorTest> {
     return true;
   }
 
@@ -61,12 +69,12 @@ export class ActorContextPreprocessQuerySourceIdentify extends ActorContextPrepr
     return {
       ...<Omit<IQuerySourceUnidentifiedExpanded, 'context'>>querySource,
       ...querySource.context ?
-        {
-          context: (await this.mediatorContextPreprocess.mediate({
-            context: ActionContext.ensureActionContext(querySource.context),
-          })).context,
-        } :
-        {},
+          {
+            context: (await this.mediatorContextPreprocess.mediate({
+              context: ActionContext.ensureActionContext(querySource.context),
+            })).context,
+          } :
+          {},
     };
   }
 

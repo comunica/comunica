@@ -9,7 +9,9 @@ import {
   filterMatchingQuotedQuads,
   getDuplicateElementLinks,
   getVariables,
-  isTermVariable, quadsMetadataToBindingsMetadata, quadsOrderToBindingsOrder,
+  isTermVariable,
+  quadsMetadataToBindingsMetadata,
+  quadsOrderToBindingsOrder,
   quadsToBindings,
 } from '../lib';
 import '@comunica/jest';
@@ -438,7 +440,9 @@ describe('Utils', () => {
     it('should get variables from a nested pattern', () => {
       expect(getVariables(
         AF.createPattern(DF.variable('v1'), DF.namedNode('p1'), DF.quad(
-          DF.namedNode('s2'), DF.namedNode('p2'), DF.variable('v2'),
+          DF.namedNode('s2'),
+          DF.namedNode('p2'),
+          DF.variable('v2'),
         )),
       )).toEqual([ DF.variable('v1'), DF.variable('v2') ]);
     });
@@ -446,94 +450,94 @@ describe('Utils', () => {
 
   describe('getDuplicateElementLinks', () => {
     it('should return falsy on patterns with different elements', () => {
-      return expect(getDuplicateElementLinks(quad('s', 'p', 'o', 'g')))
+      expect(getDuplicateElementLinks(quad('s', 'p', 'o', 'g')))
         .toBeFalsy();
     });
 
     it('should return falsy on patterns with different variables', () => {
-      return expect(getDuplicateElementLinks(quad('?v1', '?v2', '?v3', '?v4')))
+      expect(getDuplicateElementLinks(quad('?v1', '?v2', '?v3', '?v4')))
         .toBeFalsy();
     });
 
     it('should return falsy on patterns when blank nodes and variables have the same value', () => {
-      return expect(getDuplicateElementLinks(quad('?v1', '_:v1', '?v3', '?v4')))
+      expect(getDuplicateElementLinks(quad('?v1', '_:v1', '?v3', '?v4')))
         .toBeFalsy();
     });
 
     it('should return correctly on patterns with equal subject and predicate variables', () => {
-      return expect(getDuplicateElementLinks(quad('?v1', '?v1', '?v3', '?v4')))
+      expect(getDuplicateElementLinks(quad('?v1', '?v1', '?v3', '?v4')))
         .toEqual({ subject: [[ 'predicate' ]]});
     });
 
     it('should ignore patterns with equal subject and predicate blank nodes', () => {
-      return expect(getDuplicateElementLinks(quad('_:v1', '_:v1', '?v3', '?v4')))
-        .toEqual(undefined);
+      expect(getDuplicateElementLinks(quad('_:v1', '_:v1', '?v3', '?v4')))
+        .toBeUndefined();
     });
 
     it('should return correctly on patterns with equal subject and object variables', () => {
-      return expect(getDuplicateElementLinks(quad('?v1', '?v2', '?v1', '?v4')))
+      expect(getDuplicateElementLinks(quad('?v1', '?v2', '?v1', '?v4')))
         .toEqual({ subject: [[ 'object' ]]});
     });
 
     it('should return correctly on patterns with equal subject and graph variables', () => {
-      return expect(getDuplicateElementLinks(quad('?v1', '?v2', '?v3', '?v1')))
+      expect(getDuplicateElementLinks(quad('?v1', '?v2', '?v3', '?v1')))
         .toEqual({ subject: [[ 'graph' ]]});
     });
 
     it('should return correctly on patterns with equal subject, predicate and object variables', () => {
-      return expect(getDuplicateElementLinks(quad('?v1', '?v1', '?v1', '?v4')))
+      expect(getDuplicateElementLinks(quad('?v1', '?v1', '?v1', '?v4')))
         .toEqual({ subject: [[ 'predicate' ], [ 'object' ]]});
     });
 
     it('should return correctly on patterns with equal subject, predicate and graph variables', () => {
-      return expect(getDuplicateElementLinks(quad('?v1', '?v1', '?v3', '?v1')))
+      expect(getDuplicateElementLinks(quad('?v1', '?v1', '?v3', '?v1')))
         .toEqual({ subject: [[ 'predicate' ], [ 'graph' ]]});
     });
 
     it('should return correctly on patterns with equal subject, object and graph variables', () => {
-      return expect(getDuplicateElementLinks(quad('?v1', '?v2', '?v1', '?v1')))
+      expect(getDuplicateElementLinks(quad('?v1', '?v2', '?v1', '?v1')))
         .toEqual({ subject: [[ 'object' ], [ 'graph' ]]});
     });
 
     it('should return correctly on patterns with equal subject, predicate, object and graph variables', () => {
-      return expect(getDuplicateElementLinks(quad('?v1', '?v1', '?v1', '?v1')))
+      expect(getDuplicateElementLinks(quad('?v1', '?v1', '?v1', '?v1')))
         .toEqual({ subject: [[ 'predicate' ], [ 'object' ], [ 'graph' ]]});
     });
 
     it('should return correctly on patterns with equal predicate and object variables', () => {
-      return expect(getDuplicateElementLinks(quad('?v1', '?v2', '?v2', '?v4')))
+      expect(getDuplicateElementLinks(quad('?v1', '?v2', '?v2', '?v4')))
         .toEqual({ predicate: [[ 'object' ]]});
     });
 
     it('should return correctly on patterns with equal predicate and graph variables', () => {
-      return expect(getDuplicateElementLinks(quad('?v1', '?v2', '?v3', '?v2')))
+      expect(getDuplicateElementLinks(quad('?v1', '?v2', '?v3', '?v2')))
         .toEqual({ predicate: [[ 'graph' ]]});
     });
 
     it('should return correctly on patterns with equal predicate, object and graph variables', () => {
-      return expect(getDuplicateElementLinks(quad('?v1', '?v2', '?v2', '?v2')))
+      expect(getDuplicateElementLinks(quad('?v1', '?v2', '?v2', '?v2')))
         .toEqual({ predicate: [[ 'object' ], [ 'graph' ]]});
     });
 
     it('should return correctly on patterns with equal object and graph variables', () => {
-      return expect(getDuplicateElementLinks(quad('?v1', '?v2', '?v3', '?v3')))
+      expect(getDuplicateElementLinks(quad('?v1', '?v2', '?v3', '?v3')))
         .toEqual({ object: [[ 'graph' ]]});
     });
 
     it('should return correctly on quoted patterns with equal SP and OP variables', () => {
-      return expect(getDuplicateElementLinks(quad('<<ex:s ?v1 ex:o>>', '?v2', '<<ex:s ?v1 ex:o>>', '?v4')))
+      expect(getDuplicateElementLinks(quad('<<ex:s ?v1 ex:o>>', '?v2', '<<ex:s ?v1 ex:o>>', '?v4')))
         .toEqual({ subject_predicate: [[ 'object', 'predicate' ]]});
     });
 
     it('should return correctly on quoted patterns with equal SP, PO and OP variables', () => {
-      return expect(getDuplicateElementLinks(
+      expect(getDuplicateElementLinks(
         quad('<<ex:s ?v1 ex:o>>', '<<ex:s ex:p ?v1>>', '<<ex:s ?v1 ex:o>>', '?v4'),
       ))
         .toEqual({ subject_predicate: [[ 'predicate', 'object' ], [ 'object', 'predicate' ]]});
     });
 
     it('should return correctly on quoted patterns with equal SP and OP, and P and G variables', () => {
-      return expect(getDuplicateElementLinks(quad('<<ex:s ?v1 ex:o>>', '?v2', '<<ex:s ?v1 ex:o>>', '?v2')))
+      expect(getDuplicateElementLinks(quad('<<ex:s ?v1 ex:o>>', '?v2', '<<ex:s ?v1 ex:o>>', '?v2')))
         .toEqual({ subject_predicate: [[ 'object', 'predicate' ]], predicate: [[ 'graph' ]]});
     });
   });
@@ -683,7 +687,7 @@ describe('Utils', () => {
         itIn,
       );
       expect(itOut).not.toBe(itIn);
-      expect(await itOut.toArray()).toBeRdfIsomorphic([
+      await expect(itOut.toArray()).resolves.toBeRdfIsomorphic([
         quad('s1', 'p1', '<<o1s o1p o>>'),
       ]);
     });
@@ -703,7 +707,7 @@ describe('Utils', () => {
         itIn,
       );
       expect(itOut).not.toBe(itIn);
-      expect(await itOut.toArray()).toBeRdfIsomorphic([
+      await expect(itOut.toArray()).resolves.toBeRdfIsomorphic([
         quad('s2', 'p2', '<<a o2p a>>'),
       ]);
     });

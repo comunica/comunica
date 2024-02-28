@@ -1,8 +1,9 @@
 import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
-import type { ILink,
-  MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
-import type { ILinkQueue,
-  MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
+import type { ILink, MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
+import type {
+  ILinkQueue,
+  MediatorRdfResolveHypermediaLinksQueue,
+} from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { IActionContext, IAggregatedStore, IQueryBindingsOptions, MetadataBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -76,7 +77,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     }
 
     this.getLinkQueue()
-      .then(linkQueue => {
+      .then((linkQueue) => {
         if (this.isCloseable(linkQueue, false)) {
           // Wait a tick before ending the aggregatedStore, to ensure that pending match() calls to it have started.
           if (this.aggregatedStore) {
@@ -97,8 +98,8 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     }
 
     this.getLinkQueue()
-      .then(linkQueue => {
-        if (cause || this.isCloseable(linkQueue, false)) {
+      .then((linkQueue) => {
+        if (cause ?? this.isCloseable(linkQueue, false)) {
           // Wait a tick before ending the aggregatedStore, to ensure that pending match() calls to it have started.
           if (this.aggregatedStore) {
             setTimeout(() => this.aggregatedStore!.end());
@@ -119,8 +120,9 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   protected override canStartNewIterator(): boolean {
     // Also allow sub-iterators to be started if the aggregated store has at least one running iterator.
     // We need this because there are cases where these running iterators will be consumed before this linked iterator.
-    return !this.wasForcefullyClosed &&
-      (this.aggregatedStore && this.aggregatedStore.hasRunningIterators()) || super.canStartNewIterator();
+    return (!this.wasForcefullyClosed &&
+      // eslint-disable-next-line ts/prefer-nullish-coalescing
+      (this.aggregatedStore && this.aggregatedStore.hasRunningIterators())) || super.canStartNewIterator();
   }
 
   protected canStartNewIteratorConsiderReadable(): boolean {
@@ -129,6 +131,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
 
   protected override isRunning(): boolean {
     // Same as above
+    // eslint-disable-next-line ts/prefer-nullish-coalescing
     return (this.aggregatedStore && this.aggregatedStore.hasRunningIterators()) || !this.done;
   }
 
@@ -146,7 +149,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
       const { links } = await this.mediatorRdfResolveHypermediaLinks.mediate({ context: this.context, metadata });
 
       // Filter URLs to avoid cyclic next-page loops
-      return links.filter(link => {
+      return links.filter((link) => {
         if (this.handledUrls[link.url]) {
           return false;
         }

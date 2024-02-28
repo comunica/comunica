@@ -33,25 +33,23 @@ export function deskolemize(action: IActionRdfUpdateQuads): IActionRdfUpdateQuad
  * @see IQuadDestination
  */
 export abstract class ActorRdfUpdateQuadsDestination extends ActorRdfUpdateQuads {
-  public async test(action: IActionRdfUpdateQuads): Promise<IActorTest> {
+  public async test(_action: IActionRdfUpdateQuads): Promise<IActorTest> {
     return true;
   }
 
   public async run(action: IActionRdfUpdateQuads): Promise<IActorRdfUpdateQuadsOutput> {
     const destination = await this.getDestination(action.context);
-    return await this.getOutput(destination, deskolemize(action), action.context);
+    return await this.getOutput(destination, deskolemize(action));
   }
 
   /**
    * Get the output of the given action on a destination.
    * @param {IQuadDestination} destination A quad destination, possibly lazy.
    * @param {IActionRdfUpdateQuads} action The action.
-   * @param {ActionContext} context Optional context data.
    */
   protected async getOutput(
     destination: IQuadDestination,
     action: IActionRdfUpdateQuads,
-    context: IActionContext,
   ): Promise<IActorRdfUpdateQuadsOutput> {
     const execute = (): Promise<void> => Promise.all([
       action.quadStreamInsert ? destination.insert(action.quadStreamInsert) : Promise.resolve(),
@@ -75,7 +73,7 @@ export abstract class ActorRdfUpdateQuadsDestination extends ActorRdfUpdateQuads
   /**
    * Get a destination instance for the given context.
    * @param {ActionContext} context Optional context data.
-   * @return {Promise<IQuadSource>} A promise that resolves to a destination.
+   * @return {Promise<IQuadDestination>} A promise that resolves to a destination.
    */
   protected abstract getDestination(context: IActionContext): Promise<IQuadDestination>;
 }

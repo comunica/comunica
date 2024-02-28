@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
@@ -29,7 +29,7 @@ describe('QuerySourceRdfJs', () => {
 
   describe('getSelectorShape', () => {
     it('should return a selector shape', async() => {
-      expect(await source.getSelectorShape()).toEqual({
+      await expect(source.getSelectorShape()).resolves.toEqual({
         type: 'operation',
         operation: {
           operationType: 'pattern',
@@ -46,7 +46,7 @@ describe('QuerySourceRdfJs', () => {
 
   describe('toString', () => {
     it('should return a string representation', async() => {
-      expect(source.toString()).toEqual('QuerySourceRdfJs(RdfStore)');
+      expect(source.toString()).toBe('QuerySourceRdfJs(RdfStore)');
     });
   });
 
@@ -77,7 +77,7 @@ describe('QuerySourceRdfJs', () => {
           o: DF.namedNode('o2'),
         }),
       ]);
-      expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
+      await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
         .toEqual({
           cardinality: { type: 'exact', value: 2 },
           canContainUndefs: false,
@@ -101,7 +101,7 @@ describe('QuerySourceRdfJs', () => {
           o: DF.namedNode('o1'),
         }),
       ]);
-      expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
+      await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
         .toEqual({
           cardinality: { type: 'exact', value: 1 },
           canContainUndefs: false,
@@ -126,7 +126,7 @@ describe('QuerySourceRdfJs', () => {
           g: DF.namedNode('g1'),
         }),
       ]);
-      expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
+      await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
         .toEqual({
           cardinality: { type: 'estimate', value: 2 },
           canContainUndefs: false,
@@ -158,7 +158,7 @@ describe('QuerySourceRdfJs', () => {
           g: DF.defaultGraph(),
         }),
       ]);
-      expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
+      await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
         .toEqual({
           cardinality: { type: 'exact', value: 2 },
           canContainUndefs: false,
@@ -188,7 +188,7 @@ describe('QuerySourceRdfJs', () => {
           o: DF.namedNode('o2'),
         }),
       ]);
-      expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
+      await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
         .toEqual({
           cardinality: { type: 'exact', value: 123 },
           canContainUndefs: false,
@@ -220,7 +220,7 @@ describe('QuerySourceRdfJs', () => {
           o: DF.namedNode('o2'),
         }),
       ]);
-      expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
+      await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
         .toEqual({
           cardinality: { type: 'exact', value: 2 },
           canContainUndefs: false,
@@ -256,10 +256,14 @@ describe('QuerySourceRdfJs', () => {
           store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')));
           store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('px'), DF.namedNode('o3')));
           store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('p'), DF.quad(
-            DF.namedNode('sa3'), DF.namedNode('pax'), DF.namedNode('oa3'),
+            DF.namedNode('sa3'),
+            DF.namedNode('pax'),
+            DF.namedNode('oa3'),
           )));
           store.addQuad(DF.quad(DF.namedNode('s4'), DF.namedNode('px'), DF.quad(
-            DF.namedNode('sb3'), DF.namedNode('pbx'), DF.namedNode('ob3'),
+            DF.namedNode('sb3'),
+            DF.namedNode('pbx'),
+            DF.namedNode('ob3'),
           )));
 
           const data = source.queryBindings(
@@ -278,11 +282,13 @@ describe('QuerySourceRdfJs', () => {
             BF.fromRecord({
               s: DF.namedNode('s3'),
               o: DF.quad(
-                DF.namedNode('sa3'), DF.namedNode('pax'), DF.namedNode('oa3'),
+                DF.namedNode('sa3'),
+                DF.namedNode('pax'),
+                DF.namedNode('oa3'),
               ),
             }),
           ]);
-          expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
+          await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
             .toEqual({
               cardinality: { type: 'exact', value: 3 },
               canContainUndefs: false,
@@ -296,15 +302,21 @@ describe('QuerySourceRdfJs', () => {
           store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')));
           store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('px'), DF.namedNode('o3')));
           store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('p'), DF.quad(
-            DF.namedNode('sa3'), DF.namedNode('pax'), DF.namedNode('oa3'),
+            DF.namedNode('sa3'),
+            DF.namedNode('pax'),
+            DF.namedNode('oa3'),
           )));
           store.addQuad(DF.quad(DF.namedNode('s4'), DF.namedNode('px'), DF.quad(
-            DF.namedNode('sb3'), DF.namedNode('pbx'), DF.namedNode('ob3'),
+            DF.namedNode('sb3'),
+            DF.namedNode('pbx'),
+            DF.namedNode('ob3'),
           )));
 
           const data = source.queryBindings(
             AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.quad(
-              DF.variable('s1'), DF.variable('p1'), DF.variable('o1'),
+              DF.variable('s1'),
+              DF.variable('p1'),
+              DF.variable('o1'),
             )),
             ctx,
           );
@@ -316,7 +328,7 @@ describe('QuerySourceRdfJs', () => {
               o1: DF.namedNode('oa3'),
             }),
           ]);
-          expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
+          await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
             .toEqual({
               cardinality: { type: 'exact', value: 1 },
               canContainUndefs: false,
@@ -330,15 +342,21 @@ describe('QuerySourceRdfJs', () => {
           store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')));
           store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('px'), DF.namedNode('o3')));
           store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('p'), DF.quad(
-            DF.namedNode('sa3'), DF.namedNode('pax'), DF.namedNode('oa3'),
+            DF.namedNode('sa3'),
+            DF.namedNode('pax'),
+            DF.namedNode('oa3'),
           )));
           store.addQuad(DF.quad(DF.namedNode('s4'), DF.namedNode('px'), DF.quad(
-            DF.namedNode('sb3'), DF.namedNode('pbx'), DF.namedNode('ob3'),
+            DF.namedNode('sb3'),
+            DF.namedNode('pbx'),
+            DF.namedNode('ob3'),
           )));
 
           const data = source.queryBindings(
             AF.createPattern(DF.variable('s'), DF.variable('p'), DF.quad(
-              DF.variable('s1'), DF.namedNode('pbx'), DF.variable('o1'),
+              DF.variable('s1'),
+              DF.namedNode('pbx'),
+              DF.variable('o1'),
             )),
             ctx,
           );
@@ -350,7 +368,7 @@ describe('QuerySourceRdfJs', () => {
               o1: DF.namedNode('ob3'),
             }),
           ]);
-          expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
+          await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
             .toEqual({
               cardinality: { type: 'exact', value: 1 },
               canContainUndefs: false,
@@ -364,21 +382,33 @@ describe('QuerySourceRdfJs', () => {
           store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')));
           store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('px'), DF.namedNode('o3')));
           store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('p'), DF.quad(
-            DF.namedNode('sa3'), DF.namedNode('pax'), DF.namedNode('oa3'),
+            DF.namedNode('sa3'),
+            DF.namedNode('pax'),
+            DF.namedNode('oa3'),
           )));
           store.addQuad(DF.quad(DF.namedNode('s4'), DF.namedNode('px'), DF.quad(
-            DF.namedNode('sb3'), DF.namedNode('pbx'), DF.namedNode('ob3'),
+            DF.namedNode('sb3'),
+            DF.namedNode('pbx'),
+            DF.namedNode('ob3'),
           )));
           store.addQuad(DF.quad(DF.namedNode('s4'), DF.namedNode('px'), DF.quad(
-            DF.namedNode('sb3'), DF.namedNode('pbx'), DF.quad(
-              DF.namedNode('sb3'), DF.namedNode('pbx'), DF.namedNode('ob3'),
+            DF.namedNode('sb3'),
+            DF.namedNode('pbx'),
+            DF.quad(
+              DF.namedNode('sb3'),
+              DF.namedNode('pbx'),
+              DF.namedNode('ob3'),
             ),
           )));
 
           const data = source.queryBindings(
             AF.createPattern(DF.variable('s'), DF.variable('p'), DF.quad(
-              DF.variable('s1'), DF.namedNode('pbx'), DF.quad(
-                DF.variable('s2'), DF.variable('pcx'), DF.variable('o2'),
+              DF.variable('s1'),
+              DF.namedNode('pbx'),
+              DF.quad(
+                DF.variable('s2'),
+                DF.variable('pcx'),
+                DF.variable('o2'),
               ),
             )),
             ctx,
@@ -393,7 +423,7 @@ describe('QuerySourceRdfJs', () => {
               o2: DF.namedNode('ob3'),
             }),
           ]);
-          expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
+          await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
             .toEqual({
               cardinality: { type: 'exact', value: 1 },
               canContainUndefs: false,
@@ -421,10 +451,14 @@ describe('QuerySourceRdfJs', () => {
           store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')));
           store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('px'), DF.namedNode('o3')));
           store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('p'), DF.quad(
-            DF.namedNode('sa3'), DF.namedNode('pax'), DF.namedNode('oa3'),
+            DF.namedNode('sa3'),
+            DF.namedNode('pax'),
+            DF.namedNode('oa3'),
           )));
           store.addQuad(DF.quad(DF.namedNode('s4'), DF.namedNode('px'), DF.quad(
-            DF.namedNode('sb3'), DF.namedNode('pbx'), DF.namedNode('ob3'),
+            DF.namedNode('sb3'),
+            DF.namedNode('pbx'),
+            DF.namedNode('ob3'),
           )));
 
           const data = source.queryBindings(
@@ -443,11 +477,13 @@ describe('QuerySourceRdfJs', () => {
             BF.fromRecord({
               s: DF.namedNode('s3'),
               o: DF.quad(
-                DF.namedNode('sa3'), DF.namedNode('pax'), DF.namedNode('oa3'),
+                DF.namedNode('sa3'),
+                DF.namedNode('pax'),
+                DF.namedNode('oa3'),
               ),
             }),
           ]);
-          expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
+          await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
             .toEqual({
               cardinality: { type: 'exact', value: 3 },
               canContainUndefs: false,
@@ -461,15 +497,21 @@ describe('QuerySourceRdfJs', () => {
           store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')));
           store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('px'), DF.namedNode('o3')));
           store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('p'), DF.quad(
-            DF.namedNode('sa3'), DF.namedNode('pax'), DF.namedNode('oa3'),
+            DF.namedNode('sa3'),
+            DF.namedNode('pax'),
+            DF.namedNode('oa3'),
           )));
           store.addQuad(DF.quad(DF.namedNode('s4'), DF.namedNode('px'), DF.quad(
-            DF.namedNode('sb3'), DF.namedNode('pbx'), DF.namedNode('ob3'),
+            DF.namedNode('sb3'),
+            DF.namedNode('pbx'),
+            DF.namedNode('ob3'),
           )));
 
           const data = source.queryBindings(
             AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.quad(
-              DF.variable('s1'), DF.variable('p1'), DF.variable('o1'),
+              DF.variable('s1'),
+              DF.variable('p1'),
+              DF.variable('o1'),
             )),
             ctx,
           );
@@ -481,7 +523,7 @@ describe('QuerySourceRdfJs', () => {
               o1: DF.namedNode('oa3'),
             }),
           ]);
-          expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
+          await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
             .toEqual({
               cardinality: { type: 'estimate', value: 3 },
               canContainUndefs: false,
@@ -495,15 +537,21 @@ describe('QuerySourceRdfJs', () => {
           store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')));
           store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('px'), DF.namedNode('o3')));
           store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('p'), DF.quad(
-            DF.namedNode('sa3'), DF.namedNode('pax'), DF.namedNode('oa3'),
+            DF.namedNode('sa3'),
+            DF.namedNode('pax'),
+            DF.namedNode('oa3'),
           )));
           store.addQuad(DF.quad(DF.namedNode('s4'), DF.namedNode('px'), DF.quad(
-            DF.namedNode('sb3'), DF.namedNode('pbx'), DF.namedNode('ob3'),
+            DF.namedNode('sb3'),
+            DF.namedNode('pbx'),
+            DF.namedNode('ob3'),
           )));
 
           const data = source.queryBindings(
             AF.createPattern(DF.variable('s'), DF.variable('p'), DF.quad(
-              DF.variable('s1'), DF.namedNode('pbx'), DF.variable('o1'),
+              DF.variable('s1'),
+              DF.namedNode('pbx'),
+              DF.variable('o1'),
             )),
             ctx,
           );
@@ -515,7 +563,7 @@ describe('QuerySourceRdfJs', () => {
               o1: DF.namedNode('ob3'),
             }),
           ]);
-          expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
+          await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
             .toEqual({
               cardinality: { type: 'estimate', value: 5 },
               canContainUndefs: false,

@@ -2,7 +2,8 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
-  ActorQueryOperation, ActorQueryOperationTypedMediated,
+  ActorQueryOperation,
+  ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
 import { AsyncEvaluator, isExpressionError, orderTypes } from '@comunica/expression-evaluator';
@@ -44,9 +45,9 @@ export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated
 
     const options = { window: this.window };
     const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context);
-    const sparqleeConfig = { ...ActorQueryOperation.getAsyncExpressionContext(context,
-      this.mediatorQueryOperation,
-      bindingsFactory) };
+    const sparqleeConfig = {
+      ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation, bindingsFactory),
+    };
     let { bindingsStream } = output;
 
     // Sorting backwards since the first one is the most important therefore should be ordered last.
@@ -57,9 +58,10 @@ export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated
       // Transform the stream by annotating it with the expr result
       const evaluator = new AsyncEvaluator(expr, sparqleeConfig);
       interface IAnnotatedBinding {
-        bindings: Bindings; result: Term | undefined;
+        bindings: Bindings;
+        result: Term | undefined;
       }
-      // eslint-disable-next-line @typescript-eslint/no-loop-func
+
       const transform = async(bindings: Bindings, next: any, push: (result: IAnnotatedBinding) => void):
       Promise<void> => {
         try {
@@ -76,21 +78,20 @@ export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated
         }
         next();
       };
+      // eslint-disable-next-line ts/no-misused-promises
       const transformedStream = bindingsStream.transform<IAnnotatedBinding>({ transform });
 
       // Sort the annoted stream
-      const sortedStream = new SortIterator(transformedStream,
-        (left, right) => {
-          let compare = orderTypes(left.result, right.result);
-          if (!isAscending) {
-            compare *= -1;
-          }
-          return compare;
-        },
-        options);
+      const sortedStream = new SortIterator(transformedStream, (left, right) => {
+        let compare = orderTypes(left.result, right.result);
+        if (!isAscending) {
+          compare *= -1;
+        }
+        return compare;
+      }, options);
 
       // Remove the annotation
-      bindingsStream = sortedStream.map(({ bindings, result }) => bindings);
+      bindingsStream = sortedStream.map(({ bindings }) => bindings);
     }
 
     return {

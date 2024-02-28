@@ -96,7 +96,9 @@ describe('ActorQueryOperationExtend', () => {
     });
 
     it('should not be able to create new ActorQueryOperationExtend objects without \'new\'', () => {
-      expect(() => { (<any> ActorQueryOperationExtend)(); }).toThrow();
+      expect(() => {
+        (<any> ActorQueryOperationExtend)();
+      }).toThrow(`Class constructor ActorQueryOperationExtend cannot be invoked without 'new'`);
     });
   });
 
@@ -115,14 +117,14 @@ describe('ActorQueryOperationExtend', () => {
       );
     });
 
-    it('should test on extend', () => {
+    it('should test on extend', async() => {
       const op: any = { operation: example(defaultExpression), context: new ActionContext() };
-      return expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toBeTruthy();
     });
 
-    it('should not test on non-extend', () => {
+    it('should not test on non-extend', async() => {
       const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
-      return expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run', async() => {
@@ -143,8 +145,8 @@ describe('ActorQueryOperationExtend', () => {
         ]),
       ]);
 
-      expect(output.type).toEqual('bindings');
-      expect(await output.metadata())
+      expect(output.type).toBe('bindings');
+      await expect(output.metadata()).resolves
         .toMatchObject({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a'), DF.variable('l') ]});
     });
 
@@ -155,18 +157,19 @@ describe('ActorQueryOperationExtend', () => {
       const op: any = { operation: example(faultyExpression), context: new ActionContext() };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
 
-      expect(await arrayifyStream(output.bindingsStream)).toMatchObject(input);
+      await expect(arrayifyStream(output.bindingsStream)).resolves.toMatchObject(input);
       expect(warn).toHaveBeenCalledTimes(3);
-      expect(output.type).toEqual('bindings');
-      expect(await output.metadata())
+      expect(output.type).toBe('bindings');
+      await expect(output.metadata()).resolves
         .toMatchObject({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a'), DF.variable('l') ]});
     });
 
     it('should emit error when evaluation code returns a hard error', async() => {
       const warn = jest.fn();
       jest.spyOn(Actor, 'getContextLogger').mockImplementation(() => (<any>{ warn }));
-      // eslint-disable-next-line no-import-assign
+
       Object.defineProperty(sparqlee, 'isExpressionError', { writable: true });
+      // eslint-disable-next-line jest/prefer-spy-on
       (<any> sparqlee).isExpressionError = jest.fn(() => false);
 
       const op: any = { operation: example(faultyExpression), context: new ActionContext() };
@@ -175,7 +178,7 @@ describe('ActorQueryOperationExtend', () => {
         output.bindingsStream.on('error', () => resolve());
         output.bindingsStream.on('data', reject);
       });
-      expect(warn).toBeCalledTimes(0);
+      expect(warn).toHaveBeenCalledTimes(0);
     });
 
     it('throws ia a variable was already bound', async() => {

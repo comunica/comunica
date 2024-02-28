@@ -17,8 +17,8 @@ describe('ActorContextPreprocessQuerySourceSkolemize', () => {
       actor = new ActorContextPreprocessQuerySourceSkolemize({ name: 'actor', bus });
     });
 
-    it('should test', () => {
-      return expect(actor.test({ context: new ActionContext() })).resolves.toBeTruthy();
+    it('should test', async() => {
+      await expect(actor.test({ context: new ActionContext() })).resolves.toBeTruthy();
     });
 
     describe('run', () => {

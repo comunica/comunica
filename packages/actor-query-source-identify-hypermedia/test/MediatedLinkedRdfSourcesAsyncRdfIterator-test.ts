@@ -103,8 +103,8 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         const source = sourceFactory();
         source.close();
         await new Promise(setImmediate);
-        expect(source.closed).toEqual(true);
-        expect(source.wasForcefullyClosed).toEqual(false);
+        expect(source.closed).toBe(true);
+        expect(source.wasForcefullyClosed).toBe(false);
       });
 
       it('should close if the iterator is closeable, and end the aggregated store', async() => {
@@ -131,9 +131,9 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
 
         source.close();
         await new Promise(resolve => setTimeout(resolve, 10));
-        expect(source.closed).toEqual(true);
-        expect(aggregatedStore.end).toHaveBeenCalled();
-        expect(source.wasForcefullyClosed).toEqual(false);
+        expect(source.closed).toBe(true);
+        expect(aggregatedStore.end).toHaveBeenCalledTimes(1);
+        expect(source.wasForcefullyClosed).toBe(false);
       });
 
       it('should not close if the iterator is not closeable', async() => {
@@ -144,8 +144,8 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         source.getLinkQueue = async() => ({ isEmpty: () => false });
         source.close();
         await new Promise(setImmediate);
-        expect(source.closed).toEqual(false);
-        expect(source.wasForcefullyClosed).toEqual(true);
+        expect(source.closed).toBe(false);
+        expect(source.wasForcefullyClosed).toBe(true);
 
         source.destroy();
         await new Promise(setImmediate);
@@ -196,8 +196,8 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         const source = sourceFactory();
         source.destroy();
         await new Promise(setImmediate);
-        expect(source.closed).toEqual(true);
-        expect(source.wasForcefullyClosed).toEqual(false);
+        expect(source.closed).toBe(true);
+        expect(source.wasForcefullyClosed).toBe(false);
       });
 
       it('should close if the iterator is closeable, and end the aggregated store', async() => {
@@ -223,9 +223,9 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
 
         source.destroy();
         await new Promise(resolve => setTimeout(resolve, 10));
-        expect(source.closed).toEqual(true);
-        expect(aggregatedStore.end).toHaveBeenCalled();
-        expect(source.wasForcefullyClosed).toEqual(false);
+        expect(source.closed).toBe(true);
+        expect(aggregatedStore.end).toHaveBeenCalledTimes(1);
+        expect(source.wasForcefullyClosed).toBe(false);
       });
 
       it('should not close if the iterator is not closeable', async() => {
@@ -236,8 +236,8 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         source.getLinkQueue = async() => ({ isEmpty: () => false });
         source.destroy();
         await new Promise(setImmediate);
-        expect(source.closed).toEqual(false);
-        expect(source.wasForcefullyClosed).toEqual(true);
+        expect(source.closed).toBe(false);
+        expect(source.wasForcefullyClosed).toBe(true);
 
         source.destroy();
         await new Promise(setImmediate);
@@ -249,8 +249,8 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         source.on('error', jest.fn());
         source.destroy(new Error('force destroy'));
         await new Promise(setImmediate);
-        expect(source.closed).toEqual(true);
-        expect(source.wasForcefullyClosed).toEqual(false);
+        expect(source.closed).toBe(true);
+        expect(source.wasForcefullyClosed).toBe(false);
       });
 
       it('should destroy if the link queue rejects', async() => {
@@ -266,7 +266,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
     describe('getLinkQueue', () => {
       it('should return a new link queue when called for the first time', async() => {
         const source = sourceFactory();
-        expect(await source.getLinkQueue()).toBeInstanceOf(LinkQueueFifo);
+        await expect(source.getLinkQueue()).resolves.toBeInstanceOf(LinkQueueFifo);
 
         source.destroy();
         await new Promise(setImmediate);
@@ -275,9 +275,9 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       it('should always return the same link queue', async() => {
         const source = sourceFactory();
         const queue = await source.getLinkQueue();
-        expect(await source.getLinkQueue()).toBe(queue);
-        expect(await source.getLinkQueue()).toBe(queue);
-        expect(await source.getLinkQueue()).toBe(queue);
+        await expect(source.getLinkQueue()).resolves.toBe(queue);
+        await expect(source.getLinkQueue()).resolves.toBe(queue);
+        await expect(source.getLinkQueue()).resolves.toBe(queue);
 
         source.destroy();
         await new Promise(setImmediate);
@@ -287,7 +287,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         const source = sourceFactory();
         mediatorRdfResolveHypermediaLinksQueue.mediate = () => Promise
           .reject(new Error('mediatorRdfResolveHypermediaLinksQueue-error'));
-        await expect(source.getLinkQueue()).rejects.toThrowError('mediatorRdfResolveHypermediaLinksQueue-error');
+        await expect(source.getLinkQueue()).rejects.toThrow('mediatorRdfResolveHypermediaLinksQueue-error');
 
         source.on('error', () => {
           // Void any later errors
@@ -301,7 +301,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       it('should get urls based on mediatorRdfResolveHypermediaLinks', async() => {
         const source = sourceFactory();
         jest.spyOn(mediatorRdfResolveHypermediaLinks, 'mediate');
-        expect(await source.getSourceLinks({ baseURL: 'http://base.org/' })).toEqual([
+        await expect(source.getSourceLinks({ baseURL: 'http://base.org/' })).resolves.toEqual([
           { url: 'http://base.org/url1' },
           { url: 'http://base.org/url2' },
         ]);
@@ -315,7 +315,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       it('should not emit any urls that were already emitted', async() => {
         const source = sourceFactory();
         source.handledUrls['http://base.org/url1'] = true;
-        expect(await source.getSourceLinks({ baseURL: 'http://base.org/' })).toEqual([
+        await expect(source.getSourceLinks({ baseURL: 'http://base.org/' })).resolves.toEqual([
           { url: 'http://base.org/url2' },
         ]);
 
@@ -326,7 +326,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       it('should not re-emit any the first url', async() => {
         const source = sourceFactory();
         mediatorRdfResolveHypermediaLinks.mediate = () => Promise.resolve({ links: [{ url: 'first' }]});
-        expect(await source.getSourceLinks({ baseURL: 'http://base.org/' })).toEqual([]);
+        await expect(source.getSourceLinks({ baseURL: 'http://base.org/' })).resolves.toEqual([]);
 
         source.destroy();
         await new Promise(setImmediate);
@@ -334,15 +334,15 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
 
       it('should be invokable multiple times', async() => {
         const source = sourceFactory();
-        expect(await source.getSourceLinks({ baseURL: 'http://base.org/' })).toEqual([
+        await expect(source.getSourceLinks({ baseURL: 'http://base.org/' })).resolves.toEqual([
           { url: 'http://base.org/url1' },
           { url: 'http://base.org/url2' },
         ]);
-        expect(await source.getSourceLinks({ baseURL: 'http://base2.org/' })).toEqual([
+        await expect(source.getSourceLinks({ baseURL: 'http://base2.org/' })).resolves.toEqual([
           { url: 'http://base2.org/url1' },
           { url: 'http://base2.org/url2' },
         ]);
-        expect(await source.getSourceLinks({ baseURL: 'http://base.org/' })).toEqual([]); // Already handled
+        await expect(source.getSourceLinks({ baseURL: 'http://base.org/' })).resolves.toEqual([]); // Already handled
 
         source.destroy();
         await new Promise(setImmediate);
@@ -353,7 +353,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         mediatorRdfResolveHypermediaLinks.mediate = () => Promise.reject(
           new Error('MediatedLinkedRdfSourcesAsyncRdfIterator error'),
         );
-        expect(await source.getSourceLinks({ baseURL: 'http://base.org/' })).toEqual([]);
+        await expect(source.getSourceLinks({ baseURL: 'http://base.org/' })).resolves.toEqual([]);
 
         source.destroy();
         await new Promise(setImmediate);
@@ -373,14 +373,14 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         const linkQueue = {
           isEmpty: () => false,
         };
-        expect(source.isCloseable(linkQueue)).toEqual(false);
+        expect(source.isCloseable(linkQueue)).toBe(false);
       });
 
       it('should be true for an empty link queue', async() => {
         const linkQueue = {
           isEmpty: () => true,
         };
-        expect(source.isCloseable(linkQueue)).toEqual(true);
+        expect(source.isCloseable(linkQueue)).toBe(true);
       });
 
       it('should be false for an empty link queue when sub-iterators are running', async() => {
@@ -388,7 +388,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
           isEmpty: () => true,
         };
         source.iteratorsPendingCreation++;
-        expect(source.isCloseable(linkQueue)).toEqual(false);
+        expect(source.isCloseable(linkQueue)).toBe(false);
       });
 
       it('should be true for a non-empty link queue, but was forcefully closed', async() => {
@@ -400,7 +400,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         source.close();
         await new Promise(setImmediate);
         source.iteratorsPendingCreation--;
-        expect(source.isCloseable(linkQueue)).toEqual(true);
+        expect(source.isCloseable(linkQueue)).toBe(true);
       });
 
       it('should be false for non-empty link queue, was forcefully closed, and sub-iterators are running', async() => {
@@ -410,7 +410,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         source.iteratorsPendingCreation++;
         source.close();
         await new Promise(setImmediate);
-        expect(source.isCloseable(linkQueue)).toEqual(false);
+        expect(source.isCloseable(linkQueue)).toBe(false);
       });
     });
   });

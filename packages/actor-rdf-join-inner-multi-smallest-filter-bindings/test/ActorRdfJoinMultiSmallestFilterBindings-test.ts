@@ -33,7 +33,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
     let mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort;
     let mediatorJoin: MediatorRdfJoin;
     let actor: ActorRdfJoinMultiSmallestFilterBindings;
-    let logSpy: jest.Mock;
+    let logSpy: jest.SpyInstance;
     let source1: IQuerySourceWrapper;
     let source2: IQuerySourceWrapper;
     let source3TriplePattern: IQuerySourceWrapper;
@@ -77,7 +77,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
         mediatorJoinSelectivity,
         mediatorJoinEntriesSort,
       });
-      logSpy = (<any> actor).logDebug = jest.fn();
+      logSpy = jest.spyOn((<any> actor), 'logDebug').mockImplementation();
       source1 = <IQuerySourceWrapper> <any> {
         source: {
           getSelectorShape() {
@@ -203,7 +203,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
             variables: [ DF.variable('a') ],
           },
         };
-        expect(await actor.sortJoinEntries([ e1, e2, e3 ], context)).toEqual({
+        await expect(actor.sortJoinEntries([ e1, e2, e3 ], context)).resolves.toEqual({
           first: e3,
           second: e1,
           remaining: [ e2 ],
@@ -248,7 +248,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
             variables: [ DF.variable('a') ],
           },
         };
-        expect(await actor.sortJoinEntries([ e1, e2, e3 ], context)).toEqual({
+        await expect(actor.sortJoinEntries([ e1, e2, e3 ], context)).resolves.toEqual({
           first: e2,
           second: e3,
           remaining: [ e1 ],
@@ -292,7 +292,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
             variables: [ DF.variable('a') ],
           },
         };
-        expect(await actor.sortJoinEntries([ e1, e2, e3 ], context)).toEqual({
+        await expect(actor.sortJoinEntries([ e1, e2, e3 ], context)).resolves.toEqual({
           first: e3,
           second: e1,
           remaining: [ e2 ],
@@ -336,7 +336,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
             variables: [ DF.variable('a') ],
           },
         };
-        expect(await actor.sortJoinEntries([ e1, e2, e3 ], context)).toEqual({
+        await expect(actor.sortJoinEntries([ e1, e2, e3 ], context)).resolves.toEqual({
           first: e3,
           second: e1,
           remaining: [ e2 ],
@@ -380,7 +380,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
             variables: [ DF.variable('a'), DF.variable('b') ],
           },
         };
-        expect(await actor.sortJoinEntries([ e1, e2, e3 ], context)).toEqual({
+        await expect(actor.sortJoinEntries([ e1, e2, e3 ], context)).resolves.toEqual({
           first: e3,
           second: e1,
           remaining: [ e2 ],
@@ -480,14 +480,14 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
         const { result, physicalPlanMetadata } = await actor.getOutput(action);
 
         // Validate output
-        expect(result.type).toEqual('bindings');
+        expect(result.type).toBe('bindings');
         await expect(result.bindingsStream).toEqualBindingsStream([
           BF.bindings([
             [ DF.variable('filtered'), DF.namedNode('ex:filtered') ],
             [ DF.variable('a'), DF.namedNode('ex:a1') ],
           ]),
         ]);
-        expect(await result.metadata()).toEqual({
+        await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: 1.6 },
           canContainUndefs: false,
@@ -565,14 +565,14 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
         const { result, physicalPlanMetadata } = await actor.getOutput(action);
 
         // Validate output
-        expect(result.type).toEqual('bindings');
+        expect(result.type).toBe('bindings');
         await expect(result.bindingsStream).toEqualBindingsStream([
           BF.bindings([
             [ DF.variable('filtered'), DF.namedNode('ex:filtered') ],
             [ DF.variable('a'), DF.namedNode('ex:a1') ],
           ]),
         ]);
-        expect(await result.metadata()).toEqual({
+        await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: 1.6 },
           canContainUndefs: false,
@@ -603,7 +603,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
 
     describe('getJoinCoefficients', () => {
       it('should handle three entries', async() => {
-        expect(await actor.getJoinCoefficients(
+        await expect(actor.getJoinCoefficients(
           {
             type: 'inner',
             entries: [
@@ -648,7 +648,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
               variables: [ DF.variable('a') ],
             },
           ],
-        )).toEqual({
+        )).resolves.toEqual({
           iterations: 1.200_000_000_000_000_2e-7,
           persistedItems: 2,
           blockingItems: 2,

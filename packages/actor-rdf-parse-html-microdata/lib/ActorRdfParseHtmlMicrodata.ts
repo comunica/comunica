@@ -15,7 +15,7 @@ export class ActorRdfParseHtmlMicrodata extends ActorRdfParseHtml {
     super(args);
   }
 
-  public async test(action: IActionRdfParseHtml): Promise<IActorTest> {
+  public async test(_action: IActionRdfParseHtml): Promise<IActorTest> {
     return true;
   }
 
@@ -26,7 +26,7 @@ export class ActorRdfParseHtmlMicrodata extends ActorRdfParseHtml {
     const htmlParseListener = new MicrodataRdfParser({ baseIRI: action.baseIRI, xmlMode });
     htmlParseListener.on('error', action.error);
     htmlParseListener.on('data', action.emit);
-    // eslint-disable-next-line @typescript-eslint/unbound-method
+    // eslint-disable-next-line ts/unbound-method
     const onTagEndOld = htmlParseListener.onEnd;
     htmlParseListener.onEnd = () => {
       onTagEndOld.call(htmlParseListener);

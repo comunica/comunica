@@ -32,7 +32,9 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
     });
 
     it('should not be able to create new ActorQuerySourceIdentifyHypermediaSparql objects without \'new\'', () => {
-      expect(() => { (<any> ActorQuerySourceIdentifyHypermediaSparql)(); }).toThrow();
+      expect(() => {
+        (<any> ActorQuerySourceIdentifyHypermediaSparql)();
+      }).toThrow(`Class constructor ActorQuerySourceIdentifyHypermediaSparql cannot be invoked without 'new'`);
     });
   });
 
@@ -55,17 +57,34 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
 
     describe('#test', () => {
       it('should test with a forced sparql source type', async() => {
-        expect(await actor.test({ url: 'URL', metadata: {}, quads: <any> null, forceSourceType: 'sparql', context }))
+        await expect(actor.test({
+          url: 'URL',
+          metadata: {},
+          quads: <any> null,
+          forceSourceType: 'sparql',
+          context,
+        })).resolves
           .toEqual({ filterFactor: 1 });
       });
 
       it('should not test with a forced unknown source type', async() => {
-        await expect(actor.test({ url: 'URL', metadata: {}, quads: <any> null, forceSourceType: 'unknown', context }))
+        await expect(actor.test({
+          url: 'URL',
+          metadata: {},
+          quads: <any> null,
+          forceSourceType: 'unknown',
+          context,
+        }))
           .rejects.toThrow(new Error('Actor actor is not able to handle source type unknown.'));
       });
 
       it('should test with a sparql service metadata', async() => {
-        expect(await actor.test({ url: 'URL', metadata: { sparqlService: 'SERVICE' }, quads: <any> null, context }))
+        await expect(actor.test({
+          url: 'URL',
+          metadata: { sparqlService: 'SERVICE' },
+          quads: <any> null,
+          context,
+        })).resolves
           .toEqual({ filterFactor: 1 });
       });
 
@@ -75,7 +94,7 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
       });
 
       it('should test with an URL ending with /sparql', async() => {
-        expect(await actor.test({ url: 'URL/sparql', metadata: {}, quads: <any> null, context }))
+        await expect(actor.test({ url: 'URL/sparql', metadata: {}, quads: <any> null, context })).resolves
           .toEqual({ filterFactor: 1 });
       });
 
@@ -116,27 +135,27 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
         const output = await actor
           .run({ url: 'URL', metadata: { sparqlService: 'SERVICE' }, quads: <any> null, context });
         expect(output.source).toBeInstanceOf(QuerySourceSparql);
-        expect((<any> output.source).url).toEqual('SERVICE');
+        expect((<any> output.source).url).toBe('SERVICE');
       });
 
       it('should return a source when no sparqlService was defined in metadata', async() => {
         const output = await actor
           .run({ url: 'URL', metadata: {}, quads: <any> null, forceSourceType: 'sparql', context });
         expect(output.source).toBeInstanceOf(QuerySourceSparql);
-        expect((<any> output.source).url).toEqual('URL');
+        expect((<any> output.source).url).toBe('URL');
       });
 
       it('should return a source when no sparqlService was defined in metadata without forcing', async() => {
         const output = await actor
           .run({ url: 'URL', metadata: {}, quads: <any> null, context });
         expect(output.source).toBeInstanceOf(QuerySourceSparql);
-        expect((<any> output.source).url).toEqual('URL');
+        expect((<any> output.source).url).toBe('URL');
       });
 
       it('should return a source with the correct cache size', async() => {
         const output = await actor
           .run({ url: 'URL', metadata: { sparqlService: 'SERVICE' }, quads: <any> null, context });
-        expect((<any> output.source).cache.max).toEqual(1_024);
+        expect((<any> output.source).cache.max).toBe(1_024);
       });
     });
   });

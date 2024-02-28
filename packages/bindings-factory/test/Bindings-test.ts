@@ -143,6 +143,7 @@ describe('Bindings', () => {
     describe('forEach', () => {
       it('should iterate over all entries', () => {
         const cb = jest.fn();
+        // eslint-disable-next-line unicorn/no-array-for-each
         bindings.forEach(cb);
         expect(cb).toHaveBeenCalledTimes(3);
         expect(cb).toHaveBeenNthCalledWith(1, DF.namedNode('ex:a'), DF.variable('a'));
@@ -153,7 +154,7 @@ describe('Bindings', () => {
 
     describe('size', () => {
       it('should return the number of entries', () => {
-        expect(bindings.size).toEqual(3);
+        expect(bindings.size).toBe(3);
       });
     });
 
@@ -173,7 +174,6 @@ describe('Bindings', () => {
       });
 
       it('should be false for undefined', () => {
-        // eslint-disable-next-line unicorn/no-useless-undefined
         expect(bindings.equals(undefined)).toBeFalsy();
       });
 
@@ -243,7 +243,7 @@ describe('Bindings', () => {
         const cb = jest.fn((value: RDF.Term) => value.value !== 'ex:b');
         const bindingsNew = bindings.filter(cb);
         expect(bindingsNew).not.toBe(bindings);
-        expect(bindingsNew.size).toEqual(2);
+        expect(bindingsNew.size).toBe(2);
 
         expect(bindingsNew.get(DF.variable('a'))).toEqual(DF.namedNode('ex:a'));
         expect(bindingsNew.get(DF.variable('b'))).toBeUndefined();
@@ -261,7 +261,7 @@ describe('Bindings', () => {
         const cb = jest.fn((value: RDF.Term) => DF.namedNode(`${value.value}.2`));
         const bindingsNew = bindings.map(cb);
         expect(bindingsNew).not.toBe(bindings);
-        expect(bindingsNew.size).toEqual(3);
+        expect(bindingsNew.size).toBe(3);
 
         expect(bindingsNew.get(DF.variable('a'))).toEqual(DF.namedNode('ex:a.2'));
         expect(bindingsNew.get(DF.variable('b'))).toEqual(DF.namedNode('ex:b.2'));
@@ -285,7 +285,7 @@ describe('Bindings', () => {
         const bindingsNew: Bindings = bindings.merge(bindingsOther)!;
         expect(bindingsNew).toBeDefined();
         expect(bindingsNew).not.toBe(bindings);
-        expect(bindingsNew.size).toEqual(6);
+        expect(bindingsNew.size).toBe(6);
 
         expect(bindingsNew.get(DF.variable('a'))).toEqual(DF.namedNode('ex:a'));
         expect(bindingsNew.get(DF.variable('b'))).toEqual(DF.namedNode('ex:b'));
@@ -305,7 +305,7 @@ describe('Bindings', () => {
         const bindingsNew: Bindings = bindings.merge(bindingsOther)!;
         expect(bindingsNew).toBeDefined();
         expect(bindingsNew).not.toBe(bindings);
-        expect(bindingsNew.size).toEqual(4);
+        expect(bindingsNew.size).toBe(4);
 
         expect(bindingsNew.get(DF.variable('a'))).toEqual(DF.namedNode('ex:a'));
         expect(bindingsNew.get(DF.variable('b'))).toEqual(DF.namedNode('ex:b'));
@@ -335,7 +335,7 @@ describe('Bindings', () => {
         const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
         expect(bindingsNew).toBeDefined();
         expect(bindingsNew).not.toBe(bindings);
-        expect(bindingsNew.size).toEqual(6);
+        expect(bindingsNew.size).toBe(6);
 
         expect(bindingsNew.get(DF.variable('a'))).toEqual(DF.namedNode('ex:a'));
         expect(bindingsNew.get(DF.variable('b'))).toEqual(DF.namedNode('ex:b'));
@@ -358,7 +358,7 @@ describe('Bindings', () => {
         const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
         expect(bindingsNew).toBeDefined();
         expect(bindingsNew).not.toBe(bindings);
-        expect(bindingsNew.size).toEqual(4);
+        expect(bindingsNew.size).toBe(4);
 
         expect(bindingsNew.get(DF.variable('a'))).toEqual(DF.namedNode('ex:a'));
         expect(bindingsNew.get(DF.variable('b'))).toEqual(DF.namedNode('ex:b'));
@@ -377,7 +377,7 @@ describe('Bindings', () => {
         const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
         expect(bindingsNew).toBeDefined();
         expect(bindingsNew).not.toBe(bindings);
-        expect(bindingsNew.size).toEqual(3);
+        expect(bindingsNew.size).toBe(3);
 
         expect(bindingsNew.get(DF.variable('a'))).toEqual(DF.namedNode('ex:a+ex:b'));
         expect(bindingsNew.get(DF.variable('b'))).toEqual(DF.namedNode('ex:b'));
@@ -390,11 +390,11 @@ describe('Bindings', () => {
 
     describe('toString', () => {
       it('should stringify empty bindings', () => {
-        expect(new Bindings(DF, Map<string, RDF.Term>(), { contextMergeHandlers }).toString()).toEqual(`{}`);
+        expect(new Bindings(DF, Map<string, RDF.Term>(), { contextMergeHandlers }).toString()).toBe(`{}`);
       });
 
       it('should stringify non-empty bindings', () => {
-        expect(bindings.toString()).toEqual(`{
+        expect(bindings.toString()).toBe(`{
   "a": "ex:a",
   "b": "ex:b",
   "c": "ex:c"
@@ -539,8 +539,8 @@ describe('Bindings', () => {
       );
       const bindingsNew: Bindings = bindingsExtraKey.merge(bindings)!;
       expect(bindingsNew).toBeDefined();
-      expect(bindingsNew.getContext()).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S5', 'ex:S3' ],
-        extraKey: [ 'ex:T1', 'ex:T2' ]}));
+      expect(bindingsNew.getContext())
+        .toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S5', 'ex:S3' ], extraKey: [ 'ex:T1', 'ex:T2' ]}));
     });
 
     it('should merge other binding context with extra key by adding to result context without change', () => {
@@ -561,8 +561,8 @@ describe('Bindings', () => {
       );
       const bindingsNew: Bindings = bindings.merge(bindingsExtraKey)!;
       expect(bindingsNew).toBeDefined();
-      expect(bindingsNew.getContext()).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3', 'ex:S5' ],
-        extraKey: [ 'ex:T1', 'ex:T2' ]}));
+      expect(bindingsNew.getContext())
+        .toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3', 'ex:S5' ], extraKey: [ 'ex:T1', 'ex:T2' ]}));
     });
 
     it(`should merge remove all binding context entries that occur in both contexts but dont have a mergehandler`, () => {
@@ -637,13 +637,13 @@ describe('Bindings', () => {
 
       const bindingsNew = bindingsNoContext.merge(bindingsNoContextOther)!;
       expect(bindingsNew).toBeDefined();
-      expect(bindingsNew.getContext()).toEqual(undefined);
+      expect(bindingsNew.getContext()).toBeUndefined();
     });
 
     it('should merge with itself with no context', () => {
       const bindingsNew = bindingsNoContext.merge(bindingsNoContext)!;
       expect(bindingsNew).toBeDefined();
-      expect(bindingsNew.getContext()).toEqual(undefined);
+      expect(bindingsNew.getContext()).toBeUndefined();
     });
 
     describe('calling merge twice on same binding should give correct results', () => {
@@ -691,14 +691,13 @@ describe('Bindings', () => {
 
       it('calling mergeWith twice with different bindings should give correct results', () => {
         const cb = jest.fn();
-        const bindingsNew1: Bindings = bindings.mergeWith(cb, bindingsOther1)!;
+        const bindingsNew1: Bindings = bindings.mergeWith(cb, bindingsOther1);
         expect(bindingsNew1).toBeDefined();
         expect(bindingsNew1.getContext()).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3', 'ex:S5' ]}));
-        const bindingsNew2: Bindings = bindings.mergeWith(cb, bindingsOther2)!;
+        const bindingsNew2: Bindings = bindings.mergeWith(cb, bindingsOther2);
         expect(bindingsNew2).toBeDefined();
         expect(bindingsNew2.getContext()).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3', 'ex:S9' ]}));
       });
     });
   });
 });
-

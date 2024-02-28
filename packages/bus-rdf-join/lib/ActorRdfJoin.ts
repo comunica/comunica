@@ -8,8 +8,13 @@ import { Actor } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import { cachifyMetadata, MetadataValidationState } from '@comunica/metadata';
 import type {
-  IQueryOperationResultBindings, MetadataBindings,
-  IPhysicalQueryPlanLogger, Bindings, IActionContext, IJoinEntry, IJoinEntryWithMetadata,
+  IQueryOperationResultBindings,
+  MetadataBindings,
+  IPhysicalQueryPlanLogger,
+  Bindings,
+  IActionContext,
+  IJoinEntry,
+  IJoinEntryWithMetadata,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -72,7 +77,7 @@ export abstract class ActorRdfJoin
    * This function will not sort the variables and expects them to be in the same order for every call.
    * @param {Bindings} bindings
    * @param {string[]} variables
-   * @returns {string}
+   * @returns {string} A hash string.
    */
   public static hash(bindings: Bindings, variables: RDF.Variable[]): string {
     return variables
@@ -84,7 +89,7 @@ export abstract class ActorRdfJoin
   /**
    * Returns an array containing all the variable names that occur in all bindings streams.
    * @param {MetadataBindings[]} metadatas An array of optional metadata objects for the entries.
-   * @returns {string[]}
+   * @returns {RDF.Variable[]} An array of variables.
    */
   public static overlappingVariables(metadatas: MetadataBindings[]): RDF.Variable[] {
     const variables = metadatas.map(metadata => metadata.variables);
@@ -98,7 +103,7 @@ export abstract class ActorRdfJoin
   /**
    * Returns the variables that will occur in the joined bindings.
    * @param {MetadataBindings[]} metadatas An array of metadata objects for the entries.
-   * @returns {string[]}
+   * @returns {RDF.Variable[]} An array of joined variables.
    */
   public static joinVariables(metadatas: MetadataBindings[]): RDF.Variable[] {
     return [ ...new Set(metadatas.flatMap(metadata => metadata.variables.map(variable => variable.value))) ]
@@ -161,7 +166,7 @@ export abstract class ActorRdfJoin
    * @param metadatas An array of checked metadata.
    */
   public static getRequestInitialTimes(metadatas: MetadataBindings[]): number[] {
-    return metadatas.map(metadata => metadata.pageSize ? 0 : metadata.requestTime || 0);
+    return metadatas.map(metadata => metadata.pageSize ? 0 : metadata.requestTime ?? 0);
   }
 
   /**
@@ -170,7 +175,7 @@ export abstract class ActorRdfJoin
    */
   public static getRequestItemTimes(metadatas: MetadataBindings[]): number[] {
     return metadatas
-      .map(metadata => !metadata.pageSize ? 0 : (metadata.requestTime || 0) / metadata.pageSize);
+      .map(metadata => metadata.pageSize ? (metadata.requestTime ?? 0) / metadata.pageSize : 0);
   }
 
   /**
@@ -291,7 +296,7 @@ export abstract class ActorRdfJoin
         }
         return leftWithoutCommonVariables ?
           1 :
-          -1;
+            -1;
       });
   }
 
@@ -323,6 +328,7 @@ export abstract class ActorRdfJoin
     // Check if all streams are bindings streams
     for (const entry of action.entries) {
       if (entry.output.type !== 'bindings') {
+        // eslint-disable-next-line ts/restrict-template-expressions
         throw new Error(`Invalid type of a join entry: Expected 'bindings' but got '${entry.output.type}'`);
       }
     }
@@ -344,7 +350,7 @@ export abstract class ActorRdfJoin
   /**
    * Returns default input for 0 or 1 entries. Calls the getOutput function otherwise
    * @param {IActionRdfJoin} action
-   * @returns {Promise<IActorQueryOperationOutput>}
+   * @returns {Promise<IQueryOperationResultBindings>} A bindings result.
    */
   public async run(action: IActionRdfJoin): Promise<IQueryOperationResultBindings> {
     // Prepare logging to physical plan

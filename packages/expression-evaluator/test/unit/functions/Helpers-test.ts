@@ -29,7 +29,7 @@ describe('The function helper file', () => {
       const args = [ bool(true) ];
       builder.onUnaryTyped(TypeURL.XSD_BOOLEAN, () => func).collect()
         .search(args, sharedContext.superTypeProvider, sharedContext.functionArgumentsCache)!(sharedContext)(args);
-      expect(func).toBeCalledTimes(1);
+      expect(func).toHaveBeenCalledTimes(1);
     });
 
     it('defines a function onBoolean1', () => {
@@ -37,7 +37,7 @@ describe('The function helper file', () => {
       const args = [ bool(true) ];
       builder.onBoolean1(() => func).collect()
         .search(args, sharedContext.superTypeProvider, sharedContext.functionArgumentsCache)!(sharedContext)(args);
-      expect(func).toBeCalledTimes(1);
+      expect(func).toHaveBeenCalledTimes(1);
     });
   });
 });

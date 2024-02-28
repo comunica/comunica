@@ -1,6 +1,11 @@
 import { BlankNodeScoped } from '@comunica/data-factory';
-import type { BindingsStream, IQuerySource, MetadataBindings,
-  MetadataQuads, QuerySourceReference } from '@comunica/types';
+import type {
+  BindingsStream,
+  IQuerySource,
+  MetadataBindings,
+  MetadataQuads,
+  QuerySourceReference,
+} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -35,8 +40,7 @@ export function getSourceId(sourceIds: Map<QuerySourceReference, string>, source
  */
 export function skolemizeTerm(term: RDF.Term, sourceId: string): RDF.Term | BlankNodeScoped {
   if (term.termType === 'BlankNode') {
-    return new BlankNodeScoped(`bc_${sourceId}_${term.value}`,
-      DF.namedNode(`${SKOLEM_PREFIX}${sourceId}:${term.value}`));
+    return new BlankNodeScoped(`bc_${sourceId}_${term.value}`, DF.namedNode(`${SKOLEM_PREFIX}${sourceId}:${term.value}`));
   }
   return term;
 }
@@ -58,7 +62,7 @@ export function skolemizeQuad<Q extends RDF.BaseQuad = RDF.Quad>(quad: Q, source
  * @return The skolemized bindings.
  */
 export function skolemizeBindings(bindings: RDF.Bindings, sourceId: string): RDF.Bindings {
-  return bindings.map(term => {
+  return bindings.map((term) => {
     if (term.termType === 'Quad') {
       return skolemizeQuad(term, sourceId);
     }
@@ -137,7 +141,7 @@ export function deskolemizeTerm(term: RDF.Term, sourceId: string): RDF.Term | nu
 
 export function deskolemizeTermNestedThrowing(term: RDF.Term, sourceId: string): RDF.Term {
   if (term.termType === 'Quad') {
-    return mapTermsNested(term, subTerm => {
+    return mapTermsNested(term, (subTerm) => {
       const deskolemized = deskolemizeTerm(subTerm, sourceId);
       if (!deskolemized) {
         throw new Error(`Skolemized term is not in scope for this source`);
@@ -162,7 +166,7 @@ export function deskolemizeQuad<Q extends RDF.BaseQuad = RDF.Quad>(quad: Q, sour
   return mapTermsNested(quad, (term: RDF.Term): RDF.Term => {
     const newTerm = deskolemizeTerm(term, sourceId);
     // If the term was skolemized in a different source then don't deskolemize it
-    return !newTerm ? term : newTerm;
+    return newTerm ?? term;
   });
 }
 

@@ -38,19 +38,25 @@ describe('ActorQueryProcessExplainLogical', () => {
       });
 
       it('handles logical explain in context', async() => {
-        expect(await actor.test({ query: 'q', context: new ActionContext().set(KeysInitQuery.explain, 'logical') }))
+        await expect(actor.test({
+          query: 'q',
+          context: new ActionContext().set(KeysInitQuery.explain, 'logical'),
+        })).resolves
           .toBeTruthy();
       });
 
       it('handles logical explain in raw context', async() => {
-        expect(await actor.test({ query: 'q', context: new ActionContext().setRaw('explain', 'logical') }))
+        await expect(actor.test({ query: 'q', context: new ActionContext().setRaw('explain', 'logical') })).resolves
           .toBeTruthy();
       });
     });
 
     describe('run', () => {
       it('handles logical explain in context', async() => {
-        expect(await actor.run({ query: 'q', context: new ActionContext().set(KeysInitQuery.explain, 'logical') }))
+        await expect(actor.run({
+          query: 'q',
+          context: new ActionContext().set(KeysInitQuery.explain, 'logical'),
+        })).resolves
           .toEqual({
             result: {
               explain: true,

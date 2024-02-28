@@ -1,5 +1,8 @@
-import type { IActionOptimizeQueryOperation,
-  IActorOptimizeQueryOperationOutput, IActorOptimizeQueryOperationArgs } from '@comunica/bus-optimize-query-operation';
+import type {
+  IActionOptimizeQueryOperation,
+  IActorOptimizeQueryOperationOutput,
+  IActorOptimizeQueryOperationArgs,
+} from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import type { IActorTest } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
@@ -16,12 +19,12 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     super(args);
   }
 
-  public async test(action: IActionOptimizeQueryOperation): Promise<IActorTest> {
+  public async test(_action: IActionOptimizeQueryOperation): Promise<IActorTest> {
     return true;
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias,consistent-this
+    // eslint-disable-next-line ts/no-this-alias
     const self = this;
     const operation = Util.mapOperation(action.operation, {
       filter(op: Algebra.Filter, factory: Factory) {
@@ -52,7 +55,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
       case Algebra.expressionTypes.NAMED:
         return [];
       case Algebra.expressionTypes.OPERATOR:
-        return uniqTerms(expression.args.flatMap(arg => this.getExpressionVariables(arg)!));
+        return uniqTerms(expression.args.flatMap(arg => this.getExpressionVariables(arg)));
       case Algebra.expressionTypes.TERM:
         if (expression.term.termType === 'Variable') {
           return [ expression.term ];

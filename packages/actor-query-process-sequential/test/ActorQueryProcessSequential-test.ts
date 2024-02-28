@@ -84,7 +84,7 @@ describe('ActorQueryProcessSequential', () => {
       });
 
       it('handles no explain in context', async() => {
-        expect(await actor.test({ query: 'q', context: new ActionContext() }))
+        await expect(actor.test({ query: 'q', context: new ActionContext() })).resolves
           .toBeTruthy();
       });
     });
@@ -134,7 +134,7 @@ describe('ActorQueryProcessSequential', () => {
         const output = await actor.parse('query', ctx);
         expect(output.context).toEqual(new ActionContext()
           .set(KeysInitQuery.queryString, 'query'));
-        expect(output.operation).toEqual('PARSED');
+        expect(output.operation).toBe('PARSED');
 
         expect(mediatorContextPreprocess.mediate).toHaveBeenCalledWith({
           context: new ActionContext(),
@@ -151,7 +151,7 @@ describe('ActorQueryProcessSequential', () => {
         const output = await actor.parse('query', ctx);
         expect(output.context).toEqual(new ActionContext()
           .set(KeysInitQuery.queryString, 'query'));
-        expect(output.operation).toEqual('PARSED');
+        expect(output.operation).toBe('PARSED');
 
         expect(mediatorContextPreprocess.mediate).toHaveBeenCalledWith({
           context: new ActionContext(),
@@ -165,7 +165,7 @@ describe('ActorQueryProcessSequential', () => {
       });
 
       it('parses a query with baseIRI in query', async() => {
-        (<any> mediatorQueryParse).mediate = jest.fn((action: any) => Promise.resolve({
+        jest.spyOn((<any> mediatorQueryParse), 'mediate').mockImplementation((action: any) => Promise.resolve({
           operation: 'PARSED',
           context: action.context,
           baseIRI: 'BASE',
@@ -175,7 +175,7 @@ describe('ActorQueryProcessSequential', () => {
         expect(output.context).toEqual(new ActionContext()
           .set(KeysInitQuery.queryString, 'query')
           .set(KeysInitQuery.baseIRI, 'BASE'));
-        expect(output.operation).toEqual('PARSED');
+        expect(output.operation).toBe('PARSED');
 
         expect(mediatorContextPreprocess.mediate).toHaveBeenCalledWith({
           context: new ActionContext(),

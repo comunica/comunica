@@ -6,7 +6,7 @@ A [Query Source Identify](https://github.com/comunica/comunica/tree/master/packa
 
 This actor enables to the possibility to provide data sources using the context in the form of a string, such as:
 ```js
-{ sources: [{ type: 'serialized', value: `<ex:s> <ex:p> <ex:o>. <ex:s> <ex:p> <ex:z>.`, mediaType: 'text/turtle', baseIRI: 'http://example.org/' }]}
+{ sources: [{ type: 'serialized', value: `<ex:s> <ex:p> <ex:o>. <ex:s> <ex:p> <ex:z>.`, mediaType: 'text/turtle', baseIRI: 'http://example.org/' }];}
 ```
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
@@ -27,7 +27,7 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-source-identify-serialized/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-source-identify-serialized/^1.0.0/components/context.jsonld"
   ],
   "actors": [
     ...

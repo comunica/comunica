@@ -36,12 +36,12 @@ describe('evaluators', () => {
     describe('evaluateAsEBV', () => {
       it('is able to evaluate to true', () => {
         const evaluator = new SyncEvaluator(parse('1 + 1'));
-        expect(evaluator.evaluateAsEBV(BF.bindings())).toEqual(true);
+        expect(evaluator.evaluateAsEBV(BF.bindings())).toBe(true);
       });
 
       it('is able to evaluate to false', () => {
         const evaluator = new SyncEvaluator(parse('0'));
-        expect(evaluator.evaluateAsEBV(BF.bindings())).toEqual(false);
+        expect(evaluator.evaluateAsEBV(BF.bindings())).toBe(false);
       });
     });
 
@@ -57,12 +57,12 @@ describe('evaluators', () => {
     describe('evaluate', () => {
       it('is able to evaluate', async() => {
         const evaluator = new AsyncEvaluator(parse('1 + 1'));
-        expect(await evaluator.evaluate(BF.bindings())).toEqual(two);
+        await expect(evaluator.evaluate(BF.bindings())).resolves.toEqual(two);
       });
 
       it('has proper default extended XSD type support', async() => {
         const evaluator = new AsyncEvaluator(parse('1 + 1'));
-        expect(await evaluator.evaluate(BF.bindings())).toEqual(two);
+        await expect(evaluator.evaluate(BF.bindings())).resolves.toEqual(two);
       });
 
       it('has proper extended XSD type support', async() => {
@@ -74,19 +74,19 @@ describe('evaluators', () => {
     describe('evaluateAsEBV', () => {
       it('is able to evaluate to true', async() => {
         const evaluator = new AsyncEvaluator(parse('1 + 1'));
-        expect(await evaluator.evaluateAsEBV(BF.bindings())).toEqual(true);
+        await expect(evaluator.evaluateAsEBV(BF.bindings())).resolves.toBe(true);
       });
 
       it('is able to evaluate to false', async() => {
         const evaluator = new AsyncEvaluator(parse('0'));
-        expect(await evaluator.evaluateAsEBV(BF.bindings())).toEqual(false);
+        await expect(evaluator.evaluateAsEBV(BF.bindings())).resolves.toBe(false);
       });
     });
 
     describe('evaluateAsInternal', () => {
       it('is able to evaluate', async() => {
         const evaluator = new AsyncEvaluator(parse('1 + 1'));
-        expect(await evaluator.evaluateAsInternal(BF.bindings())).toEqual(new IntegerLiteral(2));
+        await expect(evaluator.evaluateAsInternal(BF.bindings())).resolves.toEqual(new IntegerLiteral(2));
       });
     });
   });

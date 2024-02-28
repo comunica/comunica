@@ -23,4 +23,3 @@ $ yarn add @comunica/bus-rdf-metadata-extract
 ## Creating actors on this bus
 
 Actors extending [`ActorRdfMetadataExtract`](https://comunica.github.io/comunica/classes/_comunica_bus_rdf_metadata_extract.ActorRdfMetadataExtract.html) are automatically subscribed to this bus.
-

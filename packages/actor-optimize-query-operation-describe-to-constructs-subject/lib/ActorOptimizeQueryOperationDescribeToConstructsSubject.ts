@@ -1,5 +1,8 @@
-import type { IActionOptimizeQueryOperation, IActorOptimizeQueryOperationOutput,
-  IActorOptimizeQueryOperationArgs } from '@comunica/bus-optimize-query-operation';
+import type {
+  IActionOptimizeQueryOperation,
+  IActorOptimizeQueryOperationOutput,
+  IActorOptimizeQueryOperationArgs,
+} from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import type { IActorTest } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
@@ -35,7 +38,8 @@ export class ActorOptimizeQueryOperationDescribeToConstructsSubject extends Acto
         const patterns: RDF.BaseQuad[] = [
           DF.quad(term, DF.variable('__predicate'), DF.variable('__object')),
         ];
-        // eslint-disable-next-line no-return-assign
+
+        // eslint-disable-next-line unicorn/no-array-for-each
         patterns.forEach((templatePattern: any) => templatePattern.type = 'pattern');
         const templateOperation: Algebra.Operation = {
           type: Algebra.types.BGP,
@@ -56,12 +60,14 @@ export class ActorOptimizeQueryOperationDescribeToConstructsSubject extends Acto
       let variablePatterns: Algebra.Pattern[] = [];
       operationOriginal.terms
         .filter(term => term.termType === 'Variable')
+        // eslint-disable-next-line unicorn/no-array-for-each
         .forEach((term: RDF.Term, i: number) => {
           // Transform each term to an S ?p ?o pattern in a non-conflicting way
           const patterns: RDF.BaseQuad[] = [
             DF.quad(term, DF.variable(`__predicate${i}`), DF.variable(`__object${i}`)),
           ];
-          // eslint-disable-next-line no-return-assign
+
+          // eslint-disable-next-line unicorn/no-array-for-each
           patterns.forEach((templatePattern: any) => templatePattern.type = 'pattern');
           variablePatterns = [ ...variablePatterns, ...<Algebra.Pattern[]> patterns ];
         });

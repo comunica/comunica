@@ -22,7 +22,7 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
     super(args, 'service');
   }
 
-  public async testOperation(operation: Algebra.Service, context: IActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Service, _context: IActionContext): Promise<IActorTest> {
     if (operation.name.termType !== 'NamedNode') {
       throw new Error(`${this.name} can only query services by IRI, while a ${operation.name.termType} was given.`);
     }

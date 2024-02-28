@@ -8,7 +8,8 @@ import type {
   IDateRepresentation,
   IDateTimeRepresentation,
   IDurationRepresentation,
-  ITimeRepresentation, IYearMonthDurationRepresentation,
+  ITimeRepresentation,
+  IYearMonthDurationRepresentation,
 } from '../util/DateTimeHelpers';
 import * as Err from '../util/Errors';
 import { serializeDateTime, serializeDuration, serializeTime, serializeDate } from '../util/Serialization';
@@ -138,13 +139,13 @@ export class Literal<T extends ISerializable> extends Term {
 
   public toRDF(): RDF.Literal {
     return DF.literal(
-      this.strValue || this.str(),
-      this.language || DF.namedNode(this.dataType),
+      this.strValue ?? this.str(),
+      this.language ?? DF.namedNode(this.dataType),
     );
   }
 
   public str(): string {
-    return this.strValue || this.typedValue.toString();
+    return this.strValue ?? this.typedValue.toString();
   }
 }
 
@@ -173,7 +174,7 @@ export abstract class NumericLiteral extends Literal<number> {
   }
 
   public str(): string {
-    return this.strValue ||
+    return this.strValue ??
       this.specificFormatter(this.typedValue);
   }
 }
@@ -185,7 +186,7 @@ export class IntegerLiteral extends NumericLiteral {
     public strValue?: string,
     public language?: string,
   ) {
-    super(typedValue, dataType || TypeURL.XSD_INTEGER, strValue, language);
+    super(typedValue, dataType ?? TypeURL.XSD_INTEGER, strValue, language);
   }
 
   protected specificFormatter(val: number): string {
@@ -200,7 +201,7 @@ export class DecimalLiteral extends NumericLiteral {
     public strValue?: string,
     public language?: string,
   ) {
-    super(typedValue, dataType || TypeURL.XSD_DECIMAL, strValue, language);
+    super(typedValue, dataType ?? TypeURL.XSD_DECIMAL, strValue, language);
   }
 
   protected specificFormatter(val: number): string {
@@ -215,7 +216,7 @@ export class FloatLiteral extends NumericLiteral {
     public strValue?: string,
     public language?: string,
   ) {
-    super(typedValue, dataType || TypeURL.XSD_FLOAT, strValue, language);
+    super(typedValue, dataType ?? TypeURL.XSD_FLOAT, strValue, language);
   }
 
   protected specificFormatter(val: number): string {
@@ -230,7 +231,7 @@ export class DoubleLiteral extends NumericLiteral {
     public strValue?: string,
     public language?: string,
   ) {
-    super(typedValue, dataType || TypeURL.XSD_DOUBLE, strValue, language);
+    super(typedValue, dataType ?? TypeURL.XSD_DOUBLE, strValue, language);
   }
 
   protected specificFormatter(val: number): string {
@@ -262,7 +263,7 @@ export class DoubleLiteral extends NumericLiteral {
 
 export class BooleanLiteral extends Literal<boolean> {
   public constructor(public typedValue: boolean, public strValue?: string, dataType?: string) {
-    super(typedValue, dataType || TypeURL.XSD_BOOLEAN, strValue);
+    super(typedValue, dataType ?? TypeURL.XSD_BOOLEAN, strValue);
   }
 
   public coerceEBV(): boolean {
@@ -272,7 +273,7 @@ export class BooleanLiteral extends Literal<boolean> {
 
 export class LangStringLiteral extends Literal<string> {
   public constructor(public typedValue: string, public language: string, dataType?: string) {
-    super(typedValue, dataType || TypeURL.RDF_LANG_STRING, typedValue, language);
+    super(typedValue, dataType ?? TypeURL.RDF_LANG_STRING, typedValue, language);
   }
 
   public coerceEBV(): boolean {
@@ -290,7 +291,7 @@ export class StringLiteral extends Literal<string> {
    * @param dataType Should be type that implements XSD_STRING
    */
   public constructor(public typedValue: string, dataType?: string) {
-    super(typedValue, dataType || TypeURL.XSD_STRING, typedValue);
+    super(typedValue, dataType ?? TypeURL.XSD_STRING, typedValue);
   }
 
   public coerceEBV(): boolean {
@@ -300,7 +301,7 @@ export class StringLiteral extends Literal<string> {
 
 export class DateTimeLiteral extends Literal<IDateTimeRepresentation> {
   public constructor(public typedValue: IDateTimeRepresentation, public strValue?: string, dataType?: string) {
-    super(typedValue, dataType || TypeURL.XSD_DATE_TIME, strValue);
+    super(typedValue, dataType ?? TypeURL.XSD_DATE_TIME, strValue);
   }
 
   public str(): string {
@@ -310,7 +311,7 @@ export class DateTimeLiteral extends Literal<IDateTimeRepresentation> {
 
 export class TimeLiteral extends Literal<ITimeRepresentation> {
   public constructor(public typedValue: ITimeRepresentation, public strValue?: string, dataType?: string) {
-    super(typedValue, dataType || TypeURL.XSD_TIME, strValue);
+    super(typedValue, dataType ?? TypeURL.XSD_TIME, strValue);
   }
 
   public str(): string {
@@ -320,7 +321,7 @@ export class TimeLiteral extends Literal<ITimeRepresentation> {
 
 export class DateLiteral extends Literal<IDateRepresentation> {
   public constructor(public typedValue: IDateRepresentation, public strValue?: string, dataType?: string) {
-    super(typedValue, dataType || TypeURL.XSD_DATE, strValue);
+    super(typedValue, dataType ?? TypeURL.XSD_DATE, strValue);
   }
 
   public str(): string {
@@ -330,7 +331,7 @@ export class DateLiteral extends Literal<IDateRepresentation> {
 
 export class DurationLiteral extends Literal<Partial<IDurationRepresentation>> {
   public constructor(public typedValue: Partial<IDurationRepresentation>, public strValue?: string, dataType?: string) {
-    super(typedValue, dataType || TypeURL.XSD_DURATION, strValue);
+    super(typedValue, dataType ?? TypeURL.XSD_DURATION, strValue);
   }
 
   public str(): string {
@@ -340,14 +341,17 @@ export class DurationLiteral extends Literal<Partial<IDurationRepresentation>> {
 
 export class DayTimeDurationLiteral extends DurationLiteral {
   public constructor(public typedValue: Partial<IDurationRepresentation>, public strValue?: string, dataType?: string) {
-    super(typedValue, strValue, dataType || TypeURL.XSD_DAY_TIME_DURATION);
+    super(typedValue, strValue, dataType ?? TypeURL.XSD_DAY_TIME_DURATION);
   }
 }
 
 export class YearMonthDurationLiteral extends Literal<Partial<IYearMonthDurationRepresentation>> {
-  public constructor(public typedValue: Partial<IYearMonthDurationRepresentation>, public strValue?: string,
-    dataType?: string) {
-    super(typedValue, dataType || TypeURL.XSD_YEAR_MONTH_DURATION, strValue);
+  public constructor(
+    public typedValue: Partial<IYearMonthDurationRepresentation>,
+    public strValue?: string,
+    dataType?: string,
+  ) {
+    super(typedValue, dataType ?? TypeURL.XSD_YEAR_MONTH_DURATION, strValue);
   }
 
   public str(): string {
@@ -396,12 +400,12 @@ export class NonLexicalLiteral extends Literal<{ toString: () => 'undefined' }> 
   public toRDF(): RDF.Literal {
     return DF.literal(
       this.str(),
-      this.language || DF.namedNode(this.dataType),
+      this.language ?? DF.namedNode(this.dataType),
     );
   }
 
   public str(): string {
-    return this.strValue || '';
+    return this.strValue ?? '';
   }
 }
 

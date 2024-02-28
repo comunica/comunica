@@ -7,7 +7,7 @@ import { WrappingIterator } from 'asynciterator';
 export class PrefixWrappingIterator extends WrappingIterator<Quad> {
   private prefixes?: Record<string, string>;
   public constructor(source: Promise<Quad[] & { prefixes: Record<string, string> }> | undefined) {
-    super(source?.then(src => {
+    super(source?.then((src) => {
       this.prefixes = src.prefixes;
       return src;
     }));

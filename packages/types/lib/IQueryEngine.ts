@@ -3,7 +3,7 @@ import type { AsyncIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 import type { BindingsStream } from './Bindings';
 import type { IActionContext } from './IActionContext';
-import type { IQueryContextCommon, QueryAlgebraContext, QueryStringContext } from './IQueryContext';
+import type { QueryAlgebraContext, QueryStringContext } from './IQueryContext';
 import type { IQueryExplained, QueryEnhanced, QueryExplainMode } from './IQueryOperationResult';
 import type { QuerySourceUnidentified } from './IQuerySource';
 
@@ -15,9 +15,9 @@ export type QueryType = QueryEnhanced & { context?: IActionContext };
  * Base interface for a Comunica query engine.
  */
 export interface IQueryEngine<
-  QueryContext extends IQueryContextCommon = IQueryContextCommon,
   QueryStringContextInner extends RDF.QueryStringContext = QueryStringContext,
-  QueryAlgebraContextInner extends RDF.QueryAlgebraContext = QueryAlgebraContext> extends
+  QueryAlgebraContextInner extends RDF.QueryAlgebraContext = QueryAlgebraContext,
+> extends
   RDF.StringQueryable<RDF.AllMetadataSupport, QueryStringContextInner>,
   RDF.AlgebraQueryable<Algebra.Operation, RDF.AllMetadataSupport, QueryAlgebraContextInner>,
   RDF.StringSparqlQueryable<RDF.SparqlResultSupport, QueryStringContextInner>,

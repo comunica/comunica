@@ -25,7 +25,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
         {},
         'actor-pattern',
         {},
-      )).toThrowError('No root node has been set yet, while a parent is being referenced');
+      )).toThrow('No root node has been set yet, while a parent is being referenced');
     });
 
     it('referencing no parent while a root was already set', () => {
@@ -55,7 +55,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
         undefined,
         'actor-pattern',
         {},
-      )).toThrowError('Detected more than one parent-less node');
+      )).toThrow('Detected more than one parent-less node');
     });
 
     it('referencing an unknown parent', () => {
@@ -85,7 +85,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
         {},
         'actor-pattern',
         {},
-      )).toThrowError('Could not find parent node');
+      )).toThrow('Could not find parent node');
     });
   });
 

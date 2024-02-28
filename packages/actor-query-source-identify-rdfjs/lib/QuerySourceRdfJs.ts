@@ -138,15 +138,24 @@ export class QuerySourceRdfJs implements IQuerySource {
     });
   }
 
-  public queryQuads(operation: Algebra.Construct, context: IActionContext): AsyncIterator<RDF.Quad> {
+  public queryQuads(
+    _operation: Algebra.Construct,
+    _context: IActionContext,
+  ): AsyncIterator<RDF.Quad> {
     throw new Error('queryQuads is not implemented in QuerySourceQpf');
   }
 
-  public queryBoolean(operation: Algebra.Ask, context: IActionContext): Promise<boolean> {
+  public queryBoolean(
+    _operation: Algebra.Ask,
+    _context: IActionContext,
+  ): Promise<boolean> {
     throw new Error('queryBoolean is not implemented in QuerySourceQpf');
   }
 
-  public queryVoid(operation: Algebra.Update, context: IActionContext): Promise<void> {
+  public queryVoid(
+    _operation: Algebra.Update,
+    _context: IActionContext,
+  ): Promise<void> {
     throw new Error('queryVoid is not implemented in QuerySourceQpf');
   }
 

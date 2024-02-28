@@ -3,11 +3,18 @@ import { ActionContext } from '@comunica/core';
 import type {
   IActionContext,
   IQueryOperationResult,
-  IQueryEngine, IQueryExplained,
+  IQueryEngine,
+  IQueryExplained,
   QueryFormatType,
-  QueryType, QueryExplainMode, BindingsStream,
-  QueryAlgebraContext, QueryStringContext, IQueryBindingsEnhanced,
-  IQueryQuadsEnhanced, QueryEnhanced, IQueryContextCommon,
+  QueryType,
+  QueryExplainMode,
+  BindingsStream,
+  QueryAlgebraContext,
+  QueryStringContext,
+  IQueryBindingsEnhanced,
+  IQueryQuadsEnhanced,
+  QueryEnhanced,
+  IQueryContextCommon,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -17,13 +24,15 @@ import type { ActorInitQueryBase } from './ActorInitQueryBase';
  * Base implementation of a Comunica query engine.
  */
 export class QueryEngineBase<
+  // eslint-disable-next-line unused-imports/no-unused-vars
   QueryContext extends IQueryContextCommon = IQueryContextCommon,
   QueryStringContextInner extends RDF.QueryStringContext = QueryStringContext,
-  QueryAlgebraContextInner extends RDF.QueryAlgebraContext = QueryAlgebraContext>
-implements IQueryEngine<QueryContext, QueryStringContextInner, QueryAlgebraContextInner> {
+  QueryAlgebraContextInner extends RDF.QueryAlgebraContext = QueryAlgebraContext,
+>
+implements IQueryEngine<QueryStringContextInner, QueryAlgebraContextInner> {
   private readonly actorInitQuery: ActorInitQueryBase;
 
-  public constructor(actorInitQuery: ActorInitQueryBase<QueryContext>) {
+  public constructor(actorInitQuery: ActorInitQueryBase) {
     this.actorInitQuery = actorInitQuery;
   }
 

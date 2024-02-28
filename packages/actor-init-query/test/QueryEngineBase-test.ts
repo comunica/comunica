@@ -1,12 +1,19 @@
-import { Readable, Transform } from 'stream';
+import { Readable, Transform } from 'node:stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
 import type {
-  IActionContext, QueryStringContext, IQueryBindingsEnhanced, IQueryQuadsEnhanced,
-  QueryType, IQueryOperationResultQuads, IQueryOperationResultBindings,
-  IQueryOperationResultBoolean, IQueryOperationResultVoid, IQueryEngine,
+  IActionContext,
+  QueryStringContext,
+  IQueryBindingsEnhanced,
+  IQueryQuadsEnhanced,
+  QueryType,
+  IQueryOperationResultQuads,
+  IQueryOperationResultBindings,
+  IQueryOperationResultBoolean,
+  IQueryOperationResultVoid,
+  IQueryEngine,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
@@ -23,12 +30,11 @@ const DF = new DataFactory();
 const BF = new BindingsFactory(DF, {});
 
 describe('ActorInitQueryBase', () => {
-  it('should not allow invoking its run method', () => {
-    return expect(new (<any> ActorInitQueryBase)({ bus: new Bus({ name: 'bus' }) }).run()).rejects.toBeTruthy();
+  it('should not allow invoking its run method', async() => {
+    await expect(new (<any> ActorInitQueryBase)({ bus: new Bus({ name: 'bus' }) }).run()).rejects.toBeTruthy();
   });
 });
 
-// eslint-disable-next-line mocha/max-top-level-suites
 describe('QueryEngineBase', () => {
   let bus: any;
   let mediatorQueryProcess: any;
@@ -56,25 +62,25 @@ describe('QueryEngineBase', () => {
             },
           });
         }
-        return action.query !== 'INVALID' ?
+        return action.query === 'INVALID' ?
+          Promise.reject(new Error('Invalid query')) :
           Promise.resolve({
             result: { type: 'bindings', bindingsStream: input, metadata: () => ({}), context: action.context },
-          }) :
-          Promise.reject(new Error('Invalid query'));
+          });
       }),
     };
     mediatorSparqlSerialize = {
       mediate: (arg: any) => Promise.resolve(arg.mediaTypes ?
-        { mediaTypes: arg } :
-        {
-          handle: {
-            data: arg.handle.bindingsStream
-              .pipe(new Transform({
-                objectMode: true,
-                transform: (e: any, enc: any, cb: any) => cb(null, JSON.stringify(e)),
-              })),
-          },
-        }),
+          { mediaTypes: arg } :
+          {
+            handle: {
+              data: arg.handle.bindingsStream
+                .pipe(new Transform({
+                  objectMode: true,
+                  transform: (e: any, enc: any, cb: any) => cb(null, JSON.stringify(e)),
+                })),
+            },
+          }),
     };
     mediatorHttpInvalidate = {
       mediate: (arg: any) => Promise.resolve(true),
@@ -93,7 +99,9 @@ describe('QueryEngineBase', () => {
     });
 
     it('should not be able to create new QueryEngineBase objects without \'new\'', () => {
-      expect(() => { (<any> QueryEngineBase)(); }).toThrow();
+      expect(() => {
+        (<any> QueryEngineBase)();
+      }).toThrow(`Class constructor QueryEngineBase cannot be invoked without 'new'`);
     });
   });
 
@@ -105,16 +113,16 @@ describe('QueryEngineBase', () => {
     beforeEach(() => {
       const defaultQueryInputFormat = 'sparql';
 
-      actor = new ActorInitQuery(
-        { bus,
-          defaultQueryInputFormat,
-          mediatorHttpInvalidate,
-          mediatorQueryProcess,
-          mediatorQueryResultSerialize: mediatorSparqlSerialize,
-          mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
-          mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-          name: 'actor' },
-      );
+      actor = new ActorInitQuery({
+        bus,
+        defaultQueryInputFormat,
+        mediatorHttpInvalidate,
+        mediatorQueryProcess,
+        mediatorQueryResultSerialize: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+        name: 'actor',
+      });
       queryEngine = new QueryEngineBase(actor);
     });
 
@@ -127,46 +135,46 @@ describe('QueryEngineBase', () => {
     });
 
     describe('query', () => {
-      it('should apply bindings when initialBindings are passed via the context', () => {
+      it('should apply bindings when initialBindings are passed via the context', async() => {
         const ctx: QueryStringContext = {
           sources: [ 'dummy' ],
           '@comunica/actor-init-query:initialBindings': BF.bindings([
             [ DF.variable('s'), DF.literal('sl') ],
           ]),
         };
-        return expect(queryEngine.query('SELECT * WHERE { ?s ?p ?o }', ctx))
+        await expect(queryEngine.query('SELECT * WHERE { ?s ?p ?o }', ctx))
           .resolves.toBeTruthy();
       });
 
-      it('should apply bindings when initialBindings in the old format are passed via the context', () => {
+      it('should apply bindings when initialBindings in the old format are passed via the context', async() => {
         const ctx: QueryStringContext = {
           sources: [ 'dummy' ],
           initialBindings: BF.bindings([
             [ DF.variable('s'), DF.literal('sl') ],
           ]),
         };
-        return expect(queryEngine.query('SELECT * WHERE { ?s ?p ?o }', ctx))
+        await expect(queryEngine.query('SELECT * WHERE { ?s ?p ?o }', ctx))
           .resolves.toBeTruthy();
       });
 
-      it('should apply bindings when sources in the old format are passed via the context', () => {
-        return expect(queryEngine.query('SELECT * WHERE { ?s ?p ?o }', { sources: [ 'abc' ]}))
+      it('should apply bindings when sources in the old format are passed via the context', async() => {
+        await expect(queryEngine.query('SELECT * WHERE { ?s ?p ?o }', { sources: [ 'abc' ]}))
           .resolves.toBeTruthy();
       });
 
-      it('should allow query to be called without context', () => {
-        return expect(queryEngine.query('SELECT * WHERE { ?s ?p ?o }'))
+      it('should allow query to be called without context', async() => {
+        await expect(queryEngine.query('SELECT * WHERE { ?s ?p ?o }'))
           .resolves.toBeTruthy();
       });
 
-      it('should allow KeysInitSparql.queryTimestamp to be set', () => {
+      it('should allow KeysInitSparql.queryTimestamp to be set', async() => {
         const ctx: QueryStringContext = { sources: [ 'dummy' ], [KeysInitQuery.queryTimestamp.name]: new Date() };
-        return expect(queryEngine.query('SELECT * WHERE { ?s ?p ?o }', ctx))
+        await expect(queryEngine.query('SELECT * WHERE { ?s ?p ?o }', ctx))
           .resolves.toBeTruthy();
       });
 
-      it('should allow a parsed query to be passed', () => {
-        return expect(queryEngine.query(translate('SELECT * WHERE { ?s ?p ?o }')))
+      it('should allow a parsed query to be passed', async() => {
+        await expect(queryEngine.query(translate('SELECT * WHERE { ?s ?p ?o }')))
           .resolves.toBeTruthy();
       });
 
@@ -188,20 +196,20 @@ describe('QueryEngineBase', () => {
         };
         const result = await queryEngine.query('SELECT * WHERE { ?s ?p ?o }');
         expect(result).toHaveProperty('context');
-        expect((<ActionContext> result.context).getRaw('the-answer')).toEqual(42);
+        expect((<ActionContext> result.context).getRaw('the-answer')).toBe(42);
       });
 
-      it('should return a rejected promise on an invalid request', () => {
+      it('should return a rejected promise on an invalid request', async() => {
         const ctx: QueryStringContext = { sources: [ 'abc' ]};
         // Make it reject instead of reading input
         mediatorQueryProcess.mediate = (action: any) => Promise.reject(new Error('a'));
-        return expect(queryEngine.query('INVALID QUERY', ctx)).rejects.toBeTruthy();
+        await expect(queryEngine.query('INVALID QUERY', ctx)).rejects.toBeTruthy();
       });
 
-      it('should return a rejected promise on an explain', () => {
+      it('should return a rejected promise on an explain', async() => {
         const ctx: QueryStringContext = { sources: [ 'abc' ], [KeysInitQuery.explain.name]: 'parsed' };
-        return expect(queryEngine.query('BLA', ctx)).rejects
-          .toThrowError('Tried to explain a query when in query-only mode');
+        await expect(queryEngine.query('BLA', ctx)).rejects
+          .toThrow('Tried to explain a query when in query-only mode');
       });
     });
 
@@ -213,7 +221,7 @@ describe('QueryEngineBase', () => {
               [ DF.variable('a'), DF.namedNode('ex:a') ],
             ]),
           ]);
-          await expect(await queryEngine.queryBindings('SELECT ...')).toEqualBindingsStream([
+          await expect(queryEngine.queryBindings('SELECT ...')).resolves.toEqualBindingsStream([
             BF.bindings([
               [ DF.variable('a'), DF.namedNode('ex:a') ],
             ]),
@@ -221,9 +229,9 @@ describe('QueryEngineBase', () => {
         });
 
         it('rejects for an invalid bindings query', async() => {
-          mediatorQueryProcess.mediate = jest.fn(() => Promise.resolve({ result: { type: 'void' }}));
+          jest.spyOn(mediatorQueryProcess, 'mediate').mockResolvedValue({ result: { type: 'void' }});
           await expect(queryEngine.queryBindings('INSERT ...')).rejects
-            .toThrowError(`Query result type 'bindings' was expected, while 'void' was found.`);
+            .toThrow(`Query result type 'bindings' was expected, while 'void' was found.`);
         });
       });
 
@@ -232,76 +240,76 @@ describe('QueryEngineBase', () => {
           input = new ArrayIterator([
             DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
           ]);
-          mediatorQueryProcess.mediate = jest.fn(() => Promise
-            .resolve({ result: { type: 'quads', quadStream: input }}));
-          expect(await arrayifyStream(await queryEngine.queryQuads('CONSTRUCT ...'))).toEqualRdfQuadArray([
+          jest.spyOn(mediatorQueryProcess, 'mediate')
+            .mockResolvedValue({ result: { type: 'quads', quadStream: input }});
+          await expect(arrayifyStream(await queryEngine.queryQuads('CONSTRUCT ...'))).resolves.toEqualRdfQuadArray([
             DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
           ]);
         });
 
         it('rejects for an invalid bindings query', async() => {
-          mediatorQueryProcess.mediate = jest.fn(() => Promise.resolve({ result: { type: 'void' }}));
+          jest.spyOn(mediatorQueryProcess, 'mediate').mockResolvedValue({ result: { type: 'void' }});
           await expect(queryEngine.queryQuads('INSERT ...')).rejects
-            .toThrowError(`Query result type 'quads' was expected, while 'void' was found.`);
+            .toThrow(`Query result type 'quads' was expected, while 'void' was found.`);
         });
       });
 
       describe('queryBoolean', () => {
         it('handles a valid boolean query', async() => {
-          mediatorQueryProcess.mediate = jest.fn(() => Promise.resolve({
+          jest.spyOn(mediatorQueryProcess, 'mediate').mockResolvedValue({
             result: {
               type: 'boolean',
               execute: () => Promise.resolve(true),
             },
-          }));
-          expect(await queryEngine.queryBoolean('ASK ...')).toEqual(true);
+          });
+          await expect(queryEngine.queryBoolean('ASK ...')).resolves.toBe(true);
         });
 
         it('rejects for an invalid boolean query', async() => {
-          mediatorQueryProcess.mediate = jest.fn(() => Promise.resolve({ result: { type: 'void' }}));
+          jest.spyOn(mediatorQueryProcess, 'mediate').mockResolvedValue({ result: { type: 'void' }});
           await expect(queryEngine.queryBoolean('INSERT ...')).rejects
-            .toThrowError(`Query result type 'boolean' was expected, while 'void' was found.`);
+            .toThrow(`Query result type 'boolean' was expected, while 'void' was found.`);
         });
       });
 
       describe('queryVoid', () => {
         it('handles a valid void query', async() => {
-          mediatorQueryProcess.mediate = jest.fn(() => Promise.resolve({
+          jest.spyOn(mediatorQueryProcess, 'mediate').mockResolvedValue({
             result: {
               type: 'void',
               execute: () => Promise.resolve(true),
             },
-          }));
-          expect(await queryEngine.queryVoid('INSERT ...')).toEqual(true);
+          });
+          await expect(queryEngine.queryVoid('INSERT ...')).resolves.toBe(true);
         });
 
         it('rejects for an invalid void query', async() => {
-          mediatorQueryProcess.mediate = jest.fn(() => Promise.resolve({
+          jest.spyOn(mediatorQueryProcess, 'mediate').mockResolvedValue({
             result: { type: 'boolean' },
-          }));
+          });
           await expect(queryEngine.queryVoid('ASK ...')).rejects
-            .toThrowError(`Query result type 'void' was expected, while 'boolean' was found.`);
+            .toThrow(`Query result type 'void' was expected, while 'boolean' was found.`);
         });
       });
     });
 
     describe('getResultMediaTypeFormats', () => {
-      it('should return the media type formats', () => {
+      it('should return the media type formats', async() => {
         const med: any = {
           mediate: (arg: any) => Promise.resolve({ mediaTypeFormats: { data: 'DATA' }}),
         };
-        actor = new ActorInitQuery(
-          { bus,
-            mediatorHttpInvalidate,
-            mediatorQueryProcess,
-            mediatorQueryResultSerialize: med,
-            mediatorQueryResultSerializeMediaTypeCombiner: med,
-            mediatorQueryResultSerializeMediaTypeFormatCombiner: med,
-            name: 'actor',
-            queryString },
-        );
+        actor = new ActorInitQuery({
+          bus,
+          mediatorHttpInvalidate,
+          mediatorQueryProcess,
+          mediatorQueryResultSerialize: med,
+          mediatorQueryResultSerializeMediaTypeCombiner: med,
+          mediatorQueryResultSerializeMediaTypeFormatCombiner: med,
+          name: 'actor',
+          queryString,
+        });
         queryEngine = new QueryEngineBase(actor);
-        return expect(queryEngine.getResultMediaTypeFormats())
+        await expect(queryEngine.getResultMediaTypeFormats())
           .resolves.toEqual({ data: 'DATA' });
       });
     });
@@ -312,27 +320,27 @@ describe('QueryEngineBase', () => {
     let queryEngine: QueryEngineBase;
 
     beforeEach(() => {
-      mediatorQueryProcess.mediate = (action: any) => action.operation.query !== 'INVALID' ?
-        Promise.resolve({ quadStream: input, type: 'quads' }) :
-        Promise.reject(new Error('a'));
+      mediatorQueryProcess.mediate = (action: any) => action.operation.query === 'INVALID' ?
+        Promise.reject(new Error('a')) :
+        Promise.resolve({ quadStream: input, type: 'quads' });
       const defaultQueryInputFormat = 'sparql';
-      actor = new ActorInitQuery(
-        { bus,
-          defaultQueryInputFormat,
-          mediatorHttpInvalidate,
-          mediatorQueryProcess,
-          mediatorQueryResultSerialize: mediatorSparqlSerialize,
-          mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
-          mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-          name: 'actor' },
-      );
+      actor = new ActorInitQuery({
+        bus,
+        defaultQueryInputFormat,
+        mediatorHttpInvalidate,
+        mediatorQueryProcess,
+        mediatorQueryResultSerialize: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+        name: 'actor',
+      });
       queryEngine = new QueryEngineBase(actor);
     });
 
-    it('should return a rejected promise on an invalid request', () => {
+    it('should return a rejected promise on an invalid request', async() => {
       // Make it reject instead of reading input
       mediatorQueryProcess.mediate = (action: any) => Promise.reject(new Error('a'));
-      return expect(queryEngine.query('INVALID QUERY', { sources: [ 'abc' ]})).rejects.toBeTruthy();
+      await expect(queryEngine.query('INVALID QUERY', { sources: [ 'abc' ]})).rejects.toBeTruthy();
     });
   });
 
@@ -354,13 +362,13 @@ describe('QueryEngineBase', () => {
         context: new ActionContext({ c: 'd' }),
       });
 
-      expect(final.resultType).toEqual('bindings');
-      await expect(await final.execute()).toEqualBindingsStream([
+      expect(final.resultType).toBe('bindings');
+      await expect(final.execute()).resolves.toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('a'), DF.namedNode('ex:a') ],
         ]),
       ]);
-      expect(await final.metadata()).toEqual({
+      await expect(final.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 1 },
         canContainUndefs: false,
@@ -384,11 +392,11 @@ describe('QueryEngineBase', () => {
         context: new ActionContext({ c: 'd' }),
       });
 
-      expect(final.resultType).toEqual('quads');
-      expect(await arrayifyStream(await final.execute())).toEqualRdfQuadArray([
+      expect(final.resultType).toBe('quads');
+      await expect(arrayifyStream(await final.execute())).resolves.toEqualRdfQuadArray([
         DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
       ]);
-      expect(await final.metadata()).toEqual({
+      await expect(final.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 1 },
         canContainUndefs: false,
@@ -404,8 +412,8 @@ describe('QueryEngineBase', () => {
         context: new ActionContext({ c: 'd' }),
       });
 
-      expect(final.resultType).toEqual('boolean');
-      expect(await final.execute()).toEqual(true);
+      expect(final.resultType).toBe('boolean');
+      await expect(final.execute()).resolves.toBe(true);
       expect(final.context).toEqual(new ActionContext({ c: 'd' }));
     });
 
@@ -416,8 +424,8 @@ describe('QueryEngineBase', () => {
         context: new ActionContext({ c: 'd' }),
       });
 
-      expect(final.resultType).toEqual('void');
-      expect(await final.execute()).toBeUndefined();
+      expect(final.resultType).toBe('void');
+      await expect(final.execute()).resolves.toBeUndefined();
       expect(final.context).toEqual(new ActionContext({ c: 'd' }));
     });
   });
@@ -438,13 +446,13 @@ describe('QueryEngineBase', () => {
         }),
       });
 
-      expect(internal.type).toEqual('bindings');
+      expect(internal.type).toBe('bindings');
       await expect(internal.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('a'), DF.namedNode('ex:a') ],
         ]),
       ]);
-      expect(await internal.metadata()).toEqual({
+      await expect(internal.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 1 },
         canContainUndefs: false,
         variables: [ DF.variable('a') ],
@@ -460,11 +468,11 @@ describe('QueryEngineBase', () => {
         metadata: async() => (<any>{ cardinality: 1, canContainUndefs: false }),
       });
 
-      expect(internal.type).toEqual('quads');
-      expect(await arrayifyStream(internal.quadStream)).toEqualRdfQuadArray([
+      expect(internal.type).toBe('quads');
+      await expect(arrayifyStream(internal.quadStream)).resolves.toEqualRdfQuadArray([
         DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
       ]);
-      expect(await internal.metadata()).toEqual({
+      await expect(internal.metadata()).resolves.toEqual({
         cardinality: 1,
         canContainUndefs: false,
       });
@@ -476,19 +484,19 @@ describe('QueryEngineBase', () => {
         execute: async() => true,
       });
 
-      expect(final.type).toEqual('boolean');
-      expect(await final.execute()).toEqual(true);
+      expect(final.type).toBe('boolean');
+      await expect(final.execute()).resolves.toBe(true);
     });
 
     it('converts voids', async() => {
       const final = <IQueryOperationResultVoid> await QueryEngineBase.finalToInternalResult({
         resultType: 'void',
-        // eslint-disable-next-line unicorn/no-useless-undefined
+
         execute: async() => undefined,
       });
 
-      expect(final.type).toEqual('void');
-      expect(await final.execute()).toBeUndefined();
+      expect(final.type).toBe('void');
+      await expect(final.execute()).resolves.toBeUndefined();
     });
   });
 });

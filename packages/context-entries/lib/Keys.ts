@@ -1,13 +1,18 @@
 import { ActionContextKey, CONTEXT_KEY_LOGGER } from '@comunica/core';
-import type { Bindings,
+import type {
+  Bindings,
   IPhysicalQueryPlanLogger,
   QueryExplainMode,
   IProxyHandler,
   ICliArgsHandler,
   IDataDestination,
-  MetadataBindings, FunctionArgumentsCache,
+  MetadataBindings,
+  FunctionArgumentsCache,
   IAggregatedStore,
-  QuerySourceUnidentified, IQuerySourceWrapper, QuerySourceReference } from '@comunica/types';
+  QuerySourceUnidentified,
+  IQuerySourceWrapper,
+  QuerySourceReference,
+} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { IDocumentLoader } from 'jsonld-context-parser';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -143,8 +148,7 @@ export const KeysInitQuery = {
    */
   extensionFunctionCreator: new ActionContextKey<
   (functionNamedNode: RDF.NamedNode) => ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined
-  // eslint-disable-next-line @typescript-eslint/no-extra-parens
-  >('@comunica/actor-init-query:extensionFunctionCreator'),
+    >('@comunica/actor-init-query:extensionFunctionCreator'),
   /**
    * Dictionary of extension functions.
    * Key is the IRI of the function, and value is the async function implementation.
@@ -153,8 +157,7 @@ export const KeysInitQuery = {
    */
   extensionFunctions: new ActionContextKey<
   Record<string, (args: RDF.Term[]) => Promise<RDF.Term>>
-  // eslint-disable-next-line @typescript-eslint/no-extra-parens
-  >('@comunica/actor-init-query:extensionFunctions'),
+    >('@comunica/actor-init-query:extensionFunctions'),
   /**
    * Enables manipulation of the CLI arguments and their processing.
    */

@@ -1,4 +1,4 @@
-import { Transform } from 'stream';
+import { Transform } from 'node:stream';
 import { ActorInit } from '@comunica/bus-init';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
@@ -23,16 +23,16 @@ describe('ActorInitQueryBase', () => {
     };
     mediatorSparqlSerialize = {
       mediate: (arg: any) => Promise.resolve(arg.mediaTypes ?
-        { mediaTypes: arg } :
-        {
-          handle: {
-            data: arg.handle.bindingsStream
-              .pipe(new Transform({
-                objectMode: true,
-                transform: (e: any, enc: any, cb: any) => cb(null, JSON.stringify(e)),
-              })),
-          },
-        }),
+          { mediaTypes: arg } :
+          {
+            handle: {
+              data: arg.handle.bindingsStream
+                .pipe(new Transform({
+                  objectMode: true,
+                  transform: (e: any, enc: any, cb: any) => cb(null, JSON.stringify(e)),
+                })),
+            },
+          }),
     };
     mediatorHttpInvalidate = {
       mediate: (arg: any) => Promise.resolve(true),
@@ -57,7 +57,9 @@ describe('ActorInitQueryBase', () => {
     });
 
     it('should not be able to create new ActorInitQueryBase objects without \'new\'', () => {
-      expect(() => { (<any> ActorInitQueryBase)(); }).toThrow();
+      expect(() => {
+        (<any> ActorInitQueryBase)();
+      }).toThrow(`Class constructor ActorInitQueryBase cannot be invoked without 'new'`);
     });
   });
 
@@ -79,7 +81,7 @@ describe('ActorInitQueryBase', () => {
 
     describe('test', () => {
       it('should be true', async() => {
-        expect(await actor.test(<any> {})).toBeTruthy();
+        await expect(actor.test(<any> {})).resolves.toBeTruthy();
       });
     });
 
