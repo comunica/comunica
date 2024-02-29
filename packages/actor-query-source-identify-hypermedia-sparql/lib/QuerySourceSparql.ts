@@ -1,3 +1,4 @@
+import type { IVoidCardinalityProvider } from '@comunica/actor-rdf-metadata-extract-void';
 import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorHttp } from '@comunica/bus-http';
 import { KeysInitQuery } from '@comunica/context-entries';
@@ -59,6 +60,7 @@ export class QuerySourceSparql implements IQuerySource {
   private readonly bindMethod: BindMethod;
   private readonly countTimeout: number;
   private readonly bindingsFactory: BindingsFactory;
+  private readonly cardinalityProvider: IVoidCardinalityProvider | undefined;
 
   private readonly endpointFetcher: SparqlEndpointFetcher;
   private readonly cache: LRUCache<string, RDF.QueryResultCardinality> | undefined;
@@ -74,6 +76,7 @@ export class QuerySourceSparql implements IQuerySource {
     forceHttpGet: boolean,
     cacheSize: number,
     countTimeout: number,
+    cardinalityProvider: IVoidCardinalityProvider | undefined,
   ) {
     this.referenceValue = url;
     this.url = url;
@@ -92,6 +95,7 @@ export class QuerySourceSparql implements IQuerySource {
       new LRUCache<string, RDF.QueryResultCardinality>({ max: cacheSize }) :
       undefined;
     this.countTimeout = countTimeout;
+    this.cardinalityProvider = cardinalityProvider;
   }
 
   public async getSelectorShape(): Promise<FragmentSelectorShape> {
@@ -174,6 +178,26 @@ export class QuerySourceSparql implements IQuerySource {
         const operation = await operationPromise;
         variablesCount = Util.inScopeVariables(operation);
         countQuery = QuerySourceSparql.operationToCountQuery(operation);
+
+        // Use cardinality provider if applicable
+        if (this.cardinalityProvider && operation.type === 'pattern') {
+          // console.log('GET FROM VOID!'); // TODO
+          // console.log(this.cardinalityProvider.getCardinality(
+          //   operation.subject,
+          //   operation.predicate,
+          //   operation.object,
+          //   operation.graph,
+          // )); // TODO
+          resolve(this.cardinalityProvider.getCardinality(
+            operation.subject,
+            operation.predicate,
+            operation.object,
+            operation.graph,
+          ));
+          return;
+        }
+        // console.log('NOT FROM VOID!'); // TODO
+        // console.log(operation); // TODO
 
         const cachedCardinality = this.cache?.get(countQuery);
         if (cachedCardinality !== undefined) {

@@ -177,6 +177,7 @@
     "@comunica/actor-rdf-metadata-extract-put-accepted": "^3.0.0",
     "@comunica/actor-rdf-metadata-extract-request-time": "^3.0.0",
     "@comunica/actor-rdf-metadata-extract-sparql-service": "^3.0.0",
+    "@comunica/actor-rdf-metadata-extract-void": "^3.0.0",
     "@comunica/actor-rdf-metadata-primary-topic": "^3.0.0",
     "@comunica/actor-rdf-parse-html": "^3.0.0",
     "@comunica/actor-rdf-parse-html-microdata": "^3.0.0",
