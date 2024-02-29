@@ -621,6 +621,32 @@ describe('an aggregate evaluator should be able to', () => {
       });
       await expect(result).resolves.toEqual(DF.literal('1;2;3;4'));
     });
+
+    it('with equal languages', async() => {
+      const result = testCase({
+        ...baseTestCaseArgs,
+        input: [
+          BF.bindings([[ DF.variable('x'), DF.literal('1', 'en') ]]),
+          BF.bindings([[ DF.variable('x'), DF.literal('2', 'en') ]]),
+          BF.bindings([[ DF.variable('x'), DF.literal('3', 'en') ]]),
+          BF.bindings([[ DF.variable('x'), DF.literal('4', 'en') ]]),
+        ],
+      });
+      await expect(result).resolves.toEqual(DF.literal('1 2 3 4', 'en'));
+    });
+
+    it('with non-equal languages', async() => {
+      const result = testCase({
+        ...baseTestCaseArgs,
+        input: [
+          BF.bindings([[ DF.variable('x'), DF.literal('1', 'en') ]]),
+          BF.bindings([[ DF.variable('x'), DF.literal('2', 'nl') ]]),
+          BF.bindings([[ DF.variable('x'), DF.literal('3', 'en') ]]),
+          BF.bindings([[ DF.variable('x'), DF.literal('4', 'en') ]]),
+        ],
+      });
+      await expect(result).resolves.toEqual(DF.literal('1 2 3 4'));
+    });
   });
 
   it('on a put', async() => {
