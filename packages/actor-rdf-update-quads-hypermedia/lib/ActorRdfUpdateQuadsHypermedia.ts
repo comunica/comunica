@@ -37,7 +37,7 @@ export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestinatio
     }
   }
 
-  public async test(action: IActionRdfUpdateQuads): Promise<IActorTest> {
+  public override async test(action: IActionRdfUpdateQuads): Promise<IActorTest> {
     const url = getContextDestinationUrl(getContextDestination(action.context));
     if (!url) {
       throw new Error(`Actor ${this.name} can only update quads against a single destination URL.`);

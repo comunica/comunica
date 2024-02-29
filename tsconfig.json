@@ -12,6 +12,7 @@
     "strict": true,
     "strictFunctionTypes": false,
     "strictPropertyInitialization": false,
+    "noImplicitOverride": true,
     "declaration": true,
     "downlevelIteration": true,
     "inlineSources": true,

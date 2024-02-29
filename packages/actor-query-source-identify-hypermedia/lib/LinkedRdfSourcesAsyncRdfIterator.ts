@@ -59,7 +59,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
     }
   }
 
-  public getProperty<P>(propertyName: string, callback?: (value: P) => void): P | undefined {
+  public override getProperty<P>(propertyName: string, callback?: (value: P) => void): P | undefined {
     if (propertyName === 'metadata' && !this.started) {
       // If the iterator has not started yet, forcefully fetch the metadata from the source without starting the
       // iterator. This way, we keep the iterator lazy.
@@ -87,7 +87,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
     return super.getProperty(propertyName, callback);
   }
 
-  protected _end(destroy?: boolean): void {
+  protected override _end(destroy?: boolean): void {
     // Close all running iterators
     for (const it of this.currentIterators) {
       it.destroy();
@@ -108,7 +108,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
    */
   protected abstract getSourceLinks(metadata: Record<string, any>): Promise<ILink[]>;
 
-  public _read(count: number, done: () => void): void {
+  public override _read(count: number, done: () => void): void {
     if (this.started) {
       // Read from all current iterators
       for (const iterator of this.currentIterators) {

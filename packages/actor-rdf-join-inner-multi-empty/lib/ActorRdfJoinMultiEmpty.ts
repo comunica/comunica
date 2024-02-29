@@ -17,7 +17,7 @@ export class ActorRdfJoinMultiEmpty extends ActorRdfJoin {
     });
   }
 
-  public async test(action: IActionRdfJoin): Promise<IMediatorTypeJoinCoefficients> {
+  public override async test(action: IActionRdfJoin): Promise<IMediatorTypeJoinCoefficients> {
     if ((await ActorRdfJoin.getMetadatas(action.entries))
       .every(metadata => ActorRdfJoin.getCardinality(metadata).value > 0)) {
       throw new Error(`Actor ${this.name} can only join entries where at least one is empty`);
@@ -25,7 +25,7 @@ export class ActorRdfJoinMultiEmpty extends ActorRdfJoin {
     return super.test(action);
   }
 
-  protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
+  protected override async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
     // Close all entries
     for (const entry of action.entries) {
       entry.output.bindingsStream.close();

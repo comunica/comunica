@@ -70,7 +70,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   // We don't override _end, because that would mean that we have to wait
   // until the buffer of this iterator must be fully consumed, which will not always be the case.
 
-  public close(): void {
+  public override close(): void {
     if (!this.aggregatedStore) {
       super.close();
       return;
@@ -91,7 +91,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
       .catch(error => super.destroy(error));
   }
 
-  public destroy(cause?: Error): void {
+  public override destroy(cause?: Error): void {
     if (!this.aggregatedStore) {
       super.destroy(cause);
       return;
@@ -112,7 +112,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
       .catch(error => super.destroy(error));
   }
 
-  protected isCloseable(linkQueue: ILinkQueue, requireQueueEmpty: boolean): boolean {
+  protected override isCloseable(linkQueue: ILinkQueue, requireQueueEmpty: boolean): boolean {
     return (requireQueueEmpty ? linkQueue.isEmpty() : this.wasForcefullyClosed || linkQueue.isEmpty()) &&
       !this.areIteratorsRunning();
   }
@@ -125,7 +125,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
       (this.aggregatedStore && this.aggregatedStore.hasRunningIterators())) || super.canStartNewIterator();
   }
 
-  protected canStartNewIteratorConsiderReadable(): boolean {
+  protected override canStartNewIteratorConsiderReadable(): boolean {
     return !this.aggregatedStore;
   }
 
@@ -162,7 +162,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     }
   }
 
-  protected startIterator(startSource: ISourceState): void {
+  protected override startIterator(startSource: ISourceState): void {
     if (this.aggregatedStore && !this.aggregatedStore.containedSources.has(startSource.link.url)) {
       // A source that has been cached due to earlier query executions may not be part of the aggregated store yet.
       // In that case, we add all quads from that source to the aggregated store.
@@ -205,7 +205,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     })).metadata;
   }
 
-  protected updateMetadata(metadataNew: MetadataBindings): void {
+  protected override updateMetadata(metadataNew: MetadataBindings): void {
     super.updateMetadata(metadataNew);
     this.aggregatedStore?.setBaseMetadata(metadataNew, true);
   }

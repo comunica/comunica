@@ -20,7 +20,7 @@ T extends IActorTest,
     super(args);
   }
 
-  public async mediate(action: H): Promise<H> {
+  public override async mediate(action: H): Promise<H> {
     let testResults: IActorReply<A, H, T, H>[] | { actor: A; reply: T }[];
     try {
       testResults = this.publish(action);

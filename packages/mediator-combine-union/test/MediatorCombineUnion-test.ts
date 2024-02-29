@@ -116,7 +116,7 @@ class DummyThrowActor extends DummyActor {
     super(id, data, bus);
   }
 
-  public async test(action: IAction): Promise<IDummyTest> {
+  public override async test(action: IAction): Promise<IDummyTest> {
     throw new Error('Dummy Error');
   }
 }

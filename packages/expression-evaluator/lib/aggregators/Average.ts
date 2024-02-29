@@ -15,7 +15,7 @@ export class Average extends AggregatorComponent {
   private readonly divider = regularFunctions[C.RegularOperator.DIVISION];
   private state: IAverageState | undefined = undefined;
 
-  public static emptyValue(): RDF.Term {
+  public static override emptyValue(): RDF.Term {
     return integer(0).toRDF();
   }
 

@@ -58,7 +58,7 @@ export class ActorQueryResultSerializeTree extends ActorQueryResultSerializeFixe
     });
   }
 
-  public async testHandleChecked(action: IActionSparqlSerialize): Promise<boolean> {
+  public override async testHandleChecked(action: IActionSparqlSerialize): Promise<boolean> {
     if (action.type !== 'bindings') {
       throw new Error('This actor can only handle bindings streams.');
     }

@@ -7,7 +7,7 @@ export class GroupConcat extends AggregatorComponent {
   private lastLanguageValid = true;
   private lastLanguage: string | undefined = undefined;
 
-  public static emptyValue(): RDF.Term {
+  public static override emptyValue(): RDF.Term {
     return string('').toRDF();
   }
 

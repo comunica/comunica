@@ -249,7 +249,7 @@ class DummyThrowActor extends DummyActor {
     super(id, bus, testOutput);
   }
 
-  public async test(action: IDummyAction): Promise<IActorTest> {
+  public override async test(action: IDummyAction): Promise<IActorTest> {
     throw new Error('Dummy Error');
   }
 }
@@ -277,7 +277,7 @@ class DummyConcatActor extends Actor<IDummyConcatAction, IActorTest, IDummyConca
 }
 
 class DummyActorContextOutput extends DummyActor {
-  public async run(action: IDummyAction): Promise<IDummyOutput> {
+  public override async run(action: IDummyAction): Promise<IDummyOutput> {
     return {
       ...await super.run(action),
       context: (<ActionContext> action.context).setRaw('id', this.id),

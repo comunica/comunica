@@ -45,7 +45,7 @@ export class ActorQueryResultSerializeSparqlTsv extends ActorQueryResultSerializ
       .replaceAll('\r', '\\r');
   }
 
-  public async testHandleChecked(action: IActionSparqlSerialize, _context: IActionContext): Promise<boolean> {
+  public override async testHandleChecked(action: IActionSparqlSerialize, _context: IActionContext): Promise<boolean> {
     if (action.type !== 'bindings') {
       throw new Error('This actor can only handle bindings streams.');
     }

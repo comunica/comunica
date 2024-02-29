@@ -19,7 +19,7 @@ export class ChunkedIterator<T> extends TransformIterator<T, AsyncIterator<T>> {
     return it;
   }
 
-  protected _transform(item: T, done: () => void, push: (i: AsyncIterator<T>) => void): void {
+  protected override _transform(item: T, done: () => void, push: (i: AsyncIterator<T>) => void): void {
     this.chunk.push(item);
     if (this.chunk.length >= this.blockSize) {
       push(this.consumeChunkAsIterator());
@@ -27,7 +27,7 @@ export class ChunkedIterator<T> extends TransformIterator<T, AsyncIterator<T>> {
     done();
   }
 
-  protected _flush(done: () => void): void {
+  protected override _flush(done: () => void): void {
     if (this.chunk.length > 0) {
       this._push(this.consumeChunkAsIterator());
     }

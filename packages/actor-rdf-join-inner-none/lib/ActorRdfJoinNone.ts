@@ -20,7 +20,7 @@ export class ActorRdfJoinNone extends ActorRdfJoin {
     });
   }
 
-  public async test(action: IActionRdfJoin): Promise<IMediatorTypeJoinCoefficients> {
+  public override async test(action: IActionRdfJoin): Promise<IMediatorTypeJoinCoefficients> {
     // Allow joining of one or zero streams
     if (action.entries.length > 0) {
       throw new Error(`Actor ${this.name} can only join zero entries`);

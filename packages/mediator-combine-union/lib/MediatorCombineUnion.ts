@@ -23,7 +23,7 @@ O extends IActorOutput,
     this.combiner = this.createCombiner();
   }
 
-  public async mediate(action: I): Promise<O> {
+  public override async mediate(action: I): Promise<O> {
     let testResults: IActorReply<A, I, T, O>[];
     try {
       testResults = this.publish(action);

@@ -13,7 +13,7 @@ export class PrefixWrappingIterator extends WrappingIterator<Quad> {
     }));
   }
 
-  public read(): Quad | null {
+  public override read(): Quad | null {
     // On the first read where the prefixes are available, emit them
     if (this.prefixes) {
       for (const args of Object.entries(this.prefixes)) {

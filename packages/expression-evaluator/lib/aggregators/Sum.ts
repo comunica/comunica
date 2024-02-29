@@ -11,7 +11,7 @@ export class Sum extends AggregatorComponent {
   private state: SumState | undefined = undefined;
   private readonly summer = regularFunctions[C.RegularOperator.ADDITION];
 
-  public static emptyValue(): RDF.Term {
+  public static override emptyValue(): RDF.Term {
     return integer(0).toRDF();
   }
 

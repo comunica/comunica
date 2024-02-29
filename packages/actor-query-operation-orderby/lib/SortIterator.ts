@@ -18,7 +18,7 @@ export class SortIterator<T> extends TransformIterator<T, T> {
   }
 
   // Reads the smallest item in the current sorting window
-  public _read(count: number, done: () => void): void {
+  public override _read(count: number, done: () => void): void {
     let item;
     let { length } = this.sorted;
     // Try to read items until we reach the desired window length
@@ -55,7 +55,7 @@ export class SortIterator<T> extends TransformIterator<T, T> {
   }
 
   // Flushes remaining data after the source has ended
-  public _flush(done: () => void): void {
+  public override _flush(done: () => void): void {
     let { length } = this.sorted;
     while (length--) {
       this._push(this.sorted.pop()!);

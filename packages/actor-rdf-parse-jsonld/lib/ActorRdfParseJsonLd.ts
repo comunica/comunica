@@ -31,7 +31,7 @@ export class ActorRdfParseJsonLd extends ActorRdfParseFixedMediaTypes {
     super(args);
   }
 
-  public async testHandle(action: IActionRdfParse, mediaType: string | undefined, context: IActionContext):
+  public override async testHandle(action: IActionRdfParse, mediaType: string | undefined, context: IActionContext):
   Promise<IActorTest> {
     if (context.has(KeysRdfParseHtmlScript.processingHtmlScript) && mediaType !== 'application/ld+json') {
       throw new Error(`JSON-LD in script tags can only have media type 'application/ld+json'`);

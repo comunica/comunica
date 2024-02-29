@@ -32,7 +32,7 @@ export class ActorQueryResultSerializeStats extends ActorQueryResultSerializeFix
   }
   /* eslint-enable max-len */
 
-  public async testHandleChecked(action: IActionSparqlSerialize, _context: IActionContext): Promise<boolean> {
+  public override async testHandleChecked(action: IActionSparqlSerialize, _context: IActionContext): Promise<boolean> {
     if (![ 'bindings', 'quads' ].includes(action.type)) {
       throw new Error('This actor can only handle bindings streams or quad streams.');
     }

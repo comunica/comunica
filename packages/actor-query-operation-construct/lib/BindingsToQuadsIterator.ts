@@ -107,7 +107,7 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
     return <RDF.Quad[]> quads;
   }
 
-  public _createTransformer(bindings: Bindings): AsyncIterator<RDF.Quad> {
+  public override _createTransformer(bindings: Bindings): AsyncIterator<RDF.Quad> {
     return new ArrayIterator(this.bindTemplate(
       bindings,
       this.template,

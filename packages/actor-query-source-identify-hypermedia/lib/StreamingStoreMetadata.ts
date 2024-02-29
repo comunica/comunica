@@ -34,7 +34,7 @@ export class StreamingStoreMetadata extends StreamingStore implements IAggregate
     this.metadataAccumulator = metadataAccumulator;
   }
 
-  public import(stream: RDF.Stream): EventEmitter {
+  public override import(stream: RDF.Stream): EventEmitter {
     if (!this.ended) {
       super.import(stream);
     }
@@ -45,7 +45,7 @@ export class StreamingStoreMetadata extends StreamingStore implements IAggregate
     return this.runningIterators.size > 0;
   }
 
-  public match(
+  public override match(
     subject?: RDF.Term | null,
     predicate?: RDF.Term | null,
     object?: RDF.Term | null,

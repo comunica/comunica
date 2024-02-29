@@ -33,7 +33,9 @@ export class ActorQuerySourceIdentifyHypermediaQpf extends ActorQuerySourceIdent
     super(args, 'qpf');
   }
 
-  public async test(action: IActionQuerySourceIdentifyHypermedia): Promise<IActorQuerySourceIdentifyHypermediaTest> {
+  public override async test(
+    action: IActionQuerySourceIdentifyHypermedia,
+  ): Promise<IActorQuerySourceIdentifyHypermediaTest> {
     if (action.forceSourceType && (action.forceSourceType !== 'qpf' && action.forceSourceType !== 'brtpf')) {
       throw new Error(`Actor ${this.name} is not able to handle source type ${action.forceSourceType}.`);
     }

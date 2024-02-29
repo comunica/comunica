@@ -59,21 +59,21 @@ class DummyIterator extends LinkedRdfSourcesAsyncRdfIterator {
 
 // Dummy class that produces multiple next page links
 class DummyIteratorMultiple extends DummyIterator {
-  protected async getSourceLinks(metadata: Record<string, any>): Promise<ILink[]> {
+  protected override async getSourceLinks(metadata: Record<string, any>): Promise<ILink[]> {
     return metadata.next ? [{ url: metadata.next }, { url: metadata.next }] : [];
   }
 }
 
 // Dummy class that produces multiple next page links
 class DummyIteratorErrorLinks extends DummyIterator {
-  protected async getSourceLinks(metadata: Record<string, any>): Promise<ILink[]> {
+  protected override async getSourceLinks(metadata: Record<string, any>): Promise<ILink[]> {
     throw new Error('DummyErrorLinks');
   }
 }
 
 // Dummy class that rejects on getLinkQueue
 class DummyIteratorErrorLinkQueueFirst extends DummyIterator {
-  public getLinkQueue(): Promise<ILinkQueue> {
+  public override getLinkQueue(): Promise<ILinkQueue> {
     return Promise.reject(new Error('DummyErrorLinkQueueFirst'));
   }
 }
@@ -82,7 +82,7 @@ class DummyIteratorErrorLinkQueueFirst extends DummyIterator {
 class DummyIteratorErrorLinkQueueLater extends DummyIterator {
   public calls = 0;
 
-  public getLinkQueue(): Promise<ILinkQueue> {
+  public override getLinkQueue(): Promise<ILinkQueue> {
     if (this.calls++ === 0) {
       return super.getLinkQueue();
     }
@@ -92,7 +92,7 @@ class DummyIteratorErrorLinkQueueLater extends DummyIterator {
 
 // Dummy class with a rejecting accumulateMetadata
 class DummyIteratorErrorAccumulate extends DummyIterator {
-  protected accumulateMetadata(
+  protected override accumulateMetadata(
     accumulatedMetadata: MetadataBindings,
     appendingMetadata: MetadataBindings,
   ): Promise<MetadataBindings> {

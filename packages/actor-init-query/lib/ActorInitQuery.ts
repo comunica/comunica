@@ -22,7 +22,7 @@ export class ActorInitQuery<QueryContext extends IQueryContextCommon = IQueryCon
     super(args);
   }
 
-  public async run(action: IActionInit): Promise<IActorOutputInit> {
+  public override async run(action: IActionInit): Promise<IActorOutputInit> {
     // Wrap this actor in a query engine so we can conveniently execute queries
     const queryEngine = new QueryEngineBase<QueryContext>(this);
 

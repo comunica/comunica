@@ -41,7 +41,7 @@ export class ActorQueryResultSerializeTable extends ActorQueryResultSerializeFix
     return str.repeat(count);
   }
 
-  public async testHandleChecked(action: IActionSparqlSerialize, _context: IActionContext): Promise<boolean> {
+  public override async testHandleChecked(action: IActionSparqlSerialize, _context: IActionContext): Promise<boolean> {
     if (![ 'bindings', 'quads' ].includes(action.type)) {
       throw new Error('This actor can only handle bindings or quad streams.');
     }
