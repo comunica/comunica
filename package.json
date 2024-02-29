@@ -13,7 +13,7 @@
     "@pollyjs/adapter-node-http": "^6.0.5",
     "@pollyjs/core": "^6.0.5",
     "@pollyjs/persister-fs": "^6.0.5",
-    "@rubensworks/eslint-config": "^2.0.0",
+    "@rubensworks/eslint-config": "^3.0.0",
     "@types/jest": "^29.4.0",
     "@types/node": "^20.0.0",
     "@types/object-inspect": "^1.8.1",
