@@ -9065,7 +9065,7 @@ jsprim@^1.2.2:
     object.assign "^4.1.4"
     object.values "^1.1.6"
 
-karma-chrome-launcher@^3.1.1:
+karma-chrome-launcher@^3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/karma-chrome-launcher/-/karma-chrome-launcher-3.2.0.tgz#eb9c95024f2d6dfbb3748d3415ac9b381906b9a9"
   integrity sha512-rE9RkUPI7I9mAxByQWkGJFXfFD6lE4gC5nPuZdobf/QdTEJI6EU4yIay/cfU/xV4ZxlM5JiTv7zWYgA64NpS5Q==
@@ -9080,7 +9080,7 @@ karma-firefox-launcher@^2.1.2:
     is-wsl "^2.2.0"
     which "^2.0.1"
 
-karma-jasmine-html-reporter@^2.0.0:
+karma-jasmine-html-reporter@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/karma-jasmine-html-reporter/-/karma-jasmine-html-reporter-2.1.0.tgz#f951ad00b08d61d03595402c914d1a589c4930e3"
   integrity sha512-sPQE1+nlsn6Hwb5t+HHwyy0A1FNCVKuL1192b+XNauMYWThz2kweiBVW1DqloRpVvZIJkIoHVB7XRpK78n1xbQ==
@@ -9099,19 +9099,19 @@ karma-sourcemap-loader@^0.4.0:
   dependencies:
     graceful-fs "^4.2.10"
 
-karma-webpack@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/karma-webpack/-/karma-webpack-5.0.0.tgz#2a2c7b80163fe7ffd1010f83f5507f95ef39f840"
-  integrity sha512-+54i/cd3/piZuP3dr54+NcFeKOPnys5QeM1IY+0SPASwrtHsliXUiCL50iW+K9WWA7RvamC4macvvQ86l3KtaA==
+karma-webpack@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/karma-webpack/-/karma-webpack-5.0.1.tgz#4eafd31bbe684a747a6e8f3e4ad373e53979ced4"
+  integrity sha512-oo38O+P3W2mSPCSUrQdySSPv1LvPpXP+f+bBimNomS5sW+1V4SuhCuW8TfJzV+rDv921w2fDSDw0xJbPe6U+kQ==
   dependencies:
     glob "^7.1.3"
-    minimatch "^3.0.4"
+    minimatch "^9.0.3"
     webpack-merge "^4.1.5"
 
-karma@^6.4.1:
-  version "6.4.2"
-  resolved "https://registry.yarnpkg.com/karma/-/karma-6.4.2.tgz#a983f874cee6f35990c4b2dcc3d274653714de8e"
-  integrity sha512-C6SU/53LB31BEgRg+omznBEMY4SjHU3ricV6zBcAe1EeILKkeScr+fZXtaI5WyDbkVowJxxAI6h73NcFPmXolQ==
+karma@^6.4.3:
+  version "6.4.3"
+  resolved "https://registry.yarnpkg.com/karma/-/karma-6.4.3.tgz#763e500f99597218bbb536de1a14acc4ceea7ce8"
+  integrity sha512-LuucC/RE92tJ8mlCwqEoRWXP38UMAqpnq98vktmS9SznSoUPPUJQbc91dHcxcunROvfQjdORVA/YFviH+Xci9Q==
   dependencies:
     "@colors/colors" "1.5.0"
     body-parser "^1.19.0"
@@ -9132,7 +9132,7 @@ karma@^6.4.1:
     qjobs "^1.2.0"
     range-parser "^1.2.1"
     rimraf "^3.0.2"
-    socket.io "^4.4.1"
+    socket.io "^4.7.2"
     source-map "^0.6.1"
     tmp "^0.2.1"
     ua-parser-js "^0.7.30"
@@ -12728,10 +12728,10 @@ socket.io-parser@~4.2.4:
     "@socket.io/component-emitter" "~3.1.0"
     debug "~4.3.1"
 
-socket.io@^4.4.1:
-  version "4.7.2"
-  resolved "https://registry.yarnpkg.com/socket.io/-/socket.io-4.7.2.tgz#22557d76c3f3ca48f82e73d68b7add36a22df002"
-  integrity sha512-bvKVS29/I5fl2FGLNHuXlQaUH/BlzX1IN6S+NKLNZpBsPZIDH+90eQmCs2Railn4YUiww4SzUedJ6+uzwFnKLw==
+socket.io@^4.7.2:
+  version "4.7.4"
+  resolved "https://registry.yarnpkg.com/socket.io/-/socket.io-4.7.4.tgz#2401a2d7101e4bdc64da80b140d5d8b6a8c7738b"
+  integrity sha512-DcotgfP1Zg9iP/dH9zvAQcWrE0TtbMVwXmlV4T4mqsvY+gw+LqUGPfx2AoVyRk0FLME+GQhufDMyacFmw7ksqw==
   dependencies:
     accepts "~1.3.4"
     base64id "~2.0.0"

@@ -1,5 +1,4 @@
 const path = require('node:path');
-const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 const webpack = require('webpack');
 
 module.exports = {
@@ -21,13 +20,7 @@ module.exports = {
       },
     ],
   },
-  resolve: {
-    fallback: {
-      buffer: require.resolve('buffer/'),
-    },
-  },
   plugins: [
-    new NodePolyfillPlugin({ includeAliases: [ 'Buffer' ]}),
     new webpack.ProgressPlugin(),
   ],
 };

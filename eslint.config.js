@@ -103,6 +103,7 @@ module.exports = config([
       'setup-jest.js',
       '**/engine-default.js',
       '**/engine-browser.js',
+      '**/comunica-browser.js',
       '.github/**',
       // TODO: Remove this once solid-client-authn supports node 18.
       '**/QuerySparql-solid-test.ts',
