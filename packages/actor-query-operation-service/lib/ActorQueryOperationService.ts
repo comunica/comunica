@@ -6,6 +6,7 @@ import type { MediatorQuerySourceIdentify } from '@comunica/bus-query-source-ide
 import type { IActorTest } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext, IQueryOperationResult, IQueryOperationResultBindings } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { SingletonIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -52,7 +53,7 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
         // Emit a single empty binding
         const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context);
         output = {
-          bindingsStream: new SingletonIterator(bindingsFactory.bindings()),
+          bindingsStream: new SingletonIterator<RDF.Bindings>(bindingsFactory.bindings()),
           type: 'bindings',
           metadata: async() => ({
             state: new MetadataValidationState(),

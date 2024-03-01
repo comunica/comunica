@@ -9,6 +9,7 @@ import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext, IQueryOperationResultBindings } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory, Algebra } from 'sparqlalgebrajs';
@@ -64,7 +65,7 @@ IQueryOperationResultBindings
       mediatorQueryOperation = <any> {
         mediate: jest.fn(async(arg: IActionQueryOperation): Promise<IQueryOperationResultBindings> => {
           return {
-            bindingsStream: new ArrayIterator([
+            bindingsStream: new ArrayIterator<RDF.Bindings>([
               BF.bindings([
                 [ DF.variable('bound'), DF.namedNode('ex:bound1') ],
               ]),

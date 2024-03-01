@@ -65,7 +65,7 @@ export class XmlSerializer {
   }
 
   private escape(text: string): string {
-    return text.replaceAll(/["&'<>]/gu, (char: '"' | '&' | '\'' | '<' | '>') => {
+    return text.replaceAll(/["&'<>]/gu, <(substring: string) => string> ((char: '"' | '&' | '\'' | '<' | '>') => {
       switch (char) {
         case '<': return '&lt;';
         case '>': return '&gt;';
@@ -73,7 +73,7 @@ export class XmlSerializer {
         case '\'': return '&apos;';
         case '"': return '&quot;';
       }
-    });
+    }));
   }
 }
 

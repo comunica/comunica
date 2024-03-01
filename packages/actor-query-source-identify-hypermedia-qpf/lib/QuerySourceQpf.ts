@@ -236,7 +236,7 @@ export class QuerySourceQpf implements IQuerySource {
           graph = DF.variable('g');
         } else {
           // Without union-default-graph, the default graph must be empty.
-          const quads = new ArrayIterator([], { autoStart: false });
+          const quads = new ArrayIterator<RDF.Quad>([], { autoStart: false });
           quads.setProperty('metadata', {
             requestTime: 0,
             cardinality: { type: 'exact', value: 0 },

@@ -24,16 +24,16 @@ export class SyncRecursiveEvaluator extends BaseExpressionEvaluator
   protected openWorldType: ISuperTypeProvider;
   private readonly subEvaluators: Record<string, (expr: E.Expression, mapping: RDF.Bindings) => E.Term> = {
     // Shared
-    [E.ExpressionType.Term]: this.term.bind(this),
-    [E.ExpressionType.Variable]: this.variable.bind(this),
+    [E.ExpressionType.Term]: (expr, _mapping) => this.term(<E.Term> expr),
+    [E.ExpressionType.Variable]: (expr, mapping) => this.variable(<E.Variable> expr, mapping),
 
     // Sync
-    [E.ExpressionType.Operator]: this.evalOperator.bind(this),
-    [E.ExpressionType.SpecialOperator]: this.evalSpecialOperator.bind(this),
-    [E.ExpressionType.Named]: this.evalNamed.bind(this),
-    [E.ExpressionType.Existence]: this.evalExistence.bind(this),
-    [E.ExpressionType.Aggregate]: this.evalAggregate.bind(this),
-    [E.ExpressionType.SyncExtension]: this.evalSyncExtension.bind(this),
+    [E.ExpressionType.Operator]: (expr, mapping) => this.evalOperator(<E.Operator> expr, mapping),
+    [E.ExpressionType.SpecialOperator]: (expr, mapping) => this.evalSpecialOperator(<E.SpecialOperator> expr, mapping),
+    [E.ExpressionType.Named]: (expr, mapping) => this.evalNamed(<E.Named> expr, mapping),
+    [E.ExpressionType.Existence]: (expr, mapping) => this.evalExistence(<E.Existence> expr, mapping),
+    [E.ExpressionType.Aggregate]: (expr, _mapping) => this.evalAggregate(<E.Aggregate> expr),
+    [E.ExpressionType.SyncExtension]: (expr, mapping) => this.evalSyncExtension(<E.SyncExtension> expr, mapping),
   };
 
   public constructor(private readonly context: ICompleteSyncEvaluatorContext, termTransformer?: ITermTransformer) {

@@ -129,7 +129,7 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
         emitMetadata: true,
         httpObserver,
       });
-      bindingsStream = () => new ArrayIterator([
+      bindingsStream = () => new ArrayIterator<RDF.Bindings>([
         BF.bindings([
           [ DF.variable('k1'), DF.namedNode('v1') ],
         ]),
@@ -137,7 +137,7 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
           [ DF.variable('k2'), DF.namedNode('v2') ],
         ]),
       ]);
-      bindingsStreamPartial = () => new ArrayIterator([
+      bindingsStreamPartial = () => new ArrayIterator<RDF.Bindings>([
         BF.bindings([
           [ DF.variable('k1'), DF.namedNode('v1') ],
         ]),
@@ -154,7 +154,7 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
       (<any> bindingsStreamError)._read = <any> (() => {
         bindingsStreamError.emit('error', new Error('SpJson'));
       });
-      bindingsStreamQuoted = () => new ArrayIterator([
+      bindingsStreamQuoted = () => new ArrayIterator<RDF.Bindings>([
         BF.bindings([
           [ DF.variable('k1'), DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')) ],
         ]),

@@ -1,6 +1,6 @@
 import type { ICompleteSharedContext } from '../evaluators/evaluatorHelpers/BaseExpressionEvaluator';
 import type * as E from '../expressions';
-import { isLiteralTermExpression } from '../expressions';
+import { isLiteralTermExpression, TermExpression } from '../expressions';
 import type { KnownLiteralTypes } from '../util/Consts';
 import type { GeneralSuperTypeDict, ISuperTypeProvider, OverrideType } from '../util/TypeHandling';
 import {
@@ -15,6 +15,7 @@ import type { ArgumentType } from './Core';
 
 export type SearchStack = OverloadTree[];
 export type ImplementationFunction = (sharedContext: ICompleteSharedContext) => E.SimpleApplication;
+export type ImplementationFunctionTuple<T> = (sharedContext: ICompleteSharedContext) => E.SimpleApplicationTuple<T>;
 interface IFunctionArgumentsCacheObj {
   func?: ImplementationFunction;
   cache?: FunctionArgumentsCache;

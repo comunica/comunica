@@ -348,7 +348,7 @@ describe('QueryEngineBase', () => {
     it('converts bindings', async() => {
       const final = <QueryType & IQueryBindingsEnhanced> QueryEngineBase.internalToFinalResult({
         type: 'bindings',
-        bindingsStream: new ArrayIterator([
+        bindingsStream: new ArrayIterator<RDF.Bindings>([
           BF.bindings([
             [ DF.variable('a'), DF.namedNode('ex:a') ],
           ]),

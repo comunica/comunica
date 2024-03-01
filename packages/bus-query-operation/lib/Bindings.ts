@@ -190,7 +190,7 @@ export function materializeOperation(
           const newBinding = { ...binding };
           let valid = true;
           // eslint-disable-next-line unicorn/no-array-for-each
-          bindings.forEach((value: RDF.NamedNode, key: RDF.Variable) => {
+          bindings.forEach((value: RDF.Term, key: RDF.Variable) => {
             const keyString = termToString(key);
             if (keyString in newBinding) {
               if (!value.equals(newBinding[keyString])) {

@@ -1,7 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IQueryOperationResultQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
@@ -118,12 +117,11 @@ describe('ActorQueryOperationConstruct', () => {
 
     it('should run on an empty template', async() => {
       const op: any = { operation: { type: 'construct', template: []}, context: new ActionContext() };
-      await actor.run(op).then(async(output: IQueryOperationResultQuads) => {
-        await expect((<any> output).metadata()).resolves
-          .toEqual({ cardinality: { type: 'estimate', value: 0 }, canContainUndefs: false });
-        expect(output.type).toBe('quads');
-        await expect(arrayifyStream(output.quadStream)).resolves.toEqual([]);
-      });
+      const output = ActorQueryOperation.getSafeQuads(await actor.run(op));
+      await expect((<any> output).metadata()).resolves
+        .toEqual({ cardinality: { type: 'estimate', value: 0 }, canContainUndefs: false });
+      expect(output.type).toBe('quads');
+      await expect(arrayifyStream(output.quadStream)).resolves.toEqual([]);
     });
 
     it('should run on a template with the empty binding and produce one result', async() => {
@@ -131,15 +129,14 @@ describe('ActorQueryOperationConstruct', () => {
         DF.quad(DF.blankNode('s1'), DF.namedNode('p1'), DF.literal('o1')),
         DF.quad(DF.blankNode('s2'), DF.namedNode('p2'), DF.literal('o2')),
       ], type: 'construct' }, context: new ActionContext() };
-      await actor.run(op).then(async(output: IQueryOperationResultQuads) => {
-        await expect((<any> output).metadata()).resolves
-          .toEqual({ cardinality: { type: 'estimate', value: 2 }, canContainUndefs: false });
-        expect(output.type).toBe('quads');
-        await expect(arrayifyStream(output.quadStream)).resolves.toEqual([
-          DF.quad(DF.blankNode('s10'), DF.namedNode('p1'), DF.literal('o1')),
-          DF.quad(DF.blankNode('s20'), DF.namedNode('p2'), DF.literal('o2')),
-        ]);
-      });
+      const output = ActorQueryOperation.getSafeQuads(await actor.run(op));
+      await expect((<any> output).metadata()).resolves
+        .toEqual({ cardinality: { type: 'estimate', value: 2 }, canContainUndefs: false });
+      expect(output.type).toBe('quads');
+      await expect(arrayifyStream(output.quadStream)).resolves.toEqual([
+        DF.quad(DF.blankNode('s10'), DF.namedNode('p1'), DF.literal('o1')),
+        DF.quad(DF.blankNode('s20'), DF.namedNode('p2'), DF.literal('o2')),
+      ]);
     });
 
     it('should run on a template with input', async() => {
@@ -147,21 +144,20 @@ describe('ActorQueryOperationConstruct', () => {
         DF.quad(DF.blankNode('s1'), DF.variable('a'), DF.literal('o1')),
         DF.quad(DF.blankNode('s2'), DF.namedNode('p2'), DF.variable('a'), DF.variable('a')),
       ], type: 'construct' }, context: new ActionContext() };
-      await actor.run(op).then(async(output: IQueryOperationResultQuads) => {
-        await expect((<any> output).metadata()).resolves
-          .toEqual({ cardinality: { type: 'estimate', value: 6 }, canContainUndefs: false });
-        expect(output.type).toBe('quads');
-        await expect(arrayifyStream(output.quadStream)).resolves.toEqual([
-          DF.quad(DF.blankNode('s10'), DF.literal('1'), DF.literal('o1')),
-          DF.quad(DF.blankNode('s20'), DF.namedNode('p2'), DF.literal('1'), DF.literal('1')),
+      const output = ActorQueryOperation.getSafeQuads(await actor.run(op));
+      await expect((<any> output).metadata()).resolves
+        .toEqual({ cardinality: { type: 'estimate', value: 6 }, canContainUndefs: false });
+      expect(output.type).toBe('quads');
+      await expect(arrayifyStream(output.quadStream)).resolves.toEqual([
+        DF.quad(DF.blankNode('s10'), DF.literal('1'), DF.literal('o1')),
+        DF.quad(DF.blankNode('s20'), DF.namedNode('p2'), DF.literal('1'), DF.literal('1')),
 
-          DF.quad(DF.blankNode('s11'), DF.literal('2'), DF.literal('o1')),
-          DF.quad(DF.blankNode('s21'), DF.namedNode('p2'), DF.literal('2'), DF.literal('2')),
+        DF.quad(DF.blankNode('s11'), DF.literal('2'), DF.literal('o1')),
+        DF.quad(DF.blankNode('s21'), DF.namedNode('p2'), DF.literal('2'), DF.literal('2')),
 
-          DF.quad(DF.blankNode('s12'), DF.literal('3'), DF.literal('o1')),
-          DF.quad(DF.blankNode('s22'), DF.namedNode('p2'), DF.literal('3'), DF.literal('3')),
-        ]);
-      });
+        DF.quad(DF.blankNode('s12'), DF.literal('3'), DF.literal('o1')),
+        DF.quad(DF.blankNode('s22'), DF.namedNode('p2'), DF.literal('3'), DF.literal('3')),
+      ]);
     });
   });
 });

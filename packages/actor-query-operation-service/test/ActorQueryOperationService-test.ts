@@ -1,7 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IQueryOperationResultBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationService } from '../lib/ActorQueryOperationService';
@@ -113,17 +112,16 @@ describe('ActorQueryOperationService', () => {
         operation: { type: 'service', silent: false, name: DF.literal('dummy') },
         context: new ActionContext(),
       };
-      await actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        await expect(output.metadata()).resolves
-          .toEqual({ cardinality: 3, canContainUndefs: true, variables: [ DF.variable('a') ]});
-        await expect(output.bindingsStream).toEqualBindingsStream([
-          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
-          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
-          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
-        ]);
-        expect((<any> output).operated.operation.metadata).toEqual({
-          scopedSource: { value: 'QUERY_SOURCE_WRAPPER', type: 'sparql' },
-        });
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      await expect(output.metadata()).resolves
+        .toEqual({ cardinality: 3, canContainUndefs: true, variables: [ DF.variable('a') ]});
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
+      ]);
+      expect((<any> output).operated.operation.metadata).toEqual({
+        scopedSource: { value: 'QUERY_SOURCE_WRAPPER', type: 'sparql' },
       });
     });
 
@@ -132,13 +130,12 @@ describe('ActorQueryOperationService', () => {
         operation: { type: 'service', silent: true, name: DF.literal('dummy'), input: { type: 'error' }},
         context: new ActionContext(),
       };
-      await actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        await expect(output.metadata()).resolves
-          .toMatchObject({ cardinality: { type: 'exact', value: 1 }, canContainUndefs: false, variables: []});
-        await expect(output.bindingsStream).toEqualBindingsStream([
-          BF.bindings(),
-        ]);
-      });
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      await expect(output.metadata()).resolves
+        .toMatchObject({ cardinality: { type: 'exact', value: 1 }, canContainUndefs: false, variables: []});
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings(),
+      ]);
     });
 
     it('should not run on a non-silent operation when the endpoint errors', async() => {
@@ -163,18 +160,17 @@ describe('ActorQueryOperationService', () => {
         mediatorQuerySourceIdentify,
       });
 
-      await actorThis.run(op).then(async(output: IQueryOperationResultBindings) => {
-        expect((<any> output).operated.operation.metadata).toEqual({
-          scopedSource: { value: 'QUERY_SOURCE_WRAPPER', type: undefined },
-        });
-        await expect(output.metadata()).resolves
-          .toEqual({ cardinality: 3, canContainUndefs: true, variables: [ DF.variable('a') ]});
-        await expect(output.bindingsStream).toEqualBindingsStream([
-          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
-          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
-          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
-        ]);
+      const output = ActorQueryOperation.getSafeBindings(await actorThis.run(op));
+      expect((<any> output).operated.operation.metadata).toEqual({
+        scopedSource: { value: 'QUERY_SOURCE_WRAPPER', type: undefined },
       });
+      await expect(output.metadata()).resolves
+        .toEqual({ cardinality: 3, canContainUndefs: true, variables: [ DF.variable('a') ]});
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
+      ]);
     });
 
     it('should run and use sparql source type when forceSparqlEndpoint is enabled', async() => {
@@ -191,18 +187,17 @@ describe('ActorQueryOperationService', () => {
         mediatorQuerySourceIdentify,
       });
 
-      await actorThis.run(op).then(async(output: IQueryOperationResultBindings) => {
-        expect((<any> output).operated.operation.metadata).toEqual({
-          scopedSource: { value: 'QUERY_SOURCE_WRAPPER', type: 'sparql' },
-        });
-        await expect(output.metadata()).resolves
-          .toEqual({ cardinality: 3, canContainUndefs: true, variables: [ DF.variable('a') ]});
-        await expect(output.bindingsStream).toEqualBindingsStream([
-          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
-          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
-          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
-        ]);
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      expect((<any> output).operated.operation.metadata).toEqual({
+        scopedSource: { value: 'QUERY_SOURCE_WRAPPER', type: 'sparql' },
       });
+      await expect(output.metadata()).resolves
+        .toEqual({ cardinality: 3, canContainUndefs: true, variables: [ DF.variable('a') ]});
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
+      ]);
     });
   });
 });

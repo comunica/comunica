@@ -8,6 +8,7 @@ import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinMultiSmallest } from '../lib/ActorRdfJoinMultiSmallest';
@@ -90,7 +91,7 @@ IActorRdfJoinSelectivityOutput
         entries: [
           {
             output: {
-              bindingsStream: new ArrayIterator([
+              bindingsStream: new ArrayIterator<RDF.Bindings>([
                 BF.bindings([
                   [ DF.variable('a'), DF.literal('a1') ],
                   [ DF.variable('b'), DF.literal('b1') ],
@@ -116,7 +117,7 @@ IActorRdfJoinSelectivityOutput
           },
           {
             output: {
-              bindingsStream: new ArrayIterator([
+              bindingsStream: new ArrayIterator<RDF.Bindings>([
                 BF.bindings([
                   [ DF.variable('a'), DF.literal('a1') ],
                   [ DF.variable('c'), DF.literal('c1') ],
@@ -142,7 +143,7 @@ IActorRdfJoinSelectivityOutput
           },
           {
             output: {
-              bindingsStream: new ArrayIterator([
+              bindingsStream: new ArrayIterator<RDF.Bindings>([
                 BF.bindings([
                   [ DF.variable('a'), DF.literal('a1') ],
                   [ DF.variable('b'), DF.literal('b1') ],
@@ -174,7 +175,7 @@ IActorRdfJoinSelectivityOutput
         entries: [
           {
             output: {
-              bindingsStream: new ArrayIterator([
+              bindingsStream: new ArrayIterator<RDF.Bindings>([
                 BF.bindings([
                   [ DF.variable('a'), DF.literal('a1') ],
                   [ DF.variable('b'), DF.literal('b1') ],
@@ -200,7 +201,7 @@ IActorRdfJoinSelectivityOutput
           },
           {
             output: {
-              bindingsStream: new ArrayIterator([
+              bindingsStream: new ArrayIterator<RDF.Bindings>([
                 BF.bindings([
                   [ DF.variable('a'), DF.literal('a1') ],
                   [ DF.variable('c'), DF.literal('c1') ],
@@ -226,7 +227,7 @@ IActorRdfJoinSelectivityOutput
           },
           {
             output: {
-              bindingsStream: new ArrayIterator([
+              bindingsStream: new ArrayIterator<RDF.Bindings>([
                 BF.bindings([
                   [ DF.variable('a'), DF.literal('a1') ],
                   [ DF.variable('b'), DF.literal('b1') ],
@@ -252,7 +253,7 @@ IActorRdfJoinSelectivityOutput
           },
           {
             output: {
-              bindingsStream: new ArrayIterator([
+              bindingsStream: new ArrayIterator<RDF.Bindings>([
                 BF.bindings([
                   [ DF.variable('a'), DF.literal('a1') ],
                   [ DF.variable('d'), DF.literal('d1') ],

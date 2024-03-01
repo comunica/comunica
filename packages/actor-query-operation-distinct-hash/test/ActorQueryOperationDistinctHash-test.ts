@@ -1,6 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IQueryOperationResultBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationDistinctHash } from '..';
@@ -100,15 +100,14 @@ describe('ActorQueryOperationDistinctHash', () => {
 
     it('should run', async() => {
       const op: any = { operation: { type: 'distinct' }, context: new ActionContext() };
-      await actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        await expect(output.metadata()).resolves.toEqual({ cardinality: 5, variables: [ DF.variable('a') ]});
-        expect(output.type).toBe('bindings');
-        await expect(output.bindingsStream).toEqualBindingsStream([
-          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
-          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
-          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
-        ]);
-      });
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      await expect(output.metadata()).resolves.toEqual({ cardinality: 5, variables: [ DF.variable('a') ]});
+      expect(output.type).toBe('bindings');
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
+      ]);
     });
   });
 });

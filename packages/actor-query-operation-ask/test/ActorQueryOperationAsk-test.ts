@@ -1,7 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IQueryOperationResultBoolean } from '@comunica/types';
 import { ArrayIterator, BufferedIterator, range } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationAsk } from '../lib/ActorQueryOperationAsk';
@@ -102,10 +101,9 @@ describe('ActorQueryOperationAsk', () => {
 
     it('should run on a non-empty stream', async() => {
       const op: any = { operation: { type: 'ask' }, context: new ActionContext() };
-      await actor.run(op).then(async(output: IQueryOperationResultBoolean) => {
-        expect(output.type).toBe('boolean');
-        await expect(output.execute()).resolves.toBeTruthy();
-      });
+      const output = ActorQueryOperation.getSafeBoolean(await actor.run(op));
+      expect(output.type).toBe('boolean');
+      await expect(output.execute()).resolves.toBeTruthy();
     });
 
     it('should run on an empty stream', async() => {
@@ -113,10 +111,9 @@ describe('ActorQueryOperationAsk', () => {
       const actorEmpty = new ActorQueryOperationAsk(
         { name: 'actor', bus, mediatorQueryOperation: mediatorQueryOperationEmpty },
       );
-      await actorEmpty.run(op).then(async(output: IQueryOperationResultBoolean) => {
-        expect(output.type).toBe('boolean');
-        await expect(output.execute()).resolves.toBeFalsy();
-      });
+      const output = ActorQueryOperation.getSafeBoolean(await actorEmpty.run(op));
+      expect(output.type).toBe('boolean');
+      await expect(output.execute()).resolves.toBeFalsy();
     });
 
     it('should run and return a rejecting promise on an errorring stream', async() => {
@@ -124,10 +121,9 @@ describe('ActorQueryOperationAsk', () => {
       const actorError = new ActorQueryOperationAsk(
         { name: 'actor', bus, mediatorQueryOperation: mediatorQueryOperationError },
       );
-      await actorError.run(op).then(async(output: IQueryOperationResultBoolean) => {
-        expect(output.type).toBe('boolean');
-        await expect(output.execute()).rejects.toBeTruthy();
-      });
+      const output = ActorQueryOperation.getSafeBoolean(await actorError.run(op));
+      expect(output.type).toBe('boolean');
+      await expect(output.execute()).rejects.toBeTruthy();
     });
   });
 });

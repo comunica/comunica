@@ -1,7 +1,7 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IJoinEntry, IQueryOperationResultBindings } from '@comunica/types';
+import type { IJoinEntry } from '@comunica/types';
 import { ArrayIterator, UnionIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationMinus } from '../lib/ActorQueryOperationMinus';
@@ -81,25 +81,24 @@ describe('ActorQueryOperationMinus', () => {
 
     it('should run', async() => {
       const op: any = { operation: { type: 'minus', input: [{}, {}, {}]}, context: new ActionContext() };
-      await actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        expect(output.type).toBe('bindings');
-        await expect(output.metadata()).resolves.toEqual({
-          cardinality: 100,
-          canContainUndefs: false,
-          variables: [ DF.variable('x'), DF.variable('y') ],
-        });
-        await expect(output.bindingsStream).toEqualBindingsStream([
-          BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
-          BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
-          BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
-          BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),
-          BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),
-          BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),
-          BF.bindings([[ DF.variable('x'), DF.literal('3') ]]),
-          BF.bindings([[ DF.variable('x'), DF.literal('3') ]]),
-          BF.bindings([[ DF.variable('x'), DF.literal('3') ]]),
-        ]);
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      expect(output.type).toBe('bindings');
+      await expect(output.metadata()).resolves.toEqual({
+        cardinality: 100,
+        canContainUndefs: false,
+        variables: [ DF.variable('x'), DF.variable('y') ],
       });
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('3') ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('3') ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('3') ]]),
+      ]);
     });
   });
 });

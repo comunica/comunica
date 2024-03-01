@@ -56,7 +56,7 @@ describe('ActorQueryResultSerializeTree', () => {
       actor = new ActorQueryResultSerializeTree(
         { bus, name: 'actor', mediaTypePriorities: { tree: 1 }, mediaTypeFormats: {}},
       );
-      bindingsStream = () => new ArrayIterator([
+      bindingsStream = () => new ArrayIterator<RDF.Bindings>([
         BF.bindings([[ DF.variable('k1'), DF.literal('v1') ]]),
         BF.bindings([[ DF.variable('k2'), DF.literal('v2') ]]),
       ]);

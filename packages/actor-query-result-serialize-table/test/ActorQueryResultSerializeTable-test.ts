@@ -52,7 +52,7 @@ describe('ActorQueryResultSerializeTable', () => {
       actor = new ActorQueryResultSerializeTable({ bus, columnWidth: 10, mediaTypePriorities: {
         table: 1,
       }, mediaTypeFormats: {}, name: 'actor' });
-      bindingsStream = () => new ArrayIterator([
+      bindingsStream = () => new ArrayIterator<RDF.Bindings>([
         BF.bindings([
           [ DF.variable('k1'), DF.namedNode('v1') ],
         ]),
@@ -60,7 +60,7 @@ describe('ActorQueryResultSerializeTable', () => {
           [ DF.variable('k2'), DF.namedNode('v2') ],
         ]),
       ]);
-      bindingsStreamQuoted = () => new ArrayIterator([
+      bindingsStreamQuoted = () => new ArrayIterator<RDF.Bindings>([
         BF.bindings([
           [ DF.variable('k1'), DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')) ],
         ]),

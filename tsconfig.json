@@ -10,7 +10,7 @@
     "resolveJsonModule": true,
 
     "strict": true,
-    "strictFunctionTypes": false,
+    "strictFunctionTypes": true,
     "strictPropertyInitialization": false,
     "noImplicitOverride": true,
     "declaration": true,

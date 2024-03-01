@@ -42,6 +42,7 @@
     "@comunica/bus-rdf-join": "^3.0.0",
     "@comunica/mediatortype-join-coefficients": "^3.0.0",
     "@comunica/metadata": "^3.0.0",
+    "@rdfjs/types": "*",
     "asynciterator": "^3.8.1"
   }
 }

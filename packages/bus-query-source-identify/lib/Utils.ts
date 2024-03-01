@@ -84,12 +84,13 @@ export function quadsToBindings(
       });
     }
 
-    return filteredOutput.map(quad => bindingsFactory.bindings(Object.keys(elementVariables).map((key) => {
-      const keys: QuadTermName[] = <any>key.split('_');
-      const variable = elementVariables[key];
-      const term = getValueNestedPath(quad, keys);
-      return [ DF.variable(variable), term ];
-    })));
+    return filteredOutput.map<RDF.Bindings>(quad => bindingsFactory
+      .bindings(Object.keys(elementVariables).map((key) => {
+        const keys: QuadTermName[] = <any>key.split('_');
+        const variable = elementVariables[key];
+        const term = getValueNestedPath(quad, keys);
+        return [ DF.variable(variable), term ];
+      })));
   }, {
     autoStart: false,
     onClose: () => quads.destroy(),

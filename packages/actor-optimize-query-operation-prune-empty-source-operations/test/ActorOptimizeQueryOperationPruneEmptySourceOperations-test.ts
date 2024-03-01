@@ -2,6 +2,7 @@ import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra, Factory } from 'sparqlalgebrajs';
@@ -505,7 +506,7 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
 
         it('should be false for cardinality === 0', async() => {
           source1.source.queryBindings = () => {
-            const bindingsStream = new ArrayIterator([], { autoStart: false });
+            const bindingsStream = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
             bindingsStream.setProperty('metadata', { cardinality: { value: 0 }});
             return bindingsStream;
           };
@@ -514,7 +515,7 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
 
         it('should reject for an erroring query', async() => {
           source1.source.queryBindings = () => {
-            const bindingsStream = new ArrayIterator([], { autoStart: false });
+            const bindingsStream = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
             bindingsStream.emit('error', new Error(`queryBindings error in ActorOptimizeQueryOperationPruneEmptySourceOperations`));
             return bindingsStream;
           };
@@ -530,7 +531,7 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
         it('should be true for cardinality = 0 on a traversal source', async() => {
           source1.context = new ActionContext().set(KeysQuerySourceIdentify.traverse, true);
           source1.source.queryBindings = () => {
-            const bindingsStream = new ArrayIterator([], { autoStart: false });
+            const bindingsStream = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
             bindingsStream.setProperty('metadata', { cardinality: { value: 0 }});
             return bindingsStream;
           };

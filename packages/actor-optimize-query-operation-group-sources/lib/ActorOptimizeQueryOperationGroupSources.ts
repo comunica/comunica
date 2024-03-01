@@ -88,10 +88,10 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
         multiFactoryMethod = AF.createUnion.bind(AF);
         break;
       case Algebra.types.ALT:
-        multiFactoryMethod = AF.createAlt.bind(AF);
+        multiFactoryMethod = <any> AF.createAlt.bind(AF);
         break;
       case Algebra.types.SEQ:
-        multiFactoryMethod = AF.createSeq.bind(AF);
+        multiFactoryMethod = <any> AF.createSeq.bind(AF);
         break;
       default:
         // While LeftJoin and Minus are also multi-operations,

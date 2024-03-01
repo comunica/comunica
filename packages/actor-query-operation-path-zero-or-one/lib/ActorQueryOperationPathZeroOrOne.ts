@@ -5,6 +5,7 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { MetadataValidationState } from '@comunica/metadata';
 import type { Bindings, IQueryOperationResult, IActionContext, BindingsStream } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import {
   SingletonIterator,
   UnionIterator,
@@ -37,7 +38,7 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
       operation.subject.equals(operation.object)) {
       return {
         type: 'bindings',
-        bindingsStream: new SingletonIterator(bindingsFactory.bindings()),
+        bindingsStream: new SingletonIterator<RDF.Bindings>(bindingsFactory.bindings()),
         metadata: () => Promise.resolve({
           state: new MetadataValidationState(),
           cardinality: { type: 'exact', value: 1 },

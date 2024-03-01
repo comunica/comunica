@@ -314,7 +314,7 @@ export class QuerySourceSparql implements IQuerySource {
     this.lastSourceContext = undefined;
 
     const it = wrap<any>(rawStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY })
-      .map((rawData: Record<string, RDF.Term>) => this.bindingsFactory.bindings(variables
+      .map<RDF.Bindings>((rawData: Record<string, RDF.Term>) => this.bindingsFactory.bindings(variables
         .map((variable) => {
           const value = rawData[`?${variable.value}`];
           if (!value) {

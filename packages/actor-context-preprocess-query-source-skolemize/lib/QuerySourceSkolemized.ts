@@ -41,7 +41,7 @@ export class QuerySourceSkolemized implements IQuerySource {
   ): BindingsStream {
     const operationMapped = deskolemizeOperation(operation, this.sourceId);
     if (!operationMapped) {
-      const it: BindingsStream = new ArrayIterator([], { autoStart: false });
+      const it: BindingsStream = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
       it.setProperty('metadata', {
         state: new MetadataValidationState(),
         cardinality: { type: 'exact', value: 0 },
@@ -60,7 +60,7 @@ export class QuerySourceSkolemized implements IQuerySource {
   public queryQuads(operation: Algebra.Construct, context: IActionContext): AsyncIterator<RDF.Quad> {
     const operationMapped = deskolemizeOperation(operation, this.sourceId);
     if (!operationMapped) {
-      const it: AsyncIterator<RDF.Quad> = new ArrayIterator([], { autoStart: false });
+      const it: AsyncIterator<RDF.Quad> = new ArrayIterator<RDF.Quad>([], { autoStart: false });
       it.setProperty('metadata', {
         state: new MetadataValidationState(),
         cardinality: { type: 'exact', value: 0 },

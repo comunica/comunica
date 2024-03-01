@@ -2,7 +2,6 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
 import { BlankNodeBindingsScoped, BlankNodeScoped } from '@comunica/data-factory';
-import type { IQueryOperationResultBindings } from '@comunica/types';
 import { ArrayIterator, SingletonIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationProject } from '../lib/ActorQueryOperationProject';
@@ -69,17 +68,16 @@ describe('ActorQueryOperationProject', () => {
         operation: { type: 'project', input: 'in', variables: [ DF.variable('a'), DF.variable('delet') ]},
         context: new ActionContext(),
       };
-      await actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        await expect(output.metadata()).resolves
-          .toEqual({ variables: [ DF.variable('a'), DF.variable('delet') ]});
-        expect(output.type).toBe('bindings');
-        await expect(output.bindingsStream).toEqualBindingsStream([
-          BF.bindings([
-            [ DF.variable('a'), DF.literal('A') ],
-            [ DF.variable('delet'), DF.literal('deleteMe') ],
-          ]),
-        ]);
-      });
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      await expect(output.metadata()).resolves
+        .toEqual({ variables: [ DF.variable('a'), DF.variable('delet') ]});
+      expect(output.type).toBe('bindings');
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('A') ],
+          [ DF.variable('delet'), DF.literal('deleteMe') ],
+        ]),
+      ]);
     });
 
     it('should run on a stream with variables that should be deleted', async() => {
@@ -87,16 +85,15 @@ describe('ActorQueryOperationProject', () => {
         operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]},
         context: new ActionContext(),
       };
-      await actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        await expect(output.metadata()).resolves
-          .toEqual({ variables: [ DF.variable('a') ]});
-        expect(output.type).toBe('bindings');
-        await expect(output.bindingsStream).toEqualBindingsStream([
-          BF.bindings([
-            [ DF.variable('a'), DF.literal('A') ],
-          ]),
-        ]);
-      });
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      await expect(output.metadata()).resolves
+        .toEqual({ variables: [ DF.variable('a') ]});
+      expect(output.type).toBe('bindings');
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('A') ],
+        ]),
+      ]);
     });
 
     it('should error run on a stream with variables that should be deleted and are missing', async() => {
@@ -132,25 +129,24 @@ describe('ActorQueryOperationProject', () => {
         operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]},
         context: new ActionContext(),
       };
-      await actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        await expect(output.metadata()).resolves
-          .toEqual({ variables: [ DF.variable('a') ]});
-        expect(output.type).toBe('bindings');
-        await expect(output.bindingsStream).toEqualBindingsStream([
-          BF.bindings([
-            [ DF.variable('a'), DF.blankNode('a') ],
-            [ DF.variable('b'), DF.literal('b') ],
-          ]),
-          BF.bindings([
-            [ DF.variable('a'), DF.blankNode('a') ],
-            [ DF.variable('b'), DF.literal('b') ],
-          ]),
-          BF.bindings([
-            [ DF.variable('a'), DF.blankNode('a') ],
-            [ DF.variable('b'), DF.literal('b') ],
-          ]),
-        ]);
-      });
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      await expect(output.metadata()).resolves
+        .toEqual({ variables: [ DF.variable('a') ]});
+      expect(output.type).toBe('bindings');
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('a'), DF.blankNode('a') ],
+          [ DF.variable('b'), DF.literal('b') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('a'), DF.blankNode('a') ],
+          [ DF.variable('b'), DF.literal('b') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('a'), DF.blankNode('a') ],
+          [ DF.variable('b'), DF.literal('b') ],
+        ]),
+      ]);
     });
 
     it('should run on a stream with equal scoped blank nodes across bindings', async() => {
@@ -177,25 +173,24 @@ describe('ActorQueryOperationProject', () => {
         operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]},
         context: new ActionContext(),
       };
-      await actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        await expect(output.metadata()).resolves
-          .toEqual({ variables: [ DF.variable('a') ]});
-        expect(output.type).toBe('bindings');
-        await expect(output.bindingsStream).toEqualBindingsStream([
-          BF.bindings([
-            [ DF.variable('a'), new BlankNodeScoped('a', DF.namedNode('A')) ],
-            [ DF.variable('b'), DF.literal('b') ],
-          ]),
-          BF.bindings([
-            [ DF.variable('a'), new BlankNodeScoped('a', DF.namedNode('B')) ],
-            [ DF.variable('b'), DF.literal('b') ],
-          ]),
-          BF.bindings([
-            [ DF.variable('a'), new BlankNodeScoped('a', DF.namedNode('C')) ],
-            [ DF.variable('b'), DF.literal('b') ],
-          ]),
-        ]);
-      });
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      await expect(output.metadata()).resolves
+        .toEqual({ variables: [ DF.variable('a') ]});
+      expect(output.type).toBe('bindings');
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('a'), new BlankNodeScoped('a', DF.namedNode('A')) ],
+          [ DF.variable('b'), DF.literal('b') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('a'), new BlankNodeScoped('a', DF.namedNode('B')) ],
+          [ DF.variable('b'), DF.literal('b') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('a'), new BlankNodeScoped('a', DF.namedNode('C')) ],
+          [ DF.variable('b'), DF.literal('b') ],
+        ]),
+      ]);
     });
 
     it('should run on a stream with binding-scoped blank nodes across bindings', async() => {
@@ -222,25 +217,24 @@ describe('ActorQueryOperationProject', () => {
         operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]},
         context: new ActionContext(),
       };
-      await actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        await expect(output.metadata()).resolves
-          .toEqual({ variables: [ DF.variable('a') ], canContainUndefs: true });
-        expect(output.type).toBe('bindings');
-        await expect(output.bindingsStream).toEqualBindingsStream([
-          BF.bindings([
-            [ DF.variable('a'), DF.blankNode('a1') ],
-            [ DF.variable('b'), DF.literal('b') ],
-          ]),
-          BF.bindings([
-            [ DF.variable('a'), DF.blankNode('a2') ],
-            [ DF.variable('b'), DF.literal('b') ],
-          ]),
-          BF.bindings([
-            [ DF.variable('a'), DF.blankNode('a3') ],
-            [ DF.variable('b'), DF.literal('b') ],
-          ]),
-        ]);
-      });
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      await expect(output.metadata()).resolves
+        .toEqual({ variables: [ DF.variable('a') ], canContainUndefs: true });
+      expect(output.type).toBe('bindings');
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('a'), DF.blankNode('a1') ],
+          [ DF.variable('b'), DF.literal('b') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('a'), DF.blankNode('a2') ],
+          [ DF.variable('b'), DF.literal('b') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('a'), DF.blankNode('a3') ],
+          [ DF.variable('b'), DF.literal('b') ],
+        ]),
+      ]);
     });
 
     it('should run on a stream with binding-scoped blank nodes within a single bindings object', async() => {
@@ -259,17 +253,16 @@ describe('ActorQueryOperationProject', () => {
         operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]},
         context: new ActionContext(),
       };
-      await actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        await expect(output.metadata()).resolves
-          .toEqual({ variables: [ DF.variable('a') ]});
-        expect(output.type).toBe('bindings');
-        await expect(output.bindingsStream).toEqualBindingsStream([
-          BF.bindings([
-            [ DF.variable('a'), DF.blankNode('a1') ],
-            [ DF.variable('b'), DF.blankNode('a1') ],
-          ]),
-        ]);
-      });
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      await expect(output.metadata()).resolves
+        .toEqual({ variables: [ DF.variable('a') ]});
+      expect(output.type).toBe('bindings');
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('a'), DF.blankNode('a1') ],
+          [ DF.variable('b'), DF.blankNode('a1') ],
+        ]),
+      ]);
     });
   });
 });

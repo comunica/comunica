@@ -5,6 +5,7 @@ import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinOptionalNestedLoop } from '../lib/ActorRdfJoinOptionalNestedLoop';
@@ -113,7 +114,7 @@ IActorRdfJoinSelectivityOutput
           entries: [
             {
               output: {
-                bindingsStream: new ArrayIterator([
+                bindingsStream: new ArrayIterator<RDF.Bindings>([
                   BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
                   BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
                   BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
@@ -130,7 +131,7 @@ IActorRdfJoinSelectivityOutput
             },
             {
               output: {
-                bindingsStream: new ArrayIterator([
+                bindingsStream: new ArrayIterator<RDF.Bindings>([
                   BF.bindings([
                     [ DF.variable('a'), DF.literal('1') ],
                     [ DF.variable('b'), DF.literal('1') ],

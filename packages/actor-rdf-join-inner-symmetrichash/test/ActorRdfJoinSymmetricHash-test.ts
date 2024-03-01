@@ -72,7 +72,7 @@ IActorRdfJoinSelectivityOutput
         entries: [
           {
             output: {
-              bindingsStream: new ArrayIterator([], { autoStart: false }),
+              bindingsStream: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
               metadata: () => Promise.resolve({
                 state: new MetadataValidationState(),
                 cardinality: { type: 'estimate', value: 4 },
@@ -85,7 +85,7 @@ IActorRdfJoinSelectivityOutput
           },
           {
             output: {
-              bindingsStream: new ArrayIterator([], { autoStart: false }),
+              bindingsStream: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
               metadata: () => Promise.resolve({
                 state: new MetadataValidationState(),
                 cardinality: { type: 'estimate', value: 5 },
@@ -114,7 +114,7 @@ IActorRdfJoinSelectivityOutput
           entries: [
             {
               output: {
-                bindingsStream: new ArrayIterator([], { autoStart: false }),
+                bindingsStream: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 4 },
@@ -127,7 +127,7 @@ IActorRdfJoinSelectivityOutput
             },
             {
               output: {
-                bindingsStream: new ArrayIterator([], { autoStart: false }),
+                bindingsStream: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 5 },
@@ -151,7 +151,7 @@ IActorRdfJoinSelectivityOutput
           entries: [
             {
               output: {
-                bindingsStream: new ArrayIterator([], { autoStart: false }),
+                bindingsStream: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 4 },
@@ -164,7 +164,7 @@ IActorRdfJoinSelectivityOutput
             },
             {
               output: {
-                bindingsStream: new ArrayIterator([], { autoStart: false }),
+                bindingsStream: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 5 },
@@ -188,7 +188,7 @@ IActorRdfJoinSelectivityOutput
           entries: [
             {
               output: {
-                bindingsStream: new ArrayIterator([], { autoStart: false }),
+                bindingsStream: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 4 },
@@ -201,7 +201,7 @@ IActorRdfJoinSelectivityOutput
             },
             {
               output: {
-                bindingsStream: new ArrayIterator([], { autoStart: false }),
+                bindingsStream: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 5 },
@@ -256,14 +256,14 @@ IActorRdfJoinSelectivityOutput
         output?.bindingsStream.destroy();
       }
 
-      action.entries[0].output.bindingsStream = new ArrayIterator([
+      action.entries[0].output.bindingsStream = new ArrayIterator<RDF.Bindings>([
         BF.bindings([
           [ DF.variable('a'), DF.literal('a') ],
           [ DF.variable('b'), DF.literal('b') ],
         ]),
       ]);
       variables0 = [ DF.variable('a'), DF.variable('b') ];
-      action.entries[1].output.bindingsStream = new ArrayIterator([
+      action.entries[1].output.bindingsStream = new ArrayIterator<RDF.Bindings>([
         BF.bindings([
           [ DF.variable('a'), DF.literal('a') ],
           [ DF.variable('c'), DF.literal('c') ],
@@ -293,14 +293,14 @@ IActorRdfJoinSelectivityOutput
         output?.bindingsStream.destroy();
       }
 
-      action.entries[0].output.bindingsStream = new ArrayIterator([
+      action.entries[0].output.bindingsStream = new ArrayIterator<RDF.Bindings>([
         BF.bindings([
           [ DF.variable('a'), DF.literal('a') ],
           [ DF.variable('b'), DF.literal('b') ],
         ]),
       ]);
       variables0 = [ DF.variable('a'), DF.variable('b') ];
-      action.entries[1].output.bindingsStream = new ArrayIterator([
+      action.entries[1].output.bindingsStream = new ArrayIterator<RDF.Bindings>([
         BF.bindings([
           [ DF.variable('a'), DF.literal('d') ],
           [ DF.variable('c'), DF.literal('c') ],
@@ -324,7 +324,7 @@ IActorRdfJoinSelectivityOutput
         output?.bindingsStream.destroy();
       }
 
-      action.entries[0].output.bindingsStream = new ArrayIterator([
+      action.entries[0].output.bindingsStream = new ArrayIterator<RDF.Bindings>([
         BF.bindings([
           [ DF.variable('a'), DF.literal('1') ],
           [ DF.variable('b'), DF.literal('2') ],
@@ -351,7 +351,7 @@ IActorRdfJoinSelectivityOutput
         ]),
       ]);
       variables0 = [ DF.variable('a'), DF.variable('b') ];
-      action.entries[1].output.bindingsStream = new ArrayIterator([
+      action.entries[1].output.bindingsStream = new ArrayIterator<RDF.Bindings>([
         BF.bindings([
           [ DF.variable('a'), DF.literal('1') ],
           [ DF.variable('c'), DF.literal('4') ],

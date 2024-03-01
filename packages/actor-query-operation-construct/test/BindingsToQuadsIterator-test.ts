@@ -1,5 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { BlankNodeBindingsScoped } from '@comunica/data-factory';
+import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -493,7 +494,7 @@ describe('BindingsToQuadsIterator', () => {
           DF.blankNode('otherbnode'),
           DF.blankNode('otherbnode'),
         ),
-      ], new ArrayIterator([
+      ], new ArrayIterator<RDF.Bindings>([
         BF.bindings([
           [ DF.variable('a'), DF.namedNode('a1') ],
           [ DF.variable('b'), DF.namedNode('b1') ],

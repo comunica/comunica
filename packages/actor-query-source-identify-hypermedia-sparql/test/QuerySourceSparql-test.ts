@@ -2,6 +2,7 @@ import { PassThrough } from 'node:stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
+import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 
@@ -704,7 +705,7 @@ describe('QuerySourceSparql', () => {
         ctx,
         {
           joinBindings: {
-            bindings: new ArrayIterator([], { autoStart: false }),
+            bindings: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
             metadata: <any> { variables: []},
           },
         },
@@ -744,7 +745,7 @@ describe('QuerySourceSparql', () => {
         ctx.set(KeysInitQuery.queryString, 'abc'), // This must be ignored
         {
           joinBindings: {
-            bindings: new ArrayIterator([], { autoStart: false }),
+            bindings: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
             metadata: <any> { variables: []},
           },
         },
@@ -1120,7 +1121,7 @@ WHERE { undefined:s ?p undefined:o. }` }),
         'values',
         AF.createNop(),
         {
-          bindings: new ArrayIterator([], { autoStart: false }),
+          bindings: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
           metadata: <any> { variables: []},
         },
       )).resolves.toEqual(AF.createJoin([
@@ -1134,7 +1135,7 @@ WHERE { undefined:s ?p undefined:o. }` }),
         'values',
         AF.createNop(),
         {
-          bindings: new ArrayIterator([
+          bindings: new ArrayIterator<RDF.Bindings>([
             BF.fromRecord({ a: DF.namedNode('a1') }),
             BF.fromRecord({ a: DF.namedNode('a2') }),
           ], { autoStart: false }),
@@ -1154,7 +1155,7 @@ WHERE { undefined:s ?p undefined:o. }` }),
         'union',
         AF.createNop(),
         {
-          bindings: new ArrayIterator([], { autoStart: false }),
+          bindings: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
           metadata: <any> { variables: []},
         },
       )).rejects.toThrow(`Not implemented yet: "union" case`);
@@ -1165,7 +1166,7 @@ WHERE { undefined:s ?p undefined:o. }` }),
         'filter',
         AF.createNop(),
         {
-          bindings: new ArrayIterator([], { autoStart: false }),
+          bindings: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
           metadata: <any> { variables: []},
         },
       )).rejects.toThrow(`Not implemented yet: "filter" case`);

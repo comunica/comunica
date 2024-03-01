@@ -1111,7 +1111,7 @@ describe('QuerySourceQpf', () => {
           DF.namedNode('g'),
           'url',
           {
-            bindings: new ArrayIterator([], { autoStart: false }),
+            bindings: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
             metadata: <any> { variables: [ DF.variable('f1'), DF.variable('f2') ]},
           },
         )).resolves.toBe(`url&values=(%3Ff1%20%3Ff2)%20%7B%20(%3Cex%3Acomunica%3Aunknown%3E)%20%7D`);
@@ -1125,7 +1125,7 @@ describe('QuerySourceQpf', () => {
           DF.namedNode('g'),
           'url',
           {
-            bindings: new ArrayIterator([
+            bindings: new ArrayIterator<RDF.Bindings>([
               BF.fromRecord({
                 f1: DF.namedNode('a1'),
               }),

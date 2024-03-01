@@ -13,7 +13,7 @@ import { TypeURL } from '../util/Consts';
 import type { IDateTimeRepresentation } from '../util/DateTimeHelpers';
 import * as Err from '../util/Errors';
 import type { ArgumentType } from './Core';
-import type { ImplementationFunction } from './OverloadTree';
+import type { ImplementationFunction, ImplementationFunctionTuple } from './OverloadTree';
 import { OverloadTree } from './OverloadTree';
 
 type Term = E.TermExpression;
@@ -53,6 +53,37 @@ export class Builder {
     };
   }
 
+  public set(
+    argTypes: [],
+    func: ImplementationFunctionTuple<[]>,
+    addInvalidHandling?: boolean,
+  ): Builder;
+  public set<T1 extends TermExpression>(
+    argTypes: [ArgumentType],
+    func: ImplementationFunctionTuple<[T1]>,
+    addInvalidHandling?: boolean,
+  ): Builder;
+  public set<T1 extends TermExpression, T2 extends TermExpression>(
+    argTypes: [ArgumentType, ArgumentType],
+    func: ImplementationFunctionTuple<[T1, T2]>,
+    addInvalidHandling?: boolean,
+  ): Builder;
+  public set<T1 extends TermExpression, T2 extends TermExpression, T3 extends TermExpression>(
+    argTypes: [ArgumentType, ArgumentType, ArgumentType],
+    func: ImplementationFunctionTuple<[T1, T2, T3]>,
+    addInvalidHandling?: boolean,
+  ): Builder;
+  public set<
+    T1 extends TermExpression,
+    T2 extends TermExpression,
+    T3 extends TermExpression,
+    T4 extends TermExpression,
+  >(
+    argTypes: [ArgumentType, ArgumentType, ArgumentType, ArgumentType],
+    func: ImplementationFunctionTuple<[T1, T2, T3, T4]>,
+    addInvalidHandling?: boolean,
+  ): Builder;
+  public set(argTypes: ArgumentType[], func: ImplementationFunction, addInvalidHandling?: boolean): Builder;
   public set(argTypes: ArgumentType[], func: ImplementationFunction, addInvalidHandling = true): Builder {
     this.overloadTree.addOverload(argTypes, addInvalidHandling ? Builder.wrapInvalidLexicalProtected(func) : func);
     return this;
@@ -83,7 +114,7 @@ addInvalidHandling = true,
   }
 
   public onBinary<L extends Term, R extends Term>(
-    types: ArgumentType[],
+    types: [ArgumentType, ArgumentType],
     op: (context: ICompleteSharedContext) => (left: L, right: R) => Term,
 addInvalidHandling = true,
   ): Builder {
@@ -91,7 +122,7 @@ addInvalidHandling = true,
   }
 
   public onBinaryTyped<L extends ISerializable, R extends ISerializable>(
-    types: ArgumentType[],
+    types: [ArgumentType, ArgumentType],
     op: (context: ICompleteSharedContext) => (left: L, right: R) => Term,
 addInvalidHandling = true,
   ): Builder {
@@ -103,7 +134,7 @@ addInvalidHandling = true,
   }
 
   public onTernaryTyped<A1 extends ISerializable, A2 extends ISerializable, A3 extends ISerializable>(
-    types: ArgumentType[],
+    types: [ArgumentType, ArgumentType, ArgumentType],
     op: (context: ICompleteSharedContext)
     => (a1: A1, a2: A2, a3: A3) => Term,
 addInvalidHandling = true,
@@ -113,7 +144,7 @@ addInvalidHandling = true,
   }
 
   public onTernary<A1 extends Term, A2 extends Term, A3 extends Term>(
-    types: ArgumentType[],
+    types: [ArgumentType, ArgumentType, ArgumentType],
     op: (context: ICompleteSharedContext) => (a1: A1, a2: A2, a3: A3) => Term,
 addInvalidHandling = true,
   ): Builder {
@@ -126,7 +157,7 @@ A2 extends ISerializable,
 A3 extends ISerializable,
 A4 extends ISerializable,
 >(
-    types: ArgumentType[],
+    types: [ArgumentType, ArgumentType, ArgumentType, ArgumentType],
     op: (context: ICompleteSharedContext) => (a1: A1, a2: A2, a3: A3, a4: A4) => Term,
 addInvalidHandling = true,
   ): Builder {
@@ -135,10 +166,13 @@ addInvalidHandling = true,
         op(context)(a1.typedValue, a2.typedValue, a3.typedValue, a4.typedValue), addInvalidHandling);
   }
 
-  public onTerm1(op: (context: ICompleteSharedContext) => (term: Term) => Term, addInvalidHandling = false): Builder {
+  public onTerm1<T extends Term>(
+    op: (context: ICompleteSharedContext) => (term: T) => Term,
+addInvalidHandling = false,
+  ): Builder {
     return this.set(
       [ 'term' ],
-      context => ([ term ]: [Term]) => op(context)(term),
+      context => ([ term ]: [T]) => op(context)(term),
       addInvalidHandling,
     );
   }
@@ -279,13 +313,13 @@ addInvalidHandling = true,
   ): Builder {
     const evalHelper = (context: ICompleteSharedContext) => (arg: Term): number =>
       op(context)((<Literal<number>>arg).typedValue);
-    return this.onBinary([ TypeURL.XSD_INTEGER ], context => arg =>
+    return this.onUnary(TypeURL.XSD_INTEGER, context => arg =>
       integer(evalHelper(context)(arg)), addInvalidHandling)
-      .onBinary([ TypeURL.XSD_DECIMAL ], context => arg =>
+      .onUnary(TypeURL.XSD_DECIMAL, context => arg =>
         decimal(evalHelper(context)(arg)), addInvalidHandling)
-      .onBinary([ TypeURL.XSD_FLOAT ], context => arg =>
+      .onUnary(TypeURL.XSD_FLOAT, context => arg =>
         float(evalHelper(context)(arg)), addInvalidHandling)
-      .onBinary([ TypeURL.XSD_DOUBLE ], context => arg =>
+      .onUnary(TypeURL.XSD_DOUBLE, context => arg =>
         double(evalHelper(context)(arg)), addInvalidHandling);
   }
 
@@ -366,7 +400,7 @@ addInvalidHandling = true,
       );
   }
 
-  public numeric(op: ImplementationFunction): Builder {
+  public numeric<T extends TermExpression>(op: ImplementationFunctionTuple<[T, T]>): Builder {
     return this.set([ C.TypeAlias.SPARQL_NUMERIC, C.TypeAlias.SPARQL_NUMERIC ], op);
   }
 }

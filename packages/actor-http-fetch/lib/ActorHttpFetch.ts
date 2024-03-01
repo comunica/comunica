@@ -138,7 +138,7 @@ export class ActorHttpFetch extends ActorHttp {
       const retryCount: number = action.context?.get(KeysHttp.httpRetryCount) ?? 0;
       const retryDelay: number = action.context?.get(KeysHttp.httpRetryDelay) ?? 0;
       const retryOnSeverError: boolean = action.context?.get(KeysHttp.httpRetryOnServerError) ?? false;
-      const customFetch: ((input: RequestInfo, init?: RequestInit) => Promise<Response>) | undefined = action
+      const customFetch: ((input: RequestInfo | URL, init?: RequestInit) => Promise<Response>) | undefined = action
         .context?.get(KeysHttp.fetch);
 
       // Execute the fetch (with retries and timeouts, if applicable).

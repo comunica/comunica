@@ -5,7 +5,7 @@ describe('ChunkedIterator', () => {
   let itr: ChunkedIterator<number>;
   describe('for blockSize 1', () => {
     it('should handle an empty iterator', async() => {
-      itr = new ChunkedIterator<number>(new ArrayIterator([]), 1);
+      itr = new ChunkedIterator<number>(new ArrayIterator<number>([]), 1);
       await expect(flattenIterator(itr)).resolves.toEqual([]);
     });
 

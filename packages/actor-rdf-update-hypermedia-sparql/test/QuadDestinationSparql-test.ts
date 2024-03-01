@@ -2,6 +2,7 @@
 import { KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { Headers } from 'cross-fetch';
 import { DataFactory } from 'rdf-data-factory';
@@ -90,7 +91,7 @@ describe('QuadDestinationSparql', () => {
         ok: false,
       });
       body.cancel = jest.fn();
-      await expect(destination.insert(new ArrayIterator([]))).rejects
+      await expect(destination.insert(new ArrayIterator<RDF.Quad>([]))).rejects
         .toThrow(`Invalid SPARQL endpoint response from abc (HTTP status 400):\nempty response`);
     });
   });

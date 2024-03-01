@@ -70,7 +70,7 @@ describe('ActorQueryResultSerializeStats', () => {
         httpObserver,
       });
 
-      bindingsStream = () => new ArrayIterator([
+      bindingsStream = () => new ArrayIterator<RDF.Bindings>([
         BF.bindings([
           [ DF.variable('k1'), DF.namedNode('v1') ],
         ]),

@@ -2,6 +2,7 @@ import { PassThrough } from 'node:stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActionContext, Bus } from '@comunica/core';
 import type { BindingsStream, IActionContext, MetadataBindings } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryResultSerializeSparqlTsv } from '..';
@@ -122,7 +123,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
       actor = new ActorQueryResultSerializeSparqlTsv({ bus, mediaTypePriorities: {
         'text/tab-separated-values': 1,
       }, mediaTypeFormats: {}, name: 'actor' });
-      bindingsStream = () => new ArrayIterator([
+      bindingsStream = () => new ArrayIterator<RDF.Bindings>([
         BF.bindings([
           [ DF.variable('k1'), DF.namedNode('v1') ],
         ]),
@@ -130,7 +131,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
           [ DF.variable('k2'), DF.namedNode('v2') ],
         ]),
       ]);
-      bindingsStreamPartial = () => new ArrayIterator([
+      bindingsStreamPartial = () => new ArrayIterator<RDF.Bindings>([
         BF.bindings([
           [ DF.variable('k1'), DF.namedNode('v1') ],
         ]),
@@ -139,7 +140,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
         ]),
         BF.bindings(),
       ]);
-      bindingsStreamMixed = () => new ArrayIterator([
+      bindingsStreamMixed = () => new ArrayIterator<RDF.Bindings>([
         BF.bindings([
           [ DF.variable('k1'), DF.literal('v"') ],
           [ DF.variable('k2'), DF.defaultGraph() ],
@@ -157,7 +158,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
       (<any> bindingsStreamError)._read = <any> (() => {
         bindingsStreamError.emit('error', new Error('SparqlTsv'));
       });
-      bindingsStreamQuoted = () => new ArrayIterator([
+      bindingsStreamQuoted = () => new ArrayIterator<RDF.Bindings>([
         BF.bindings([
           [ DF.variable('k1'), DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')) ],
         ]),

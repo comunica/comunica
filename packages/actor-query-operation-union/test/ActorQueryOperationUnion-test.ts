@@ -9,7 +9,6 @@ import { MetadataValidationState } from '@comunica/metadata';
 import type {
   IActionContext,
   IQueryOperationResultBindings,
-  IQueryOperationResultQuads,
   MetadataQuads,
 } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
@@ -419,77 +418,73 @@ describe('ActorQueryOperationUnion', () => {
 
     it('should run on zero bindings streams', async() => {
       const op: any = { operation: { type: 'union', input: []}, context: new ActionContext() };
-      await actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        await expect(output.metadata()).resolves.toMatchObject({
-          cardinality: { type: 'exact', value: 0 },
-          canContainUndefs: false,
-          variables: [],
-        });
-        expect(output.type).toBe('bindings');
-        await expect(output.bindingsStream).toEqualBindingsStream([]);
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      await expect(output.metadata()).resolves.toMatchObject({
+        cardinality: { type: 'exact', value: 0 },
+        canContainUndefs: false,
+        variables: [],
       });
+      expect(output.type).toBe('bindings');
+      await expect(output.bindingsStream).toEqualBindingsStream([]);
     });
 
     it('should run on two bindings streams', async() => {
       const op: any = { operation: { type: 'union', input: [ op3(), op2() ]}, context: new ActionContext() };
-      await actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        await expect(output.metadata()).resolves.toMatchObject({
-          cardinality: { type: 'estimate', value: 5 },
-          canContainUndefs: false,
-          variables: [ DF.variable('a'), DF.variable('b') ],
-        });
-        expect(output.type).toBe('bindings');
-        await expect(output.bindingsStream).toEqualBindingsStream([
-          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
-          BF.bindings([[ DF.variable('b'), DF.literal('1') ]]),
-          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
-          BF.bindings([[ DF.variable('b'), DF.literal('2') ]]),
-          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
-        ]);
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      await expect(output.metadata()).resolves.toMatchObject({
+        cardinality: { type: 'estimate', value: 5 },
+        canContainUndefs: false,
+        variables: [ DF.variable('a'), DF.variable('b') ],
       });
+      expect(output.type).toBe('bindings');
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('b'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+        BF.bindings([[ DF.variable('b'), DF.literal('2') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
+      ]);
     });
 
     it('should run on three bindings streams', async() => {
-      await actor.run(<any> {
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(<any> {
         operation: { type: 'union', input: [ op3(), op2(), op2Undef() ]},
         context: new ActionContext(),
-      }).then(async(output: IQueryOperationResultBindings) => {
-        await expect(output.metadata()).resolves.toEqual({
-          state: expect.any(MetadataValidationState),
-          cardinality: { type: 'estimate', value: 7 },
-          canContainUndefs: true,
-          variables: [ DF.variable('a'), DF.variable('b') ],
-        });
-        expect(output.type).toBe('bindings');
-        await expect(output.bindingsStream).toEqualBindingsStream([
-          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
-          BF.bindings([[ DF.variable('b'), DF.literal('1') ]]),
-          BF.bindings([[ DF.variable('b'), DF.literal('1') ]]),
-          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
-          BF.bindings([[ DF.variable('b'), DF.literal('2') ]]),
-          BF.bindings([[ DF.variable('b'), DF.literal('2') ]]),
-          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
-        ]);
+      }));
+      await expect(output.metadata()).resolves.toEqual({
+        state: expect.any(MetadataValidationState),
+        cardinality: { type: 'estimate', value: 7 },
+        canContainUndefs: true,
+        variables: [ DF.variable('a'), DF.variable('b') ],
       });
+      expect(output.type).toBe('bindings');
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('b'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('b'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+        BF.bindings([[ DF.variable('b'), DF.literal('2') ]]),
+        BF.bindings([[ DF.variable('b'), DF.literal('2') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
+      ]);
     });
 
     it('should run with a right bindings stream with undefs', async() => {
       const op: any = { operation: { type: 'union', input: [ op3(), op2Undef() ]}, context: new ActionContext() };
-      await actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        await expect(output.metadata()).resolves.toMatchObject({
-          cardinality: { type: 'estimate', value: 5 },
-          canContainUndefs: true,
-          variables: [ DF.variable('a'), DF.variable('b') ],
-        });
-        expect(output.type).toBe('bindings');
-        await expect(output.bindingsStream).toEqualBindingsStream([
-          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
-          BF.bindings([[ DF.variable('b'), DF.literal('1') ]]),
-          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
-          BF.bindings([[ DF.variable('b'), DF.literal('2') ]]),
-          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
-        ]);
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      await expect(output.metadata()).resolves.toMatchObject({
+        cardinality: { type: 'estimate', value: 5 },
+        canContainUndefs: true,
+        variables: [ DF.variable('a'), DF.variable('b') ],
       });
+      expect(output.type).toBe('bindings');
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('b'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+        BF.bindings([[ DF.variable('b'), DF.literal('2') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
+      ]);
     });
 
     it('should run on two bindings streams with metadata invalidation', async() => {
@@ -537,18 +532,17 @@ describe('ActorQueryOperationUnion', () => {
 
     it('should run on two quad streams', async() => {
       const op: any = { operation: { type: 'union', input: [ opq1(), opq2() ]}, context: new ActionContext() };
-      await actor.run(op).then(async(output: IQueryOperationResultQuads) => {
-        await expect(output.metadata()).resolves.toMatchObject({
-          cardinality: { type: 'estimate', value: 4 },
-        });
-        expect(output.type).toBe('quads');
-        await expect(output.quadStream.toArray()).resolves.toBeRdfIsomorphic([
-          DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
-          DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
-          DF.quad(DF.namedNode('s3'), DF.namedNode('p3'), DF.namedNode('o3')),
-          DF.quad(DF.namedNode('s4'), DF.namedNode('p4'), DF.namedNode('o4')),
-        ]);
+      const output = ActorQueryOperation.getSafeQuads(await actor.run(op));
+      await expect(output.metadata()).resolves.toMatchObject({
+        cardinality: { type: 'estimate', value: 4 },
       });
+      expect(output.type).toBe('quads');
+      await expect(output.quadStream.toArray()).resolves.toBeRdfIsomorphic([
+        DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
+        DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
+        DF.quad(DF.namedNode('s3'), DF.namedNode('p3'), DF.namedNode('o3')),
+        DF.quad(DF.namedNode('s4'), DF.namedNode('p4'), DF.namedNode('o4')),
+      ]);
     });
 
     it('should throw on different stream types', async() => {
