@@ -10,7 +10,7 @@ const engineDefault = require('../engine-default.js');
  */
 export class QueryEngine<QueryContext extends IQueryContextCommon = IQueryContextCommon>
   extends QueryEngineBase<QueryContext> {
-  public constructor(engine: ActorInitQueryBase = engineDefault) {
+  public constructor(engine: ActorInitQueryBase = engineDefault()) {
     super(engine);
   }
 }
