@@ -80,6 +80,38 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
           return self.mapMultiOperation(subOperation, emptyOperations, children => factory.createAlt(children));
         },
       });
+
+      // Identify and remove projections that have become empty now due to missing variables
+      operation = Util.mapOperation(operation, {
+        [Algebra.types.PROJECT](subOperation, factory) {
+          let emptyProject = false;
+          Util.recurseOperation(subOperation, {
+            [Algebra.types.UNION](subSubOperation) {
+              if (subSubOperation.input.length === 0) {
+                emptyProject = true;
+              }
+              return true;
+            },
+            [Algebra.types.ALT](subSubOperation) {
+              if (subSubOperation.input.length === 0) {
+                emptyProject = true;
+              }
+              return true;
+            },
+          });
+
+          if (emptyProject) {
+            return {
+              recurse: false,
+              result: factory.createUnion([]),
+            };
+          }
+          return {
+            recurse: true,
+            result: subOperation,
+          };
+        },
+      });
     }
 
     return { operation, context: action.context };
