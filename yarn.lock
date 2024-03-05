@@ -4075,10 +4075,30 @@ componentsjs-generator@^3.1.0:
     rdf-object "^1.13.1"
     semver "^7.3.2"
 
-componentsjs@^5.0.1, componentsjs@^5.3.2:
+componentsjs@^5.0.1:
   version "5.4.2"
   resolved "https://registry.yarnpkg.com/componentsjs/-/componentsjs-5.4.2.tgz#a433ce02d2f17b9598aff313deda8f48f11c58a0"
   integrity sha512-qIeXLozDkvubl6qtiovWsIBRqUP80w1ImTbilB6QE3OQgaEExI8pYZ9MkZ10QDFtdoKUryztlqp0AWs49t4puA==
+  dependencies:
+    "@rdfjs/types" "*"
+    "@types/minimist" "^1.2.0"
+    "@types/node" "^18.0.0"
+    "@types/semver" "^7.3.4"
+    jsonld-context-parser "^2.1.1"
+    minimist "^1.2.0"
+    rdf-data-factory "^1.1.0"
+    rdf-object "^1.14.0"
+    rdf-parse "^2.0.0"
+    rdf-quad "^1.5.0"
+    rdf-string "^1.6.0"
+    rdf-terms "^1.7.0"
+    semver "^7.3.2"
+    winston "^3.3.3"
+
+componentsjs@^6.0.0:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/componentsjs/-/componentsjs-6.0.1.tgz#f34cbd37195ec232dbcbad5426efab74d352a14d"
+  integrity sha512-8ylkwrS0WJCTkkp2dOamE4yLkkdFd9xZQQ8dGzaY22TdntLR9V/SH+dZ+GQ+im9/2KgrKtcEu0UHMY+cpE0LYw==
   dependencies:
     "@rdfjs/types" "*"
     "@types/minimist" "^1.2.0"
