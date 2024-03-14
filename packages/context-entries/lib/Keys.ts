@@ -185,6 +185,10 @@ export const KeysInitQuery = {
    * A boolean value denoting whether caching is disabled or not.
    */
   noCache: new ActionContextKey<boolean>('@comunica/actor-init-query:noCache'),
+  /**
+   * A boolean value denoting whether results should be deduplicated or not.
+   */
+  distinct: new ActionContextKey<boolean>('@comunica/actor-init-query:noCache'),
 };
 
 export const KeysQueryOperation = {
