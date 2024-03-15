@@ -1,10 +1,15 @@
 import { ActionContext } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
-import { getDataSourceType, getDataSourceValue,
-  getDataSourceContext, isDataSourceRawType, getContextSourceFirst } from '..';
+import {
+  getDataSourceType,
+  getDataSourceValue,
+  getDataSourceContext,
+  isDataSourceRawType,
+  getContextSourceFirst,
+} from '..';
 
 describe('utils', () => {
-  const rdfjsSource: RDF.Source = <any> { match: true };
+  const rdfjsSource: RDF.Source = <any>{ match: true };
 
   describe('isDataSourceRawType', () => {
     it('should return on a string source', () => {
@@ -16,7 +21,9 @@ describe('utils', () => {
     });
 
     it('should return on an object source', () => {
-      return expect(isDataSourceRawType({ type: 'T', value: 'abc' })).toEqual(false);
+      return expect(isDataSourceRawType({ type: 'T', value: 'abc' })).toEqual(
+        false,
+      );
     });
   });
 
@@ -30,15 +37,21 @@ describe('utils', () => {
     });
 
     it('should return on an object source', () => {
-      return expect(getDataSourceType({ type: 'T', value: 'abc' })).toEqual('T');
+      return expect(getDataSourceType({ type: 'T', value: 'abc' })).toEqual(
+        'T',
+      );
     });
 
     it('should return on an object source with implicit rdfjs source', () => {
-      return expect(getDataSourceType({ value: rdfjsSource })).toEqual(undefined);
+      return expect(getDataSourceType({ value: rdfjsSource })).toEqual(
+        undefined,
+      );
     });
 
     it('should return on an object source with explicit rdfjs source', () => {
-      return expect(getDataSourceType({ type: 'rdfjsSource', value: rdfjsSource })).toEqual('rdfjsSource');
+      return expect(
+        getDataSourceType({ type: 'rdfjsSource', value: rdfjsSource }),
+      ).toEqual('rdfjsSource');
     });
   });
 
@@ -52,15 +65,21 @@ describe('utils', () => {
     });
 
     it('should return on an object source', () => {
-      return expect(getDataSourceValue({ type: 'T', value: 'abc' })).toEqual('abc');
+      return expect(getDataSourceValue({ type: 'T', value: 'abc' })).toEqual(
+        'abc',
+      );
     });
 
     it('should return on an object source with implicit rdfjs source', () => {
-      return expect(getDataSourceValue({ value: rdfjsSource })).toEqual(rdfjsSource);
+      return expect(getDataSourceValue({ value: rdfjsSource })).toEqual(
+        rdfjsSource,
+      );
     });
 
     it('should return on an object source with explicit rdfjs source', () => {
-      return expect(getDataSourceValue({ type: 'rdfjsSource', value: rdfjsSource })).toEqual(rdfjsSource);
+      return expect(
+        getDataSourceValue({ type: 'rdfjsSource', value: rdfjsSource }),
+      ).toEqual(rdfjsSource);
     });
   });
 
@@ -72,47 +91,73 @@ describe('utils', () => {
     });
 
     it('should return on a rdfjs source source', () => {
-      return expect(getDataSourceContext(rdfjsSource, context)).toEqual(context);
+      return expect(getDataSourceContext(rdfjsSource, context)).toEqual(
+        context,
+      );
+    });
+
+    it('should accept object as data source context', () => {
+      return expect(
+        getDataSourceContext(
+          { type: 'type', value: 'value', context: { key2: 'value2' }},
+          context,
+        ),
+      ).toEqual(new ActionContext({ key: 'value', key2: 'value2' }));
     });
 
     it('should return on an object source', () => {
       const sourceContext = new ActionContext({ auth: 'username:passwd' });
-      return expect(getDataSourceContext({ value: 'http://google.com', context: sourceContext }, context))
-        .toEqual(context.merge(sourceContext));
+      return expect(
+        getDataSourceContext(
+          { value: 'http://google.com', context: sourceContext },
+          context,
+        ),
+      ).toEqual(context.merge(sourceContext));
     });
   });
 
   describe('#getSingleSource', () => {
     it('should extract single source when source is set', () => {
-      const source = getContextSourceFirst(new ActionContext(
-        { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'a-type', value: 'a-value' }},
-      ));
+      const source = getContextSourceFirst(
+        new ActionContext({
+          '@comunica/bus-rdf-resolve-quad-pattern:source': {
+            type: 'a-type',
+            value: 'a-value',
+          },
+        }),
+      );
       return expect(source).toEqual({ type: 'a-type', value: 'a-value' });
     });
 
     it('should return the first source when one sources is defined in the list of sources', () => {
-      const source = getContextSourceFirst(new ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:sources': [
-          { type: 'a-type', value: 'a-value' },
-        ],
-      }));
+      const source = getContextSourceFirst(
+        new ActionContext({
+          '@comunica/bus-rdf-resolve-quad-pattern:sources': [
+            { type: 'a-type', value: 'a-value' },
+          ],
+        }),
+      );
       return expect(source).toEqual({ type: 'a-type', value: 'a-value' });
     });
 
     it('should return undefined when multiple sources are defined in the list of sources', () => {
-      const source = getContextSourceFirst(new ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:sources': [
-          { type: 'a-type', value: 'a-value' },
-          { type: 'a-type', value: 'a-value' },
-        ],
-      }));
+      const source = getContextSourceFirst(
+        new ActionContext({
+          '@comunica/bus-rdf-resolve-quad-pattern:sources': [
+            { type: 'a-type', value: 'a-value' },
+            { type: 'a-type', value: 'a-value' },
+          ],
+        }),
+      );
       return expect(source).toEqual(undefined);
     });
 
     it('return undefined for sources that are not ended', () => {
-      const source = getContextSourceFirst(new ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:sources': [],
-      }));
+      const source = getContextSourceFirst(
+        new ActionContext({
+          '@comunica/bus-rdf-resolve-quad-pattern:sources': [],
+        }),
+      );
       return expect(source).toEqual(undefined);
     });
   });

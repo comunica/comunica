@@ -417,6 +417,32 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       expect(jest.mocked(mediatorHttp.mediate).mock.calls[0][0].init.signal.aborted).toBeTruthy();
     });
 
+    it('should run for an update star query', async() => {
+      const context = new ActionContext({
+        '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-update' },
+      });
+      const op: any = { context,
+        operation: factory.createDeleteInsert([], [
+          factory.createPattern(
+            DF.quad(
+              DF.namedNode('http://s'),
+              DF.namedNode('http://p'),
+              DF.namedNode('http://o'),
+            ),
+            DF.namedNode('http://p'),
+            DF.namedNode('http://o'),
+          ),
+        ]) };
+      const output: IQueryOperationResultVoid = <any> await actor.run(op);
+
+      expect(mediatorHttp.mediate).not.toHaveBeenCalled();
+
+      await output.execute();
+
+      expect(jest.mocked(mediatorHttp.mediate).mock.calls[0][0].init.signal).toBeTruthy();
+      expect(jest.mocked(mediatorHttp.mediate).mock.calls[0][0].init.signal.aborted).toBeTruthy();
+    });
+
     it('should run and error for a server error', async() => {
       const thisMediator: any = {
         mediate() {

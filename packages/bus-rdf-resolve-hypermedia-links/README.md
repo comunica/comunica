@@ -22,5 +22,5 @@ $ yarn add @comunica/bus-rdf-resolve-hypermedia-links
 
 ## Creating actors on this bus
 
-Actors extending [`ActorRdfresolveHypermediaLinks`](https://comunica.github.io/comunica/classes/bus_rdf_resolve_hypermedia_links.actorrdfresolvehypermedialinks.html) are automatically subscribed to this bus.
+Actors extending [`ActorRdfresolveHypermediaLinks`](https://comunica.github.io/comunica/classes/_comunica_bus_rdf_resolve_hypermedia_links.ActorRdfresolveHypermediaLinks.html) are automatically subscribed to this bus.
 

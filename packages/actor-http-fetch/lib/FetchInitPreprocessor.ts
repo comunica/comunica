@@ -18,11 +18,21 @@ export class FetchInitPreprocessor implements IFetchInitPreprocessor {
 
   public async handle(init: RequestInit): Promise<RequestInit> {
     // Convert body Web stream to Node stream, as node-fetch does not support Web streams
+    let halfDuplex = false;
     if (init.body && typeof init.body !== 'string' && 'getReader' in <any> init.body) {
       init.body = <any> ActorHttp.toNodeReadable(<any> init.body);
+      // The Fetch API requires specific options to be set when sending body streams:
+      // - 'keepalive' can not be true
+      // - 'duplex' must be set to 'half'
+      halfDuplex = true;
     }
 
-    return <any> { ...init, agent: this.agent, keepalive: true };
+    return <any> {
+      ...init,
+      agent: this.agent,
+      keepalive: !halfDuplex ? true : undefined,
+      duplex: halfDuplex ? 'half' : undefined,
+    };
   }
 
   public async createAbortController(): Promise<AbortController> {

@@ -13,10 +13,12 @@ import type { IActionContext, ICliArgsHandler, IPhysicalQueryPlanLogger } from '
 import { DataFactory } from 'rdf-data-factory';
 import { PassThrough, Readable, Transform } from 'readable-stream';
 import { Factory } from 'sparqlalgebrajs';
-import * as stringifyStream from 'stream-to-string';
+
 import { CliArgsHandlerBase } from '../lib';
 import { ActorInitQuery } from '../lib/ActorInitQuery';
 import { QueryEngineBase } from '../lib/QueryEngineBase';
+// Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
+const stringifyStream = require('stream-to-string');
 
 const DF = new DataFactory();
 
@@ -778,6 +780,22 @@ LIMIT 100
           [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
           [KeysCore.log.name]: expect.any(LoggerPretty),
           [KeysQueryOperation.unionDefaultGraph.name]: true,
+        });
+      });
+
+      it('handles the --noCache flag', async() => {
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-q', queryString, '--noCache' ],
+          env: {},
+          stdin: <Readable><any> new PassThrough(),
+          context,
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
+          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
+          [KeysCore.log.name]: expect.any(LoggerPretty),
+          [KeysInitQuery.noCache.name]: true,
         });
       });
 

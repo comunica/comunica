@@ -1,4 +1,3 @@
-import * as EventEmitter from 'events';
 import { Readable } from 'stream';
 import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
 import type { ILink } from '@comunica/bus-rdf-resolve-hypermedia-links';
@@ -11,6 +10,9 @@ import { DataFactory } from 'rdf-data-factory';
 import type { ISourceState } from '../lib/LinkedRdfSourcesAsyncRdfIterator';
 import { LinkedRdfSourcesAsyncRdfIterator } from '../lib/LinkedRdfSourcesAsyncRdfIterator';
 
+// Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
+const EventEmitter = require('events');
+
 const DF = new DataFactory();
 const v = DF.variable('v');
 
@@ -18,7 +20,7 @@ const v = DF.variable('v');
 // input is array of arrays, with every array corresponding to a page
 class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
   public data: RDF.Quad[][];
-  public linkQueue: ILinkQueue = new LinkQueueFifo();
+  public linkQueue: ILinkQueue | undefined;
   public createdSubIterator = new EventEmitter();
 
   public constructor(data: RDF.Quad[][], subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term,
@@ -28,6 +30,9 @@ class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
   }
 
   public async getLinkQueue(): Promise<ILinkQueue> {
+    if (!this.linkQueue) {
+      this.linkQueue = new LinkQueueFifo();
+    }
     return this.linkQueue;
   }
 
@@ -64,7 +69,10 @@ class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
       metadata: <any>{ requestedPage, firstPageToken: true, next: `P${requestedPage + 1}` },
       source: <any> {
         match: () => {
-          const it = new ArrayIterator<RDF.Quad>([ ...this.data[requestedPage] ], { autoStart: false });
+          const it = new ArrayIterator<RDF.Quad>(
+            [ ...(this.data ? this.data[requestedPage] : []) ],
+            { autoStart: false },
+          );
           it.setProperty('metadata', { subseq: true, next: `P${requestedPage + 1}` });
           if (this.createdSubIterator) {
             this.createdSubIterator.emit('data', it);
@@ -658,13 +666,12 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       await new Promise(resolve => it.on('end', resolve));
 
       expect(result).toEqual(quads.flat());
-      expect((<any> it).startIteratorsForNextUrls).toHaveBeenCalledTimes(6);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenCalledTimes(5);
       expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(1, { first: true }, false);
       expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(2, { first: true }, true);
-      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(3, { first: true }, false);
-      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(4, { P1: true }, true);
-      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(5, { first: true }, false);
-      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(6, { P2: true }, true);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(3, { P1: true }, true);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(4, { first: true }, false);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(5, { P2: true }, true);
     });
 
     it('handles metadata event emitted before the end event', async() => {

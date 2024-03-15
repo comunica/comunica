@@ -1,10 +1,5 @@
 /** @jest-environment setup-polly-jest/jest-environment-node */
 
-// Needed to undo automock from actor-http-native, cleaner workarounds do not appear to be working.
-if (!globalThis.window) {
-  jest.unmock('follow-redirects');
-}
-
 import { KeysHttpWayback, KeysInitQuery, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import { BlankNodeScoped } from '@comunica/data-factory';
 import type { IActionContext, QueryBindings, QueryStringContext } from '@comunica/types';
@@ -17,6 +12,7 @@ import { Factory } from 'sparqlalgebrajs';
 import { QueryEngine } from '../lib/QueryEngine';
 import { usePolly } from './util';
 
+// Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
 const stringifyStream = require('stream-to-string');
 
 const DF = new DataFactory();
@@ -729,6 +725,99 @@ describe('System test: QuerySparql', () => {
 
         const bindings = results.map(binding => [ ...binding ]);
         expect(bindings).toMatchObject(expectedResult);
+      });
+    });
+
+    describe('with a throwing fetch function', () => {
+      function throwingFetch() {
+        throw new Error('Fetch failed!');
+      }
+
+      it('should throw when querying once', async() => {
+        await expect(engine.query(`
+        SELECT ?s ?p ?o WHERE { ?s ?p ?o }`, {
+          sources: [ 'https://my.failing.url' ],
+          fetch: <any> throwingFetch,
+        })).rejects.toThrow('Fetch failed!');
+      });
+
+      it('should throw when querying twice', async() => {
+        await expect(engine.query(`
+        SELECT ?s ?p ?o WHERE { ?s ?p ?o }`, {
+          sources: [ 'https://my.failing.url' ],
+          fetch: <any> throwingFetch,
+        })).rejects.toThrow('Fetch failed!');
+
+        await expect(engine.query(`
+        SELECT ?s ?p ?o WHERE { ?s ?p ?o }`, {
+          sources: [ 'https://my.failing.url' ],
+          fetch: <any> throwingFetch,
+        })).rejects.toThrow('Fetch failed!');
+      });
+    });
+
+    describe('on a remote source', () => {
+      it('with non-matching query with limit and filter', async() => {
+        const bindingsStream = await engine.queryBindings(`
+SELECT * WHERE {
+  ?s ?p <http://purl.org/dc/terms/dontExist>
+  FILTER(?s>1)
+} LIMIT 1`, {
+          sources: [ 'https://www.rubensworks.net/' ],
+        });
+        let called = 0;
+        const dataListener = () => {
+          called++;
+        };
+        bindingsStream.on('data', dataListener);
+        await new Promise((resolve, reject) => {
+          bindingsStream.on('error', reject);
+          bindingsStream.on('end', resolve);
+        });
+        expect(called).toEqual(0);
+      });
+    });
+
+    describe('property paths', () => {
+      it('should handle zero-or-more paths with lists', async() => {
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'stringSource',
+              value: `
+PREFIX fhir: <http://hl7.org/fhir/>
+
+<http://hl7.org/fhir/Observation/58671>
+  fhir:id [ fhir:v "58671" ];
+  fhir:value [
+    fhir:coding ( [
+      a <http://snomed.info/id/8517006>;
+    ] )
+  ];
+  fhir:component ( [
+    fhir:value [
+      fhir:coding [] # comment this line
+    ];
+  ] ).
+`,
+              mediaType: 'text/turtle',
+              baseIRI: 'http://example.org/',
+            },
+          ],
+        };
+
+        expect((await arrayifyStream(await engine.queryBindings(`
+PREFIX fhir: <http://hl7.org/fhir/>
+SELECT ?obsId {
+  ?obs
+    fhir:id [ fhir:v ?obsId ].
+  ?obs fhir:value [
+      fhir:coding [ rdf:rest*/rdf:first [
+        a <http://snomed.info/id/8517006> ;
+      ] ]
+    ].
+}
+`, context))).length).toEqual(1);
       });
     });
   });

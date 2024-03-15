@@ -95,7 +95,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     let variables: RDF.Variable[] | undefined;
     try {
       // Use the original query string if available
-      query = action.context.get(KeysInitQuery.queryString) ?? toSparql(action.operation);
+      query = action.context.get(KeysInitQuery.queryString) ?? toSparql(action.operation, { sparqlStar: true });
       // This will throw an error in case the result is an invalid SPARQL query
       type = this.endpointFetcher.getQueryType(query);
 

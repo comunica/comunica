@@ -177,7 +177,15 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
 
     return {
       bindingsStream,
-      metadata: () => new Promise(resolve => it.getProperty('metadata', (metadata: any) => resolve(metadata()))),
+      async metadata() {
+        const metadata: MetadataBindings = await new Promise(resolve => {
+          it.getProperty('metadata', (metadataInner: any) => resolve(metadataInner()));
+        });
+        // Increment cardinality by one, because we always have at least one result once we reach this stage.
+        // See the transformation above where we push a single binding.
+        metadata.cardinality.value++;
+        return metadata;
+      },
     };
   }
 

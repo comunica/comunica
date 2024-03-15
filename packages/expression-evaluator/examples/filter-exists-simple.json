@@ -1,0 +1,65 @@
+{
+  "query": "SELECT * WHERE { FILTER EXISTS {?s ?p ?o}}",
+  "result": {
+    "type": "project",
+    "input": {
+      "type": "filter",
+      "input": {
+        "type": "bgp",
+        "patterns": [
+          {
+            "subject": {
+              "value": "s"
+            },
+            "predicate": {
+              "value": "p"
+            },
+            "object": {
+              "value": "o"
+            },
+            "graph": {
+              "value": ""
+            },
+            "type": "pattern"
+          }
+        ]
+      },
+      "expression": {
+        "type": "expression",
+        "expressionType": "existence",
+        "not": false,
+        "input": {
+          "type": "bgp",
+          "patterns": [
+            {
+              "subject": {
+                "value": "s"
+              },
+              "predicate": {
+                "value": "p"
+              },
+              "object": {
+                "value": "o"
+              },
+              "graph": {
+                "value": ""
+              },
+              "type": "pattern"
+            }
+          ]
+        }
+      }
+    },
+    "variables": [
+      {
+        "value": "s"
+      },
+      {
+        "value": "p"
+      },
+      {
+        "value": "o"
+      }
+    ]
+  }
+}

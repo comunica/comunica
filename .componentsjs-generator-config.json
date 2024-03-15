@@ -12,7 +12,8 @@
     "packages/data-factory",
     "packages/jest",
     "packages/packager",
-    "packages/runner-cli"
+    "packages/runner-cli",
+    "packages/expression-evaluator"
   ],
   "ignoreComponents": [
     "Error",

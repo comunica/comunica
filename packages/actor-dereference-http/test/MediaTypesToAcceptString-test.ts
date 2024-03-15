@@ -53,8 +53,8 @@ describe('mediaTypesToAcceptString', () => {
     const maxHeaderLength = 127;
     // Subtract 6 for ';q=0.8'
     const typeLength = Math.ceil((maxHeaderLength - 6) / 2);
-    const a = new Array(typeLength).join('a');
-    const b = new Array(typeLength).join('b');
+    const a = 'a'.repeat(typeLength - 1);
+    const b = 'b'.repeat(typeLength - 1);
     return expect(mediaTypesToAcceptString({ [a]: 1, [b]: 0.8 }, maxHeaderLength))
       .toEqual(`${a},${b};q=0.8`);
   });

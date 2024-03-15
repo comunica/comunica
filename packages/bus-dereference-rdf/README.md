@@ -22,5 +22,5 @@ $ yarn add @comunica/bus-dereference-rdf
 
 ## Creating actors on this bus
 
-Actors extending [`ActorDereferenceRdf`](https://comunica.github.io/comunica/classes/bus_dereference_rdf.actordereferencerdf.html) are automatically subscribed to this bus.
+Actors extending [`ActorDereferenceRdf`](https://comunica.github.io/comunica/classes/_comunica_bus_dereference_rdf.ActorDereferenceRdf.html) are automatically subscribed to this bus.
 

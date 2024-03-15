@@ -23,7 +23,7 @@ export class BindingsFactory implements RDF.BindingsFactory {
       this.contextMergeHandlers);
   }
 
-  public fromBindings(bindings: Bindings): Bindings {
+  public fromBindings(bindings: RDF.Bindings): Bindings {
     return this.bindings([ ...bindings ]);
   }
 

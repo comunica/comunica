@@ -154,6 +154,11 @@ implements IQueryEngine<QueryContext, QueryStringContextInner, QueryAlgebraConte
     // Pre-processing the context
     actionContext = (await this.actorInitQuery.mediatorContextPreprocess.mediate({ context: actionContext })).context;
 
+    // Invalidate caches if cache argument is set to false
+    if (actionContext.get(KeysInitQuery.noCache)) {
+      await this.invalidateHttpCache();
+    }
+
     // Determine explain mode
     const explainMode: QueryExplainMode = actionContext.get(KeysInitQuery.explain)!;
 
@@ -252,6 +257,11 @@ implements IQueryEngine<QueryContext, QueryStringContextInner, QueryAlgebraConte
         type: explainMode,
         data: physicalQueryPlanLogger.toJson(),
       };
+    }
+
+    // Invalidate caches if cache argument is set to false
+    if (actionContext.get(KeysInitQuery.noCache)) {
+      await this.invalidateHttpCache();
     }
 
     return finalOutput;

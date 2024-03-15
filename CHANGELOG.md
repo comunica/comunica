@@ -1,6 +1,60 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.10.2"></a>
+## [v2.10.2](https://github.com/comunica/comunica/compare/v2.10.1...v2.10.2) - 2024-01-09
+
+### Fixed
+* [Migrate to @smessie/readable-web-to-node-stream](https://github.com/comunica/comunica/commit/309284eb98ad919da81d9d373517b24fa877a608)
+
+<a name="v2.10.1"></a>
+## [v2.10.1](https://github.com/comunica/comunica/compare/v2.10.0...v2.10.1) - 2023-11-29
+
+### Fixed
+* [Fix updates with body streams failing in Node >= 18](https://github.com/comunica/comunica/commit/6cb01741c01c493e96fea3ff3e3ed295bbcff333)
+* [Generalize fromBindings in BindingsFactory](https://github.com/comunica/comunica/commit/3cc20f76e6be0f83f13e2a349fef9cd5c37e6b64)
+
+<a name="v2.10.0"></a>
+## [v2.10.0](https://github.com/comunica/comunica/compare/v2.9.0...v2.10.0) - 2023-10-27
+
+### Added
+* [Convert raw source contexts to ActionContexts](https://github.com/comunica/comunica/commit/8f685d844477145996b3685ceb500b1b84d9448e)
+* [Support relative and absolute paths for COMUNICA_CONFIG](https://github.com/comunica/comunica/commit/304dd8e97bd8cb1f487cd5012ccbb79b3ca8d0e9)
+
+### Changed
+* [Log expression error messages](https://github.com/comunica/comunica/commit/402524c62ce1002db7142aa4fd4b2724e5d98153)
+* [Print log levels in different colors](https://github.com/comunica/comunica/commit/4e931fd606e3bf7cdb9cc3a7dd6529e638a11b18)
+* [Update readable-stream, yargs, lerna, typescript and eslint (#1271)](https://github.com/comunica/comunica/commit/05d1bd362b1ef28de7020ad17f88afa57ea59254)
+
+### Fixed
+* [Fix wrong cardinality for zero-or-one paths with one variable](https://github.com/comunica/comunica/commit/058f27728459c5305868c8dfe40fc1794222aa04)
+* [Support building with esModuleInterop TS flag](https://github.com/comunica/comunica/commit/29c308fcf84ac8a598df5c8cb8cda41c0212e6a3)
+* [Skip calling endsWith on mediaType when mediaType is undefined](https://github.com/comunica/comunica/commit/5d5fb8324b7281fad1e03bde01763d426c0a7987)
+
+<a name="v2.9.0"></a>
+## [v2.9.0](https://github.com/comunica/comunica/compare/v2.8.3...v2.9.0) - 2023-09-07
+
+### Changed
+* [Early close/destroy in hypermedia iterator when aggregatedStore is unused](https://github.com/comunica/comunica/commit/6560e4764b57734fe099ca4a2b739a097e94735b)
+* [Update dependency uuid to v9 (#1247)](https://github.com/comunica/comunica/commit/8d7bc5a44054cc98d60fbcea6b0d524d63ae5df8)
+* [Migrate sparqlee into Comunica](https://github.com/comunica/comunica/commit/76685e59cf6615fc2144c197a338ede8851525eb)
+
+### Fixed
+* [Enable SPARQL-star for update queries to endpoints](https://github.com/comunica/comunica/commit/01ed03e98e27a72c0077c17d634df4165692eda4)
+
+<a name="v2.8.3"></a>
+## [v2.8.3](https://github.com/comunica/comunica/compare/v2.8.2...v2.8.3) - 2023-08-21
+
+### Changed
+* [Throw when doing BIND on a pre-bound variable, Closes #1229](https://github.com/comunica/comunica/commit/cb9f0a9c90c0586d2149b02dac7a5e63c4bbcd80)
+* [Include final SPARQL endpoint URL in debug logger](https://github.com/comunica/comunica/commit/aa392165f18012e518773a9479b0033fcb605005)
+
+### Fixed
+* [Fix hypermedia errors being voided, Closes #1241](https://github.com/comunica/comunica/commit/13e75b9a918b530a7e4d9f26322d020241e9a542)
+* [Fix some SPARQL endpoint errors being voided](https://github.com/comunica/comunica/commit/fb42092caf9ea52ae4e8713fdb412d8bdcd397a4)
+* [Fix missing end event for empty queries with limit](https://github.com/comunica/comunica/commit/3a35163546698575f63760907dc1de4a5f7d3e88)
+* [Fix process halt when re-executing query over erroring source](https://github.com/comunica/comunica/commit/159ea078ea760d6e58eda2733a700db8bfa0d2a1)
+
 <a name="v2.8.2"></a>
 ## [v2.8.2](https://github.com/comunica/comunica/compare/v2.8.1...v2.8.2) - 2023-08-10
 

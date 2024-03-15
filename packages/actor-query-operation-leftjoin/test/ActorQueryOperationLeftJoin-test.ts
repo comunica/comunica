@@ -1,12 +1,12 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
+import * as sparqlee from '@comunica/expression-evaluator';
+import { isExpressionError } from '@comunica/expression-evaluator';
 import type { IQueryOperationResultBindings, Bindings, IJoinEntry } from '@comunica/types';
 import { ArrayIterator, UnionIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import * as sparqlee from 'sparqlee';
-import { isExpressionError } from 'sparqlee';
-import { ActorQueryOperationLeftJoin } from '../lib/ActorQueryOperationLeftJoin';
+import { ActorQueryOperationLeftJoin } from '../lib';
 import '@comunica/jest';
 
 const DF = new DataFactory();

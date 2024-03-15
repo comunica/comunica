@@ -71,6 +71,10 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   // until the buffer of this iterator must be fully consumed, which will not always be the case.
 
   public close(): void {
+    if (!this.aggregatedStore) {
+      super.close();
+      return;
+    }
     this.getLinkQueue()
       .then(linkQueue => {
         if (this.isCloseable(linkQueue)) {
@@ -84,9 +88,13 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   }
 
   public destroy(cause?: Error): void {
+    if (!this.aggregatedStore) {
+      super.destroy(cause);
+      return;
+    }
     this.getLinkQueue()
       .then(linkQueue => {
-        if (this.isCloseable(linkQueue)) {
+        if (cause || this.isCloseable(linkQueue)) {
           this.aggregatedStore?.end();
           super.destroy(cause);
         } else {

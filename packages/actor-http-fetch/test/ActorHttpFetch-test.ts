@@ -6,7 +6,7 @@ import { KeysCore, KeysHttp } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { LoggerVoid } from '@comunica/logger-void';
 import type { IActionContext } from '@comunica/types';
-import { ReadableWebToNodeStream } from 'readable-web-to-node-stream';
+import { ReadableWebToNodeStream } from '@smessie/readable-web-to-node-stream';
 import { ActorHttpFetch } from '../lib/ActorHttpFetch';
 
 const streamifyString = require('streamify-string');
@@ -318,7 +318,8 @@ describe('ActorHttpFetch', () => {
           body: expect.any(ReadableWebToNodeStream),
           agent: expect.anything(),
           headers: expect.anything(),
-          keepalive: true,
+          keepalive: undefined,
+          duplex: 'half',
         },
       );
     });

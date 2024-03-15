@@ -1,11 +1,11 @@
 import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { HashFunction } from '@comunica/bus-hash-bindings';
+import type { IAsyncEvaluatorContext } from '@comunica/expression-evaluator';
+import { AsyncAggregateEvaluator } from '@comunica/expression-evaluator';
 import type { Bindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
-import { AsyncAggregateEvaluator } from 'sparqlee';
-import type { AsyncEvaluatorConfig } from 'sparqlee';
 
 const DF = new DataFactory();
 
@@ -43,8 +43,8 @@ export class GroupsState {
   public constructor(
     private readonly hashFunction: HashFunction,
     private readonly pattern: Algebra.Group,
-    private readonly sparqleeConfig: AsyncEvaluatorConfig,
     bindingsFactory: BindingsFactory,
+    private readonly sparqleeConfig: IAsyncEvaluatorContext,
   ) {
     this.groups = new Map();
     this.groupsInitializer = new Map();

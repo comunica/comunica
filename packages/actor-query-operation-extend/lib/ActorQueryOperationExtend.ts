@@ -5,9 +5,10 @@ import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
+import type { ExpressionError } from '@comunica/expression-evaluator';
+import { AsyncEvaluator, isExpressionError } from '@comunica/expression-evaluator';
 import type { Bindings, IActionContext, IQueryOperationResult, IQueryOperationResultBindings } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
-import { AsyncEvaluator, isExpressionError } from 'sparqlee';
 
 /**
  * A comunica Extend Query Operation Actor.
@@ -38,6 +39,12 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
     const output: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: input, context }),
     );
+
+    // Throw if the variable has already been bound
+    if ((await output.metadata()).variables.some(innerVariable => innerVariable.equals(variable))) {
+      throw new Error(`Illegal binding to variable '${variable.value}' that has already been bound`);
+    }
+
     const bindingsFactory = new BindingsFactory(
       (await this.mediatorMergeBindingsContext.mediate({ context })).mergeHandlers,
     );
@@ -61,7 +68,8 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
           // Errors silently don't actually extend according to the spec
           push(bindings);
           // But let's warn anyway
-          this.logWarn(context, `Expression error for extend operation with bindings '${bindingsToString(bindings)}'`);
+          this.logWarn(context, `Expression error for extend operation (${(<ExpressionError> error).message})` +
+            `with bindings '${bindingsToString(bindings)}'`);
         } else {
           bindingsStream.emit('error', error);
         }

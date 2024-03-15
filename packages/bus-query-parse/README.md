@@ -22,5 +22,5 @@ $ yarn add @comunica/bus-query-parse
 
 ## Creating actors on this bus
 
-Actors extending [`ActorQueryParse`](https://comunica.github.io/comunica/classes/bus_query_parse.actorqueryparse.html) are automatically subscribed to this bus.
+Actors extending [`ActorQueryParse`](https://comunica.github.io/comunica/classes/_comunica_bus_query_parse.ActorQueryParse.html) are automatically subscribed to this bus.
 
