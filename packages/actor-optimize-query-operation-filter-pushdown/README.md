@@ -3,7 +3,7 @@
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-optimize-query-operation-filter-pushdown.svg)](https://www.npmjs.com/package/@comunica/actor-optimize-query-operation-filter-pushdown)
 
 An [Optimize Query Operation](https://github.com/comunica/comunica/tree/master/packages/bus-optimize-query-operation) actor
-that pushed down filter expressions into the query plan as deep as possible.
+that pushes down filter expressions into the query plan as deep as possible.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
