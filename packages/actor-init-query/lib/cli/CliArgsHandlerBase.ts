@@ -142,6 +142,10 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
           type: 'boolean',
           describe: 'If the default graph should also contain the union of all named graphs',
         },
+        noCache: {
+          type: 'boolean',
+          describe: 'If the cache should be disabled',
+        },
       })
       .exitProcess(false)
       .fail(false)
@@ -252,6 +256,11 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
     // Define union default graph
     if (args.unionDefaultGraph) {
       context[KeysQueryOperation.unionDefaultGraph.name] = true;
+    }
+
+    // Define if cache should be disabled
+    if (args.noCache) {
+      context[KeysInitQuery.noCache.name] = true;
     }
   }
 }

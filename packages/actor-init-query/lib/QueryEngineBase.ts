@@ -1,4 +1,5 @@
 import type { IActionSparqlSerialize, IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type {
   IActionContext,
@@ -123,8 +124,14 @@ implements IQueryEngine<QueryStringContextInner, QueryAlgebraContextInner> {
     query: QueryFormatTypeInner,
     context?: QueryFormatTypeInner extends string ? QueryStringContextInner : QueryAlgebraContextInner,
   ): Promise<QueryType | IQueryExplained> {
-    // Invoke query process
     const actionContext: IActionContext = ActionContext.ensureActionContext(context);
+
+    // Invalidate caches if cache argument is set to false
+    if (actionContext.get(KeysInitQuery.noCache)) {
+      await this.invalidateHttpCache();
+    }
+
+    // Invoke query process
     const { result } = await this.actorInitQuery.mediatorQueryProcess.mediate({ query, context: actionContext });
     if ('explain' in result) {
       return result;
