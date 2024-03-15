@@ -171,6 +171,11 @@ bindingsStream.on('error', (error) => {
   console.error(error);
 });
 
+// Consume results as async iterable (easier)
+for await (const binding of bindingsStream) {
+  console.log(binding.toString());
+}
+
 // Consume results as an array (easier)
 const bindings = await bindingsStream.toArray();
 console.log(bindings[0].get('s').value);
@@ -197,7 +202,7 @@ const bindingsStream = await myEngine.queryBindings(`...`, {
       value: 'https://dbpedia.org/sparql'
     },
   ],
-}, undefined, abortController.signal);
+});
 ```
 
 **Note: Some SPARQL endpoints may be recognised as a file instead of a SPARQL endpoint due to them not supporting [SPARQL Service Description](https://www.w3.org/TR/sparql11-service-description/), which may produce incorrect results. For these cases, the `sparql` type MUST be set.**
@@ -220,6 +225,11 @@ quadStream.on('data', (quad) => {
     console.log(quad.object.value);
     console.log(quad.graph.value);
 });
+
+// Consume results as asynciterable (easier)
+for await (const quad of quadStream) {
+  console.log(quad.subject.value);
+}
 
 // Consume results as an array (easier)
 const quads = await quadStream.toArray();
