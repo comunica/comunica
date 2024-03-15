@@ -1,5 +1,5 @@
 import { Logger } from '@comunica/types';
-import * as objectInspect from 'object-inspect';
+const objectInspect = require('object-inspect');
 
 const process: NodeJS.Process = require('process/');
 

@@ -12,7 +12,7 @@
       "@type": "ActorQueryOperationQuadpattern",
       "mediatorResolveQuadPattern": { "@id": "urn:comunica:default:rdf-resolve-quad-pattern/mediators#main" },
       "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main"},
-      "addSourceToBindingContext": false
+      "addSourceToBindingContext": true
     }
   ]
 }

@@ -9,7 +9,7 @@
       {
         "@id": "urn:comunica:default:merge-bindings-context/actors#source-binding-union",
         "@type": "ActorMergeBindingsContextUnion",
-        "contextKey": "sources"
+        "contextKey": "@comunica/bus-merge-bindings-context:sourceBinding"
       }
     ]
 }

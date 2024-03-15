@@ -117,7 +117,7 @@ export class HttpServiceSparqlEndpoint {
       new CliArgsHandlerHttp(),
       ...cliArgsHandlers,
     ];
-    let argumentsBuilder = yargs({});
+    let argumentsBuilder = yargs([]);
     for (const cliArgsHandler of cliArgsHandlers) {
       argumentsBuilder = cliArgsHandler.populateYargs(argumentsBuilder);
     }

@@ -1,5 +1,4 @@
 import type { IBindingsContextMergeHandler } from '@comunica/bus-merge-bindings-context';
-import type { ActionContextKey } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext, IActionContextKey } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -178,37 +177,58 @@ export class Bindings implements RDF.Bindings {
   }
 
   private mergeContext(context: IActionContext, otherContext: IActionContext): IActionContext {
-    // Get Set of all keys present in either of the bindings
-    const keysContext = this.uniqueKeys([ ...context.keys(),
-      ...otherContext.keys() ]);
+    // All keys can contain duplicates, we prevent this by checking our built datamap for duplicates
+    const allKeys = [ ...context.keys(), ...otherContext.keys() ];
+    // Map we build up with merged context values
+    const newContextData: Record<string, any> = {};
+    const handledKeys: Map<string, number> = Map<string, number>({});
 
-    // Get Set of all keys present in both bindings
-    const keysBothContext = context.keys().filter(
-      element => otherContext.keys().some(({ name }) => element.name === name),
+    // Set of names of keys in other context to allow for constant time lookup
+    const keysSetOtherContext = new Set(
+      otherContext.keys().map(key => key.name),
     );
-    // Merge context based on supplied mergeHandlers
-    for (const key of keysContext) {
-      const keyString = key.name;
+    const keysBothContext = context.keys().filter(
+      key => keysSetOtherContext.has(key.name),
+    );
+
+    for (const key of allKeys) {
+      // If duplicate key, we continue iterating
+      if (handledKeys.has(key.name)) {
+        continue;
+      }
+
+      // We've processed this key and shouldn't repeat it
+      handledKeys.set(key.name, 1);
+
+      // Determine whether this key occurs in both contexts
       const occursInBoth = keysBothContext.some(x => x.name === key.name);
+
       // If we execute this function, we already check for existence of context merge handlers
-      if (this.contextMergeHandlers![keyString] && occursInBoth) {
-        context = context.set(key, this.contextMergeHandlers![keyString]
-          .run(context.get(key), otherContext.get(key)));
+      // This if statement is first as the most likely case for non-empty contexts is that we have mergehandlers
+      // and both contexts have an entry
+      if (this.contextMergeHandlers![key.name] && occursInBoth) {
+        newContextData[key.name] = this.contextMergeHandlers![key.name]
+          .run(context.get(key), otherContext.get(key));
         continue;
       }
-      // For keys in both bindings we require a mergehandler. If no mergehandler is supplied the keys
-      // are removed in the result
-      if (!this.contextMergeHandlers![keyString] && occursInBoth) {
-        context = context.delete(key);
+      // If we have no merge handler, but both contexts have entries for key, we don't add it to new context
+      if (!this.contextMergeHandlers![key.name] && occursInBoth) {
         continue;
       }
-      // If a key doesn't occur in both contexts (but does in atleast one),
-      // we simply copy the context entry into the new binding
-      if (!occursInBoth && !context.get(key)) {
-        context = context.set(key, otherContext.get(key));
+
+      // If key doesn't occur in own context, it must be in other context
+      // (if we get to this point, the key doesn't occur in both)
+      if (!context.get(key)) {
+        newContextData[key.name] = otherContext.get(key);
+        continue;
+      }
+      // This could likely be else statement, but don't want to risk it
+      if (!otherContext.get(key)) {
+        newContextData[key.name] = context.get(key);
+        continue;
       }
     }
-    return context;
+    return new ActionContext(newContextData);
   }
 
   public setContextEntry<V>(key: IActionContextKey<V>, value: any): Bindings {
@@ -236,21 +256,6 @@ export class Bindings implements RDF.Bindings {
 
   public toString(): string {
     return bindingsToString(this);
-  }
-
-  private uniqueKeys(keyArray: ActionContextKey<any>[]): ActionContextKey<any>[] {
-    const seen: Record<string, number> = {};
-    const out = [];
-    const len = keyArray.length;
-    let j = 0;
-    for (let i = 0; i < len; i++) {
-      const item = keyArray[i];
-      if (seen[item.name] !== 1) {
-        seen[item.name] = 1;
-        out[j++] = item;
-      }
-    }
-    return out;
   }
 
   protected * mapIterable<T, U>(iterable: Iterable<T>, callback: (value: T) => U): Iterable<U> {

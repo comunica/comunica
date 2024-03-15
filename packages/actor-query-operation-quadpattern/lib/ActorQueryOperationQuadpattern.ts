@@ -287,7 +287,6 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
           const term = getValueNestedPath(quad, keys);
           return [ DF.variable(variable), term ];
         })).setContextEntry(KeysBindingContext.sourceBinding, quad.graph.value);
-        // Console.log(binding);
         return binding;
       });
     }, {

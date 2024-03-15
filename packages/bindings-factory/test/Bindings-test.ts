@@ -1,4 +1,3 @@
-import { ActionContext } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 import { Map } from 'immutable';
 import { DataFactory } from 'rdf-data-factory';
@@ -223,7 +222,6 @@ describe('Bindings', () => {
     it('should be true for itself', () => {
       expect(bindings.equals(bindings)).toBeTruthy();
     });
-
   });
 
   describe('filter', () => {
