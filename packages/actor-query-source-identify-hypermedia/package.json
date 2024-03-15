@@ -54,7 +54,7 @@
     "@comunica/metadata": "^3.0.0",
     "@comunica/types": "^3.0.0",
     "@rdfjs/types": "*",
-    "asynciterator": "^3.8.1",
+    "asynciterator": "^3.9.0",
     "lru-cache": "^10.0.0",
     "rdf-data-factory": "^1.1.2",
     "rdf-streaming-store": "^1.1.4",

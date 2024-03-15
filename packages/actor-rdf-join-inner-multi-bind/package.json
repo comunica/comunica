@@ -45,7 +45,7 @@
     "@comunica/context-entries": "^3.0.0",
     "@comunica/mediatortype-join-coefficients": "^3.0.0",
     "@comunica/types": "^3.0.0",
-    "asynciterator": "^3.8.1",
+    "asynciterator": "^3.9.0",
     "sparqlalgebrajs": "^4.3.3"
   }
 }

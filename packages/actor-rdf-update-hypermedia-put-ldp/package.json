@@ -44,7 +44,7 @@
     "@comunica/core": "^3.0.0",
     "@comunica/types": "^3.0.0",
     "@rdfjs/types": "*",
-    "asynciterator": "^3.8.1",
+    "asynciterator": "^3.9.0",
     "cross-fetch": "^4.0.0"
   }
 }

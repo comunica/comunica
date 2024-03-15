@@ -49,7 +49,7 @@
     "@comunica/types": "^3.0.0",
     "@rdfjs/types": "*",
     "@types/yargs": "^17.0.24",
-    "asynciterator": "^3.8.1",
+    "asynciterator": "^3.9.0",
     "negotiate": "^1.0.1",
     "process": "^0.11.10",
     "rdf-quad": "^1.5.0",

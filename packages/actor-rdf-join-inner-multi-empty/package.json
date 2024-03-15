@@ -42,6 +42,6 @@
     "@comunica/metadata": "^3.0.0",
     "@comunica/types": "^3.0.0",
     "@rdfjs/types": "*",
-    "asynciterator": "^3.8.1"
+    "asynciterator": "^3.9.0"
   }
 }

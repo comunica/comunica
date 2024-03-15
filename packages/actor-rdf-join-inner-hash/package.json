@@ -40,6 +40,6 @@
     "@comunica/bus-rdf-join": "^3.0.0",
     "@comunica/mediatortype-join-coefficients": "^3.0.0",
     "@comunica/types": "^3.0.0",
-    "asyncjoin": "^1.1.1"
+    "asyncjoin": "^1.2.0"
   }
 }
