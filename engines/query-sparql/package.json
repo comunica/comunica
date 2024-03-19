@@ -65,7 +65,7 @@
     "spec:sparql-star-evaluation": "node ../../node_modules/rdf-test-suite/bin/Runner.js spec/sparql-engine.js https://w3c.github.io/rdf-star/tests/sparql/eval/manifest.ttl -c ../../.rdf-test-suite-cache/",
     "spec": "yarn run spec:query && yarn run spec:update && yarn run spec:sparql12-xsd-datetime-duration && yarn run spec:sparql-star-syntax && yarn run spec:sparql-star-evaluation",
     "spec-earl": "yarn run spec:query -o earl -p spec/earl-meta.json > earl.ttl",
-    "integration": "rdf-test-suite-ldf spec/sparql-engine.js https://comunica.github.io/manifest-ldf-tests/next/sparql/sparql-manifest.ttl -d 200000 -c ../../.rdf-test-suite-ldf-cache/"
+    "integration": "rdf-test-suite-ldf spec/sparql-engine.js https://comunica.github.io/manifest-ldf-tests/sparql/sparql-manifest.ttl -d 200000 -c ../../.rdf-test-suite-ldf-cache/"
   },
   "dependencies": {
     "@comunica/actor-context-preprocess-convert-shortcuts": "^3.0.1",
