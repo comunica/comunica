@@ -1,8 +1,8 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-<a name="v3.0.0"></a>
-## [v3.0.0](https://github.com/comunica/comunica/compare/v2.10.2...v3.0.0) - 2024-02-09
+<a name="v3.0.1"></a>
+## [v3.0.1](https://github.com/comunica/comunica/compare/v2.10.2...v3.0.1) - 2024-03-19
 
 ### BREAKING CHANGES
 * [Rename sparqlee-specific package names](https://github.com/comunica/comunica/commit/8a035723e210d2d08fee279638151af0eeeb1fbe)
@@ -23,6 +23,16 @@ All notable changes to this project will be documented in this file.
 * [Allow Bindings to have contexts](https://github.com/comunica/comunica/commit/aeaa306bb06caeea480be31229287b753e84600a)
 * [Add timeout for sparql endpoint count queries](https://github.com/comunica/comunica/commit/323ab493e9ee7cf7675228cfab5faf069e46304b)
 * [Process source contexts to support shortcuts](https://github.com/comunica/comunica/commit/4a475fbb3409552b7b6a02a53826851ebdb9ad55)
+* [Add option to disable caching (#1297)](https://github.com/comunica/comunica/commit/53c7686c9324d15ee47e122d4355e59247128495)
+* [Allow sources to be annotated with traverse flag](https://github.com/comunica/comunica/commit/0b13082c2eef06a45298b30620323d0f956e1a3e)
+
+### Fixed
+* [Fix GROUP_CONCAT losing languages if equal](https://github.com/comunica/comunica/commit/0cf0bee1f41ea2d230f038fe57141ba4022ed5cb)
+
+### Changed
+* [Update to asynciterator 3.9.0 to make results async iterable](https://github.com/comunica/comunica/commit/80d717b7222eb98d5eec4e77ef4799bd916bceb8)
+* [Ensure QueryEngine instances are fully independent](https://github.com/comunica/comunica/commit/4d5b724a5866c625e47497d6ed17f7a7e5c2e11d)
+* [Update to Components.js v6](https://github.com/comunica/comunica/commit/86dd69e653f5bbf4de9c760e40fc1fcce3e1b679)
 
 <a name="v2.10.2"></a>
 ## [v2.10.2](https://github.com/comunica/comunica/compare/v2.10.1...v2.10.2) - 2024-01-09

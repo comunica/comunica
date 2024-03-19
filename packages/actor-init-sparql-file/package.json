@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-init-sparql-file",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Deprecated: A SPARQL query engine for querying over local and remote RDF files",
   "license": "MIT",
   "homepage": "https://comunica.dev/",
