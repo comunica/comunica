@@ -150,7 +150,7 @@ const bindingsStream = await myEngine.queryBindings(`
     ?s ?p ?o
   } LIMIT 100`, {
   sources: [ 'http://fragments.dbpedia.org/2015/en' ],
-}, undefined, abortController.signal);
+});
 
 // Consume results as a stream (best performance)
 bindingsStream.on('data', (binding) => {
