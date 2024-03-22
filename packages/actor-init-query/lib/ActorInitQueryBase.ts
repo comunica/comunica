@@ -157,7 +157,7 @@ export interface IActorInitQueryBaseArgs<QueryContext extends IQueryContextCommo
    *   "functionArgumentsCache": "@comunica/actor-init-query:functionArgumentsCache",
    *   "explain": "@comunica/actor-init-query:explain",
    *   "unionDefaultGraph": "@comunica/bus-query-operation:unionDefaultGraph",
-   *   "sourceBinding": "@comunica/bus-merge-bindings-context:sourceBinding"
+   *   "sourceBinding": "@comunica/bus-merge-bindings-context:sourceBinding",
    *   "noCache": "@comunica/actor-init-query:noCache"
    * }}
    */

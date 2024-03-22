@@ -3,9 +3,11 @@ import type { IActionSparqlSerialize,
   IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
 import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-result-serialize';
 import type {
-  Bindings, IActionContext, IQueryOperationResultBindings,
+  IActionContext, IQueryOperationResultBindings,
   IQueryOperationResultBoolean,
 } from '@comunica/types';
+import { KeysBindingContext } from "@comunica/context-entries";
+import { Bindings } from "@comunica/bindings-factory";
 import type * as RDF from '@rdfjs/types';
 import { Readable } from 'readable-stream';
 import type { ActionObserverHttp } from './ActionObserverHttp';
@@ -110,6 +112,7 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
         // JSON SPARQL results spec does not allow unbound variables and blank node bindings
         const bindingsJson = Object.fromEntries([ ...bindings ]
           .map(([ key, value ]) => [ key.value, ActorQueryResultSerializeSparqlJson.bindingToJsonBindings(value) ]));
+        bindingsJson["_sourceAttribution"] = bindings.getContextEntry(KeysBindingContext.sourceBinding);
         data.push(JSON.stringify(bindingsJson));
         empty = false;
       });
