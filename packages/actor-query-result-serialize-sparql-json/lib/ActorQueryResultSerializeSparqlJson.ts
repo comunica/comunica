@@ -112,7 +112,7 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
         // JSON SPARQL results spec does not allow unbound variables and blank node bindings
         const bindingsJson = Object.fromEntries([ ...bindings ]
           .map(([ key, value ]) => [ key.value, ActorQueryResultSerializeSparqlJson.bindingToJsonBindings(value) ]));
-        bindingsJson["_sourceAttribution"] = bindings.getContextEntry(KeysBindingContext.sourceBinding);
+        bindingsJson["_sourceAttribution"] = { value: JSON.stringify(bindings.getContextEntry(KeysBindingContext.sourceBinding)) , type: 'literal' }
         data.push(JSON.stringify(bindingsJson));
         empty = false;
       });
