@@ -1,12 +1,10 @@
-import { ActionContext, Bus } from '@comunica/core';
-import { BlankNodeBindingsScoped } from '@comunica/data-factory';
-import type { IActionContext } from '@comunica/types';
+import { prepareEvaluatorActionContext } from '@comunica/actor-expression-evaluator-factory-base';
+import { ActionContext } from '@comunica/core';
+import { getMockEEFactory } from '@comunica/jest';
+import type { GeneralSuperTypeDict, IActionContext, ISuperTypeProvider } from '@comunica/types';
 import { LRUCache } from 'lru-cache';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 import { translate } from 'sparqlalgebrajs';
-import { ExpressionEvaluatorFactory } from '../../lib';
-import type { ICompleteEEContext } from '../../lib/evaluators/evaluatorHelpers/AsyncRecursiveEvaluator';
-import type { IAsyncEvaluatorContext } from '../../lib/evaluators/ExpressionEvaluator';
 import type { AliasMap } from './Aliases';
 import type { Notation } from './TestTable';
 import { ArrayTable, BinaryTable, UnaryTable, VariableTable } from './TestTable';
@@ -15,21 +13,23 @@ export function getMockEEActionContext(): IActionContext {
   return new ActionContext({});
 }
 
-export function getMockEEFactory(): ExpressionEvaluatorFactory {
-  const bus: any = new Bus({ name: 'bus' });
-
-  const mediatorQueryOperation: any = {
-    async mediate(arg: any) { return {}; },
-  };
-
-  return new ExpressionEvaluatorFactory({
-    mediatorQueryOperation,
-    mediatorBindingsAggregatorFactory: mediatorQueryOperation,
-  });
+export function getMockExpression(expr = '1+1'): Alg.Expression {
+  return translate(`SELECT * WHERE { ?s ?p ?o FILTER (${expr})}`).input.expression;
 }
 
-export function getMockExpression(expr: string): Alg.Expression {
-  return translate(`SELECT * WHERE { ?s ?p ?o FILTER (${expr})}`).input.expression;
+export function getMockEvaluatorContext(): IActionContext {
+  const factory = getMockEEFactory();
+
+  return prepareEvaluatorActionContext(getMockEEActionContext(),
+    factory.mediatorQueryOperation,
+    factory.mediatorFunctions);
+}
+
+export function getMockSuperTypeProvider(): ISuperTypeProvider {
+  return {
+    cache: new LRUCache<string, GeneralSuperTypeDict>({ max: 1_000 }),
+    discoverer: _ => 'term',
+  };
 }
 
 export interface ITestTableConfigBase {
@@ -48,8 +48,6 @@ export interface ITestTableConfigBase {
    * If the type is sync, the test will be preformed both sync and async.
    */
   config?: IActionContext;
-  // TODO: remove legacyContext in *final* update (probably when preparing the EE for function bussification)
-  legacyContext?: Partial<IAsyncEvaluatorContext>;
   aliases?: AliasMap;
   /**
    * Additional prefixes can be provided if the defaultPrefixes in ./Aliases.ts are not enough.
@@ -96,19 +94,3 @@ export function runTestTable(arg: TestTableConfig): void {
 
   testTable.test();
 }
-
-export function getDefaultCompleteEEContext(actionContext?: IActionContext): ICompleteEEContext {
-  return {
-    actionContext: actionContext || getMockEEActionContext(),
-    now: new Date(),
-    superTypeProvider: {
-      cache: new LRUCache({ max: 1_000 }),
-      discoverer: () => 'term',
-    },
-    functionArgumentsCache: {},
-    defaultTimeZone: { zoneMinutes: 0, zoneHours: 0 },
-    bnode: (input?: string) => Promise.resolve(new BlankNodeBindingsScoped(input || `BNODE_0`)),
-    exists: () => Promise.resolve(false),
-  };
-}
-

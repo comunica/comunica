@@ -2,7 +2,7 @@ import { DataFactory } from 'rdf-data-factory';
 
 import { TermTransformer } from '../../../lib/transformers/TermTransformer';
 import { TypeURL as DT } from '../../../lib/util/Consts';
-import { getDefaultCompleteEEContext } from '../../util/utils';
+import { getMockSuperTypeProvider } from '../../util/utils';
 
 jest.mock('../../../lib/util/Parsing', () => ({
   __esModule: true,
@@ -12,7 +12,7 @@ jest.mock('../../../lib/util/Parsing', () => ({
 describe('term Tranformer', () => {
   let termTransformer: TermTransformer;
   beforeEach(() => {
-    termTransformer = new TermTransformer(getDefaultCompleteEEContext().superTypeProvider);
+    termTransformer = new TermTransformer(getMockSuperTypeProvider());
   });
 
   const DF = new DataFactory();

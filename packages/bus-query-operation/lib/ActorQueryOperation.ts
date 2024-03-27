@@ -11,7 +11,6 @@ import type { IQueryOperationResult,
   FunctionArgumentsCache } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
-import { materializeOperation } from './Bindings';
 
 /**
  * A comunica actor for query-operation events.
@@ -109,37 +108,6 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
     if (output.type !== expectedType) {
       throw new Error(`Invalid query output type: Expected '${expectedType}' but got '${output.type}'`);
     }
-  }
-
-  /**
-   * Create an existence resolver for usage within an expression context.
-   * @param context An action context.
-   * @param mediatorQueryOperation A query operation mediator.
-   */
-  public static createExistenceResolver(context: IActionContext, mediatorQueryOperation: MediatorQueryOperation):
-  (expr: Algebra.ExistenceExpression, bindings: Bindings) => Promise<boolean> {
-    return async(expr, bindings) => {
-      const operation = materializeOperation(expr.input, bindings);
-
-      const outputRaw = await mediatorQueryOperation.mediate({ operation, context });
-      const output = ActorQueryOperation.getSafeBindings(outputRaw);
-
-      return new Promise(
-        (resolve, reject) => {
-          output.bindingsStream.on('end', () => {
-            resolve(false);
-          });
-
-          output.bindingsStream.on('error', reject);
-
-          output.bindingsStream.on('data', () => {
-            output.bindingsStream.close();
-            resolve(true);
-          });
-        },
-      )
-        .then((exists: boolean) => expr.not ? !exists : exists);
-    };
   }
 
   /**

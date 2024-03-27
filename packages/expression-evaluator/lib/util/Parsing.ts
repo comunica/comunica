@@ -2,11 +2,11 @@
 
 import type {
   IDateRepresentation,
-  IDateTimeRepresentation, IDayTimeDurationRepresentation, IDurationRepresentation,
-  ITimeRepresentation,
-  ITimeZoneRepresentation, IYearMonthDurationRepresentation,
-} from './DateTimeHelpers';
-
+  IDateTimeRepresentation,
+  IDayTimeDurationRepresentation,
+  IDurationRepresentation, ITimeRepresentation, ITimeZoneRepresentation,
+  IYearMonthDurationRepresentation,
+} from '@comunica/types';
 import { simplifyDurationRepresentation } from './DateTimeHelpers';
 import { ParseError } from './Errors';
 import { maximumDayInMonthFor } from './SpecAlgos';

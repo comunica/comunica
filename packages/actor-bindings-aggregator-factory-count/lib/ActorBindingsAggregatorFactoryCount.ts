@@ -6,16 +6,24 @@ import type {
 import {
   ActorBindingsAggregatorFactory,
 } from '@comunica/bus-bindings-aggeregator-factory';
+import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { IActorTest } from '@comunica/core';
 import { Algebra } from 'sparqlalgebrajs';
 import { CountAggregator } from './CountAggregator';
+
+export interface IActorBindingsAggregatorFactoryCountArgs extends IActorBindingsAggregatorFactoryArgs {
+  factory: ActorExpressionEvaluatorFactory;
+}
 
 /**
  * A comunica Count Expression Evaluator Aggregate Actor.
  */
 export class ActorBindingsAggregatorFactoryCount extends ActorBindingsAggregatorFactory {
-  public constructor(args: IActorBindingsAggregatorFactoryArgs) {
+  private readonly factory: ActorExpressionEvaluatorFactory;
+
+  public constructor(args: IActorBindingsAggregatorFactoryCountArgs) {
     super(args);
+    this.factory = args.factory;
   }
 
   public async test(action: IActionBindingsAggregatorFactory): Promise<IActorTest> {
@@ -26,9 +34,13 @@ export class ActorBindingsAggregatorFactoryCount extends ActorBindingsAggregator
     return {};
   }
 
-  public async run(action: IActionBindingsAggregatorFactory): Promise<IActorBindingsAggregatorFactoryOutput> {
+  public async run({ context, expr }: IActionBindingsAggregatorFactory):
+  Promise<IActorBindingsAggregatorFactoryOutput> {
     return {
-      aggregator: new CountAggregator(action.expr, action.factory, action.context),
+      aggregator: new CountAggregator(
+        (await this.factory.run({ algExpr: expr.expression, context })).expressionEvaluator,
+        expr.distinct,
+      ),
     };
   }
 }

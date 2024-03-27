@@ -1,6 +1,6 @@
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
-import type { EvalContextAsync } from '../functions';
+import type { FunctionApplication } from '../functions/OverloadTree';
 
 export enum ExpressionType {
   Aggregate = 'aggregate',
@@ -10,8 +10,6 @@ export enum ExpressionType {
   SpecialOperator = 'specialOperator',
   Term = 'term',
   Variable = 'variable',
-  AsyncExtension = 'asyncExtension',
-  SyncExtension = 'syncExtension',
 }
 
 export type Expression =
@@ -21,9 +19,7 @@ export type Expression =
   OperatorExpression |
   SpecialOperatorExpression |
   TermExpression |
-  VariableExpression |
-  AsyncExtensionExpression |
-  SyncExtensionExpression;
+  VariableExpression;
 
 export interface IExpressionProps {
   expressionType: ExpressionType;
@@ -43,34 +39,20 @@ export type ExistenceExpression = IExpressionProps & {
 export type NamedExpression = IExpressionProps & {
   expressionType: ExpressionType.Named;
   name: RDF.NamedNode;
-  apply: SimpleApplication;
-  args: Expression[];
-};
-
-export type AsyncExtensionExpression = IExpressionProps & {
-  expressionType: ExpressionType.AsyncExtension;
-  name: RDF.NamedNode;
-  apply: AsyncExtensionApplication;
-  args: Expression[];
-};
-
-export type SyncExtensionExpression = IExpressionProps & {
-  expressionType: ExpressionType.SyncExtension;
-  name: RDF.NamedNode;
-  apply: SimpleApplication;
+  apply: FunctionApplication;
   args: Expression[];
 };
 
 export type OperatorExpression = IExpressionProps & {
   expressionType: ExpressionType.Operator;
   args: Expression[];
-  apply: SimpleApplication;
+  apply: FunctionApplication;
 };
 
 export type SpecialOperatorExpression = IExpressionProps & {
   expressionType: ExpressionType.SpecialOperator;
   args: Expression[];
-  applyAsync: SpecialApplicationAsync;
+  apply: FunctionApplication;
 };
 
 // TODO: Create alias Term = TermExpression
@@ -94,8 +76,4 @@ export type VariableExpression = IExpressionProps & {
   name: string;
 };
 
-// Export type Application = SimpleApplication | SpecialApplication;
 export type SimpleApplication = (args: TermExpression[]) => TermExpression;
-export type AsyncExtensionApplication = (args: TermExpression[]) => Promise<TermExpression>;
-
-export type SpecialApplicationAsync = (context: EvalContextAsync) => Promise<TermExpression>;

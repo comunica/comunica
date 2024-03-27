@@ -6,4 +6,3 @@ export * from './SpecialOperator';
 export * from './Named';
 export * from './Aggregate';
 export * from './Existence';
-export * from './AsyncExtension';

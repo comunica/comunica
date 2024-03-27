@@ -1,4 +1,11 @@
+import { ActorExpressionEvaluatorFactoryBase } from '@comunica/actor-expression-evaluator-factory-base';
 import { BindingsFactory } from '@comunica/bindings-factory';
+import type { MediatorBindingsAggregatorFactory } from '@comunica/bus-bindings-aggeregator-factory';
+import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
+import type { MediatorFunctions } from '@comunica/bus-functions';
+import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
+import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
+import { Bus } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 import type { Quad } from 'rdf-data-factory';
 import { DataFactory } from 'rdf-data-factory';
@@ -58,4 +65,39 @@ export function double(value: string): RDF.Term {
 
 export function nonLiteral(): RDF.Term {
   return DF.namedNode('http://example.org/');
+}
+
+export function getMockEEFactory({ mediatorQueryOperation,
+  mediatorBindingsAggregatorFactory,
+  mediatorFunctions,
+  mediatorTermComparatorFactory }: {
+  mediatorQueryOperation?: MediatorQueryOperation;
+  mediatorBindingsAggregatorFactory?: MediatorBindingsAggregatorFactory;
+  mediatorTermComparatorFactory?: MediatorTermComparatorFactory;
+  mediatorFunctions?: MediatorFunctions;
+} = {}): ActorExpressionEvaluatorFactory {
+  return new ActorExpressionEvaluatorFactoryBase({
+    bus: new Bus({ name: 'testBusMock' }),
+    name: 'mockEEFactory',
+    mediatorQueryOperation: mediatorQueryOperation || <any> {
+      async mediate(arg: any) {
+        throw new Error('mediatorQueryOperation mock of mockEEFactory not implemented');
+      },
+    },
+    mediatorBindingsAggregatorFactory: mediatorBindingsAggregatorFactory || <any> {
+      async mediate(arg: any) {
+        throw new Error('mediatorBindingsAggregatorFactory mock of mockEEFactory not implemented');
+      },
+    },
+    mediatorTermComparatorFactory: mediatorTermComparatorFactory || <any> {
+      async mediate(arg: any) {
+        throw new Error('mediatorTermComparatorFactory mock of mockEEFactory not implemented');
+      },
+    },
+    mediatorFunctions: mediatorFunctions || <any> {
+      async mediate(arg: any) {
+        throw new Error('mediatorFunctions mock of mockEEFactory not implemented');
+      },
+    },
+  });
 }

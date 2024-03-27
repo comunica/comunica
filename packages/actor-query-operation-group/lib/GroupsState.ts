@@ -1,7 +1,8 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
+import type { IBindingsAggregator } from '@comunica/bus-bindings-aggeregator-factory';
+import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { HashFunction } from '@comunica/bus-hash-bindings';
-import type { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
-import type { Bindings, IActionContext, IBindingsAggregator } from '@comunica/types';
+import type { Bindings, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -42,7 +43,7 @@ export class GroupsState {
   public constructor(
     private readonly hashFunction: HashFunction,
     private readonly pattern: Algebra.Group,
-    private readonly expressionEvaluatorFactory: ExpressionEvaluatorFactory,
+    private readonly expressionEvaluatorFactory: ActorExpressionEvaluatorFactory,
     private readonly context: IActionContext,
   ) {
     this.groups = new Map();
@@ -95,7 +96,7 @@ export class GroupsState {
         }
         const group = { aggregators, bindings: grouper };
         this.groups.set(groupHash, group);
-        this.subtractWaitCounterAndCollect();
+        await this.subtractWaitCounterAndCollect();
         return group;
       })();
       this.groupsInitializer.set(groupHash, groupInitializer);
@@ -117,18 +118,16 @@ export class GroupsState {
           const variable = aggregate.variable.value;
           await group.aggregators[variable].putBindings(bindings);
         }));
-      })().then(() => {
-        this.subtractWaitCounterAndCollect();
+      })().then(async() => {
+        await this.subtractWaitCounterAndCollect();
       });
     }
     return res;
   }
 
-  private subtractWaitCounterAndCollect(): void {
+  private async subtractWaitCounterAndCollect(): Promise<void> {
     if (--this.waitCounter === 0) {
-      this.handleResultCollection().catch(error => {
-        throw error;
-      });
+      await this.handleResultCollection();
     }
   }
 
@@ -183,7 +182,7 @@ export class GroupsState {
    * You can only call this method once, after calling this method,
    * calling any function on this will result in an error being thrown.
    */
-  public collectResults(): Promise<Bindings[]> {
+  public async collectResults(): Promise<Bindings[]> {
     const check = this.resultCheck<Bindings[]>();
     if (check) {
       return check;
@@ -192,7 +191,7 @@ export class GroupsState {
     const res = new Promise<Bindings[]>(resolve => {
       this.waitResolver = resolve;
     });
-    this.subtractWaitCounterAndCollect();
+    await this.subtractWaitCounterAndCollect();
     return res;
   }
 

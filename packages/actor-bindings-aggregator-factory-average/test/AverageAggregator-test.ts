@@ -1,7 +1,8 @@
+import type { IBindingsAggregator } from '@comunica/bus-bindings-aggeregator-factory';
 import { ActionContext } from '@comunica/core';
-import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
+import { ExpressionEvaluatorFactory, RegularOperator } from '@comunica/expression-evaluator';
 import { BF, decimal, DF, double, float, int, makeAggregate } from '@comunica/jest';
-import type { IActionContext, IBindingsAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
+import type { IActionContext, IExpressionEvaluatorFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { AverageAggregator } from '../lib/AverageAggregator';
@@ -11,6 +12,27 @@ async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Binding
     await aggregator.putBindings(bindings);
   }
   return aggregator.result();
+}
+
+async function createAggregator({ expressionEvaluatorFactory, context, distinct }: {
+  expressionEvaluatorFactory: IExpressionEvaluatorFactory;
+  context: IActionContext;
+  distinct: boolean;
+}): Promise<AverageAggregator> {
+  return new AverageAggregator(
+    await expressionEvaluatorFactory.createEvaluator(makeAggregate('avg', distinct).expression, context),
+    distinct,
+    await expressionEvaluatorFactory.createFunction({
+      context,
+      functionName: RegularOperator.ADDITION,
+      requireTermExpression: true,
+    }),
+    await expressionEvaluatorFactory.createFunction({
+      context,
+      functionName: RegularOperator.DIVISION,
+      requireTermExpression: true,
+    }),
+  );
 }
 
 describe('AverageAggregator', () => {
@@ -42,12 +64,8 @@ describe('AverageAggregator', () => {
   describe('non distinctive avg', () => {
     let aggregator: IBindingsAggregator;
 
-    beforeEach(() => {
-      aggregator = new AverageAggregator(
-        makeAggregate('avg', false),
-        expressionEvaluatorFactory,
-        context,
-      );
+    beforeEach(async() => {
+      aggregator = await createAggregator({ expressionEvaluatorFactory, context, distinct: false });
     });
 
     it('a list of bindings', async() => {
@@ -101,12 +119,8 @@ describe('AverageAggregator', () => {
   describe('distinctive avg', () => {
     let aggregator: IBindingsAggregator;
 
-    beforeEach(() => {
-      aggregator = new AverageAggregator(
-        makeAggregate('count', true),
-        expressionEvaluatorFactory,
-        context,
-      );
+    beforeEach(async() => {
+      aggregator = await createAggregator({ expressionEvaluatorFactory, context, distinct: true });
     });
 
     it('a list of bindings', async() => {

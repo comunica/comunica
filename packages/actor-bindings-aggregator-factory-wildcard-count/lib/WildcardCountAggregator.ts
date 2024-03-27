@@ -1,17 +1,18 @@
-import { AggregateEvaluator, typedLiteral, TypeURL } from '@comunica/expression-evaluator';
-import type { IActionContext, IBindingsAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
+import type { IBindingsAggregator } from '@comunica/bus-bindings-aggeregator-factory';
+import { AggregateEvaluator } from '@comunica/bus-bindings-aggeregator-factory';
+import type { IExpressionEvaluator } from '@comunica/expression-evaluator';
+import { typedLiteral, TypeURL } from '@comunica/expression-evaluator';
 import type * as RDF from '@rdfjs/types';
 import * as RdfString from 'rdf-string';
-import type { Algebra } from 'sparqlalgebrajs';
 
 export class WildcardCountAggregator extends AggregateEvaluator implements IBindingsAggregator {
   private readonly bindingValues: Map<string, Set<string>> = new Map();
   private state: number | undefined = undefined;
 
-  public constructor(aggregateExpression: Algebra.AggregateExpression,
-    expressionEvaluatorFactory: IExpressionEvaluatorFactory, context: IActionContext,
+  public constructor(evaluator: IExpressionEvaluator,
+    distinct: boolean,
     throwError?: boolean) {
-    super(aggregateExpression, expressionEvaluatorFactory, context, throwError);
+    super(evaluator, distinct, throwError);
   }
 
   public putTerm(term: RDF.Term): void {

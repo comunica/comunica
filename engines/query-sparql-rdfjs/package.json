@@ -39,7 +39,6 @@
     "engine-default.js"
   ],
   "dependencies": {
-    "@comunica/actor-context-preprocess-source-to-destination": "^2.8.2",
     "@comunica/actor-bindings-aggregator-factory-average": "^1.0.0",
     "@comunica/actor-bindings-aggregator-factory-count": "^1.0.0",
     "@comunica/actor-bindings-aggregator-factory-group-concat": "^1.0.0",
@@ -48,6 +47,7 @@
     "@comunica/actor-bindings-aggregator-factory-sample": "^1.0.0",
     "@comunica/actor-bindings-aggregator-factory-sum": "^1.0.0",
     "@comunica/actor-bindings-aggregator-factory-wildcard-count": "^1.0.0",
+    "@comunica/actor-context-preprocess-source-to-destination": "^2.8.2",
     "@comunica/actor-hash-bindings-sha1": "^2.8.2",
     "@comunica/actor-init-query": "^2.9.0",
     "@comunica/actor-optimize-query-operation-bgp-to-join": "^2.8.2",

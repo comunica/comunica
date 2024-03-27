@@ -6,15 +6,23 @@ import type {
 import {
   ActorBindingsAggregatorFactory,
 } from '@comunica/bus-bindings-aggeregator-factory';
+import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { IActorTest } from '@comunica/core';
 import { WildcardCountAggregator } from './WildcardCountAggregator';
+
+export interface IActorBindingsAggregatorFactoryWildcardCountArgs extends IActorBindingsAggregatorFactoryArgs {
+  factory: ActorExpressionEvaluatorFactory;
+}
 
 /**
  * A comunica Wildcard Count Expression Evaluator Aggregate Actor.
  */
 export class ActorBindingsAggregatorFactoryWildcardCount extends ActorBindingsAggregatorFactory {
-  public constructor(args: IActorBindingsAggregatorFactoryArgs) {
+  private readonly factory: ActorExpressionEvaluatorFactory;
+
+  public constructor(args: IActorBindingsAggregatorFactoryWildcardCountArgs) {
     super(args);
+    this.factory = args.factory;
   }
 
   public async test(action: IActionBindingsAggregatorFactory): Promise<IActorTest> {
@@ -24,9 +32,13 @@ export class ActorBindingsAggregatorFactoryWildcardCount extends ActorBindingsAg
     return {};
   }
 
-  public async run(action: IActionBindingsAggregatorFactory): Promise<IActorBindingsAggregatorFactoryOutput> {
+  public async run({ context, expr }: IActionBindingsAggregatorFactory):
+  Promise<IActorBindingsAggregatorFactoryOutput> {
     return {
-      aggregator: new WildcardCountAggregator(action.expr, action.factory, action.context),
+      aggregator: new WildcardCountAggregator(
+        (await this.factory.run({ algExpr: expr.expression, context })).expressionEvaluator,
+        expr.distinct,
+      ),
     };
   }
 }

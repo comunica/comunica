@@ -1,37 +1,10 @@
-export interface ITimeZoneRepresentation {
-  // https://www.w3.org/TR/xpath-functions/#func-implicit-timezone
-  // Type is a dayTimeDuration.
-  // We use a separate dataType since it makes TS type modifications and JS object copying easier.
-  zoneHours: number;
-  zoneMinutes: number;
-}
-
-export interface IDateRepresentation extends Partial<ITimeZoneRepresentation> {
-  year: number;
-  month: number;
-  day: number;
-}
-
-export interface ITimeRepresentation extends Partial<ITimeZoneRepresentation>{
-  hours: number;
-  minutes: number;
-  seconds: number;
-}
-
-export interface IDayTimeDurationRepresentation {
-  hours: number;
-  minutes: number;
-  seconds: number;
-  day: number;
-}
-
-export interface IYearMonthDurationRepresentation {
-  year: number;
-  month: number;
-}
-
-export type IDurationRepresentation = IYearMonthDurationRepresentation & IDayTimeDurationRepresentation;
-export type IDateTimeRepresentation = IDateRepresentation & ITimeRepresentation;
+import type {
+  IDateTimeRepresentation,
+  IDayTimeDurationRepresentation,
+  IDurationRepresentation,
+  ITimeZoneRepresentation,
+  IYearMonthDurationRepresentation,
+} from '@comunica/types';
 
 // Important is to notice JS and XSD datatypes have different defaulted values
 // | Field | Default in JS | Default in XSD_DayTime | Default in XSD_Duration |

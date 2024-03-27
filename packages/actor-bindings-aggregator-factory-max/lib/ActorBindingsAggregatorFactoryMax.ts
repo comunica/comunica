@@ -6,15 +6,23 @@ import type {
 import {
   ActorBindingsAggregatorFactory,
 } from '@comunica/bus-bindings-aggeregator-factory';
+import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { IActorTest } from '@comunica/core';
 import { MaxAggregator } from './MaxAggregator';
+
+export interface IActorBindingsAggregatorFactoryMaxArgs extends IActorBindingsAggregatorFactoryArgs {
+  factory: ActorExpressionEvaluatorFactory;
+}
 
 /**
  * A comunica Max Expression Evaluator Aggregate Actor.
  */
 export class ActorBindingsAggregatorFactoryMax extends ActorBindingsAggregatorFactory {
-  public constructor(args: IActorBindingsAggregatorFactoryArgs) {
+  private readonly factory: ActorExpressionEvaluatorFactory;
+
+  public constructor(args: IActorBindingsAggregatorFactoryMaxArgs) {
     super(args);
+    this.factory = args.factory;
   }
 
   public async test(action: IActionBindingsAggregatorFactory): Promise<IActorTest> {
@@ -24,9 +32,14 @@ export class ActorBindingsAggregatorFactoryMax extends ActorBindingsAggregatorFa
     return {};
   }
 
-  public async run(action: IActionBindingsAggregatorFactory): Promise<IActorBindingsAggregatorFactoryOutput> {
+  public async run({ expr, context }: IActionBindingsAggregatorFactory):
+  Promise<IActorBindingsAggregatorFactoryOutput> {
     return {
-      aggregator: new MaxAggregator(action.expr, action.factory, action.context),
+      aggregator: new MaxAggregator(
+        (await this.factory.run({ algExpr: expr.expression, context })).expressionEvaluator,
+        expr.distinct,
+        await this.factory.createTermComparator({ context }),
+      ),
     };
   }
 }

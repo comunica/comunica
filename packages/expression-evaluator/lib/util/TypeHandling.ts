@@ -1,8 +1,8 @@
-import type { LRUCache } from 'lru-cache';
+import type { GeneralSuperTypeDict, ISuperTypeProvider } from '@comunica/types';
 import type * as E from '../expressions';
 import { asTermType } from '../expressions';
-import type { ArgumentType } from '../functions';
 import { double, float, string } from '../functions/Helpers';
+import type { ArgumentType } from '../functions/OverloadTree';
 import type { KnownLiteralTypes } from './Consts';
 import { TypeAlias, TypeURL } from './Consts';
 
@@ -79,8 +79,6 @@ export const extensionTableInput: Record<KnownLiteralTypes, OverrideType> = {
 };
 type SuperTypeDict = Record<KnownLiteralTypes, number> & { __depth: number };
 type SuperTypeDictTable = Record<KnownLiteralTypes, SuperTypeDict>;
-// The key 'term' is not included in these keys. Something that is just a term will map to number 0.
-export type GeneralSuperTypeDict = Record<string, number> & { __depth: number };
 export const superTypeDictTable: SuperTypeDictTable = Object.create(null);
 
 /**
@@ -174,13 +172,6 @@ export function asGeneralType(type: string): 'term' | E.TermType | undefined {
     return <'term' | E.TermType> type;
   }
   return undefined;
-}
-
-export type TypeCache = LRUCache<string, GeneralSuperTypeDict>;
-export type SuperTypeCallback = (unknownType: string) => string;
-export interface ISuperTypeProvider {
-  cache: TypeCache;
-  discoverer: SuperTypeCallback;
 }
 
 /**

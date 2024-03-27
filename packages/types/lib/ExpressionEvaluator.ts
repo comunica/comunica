@@ -1,67 +1,52 @@
 import type * as RDF from '@rdfjs/types';
-import type { Algebra as Alg } from 'sparqlalgebrajs';
-import type { IActionContext } from './IActionContext';
+import type { LRUCache } from 'lru-cache';
 
-/**
- * Instances of this interface perform a specific aggregation of bindings.
- * You can put bindings and when all bindings have been put, request the result.
- */
-export interface IBindingsAggregator {
-  /**
-   * Registers bindings to the aggregator. Each binding you put has the ability to change the aggregation result.
-   * @param bindings the bindings to put.
-   */
-  putBindings: (bindings: RDF.Bindings) => Promise<void>;
-
-  /**
-   * Request the result term of aggregating the bindings you have put in the aggregator.
-   */
-  result: () => Promise<RDF.Term | undefined>;
+export interface ITimeZoneRepresentation {
+  // https://www.w3.org/TR/xpath-functions/#func-implicit-timezone
+  // Type is a dayTimeDuration.
+  // We use a separate dataType since it makes TS type modifications and JS object copying easier.
+  zoneHours: number;
+  zoneMinutes: number;
 }
 
-/**
- * A factory able to create objects for handling expressions.
- */
-export interface IExpressionEvaluatorFactory {
-  /**
-   * Create an Expression Evaluator given an expression and the action context,
-   * additional configs will be extracted from the context.
-   * @param algExpr The SPARQL expression.
-   * @param context the actionContext to extract engine config settings from.
-   */
-  createEvaluator: (algExpr: Alg.Expression, context: IActionContext) => IExpressionEvaluator;
-
-  /**
-   * Creates a bindings aggregator given an expression and the action context,
-   * additional configs will be extracted from the context.
-   * @param algExpr The SPARQL expression.
-   * @param context the actionContext to extract engine config settings from.
-   */
-  createAggregator: (algExpr: Alg.AggregateExpression, context: IActionContext) => Promise<IBindingsAggregator>;
+export interface IDateRepresentation extends Partial<ITimeZoneRepresentation> {
+  year: number;
+  month: number;
+  day: number;
 }
 
+export interface ITimeRepresentation extends Partial<ITimeZoneRepresentation> {
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
+
+export interface IDayTimeDurationRepresentation {
+  hours: number;
+  minutes: number;
+  seconds: number;
+  day: number;
+}
+
+export interface IYearMonthDurationRepresentation {
+  year: number;
+  month: number;
+}
+
+export type IDurationRepresentation = IYearMonthDurationRepresentation & IDayTimeDurationRepresentation;
+export type IDateTimeRepresentation = IDateRepresentation & ITimeRepresentation;
+export type AsyncExtensionFunction = (args: RDF.Term[]) => Promise<RDF.Term>;
+export type AsyncExtensionFunctionCreator = (functionNamedNode: RDF.NamedNode) =>
+Promise<AsyncExtensionFunction | undefined>;
+
 /**
- * An evaluator for RDF expressions.
+ * The key 'term' is not included in these keys. Something that is just a term will map to number 0.
  */
-export interface IExpressionEvaluator {
-  /**
-   * Evaluates the provided bindings in terms of the context the evaluator was created.
-   * @param mapping the RDF bindings to evaluate against.
-   */
-  evaluate: (mapping: RDF.Bindings) => Promise<RDF.Term>;
+export type GeneralSuperTypeDict = Record<string, number> & { __depth: number };
+export type TypeCache = LRUCache<string, GeneralSuperTypeDict>;
+export type SuperTypeCallback = (unknownType: string) => string;
 
-  /**
-   * Evaluates the provided bindings in terms of the context the evaluator was created,
-   * returning the effective boolean value.
-   * @param mapping the RDF bindings to evaluate against.
-   */
-  evaluateAsEBV: (mapping: RDF.Bindings) => Promise<boolean>;
-
-  /**
-   * Orders two RDF terms according to: https://www.w3.org/TR/sparql11-query/#modOrderBy
-   * @param termA the first term
-   * @param termB the second term
-   * @param strict whether to throw an error (true), or compare by value (false) if no other compare rules match.
-   */
-  orderTypes: (termA: RDF.Term | undefined, termB: RDF.Term | undefined, strict: boolean | undefined) => -1 | 0 | 1;
+export interface ISuperTypeProvider {
+  cache: TypeCache;
+  discoverer: SuperTypeCallback;
 }

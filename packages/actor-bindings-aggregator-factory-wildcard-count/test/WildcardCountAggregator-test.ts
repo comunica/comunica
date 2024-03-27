@@ -1,7 +1,8 @@
+import type { IBindingsAggregator } from '@comunica/bus-bindings-aggeregator-factory';
 import { ActionContext } from '@comunica/core';
 import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
 import { BF, DF, int, makeAggregate } from '@comunica/jest';
-import type { IActionContext, IBindingsAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
+import type { IActionContext, IExpressionEvaluatorFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { WildcardCountAggregator } from '../lib/WildcardCountAggregator';
@@ -11,6 +12,19 @@ async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Binding
     await aggregator.putBindings(bindings);
   }
   return aggregator.result();
+}
+
+async function createAggregator({ expressionEvaluatorFactory, context, distinct }: {
+  expressionEvaluatorFactory: IExpressionEvaluatorFactory;
+  context: IActionContext;
+  distinct: boolean;
+}): Promise<WildcardCountAggregator> {
+  return new WildcardCountAggregator(
+    await expressionEvaluatorFactory.createEvaluator(
+      makeAggregate('count', distinct, undefined, true).expression, context,
+    ),
+    distinct,
+  );
 }
 
 describe('WildcardCountAggregator', () => {
@@ -42,12 +56,8 @@ describe('WildcardCountAggregator', () => {
   describe('non distinctive count-wildcard', () => {
     let aggregator: IBindingsAggregator;
 
-    beforeEach(() => {
-      aggregator = new WildcardCountAggregator(
-        makeAggregate('count', false, undefined, true),
-        expressionEvaluatorFactory,
-        context,
-      );
+    beforeEach(async() => {
+      aggregator = await createAggregator({ expressionEvaluatorFactory, context, distinct: false });
     });
 
     it('a list of bindings', async() => {
@@ -76,12 +86,8 @@ describe('WildcardCountAggregator', () => {
   describe('distinctive count-wildcard', () => {
     let aggregator: IBindingsAggregator;
 
-    beforeEach(() => {
-      aggregator = new WildcardCountAggregator(
-        makeAggregate('count', true, undefined, true),
-        expressionEvaluatorFactory,
-        context,
-      );
+    beforeEach(async() => {
+      aggregator = await createAggregator({ expressionEvaluatorFactory, context, distinct: true });
     });
 
     it('a list of bindings', async() => {

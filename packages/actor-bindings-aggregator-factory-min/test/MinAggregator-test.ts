@@ -1,7 +1,8 @@
+import type { IBindingsAggregator } from '@comunica/bus-bindings-aggeregator-factory';
 import { ActionContext } from '@comunica/core';
 import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
 import { BF, date, DF, double, float, int, makeAggregate, nonLiteral, string } from '@comunica/jest';
-import type { IActionContext, IBindingsAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
+import type { IActionContext, IExpressionEvaluatorFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { MinAggregator } from '../lib/MinAggregator';
@@ -13,6 +14,19 @@ async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Binding
   return aggregator.result();
 }
 
+async function createAggregator({ expressionEvaluatorFactory, context, distinct, throwError }: {
+  expressionEvaluatorFactory: IExpressionEvaluatorFactory;
+  context: IActionContext;
+  distinct: boolean;
+  throwError?: boolean;
+}): Promise<MinAggregator> {
+  return new MinAggregator(
+    await expressionEvaluatorFactory.createEvaluator(makeAggregate('min', distinct).expression, context),
+    distinct,
+    await expressionEvaluatorFactory.createTermComparator({ context }),
+    throwError,
+  );
+}
 describe('MinAggregator', () => {
   let expressionEvaluatorFactory: IExpressionEvaluatorFactory;
   let context: IActionContext;
@@ -42,12 +56,8 @@ describe('MinAggregator', () => {
   describe('non distinctive min', () => {
     let aggregator: IBindingsAggregator;
 
-    beforeEach(() => {
-      aggregator = new MinAggregator(
-        makeAggregate('min', false),
-        expressionEvaluatorFactory,
-        context,
-      );
+    beforeEach(async() => {
+      aggregator = await createAggregator({ expressionEvaluatorFactory, context, distinct: false });
     });
 
     it('a list of bindings', async() => {
@@ -119,12 +129,8 @@ describe('MinAggregator', () => {
   describe('distinctive Min', () => {
     let aggregator: IBindingsAggregator;
 
-    beforeEach(() => {
-      aggregator = new MinAggregator(
-        makeAggregate('min', true),
-        expressionEvaluatorFactory,
-        context,
-      );
+    beforeEach(async() => {
+      aggregator = await createAggregator({ expressionEvaluatorFactory, context, distinct: true });
     });
 
     it('a list of bindings', async() => {

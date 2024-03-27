@@ -1,9 +1,0 @@
-{
-  "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/expression-evaluator/^2.0.0/components/context.jsonld"
-  ],
-  "@id": "urn:comunica:default:expression-evaluator/evaluators#main",
-  "@type": "ExpressionEvaluatorFactory",
-  "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
-  "mediatorBindingsAggregatorFactory": { "@id": "urn:comunica:default:bindings-aggregator-factory/mediators#main" }
-}
