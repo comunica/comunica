@@ -28,7 +28,7 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
     for (let expr of operation.expressions) {
       expr = this.extractSortExpression(expr);
       const _ = (await this.expressionEvaluatorFactory
-        .run({ algExpr: operation.expression, context })).expressionEvaluator;
+        .run({ algExpr: expr, context })).expressionEvaluator;
     }
     return true;
   }
@@ -50,7 +50,7 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
       expr = this.extractSortExpression(expr);
       // Transform the stream by annotating it with the expr result
       const evaluator = (await this.expressionEvaluatorFactory
-        .run({ algExpr: operation.expression, context })).expressionEvaluator;
+        .run({ algExpr: expr, context })).expressionEvaluator;
       interface IAnnotatedBinding {
         bindings: Bindings; result: Term | undefined;
       }

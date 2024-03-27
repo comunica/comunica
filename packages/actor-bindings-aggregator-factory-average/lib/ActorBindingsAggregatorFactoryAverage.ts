@@ -3,6 +3,7 @@ import type {
   IActorBindingsAggregatorFactoryArgs, IActorBindingsAggregatorFactoryOutput,
 } from '@comunica/bus-bindings-aggeregator-factory';
 import { ActorBindingsAggregatorFactory } from '@comunica/bus-bindings-aggeregator-factory';
+
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { IActorTest } from '@comunica/core';
 import { RegularOperator } from '@comunica/expression-evaluator';

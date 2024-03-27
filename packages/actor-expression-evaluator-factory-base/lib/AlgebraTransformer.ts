@@ -45,12 +45,11 @@ export class AlgebraTransformer extends TermTransformer {
     if (!C.Operators.has(operator)) {
       throw new Err.UnknownOperator(expr.operator);
     }
-    const mediator: MediatorFunctions = await this.context.getSafe(this.mediatorFunctions);
     const operatorFunc =
-      await mediator.mediate({ functionName: operator, arguments: expr.args, context: this.context });
+      await this.mediatorFunctions.mediate({ functionName: operator, arguments: expr.args, context: this.context });
     const operatorArgs = await Promise.all(expr.args.map(arg => this.transformAlgebra(arg)));
     if (!operatorFunc.checkArity(operatorArgs)) {
-      throw new Err.InvalidArity(operatorArgs, <C.Operator> operator);
+      throw new Err.InvalidArity(operatorArgs, <C.Operator>operator);
     }
     if (C.SpecialOperators.has(operator)) {
       return new E.SpecialOperator(operatorArgs, operatorFunc.apply);
@@ -62,8 +61,11 @@ export class AlgebraTransformer extends TermTransformer {
     const namedArgs = await Promise.all(expr.args.map(arg => this.transformAlgebra(arg)));
     // Return a basic named expression
     const op = <C.NamedOperator>expr.name.value;
-    const mediator: MediatorFunctions = await this.context.getSafe(this.mediatorFunctions);
-    const namedFunc = await mediator.mediate({ functionName: op, arguments: expr.args, context: this.context });
+    const namedFunc = await this.mediatorFunctions.mediate({
+      functionName: op,
+      arguments: expr.args,
+      context: this.context,
+    });
     if (!namedFunc) {
       throw new Err.UnknownNamedOperator(expr.name.value);
     }

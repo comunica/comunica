@@ -49,7 +49,6 @@
     "@types/yargs": "^17.0.24",
     "asynciterator": "^3.8.1",
     "negotiate": "^1.0.1",
-    "process": "^0.11.10",
     "rdf-quad": "^1.5.0",
     "rdf-string": "^1.6.1",
     "sparqlalgebrajs": "^4.2.0",

@@ -26,6 +26,21 @@ describe('System test: QuerySparql', () => {
   });
 
   describe('query', () => {
+    it('playground', async() => {
+      // TODO: I do wonder how this ever passed... Should group concat know what to do with a language tag? Did it ever?
+      const res = await engine.queryBoolean(`
+        PREFIX : <http://www.example.org/>
+        ASK {
+            {SELECT (GROUP_CONCAT(?o) AS ?g) WHERE {
+                VALUES ?o { "1"@en "2"@en }
+            }
+          }
+          FILTER(?g = "1 2"@en || ?g = "2 1"@en)
+        }
+      `, { sources: [ 'https://www.rubensworks.net/' ]});
+      expect(res).toBe(true);
+    });
+
     describe('simple SPO on a raw RDF document', () => {
       it('with results', async() => {
         const result = <QueryBindings> await engine.query(`SELECT * WHERE {
@@ -806,8 +821,8 @@ SELECT * WHERE {
 
         // Execute query
         const result = <RDF.QueryVoid> await engine.query(`INSERT DATA {
-      <ex:s> <ex:p> <ex:o>.
-    }`, {
+          <ex:s> <ex:p> <ex:o>.
+        }`, {
           sources: [ 'dummy' ],
           destination: store,
         });
@@ -825,8 +840,8 @@ SELECT * WHERE {
 
         // Execute query
         const result = <RDF.QueryVoid> await engine.query(`INSERT DATA {
-      <ex:s> <ex:p> <ex:o>.
-    }`, {
+          <ex:s> <ex:p> <ex:o>.
+        }`, {
           sources: [ store ],
         });
         await result.execute();

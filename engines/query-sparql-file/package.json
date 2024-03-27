@@ -27,9 +27,9 @@
   ],
   "license": "MIT",
   "bin": {
+    "comunica-dynamic-sparql-file": "./bin/query-dynamic.js",
     "comunica-sparql-file": "./bin/query.js",
-    "comunica-sparql-file-http": "./bin/http.js",
-    "comunica-dynamic-sparql-file": "./bin/query-dynamic.js"
+    "comunica-sparql-file-http": "./bin/http.js"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"
@@ -47,11 +47,6 @@
     "engine-browser.js"
   ],
   "dependencies": {
-    "@comunica/actor-context-preprocess-source-to-destination": "^2.8.2",
-    "@comunica/actor-dereference-fallback": "^2.8.2",
-    "@comunica/actor-dereference-file": "^2.8.2",
-    "@comunica/actor-dereference-http": "^2.8.2",
-    "@comunica/actor-dereference-rdf-parse": "^2.8.2",
     "@comunica/actor-bindings-aggregator-factory-average": "^1.0.0",
     "@comunica/actor-bindings-aggregator-factory-count": "^1.0.0",
     "@comunica/actor-bindings-aggregator-factory-group-concat": "^1.0.0",
@@ -60,6 +55,11 @@
     "@comunica/actor-bindings-aggregator-factory-sample": "^1.0.0",
     "@comunica/actor-bindings-aggregator-factory-sum": "^1.0.0",
     "@comunica/actor-bindings-aggregator-factory-wildcard-count": "^1.0.0",
+    "@comunica/actor-context-preprocess-source-to-destination": "^2.8.2",
+    "@comunica/actor-dereference-fallback": "^2.8.2",
+    "@comunica/actor-dereference-file": "^2.8.2",
+    "@comunica/actor-dereference-http": "^2.8.2",
+    "@comunica/actor-dereference-rdf-parse": "^2.8.2",
     "@comunica/actor-hash-bindings-sha1": "^2.8.2",
     "@comunica/actor-http-fetch": "^2.8.2",
     "@comunica/actor-http-proxy": "^2.8.2",
@@ -198,7 +198,7 @@
     "integration": "rdf-test-suite-ldf spec/sparql-engine.js https://comunica.github.io/manifest-ldf-tests/sparql-file/file-manifest.ttl -d 200000 -c ../../.rdf-test-suite-ldf-cache/"
   },
   "browser": {
-    "./lib/index.js": "./lib/index-browser.js",
-    "./engine-default.js": "./engine-browser.js"
+    "./engine-default.js": "./engine-browser.js",
+    "./lib/index.js": "./lib/index-browser.js"
   }
 }

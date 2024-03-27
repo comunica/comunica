@@ -24,7 +24,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
     for (const aggregate of operation.aggregates) {
       // Will throw for unsupported expressions
       const _ = (await this.expressionEvaluatorFactory
-        .run({ algExpr: operation.expression, context })).expressionEvaluator;
+        .run({ algExpr: aggregate.expression, context })).expressionEvaluator;
     }
     return true;
   }
