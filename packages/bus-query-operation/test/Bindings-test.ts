@@ -2,6 +2,7 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { materializeOperation, materializeTerm } from '..';
+import type * as RDF from '@rdfjs/types';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -802,5 +803,35 @@ describe('materializeOperation', () => {
           factory.createTermExpression(termVariableB),
         ]),
       ));
+  });
+
+  it('should create VALUES clause for variables from SELECT clause that appear also in InitialBindings', () => {
+    console.log("operation");
+    console.log(factory.createProject(
+      factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
+      [ termVariableA, termVariableB, termVariableD ],
+    ));
+    console.log("bindingsA");
+    console.log(bindingsA);
+    const bindings: Record<string, RDF.Literal | RDF.NamedNode> = {};
+    bindings[`?${termVariableA.value}`] = <RDF.Literal> bindingsA.get(termVariableA);
+
+    const x = materializeOperation(
+      factory.createProject(
+        factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
+        [ termVariableA, termVariableB, termVariableD ],
+      ),
+      bindingsA,
+    );
+    const y = factory.createJoin([factory.createValues([termVariableA], [bindings]),
+    factory.createProject(
+      factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
+      [ termVariableA, termVariableB, termVariableD ],
+    )]);
+
+    return expect(x)
+      .toEqual(
+        y
+      );
   });
 });

@@ -29,6 +29,13 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
 
   public async runOperation(operation: Algebra.Project, context: IActionContext):
   Promise<IQueryOperationResult> {
+    console.log("operation in runOperation");
+    console.log(operation);
+    console.log("operation input.input content in runOperation");
+    for (let i of operation.input.input) {
+      console.log(i);
+    }
+
     // Resolve the input
     const output: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: operation.input, context }),
@@ -36,6 +43,8 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
 
     // Find all variables that should be deleted from the input stream.
     const outputMetadata = await output.metadata();
+    console.log("outputMetadata");
+    console.log(outputMetadata);
     const variables = operation.variables;
     const deleteVariables = outputMetadata.variables
       .filter(variable => !variables.some(subVariable => variable.value === subVariable.value));
@@ -43,6 +52,9 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
     // Error if there are variables that are not bound in the input stream.
     const missingVariables = variables
       .filter(variable => !outputMetadata.variables.some(subVariable => variable.value === subVariable.value));
+
+    console.log("missingVariables");
+    console.log(missingVariables);
     if (missingVariables.length > 0) {
       // eslint-disable-next-line ts/restrict-template-expressions
       throw new Error(`Variables '${missingVariables.map(variable => `?${variable.value}`)}' are used in the projection result, but are not assigned.`);
