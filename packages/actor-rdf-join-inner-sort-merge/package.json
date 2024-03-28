@@ -1,0 +1,47 @@
+{
+  "name": "@comunica/actor-rdf-join-inner-sort-merge",
+  "version": "1.0.0",
+  "description": "A inner-sort-merge rdf-join actor",
+  "lsd:module": true,
+  "license": "MIT",
+  "homepage": "https://comunica.dev/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/actor-rdf-join-inner-sort-merge"
+  },
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
+  "keywords": [
+    "comunica",
+    "actor",
+    "rdf-join",
+    "inner-sort-merge"
+  ],
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.js.map"
+  ],
+  "scripts": {
+    "build": "npm run build:ts && npm run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
+  },
+  "dependencies": {
+    "@comunica/bus-rdf-join": "^3.0.1",
+    "@comunica/mediatortype-join-coefficients": "^3.0.1",
+    "@comunica/types": "^3.0.1",
+    "@rdfjs/types": "*",
+    "asynciterator": "^3.9.0",
+    "rdf-string": "^1.6.3"
+  }
+}
