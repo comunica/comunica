@@ -1,9 +1,5 @@
 import type { IActionSparqlSerialize, IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
-<<<<<<< Updated upstream
 import { KeysInitQuery } from '@comunica/context-entries';
-=======
-import { KeysCore, KeysHttp, KeysInitQuery, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
->>>>>>> Stashed changes
 import { ActionContext } from '@comunica/core';
 import type {
   IActionContext,
