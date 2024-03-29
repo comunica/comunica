@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-inner-sort-merge",
-  "version": "1.0.0",
+  "version": "3.0.1",
   "description": "A inner-sort-merge rdf-join actor",
   "lsd:module": true,
   "license": "MIT",

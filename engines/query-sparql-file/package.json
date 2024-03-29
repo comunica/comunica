@@ -145,6 +145,7 @@
     "@comunica/actor-rdf-join-inner-nestedloop": "^3.0.1",
     "@comunica/actor-rdf-join-inner-none": "^3.0.1",
     "@comunica/actor-rdf-join-inner-single": "^3.0.1",
+    "@comunica/actor-rdf-join-inner-sort-merge": "^3.0.1",
     "@comunica/actor-rdf-join-inner-symmetrichash": "^3.0.1",
     "@comunica/actor-rdf-join-minus-hash": "^3.0.1",
     "@comunica/actor-rdf-join-minus-hash-undef": "^3.0.1",
