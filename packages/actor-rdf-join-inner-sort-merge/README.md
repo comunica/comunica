@@ -28,7 +28,7 @@ After installing, this package can be added to your engine's configuration as fo
     ...
     {
       "@id": "urn:comunica:default:rdf-join/actors#inner-sort-merge",
-      "@type": "ActorRdfJoinInnerSortMerge",
+      "@type": "ActorRdfJoinSortMerge",
       "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" }
     }
   ]

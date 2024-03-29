@@ -13,7 +13,7 @@ import { SortMergeJoinIterator } from './SortMergeJoinIterator';
 /**
  * A comunica Inner Sort Merge RDF Join Actor.
  */
-export class ActorRdfJoinInnerSortMerge extends ActorRdfJoin {
+export class ActorRdfJoinSortMerge extends ActorRdfJoin {
   public constructor(args: IActorRdfJoinArgs) {
     super(args, {
       logicalType: 'inner',
@@ -30,7 +30,7 @@ export class ActorRdfJoinInnerSortMerge extends ActorRdfJoin {
       action.entries[1].output.bindingsStream,
       ActorRdfJoin.joinBindings,
       // TODO: pass comparator from sparqlee?
-      ActorRdfJoinInnerSortMerge.compareBindings.bind(this, commonVariables),
+      ActorRdfJoinSortMerge.compareBindings.bind(this, commonVariables),
     );
     return {
       result: {
@@ -38,7 +38,7 @@ export class ActorRdfJoinInnerSortMerge extends ActorRdfJoin {
         bindingsStream: join,
         metadata: async() => {
           const meta = await this.constructResultMetadata(action.entries, metadatas, action.context);
-          meta.order = ActorRdfJoinInnerSortMerge.mergeOrderMetadata(metadatas);
+          meta.order = ActorRdfJoinSortMerge.mergeOrderMetadata(metadatas);
           return meta;
         },
       },

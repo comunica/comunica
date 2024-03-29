@@ -7,12 +7,12 @@ import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { ActorRdfJoinInnerSortMerge } from '../lib/ActorRdfJoinInnerSortMerge';
+import { ActorRdfJoinSortMerge } from '../lib/ActorRdfJoinSortMerge';
 
 const BF = new BindingsFactory();
 const DF = new DataFactory();
 
-describe('ActorRdfJoinInnerSortMerge', () => {
+describe('ActorRdfJoinSortMerge', () => {
   let bus: any;
   let mediatorJoinSelectivity: Mediator<
     Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
@@ -30,11 +30,11 @@ describe('ActorRdfJoinInnerSortMerge', () => {
     context = new ActionContext();
   });
 
-  describe('An ActorRdfJoinInnerSortMerge instance', () => {
-    let actor: ActorRdfJoinInnerSortMerge;
+  describe('An ActorRdfJoinSortMerge instance', () => {
+    let actor: ActorRdfJoinSortMerge;
 
     beforeEach(() => {
-      actor = new ActorRdfJoinInnerSortMerge({ name: 'actor', bus, mediatorJoinSelectivity });
+      actor = new ActorRdfJoinSortMerge({ name: 'actor', bus, mediatorJoinSelectivity });
     });
 
     describe('test', () => {
@@ -221,7 +221,7 @@ describe('ActorRdfJoinInnerSortMerge', () => {
 
     describe('compareBindings', () => {
       it('should handle no common variables', () => {
-        expect(ActorRdfJoinInnerSortMerge.compareBindings(
+        expect(ActorRdfJoinSortMerge.compareBindings(
           [],
           BF.fromRecord({}),
           BF.fromRecord({}),
@@ -229,12 +229,12 @@ describe('ActorRdfJoinInnerSortMerge', () => {
       });
 
       it('should handle one common variable', () => {
-        expect(ActorRdfJoinInnerSortMerge.compareBindings(
+        expect(ActorRdfJoinSortMerge.compareBindings(
           [ DF.variable('a') ],
           BF.fromRecord({ a: DF.namedNode('1') }),
           BF.fromRecord({ a: DF.namedNode('2') }),
         )).toBe(-1);
-        expect(ActorRdfJoinInnerSortMerge.compareBindings(
+        expect(ActorRdfJoinSortMerge.compareBindings(
           [ DF.variable('a') ],
           BF.fromRecord({ a: DF.namedNode('2') }),
           BF.fromRecord({ a: DF.namedNode('1') }),
@@ -242,7 +242,7 @@ describe('ActorRdfJoinInnerSortMerge', () => {
       });
 
       it('should handle multiple common variables', () => {
-        expect(ActorRdfJoinInnerSortMerge.compareBindings(
+        expect(ActorRdfJoinSortMerge.compareBindings(
           [ DF.variable('a'), DF.variable('b') ],
           BF.fromRecord({
             a: DF.namedNode('a1'),
@@ -253,7 +253,7 @@ describe('ActorRdfJoinInnerSortMerge', () => {
             b: DF.namedNode('b2'),
           }),
         )).toBe(-1);
-        expect(ActorRdfJoinInnerSortMerge.compareBindings(
+        expect(ActorRdfJoinSortMerge.compareBindings(
           [ DF.variable('a'), DF.variable('b') ],
           BF.fromRecord({
             a: DF.namedNode('a1'),

@@ -1,1 +1,1 @@
-export * from './ActorRdfJoinInnerSortMerge';
+export * from './ActorRdfJoinSortMerge';

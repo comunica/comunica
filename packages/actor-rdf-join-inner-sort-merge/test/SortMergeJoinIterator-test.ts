@@ -4,7 +4,7 @@ import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { ActorRdfJoinInnerSortMerge } from '../lib/ActorRdfJoinInnerSortMerge';
+import { ActorRdfJoinSortMerge } from '../lib/ActorRdfJoinSortMerge';
 import { SortMergeJoinIterator } from '../lib/SortMergeJoinIterator';
 
 const BF = new BindingsFactory();
@@ -16,7 +16,7 @@ describe('SortMergeJoinIterator', () => {
       new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
       new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
       ActorRdfJoin.joinBindings,
-      ActorRdfJoinInnerSortMerge.compareBindings.bind(this, []),
+      ActorRdfJoinSortMerge.compareBindings.bind(this, []),
     )).toEqualBindingsStream([]);
   });
 
@@ -35,7 +35,7 @@ describe('SortMergeJoinIterator', () => {
       ], { autoStart: false }),
       new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
       ActorRdfJoin.joinBindings,
-      ActorRdfJoinInnerSortMerge.compareBindings.bind(this, []),
+      ActorRdfJoinSortMerge.compareBindings.bind(this, []),
     )).toEqualBindingsStream([]);
   });
 
@@ -54,7 +54,7 @@ describe('SortMergeJoinIterator', () => {
         }),
       ], { autoStart: false }),
       ActorRdfJoin.joinBindings,
-      ActorRdfJoinInnerSortMerge.compareBindings.bind(this, []),
+      ActorRdfJoinSortMerge.compareBindings.bind(this, []),
     )).toEqualBindingsStream([]);
   });
 
@@ -83,7 +83,7 @@ describe('SortMergeJoinIterator', () => {
         }),
       ], { autoStart: false }),
       ActorRdfJoin.joinBindings,
-      ActorRdfJoinInnerSortMerge.compareBindings.bind(this, [
+      ActorRdfJoinSortMerge.compareBindings.bind(this, [
         DF.variable('a'),
       ]),
     )).toEqualBindingsStream([
@@ -124,7 +124,7 @@ describe('SortMergeJoinIterator', () => {
         }),
       ], { autoStart: false }),
       ActorRdfJoin.joinBindings,
-      ActorRdfJoinInnerSortMerge.compareBindings.bind(this, [
+      ActorRdfJoinSortMerge.compareBindings.bind(this, [
         DF.variable('a'),
       ]),
     )).toEqualBindingsStream([
@@ -178,7 +178,7 @@ describe('SortMergeJoinIterator', () => {
         }),
       ], { autoStart: false }),
       ActorRdfJoin.joinBindings,
-      ActorRdfJoinInnerSortMerge.compareBindings.bind(this, [
+      ActorRdfJoinSortMerge.compareBindings.bind(this, [
         DF.variable('a'),
         DF.variable('aa'),
       ]),
@@ -254,7 +254,7 @@ describe('SortMergeJoinIterator', () => {
         }),
       ], { autoStart: false }),
       ActorRdfJoin.joinBindings,
-      ActorRdfJoinInnerSortMerge.compareBindings.bind(this, [
+      ActorRdfJoinSortMerge.compareBindings.bind(this, [
         DF.variable('a'),
         DF.variable('aa'),
       ]),
@@ -308,7 +308,7 @@ describe('SortMergeJoinIterator', () => {
         }),
       ], { autoStart: false }),
       ActorRdfJoin.joinBindings,
-      ActorRdfJoinInnerSortMerge.compareBindings.bind(this, [
+      ActorRdfJoinSortMerge.compareBindings.bind(this, [
         DF.variable('a'),
       ]),
     )).toEqualBindingsStream([
@@ -346,7 +346,7 @@ describe('SortMergeJoinIterator', () => {
         }),
       ], { autoStart: false }),
       ActorRdfJoin.joinBindings,
-      ActorRdfJoinInnerSortMerge.compareBindings.bind(this, [
+      ActorRdfJoinSortMerge.compareBindings.bind(this, [
         DF.variable('a'),
       ]),
     )).toEqualBindingsStream([
@@ -407,7 +407,7 @@ describe('SortMergeJoinIterator', () => {
         }),
       ], { autoStart: false }),
       ActorRdfJoin.joinBindings,
-      ActorRdfJoinInnerSortMerge.compareBindings.bind(this, [
+      ActorRdfJoinSortMerge.compareBindings.bind(this, [
         DF.variable('a'),
       ]),
     )).toEqualBindingsStream([
@@ -452,7 +452,7 @@ describe('SortMergeJoinIterator', () => {
         }),
       ], { autoStart: false }),
       ActorRdfJoin.joinBindings,
-      ActorRdfJoinInnerSortMerge.compareBindings.bind(this, [
+      ActorRdfJoinSortMerge.compareBindings.bind(this, [
         DF.variable('a'),
       ]),
     )).toEqualBindingsStream([
@@ -513,7 +513,7 @@ describe('SortMergeJoinIterator', () => {
         }),
       ], { autoStart: false }),
       ActorRdfJoin.joinBindings,
-      ActorRdfJoinInnerSortMerge.compareBindings.bind(this, [
+      ActorRdfJoinSortMerge.compareBindings.bind(this, [
         DF.variable('a'),
       ]),
     )).toEqualBindingsStream([
@@ -558,7 +558,7 @@ describe('SortMergeJoinIterator', () => {
         }),
       ], { autoStart: false }),
       ActorRdfJoin.joinBindings,
-      ActorRdfJoinInnerSortMerge.compareBindings.bind(this, [
+      ActorRdfJoinSortMerge.compareBindings.bind(this, [
         DF.variable('a'),
       ]),
     )).toEqualBindingsStream([
@@ -616,7 +616,7 @@ describe('SortMergeJoinIterator', () => {
         }),
       ], { autoStart: false }),
       ActorRdfJoin.joinBindings,
-      ActorRdfJoinInnerSortMerge.compareBindings.bind(this, [
+      ActorRdfJoinSortMerge.compareBindings.bind(this, [
         DF.variable('a'),
       ]),
     )).toEqualBindingsStream([
@@ -707,7 +707,7 @@ describe('SortMergeJoinIterator', () => {
         }),
       ], { autoStart: false }),
       ActorRdfJoin.joinBindings,
-      ActorRdfJoinInnerSortMerge.compareBindings.bind(this, [
+      ActorRdfJoinSortMerge.compareBindings.bind(this, [
         DF.variable('a'),
       ]),
     )).toEqualBindingsStream([
@@ -773,7 +773,7 @@ describe('SortMergeJoinIterator', () => {
         }),
       ], { autoStart: false }),
       ActorRdfJoin.joinBindings,
-      ActorRdfJoinInnerSortMerge.compareBindings.bind(this, [
+      ActorRdfJoinSortMerge.compareBindings.bind(this, [
         DF.variable('a'),
       ]),
     )).toEqualBindingsStream([
@@ -865,7 +865,7 @@ describe('SortMergeJoinIterator', () => {
         }),
       ], { autoStart: false }),
       ActorRdfJoin.joinBindings,
-      ActorRdfJoinInnerSortMerge.compareBindings.bind(this, [
+      ActorRdfJoinSortMerge.compareBindings.bind(this, [
         DF.variable('a'),
       ]),
     )).toEqualBindingsStream([
@@ -941,7 +941,7 @@ describe('SortMergeJoinIterator', () => {
         }),
       ], { autoStart: false }),
       ActorRdfJoin.joinBindings,
-      ActorRdfJoinInnerSortMerge.compareBindings.bind(this, [
+      ActorRdfJoinSortMerge.compareBindings.bind(this, [
         DF.variable('a'),
       ]),
     )).toEqualBindingsStream([
@@ -1033,7 +1033,7 @@ describe('SortMergeJoinIterator', () => {
         }),
       ], { autoStart: false }),
       ActorRdfJoin.joinBindings,
-      ActorRdfJoinInnerSortMerge.compareBindings.bind(this, [
+      ActorRdfJoinSortMerge.compareBindings.bind(this, [
         DF.variable('a'),
       ]),
     )).toEqualBindingsStream([
@@ -1109,7 +1109,7 @@ describe('SortMergeJoinIterator', () => {
         }),
       ], { autoStart: false }),
       ActorRdfJoin.joinBindings,
-      ActorRdfJoinInnerSortMerge.compareBindings.bind(this, [
+      ActorRdfJoinSortMerge.compareBindings.bind(this, [
         DF.variable('a'),
       ]),
     )).toEqualBindingsStream([
@@ -1219,7 +1219,7 @@ describe('SortMergeJoinIterator', () => {
         }),
       ], { autoStart: false }),
       ActorRdfJoin.joinBindings,
-      ActorRdfJoinInnerSortMerge.compareBindings.bind(this, [
+      ActorRdfJoinSortMerge.compareBindings.bind(this, [
         DF.variable('a'),
       ]),
     )).toEqualBindingsStream([
@@ -1357,7 +1357,7 @@ describe('SortMergeJoinIterator', () => {
         }),
       ], { autoStart: false }),
       ActorRdfJoin.joinBindings,
-      ActorRdfJoinInnerSortMerge.compareBindings.bind(this, [
+      ActorRdfJoinSortMerge.compareBindings.bind(this, [
         DF.variable('a'),
       ]),
     )).toEqualBindingsStream([
