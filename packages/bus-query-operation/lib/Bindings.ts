@@ -137,7 +137,8 @@ export function materializeOperation(
       };
     },
     project(op: Algebra.Project, factory: Factory) {
-      console.log("MATERIALIZING An PROJECT OPERATION");
+      console.log("MATERIALIZING A PROJECT OPERATION");
+      console.log("op");
       console.log(op);
       // Materialize a project operation.
       // If strictTargetVariables is true, we throw if the project target variable is attempted to be bound.
@@ -153,32 +154,33 @@ export function materializeOperation(
           result: op,
         };
       }
-
-      // TODO Create a values operation with the initialbindings that occur in the select clause
-      let valueVariables : Variable[] = []
-      let valueBindings: Record<string, RDF.Literal | RDF.NamedNode>[] = [];
+      
+      // Find which projected variables are present in the InitialBindings
+      let overlappingVariables : Variable[] = []
+      let overlappingBindings: Record<string, RDF.Literal | RDF.NamedNode>[] = [];
 
       for (let variable of op.variables) {
         if (bindings.has(variable)){
           const newBinding = { ...bindings.get(variable) };
-          valueVariables.push(variable);
-          valueBindings.push(newBinding);
+          overlappingVariables.push(variable);
+          overlappingBindings.push(newBinding);
         }
       }
-      let values : Algebra.Operation = factory.createValues(valueVariables, valueBindings);
+      let values : Algebra.Operation = factory.createValues(overlappingVariables, overlappingBindings);
       console.log("created values:");
+      console.log("values");
       console.log(values);
 
-      // TODO old version leaves them out, but instead should put them in a values operation
-      const variables = op.variables.filter(variable => !bindings.has(variable)); //TODO don't leave them out
+      // Remove projected variables that appear in InitialBindings
+      // const variables = op.variables.filter(variable => !bindings.has(variable));
+      // TODO We removed this filter because we want to keep our projected variable written as a variable
 
       // Only include projected variables in the sub-bindings that will be passed down recursively.
       // If we don't do this, we may be binding variables that may have the same label, but are not considered equal.
-      // TODO Here we make a subset of only bindings that occur in the SELECT CLAUSE
-      // TODO Will our solution with the Values clause work correctly despite that it concerns the same bindings?
+      // TODO We remove this because projected variables shouldn't be replaced (later in materializeterm)
       const subBindings = bindingsFactory.bindings(<[RDF.Variable, RDF.Term][]> op.variables.map((variable) => {
         const binding = bindings.get(variable);
-        if (binding) {
+        if (false) { //TODO this was 'binding'
           return [ variable, binding ];
         }
         // eslint-disable-next-line no-useless-return,array-callback-return
@@ -190,13 +192,16 @@ export function materializeOperation(
       return {
         recurse: false,
         result: factory.createProject(
-          materializeOperation(
-            op.input,
-            subBindings,
-            bindingsFactory,
-            options,
-          ),
-          variables,
+          factory.createJoin([
+            materializeOperation(
+              op.input,
+              subBindings,
+              bindingsFactory,
+              options,
+            ),
+            values
+          ]),
+          op.variables,
         ),
       };
     },
