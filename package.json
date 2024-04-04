@@ -95,5 +95,6 @@
   },
   "resolutions": {
     "@rdfjs/types": "1.1.0"
-  }
+  },
+  "packageManager": "yarn@1.22.1"
 }
