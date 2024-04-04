@@ -1,4 +1,5 @@
 import { prepareEvaluatorActionContext } from '@comunica/actor-expression-evaluator-factory-base';
+import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { ActionContext } from '@comunica/core';
 import { getMockEEFactory } from '@comunica/jest';
 import type { GeneralSuperTypeDict, IActionContext, ISuperTypeProvider } from '@comunica/types';
@@ -20,9 +21,7 @@ export function getMockExpression(expr = '1+1'): Alg.Expression {
 export function getMockEvaluatorContext(): IActionContext {
   const factory = getMockEEFactory();
 
-  return prepareEvaluatorActionContext(getMockEEActionContext(),
-    factory.mediatorQueryOperation,
-    factory.mediatorFunctions);
+  return prepareEvaluatorActionContext(getMockEEActionContext());
 }
 
 export function getMockSuperTypeProvider(): ISuperTypeProvider {
@@ -68,6 +67,10 @@ export type TestTableConfig = ITestTableConfigBase & {
    * Result can be '' if the message doesn't need to be checked.
    */
   errorTable?: string;
+  /**
+   * The factory that will create the evaluator used for this evaluation.
+   */
+  exprEvalFactory?: ActorExpressionEvaluatorFactory;
   /**
    * Test array that will check if a given error is thrown.
    * Result can be '' if the message doesn't need to be checked.

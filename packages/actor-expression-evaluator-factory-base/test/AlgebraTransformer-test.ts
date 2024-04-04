@@ -1,16 +1,18 @@
 import { prepareEvaluatorActionContext } from '@comunica/actor-expression-evaluator-factory-base';
 import { AlgebraTransformer } from '@comunica/actor-expression-evaluator-factory-base/lib/AlgebraTransformer';
+import { NamedExtension } from '@comunica/actor-functions-wrapper-all/lib/implementation/NamedExtension';
+import { namedFunctions } from '@comunica/actor-functions-wrapper-all/lib/implementation/NamedFunctions';
+import { regularFunctions } from '@comunica/actor-functions-wrapper-all/lib/implementation/RegularFunctions';
+import { specialFunctions } from '@comunica/actor-functions-wrapper-all/lib/implementation/SpecialFunctions';
 import type { IExpressionFunction, MediatorFunctions } from '@comunica/bus-functions';
-import { namedFunctions, regularFunctions, specialFunctions } from '@comunica/bus-functions/lib/implementation';
 import { ActionContext } from '@comunica/core';
+import * as E from '@comunica/expression-evaluator/lib/expressions';
+import type * as C from '@comunica/expression-evaluator/lib/util/Consts';
+import * as Err from '@comunica/expression-evaluator/lib/util/Errors';
 import { getMockEEFactory } from '@comunica/jest';
-import { NamedExtension } from 'packages/actor-functions-wrapper-all/lib/implementation/NamedExtension';
 import { DataFactory } from 'rdf-data-factory';
 import { expressionTypes, types } from 'sparqlalgebrajs/lib/algebra';
 import { Wildcard } from 'sparqljs';
-import * as E from '../../../lib/expressions';
-import type * as C from '../../../lib/util/Consts';
-import * as Err from '../../../lib/util/Errors';
 
 const DF = new DataFactory();
 

@@ -1,5 +1,6 @@
 import type { InternalEvaluator } from '@comunica/actor-expression-evaluator-factory-base/lib/InternalEvaluator';
 import { BindingsFactory } from '@comunica/bindings-factory';
+import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { getMockEEFactory } from '@comunica/jest';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -17,6 +18,10 @@ export interface IGeneralEvaluationArg {
    * Default: Check / true
    */
   expectEquality?: boolean;
+  /**
+   * The factory that will create the evaluator used for this evaluation.
+   */
+  exprEvalFactory?: ActorExpressionEvaluatorFactory;
 
   // TODO: remove legacyContext in *final* update (probably when preparing the EE for function bussification)
   legacyContext?: Partial<InternalEvaluator>;
@@ -29,6 +34,7 @@ Promise<{ asyncResult: RDF.Term; syncResult?: RDF.Term }> {
     arg.expression,
     bindings,
     arg.generalEvaluationConfig || getMockEEActionContext(),
+    arg.exprEvalFactory,
   );
   return { asyncResult };
 }
@@ -54,8 +60,9 @@ function parse(query: string) {
   return sparqlQuery.input.expression;
 }
 
-async function evaluateAsync(expr: string, bindings: RDF.Bindings, actionContext: IActionContext): Promise<RDF.Term> {
-  const evaluator = (await getMockEEFactory()
+async function evaluateAsync(expr: string, bindings: RDF.Bindings, actionContext: IActionContext,
+  exprEvalFactory?: ActorExpressionEvaluatorFactory): Promise<RDF.Term> {
+  const evaluator = (await (exprEvalFactory ?? getMockEEFactory())
     .run({ algExpr: parse(expr), context: actionContext })).expressionEvaluator;
   return evaluator.evaluate(bindings);
 }

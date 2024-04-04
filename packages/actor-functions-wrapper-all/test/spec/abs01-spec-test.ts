@@ -1,6 +1,8 @@
-import { bool } from '../util/Aliases';
-import { Notation } from '../util/TestTable';
-import { runTestTable } from '../util/utils';
+import { bool } from '@comunica/expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { runTestTable } from '@comunica/expression-evaluator/test/util/utils';
+import { getMockEEFactory } from '@comunica/jest';
+import { createFuncMediator } from '../util';
 import * as Data from './_data';
 
 /**
@@ -34,6 +36,9 @@ describe('We should respect the abs01 spec', () => {
     notation: Notation.Infix,
     operation: '>=',
     aliases: bool,
+    exprEvalFactory: getMockEEFactory({
+      mediatorFunctions: createFuncMediator(),
+    }),
     testTable: `
       'abs(${n1})' 2 = false
       'abs(${n2})' 2 = false

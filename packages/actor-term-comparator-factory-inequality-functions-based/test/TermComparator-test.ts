@@ -1,23 +1,15 @@
-import { prepareEvaluatorActionContext } from '@comunica/actor-expression-evaluator-factory-base';
-import { InternalEvaluator } from '@comunica/actor-expression-evaluator-factory-base/lib/InternalEvaluator';
-import {
-  InequalityFunctionBasedComparator,
-} from '@comunica/actor-term-comparator-factory-inequality-functions-based/lib/InequalityFunctionBasedComparator';
+import { regularFunctions } from '@comunica/actor-functions-wrapper-all/lib/implementation/RegularFunctions';
 import type { TermSparqlFunction } from '@comunica/bus-functions/lib/implementation';
-import { regularFunctions } from '@comunica/bus-functions/lib/implementation';
-import type {
-  ITermComparator,
-} from '@comunica/bus-term-comparator-factory';
+import type { ITermComparator } from '@comunica/bus-term-comparator-factory';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
-import { getMockEEFactory } from '@comunica/jest';
+import type * as C from '@comunica/expression-evaluator/lib/util/Consts';
+import { TypeURL, TypeURL as DT } from '@comunica/expression-evaluator/lib/util/Consts';
+import { getMockEEActionContext, getMockInternalEvaluator } from '@comunica/jest';
 import type { SuperTypeCallback } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
 import { DataFactory } from 'rdf-data-factory';
-
-import { TypeURL, TypeURL as DT } from '../../../lib/util/Consts';
-import type * as C from '../../../lib/util/Consts';
-import { getMockEEActionContext } from '../../util/utils';
+import { InequalityFunctionBasedComparator } from '../lib/InequalityFunctionBasedComparator';
 
 const DF = new DataFactory();
 
@@ -52,13 +44,8 @@ function orderByFactory(typeDiscoveryCallback?: SuperTypeCallback): ITermCompara
       cache: new LRUCache<string, any>({ max: 1_000 }),
     }) :
     getMockEEActionContext();
-  const factory = getMockEEFactory();
   return new InequalityFunctionBasedComparator(
-    new InternalEvaluator(
-      prepareEvaluatorActionContext(context),
-      factory.mediatorFunctions,
-      factory.mediatorQueryOperation,
-    ),
+    getMockInternalEvaluator(undefined, context),
     <TermSparqlFunction<C.RegularOperator>> regularFunctions['='],
     <TermSparqlFunction<C.RegularOperator>> regularFunctions['<'],
   );

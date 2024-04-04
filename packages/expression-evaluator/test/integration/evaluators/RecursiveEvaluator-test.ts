@@ -1,18 +1,17 @@
-import { InternalEvaluator } from '@comunica/actor-expression-evaluator-factory-base/lib/InternalEvaluator';
 import { BindingsFactory } from '@comunica/bindings-factory';
+import { getMockInternalEvaluator } from '@comunica/jest';
 import { DataFactory } from 'rdf-data-factory';
 import { expressionTypes, types } from 'sparqlalgebrajs/lib/algebra';
 import { Wildcard } from 'sparqljs';
 import * as E from '../../../lib/expressions';
 import * as Err from '../../../lib/util/Errors';
-import { getMockEvaluatorContext } from '../../util/utils';
 
 const BF = new BindingsFactory();
 const DF = new DataFactory();
 
 describe('recursive evaluators', () => {
   describe('AsyncRecursiveEvaluator', () => {
-    const evaluator = new InternalEvaluator(getMockEvaluatorContext());
+    const evaluator = getMockInternalEvaluator();
 
     it('is able to evaluate operator', async() => {
       expect(await evaluator.internalEvaluation(new E.IntegerLiteral(1), BF.bindings()))

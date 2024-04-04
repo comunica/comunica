@@ -1,7 +1,7 @@
 import { Bus } from '@comunica/core';
 import {
   ActorTermComparatorFactoryInequalityFunctionsBased,
-} from '../lib/ActorTermComparatorFactoryInequalityFunctionsBased';
+} from '../lib';
 
 describe('ActorTermComparatorFactoryInequalityFunctionsBased', () => {
   let bus: any;
@@ -14,7 +14,11 @@ describe('ActorTermComparatorFactoryInequalityFunctionsBased', () => {
     let actor: ActorTermComparatorFactoryInequalityFunctionsBased;
 
     beforeEach(() => {
-      actor = new ActorTermComparatorFactoryInequalityFunctionsBased({ name: 'actor', bus });
+      actor = new ActorTermComparatorFactoryInequalityFunctionsBased({
+        name: 'actor',
+        bus,
+        mediatorFunctions:
+      });
     });
 
     it('should test', () => {
