@@ -4,6 +4,7 @@ node_modules
 .idea
 .vscode
 .yarn
+.yarnrc
 lerna-debug.log
 yarn-error.log
 .eslintcache
