@@ -145,7 +145,7 @@ describe('Bus', () => {
       bus.subscribe(actor1);
       bus.subscribe(actor2, undefined, true);
       expect(() => bus.subscribe(actor3, undefined, true))
-        .toThrow(`the last actor ${actor2.name} was already defined when trying to define ${actor3.name} has first actor`);
+        .toThrow(`the last actor ${actor2.name} was already defined when trying to define ${actor3.name} has the last actor`);
     });
 
     it('should throw an error given two actors are defined to be first', () => {
