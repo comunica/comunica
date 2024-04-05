@@ -23,6 +23,8 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
   public readonly name: string;
   public readonly bus: Bus<Actor<I, T, O>, I, T, O>;
   public readonly beforeActors: Actor<I, T, O>[] = [];
+  public readonly beforeAll: boolean;
+  public readonly afterAll: boolean;
 
   /**
    * All enumerable properties from the `args` object are inherited to this actor.
@@ -37,7 +39,7 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
    */
   protected constructor(args: IActorArgs<I, T, O>) {
     Object.assign(this, args);
-    this.bus.subscribe(this);
+    this.bus.subscribe(this, this.beforeAll, this.afterAll);
     if (this.beforeActors.length > 0) {
       this.bus.addDependencies(this, this.beforeActors);
     }
@@ -172,6 +174,14 @@ export interface IActorArgs<I extends IAction, T extends IActorTest, O extends I
    * Actor that must be registered in the bus before this actor.
    */
   beforeActors?: Actor<I, T, O>[];
+  /**
+   * Actor must be registered in the bus before all the actors.
+   */
+  beforeAll?:boolean;
+  /**
+   * Actor must be registered in the bus after all the actors.
+   */
+  afterAll?:boolean;
 }
 
 /**

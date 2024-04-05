@@ -17,12 +17,14 @@ import type { Actor, IAction, IActorOutput, IActorTest } from './Actor';
  * @template O The output type of an actor.
  */
 export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTest, O extends IActorOutput> implements
-    IBusArgs {
+  IBusArgs {
   public readonly name: string;
   protected readonly actors: A[] = [];
   protected readonly observers: ActionObserver<I, O>[] = [];
   // Mapping from dependency (after) to dependents (before)
   protected readonly dependencyLinks: Map<A, A[]> = new Map();
+  protected firstActor: A | undefined = undefined;
+  protected lastActor: A | undefined = undefined;
 
   /**
    * All enumerable properties from the `args` object are inherited to this bus.
@@ -43,8 +45,19 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
    *
    * @param {A} actor The actor to subscribe.
    */
-  public subscribe(actor: A): void {
-    this.actors.push(actor);
+  public subscribe(actor: A, firstActor?: boolean, lastActor?: boolean): void {
+    if ((firstActor !== undefined) && !this.firstActor) {
+      this.actors.unshift(actor);
+      this.firstActor = actor;
+    } else if (firstActor && this.firstActor) {
+      throw new Error(`The first actor ${this.firstActor.name} was already defined when trying to define as first actor ${actor.name}`);
+    }else if(lastActor!==undefined && this.lastActor){
+      this.lastActor = actor;
+    }else if(lastActor && this.lastActor){
+      throw new Error(`The last actor ${this.lastActor.name} was already defined when trying to define as first actor ${actor.name}`);
+    }else {
+      this.actors.push(actor);
+    }
     this.reorderForDependencies();
   }
 
@@ -146,6 +159,13 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
    * Reorder the bus based on all present dependencies.
    */
   public reorderForDependencies(): void {
+    if (this.lastActor !== undefined) {
+      for (let i = 0; i < this.actors.length; ++i) {
+        if (this.actors[i].name === this.lastActor.name) {
+          this.actors.slice(i, 1);
+        }
+      }
+    }
     if (this.dependencyLinks.size > 0) {
       const actorsAfter = [];
 
@@ -187,6 +207,9 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
         this.actors.push(activeActorAfter);
       }
     }
+    if (this.lastActor !== undefined) {
+      this.actors.push(this.lastActor);
+    }
   }
 }
 
@@ -203,9 +226,9 @@ export interface IBusArgs {
  */
 export interface IActorReply<
   A extends Actor<I, T, O>,
-I extends IAction,
-T extends IActorTest,
-O extends IActorOutput,
+  I extends IAction,
+  T extends IActorTest,
+  O extends IActorOutput,
 > {
   actor: A;
   reply: Promise<T>;
@@ -218,4 +241,4 @@ export type IReply<
 > = IActorReply<Actor<I, T, O>, I, T, O>;
 
 export type IBus<I extends IAction = IAction, O extends IActorOutput = IActorOutput, T extends IActorTest = IActorTest>
-= Bus<Actor<I, T, O>, I, T, O>;
+  = Bus<Actor<I, T, O>, I, T, O>;
