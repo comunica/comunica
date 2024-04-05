@@ -51,7 +51,7 @@ describe('Actor', () => {
         .toThrow('an actor cannot define a beforeAll or afterAll with a beforeActor list');
     });
 
-    it('should be a Actor constructor with a beforeAll field', () => {
+    it('should construct for an Actor with a beforeAll field', () => {
       const b = new Bus({ name: 'bus' });
       const actor1 = new (<any> Actor)({ name: 'actor1', bus: b });
       const actor2 = new (<any> Actor)({ name: 'actor2', bus: b });
@@ -59,7 +59,7 @@ describe('Actor', () => {
       expect((<any> b).actors).toStrictEqual([ actor3, actor1, actor2 ]);
     });
 
-    it('should be a Actor constructor with a afterAll field', () => {
+    it('should construct for an Actor with a afterAll field', () => {
       const b = new Bus({ name: 'bus' });
       const actor1 = new (<any> Actor)({ name: 'actor1', bus: b });
       const actor2 = new (<any> Actor)({ name: 'actor2', bus: b, afterAll: true });
