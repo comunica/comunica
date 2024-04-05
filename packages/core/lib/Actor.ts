@@ -39,6 +39,16 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
    */
   protected constructor(args: IActorArgs<I, T, O>) {
     Object.assign(this, args);
+    this.beforeAll = args.beforeAll ?? false;
+    this.afterAll = args.afterAll ?? false;
+
+    if ((this.beforeAll || this.afterAll) && this.beforeActors.length > 0) {
+      throw new Error('an actor cannot define a beforeAll or afterAll with a beforeActor list');
+    }
+    if (this.beforeAll && this.afterAll) {
+      throw new Error('an actor cannot be define with beforAll and afterAll');
+    }
+
     this.bus.subscribe(this, this.beforeAll, this.afterAll);
     if (this.beforeActors.length > 0) {
       this.bus.addDependencies(this, this.beforeActors);
@@ -177,11 +187,11 @@ export interface IActorArgs<I extends IAction, T extends IActorTest, O extends I
   /**
    * Actor must be registered in the bus before all the actors.
    */
-  beforeAll?:boolean;
+  beforeAll?: boolean;
   /**
    * Actor must be registered in the bus after all the actors.
    */
-  afterAll?:boolean;
+  afterAll?: boolean;
 }
 
 /**

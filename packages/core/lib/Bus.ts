@@ -46,17 +46,33 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
    * @param {A} actor The actor to subscribe.
    */
   public subscribe(actor: A, firstActor?: boolean, lastActor?: boolean): void {
-    if ((firstActor !== undefined) && !this.firstActor) {
+    if (firstActor && lastActor) {
+      throw new Error(`the actor ${actor.name} cannot be defined to be before all or after all`);
+    } else if ((firstActor ?? false) && !this.firstActor) {
       this.actors.unshift(actor);
       this.firstActor = actor;
+      // Check if the first actor is a before actor dependency
+      for (const [ dependent, dependencies ] of this.dependencyLinks) {
+        if (dependent.name === actor.name) {
+          throw new Error(`The depencies of ${dependencies[0].name} are inconsistent because the actor ${actor.name} is defined to be the first actor`);
+        }
+      }
     } else if (firstActor && this.firstActor) {
-      throw new Error(`The first actor ${this.firstActor.name} was already defined when trying to define as first actor ${actor.name}`);
-    }else if(lastActor!==undefined && this.lastActor){
+      throw new Error(`the first actor ${this.firstActor.name} was already defined when trying to define as first actor ${actor.name}`);
+    } else if ((lastActor ?? false) && !this.lastActor) {
       this.lastActor = actor;
-    }else if(lastActor && this.lastActor){
-      throw new Error(`The last actor ${this.lastActor.name} was already defined when trying to define as first actor ${actor.name}`);
-    }else {
       this.actors.push(actor);
+    } else if (lastActor && this.lastActor) {
+      throw new Error(`the last actor ${this.lastActor.name} was already defined when trying to define as first actor ${actor.name}`);
+    } else {
+      if (this.lastActor !== undefined) {
+        this.actors.pop();
+      }
+      this.actors.push(actor);
+
+      if (this.lastActor !== undefined) {
+        this.actors.push(this.lastActor);
+      }
     }
     this.reorderForDependencies();
   }
@@ -145,6 +161,9 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
    */
   public addDependencies(dependent: A, dependencies: A[]): void {
     for (const dependency of dependencies) {
+      if (dependency.name === this.firstActor?.name) {
+        throw new Error(`The depencies of ${dependent.name} are inconsistent because the actor ${dependency.name} is defined to be the first actor`);
+      }
       let existingDependencies = this.dependencyLinks.get(dependency);
       if (!existingDependencies) {
         existingDependencies = [];
@@ -159,13 +178,6 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
    * Reorder the bus based on all present dependencies.
    */
   public reorderForDependencies(): void {
-    if (this.lastActor !== undefined) {
-      for (let i = 0; i < this.actors.length; ++i) {
-        if (this.actors[i].name === this.lastActor.name) {
-          this.actors.slice(i, 1);
-        }
-      }
-    }
     if (this.dependencyLinks.size > 0) {
       const actorsAfter = [];
 
@@ -206,9 +218,6 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
         const activeActorAfter = actorsAfter.splice(activeActorAfterId, 1)[0];
         this.actors.push(activeActorAfter);
       }
-    }
-    if (this.lastActor !== undefined) {
-      this.actors.push(this.lastActor);
     }
   }
 }

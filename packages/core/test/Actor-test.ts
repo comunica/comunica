@@ -22,13 +22,49 @@ describe('Actor', () => {
     });
 
     it('should be a Actor constructor with a beforeActors field', () => {
-      const beforeActors = [ 'a', 'b' ];
+      const beforeActors = [{ name: 'a' }, { name: 'b' }];
       const b = new Bus({ name: 'bus' });
       const actor = new (<any> Actor)({ name: 'actor', bus: b, beforeActors });
       const map = new Map();
-      map.set('a', [ actor ]);
-      map.set('b', [ actor ]);
+      map.set({ name: 'a' }, [ actor ]);
+      map.set({ name: 'b' }, [ actor ]);
       expect((<any> b).dependencyLinks).toEqual(map);
+    });
+
+    it('should not construct for an actor with beforeAll and afterAll field', () => {
+      const b = new Bus({ name: 'bus' });
+      expect(() => new (<any> Actor)({ name: 'actor', bus: b, beforeAll: true, afterAll: true }))
+        .toThrow('an actor cannot be define with beforAll and afterAll');
+    });
+
+    it('should not construct for an actor with beforeAll and beforeActor field', () => {
+      const beforeActors = [{ name: 'a' }, { name: 'b' }];
+      const b = new Bus({ name: 'bus' });
+      expect(() => new (<any> Actor)({ name: 'actor', bus: b, beforeAll: true, beforeActors }))
+        .toThrow('an actor cannot define a beforeAll or afterAll with a beforeActor list');
+    });
+
+    it('should not construct for an actor with afterAll and beforeActor field', () => {
+      const beforeActors = [{ name: 'a' }, { name: 'b' }];
+      const b = new Bus({ name: 'bus' });
+      expect(() => new (<any> Actor)({ name: 'actor', bus: b, afterAll: true, beforeActors }))
+        .toThrow('an actor cannot define a beforeAll or afterAll with a beforeActor list');
+    });
+
+    it('should be a Actor constructor with a beforeAll field', () => {
+      const b = new Bus({ name: 'bus' });
+      const actor1 = new (<any> Actor)({ name: 'actor1', bus: b });
+      const actor2 = new (<any> Actor)({ name: 'actor2', bus: b });
+      const actor3 = new (<any> Actor)({ name: 'actor3', bus: b, beforeAll: true });
+      expect((<any> b).actors).toStrictEqual([ actor3, actor1, actor2 ]);
+    });
+
+    it('should be a Actor constructor with a afterAll field', () => {
+      const b = new Bus({ name: 'bus' });
+      const actor1 = new (<any> Actor)({ name: 'actor1', bus: b });
+      const actor2 = new (<any> Actor)({ name: 'actor2', bus: b, afterAll: true });
+      const actor3 = new (<any> Actor)({ name: 'actor3', bus: b });
+      expect((<any> b).actors).toStrictEqual([ actor1, actor3, actor2 ]);
     });
   });
 

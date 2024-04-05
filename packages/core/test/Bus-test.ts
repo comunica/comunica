@@ -64,6 +64,23 @@ describe('Bus', () => {
       expect(bus.actors).toHaveLength(1);
     });
 
+    it('should allow an actor to be subscribed before all', () => {
+      bus.subscribe(actor1, true);
+      expect(bus.actors).toContain(actor1);
+      expect(bus.actors).toHaveLength(1);
+    });
+
+    it('should allow an actor to be subscribed after all', () => {
+      bus.subscribe(actor1, undefined, true);
+      expect(bus.actors).toContain(actor1);
+      expect(bus.actors).toHaveLength(1);
+    });
+
+    it('should not allow an actor to be subscribed after all and before all', () => {
+      expect(() => bus.subscribe(actor1, true, true))
+        .toThrow(`the actor ${actor1.name} cannot be defined to be before all or after all`);
+    });
+
     it('should allow an actor to be subscribed and unsubscribed', () => {
       bus.subscribe(actor1);
       expect(bus.actors).toContain(actor1);
@@ -88,6 +105,54 @@ describe('Bus', () => {
       expect(bus.actors).toContain(actor2);
       expect(bus.actors).not.toContain(actor3);
       expect(bus.actors).toHaveLength(1);
+    });
+
+    it('should be consistent when defining an actor to be first', () => {
+      bus.subscribe(actor1);
+      bus.subscribe(actor2);
+      bus.subscribe(actor3, true);
+      expect(bus.actors).toContain(actor3);
+      expect(bus.actors).toContain(actor1);
+      expect(bus.actors).toContain(actor2);
+      expect(bus.actors).toHaveLength(3);
+      expect(bus.unsubscribe(actor1)).toBeTruthy();
+      expect(bus.actors).toHaveLength(2);
+      expect(bus.unsubscribe(actor3)).toBeTruthy();
+      expect(bus.actors).not.toContain(actor1);
+      expect(bus.actors).toContain(actor2);
+      expect(bus.actors).not.toContain(actor3);
+      expect(bus.actors).toHaveLength(1);
+    });
+
+    it('should be consistent when defining to be the last actor', () => {
+      bus.subscribe(actor1, false, true);
+      bus.subscribe(actor2);
+      bus.subscribe(actor3);
+      expect(bus.actors).toContain(actor2);
+      expect(bus.actors).toContain(actor3);
+      expect(bus.actors).toContain(actor1);
+      expect(bus.actors).toHaveLength(3);
+      expect(bus.unsubscribe(actor1)).toBeTruthy();
+      expect(bus.actors).toHaveLength(2);
+      expect(bus.unsubscribe(actor3)).toBeTruthy();
+      expect(bus.actors).not.toContain(actor1);
+      expect(bus.actors).toContain(actor2);
+      expect(bus.actors).not.toContain(actor3);
+      expect(bus.actors).toHaveLength(1);
+    });
+
+    it('should throw an error given two actors are defined to be last', () => {
+      bus.subscribe(actor1);
+      bus.subscribe(actor2, undefined, true);
+      expect(() => bus.subscribe(actor3, undefined, true))
+        .toThrow(`the last actor ${actor2.name} was already defined when trying to define as first actor ${actor3.name}`);
+    });
+
+    it('should throw an error given two actors are defined to be first', () => {
+      bus.subscribe(actor1, true);
+      bus.subscribe(actor2);
+      expect(() => bus.subscribe(actor3, true))
+        .toThrow(`the first actor ${actor1.name} was already defined when trying to define as first actor ${actor3.name}`);
     });
 
     it('should allow an actor to be subscribed multiple times', () => {
@@ -294,7 +359,7 @@ describe('Bus', () => {
       });
 
       it('should not change the effective order when a dependency is added for an unsubscribed actor', () => {
-        bus.addDependencies(actor2, [{}]);
+        bus.addDependencies(actor2, [{ name: 'unsubscribed' }]);
         expect(bus.actors).toEqual([ actor1, actor2, actor3 ]);
       });
 
@@ -316,6 +381,23 @@ describe('Bus', () => {
         bus.addDependencies(actor2, [ actor3 ]);
         expect(() => bus.addDependencies(actor3, [ actor1 ]))
           .toThrow(new Error('Cyclic dependency links detected in bus bus'));
+      });
+    });
+
+    describe('inconsistency with beforeAll and before', () => {
+      it('should error if an actor with beforeActor dependencies is dependent on an actor with beforeAll', () => {
+        bus = new Bus({ name: 'bus' });
+        const actor1o = new (<any> Actor)({ name: 'actor1o', bus, beforeAll: true });
+        expect(() => new (<any> Actor)({ name: 'actor2o', bus, beforeActors: [ actor1o ]}))
+          .toThrow(`The depencies of actor2o are inconsistent because the actor ${actor1o.name} is defined to be the first actor`);
+      });
+
+      it(`should error if an actor with a beforeActor dependencies is dependent on an actor with beforeAll 
+      given the beforeAll actor is defined after`, () => {
+        bus = new Bus({ name: 'bus' });
+        new (<any> Actor)({ name: 'actor1o', bus, beforeActors: [{ name: 'actor2o' }]});
+        expect(() => new (<any> Actor)({ name: 'actor2o', bus, beforeAll: true }))
+          .toThrow(`The depencies of actor1o are inconsistent because the actor actor2o is defined to be the first actor`);
       });
     });
 
@@ -343,6 +425,101 @@ describe('Bus', () => {
 
         expect(bus.publish({ a: 'b' })[2].actor).toBe(actor1o);
         expect(bus.publish({ a: 'b' })[2].reply).toBeInstanceOf(Promise);
+      });
+    });
+
+    describe('with ordered actors with after all', () => {
+      let actor1o: Actor<IAction, IActorTest, IActorOutput>;
+      let actor2o: Actor<IAction, IActorTest, IActorOutput>;
+      let actor3o: Actor<IAction, IActorTest, IActorOutput>;
+      let actor4o: Actor<IAction, IActorTest, IActorOutput>;
+
+      beforeEach(() => {
+        bus = new Bus({ name: 'bus1' });
+        actor1o = new (<any> Actor)({ name: 'actor1o', bus, afterAll: true });
+        actor2o = new (<any> Actor)({ name: 'actor2o', bus, beforeActors: [ actor1o ]});
+        actor3o = new (<any> Actor)({ name: 'actor3o', bus, beforeActors: [ actor2o ]});
+        actor4o = new (<any> Actor)({ name: 'actor4o', bus });
+
+        (<any> actor1o).test = actorTest;
+        (<any> actor2o).test = actorTest;
+        (<any> actor3o).test = actorTest;
+        (<any> actor4o).test = actorTest;
+      });
+
+      it('should receive correct publication replies', () => {
+        expect(bus.publish({ a: 'b' })[0].actor).toBe(actor3o);
+        expect(bus.publish({ a: 'b' })[0].reply).toBeInstanceOf(Promise);
+
+        expect(bus.publish({ a: 'b' })[1].actor).toBe(actor4o);
+        expect(bus.publish({ a: 'b' })[1].reply).toBeInstanceOf(Promise);
+
+        expect(bus.publish({ a: 'b' })[2].actor).toBe(actor2o);
+        expect(bus.publish({ a: 'b' })[2].reply).toBeInstanceOf(Promise);
+
+        expect(bus.publish({ a: 'b' })[3].actor).toBe(actor1o);
+        expect(bus.publish({ a: 'b' })[3].reply).toBeInstanceOf(Promise);
+      });
+    });
+
+    describe('with ordered actors with before all', () => {
+      let actor1o: Actor<IAction, IActorTest, IActorOutput>;
+      let actor2o: Actor<IAction, IActorTest, IActorOutput>;
+      let actor3o: Actor<IAction, IActorTest, IActorOutput>;
+
+      beforeEach(() => {
+        actor1o = new (<any> Actor)({ name: 'actor1o', bus });
+        actor2o = new (<any> Actor)({ name: 'actor2o', bus, beforeActors: [ actor1o ]});
+        actor3o = new (<any> Actor)({ name: 'actor3o', bus, beforeAll: true });
+
+        (<any> actor1o).test = actorTest;
+        (<any> actor2o).test = actorTest;
+        (<any> actor3o).test = actorTest;
+      });
+
+      it('should receive correct publication replies', () => {
+        expect(bus.publish({ a: 'b' })[0].actor).toBe(actor3o);
+        expect(bus.publish({ a: 'b' })[0].reply).toBeInstanceOf(Promise);
+
+        expect(bus.publish({ a: 'b' })[1].actor).toBe(actor2o);
+        expect(bus.publish({ a: 'b' })[1].reply).toBeInstanceOf(Promise);
+
+        expect(bus.publish({ a: 'b' })[2].actor).toBe(actor1o);
+        expect(bus.publish({ a: 'b' })[2].reply).toBeInstanceOf(Promise);
+      });
+    });
+
+    describe('with ordered actors with after all and before all', () => {
+      let actor1o: Actor<IAction, IActorTest, IActorOutput>;
+      let actor2o: Actor<IAction, IActorTest, IActorOutput>;
+      let actor3o: Actor<IAction, IActorTest, IActorOutput>;
+      let actor4o: Actor<IAction, IActorTest, IActorOutput>;
+
+      beforeEach(() => {
+        bus = new Bus({ name: 'bus1' });
+        actor1o = new (<any> Actor)({ name: 'actor1o', bus, afterAll: true });
+        actor2o = new (<any> Actor)({ name: 'actor2o', bus, beforeActors: [ actor1o ]});
+        actor3o = new (<any> Actor)({ name: 'actor3o', bus, beforeActors: [ actor2o ]});
+        actor4o = new (<any> Actor)({ name: 'actor4o', bus, beforeAll: true });
+
+        (<any> actor1o).test = actorTest;
+        (<any> actor2o).test = actorTest;
+        (<any> actor3o).test = actorTest;
+        (<any> actor4o).test = actorTest;
+      });
+
+      it('should receive correct publication replies', () => {
+        expect(bus.publish({ a: 'b' })[0].actor).toBe(actor4o);
+        expect(bus.publish({ a: 'b' })[0].reply).toBeInstanceOf(Promise);
+
+        expect(bus.publish({ a: 'b' })[1].actor).toBe(actor3o);
+        expect(bus.publish({ a: 'b' })[1].reply).toBeInstanceOf(Promise);
+
+        expect(bus.publish({ a: 'b' })[2].actor).toBe(actor2o);
+        expect(bus.publish({ a: 'b' })[2].reply).toBeInstanceOf(Promise);
+
+        expect(bus.publish({ a: 'b' })[3].actor).toBe(actor1o);
+        expect(bus.publish({ a: 'b' })[3].reply).toBeInstanceOf(Promise);
       });
     });
   });
