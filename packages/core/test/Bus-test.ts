@@ -78,7 +78,7 @@ describe('Bus', () => {
 
     it('should not allow an actor to be subscribed after all and before all', () => {
       expect(() => bus.subscribe(actor1, true, true))
-        .toThrow(`the actor ${actor1.name} cannot be defined to be before all or after all`);
+        .toThrow(`the actor ${actor1.name} cannot be defined to be the first and last actor`);
     });
 
     it('should allow an actor to be subscribed and unsubscribed', () => {
@@ -145,14 +145,14 @@ describe('Bus', () => {
       bus.subscribe(actor1);
       bus.subscribe(actor2, undefined, true);
       expect(() => bus.subscribe(actor3, undefined, true))
-        .toThrow(`the last actor ${actor2.name} was already defined when trying to define as first actor ${actor3.name}`);
+        .toThrow(`the last actor ${actor2.name} was already defined when trying to define ${actor3.name} has first actor`);
     });
 
     it('should throw an error given two actors are defined to be first', () => {
       bus.subscribe(actor1, true);
       bus.subscribe(actor2);
       expect(() => bus.subscribe(actor3, true))
-        .toThrow(`the first actor ${actor1.name} was already defined when trying to define as first actor ${actor3.name}`);
+        .toThrow(`the first actor ${actor1.name} was already defined when trying to define ${actor3.name} has the first actor`);
     });
 
     it('should allow an actor to be subscribed multiple times', () => {

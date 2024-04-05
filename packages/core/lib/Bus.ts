@@ -47,7 +47,7 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
    */
   public subscribe(actor: A, firstActor?: boolean, lastActor?: boolean): void {
     if (firstActor && lastActor) {
-      throw new Error(`the actor ${actor.name} cannot be defined to be before all or after all`);
+      throw new Error(`the actor ${actor.name} cannot be defined to be the first and last actor`);
     } else if ((firstActor ?? false) && !this.firstActor) {
       this.actors.unshift(actor);
       this.firstActor = actor;
@@ -58,12 +58,12 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
         }
       }
     } else if (firstActor && this.firstActor) {
-      throw new Error(`the first actor ${this.firstActor.name} was already defined when trying to define as first actor ${actor.name}`);
+      throw new Error(`the first actor ${this.firstActor.name} was already defined when trying to define ${actor.name} has the first actor`);
     } else if ((lastActor ?? false) && !this.lastActor) {
       this.lastActor = actor;
       this.actors.push(actor);
     } else if (lastActor && this.lastActor) {
-      throw new Error(`the last actor ${this.lastActor.name} was already defined when trying to define as first actor ${actor.name}`);
+      throw new Error(`the last actor ${this.lastActor.name} was already defined when trying to define ${actor.name} has first actor`);
     } else {
       if (this.lastActor !== undefined) {
         this.actors.pop();
