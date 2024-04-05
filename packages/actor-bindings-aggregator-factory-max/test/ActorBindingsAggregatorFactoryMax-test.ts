@@ -1,13 +1,12 @@
+import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { ActionContext, Bus } from '@comunica/core';
-import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
-import { BF, DF, makeAggregate } from '@comunica/jest';
-import type { IExpressionEvaluatorFactory } from '@comunica/types';
+import { BF, DF, getMockEEFactory, makeAggregate } from '@comunica/jest';
 import { ArrayIterator } from 'asynciterator';
 import { ActorBindingsAggregatorFactoryMax } from '../lib';
 
 describe('ActorBindingsAggregatorFactoryMax', () => {
   let bus: any;
-  let expressionEvaluatorFactory: IExpressionEvaluatorFactory;
+  let expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -25,7 +24,7 @@ describe('ActorBindingsAggregatorFactoryMax', () => {
       }),
     };
 
-    expressionEvaluatorFactory = new ExpressionEvaluatorFactory({
+    expressionEvaluatorFactory = getMockEEFactory({
       mediatorQueryOperation,
       mediatorBindingsAggregatorFactory: mediatorQueryOperation,
     });
@@ -35,13 +34,12 @@ describe('ActorBindingsAggregatorFactoryMax', () => {
     let actor: ActorBindingsAggregatorFactoryMax;
 
     beforeEach(() => {
-      actor = new ActorBindingsAggregatorFactoryMax({ name: 'actor', bus });
+      actor = new ActorBindingsAggregatorFactoryMax({ name: 'actor', bus, factory: expressionEvaluatorFactory });
     });
 
     describe('test', () => {
       it('accepts max 1', () => {
         return expect(actor.test({
-          factory: expressionEvaluatorFactory,
           context: new ActionContext(),
           expr: makeAggregate('max', false),
         })).resolves.toEqual({});
@@ -49,7 +47,6 @@ describe('ActorBindingsAggregatorFactoryMax', () => {
 
       it('accepts max 2', () => {
         return expect(actor.test({
-          factory: expressionEvaluatorFactory,
           context: new ActionContext(),
           expr: makeAggregate('max', true),
         })).resolves.toEqual({});
@@ -57,7 +54,6 @@ describe('ActorBindingsAggregatorFactoryMax', () => {
 
       it('rejects sum', () => {
         return expect(actor.test({
-          factory: expressionEvaluatorFactory,
           context: new ActionContext(),
           expr: makeAggregate('sum', false),
         })).rejects.toThrow();
@@ -66,7 +62,6 @@ describe('ActorBindingsAggregatorFactoryMax', () => {
 
     it('should run', () => {
       return expect(actor.run({
-        factory: expressionEvaluatorFactory,
         context: new ActionContext(),
         expr: makeAggregate('max', false),
       })).resolves.toMatchObject({

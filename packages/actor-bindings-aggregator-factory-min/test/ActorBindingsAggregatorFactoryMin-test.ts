@@ -1,13 +1,12 @@
+import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { ActionContext, Bus } from '@comunica/core';
-import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
-import { BF, DF, makeAggregate } from '@comunica/jest';
-import type { IExpressionEvaluatorFactory } from '@comunica/types';
+import { BF, DF, getMockEEFactory, makeAggregate } from '@comunica/jest';
 import { ArrayIterator } from 'asynciterator';
 import { ActorBindingsAggregatorFactoryMin } from '../lib';
 
 describe('ActorBindingsAggregatorFactoryMin', () => {
   let bus: any;
-  let expressionEvaluatorFactory: IExpressionEvaluatorFactory;
+  let expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -25,7 +24,7 @@ describe('ActorBindingsAggregatorFactoryMin', () => {
       }),
     };
 
-    expressionEvaluatorFactory = new ExpressionEvaluatorFactory({
+    expressionEvaluatorFactory = getMockEEFactory({
       mediatorQueryOperation,
       mediatorBindingsAggregatorFactory: mediatorQueryOperation,
     });
@@ -35,13 +34,16 @@ describe('ActorBindingsAggregatorFactoryMin', () => {
     let actor: ActorBindingsAggregatorFactoryMin;
 
     beforeEach(() => {
-      actor = new ActorBindingsAggregatorFactoryMin({ name: 'actor', bus });
+      actor = new ActorBindingsAggregatorFactoryMin({
+        name: 'actor',
+        bus,
+        factory: expressionEvaluatorFactory,
+      });
     });
 
     describe('test', () => {
       it('accepts min 1', () => {
         return expect(actor.test({
-          factory: expressionEvaluatorFactory,
           context: new ActionContext(),
           expr: makeAggregate('min', false),
         })).resolves.toEqual({});
@@ -49,7 +51,6 @@ describe('ActorBindingsAggregatorFactoryMin', () => {
 
       it('accepts min 2', () => {
         return expect(actor.test({
-          factory: expressionEvaluatorFactory,
           context: new ActionContext(),
           expr: makeAggregate('min', true),
         })).resolves.toEqual({});
@@ -57,7 +58,6 @@ describe('ActorBindingsAggregatorFactoryMin', () => {
 
       it('rejects sum', () => {
         return expect(actor.test({
-          factory: expressionEvaluatorFactory,
           context: new ActionContext(),
           expr: makeAggregate('sum', false),
         })).rejects.toThrow();
@@ -66,7 +66,6 @@ describe('ActorBindingsAggregatorFactoryMin', () => {
 
     it('should run', () => {
       return expect(actor.run({
-        factory: expressionEvaluatorFactory,
         context: new ActionContext(),
         expr: makeAggregate('min', false),
       })).resolves.toMatchObject({

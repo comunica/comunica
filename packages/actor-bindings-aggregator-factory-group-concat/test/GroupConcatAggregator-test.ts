@@ -1,8 +1,8 @@
 import type { IBindingsAggregator } from '@comunica/bus-bindings-aggeregator-factory';
+import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { ActionContext } from '@comunica/core';
-import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
-import { BF, DF, int, makeAggregate } from '@comunica/jest';
-import type { IActionContext, IExpressionEvaluatorFactory } from '@comunica/types';
+import { BF, DF, getMockEEFactory, int, makeAggregate } from '@comunica/jest';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { GroupConcatAggregator } from '../lib/GroupConcatAggregator';
@@ -15,21 +15,22 @@ async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Binding
 }
 
 async function createAggregator({ expressionEvaluatorFactory, context, distinct, separator }: {
-  expressionEvaluatorFactory: IExpressionEvaluatorFactory;
+  expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
   context: IActionContext;
   distinct: boolean;
   separator?: string;
 }): Promise<GroupConcatAggregator> {
   return new GroupConcatAggregator(
-    await expressionEvaluatorFactory.createEvaluator(
-      makeAggregate('group_concat', distinct, separator).expression, context,
-    ),
+    (await expressionEvaluatorFactory.run({
+      algExpr: makeAggregate('group_concat', distinct, separator).expression,
+      context,
+    })).expressionEvaluator,
     distinct,
     separator,
   );
 }
 describe('CountAggregator', () => {
-  let expressionEvaluatorFactory: IExpressionEvaluatorFactory;
+  let expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
   let context: IActionContext;
 
   beforeEach(() => {
@@ -46,7 +47,7 @@ describe('CountAggregator', () => {
       }),
     };
 
-    expressionEvaluatorFactory = new ExpressionEvaluatorFactory({
+    expressionEvaluatorFactory = getMockEEFactory({
       mediatorQueryOperation,
       mediatorBindingsAggregatorFactory: mediatorQueryOperation,
     });

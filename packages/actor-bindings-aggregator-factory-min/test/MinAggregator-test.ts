@@ -1,8 +1,8 @@
 import type { IBindingsAggregator } from '@comunica/bus-bindings-aggeregator-factory';
+import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { ActionContext } from '@comunica/core';
-import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
-import { BF, date, DF, double, float, int, makeAggregate, nonLiteral, string } from '@comunica/jest';
-import type { IActionContext, IExpressionEvaluatorFactory } from '@comunica/types';
+import { BF, date, DF, double, float, getMockEEFactory, int, makeAggregate, nonLiteral, string } from '@comunica/jest';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { MinAggregator } from '../lib/MinAggregator';
@@ -15,20 +15,23 @@ async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Binding
 }
 
 async function createAggregator({ expressionEvaluatorFactory, context, distinct, throwError }: {
-  expressionEvaluatorFactory: IExpressionEvaluatorFactory;
+  expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
   context: IActionContext;
   distinct: boolean;
   throwError?: boolean;
 }): Promise<MinAggregator> {
   return new MinAggregator(
-    await expressionEvaluatorFactory.createEvaluator(makeAggregate('min', distinct).expression, context),
+    (await expressionEvaluatorFactory.run({
+      algExpr: makeAggregate('min', distinct).expression,
+      context,
+    })).expressionEvaluator,
     distinct,
     await expressionEvaluatorFactory.createTermComparator({ context }),
     throwError,
   );
 }
 describe('MinAggregator', () => {
-  let expressionEvaluatorFactory: IExpressionEvaluatorFactory;
+  let expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
   let context: IActionContext;
 
   beforeEach(() => {
@@ -45,7 +48,7 @@ describe('MinAggregator', () => {
       }),
     };
 
-    expressionEvaluatorFactory = new ExpressionEvaluatorFactory({
+    expressionEvaluatorFactory = getMockEEFactory({
       mediatorQueryOperation,
       mediatorBindingsAggregatorFactory: mediatorQueryOperation,
     });

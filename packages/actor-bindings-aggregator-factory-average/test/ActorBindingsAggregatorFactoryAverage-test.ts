@@ -1,13 +1,13 @@
+import { createFuncMediator } from '@comunica/actor-functions-wrapper-all/test/util';
+import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { ActionContext, Bus } from '@comunica/core';
-import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
-import { BF, DF, makeAggregate } from '@comunica/jest';
-import type { IExpressionEvaluatorFactory } from '@comunica/types';
+import { BF, DF, getMockEEFactory, makeAggregate } from '@comunica/jest';
 import { ArrayIterator } from 'asynciterator';
 import { ActorBindingsAggregatorFactoryAverage } from '../lib';
 
 describe('ActorBindingsAggregatorFactoryAverage', () => {
   let bus: any;
-  let expressionEvaluatorFactory: IExpressionEvaluatorFactory;
+  let expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -25,9 +25,10 @@ describe('ActorBindingsAggregatorFactoryAverage', () => {
       }),
     };
 
-    expressionEvaluatorFactory = new ExpressionEvaluatorFactory({
+    expressionEvaluatorFactory = getMockEEFactory({
       mediatorQueryOperation,
       mediatorBindingsAggregatorFactory: mediatorQueryOperation,
+      mediatorFunctions: createFuncMediator(),
     });
   });
 
@@ -35,13 +36,16 @@ describe('ActorBindingsAggregatorFactoryAverage', () => {
     let actor: ActorBindingsAggregatorFactoryAverage;
 
     beforeEach(() => {
-      actor = new ActorBindingsAggregatorFactoryAverage({ name: 'actor', bus });
+      actor = new ActorBindingsAggregatorFactoryAverage({
+        name: 'actor',
+        bus,
+        factory: expressionEvaluatorFactory,
+      });
     });
 
     describe('test', () => {
       it('accepts average 1', () => {
         return expect(actor.test({
-          factory: expressionEvaluatorFactory,
           context: new ActionContext(),
           expr: makeAggregate('avg', false),
         })).resolves.toEqual({});
@@ -49,7 +53,6 @@ describe('ActorBindingsAggregatorFactoryAverage', () => {
 
       it('accepts average 2', () => {
         return expect(actor.test({
-          factory: expressionEvaluatorFactory,
           context: new ActionContext(),
           expr: makeAggregate('avg', true),
         })).resolves.toEqual({});
@@ -57,7 +60,6 @@ describe('ActorBindingsAggregatorFactoryAverage', () => {
 
       it('rejects sum', () => {
         return expect(actor.test({
-          factory: expressionEvaluatorFactory,
           context: new ActionContext(),
           expr: makeAggregate('sum', false),
         })).rejects.toThrow();
@@ -66,7 +68,6 @@ describe('ActorBindingsAggregatorFactoryAverage', () => {
 
     it('should run', () => {
       return expect(actor.run({
-        factory: expressionEvaluatorFactory,
         context: new ActionContext(),
         expr: makeAggregate('avg', false),
       })).resolves.toMatchObject({

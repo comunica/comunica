@@ -1,8 +1,10 @@
+import { createFuncMediator } from '@comunica/actor-functions-wrapper-all/test/util';
 import type { IBindingsAggregator } from '@comunica/bus-bindings-aggeregator-factory';
+import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { ActionContext } from '@comunica/core';
-import { ExpressionEvaluatorFactory, RegularOperator } from '@comunica/expression-evaluator';
-import { BF, decimal, DF, float, int, makeAggregate, nonLiteral } from '@comunica/jest';
-import type { IActionContext, IExpressionEvaluatorFactory } from '@comunica/types';
+import { RegularOperator } from '@comunica/expression-evaluator';
+import { BF, decimal, DF, float, getMockEEFactory, int, makeAggregate, nonLiteral } from '@comunica/jest';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { SumAggregator } from '../lib';
@@ -15,12 +17,15 @@ async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Binding
 }
 
 async function createAggregator({ expressionEvaluatorFactory, context, distinct }: {
-  expressionEvaluatorFactory: IExpressionEvaluatorFactory;
+  expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
   context: IActionContext;
   distinct: boolean;
 }): Promise<SumAggregator> {
   return new SumAggregator(
-    await expressionEvaluatorFactory.createEvaluator(makeAggregate('sum', distinct).expression, context),
+    (await expressionEvaluatorFactory.run({
+      algExpr: makeAggregate('sum', distinct).expression,
+      context,
+    })).expressionEvaluator,
     distinct,
     await expressionEvaluatorFactory.createFunction({
       context,
@@ -31,7 +36,7 @@ async function createAggregator({ expressionEvaluatorFactory, context, distinct 
 }
 
 describe('SumAggregator', () => {
-  let expressionEvaluatorFactory: IExpressionEvaluatorFactory;
+  let expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
   let context: IActionContext;
 
   beforeEach(() => {
@@ -48,9 +53,10 @@ describe('SumAggregator', () => {
       }),
     };
 
-    expressionEvaluatorFactory = new ExpressionEvaluatorFactory({
+    expressionEvaluatorFactory = getMockEEFactory({
       mediatorQueryOperation,
       mediatorBindingsAggregatorFactory: mediatorQueryOperation,
+      mediatorFunctions: createFuncMediator(),
     });
 
     context = new ActionContext();

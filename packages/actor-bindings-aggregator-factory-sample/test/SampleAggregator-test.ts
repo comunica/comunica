@@ -1,8 +1,8 @@
 import type { IBindingsAggregator } from '@comunica/bus-bindings-aggeregator-factory';
+import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { ActionContext } from '@comunica/core';
-import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
-import { BF, DF, int, makeAggregate } from '@comunica/jest';
-import type { IActionContext, IExpressionEvaluatorFactory } from '@comunica/types';
+import { BF, DF, getMockEEFactory, int, makeAggregate } from '@comunica/jest';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { SampleAggregator } from '../lib';
@@ -15,17 +15,20 @@ async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Binding
 }
 
 async function createAggregator({ expressionEvaluatorFactory, context, distinct }: {
-  expressionEvaluatorFactory: IExpressionEvaluatorFactory;
+  expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
   context: IActionContext;
   distinct: boolean;
 }): Promise<SampleAggregator> {
   return new SampleAggregator(
-    await expressionEvaluatorFactory.createEvaluator(makeAggregate('sample', distinct).expression, context),
+    (await expressionEvaluatorFactory.run({
+      algExpr: makeAggregate('sample', distinct).expression,
+      context,
+    })).expressionEvaluator,
     distinct,
   );
 }
 describe('SampleAggregator', () => {
-  let expressionEvaluatorFactory: IExpressionEvaluatorFactory;
+  let expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
   let context: IActionContext;
 
   beforeEach(() => {
@@ -42,7 +45,7 @@ describe('SampleAggregator', () => {
       }),
     };
 
-    expressionEvaluatorFactory = new ExpressionEvaluatorFactory({
+    expressionEvaluatorFactory = getMockEEFactory({
       mediatorQueryOperation,
       mediatorBindingsAggregatorFactory: mediatorQueryOperation,
     });
