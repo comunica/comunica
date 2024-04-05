@@ -3,9 +3,9 @@ import {
   dateTyped,
   dateTimeTyped,
   yearMonthDurationTyped,
-} from '../../../util/Aliases';
-import { Notation } from '../../../util/TestTable';
-import { runTestTable } from '../../../util/utils';
+} from '@comunica/expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { runFuncTestTable } from '../../../util';
 
 describe('Add duration and yearMonthDuration 01', () => {
   /**
@@ -20,7 +20,7 @@ describe('Add duration and yearMonthDuration 01', () => {
    */
 
   describe('respect the duration_dayTimeDuration_add-01 spec', () => {
-    runTestTable({
+    runFuncTestTable({
       operation: '+',
       arity: 2,
       notation: Notation.Infix,

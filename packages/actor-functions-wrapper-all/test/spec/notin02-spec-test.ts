@@ -1,6 +1,6 @@
-import { bool } from '../util/Aliases';
-import { Notation } from '../util/TestTable';
-import { runTestTable } from '../util/utils';
+import { bool } from '@comunica/expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { runFuncTestTable } from '../util';
 
 /**
  * REQUEST: notin02.rq
@@ -26,7 +26,7 @@ import { runTestTable } from '../util/utils';
  */
 
 describe('We should respect the notin02 spec', () => {
-  runTestTable({
+  runFuncTestTable({
     arity: 2,
     notation: Notation.Infix,
     operation: 'NOT IN',

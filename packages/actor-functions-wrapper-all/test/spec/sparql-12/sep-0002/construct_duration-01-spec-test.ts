@@ -1,8 +1,10 @@
 /* eslint max-len: 0 */
-import { TypeURL } from '../../../../lib/util/Consts';
-import { compactTermString } from '../../../util/Aliases';
-import { Notation } from '../../../util/TestTable';
-import { runTestTable } from '../../../util/utils';
+import { TypeURL } from '@comunica/expression-evaluator';
+import {
+  compactTermString,
+} from '@comunica/expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { runFuncTestTable } from '../../../util';
 
 describe('construct duration', () => {
   /**
@@ -25,7 +27,7 @@ describe('construct duration', () => {
    */
 
   describe('respect the construct_duration-01 spec', () => {
-    runTestTable({
+    runFuncTestTable({
       operation: 'xsd:duration',
       arity: 1,
       notation: Notation.Function,

@@ -1,8 +1,7 @@
-import { bool, int } from '../util/Aliases';
-import { Notation } from '../util/TestTable';
-import type { ITestTableConfigBase } from '../util/utils';
-
-import { runTestTable } from '../util/utils';
+import { bool, int } from '@comunica/expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import type { ITestTableConfigBase } from '@comunica/expression-evaluator/test/util/utils';
+import { runFuncTestTable } from '../util';
 
 /**
  * REQUEST: struuid01.rq
@@ -37,21 +36,21 @@ describe('We should respect the struuid01 spec', () => {
     notation: Notation.Function,
     operation: '',
   };
-  runTestTable({
+  runFuncTestTable({
     ...config,
     operation: 'ISLITERAL',
     testTable: `
       STRUUID() = true    
     `,
   });
-  runTestTable({
+  runFuncTestTable({
     ...config,
     operation: 'REGEX',
     testTable: `
       STRUUID() "^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$" "i" = true    
     `,
   });
-  runTestTable({
+  runFuncTestTable({
     ...config,
     operation: 'STRLEN',
     testTable: `

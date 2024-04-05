@@ -1,6 +1,6 @@
-import { int } from '../util/Aliases';
-import { Notation } from '../util/TestTable';
-import { runTestTable } from '../util/utils';
+import { int } from '@comunica/expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { runFuncTestTable } from '../util';
 import * as Data from './_data';
 
 describe('Year', () => {
@@ -29,7 +29,7 @@ describe('Year', () => {
 
   describe('We should respect the year-01 spec', () => {
     const { d1, d2, d3, d4 } = Data.data();
-    runTestTable({
+    runFuncTestTable({
       operation: 'YEAR',
       arity: 1,
       notation: Notation.Function,
@@ -74,7 +74,7 @@ describe('Year', () => {
 
   describe('We should allow YEAR on xsd:dateTime', () => {
     const { d1, d2, d3, d4 } = Data.data();
-    runTestTable({
+    runFuncTestTable({
       operation: 'YEAR',
       arity: 1,
       notation: Notation.Function,

@@ -1,7 +1,7 @@
-import { bool } from '../util/Aliases';
-import { Notation } from '../util/TestTable';
-import type { ITestTableConfigBase } from '../util/utils';
-import { runTestTable } from '../util/utils';
+import { bool } from '@comunica/expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import type { ITestTableConfigBase } from '@comunica/expression-evaluator/test/util/utils';
+import { runFuncTestTable } from '../util';
 
 describe('We should respect the rand01 spec', () => {
   const config: ITestTableConfigBase = {
@@ -10,21 +10,21 @@ describe('We should respect the rand01 spec', () => {
     aliases: bool,
     operation: '',
   };
-  runTestTable({
+  runFuncTestTable({
     ...config,
     operation: '>=',
     testTable: `
       RAND() 0.0 = true
     `,
   });
-  runTestTable({
+  runFuncTestTable({
     ...config,
     operation: '<',
     testTable: `
       RAND() 1.0 = true    
     `,
   });
-  runTestTable({
+  runFuncTestTable({
     arity: 1,
     operation: 'DATATYPE',
     notation: Notation.Function,

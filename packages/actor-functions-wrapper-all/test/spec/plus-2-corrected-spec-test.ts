@@ -1,5 +1,5 @@
-import { Notation } from '../util/TestTable';
-import { runTestTable } from '../util/utils';
+import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { runFuncTestTable } from '../util';
 import * as Data from './_data';
 
 /**
@@ -37,7 +37,7 @@ describe('We should respect the plus-2-corrected spec', () => {
     x7p, x7q,
     x8p, x8q,
   } = Data.dataBuiltin3();
-  runTestTable({
+  runFuncTestTable({
     notation: Notation.Infix,
     operation: '+',
     arity: 2,

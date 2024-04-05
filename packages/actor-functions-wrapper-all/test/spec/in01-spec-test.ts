@@ -1,6 +1,6 @@
-import { bool } from '../util/Aliases';
-import { Notation } from '../util/TestTable';
-import { runTestTable } from '../util/utils';
+import { bool } from '@comunica/expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { runFuncTestTable } from '../util';
 
 /**
  * REQUEST: in01.rq
@@ -25,7 +25,7 @@ import { runTestTable } from '../util/utils';
  */
 
 describe('We should respect the in01 spec', () => {
-  runTestTable({
+  runFuncTestTable({
     aliases: bool,
     notation: Notation.Infix,
     operation: 'IN',

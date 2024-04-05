@@ -1,7 +1,7 @@
 /* eslint max-len: 0 */
-import { dateTimeTyped, dayTimeDurationTyped } from '../../../util/Aliases';
-import { Notation } from '../../../util/TestTable';
-import { runTestTable } from '../../../util/utils';
+import { dayTimeDurationTyped, dateTimeTyped } from '@comunica/expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { runFuncTestTable } from '../../../util';
 
 describe('adjust dateTime duration', () => {
   /**
@@ -21,7 +21,7 @@ describe('adjust dateTime duration', () => {
   // ADJUST has jet to be implemented
   // eslint-disable-next-line mocha/no-skipped-tests
   describe.skip('respect the adjust_dateTime-01 spec', () => {
-    runTestTable({
+    runFuncTestTable({
       operation: 'ADJUST',
       arity: 2,
       notation: Notation.Function,

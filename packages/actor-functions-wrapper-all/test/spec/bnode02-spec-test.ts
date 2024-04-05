@@ -1,6 +1,6 @@
-import { bool } from '../util/Aliases';
-import { Notation } from '../util/TestTable';
-import { runTestTable } from '../util/utils';
+import { bool } from '@comunica/expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { runFuncTestTable } from '../util';
 
 /**
  * REQUEST: bnode02.rq
@@ -27,7 +27,7 @@ import { runTestTable } from '../util/utils';
 
 // This does of course not correspond to the actual spec test.
 describe('We should respect the bnode02 spec', () => {
-  runTestTable({
+  runFuncTestTable({
     arity: 2,
     operation: '!=',
     aliases: bool,

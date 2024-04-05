@@ -1,6 +1,9 @@
-import { dateTyped, int } from '../../../util/Aliases';
-import { Notation } from '../../../util/TestTable';
-import { runTestTable } from '../../../util/utils';
+import {
+  int,
+  dateTyped,
+} from '@comunica/expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { runFuncTestTable } from '../../../util';
 
 describe('Extract date', () => {
   /**
@@ -13,7 +16,7 @@ describe('Extract date', () => {
    */
 
   describe('respect the extract_date-01 spec', () => {
-    runTestTable({
+    runFuncTestTable({
       operation: 'YEAR',
       arity: 1,
       notation: Notation.Function,
@@ -22,7 +25,7 @@ describe('Extract date', () => {
       `,
     });
 
-    runTestTable({
+    runFuncTestTable({
       operation: 'MONTH',
       arity: 1,
       notation: Notation.Function,
@@ -31,7 +34,7 @@ describe('Extract date', () => {
       `,
     });
 
-    runTestTable({
+    runFuncTestTable({
       operation: 'DAY',
       arity: 1,
       notation: Notation.Function,

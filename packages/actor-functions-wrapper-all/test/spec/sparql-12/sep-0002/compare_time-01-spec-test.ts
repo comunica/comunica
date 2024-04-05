@@ -1,6 +1,6 @@
-import { bool, timeTyped } from '../../../util/Aliases';
-import { Notation } from '../../../util/TestTable';
-import { runTestTable } from '../../../util/utils';
+import { bool, timeTyped } from '@comunica/expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { runFuncTestTable } from '../../../util';
 
 describe('compare date', () => {
   /**
@@ -20,7 +20,7 @@ describe('compare date', () => {
    */
 
   describe('respect the op:time-equal xpath-functions spec', () => {
-    runTestTable({
+    runFuncTestTable({
       operation: '=',
       arity: 2,
       notation: Notation.Infix,
@@ -36,7 +36,7 @@ describe('compare date', () => {
   });
 
   describe('respect the op:time-less-than xpath-functions spec', () => {
-    runTestTable({
+    runFuncTestTable({
       operation: '<',
       arity: 2,
       notation: Notation.Infix,
@@ -52,7 +52,7 @@ describe('compare date', () => {
   });
 
   describe('respect the op:date-greater-than xpath-functions spec', () => {
-    runTestTable({
+    runFuncTestTable({
       operation: '>',
       arity: 2,
       notation: Notation.Infix,

@@ -1,5 +1,5 @@
-import { Notation } from '../../../util/TestTable';
-import { runTestTable } from '../../../util/utils';
+import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { runFuncTestTable } from '../../../util';
 
 describe('Construct duration', () => {
   /**
@@ -18,7 +18,7 @@ describe('Construct duration', () => {
    */
 
   describe('respect the construct_duration-02 spec', () => {
-    runTestTable({
+    runFuncTestTable({
       operation: 'xsd:duration',
       arity: 1,
       notation: Notation.Function,

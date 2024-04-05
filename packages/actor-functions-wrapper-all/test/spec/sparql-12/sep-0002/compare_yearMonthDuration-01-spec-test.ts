@@ -1,6 +1,6 @@
-import { bool, yearMonthDurationTyped } from '../../../util/Aliases';
-import { Notation } from '../../../util/TestTable';
-import { runTestTable } from '../../../util/utils';
+import { bool, yearMonthDurationTyped } from '@comunica/expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { runFuncTestTable } from '../../../util';
 
 describe('compare yearMonthDuration 01', () => {
   /**
@@ -19,7 +19,7 @@ describe('compare yearMonthDuration 01', () => {
    */
 
   describe('respect the lesserThan compare_yearMonthDuration-01 spec', () => {
-    runTestTable({
+    runFuncTestTable({
       operation: '<',
       arity: 2,
       notation: Notation.Infix,
@@ -35,7 +35,7 @@ describe('compare yearMonthDuration 01', () => {
   });
 
   describe('respect the largerThan compare_yearMonthDuration-01 spec', () => {
-    runTestTable({
+    runFuncTestTable({
       operation: '>',
       arity: 2,
       notation: Notation.Infix,

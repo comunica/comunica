@@ -1,5 +1,5 @@
-import { Notation } from '../util/TestTable';
-import { runTestTable } from '../util/utils';
+import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { runFuncTestTable } from '../util';
 import * as Data from './_data';
 
 /**
@@ -28,7 +28,7 @@ import * as Data from './_data';
 
 describe('We should respect the replace01 spec', () => {
   const { s1, s2, s3, s4, s5, s6, s7, s8, s9 } = Data.data3();
-  runTestTable({
+  runFuncTestTable({
     operation: 'REPLACE',
     arity: 'vary',
     notation: Notation.Function,

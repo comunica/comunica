@@ -1,6 +1,6 @@
-import { bool, durationTyped } from '../../../util/Aliases';
-import { Notation } from '../../../util/TestTable';
-import { runTestTable } from '../../../util/utils';
+import { bool, durationTyped } from '@comunica/expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { runFuncTestTable } from '../../../util';
 
 describe('compare duration 01', () => {
   /**
@@ -23,7 +23,7 @@ describe('compare duration 01', () => {
    */
 
   describe('respect the compare_duration-01 spec', () => {
-    runTestTable({
+    runFuncTestTable({
       operation: '=',
       arity: 2,
       notation: Notation.Infix,

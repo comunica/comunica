@@ -1,6 +1,9 @@
-import { int, timeTyped } from '../../../util/Aliases';
-import { Notation } from '../../../util/TestTable';
-import { runTestTable } from '../../../util/utils';
+import {
+  int,
+  timeTyped,
+} from '@comunica/expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { runFuncTestTable } from '../../../util';
 
 describe('Extract time', () => {
   /**
@@ -13,7 +16,7 @@ describe('Extract time', () => {
    */
 
   describe('respect the extract_time-01 spec', () => {
-    runTestTable({
+    runFuncTestTable({
       operation: 'HOURS',
       arity: 1,
       notation: Notation.Function,
@@ -22,7 +25,7 @@ describe('Extract time', () => {
       `,
     });
 
-    runTestTable({
+    runFuncTestTable({
       operation: 'MINUTES',
       arity: 1,
       notation: Notation.Function,
@@ -31,7 +34,7 @@ describe('Extract time', () => {
       `,
     });
 
-    runTestTable({
+    runFuncTestTable({
       operation: 'SECONDS',
       arity: 1,
       notation: Notation.Function,

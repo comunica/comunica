@@ -1,6 +1,6 @@
-import { bool, dayTimeDurationTyped } from '../../../util/Aliases';
-import { Notation } from '../../../util/TestTable';
-import { runTestTable } from '../../../util/utils';
+import { bool, dayTimeDurationTyped } from '@comunica/expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { runFuncTestTable } from '../../../util';
 
 describe('compare dayTimeDuration 01', () => {
   /**
@@ -18,7 +18,7 @@ describe('compare dayTimeDuration 01', () => {
    */
 
   describe('respect the lesserThan compare_dayTimeDuration-01 spec', () => {
-    runTestTable({
+    runFuncTestTable({
       operation: '<',
       arity: 2,
       notation: Notation.Infix,
@@ -33,7 +33,7 @@ describe('compare dayTimeDuration 01', () => {
   });
 
   describe('respect the largerThan compare_dayTimeDuration-01 spec', () => {
-    runTestTable({
+    runFuncTestTable({
       operation: '>',
       arity: 2,
       notation: Notation.Infix,

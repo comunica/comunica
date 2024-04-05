@@ -1,8 +1,8 @@
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import { Notation } from '../util/TestTable';
-import type { ITestTableConfigBase } from '../util/utils';
-import { runTestTable } from '../util/utils';
+import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import type { ITestTableConfigBase } from '@comunica/expression-evaluator/test/util/utils';
+import { runFuncTestTable } from '../util';
 
 describe('We should respect the iri01 spec', () => {
   const config: ITestTableConfigBase = {
@@ -11,14 +11,14 @@ describe('We should respect the iri01 spec', () => {
     operation: '',
     notation: Notation.Function,
   };
-  runTestTable({
+  runFuncTestTable({
     ...config,
     operation: 'URI',
     testTable: `
       "uri" = http://example.org/uri
     `,
   });
-  runTestTable({
+  runFuncTestTable({
     ...config,
     operation: 'IRI',
     testTable: `

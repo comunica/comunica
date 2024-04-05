@@ -1,6 +1,6 @@
-import { decimal, int } from '../util/Aliases';
-import { Notation } from '../util/TestTable';
-import { runTestTable } from '../util/utils';
+import { int, decimal } from '@comunica/expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { runFuncTestTable } from '../util';
 import * as Data from './_data';
 
 /**
@@ -29,7 +29,7 @@ import * as Data from './_data';
 
 describe('We should respect the round01 spec', () => {
   const { n1, n2, n3, n4, n5 } = Data.data();
-  runTestTable({
+  runFuncTestTable({
     arity: 1,
     operation: 'ROUND',
     notation: Notation.Function,

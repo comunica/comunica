@@ -1,8 +1,8 @@
-import { Notation } from '../util/TestTable';
-import { runTestTable } from '../util/utils';
+import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { runFuncTestTable } from '../util';
 
 describe('We should respect the now01 spec', () => {
-  runTestTable({
+  runFuncTestTable({
     arity: 1,
     operation: 'DATATYPE',
     notation: Notation.Function,

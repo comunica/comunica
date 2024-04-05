@@ -1,5 +1,5 @@
-import { Notation } from '../util/TestTable';
-import { runTestTable } from '../util/utils';
+import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { runFuncTestTable } from '../util';
 import * as Data from './_data';
 
 /**
@@ -27,7 +27,7 @@ import * as Data from './_data';
 
 describe('We should respect the md5-02 spec', () => {
   const { s4 } = Data.data();
-  runTestTable({
+  runFuncTestTable({
     operation: 'MD5',
     notation: Notation.Function,
     arity: 1,

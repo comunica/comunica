@@ -1,11 +1,12 @@
 /* eslint max-len: 0 */
 import {
   dateTyped,
-  dateTimeTyped, dayTimeDurationTyped,
+  dayTimeDurationTyped,
+  dateTimeTyped,
   yearMonthDurationTyped,
-} from '../../../util/Aliases';
-import { Notation } from '../../../util/TestTable';
-import { runTestTable } from '../../../util/utils';
+} from '@comunica/expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { runFuncTestTable } from '../../../util';
 
 describe('subtract duration and dayTimeDuration 01', () => {
   /**
@@ -20,7 +21,7 @@ describe('subtract duration and dayTimeDuration 01', () => {
    */
 
   describe('respect the duration_yearMonthDuration_subtract-01 spec', () => {
-    runTestTable({
+    runFuncTestTable({
       operation: '-',
       arity: 2,
       notation: Notation.Infix,

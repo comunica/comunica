@@ -1,6 +1,6 @@
-import { bool } from '../util/Aliases';
-import { Notation } from '../util/TestTable';
-import { runTestTable } from '../util/utils';
+import { bool } from '@comunica/expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { runFuncTestTable } from '../util';
 import * as Data from './_data';
 
 /**
@@ -30,7 +30,7 @@ import * as Data from './_data';
 
 describe('We should respect the ends01 spec', () => {
   const { s1, s2, s3, s4, s5, s6, s7 } = Data.data();
-  runTestTable({
+  runFuncTestTable({
     notation: Notation.Function,
     arity: 2,
     aliases: bool,

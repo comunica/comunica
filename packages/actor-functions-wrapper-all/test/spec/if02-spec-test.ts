@@ -1,5 +1,5 @@
-import { Notation } from '../util/TestTable';
-import { runTestTable } from '../util/utils';
+import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { runFuncTestTable } from '../util';
 
 /**
  * REQUEST: if02.rq
@@ -22,7 +22,7 @@ import { runTestTable } from '../util/utils';
  */
 
 describe('We should respect the if02 spec', () => {
-  runTestTable({
+  runFuncTestTable({
     notation: Notation.Function,
     arity: 'vary',
     operation: 'IF',

@@ -1,7 +1,9 @@
-import { TypeURL } from '../../../../lib/util/Consts';
-import { compactTermString } from '../../../util/Aliases';
-import { Notation } from '../../../util/TestTable';
-import { runTestTable } from '../../../util/utils';
+import { TypeURL } from '@comunica/expression-evaluator';
+import {
+  compactTermString,
+} from '@comunica/expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { runFuncTestTable } from '../../../util';
 
 describe('construct time', () => {
   /**
@@ -17,7 +19,7 @@ describe('construct time', () => {
    */
 
   describe('respect the construct_time-01 spec', () => {
-    runTestTable({
+    runFuncTestTable({
       operation: 'xsd:time',
       arity: 1,
       notation: Notation.Function,

@@ -1,6 +1,6 @@
-import { decimal, int } from '../util/Aliases';
-import { Notation } from '../util/TestTable';
-import { runTestTable } from '../util/utils';
+import { int, decimal } from '@comunica/expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { runFuncTestTable } from '../util';
 
 /**
  * REQUEST: coalesce01.rq
@@ -52,7 +52,7 @@ describe('We should respect the coalesce01 spec', () => {
     n3: int('4'),
   };
 
-  runTestTable({
+  runFuncTestTable({
     arity: 'vary',
     operation: 'COALESCE',
     notation: Notation.Function,

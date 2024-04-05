@@ -1,5 +1,5 @@
-import { Notation } from '../util/TestTable';
-import { runTestTable } from '../util/utils';
+import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { runFuncTestTable } from '../util';
 import * as Data from './_data';
 
 /**
@@ -28,7 +28,7 @@ import * as Data from './_data';
 
 describe('We should respect the strlang02 spec', () => {
   const { s2 } = Data.data();
-  runTestTable({
+  runFuncTestTable({
     arity: 2,
     operation: 'STRLANG',
     notation: Notation.Function,

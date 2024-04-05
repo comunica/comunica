@@ -1,8 +1,7 @@
 /* eslint max-len: 0 */
-import { Notation } from '../util/TestTable';
-import { runTestTable } from '../util/utils';
+import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { runFuncTestTable } from '../util';
 import * as Data from './_data';
-
 /**
  * REQUEST: sha512-01.rq
  *
@@ -34,7 +33,7 @@ import * as Data from './_data';
 
 describe('We should respect the sha512-01 spec', () => {
   const { s1 } = Data.data();
-  runTestTable({
+  runFuncTestTable({
     arity: 1,
     notation: Notation.Function,
     operation: 'SHA512',

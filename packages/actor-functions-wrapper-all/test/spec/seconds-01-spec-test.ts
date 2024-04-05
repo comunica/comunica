@@ -1,6 +1,6 @@
-import { decimal } from '../util/Aliases';
-import { Notation } from '../util/TestTable';
-import { runTestTable } from '../util/utils';
+import { decimal } from '@comunica/expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { runFuncTestTable } from '../util';
 import * as Data from './_data';
 
 /**
@@ -28,7 +28,7 @@ import * as Data from './_data';
 
 describe('We should respect the seconds-01 spec', () => {
   const { d1, d2, d3, d4 } = Data.data();
-  runTestTable({
+  runFuncTestTable({
     arity: 1,
     operation: 'SECONDS',
     notation: Notation.Function,

@@ -1,7 +1,12 @@
 /* eslint max-len: 0 */
-import { dateTyped, dateTimeTyped, dayTimeDurationTyped, timeTyped } from '../../../util/Aliases';
-import { Notation } from '../../../util/TestTable';
-import { runTestTable } from '../../../util/utils';
+import {
+  dateTyped,
+  dayTimeDurationTyped,
+  dateTimeTyped,
+  timeTyped,
+} from '@comunica/expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { runFuncTestTable } from '../../../util';
 
 describe('dateTime subtract', () => {
   /**
@@ -17,7 +22,7 @@ describe('dateTime subtract', () => {
    */
 
   describe('respect the construct_time-02 spec', () => {
-    runTestTable({
+    runFuncTestTable({
       operation: '-',
       arity: 2,
       notation: Notation.Infix,
