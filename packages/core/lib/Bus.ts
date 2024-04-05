@@ -64,15 +64,12 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
       this.actors.push(actor);
     } else if (lastActor && this.lastActor) {
       throw new Error(`the last actor ${this.lastActor.name} was already defined when trying to define ${actor.name} has the last actor`);
-    } else {
-      if (this.lastActor !== undefined) {
-        this.actors.pop();
-      }
+    } else if (this.lastActor === undefined) {
       this.actors.push(actor);
-
-      if (this.lastActor !== undefined) {
-        this.actors.push(this.lastActor);
-      }
+    } else {
+      this.actors.pop();
+      this.actors.push(actor);
+      this.actors.push(this.lastActor);
     }
     this.reorderForDependencies();
   }
