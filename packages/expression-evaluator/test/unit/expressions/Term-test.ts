@@ -1,8 +1,8 @@
+import { getMockSuperTypeProvider } from '@comunica/jest';
 import type { ISuperTypeProvider } from '@comunica/types';
 import { IntegerLiteral, isNonLexicalLiteral, NonLexicalLiteral } from '../../../lib/expressions';
 import * as E from '../../../lib/expressions';
 import { TypeURL } from '../../../lib/util/Consts';
-import { getMockSuperTypeProvider } from '../../util/utils';
 
 describe('Term', () => {
   describe('has isNonLexicalLiteral function', () => {

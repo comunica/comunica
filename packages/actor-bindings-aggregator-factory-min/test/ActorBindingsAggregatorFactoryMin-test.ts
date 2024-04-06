@@ -1,3 +1,4 @@
+import { createTermCompMediator } from '@comunica/actor-term-comparator-factory-inequality-functions-based/test/util';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { ActionContext, Bus } from '@comunica/core';
 import { BF, DF, getMockEEFactory, makeAggregate } from '@comunica/jest';
@@ -27,6 +28,7 @@ describe('ActorBindingsAggregatorFactoryMin', () => {
     expressionEvaluatorFactory = getMockEEFactory({
       mediatorQueryOperation,
       mediatorBindingsAggregatorFactory: mediatorQueryOperation,
+      mediatorTermComparatorFactory: createTermCompMediator(),
     });
   });
 

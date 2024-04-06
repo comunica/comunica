@@ -25,17 +25,19 @@ class EmptyEvaluator extends AggregateEvaluator {
 
 describe('aggregate evaluator', () => {
   it('handles errors using async evaluations', async() => {
-    const temp = await getMockEEFactory()
-      .createEvaluator(makeAggregate('sum').expression, new ActionContext({}));
+    const temp = await getMockEEFactory().run({
+      algExpr: makeAggregate('sum').expression,
+      context: new ActionContext({})
+    });
     let first = true;
-    temp.evaluate = async() => {
+    temp.expressionEvaluator.evaluate = async() => {
       if (first) {
         first = false;
         throw new Error('We only want the first to succeed');
       }
       return int('1');
     };
-    const evaluator: AggregateEvaluator = new EmptyEvaluator(temp, false);
+    const evaluator: AggregateEvaluator = new EmptyEvaluator(temp.expressionEvaluator, false);
     await Promise.all([ evaluator.putBindings(BF.bindings()), evaluator.putBindings(BF.bindings()) ]);
     await expect(evaluator.result()).resolves.toBeUndefined();
   });

@@ -50,11 +50,12 @@ abstract class Table<RowType extends Row> {
   }
 
   protected async testErrorExpression(expr: string, error: string) {
-    const { config, additionalPrefixes } = this.def;
+    const { config, additionalPrefixes, exprEvalFactory } = this.def;
     const result = await generalErrorEvaluation({
       expression: template(expr, additionalPrefixes),
       expectEquality: false,
       generalEvaluationConfig: config,
+      exprEvalFactory,
     });
     expect(result).not.toBeUndefined();
     expect(() => { throw result?.asyncError; }).toThrow(error);

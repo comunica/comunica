@@ -1,4 +1,4 @@
-import { createFuncMediator } from '@comunica/actor-functions-wrapper-all/test/util';
+import { createTermCompMediator } from '@comunica/actor-term-comparator-factory-inequality-functions-based/test/util';
 import type { IBindingsAggregator } from '@comunica/bus-bindings-aggeregator-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { ActionContext } from '@comunica/core';
@@ -53,8 +53,7 @@ describe('MaxAggregator', () => {
     expressionEvaluatorFactory = getMockEEFactory({
       mediatorQueryOperation,
       mediatorBindingsAggregatorFactory: mediatorQueryOperation,
-      // TODO: needs to get the comarator mediator!
-      mediatorFunctions: createFuncMediator(),
+      mediatorTermComparatorFactory: createTermCompMediator(),
     });
 
     context = new ActionContext();

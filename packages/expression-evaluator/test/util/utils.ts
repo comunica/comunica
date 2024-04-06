@@ -2,8 +2,7 @@ import { prepareEvaluatorActionContext } from '@comunica/actor-expression-evalua
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { ActionContext } from '@comunica/core';
 import { getMockEEFactory } from '@comunica/jest';
-import type { GeneralSuperTypeDict, IActionContext, ISuperTypeProvider } from '@comunica/types';
-import { LRUCache } from 'lru-cache';
+import type { IActionContext } from '@comunica/types';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 import { translate } from 'sparqlalgebrajs';
 import type { AliasMap } from './Aliases';
@@ -22,13 +21,6 @@ export function getMockEvaluatorContext(): IActionContext {
   const factory = getMockEEFactory();
 
   return prepareEvaluatorActionContext(getMockEEActionContext());
-}
-
-export function getMockSuperTypeProvider(): ISuperTypeProvider {
-  return {
-    cache: new LRUCache<string, GeneralSuperTypeDict>({ max: 1_000 }),
-    discoverer: _ => 'term',
-  };
 }
 
 export interface ITestTableConfigBase {

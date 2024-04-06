@@ -1,8 +1,7 @@
-import { ActorExpressionEvaluatorFactoryBase } from '@comunica/actor-expression-evaluator-factory-base';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
-import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
-import { ActionContext, Bus } from '@comunica/core';
+import { ActionContext } from '@comunica/core';
+import { getMockEEFactory } from '@comunica/jest';
 import type { FunctionArgumentsCache } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { getMockExpression } from '../../util/utils';
@@ -27,13 +26,7 @@ describe('The ExpressionEvaluatorFactory', () => {
       mediate: (arg: any) => Promise.reject(new Error('Not implemented')),
     };
 
-    expressionEvaluatorFactory = new ActorExpressionEvaluatorFactoryBase({
-      name: 'ActorExpressionEvaluatorFactoryBase',
-      bus: new Bus({ name: 'ExpressionEvaluatorFactoryBus' }),
-      mediatorQueryOperation,
-      mediatorBindingsAggregatorFactory,
-      mediatorTermComparatorFactory: <MediatorTermComparatorFactory> mediatorQueryOperation,
-    });
+    expressionEvaluatorFactory = getMockEEFactory();
   });
 
   it('should create an non-empty object for a filled context', async() => {
@@ -45,7 +38,7 @@ describe('The ExpressionEvaluatorFactory', () => {
       [KeysInitQuery.functionArgumentsCache.name]: functionArgumentsCache,
     });
     const evaluator = (await expressionEvaluatorFactory.run({
-      algExpr: getMockExpression('1 + 1'),
+      algExpr: getMockExpression('true'),
       context: actionContext,
     })).expressionEvaluator;
     expect(evaluator.context.toJS()).toMatchObject({

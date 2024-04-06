@@ -1,4 +1,5 @@
 // We need to disable typescript because we want undefined types.
+import { getMockSuperTypeProvider } from '@comunica/jest';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 
@@ -7,7 +8,6 @@ import { isNonLexicalLiteral } from '../../../lib/expressions';
 import { TermTransformer } from '../../../lib/transformers/TermTransformer';
 import { TypeURL as DT } from '../../../lib/util/Consts';
 import * as Err from '../../../lib/util/Errors';
-import { getMockSuperTypeProvider } from '../../util/utils';
 
 function int(value: string): RDF.Literal {
   return DF.literal(value, DF.namedNode(DT.XSD_INTEGER));

@@ -26,21 +26,6 @@ describe('System test: QuerySparql', () => {
   });
 
   describe('query', () => {
-    it('playground', async() => {
-      // TODO: I do wonder how this ever passed... Should group concat know what to do with a language tag? Did it ever?
-      const res = await engine.queryBoolean(`
-        PREFIX : <http://www.example.org/>
-        ASK {
-            {SELECT (GROUP_CONCAT(?o) AS ?g) WHERE {
-                VALUES ?o { "1"@en "2"@en }
-            }
-          }
-          FILTER(?g = "1 2"@en || ?g = "2 1"@en)
-        }
-      `, { sources: [ 'https://www.rubensworks.net/' ]});
-      expect(res).toBe(true);
-    });
-
     describe('simple SPO on a raw RDF document', () => {
       it('with results', async() => {
         const result = <QueryBindings> await engine.query(`SELECT * WHERE {
@@ -393,13 +378,13 @@ describe('System test: QuerySparql', () => {
         it('rejects when record does not match', async() => {
           const context = <any> { sources: [ store ]};
           context.extensionFunctions = baseFunctions;
-          await expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow('Unknown named operator');
+          await expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow('actors rejected');
         });
 
         it('rejects when creator returns null', async() => {
           const context = <any> { sources: [ store ]};
           context.extensionFunctionCreator = () => null;
-          await expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow('Unknown named operator');
+          await expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow('actors rejected');
         });
 
         it('with results and pointless custom filter given by creator', async() => {

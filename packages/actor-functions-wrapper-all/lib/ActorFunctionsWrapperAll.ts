@@ -47,6 +47,6 @@ export class ActorFunctionsWrapperAll extends ActorFunctions {
       return <T extends { requireTermExpression: true } ? IActorFunctionsOutputTerm :
         IActorFunctionsOutput><unknown> new NamedExtension(functionName, definition);
     }
-    throw new Error('no');
+    throw new Error('Unknown function');
   }
 }

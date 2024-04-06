@@ -1,16 +1,18 @@
+import { createFuncMediator } from '@comunica/actor-functions-wrapper-all/test/util';
 import { BindingsFactory } from '@comunica/bindings-factory';
+import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import * as sparqlee from '@comunica/expression-evaluator';
-import { ExpressionEvaluatorFactory, isExpressionError } from '@comunica/expression-evaluator';
+import { isExpressionError } from '@comunica/expression-evaluator';
+import { getMockEEFactory } from '@comunica/jest';
 import type { IQueryOperationResultBindings, Bindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory, translate } from 'sparqlalgebrajs';
 import { ActorQueryOperationFilterSparqlee } from '../lib';
-import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -84,16 +86,12 @@ describe('ActorQueryOperationFilterSparqlee', () => {
 
   describe('An ActorQueryOperationFilterSparqlee instance', () => {
     let actor: ActorQueryOperationFilterSparqlee;
-    let expressionEvaluatorFactory: ExpressionEvaluatorFactory;
+    let expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
 
     beforeEach(() => {
-      expressionEvaluatorFactory = new ExpressionEvaluatorFactory({
+      expressionEvaluatorFactory = getMockEEFactory({
         mediatorQueryOperation,
-        mediatorBindingsAggregatorFactory: <any> {
-          mediate(arg: any) {
-            throw new Error('Not implemented');
-          },
-        },
+        mediatorFunctions: createFuncMediator(),
       });
       actor = new ActorQueryOperationFilterSparqlee({
         name: 'actor',

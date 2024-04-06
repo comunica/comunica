@@ -9,9 +9,11 @@ import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-e
 import type { MediatorFunctions } from '@comunica/bus-functions';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
+import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IActionContext } from '@comunica/types';
+import type { GeneralSuperTypeDict, IActionContext, ISuperTypeProvider } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import { LRUCache } from 'lru-cache';
 import type { Quad } from 'rdf-data-factory';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra } from 'sparqlalgebrajs';
@@ -73,7 +75,7 @@ export function nonLiteral(): RDF.Term {
 }
 
 export function getMockEEActionContext(): IActionContext {
-  return new ActionContext({});
+  return new ActionContext({}).set(KeysExpressionEvaluator.superTypeProvider, getMockSuperTypeProvider());
 }
 
 export function getMockInternalEvaluator(factory?: ActorExpressionEvaluatorFactory,
@@ -113,10 +115,21 @@ export function getMockEEFactory({ mediatorQueryOperation,
         throw new Error('mediatorTermComparatorFactory mock of mockEEFactory not implemented');
       },
     },
-    mediatorFunctions: mediatorFunctions || <any> {
-      async mediate(arg: any) {
-        throw new Error('mediatorFunctions mock of mockEEFactory not implemented');
-      },
-    },
+    mediatorFunctions: mediatorFunctions || getMockMediatorFunctions(),
   });
+}
+
+export function getMockMediatorFunctions(): MediatorFunctions {
+  return <any> {
+    async mediate(arg: any) {
+      throw new Error('mediatorFunctions mock of mockEEFactory not implemented');
+    },
+  };
+}
+
+export function getMockSuperTypeProvider(): ISuperTypeProvider {
+  return {
+    cache: new LRUCache<string, GeneralSuperTypeDict>({ max: 1_000 }),
+    discoverer: _ => 'term',
+  };
 }

@@ -1,3 +1,4 @@
+import { getMockSuperTypeProvider } from '@comunica/jest';
 import type { KnownLiteralTypes } from '../../../lib/util/Consts';
 import { TypeAlias, TypeURL } from '../../../lib/util/Consts';
 import type { OverrideType } from '../../../lib/util/TypeHandling';
@@ -8,7 +9,6 @@ import {
   isInternalSubType,
   isSubTypeOf,
 } from '../../../lib/util/TypeHandling';
-import { getMockSuperTypeProvider } from '../../util/utils';
 
 describe('TypeHandling', () => {
   describe('has isTypeAlias function', () => {

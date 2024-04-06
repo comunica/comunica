@@ -1,12 +1,14 @@
+import { getMockSuperTypeProvider } from '@comunica/jest';
 import { DataFactory } from 'rdf-data-factory';
 
-import { TermTransformer } from '../../../lib/transformers/TermTransformer';
+import { TermTransformer } from '../../../lib';
 import { TypeURL as DT } from '../../../lib/util/Consts';
-import { getMockSuperTypeProvider } from '../../util/utils';
 
 jest.mock('../../../lib/util/Parsing', () => ({
   __esModule: true,
-  parseDate() { throw new Error('mine'); },
+  parseDate() {
+    throw new Error('mine');
+  },
 }));
 
 describe('term Tranformer', () => {

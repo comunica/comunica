@@ -47,6 +47,7 @@ Promise<{ asyncError: unknown; syncError?: unknown } | undefined > {
       arg.expression,
       bindings,
       arg.generalEvaluationConfig || getMockEEActionContext(),
+      arg.exprEvalFactory,
     );
     return undefined;
   } catch (error: unknown) {
