@@ -154,18 +154,25 @@ export function materializeOperation(
           result: op,
         };
       }
-      
+
       // Find which projected variables are present in the InitialBindings
       let overlappingVariables : Variable[] = []
       let overlappingBindings: Record<string, RDF.Literal | RDF.NamedNode>[] = [];
 
       for (let variable of op.variables) {
         if (bindings.has(variable)){
-          const newBinding = { ...bindings.get(variable) };
+          const x : NamedNode | Literal = <NamedNode | Literal> bindings.get(variable); //TODO
+          console.log("x");
+          console.log(x);
+          
+          const newBinding = {[termToString(variable)]: x};
+          console.log("newBinding");
+          console.log(newBinding);
           overlappingVariables.push(variable);
           overlappingBindings.push(newBinding);
         }
       }
+      
       let values : Algebra.Operation = factory.createValues(overlappingVariables, overlappingBindings);
       console.log("created values:");
       console.log("values");
