@@ -37,6 +37,12 @@ const bindingsAB = BF.bindings([
   [ DF.variable('b'), valueB ],
 ]);
 
+const valuesBindingsA: Record<string, RDF.Literal | RDF.NamedNode> = {};
+valuesBindingsA[`?${termVariableA.value}`] = <RDF.Literal> bindingsA.get(termVariableB);
+const valuesBindingsB: Record<string, RDF.Literal | RDF.NamedNode> = {};
+valuesBindingsB[`?${termVariableB.value}`] = <RDF.Literal> bindingsAB.get(termVariableB);
+
+
 describe('materializeTerm', () => {
   it('should not materialize a named node with empty bindings', () => {
     expect(materializeTerm(termNamedNode, bindingsEmpty))
@@ -477,9 +483,6 @@ describe('materializeOperation', () => {
   });
 
   it('should modify a project operation with matching variables', () => {
-    const valuesBindingsA: Record<string, RDF.Literal | RDF.NamedNode> = {};
-    valuesBindingsA[`?${termVariableA.value}`] = <RDF.Literal> bindingsA.get(termVariableA);
-
     return expect(
       materializeOperation(
       factory.createProject(
@@ -531,9 +534,6 @@ describe('materializeOperation', () => {
   });
 
   it('should modify a project operation with a binding variable equal to the target variable', () => {
-    const valuesBindingsA: Record<string, RDF.Literal | RDF.NamedNode> = {};
-    valuesBindingsA[`?${termVariableA.value}`] = <RDF.Literal> bindingsA.get(termVariableA);
-
     expect(materializeOperation(
       factory.createProject(
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
@@ -552,9 +552,6 @@ describe('materializeOperation', () => {
   });
 
   it('should only modify variables in the project operation that are present in the projection range', () => {
-    const valuesBindingsB: Record<string, RDF.Literal | RDF.NamedNode> = {};
-    valuesBindingsB[`?${termVariableB.value}`] = <RDF.Literal> bindingsAB.get(termVariableB);
-
     expect(materializeOperation(
       factory.createProject(
         factory.createPattern(termVariableA, termNamedNode, termVariableB, termNamedNode),
