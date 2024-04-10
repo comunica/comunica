@@ -20,7 +20,7 @@ export class ActorRdfParseJsonLd extends ActorRdfParseFixedMediaTypes {
    * @param args -
    *   \ @defaultNested {{
    *       "application/ld+json": 1.0,
-   *       "application/json": 0.5
+   *       "application/json": 0.15
    *     }} mediaTypePriorities
    *   \ @defaultNested {{
    *       "application/ld+json": "http://www.w3.org/ns/formats/JSON-LD",
