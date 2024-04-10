@@ -196,22 +196,38 @@ export function materializeOperation(
       
       console.log("recursion materializeOperation");
       
-      return {
-        recurse: false,
-        result: factory.createProject(
-          factory.createJoin([
+      if (overlappingVariables.length === 0) {
+        return {
+          recurse: false,
+          result: factory.createProject(
             materializeOperation(
               op.input,
               subBindings,
               bindingsFactory,
               options,
             ),
-            values
-          ]),
-          op.variables,
-        ),
-      };
+            op.variables,
+          ),
+        };
+      } else {
+        return {
+          recurse: false,
+          result: factory.createProject(
+            factory.createJoin([
+              materializeOperation(
+                op.input,
+                subBindings,
+                bindingsFactory,
+                options,
+              ),
+              values
+            ]),
+            op.variables,
+          ),
+        };
+      }
     },
+    
     values(op: Algebra.Values, factory: Factory) {
       // Materialize a values operation.
       // If strictTargetVariables is true, we throw if the values target variable is attempted to be bound.
