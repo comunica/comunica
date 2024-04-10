@@ -1,6 +1,6 @@
 {
   "name": "@comunica/query-sparql-file",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "A SPARQL query engine for querying over local and remote RDF files",
   "license": "MIT",
   "homepage": "https://comunica.dev/",
@@ -169,7 +169,7 @@
     "@comunica/actor-rdf-parse-html-microdata": "^3.0.1",
     "@comunica/actor-rdf-parse-html-rdfa": "^3.0.1",
     "@comunica/actor-rdf-parse-html-script": "^3.0.1",
-    "@comunica/actor-rdf-parse-jsonld": "^3.0.1",
+    "@comunica/actor-rdf-parse-jsonld": "^3.0.2",
     "@comunica/actor-rdf-parse-n3": "^3.0.1",
     "@comunica/actor-rdf-parse-rdfxml": "^3.0.1",
     "@comunica/actor-rdf-parse-shaclc": "^3.0.1",

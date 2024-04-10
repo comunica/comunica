@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v3.0.2"></a>
+## [v3.0.2](https://github.com/comunica/comunica/compare/v3.0.1...v3.0.2) - 2024-04-10
+
+### Fixed
+* [Lower q-value of application/json in fetch requests](https://github.com/comunica/comunica/commit/4409517db9e1f05317589dc23af382fcf76f154b)
+
 <a name="v3.0.1"></a>
 ## [v3.0.1](https://github.com/comunica/comunica/compare/v2.10.2...v3.0.1) - 2024-03-19
 
