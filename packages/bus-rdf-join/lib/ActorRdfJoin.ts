@@ -117,7 +117,6 @@ export abstract class ActorRdfJoin
     if (bindings.length === 1) {
       return bindings[0];
     }
-
     let acc: Bindings = bindings[0];
     for (const binding of bindings.slice(1)) {
       const merged = acc.merge(binding);
@@ -279,7 +278,6 @@ export abstract class ActorRdfJoin
       parentPhysicalQueryPlanNode = action.context.get(KeysInitQuery.physicalQueryPlanNode);
       action.context = action.context.set(KeysInitQuery.physicalQueryPlanNode, action);
     }
-
     // Log to physical plan
     const physicalQueryPlanLogger: IPhysicalQueryPlanLogger | undefined = action.context.get(KeysInitQuery
       .physicalQueryPlanLogger);
@@ -295,7 +293,6 @@ export abstract class ActorRdfJoin
         planMetadata,
       );
     }
-
     // Get action output
     const { result, physicalPlanMetadata } = await this.getOutput(action);
     const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
@@ -309,7 +306,6 @@ export abstract class ActorRdfJoin
 
     // Cache metadata
     result.metadata = ActorQueryOperation.cachifyMetadata(result.metadata);
-
     return result;
   }
 
