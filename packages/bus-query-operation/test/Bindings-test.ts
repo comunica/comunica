@@ -1,8 +1,8 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
+import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { materializeOperation, materializeTerm } from '..';
-import type * as RDF from '@rdfjs/types';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -38,10 +38,9 @@ const bindingsAB = BF.bindings([
 ]);
 
 const valuesBindingsA: Record<string, RDF.Literal | RDF.NamedNode> = {};
-valuesBindingsA[`?${termVariableA.value}`] = <RDF.Literal> bindingsA.get(termVariableB);
+valuesBindingsA[`?${termVariableA.value}`] = <RDF.Literal> bindingsA.get(termVariableA);
 const valuesBindingsB: Record<string, RDF.Literal | RDF.NamedNode> = {};
 valuesBindingsB[`?${termVariableB.value}`] = <RDF.Literal> bindingsAB.get(termVariableB);
-
 
 describe('materializeTerm', () => {
   it('should not materialize a named node with empty bindings', () => {
@@ -483,25 +482,21 @@ describe('materializeOperation', () => {
   });
 
   it('should modify a project operation with matching variables', () => {
-    return expect(
-      materializeOperation(
+    expect(materializeOperation(
       factory.createProject(
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
-        [ termVariableA, termVariableB, termVariableD ]
+        [ termVariableA, termVariableB, termVariableD ],
       ),
       bindingsA,
-      BF
-      )
-    )
-      .toEqual(
-        factory.createProject(
-          factory.createJoin([
-            factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
-            factory.createValues([termVariableA], [valuesBindingsA])
-          ]),
-          [ termVariableA, termVariableB, termVariableD ],
-        )
-      );
+      BF,
+    ))
+      .toEqual(factory.createProject(
+        factory.createJoin([
+          factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
+          factory.createValues([ termVariableA ], [ valuesBindingsA ]),
+        ]),
+        [ termVariableA, termVariableB, termVariableD ],
+      ));
   });
 
   it('should modify a project operation with matching variables for strictTargetVariables', () => {
@@ -534,21 +529,24 @@ describe('materializeOperation', () => {
   });
 
   it('should modify a project operation with a binding variable equal to the target variable', () => {
-    expect(materializeOperation(
+    const x = materializeOperation(
       factory.createProject(
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
         [ termVariableA, termVariableD ],
       ),
       bindingsA,
       BF,
-    ))
-      .toEqual(factory.createProject(
-        factory.createJoin([
-          factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
-          factory.createValues([termVariableA], [valuesBindingsA])
+    );
+    const y = factory.createProject(
+      factory.createJoin([
+        factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
+        factory.createValues([ termVariableA ], [ valuesBindingsA ]),
       ]),
       [ termVariableA, termVariableD ],
-      ));
+    );
+
+    expect(x)
+      .toEqual(y);
   });
 
   it('should only modify variables in the project operation that are present in the projection range', () => {
@@ -563,7 +561,7 @@ describe('materializeOperation', () => {
       .toEqual(factory.createProject(
         factory.createJoin([
           factory.createPattern(termVariableA, termNamedNode, termVariableB, termNamedNode),
-          factory.createValues([termVariableB], [valuesBindingsB])
+          factory.createValues([ termVariableB ], [ valuesBindingsB ]),
         ]),
         [ termVariableD, termVariableB ],
       ));
