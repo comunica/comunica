@@ -806,32 +806,27 @@ describe('materializeOperation', () => {
   });
 
   it('should create VALUES clause for variables from SELECT clause that appear also in InitialBindings', () => {
-    console.log("operation");
-    console.log(factory.createProject(
-      factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
-      [ termVariableA, termVariableB, termVariableD ],
-    ));
-    console.log("bindingsA");
-    console.log(bindingsA);
-    const bindings: Record<string, RDF.Literal | RDF.NamedNode> = {};
-    bindings[`?${termVariableA.value}`] = <RDF.Literal> bindingsA.get(termVariableA);
+    const valuesBindings: Record<string, RDF.Literal | RDF.NamedNode> = {};
+    valuesBindings[`?${termVariableA.value}`] = <RDF.Literal> bindingsA.get(termVariableA);
 
-    const x = materializeOperation(
+    return expect(
+      materializeOperation(
       factory.createProject(
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
-        [ termVariableA, termVariableB, termVariableD ],
+        [ termVariableA, termVariableB, termVariableD ]
       ),
       bindingsA,
-    );
-    const y = factory.createJoin([factory.createValues([termVariableA], [bindings]),
-    factory.createProject(
-      factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
-      [ termVariableA, termVariableB, termVariableD ],
-    )]);
-
-    return expect(x)
+      BF
+      )
+    )
       .toEqual(
-        y
+        factory.createProject(
+          factory.createJoin([
+            factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
+            factory.createValues([termVariableA], [valuesBindings])
+          ]),
+          [ termVariableA, termVariableB, termVariableD ],
+        )
       );
   });
 });
