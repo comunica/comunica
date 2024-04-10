@@ -529,24 +529,21 @@ describe('materializeOperation', () => {
   });
 
   it('should modify a project operation with a binding variable equal to the target variable', () => {
-    const x = materializeOperation(
+    expect(materializeOperation(
       factory.createProject(
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
         [ termVariableA, termVariableD ],
       ),
       bindingsA,
       BF,
-    );
-    const y = factory.createProject(
-      factory.createJoin([
-        factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
-        factory.createValues([ termVariableA ], [ valuesBindingsA ]),
-      ]),
-      [ termVariableA, termVariableD ],
-    );
-
-    expect(x)
-      .toEqual(y);
+    ))
+      .toEqual(factory.createProject(
+        factory.createJoin([
+          factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
+          factory.createValues([ termVariableA ], [ valuesBindingsA ]),
+        ]),
+        [ termVariableA, termVariableD ],
+      ));
   });
 
   it('should only modify variables in the project operation that are present in the projection range', () => {
