@@ -477,18 +477,28 @@ describe('materializeOperation', () => {
   });
 
   it('should modify a project operation with matching variables', () => {
-    expect(materializeOperation(
+    const valuesBindingsA: Record<string, RDF.Literal | RDF.NamedNode> = {};
+    valuesBindingsA[`?${termVariableA.value}`] = <RDF.Literal> bindingsA.get(termVariableA);
+
+    return expect(
+      materializeOperation(
       factory.createProject(
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
-        [ termVariableA, termVariableB, termVariableD ],
+        [ termVariableA, termVariableB, termVariableD ]
       ),
       bindingsA,
-      BF,
-    ))
-      .toEqual(factory.createProject(
-        factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
-        [ termVariableB, termVariableD ],
-      ));
+      BF
+      )
+    )
+      .toEqual(
+        factory.createProject(
+          factory.createJoin([
+            factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
+            factory.createValues([termVariableA], [valuesBindingsA])
+          ]),
+          [ termVariableA, termVariableB, termVariableD ],
+        )
+      );
   });
 
   it('should modify a project operation with matching variables for strictTargetVariables', () => {
@@ -521,6 +531,9 @@ describe('materializeOperation', () => {
   });
 
   it('should modify a project operation with a binding variable equal to the target variable', () => {
+    const valuesBindingsA: Record<string, RDF.Literal | RDF.NamedNode> = {};
+    valuesBindingsA[`?${termVariableA.value}`] = <RDF.Literal> bindingsA.get(termVariableA);
+
     expect(materializeOperation(
       factory.createProject(
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
@@ -530,12 +543,18 @@ describe('materializeOperation', () => {
       BF,
     ))
       .toEqual(factory.createProject(
-        factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
-        [ termVariableD ],
+        factory.createJoin([
+          factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
+          factory.createValues([termVariableA], [valuesBindingsA])
+      ]),
+      [ termVariableA, termVariableD ],
       ));
   });
 
   it('should only modify variables in the project operation that are present in the projection range', () => {
+    const valuesBindingsB: Record<string, RDF.Literal | RDF.NamedNode> = {};
+    valuesBindingsB[`?${termVariableB.value}`] = <RDF.Literal> bindingsAB.get(termVariableB);
+
     expect(materializeOperation(
       factory.createProject(
         factory.createPattern(termVariableA, termNamedNode, termVariableB, termNamedNode),
@@ -545,8 +564,11 @@ describe('materializeOperation', () => {
       BF,
     ))
       .toEqual(factory.createProject(
-        factory.createPattern(termVariableA, termNamedNode, valueB, termNamedNode),
-        [ termVariableD ],
+        factory.createJoin([
+          factory.createPattern(termVariableA, termNamedNode, termVariableB, termNamedNode),
+          factory.createValues([termVariableB], [valuesBindingsB])
+        ]),
+        [ termVariableD, termVariableB ],
       ));
   });
 
@@ -803,30 +825,5 @@ describe('materializeOperation', () => {
           factory.createTermExpression(termVariableB),
         ]),
       ));
-  });
-
-  it('should create VALUES clause for variables from SELECT clause that appear also in InitialBindings', () => {
-    const valuesBindings: Record<string, RDF.Literal | RDF.NamedNode> = {};
-    valuesBindings[`?${termVariableA.value}`] = <RDF.Literal> bindingsA.get(termVariableA);
-
-    return expect(
-      materializeOperation(
-      factory.createProject(
-        factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
-        [ termVariableA, termVariableB, termVariableD ]
-      ),
-      bindingsA,
-      BF
-      )
-    )
-      .toEqual(
-        factory.createProject(
-          factory.createJoin([
-            factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
-            factory.createValues([termVariableA], [valuesBindings])
-          ]),
-          [ termVariableA, termVariableB, termVariableD ],
-        )
-      );
   });
 });
