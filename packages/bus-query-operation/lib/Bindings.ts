@@ -166,12 +166,12 @@ export function materializeOperation(
 
       // Only include projected variables in the sub-bindings that will be passed down recursively.
       // If we don't do this, we may be binding variables that may have the same label, but are not considered equal.
-      // TODO Not sure about this yet
-      const subBindings = bindingsFactory.bindings([]);
 
       let recursionResult = materializeOperation(
         op.input,
-        subBindings,
+        // Pass empty InitialBindings recursively to prevent replacing variables directly (Values takes care of this)
+        // We also avoid binding variables that have the same label but are not considered equal due to sub-querying.
+        bindingsFactory.bindings([]),
         bindingsFactory,
         options,
       );
