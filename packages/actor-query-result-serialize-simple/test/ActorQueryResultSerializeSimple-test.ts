@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActionContext, Bus } from '@comunica/core';
 import type { Bindings, BindingsStream, IActionContext } from '@comunica/types';
@@ -34,7 +34,9 @@ describe('ActorQueryResultSerializeSimple', () => {
     });
 
     it('should not be able to create new ActorQueryResultSerializeSimple objects without \'new\'', () => {
-      expect(() => { (<any> ActorQueryResultSerializeSimple)(); }).toThrow();
+      expect(() => {
+        (<any> ActorQueryResultSerializeSimple)();
+      }).toThrow(`Class constructor ActorQueryResultSerializeSimple cannot be invoked without 'new'`);
     });
   });
 
@@ -47,13 +49,10 @@ describe('ActorQueryResultSerializeSimple', () => {
     let streamError: Readable;
 
     beforeEach(() => {
-      actor = new ActorQueryResultSerializeSimple({ bus,
-        mediaTypePriorities: {
-          simple: 1,
-        },
-        mediaTypeFormats: {},
-        name: 'actor' });
-      bindingsStream = () => new ArrayIterator([
+      actor = new ActorQueryResultSerializeSimple({ bus, mediaTypePriorities: {
+        simple: 1,
+      }, mediaTypeFormats: {}, name: 'actor' });
+      bindingsStream = () => new ArrayIterator<RDF.Bindings>([
         BF.bindings([
           [ DF.variable('k1'), DF.namedNode('v1') ],
         ]),
@@ -61,7 +60,7 @@ describe('ActorQueryResultSerializeSimple', () => {
           [ DF.variable('k2'), DF.namedNode('v2') ],
         ]),
       ]);
-      bindingsStreamQuoted = () => new ArrayIterator([
+      bindingsStreamQuoted = () => new ArrayIterator<RDF.Bindings>([
         BF.bindings([
           [ DF.variable('k1'), DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')) ],
         ]),
@@ -82,12 +81,12 @@ describe('ActorQueryResultSerializeSimple', () => {
     });
 
     describe('for getting media types', () => {
-      it('should test', () => {
-        return expect(actor.test({ mediaTypes: true, context })).resolves.toBeTruthy();
+      it('should test', async() => {
+        await expect(actor.test({ mediaTypes: true, context })).resolves.toBeTruthy();
       });
 
-      it('should run', () => {
-        return expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({ mediaTypes: {
+      it('should run', async() => {
+        await expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({ mediaTypes: {
           simple: 1,
         }});
       });
@@ -117,17 +116,21 @@ describe('ActorQueryResultSerializeSimple', () => {
         stream.destroy();
       });
 
-      it('should test on simple booleans', () => {
-        return expect(actor.test({ handle: <any> { type: 'boolean', execute: () => Promise.resolve(true), context },
+      it('should test on simple booleans', async() => {
+        await expect(actor.test({
+          handle: <any> { type: 'boolean', execute: () => Promise.resolve(true), context },
           handleMediaType: 'simple',
-          context }))
+          context,
+        }))
           .resolves.toBeTruthy();
       });
 
-      it('should test on simple update', () => {
-        return expect(actor.test({ handle: <any> { type: 'void', execute: () => Promise.resolve(true), context },
+      it('should test on simple update', async() => {
+        await expect(actor.test({
+          handle: <any> { type: 'void', execute: () => Promise.resolve(true), context },
           handleMediaType: 'simple',
-          context }))
+          context,
+        }))
           .resolves.toBeTruthy();
       });
 
@@ -142,21 +145,21 @@ describe('ActorQueryResultSerializeSimple', () => {
         stream.destroy();
       });
 
-      it('should not test on unknown types', () => {
-        return expect(actor.test(
+      it('should not test on unknown types', async() => {
+        await expect(actor.test(
           { handle: <any> { type: 'unknown', context }, handleMediaType: 'simple', context },
         ))
           .rejects.toBeTruthy();
       });
 
       it('should run on a bindings stream', async() => {
-        expect(await stringifyStream((<any> (await actor.run(
+        await expect(stringifyStream((<any> (await actor.run(
           {
             handle: <any> { type: 'bindings', bindingsStream: bindingsStream(), context },
             handleMediaType: 'simple',
             context,
           },
-        ))).handle.data)).toEqual(
+        ))).handle.data)).resolves.toBe(
           `?k1: v1
 
 ?k2: v2
@@ -166,13 +169,13 @@ describe('ActorQueryResultSerializeSimple', () => {
       });
 
       it('should run on a bindings stream with quoted triples', async() => {
-        expect(await stringifyStream((<any> (await actor.run(
+        await expect(stringifyStream((<any> (await actor.run(
           {
             handle: <any> { type: 'bindings', bindingsStream: bindingsStreamQuoted(), context },
             handleMediaType: 'simple',
             context,
           },
-        ))).handle.data)).toEqual(
+        ))).handle.data)).resolves.toBe(
           `?k1: <<s1 p1 o1>>
 
 ?k2: <<s2 p2 o2>>
@@ -182,9 +185,9 @@ describe('ActorQueryResultSerializeSimple', () => {
       });
 
       it('should run on a quad stream', async() => {
-        expect(await stringifyStream((<any> (await actor.run(
+        await expect(stringifyStream((<any> (await actor.run(
           { handle: <any> { type: 'quads', quadStream: quadStream(), context }, handleMediaType: 'simple', context },
-        ))).handle.data)).toEqual(
+        ))).handle.data)).resolves.toBe(
           `subject: http://example.org/a
 predicate: http://example.org/b
 object: http://example.org/c
@@ -200,13 +203,13 @@ graph:
       });
 
       it('should run on a quad stream with quoted triples', async() => {
-        expect(await stringifyStream((<any> (await actor.run(
+        await expect(stringifyStream((<any> (await actor.run(
           {
             handle: <any> { type: 'quads', quadStream: quadStreamQuoted(), context },
             handleMediaType: 'simple',
             context,
           },
-        ))).handle.data)).toEqual(
+        ))).handle.data)).resolves.toBe(
           `subject: <<ex:s1 ex:p1 ex:o1>>
 predicate: http://example.org/b
 object: http://example.org/c
@@ -222,36 +225,36 @@ graph:
       });
 
       it('should run on a boolean result that resolves to true', async() => {
-        expect(await stringifyStream((<any> (await actor.run({
+        await expect(stringifyStream((<any> (await actor.run({
           handle: <any> { type: 'boolean', execute: () => Promise.resolve(true), context },
           handleMediaType: 'simple',
           context,
         })))
-          .handle.data)).toEqual(
+          .handle.data)).resolves.toBe(
           `true
 `,
         );
       });
 
       it('should run on a boolean result that resolves to false', async() => {
-        expect(await stringifyStream((<any> (await actor.run({
+        await expect(stringifyStream((<any> (await actor.run({
           handle: <any> { type: 'boolean', execute: () => Promise.resolve(false), context },
           handleMediaType: 'simple',
           context,
         })))
-          .handle.data)).toEqual(
+          .handle.data)).resolves.toBe(
           `false
 `,
         );
       });
 
       it('should run on an update result that resolves to false', async() => {
-        expect(await stringifyStream((<any> (await actor.run({
+        await expect(stringifyStream((<any> (await actor.run({
           handle: <any> { type: 'void', execute: () => Promise.resolve(), context },
           handleMediaType: 'simple',
           context,
         })))
-          .handle.data)).toEqual(
+          .handle.data)).resolves.toBe(
           `ok
 `,
         );
@@ -259,33 +262,41 @@ graph:
 
       it('should emit an error when a bindings stream emits an error', async() => {
         await expect(stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'bindings', bindingsStream: streamError, context },
+          {
+            handle: <any> { type: 'bindings', bindingsStream: streamError, context },
             handleMediaType: 'application/json',
-            context },
+            context,
+          },
         ))).handle.data)).rejects.toBeTruthy();
       });
 
       it('should emit an error when a quad stream emits an error', async() => {
         await expect(stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'quads', quadStream: streamError, context },
+          {
+            handle: <any> { type: 'quads', quadStream: streamError, context },
             handleMediaType: 'application/json',
-            context },
+            context,
+          },
         ))).handle.data)).rejects.toBeTruthy();
       });
 
       it('should emit an error when the boolean is rejected', async() => {
         await expect(stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'boolean', execute: () => Promise.reject(new Error('SparqlSimple')), context },
+          {
+            handle: <any> { type: 'boolean', execute: () => Promise.reject(new Error('SparqlSimple')), context },
             handleMediaType: 'application/json',
-            context },
+            context,
+          },
         ))).handle.data)).rejects.toBeTruthy();
       });
 
       it('should emit an error when the update is rejected', async() => {
         await expect(stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'void', execute: () => Promise.reject(new Error('SparqlSimple')), context },
+          {
+            handle: <any> { type: 'void', execute: () => Promise.reject(new Error('SparqlSimple')), context },
             handleMediaType: 'application/json',
-            context },
+            context,
+          },
         ))).handle.data)).rejects.toBeTruthy();
       });
     });

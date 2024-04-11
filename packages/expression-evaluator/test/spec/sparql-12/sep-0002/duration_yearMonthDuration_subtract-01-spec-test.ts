@@ -1,7 +1,8 @@
 /* eslint max-len: 0 */
 import {
   dateTyped,
-  dateTimeTyped, dayTimeDurationTyped,
+  dateTimeTyped,
+  dayTimeDurationTyped,
   yearMonthDurationTyped,
 } from '../../../util/Aliases';
 import { Notation } from '../../../util/TestTable';

@@ -51,4 +51,7 @@ export type IActorHashBindingsArgs = IActorArgs<IActionHashBindings, IActorTest,
 
 export type MediatorHashBindings = Mediator<
 Actor<IActionHashBindings, IActorTest, IActorHashBindingsOutput>,
-IActionHashBindings, IActorTest, IActorHashBindingsOutput>;
+IActionHashBindings,
+IActorTest,
+IActorHashBindingsOutput
+>;

@@ -2,7 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Fbus-merge-binding-factory.svg)](https://www.npmjs.com/package/@comunica/bus-merge-bindings-context)
 
-A comunica bus for merge-bindings-context events.
+A bus for creating merge handlers that are responsible for merging context entries in bindings with different values.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
@@ -19,7 +19,7 @@ $ yarn add @comunica/bus-merge-bindings-context
 
 ## Bus usage
 
-* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-merge-bindings-context/^2.0.0/components/context.jsonld"`
+* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-merge-bindings-context/^3.0.0/components/context.jsonld"`
 * **Bus name**: `ActorMergeBindingsContext:_default_bus`
 
 ## Creating actors on this bus

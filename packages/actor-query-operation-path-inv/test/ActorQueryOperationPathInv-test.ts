@@ -45,7 +45,9 @@ describe('ActorQueryOperationPathInv', () => {
     });
 
     it('should not be able to create new ActorQueryOperationPathInv objects without \'new\'', () => {
-      expect(() => { (<any> ActorQueryOperationPathInv)(); }).toThrow();
+      expect(() => {
+        (<any> ActorQueryOperationPathInv)();
+      }).toThrow(`Class constructor ActorQueryOperationPathInv cannot be invoked without 'new'`);
     });
   });
 
@@ -56,18 +58,18 @@ describe('ActorQueryOperationPathInv', () => {
       actor = new ActorQueryOperationPathInv({ name: 'actor', bus, mediatorQueryOperation });
     });
 
-    it('should test on Inv paths', () => {
-      const op: any = { operation: { type: Algebra.types.PATH,
-        predicate: { type: Algebra.types.INV },
-        context: new ActionContext() }};
-      return expect(actor.test(op)).resolves.toBeTruthy();
+    it('should test on Inv paths', async() => {
+      const op: any = {
+        operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.INV }, context: new ActionContext() },
+      };
+      await expect(actor.test(op)).resolves.toBeTruthy();
     });
 
-    it('should test on different paths', () => {
-      const op: any = { operation: { type: Algebra.types.PATH,
-        predicate: { type: 'dummy' },
-        context: new ActionContext() }};
-      return expect(actor.test(op)).rejects.toBeTruthy();
+    it('should test on different paths', async() => {
+      const op: any = {
+        operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }, context: new ActionContext() },
+      };
+      await expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should support Inv paths', async() => {
@@ -75,10 +77,9 @@ describe('ActorQueryOperationPathInv', () => {
         DF.namedNode('s'),
         factory.createInv(factory.createLink(DF.namedNode('p'))),
         DF.variable('x'),
-      ),
-      context: new ActionContext() };
+      ), context: new ActionContext() };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
+      await expect(output.metadata()).resolves.toEqual({ cardinality: 3, canContainUndefs: false });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
         BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),

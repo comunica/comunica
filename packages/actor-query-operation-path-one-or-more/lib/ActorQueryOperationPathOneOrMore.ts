@@ -18,9 +18,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
   }
 
   public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryOperationResult> {
-    const bindingsFactory = new BindingsFactory(
-      (await this.mediatorMergeBindingsContext.mediate({ context })).mergeHandlers,
-    );
+    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context);
     const distinct = await this.isPathArbitraryLengthDistinct(context, operation);
     if (distinct.operation) {
       return distinct.operation;
@@ -95,15 +93,16 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
                     next();
                   },
                 });
-              }, { maxBufferSize: 128 },
+              },
+              { maxBufferSize: 128 },
             );
           },
           autoStart: false,
         },
       );
       const variables = operation.graph.termType === 'Variable' ?
-        [ subjectVar, objectVar, operation.graph ] :
-        [ subjectVar, objectVar ];
+          [ subjectVar, objectVar, operation.graph ] :
+          [ subjectVar, objectVar ];
       return {
         type: 'bindings',
         bindingsStream,

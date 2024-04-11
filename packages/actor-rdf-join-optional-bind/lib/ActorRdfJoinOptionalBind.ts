@@ -30,10 +30,7 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
   }
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
-    // Create BindingsFactory and context handlers
-    const bindingsFactory = new BindingsFactory(
-      (await this.mediatorMergeBindingsContext.mediate({ context: action.context })).mergeHandlers,
-    );
+    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context);
     // Close the right stream, since we don't need that one
     action.entries[1].output.bindingsStream.close();
 

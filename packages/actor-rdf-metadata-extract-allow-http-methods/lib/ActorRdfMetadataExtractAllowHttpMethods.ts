@@ -14,7 +14,7 @@ export class ActorRdfMetadataExtractAllowHttpMethods extends ActorRdfMetadataExt
     super(args);
   }
 
-  public async test(action: IActionRdfMetadataExtract): Promise<IActorTest> {
+  public async test(_action: IActionRdfMetadataExtract): Promise<IActorTest> {
     return true;
   }
 

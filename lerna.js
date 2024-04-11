@@ -1,13 +1,13 @@
-const {loadPackages, exec, iter} = require('lerna-script')
-const checkDeps = require('depcheck')
-const path = require('path');
-const { readFileSync, writeFileSync, readdirSync, readdir } = require('fs');
+const { readFileSync, writeFileSync, readdirSync } = require('node:fs');
+const path = require('node:path');
+const checkDeps = require('depcheck');
+const { loadPackages, exec, iter } = require('lerna-script');
 
-function ensureDependency({ checkedDeps, dependency, dependant }, log) {
+function ensureDependency({ checkedDeps, dependency, dependant }) {
   if (!checkedDeps.dependencies.includes(dependency)) {
-    checkedDeps.missing[dependency] = [dependant];
+    checkedDeps.missing[dependency] = [ dependant ];
   }
-  checkedDeps.using[dependency] = [dependant];
+  checkedDeps.using[dependency] = [ dependant ];
 }
 
 /**
@@ -16,8 +16,8 @@ function ensureDependency({ checkedDeps, dependency, dependant }, log) {
  */
 function filterTypeUsedTypeDependencies({ dependencies, using }) {
   const newDependencies = [];
-  for (let dependency of dependencies) {
-    if (dependency.startsWith('@types/') && Object.keys(using).some(file => file === dependency.slice(7))) {
+  for (const dependency of dependencies) {
+    if (dependency.startsWith('@types/') && Object.keys(using).includes(dependency.slice(7))) {
       break;
     }
     newDependencies.push(dependency);
@@ -25,7 +25,7 @@ function filterTypeUsedTypeDependencies({ dependencies, using }) {
   return newDependencies;
 }
 
-async function depInfo({ location, name }, log) {
+async function depInfo({ location }, log) {
   const folders = readdirSync(location, { withFileTypes: true });
 
   const { files } = JSON.parse(readFileSync(path.join(location, 'package.json'), 'utf8'));
@@ -41,66 +41,72 @@ async function depInfo({ location, name }, log) {
       };
     }
     ignore = files ? folders.filter(elem => files.every(file => !file.startsWith(elem.name))) : folders;
-    ignore = ignore.map(x => x.isDirectory() ? `${x.name}/**` : x.name)
+    ignore = ignore.map(x => x.isDirectory() ? `${x.name}/**` : x.name);
 
     // Add a nonExisting path to bypass the automatic .gitignore parsing: https://github.com/depcheck/depcheck/issues/497
-    checkedDeps = await checkDeps(location,
-      { ignorePath: 'falsePath', ignorePatterns: ignore }, val => val);
+    checkedDeps = await checkDeps(location, { ignorePath: 'falsePath', ignorePatterns: ignore }, val => val);
     ensureDependency({
-      checkedDeps, dependency: '@comunica/runner', dependant: path.join(location, 'engine-default.js') }, log);
+      checkedDeps,
+      dependency: '@comunica/runner',
+      dependant: path.join(location, 'engine-default.js'),
+    }, log);
     ensureDependency({
-      checkedDeps, dependency: '@comunica/config-query-sparql', dependant: path.join(location, 'engine-default.js') }, log);
+      checkedDeps,
+      dependency: '@comunica/config-query-sparql',
+      dependant: path.join(location, 'engine-default.js'),
+    }, log);
   } else {
     ignore = files ? folders.filter(elem => files.every(file => !file.startsWith(elem.name))) : folders;
-    ignore = ignore.map(x => x.isDirectory() ? `${x.name}/**` : x.name)
+    ignore = ignore.map(x => x.isDirectory() ? `${x.name}/**` : x.name);
 
     checkedDeps = await checkDeps(location, { ignorePatterns: ignore }, val => val);
   }
-  let {dependencies, devDependencies, missing, using} = checkedDeps;
+  let { dependencies, devDependencies, missing, using } = checkedDeps;
 
   dependencies = filterTypeUsedTypeDependencies({ dependencies, using });
 
   if (Object.values(using).flat().some(file =>
     readFileSync(file, 'utf8').toString().includes('require(\'process/\')') ||
-    readFileSync(file, 'utf8').toString().includes('require(\"process/\")')
-    )) {
-      if (dependencies.includes('process')) {
-        // If we know it exists and is in the dependency array, remove it so that no errors are thrown
-        dependencies = dependencies.filter(dep => dep !== 'process');
-      } else {
-        // If it is *not* declared in the dependencies then mark it as missing
-        missing['process'] = missing['process'] || [];
-      }
+    readFileSync(file, 'utf8').toString().includes('require("process/")'))) {
+    if (dependencies.includes('process')) {
+      // If we know it exists and is in the dependency array, remove it so that no errors are thrown
+      dependencies = dependencies.filter(dep => dep !== 'process');
+    } else {
+      // If it is *not* declared in the dependencies then mark it as missing
+      missing.process = missing.process || [];
+    }
   }
 
   return {
-    unusedDeps: [...dependencies, ...devDependencies].filter(elem => !Object.keys(using).includes(elem)),
+    unusedDeps: [ ...dependencies, ...devDependencies ].filter(elem => !Object.keys(using).includes(elem)),
     missingDeps: Object.keys(missing),
     allDeps: Object.keys(using),
-  }
+  };
 }
 
 async function depfixTask(log) {
   const packages = (await (log.packages || loadPackages())).filter(package => package.location.startsWith(path.join(__dirname, '/packages')));
   const resolutions = Object.keys(JSON.parse(readFileSync(path.join(__dirname, 'package.json'), 'utf8')).resolutions ?? {});
 
-  await iter.forEach(packages, { log })(async package => {
-    log.info(package.name)
+  // eslint-disable-next-line unicorn/no-array-for-each
+  await iter.forEach(packages, { log })(async(package) => {
+    log.info(package.name);
 
     const { missingDeps, unusedDeps, allDeps } = await depInfo(package);
 
-    if (allDeps.includes(package.name))
-      log.error('     package is a dependency of itself')
+    if (allDeps.includes(package.name)) {
+      log.error('     package is a dependency of itself');
+    }
 
     if (missingDeps.length > 0) {
       try {
-        log.info('    add:', missingDeps.join(', '))
+        log.info('    add:', missingDeps.join(', '));
         await exec.command(package)(`yarn add ${missingDeps.join(' ')}`);
-      } catch (e) {
+      } catch {
         for (const dep of missingDeps) {
           try {
             await exec.command(package)(`yarn add ${dep}`);
-          } catch (e) {
+          } catch {
             log.error('    CANNOT ADD:', dep);
           }
         }
@@ -109,13 +115,13 @@ async function depfixTask(log) {
 
     if (unusedDeps.length > 0) {
       try {
-        log.info('    remove:', unusedDeps.join(', '))
+        log.info('    remove:', unusedDeps.join(', '));
         await exec.command(package)(`yarn remove ${unusedDeps.join(' ')}`);
-      } catch (e) {
+      } catch {
         for (const dep of unusedDeps) {
           try {
             await exec.command(package)(`yarn remove ${dep}`);
-          } catch (e) {
+          } catch {
             log.error('    CANNOT REMOVE:', dep);
           }
         }
@@ -126,20 +132,21 @@ async function depfixTask(log) {
     const packageJson = JSON.parse(readFileSync(path.join(package.location, 'package.json'), 'utf8'));
     for (const dep of Object.keys(packageJson.dependencies ?? {})) {
       if (resolutions.includes(dep) && packageJson.dependencies[dep] !== '*') {
-        log.info('    converting to \'*\' import for', dep)
+        log.info('    converting to \'*\' import for', dep);
         packageJson.dependencies[dep] = '*';
       }
     }
-    writeFileSync(path.join(package.location, 'package.json'), JSON.stringify(packageJson, null, 2) + '\n');
-  })
+    writeFileSync(path.join(package.location, 'package.json'), `${JSON.stringify(packageJson, null, 2)}\n`);
+  });
 }
 
 async function depcheckTask(log) {
   const packages = await (log.packages || loadPackages());
   const resolutions = Object.keys(JSON.parse(readFileSync(path.join(__dirname, 'package.json'), 'utf8')).resolutions ?? {});
 
-  return iter.forEach(packages, { log })(async package => {
-    const { missingDeps, unusedDeps, allDeps } = await depInfo(package)
+  // eslint-disable-next-line unicorn/no-array-for-each
+  return iter.forEach(packages, { log })(async(package) => {
+    const { missingDeps, unusedDeps, allDeps } = await depInfo(package);
 
     if (missingDeps.length > 0) {
       throw new Error(`Missing dependencies:  ${missingDeps.join(', ')} from ${package.name}`);
@@ -149,52 +156,55 @@ async function depcheckTask(log) {
       throw new Error(`Extra dependencies: ${unusedDeps.join(', ')} in ${package.name}`);
     }
 
-    if (allDeps.includes(package.name))
+    if (allDeps.includes(package.name)) {
       throw new Error(`${package.name} is a dependency of itself`);
-
+    }
 
     // Now check all resolutions use a star ("*") import
     const packageJson = JSON.parse(readFileSync(path.join(package.location, 'package.json'), 'utf8'));
     for (const dep of Object.keys(packageJson.dependencies ?? {})) {
       if (resolutions.includes(dep) && packageJson.dependencies[dep] !== '*') {
-        throw new Error(`Resolution not using \'*\' import for ${dep} in ${package.name}`);
+        throw new Error(`Resolution not using '*' import for ${dep} in ${package.name}`);
       }
     }
-  })
+  });
 }
 
-module.exports.depfixTask = depfixTask
-module.exports.depcheckTask = depcheckTask
+module.exports.depfixTask = depfixTask;
+module.exports.depcheckTask = depcheckTask;
 
 const ncu = require('npm-check-updates');
+
 async function updateTask(log) {
   const packages = (await (log.packages || loadPackages())).filter(
     package => package.location.startsWith(path.join(__dirname, '/packages')) ||
-      package.location.startsWith(path.join(__dirname, '/engines'))
+      package.location.startsWith(path.join(__dirname, '/engines')),
   );
 
-  await iter.forEach(packages, { log })(async package => {
+  // eslint-disable-next-line unicorn/no-array-for-each
+  await iter.forEach(packages, { log })(async(package) => {
     const upgraded = await ncu.run({
       // Pass any cli option
       packageFile: path.join(package.location, 'package.json'),
       upgrade: true,
-      target: 'minor'
+      target: 'minor',
     });
     log.info(package.name, upgraded);
-  })
+  });
 }
 
 async function updateTaskMajor(log) {
   const packages = (await (log.packages || loadPackages())).filter(package => package.location.startsWith(path.join(__dirname, '/packages')));
 
-  await iter.forEach(packages, { log })(async package => {
+  // eslint-disable-next-line unicorn/no-array-for-each
+  await iter.forEach(packages, { log })(async(package) => {
     const upgraded = await ncu.run({
       // Pass any cli option
       packageFile: path.join(package.location, 'package.json'),
     });
     log.info(package.name, upgraded);
-  })
+  });
 }
 
-module.exports.updateTask = updateTask
-module.exports.updateTaskMajor = updateTaskMajor
+module.exports.updateTask = updateTask;
+module.exports.updateTaskMajor = updateTaskMajor;

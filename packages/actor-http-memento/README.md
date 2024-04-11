@@ -23,7 +23,7 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-memento/^2.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-memento/^3.0.0/components/context.jsonld"
   ],
   "actors": [
     ...

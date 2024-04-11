@@ -1,6 +1,9 @@
 import type { MediatorHttp } from '@comunica/bus-http';
-import type { IActionRdfUpdateHypermedia, IActorRdfUpdateHypermediaOutput,
-  IActorRdfUpdateHypermediaArgs } from '@comunica/bus-rdf-update-hypermedia';
+import type {
+  IActionRdfUpdateHypermedia,
+  IActorRdfUpdateHypermediaOutput,
+  IActorRdfUpdateHypermediaArgs,
+} from '@comunica/bus-rdf-update-hypermedia';
 import { ActorRdfUpdateHypermedia } from '@comunica/bus-rdf-update-hypermedia';
 import type { IActorTest } from '@comunica/core';
 import { QuadDestinationSparql } from './QuadDestinationSparql';

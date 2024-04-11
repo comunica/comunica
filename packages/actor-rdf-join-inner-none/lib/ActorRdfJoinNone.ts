@@ -4,6 +4,7 @@ import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import { MetadataValidationState } from '@comunica/metadata';
+import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 
 /**
@@ -20,7 +21,7 @@ export class ActorRdfJoinNone extends ActorRdfJoin {
     });
   }
 
-  public async test(action: IActionRdfJoin): Promise<IMediatorTypeJoinCoefficients> {
+  public override async test(action: IActionRdfJoin): Promise<IMediatorTypeJoinCoefficients> {
     // Allow joining of one or zero streams
     if (action.entries.length > 0) {
       throw new Error(`Actor ${this.name} can only join zero entries`);
@@ -29,12 +30,10 @@ export class ActorRdfJoinNone extends ActorRdfJoin {
   }
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
-    const bindingsFactory = new BindingsFactory(
-      (await this.mediatorMergeBindingsContext.mediate({ context: action.context })).mergeHandlers,
-    );
+    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context);
     return {
       result: {
-        bindingsStream: new ArrayIterator([ bindingsFactory.bindings() ], { autoStart: false }),
+        bindingsStream: new ArrayIterator<RDF.Bindings>([ bindingsFactory.bindings() ], { autoStart: false }),
         metadata: () => Promise.resolve({
           state: new MetadataValidationState(),
           cardinality: { type: 'exact', value: 1 },

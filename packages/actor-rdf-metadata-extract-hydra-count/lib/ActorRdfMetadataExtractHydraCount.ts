@@ -1,5 +1,8 @@
-import type { IActionRdfMetadataExtract,
-  IActorRdfMetadataExtractOutput, IActorRdfMetadataExtractArgs } from '@comunica/bus-rdf-metadata-extract';
+import type {
+  IActionRdfMetadataExtract,
+  IActorRdfMetadataExtractOutput,
+  IActorRdfMetadataExtractArgs,
+} from '@comunica/bus-rdf-metadata-extract';
 import { ActorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { IActorTest } from '@comunica/core';
 
@@ -14,7 +17,7 @@ export class ActorRdfMetadataExtractHydraCount extends ActorRdfMetadataExtract
     super(args);
   }
 
-  public async test(action: IActionRdfMetadataExtract): Promise<IActorTest> {
+  public async test(_action: IActionRdfMetadataExtract): Promise<IActorTest> {
     return true;
   }
 
@@ -24,7 +27,7 @@ export class ActorRdfMetadataExtractHydraCount extends ActorRdfMetadataExtract
       action.metadata.on('error', reject);
 
       // Immediately resolve when a value has been found.
-      action.metadata.on('data', quad => {
+      action.metadata.on('data', (quad) => {
         if (this.predicates.includes(quad.predicate.value)) {
           resolve({
             metadata: {

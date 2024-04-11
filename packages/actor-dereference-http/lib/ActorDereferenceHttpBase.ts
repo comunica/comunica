@@ -5,6 +5,7 @@ import { ActorHttp } from '@comunica/bus-http';
 import type { IActorTest } from '@comunica/core';
 import { Headers } from 'cross-fetch';
 import { resolve as resolveRelative } from 'relative-to-absolute-iri';
+
 // Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
 const stringifyStream = require('stream-to-string');
 
@@ -21,10 +22,10 @@ export function mediaTypesToAcceptString(mediaTypes: Record<string, number>, max
   // Take into account the ',' characters joining each type
   let partsLength = sortedMediaTypes.length - 1;
   for (const { mediaType, priority } of sortedMediaTypes) {
-    const part = mediaType + (priority !== 1 ? `;q=${priority.toFixed(3).replace(/0*$/u, '')}` : '');
+    const part = mediaType + (priority === 1 ? '' : `;q=${priority.toFixed(3).replace(/0*$/u, '')}`);
     if (partsLength + part.length > maxLength) {
       while (partsLength + wildcard.length > maxLength) {
-        const last = parts.pop() || '';
+        const last = parts.pop() ?? '';
         // Don't forget the ','
         partsLength -= last.length + 1;
       }
@@ -108,7 +109,7 @@ export abstract class ActorDereferenceHttpBase extends ActorDereference implemen
       exists,
       requestTime,
       headers: httpResponse.headers,
-      mediaType: mediaType !== 'text/plain' ? mediaType : undefined,
+      mediaType: mediaType === 'text/plain' ? undefined : mediaType,
     };
   }
 

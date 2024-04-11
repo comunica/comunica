@@ -29,42 +29,42 @@ describe('ActorRdfUpdateHypermediaSparql', () => {
       });
     });
 
-    it('should test', () => {
+    it('should test', async() => {
       const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       const url = 'abc';
       const metadata = { sparqlService: true };
       const exists = true;
-      return expect(actor.test({ context, url, metadata, exists })).resolves.toBeTruthy();
+      await expect(actor.test({ context, url, metadata, exists })).resolves.toBeTruthy();
     });
 
-    it('should not test on invalid metadata', () => {
+    it('should not test on invalid metadata', async() => {
       const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       const url = 'abc';
       const metadata = { somethingElse: true };
       const exists = true;
-      return expect(actor.test({ context, url, metadata, exists })).rejects
+      await expect(actor.test({ context, url, metadata, exists })).rejects
         .toThrow(`Actor actor could not detect a SPARQL service description or URL ending on /sparql or /update.`);
     });
 
-    it('should test on invalid metadata with forced destination type', () => {
+    it('should test on invalid metadata with forced destination type', async() => {
       const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       const url = 'abc';
       const metadata = { somethingElse: true };
       const exists = true;
-      return expect(actor.test({ context, url, metadata, exists, forceDestinationType: 'sparql' }))
+      await expect(actor.test({ context, url, metadata, exists, forceDestinationType: 'sparql' }))
         .resolves.toBeTruthy();
     });
 
-    it('should test on invalid metadata when URL ends with /sparql', () => {
+    it('should test on invalid metadata when URL ends with /sparql', async() => {
       const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       const url = 'abc/sparql';
       const metadata = { somethingElse: true };
       const exists = true;
-      return expect(actor.test({ context, url, metadata, exists }))
+      await expect(actor.test({ context, url, metadata, exists }))
         .resolves.toBeTruthy();
     });
 
-    it('should not test on invalid metadata when URL ends with /sparql when checkUrlSuffix is false', () => {
+    it('should not test on invalid metadata when URL ends with /sparql when checkUrlSuffix is false', async() => {
       actor = new ActorRdfUpdateHypermediaSparql({
         name: 'actor',
         bus,
@@ -76,11 +76,11 @@ describe('ActorRdfUpdateHypermediaSparql', () => {
       const url = 'abc/sparql';
       const metadata = { somethingElse: true };
       const exists = true;
-      return expect(actor.test({ context, url, metadata, exists })).rejects
+      await expect(actor.test({ context, url, metadata, exists })).rejects
         .toThrow(`Actor actor could not detect a SPARQL service description or URL ending on /sparql or /update.`);
     });
 
-    it('should not test on invalid metadata when URL ends with /update when checkUrlSuffix is false', () => {
+    it('should not test on invalid metadata when URL ends with /update when checkUrlSuffix is false', async() => {
       actor = new ActorRdfUpdateHypermediaSparql({
         name: 'actor',
         bus,
@@ -92,16 +92,16 @@ describe('ActorRdfUpdateHypermediaSparql', () => {
       const url = 'abc/update';
       const metadata = { somethingElse: true };
       const exists = true;
-      return expect(actor.test({ context, url, metadata, exists })).rejects
+      await expect(actor.test({ context, url, metadata, exists })).rejects
         .toThrow(`Actor actor could not detect a SPARQL service description or URL ending on /sparql or /update.`);
     });
 
-    it('should not test on invalid metadata with forced destination type for different destination type', () => {
+    it('should not test on invalid metadata with forced destination type for different destination type', async() => {
       const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       const url = 'abc';
       const metadata = { somethingElse: true };
       const exists = true;
-      return expect(actor.test({ context, url, metadata, exists, forceDestinationType: 'different' }))
+      await expect(actor.test({ context, url, metadata, exists, forceDestinationType: 'different' }))
         .rejects.toThrow('Actor actor is not able to handle destination type different.');
     });
 
@@ -112,7 +112,7 @@ describe('ActorRdfUpdateHypermediaSparql', () => {
       const exists = true;
       const { destination } = await actor.run({ context, url, metadata, exists });
       expect(destination).toEqual(expect.any(QuadDestinationSparql));
-      expect((<any> destination).url).toEqual('service');
+      expect((<any> destination).url).toBe('service');
     });
 
     it('should run without sparqlService metadata', async() => {
@@ -122,7 +122,7 @@ describe('ActorRdfUpdateHypermediaSparql', () => {
       const exists = true;
       const { destination } = await actor.run({ context, url, metadata, exists });
       expect(destination).toEqual(expect.any(QuadDestinationSparql));
-      expect((<any> destination).url).toEqual('abc');
+      expect((<any> destination).url).toBe('abc');
     });
   });
 });

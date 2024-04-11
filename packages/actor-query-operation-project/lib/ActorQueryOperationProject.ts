@@ -23,7 +23,7 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
     super(args, 'project');
   }
 
-  public async testOperation(operation: Algebra.Project, context: IActionContext): Promise<IActorTest> {
+  public async testOperation(_operation: Algebra.Project, _context: IActionContext): Promise<IActorTest> {
     return true;
   }
 
@@ -44,6 +44,7 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
     const missingVariables = variables
       .filter(variable => !outputMetadata.variables.some(subVariable => variable.value === subVariable.value));
     if (missingVariables.length > 0) {
+      // eslint-disable-next-line ts/restrict-template-expressions
       throw new Error(`Variables '${missingVariables.map(variable => `?${variable.value}`)}' are used in the projection result, but are not assigned.`);
     }
 
@@ -68,7 +69,7 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
       map(bindings: Bindings) {
         blankNodeCounter++;
         const scopedBlankNodesCache = new Map<string, RDF.BlankNode>();
-        return bindings.map(term => {
+        return bindings.map((term) => {
           if (term instanceof BlankNodeBindingsScoped) {
             let scopedBlankNode = scopedBlankNodesCache.get(term.value);
             if (!scopedBlankNode) {

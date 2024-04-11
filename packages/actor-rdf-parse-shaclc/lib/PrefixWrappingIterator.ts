@@ -7,13 +7,13 @@ import { WrappingIterator } from 'asynciterator';
 export class PrefixWrappingIterator extends WrappingIterator<Quad> {
   private prefixes?: Record<string, string>;
   public constructor(source: Promise<Quad[] & { prefixes: Record<string, string> }> | undefined) {
-    super(source?.then(src => {
+    super(source?.then((src) => {
       this.prefixes = src.prefixes;
       return src;
     }));
   }
 
-  public read(): Quad | null {
+  public override read(): Quad | null {
     // On the first read where the prefixes are available, emit them
     if (this.prefixes) {
       for (const args of Object.entries(this.prefixes)) {

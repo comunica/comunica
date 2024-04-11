@@ -41,7 +41,7 @@ This will output a list of dependencies that can be included in your `package.js
 ### Initializing a new package
 
 ```bash
-$ comunica-package -c config/config-default.json -o my-sparql-engine 
+$ comunica-package -c config/config-default.json -o my-sparql-engine
 ```
 
 This will create a directory `my-sparql-engine` containing new `package.json` and `index.js` files.

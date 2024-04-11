@@ -1,13 +1,15 @@
-// eslint-disable-next-line eslint-comments/disable-enable-pair
 /* eslint-disable no-console */
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import type { Event } from 'benchmark';
+
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Suite } from 'benchmark';
+
 // Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
+// eslint-disable-next-line ts/no-require-imports
 import Benchmark = require('benchmark');
 import { DataFactory } from 'rdf-data-factory';
 import { translate } from 'sparqlalgebrajs';

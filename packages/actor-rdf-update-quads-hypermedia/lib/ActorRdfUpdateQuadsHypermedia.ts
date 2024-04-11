@@ -4,12 +4,12 @@ import type { IActorRdfMetadataOutput, MediatorRdfMetadata } from '@comunica/bus
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { MediatorRdfUpdateHypermedia } from '@comunica/bus-rdf-update-hypermedia';
 import {
-  ActorRdfUpdateQuadsDestination, getContextDestination,
+  ActorRdfUpdateQuadsDestination,
+  getContextDestination,
   getContextDestinationUrl,
   getDataDestinationType,
 } from '@comunica/bus-rdf-update-quads';
-import type { IActionRdfUpdateQuads,
-  IQuadDestination, IActorRdfUpdateQuadsArgs } from '@comunica/bus-rdf-update-quads';
+import type { IActionRdfUpdateQuads, IQuadDestination, IActorRdfUpdateQuadsArgs } from '@comunica/bus-rdf-update-quads';
 import type { IActorTest } from '@comunica/core';
 import type { IActionContext, IDataDestination } from '@comunica/types';
 import { LRUCache } from 'lru-cache';
@@ -37,7 +37,7 @@ export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestinatio
     }
   }
 
-  public async test(action: IActionRdfUpdateQuads): Promise<IActorTest> {
+  public override async test(action: IActionRdfUpdateQuads): Promise<IActorTest> {
     const url = getContextDestinationUrl(getContextDestination(action.context));
     if (!url) {
       throw new Error(`Actor ${this.name} can only update quads against a single destination URL.`);
@@ -108,7 +108,7 @@ export interface IActorRdfUpdateQuadsHypermediaArgs extends IActorRdfUpdateQuads
   /* eslint-disable max-len */
   /**
    * An actor that listens to HTTP invalidation events
-   * @default {<default_invalidator> a <npmd:@comunica/bus-http-invalidate/^2.0.0/components/ActorHttpInvalidateListenable.jsonld#ActorHttpInvalidateListenable>}
+   * @default {<default_invalidator> a <npmd:@comunica/bus-http-invalidate/^3.0.0/components/ActorHttpInvalidateListenable.jsonld#ActorHttpInvalidateListenable>}
    */
   httpInvalidator: ActorHttpInvalidateListenable;
   /* eslint-enable max-len */

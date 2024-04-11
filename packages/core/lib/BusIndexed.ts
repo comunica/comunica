@@ -35,7 +35,7 @@ export class BusIndexed<A extends Actor<I, T, O>, I extends IAction, T extends I
     super(args);
   }
 
-  public subscribe(actor: A): void {
+  public override subscribe(actor: A): void {
     const actorId = this.getActorIdentifier(actor) || '_undefined_';
     let actors = this.actorsIndex[actorId];
     if (!actors) {
@@ -45,7 +45,7 @@ export class BusIndexed<A extends Actor<I, T, O>, I extends IAction, T extends I
     super.subscribe(actor);
   }
 
-  public unsubscribe(actor: A): boolean {
+  public override unsubscribe(actor: A): boolean {
     const actorId = this.getActorIdentifier(actor) || '_undefined_';
     const actors = this.actorsIndex[actorId];
     if (actors) {
@@ -60,7 +60,7 @@ export class BusIndexed<A extends Actor<I, T, O>, I extends IAction, T extends I
     return super.unsubscribe(actor);
   }
 
-  public publish(action: I): IActorReply<A, I, T, O>[] {
+  public override publish(action: I): IActorReply<A, I, T, O>[] {
     const actionId = this.getActionIdentifier(action);
     if (actionId) {
       const actors = [ ...this.actorsIndex[actionId] || [], ...this.actorsIndex._undefined_ || [] ];

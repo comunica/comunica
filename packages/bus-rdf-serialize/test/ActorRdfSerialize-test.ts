@@ -15,7 +15,9 @@ describe('ActorRdfSerialize', () => {
     });
 
     it('should not be able to create new ActorRdfSerialize objects without \'new\'', () => {
-      expect(() => { (<any> ActorRdfSerialize)(); }).toThrow();
+      expect(() => {
+        (<any> ActorRdfSerialize)();
+      }).toThrow(`Class constructor ActorRdfSerialize cannot be invoked without 'new'`);
     });
   });
 });

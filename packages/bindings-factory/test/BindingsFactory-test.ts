@@ -14,11 +14,11 @@ describe('BindingsFactory', () => {
   let factory: RDF.BindingsFactory;
 
   beforeEach(() => {
-    factory = new BindingsFactory({}, DF);
+    factory = new BindingsFactory(DF, {});
   });
 
   it('should allow construction without args', () => {
-    factory = new BindingsFactory({}, DF);
+    factory = new BindingsFactory(DF, {});
     expect((<any> factory).dataFactory).toBeInstanceOf(DataFactory);
   });
 

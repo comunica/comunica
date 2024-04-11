@@ -8,7 +8,7 @@ export class AsyncAggregateEvaluator extends BaseAggregateEvaluator {
   private readonly evaluator: AsyncEvaluator;
 
   public constructor(expr: Algebra.AggregateExpression, context?: IAsyncEvaluatorContext, throwError?: boolean) {
-    super(expr, AsyncEvaluator.completeContext(context || {}), throwError);
+    super(expr, AsyncEvaluator.completeContext(context ?? {}), throwError);
     this.evaluator = new AsyncEvaluator(expr.expression, context);
     this.errorOccurred = false;
   }

@@ -1,7 +1,7 @@
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorMergeBindingsContextUnion } from '../lib/ActorMergeBindingsContextUnion';
-import { SetUnionContext } from '../lib/SetUnionContext';
+import { SetUnionBindingsContextMergeHandler } from '../lib/SetUnionBindingsContextMergeHandler';
 
 describe('ActorMergeBindingFactoryContextUnion', () => {
   let bus: any;
@@ -11,32 +11,32 @@ describe('ActorMergeBindingFactoryContextUnion', () => {
   });
 
   describe('An ActorMergeBindingFactoryContextUnion instance', () => {
-    let setUnionMergeHandler: SetUnionContext;
+    let setUnionMergeHandler: SetUnionBindingsContextMergeHandler;
     let actor: ActorMergeBindingsContextUnion;
     let context: IActionContext;
 
     beforeEach(() => {
-      setUnionMergeHandler = new SetUnionContext();
+      setUnionMergeHandler = new SetUnionBindingsContextMergeHandler();
       actor = new ActorMergeBindingsContextUnion({ name: 'actor', bus, contextKey: 'sources' });
       context = new ActionContext();
     });
 
-    it('should test', () => {
-      return expect(actor.test({ context })).resolves.toEqual(true); // TODO
+    it('should test', async() => {
+      await expect(actor.test({ context })).resolves.toBe(true);
     });
 
-    it('should run', () => {
-      return expect(actor.run({ context })).resolves.toMatchObject(
-        { mergeHandlers: { sources: new SetUnionContext() }},
-      ); // TODO
+    it('should run', async() => {
+      await expect(actor.run({ context })).resolves.toMatchObject(
+        { mergeHandlers: { sources: new SetUnionBindingsContextMergeHandler() }},
+      );
     });
     it('should be SetUnionConstructor', () => {
-      expect(new (<any> SetUnionContext)())
-        .toBeInstanceOf(SetUnionContext);
+      expect(new (<any> SetUnionBindingsContextMergeHandler)())
+        .toBeInstanceOf(SetUnionBindingsContextMergeHandler);
     });
     it('merge handler should return set union', () => {
       const inputSets = [[ '1', '2', '3' ], [ '1', '3', '5' ], [ '2', '1' ]];
-      return expect(setUnionMergeHandler.run(...inputSets)).toStrictEqual([ '1', '2', '3', '5' ]);
+      expect(setUnionMergeHandler.run(...inputSets)).toStrictEqual([ '1', '2', '3', '5' ]);
     });
   });
 });

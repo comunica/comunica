@@ -11,12 +11,14 @@ describe('ActorHttpInvalidateListenable', () => {
     });
 
     it('should be a ActorHttpInvalidateListenable constructor', () => {
-      expect(new (<any> ActorHttpInvalidateListenable)({ bus: new Bus({ name: 'bus' }),
-        name: 'actor' })).toBeInstanceOf(ActorHttpInvalidateListenable);
+      expect(new (<any> ActorHttpInvalidateListenable)({ bus: new Bus({ name: 'bus' }), name: 'actor' }))
+        .toBeInstanceOf(ActorHttpInvalidateListenable);
     });
 
     it('should not be able to create new ActorHttpInvalidateListenable objects without \'new\'', () => {
-      expect(() => { (<any> ActorHttpInvalidateListenable)(); }).toThrow();
+      expect(() => {
+        (<any> ActorHttpInvalidateListenable)();
+      }).toThrow(`Class constructor ActorHttpInvalidateListenable cannot be invoked without 'new'`);
     });
   });
 
@@ -26,12 +28,12 @@ describe('ActorHttpInvalidateListenable', () => {
       actor = new ActorHttpInvalidateListenable({ bus, name: 'actor' });
     });
 
-    it('should test', () => {
-      return expect(actor.test({ context: new ActionContext() })).resolves.toBeTruthy();
+    it('should test', async() => {
+      await expect(actor.test({ context: new ActionContext() })).resolves.toBeTruthy();
     });
 
-    it('should run', () => {
-      return expect(actor.run({ context: new ActionContext() })).resolves.toBeTruthy();
+    it('should run', async() => {
+      await expect(actor.run({ context: new ActionContext() })).resolves.toBeTruthy();
     });
   });
 
@@ -48,19 +50,19 @@ describe('ActorHttpInvalidateListenable', () => {
     });
 
     it('should test', async() => {
-      expect(await actor.test({ context: new ActionContext() })).toBeTruthy();
+      await expect(actor.test({ context: new ActionContext() })).resolves.toBeTruthy();
       expect(l0).not.toHaveBeenCalled();
       expect(l1).not.toHaveBeenCalled();
     });
 
     it('should run without URL', async() => {
-      expect(await actor.run({ context: new ActionContext() })).toBeTruthy();
+      await expect(actor.run({ context: new ActionContext() })).resolves.toBeTruthy();
       expect(l0).toHaveBeenCalledWith({ context: new ActionContext() });
       expect(l1).toHaveBeenCalledWith({ context: new ActionContext() });
     });
 
     it('should run with URL', async() => {
-      expect(await actor.run({ url: 'abc', context: new ActionContext() })).toBeTruthy();
+      await expect(actor.run({ url: 'abc', context: new ActionContext() })).resolves.toBeTruthy();
       expect(l0).toHaveBeenCalledWith({ url: 'abc', context: new ActionContext() });
       expect(l1).toHaveBeenCalledWith({ url: 'abc', context: new ActionContext() });
     });

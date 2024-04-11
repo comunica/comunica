@@ -1,12 +1,11 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/config-query-sparql/^2.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/config-query-sparql/^3.0.0/components/context.jsonld"
   ],
   "import": [
     "ccqs:config/query-operation/actors/query/ask.json",
     "ccqs:config/query-operation/actors/query/bgp.json",
     "ccqs:config/query-operation/actors/query/construct.json",
-    "ccqs:config/query-operation/actors/query/describe.json",
     "ccqs:config/query-operation/actors/query/distinct.json",
     "ccqs:config/query-operation/actors/query/extend.json",
     "ccqs:config/query-operation/actors/query/filter.json",
@@ -18,11 +17,10 @@
     "ccqs:config/query-operation/actors/query/nop.json",
     "ccqs:config/query-operation/actors/query/orderby.json",
     "ccqs:config/query-operation/actors/query/project.json",
-    "ccqs:config/query-operation/actors/query/quadpattern.json",
     "ccqs:config/query-operation/actors/query/reduced.json",
     "ccqs:config/query-operation/actors/query/service.json",
     "ccqs:config/query-operation/actors/query/slice.json",
-    "ccqs:config/query-operation/actors/query/sparql-endpoint.json",
+    "ccqs:config/query-operation/actors/query/source.json",
     "ccqs:config/query-operation/actors/query/union.json",
     "ccqs:config/query-operation/actors/query/values.json",
 
@@ -35,14 +33,11 @@
     "ccqs:config/query-operation/actors/query/path-zero-or-more.json",
     "ccqs:config/query-operation/actors/query/path-zero-or-one.json",
 
-    "ccqs:config/query-operation/actors/update/add.json",
     "ccqs:config/query-operation/actors/update/clear.json",
     "ccqs:config/query-operation/actors/update/composite.json",
-    "ccqs:config/query-operation/actors/update/copy.json",
     "ccqs:config/query-operation/actors/update/create.json",
     "ccqs:config/query-operation/actors/update/delete-insert.json",
     "ccqs:config/query-operation/actors/update/drop.json",
-    "ccqs:config/query-operation/actors/update/load.json",
-    "ccqs:config/query-operation/actors/update/move.json"
+    "ccqs:config/query-operation/actors/update/load.json"
   ]
 }

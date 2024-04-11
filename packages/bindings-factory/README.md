@@ -123,7 +123,7 @@ const newBindings = bindings
 
 #### `Bindings.keys()`
 
-The `keys()` method returns an iterable over all the RDF/JS variable keys that have a value in this bindings object. 
+The `keys()` method returns an iterable over all the RDF/JS variable keys that have a value in this bindings object.
 
 ```typescript
 for (const variable of bindings.keys()) {

@@ -1,14 +1,18 @@
 import { ActionContextKey, CONTEXT_KEY_LOGGER } from '@comunica/core';
-import type { Bindings,
+import type {
+  Bindings,
   IPhysicalQueryPlanLogger,
   QueryExplainMode,
   IProxyHandler,
   ICliArgsHandler,
-  DataSources,
-  IDataSource,
   IDataDestination,
-  MetadataBindings, FunctionArgumentsCache,
-  IAggregatedStore } from '@comunica/types';
+  MetadataBindings,
+  FunctionArgumentsCache,
+  IAggregatedStore,
+  QuerySourceUnidentified,
+  IQuerySourceWrapper,
+  QuerySourceReference,
+} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { IDocumentLoader } from 'jsonld-context-parser';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -88,6 +92,12 @@ export const KeysHttpProxy = {
 
 export const KeysInitQuery = {
   /**
+   * The unidentified sources to query over.
+   */
+  querySourcesUnidentified: new ActionContextKey<QuerySourceUnidentified[]>(
+    '@comunica/actor-init-query:querySourcesUnidentified',
+  ),
+  /**
    * Variables that have to be pre-bound to values in the query.
    */
   initialBindings: new ActionContextKey<RDF.Bindings>('@comunica/actor-init-query:initialBindings'),
@@ -138,8 +148,7 @@ export const KeysInitQuery = {
    */
   extensionFunctionCreator: new ActionContextKey<
   (functionNamedNode: RDF.NamedNode) => ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined
-  // eslint-disable-next-line @typescript-eslint/no-extra-parens
-  >('@comunica/actor-init-query:extensionFunctionCreator'),
+    >('@comunica/actor-init-query:extensionFunctionCreator'),
   /**
    * Dictionary of extension functions.
    * Key is the IRI of the function, and value is the async function implementation.
@@ -148,8 +157,7 @@ export const KeysInitQuery = {
    */
   extensionFunctions: new ActionContextKey<
   Record<string, (args: RDF.Term[]) => Promise<RDF.Term>>
-  // eslint-disable-next-line @typescript-eslint/no-extra-parens
-  >('@comunica/actor-init-query:extensionFunctions'),
+    >('@comunica/actor-init-query:extensionFunctions'),
   /**
    * Enables manipulation of the CLI arguments and their processing.
    */
@@ -214,6 +222,10 @@ export const KeysQueryOperation = {
    * If the default graph should also contain the union of all named graphs.
    */
   unionDefaultGraph: new ActionContextKey<boolean>('@comunica/bus-query-operation:unionDefaultGraph'),
+  /**
+   * The sources to query over.
+   */
+  querySources: new ActionContextKey<IQuerySourceWrapper[]>('@comunica/bus-query-operation:querySources'),
 };
 
 export const KeysRdfParseJsonLd = {
@@ -242,25 +254,24 @@ export const KeysRdfParseHtmlScript = {
   extractAllScripts: new ActionContextKey<boolean>('extractAllScripts'),
 };
 
-export const KeysRdfResolveQuadPattern = {
-  /**
-   * Data sources.
-   */
-  sources: new ActionContextKey<DataSources>('@comunica/bus-rdf-resolve-quad-pattern:sources'),
-  /**
-   * A data source.
-   */
-  source: new ActionContextKey<IDataSource>('@comunica/bus-rdf-resolve-quad-pattern:source'),
+export const KeysQuerySourceIdentify = {
   /**
    * A map containing unique IDs for each source
    */
-  sourceIds: new ActionContextKey<Map<IDataSource, string>>('@comunica/bus-rdf-resolve-quad-pattern:sourceIds'),
+  sourceIds: new ActionContextKey<Map<QuerySourceReference, string>>(
+    '@comunica/bus-query-source-identify:sourceIds',
+  ),
   /**
    * Hypermedia sources mapping to their aggregated store.
    */
   hypermediaSourcesAggregatedStores: new ActionContextKey<Map<string, IAggregatedStore>>(
-    '@comunica/bus-rdf-resolve-quad-pattern:hypermediaSourcesAggregatedStores',
+    '@comunica/bus-query-source-identify:hypermediaSourcesAggregatedStores',
   ),
+  /**
+   * If links may be traversed from this source.
+   * This means that sources annotated with this flag are considered incomplete until all links have been traversed.
+   */
+  traverse: new ActionContextKey<boolean>('@comunica/bus-query-source-identify:traverse'),
 };
 
 export const KeysRdfUpdateQuads = {
@@ -275,4 +286,11 @@ export const KeysBindingContext = {
    * The data source of the binding
    */
   sourceBinding: new ActionContextKey<string>('@comunica/bus-merge-bindings-context:sourceBinding'),
+};
+
+export const KeysRdfJoin = {
+  /**
+   * The last physical join actor that was executed.
+   */
+  lastPhysicalJoin: new ActionContextKey<string>('@comunica/bus-rdf-join:lastPhysicalJoin'),
 };

@@ -15,11 +15,14 @@ export abstract class BaseAggregateEvaluator {
   protected wildcardAggregator: WildcardCountAggregator | undefined;
   protected errorOccurred = false;
 
-  protected constructor(expr: Algebra.AggregateExpression,
-    sharedContext: ICompleteSharedContext, throwError?: boolean) {
+  protected constructor(
+    expr: Algebra.AggregateExpression,
+    sharedContext: ICompleteSharedContext,
+    throwError?: boolean,
+  ) {
     this.expression = expr;
     this.aggregator = new Aggregator(expr, new aggregators[<SetFunction> expr.aggregator](expr, sharedContext));
-    this.throwError = throwError || false;
+    this.throwError = throwError ?? false;
     this.isWildcard = expr.expression.expressionType === Algebra.expressionTypes.WILDCARD;
     if (this.isWildcard) {
       this.wildcardAggregator = new WildcardCountAggregator(expr);

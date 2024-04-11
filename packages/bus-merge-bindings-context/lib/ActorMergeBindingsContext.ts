@@ -14,12 +14,11 @@ import type { IActionContext } from '@comunica/types';
  * @see IActorMergeBindingsContextOutput
  */
 
-export abstract class ActorMergeBindingsContext extends Actor<IActionMergeBindingsContext,
-IActorTest,
-IActorMergeBindingsContextOutput> {
+export abstract class ActorMergeBindingsContext
+  extends Actor<IActionMergeBindingsContext, IActorTest, IActorMergeBindingsContextOutput> {
   /**
-  * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
-  */
+   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   */
   public constructor(args: IActorMergeBindingsContextArgs) {
     super(args);
   }
@@ -39,10 +38,15 @@ export interface IActorMergeBindingsContextOutput extends IActorOutput {
 }
 
 export type IActorMergeBindingsContextArgs = IActorArgs<
-IActionMergeBindingsContext, IActorTest, IActorMergeBindingsContextOutput>;
+IActionMergeBindingsContext,
+IActorTest,
+IActorMergeBindingsContextOutput
+>;
 
 export type MediatorMergeBindingsContext = Mediate<
-IActionMergeBindingsContext, IActorMergeBindingsContextOutput>;
+IActionMergeBindingsContext,
+IActorMergeBindingsContextOutput
+>;
 
 /**
  * The interface for a binding context merge handler. A merge handler is a function that accepts
@@ -54,4 +58,3 @@ IActionMergeBindingsContext, IActorMergeBindingsContextOutput>;
 export interface IBindingsContextMergeHandler<V> {
   run: (...args: V[]) => V[];
 }
-

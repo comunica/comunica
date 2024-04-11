@@ -79,7 +79,7 @@ export class ActorHttpNative extends ActorHttp {
     return new Promise<IActorHttpOutput>((resolve, reject) => {
       const req = this.requester.createRequest(options);
       req.on('error', reject);
-      req.on('response', httpResponse => {
+      req.on('response', (httpResponse) => {
         httpResponse.on('error', (error: Error) => {
           httpResponse = null;
           reject(error);

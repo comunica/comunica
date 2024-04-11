@@ -5,8 +5,10 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { MetadataValidationState } from '@comunica/metadata';
 import type { Bindings, IQueryOperationResult, IActionContext, BindingsStream } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import {
-  SingletonIterator, UnionIterator,
+  SingletonIterator,
+  UnionIterator,
 } from 'asynciterator';
 import { Algebra } from 'sparqlalgebrajs';
 
@@ -24,10 +26,9 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
     operation: Algebra.Path,
     context: IActionContext,
   ): Promise<IQueryOperationResult> {
-    const bindingsFactory = new BindingsFactory(
-      (await this.mediatorMergeBindingsContext.mediate({ context })).mergeHandlers,
-    );
+    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context);
     const predicate = <Algebra.ZeroOrOnePath> operation.predicate;
+    const sources = this.getPathSources(predicate);
 
     const extra: Bindings[] = [];
 
@@ -37,7 +38,7 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
       operation.subject.equals(operation.object)) {
       return {
         type: 'bindings',
-        bindingsStream: new SingletonIterator(bindingsFactory.bindings()),
+        bindingsStream: new SingletonIterator<RDF.Bindings>(bindingsFactory.bindings()),
         metadata: () => Promise.resolve({
           state: new MetadataValidationState(),
           cardinality: { type: 'exact', value: 1 },
@@ -72,8 +73,8 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
         await this.mediatorQueryOperation.mediate({
           context,
           operation: ActorAbstractPath.FACTORY.createFilter(
-            ActorAbstractPath.FACTORY
-              .createPattern(operation.subject, varP, operation.object, operation.graph),
+            this.assignPatternSources(ActorAbstractPath.FACTORY
+              .createPattern(operation.subject, varP, operation.object, operation.graph), sources),
             ActorAbstractPath.FACTORY.createOperatorExpression('=', [
               ActorAbstractPath.FACTORY.createTermExpression(operation.subject),
               ActorAbstractPath.FACTORY.createTermExpression(operation.object),

@@ -6,15 +6,15 @@ const DF = new DataFactory();
 
 describe('bindingsToString', () => {
   it('should stringify empty bindings', () => {
-    expect(bindingsToString(new BindingsFactory({}, DF).bindings([]))).toEqual(`{}`);
+    expect(bindingsToString(new BindingsFactory(DF, {}).bindings([]))).toBe(`{}`);
   });
 
   it('should stringify non-empty bindings', () => {
-    expect(bindingsToString(new BindingsFactory({}, DF).bindings([
+    expect(bindingsToString(new BindingsFactory(DF, {}).bindings([
       [ DF.variable('a'), DF.namedNode('ex:a') ],
       [ DF.variable('b'), DF.namedNode('ex:b') ],
       [ DF.variable('c'), DF.namedNode('ex:c') ],
-    ]))).toEqual(`{
+    ]))).toBe(`{
   "a": "ex:a",
   "b": "ex:b",
   "c": "ex:c"
@@ -26,7 +26,7 @@ describe('bindingsToString', () => {
       [ DF.variable('c'), DF.namedNode('ex:c') ],
       [ DF.variable('a'), DF.namedNode('ex:a') ],
       [ DF.variable('b'), DF.namedNode('ex:b') ],
-    ]))).toEqual(`{
+    ]))).toBe(`{
   "c": "ex:c",
   "a": "ex:a",
   "b": "ex:b"

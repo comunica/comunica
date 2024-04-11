@@ -1,0 +1,10 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-merge-bindings-context/^3.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-union/^3.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:default:merge-bindings-context/mediators#main",
+  "@type": "MediatorCombineUnion",
+  "field": "mergeHandlers",
+  "bus": { "@id": "ActorMergeBindingsContext:_default_bus" }
+}

@@ -38,7 +38,7 @@ Promise<{ asyncResult: RDF.Term; syncResult?: RDF.Term }> {
     convertedConfig,
   );
   const syncResult = evaluateSync(arg.expression, bindings, syncConfig);
-  if (arg.expectEquality || arg.expectEquality === undefined) {
+  if (arg.expectEquality ?? arg.expectEquality === undefined) {
     expect(termToString(asyncResult)).toEqual(termToString(syncResult));
   }
   return { asyncResult, syncResult };
@@ -73,7 +73,7 @@ Promise<{ asyncError: unknown; syncError?: unknown } | undefined > {
   } catch (error: unknown) {
     res.syncError = error;
   }
-  if (arg.expectEquality || arg.expectEquality === undefined) {
+  if (arg.expectEquality ?? arg.expectEquality === undefined) {
     expect(res.asyncError).toEqual(res.syncError);
   }
   return res;
@@ -101,8 +101,9 @@ function syncConfigToAsyncConfig(config: ISyncEvaluatorContext | undefined): IAs
 }
 
 function syncCallbackWrapper(f: SyncExtensionFunctionCreator | undefined): AsyncExtensionFunctionCreator | undefined {
-  if (!f)
-  { return undefined; }
+  if (!f) {
+    return undefined;
+  }
   return (namedNode: RDF.NamedNode) => {
     const func = f(namedNode);
     if (!func) {

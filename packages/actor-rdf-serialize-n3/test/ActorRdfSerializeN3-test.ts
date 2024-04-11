@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -29,7 +29,9 @@ describe('ActorRdfSerializeN3', () => {
     });
 
     it('should not be able to create new ActorRdfSerializeN3 objects without \'new\'', () => {
-      expect(() => { (<any> ActorRdfSerializeN3)(); }).toThrow();
+      expect(() => {
+        (<any> ActorRdfSerializeN3)();
+      }).toThrow(`Class constructor ActorRdfSerializeN3 cannot be invoked without 'new'`);
     });
   });
 
@@ -41,13 +43,10 @@ describe('ActorRdfSerializeN3', () => {
     let quadsError: any;
 
     beforeEach(() => {
-      actor = new ActorRdfSerializeN3({ bus,
-        mediaTypePriorities: {
-          'application/trig': 1,
-          'text/turtle': 1,
-        },
-        mediaTypeFormats: {},
-        name: 'actor' });
+      actor = new ActorRdfSerializeN3({ bus, mediaTypePriorities: {
+        'application/trig': 1,
+        'text/turtle': 1,
+      }, mediaTypeFormats: {}, name: 'actor' });
     });
 
     describe('for serializing', () => {
@@ -77,8 +76,8 @@ describe('ActorRdfSerializeN3', () => {
           stream.destroy();
         });
 
-        it('should test on application/trig', () => {
-          return expect(actor.test({
+        it('should test on application/trig', async() => {
+          await expect(actor.test({
             handle: { quadStream: stream, context },
             handleMediaType: 'application/trig',
             context,
@@ -86,8 +85,8 @@ describe('ActorRdfSerializeN3', () => {
             .resolves.toBeTruthy();
         });
 
-        it('should test on text/turtle', () => {
-          return expect(actor.test({
+        it('should test on text/turtle', async() => {
+          await expect(actor.test({
             handle: { quadStream: stream, context },
             handleMediaType: 'text/turtle',
             context,
@@ -95,8 +94,8 @@ describe('ActorRdfSerializeN3', () => {
             .resolves.toBeTruthy();
         });
 
-        it('should not test on application/json', () => {
-          return expect(actor.test({
+        it('should not test on application/json', async() => {
+          await expect(actor.test({
             handle: { quadStream: stream, context },
             handleMediaType: 'application/json',
             context,
@@ -108,7 +107,7 @@ describe('ActorRdfSerializeN3', () => {
       it('should run', async() => {
         const output: any = await actor
           .run({ handle: { quadStream: quadStream(), context }, handleMediaType: 'text/turtle', context });
-        expect(await stringifyStream(output.handle.data)).toEqual(
+        await expect(stringifyStream(output.handle.data)).resolves.toBe(
           `<http://example.org/a> <http://example.org/b> <http://example.org/c>;
     <http://example.org/d> <http://example.org/e>.
 `,
@@ -118,7 +117,7 @@ describe('ActorRdfSerializeN3', () => {
       it('should run on a pipeable stream', async() => {
         const output: any = await actor
           .run({ handle: { quadStream: quadStreamPipeable, context }, handleMediaType: 'text/turtle', context });
-        expect(await stringifyStream(output.handle.data)).toEqual(
+        await expect(stringifyStream(output.handle.data)).resolves.toBe(
           `<http://example.org/a> <http://example.org/b> <http://example.org/c>;
     <http://example.org/d> <http://example.org/e>.
 `,
@@ -128,7 +127,7 @@ describe('ActorRdfSerializeN3', () => {
       it('should run on quoted triples', async() => {
         const output: any = await actor
           .run({ handle: { quadStream: quadStreamQuoted(), context }, handleMediaType: 'text/turtle', context });
-        expect(await stringifyStream(output.handle.data)).toEqual(
+        await expect(stringifyStream(output.handle.data)).resolves.toBe(
           `<<<ex:s1> <ex:p1> <ex:o1>>> <http://example.org/b> <http://example.org/c>;
     <http://example.org/d> <http://example.org/e>.
 `,
@@ -171,12 +170,12 @@ describe('ActorRdfSerializeN3', () => {
     });
 
     describe('for getting media types', () => {
-      it('should test', () => {
-        return expect(actor.test({ mediaTypes: true, context })).resolves.toBeTruthy();
+      it('should test', async() => {
+        await expect(actor.test({ mediaTypes: true, context })).resolves.toBeTruthy();
       });
 
-      it('should run', () => {
-        return expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({ mediaTypes: {
+      it('should run', async() => {
+        await expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({ mediaTypes: {
           'application/trig': 1,
           'text/turtle': 1,
         }});

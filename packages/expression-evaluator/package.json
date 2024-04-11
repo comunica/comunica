@@ -1,35 +1,39 @@
 {
   "name": "@comunica/expression-evaluator",
-  "version": "2.10.0",
+  "version": "3.0.1",
   "description": "A simple SPARQL expression evaluator",
   "lsd:module": false,
-  "main": "lib/index.js",
-  "typings": "lib/index",
+  "license": "MIT",
+  "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
     "directory": "packages/expression-evaluator"
   },
-  "publishConfig": {
-    "access": "public"
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
   },
-  "sideEffects": false,
   "keywords": [
     "sparql",
     "expression",
     "rdf",
     "evaluator"
   ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/comunica/comunica/issues"
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "publishConfig": {
+    "access": "public"
   },
-  "homepage": "https://comunica.dev/",
   "files": [
     "lib/**/*.d.ts",
     "lib/**/*.js",
     "lib/**/*.js.map"
   ],
+  "scripts": {
+    "build": "node \"../../node_modules/typescript/bin/tsc\"",
+    "bench": "node \"../../node_modules/typescript/bin/tsc\" && node benchmarks/*.js"
+  },
   "dependencies": {
     "@rdfjs/types": "*",
     "@types/spark-md5": "^3.0.2",
@@ -43,9 +47,5 @@
     "spark-md5": "^3.0.1",
     "sparqlalgebrajs": "^4.2.0",
     "uuid": "^9.0.0"
-  },
-  "scripts": {
-    "build": "node \"../../node_modules/typescript/bin/tsc\"",
-    "bench": "node \"../../node_modules/typescript/bin/tsc\" && node benchmarks/*.js"
   }
 }

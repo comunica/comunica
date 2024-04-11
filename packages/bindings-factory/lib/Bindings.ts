@@ -16,15 +16,12 @@ export class Bindings implements RDF.Bindings {
 
   private readonly dataFactory: RDF.DataFactory;
   private readonly entries: Map<string, RDF.Term>;
+  private readonly contextHolder: IContextHolder | undefined;
 
-  public constructor(dataFactory: RDF.DataFactory, entries: Map<string, RDF.Term>,
-    contextMergeHandlers?: Record<string, IBindingsContextMergeHandler<any>>,
-    context?: IActionContext) {
+  public constructor(dataFactory: RDF.DataFactory, entries: Map<string, RDF.Term>, contextHolder?: IContextHolder) {
     this.dataFactory = dataFactory;
     this.entries = entries;
-
-    this.context = context;
-    this.contextMergeHandlers = contextMergeHandlers;
+    this.contextHolder = contextHolder;
   }
 
   public has(key: RDF.Variable | string): boolean {
@@ -36,17 +33,19 @@ export class Bindings implements RDF.Bindings {
   }
 
   public set(key: RDF.Variable | string, value: RDF.Term): Bindings {
-    return new Bindings(this.dataFactory,
+    return new Bindings(
+      this.dataFactory,
       this.entries.set(typeof key === 'string' ? key : key.value, value),
-      this.contextMergeHandlers,
-      this.context);
+      this.contextHolder,
+    );
   }
 
   public delete(key: RDF.Variable | string): Bindings {
-    return new Bindings(this.dataFactory,
+    return new Bindings(
+      this.dataFactory,
       this.entries.delete(typeof key === 'string' ? key : key.value),
-      this.contextMergeHandlers,
-      this.context);
+      this.contextHolder,
+    );
   }
 
   public keys(): Iterable<RDF.Variable> {
@@ -61,7 +60,9 @@ export class Bindings implements RDF.Bindings {
   }
 
   public forEach(fn: (value: RDF.Term, key: RDF.Variable) => any): void {
-    this.entries.forEach((value, key) => fn(value, this.dataFactory.variable!(key)));
+    for (const [ key, value ] of this.entries.entries()) {
+      fn(value, this.dataFactory.variable!(key));
+    }
   }
 
   public get size(): number {
@@ -99,12 +100,12 @@ export class Bindings implements RDF.Bindings {
 
   public filter(fn: (value: RDF.Term, key: RDF.Variable) => boolean): Bindings {
     return new Bindings(this.dataFactory, Map(<any> this.entries
-      .filter((value, key) => fn(value, this.dataFactory.variable!(key)))), this.contextMergeHandlers, this.context);
+      .filter((value, key) => fn(value, this.dataFactory.variable!(key)))), this.contextHolder);
   }
 
   public map(fn: (value: RDF.Term, key: RDF.Variable) => RDF.Term): Bindings {
     return new Bindings(this.dataFactory, Map(<any> this.entries
-      .map((value, key) => fn(value, this.dataFactory.variable!(key)))), this.contextMergeHandlers, this.context);
+      .map((value, key) => fn(value, this.dataFactory.variable!(key)))), this.contextHolder);
   }
 
   public merge(other: RDF.Bindings | Bindings): Bindings | undefined {
@@ -126,17 +127,7 @@ export class Bindings implements RDF.Bindings {
       entries.push([ key, value ]);
     }
 
-    // If any context is empty we skip merging contexts
-    if (this.context && this.contextMergeHandlers) {
-      let mergedContext = this.context;
-      // Only merge if the other has a context
-      if ('context' in other && other.context) {
-        mergedContext = this.mergeContext(mergedContext, other.context);
-      }
-      return new Bindings(this.dataFactory, Map(entries), this.contextMergeHandlers, mergedContext);
-    }
-    const castOther = <Bindings>other;
-    return new Bindings(this.dataFactory, Map(entries), this.contextMergeHandlers, castOther.context);
+    return this.createBindingsWithContexts(entries, other);
   }
 
   public mergeWith(
@@ -164,24 +155,39 @@ export class Bindings implements RDF.Bindings {
       entries.push([ key, value ]);
     }
 
-    if (this.context && this.contextMergeHandlers) {
-      let mergedContext = this.context;
-      // Only merge if the other has a context
-      if ('context' in other && other.context) {
-        mergedContext = this.mergeContext(mergedContext, other.context);
-      }
-      return new Bindings(this.dataFactory, Map(entries), this.contextMergeHandlers, mergedContext);
-    }
-    const castOther = <Bindings> other;
-    return new Bindings(this.dataFactory, Map(entries), this.contextMergeHandlers, castOther.context);
+    return this.createBindingsWithContexts(entries, other);
   }
 
-  private mergeContext(context: IActionContext, otherContext: IActionContext): IActionContext {
+  protected createBindingsWithContexts(entries: [string, RDF.Term][], other: RDF.Bindings | Bindings): Bindings {
+    // If any context is empty, we skip merging contexts
+    if (this.contextHolder && this.contextHolder.context) {
+      let mergedContext = this.contextHolder.context;
+      // Only merge if the other has a context
+      if ('contextHolder' in other && other.contextHolder && other.contextHolder.context) {
+        mergedContext = Bindings
+          .mergeContext(this.contextHolder.contextMergeHandlers, mergedContext, other.contextHolder.context);
+      }
+      return new Bindings(
+        this.dataFactory,
+        Map(entries),
+        { contextMergeHandlers: this.contextHolder.contextMergeHandlers, context: mergedContext },
+      );
+    }
+
+    // Otherwise, use optional context from other
+    return new Bindings(this.dataFactory, Map(entries), (<Bindings> other).contextHolder);
+  }
+
+  private static mergeContext(
+    contextMergeHandlers: Record<string, IBindingsContextMergeHandler<any>>,
+    context: IActionContext,
+    otherContext: IActionContext,
+  ): IActionContext {
     // All keys can contain duplicates, we prevent this by checking our built datamap for duplicates
     const allKeys = [ ...context.keys(), ...otherContext.keys() ];
     // Map we build up with merged context values
     const newContextData: Record<string, any> = {};
-    const handledKeys: Map<string, number> = Map<string, number>({});
+    const handledKeys: Record<string, number> = {};
 
     // Set of names of keys in other context to allow for constant time lookup
     const keysSetOtherContext = new Set(
@@ -193,12 +199,12 @@ export class Bindings implements RDF.Bindings {
 
     for (const key of allKeys) {
       // If duplicate key, we continue iterating
-      if (handledKeys.has(key.name)) {
+      if (handledKeys[key.name] === 1) {
         continue;
       }
 
       // We've processed this key and shouldn't repeat it
-      handledKeys.set(key.name, 1);
+      handledKeys[key.name] = 1;
 
       // Determine whether this key occurs in both contexts
       const occursInBoth = keysBothContext.some(x => x.name === key.name);
@@ -206,13 +212,13 @@ export class Bindings implements RDF.Bindings {
       // If we execute this function, we already check for existence of context merge handlers
       // This if statement is first as the most likely case for non-empty contexts is that we have mergehandlers
       // and both contexts have an entry
-      if (this.contextMergeHandlers![key.name] && occursInBoth) {
-        newContextData[key.name] = this.contextMergeHandlers![key.name]
+      if (contextMergeHandlers[key.name] && occursInBoth) {
+        newContextData[key.name] = contextMergeHandlers[key.name]
           .run(context.get(key), otherContext.get(key));
         continue;
       }
       // If we have no merge handler, but both contexts have entries for key, we don't add it to new context
-      if (!this.contextMergeHandlers![key.name] && occursInBoth) {
+      if (!contextMergeHandlers[key.name] && occursInBoth) {
         continue;
       }
 
@@ -225,7 +231,6 @@ export class Bindings implements RDF.Bindings {
       // This could likely be else statement, but don't want to risk it
       if (!otherContext.get(key)) {
         newContextData[key.name] = context.get(key);
-        continue;
       }
     }
     return new ActionContext(newContextData);
@@ -236,10 +241,24 @@ export class Bindings implements RDF.Bindings {
   }
 
   public setContextEntryRaw<V>(key: IActionContextKey<V>, value: any): Bindings {
-    if (this.context) {
-      return new Bindings(this.dataFactory, this.entries, this.contextMergeHandlers, this.context.set(key, value));
+    if (this.contextHolder && this.contextHolder.context) {
+      return new Bindings(
+        this.dataFactory,
+        this.entries,
+        {
+          contextMergeHandlers: this.contextHolder.contextMergeHandlers,
+          context: this.contextHolder.context.set(key, value),
+        },
+      );
     }
-    return new Bindings(this.dataFactory, this.entries, this.contextMergeHandlers, new ActionContext().set(key, value));
+    return new Bindings(
+      this.dataFactory,
+      this.entries,
+      {
+        contextMergeHandlers: this.contextHolder?.contextMergeHandlers ?? {},
+        context: new ActionContext().set(key, value),
+      },
+    );
   }
 
   public deleteContextEntry<V>(key: IActionContextKey<V>): Bindings {
@@ -247,20 +266,33 @@ export class Bindings implements RDF.Bindings {
   }
 
   public deleteContextEntryRaw<V>(key: IActionContextKey<V>): Bindings {
-    return new Bindings(this.dataFactory, this.entries, this.contextMergeHandlers, this.context?.delete(key));
+    if (this.contextHolder) {
+      return new Bindings(
+        this.dataFactory,
+        this.entries,
+        {
+          contextMergeHandlers: this.contextHolder.contextMergeHandlers,
+          context: this.contextHolder.context?.delete(key),
+        },
+      );
+    }
+    return new Bindings(this.dataFactory, this.entries);
+  }
+
+  public getContext(): IActionContext | undefined {
+    return this.contextHolder?.context;
   }
 
   public getContextEntry<V>(key: IActionContextKey<V>): V | undefined {
-    return this.context?.get(key);
+    return this.getContext()?.get(key);
   }
 
   public toString(): string {
     return bindingsToString(this);
   }
 
-  protected * mapIterable<T, U>(iterable: Iterable<T>, callback: (value: T) => U): Iterable<U> {
+  protected* mapIterable<T, U>(iterable: Iterable<T>, callback: (value: T) => U): Iterable<U> {
     for (const x of iterable) {
-      // eslint-disable-next-line callback-return
       yield callback(x);
     }
   }
@@ -270,4 +302,9 @@ export class Bindings implements RDF.Bindings {
       [Symbol.iterator]: () => iterator,
     };
   }
+}
+
+export interface IContextHolder {
+  contextMergeHandlers: Record<string, IBindingsContextMergeHandler<any>>;
+  context?: IActionContext;
 }

@@ -46,7 +46,6 @@
     "RequestInfo",
     "RequestInit",
 
-
     "IQueryableResultStream",
     "IQueryableResultBindings",
     "IQueryableResultQuads",
@@ -55,6 +54,9 @@
     "PathVariableObjectIterator",
     "ClosableTransformIterator",
     "MetadataValidationState",
+    "FragmentSelectorShape",
+    "ChunkedIterator",
+    "IQuerySource",
 
     "RDF.Stream",
     "Omit",

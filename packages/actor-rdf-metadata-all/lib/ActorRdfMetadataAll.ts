@@ -11,7 +11,7 @@ export class ActorRdfMetadataAll extends ActorRdfMetadata {
     super(args);
   }
 
-  public async test(action: IActionRdfMetadata): Promise<IActorTest> {
+  public async test(_action: IActionRdfMetadata): Promise<IActorTest> {
     return true;
   }
 
@@ -20,7 +20,7 @@ export class ActorRdfMetadataAll extends ActorRdfMetadata {
     const metadata: Readable = new Readable({ objectMode: true });
 
     // Forward errors (attach them immediately as they could arrive earlier)
-    action.quads.on('error', error => {
+    action.quads.on('error', (error) => {
       data.emit('error', error);
       metadata.emit('error', error);
     });
@@ -33,7 +33,7 @@ export class ActorRdfMetadataAll extends ActorRdfMetadata {
       };
 
       // Forward quads to both streams
-      action.quads.on('data', quad => {
+      action.quads.on('data', (quad) => {
         data.push(quad);
         metadata.push(quad);
       });

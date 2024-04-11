@@ -1,13 +1,16 @@
-import type { IActionSparqlSerialize,
-  IActorQueryResultSerializeFixedMediaTypesArgs,
-  IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
-import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-result-serialize';
+import type { Bindings } from '@comunica/bindings-factory';
 import type {
-  IActionContext, IQueryOperationResultBindings,
+  IActionSparqlSerialize,
+  IActorQueryResultSerializeFixedMediaTypesArgs,
+  IActorQueryResultSerializeOutput,
+} from '@comunica/bus-query-result-serialize';
+import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-result-serialize';
+import { KeysBindingContext } from '@comunica/context-entries';
+import type {
+  IActionContext,
+  IQueryOperationResultBindings,
   IQueryOperationResultBoolean,
 } from '@comunica/types';
-import { KeysBindingContext } from "@comunica/context-entries";
-import { Bindings } from "@comunica/bindings-factory";
 import type * as RDF from '@rdfjs/types';
 import { Readable } from 'readable-stream';
 import type { ActionObserverHttp } from './ActionObserverHttp';
@@ -17,6 +20,7 @@ import type { ActionObserverHttp } from './ActionObserverHttp';
  */
 export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSerializeFixedMediaTypes {
   private readonly emitMetadata: boolean;
+  private readonly addSourceAttributionToBinding: boolean;
   public readonly httpObserver: ActionObserverHttp;
 
   /* eslint-disable max-len */
@@ -29,6 +33,7 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
    *       "application/sparql-results+json": "http://www.w3.org/ns/formats/SPARQL_Results_JSON"
    *     }} mediaTypeFormats
    *   \ @defaultNested {true} emitMetadata
+   *   \ @defaultNested {false} addSourceAttributionToBinding
    *   \ @defaultNested {<default_observer> a <caqrssj:components/ActionObserverHttp.jsonld#ActionObserverHttp>} httpObserver
    */
   public constructor(args: IActorQueryResultSerializeSparqlJsonArgs) {
@@ -70,14 +75,14 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
     return { value: value.value, type: 'uri' };
   }
 
-  public async testHandleChecked(action: IActionSparqlSerialize, context: IActionContext): Promise<boolean> {
+  public override async testHandleChecked(action: IActionSparqlSerialize, _context: IActionContext): Promise<boolean> {
     if (![ 'bindings', 'boolean' ].includes(action.type)) {
       throw new Error('This actor can only handle bindings streams or booleans.');
     }
     return true;
   }
 
-  public async runHandle(action: IActionSparqlSerialize, mediaType: string | undefined, context: IActionContext):
+  public async runHandle(action: IActionSparqlSerialize, _mediaType: string | undefined, _context: IActionContext):
   Promise<IActorQueryResultSerializeOutput> {
     const data = new Readable();
     data._read = () => {
@@ -112,7 +117,14 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
         // JSON SPARQL results spec does not allow unbound variables and blank node bindings
         const bindingsJson = Object.fromEntries([ ...bindings ]
           .map(([ key, value ]) => [ key.value, ActorQueryResultSerializeSparqlJson.bindingToJsonBindings(value) ]));
-        bindingsJson["_sourceAttribution"] = { value: JSON.stringify(bindings.getContextEntry(KeysBindingContext.sourceBinding)) , type: 'literal' }
+
+        if (this.addSourceAttributionToBinding) {
+          bindingsJson._sourceAttribution = {
+            value: JSON.stringify(bindings.getContextEntry(KeysBindingContext.sourceBinding)),
+            type: 'literal',
+          };
+        }
+
         data.push(JSON.stringify(bindingsJson));
         empty = false;
       });
@@ -151,5 +163,6 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
 
 export interface IActorQueryResultSerializeSparqlJsonArgs extends IActorQueryResultSerializeFixedMediaTypesArgs {
   emitMetadata: boolean;
+  addSourceAttributionToBinding: boolean;
   httpObserver: ActionObserverHttp;
 }

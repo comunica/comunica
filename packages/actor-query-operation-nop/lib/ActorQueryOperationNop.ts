@@ -5,6 +5,7 @@ import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation'
 import type { IActorTest } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext, IQueryOperationResult } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { SingletonIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -19,17 +20,15 @@ export class ActorQueryOperationNop extends ActorQueryOperationTypedMediated<Alg
     super(args, 'nop');
   }
 
-  public async testOperation(operation: Algebra.Nop, context: IActionContext): Promise<IActorTest> {
+  public async testOperation(_operation: Algebra.Nop, _context: IActionContext): Promise<IActorTest> {
     return true;
   }
 
   public async runOperation(operation: Algebra.Nop, context: IActionContext): Promise<IQueryOperationResult> {
-    const bindingsFactory = new BindingsFactory(
-      (await this.mediatorMergeBindingsContext.mediate({ context })).mergeHandlers,
-    );
+    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context);
 
     return {
-      bindingsStream: new SingletonIterator(bindingsFactory.bindings()),
+      bindingsStream: new SingletonIterator<RDF.Bindings>(bindingsFactory.bindings()),
       metadata: () => Promise.resolve({
         state: new MetadataValidationState(),
         cardinality: { type: 'exact', value: 1 },

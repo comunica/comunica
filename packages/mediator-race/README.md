@@ -22,7 +22,7 @@ After installing, this mediator can be instantiated as follows:
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^2.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^3.0.0/components/context.jsonld"
   ],
   "actors": [
     ...
@@ -41,5 +41,3 @@ After installing, this mediator can be instantiated as follows:
 ### Config Parameters
 
 * `bus`: Identifier of the bus to mediate over.
-
-

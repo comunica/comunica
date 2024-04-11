@@ -17,13 +17,14 @@ import { ActorDereferenceBase, isHardError } from './ActorDereferenceBase';
 export function getMediaTypeFromExtension(path: string, mediaMappings?: Record<string, string>): string {
   const dotIndex = path.lastIndexOf('.');
   // Get extension after last dot and map to media
+  // eslint-disable-next-line ts/prefer-nullish-coalescing
   return (dotIndex >= 0 && mediaMappings?.[path.slice(dotIndex + 1)]) || '';
 }
 
 export interface IActorDereferenceParseArgs<
   S,
   K extends IParseMetadata = IParseMetadata,
-  M extends IParseMetadata = IParseMetadata
+  M extends IParseMetadata = IParseMetadata,
 > extends IActorArgs<IActionDereferenceParse<K>, IActorTest, IActorDereferenceParseOutput<S, M>> {
   mediatorDereference: MediatorDereference;
   mediatorParse: MediateMediaTyped<IActionParse<K>, IActorTest, IActorParseOutput<S, M>>;
@@ -47,7 +48,7 @@ export interface IActorDereferenceParseArgs<
 export abstract class ActorDereferenceParse<
   S,
   K extends IParseMetadata = IParseMetadata,
-  M extends IParseMetadata = IParseMetadata
+  M extends IParseMetadata = IParseMetadata,
 > extends ActorDereferenceBase<IActionDereferenceParse<K>, IActorTest, IActorDereferenceParseOutput<S, M>> {
   public readonly mediatorDereference: MediatorDereference;
   public readonly mediatorParse: MediateMediaTyped<IActionParse<K>, IActorTest, IActorParseOutput<S, M>>;
@@ -58,7 +59,7 @@ export abstract class ActorDereferenceParse<
     super(args);
   }
 
-  public async test(action: IActionDereference): Promise<IActorTest> {
+  public async test(_action: IActionDereference): Promise<IActorTest> {
     return true;
   }
 
@@ -74,8 +75,8 @@ export abstract class ActorDereferenceParse<
   ): T {
     // If we don't emit hard errors, make parsing error events log instead, and silence them downstream.
     if (!isHardError(action.context)) {
-      data.on('error', error => {
-        this.logError(action.context, error.message, () => ({ url: action.url }));
+      data.on('error', (error) => {
+        this.logWarn(action.context, error.message, () => ({ url: action.url }));
         // Make sure the errored stream is ended.
         data.push(null);
       });
@@ -98,8 +99,8 @@ export abstract class ActorDereferenceParse<
       result = (await this.mediatorParse.mediate({
         context,
         handle: { context, ...dereference, metadata: await this.getMetadata(dereference) },
-        handleMediaType: dereference.mediaType ||
-          getMediaTypeFromExtension(dereference.url, this.mediaMappings) ||
+        handleMediaType: (dereference.mediaType ??
+          getMediaTypeFromExtension(dereference.url, this.mediaMappings)) ||
           action.mediaType,
       })).handle;
       result.data = this.handleDereferenceStreamErrors(action, result.data);

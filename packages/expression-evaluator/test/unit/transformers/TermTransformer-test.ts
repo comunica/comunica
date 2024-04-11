@@ -4,9 +4,12 @@ import { TermTransformer } from '../../../lib/transformers/TermTransformer';
 import { TypeURL as DT } from '../../../lib/util/Consts';
 import { getDefaultSharedContext } from '../../util/utils';
 
+// eslint-disable-next-line jest/no-untyped-mock-factory
 jest.mock('../../../lib/util/Parsing', () => ({
   __esModule: true,
-  parseDate() { throw new Error('mine'); },
+  parseDate() {
+    throw new Error('mine');
+  },
 }));
 
 describe('term Tranformer', () => {
@@ -20,7 +23,7 @@ describe('term Tranformer', () => {
   it('Throws non-Expression errors of parsers', () => {
     const lit = DF.literal('apple', DF.namedNode(DT.XSD_DATE));
 
-    expect(() => termTransformer.transformLiteral(lit)).toThrow();
+    expect(() => termTransformer.transformLiteral(lit)).toThrow('mine');
 
     jest.clearAllMocks();
   });

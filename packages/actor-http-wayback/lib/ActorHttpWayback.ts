@@ -3,6 +3,7 @@ import { ActorHttp } from '@comunica/bus-http';
 import { KeysHttpWayback, KeysHttpProxy } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import type { IActionContext, IProxyHandler, IRequest } from '@comunica/types';
+
 // Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
 import stringifyStream = require('stream-to-string');
 import 'cross-fetch/polyfill';
@@ -34,7 +35,7 @@ export class ActorHttpWayback extends ActorHttp {
     super(args);
   }
 
-  public async test(action: IActionHttp): Promise<IActorTest> {
+  public async test(_action: IActionHttp): Promise<IActorTest> {
     return true;
   }
 

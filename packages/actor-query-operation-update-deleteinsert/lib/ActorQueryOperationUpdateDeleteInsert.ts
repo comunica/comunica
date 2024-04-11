@@ -3,7 +3,8 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
-  ActorQueryOperation, ActorQueryOperationTypedMediated,
+  ActorQueryOperation,
+  ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { MediatorRdfUpdateQuads } from '@comunica/bus-rdf-update-quads';
 import type { IActorTest } from '@comunica/core';
@@ -36,14 +37,12 @@ export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTy
 
   public async runOperation(operation: Algebra.DeleteInsert, context: IActionContext):
   Promise<IQueryOperationResult> {
-    const bindingsFactory = new BindingsFactory(
-      (await this.mediatorMergeBindingsContext.mediate({ context })).mergeHandlers,
-    );
+    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context);
     // Evaluate the where clause
     const whereBindings: BindingsStream = operation.where ?
       ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation
         .mediate({ operation: operation.where, context })).bindingsStream :
-      new ArrayIterator([ bindingsFactory.bindings() ], { autoStart: false });
+      new ArrayIterator<RDF.Bindings>([ bindingsFactory.bindings() ], { autoStart: false });
 
     // Construct triples using the result based on the pattern.
     let quadStreamInsert: AsyncIterator<RDF.Quad> | undefined;

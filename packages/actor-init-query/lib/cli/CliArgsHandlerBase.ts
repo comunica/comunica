@@ -1,8 +1,8 @@
 /* eslint-disable import/no-nodejs-modules */
-import { exec } from 'child_process';
-import { existsSync, readFileSync } from 'fs';
-import * as OS from 'os';
-
+import { exec } from 'node:child_process';
+import { existsSync, readFileSync } from 'node:fs';
+import * as OS from 'node:os';
+import * as Path from 'node:path';
 import { KeysHttp, KeysInitQuery, KeysQueryOperation, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
@@ -22,7 +22,7 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
   }
 
   public static getScriptOutput(command: string, fallback: string): Promise<string> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       exec(command, (error, stdout, stderr) => {
         if (error) {
           resolve(fallback);
@@ -33,7 +33,7 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
   }
 
   public static isDevelopmentEnvironment(): boolean {
-    return existsSync(`${__dirname}/../../test`);
+    return existsSync(Path.join(__dirname, `../../test`));
   }
 
   /**
@@ -155,6 +155,7 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
   public async handleArgs(args: Record<string, any>, context: Record<string, any>): Promise<void> {
     // Print version information
     if (args.version) {
+      // eslint-disable-next-line ts/no-require-imports,ts/no-var-requires,import/extensions
       const comunicaVersion: string = require('../../package.json').version;
       const dev: string = CliArgsHandlerBase.isDevelopmentEnvironment() ? '(dev)' : '';
       const nodeVersion: string = process.version;
@@ -171,7 +172,7 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
 | Operating System | ${os}
 `;
 
-      return Promise.reject(new Error(message));
+      throw new Error(message);
     }
 
     // Inherit default context options
@@ -191,6 +192,7 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
     // Add sources to context
     if (args.sources.length > 0) {
       context.sources = context.sources || [];
+      // eslint-disable-next-line unicorn/no-array-for-each
       args.sources.forEach((sourceValue: string) => {
         const source = CliArgsHandlerBase.getSourceObjectFromString(sourceValue);
         context.sources.push(source);
@@ -263,4 +265,3 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
   }
 }
 /* eslint-enable import/no-nodejs-modules */
-

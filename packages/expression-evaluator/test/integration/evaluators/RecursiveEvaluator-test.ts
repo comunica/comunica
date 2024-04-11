@@ -110,7 +110,9 @@ describe('recursive evaluators', () => {
       expect(() => evaluator.evaluate({
         expressionType: ExpressionType.AsyncExtension,
         name: DF.namedNode('http://example.com'),
-        async apply(_) { throw new Error('Error'); },
+        async apply(_) {
+          throw new Error('Error');
+        },
         args: [],
       }, BF.bindings())).toThrow(Err.InvalidExpressionType);
     });
@@ -128,7 +130,8 @@ describe('recursive evaluators', () => {
     });
 
     it('is able to evaluate operator', async() => {
-      expect(await evaluator.evaluate(new E.IntegerLiteral(1), BF.bindings())).toEqual(new E.IntegerLiteral(1));
+      await expect(evaluator.evaluate(new E.IntegerLiteral(1), BF.bindings()))
+        .resolves.toEqual(new E.IntegerLiteral(1));
     });
 
     it('is not able to evaluate existence by default', async() => {
@@ -156,7 +159,7 @@ describe('recursive evaluators', () => {
         defaultTimeZone,
       });
 
-      expect(await customEvaluator.evaluate(new E.Existence({
+      await expect(customEvaluator.evaluate(new E.Existence({
         type: types.EXPRESSION,
         expressionType: expressionTypes.EXISTENCE,
         not: false,
@@ -165,7 +168,7 @@ describe('recursive evaluators', () => {
           variables: [],
           bindings: [],
         },
-      }), BF.bindings())).toEqual(new E.BooleanLiteral(true));
+      }), BF.bindings())).resolves.toEqual(new E.BooleanLiteral(true));
     });
 
     it('is not able to evaluate aggregates by default', async() => {
@@ -194,7 +197,7 @@ describe('recursive evaluators', () => {
         defaultTimeZone,
       });
 
-      expect(await customEvaluator.evaluate(new E.Aggregate('count', {
+      await expect(customEvaluator.evaluate(new E.Aggregate('count', {
         type: types.EXPRESSION,
         expressionType: expressionTypes.AGGREGATE,
         aggregator: 'count',
@@ -204,14 +207,16 @@ describe('recursive evaluators', () => {
           expressionType: expressionTypes.WILDCARD,
           wildcard: new Wildcard(),
         },
-      }), BF.bindings())).toEqual(new E.StringLiteral('42'));
+      }), BF.bindings())).resolves.toEqual(new E.StringLiteral('42'));
     });
 
     it('is not able to evaluate async extensions', async() => {
       await expect(evaluator.evaluate({
         expressionType: ExpressionType.SyncExtension,
         name: DF.namedNode('http://example.com'),
-        apply(_) { throw new Error('Error'); },
+        apply(_) {
+          throw new Error('Error');
+        },
         args: [],
       }, BF.bindings())).rejects.toThrow(Err.InvalidExpressionType);
     });

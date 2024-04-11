@@ -45,7 +45,9 @@ describe('ActorQueryOperationPathLink', () => {
     });
 
     it('should not be able to create new ActorQueryOperationPathLink objects without \'new\'', () => {
-      expect(() => { (<any> ActorQueryOperationPathLink)(); }).toThrow();
+      expect(() => {
+        (<any> ActorQueryOperationPathLink)();
+      }).toThrow(`Class constructor ActorQueryOperationPathLink cannot be invoked without 'new'`);
     });
   });
 
@@ -56,28 +58,52 @@ describe('ActorQueryOperationPathLink', () => {
       actor = new ActorQueryOperationPathLink({ name: 'actor', bus, mediatorQueryOperation });
     });
 
-    it('should test on Link paths', () => {
+    it('should test on Link paths', async() => {
       const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.LINK }}};
-      return expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toBeTruthy();
     });
 
-    it('should test on different paths', () => {
-      const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }},
-        context: new ActionContext() };
-      return expect(actor.test(op)).rejects.toBeTruthy();
+    it('should test on different paths', async() => {
+      const op: any = {
+        operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }},
+        context: new ActionContext(),
+      };
+      await expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should support Link paths', async() => {
       const op: any = { operation: factory
-        .createPath(DF.namedNode('s'), factory.createLink(DF.namedNode('p')), DF.variable('x')),
-      context: new ActionContext() };
+        .createPath(
+          DF.namedNode('s'),
+          factory.createLink(DF.namedNode('p')),
+          DF.variable('x'),
+        ), context: new ActionContext() };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(await output.metadata()).toEqual({ cardinality: 3, canContainUndefs: false });
+      await expect(output.metadata()).resolves.toEqual({ cardinality: 3, canContainUndefs: false });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
         BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),
         BF.bindings([[ DF.variable('x'), DF.literal('3') ]]),
       ]);
+    });
+
+    it('should support Link paths with metadata', async() => {
+      const op: any = {
+        operation: factory
+          .createPath(DF.namedNode('s'), factory.createLink(DF.namedNode('p')), DF.variable('x')),
+        context: new ActionContext(),
+      };
+      op.operation.predicate.metadata = { a: 'b' };
+
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      await expect(output.metadata()).resolves.toEqual({ cardinality: 3, canContainUndefs: false });
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('3') ]]),
+      ]);
+
+      expect((<any> output).operated.operation.metadata).toEqual({ a: 'b' });
     });
   });
 });

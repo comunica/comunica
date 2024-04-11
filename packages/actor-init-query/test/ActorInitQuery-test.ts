@@ -1,48 +1,35 @@
+import * as Path from 'node:path';
 import { ProxyHandlerStatic } from '@comunica/actor-http-proxy';
+import type { MediatorQueryProcess } from '@comunica/bus-query-process';
 import {
-  KeysCore,
   KeysHttp,
-  KeysHttpMemento, KeysHttpProxy,
+  KeysHttpMemento,
+  KeysHttpProxy,
   KeysHttpWayback,
-  KeysInitQuery, KeysQueryOperation,
-  KeysRdfResolveQuadPattern, KeysRdfUpdateQuads,
+  KeysInitQuery,
+  KeysQueryOperation,
+  KeysRdfUpdateQuads,
 } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
-import type { IActionContext, ICliArgsHandler, IPhysicalQueryPlanLogger } from '@comunica/types';
-import { DataFactory } from 'rdf-data-factory';
+import type { IActionContext, ICliArgsHandler } from '@comunica/types';
 import { PassThrough, Readable, Transform } from 'readable-stream';
-import { Factory } from 'sparqlalgebrajs';
 
 import { CliArgsHandlerBase } from '../lib';
 import { ActorInitQuery } from '../lib/ActorInitQuery';
 import { QueryEngineBase } from '../lib/QueryEngineBase';
+
 // Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
 const stringifyStream = require('stream-to-string');
 
-const DF = new DataFactory();
-
 describe('ActorInitQuery', () => {
   let bus: any;
-  let logger: any;
-  let mediatorOptimizeQueryOperation: any;
-  let mediatorQueryOperation: any;
-  let mediatorSparqlParse: any;
+  let mediatorQueryProcess: MediatorQueryProcess;
   let mediatorSparqlSerialize: any;
   let mediatorHttpInvalidate: any;
   let context: IActionContext;
   let input: Readable;
 
-  const mediatorContextPreprocess: any = {
-    mediate: (action: any) => Promise.resolve(action),
-  };
-  const contextKeyShortcuts = {
-    initialBindings: '@comunica/actor-init-query:initialBindings',
-    log: '@comunica/core:log',
-    queryFormat: '@comunica/actor-init-query:queryFormat',
-    source: '@comunica/bus-rdf-resolve-quad-pattern:source',
-    sources: '@comunica/bus-rdf-resolve-quad-pattern:sources',
-  };
   const defaultQueryInputFormat = 'sparql';
   const sourceHypermedia = 'http://example.org/';
   const sourceSparqlTagged = 'sparql@http://example.org/';
@@ -54,25 +41,36 @@ describe('ActorInitQuery', () => {
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    logger = null;
-    mediatorOptimizeQueryOperation = {
-      mediate: (arg: any) => Promise.resolve(arg),
+    mediatorQueryProcess = <any>{
+      mediate: jest.fn((action: any) => {
+        if (action.context.has(KeysInitQuery.explain)) {
+          return Promise.resolve({
+            result: {
+              explain: 'true',
+              data: 'EXPLAINED',
+            },
+          });
+        }
+        return action.query === 'INVALID' ?
+          Promise.reject(new Error('Invalid query')) :
+          Promise.resolve({
+            result: { type: 'bindings', bindingsStream: input, metadata: () => ({}), context: action.context },
+          });
+      }),
     };
-    mediatorQueryOperation = {};
-    mediatorSparqlParse = {};
     mediatorSparqlSerialize = {
       mediate(arg: any) {
         return Promise.resolve(arg.mediaTypes ?
-          { mediaTypes: arg } :
-          {
-            handle: {
-              data: arg.handle.bindingsStream
-                .pipe(new Transform({
-                  objectMode: true,
-                  transform: (e: any, enc: any, cb: any) => cb(null, JSON.stringify(e)),
-                })),
-            },
-          });
+            { mediaTypes: arg } :
+            {
+              handle: {
+                data: arg.handle.bindingsStream
+                  .pipe(new Transform({
+                    objectMode: true,
+                    transform: (e: any, enc: any, cb: any) => cb(null, JSON.stringify(e)),
+                  })),
+              },
+            });
       },
     };
     mediatorHttpInvalidate = {
@@ -98,112 +96,50 @@ describe('ActorInitQuery', () => {
     let mediatorMergeBindingsContext: any;
 
     beforeEach(() => {
-      const factory = new Factory();
-      mediatorMergeBindingsContext = {
-        mediate(arg: any) {
-          return {};
-        },
-      };
-
-      mediatorQueryOperation.mediate = jest.fn((action: any) => {
-        if (action.context.has(KeysInitQuery.physicalQueryPlanLogger)) {
-          (<IPhysicalQueryPlanLogger> action.context.get(KeysInitQuery.physicalQueryPlanLogger))
-            .logOperation(
-              'logicalOp',
-              'physicalOp',
-              {},
-              undefined,
-              'actor',
-              {},
-            );
-        }
-        return action.operation !== 'INVALID' ?
-          Promise.resolve({ type: 'bindings', bindingsStream: input, metadata: () => ({}) }) :
-          Promise.reject(new Error('Invalid query'));
-      });
-      mediatorSparqlParse.mediate = (action: any) => action.query === 'INVALID' ?
-        Promise.resolve({ operation: action.query }) :
-        Promise.resolve({
-          baseIRI: action.query.includes('BASE') ? 'myBaseIRI' : null,
-          operation: factory.createProject(
-            factory.createBgp([
-              factory.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
-            ]),
-            [
-              DF.variable('s'),
-              DF.variable('p'),
-              DF.variable('o'),
-            ],
-          ),
-        });
       actor = new ActorInitQuery({
         bus,
-        contextKeyShortcuts,
         defaultQueryInputFormat,
-        logger,
-        mediatorContextPreprocess,
+        mediatorQueryProcess,
         mediatorHttpInvalidate,
-        mediatorOptimizeQueryOperation,
-        mediatorQueryOperation,
-        mediatorQueryParse: mediatorSparqlParse,
         mediatorQueryResultSerialize: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
         name: 'actor',
-        mediatorMergeBindingsContext,
       });
-      actorFixedQuery = new ActorInitQuery(
-        { bus,
-          contextKeyShortcuts,
-          defaultQueryInputFormat: 'sparql',
-          logger,
-          mediatorContextPreprocess,
-          mediatorHttpInvalidate,
-          mediatorOptimizeQueryOperation,
-          mediatorQueryOperation,
-          mediatorQueryParse: mediatorSparqlParse,
-          mediatorQueryResultSerialize: mediatorSparqlSerialize,
-          mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
-          mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-          name: 'actor',
-          mediatorMergeBindingsContext,
-          queryString },
-      );
-      actorFixedContext = new ActorInitQuery(
-        { bus,
-          contextKeyShortcuts,
-          defaultQueryInputFormat: 'sparql',
-          logger,
-          mediatorContextPreprocess,
-          mediatorHttpInvalidate,
-          mediatorOptimizeQueryOperation,
-          mediatorQueryOperation,
-          mediatorQueryParse: mediatorSparqlParse,
-          mediatorQueryResultSerialize: mediatorSparqlSerialize,
-          mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
-          mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-          name: 'actor',
-          mediatorMergeBindingsContext,
-          context: contextString },
-      );
-      actorFixedQueryAndContext = new ActorInitQuery(
-        { bus,
-          contextKeyShortcuts,
-          defaultQueryInputFormat: 'sparql',
-          logger,
-          mediatorContextPreprocess,
-          mediatorHttpInvalidate,
-          mediatorOptimizeQueryOperation,
-          mediatorQueryOperation,
-          mediatorQueryParse: mediatorSparqlParse,
-          mediatorQueryResultSerialize: mediatorSparqlSerialize,
-          mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
-          mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-          mediatorMergeBindingsContext,
-          name: 'actor',
-          queryString,
-          context: contextString },
-      );
+      actorFixedQuery = new ActorInitQuery({
+        bus,
+        defaultQueryInputFormat: 'sparql',
+        mediatorQueryProcess,
+        mediatorHttpInvalidate,
+        mediatorQueryResultSerialize: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+        name: 'actor',
+        queryString,
+      });
+      actorFixedContext = new ActorInitQuery({
+        bus,
+        defaultQueryInputFormat: 'sparql',
+        mediatorQueryProcess,
+        mediatorHttpInvalidate,
+        mediatorQueryResultSerialize: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+        name: 'actor',
+        context: contextString,
+      });
+      actorFixedQueryAndContext = new ActorInitQuery({
+        bus,
+        defaultQueryInputFormat: 'sparql',
+        mediatorQueryProcess,
+        mediatorHttpInvalidate,
+        mediatorQueryResultSerialize: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+        name: 'actor',
+        queryString,
+        context: contextString,
+      });
 
       spyResultToString = jest.spyOn(QueryEngineBase.prototype, 'resultToString');
       spyQueryOrExplain = jest.spyOn(QueryEngineBase.prototype, 'queryOrExplain');
@@ -211,7 +147,7 @@ describe('ActorInitQuery', () => {
 
     describe('test', () => {
       it('should be true', async() => {
-        expect(await actor.test(<any> {})).toBeTruthy();
+        await expect(actor.test(<any> {})).resolves.toBeTruthy();
       });
     });
 
@@ -315,7 +251,7 @@ describe('ActorInitQuery', () => {
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith('Q', {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          [KeysCore.log.name]: expect.any(LoggerPretty),
+          log: expect.any(LoggerPretty),
           bla: true,
         });
       });
@@ -330,8 +266,8 @@ describe('ActorInitQuery', () => {
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
-          [KeysCore.log.name]: expect.any(LoggerPretty),
+          sources: [{ value: sourceHypermedia }],
+          log: expect.any(LoggerPretty),
         });
       });
 
@@ -352,7 +288,7 @@ describe('ActorInitQuery', () => {
           env: {},
           stdin: <Readable><any> new PassThrough(),
           context,
-        })).rejects.toThrowError('Invalid query');
+        })).rejects.toThrow('Invalid query');
       });
 
       it('handles a hypermedia source and query option', async() => {
@@ -365,8 +301,8 @@ describe('ActorInitQuery', () => {
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
-          [KeysCore.log.name]: expect.any(LoggerPretty),
+          sources: [{ value: sourceHypermedia }],
+          log: expect.any(LoggerPretty),
         });
       });
 
@@ -383,7 +319,7 @@ describe('ActorInitQuery', () => {
 
       it('handles a hypermedia source and query file option', async() => {
         const stdout = await stringifyStream(<any> (await actor.run({
-          argv: [ sourceHypermedia, '-f', `${__dirname}/assets/all-100.sparql` ],
+          argv: [ sourceHypermedia, '-f', Path.join(__dirname, `assets/all-100.sparql`) ],
           env: {},
           stdin: <Readable><any> new PassThrough(),
           context,
@@ -395,8 +331,8 @@ describe('ActorInitQuery', () => {
 LIMIT 100
 `, {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
-          [KeysCore.log.name]: expect.any(LoggerPretty),
+          sources: [{ value: sourceHypermedia }],
+          log: expect.any(LoggerPretty),
         });
       });
 
@@ -417,7 +353,7 @@ LIMIT 100
           env: {},
           stdin: <Readable><any> new PassThrough(),
           context,
-        })).rejects.toThrowError('no such file or directory');
+        })).rejects.toThrow('no such file or directory');
       });
 
       it('handles a tagged sparql source and query option', async() => {
@@ -430,8 +366,8 @@ LIMIT 100
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          [KeysRdfResolveQuadPattern.sources.name]: [{ type: 'sparql', value: sourceHypermedia }],
-          [KeysCore.log.name]: expect.any(LoggerPretty),
+          sources: [{ type: 'sparql', value: sourceHypermedia }],
+          log: expect.any(LoggerPretty),
         });
       });
 
@@ -445,13 +381,13 @@ LIMIT 100
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          [KeysRdfResolveQuadPattern.sources.name]: [{
+          sources: [{
             value: sourceHypermedia,
             context: new ActionContext({
               [KeysHttp.auth.name]: 'username:passwd',
             }),
           }],
-          [KeysCore.log.name]: expect.any(LoggerPretty),
+          log: expect.any(LoggerPretty),
         });
       });
 
@@ -465,14 +401,14 @@ LIMIT 100
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          [KeysRdfResolveQuadPattern.sources.name]: [{
+          sources: [{
             type: 'sparql',
             value: sourceHypermedia,
             context: new ActionContext({
               [KeysHttp.auth.name]: 'username:passwd',
             }),
           }],
-          [KeysCore.log.name]: expect.any(LoggerPretty),
+          log: expect.any(LoggerPretty),
         });
       });
 
@@ -486,8 +422,8 @@ LIMIT 100
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          [KeysRdfResolveQuadPattern.sources.name]: [{ type: 'other', value: sourceHypermedia }],
-          [KeysCore.log.name]: expect.any(LoggerPretty),
+          sources: [{ type: 'other', value: sourceHypermedia }],
+          log: expect.any(LoggerPretty),
         });
       });
 
@@ -501,8 +437,8 @@ LIMIT 100
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }, { value: sourceHypermedia }],
-          [KeysCore.log.name]: expect.any(LoggerPretty),
+          sources: [{ value: sourceHypermedia }, { value: sourceHypermedia }],
+          log: expect.any(LoggerPretty),
         });
       });
 
@@ -516,17 +452,17 @@ LIMIT 100
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          [KeysRdfResolveQuadPattern.sources.name]: [
+          sources: [
             { type: 'sparql', value: sourceHypermedia },
             { type: 'sparql', value: sourceHypermedia },
           ],
-          [KeysCore.log.name]: expect.any(LoggerPretty),
+          log: expect.any(LoggerPretty),
         });
       });
 
       it('handles query and a config file option', async() => {
         const stdout = await stringifyStream(<any> (await actor.run({
-          argv: [ queryString, '-c', `${__dirname}/assets/config.json` ],
+          argv: [ queryString, '-c', Path.join(__dirname, `/assets/config.json`) ],
           env: {},
           stdin: <Readable><any> new PassThrough(),
           context,
@@ -535,7 +471,7 @@ LIMIT 100
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
           entrypoint: 'http://example.org/',
-          [KeysCore.log.name]: expect.any(LoggerPretty),
+          log: expect.any(LoggerPretty),
         });
       });
 
@@ -550,8 +486,8 @@ LIMIT 100
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
-          [KeysCore.log.name]: expect.any(LoggerPretty),
+          sources: [{ value: sourceHypermedia }],
+          log: expect.any(LoggerPretty),
           [KeysHttpMemento.datetime.name]: dt,
         });
       });
@@ -566,8 +502,8 @@ LIMIT 100
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
-          [KeysCore.log.name]: new LoggerPretty({ level: 'warn' }),
+          sources: [{ value: sourceHypermedia }],
+          log: new LoggerPretty({ level: 'warn' }),
           [KeysHttpWayback.recoverBrokenLinks.name]: true,
         });
       });
@@ -582,8 +518,8 @@ LIMIT 100
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
-          [KeysCore.log.name]: new LoggerPretty({ level: 'warn' }),
+          sources: [{ value: sourceHypermedia }],
+          log: new LoggerPretty({ level: 'warn' }),
         });
       });
 
@@ -599,8 +535,8 @@ LIMIT 100
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
-          [KeysCore.log.name]: 'LOGGER',
+          sources: [{ value: sourceHypermedia }],
+          log: 'LOGGER',
         });
       });
 
@@ -615,8 +551,8 @@ LIMIT 100
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
-          [KeysCore.log.name]: expect.any(LoggerPretty),
+          sources: [{ value: sourceHypermedia }],
+          log: expect.any(LoggerPretty),
           [KeysInitQuery.baseIRI.name]: baseIRI,
         });
       });
@@ -632,8 +568,8 @@ LIMIT 100
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
-          [KeysCore.log.name]: expect.any(LoggerPretty),
+          sources: [{ value: sourceHypermedia }],
+          log: expect.any(LoggerPretty),
           [KeysHttpProxy.httpProxyHandler.name]: new ProxyHandlerStatic(proxy),
         });
       });
@@ -648,8 +584,8 @@ LIMIT 100
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
-          [KeysCore.log.name]: expect.any(LoggerPretty),
+          sources: [{ value: sourceHypermedia }],
+          log: expect.any(LoggerPretty),
           [KeysInitQuery.lenient.name]: true,
         });
       });
@@ -664,8 +600,8 @@ LIMIT 100
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
-          [KeysCore.log.name]: expect.any(LoggerPretty),
+          sources: [{ value: sourceHypermedia }],
+          log: expect.any(LoggerPretty),
           [KeysHttp.httpTimeout.name]: 60,
         });
       });
@@ -680,8 +616,8 @@ LIMIT 100
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
-          [KeysCore.log.name]: expect.any(LoggerPretty),
+          sources: [{ value: sourceHypermedia }],
+          log: expect.any(LoggerPretty),
           [KeysHttp.httpTimeout.name]: 60,
           [KeysHttp.httpBodyTimeout.name]: true,
         });
@@ -707,8 +643,8 @@ LIMIT 100
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
-          [KeysCore.log.name]: expect.any(LoggerPretty),
+          sources: [{ value: sourceHypermedia }],
+          log: expect.any(LoggerPretty),
           [KeysHttp.httpRetryCount.name]: 2,
         });
       });
@@ -723,8 +659,8 @@ LIMIT 100
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
-          [KeysCore.log.name]: expect.any(LoggerPretty),
+          sources: [{ value: sourceHypermedia }],
+          log: expect.any(LoggerPretty),
           [KeysHttp.httpRetryCount.name]: 2,
           [KeysHttp.httpRetryDelay.name]: 500,
         });
@@ -750,8 +686,8 @@ LIMIT 100
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
-          [KeysCore.log.name]: expect.any(LoggerPretty),
+          sources: [{ value: sourceHypermedia }],
+          log: expect.any(LoggerPretty),
           [KeysHttp.httpRetryCount.name]: 2,
           [KeysHttp.httpRetryOnServerError.name]: true,
         });
@@ -777,8 +713,8 @@ LIMIT 100
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
-          [KeysCore.log.name]: expect.any(LoggerPretty),
+          sources: [{ value: sourceHypermedia }],
+          log: expect.any(LoggerPretty),
           [KeysQueryOperation.unionDefaultGraph.name]: true,
         });
       });
@@ -793,8 +729,8 @@ LIMIT 100
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
-          [KeysCore.log.name]: expect.any(LoggerPretty),
+          sources: [{ value: sourceHypermedia }],
+          log: expect.any(LoggerPretty),
           [KeysInitQuery.noCache.name]: true,
         });
       });
@@ -809,8 +745,8 @@ LIMIT 100
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
-          [KeysCore.log.name]: expect.any(LoggerPretty),
+          sources: [{ value: sourceHypermedia }],
+          log: expect.any(LoggerPretty),
           [KeysRdfUpdateQuads.destination.name]: 'http://target.com/',
         });
       });
@@ -839,8 +775,8 @@ LIMIT 100
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          [KeysRdfResolveQuadPattern.sources.name]: [{ value: sourceHypermedia }],
-          [KeysCore.log.name]: expect.any(LoggerPretty),
+          sources: [{ value: sourceHypermedia }],
+          log: expect.any(LoggerPretty),
           [KeysInitQuery.cliArgsHandlers.name]: [ cliArgsHandler ],
           bla: 'BLA',
         });
@@ -854,93 +790,77 @@ LIMIT 100
           const m2: any = {
             mediate: (arg: any) => Promise.resolve({ handle: { data: arg.handleMediaType }}),
           };
-          const actorThis = new ActorInitQuery(
-            { bus,
-              contextKeyShortcuts,
-              logger,
-              mediatorContextPreprocess,
-              mediatorHttpInvalidate,
-              mediatorOptimizeQueryOperation,
-              mediatorQueryOperation: m1,
-              mediatorQueryParse: mediatorSparqlParse,
-              mediatorQueryResultSerialize: m2,
-              mediatorQueryResultSerializeMediaTypeCombiner: m2,
-              mediatorQueryResultSerializeMediaTypeFormatCombiner: m2,
-              name: 'actor',
-              mediatorMergeBindingsContext,
-              queryString },
-          );
+          const actorThis = new ActorInitQuery({
+            bus,
+            mediatorQueryProcess,
+            mediatorHttpInvalidate,
+            mediatorQueryResultSerialize: m2,
+            mediatorQueryResultSerializeMediaTypeCombiner: m2,
+            mediatorQueryResultSerializeMediaTypeFormatCombiner: m2,
+            name: 'actor',
+            queryString,
+          });
           expect((await actorThis.run({
             argv: [ 'S' ],
             env: {},
             stdin: <Readable><any> new PassThrough(),
             context,
           })).stdout)
-            .toEqual('application/json');
+            .toBe('application/json');
         });
 
         it('defaults to application/trig for quadStream', async() => {
           const m1: any = {
-            mediate: (arg: any) => Promise.resolve({ type: 'quads', quadStream: true }),
+            mediate: (arg: any) => Promise.resolve({ result: { type: 'quads', quadStream: true }}),
           };
           const m2: any = {
             mediate: (arg: any) => Promise.resolve({ handle: { data: arg.handleMediaType }}),
           };
-          const actorThis = new ActorInitQuery(
-            { bus,
-              contextKeyShortcuts,
-              logger,
-              mediatorContextPreprocess,
-              mediatorHttpInvalidate,
-              mediatorOptimizeQueryOperation,
-              mediatorQueryOperation: m1,
-              mediatorQueryParse: mediatorSparqlParse,
-              mediatorQueryResultSerialize: m2,
-              mediatorQueryResultSerializeMediaTypeCombiner: m2,
-              mediatorQueryResultSerializeMediaTypeFormatCombiner: m2,
-              name: 'actor',
-              mediatorMergeBindingsContext,
-              queryString },
-          );
+          const actorThis = new ActorInitQuery({
+            bus,
+            mediatorQueryProcess: m1,
+            mediatorHttpInvalidate,
+            mediatorQueryResultSerialize: m2,
+            mediatorQueryResultSerializeMediaTypeCombiner: m2,
+            mediatorQueryResultSerializeMediaTypeFormatCombiner: m2,
+            name: 'actor',
+            queryString,
+          });
           expect((await actorThis.run({
             argv: [ 'S' ],
             env: {},
             stdin: <Readable><any> new PassThrough(),
             context,
           })).stdout)
-            .toEqual('application/trig');
+            .toBe('application/trig');
         });
 
         it('defaults to simple for boolean', async() => {
           const m1: any = {
-            mediate: (arg: any) => Promise.resolve({ type: 'boolean', booleanResult: Promise.resolve(true) }),
+            mediate: (arg: any) => Promise.resolve({
+              result: { type: 'boolean', booleanResult: Promise.resolve(true) },
+            }),
           };
           const m2: any = {
             mediate: (arg: any) => Promise.resolve({ handle: { data: arg.handleMediaType }}),
           };
-          const actorThis = new ActorInitQuery(
-            { bus,
-              contextKeyShortcuts,
-              logger,
-              mediatorContextPreprocess,
-              mediatorHttpInvalidate,
-              mediatorOptimizeQueryOperation,
-              mediatorQueryOperation: m1,
-              mediatorQueryParse: mediatorSparqlParse,
-              mediatorQueryResultSerialize: m2,
-              mediatorQueryResultSerializeMediaTypeCombiner: m2,
-              mediatorQueryResultSerializeMediaTypeFormatCombiner: m2,
-              name: 'actor',
-              mediatorMergeBindingsContext,
-              queryString },
-          );
+          const actorThis = new ActorInitQuery({
+            bus,
+            mediatorQueryProcess: m1,
+            mediatorHttpInvalidate,
+            mediatorQueryResultSerialize: m2,
+            mediatorQueryResultSerializeMediaTypeCombiner: m2,
+            mediatorQueryResultSerializeMediaTypeFormatCombiner: m2,
+            name: 'actor',
+            queryString,
+          });
           expect((await actorThis.run({
             argv: [ 'S' ],
             env: {},
             stdin: <Readable><any> new PassThrough(),
             context,
           })).stdout)
-            .toEqual('simple');
+            .toBe('simple');
         });
       });
 
@@ -955,8 +875,8 @@ LIMIT 100
           expect(stdout).toContain(`{"a":"triple"}`);
           expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
             [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-            [KeysRdfResolveQuadPattern.sources.name]: [{ value: 'SOURCE' }],
-            [KeysCore.log.name]: expect.any(LoggerPretty),
+            sources: [{ value: 'SOURCE' }],
+            log: expect.any(LoggerPretty),
           });
         });
 
@@ -970,8 +890,8 @@ LIMIT 100
           expect(stdout).toContain(`{"a":"triple"}`);
           expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
             [KeysInitQuery.queryFormat.name]: { language: 'graphql', version: '1.1' },
-            [KeysRdfResolveQuadPattern.sources.name]: [{ value: 'SOURCE' }],
-            [KeysCore.log.name]: expect.any(LoggerPretty),
+            sources: [{ value: 'SOURCE' }],
+            log: expect.any(LoggerPretty),
           });
         });
 
@@ -987,22 +907,16 @@ LIMIT 100
         });
 
         it('emits to stderr for no argv when the default query is falsy', async() => {
-          const actorThis = new ActorInitQuery(
-            { bus,
-              contextKeyShortcuts,
-              logger,
-              mediatorContextPreprocess,
-              mediatorHttpInvalidate,
-              mediatorOptimizeQueryOperation,
-              mediatorQueryOperation,
-              mediatorQueryParse: mediatorSparqlParse,
-              mediatorQueryResultSerialize: mediatorSparqlSerialize,
-              mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
-              mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
-              name: 'actor',
-              mediatorMergeBindingsContext,
-              queryString: <any> null },
-          );
+          const actorThis = new ActorInitQuery({
+            bus,
+            mediatorQueryProcess,
+            mediatorHttpInvalidate,
+            mediatorQueryResultSerialize: mediatorSparqlSerialize,
+            mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
+            mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+            name: 'actor',
+            queryString: <any> null,
+          });
 
           const stderr = await stringifyStream(<any> (await actorThis.run({
             argv: [],
@@ -1026,7 +940,7 @@ LIMIT 100
           expect(stdout).toContain(`{"a":"triple"}`);
           expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
             [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-            [KeysCore.log.name]: expect.any(LoggerPretty),
+            log: expect.any(LoggerPretty),
             hypermedia: 'http://example.org/',
           });
         });
@@ -1053,54 +967,12 @@ LIMIT 100
             stdin: <Readable><any> new PassThrough(),
             context,
           })).stdout);
-          expect(stdout).toContain(`{
-  "type": "project",
-  "input": {
-    "type": "bgp",
-    "patterns": [
-      {
-        "termType": "Quad",
-        "value": "",
-        "subject": {
-          "termType": "Variable",
-          "value": "s"
-        },
-        "predicate": {
-          "termType": "Variable",
-          "value": "p"
-        },
-        "object": {
-          "termType": "Variable",
-          "value": "o"
-        },
-        "graph": {
-          "termType": "DefaultGraph",
-          "value": ""
-        },
-        "type": "pattern"
-      }
-    ]
-  },
-  "variables": [
-    {
-      "termType": "Variable",
-      "value": "s"
-    },
-    {
-      "termType": "Variable",
-      "value": "p"
-    },
-    {
-      "termType": "Variable",
-      "value": "o"
-    }
-  ]
-}`);
+          expect(stdout).toContain(`"EXPLAINED"`);
           expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
             [KeysInitQuery.explain.name]: 'parsed',
             [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-            [KeysRdfResolveQuadPattern.sources.name]: [{ value: 'SOURCE' }],
-            [KeysCore.log.name]: expect.any(LoggerPretty),
+            sources: [{ value: 'SOURCE' }],
+            log: expect.any(LoggerPretty),
           });
         });
 
@@ -1111,162 +983,56 @@ LIMIT 100
             stdin: <Readable><any> new PassThrough(),
             context,
           })).stdout);
-          expect(stdout).toContain(`{
-  "type": "project",
-  "input": {
-    "type": "bgp",
-    "patterns": [
-      {
-        "termType": "Quad",
-        "value": "",
-        "subject": {
-          "termType": "Variable",
-          "value": "s"
-        },
-        "predicate": {
-          "termType": "Variable",
-          "value": "p"
-        },
-        "object": {
-          "termType": "Variable",
-          "value": "o"
-        },
-        "graph": {
-          "termType": "DefaultGraph",
-          "value": ""
-        },
-        "type": "pattern"
-      }
-    ]
-  },
-  "variables": [
-    {
-      "termType": "Variable",
-      "value": "s"
-    },
-    {
-      "termType": "Variable",
-      "value": "p"
-    },
-    {
-      "termType": "Variable",
-      "value": "o"
-    }
-  ]
-}`);
+          expect(stdout).toContain(`"EXPLAINED"`);
           expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
             [KeysInitQuery.explain.name]: 'logical',
             [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-            [KeysRdfResolveQuadPattern.sources.name]: [{ value: 'SOURCE' }],
-            [KeysCore.log.name]: expect.any(LoggerPretty),
+            sources: [{ value: 'SOURCE' }],
+            log: expect.any(LoggerPretty),
           });
         });
 
-        describe('in physical mode', () => {
-          it('for a bindings response', async() => {
-            const stdout = await stringifyStream(<any> (await actor.run({
-              argv: [ 'SOURCE', '-q', queryString, '--explain', 'physical' ],
-              env: {},
-              stdin: <Readable><any> new PassThrough(),
-              context,
-            })).stdout);
-            expect(stdout).toContain(`{
-  "logical": "logicalOp",
-  "physical": "physicalOp"
-}`);
+        it('in physical mode', async() => {
+          const stdout = await stringifyStream(<any> (await actor.run({
+            argv: [ 'SOURCE', '-q', queryString, '--explain', 'physical' ],
+            env: {},
+            stdin: <Readable><any> new PassThrough(),
+            context,
+          })).stdout);
+          expect(stdout).toContain(`"EXPLAINED"`);
+          expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
+            [KeysInitQuery.explain.name]: 'physical',
+            [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
+            sources: [{ value: 'SOURCE' }],
+            log: expect.any(LoggerPretty),
           });
+        });
 
-          it('for a quads response', async() => {
-            mediatorQueryOperation.mediate = jest.fn((action: any) => {
-              if (action.context.has(KeysInitQuery.physicalQueryPlanLogger)) {
-                (<IPhysicalQueryPlanLogger> action.context.get(KeysInitQuery.physicalQueryPlanLogger))
-                  .logOperation(
-                    'logicalOp',
-                    'physicalOp',
-                    {},
-                    undefined,
-                    'actor',
-                    {},
-                  );
-              }
-              return Promise.resolve({
-                type: 'quads',
-                quadStream: input,
-              });
+        it('in physical mode for scoped sources', async() => {
+          (<any> mediatorQueryProcess).mediate = () => {
+            return Promise.resolve({
+              result: {
+                explain: 'true',
+                data: { bla: 'bla', scopedSource: { source: { toString: () => 'SRCSTR' }}},
+              },
             });
+          };
 
-            const stdout = await stringifyStream(<any> (await actor.run({
-              argv: [ 'SOURCE', '-q', queryString, '--explain', 'physical' ],
-              env: {},
-              stdin: <Readable><any> new PassThrough(),
-              context,
-            })).stdout);
-            expect(stdout).toContain(`{
-  "logical": "logicalOp",
-  "physical": "physicalOp"
+          const stdout = await stringifyStream(<any> (await actor.run({
+            argv: [ 'SOURCE', '-q', queryString, '--explain', 'physical' ],
+            env: {},
+            stdin: <Readable><any> new PassThrough(),
+            context,
+          })).stdout);
+          expect(stdout).toContain(`{
+  "bla": "bla",
+  "scopedSource": "SRCSTR"
 }`);
-          });
-
-          it('for a boolean', async() => {
-            mediatorQueryOperation.mediate = jest.fn((action: any) => {
-              if (action.context.has(KeysInitQuery.physicalQueryPlanLogger)) {
-                (<IPhysicalQueryPlanLogger> action.context.get(KeysInitQuery.physicalQueryPlanLogger))
-                  .logOperation(
-                    'logicalOp',
-                    'physicalOp',
-                    {},
-                    undefined,
-                    'actor',
-                    {},
-                  );
-              }
-              return Promise.resolve({
-                type: 'boolean',
-                execute: () => Promise.resolve(true),
-              });
-            });
-
-            const stdout = await stringifyStream(<any> (await actor.run({
-              argv: [ 'SOURCE', '-q', queryString, '--explain', 'physical' ],
-              env: {},
-              stdin: <Readable><any> new PassThrough(),
-              context,
-            })).stdout);
-            expect(stdout).toContain(`{
-  "logical": "logicalOp",
-  "physical": "physicalOp"
-}`);
-          });
-
-          it('for an update', async() => {
-            mediatorQueryOperation.mediate = jest.fn((action: any) => {
-              if (action.context.has(KeysInitQuery.physicalQueryPlanLogger)) {
-                (<IPhysicalQueryPlanLogger> action.context.get(KeysInitQuery.physicalQueryPlanLogger))
-                  .logOperation(
-                    'logicalOp',
-                    'physicalOp',
-                    {},
-                    undefined,
-                    'actor',
-                    {},
-                  );
-              }
-              return Promise.resolve({
-                type: 'void',
-                execute: () => Promise.resolve(true),
-              });
-            });
-
-            const stdout = await stringifyStream(<any> (await actor.run({
-              argv: [ 'SOURCE', '-q', queryString, '--explain', 'physical' ],
-              env: {},
-              stdin: <Readable><any> new PassThrough(),
-              context,
-            })).stdout);
-            expect(stdout).toContain(`{
-  "logical": "logicalOp",
-  "physical": "physicalOp"
-}`);
+          expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
+            [KeysInitQuery.explain.name]: 'physical',
+            [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
+            sources: [{ value: 'SOURCE' }],
+            log: expect.any(LoggerPretty),
           });
         });
       });

@@ -17,36 +17,36 @@ describe('LinkQueueWrapper', () => {
 
   describe('push', () => {
     it('calls the wrapped link queue', () => {
-      expect(wrapper.push({ url: 'a' }, { url: 'parent' })).toEqual(true);
+      expect(wrapper.push({ url: 'a' }, { url: 'parent' })).toBe(true);
       expect(wrapped.push).toHaveBeenCalledWith({ url: 'a' }, { url: 'parent' });
     });
   });
 
   describe('getSize', () => {
     it('calls the wrapped link queue', () => {
-      expect(wrapper.getSize()).toEqual(123);
-      expect(wrapped.getSize).toHaveBeenCalled();
+      expect(wrapper.getSize()).toBe(123);
+      expect(wrapped.getSize).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('isEmpty', () => {
     it('calls the wrapped link queue', () => {
-      expect(wrapper.isEmpty()).toEqual(true);
-      expect(wrapped.isEmpty).toHaveBeenCalled();
+      expect(wrapper.isEmpty()).toBe(true);
+      expect(wrapped.isEmpty).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('pop', () => {
     it('calls the wrapped link queue', () => {
       expect(wrapper.pop()).toEqual({ url: 'L1' });
-      expect(wrapped.pop).toHaveBeenCalled();
+      expect(wrapped.pop).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('peek', () => {
     it('calls the wrapped link queue', () => {
       expect(wrapper.peek()).toEqual({ url: 'L2' });
-      expect(wrapped.peek).toHaveBeenCalled();
+      expect(wrapped.peek).toHaveBeenCalledTimes(1);
     });
   });
 });

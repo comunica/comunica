@@ -6,7 +6,7 @@ import * as Err from '../util/Errors';
 import type { ISuperTypeProvider } from '../util/TypeHandling';
 import type { ImplementationFunction, OverloadTree, FunctionArgumentsCache } from './OverloadTree';
 
-export interface IEvalSharedContext extends ICompleteSharedContext{
+export interface IEvalSharedContext extends ICompleteSharedContext {
   args: E.Expression[];
   mapping: RDF.Bindings;
 }
@@ -48,7 +48,7 @@ export abstract class BaseFunction<Operator> {
   public apply = (args: E.TermExpression[], context: ICompleteSharedContext):
   E.TermExpression => {
     const concreteFunction =
-      this.monomorph(args, context.superTypeProvider, context.functionArgumentsCache) ||
+      this.monomorph(args, context.superTypeProvider, context.functionArgumentsCache) ??
       this.handleInvalidTypes(args);
     return concreteFunction(context)(args);
   };
@@ -66,8 +66,11 @@ export abstract class BaseFunction<Operator> {
    * for every concrete type when the function is generic over termtypes or
    * terms.
    */
-  private monomorph(args: E.TermExpression[], superTypeProvider: ISuperTypeProvider,
-    functionArgumentsCache: FunctionArgumentsCache): ImplementationFunction | undefined {
+  private monomorph(
+    args: E.TermExpression[],
+    superTypeProvider: ISuperTypeProvider,
+    functionArgumentsCache: FunctionArgumentsCache,
+  ): ImplementationFunction | undefined {
     return this.overloads.search(args, superTypeProvider, functionArgumentsCache);
   }
 }
@@ -144,7 +147,7 @@ export class SpecialFunction {
     this.arity = definition.arity;
     this.applySynchronously = definition.applySynchronously;
     this.applyAsync = definition.applyAsync;
-    this.checkArity = definition.checkArity || defaultArityCheck(this.arity);
+    this.checkArity = definition.checkArity ?? defaultArityCheck(this.arity);
   }
 }
 

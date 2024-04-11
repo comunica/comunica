@@ -23,7 +23,7 @@ describe('Bus', () => {
     const observer3 = new (<any> ActionObserver)({ name: 'observer3', bus: new Bus({ name: 'bus3' }) });
 
     const actorTest = (action: any) => {
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         resolve({ type: 'test', sent: action });
       });
     };
@@ -55,7 +55,7 @@ describe('Bus', () => {
     });
 
     it('should have a \'name\' field', () => {
-      expect(bus.name).toEqual('bus');
+      expect(bus.name).toBe('bus');
     });
 
     it('should allow an actor to be subscribed', () => {
@@ -108,7 +108,7 @@ describe('Bus', () => {
 
       bus.onRun(1, 2, 3);
       expect(observer1.onRun).toHaveBeenCalledTimes(1);
-      expect(observer1.onRun).toBeCalledWith(1, 2, 3);
+      expect(observer1.onRun).toHaveBeenCalledWith(1, 2, 3);
       expect(observer2.onRun).toHaveBeenCalledTimes(0);
       expect(observer3.onRun).toHaveBeenCalledTimes(0);
     });
@@ -146,7 +146,7 @@ describe('Bus', () => {
       bus.onRun(1, 2, 3);
       expect(observer1.onRun).toHaveBeenCalledTimes(0);
       expect(observer2.onRun).toHaveBeenCalledTimes(1);
-      expect(observer2.onRun).toBeCalledWith(1, 2, 3);
+      expect(observer2.onRun).toHaveBeenCalledWith(1, 2, 3);
       expect(observer3.onRun).toHaveBeenCalledTimes(0);
     });
 
@@ -158,7 +158,7 @@ describe('Bus', () => {
 
       bus.onRun(1, 2, 3);
       expect(observer1.onRun).toHaveBeenCalledTimes(3);
-      expect(observer1.onRun).toBeCalledWith(1, 2, 3);
+      expect(observer1.onRun).toHaveBeenCalledWith(1, 2, 3);
       expect(observer2.onRun).toHaveBeenCalledTimes(0);
       expect(observer3.onRun).toHaveBeenCalledTimes(0);
     });
@@ -208,10 +208,10 @@ describe('Bus', () => {
         expect(bus.publish({})).toHaveLength(1);
       });
 
-      it('should receive a correct publication reply', () => {
+      it('should receive a correct publication reply', async() => {
         expect(bus.publish({ a: 'b' })[0].actor).toEqual(actor1);
         expect(bus.publish({ a: 'b' })[0].reply).toBeInstanceOf(Promise);
-        return expect(bus.publish({ a: 'b' })[0].reply).resolves.toEqual({ type: 'test', sent: { a: 'b' }});
+        await expect(bus.publish({ a: 'b' })[0].reply).resolves.toEqual({ type: 'test', sent: { a: 'b' }});
       });
     });
 

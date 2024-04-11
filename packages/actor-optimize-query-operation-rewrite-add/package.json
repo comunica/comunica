@@ -1,0 +1,46 @@
+{
+  "name": "@comunica/actor-optimize-query-operation-rewrite-add",
+  "version": "3.0.1",
+  "description": "A rewrite-add optimize-query-operation actor",
+  "lsd:module": true,
+  "license": "MIT",
+  "homepage": "https://comunica.dev/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/actor-optimize-query-operation-rewrite-add"
+  },
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
+  "keywords": [
+    "comunica",
+    "actor",
+    "optimize-query-operation",
+    "rewrite-add"
+  ],
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.js.map"
+  ],
+  "scripts": {
+    "build": "npm run build:ts && npm run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
+  },
+  "dependencies": {
+    "@comunica/bus-optimize-query-operation": "^3.0.1",
+    "@comunica/core": "^3.0.1",
+    "@rdfjs/types": "*",
+    "rdf-data-factory": "^1.1.2",
+    "sparqlalgebrajs": "^4.3.3"
+  }
+}

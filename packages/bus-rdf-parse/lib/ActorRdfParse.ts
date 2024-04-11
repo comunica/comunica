@@ -1,14 +1,18 @@
-import type { IActionAbstractMediaTyped,
-  IActionAbstractMediaTypedHandle, IActionAbstractMediaTypedMediaTypes,
+import type {
+  IActionAbstractMediaTyped,
+  IActionAbstractMediaTypedHandle,
+  IActionAbstractMediaTypedMediaTypes,
   IActorArgsMediaTyped,
   IActorOutputAbstractMediaTyped,
-  IActorOutputAbstractMediaTypedHandle, IActorOutputAbstractMediaTypedMediaTypes,
+  IActorOutputAbstractMediaTypedHandle,
+  IActorOutputAbstractMediaTypedMediaTypes,
   IActorTestAbstractMediaTyped,
   IActorTestAbstractMediaTypedHandle,
   IActorTestAbstractMediaTypedMediaTypes,
   IActionAbstractMediaTypedMediaTypeFormats,
   IActorOutputAbstractMediaTypedMediaTypeFormats,
-  IActorTestAbstractMediaTypedMediaTypeFormats } from '@comunica/actor-abstract-mediatyped';
+  IActorTestAbstractMediaTypedMediaTypeFormats,
+} from '@comunica/actor-abstract-mediatyped';
 import { ActorAbstractMediaTyped } from '@comunica/actor-abstract-mediatyped';
 import type { IActionParse, IActorParseOutput } from '@comunica/actor-abstract-parse';
 import type { IActorTest, Mediate } from '@comunica/core';
@@ -76,10 +80,19 @@ export type IActorRdfParseOutput = IActorParseOutput<RDF.Stream, IActorRdfParseO
 export type IActorRdfParseArgs = IActorArgsMediaTyped<IActionRdfParse, IActorTest, IActorRdfParseOutput>;
 
 export type MediatorRdfParseHandle = Mediate<
-IActionRdfParseHandle, IActorOutputRdfParseHandle, IActorTestRdfParseHandle>;
+IActionRdfParseHandle,
+IActorOutputRdfParseHandle,
+IActorTestRdfParseHandle
+>;
 
 export type MediatorRdfParseMediaTypes = Mediate<
-IActionRdfParseMediaTypes, IActorOutputRdfParseMediaTypes, IActorTestRdfParseMediaTypes>;
+IActionRdfParseMediaTypes,
+IActorOutputRdfParseMediaTypes,
+IActorTestRdfParseMediaTypes
+>;
 
 export type MediatorRdfParseMediaTypeFormats = Mediate<
-IActionRdfParseMediaTypeFormats, IActorOutputRdfParseMediaTypeFormats, IActorTestRdfParseMediaTypeFormats>;
+IActionRdfParseMediaTypeFormats,
+IActorOutputRdfParseMediaTypeFormats,
+IActorTestRdfParseMediaTypeFormats
+>;

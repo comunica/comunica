@@ -6,8 +6,11 @@ import type { IActionContext } from '@comunica/types';
  * A comunica mediator that goes over all actors in sequence and forwards I/O.
  * This required the action input and the actor output to be of the same type.
  */
-export class MediatorCombinePipeline
-<A extends Actor<H, T, H>, H extends IAction | (IActorOutput & { context: IActionContext }), T extends IActorTest>
+export class MediatorCombinePipeline<
+  A extends Actor<H, T, H>,
+H extends IAction | (IActorOutput & { context: IActionContext }),
+T extends IActorTest,
+>
   extends Mediator<A, H, T, H> {
   public readonly filterErrors: boolean | undefined;
   public readonly order: 'increasing' | 'decreasing' | undefined;
@@ -17,7 +20,7 @@ export class MediatorCombinePipeline
     super(args);
   }
 
-  public async mediate(action: H): Promise<H> {
+  public override async mediate(action: H): Promise<H> {
     let testResults: IActorReply<A, H, T, H>[] | { actor: A; reply: T }[];
     try {
       testResults = this.publish(action);
@@ -52,7 +55,7 @@ export class MediatorCombinePipeline
 
         // Check the ordering value is a number
         if (typeof value !== 'number') {
-          throw new Error('Cannot order elements that are not numbers.');
+          throw new TypeError('Cannot order elements that are not numbers.');
         }
         return value;
       };
@@ -78,8 +81,13 @@ export class MediatorCombinePipeline
   }
 }
 
-export interface IMediatorCombinePipelineArgs<A extends Actor<I, T, O>, I extends IAction, T extends IActorTest,
-  O extends IActorOutput> extends IMediatorArgs<A, I, T, O> {
+export interface IMediatorCombinePipelineArgs<
+  A extends Actor<I, T, O>,
+I extends IAction,
+T extends IActorTest,
+O extends IActorOutput,
+>
+  extends IMediatorArgs<A, I, T, O> {
   /**
    * If actors that throw test errors should be ignored
    */

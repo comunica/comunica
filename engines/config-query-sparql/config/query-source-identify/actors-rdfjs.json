@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/config-query-sparql/^3.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^3.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-source-identify-hypermedia/^3.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-source-identify-rdfjs/^3.0.0/components/context.jsonld"
+  ],
+  "@graph": [
+    {
+      "import": [
+        "ccqs:config/query-source-identify/actors/hypermedia.json",
+        "ccqs:config/query-source-identify/actors/rdfjs.json"
+      ]
+    },
+    {
+      "@id": "urn:comunica:default:query-source-identify/actors#rdfjs",
+      "@type": "ActorQuerySourceIdentifyRdfJs",
+      "beforeActors": { "@id": "urn:comunica:default:query-source-identify/actors#hypermedia" }
+    }
+  ]
+}

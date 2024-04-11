@@ -75,20 +75,20 @@ export class BindingsIndex {
     for (const data of dataIndexes) {
       // If the index contained a variable, all terms will match.
       const dataKey = BindingsIndex.hashTerm(bindings.get(key));
-      if (!dataKey) {
-        // Iterate over all entries
-        let subDatas = Object.keys(data).map(subKey => data[subKey]);
+      if (dataKey) {
+        // Check the entry for the term, and the variable term.
+        const subDatas = [ data[dataKey], data[''] ].filter(Boolean);
         if (subDatas.length === 0) {
-          subDatas = [{}];
+          continue;
         }
         if (this.containsRecursive(bindings, keys, subDatas)) {
           return true;
         }
       } else {
-        // Check the entry for the term, and the variable term.
-        const subDatas = [ data[dataKey], data[''] ].filter(Boolean);
+        // Iterate over all entries
+        let subDatas = Object.keys(data).map(subKey => data[subKey]);
         if (subDatas.length === 0) {
-          continue;
+          subDatas = [{}];
         }
         if (this.containsRecursive(bindings, keys, subDatas)) {
           return true;

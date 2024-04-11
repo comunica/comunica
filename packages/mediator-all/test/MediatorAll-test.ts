@@ -33,7 +33,7 @@ describe('MediatorAll', () => {
       });
 
       it('should mediate to all resolving actors', async() => {
-        expect(await mediator.mediate(<any> { a: 'b' })).toBe(undefined);
+        await expect(mediator.mediate(<any> { a: 'b' })).resolves.toBeUndefined();
       });
 
       it('should throw for mediateWith', async() => {
@@ -61,7 +61,7 @@ describe('MediatorAll', () => {
       });
 
       it('should mediate to all resolving actors', async() => {
-        expect(await mediator.mediate(<any> { a: 'b' })).toEqual({ field: 10 });
+        await expect(mediator.mediate(<any> { a: 'b' })).resolves.toEqual({ field: 10 });
         expect(a0.runObservable).toHaveBeenCalledWith({ a: 'b' });
         expect(a1.runObservable).toHaveBeenCalledWith({ a: 'b' });
         expect(a2.runObservable).toHaveBeenCalledWith({ a: 'b' });
@@ -87,7 +87,7 @@ describe('MediatorAll', () => {
       });
 
       it('should mediate over no actors', async() => {
-        expect(await mediator.mediate(<any> { a: 'b' })).toBe(undefined);
+        await expect(mediator.mediate(<any> { a: 'b' })).resolves.toBeUndefined();
         expect(a0.runObservable).not.toHaveBeenCalled();
         expect(a1.runObservable).not.toHaveBeenCalled();
         expect(a2.runObservable).not.toHaveBeenCalled();
@@ -113,7 +113,7 @@ describe('MediatorAll', () => {
       });
 
       it('should mediate over the non-rejecting actors', async() => {
-        expect(await mediator.mediate(<any> { a: 'b' })).toEqual({ field: 10 });
+        await expect(mediator.mediate(<any> { a: 'b' })).resolves.toEqual({ field: 10 });
         expect(a0.runObservable).toHaveBeenCalledWith({ a: 'b' });
         expect(a1.runObservable).not.toHaveBeenCalled();
         expect(a2.runObservable).toHaveBeenCalledWith({ a: 'b' });

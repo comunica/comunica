@@ -20,9 +20,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
   }
 
   public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryOperationResult> {
-    const bindingsFactory = new BindingsFactory(
-      (await this.mediatorMergeBindingsContext.mediate({ context })).mergeHandlers,
-    );
+    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context);
 
     const distinct = await this.isPathArbitraryLengthDistinct(context, operation);
     if (distinct.operation) {
@@ -32,6 +30,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
     context = distinct.context;
 
     const predicate = <Algebra.ZeroOrMorePath> operation.predicate;
+    const sources = this.getPathSources(predicate);
 
     const sVar = operation.subject.termType === 'Variable';
     const oVar = operation.object.termType === 'Variable';
@@ -39,8 +38,8 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
     if (operation.subject.termType === 'Variable' && operation.object.termType === 'Variable') {
       // Query ?s ?p ?o, to get all possible namedNodes in de the db
       const predVar = this.generateVariable(operation);
-      const single = ActorAbstractPath.FACTORY
-        .createPattern(operation.subject, predVar, operation.object, operation.graph);
+      const single = this.assignPatternSources(ActorAbstractPath.FACTORY
+        .createPattern(operation.subject, predVar, operation.object, operation.graph), sources);
       const results = ActorQueryOperation.getSafeBindings(
         await this.mediatorQueryOperation.mediate({ context, operation: single }),
       );
@@ -126,8 +125,8 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
         },
       );
       const variables: RDF.Variable[] = operation.graph.termType === 'Variable' ?
-        [ subjectVar, operation.object, operation.graph ] :
-        [ subjectVar, operation.object ];
+          [ subjectVar, operation.object, operation.graph ] :
+          [ subjectVar, operation.object ];
       return {
         type: 'bindings',
         bindingsStream,

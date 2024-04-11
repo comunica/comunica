@@ -10,17 +10,17 @@ describe('validateHttpResponse', () => {
   it('should cancel the body on a valid response', async() => {
     const body = <any> { cancel: jest.fn() };
     await validateHttpResponse('URL', <Response> { status: 200, body });
-    expect(body.cancel).toHaveBeenCalled();
+    expect(body.cancel).toHaveBeenCalledTimes(1);
   });
 
   it('should throw with an invalid response', async() => {
     await expect(validateHttpResponse('URL', <Response> { status: 400 })).rejects
-      .toThrowError('Could not update URL (HTTP status 400):\nempty response');
+      .toThrow('Could not update URL (HTTP status 400):\nempty response');
   });
 
   it('should throw with an invalid response with body', async() => {
     const body = streamifyString('BODY');
     await expect(validateHttpResponse('URL', <Response> { status: 400, body })).rejects
-      .toThrowError('Could not update URL (HTTP status 400):\nBODY');
+      .toThrow('Could not update URL (HTTP status 400):\nBODY');
   });
 });

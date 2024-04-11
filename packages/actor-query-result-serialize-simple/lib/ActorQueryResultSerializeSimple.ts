@@ -1,9 +1,16 @@
-import type { IActionSparqlSerialize,
+import type {
+  IActionSparqlSerialize,
   IActorQueryResultSerializeFixedMediaTypesArgs,
-  IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
+  IActorQueryResultSerializeOutput,
+} from '@comunica/bus-query-result-serialize';
 import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-result-serialize';
-import type { IActionContext, IQueryOperationResultBindings, IQueryOperationResultBoolean,
-  IQueryOperationResultQuads, IQueryOperationResultVoid } from '@comunica/types';
+import type {
+  IActionContext,
+  IQueryOperationResultBindings,
+  IQueryOperationResultBoolean,
+  IQueryOperationResultQuads,
+  IQueryOperationResultVoid,
+} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { termToString } from 'rdf-string';
 import { Readable } from 'readable-stream';
@@ -21,7 +28,7 @@ export class ActorQueryResultSerializeSimple extends ActorQueryResultSerializeFi
     super(args);
   }
 
-  public async testHandleChecked(action: IActionSparqlSerialize, context: IActionContext): Promise<boolean> {
+  public override async testHandleChecked(action: IActionSparqlSerialize, _context: IActionContext): Promise<boolean> {
     if (![ 'bindings', 'quads', 'boolean', 'void' ].includes(action.type)) {
       throw new Error('This actor can only handle bindings streams, quad streams, booleans, or updates.');
     }
@@ -32,7 +39,7 @@ export class ActorQueryResultSerializeSimple extends ActorQueryResultSerializeFi
     return term.termType === 'Quad' ? termToString(term) : term.value;
   }
 
-  public async runHandle(action: IActionSparqlSerialize, mediaType: string, context: IActionContext):
+  public async runHandle(action: IActionSparqlSerialize, _mediaType: string, _context: IActionContext):
   Promise<IActorQueryResultSerializeOutput> {
     const data = new Readable();
     data._read = () => {

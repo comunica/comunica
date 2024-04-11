@@ -20,8 +20,8 @@ describe('ActionContext', () => {
           .set(key2, 123)
           .set(key3, [ true, false ]);
 
-        expect(context.get(key1)).toEqual('abc');
-        expect(context.get(key2)).toEqual(123);
+        expect(context.get(key1)).toBe('abc');
+        expect(context.get(key2)).toBe(123);
         expect(context.get(key3)).toEqual([ true, false ]);
       });
 
@@ -37,8 +37,8 @@ describe('ActionContext', () => {
           .set(key1, 'abc')
           .set(key3, [ true, false ]);
 
-        expect(context.get(key1)).toEqual('abc');
-        expect(context.get(key2)).toEqual(undefined);
+        expect(context.get(key1)).toBe('abc');
+        expect(context.get(key2)).toBeUndefined();
         expect(context.get(key3)).toEqual([ true, false ]);
       });
 
@@ -56,7 +56,7 @@ describe('ActionContext', () => {
       });
 
       it('should get entries', () => {
-        expect(context.getSafe(key1)).toEqual('abc');
+        expect(context.getSafe(key1)).toBe('abc');
         expect(() => context.getSafe(key2)).toThrow(`Context entry ${key2.name} is required but not available`);
         expect(context.getSafe(key3)).toEqual([ true, false ]);
       });
@@ -81,9 +81,9 @@ describe('ActionContext', () => {
           .delete(key1)
           .delete(key3);
 
-        expect(context.get(key1)).toEqual(undefined);
-        expect(context.get(key2)).toEqual(123);
-        expect(context.get(key3)).toEqual(undefined);
+        expect(context.get(key1)).toBeUndefined();
+        expect(context.get(key2)).toBe(123);
+        expect(context.get(key3)).toBeUndefined();
       });
 
       it('should delete non-existing existing entries', () => {
@@ -91,9 +91,9 @@ describe('ActionContext', () => {
           .delete(key1)
           .delete(key3);
 
-        expect(context.get(key1)).toEqual(undefined);
-        expect(context.get(key2)).toEqual(undefined);
-        expect(context.get(key3)).toEqual(undefined);
+        expect(context.get(key1)).toBeUndefined();
+        expect(context.get(key2)).toBeUndefined();
+        expect(context.get(key3)).toBeUndefined();
       });
     });
 
@@ -103,9 +103,9 @@ describe('ActionContext', () => {
           .set(key1, 'abc')
           .set(key3, [ true, false ]);
 
-        expect(context.has(key1)).toEqual(true);
-        expect(context.has(key2)).toEqual(false);
-        expect(context.has(key3)).toEqual(true);
+        expect(context.has(key1)).toBe(true);
+        expect(context.has(key2)).toBe(false);
+        expect(context.has(key3)).toBe(true);
       });
     });
 
@@ -145,8 +145,8 @@ describe('ActionContext', () => {
           .set(key2, 123)
           .set(key3, [ true, false ]);
 
-        // eslint-disable-next-line @typescript-eslint/no-base-to-string
-        expect(context.toString()).toEqual(`ActionContext({"key1":"abc","key2":123,"key3":[true,false]})`);
+        // eslint-disable-next-line ts/no-base-to-string
+        expect(context.toString()).toBe(`ActionContext({"key1":"abc","key2":123,"key3":[true,false]})`);
       });
     });
 
@@ -158,7 +158,7 @@ describe('ActionContext', () => {
           .set(key3, [ true, false ]);
 
         expect((<any> context)[Symbol.for('nodejs.util.inspect.custom')]())
-          .toEqual(`ActionContext({
+          .toBe(`ActionContext({
   "key1": "abc",
   "key2": 123,
   "key3": [
@@ -206,13 +206,14 @@ describe('ActionContext', () => {
       const value2: number | undefined = context.get(key2);
       const value3: boolean[] | undefined = context.get(key3);
 
-      expect(value1).toEqual('abc');
-      expect(value2).toEqual(123);
+      expect(value1).toBe('abc');
+      expect(value2).toBe(123);
       expect(value3).toEqual([ true, false ]);
 
       if (context.has(key1)) {
         const value1_2 = context.get(key1);
-        expect(value1_2).toEqual('abc');
+        // eslint-disable-next-line jest/no-conditional-expect
+        expect(value1_2).toBe('abc');
       }
     });
   });

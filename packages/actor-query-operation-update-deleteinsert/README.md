@@ -25,10 +25,10 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-update-deleteinsert/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-update-deleteinsert/^3.0.0/components/context.jsonld",
 
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^2.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-update-quads/^2.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^3.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-update-quads/^3.0.0/components/context.jsonld"
   ],
   "actors": [
     ...
@@ -36,7 +36,8 @@ After installing, this package can be added to your engine's configuration as fo
       "@id": "urn:comunica:default:query-operation/actors#update-deleteinsert",
       "@type": "ActorQueryOperationUpdateDeleteInsert",
       "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
-      "mediatorUpdateQuads": { "@id": "urn:comunica:default:rdf-update-quads/mediators#main" }
+      "mediatorUpdateQuads": { "@id": "urn:comunica:default:rdf-update-quads/mediators#main" },
+      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" }
     }
   ]
 }
@@ -46,3 +47,4 @@ After installing, this package can be added to your engine's configuration as fo
 
 * `mediatorQueryOperation`: A mediator over the [Query Operation bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation).
 * `mediatorUpdateQuads`: A mediator over the [RDF Update Quads bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-update-quads).
+* `mediatorMergeBindingsContext`: A mediator over the [Merge Bindings Context bus](https://github.com/comunica/comunica/tree/master/packages/bus-merge-bindings-context).

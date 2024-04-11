@@ -30,10 +30,16 @@ export class HtmlScriptListener implements IHtmlParseListener {
   private passedScripts = 0;
   private isFinalJsonLdProcessing = false;
 
-  public constructor(mediatorRdfParseHandle: MediatorRdfParseHandle,
-    cbQuad: (quad: RDF.Quad) => void, cbError: (error: Error) => void, cbEnd: () => void,
-    supportedTypes: Record<string, number>, context: IActionContext, baseIRI: string,
-    headers: Headers | undefined) {
+  public constructor(
+    mediatorRdfParseHandle: MediatorRdfParseHandle,
+    cbQuad: (quad: RDF.Quad) => void,
+    cbError: (error: Error) => void,
+    cbEnd: () => void,
+    supportedTypes: Record<string, number>,
+    context: IActionContext,
+    baseIRI: string,
+    headers: Headers | undefined,
+  ) {
     this.mediatorRdfParseHandle = mediatorRdfParseHandle;
     this.cbQuad = cbQuad;
     this.cbError = cbError;
@@ -72,8 +78,7 @@ export class HtmlScriptListener implements IHtmlParseListener {
       } else {
         // Otherwise, end processing
         if (this.passedScripts === 0 && this.targetScriptId) {
-          this.cbError(HtmlScriptListener.newErrorCoded(`Failed to find targeted script id "${this.targetScriptId}"`,
-            'loading document failed'));
+          this.cbError(HtmlScriptListener.newErrorCoded(`Failed to find targeted script id "${this.targetScriptId}"`, 'loading document failed'));
         }
         this.cbEnd();
       }

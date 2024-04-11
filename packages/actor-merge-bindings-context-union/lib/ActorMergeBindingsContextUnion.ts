@@ -1,9 +1,12 @@
-import type { IActionMergeBindingsContext,
-  IActorMergeBindingsContextOutput, IActorMergeBindingsContextArgs,
-  IBindingsContextMergeHandler } from '@comunica/bus-merge-bindings-context';
+import type {
+  IActionMergeBindingsContext,
+  IActorMergeBindingsContextOutput,
+  IActorMergeBindingsContextArgs,
+  IBindingsContextMergeHandler,
+} from '@comunica/bus-merge-bindings-context';
 import { ActorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorTest } from '@comunica/core';
-import { SetUnionContext } from './SetUnionContext';
+import { SetUnionBindingsContextMergeHandler } from './SetUnionBindingsContextMergeHandler';
 
 /**
  * A comunica Union Merge Bindings Context Actor.
@@ -15,24 +18,22 @@ export class ActorMergeBindingsContextUnion extends ActorMergeBindingsContext {
     this.contextKey = args.contextKey;
   }
 
-  public async test(action: IActionMergeBindingsContext): Promise<IActorTest> {
+  public async test(_action: IActionMergeBindingsContext): Promise<IActorTest> {
     return true;
   }
 
-  public async run(action: IActionMergeBindingsContext): Promise<IActorMergeBindingsContextOutput> {
+  public async run(_action: IActionMergeBindingsContext): Promise<IActorMergeBindingsContextOutput> {
     // Merge function: Union with set semantics
     const mergeHandlers: Record<string, IBindingsContextMergeHandler<any>> = {};
-    mergeHandlers[this.contextKey] = new SetUnionContext();
+    mergeHandlers[this.contextKey] = new SetUnionBindingsContextMergeHandler();
 
     return { mergeHandlers };
   }
 }
 
-export interface IActorMergeBindingsContextUnionArgs extends IActorMergeBindingsContextArgs{
+export interface IActorMergeBindingsContextUnionArgs extends IActorMergeBindingsContextArgs {
   /**
-   * The keys the mergehandler created by this actor should merge over. With the key of the record being the key name
-   * and the value the expected type of the context entry
+   * The context key name to merge over.
    */
   contextKey: string;
 }
-
