@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-metadata-accumulate-pagesize",
-  "version": "3.0.1",
+  "version": "3.0.3",
   "description": "A pagesize rdf-metadata-accumulate actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,7 +37,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-rdf-metadata-accumulate": "^3.0.1",
-    "@comunica/core": "^3.0.1"
+    "@comunica/bus-rdf-metadata-accumulate": "^3.0.3",
+    "@comunica/core": "^3.0.3"
   }
 }
