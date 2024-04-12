@@ -27,7 +27,7 @@ describe('aggregate evaluator', () => {
   it('handles errors using async evaluations', async() => {
     const temp = await getMockEEFactory().run({
       algExpr: makeAggregate('sum').expression,
-      context: new ActionContext({})
+      context: new ActionContext({}),
     });
     let first = true;
     temp.expressionEvaluator.evaluate = async() => {

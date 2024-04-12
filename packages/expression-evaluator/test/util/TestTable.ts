@@ -2,7 +2,6 @@
 import { stringToTermPrefix, template } from './Aliases';
 import { generalErrorEvaluation, generalEvaluate } from './generalEvaluation';
 import type { TestTableConfig } from './utils';
-import {ActorExpressionEvaluatorFactory} from "@comunica/bus-expression-evaluator-factory";
 
 export enum Notation {
   Infix,
@@ -44,7 +43,7 @@ abstract class Table<RowType extends Row> {
       expression: template(expr, additionalPrefixes),
       expectEquality: true,
       generalEvaluationConfig: config,
-      exprEvalFactory
+      exprEvalFactory,
     });
     expect(evaluated.asyncResult).toEqual(stringToTermPrefix(result, additionalPrefixes));
   }
