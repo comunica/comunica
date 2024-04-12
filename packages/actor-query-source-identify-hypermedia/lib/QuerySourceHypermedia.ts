@@ -115,7 +115,7 @@ export class QuerySourceHypermedia implements IQuerySource {
     return it;
   }
 
-  public queryQuads(operation: Algebra.Construct, context: IActionContext): AsyncIterator<RDF.Quad> {
+  public queryQuads(operation: Algebra.Operation, context: IActionContext): AsyncIterator<RDF.Quad> {
     return new TransformIterator(async() => {
       const source = await this.getSourceCached({ url: this.firstUrl }, {}, context, this.getAggregateStore(context));
       return source.source.queryQuads(operation, context);
