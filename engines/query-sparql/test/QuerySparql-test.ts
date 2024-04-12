@@ -1,6 +1,6 @@
 /** @jest-environment setup-polly-jest/jest-environment-node */
 
-import { QuerySourceSkolemized } from '@comunica/actor-context-preprocess-query-source-skolemize';
+import { QuerySourceAddSourceAttribution } from '@comunica/actor-context-preprocess-query-source-bindings-source-attribution';
 import { KeysHttpWayback, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { BlankNodeScoped } from '@comunica/data-factory';
 import type { QueryBindings, QueryStringContext } from '@comunica/types';
@@ -1194,7 +1194,7 @@ SELECT ?obsId {
                   {
                     metadata: {
                       scopedSource: {
-                        source: expect.any(QuerySourceSkolemized),
+                        source: expect.any(QuerySourceAddSourceAttribution),
                       },
                     },
                   },

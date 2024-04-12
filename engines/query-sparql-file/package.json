@@ -55,6 +55,7 @@
   },
   "dependencies": {
     "@comunica/actor-context-preprocess-convert-shortcuts": "^3.0.1",
+    "@comunica/actor-context-preprocess-query-source-bindings-source-attribution": "^3.0.1",
     "@comunica/actor-context-preprocess-query-source-identify": "^3.0.1",
     "@comunica/actor-context-preprocess-query-source-skolemize": "^3.0.1",
     "@comunica/actor-context-preprocess-set-defaults": "^3.0.1",

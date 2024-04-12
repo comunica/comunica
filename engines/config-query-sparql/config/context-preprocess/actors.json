@@ -5,6 +5,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-context-preprocess-convert-shortcuts/^3.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-context-preprocess-set-defaults/^3.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-context-preprocess-source-to-destination/^3.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-context-preprocess-query-source-bindings-source-attribution/^3.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-context-preprocess-query-source-identify/^3.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-context-preprocess-query-source-skolemize/^3.0.0/components/context.jsonld"
   ],
@@ -28,11 +29,19 @@
       "@type": "ActorContextPreprocessQuerySourceIdentify",
       "mediatorQuerySourceIdentify": { "@id": "urn:comunica:default:query-source-identify/mediators#main" },
       "mediatorContextPreprocess": { "@id": "urn:comunica:default:context-preprocess/mediators#main" },
-      "beforeActors": { "@id": "urn:comunica:default:context-preprocess/actors#query-source-skolemize" }
+      "beforeActors": [ { "@id": "urn:comunica:default:context-preprocess/actors#query-source-skolemize" }, 
+      {"@id": "urn:comunica:default:context-preprocess/actors#query-source-bindings-source-attribution"}]
     },
     {
       "@id": "urn:comunica:default:context-preprocess/actors#query-source-skolemize",
-      "@type": "ActorContextPreprocessQuerySourceSkolemize"
+      "@type": "ActorContextPreprocessQuerySourceSkolemize",
+      "beforeActors": {"@id": "urn:comunica:default:context-preprocess/actors#query-source-bindings-source-attribution"}
+
+    },
+    {
+      "@id": "urn:comunica:default:context-preprocess/actors#query-source-bindings-source-attribution",
+      "@type": "ActorContextPreprocessQuerySourceBindingsSourceAttribution"
     }
+
   ]
 }
