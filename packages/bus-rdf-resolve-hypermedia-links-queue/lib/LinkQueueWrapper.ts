@@ -4,10 +4,10 @@ import type { ILinkQueue } from './ILinkQueue';
 /**
  * A link queue that wraps a given link queue.
  */
-export class LinkQueueWrapper implements ILinkQueue {
-  private readonly linkQueue: ILinkQueue;
+export class LinkQueueWrapper<T extends ILinkQueue = ILinkQueue> implements ILinkQueue {
+  protected readonly linkQueue: T;
 
-  public constructor(linkQueue: ILinkQueue) {
+  public constructor(linkQueue: T) {
     this.linkQueue = linkQueue;
   }
 
