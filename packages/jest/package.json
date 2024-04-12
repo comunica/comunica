@@ -47,7 +47,9 @@
     "arrayify-stream": "^2.0.1",
     "rdf-data-factory": "^1.1.2",
     "sparqlalgebrajs": "^4.2.0",
-    "sparqljs": "^3.7.1"
+    "sparqljs": "^3.7.1",
+    "@comunica/context-entries":  "^2.8.2",
+    "lru-cache": "^10.2.0"
   },
   "scripts": {
     "build": "npm run build:ts",
