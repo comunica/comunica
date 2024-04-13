@@ -41,7 +41,8 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
             };
           }
         } catch {
-          // Fallback to the default case when the selector shape does not exist, which can occur for a non-existent destination.
+          // Fallback to the default case when the selector shape does not exist,
+          // which can occur for a non-existent destination.
         }
       }
     }
