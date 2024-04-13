@@ -32,12 +32,16 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
       const sourceWrapper = sources[0];
       const destination: IDataDestination | undefined = action.context.get(KeysRdfUpdateQuads.destination);
       if (!destination || sourceWrapper.source.referenceValue === getDataDestinationValue(destination)) {
-        const shape = await sourceWrapper.source.getSelectorShape(action.context);
-        if (ActorQueryOperation.doesShapeAcceptOperation(shape, action.operation)) {
-          return {
-            operation: ActorQueryOperation.assignOperationSource(action.operation, sourceWrapper),
-            context: action.context,
-          };
+        try {
+          const shape = await sourceWrapper.source.getSelectorShape(action.context);
+          if (ActorQueryOperation.doesShapeAcceptOperation(shape, action.operation)) {
+            return {
+              operation: ActorQueryOperation.assignOperationSource(action.operation, sourceWrapper),
+              context: action.context,
+            };
+          }
+        } catch {
+          // Fallback to the default case when the selector shape does not exist, which can occur for a non-existent destination.
         }
       }
     }
