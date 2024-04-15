@@ -57,7 +57,7 @@ export class QuerySourceSkolemized implements IQuerySource {
     return this.innerSource.queryBoolean(operation, context);
   }
 
-  public queryQuads(operation: Algebra.Construct, context: IActionContext): AsyncIterator<RDF.Quad> {
+  public queryQuads(operation: Algebra.Operation, context: IActionContext): AsyncIterator<RDF.Quad> {
     const operationMapped = deskolemizeOperation(operation, this.sourceId);
     if (!operationMapped) {
       const it: AsyncIterator<RDF.Quad> = new ArrayIterator<RDF.Quad>([], { autoStart: false });

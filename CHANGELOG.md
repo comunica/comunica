@@ -1,6 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v3.0.3"></a>
+## [v3.0.3](https://github.com/comunica/comunica/compare/v3.0.2...v3.0.3) - 2024-04-12
+
+### Changed
+* [Add generic type to LinkQueueWrapper (#1322)](https://github.com/comunica/comunica/commit/9e70a6475f6fb581a0ca783826e7307177adfac9)
+
+### Fixed
+* [Fix broken LIMITs on CONSTRUCT queries on SPARQL endpoints, Closes #1319](https://github.com/comunica/comunica/commit/f3f7e05518fb30ee19ffc2fd2a5edeb998d91368)
+
 <a name="v3.0.2"></a>
 ## [v3.0.2](https://github.com/comunica/comunica/compare/v3.0.1...v3.0.2) - 2024-04-10
 

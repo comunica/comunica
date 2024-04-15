@@ -1,6 +1,6 @@
 import type { IActorContextPreprocessOutput, IActorContextPreprocessArgs } from '@comunica/bus-context-preprocess';
 import { ActorContextPreprocess } from '@comunica/bus-context-preprocess';
-import { KeysInitQuery, KeysQueryOperation, KeysQuerySourceIdentify } from '@comunica/context-entries';
+import { KeysQueryOperation, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import type { IActorTest, IAction } from '@comunica/core';
 import type { IQuerySourceWrapper, QuerySourceReference } from '@comunica/types';
 import { QuerySourceAddSourceAttribution } from './QuerySourceAddSourceAttribution';
@@ -11,6 +11,7 @@ import { getSourceId } from '@comunica/actor-context-preprocess-query-source-sko
  */
 export class ActorContextPreprocessQuerySourceBindingsSourceAttribution extends ActorContextPreprocess {
   public constructor(args: IActorContextPreprocessArgs) {
+    console.log("CREATED")
     super(args);
   }
 
@@ -19,6 +20,7 @@ export class ActorContextPreprocessQuerySourceBindingsSourceAttribution extends 
   }
 
   public async run(action: IAction): Promise<IActorContextPreprocessOutput> {
+    console.log("RUNNING");
     let context = action.context;
 
     // Determine map of source id's

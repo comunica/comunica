@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-parse-html-microdata",
-  "version": "3.0.1",
+  "version": "3.0.3",
   "description": "A microdata rdf-parse-html actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,8 +37,8 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-rdf-parse-html": "^3.0.1",
-    "@comunica/core": "^3.0.1",
+    "@comunica/bus-rdf-parse-html": "^3.0.3",
+    "@comunica/core": "^3.0.3",
     "microdata-rdf-streaming-parser": "^2.0.1"
   }
 }

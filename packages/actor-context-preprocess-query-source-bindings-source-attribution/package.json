@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-context-preprocess-query-source-bindings-source-attribution",
-  "version": "3.0.1",
+  "version": "3.0.3",
   "description": "A query-source-bindings-source-attribution context-preprocess actor",
   "lsd:module": true,
   "main": "lib/index.js",

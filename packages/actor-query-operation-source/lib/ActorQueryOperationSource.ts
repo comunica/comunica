@@ -44,8 +44,14 @@ export class ActorQueryOperationSource extends ActorQueryOperation {
     const sourceWrapper: IQuerySourceWrapper = ActorQueryOperation.getOperationSource(action.operation)!;
     const mergedContext = sourceWrapper.context ? action.context.merge(sourceWrapper.context) : action.context;
 
+    // eslint-disable-next-line ts/switch-exhaustiveness-check
     switch (action.operation.type) {
+      // Special case: allow CONSTRUCT queries that are SLICED to be pushed into sources as well.
+      case Algebra.types.SLICE:
       case Algebra.types.CONSTRUCT: {
+        if (action.operation.type === Algebra.types.SLICE && action.operation.input.type !== Algebra.types.CONSTRUCT) {
+          break;
+        }
         const quadStream = sourceWrapper.source.queryQuads(action.operation, mergedContext);
         const metadata = getMetadataQuads(quadStream);
         return {
@@ -72,15 +78,14 @@ export class ActorQueryOperationSource extends ActorQueryOperation {
           type: 'void',
           execute: () => sourceWrapper.source.queryVoid(<Algebra.Update>action.operation, mergedContext),
         };
-      default: {
-        const bindingsStream = sourceWrapper.source.queryBindings(action.operation, mergedContext);
-        const metadata = getMetadataBindings(bindingsStream);
-        return {
-          type: 'bindings',
-          bindingsStream,
-          metadata,
-        };
-      }
     }
+
+    const bindingsStream = sourceWrapper.source.queryBindings(action.operation, mergedContext);
+    const metadata = getMetadataBindings(bindingsStream);
+    return {
+      type: 'bindings',
+      bindingsStream,
+      metadata,
+    };
   }
 }
