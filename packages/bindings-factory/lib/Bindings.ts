@@ -92,7 +92,7 @@ export class Bindings implements RDF.Bindings {
         return false;
       }
     }
-    
+
     return true;
   }
 
