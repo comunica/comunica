@@ -1,5 +1,5 @@
 /** @jest-environment setup-polly-jest/jest-environment-node */
-import { QuerySourceSkolemized } from '@comunica/actor-context-preprocess-query-source-skolemize'
+import { QuerySourceSkolemized } from '@comunica/actor-context-preprocess-query-source-skolemize';
 import { KeysHttpWayback, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { BlankNodeScoped } from '@comunica/data-factory';
 import type { QueryBindings, QueryStringContext } from '@comunica/types';
