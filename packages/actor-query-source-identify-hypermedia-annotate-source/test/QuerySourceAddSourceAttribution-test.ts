@@ -15,7 +15,7 @@ const BF = new BindingsFactory();
 const DF = new DataFactory();
 const AF = new Factory();
 
-describe('QuerySourceSkolemized', () => {
+describe('QuerySourcAddSourceAttribution', () => {
   let sourceInner: IQuerySource;
   let source: QuerySourceAddSourceAttribution;
 
@@ -44,7 +44,7 @@ describe('QuerySourceSkolemized', () => {
       toString: <any> jest.fn(() => 'STR'),
       referenceValue: 'REF',
     };
-    source = new QuerySourceAddSourceAttribution(sourceInner, '0');
+    source = new QuerySourceAddSourceAttribution(sourceInner);
   });
 
   it('should delegate getSelectorShape', async() => {

@@ -1,6 +1,7 @@
 import { KeysQueryOperation, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import { ActorContextPreprocessQuerySourceBindingsSourceAttribution } from '../lib/ActorContextPreprocessQuerySourceBindingsSourceAttribution';
+import { ActorContextPreprocessQuerySourceBindingsSourceAttribution } from
+  '../lib/ActorContextPreprocessQuerySourceBindingsSourceAttribution';
 import { QuerySourceAddSourceAttribution } from '../lib/QuerySourceAddSourceAttribution';
 
 describe('ActorContextPreprocessQuerySourceSkolemize', () => {

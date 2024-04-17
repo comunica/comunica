@@ -29,13 +29,13 @@
       "@type": "ActorContextPreprocessQuerySourceIdentify",
       "mediatorQuerySourceIdentify": { "@id": "urn:comunica:default:query-source-identify/mediators#main" },
       "mediatorContextPreprocess": { "@id": "urn:comunica:default:context-preprocess/mediators#main" },
-      "beforeActors": [ { "@id": "urn:comunica:default:context-preprocess/actors#query-source-skolemize" }, 
-      {"@id": "urn:comunica:default:context-preprocess/actors#query-source-bindings-source-attribution"}]
+      "beforeActors": [{ "@id": "urn:comunica:default:context-preprocess/actors#query-source-skolemize" },
+        { "@id": "urn:comunica:default:context-preprocess/actors#query-source-bindings-source-attribution" }]
     },
     {
       "@id": "urn:comunica:default:context-preprocess/actors#query-source-skolemize",
       "@type": "ActorContextPreprocessQuerySourceSkolemize",
-      "beforeActors": {"@id": "urn:comunica:default:context-preprocess/actors#query-source-bindings-source-attribution"}
+      "beforeActors": { "@id": "urn:comunica:default:context-preprocess/actors#query-source-bindings-source-attribution" }
     },
     {
       "@id": "urn:comunica:default:context-preprocess/actors#query-source-bindings-source-attribution",

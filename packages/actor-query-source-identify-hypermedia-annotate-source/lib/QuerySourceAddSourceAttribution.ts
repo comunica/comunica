@@ -13,22 +13,16 @@ import type { AsyncIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
- * A IQuerySource wrapper that wraps context sources with wrapper that gives source attribution.
- * TODO: Check if still needed
+ * A IQuerySource wrapper that skolemizes outgoing quads and bindings.
  */
 export class QuerySourceAddSourceAttribution implements IQuerySource {
   /**
    * The query source to wrap over.
    */
   public readonly innerSource: IQuerySource;
-  /**
-   * ID of the inner source, see KeysRdfResolveQuadPattern.sourceIds.
-   */
-  public readonly sourceId: string;
 
-  public constructor(innerSource: IQuerySource, sourceId: string) {
+  public constructor(innerSource: IQuerySource) {
     this.innerSource = innerSource;
-    this.sourceId = sourceId;
   }
 
   public async getSelectorShape(context: IActionContext): Promise<FragmentSelectorShape> {

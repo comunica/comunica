@@ -120,7 +120,7 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
 
         if (this.addSourceAttributionToBinding) {
           bindingsJson._sourceAttribution = {
-            value: JSON.stringify(bindings.getContextEntry(KeysBindingContext.sourceBinding)),
+            value: bindings.getContextEntry(KeysBindingContext.sourceBinding),
             type: 'literal',
           };
         }

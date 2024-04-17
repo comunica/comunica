@@ -1,6 +1,7 @@
 /** @jest-environment setup-polly-jest/jest-environment-node */
 
-import { QuerySourceAddSourceAttribution } from '@comunica/actor-context-preprocess-query-source-bindings-source-attribution';
+import { QuerySourceAddSourceAttribution } from
+  '@comunica/actor-context-preprocess-query-source-bindings-source-attribution';
 import { KeysHttpWayback, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { BlankNodeScoped } from '@comunica/data-factory';
 import type { QueryBindings, QueryStringContext } from '@comunica/types';

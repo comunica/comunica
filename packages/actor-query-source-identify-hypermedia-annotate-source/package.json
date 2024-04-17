@@ -1,14 +1,14 @@
 {
-  "name": "@comunica/actor-context-preprocess-query-source-bindings-source-attribution",
+  "name": "@comunica/actor-query-source-identify-hypermedia-annotate-source",
   "version": "3.0.3",
-  "description": "A query-source-bindings-source-attribution context-preprocess actor",
+  "description": "A annotate-source query-source-identify-hypermedia actor",
   "lsd:module": true,
   "license": "MIT",
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-context-preprocess-query-source-bindings-source-attribution"
+    "directory": "packages/actor-query-source-identify-hypermedia-annotate-source"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"
@@ -16,8 +16,8 @@
   "keywords": [
     "comunica",
     "actor",
-    "context-preprocess",
-    "query-source-bindings-source-attribution"
+    "query-source-identify-hypermedia",
+    "annotate-source"
   ],
   "sideEffects": false,
   "main": "lib/index.js",
@@ -37,10 +37,9 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/actor-context-preprocess-query-source-skolemize": "^3.0.1",
-    "@comunica/bindings-factory": "^3.0.1",
-    "@comunica/bus-context-preprocess": "^3.0.1",
-    "@comunica/context-entries": "^3.0.1",
-    "@comunica/core": "^3.0.1"
+    "@comunica/bindings-factory": "^3.0.3",
+    "@comunica/bus-query-source-identify-hypermedia": "^3.0.3",
+    "@comunica/context-entries": "^3.0.3",
+    "@comunica/core": "^3.0.3"
   }
 }
