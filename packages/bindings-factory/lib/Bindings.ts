@@ -11,9 +11,6 @@ import { bindingsToString } from './bindingsToString';
 export class Bindings implements RDF.Bindings {
   public readonly type = 'bindings';
 
-  public context: IActionContext | undefined;
-  private readonly contextMergeHandlers: Record<string, IBindingsContextMergeHandler<any>> | undefined;
-
   private readonly dataFactory: RDF.DataFactory;
   private readonly entries: Map<string, RDF.Term>;
   private readonly contextHolder: IContextHolder | undefined;
@@ -95,6 +92,7 @@ export class Bindings implements RDF.Bindings {
         return false;
       }
     }
+    
     return true;
   }
 

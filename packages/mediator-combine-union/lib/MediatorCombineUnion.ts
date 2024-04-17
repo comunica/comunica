@@ -49,6 +49,7 @@ O extends IActorOutput,
 
     // Run action on all actors.
     const results: O[] = await Promise.all(testResults.map(result => result.actor.runObservable(action)));
+    
     // Return the combined results.
     return this.combiner(results);
   }

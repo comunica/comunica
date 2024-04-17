@@ -27,7 +27,7 @@ const mediatorMergeBindingsContext: any = {
   },
 };
 
-describe('ActorQuerySourceIdentifyHypermediaNone', () => {
+describe('ActorQuerySourceIdentifyHypermediaSourceAttribution', () => {
   let bus: any;
 
   beforeEach(() => {

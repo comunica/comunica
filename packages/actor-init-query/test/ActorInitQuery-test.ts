@@ -93,7 +93,6 @@ describe('ActorInitQuery', () => {
     let actorFixedQueryAndContext: ActorInitQuery;
     let spyResultToString: any;
     let spyQueryOrExplain: any;
-    let mediatorMergeBindingsContext: any;
 
     beforeEach(() => {
       actor = new ActorInitQuery({

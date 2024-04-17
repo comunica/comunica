@@ -11,6 +11,7 @@ describe('ActorInitQueryBase', () => {
   let mediatorSparqlSerialize: any;
   let mediatorHttpInvalidate: any;
   let context: IActionContext;
+  
   const defaultQueryInputFormat = 'sparql';
 
   beforeEach(() => {
