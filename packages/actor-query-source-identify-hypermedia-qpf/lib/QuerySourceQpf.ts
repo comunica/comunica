@@ -423,7 +423,7 @@ export class QuerySourceQpf implements IQuerySource {
   }
 
   public queryQuads(
-    _operation: Algebra.Construct,
+    _operation: Algebra.Operation,
     _context: IActionContext,
   ): AsyncIterator<RDF.Quad> {
     throw new Error('queryQuads is not implemented in QuerySourceQpf');
