@@ -269,7 +269,6 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
 
     // Define if results should be deduplicated
     if (args.distinct) {
-      console.log("distinct"); //TODO
       context[KeysInitQuery.distinct.name] = true;
     }
   }
