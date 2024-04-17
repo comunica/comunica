@@ -137,15 +137,15 @@ describe('ActorRdfUpdateQuadsDestination', () => {
       const q2 = quad(namedNode('http://example.org/2'), namedNode('http://example.org#type'), namedNode('http://example.org#thing'));
 
       const store = new Store();
-      store.addQuads([q1, q2]);
+      store.addQuads([ q1, q2 ]);
       const context: IActionContext = new ActionContext({
         [KeysRdfUpdateQuads.destination.name]: store,
         [KeysQuerySourceIdentify.sourceIds.name]: new Map([[ store, '3' ]]),
       });
 
       const output: IActorRdfUpdateQuadsOutput = await actor.run({
-        quadStreamInsert: new ArrayIterator([q1], { autoStart: false }),
-        quadStreamDelete: new ArrayIterator([q1, q2], { autoStart: false }),
+        quadStreamInsert: new ArrayIterator([ q1 ], { autoStart: false }),
+        quadStreamDelete: new ArrayIterator([ q1, q2 ], { autoStart: false }),
         context,
       });
 
