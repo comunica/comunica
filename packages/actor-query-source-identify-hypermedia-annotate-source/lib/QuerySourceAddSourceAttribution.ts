@@ -1,5 +1,5 @@
 import { Bindings } from '@comunica/bindings-factory';
-import { KeysBindingContext } from '@comunica/context-entries';
+import { KeysMergeBindingsContext } from '@comunica/context-entries';
 import type {
   BindingsStream,
   FragmentSelectorShape,
@@ -42,7 +42,7 @@ export class QuerySourceAddSourceAttribution implements IQuerySource {
       map: (bindings) => {
         // Cast to our own Bindings object
         if (bindings instanceof Bindings) {
-          bindings = bindings.setContextEntry(KeysBindingContext.sourceBinding, this.innerSource.referenceValue);
+          bindings = bindings.setContextEntry(KeysMergeBindingsContext.sourceBinding, this.innerSource.referenceValue);
         }
         return bindings;
       },

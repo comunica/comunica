@@ -1,7 +1,7 @@
 import { PassThrough } from 'node:stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { ActorHttpInvalidateListenable, IInvalidateListener } from '@comunica/bus-http-invalidate';
-import { KeysBindingContext } from '@comunica/context-entries';
+import { KeysMergeBindingsContext } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { BindingsStream, IActionContext, MetadataBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -144,10 +144,10 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
       bindingsStreamWithSource = () => new ArrayIterator<RDF.Bindings>([
         BF.bindings([
           [ DF.variable('k1'), DF.namedNode('v1') ],
-        ]).setContextEntry(KeysBindingContext.sourceBinding, 'S1'),
+        ]).setContextEntry(KeysMergeBindingsContext.sourceBinding, 'S1'),
         BF.bindings([
           [ DF.variable('k2'), DF.namedNode('v2') ],
-        ]).setContextEntry(KeysBindingContext.sourceBinding, 'S2'),
+        ]).setContextEntry(KeysMergeBindingsContext.sourceBinding, 'S2'),
       ]);
       bindingsStreamPartial = () => new ArrayIterator<RDF.Bindings>([
         BF.bindings([
@@ -465,8 +465,8 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
       ))).handle.data)).resolves.toBe(
         `{"head": {"vars":["k1","k2"]},
 "results": { "bindings": [
-{"k1":{"value":"v1","type":"uri"},"_sourceAttribution":{"value":"S1","type":"literal"}},
-{"k2":{"value":"v2","type":"uri"},"_sourceAttribution":{"value":"S2","type":"literal"}}
+{"k1":{"value":"v1","type":"uri"},"_source":{"value":"S1","type":"literal"}},
+{"k2":{"value":"v2","type":"uri"},"_source":{"value":"S2","type":"literal"}}
 ]},
 "metadata": { "httpRequests": 0 }}
 `,
@@ -494,8 +494,8 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
       ))).handle.data)).resolves.toBe(
         `{"head": {"vars":["k1","k2"]},
 "results": { "bindings": [
-{"k1":{"value":"v1","type":"uri"},"_sourceAttribution":{"type":"literal"}},
-{"k2":{"value":"v2","type":"uri"},"_sourceAttribution":{"type":"literal"}}
+{"k1":{"value":"v1","type":"uri"},"_source":{"type":"literal"}},
+{"k2":{"value":"v2","type":"uri"},"_source":{"type":"literal"}}
 ]},
 "metadata": { "httpRequests": 0 }}
 `,

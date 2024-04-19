@@ -1,6 +1,6 @@
 import type { Bindings } from '@comunica/bindings-factory';
 import { BindingsFactory } from '@comunica/bindings-factory';
-import { KeysBindingContext } from '@comunica/context-entries';
+import { KeysMergeBindingsContext } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
 import type { IQuerySource } from '@comunica/types';
@@ -74,7 +74,8 @@ describe('QuerySourcAddSourceAttribution', () => {
     const opts: any = {};
     const sourceAttributionBindingsStream = source.queryBindings(op, context, opts);
     const producedBindings = await sourceAttributionBindingsStream.toArray();
-    const bindingSources = producedBindings.map(x => (<Bindings> x).getContextEntry(KeysBindingContext.sourceBinding));
+    const bindingSources = producedBindings.map(x => (<Bindings> x)
+      .getContextEntry(KeysMergeBindingsContext.sourceBinding));
     expect(bindingSources).toEqual([ 'REF', 'REF', 'REF' ]);
   });
 

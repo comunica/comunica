@@ -24,14 +24,13 @@ export class ActorQuerySourceIdentifyHypermediaAnnotateSource extends ActorQuery
   public async testMetadata(
     action: IActionQuerySourceIdentifyHypermedia,
   ): Promise<IActorQuerySourceIdentifyHypermediaTest> {
-    if (_action.context.get(KEY_CONTEXT_WRAPPED)) {
+    if (action.context.get(KEY_CONTEXT_WRAPPED)) {
       throw new Error('Unable to wrap link queues multiple times');
     }
     return { filterFactor: 0 };
   }
 
   public async run(action: IActionQuerySourceIdentifyHypermedia): Promise<IActorQuerySourceIdentifyHypermediaOutput> {
-    this.logInfo(action.context, `Wrapped source with provenance: ${action.url}`);
     const context = action.context.set(KEY_CONTEXT_WRAPPED, true);
     action.context = context;
 

@@ -5,7 +5,7 @@ import type {
   IActorQueryResultSerializeOutput,
 } from '@comunica/bus-query-result-serialize';
 import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-result-serialize';
-import { KeysBindingContext } from '@comunica/context-entries';
+import { KeysMergeBindingsContext } from '@comunica/context-entries';
 import type {
   IActionContext,
   IQueryOperationResultBindings,
@@ -119,8 +119,8 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
           .map(([ key, value ]) => [ key.value, ActorQueryResultSerializeSparqlJson.bindingToJsonBindings(value) ]));
 
         if (this.addSourceAttributionToBinding) {
-          bindingsJson._sourceAttribution = {
-            value: bindings.getContextEntry(KeysBindingContext.sourceBinding),
+          bindingsJson._source = {
+            value: bindings.getContextEntry(KeysMergeBindingsContext.sourceBinding),
             type: 'literal',
           };
         }
