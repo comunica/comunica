@@ -121,7 +121,7 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
         if (this.addSourceAttributionToBinding) {
           bindingsJson._source = {
             value: bindings.getContextEntry(KeysMergeBindingsContext.sourceBinding),
-            type: 'literal',
+            type: 'IRI',
           };
         }
 

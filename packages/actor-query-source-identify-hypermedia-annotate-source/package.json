@@ -42,7 +42,7 @@
     "@comunica/bus-query-source-identify-hypermedia": "^3.0.3",
     "@comunica/context-entries": "^3.0.3",
     "@comunica/core": "^3.0.3",
-    "@comunica/types": "^3.03",
+    "@comunica/types": "^3.0.3",
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0",
     "sparqlalgebrajs": "^4.3.4"
