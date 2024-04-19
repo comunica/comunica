@@ -281,7 +281,7 @@ export const KeysRdfUpdateQuads = {
   destination: new ActionContextKey<IDataDestination>('@comunica/bus-rdf-update-quads:destination'),
 };
 
-export const KeysBindingContext = {
+export const KeysMergeBindingsContext = {
   /**
    * The data source of the binding
    */

@@ -22,7 +22,7 @@ export class ActorQuerySourceIdentifyHypermediaAnnotateSource extends ActorQuery
   }
 
   public async testMetadata(
-    _action: IActionQuerySourceIdentifyHypermedia,
+    action: IActionQuerySourceIdentifyHypermedia,
   ): Promise<IActorQuerySourceIdentifyHypermediaTest> {
     if (_action.context.get(KEY_CONTEXT_WRAPPED)) {
       throw new Error('Unable to wrap link queues multiple times');
@@ -39,7 +39,7 @@ export class ActorQuerySourceIdentifyHypermediaAnnotateSource extends ActorQuery
     source.referenceValue = action.url;
 
     const wrappedSource = new QuerySourceAddSourceAttribution(source);
-    wrappedSource.toString = () => `QuerySourceWrappedAnnotateSource(${action.url})`;
+    wrappedSource.toString = () => `QuerySourceAddSourceAttribution(${action.url})`;
     return { source: wrappedSource, dataset };
   }
 }
