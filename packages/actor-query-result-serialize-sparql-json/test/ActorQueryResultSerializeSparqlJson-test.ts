@@ -465,8 +465,8 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
       ))).handle.data)).resolves.toBe(
         `{"head": {"vars":["k1","k2"]},
 "results": { "bindings": [
-{"k1":{"value":"v1","type":"uri"},"_source":{"value":"S1","type":"literal"}},
-{"k2":{"value":"v2","type":"uri"},"_source":{"value":"S2","type":"literal"}}
+{"k1":{"value":"v1","type":"uri"},"_source":{"value":"S1","type":"uri"}},
+{"k2":{"value":"v2","type":"uri"},"_source":{"value":"S2","type":"uri"}}
 ]},
 "metadata": { "httpRequests": 0 }}
 `,
@@ -494,8 +494,8 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
       ))).handle.data)).resolves.toBe(
         `{"head": {"vars":["k1","k2"]},
 "results": { "bindings": [
-{"k1":{"value":"v1","type":"uri"},"_source":{"type":"literal"}},
-{"k2":{"value":"v2","type":"uri"},"_source":{"type":"literal"}}
+{"k1":{"value":"v1","type":"uri"},"_source":{"type":"uri"}},
+{"k2":{"value":"v2","type":"uri"},"_source":{"type":"uri"}}
 ]},
 "metadata": { "httpRequests": 0 }}
 `,
