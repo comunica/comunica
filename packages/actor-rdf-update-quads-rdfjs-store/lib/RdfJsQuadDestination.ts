@@ -32,6 +32,10 @@ export class RdfJsQuadDestination implements IQuadDestination {
     return this.promisifyEventEmitter(this.store.import(quads));
   }
 
+  public update(quadStreamInsert: AsyncIterator<RDF.Quad>, quadStreamDelete: AsyncIterator<RDF.Quad>): Promise<void> {
+    return this.delete(quadStreamDelete).then(() => this.insert(quadStreamInsert));
+  }
+
   public async deleteGraphs(
     graphs: RDF.DefaultGraph | 'NAMED' | 'ALL' | RDF.NamedNode[],
     _requireExistence: boolean,

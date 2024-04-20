@@ -119,6 +119,39 @@ describe('QuadDestinationSparql', () => {
     });
   });
 
+  describe('update', () => {
+    it('should handle a valid update', async() => {
+      await destination.update(
+        new ArrayIterator([
+          DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
+          DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g2')),
+        ]),
+        new ArrayIterator([
+          DF.quad(DF.namedNode('ex:sd1'), DF.namedNode('ex:pd1'), DF.namedNode('ex:od1')),
+          DF.quad(DF.namedNode('ex:sd2'), DF.namedNode('ex:pd2'), DF.namedNode('ex:od2'), DF.namedNode('ex:gd2')),
+        ]),
+      );
+
+      expect(mediatorHttp.mediate).toHaveBeenCalledWith({
+        context,
+        init: {
+          headers: { 'content-type': 'application/sparql-update' },
+          method: 'POST',
+          body: `DELETE DATA {
+  <ex:sd1> <ex:pd1> <ex:od1> .
+  GRAPH <ex:gd2> { <ex:sd2> <ex:pd2> <ex:od2> . }
+} ;
+INSERT DATA {
+  <ex:s1> <ex:p1> <ex:o1> .
+  GRAPH <ex:g2> { <ex:s2> <ex:p2> <ex:o2> . }
+}`,
+          signal: expect.anything(),
+        },
+        input: 'abc',
+      });
+    });
+  });
+
   describe('deleteGraphs', () => {
     it('should delete the default graph', async() => {
       await destination.deleteGraphs(DF.defaultGraph(), true, true);

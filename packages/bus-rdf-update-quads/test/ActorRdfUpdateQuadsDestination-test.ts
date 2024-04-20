@@ -33,10 +33,7 @@ describe('ActorRdfUpdateQuadsDestination', () => {
 
   describe('An ActorRdfUpdateQuadsDestination instance', () => {
     const actor = new (<any> ActorRdfUpdateQuadsDestination)({ name: 'actor', bus });
-    actor.getDestination = () => ({
-      insert: () => Promise.resolve(),
-      delete: () => Promise.resolve(),
-    });
+    actor.getDestination = () => new MockDestination();
 
     describe('getContextDestinationUrl', () => {
       it('should return undefined when no source is available', () => {
@@ -61,12 +58,34 @@ describe('ActorRdfUpdateQuadsDestination', () => {
     });
 
     it('should run without streams', async() => {
+      actor.getDestination = () => new MockDestination(false, false, false);
       await actor.run({ context: new ActionContext() }).then(async(output: any) => {
         await expect(output.execute()).resolves.toBeUndefined();
       });
     });
 
-    it('should run with streams', async() => {
+    it('should run with insert stream', async() => {
+      actor.getDestination = () => new MockDestination(true, false, false);
+      await actor.run({
+        quadStreamInsert: new ArrayIterator([]),
+        context: new ActionContext(),
+      }).then(async(output: any) => {
+        await expect(output.execute()).resolves.toBeUndefined();
+      });
+    });
+
+    it('should run with delete stream', async() => {
+      actor.getDestination = () => new MockDestination(false, true, false);
+      await actor.run({
+        quadStreamDelete: new ArrayIterator([]),
+        context: new ActionContext(),
+      }).then(async(output: any) => {
+        await expect(output.execute()).resolves.toBeUndefined();
+      });
+    });
+
+    it('should run with insert and streams', async() => {
+      actor.getDestination = () => new MockDestination(false, false, true);
       await actor.run({
         quadStreamInsert: new ArrayIterator([]),
         quadStreamDelete: new ArrayIterator([]),
@@ -131,30 +150,35 @@ describe('ActorRdfUpdateQuadsDestination', () => {
 
       expect(store.getQuads(null, null, null, null)).toEqual([ skolemized ]);
     });
-
-    it('should not delete quads that are being inserted', async() => {
-      const q1 = quad(namedNode('http://example.org/1'), namedNode('http://example.org#type'), namedNode('http://example.org#thing'));
-      const q2 = quad(namedNode('http://example.org/2'), namedNode('http://example.org#type'), namedNode('http://example.org#thing'));
-
-      const store = new Store();
-      store.addQuads([ q1, q2 ]);
-      const context: IActionContext = new ActionContext({
-        [KeysRdfUpdateQuads.destination.name]: store,
-        [KeysQuerySourceIdentify.sourceIds.name]: new Map([[ store, '3' ]]),
-      });
-
-      const output: IActorRdfUpdateQuadsOutput = await actor.run({
-        quadStreamInsert: new ArrayIterator([ q1 ], { autoStart: false }),
-        quadStreamDelete: new ArrayIterator([ q1, q2 ], { autoStart: false }),
-        context,
-      });
-
-      await output.execute();
-
-      expect(store.getQuads(null, null, null, null)).toEqual([ q1 ]);
-    });
   });
 });
+
+/**
+ * A quad destination that mocks the insertion, deletion, and updating of quads.
+ */
+class MockDestination {
+  private readonly resolveInsert: boolean;
+  private readonly resolveDelete: boolean;
+  private readonly resolveUpdate: boolean;
+
+  public constructor(resolveInsert = true, resolveDelete = true, resolveUpdate = true) {
+    this.resolveInsert = resolveInsert;
+    this.resolveDelete = resolveDelete;
+    this.resolveUpdate = resolveUpdate;
+  }
+
+  public delete(_quads: AsyncIterator<RDF.Quad>): Promise<void> {
+    return this.resolveDelete ? Promise.resolve() : Promise.reject(new Error('delete error'));
+  }
+
+  public insert(_quads: AsyncIterator<RDF.Quad>): Promise<void> {
+    return this.resolveInsert ? Promise.resolve() : Promise.reject(new Error('insert error'));
+  }
+
+  public update(_quadStreamInsert: AsyncIterator<RDF.Quad>, _quadStreamDelete: AsyncIterator<RDF.Quad>): Promise<void> {
+    return this.resolveUpdate ? Promise.resolve() : Promise.reject(new Error('update error'));
+  }
+}
 
 /**
  * A quad destination that wraps around an {@link RDF.Store}.
@@ -179,5 +203,9 @@ class RdfJsQuadDestination {
 
   public insert(quads: AsyncIterator<RDF.Quad>): Promise<void> {
     return this.promisifyEventEmitter(this.store.import(<any> quads));
+  }
+
+  public update(quadStreamInsert: AsyncIterator<RDF.Quad>, quadStreamDelete: AsyncIterator<RDF.Quad>): Promise<void> {
+    return this.delete(quadStreamDelete).then(() => this.insert(quadStreamInsert));
   }
 }

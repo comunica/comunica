@@ -140,6 +140,40 @@ describe('QuadDestinationPatchSparqlUpdate', () => {
     });
   });
 
+  describe('update', () => {
+    it('should handle a valid update', async() => {
+      await destination.update(
+        fromArray<RDF.Quad>([
+          DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
+          DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g2')),
+        ]),
+        fromArray<RDF.Quad>([
+          DF.quad(DF.namedNode('ex:sd1'), DF.namedNode('ex:pd1'), DF.namedNode('ex:od1')),
+          DF.quad(DF.namedNode('ex:sd2'), DF.namedNode('ex:pd2'), DF.namedNode('ex:od2'), DF.namedNode('ex:gd2')),
+        ]),
+      );
+
+      expect(mediatorHttp.mediate).toHaveBeenCalledWith({
+        context,
+        init: {
+          headers: new Headers({ 'content-type': 'application/sparql-update' }),
+          method: 'PATCH',
+          body: expect.anything(),
+        },
+        input: 'abc',
+      });
+      await expect(stringifyStream(ActorHttp.toNodeReadable(mediatorHttp.mediate.mock.calls[0][0].init.body))).resolves
+        .toBe(`DELETE DATA {
+  <ex:sd1> <ex:pd1> <ex:od1> .
+  GRAPH <ex:gd2> { <ex:sd2> <ex:pd2> <ex:od2> . }
+} ;
+INSERT DATA {
+  <ex:s1> <ex:p1> <ex:o1> .
+  GRAPH <ex:g2> { <ex:s2> <ex:p2> <ex:o2> . }
+}`);
+    });
+  });
+
   describe('deleteGraphs', () => {
     it('should always throw', async() => {
       await expect(destination.deleteGraphs('ALL', true, true))

@@ -22,6 +22,12 @@ export interface IQuadDestination {
    */
   delete: (quads: AsyncIterator<RDF.Quad>) => Promise<void>;
   /**
+   * Updates destination with quad stream to insert and quad stream to delete.
+   * @param quadStreamInsert The quads to insert.
+   * @param quadStreamDelete The quads to delete.
+   */
+  update: (quadStreamInsert: AsyncIterator<RDF.Quad>, quadStreamDelete: AsyncIterator<RDF.Quad>) => Promise<void>;
+  /**
    * Graphs that should be deleted.
    * @param graphs The graph(s) in which all triples must be removed.
    * @param requireExistence If true, and any of the graphs does not exist, an error must be emitted.
