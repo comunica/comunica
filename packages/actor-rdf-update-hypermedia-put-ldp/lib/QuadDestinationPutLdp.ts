@@ -46,7 +46,7 @@ export class QuadDestinationPutLdp implements IQuadDestination {
     throw new Error(`Put-based LDP destinations don't support deletions`);
   }
 
-  public update(_quadsToInsert: AsyncIterator<RDF.Quad>, _quadsToDelete: AsyncIterator<RDF.Quad>): Promise<void> {
+  public async update(_quadsToInsert: AsyncIterator<RDF.Quad>, _quadsToDelete: AsyncIterator<RDF.Quad>): Promise<void> {
     throw new Error(`Put-based LDP destinations don't support deletions`);
   }
 
