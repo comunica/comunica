@@ -1,10 +1,6 @@
-import type {
-  MediatorBindingsAggregatorFactory,
-} from '@comunica/bus-bindings-aggeregator-factory';
 import type { MediatorFunctions,
   MediatorFunctionsUnsafe } from '@comunica/bus-functions';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
-import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { IExpressionEvaluator } from '@comunica/expression-evaluator';
@@ -23,16 +19,16 @@ import type { Algebra as Alg } from 'sparqlalgebrajs';
  */
 export abstract class ActorExpressionEvaluatorFactory extends
   Actor<IActionExpressionEvaluatorFactory, IActorTest, IActorExpressionEvaluatorFactoryOutput> {
-  public mediatorQueryOperation: MediatorQueryOperation;
-  public mediatorBindingsAggregatorFactory: MediatorBindingsAggregatorFactory;
-  public mediatorTermComparatorFactory: MediatorTermComparatorFactory;
-  public mediatorFunctions: MediatorFunctions;
+  protected mediatorQueryOperation: MediatorQueryOperation;
+  protected mediatorFunctions: MediatorFunctions;
 
   /**
   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
   */
   public constructor(args: IActorExpressionEvaluatorFactoryArgs) {
     super(args);
+    this.mediatorQueryOperation = args.mediatorQueryOperation;
+    this.mediatorFunctions = <MediatorFunctions> args.mediatorFunctions;
   }
 }
 
@@ -45,8 +41,6 @@ export interface IActorExpressionEvaluatorFactoryOutput extends IActorOutput, IE
 export interface IActorExpressionEvaluatorFactoryArgs extends IActorArgs<
 IActionExpressionEvaluatorFactory, IActorTest, IActorExpressionEvaluatorFactoryOutput> {
   mediatorQueryOperation: MediatorQueryOperation;
-  mediatorBindingsAggregatorFactory: MediatorBindingsAggregatorFactory;
-  mediatorTermComparatorFactory: MediatorTermComparatorFactory;
   mediatorFunctions: MediatorFunctionsUnsafe;
 }
 

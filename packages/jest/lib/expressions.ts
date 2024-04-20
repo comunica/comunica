@@ -83,8 +83,12 @@ export function getMockInternalEvaluator(factory?: ActorExpressionEvaluatorFacto
   const defFactory = factory ?? getMockEEFactory();
   return new InternalEvaluator(
     prepareEvaluatorActionContext(context ?? getMockEEActionContext()),
-    defFactory.mediatorFunctions,
-    defFactory.mediatorQueryOperation,
+    getMockMediatorFunctions(),
+    <any> {
+      async mediate(arg: any) {
+        throw new Error('mediatorQueryOperation mock of mockEEFactory not implemented');
+      },
+    },
   );
 }
 
@@ -103,16 +107,6 @@ export function getMockEEFactory({ mediatorQueryOperation,
     mediatorQueryOperation: mediatorQueryOperation || <any> {
       async mediate(arg: any) {
         throw new Error('mediatorQueryOperation mock of mockEEFactory not implemented');
-      },
-    },
-    mediatorBindingsAggregatorFactory: mediatorBindingsAggregatorFactory || <any> {
-      async mediate(arg: any) {
-        throw new Error('mediatorBindingsAggregatorFactory mock of mockEEFactory not implemented');
-      },
-    },
-    mediatorTermComparatorFactory: mediatorTermComparatorFactory || <any> {
-      async mediate(arg: any) {
-        throw new Error('mediatorTermComparatorFactory mock of mockEEFactory not implemented');
       },
     },
     mediatorFunctions: mediatorFunctions || getMockMediatorFunctions(),

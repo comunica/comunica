@@ -38,4 +38,6 @@ After installing, this package can be added to your engine's configuration as fo
 
 TODO: fill in parameters (this section can be removed if there are none)
 
-* `someParam`: Description of the param
+* `mediatorQueryOperation`: a MediatorQueryOperation.
+* `mediatorBindingsAggregatorFactory`: a MediatorBindingsAggregatorFactory, required to evaluate aggregate expressions.
+* `mediatorFunctions`: a MediatorFunctions, required to evaluate function expressions.

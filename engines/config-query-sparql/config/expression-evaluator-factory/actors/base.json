@@ -11,8 +11,6 @@
       "@id": "urn:comunica:default:expression-evaluator-factory/actors#base",
       "@type": "ActorExpressionEvaluatorFactoryBase",
       "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
-      "mediatorBindingsAggregatorFactory": { "@id": "urn:comunica:default:bindings-aggregator-factory/mediators#main" },
-      "mediatorTermComparatorFactory": { "@id": "urn:comunica:default:term-comparator-factory/mediators#main" },
       "mediatorFunctions": { "@id": "urn:comunica:default:functions/mediators#main" }
     }
   ]
