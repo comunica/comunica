@@ -12,8 +12,7 @@
     "packages/data-factory",
     "packages/jest",
     "packages/packager",
-    "packages/runner-cli",
-    "packages/expression-evaluator"
+    "packages/runner-cli"
   ],
   "ignoreComponents": [
     "Error",
@@ -45,8 +44,6 @@
     "Response",
     "RequestInfo",
     "RequestInit",
-
-
     "IQueryableResultStream",
     "IQueryableResultBindings",
     "IQueryableResultQuads",
@@ -55,17 +52,14 @@
     "PathVariableObjectIterator",
     "ClosableTransformIterator",
     "MetadataValidationState",
-
     "RDF.Stream",
     "Omit",
     "Partial",
     "MediateMediaTyped",
     "IActorDereferenceOutput",
     "Factory",
-
     "UriTemplate",
     "LRUCache",
-
     "AggregateEvaluator",
     "ExpressionEvaluator",
     "AggregateEvaluator",
@@ -75,7 +69,20 @@
     "typedLiteral",
     "TypeAlias",
     "isSubTypeOf",
-    "TermTransformer"
+    "TermTransformer",
+    "TermTransformer",
+    "ExpressionError",
+    "isExpressionError",
+    "EmptyAggregateError",
+    "typedLiteral",
+    "TypeURL",
+    "TypeAlias",
+    "RegularOperator",
+    "isSubTypeOf",
+    "IInternalEvaluator",
+    "FunctionApplication",
+    "IEvalContext",
+    "IExpressionEvaluator"
   ],
   "modulePrefix": {
     "@comunica/actor-query-operation-service": "caqoser",

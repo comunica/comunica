@@ -1,6 +1,8 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
-import type { IBindingsAggregator } from '@comunica/bus-bindings-aggeregator-factory';
-import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
+import type {
+  IBindingsAggregator,
+  MediatorBindingsAggregatorFactory,
+} from '@comunica/bus-bindings-aggeregator-factory';
 import type { HashFunction } from '@comunica/bus-hash-bindings';
 import type { Bindings, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -43,7 +45,7 @@ export class GroupsState {
   public constructor(
     private readonly hashFunction: HashFunction,
     private readonly pattern: Algebra.Group,
-    private readonly expressionEvaluatorFactory: ActorExpressionEvaluatorFactory,
+    private readonly mediatorBindingsAggregatorFactory: MediatorBindingsAggregatorFactory,
     private readonly context: IActionContext,
   ) {
     this.groups = new Map();
@@ -86,7 +88,8 @@ export class GroupsState {
         const aggregators: Record<string, IBindingsAggregator> = {};
         await Promise.all(this.pattern.aggregates.map(async aggregate => {
           const key = aggregate.variable.value;
-          aggregators[key] = await this.expressionEvaluatorFactory.createAggregator(aggregate, this.context);
+          aggregators[key] = await this.mediatorBindingsAggregatorFactory
+            .mediate({ expr: aggregate, context: this.context });
           await aggregators[key].putBindings(bindings);
         }));
 
@@ -158,7 +161,8 @@ export class GroupsState {
       const single: [RDF.Variable, RDF.Term][] = [];
       await Promise.all(this.pattern.aggregates.map(async aggregate => {
         const key = aggregate.variable;
-        const aggregator = await this.expressionEvaluatorFactory.createAggregator(aggregate, this.context);
+        const aggregator = await this.mediatorBindingsAggregatorFactory
+          .mediate({ expr: aggregate, context: this.context });
         const value = await aggregator.result();
         if (value !== undefined) {
           single.push([ key, value ]);

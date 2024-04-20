@@ -3,6 +3,7 @@
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-term-comparator-factory-inequality-functions-based.svg)](https://www.npmjs.com/package/@comunica/actor-term-comparator-factory-inequality-functions-based)
 
 A comunica Inequality Functions Based Term Comparator Factory Actor.
+The actor orders types based on the inequality functions (`<` and `=`) of the expression evaluator.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).

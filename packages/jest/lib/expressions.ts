@@ -1,6 +1,5 @@
 import {
   ActorExpressionEvaluatorFactoryBase,
-  prepareEvaluatorActionContext,
 } from '@comunica/actor-expression-evaluator-factory-base';
 import { InternalEvaluator } from '@comunica/actor-expression-evaluator-factory-base/lib/InternalEvaluator';
 import { BindingsFactory } from '@comunica/bindings-factory';
@@ -11,6 +10,7 @@ import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import { prepareEvaluatorActionContext } from '@comunica/expression-evaluator/lib/util/Context';
 import type { GeneralSuperTypeDict, IActionContext, ISuperTypeProvider } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';

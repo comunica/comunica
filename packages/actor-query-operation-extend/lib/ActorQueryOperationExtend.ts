@@ -25,7 +25,7 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
   public async testOperation(operation: Algebra.Extend, context: IActionContext): Promise<IActorTest> {
     // Will throw error for unsupported operations
     const _ = Boolean(
-      (await this.expressionEvaluatorFactory.run({ algExpr: operation.expression, context })).expressionEvaluator,
+      await this.expressionEvaluatorFactory.run({ algExpr: operation.expression, context }),
     );
     return true;
   }
@@ -43,8 +43,8 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
       throw new Error(`Illegal binding to variable '${variable.value}' that has already been bound`);
     }
 
-    const evaluator = (await this.expressionEvaluatorFactory
-      .run({ algExpr: operation.expression, context })).expressionEvaluator;
+    const evaluator = await this.expressionEvaluatorFactory
+      .run({ algExpr: operation.expression, context });
 
     // Transform the stream by extending each Bindings with the expression result
     const transform = async(bindings: Bindings, next: any, push: (pusbBindings: Bindings) => void): Promise<void> => {

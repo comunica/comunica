@@ -1,6 +1,3 @@
-import {
-  prepareEvaluatorActionContext,
-} from '@comunica/actor-expression-evaluator-factory-base';
 import { InternalEvaluator } from '@comunica/actor-expression-evaluator-factory-base/lib/InternalEvaluator';
 import type { MediatorFunctions } from '@comunica/bus-functions';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
@@ -12,6 +9,7 @@ import type {
 import { ActorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import type { IActorTest } from '@comunica/core';
 import { RegularOperator } from '@comunica/expression-evaluator';
+import { prepareEvaluatorActionContext } from '@comunica/expression-evaluator/lib/util/Context';
 import { InequalityFunctionBasedComparator } from './InequalityFunctionBasedComparator';
 
 /**
@@ -35,9 +33,10 @@ export class ActorTermComparatorFactoryInequalityFunctionsBased extends ActorTer
    * @param context
    */
   public async run({ context }: IActionTermComparatorFactory): Promise<IActorTermComparatorFactoryOutput> {
+    context = prepareEvaluatorActionContext(context);
     return new InequalityFunctionBasedComparator(
       new InternalEvaluator(
-        prepareEvaluatorActionContext(context),
+        context,
         this.mediatorFunctions,
         this.mediatorQueryOperation,
       ),

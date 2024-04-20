@@ -6,23 +6,23 @@ import type {
 import {
   ActorBindingsAggregatorFactory,
 } from '@comunica/bus-bindings-aggeregator-factory';
-import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
+import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import type { IActorTest } from '@comunica/core';
 import { MinAggregator } from './MinAggregator';
 
 export interface IActorBindingsAggregatorFactoryMinArgs extends IActorBindingsAggregatorFactoryArgs {
-  factory: ActorExpressionEvaluatorFactory;
+  mediatorTermComparatorFactory: MediatorTermComparatorFactory;
 }
 
 /**
  * A comunica Min Expression Evaluator Aggregate Actor.
  */
 export class ActorBindingsAggregatorFactoryMin extends ActorBindingsAggregatorFactory {
-  private readonly factory: ActorExpressionEvaluatorFactory;
+  private readonly mediatorTermComparatorFactory: MediatorTermComparatorFactory;
 
   public constructor(args: IActorBindingsAggregatorFactoryMinArgs) {
     super(args);
-    this.factory = args.factory;
+    this.mediatorTermComparatorFactory = args.mediatorTermComparatorFactory;
   }
 
   public async test(action: IActionBindingsAggregatorFactory): Promise<IActorTest> {
@@ -34,13 +34,11 @@ export class ActorBindingsAggregatorFactoryMin extends ActorBindingsAggregatorFa
 
   public async run({ context, expr }: IActionBindingsAggregatorFactory):
   Promise<IActorBindingsAggregatorFactoryOutput> {
-    return {
-      aggregator: new MinAggregator(
-        (await this.factory.run({ algExpr: expr.expression, context })).expressionEvaluator,
-        expr.distinct,
-        await this.factory.createTermComparator({ context }),
-      ),
-    };
+    return new MinAggregator(
+      await this.mediatorExpressionEvaluatorFactory.mediate({ algExpr: expr.expression, context }),
+      expr.distinct,
+      await this.mediatorTermComparatorFactory.mediate({ context }),
+    );
   }
 }
 

@@ -23,9 +23,8 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
 
   public async testOperation(operation: Algebra.Filter, context: IActionContext): Promise<IActorTest> {
     // Will throw error for unsupported operators
-    const _ = (await this.expressionEvaluatorFactory.run({ algExpr: operation.expression,
-      context }))
-      .expressionEvaluator;
+    const _ = await this.expressionEvaluatorFactory.run({ algExpr: operation.expression,
+      context });
     return true;
   }
 
@@ -35,8 +34,8 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
     const output = ActorQueryOperation.getSafeBindings(outputRaw);
     ActorQueryOperation.validateQueryOutput(output, 'bindings');
 
-    const evaluator = (await this.expressionEvaluatorFactory
-      .run({ algExpr: operation.expression, context })).expressionEvaluator;
+    const evaluator = await this.expressionEvaluatorFactory
+      .run({ algExpr: operation.expression, context });
 
     const transform = async(item: Bindings, next: any, push: (bindings: Bindings) => void): Promise<void> => {
       try {

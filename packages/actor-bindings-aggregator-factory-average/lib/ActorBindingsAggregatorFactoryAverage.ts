@@ -4,23 +4,24 @@ import type {
 } from '@comunica/bus-bindings-aggeregator-factory';
 import { ActorBindingsAggregatorFactory } from '@comunica/bus-bindings-aggeregator-factory';
 
-import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
+import type { MediatorFunctions, MediatorFunctionsUnsafe } from '@comunica/bus-functions';
 import type { IActorTest } from '@comunica/core';
 import { RegularOperator } from '@comunica/expression-evaluator';
 import { AverageAggregator } from './AverageAggregator';
 
 export interface IActorBindingsAggregatorFactoryAverageArgs extends IActorBindingsAggregatorFactoryArgs {
-  factory: ActorExpressionEvaluatorFactory;
+  mediatorFunctions: MediatorFunctionsUnsafe;
 }
 
 /**
  * A comunica Average Expression Evaluator Aggregate Actor.
  */
 export class ActorBindingsAggregatorFactoryAverage extends ActorBindingsAggregatorFactory {
-  private readonly factory: ActorExpressionEvaluatorFactory;
+  private readonly mediatorFunctions: MediatorFunctions;
+
   public constructor(args: IActorBindingsAggregatorFactoryAverageArgs) {
     super(args);
-    this.factory = args.factory;
+    this.mediatorFunctions = <MediatorFunctions>args.mediatorFunctions;
   }
 
   public async test(action: IActionBindingsAggregatorFactory): Promise<IActorTest> {
@@ -32,22 +33,20 @@ export class ActorBindingsAggregatorFactoryAverage extends ActorBindingsAggregat
 
   public async run({ context, expr }: IActionBindingsAggregatorFactory):
   Promise<IActorBindingsAggregatorFactoryOutput> {
-    return {
-      aggregator: new AverageAggregator(
-        (await this.factory.run({ algExpr: expr.expression, context })).expressionEvaluator,
-        expr.distinct,
-        await this.factory.createFunction({
-          functionName: RegularOperator.ADDITION,
-          context,
-          requireTermExpression: true,
-        }),
-        await this.factory.createFunction({
-          functionName: RegularOperator.DIVISION,
-          context,
-          requireTermExpression: true,
-        }),
-      ),
-    };
+    return new AverageAggregator(
+      await this.mediatorExpressionEvaluatorFactory.mediate({ algExpr: expr.expression, context }),
+      expr.distinct,
+      await this.mediatorFunctions.mediate({
+        functionName: RegularOperator.ADDITION,
+        context,
+        requireTermExpression: true,
+      }),
+      await this.mediatorFunctions.mediate({
+        functionName: RegularOperator.DIVISION,
+        context,
+        requireTermExpression: true,
+      }),
+    );
   }
 }
 

@@ -9,6 +9,7 @@ import {
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import type * as C from '@comunica/expression-evaluator/lib/util/Consts';
+import { prepareEvaluatorActionContext } from '@comunica/expression-evaluator/lib/util/Context';
 import type { AsyncExtensionFunctionCreator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -31,6 +32,7 @@ export class ActorFunctionsWrapperAll extends ActorFunctions {
 
   public async run<T extends IActionFunctions>({ functionName, context }: T):
   Promise<T extends { requireTermExpression: true } ? IActorFunctionsOutputTerm : IActorFunctionsOutput> {
+    context = prepareEvaluatorActionContext(context);
     const res: IExpressionFunction | undefined = {
       ...regularFunctions,
       ...specialFunctions,

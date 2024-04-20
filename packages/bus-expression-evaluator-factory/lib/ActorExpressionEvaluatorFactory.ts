@@ -1,18 +1,13 @@
 import type {
-  IBindingsAggregator,
   MediatorBindingsAggregatorFactory,
 } from '@comunica/bus-bindings-aggeregator-factory';
-import type { IActionFunctions,
-  IActorFunctionsOutput,
-  IActorFunctionsOutputTerm,
-  MediatorFunctions,
+import type { MediatorFunctions,
   MediatorFunctionsUnsafe } from '@comunica/bus-functions';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
-import type { ITermComparator, MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
+import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { IExpressionEvaluator } from '@comunica/expression-evaluator';
-import type { IActionContext } from '@comunica/types';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 
 /**
@@ -39,24 +34,13 @@ export abstract class ActorExpressionEvaluatorFactory extends
   public constructor(args: IActorExpressionEvaluatorFactoryArgs) {
     super(args);
   }
-
-  public abstract createFunction<T extends IActionFunctions>(action: T):
-  Promise<T extends { requireTermExpression: true } ? IActorFunctionsOutputTerm : IActorFunctionsOutput>;
-
-  public abstract createTermComparator(action: IAction):
-  Promise<ITermComparator>;
-
-  public abstract createAggregator(algExpr: Alg.AggregateExpression, context: IActionContext):
-  Promise<IBindingsAggregator>;
 }
 
 export interface IActionExpressionEvaluatorFactory extends IAction {
   algExpr: Alg.Expression;
 }
 
-export interface IActorExpressionEvaluatorFactoryOutput extends IActorOutput {
-  expressionEvaluator: IExpressionEvaluator;
-}
+export interface IActorExpressionEvaluatorFactoryOutput extends IActorOutput, IExpressionEvaluator {}
 
 export interface IActorExpressionEvaluatorFactoryArgs extends IActorArgs<
 IActionExpressionEvaluatorFactory, IActorTest, IActorExpressionEvaluatorFactoryOutput> {

@@ -31,7 +31,8 @@ export abstract class ActorFunctions extends
 export interface IExpressionFunction {
   apply: (evalContext: IEvalContext) => Promise<E.TermExpression>;
   /**
-   * Makes you able to error in the termTransformer.
+   * The arity of the function will be checked when parsing and preparing a function.
+   * This allows us to check if the query is correct even before we process any bindings.
    */
   checkArity: (args: E.Expression[]) => boolean;
 }
