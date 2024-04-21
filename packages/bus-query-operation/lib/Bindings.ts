@@ -151,7 +151,21 @@ export function materializeOperation(
         };
       }
 
-      // Find which projected variables are present in the InitialBindings
+      // Only include non-projected variables in the sub-bindings that will be passed down recursively.
+      // This will result in non-projected variables being replaced with their InitialBindings values.
+      let subBindings = bindingsFactory.fromBindings(bindings);
+      bindings.forEach((_, key) => {
+        for (let curVariable of op.variables) {
+          if (termToString(curVariable) === termToString(key)) {
+            subBindings = subBindings.delete(key);
+            break;
+          }
+        }
+      });
+
+      // Find projected variables which are present in the InitialBindings
+      // This will result in projected variables being handled via a values clause.
+      const values: Algebra.Operation[] = [];
       const overlappingVariables: RDF.Variable[] = [];
       const overlappingBindings: Record<string, RDF.Literal | RDF.NamedNode>[] = [];
       for (const currentVariable of op.variables) {
@@ -161,27 +175,20 @@ export function materializeOperation(
 
           overlappingVariables.push(currentVariable);
           overlappingBindings.push(newBinding);
+          values.push(factory.createValues([currentVariable], [newBinding]));
         }
       }
 
-      // Only include projected variables in the sub-bindings that will be passed down recursively.
-      // If we don't do this, we may be binding variables that may have the same label, but are not considered equal.
-
-      let recursionResult = materializeOperation(
+      let recursionResult: Algebra.Operation = materializeOperation(
         op.input,
-        // Pass empty InitialBindings recursively to prevent replacing variables directly (Values takes care of this)
-        // We also avoid binding variables that have the same label but are not considered equal due to sub-querying.
-        bindingsFactory.bindings([]),
+        subBindings,
         bindingsFactory,
         options,
       );
 
-      if (overlappingVariables.length > 0) {
-        const values: Algebra.Operation = factory.createValues(overlappingVariables, overlappingBindings);
-        recursionResult = factory.createJoin([
-          recursionResult,
-          values,
-        ]);
+      if (values.length > 0) {
+        // const values: Algebra.Operation = factory.createValues(overlappingVariables, overlappingBindings);
+        recursionResult = factory.createJoin(values.concat([recursionResult]));
       }
 
       return {
