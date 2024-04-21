@@ -59,6 +59,7 @@ export function materializeOperation(
     strictTargetVariables?: boolean;
     bindFilter?: boolean;
   } = {},
+  originalBindings?: Bindings,
 ): Algebra.Operation {
   options = {
     strictTargetVariables: 'strictTargetVariables' in options ? options.strictTargetVariables : false,
@@ -152,7 +153,7 @@ export function materializeOperation(
       }
 
       // Only include non-projected variables in the sub-bindings that will be passed down recursively.
-      // This will result in non-projected variables being replaced with their InitialBindings values.
+      // This will result in non-projected variables being replaced with their InitialBindings values. // TODO reset
       let subBindings = bindingsFactory.fromBindings(bindings);
       bindings.forEach((_, key) => {
         for (let curVariable of op.variables) {
@@ -184,6 +185,7 @@ export function materializeOperation(
         subBindings,
         bindingsFactory,
         options,
+        bindings,
       );
 
       if (values.length > 0) {
@@ -196,7 +198,49 @@ export function materializeOperation(
         result: factory.createProject(recursionResult, op.variables),
       };
     },
+    filter(op: Algebra.Filter, factory: Factory) {
+      if (op.expression.expressionType !== "operator") {
+        return {
+          recurse: false,
+          result: op,
+        }
+      }
+      let relevantBindings = bindings;
+      if (originalBindings) {
+        relevantBindings = originalBindings;
+      }
+      // TODO Create the values from overlap between filterExprs and IB
+      // Find variables from the filter which are present in the InitialBindings
+      // This will result in those variables being handled via a values clause.
+      const values: Algebra.Operation[] = [];
+      const overlappingVariables: RDF.Variable[] = [];
+      const overlappingBindings: Record<string, RDF.Literal | RDF.NamedNode>[] = [];
+      for (const currentExpr of op.expression.args) {
+        const currentTerm = currentExpr.term;
+        if (currentTerm.termType === "Variable") {
+          if (relevantBindings.has(currentTerm)) {
+            const newBinding = { [<string> termToString(currentTerm)]:
+              <RDF.NamedNode | RDF.Literal> relevantBindings.get(currentTerm) };
+  
+            overlappingVariables.push(currentTerm);
+            overlappingBindings.push(newBinding);
+            values.push(factory.createValues([currentTerm], [newBinding]));
+          }  
+        }
+      }
 
+      if (overlappingVariables.length === 0) {
+        return {
+          recurse: false,
+          result: op,
+        }          
+      }
+
+      return {
+        recurse: false,
+        result: factory.createFilter(factory.createJoin(values.concat([op.input])), op.expression),values
+      }
+    },
     values(op: Algebra.Values, factory: Factory) {
       // Materialize a values operation.
       // If strictTargetVariables is true, we throw if the values target variable is attempted to be bound.
@@ -208,7 +252,7 @@ export function materializeOperation(
           }
         }
       } else {
-        const variables = op.variables.filter(variable => !bindings.has(variable));
+        const variablesNotInitialBindings = op.variables.filter(variable => !bindings.has(variable));
         const valueBindings: Record<string, RDF.Literal | RDF.NamedNode>[] = <any> op.bindings.map((binding) => {
           const newBinding = { ...binding };
           let valid = true;
@@ -228,7 +272,7 @@ export function materializeOperation(
         return {
           recurse: true,
           result: factory.createValues(
-            variables,
+            variablesNotInitialBindings,
             valueBindings,
           ),
         };
