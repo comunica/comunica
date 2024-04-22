@@ -6,10 +6,5 @@
   "@id": "urn:comunica:default:Runner",
   "@type": "Runner",
   "actors": [
-    {
-      "@id": "urn:comunica:default:merge-bindings-context/actors#source-binding-union",
-      "@type": "ActorMergeBindingsContextUnion",
-      "contextKey": "@comunica/bus-merge-bindings-context:sourceBinding"
-    }
   ]
 }
