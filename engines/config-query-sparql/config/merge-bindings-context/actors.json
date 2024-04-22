@@ -5,6 +5,5 @@
   ],
   "@id": "urn:comunica:default:Runner",
   "@type": "Runner",
-  "actors": [
-  ]
+  "actors": []
 }
