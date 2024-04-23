@@ -37,10 +37,12 @@ describe('QuadDestinationSparql', () => {
 
   describe('insert', () => {
     it('should handle a valid insert', async() => {
-      await destination.insert(new ArrayIterator([
-        DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
-        DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g2')),
-      ]));
+      await destination.update({
+        insert: new ArrayIterator([
+          DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
+          DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g2')),
+        ]),
+      });
 
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
         context,
@@ -58,14 +60,16 @@ describe('QuadDestinationSparql', () => {
     });
 
     it('should handle a valid insert with quoted triples', async() => {
-      await destination.insert(new ArrayIterator([
-        DF.quad(
-          DF.namedNode('ex:s1'),
-          DF.namedNode('ex:p1'),
-          DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
-        ),
-        DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g2')),
-      ]));
+      await destination.update({
+        insert: new ArrayIterator([
+          DF.quad(
+            DF.namedNode('ex:s1'),
+            DF.namedNode('ex:p1'),
+            DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
+          ),
+          DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g2')),
+        ]),
+      });
 
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
         context,
@@ -91,17 +95,19 @@ describe('QuadDestinationSparql', () => {
         ok: false,
       });
       body.cancel = jest.fn();
-      await expect(destination.insert(new ArrayIterator<RDF.Quad>([]))).rejects
+      await expect(destination.update({ insert: new ArrayIterator<RDF.Quad>([]) })).rejects
         .toThrow(`Invalid SPARQL endpoint response from abc (HTTP status 400):\nempty response`);
     });
   });
 
   describe('delete', () => {
     it('should handle a valid delete', async() => {
-      await destination.delete(new ArrayIterator([
-        DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
-        DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g2')),
-      ]));
+      await destination.update({
+        delete: new ArrayIterator([
+          DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
+          DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g2')),
+        ]),
+      });
 
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
         context,
@@ -109,6 +115,39 @@ describe('QuadDestinationSparql', () => {
           headers: { 'content-type': 'application/sparql-update' },
           method: 'POST',
           body: `DELETE DATA {
+  <ex:s1> <ex:p1> <ex:o1> .
+  GRAPH <ex:g2> { <ex:s2> <ex:p2> <ex:o2> . }
+}`,
+          signal: expect.anything(),
+        },
+        input: 'abc',
+      });
+    });
+  });
+
+  describe('update', () => {
+    it('should handle a valid update', async() => {
+      await destination.update({
+        insert: new ArrayIterator([
+          DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
+          DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g2')),
+        ]),
+        delete: new ArrayIterator([
+          DF.quad(DF.namedNode('ex:sd1'), DF.namedNode('ex:pd1'), DF.namedNode('ex:od1')),
+          DF.quad(DF.namedNode('ex:sd2'), DF.namedNode('ex:pd2'), DF.namedNode('ex:od2'), DF.namedNode('ex:gd2')),
+        ]),
+      });
+
+      expect(mediatorHttp.mediate).toHaveBeenCalledWith({
+        context,
+        init: {
+          headers: { 'content-type': 'application/sparql-update' },
+          method: 'POST',
+          body: `DELETE DATA {
+  <ex:sd1> <ex:pd1> <ex:od1> .
+  GRAPH <ex:gd2> { <ex:sd2> <ex:pd2> <ex:od2> . }
+} ;
+INSERT DATA {
   <ex:s1> <ex:p1> <ex:o1> .
   GRAPH <ex:g2> { <ex:s2> <ex:p2> <ex:o2> . }
 }`,

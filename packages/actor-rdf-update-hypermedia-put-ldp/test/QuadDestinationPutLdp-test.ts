@@ -56,7 +56,7 @@ describe('QuadDestinationPutLdp', () => {
 
   describe('insert', () => {
     it('should handle a valid insert', async() => {
-      await destination.insert(<any> 'QUADS');
+      await destination.update({ insert: <any> 'QUADS' });
 
       expect(mediatorRdfSerializeMediatypes.mediate).toHaveBeenCalledWith({
         context,
@@ -93,7 +93,7 @@ describe('QuadDestinationPutLdp', () => {
         mediatorRdfSerialize,
       );
 
-      await destination.insert(<any> 'QUADS');
+      await destination.update({ insert: <any> 'QUADS' });
 
       expect(mediatorRdfSerializeMediatypes.mediate).toHaveBeenCalledWith({
         context,
@@ -121,7 +121,7 @@ describe('QuadDestinationPutLdp', () => {
 
     it('should throw on a server error', async() => {
       mediatorHttp.mediate = () => ({ status: 400 });
-      await expect(destination.insert(<any> 'QUADS')).rejects
+      await expect(destination.update({ insert: <any> 'QUADS' })).rejects
         .toThrow('Could not update abc (HTTP status 400):\nempty response');
     });
 
@@ -131,14 +131,21 @@ describe('QuadDestinationPutLdp', () => {
         status: 200,
         body: { cancel },
       });
-      await destination.insert(<any> 'QUADS');
+      await destination.update({ insert: <any> 'QUADS' });
       expect(cancel).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('delete', () => {
     it('should always throw', async() => {
-      await expect(destination.delete(<any> 'QUADS'))
+      await expect(destination.update({ delete: <any> 'QUADS' }))
+        .rejects.toThrow(`Put-based LDP destinations don't support deletions`);
+    });
+  });
+
+  describe('update', () => {
+    it('should always throw', async() => {
+      await expect(destination.update({ delete: <any> 'QUADS', insert: <any> 'QUADS' }))
         .rejects.toThrow(`Put-based LDP destinations don't support deletions`);
     });
   });
