@@ -46,7 +46,6 @@
     "@types/object-inspect": "^1.8.1",
     "@types/readable-stream": "^4.0.0",
     "@types/setup-polly-jest": "^0.5.2",
-    "abort-controller": "^3.0.0",
     "arrayify-stream": "^2.0.1",
     "asynciterator": "^3.9.0",
     "babel-loader": "^9.1.0",

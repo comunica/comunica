@@ -1,5 +1,4 @@
 import { ActorHttp } from '..';
-import 'cross-fetch/polyfill';
 
 describe('ActorHttp', () => {
   describe('#headersToHash', () => {

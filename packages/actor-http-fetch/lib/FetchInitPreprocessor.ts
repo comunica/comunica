@@ -34,12 +34,5 @@ export class FetchInitPreprocessor implements IFetchInitPreprocessor {
       duplex: halfDuplex ? 'half' : undefined,
     };
   }
-
-  public async createAbortController(): Promise<AbortController> {
-    // Fallback to abort-controller for Node 14 backward compatibility
-    /* istanbul ignore next */
-    const AbortController = globalThis.AbortController || await import('abort-controller');
-    return new AbortController();
-  }
 }
 /* eslint-enable import/no-nodejs-modules */
