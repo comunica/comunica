@@ -38,7 +38,7 @@ describe('evaluation of \'bound\'', () => {
   });
 
   it('\'bound\' on term returns error', async() => {
-    const evaluator = (await getMockEEFactory({
+    const evaluator = await getMockEEFactory({
       mediatorFunctions: createFuncMediator(),
     }).run({
       algExpr: {
@@ -52,7 +52,7 @@ describe('evaluation of \'bound\'', () => {
         }],
       },
       context: getMockEEActionContext(),
-    })).expressionEvaluator;
+    });
     await expect(evaluator.evaluate(BF.bindings())).rejects.toThrow(Err.InvalidArgumentTypes);
   });
 });

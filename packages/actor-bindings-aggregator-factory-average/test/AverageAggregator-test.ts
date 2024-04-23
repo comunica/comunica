@@ -1,12 +1,12 @@
 import { createFuncMediator } from '@comunica/actor-functions-wrapper-all/test/util';
 import type { IBindingsAggregator } from '@comunica/bus-bindings-aggeregator-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
+import type { MediatorFunctions } from '@comunica/bus-functions';
 import { ActionContext } from '@comunica/core';
 import { RegularOperator } from '@comunica/expression-evaluator';
 import { BF, decimal, DF, double, float, getMockEEFactory, int, makeAggregate } from '@comunica/jest';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { ArrayIterator } from 'asynciterator';
 import { AverageAggregator } from '../lib/AverageAggregator';
 
 async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Bindings[]): Promise<RDF.Term | undefined> {
@@ -16,23 +16,24 @@ async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Binding
   return aggregator.result();
 }
 
-async function createAggregator({ expressionEvaluatorFactory, context, distinct }: {
+async function createAggregator({ expressionEvaluatorFactory, context, distinct, mediatorFunctions }: {
   expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
   context: IActionContext;
   distinct: boolean;
+  mediatorFunctions: MediatorFunctions;
 }): Promise<AverageAggregator> {
   return new AverageAggregator(
-    (await expressionEvaluatorFactory.run({
+    await expressionEvaluatorFactory.run({
       algExpr: makeAggregate('avg', distinct).expression,
       context,
-    })).expressionEvaluator,
+    }),
     distinct,
-    await expressionEvaluatorFactory.createFunction({
+    await mediatorFunctions.mediate({
       context,
       functionName: RegularOperator.ADDITION,
       requireTermExpression: true,
     }),
-    await expressionEvaluatorFactory.createFunction({
+    await mediatorFunctions.mediate({
       context,
       functionName: RegularOperator.DIVISION,
       requireTermExpression: true,
@@ -42,26 +43,13 @@ async function createAggregator({ expressionEvaluatorFactory, context, distinct 
 
 describe('AverageAggregator', () => {
   let expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
+  let mediatorFunctions: MediatorFunctions;
   let context: IActionContext;
 
   beforeEach(() => {
-    const mediatorQueryOperation: any = {
-      mediate: (arg: any) => Promise.resolve({
-        bindingsStream: new ArrayIterator([
-          BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
-          BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),
-          BF.bindings([[ DF.variable('x'), DF.literal('3') ]]),
-        ], { autoStart: false }),
-        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('x') ]}),
-        operated: arg,
-        type: 'bindings',
-      }),
-    };
-
+    mediatorFunctions = createFuncMediator();
     expressionEvaluatorFactory = getMockEEFactory({
-      mediatorQueryOperation,
-      mediatorBindingsAggregatorFactory: mediatorQueryOperation,
-      mediatorFunctions: createFuncMediator(),
+      mediatorFunctions,
     });
 
     context = new ActionContext();
@@ -71,7 +59,12 @@ describe('AverageAggregator', () => {
     let aggregator: IBindingsAggregator;
 
     beforeEach(async() => {
-      aggregator = await createAggregator({ expressionEvaluatorFactory, context, distinct: false });
+      aggregator = await createAggregator({
+        mediatorFunctions,
+        expressionEvaluatorFactory,
+        context,
+        distinct: false,
+      });
     });
 
     it('a list of bindings', async() => {
@@ -126,7 +119,12 @@ describe('AverageAggregator', () => {
     let aggregator: IBindingsAggregator;
 
     beforeEach(async() => {
-      aggregator = await createAggregator({ expressionEvaluatorFactory, context, distinct: true });
+      aggregator = await createAggregator({
+        mediatorFunctions,
+        expressionEvaluatorFactory,
+        context,
+        distinct: true,
+      });
     });
 
     it('a list of bindings', async() => {

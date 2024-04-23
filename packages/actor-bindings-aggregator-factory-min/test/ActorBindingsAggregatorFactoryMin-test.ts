@@ -1,13 +1,20 @@
 import { createTermCompMediator } from '@comunica/actor-term-comparator-factory-inequality-functions-based/test/util';
-import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
+import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
+import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import { ActionContext, Bus } from '@comunica/core';
-import { BF, DF, getMockEEFactory, makeAggregate } from '@comunica/jest';
+import {
+  BF,
+  DF,
+  getMockMediatorExpressionEvaluatorFactory,
+  makeAggregate,
+} from '@comunica/jest';
 import { ArrayIterator } from 'asynciterator';
 import { ActorBindingsAggregatorFactoryMin } from '../lib';
 
 describe('ActorBindingsAggregatorFactoryMin', () => {
   let bus: any;
-  let expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
+  let mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
+  let mediatorTermComparatorFactory: MediatorTermComparatorFactory;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -25,11 +32,10 @@ describe('ActorBindingsAggregatorFactoryMin', () => {
       }),
     };
 
-    expressionEvaluatorFactory = getMockEEFactory({
+    mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
       mediatorQueryOperation,
-      mediatorBindingsAggregatorFactory: mediatorQueryOperation,
-      mediatorTermComparatorFactory: createTermCompMediator(),
     });
+    mediatorTermComparatorFactory = createTermCompMediator();
   });
 
   describe('An ActorBindingsAggregatorFactoryMin instance', () => {
@@ -39,7 +45,8 @@ describe('ActorBindingsAggregatorFactoryMin', () => {
       actor = new ActorBindingsAggregatorFactoryMin({
         name: 'actor',
         bus,
-        factory: expressionEvaluatorFactory,
+        mediatorExpressionEvaluatorFactory,
+        mediatorTermComparatorFactory,
       });
     });
 
@@ -70,9 +77,7 @@ describe('ActorBindingsAggregatorFactoryMin', () => {
       return expect(actor.run({
         context: new ActionContext(),
         expr: makeAggregate('min', false),
-      })).resolves.toMatchObject({
-        aggregator: expect.anything(),
-      });
+      })).resolves.toMatchObject({});
     });
   });
 });

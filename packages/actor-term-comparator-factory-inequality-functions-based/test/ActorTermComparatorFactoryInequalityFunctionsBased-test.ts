@@ -1,6 +1,6 @@
 import { createFuncMediator } from '@comunica/actor-functions-wrapper-all/test/util';
 import { Bus } from '@comunica/core';
-import { getMockEEFactory } from '@comunica/jest';
+import { getMockMediatorQueryOperation } from '@comunica/jest';
 import {
   ActorTermComparatorFactoryInequalityFunctionsBased,
 } from '../lib';
@@ -20,7 +20,7 @@ describe('ActorTermComparatorFactoryInequalityFunctionsBased', () => {
         name: 'actor',
         bus,
         mediatorFunctions: createFuncMediator(),
-        mediatorQueryOperation: getMockEEFactory().mediatorQueryOperation,
+        mediatorQueryOperation: getMockMediatorQueryOperation(),
       });
     });
 

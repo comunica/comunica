@@ -1,13 +1,14 @@
-import { prepareEvaluatorActionContext } from '@comunica/actor-expression-evaluator-factory-base';
 import { AlgebraTransformer } from '@comunica/actor-expression-evaluator-factory-base/lib/AlgebraTransformer';
 import { NamedExtension } from '@comunica/actor-functions-wrapper-all/lib/implementation/NamedExtension';
 import { namedFunctions } from '@comunica/actor-functions-wrapper-all/lib/implementation/NamedFunctions';
 import { regularFunctions } from '@comunica/actor-functions-wrapper-all/lib/implementation/RegularFunctions';
 import { specialFunctions } from '@comunica/actor-functions-wrapper-all/lib/implementation/SpecialFunctions';
+import { createFuncMediator } from '@comunica/actor-functions-wrapper-all/test/util';
 import type { IExpressionFunction, MediatorFunctions } from '@comunica/bus-functions';
 import { ActionContext } from '@comunica/core';
 import * as E from '@comunica/expression-evaluator/lib/expressions';
 import type * as C from '@comunica/expression-evaluator/lib/util/Consts';
+import { prepareEvaluatorActionContext } from '@comunica/expression-evaluator/lib/util/Context';
 import * as Err from '@comunica/expression-evaluator/lib/util/Errors';
 import { getMockEEFactory } from '@comunica/jest';
 import { DataFactory } from 'rdf-data-factory';
@@ -35,7 +36,7 @@ describe('AlgebraTransformer', () => {
     algebraTransformer = new AlgebraTransformer(
       // This basically requires the function bus.
       prepareEvaluatorActionContext(new ActionContext()),
-      factory.mediatorFunctions,
+      createFuncMediator(),
     );
   });
 

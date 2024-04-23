@@ -37,10 +37,10 @@ describe('The ExpressionEvaluatorFactory', () => {
       [KeysInitQuery.baseIRI.name]: 'http://base.org/',
       [KeysInitQuery.functionArgumentsCache.name]: functionArgumentsCache,
     });
-    const evaluator = (await expressionEvaluatorFactory.run({
+    const evaluator = await expressionEvaluatorFactory.run({
       algExpr: getMockExpression('true'),
       context: actionContext,
-    })).expressionEvaluator;
+    });
     expect(evaluator.context.toJS()).toMatchObject({
       [KeysExpressionEvaluator.now.name]: date,
       [KeysExpressionEvaluator.baseIRI.name]: 'http://base.org/',

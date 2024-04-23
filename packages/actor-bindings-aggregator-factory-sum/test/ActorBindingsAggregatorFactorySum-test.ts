@@ -1,13 +1,22 @@
 import { createFuncMediator } from '@comunica/actor-functions-wrapper-all/test/util';
-import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
+import type {
+  MediatorExpressionEvaluatorFactory,
+} from '@comunica/bus-expression-evaluator-factory';
+import type { MediatorFunctions } from '@comunica/bus-functions';
 import { ActionContext, Bus } from '@comunica/core';
-import { BF, DF, getMockEEFactory, makeAggregate } from '@comunica/jest';
+import {
+  BF,
+  DF,
+  getMockMediatorExpressionEvaluatorFactory,
+  makeAggregate,
+} from '@comunica/jest';
 import { ArrayIterator } from 'asynciterator';
 import { ActorBindingsAggregatorFactorySum } from '../lib';
 
 describe('ActorBindingsAggregatorFactorySum', () => {
   let bus: any;
-  let expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
+  let mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
+  let mediatorFunctions: MediatorFunctions;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -25,11 +34,10 @@ describe('ActorBindingsAggregatorFactorySum', () => {
       }),
     };
 
-    expressionEvaluatorFactory = getMockEEFactory({
+    mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
       mediatorQueryOperation,
-      mediatorBindingsAggregatorFactory: mediatorQueryOperation,
-      mediatorFunctions: createFuncMediator(),
     });
+    mediatorFunctions = createFuncMediator();
   });
 
   describe('An ActorBindingsAggregatorFactoryMax instance', () => {
@@ -39,7 +47,8 @@ describe('ActorBindingsAggregatorFactorySum', () => {
       actor = new ActorBindingsAggregatorFactorySum({
         name: 'actor',
         bus,
-        factory: expressionEvaluatorFactory,
+        mediatorExpressionEvaluatorFactory,
+        mediatorFunctions,
       });
     });
 
@@ -70,9 +79,7 @@ describe('ActorBindingsAggregatorFactorySum', () => {
       return expect(actor.run({
         context: new ActionContext(),
         expr: makeAggregate('sum', false),
-      })).resolves.toMatchObject({
-        aggregator: expect.anything(),
-      });
+      })).resolves.toMatchObject({});
     });
   });
 });

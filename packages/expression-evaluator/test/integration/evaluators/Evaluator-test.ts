@@ -40,10 +40,10 @@ describe('evaluators', () => {
 
   describe('evaluate', () => {
     it('is able to evaluate', async() => {
-      const evaluator = (await factory.run({
+      const evaluator = await factory.run({
         algExpr: getMockExpression('1 + 1'),
         context: actionContext,
-      })).expressionEvaluator;
+      });
 
       expect(mediate.mock.calls.length).toBe(1);
       expect(await evaluator.evaluate(BF.bindings())).toEqual(two);
@@ -51,39 +51,39 @@ describe('evaluators', () => {
 
     // eslint-disable-next-line mocha/no-skipped-tests
     it.skip('has proper extended XSD type support', async() => {
-      const evaluator = (await factory.run({
+      const evaluator = await factory.run({
         algExpr: getMockExpression('1 + "1"^^<http://example.com>'),
         context: actionContext,
-      })).expressionEvaluator;
+      });
       await expect(evaluator.evaluate(BF.bindings())).rejects.toThrow(Err.InvalidArgumentTypes);
     });
   });
 
   describe('evaluateAsEBV', () => {
     it('is able to evaluate to true', async() => {
-      const evaluator = (await factory.run({
+      const evaluator = await factory.run({
         algExpr: getMockExpression('1 + 1'),
         context: actionContext,
-      })).expressionEvaluator;
+      });
       expect(mediate.mock.calls.length).toBe(1);
       expect(await evaluator.evaluateAsEBV(BF.bindings())).toEqual(true);
     });
 
     it('is able to evaluate to false', async() => {
-      const evaluator = (await factory.run({
+      const evaluator = await factory.run({
         algExpr: getMockExpression('0'),
         context: actionContext,
-      })).expressionEvaluator;
+      });
       expect(await evaluator.evaluateAsEBV(BF.bindings())).toEqual(false);
     });
   });
 
   describe('evaluateAsInternal', () => {
     it('is able to evaluate', async() => {
-      const evaluator = (await factory.run({
+      const evaluator = await factory.run({
         algExpr: getMockExpression('1 + 1'),
         context: actionContext,
-      })).expressionEvaluator;
+      });
       expect(mediate.mock.calls.length).toBe(1);
       expect(await evaluator.evaluateAsInternal(BF.bindings())).toEqual(new IntegerLiteral(2));
     });

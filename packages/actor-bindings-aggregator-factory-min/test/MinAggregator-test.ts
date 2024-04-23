@@ -1,11 +1,11 @@
 import { createTermCompMediator } from '@comunica/actor-term-comparator-factory-inequality-functions-based/test/util';
 import type { IBindingsAggregator } from '@comunica/bus-bindings-aggeregator-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
+import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import { ActionContext } from '@comunica/core';
 import { BF, date, DF, double, float, getMockEEFactory, int, makeAggregate, nonLiteral, string } from '@comunica/jest';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { ArrayIterator } from 'asynciterator';
 import { MinAggregator } from '../lib/MinAggregator';
 
 async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Bindings[]): Promise<RDF.Term | undefined> {
@@ -15,45 +15,37 @@ async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Binding
   return aggregator.result();
 }
 
-async function createAggregator({ expressionEvaluatorFactory, context, distinct, throwError }: {
+async function createAggregator({
+  expressionEvaluatorFactory,
+  context,
+  distinct,
+  throwError,
+  mediatorTermComparatorFactory,
+}: {
   expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
+  mediatorTermComparatorFactory: MediatorTermComparatorFactory;
   context: IActionContext;
   distinct: boolean;
   throwError?: boolean;
 }): Promise<MinAggregator> {
   return new MinAggregator(
-    (await expressionEvaluatorFactory.run({
+    await expressionEvaluatorFactory.run({
       algExpr: makeAggregate('min', distinct).expression,
       context,
-    })).expressionEvaluator,
+    }),
     distinct,
-    await expressionEvaluatorFactory.createTermComparator({ context }),
+    await mediatorTermComparatorFactory.mediate({ context }),
     throwError,
   );
 }
 describe('MinAggregator', () => {
   let expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
+  let mediatorTermComparatorFactory: MediatorTermComparatorFactory;
   let context: IActionContext;
 
   beforeEach(() => {
-    const mediatorQueryOperation: any = {
-      mediate: (arg: any) => Promise.resolve({
-        bindingsStream: new ArrayIterator([
-          BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
-          BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),
-          BF.bindings([[ DF.variable('x'), DF.literal('3') ]]),
-        ], { autoStart: false }),
-        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('x') ]}),
-        operated: arg,
-        type: 'bindings',
-      }),
-    };
-
-    expressionEvaluatorFactory = getMockEEFactory({
-      mediatorQueryOperation,
-      mediatorBindingsAggregatorFactory: mediatorQueryOperation,
-      mediatorTermComparatorFactory: createTermCompMediator(),
-    });
+    expressionEvaluatorFactory = getMockEEFactory();
+    mediatorTermComparatorFactory = createTermCompMediator();
 
     context = new ActionContext();
   });
@@ -62,7 +54,12 @@ describe('MinAggregator', () => {
     let aggregator: IBindingsAggregator;
 
     beforeEach(async() => {
-      aggregator = await createAggregator({ expressionEvaluatorFactory, context, distinct: false });
+      aggregator = await createAggregator({
+        expressionEvaluatorFactory,
+        mediatorTermComparatorFactory,
+        context,
+        distinct: false,
+      });
     });
 
     it('a list of bindings', async() => {
@@ -135,7 +132,12 @@ describe('MinAggregator', () => {
     let aggregator: IBindingsAggregator;
 
     beforeEach(async() => {
-      aggregator = await createAggregator({ expressionEvaluatorFactory, context, distinct: true });
+      aggregator = await createAggregator({
+        expressionEvaluatorFactory,
+        mediatorTermComparatorFactory,
+        context,
+        distinct: true,
+      });
     });
 
     it('a list of bindings', async() => {

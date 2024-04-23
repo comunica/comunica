@@ -70,8 +70,8 @@ export class InequalityFunctionBasedComparator implements ITermComparator {
   }
 
   private orderLiteralTypes(litA: RDF.Literal, litB: RDF.Literal): -1 | 0 | 1 {
-    const myLitA = this.internalEvaluator.transformer.transformLiteral(litA);
-    const myLitB = this.internalEvaluator.transformer.transformLiteral(litB);
+    const myLitA: E.Literal<any> = this.internalEvaluator.transformer.transformLiteral(litA);
+    const myLitB: E.Literal<any> = this.internalEvaluator.transformer.transformLiteral(litB);
 
     try {
       if ((<E.BooleanLiteral> this.equalityFunction.applyOnTerms([ myLitA, myLitB ], this.internalEvaluator))

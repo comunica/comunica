@@ -4,7 +4,6 @@ import { ActionContext } from '@comunica/core';
 import { BF, DF, getMockEEFactory, int, makeAggregate } from '@comunica/jest';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { ArrayIterator } from 'asynciterator';
 import { GroupConcatAggregator } from '../lib/GroupConcatAggregator';
 
 async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Bindings[]): Promise<RDF.Term | undefined> {
@@ -21,10 +20,10 @@ async function createAggregator({ expressionEvaluatorFactory, context, distinct,
   separator?: string;
 }): Promise<GroupConcatAggregator> {
   return new GroupConcatAggregator(
-    (await expressionEvaluatorFactory.run({
+    await expressionEvaluatorFactory.run({
       algExpr: makeAggregate('group_concat', distinct, separator).expression,
       context,
-    })).expressionEvaluator,
+    }),
     distinct,
     separator,
   );
@@ -34,23 +33,7 @@ describe('CountAggregator', () => {
   let context: IActionContext;
 
   beforeEach(() => {
-    const mediatorQueryOperation: any = {
-      mediate: (arg: any) => Promise.resolve({
-        bindingsStream: new ArrayIterator([
-          BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
-          BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),
-          BF.bindings([[ DF.variable('x'), DF.literal('3') ]]),
-        ], { autoStart: false }),
-        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('x') ]}),
-        operated: arg,
-        type: 'bindings',
-      }),
-    };
-
-    expressionEvaluatorFactory = getMockEEFactory({
-      mediatorQueryOperation,
-      mediatorBindingsAggregatorFactory: mediatorQueryOperation,
-    });
+    expressionEvaluatorFactory = getMockEEFactory();
 
     context = new ActionContext();
   });

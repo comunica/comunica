@@ -12,10 +12,13 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type {
   IActionBindingsAggregatorFactory,
   IActorBindingsAggregatorFactoryOutput,
+  MediatorBindingsAggregatorFactory,
 } from '@comunica/bus-bindings-aggeregator-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
+import type { MediatorFunctions } from '@comunica/bus-functions';
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import { ActionContext, Bus } from '@comunica/core';
 import { RegularOperator } from '@comunica/expression-evaluator';
 import { getMockEEFactory } from '@comunica/jest';
@@ -107,76 +110,63 @@ interface ICaseOutput {
 async function aggregatorFactory(factory: ActorExpressionEvaluatorFactory, { expr, context }:
 IActionBindingsAggregatorFactory):
   Promise<IActorBindingsAggregatorFactoryOutput> {
-  const evaluator = (await factory.run({
+  const mediatorFunctions: MediatorFunctions = createFuncMediator();
+  const mediatorTermComparatorFactory: MediatorTermComparatorFactory = createTermCompMediator();
+
+  const evaluator = await factory.run({
     algExpr: expr.expression,
     context,
-  })).expressionEvaluator;
+  });
   if (expr.aggregator === 'count') {
     if (expr.expression.wildcard) {
-      return {
-        aggregator: new WildcardCountAggregator(evaluator, expr.distinct),
-      };
+      return new WildcardCountAggregator(evaluator, expr.distinct);
     }
-    return {
-      aggregator: new CountAggregator(evaluator, expr.distinct),
-    };
+    return new CountAggregator(evaluator, expr.distinct);
   } if (expr.aggregator === 'sum') {
-    return {
-      aggregator: new SumAggregator(
-        evaluator,
-        expr.distinct,
-        await factory.createFunction({
-          functionName: RegularOperator.ADDITION,
-          context,
-          requireTermExpression: true,
-        }),
-      ),
-    };
+    return new SumAggregator(
+      evaluator,
+      expr.distinct,
+      await mediatorFunctions.mediate({
+        functionName: RegularOperator.ADDITION,
+        context,
+        requireTermExpression: true,
+      }),
+    );
   } if (expr.aggregator === 'avg') {
-    return {
-      aggregator: new AverageAggregator(
-        evaluator,
-        expr.distinct,
-        await factory.createFunction({
-          functionName: RegularOperator.ADDITION,
-          context,
-          requireTermExpression: true,
-        }),
-        await factory.createFunction({
-          functionName: RegularOperator.DIVISION,
-          context,
-          requireTermExpression: true,
-        }),
-      ),
-    };
+    return new AverageAggregator(
+      evaluator,
+      expr.distinct,
+      await mediatorFunctions.mediate({
+        functionName: RegularOperator.ADDITION,
+        context,
+        requireTermExpression: true,
+      }),
+      await mediatorFunctions.mediate({
+        functionName: RegularOperator.DIVISION,
+        context,
+        requireTermExpression: true,
+      }),
+    );
   } if (expr.aggregator === 'min') {
-    return {
-      aggregator: new MinAggregator(
-        evaluator,
-        expr.distinct,
-        await factory.createTermComparator({ context }),
-      ),
-    };
+    return new MinAggregator(
+      evaluator,
+      expr.distinct,
+      await mediatorTermComparatorFactory.mediate({ context }),
+    );
   } if (expr.aggregator === 'max') {
-    return {
-      aggregator: new MaxAggregator(
-        evaluator,
-        expr.distinct,
-        await factory.createTermComparator({ context }),
-      ),
-    };
+    return new MaxAggregator(
+      evaluator,
+      expr.distinct,
+      await mediatorTermComparatorFactory.mediate({ context }),
+    );
   } if (expr.aggregator === 'sample') {
-    return {
-      aggregator: new SampleAggregator(evaluator, expr.distinct),
-    };
+    return new SampleAggregator(evaluator, expr.distinct);
   } if (expr.aggregator === 'group_concat') {
-    return {
-      aggregator: new GroupConcatAggregator(
-        evaluator,
-        expr.distinct,
-        expr.separator,
-      ),
-    };
+    return new GroupConcatAggregator(
+      evaluator,
+      expr.distinct,
+      expr.separator,
+    );
   }
   throw new Error(`Unsupported aggregator ${expr.aggregator}`);
 }
@@ -205,20 +195,16 @@ function constructCase(
   const mediatorHashBindings: any = {
     mediate: () => Promise.resolve({ hashFunction }),
   };
-  const internalFactory = getMockEEFactory({
-    mediatorQueryOperation,
-    mediatorFunctions: createFuncMediator(),
-    mediatorTermComparatorFactory: createTermCompMediator(),
-  });
   const expressionEvaluatorFactory = getMockEEFactory({
     mediatorQueryOperation,
-    mediatorBindingsAggregatorFactory: <any> {
-      async mediate(args: IActionBindingsAggregatorFactory):
-      Promise<IActorBindingsAggregatorFactoryOutput> {
-        return await aggregatorFactory(internalFactory, args);
-      },
-    },
+    mediatorFunctions: createFuncMediator(),
   });
+  const mediatorBindingsAggregatorFactory = <MediatorBindingsAggregatorFactory> {
+    async mediate(args: IActionBindingsAggregatorFactory):
+    Promise<IActorBindingsAggregatorFactoryOutput> {
+      return await aggregatorFactory(expressionEvaluatorFactory, args);
+    },
+  };
   const operation: Algebra.Group = {
     type: Algebra.types.GROUP,
     input: inputOp,
@@ -232,7 +218,7 @@ function constructCase(
     bus,
     mediatorQueryOperation,
     mediatorHashBindings,
-    expressionEvaluatorFactory,
+    mediatorBindingsAggregatorFactory,
   });
   return { actor, bus, mediatorQueryOperation, op };
 }
@@ -253,7 +239,7 @@ describe('ActorQueryOperationGroup', () => {
   let bus: any;
   let mediatorQueryOperation: any;
   let mediatorHashBindings: any;
-  let expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
+  let mediatorBindingsAggregatorFactory: MediatorBindingsAggregatorFactory;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -261,19 +247,16 @@ describe('ActorQueryOperationGroup', () => {
     mediatorHashBindings = {
       mediate: () => Promise.resolve({ hashFunction }),
     };
-    const internalFactory = getMockEEFactory({
+    const expressionEvaluatorFactory = getMockEEFactory({
       mediatorQueryOperation,
       mediatorFunctions: createFuncMediator(),
     });
-    expressionEvaluatorFactory = getMockEEFactory({
-      mediatorQueryOperation,
-      mediatorBindingsAggregatorFactory: <any> {
-        async mediate(args: IActionBindingsAggregatorFactory):
-        Promise<IActorBindingsAggregatorFactoryOutput> {
-          return await aggregatorFactory(internalFactory, args);
-        },
+    mediatorBindingsAggregatorFactory = <MediatorBindingsAggregatorFactory> {
+      async mediate(args: IActionBindingsAggregatorFactory):
+      Promise<IActorBindingsAggregatorFactoryOutput> {
+        return await aggregatorFactory(expressionEvaluatorFactory, args);
       },
-    });
+    };
   });
 
   describe('The ActorQueryOperationGroup module', () => {
@@ -299,7 +282,7 @@ describe('ActorQueryOperationGroup', () => {
       const temp = new GroupsState(
         hashFunction,
           <Algebra.Group> op.operation,
-          expressionEvaluatorFactory,
+          mediatorBindingsAggregatorFactory,
           new ActionContext(),
       );
       expect(await temp.collectResults()).toBeTruthy();
@@ -311,7 +294,7 @@ describe('ActorQueryOperationGroup', () => {
       const temp = new GroupsState(
         hashFunction,
           <Algebra.Group> op.operation,
-          expressionEvaluatorFactory,
+          mediatorBindingsAggregatorFactory,
           new ActionContext(),
       );
       expect(await temp.collectResults()).toBeTruthy();
@@ -737,7 +720,7 @@ describe('ActorQueryOperationGroup', () => {
         bus,
         mediatorHashBindings,
         mediatorQueryOperation: <any> myMediatorQueryOperation,
-        expressionEvaluatorFactory,
+        mediatorBindingsAggregatorFactory,
       });
 
       await expect(async() => arrayifyStream((<any> await actor.run(op)).bindingsStream))

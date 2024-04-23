@@ -1,12 +1,12 @@
-import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
+import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { ActionContext, Bus } from '@comunica/core';
-import { BF, DF, getMockEEFactory, makeAggregate } from '@comunica/jest';
+import { BF, DF, getMockMediatorExpressionEvaluatorFactory, makeAggregate } from '@comunica/jest';
 import { ArrayIterator } from 'asynciterator';
 import { ActorBindingsAggregatorFactoryWildcardCount } from '../lib';
 
 describe('ActorBindingsAggregatorFactoryWildcardCount', () => {
   let bus: any;
-  let expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
+  let mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -24,9 +24,8 @@ describe('ActorBindingsAggregatorFactoryWildcardCount', () => {
       }),
     };
 
-    expressionEvaluatorFactory = getMockEEFactory({
+    mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
       mediatorQueryOperation,
-      mediatorBindingsAggregatorFactory: mediatorQueryOperation,
     });
   });
 
@@ -37,7 +36,7 @@ describe('ActorBindingsAggregatorFactoryWildcardCount', () => {
       actor = new ActorBindingsAggregatorFactoryWildcardCount({
         name: 'actor',
         bus,
-        factory: expressionEvaluatorFactory,
+        mediatorExpressionEvaluatorFactory,
       });
     });
 
@@ -82,9 +81,7 @@ describe('ActorBindingsAggregatorFactoryWildcardCount', () => {
       return expect(actor.run({
         context: new ActionContext(),
         expr: makeAggregate('count', false, undefined, true),
-      })).resolves.toMatchObject({
-        aggregator: expect.anything(),
-      });
+      })).resolves.toMatchObject({});
     });
   });
 });

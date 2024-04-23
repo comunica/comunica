@@ -3,8 +3,10 @@ import {
 } from '@comunica/actor-expression-evaluator-factory-base';
 import { InternalEvaluator } from '@comunica/actor-expression-evaluator-factory-base/lib/InternalEvaluator';
 import { BindingsFactory } from '@comunica/bindings-factory';
-import type { MediatorBindingsAggregatorFactory } from '@comunica/bus-bindings-aggeregator-factory';
-import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
+import type {
+  ActorExpressionEvaluatorFactory, IActorExpressionEvaluatorFactoryArgs,
+  MediatorExpressionEvaluatorFactory,
+} from '@comunica/bus-expression-evaluator-factory';
 import type { MediatorFunctions } from '@comunica/bus-functions';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
@@ -39,7 +41,7 @@ Algebra.AggregateExpression {
   return {
     type: Algebra.types.EXPRESSION,
     expressionType: Algebra.expressionTypes.AGGREGATE,
-    aggregator: <any> aggregator,
+    aggregator: <any>aggregator,
     distinct,
     separator,
     expression: inner,
@@ -84,7 +86,7 @@ export function getMockInternalEvaluator(factory?: ActorExpressionEvaluatorFacto
   return new InternalEvaluator(
     prepareEvaluatorActionContext(context ?? getMockEEActionContext()),
     getMockMediatorFunctions(),
-    <any> {
+    <any>{
       async mediate(arg: any) {
         throw new Error('mediatorQueryOperation mock of mockEEFactory not implemented');
       },
@@ -92,31 +94,48 @@ export function getMockInternalEvaluator(factory?: ActorExpressionEvaluatorFacto
   );
 }
 
-export function getMockEEFactory({ mediatorQueryOperation,
-  mediatorBindingsAggregatorFactory,
+export function getMockEEFactory({
+  mediatorQueryOperation,
   mediatorFunctions,
-  mediatorTermComparatorFactory }: {
-  mediatorQueryOperation?: MediatorQueryOperation;
-  mediatorBindingsAggregatorFactory?: MediatorBindingsAggregatorFactory;
-  mediatorTermComparatorFactory?: MediatorTermComparatorFactory;
-  mediatorFunctions?: MediatorFunctions;
-} = {}): ActorExpressionEvaluatorFactory {
+}: Partial<IActorExpressionEvaluatorFactoryArgs> = {}): ActorExpressionEvaluatorFactory {
   return new ActorExpressionEvaluatorFactoryBase({
     bus: new Bus({ name: 'testBusMock' }),
     name: 'mockEEFactory',
-    mediatorQueryOperation: mediatorQueryOperation || <any> {
-      async mediate(arg: any) {
-        throw new Error('mediatorQueryOperation mock of mockEEFactory not implemented');
-      },
-    },
+    mediatorQueryOperation: mediatorQueryOperation || getMockMediatorQueryOperation(),
     mediatorFunctions: mediatorFunctions || getMockMediatorFunctions(),
   });
 }
 
-export function getMockMediatorFunctions(): MediatorFunctions {
-  return <any> {
+export function getMockMediatorQueryOperation(): MediatorQueryOperation {
+  return <any>{
     async mediate(arg: any) {
-      throw new Error('mediatorFunctions mock of mockEEFactory not implemented');
+      throw new Error('mediatorQueryOperation mock not implemented');
+    },
+  };
+}
+
+export function getMockMediatorExpressionEvaluatorFactory(
+  args: Partial<IActorExpressionEvaluatorFactoryArgs> = {},
+): MediatorExpressionEvaluatorFactory {
+  return <any>{
+    async mediate(arg: any) {
+      return getMockEEFactory(args).run(arg);
+    },
+  };
+}
+
+export function getMockMediatorFunctions(): MediatorFunctions {
+  return <any>{
+    async mediate(arg: any) {
+      throw new Error('mediatorFunctions mock not implemented');
+    },
+  };
+}
+
+export function getMockMediatorTermComparatorFactory(): MediatorTermComparatorFactory {
+  return <any>{
+    async mediate(arg: any) {
+      throw new Error('mediatorTermComparatorFactory mock not implemented');
     },
   };
 }

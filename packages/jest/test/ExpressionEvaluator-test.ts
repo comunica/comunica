@@ -1,5 +1,4 @@
 import { describe } from 'node:test';
-import type { IActionBindingsAggregatorFactory } from '@comunica/bus-bindings-aggeregator-factory';
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { Algebra } from 'sparqlalgebrajs';
@@ -143,11 +142,8 @@ describe('The Expression evaluator util function', () => {
 
   describe('getMockEEFactory', () => {
     it('Throws an error on mediator calls when not provided', async() => {
-      await expect(() => getMockEEFactory().mediatorQueryOperation.mediate(<IActionQueryOperation> {}))
-        .rejects.toThrow('mediatorQueryOperation mock of mockEEFactory not implemented');
-      await expect(() =>
-        getMockEEFactory().mediatorBindingsAggregatorFactory.mediate(<IActionBindingsAggregatorFactory> {}))
-        .rejects.toThrow('mediatorBindingsAggregatorFactory mock of mockEEFactory not implemented');
+      await expect(() => (<any> getMockEEFactory()).mediatorQueryOperation.mediate(<IActionQueryOperation> {}))
+        .rejects.toThrow('mediatorQueryOperation mock not implemented');
     });
   });
 });

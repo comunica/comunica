@@ -18,10 +18,10 @@ describe('The function helper file', () => {
     let functionArgumentsCache: FunctionArgumentsCache;
     beforeEach(async() => {
       builder = declare('non cacheable');
-      expressionEvaluator = <ExpressionEvaluator> (await getMockEEFactory().run({
+      expressionEvaluator = <ExpressionEvaluator> await getMockEEFactory().run({
         algExpr: getMockExpression('true'),
         context: getMockEEActionContext(),
-      })).expressionEvaluator;
+      });
       superTypeProvider = expressionEvaluator.context.getSafe(KeysExpressionEvaluator.superTypeProvider);
       functionArgumentsCache = expressionEvaluator.context.getSafe(KeysExpressionEvaluator.functionArgumentsCache);
     });

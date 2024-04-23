@@ -41,10 +41,10 @@ describe('MaterializedEvaluatorContext', () => {
         false,
         factory.createBgp([]),
       );
-      const evaluator = (await expressionEvaluatorFactory.run({
+      const evaluator = await expressionEvaluatorFactory.run({
         algExpr: expr,
         context: getMockEEActionContext(),
-      })).expressionEvaluator;
+      });
       const result = evaluator.evaluateAsEBV(BF.bindings());
       expect(await result).toBe(true);
     });
@@ -61,10 +61,10 @@ describe('MaterializedEvaluatorContext', () => {
         false,
         factory.createBgp([]),
       );
-      const evaluator = (await expressionEvaluatorFactory.run({
+      const evaluator = await expressionEvaluatorFactory.run({
         algExpr: expr,
         context: getMockEEActionContext(),
-      })).expressionEvaluator;
+      });
       const result = evaluator.evaluateAsEBV(BF.bindings());
       expect(await result).toBe(false);
     });
@@ -81,10 +81,10 @@ describe('MaterializedEvaluatorContext', () => {
         true,
         factory.createBgp([]),
       );
-      const evaluator = (await expressionEvaluatorFactory.run({
+      const evaluator = await expressionEvaluatorFactory.run({
         algExpr: expr,
         context: getMockEEActionContext(),
-      })).expressionEvaluator;
+      });
       const result = evaluator.evaluateAsEBV(BF.bindings());
       expect(await result).toBe(true);
     });
@@ -109,10 +109,10 @@ describe('MaterializedEvaluatorContext', () => {
         false,
         factory.createBgp([]),
       );
-      const evaluator = (await expressionEvaluatorFactory.run({
+      const evaluator = await expressionEvaluatorFactory.run({
         algExpr: expr,
         context: getMockEEActionContext(),
-      })).expressionEvaluator;
+      });
       await expect(evaluator.evaluateAsEBV(BF.bindings())).rejects.toBeTruthy();
     });
   });

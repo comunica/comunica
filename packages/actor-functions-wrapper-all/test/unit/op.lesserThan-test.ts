@@ -25,12 +25,12 @@ describe('lesser than', () => {
             dg,
           ),
         ],
-        (await getMockEEFactory({
+        await getMockEEFactory({
           mediatorFunctions: createFuncMediator(),
         }).run({
           algExpr: getMockExpression(),
           context: getMockEEActionContext(),
-        })).expressionEvaluator,
+        }),
       )).toEqual(new E.BooleanLiteral(true));
     });
   });

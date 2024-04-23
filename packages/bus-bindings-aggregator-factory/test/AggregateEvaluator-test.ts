@@ -30,14 +30,14 @@ describe('aggregate evaluator', () => {
       context: new ActionContext({}),
     });
     let first = true;
-    temp.expressionEvaluator.evaluate = async() => {
+    temp.evaluate = async() => {
       if (first) {
         first = false;
         throw new Error('We only want the first to succeed');
       }
       return int('1');
     };
-    const evaluator: AggregateEvaluator = new EmptyEvaluator(temp.expressionEvaluator, false);
+    const evaluator: AggregateEvaluator = new EmptyEvaluator(temp, false);
     await Promise.all([ evaluator.putBindings(BF.bindings()), evaluator.putBindings(BF.bindings()) ]);
     await expect(evaluator.result()).resolves.toBeUndefined();
   });

@@ -24,9 +24,9 @@ describe('OverloadTree', () => {
   let functionArgumentsCache: FunctionArgumentsCache;
   beforeEach(async() => {
     emptyTree = new OverloadTree(emptyID);
-    expressionEvaluator = <ExpressionEvaluator> (await getMockEEFactory().run(
+    expressionEvaluator = <ExpressionEvaluator> await getMockEEFactory().run(
       { algExpr: getMockExpression('true'), context: getMockEEActionContext() },
-    )).expressionEvaluator;
+    );
     superTypeProvider = expressionEvaluator.context.getSafe(KeysExpressionEvaluator.superTypeProvider);
     functionArgumentsCache = expressionEvaluator.context.getSafe(KeysExpressionEvaluator.functionArgumentsCache);
   });
