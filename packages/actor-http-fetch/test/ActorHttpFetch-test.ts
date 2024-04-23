@@ -1,12 +1,11 @@
 import { Agent as HttpAgent } from 'node:http';
 import { Agent as HttpsAgent } from 'node:https';
-import { Readable } from 'node:stream';
 import { ActorHttp } from '@comunica/bus-http';
 import { KeysCore, KeysHttp } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { LoggerVoid } from '@comunica/logger-void';
 import type { IActionContext } from '@comunica/types';
-import { ReadableWebToNodeStream } from '@smessie/readable-web-to-node-stream';
+import { Readable } from 'readable-stream';
 import { ActorHttpFetch } from '../lib/ActorHttpFetch';
 
 const streamifyString = require('streamify-string');
@@ -314,7 +313,7 @@ describe('ActorHttpFetch', () => {
       expect(spy).toHaveBeenCalledWith(
         { url: 'https://www.google.com/' },
         {
-          body: expect.any(ReadableWebToNodeStream),
+          body: expect.any(Readable),
           agent: expect.anything(),
           headers: expect.anything(),
           keepalive: undefined,
@@ -394,7 +393,7 @@ describe('ActorHttpFetch', () => {
     it('should work with a large timeout including body if the body is consumed', async() => {
       jest.spyOn(globalThis, 'clearTimeout');
       const customFetch = jest.fn(async(_, _init) => {
-        const body = Readable.from('foo');
+        const body = streamifyString('foo');
         return {
           body,
         };
@@ -417,7 +416,7 @@ describe('ActorHttpFetch', () => {
     it('should work with a large timeout including body if the body is cancelled', async() => {
       jest.spyOn(globalThis, 'clearTimeout');
       const customFetch = jest.fn(async(_, _init) => {
-        const body = Readable.from('foo');
+        const body = streamifyString('foo');
         return {
           body,
         };

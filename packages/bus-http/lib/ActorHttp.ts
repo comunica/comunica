@@ -1,6 +1,6 @@
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
-import { ReadableWebToNodeStream } from '@smessie/readable-web-to-node-stream';
+import { readableFromWeb } from 'readable-from-web';
 
 /* istanbul ignore next */
 if (!globalThis.ReadableStream) {
@@ -39,7 +39,7 @@ export abstract class ActorHttp extends Actor<IActionHttp, IActorTest, IActorHtt
   public static toNodeReadable(body: ReadableStream | null): NodeJS.ReadableStream {
     return isStream(body) || body === null ?
       <NodeJS.ReadableStream> <any> body :
-      <NodeJS.ReadableStream> <any> new ReadableWebToNodeStream(body);
+      <NodeJS.ReadableStream> <any> readableFromWeb(body);
   }
 
   /**
