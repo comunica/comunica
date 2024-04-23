@@ -63,7 +63,7 @@ function parse(query: string) {
 
 async function evaluateAsync(expr: string, bindings: RDF.Bindings, actionContext: IActionContext,
   exprEvalFactory?: ActorExpressionEvaluatorFactory): Promise<RDF.Term> {
-  const evaluator = (await (exprEvalFactory ?? getMockEEFactory())
-    .run({ algExpr: parse(expr), context: actionContext })).expressionEvaluator;
+  const evaluator = await (exprEvalFactory ?? getMockEEFactory())
+    .run({ algExpr: parse(expr), context: actionContext });
   return evaluator.evaluate(bindings);
 }

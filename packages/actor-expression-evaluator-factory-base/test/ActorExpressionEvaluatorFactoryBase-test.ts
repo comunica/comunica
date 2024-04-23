@@ -1,6 +1,7 @@
 import { Bus } from '@comunica/core';
-import { getMockEEFactory } from '@comunica/jest';
-import type { ActorExpressionEvaluatorFactoryBase } from '../lib/ActorExpressionEvaluatorFactoryBase';
+import { getMockExpression } from '@comunica/expression-evaluator/test/util/utils';
+import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
+import type { ActorExpressionEvaluatorFactoryBase } from '../lib';
 
 describe('ActorExpressionEvaluatorFactoryBase', () => {
   let bus: any;
@@ -17,11 +18,17 @@ describe('ActorExpressionEvaluatorFactoryBase', () => {
     });
 
     it('should test', () => {
-      // Return expect(actor.test({ context: getMockEvaluatorContext() })).resolves.toEqual({ todo: true }); // TODO
+      return expect(actor.test({
+        context: getMockEEActionContext(),
+        algExpr: getMockExpression('1'),
+      })).resolves.toEqual(true);
     });
 
     it('should run', () => {
-      // Return expect(actor.run({ todo: true })).resolves.toMatchObject({ todo: true }); // TODO
+      return expect(actor.run({
+        context: getMockEEActionContext(),
+        algExpr: getMockExpression('1'),
+      })).resolves.toMatchObject({});
     });
   });
 });
