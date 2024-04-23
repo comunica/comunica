@@ -37,9 +37,7 @@
   "dependencies": {
     "@comunica/bus-http": "^3.0.3",
     "@comunica/context-entries": "^3.0.3",
-    "@comunica/mediatortype-time": "^3.0.3",
-    "abort-controller": "^3.0.0",
-    "cross-fetch": "^4.0.0"
+    "@comunica/mediatortype-time": "^3.0.3"
   },
   "browser": {
     "./lib/FetchInitPreprocessor.js": "./lib/FetchInitPreprocessor-browser.js"

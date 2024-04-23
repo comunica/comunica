@@ -12,12 +12,10 @@ import { ActorHttpFetch } from '../lib/ActorHttpFetch';
 const streamifyString = require('streamify-string');
 
 // Mock fetch
-jest.spyOn((<any> globalThis), 'fetch').mockImplementation((input: any, init: any) => {
-  return Promise.resolve({
-    status: input.url === 'https://www.google.com/' ? 200 : 404,
-    ...input.url === 'NOBODY' ? {} : { body: { destroy: jest.fn(), on: jest.fn() }},
-  });
-});
+jest.spyOn(globalThis, 'fetch').mockImplementation((input: any, init?: any) => Promise.resolve(<Response> <unknown>{
+  status: input.url === 'https://www.google.com/' ? 200 : 404,
+  ...input.url === 'NOBODY' ? {} : { body: { destroy: jest.fn(), on: jest.fn() }},
+}));
 
 describe('ActorHttpFetch', () => {
   let bus: any;

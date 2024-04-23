@@ -2,7 +2,6 @@ import type { IActionHttp, IActorHttpArgs, IActorHttpOutput, MediatorHttp } from
 import { ActorHttp } from '@comunica/bus-http';
 import { KeysHttpMemento } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
-import 'cross-fetch/polyfill';
 
 // Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
 // eslint-disable-next-line ts/no-require-imports

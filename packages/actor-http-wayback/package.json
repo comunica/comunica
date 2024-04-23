@@ -40,7 +40,6 @@
     "@comunica/bus-http": "^3.0.3",
     "@comunica/context-entries": "^3.0.3",
     "@comunica/core": "^3.0.3",
-    "cross-fetch": "^4.0.0",
     "stream-to-string": "^1.2.0"
   }
 }

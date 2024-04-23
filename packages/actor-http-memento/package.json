@@ -41,7 +41,6 @@
     "@comunica/context-entries": "^3.0.3",
     "@comunica/core": "^3.0.3",
     "@types/parse-link-header": "^2.0.0",
-    "cross-fetch": "^4.0.0",
     "parse-link-header": "^2.0.0"
   }
 }
