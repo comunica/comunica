@@ -25,7 +25,7 @@ export class ActorQuerySourceIdentifyHypermediaAnnotateSource extends ActorQuery
     action: IActionQuerySourceIdentifyHypermedia,
   ): Promise<IActorQuerySourceIdentifyHypermediaTest> {
     if (action.context.get(KEY_CONTEXT_WRAPPED)) {
-      throw new Error('Unable to wrap link queues multiple times');
+      throw new Error('Unable to wrap query source multiple times');
     }
     return { filterFactor: 0 };
   }

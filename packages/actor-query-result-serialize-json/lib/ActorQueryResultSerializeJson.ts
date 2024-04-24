@@ -1,16 +1,17 @@
+import type { Bindings } from '@comunica/bindings-factory';
 import type {
   IActionSparqlSerialize,
   IActorQueryResultSerializeFixedMediaTypesArgs,
   IActorQueryResultSerializeOutput,
 } from '@comunica/bus-query-result-serialize';
 import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-result-serialize';
+import { KeysMergeBindingsContext } from '@comunica/context-entries';
 import type {
   IActionContext,
   IQueryOperationResultBindings,
   IQueryOperationResultBoolean,
   IQueryOperationResultQuads,
 } from '@comunica/types';
-import type * as RDF from '@rdfjs/types';
 import * as RdfString from 'rdf-string';
 import { Readable } from 'readable-stream';
 
@@ -50,10 +51,17 @@ export class ActorQueryResultSerializeJson extends ActorQueryResultSerializeFixe
       const resultStream = (<IQueryOperationResultBindings> action).bindingsStream;
       data.push('[');
       resultStream.on('error', error => data.emit('error', error));
-      resultStream.on('data', (element: RDF.Bindings) => {
+      resultStream.on('data', (element: Bindings) => {
         data.push(empty ? '\n' : ',\n');
-        data.push(JSON.stringify(Object.fromEntries([ ...element ]
-          .map(([ key, value ]) => [ key.value, RdfString.termToString(value) ]))));
+
+        const bindingsString = Object.fromEntries([ ...element ]
+          .map(([ key, value ]) => [ key.value, RdfString.termToString(value) ]));
+        // TODO ADD OPTIONAL
+        if (true) {
+          bindingsString._source = element.getContextEntry(KeysMergeBindingsContext.sourceBinding)!;
+        }
+
+        data.push(JSON.stringify(bindingsString));
         empty = false;
       });
       resultStream.on('end', () => {

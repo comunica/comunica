@@ -42,7 +42,10 @@ export class QuerySourceAddSourceAttribution implements IQuerySource {
       map: (bindings) => {
         // Cast to our own Bindings object
         if (bindings instanceof Bindings) {
-          bindings = bindings.setContextEntry(KeysMergeBindingsContext.sourceBinding, this.innerSource.referenceValue);
+          bindings = bindings.setContextEntry(
+            KeysMergeBindingsContext.sourceBinding,
+            [ this.innerSource.referenceValue ],
+          );
         }
         return bindings;
       },
