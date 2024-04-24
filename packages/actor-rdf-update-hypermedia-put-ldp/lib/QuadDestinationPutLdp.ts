@@ -38,12 +38,15 @@ export class QuadDestinationPutLdp implements IQuadDestination {
     this.mediatorRdfSerialize = mediatorRdfSerialize;
   }
 
-  public insert(quads: AsyncIterator<RDF.Quad>): Promise<void> {
-    return this.wrapRdfUpdateRequest('INSERT', quads);
-  }
-
-  public async delete(_quads: AsyncIterator<RDF.Quad>): Promise<void> {
-    throw new Error(`Put-based LDP destinations don't support deletions`);
+  public async update(
+    quadStreams: { insert?: AsyncIterator<RDF.Quad>; delete?: AsyncIterator<RDF.Quad> },
+  ): Promise<void> {
+    if (quadStreams.delete) {
+      throw new Error(`Put-based LDP destinations don't support deletions`);
+    }
+    if (quadStreams.insert) {
+      await this.wrapRdfUpdateRequest('INSERT', quadStreams.insert);
+    }
   }
 
   public async wrapRdfUpdateRequest(type: 'INSERT' | 'DELETE', quads: AsyncIterator<RDF.Quad>): Promise<void> {

@@ -24,12 +24,15 @@ export class RdfJsQuadDestination implements IQuadDestination {
     });
   }
 
-  public delete(quads: AsyncIterator<RDF.Quad>): Promise<void> {
-    return this.promisifyEventEmitter(this.store.remove(quads));
-  }
-
-  public insert(quads: AsyncIterator<RDF.Quad>): Promise<void> {
-    return this.promisifyEventEmitter(this.store.import(quads));
+  public async update(
+    quadStreams: { insert?: AsyncIterator<RDF.Quad>; delete?: AsyncIterator<RDF.Quad> },
+  ): Promise<void> {
+    if (quadStreams.delete) {
+      await this.promisifyEventEmitter(this.store.remove(quadStreams.delete));
+    }
+    if (quadStreams.insert) {
+      await this.promisifyEventEmitter(this.store.import(quadStreams.insert));
+    }
   }
 
   public async deleteGraphs(

@@ -34,8 +34,7 @@ describe('ActorRdfUpdateQuadsDestination', () => {
   describe('An ActorRdfUpdateQuadsDestination instance', () => {
     const actor = new (<any> ActorRdfUpdateQuadsDestination)({ name: 'actor', bus });
     actor.getDestination = () => ({
-      insert: () => Promise.resolve(),
-      delete: () => Promise.resolve(),
+      update: () => Promise.resolve(),
     });
 
     describe('getContextDestinationUrl', () => {
@@ -151,11 +150,14 @@ class RdfJsQuadDestination {
     });
   }
 
-  public delete(quads: AsyncIterator<RDF.Quad>): Promise<void> {
-    return this.promisifyEventEmitter(this.store.remove(<any> quads));
-  }
-
-  public insert(quads: AsyncIterator<RDF.Quad>): Promise<void> {
-    return this.promisifyEventEmitter(this.store.import(<any> quads));
+  public async update(
+    quadStreams: { insert?: AsyncIterator<RDF.Quad>; delete?: AsyncIterator<RDF.Quad> },
+  ): Promise<void> {
+    if (quadStreams.delete) {
+      await this.promisifyEventEmitter(this.store.remove(<any> quadStreams.delete));
+    }
+    if (quadStreams.insert) {
+      await this.promisifyEventEmitter(this.store.import(<any> quadStreams.insert));
+    }
   }
 }
