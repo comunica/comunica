@@ -122,8 +122,7 @@ This will install the dependencies of all modules, and bootstrap the Lerna monor
 After that, all [Comunica packages](https://github.com/comunica/comunica/tree/master/packages) are available in the `packages/` folder
 and can be used in a development environment, such as querying with [Comunica SPARQL (`@comunica/query-sparql`)](https://github.com/comunica/comunica/tree/master/engines/query-sparql).
 
-Furthermore, this will add [pre-commit hooks](https://www.npmjs.com/package/pre-commit)
-to build, lint and test.
+Furthermore, this will add pre-commit hooks using [husky](https://www.npmjs.com/package/husky) to build, lint and test.
 These hooks can temporarily be disabled at your own risk by adding the `-n` flag to the commit command.
 
 ## Benchmarking
