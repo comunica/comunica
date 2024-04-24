@@ -5,7 +5,7 @@ import { validateHttpResponse } from '@comunica/bus-rdf-update-quads';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import { ArrayIterator, EmptyIterator } from 'asynciterator';
+import { ArrayIterator } from 'asynciterator';
 import { Headers } from 'cross-fetch';
 import { termToString } from 'rdf-string-ttl';
 import { Readable } from 'readable-stream';
@@ -41,7 +41,7 @@ export class QuadDestinationPatchSparqlUpdate implements IQuadDestination {
     quadsToInsert?: AsyncIterator<RDF.Quad>,
     quadsToDelete?: AsyncIterator<RDF.Quad>,
   ): AsyncIterator<string> {
-    return new EmptyIterator<string>()
+    return new ArrayIterator<string>([], { autoStart: false })
       .append(this.createQuadsQuery('DELETE', quadsToDelete))
       .append(quadsToDelete && quadsToInsert ? [ ' ;\n' ] : [])
       .append(this.createQuadsQuery('INSERT', quadsToInsert));
