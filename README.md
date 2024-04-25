@@ -63,7 +63,8 @@ Or jump right into one of the available query engines:
 
  - Source Customisation
    * [Comunica SPARQL File](https://github.com/comunica/comunica/tree/master/engines/query-sparql-file#readme): Engine to query over local RDF files
-   * [Comunica SPARQL RDFJS](https://github.com/comunica/comunica/tree/master/engines/query-sparql-rdfjs#readme): Engine to query over in-memory [RDFJS-compliant sources](https://rdf.js.org/stream-spec/#source-interface).
+   * [Comunica SPARQL RDF/JS](https://github.com/comunica/comunica/tree/master/engines/query-sparql-rdfjs#readme): Engine to query over in-memory [RDF/JS-compliant sources](https://rdf.js.org/stream-spec/#source-interface).
+   * [Comunica SPARQL RDF/JS Lite](https://github.com/comunica/comunica/tree/master/engines/query-sparql-rdfjs-lite#readme): Engine optimized for bundle size to query over in-memory [RDF/JS-compliant sources](https://rdf.js.org/stream-spec/#source-interface).
    * [Comunica SPARQL HDT](https://github.com/comunica/comunica-feature-hdt/tree/master/engines/query-sparql-hdt#readme): Library to query over local [HDT](https://www.rdfhdt.org/) files
 
  - Solid Customisation
