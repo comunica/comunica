@@ -18,13 +18,13 @@ This module is part of the [Comunica framework](https://comunica.dev/).
 ## Install
 
 ```bash
-$ yarn add @comunica/query-sparql-rdfjs
+$ yarn add @comunica/query-sparql-rdfjs-lite
 ```
 
 ## Query
 
 ```typescript
-const QueryEngine = require('@comunica/query-sparql-rdfjs').QueryEngine;
+const QueryEngine = require('@comunica/query-sparql-rdfjs-lite').QueryEngine;
 const N3Store = require('n3').Store;
 const DataFactory = require('n3').DataFactory;
 
@@ -81,7 +81,7 @@ _[**Read more** about querying in an application](https://comunica.dev/docs/quer
 ## Update
 
 ```javascript
-const QueryEngine = require('@comunica/query-sparql-rdfjs').QueryEngine;
+const QueryEngine = require('@comunica/query-sparql-rdfjs-lite').QueryEngine;
 const N3Store = require('n3').Store;
 
 // This can be any RDFJS store
