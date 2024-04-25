@@ -11,7 +11,7 @@ At the time of writing, the minified size of this package is 648,88 KB (145,79 K
 This package excludes the ability to query external SPARQL endpoints via the `SERVICE` keyword,
 and does not allow serialization of results to formats such as SPARQL/JSON and SPARQL/XML.
 If such functionality would be needed, [Comunica SPARQL RDF/JS](https://github.com/comunica/comunica/tree/master/engines/query-sparql-rdfjs#readme)
-should be used instead. 
+should be used instead.
 
 This module is part of the [Comunica framework](https://comunica.dev/).
 
