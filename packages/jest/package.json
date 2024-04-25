@@ -34,7 +34,7 @@
     "lib/**/*.js.map"
   ],
   "scripts": {
-    "build": "npm run build:ts",
+    "build": "yarn run build:ts",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\""
   },
   "dependencies": {
