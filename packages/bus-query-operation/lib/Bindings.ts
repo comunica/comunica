@@ -214,8 +214,8 @@ export function materializeOperation(
       const values: Algebra.Operation[] = []; // TODO don't copy code
       const overlappingVariables: RDF.Variable[] = [];
       const overlappingBindings: Record<string, RDF.Literal | RDF.NamedNode>[] = [];
-      for (const currentExpr of op.expression.args) {
-        const currentTerm = currentExpr.term;
+      for (const currentExprArg of op.expression.args) {
+        const currentTerm = currentExprArg.term;
         if (currentTerm.termType === "Variable") {
           if (relevantBindings.has(currentTerm)) {
             const newBinding = { [<string> termToString(currentTerm)]:
@@ -235,9 +235,17 @@ export function materializeOperation(
         }          
       }
 
-      return {
+      let recursionResult: Algebra.Operation = materializeOperation(
+        op.input,
+        bindings, // TODO This will NOT result in non-projected variables being replaced with their InitialBindings values
+        bindingsFactory,
+        options,
+        originalBindings ? originalBindings : bindings,
+      );
+
+      return { //TODO should recurse on op.expression?
         recurse: false,
-        result: factory.createFilter(factory.createJoin(values.concat([op.input])), op.expression),values
+        result: factory.createFilter(factory.createJoin(values.concat([recursionResult])), op.expression), values //TODO remove ', values'?
       }
     },
     values(op: Algebra.Values, factory: Factory) {
