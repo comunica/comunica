@@ -208,34 +208,31 @@ export function materializeOperation(
       }
       let relevantBindings = originalBindings ? originalBindings : bindings;
 
-      // TODO Create the values from overlap between filterExprs and IB
-      // Find variables from the filter which are present in the InitialBindings
-      // This will result in those variables being handled via a values clause.
+      // Make a values clause using all the variables from IB
       const values: Algebra.Operation[] = []; // TODO don't copy code
-      const overlappingVariables: RDF.Variable[] = [];
-      const overlappingBindings: Record<string, RDF.Literal | RDF.NamedNode>[] = [];
-      for (const currentExprArg of op.expression.args) {
-        const currentTerm = currentExprArg.term;
-        if (currentTerm.termType === "Variable") {
-          if (relevantBindings.has(currentTerm)) {
-            const newBinding = { [<string> termToString(currentTerm)]:
-              <RDF.NamedNode | RDF.Literal> relevantBindings.get(currentTerm) };
-  
-            overlappingVariables.push(currentTerm);
-            overlappingBindings.push(newBinding);
-            values.push(factory.createValues([currentTerm], [newBinding]));
-          }  
-        }
+      for (let [variable, binding] of relevantBindings) {
+        const newBinding = { [<string> termToString(variable)]: <RDF.NamedNode | RDF.Literal> binding }; // TODO don't want cast
+        values.push(factory.createValues([variable], [newBinding]));
       }
 
-      if (overlappingVariables.length === 0) {
+      if (values.length === 0) {
         return {
-          recurse: false,
+          recurse: false, //TODO should be recurse true
           result: op,
         }          
       }
 
-      let recursionResult: Algebra.Operation = materializeOperation(
+      // Recursively handle the filter-expression
+      let recursionResultExpression: Algebra.Expression = <Algebra.Expression> materializeOperation(
+        op.expression,
+        bindings, // TODO This will NOT result in non-projected variables being replaced with their InitialBindings values
+        bindingsFactory,
+        options,
+        originalBindings ? originalBindings : bindings,
+      );
+
+
+      let recursionResultInput: Algebra.Operation = materializeOperation(
         op.input,
         bindings, // TODO This will NOT result in non-projected variables being replaced with their InitialBindings values
         bindingsFactory,
@@ -243,9 +240,9 @@ export function materializeOperation(
         originalBindings ? originalBindings : bindings,
       );
 
-      return { //TODO should recurse on op.expression?
+      return {
         recurse: false,
-        result: factory.createFilter(factory.createJoin(values.concat([recursionResult])), op.expression), values //TODO remove ', values'?
+        result: factory.createFilter(factory.createJoin(values.concat([recursionResultInput])), recursionResultExpression), values //TODO remove ', values'?
       }
     },
     values(op: Algebra.Values, factory: Factory) {
