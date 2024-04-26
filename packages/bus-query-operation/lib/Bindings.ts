@@ -169,10 +169,11 @@ export function materializeOperation(
       const values: Algebra.Operation[] = [];
       const overlappingVariables: RDF.Variable[] = [];
       const overlappingBindings: Record<string, RDF.Literal | RDF.NamedNode>[] = [];
+      originalBindings = originalBindings ? originalBindings : bindings; //TODO code duplication?
       for (const currentVariable of op.variables) {
-        if (bindings.has(currentVariable)) {
+        if (originalBindings.has(currentVariable)) {
           const newBinding = { [termToString(currentVariable)]:
-            <RDF.NamedNode | RDF.Literal> bindings.get(currentVariable) };
+            <RDF.NamedNode | RDF.Literal> originalBindings.get(currentVariable) };
 
           overlappingVariables.push(currentVariable);
           overlappingBindings.push(newBinding);
@@ -185,7 +186,7 @@ export function materializeOperation(
         subBindings,
         bindingsFactory,
         options,
-        bindings,
+        originalBindings ? originalBindings : bindings,
       );
 
       if (values.length > 0) {
@@ -205,14 +206,12 @@ export function materializeOperation(
           result: op,
         }
       }
-      let relevantBindings = bindings;
-      if (originalBindings) {
-        relevantBindings = originalBindings;
-      }
+      let relevantBindings = originalBindings ? originalBindings : bindings;
+
       // TODO Create the values from overlap between filterExprs and IB
       // Find variables from the filter which are present in the InitialBindings
       // This will result in those variables being handled via a values clause.
-      const values: Algebra.Operation[] = [];
+      const values: Algebra.Operation[] = []; // TODO don't copy code
       const overlappingVariables: RDF.Variable[] = [];
       const overlappingBindings: Record<string, RDF.Literal | RDF.NamedNode>[] = [];
       for (const currentExpr of op.expression.args) {
