@@ -83,6 +83,7 @@
     "@comunica/actor-init-query": "^3.0.3",
     "@comunica/actor-optimize-query-operation-assign-sources-exhaustive": "^3.0.3",
     "@comunica/actor-optimize-query-operation-bgp-to-join": "^3.0.3",
+    "@comunica/actor-optimize-query-operation-construct-distinct": "^1.0.0",
     "@comunica/actor-optimize-query-operation-describe-to-constructs-subject": "^3.0.3",
     "@comunica/actor-optimize-query-operation-filter-pushdown": "^3.0.3",
     "@comunica/actor-optimize-query-operation-group-sources": "^3.0.3",
