@@ -1,6 +1,6 @@
 import type { RegularFunction } from '@comunica/bus-functions/lib/implementation/Core';
 import { BaseFunctionDefinition } from '@comunica/bus-functions/lib/implementation/Core';
-import { KeysExpressionEvaluator } from '@comunica/context-entries';
+import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import { BlankNodeBindingsScoped } from '@comunica/data-factory';
 import * as E from '@comunica/expression-evaluator/lib/expressions';
 import {
@@ -251,7 +251,7 @@ class Concat extends BaseFunctionDefinition {
         const operation = concatTree.search(
           [ await pTerm ],
           exprEval.context.getSafe(KeysExpressionEvaluator.superTypeProvider),
-          exprEval.context.getSafe(KeysExpressionEvaluator.functionArgumentsCache),
+          exprEval.context.getSafe(KeysInitQuery.functionArgumentsCache),
         );
         if (!operation) {
           throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.CONCAT);
@@ -308,7 +308,7 @@ class BNode extends BaseFunctionDefinition {
       const operation = BNode.bnodeTree.search(
         [ input ],
         exprEval.context.getSafe(KeysExpressionEvaluator.superTypeProvider),
-        exprEval.context.getSafe(KeysExpressionEvaluator.functionArgumentsCache),
+        exprEval.context.getSafe(KeysInitQuery.functionArgumentsCache),
       );
       if (!operation) {
         throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.BNODE);

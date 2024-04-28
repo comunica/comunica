@@ -1,4 +1,4 @@
-import { KeysExpressionEvaluator } from '@comunica/context-entries';
+import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import type * as E from '@comunica/expression-evaluator/lib/expressions';
 import type {
   IEvalContext,
@@ -59,7 +59,7 @@ export abstract class TermSparqlFunction<O extends C.RegularOperator | C.NamedOp
       this.overloads.search(
         args,
         exprEval.context.getSafe(KeysExpressionEvaluator.superTypeProvider),
-        exprEval.context.getSafe(KeysExpressionEvaluator.functionArgumentsCache),
+        exprEval.context.getSafe(KeysInitQuery.functionArgumentsCache),
       ) || this.handleInvalidTypes(args);
     return concreteFunction(exprEval)(args);
   }

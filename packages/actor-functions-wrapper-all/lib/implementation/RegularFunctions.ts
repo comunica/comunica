@@ -1,6 +1,6 @@
 import type { InternalEvaluator } from '@comunica/actor-expression-evaluator-factory-default/lib/InternalEvaluator';
 import { RegularFunction } from '@comunica/bus-functions/lib/implementation/Core';
-import { KeysExpressionEvaluator } from '@comunica/context-entries';
+import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 
 import type { IInternalEvaluator } from '@comunica/expression-evaluator';
 import * as E from '@comunica/expression-evaluator/lib/expressions';
@@ -500,12 +500,12 @@ class IRI extends RegularFunction {
     .set([ 'namedNode' ], exprEval => args => {
       const lit = <E.NamedNode> args[0];
       const iri = resolveRelativeIri(lit.str(),
-        exprEval.context.getSafe(KeysExpressionEvaluator.baseIRI) || '');
+        exprEval.context.getSafe(KeysInitQuery.baseIRI) || '');
       return new E.NamedNode(iri);
     })
     .onString1(exprEval => lit => {
       const iri = resolveRelativeIri(lit.str(),
-        exprEval.context.getSafe(KeysExpressionEvaluator.baseIRI) || '');
+        exprEval.context.getSafe(KeysInitQuery.baseIRI) || '');
       return new E.NamedNode(iri);
     })
     .collect();
@@ -945,7 +945,7 @@ class Now extends RegularFunction {
 
   protected overloads = declare(C.RegularOperator.NOW).set([], exprEval => () =>
     new E.DateTimeLiteral(toDateTimeRepresentation(
-      { date: exprEval.context.getSafe(KeysExpressionEvaluator.now),
+      { date: exprEval.context.getSafe(KeysInitQuery.queryTimestamp),
         timeZone: exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone) },
     ))).collect();
 }
