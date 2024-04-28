@@ -12,9 +12,9 @@ import { AlgebraTransformer } from './AlgebraTransformer';
 import { ExpressionEvaluator } from './ExpressionEvaluator';
 
 /**
- * A comunica Base Expression Evaluator Factory Actor.
+ * A comunica Default Expression Evaluator Factory Actor.
  */
-export class ActorExpressionEvaluatorFactoryBase extends ActorExpressionEvaluatorFactory {
+export class ActorExpressionEvaluatorFactoryDefault extends ActorExpressionEvaluatorFactory {
   public constructor(args: IActorExpressionEvaluatorFactoryArgs) {
     super(args);
   }

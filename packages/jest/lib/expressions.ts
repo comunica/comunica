@@ -1,7 +1,7 @@
 import {
-  ActorExpressionEvaluatorFactoryBase,
-} from '@comunica/actor-expression-evaluator-factory-base';
-import { InternalEvaluator } from '@comunica/actor-expression-evaluator-factory-base/lib/InternalEvaluator';
+  ActorExpressionEvaluatorFactoryDefault,
+} from '@comunica/actor-expression-evaluator-factory-default/lib';
+import { InternalEvaluator } from '@comunica/actor-expression-evaluator-factory-default/lib/InternalEvaluator';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type {
   ActorExpressionEvaluatorFactory, IActorExpressionEvaluatorFactoryArgs,
@@ -98,7 +98,7 @@ export function getMockEEFactory({
   mediatorQueryOperation,
   mediatorFunctions,
 }: Partial<IActorExpressionEvaluatorFactoryArgs> = {}): ActorExpressionEvaluatorFactory {
-  return new ActorExpressionEvaluatorFactoryBase({
+  return new ActorExpressionEvaluatorFactoryDefault({
     bus: new Bus({ name: 'testBusMock' }),
     name: 'mockEEFactory',
     mediatorQueryOperation: mediatorQueryOperation || getMockMediatorQueryOperation(),

@@ -3,6 +3,6 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/config-query-sparql/^2.0.0/components/context.jsonld"
   ],
   "import": [
-    "ccqs:config/expression-evaluator-factory/actors/base.json"
+    "ccqs:config/expression-evaluator-factory/actors/default.json"
   ]
 }

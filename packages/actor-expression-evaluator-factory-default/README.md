@@ -1,8 +1,8 @@
-# Comunica Base Expression Evaluator Factory Actor
+# Comunica Default Expression Evaluator Factory Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-expression-evaluator-factory-base.svg)](https://www.npmjs.com/package/@comunica/actor-expression-evaluator-factory-base)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-expression-evaluator-factory-default.svg)](https://www.npmjs.com/package/@comunica/actor-expression-evaluator-factory-default)
 
-A comunica Base Expression Evaluator Factory Actor.
+A comunica Default Expression Evaluator Factory Actor.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
@@ -12,7 +12,7 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/actor-expression-evaluator-factory-base
+$ yarn add @comunica/actor-expression-evaluator-factory-default
 ```
 
 ## Configure
@@ -22,13 +22,13 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-expression-evaluator-factory-base/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-expression-evaluator-factory-default/^1.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
-      "@id": "urn:comunica:default:expression-evaluator-factory/actors#base",
-      "@type": "ActorExpressionEvaluatorFactoryBase"
+      "@id": "urn:comunica:default:expression-evaluator-factory/actors#default",
+      "@type": "ActorExpressionEvaluatorFactoryDefault"
     }
   ]
 }

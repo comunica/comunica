@@ -1,14 +1,14 @@
 {
-  "name": "@comunica/actor-expression-evaluator-factory-base",
+  "name": "@comunica/actor-expression-evaluator-factory-default",
   "version": "1.0.0",
-  "description": "A base expression-evaluator-factory actor",
+  "description": "A default expression-evaluator-factory actor",
   "lsd:module": true,
   "main": "lib/index.js",
   "typings": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-expression-evaluator-factory-base"
+    "directory": "packages/actor-expression-evaluator-factory-default"
   },
   "publishConfig": {
     "access": "public"
@@ -18,7 +18,7 @@
     "comunica",
     "actor",
     "expression-evaluator-factory",
-    "base"
+    "default"
   ],
   "license": "MIT",
   "bugs": {

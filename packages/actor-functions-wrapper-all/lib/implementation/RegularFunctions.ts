@@ -1,4 +1,4 @@
-import type { InternalEvaluator } from '@comunica/actor-expression-evaluator-factory-base/lib/InternalEvaluator';
+import type { InternalEvaluator } from '@comunica/actor-expression-evaluator-factory-default/lib/InternalEvaluator';
 import { RegularFunction } from '@comunica/bus-functions/lib/implementation/Core';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 

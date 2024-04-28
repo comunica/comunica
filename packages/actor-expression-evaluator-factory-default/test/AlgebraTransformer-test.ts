@@ -1,4 +1,4 @@
-import { AlgebraTransformer } from '@comunica/actor-expression-evaluator-factory-base/lib/AlgebraTransformer';
+import { AlgebraTransformer } from '@comunica/actor-expression-evaluator-factory-default/lib/AlgebraTransformer';
 import { NamedExtension } from '@comunica/actor-functions-wrapper-all/lib/implementation/NamedExtension';
 import { namedFunctions } from '@comunica/actor-functions-wrapper-all/lib/implementation/NamedFunctions';
 import { regularFunctions } from '@comunica/actor-functions-wrapper-all/lib/implementation/RegularFunctions';
