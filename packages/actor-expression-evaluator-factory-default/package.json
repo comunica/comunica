@@ -32,17 +32,14 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-bindings-aggeregator-factory": "^1.0.0",
     "@comunica/bus-expression-evaluator-factory": "^1.0.0",
     "@comunica/bus-functions": "^1.0.0",
     "@comunica/bus-query-operation": "^2.9.0",
-    "@comunica/bus-term-comparator-factory": "^1.0.0",
     "@comunica/context-entries": "^2.8.2",
     "@comunica/core": "^2.8.2",
     "@comunica/expression-evaluator": "^2.9.0",
     "@comunica/types": "^2.8.2",
     "@rdfjs/types": "*",
-    "lru-cache": "^10.0.0",
     "sparqlalgebrajs": "^4.2.0"
   },
   "scripts": {

@@ -32,6 +32,8 @@
   ],
   "dependencies": {
     "@comunica/types": "^2.8.2",
+    "@comunica/context-entries": "^2.8.2",
+    "lru-cache": "^10.0.0",
     "@rdfjs/types": "*",
     "rdf-data-factory": "^1.1.2",
     "rdf-string": "^1.6.3",
