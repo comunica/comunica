@@ -1,10 +1,12 @@
 import { createFuncMediator } from '@comunica/actor-functions-wrapper-all/test/util';
 import { BindingsFactory } from '@comunica/bindings-factory';
-import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
+import type {
+  MediatorExpressionEvaluatorFactory,
+} from '@comunica/bus-expression-evaluator-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Actor, Bus } from '@comunica/core';
 import * as sparqlee from '@comunica/expression-evaluator';
-import { getMockEEFactory } from '@comunica/jest';
+import { getMockMediatorExpressionEvaluatorFactory } from '@comunica/jest';
 import type { IQueryOperationResultBindings } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
@@ -18,7 +20,7 @@ const BF = new BindingsFactory();
 describe('ActorQueryOperationExtend', () => {
   let bus: any;
   let mediatorQueryOperation: any;
-  let expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
+  let mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
 
   const example = (expression: any) => ({
     type: 'extend',
@@ -84,7 +86,7 @@ describe('ActorQueryOperationExtend', () => {
         type: 'bindings',
       }),
     };
-    expressionEvaluatorFactory = getMockEEFactory({
+    mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
       mediatorQueryOperation,
       mediatorFunctions: createFuncMediator(),
     });
@@ -111,7 +113,12 @@ describe('ActorQueryOperationExtend', () => {
     let actor: ActorQueryOperationExtend;
 
     beforeEach(() => {
-      actor = new ActorQueryOperationExtend({ name: 'actor', bus, mediatorQueryOperation, expressionEvaluatorFactory });
+      actor = new ActorQueryOperationExtend({
+        name: 'actor',
+        bus,
+        mediatorQueryOperation,
+        mediatorExpressionEvaluatorFactory,
+      });
     });
 
     it('should test on extend', () => {

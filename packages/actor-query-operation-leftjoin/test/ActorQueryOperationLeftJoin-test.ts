@@ -1,12 +1,12 @@
 import { createFuncMediator } from '@comunica/actor-functions-wrapper-all/test/util';
 import { BindingsFactory } from '@comunica/bindings-factory';
-import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
+import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
-import { isExpressionError } from '@comunica/expression-evaluator';
 import * as sparqlee from '@comunica/expression-evaluator';
-import { getMockEEFactory } from '@comunica/jest';
-import type { IQueryOperationResultBindings, Bindings, IJoinEntry } from '@comunica/types';
+import { isExpressionError } from '@comunica/expression-evaluator';
+import { getMockMediatorExpressionEvaluatorFactory } from '@comunica/jest';
+import type { Bindings, IJoinEntry, IQueryOperationResultBindings } from '@comunica/types';
 import { ArrayIterator, UnionIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationLeftJoin } from '../lib';
@@ -18,7 +18,7 @@ describe('ActorQueryOperationLeftJoin', () => {
   let bus: any;
   let mediatorQueryOperation: any;
   let mediatorJoin: any;
-  let expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
+  let mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -34,7 +34,7 @@ describe('ActorQueryOperationLeftJoin', () => {
         type: 'bindings',
       }),
     };
-    expressionEvaluatorFactory = getMockEEFactory({
+    mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
       mediatorQueryOperation,
       mediatorFunctions: createFuncMediator(),
     });
@@ -78,7 +78,7 @@ describe('ActorQueryOperationLeftJoin', () => {
         bus,
         mediatorQueryOperation,
         mediatorJoin,
-        expressionEvaluatorFactory,
+        mediatorExpressionEvaluatorFactory,
       });
     });
 

@@ -500,12 +500,12 @@ class IRI extends RegularFunction {
     .set([ 'namedNode' ], exprEval => args => {
       const lit = <E.NamedNode> args[0];
       const iri = resolveRelativeIri(lit.str(),
-        exprEval.context.getSafe(KeysInitQuery.baseIRI) || '');
+        exprEval.context.get(KeysInitQuery.baseIRI) ?? '');
       return new E.NamedNode(iri);
     })
     .onString1(exprEval => lit => {
       const iri = resolveRelativeIri(lit.str(),
-        exprEval.context.getSafe(KeysInitQuery.baseIRI) || '');
+        exprEval.context.get(KeysInitQuery.baseIRI) ?? '');
       return new E.NamedNode(iri);
     })
     .collect();

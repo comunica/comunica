@@ -7,6 +7,8 @@ import { extractTimeZone } from './DateTimeHelpers';
 export function prepareEvaluatorActionContext(orgContext: IActionContext): IActionContext {
   let context = orgContext;
 
+  context = context.setDefault(KeysInitQuery.queryTimestamp, new Date(Date.now()));
+  context = context.setDefault(KeysInitQuery.functionArgumentsCache, {});
   // Handle two variants of providing extension functions
   if (context.has(KeysInitQuery.extensionFunctionCreator) && context.has(KeysInitQuery.extensionFunctions)) {
     throw new Error('Illegal simultaneous usage of extensionFunctionCreator and extensionFunctions in context');
