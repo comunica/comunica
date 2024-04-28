@@ -85,7 +85,7 @@ describe('evaluators', () => {
         context: actionContext,
       });
       expect(mediate.mock.calls.length).toBe(1);
-      expect(await evaluator.evaluateAsInternal(BF.bindings())).toEqual(new IntegerLiteral(2));
+      expect(await evaluator.evaluateAsEvaluatorExpression(BF.bindings())).toEqual(new IntegerLiteral(2));
     });
   });
 });

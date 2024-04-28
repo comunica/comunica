@@ -35,7 +35,7 @@ export class InternalEvaluator {
     );
   }
 
-  public async internalEvaluation(expr: E.Expression, mapping: RDF.Bindings): Promise<E.Term> {
+  public async evaluatorExpressionEvaluation(expr: E.Expression, mapping: RDF.Bindings): Promise<E.Term> {
     const evaluator = this.subEvaluators[expr.expressionType];
     return evaluator.bind(this)(expr, mapping);
   }

@@ -14,12 +14,12 @@ describe('recursive evaluators', () => {
     const evaluator = getMockInternalEvaluator();
 
     it('is able to evaluate operator', async() => {
-      expect(await evaluator.internalEvaluation(new E.IntegerLiteral(1), BF.bindings()))
+      expect(await evaluator.evaluatorExpressionEvaluation(new E.IntegerLiteral(1), BF.bindings()))
         .toEqual(new E.IntegerLiteral(1));
     });
 
     it('is not able to evaluate aggregates by default', async() => {
-      await expect(evaluator.internalEvaluation(new E.Aggregate('count', {
+      await expect(evaluator.evaluatorExpressionEvaluation(new E.Aggregate('count', {
         type: types.EXPRESSION,
         expressionType: expressionTypes.AGGREGATE,
         aggregator: 'count',

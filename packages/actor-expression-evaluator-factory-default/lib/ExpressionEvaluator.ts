@@ -18,20 +18,20 @@ export class ExpressionEvaluator implements IExpressionEvaluator {
   }
 
   public async evaluate(mapping: RDF.Bindings): Promise<RDF.Term> {
-    const result = await this.internalEvaluator.internalEvaluation(this.expr, mapping);
+    const result = await this.internalEvaluator.evaluatorExpressionEvaluation(this.expr, mapping);
     return result.toRDF();
   }
 
   public async evaluateAsEBV(mapping: RDF.Bindings): Promise<boolean> {
-    const result = await this.internalEvaluator.internalEvaluation(this.expr, mapping);
+    const result = await this.internalEvaluator.evaluatorExpressionEvaluation(this.expr, mapping);
     return result.coerceEBV();
   }
 
-  public evaluateAsInternal(mapping: RDF.Bindings): Promise<E.Expression> {
-    return this.internalEvaluation(this.expr, mapping);
+  public evaluateAsEvaluatorExpression(mapping: RDF.Bindings): Promise<E.Expression> {
+    return this.evaluatorExpressionEvaluation(this.expr, mapping);
   }
 
-  public internalEvaluation(expr: E.Expression, mapping: RDF.Bindings): Promise<E.Term> {
-    return this.internalEvaluator.internalEvaluation(expr, mapping);
+  public evaluatorExpressionEvaluation(expr: E.Expression, mapping: RDF.Bindings): Promise<E.Term> {
+    return this.internalEvaluator.evaluatorExpressionEvaluation(expr, mapping);
   }
 }

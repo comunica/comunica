@@ -48,11 +48,11 @@ class IfSPARQL extends BaseFunctionDefinition {
   protected arity = 3;
 
   public apply = async({ args, mapping, exprEval }: IEvalContext): Promise<E.TermExpression> => {
-    const valFirst = await exprEval.internalEvaluation(args[0], mapping);
+    const valFirst = await exprEval.evaluatorExpressionEvaluation(args[0], mapping);
     const ebv = valFirst.coerceEBV();
     return ebv ?
-      exprEval.internalEvaluation(args[1], mapping) :
-      exprEval.internalEvaluation(args[2], mapping);
+      exprEval.evaluatorExpressionEvaluation(args[1], mapping) :
+      exprEval.evaluatorExpressionEvaluation(args[2], mapping);
   };
 }
 
@@ -69,7 +69,7 @@ class Coalesce extends BaseFunctionDefinition {
     const errors: Error[] = [];
     for (const expr of args) {
       try {
-        return await exprEval.internalEvaluation(expr, mapping);
+        return await exprEval.evaluatorExpressionEvaluation(expr, mapping);
       } catch (error: unknown) {
         errors.push(<Error> error);
       }
@@ -89,16 +89,16 @@ class LogicalOr extends BaseFunctionDefinition {
   public apply = async({ args, mapping, exprEval }: IEvalContext): Promise<E.TermExpression> => {
     const [ leftExpr, rightExpr ] = args;
     try {
-      const leftTerm = await exprEval.internalEvaluation(leftExpr, mapping);
+      const leftTerm = await exprEval.evaluatorExpressionEvaluation(leftExpr, mapping);
       const left = leftTerm.coerceEBV();
       if (left) {
         return bool(true);
       }
-      const rightTerm = await exprEval.internalEvaluation(rightExpr, mapping);
+      const rightTerm = await exprEval.evaluatorExpressionEvaluation(rightExpr, mapping);
       const right = rightTerm.coerceEBV();
       return bool(right);
     } catch (error: unknown) {
-      const rightErrorTerm = await exprEval.internalEvaluation(rightExpr, mapping);
+      const rightErrorTerm = await exprEval.evaluatorExpressionEvaluation(rightExpr, mapping);
       const rightError = rightErrorTerm.coerceEBV();
       if (!rightError) {
         throw error;
@@ -120,16 +120,16 @@ class LogicalAnd extends BaseFunctionDefinition {
   public apply = async({ args, mapping, exprEval }: IEvalContext): Promise<E.TermExpression> => {
     const [ leftExpr, rightExpr ] = args;
     try {
-      const leftTerm = await exprEval.internalEvaluation(leftExpr, mapping);
+      const leftTerm = await exprEval.evaluatorExpressionEvaluation(leftExpr, mapping);
       const left = leftTerm.coerceEBV();
       if (!left) {
         return bool(false);
       }
-      const rightTerm = await exprEval.internalEvaluation(rightExpr, mapping);
+      const rightTerm = await exprEval.evaluatorExpressionEvaluation(rightExpr, mapping);
       const right = rightTerm.coerceEBV();
       return bool(right);
     } catch (error: unknown) {
-      const rightErrorTerm = await exprEval.internalEvaluation(rightExpr, mapping);
+      const rightErrorTerm = await exprEval.evaluatorExpressionEvaluation(rightExpr, mapping);
       const rightError = rightErrorTerm.coerceEBV();
       if (rightError) {
         throw error;
@@ -149,7 +149,7 @@ class LogicalAnd extends BaseFunctionDefinition {
 class SameTerm extends BaseFunctionDefinition {
   protected arity = 2;
   public apply = async({ args, mapping, exprEval }: IEvalContext): Promise<E.TermExpression> => {
-    const [ leftExpr, rightExpr ] = args.map(arg => exprEval.internalEvaluation(arg, mapping));
+    const [ leftExpr, rightExpr ] = args.map(arg => exprEval.evaluatorExpressionEvaluation(arg, mapping));
     const [ left, right ] = await Promise.all([ leftExpr, rightExpr ]);
     return bool(left.toRDF().equals(right.toRDF()));
   };
@@ -176,7 +176,7 @@ class InSPARQL extends BaseFunctionDefinition {
   public apply = async(context: IEvalContext): Promise<E.TermExpression> => {
     const { args, mapping, exprEval } = context;
     const [ leftExpr, ...remaining ] = args;
-    const left = await exprEval.internalEvaluation(leftExpr, mapping);
+    const left = await exprEval.evaluatorExpressionEvaluation(leftExpr, mapping);
     return await this.inRecursive(left, { ...context, args: remaining }, []);
   };
 
@@ -194,7 +194,7 @@ class InSPARQL extends BaseFunctionDefinition {
     try {
       // We know this will not be undefined because we check args.length === 0
       const nextExpression = args.shift()!;
-      const next = await exprEval.internalEvaluation(nextExpression, mapping);
+      const next = await exprEval.evaluatorExpressionEvaluation(nextExpression, mapping);
       if ((<E.BooleanLiteral> this.equalityFunction.applyOnTerms([ needle, next ], exprEval)).typedValue) {
         return bool(true);
       }
@@ -246,7 +246,7 @@ class Concat extends BaseFunctionDefinition {
   public apply = async(context: IEvalContext): Promise<E.TermExpression> => {
     const { args, mapping, exprEval } = context;
     const pLits: Promise<E.Literal<string>>[] = args
-      .map(async expr => exprEval.internalEvaluation(expr, mapping))
+      .map(async expr => exprEval.evaluatorExpressionEvaluation(expr, mapping))
       .map(async pTerm => {
         const operation = concatTree.search(
           [ await pTerm ],
@@ -300,7 +300,7 @@ class BNode extends BaseFunctionDefinition {
   public apply = async(context: IEvalContext): Promise<E.TermExpression> => {
     const { args, mapping, exprEval } = context;
     const input = args.length === 1 ?
-      await exprEval.internalEvaluation(args[0], mapping) :
+      await exprEval.evaluatorExpressionEvaluation(args[0], mapping) :
       undefined;
 
     let strInput: string | undefined;

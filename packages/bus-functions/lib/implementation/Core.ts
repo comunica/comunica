@@ -65,7 +65,7 @@ export abstract class TermSparqlFunction<O extends C.RegularOperator | C.NamedOp
   }
 
   public apply = async({ args, exprEval, mapping }: IEvalContext): Promise<E.TermExpression> => this.applyOnTerms(
-    await Promise.all(args.map(arg => exprEval.internalEvaluation(arg, mapping))),
+    await Promise.all(args.map(arg => exprEval.evaluatorExpressionEvaluation(arg, mapping))),
     exprEval,
   );
 

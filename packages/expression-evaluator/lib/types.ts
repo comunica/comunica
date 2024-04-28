@@ -19,5 +19,5 @@ export interface IExpressionEvaluator extends IInternalEvaluator {
    */
   evaluateAsEBV: (mapping: RDF.Bindings) => Promise<boolean>;
 
-  evaluateAsInternal: (mapping: RDF.Bindings) => Promise<E.Expression>;
+  evaluateAsEvaluatorExpression: (mapping: RDF.Bindings) => Promise<E.Expression>;
 }

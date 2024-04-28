@@ -20,7 +20,7 @@ export type ArgumentType = 'term' | E.TermType | C.TypeURL | C.TypeAlias;
 export type SearchStack = OverloadTree[];
 
 export interface IInternalEvaluator {
-  internalEvaluation: (expr: E.Expression, mapping: RDF.Bindings) => Promise<E.Term>;
+  evaluatorExpressionEvaluation: (expr: E.Expression, mapping: RDF.Bindings) => Promise<E.Term>;
 
   context: IActionContext;
 }
