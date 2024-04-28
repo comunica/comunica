@@ -2,21 +2,21 @@ import { createFuncMediator } from '@comunica/actor-functions-wrapper-all/test/u
 import { Bus } from '@comunica/core';
 import { getMockMediatorQueryOperation } from '@comunica/jest';
 import {
-  ActorTermComparatorFactoryInequalityFunctionsBased,
+  ActorTermComparatorFactoryExpressionEvaluator,
 } from '../lib';
 
-describe('ActorTermComparatorFactoryInequalityFunctionsBased', () => {
+describe('ActorTermComparatorFactoryExpressionEvaluator', () => {
   let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
   });
 
-  describe('An ActorTermComparatorFactoryInequalityFunctionsBased instance', () => {
-    let actor: ActorTermComparatorFactoryInequalityFunctionsBased;
+  describe('An ActorTermComparatorFactoryExpressionEvaluator instance', () => {
+    let actor: ActorTermComparatorFactoryExpressionEvaluator;
 
     beforeEach(() => {
-      actor = new ActorTermComparatorFactoryInequalityFunctionsBased({
+      actor = new ActorTermComparatorFactoryExpressionEvaluator({
         name: 'actor',
         bus,
         mediatorFunctions: createFuncMediator(),

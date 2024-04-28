@@ -13,9 +13,9 @@ import { prepareEvaluatorActionContext } from '@comunica/expression-evaluator/li
 import { InequalityFunctionBasedComparator } from './InequalityFunctionBasedComparator';
 
 /**
- * A comunica Inequality Functions Based Term Comparator Factory Actor.
+ * A comunica Expression Evaluator Based Term Comparator Factory Actor.
  */
-export class ActorTermComparatorFactoryInequalityFunctionsBased extends ActorTermComparatorFactory {
+export class ActorTermComparatorFactoryExpressionEvaluator extends ActorTermComparatorFactory {
   private readonly mediatorQueryOperation: MediatorQueryOperation;
   private readonly mediatorFunctions: MediatorFunctions;
   public constructor(args: IActorTermComparatorFactoryArgs) {

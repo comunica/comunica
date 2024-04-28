@@ -1,14 +1,14 @@
 {
-  "name": "@comunica/actor-term-comparator-factory-inequality-functions-based",
+  "name": "@comunica/actor-term-comparator-factory-expression-evaluator",
   "version": "1.0.0",
-  "description": "A inequality-functions-based term-comparator-factory actor",
+  "description": "A expression-evaluator term-comparator-factory actor",
   "lsd:module": true,
   "main": "lib/index.js",
   "typings": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-term-comparator-factory-inequality-functions-based"
+    "directory": "packages/actor-term-comparator-factory-expression-evaluator"
   },
   "publishConfig": {
     "access": "public"
@@ -18,7 +18,7 @@
     "comunica",
     "actor",
     "term-comparator-factory",
-    "inequality-functions-based"
+    "expression-evaluator"
   ],
   "license": "MIT",
   "bugs": {

@@ -1,6 +1,6 @@
 # Comunica Inequality Functions Based Term Comparator Factory Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-term-comparator-factory-inequality-functions-based.svg)](https://www.npmjs.com/package/@comunica/actor-term-comparator-factory-inequality-functions-based)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-term-comparator-factory-expression-evaluator.svg)](https://www.npmjs.com/package/@comunica/actor-term-comparator-factory-expression-evaluator)
 
 A comunica Inequality Functions Based Term Comparator Factory Actor.
 The actor orders types based on the inequality functions (`<` and `=`) of the expression evaluator.
@@ -13,7 +13,7 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/actor-term-comparator-factory-inequality-functions-based
+$ yarn add @comunica/actor-term-comparator-factory-expression-evaluator
 ```
 
 ## Configure
@@ -23,13 +23,13 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-term-comparator-factory-inequality-functions-based/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-term-comparator-factory-expression-evaluator/^1.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
       "@id": "urn:comunica:default:term-comparator-factory/actors#inequality-functions-based",
-      "@type": "ActorTermComparatorFactoryInequalityFunctionsBased"
+      "@type": "ActorTermComparatorFactoryExpressionEvaluator"
     }
   ]
 }

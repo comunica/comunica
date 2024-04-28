@@ -2,7 +2,7 @@ import { createFuncMediator } from '@comunica/actor-functions-wrapper-all/test/u
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import { Bus } from '@comunica/core';
 import { getMockMediatorQueryOperation } from '@comunica/jest';
-import { ActorTermComparatorFactoryInequalityFunctionsBased } from '../lib';
+import { ActorTermComparatorFactoryExpressionEvaluator } from '../lib';
 
 export function createTermCompMediator() {
   return <MediatorTermComparatorFactory> {
@@ -14,7 +14,7 @@ export function createTermCompMediator() {
 
 export function createTermCompActor() {
   const bus: any = new Bus({ name: 'bus' });
-  const actor = new ActorTermComparatorFactoryInequalityFunctionsBased({
+  const actor = new ActorTermComparatorFactoryExpressionEvaluator({
     name: 'actor',
     bus,
     mediatorFunctions: createFuncMediator(),

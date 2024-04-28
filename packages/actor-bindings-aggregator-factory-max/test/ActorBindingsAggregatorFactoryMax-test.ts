@@ -1,4 +1,4 @@
-import { createTermCompMediator } from '@comunica/actor-term-comparator-factory-inequality-functions-based/test/util';
+import { createTermCompMediator } from '@comunica/actor-term-comparator-factory-expression-evaluator/test/util';
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';

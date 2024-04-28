@@ -7,7 +7,7 @@ import { SampleAggregator } from '@comunica/actor-bindings-aggregator-factory-sa
 import { SumAggregator } from '@comunica/actor-bindings-aggregator-factory-sum';
 import { WildcardCountAggregator } from '@comunica/actor-bindings-aggregator-factory-wildcard-count';
 import { createFuncMediator } from '@comunica/actor-functions-wrapper-all/test/util';
-import { createTermCompMediator } from '@comunica/actor-term-comparator-factory-inequality-functions-based/test/util';
+import { createTermCompMediator } from '@comunica/actor-term-comparator-factory-expression-evaluator/test/util';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type {
   IActionBindingsAggregatorFactory,
