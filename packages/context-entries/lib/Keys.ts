@@ -185,11 +185,6 @@ export const KeysExpressionEvaluator = {
   extensionFunctionCreator: new ActionContextKey<AsyncExtensionFunctionCreator>(
     '@comunica/expression-evaluator:extensionFunctionCreator',
   ),
-  now: new ActionContextKey<Date>('@comunica/expression-evaluator:now'),
-  baseIRI: new ActionContextKey<string | undefined>('@comunica/expression-evaluator:baseIRI'),
-  functionArgumentsCache: new ActionContextKey<FunctionArgumentsCache>(
-    '@comunica/expression-evaluator:functionArgumentsCache',
-  ),
   superTypeProvider: new ActionContextKey<ISuperTypeProvider>('@comunica/expression-evaluator:superTypeProvider'),
   defaultTimeZone: new ActionContextKey<ITimeZoneRepresentation>('@comunica/expression-evaluator:defaultTimeZone'),
   actionContext: new ActionContextKey<IActionContext>('@comunica/expression-evaluator:actionContext'),
