@@ -20,7 +20,8 @@ export class NamedExtension extends BaseFunctionDefinition {
   }
 
   public apply = async({ args, exprEval, mapping }: IEvalContext): Promise<E.TermExpression> => {
-    const evaluatedArgs: E.Term[] = await Promise.all(args.map(arg => exprEval.evaluatorExpressionEvaluation(arg, mapping)));
+    const evaluatedArgs: E.Term[] = await Promise.all(args.map(arg =>
+      exprEval.evaluatorExpressionEvaluation(arg, mapping)));
     try {
       return new TermTransformer(exprEval.context.getSafe(KeysExpressionEvaluator.superTypeProvider))
         .transformRDFTermUnsafe(
