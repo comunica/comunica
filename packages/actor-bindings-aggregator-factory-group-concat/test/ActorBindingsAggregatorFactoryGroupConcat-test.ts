@@ -1,6 +1,12 @@
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { Bus } from '@comunica/core';
-import { BF, DF, getMockEEActionContext, getMockMediatorExpressionEvaluatorFactory, makeAggregate } from '@comunica/jest';
+import {
+  BF,
+  DF,
+  getMockEEActionContext,
+  getMockMediatorExpressionEvaluatorFactory,
+  makeAggregate,
+} from '@comunica/jest';
 import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { ActorBindingsAggregatorFactoryGroupConcat } from '../lib';
