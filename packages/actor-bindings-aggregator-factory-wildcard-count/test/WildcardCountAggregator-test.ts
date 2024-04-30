@@ -1,7 +1,6 @@
 import type { IBindingsAggregator } from '@comunica/bus-bindings-aggeregator-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
-import { ActionContext } from '@comunica/core';
-import { BF, DF, getMockEEFactory, int, makeAggregate } from '@comunica/jest';
+import { BF, DF, getMockEEActionContext, getMockEEFactory, int, makeAggregate } from '@comunica/jest';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { WildcardCountAggregator } from '../lib/WildcardCountAggregator';
@@ -34,7 +33,7 @@ describe('WildcardCountAggregator', () => {
   beforeEach(() => {
     expressionEvaluatorFactory = getMockEEFactory();
 
-    context = new ActionContext();
+    context = getMockEEActionContext();
   });
 
   describe('non distinctive count-wildcard', () => {

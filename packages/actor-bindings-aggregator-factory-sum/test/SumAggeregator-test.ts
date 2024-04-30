@@ -2,9 +2,18 @@ import { createFuncMediator } from '@comunica/actor-functions-wrapper-all/test/u
 import type { IBindingsAggregator } from '@comunica/bus-bindings-aggeregator-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { MediatorFunctions } from '@comunica/bus-functions';
-import { ActionContext } from '@comunica/core';
 import { RegularOperator } from '@comunica/expression-evaluator';
-import { BF, decimal, DF, float, getMockEEFactory, int, makeAggregate, nonLiteral } from '@comunica/jest';
+import {
+  BF,
+  decimal,
+  DF,
+  float,
+  getMockEEActionContext,
+  getMockEEFactory,
+  int,
+  makeAggregate,
+  nonLiteral,
+} from '@comunica/jest';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { SumAggregator } from '../lib';
@@ -45,7 +54,7 @@ describe('SumAggregator', () => {
     expressionEvaluatorFactory = getMockEEFactory();
     mediatorFunctions = createFuncMediator();
 
-    context = new ActionContext();
+    context = getMockEEActionContext();
   });
 
   describe('non distinctive sum', () => {

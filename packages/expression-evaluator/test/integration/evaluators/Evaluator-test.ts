@@ -1,8 +1,8 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { ITermFunction, MediatorFunctions } from '@comunica/bus-functions';
-import { ActionContext } from '@comunica/core';
-import { getMockEEFactory } from '@comunica/jest';
+import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
+import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { IntegerLiteral } from '../../../lib/expressions';
 import { TypeURL as DT } from '../../../lib/util/Consts';
@@ -15,11 +15,11 @@ const two = DF.literal('2', DF.namedNode(DT.XSD_INTEGER));
 
 describe('evaluators', () => {
   let factory: ActorExpressionEvaluatorFactory;
-  let actionContext: ActionContext;
+  let actionContext: IActionContext;
   let mediate: jest.Mock<ITermFunction, []>;
 
   beforeEach(() => {
-    actionContext = new ActionContext({});
+    actionContext = getMockEEActionContext();
 
     mediate = jest.fn((): ITermFunction => {
       return {
@@ -78,7 +78,7 @@ describe('evaluators', () => {
     });
   });
 
-  describe('evaluateAsInternal', () => {
+  describe('evaluateAsEvaluatorExpression', () => {
     it('is able to evaluate', async() => {
       const evaluator = await factory.run({
         algExpr: getMockExpression('1 + 1'),

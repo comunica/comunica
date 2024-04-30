@@ -1,6 +1,7 @@
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
-import { ActionContext, Bus } from '@comunica/core';
-import { BF, DF, getMockMediatorExpressionEvaluatorFactory, makeAggregate } from '@comunica/jest';
+import { Bus } from '@comunica/core';
+import { BF, DF, getMockEEActionContext, getMockMediatorExpressionEvaluatorFactory, makeAggregate } from '@comunica/jest';
+import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { ActorBindingsAggregatorFactoryGroupConcat } from '../lib';
 
@@ -31,6 +32,7 @@ describe('ActorBindingsAggregatorFactoryGroupConcat', () => {
 
   describe('An ActorBindingsAggregatorFactoryCount instance', () => {
     let actor: ActorBindingsAggregatorFactoryGroupConcat;
+    let context: IActionContext;
 
     beforeEach(() => {
       actor = new ActorBindingsAggregatorFactoryGroupConcat({
@@ -38,26 +40,27 @@ describe('ActorBindingsAggregatorFactoryGroupConcat', () => {
         bus,
         mediatorExpressionEvaluatorFactory,
       });
-    });
+
+      context = getMockEEActionContext(); });
 
     describe('test', () => {
       it('accepts group_concat 1', () => {
         return expect(actor.test({
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('group_concat', false),
         })).resolves.toEqual({});
       });
 
       it('accepts group_concat 2', () => {
         return expect(actor.test({
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('group_concat', true),
         })).resolves.toEqual({});
       });
 
       it('rejects sum', () => {
         return expect(actor.test({
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('sum', false),
         })).rejects.toThrow();
       });
@@ -65,7 +68,7 @@ describe('ActorBindingsAggregatorFactoryGroupConcat', () => {
 
     it('should run', () => {
       return expect(actor.run({
-        context: new ActionContext(),
+        context,
         expr: makeAggregate('group_concat', false),
       })).resolves.toMatchObject({});
     });

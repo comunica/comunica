@@ -1,7 +1,7 @@
 import type { ExpressionEvaluator } from '@comunica/actor-expression-evaluator-factory-default/lib/ExpressionEvaluator';
 import { regularFunctions } from '@comunica/actor-functions-wrapper-all/lib/implementation/RegularFunctions';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
-import { getMockEEFactory } from '@comunica/jest';
+import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
 import type { ISuperTypeProvider } from '@comunica/types';
 import { TypeURL } from '../../../lib';
 import {
@@ -14,7 +14,7 @@ import type { ISerializable } from '../../../lib/expressions';
 import type { FunctionArgumentsCache } from '../../../lib/functions/OverloadTree';
 import { OverloadTree } from '../../../lib/functions/OverloadTree';
 import type { KnownLiteralTypes } from '../../../lib/util/Consts';
-import { getMockEEActionContext, getMockExpression } from '../../util/utils';
+import { getMockExpression } from '../../util/utils';
 
 describe('OverloadTree', () => {
   let emptyTree: OverloadTree;

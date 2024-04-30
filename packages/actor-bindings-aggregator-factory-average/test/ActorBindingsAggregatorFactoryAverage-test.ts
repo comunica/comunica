@@ -3,23 +3,28 @@ import type {
   MediatorExpressionEvaluatorFactory,
 } from '@comunica/bus-expression-evaluator-factory';
 import type { MediatorFunctions } from '@comunica/bus-functions';
-import { ActionContext, Bus } from '@comunica/core';
+import { Bus } from '@comunica/core';
 import {
+  getMockEEActionContext,
   getMockMediatorExpressionEvaluatorFactory,
   makeAggregate,
 } from '@comunica/jest';
+import type { IActionContext } from '@comunica/types';
 import { ActorBindingsAggregatorFactoryAverage } from '../lib';
 
 describe('ActorBindingsAggregatorFactoryAverage', () => {
   let bus: any;
   let mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
   let mediatorFunctions: MediatorFunctions;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
 
     mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory();
     mediatorFunctions = createFuncMediator();
+
+    context = getMockEEActionContext();
   });
 
   describe('An ActorBindingsAggregatorFactoryCount instance', () => {
@@ -37,21 +42,21 @@ describe('ActorBindingsAggregatorFactoryAverage', () => {
     describe('test', () => {
       it('accepts average 1', () => {
         return expect(actor.test({
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('avg', false),
         })).resolves.toEqual({});
       });
 
       it('accepts average 2', () => {
         return expect(actor.test({
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('avg', true),
         })).resolves.toEqual({});
       });
 
       it('rejects sum', () => {
         return expect(actor.test({
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('sum', false),
         })).rejects.toThrow();
       });
@@ -59,7 +64,7 @@ describe('ActorBindingsAggregatorFactoryAverage', () => {
 
     it('should run', () => {
       return expect(actor.run({
-        context: new ActionContext(),
+        context,
         expr: makeAggregate('avg', false),
       })).resolves.toMatchObject({});
     });

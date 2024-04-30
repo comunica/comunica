@@ -1,12 +1,14 @@
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
-import { ActionContext, Bus } from '@comunica/core';
-import { BF, DF, getMockMediatorExpressionEvaluatorFactory, makeAggregate } from '@comunica/jest';
+import { Bus } from '@comunica/core';
+import { BF, DF, getMockEEActionContext, getMockMediatorExpressionEvaluatorFactory, makeAggregate } from '@comunica/jest';
+import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { ActorBindingsAggregatorFactorySample } from '../lib';
 
 describe('ActorBindingsAggregatorFactorySample', () => {
   let bus: any;
   let mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -27,6 +29,8 @@ describe('ActorBindingsAggregatorFactorySample', () => {
     mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
       mediatorQueryOperation,
     });
+
+    context = getMockEEActionContext();
   });
 
   describe('An ActorBindingsAggregatorFactoryMax instance', () => {
@@ -43,21 +47,21 @@ describe('ActorBindingsAggregatorFactorySample', () => {
     describe('test', () => {
       it('accepts sample 1', () => {
         return expect(actor.test({
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('sample', false),
         })).resolves.toEqual({});
       });
 
       it('accepts sample 2', () => {
         return expect(actor.test({
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('sample', true),
         })).resolves.toEqual({});
       });
 
       it('rejects sum', () => {
         return expect(actor.test({
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('sum', false),
         })).rejects.toThrow();
       });
@@ -65,7 +69,7 @@ describe('ActorBindingsAggregatorFactorySample', () => {
 
     it('should run', () => {
       return expect(actor.run({
-        context: new ActionContext(),
+        context,
         expr: makeAggregate('sample', false),
       })).resolves.toMatchObject({});
     });

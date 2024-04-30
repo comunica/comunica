@@ -6,8 +6,8 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import * as sparqlee from '@comunica/expression-evaluator';
 import { isExpressionError } from '@comunica/expression-evaluator';
-import { getMockMediatorExpressionEvaluatorFactory } from '@comunica/jest';
-import type { IQueryOperationResultBindings, Bindings } from '@comunica/types';
+import { getMockEEActionContext, getMockMediatorExpressionEvaluatorFactory } from '@comunica/jest';
+import type { IQueryOperationResultBindings, Bindings, IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -37,6 +37,8 @@ function parse(query: string): Algebra.Expression {
 describe('ActorQueryOperationFilterSparqlee', () => {
   let bus: any;
   let mediatorQueryOperation: any;
+  let context: IActionContext;
+
   const simpleSPOInput = new Factory().createBgp([ new Factory().createPattern(
     DF.variable('s'),
     DF.variable('p'),
@@ -65,6 +67,8 @@ describe('ActorQueryOperationFilterSparqlee', () => {
         type: 'bindings',
       }),
     };
+
+    context = getMockEEActionContext();
   });
 
   describe('The ActorQueryOperationFilterSparqlee module', () => {
@@ -102,12 +106,12 @@ describe('ActorQueryOperationFilterSparqlee', () => {
     });
 
     it('should test on filter', () => {
-      const op: any = { operation: { type: 'filter', expression: truthyExpression }, context: new ActionContext() };
+      const op: any = { operation: { type: 'filter', expression: truthyExpression }, context };
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should fail on unsupported operators', () => {
-      const op: any = { operation: { type: 'filter', expression: unknownExpression }, context: new ActionContext() };
+      const op: any = { operation: { type: 'filter', expression: unknownExpression }, context };
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
@@ -118,7 +122,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
 
     it('should return the full stream for a truthy filter', async() => {
       const op: any = { operation: { type: 'filter', input: {}, expression: truthyExpression },
-        context: new ActionContext() };
+        context };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
@@ -132,7 +136,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
 
     it('should return an empty stream for a falsy filter', async() => {
       const op: any = { operation: { type: 'filter', input: {}, expression: falsyExpression },
-        context: new ActionContext() };
+        context };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
       await expect(output.bindingsStream).toEqualBindingsStream([]);
       expect(await output.metadata())
@@ -142,7 +146,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
 
     it('should return an empty stream when the expressions error', async() => {
       const op: any = { operation: { type: 'filter', input: {}, expression: erroringExpression },
-        context: new ActionContext() };
+        context };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
       await expect(output.bindingsStream).toEqualBindingsStream([]);
       expect(await output.metadata())
@@ -154,7 +158,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       // The order is very important. This item requires isExpressionError to still have it's right definition.
       const logWarnSpy = jest.spyOn(<any> actor, 'logWarn');
       const op: any = { operation: { type: 'filter', input: {}, expression: erroringExpression },
-        context: new ActionContext() };
+        context };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
       output.bindingsStream.on('data', () => {
         // This is here to force the stream to start.
@@ -178,7 +182,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       Object.defineProperty(sparqlee, 'isExpressionError', { writable: true });
       (<any> sparqlee).isExpressionError = jest.fn(() => false);
       const op: any = { operation: { type: 'filter', input: {}, expression: erroringExpression },
-        context: new ActionContext() };
+        context };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
       output.bindingsStream.on('data', () => {
         // This is here to force the stream to start.
@@ -188,10 +192,10 @@ describe('ActorQueryOperationFilterSparqlee', () => {
 
     it('should use and respect the baseIRI from the expression context', async() => {
       const expression = parse('str(IRI(?a)) = concat("http://example.com/", ?a)');
-      const context = new ActionContext({
-        [KeysInitQuery.baseIRI.name]: 'http://example.com',
-      });
-      const op: any = { operation: { type: 'filter', input: {}, expression }, context };
+      const op: any = { operation: { type: 'filter', input: {}, expression },
+        context: getMockEEActionContext(new ActionContext({
+          [KeysInitQuery.baseIRI.name]: 'http://example.com',
+        })) };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),

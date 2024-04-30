@@ -2,8 +2,19 @@ import { createTermCompMediator } from '@comunica/actor-term-comparator-factory-
 import type { IBindingsAggregator } from '@comunica/bus-bindings-aggeregator-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
-import { ActionContext } from '@comunica/core';
-import { BF, date, DF, double, float, getMockEEFactory, int, makeAggregate, nonLiteral, string } from '@comunica/jest';
+import {
+  BF,
+  date,
+  DF,
+  double,
+  float,
+  getMockEEActionContext,
+  getMockEEFactory,
+  int,
+  makeAggregate,
+  nonLiteral,
+  string,
+} from '@comunica/jest';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { MinAggregator } from '../lib/MinAggregator';
@@ -47,7 +58,7 @@ describe('MinAggregator', () => {
     expressionEvaluatorFactory = getMockEEFactory();
     mediatorTermComparatorFactory = createTermCompMediator();
 
-    context = new ActionContext();
+    context = getMockEEActionContext();
   });
 
   describe('non distinctive min', () => {

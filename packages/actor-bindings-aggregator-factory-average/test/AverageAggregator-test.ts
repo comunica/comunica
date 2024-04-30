@@ -2,9 +2,18 @@ import { createFuncMediator } from '@comunica/actor-functions-wrapper-all/test/u
 import type { IBindingsAggregator } from '@comunica/bus-bindings-aggeregator-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { MediatorFunctions } from '@comunica/bus-functions';
-import { ActionContext } from '@comunica/core';
 import { RegularOperator } from '@comunica/expression-evaluator';
-import { BF, decimal, DF, double, float, getMockEEFactory, int, makeAggregate } from '@comunica/jest';
+import {
+  BF,
+  decimal,
+  DF,
+  double,
+  float,
+  getMockEEActionContext,
+  getMockEEFactory,
+  int,
+  makeAggregate,
+} from '@comunica/jest';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { AverageAggregator } from '../lib/AverageAggregator';
@@ -52,7 +61,7 @@ describe('AverageAggregator', () => {
       mediatorFunctions,
     });
 
-    context = new ActionContext();
+    context = getMockEEActionContext();
   });
 
   describe('non distinctive avg', () => {

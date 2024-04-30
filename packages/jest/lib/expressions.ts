@@ -10,7 +10,7 @@ import type {
 import type { MediatorFunctions } from '@comunica/bus-functions';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
-import { KeysExpressionEvaluator } from '@comunica/context-entries';
+import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { prepareEvaluatorActionContext } from '@comunica/expression-evaluator/lib/util/Context';
 import type { GeneralSuperTypeDict, IActionContext, ISuperTypeProvider } from '@comunica/types';
@@ -76,15 +76,19 @@ export function nonLiteral(): RDF.Term {
   return DF.namedNode('http://example.org/');
 }
 
-export function getMockEEActionContext(): IActionContext {
-  return new ActionContext({}).set(KeysExpressionEvaluator.superTypeProvider, getMockSuperTypeProvider());
+export function getMockEEActionContext(actionContext?: IActionContext): IActionContext {
+  return new ActionContext({
+    [KeysInitQuery.queryTimestamp.name]: new Date(Date.now()),
+    [KeysInitQuery.functionArgumentsCache.name]: {},
+    [KeysExpressionEvaluator.superTypeProvider.name]: getMockSuperTypeProvider(),
+  }).merge(actionContext ?? new ActionContext());
 }
 
 export function getMockInternalEvaluator(factory?: ActorExpressionEvaluatorFactory,
   context?: IActionContext): InternalEvaluator {
   const defFactory = factory ?? getMockEEFactory();
   return new InternalEvaluator(
-    prepareEvaluatorActionContext(context ?? getMockEEActionContext()),
+    prepareEvaluatorActionContext(getMockEEActionContext(context)),
     getMockMediatorFunctions(),
     <any>{
       async mediate(arg: any) {

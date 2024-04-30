@@ -2,8 +2,9 @@ import { createTermCompMediator } from '@comunica/actor-term-comparator-factory-
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
-import { ActionContext, Bus } from '@comunica/core';
-import { BF, DF, getMockMediatorExpressionEvaluatorFactory, makeAggregate } from '@comunica/jest';
+import { Bus } from '@comunica/core';
+import { BF, DF, getMockEEActionContext, getMockMediatorExpressionEvaluatorFactory, makeAggregate } from '@comunica/jest';
+import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { ActorBindingsAggregatorFactoryMax } from '../lib';
 
@@ -11,6 +12,7 @@ describe('ActorBindingsAggregatorFactoryMax', () => {
   let bus: any;
   let mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
   let mediatorTermComparatorFactory: MediatorTermComparatorFactory;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -32,6 +34,8 @@ describe('ActorBindingsAggregatorFactoryMax', () => {
       mediatorQueryOperation,
     });
     mediatorTermComparatorFactory = createTermCompMediator();
+
+    context = getMockEEActionContext();
   });
 
   describe('An ActorBindingsAggregatorFactoryMax instance', () => {
@@ -49,21 +53,21 @@ describe('ActorBindingsAggregatorFactoryMax', () => {
     describe('test', () => {
       it('accepts max 1', () => {
         return expect(actor.test({
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('max', false),
         })).resolves.toEqual({});
       });
 
       it('accepts max 2', () => {
         return expect(actor.test({
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('max', true),
         })).resolves.toEqual({});
       });
 
       it('rejects sum', () => {
         return expect(actor.test({
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('sum', false),
         })).rejects.toThrow();
       });
@@ -71,7 +75,7 @@ describe('ActorBindingsAggregatorFactoryMax', () => {
 
     it('should run', () => {
       return expect(actor.run({
-        context: new ActionContext(),
+        context,
         expr: makeAggregate('max', false),
       })).resolves.toMatchObject({});
     });

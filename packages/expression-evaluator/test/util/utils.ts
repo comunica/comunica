@@ -1,6 +1,5 @@
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
-import { ActionContext } from '@comunica/core';
-import { getMockEEFactory } from '@comunica/jest';
+import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
 import type { IActionContext } from '@comunica/types';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 import { translate } from 'sparqlalgebrajs';
@@ -8,10 +7,6 @@ import { prepareEvaluatorActionContext } from '../../lib/util/Context';
 import type { AliasMap } from './Aliases';
 import type { Notation } from './TestTable';
 import { ArrayTable, BinaryTable, UnaryTable, VariableTable } from './TestTable';
-
-export function getMockEEActionContext(): IActionContext {
-  return new ActionContext({});
-}
 
 export function getMockExpression(expr = '1+1'): Alg.Expression {
   return translate(`SELECT * WHERE { ?s ?p ?o FILTER (${expr})}`).input.expression;

@@ -3,13 +3,14 @@ import type {
   MediatorExpressionEvaluatorFactory,
 } from '@comunica/bus-expression-evaluator-factory';
 import type { MediatorFunctions } from '@comunica/bus-functions';
-import { ActionContext, Bus } from '@comunica/core';
+import { Bus } from '@comunica/core';
 import {
   BF,
-  DF,
+  DF, getMockEEActionContext,
   getMockMediatorExpressionEvaluatorFactory,
   makeAggregate,
 } from '@comunica/jest';
+import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { ActorBindingsAggregatorFactorySum } from '../lib';
 
@@ -42,6 +43,7 @@ describe('ActorBindingsAggregatorFactorySum', () => {
 
   describe('An ActorBindingsAggregatorFactoryMax instance', () => {
     let actor: ActorBindingsAggregatorFactorySum;
+    let context: IActionContext;
 
     beforeEach(() => {
       actor = new ActorBindingsAggregatorFactorySum({
@@ -50,26 +52,28 @@ describe('ActorBindingsAggregatorFactorySum', () => {
         mediatorExpressionEvaluatorFactory,
         mediatorFunctions,
       });
+
+      context = getMockEEActionContext();
     });
 
     describe('test', () => {
       it('accepts sum 1', () => {
         return expect(actor.test({
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('sum', false),
         })).resolves.toEqual({});
       });
 
       it('accepts sum 2', () => {
         return expect(actor.test({
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('sum', true),
         })).resolves.toEqual({});
       });
 
       it('rejects count', () => {
         return expect(actor.test({
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('count', false),
         })).rejects.toThrow();
       });
@@ -77,7 +81,7 @@ describe('ActorBindingsAggregatorFactorySum', () => {
 
     it('should run', () => {
       return expect(actor.run({
-        context: new ActionContext(),
+        context,
         expr: makeAggregate('sum', false),
       })).resolves.toMatchObject({});
     });

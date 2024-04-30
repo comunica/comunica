@@ -1,7 +1,7 @@
 import { RegularOperator } from '@comunica/expression-evaluator';
 import * as E from '@comunica/expression-evaluator/lib/expressions';
-import { getMockEEActionContext, getMockExpression } from '@comunica/expression-evaluator/test/util/utils';
-import { getMockEEFactory } from '@comunica/jest';
+import { getMockExpression } from '@comunica/expression-evaluator/test/util/utils';
+import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
 import { regularFunctions } from '../../lib/implementation/RegularFunctions';
 import { createFuncMediator } from '../util';
 

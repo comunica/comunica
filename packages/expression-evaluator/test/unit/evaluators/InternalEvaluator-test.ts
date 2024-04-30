@@ -1,11 +1,10 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
-import { getMockEEFactory } from '@comunica/jest';
+import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
-import { getMockEEActionContext } from '../../util/utils';
 
 const BF = new BindingsFactory();
 const DF = new DataFactory();

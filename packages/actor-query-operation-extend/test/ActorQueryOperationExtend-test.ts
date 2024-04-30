@@ -4,10 +4,10 @@ import type {
   MediatorExpressionEvaluatorFactory,
 } from '@comunica/bus-expression-evaluator-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import { ActionContext, Actor, Bus } from '@comunica/core';
+import { Actor, Bus } from '@comunica/core';
 import * as sparqlee from '@comunica/expression-evaluator';
-import { getMockMediatorExpressionEvaluatorFactory } from '@comunica/jest';
-import type { IQueryOperationResultBindings } from '@comunica/types';
+import { getMockEEActionContext, getMockMediatorExpressionEvaluatorFactory } from '@comunica/jest';
+import type { IActionContext, IQueryOperationResultBindings } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -21,6 +21,7 @@ describe('ActorQueryOperationExtend', () => {
   let bus: any;
   let mediatorQueryOperation: any;
   let mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
+  let context: IActionContext;
 
   const example = (expression: any) => ({
     type: 'extend',
@@ -90,6 +91,8 @@ describe('ActorQueryOperationExtend', () => {
       mediatorQueryOperation,
       mediatorFunctions: createFuncMediator(),
     });
+
+    context = getMockEEActionContext();
   });
 
   describe('The ActorQueryOperationExtend module', () => {
@@ -122,17 +125,17 @@ describe('ActorQueryOperationExtend', () => {
     });
 
     it('should test on extend', () => {
-      const op: any = { operation: example(defaultExpression), context: new ActionContext() };
+      const op: any = { operation: example(defaultExpression), context };
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-extend', () => {
-      const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
+      const op: any = { operation: { type: 'some-other-type' }, context };
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run', async() => {
-      const op: any = { operation: example(defaultExpression), context: new ActionContext() };
+      const op: any = { operation: example(defaultExpression), context };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
@@ -158,7 +161,7 @@ describe('ActorQueryOperationExtend', () => {
       const warn = jest.fn();
       jest.spyOn(Actor, 'getContextLogger').mockImplementation(() => (<any>{ warn }));
 
-      const op: any = { operation: example(faultyExpression), context: new ActionContext() };
+      const op: any = { operation: example(faultyExpression), context };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
 
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject(input);
@@ -175,7 +178,7 @@ describe('ActorQueryOperationExtend', () => {
       Object.defineProperty(sparqlee, 'isExpressionError', { writable: true });
       (<any> sparqlee).isExpressionError = jest.fn(() => false);
 
-      const op: any = { operation: example(faultyExpression), context: new ActionContext() };
+      const op: any = { operation: example(faultyExpression), context };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
       await new Promise<void>((resolve, reject) => {
         output.bindingsStream.on('error', () => resolve());
@@ -201,7 +204,7 @@ describe('ActorQueryOperationExtend', () => {
           variable: { termType: 'Variable', value: 'a' },
           defaultExpression,
         },
-        context: new ActionContext(),
+        context,
       };
       await expect(actor.run(op)).rejects.toThrow(`Illegal binding to variable 'a' that has already been bound`);
     });

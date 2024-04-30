@@ -1,13 +1,15 @@
 import { createTermCompMediator } from '@comunica/actor-term-comparator-factory-expression-evaluator/test/util';
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
-import { ActionContext, Bus } from '@comunica/core';
+import { Bus } from '@comunica/core';
 import {
   BF,
   DF,
+  getMockEEActionContext,
   getMockMediatorExpressionEvaluatorFactory,
   makeAggregate,
 } from '@comunica/jest';
+import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { ActorBindingsAggregatorFactoryMin } from '../lib';
 
@@ -40,6 +42,7 @@ describe('ActorBindingsAggregatorFactoryMin', () => {
 
   describe('An ActorBindingsAggregatorFactoryMin instance', () => {
     let actor: ActorBindingsAggregatorFactoryMin;
+    let context: IActionContext;
 
     beforeEach(() => {
       actor = new ActorBindingsAggregatorFactoryMin({
@@ -48,26 +51,28 @@ describe('ActorBindingsAggregatorFactoryMin', () => {
         mediatorExpressionEvaluatorFactory,
         mediatorTermComparatorFactory,
       });
+
+      context = getMockEEActionContext();
     });
 
     describe('test', () => {
       it('accepts min 1', () => {
         return expect(actor.test({
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('min', false),
         })).resolves.toEqual({});
       });
 
       it('accepts min 2', () => {
         return expect(actor.test({
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('min', true),
         })).resolves.toEqual({});
       });
 
       it('rejects sum', () => {
         return expect(actor.test({
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('sum', false),
         })).rejects.toThrow();
       });
@@ -75,7 +80,7 @@ describe('ActorBindingsAggregatorFactoryMin', () => {
 
     it('should run', () => {
       return expect(actor.run({
-        context: new ActionContext(),
+        context,
         expr: makeAggregate('min', false),
       })).resolves.toMatchObject({});
     });

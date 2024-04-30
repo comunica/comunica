@@ -1,11 +1,10 @@
 import type { InternalEvaluator } from '@comunica/actor-expression-evaluator-factory-default/lib/InternalEvaluator';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
-import { getMockEEFactory } from '@comunica/jest';
+import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { translate } from 'sparqlalgebrajs';
-import { getMockEEActionContext } from './utils';
 
 const BF = new BindingsFactory();
 
@@ -33,7 +32,7 @@ Promise<{ asyncResult: RDF.Term; syncResult?: RDF.Term }> {
   const asyncResult = await evaluateAsync(
     arg.expression,
     bindings,
-    arg.generalEvaluationConfig || getMockEEActionContext(),
+    getMockEEActionContext(arg.generalEvaluationConfig),
     arg.exprEvalFactory,
   );
   return { asyncResult };
@@ -46,7 +45,7 @@ Promise<{ asyncError: unknown; syncError?: unknown } | undefined > {
     await evaluateAsync(
       arg.expression,
       bindings,
-      arg.generalEvaluationConfig || getMockEEActionContext(),
+      getMockEEActionContext(arg.generalEvaluationConfig),
       arg.exprEvalFactory,
     );
     return undefined;
