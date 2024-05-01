@@ -1,4 +1,5 @@
 // We need to disable typescript because we want undefined types.
+import { getMockSuperTypeProvider } from '@comunica/jest';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 
@@ -7,7 +8,6 @@ import { isNonLexicalLiteral } from '../../../lib/expressions';
 import { TermTransformer } from '../../../lib/transformers/TermTransformer';
 import { TypeURL as DT } from '../../../lib/util/Consts';
 import * as Err from '../../../lib/util/Errors';
-import { getDefaultCompleteEEContext } from '../../util/utils';
 
 function int(value: string): RDF.Literal {
   return DF.literal(value, DF.namedNode(DT.XSD_INTEGER));
@@ -38,7 +38,7 @@ const DF = new DataFactory();
 describe('TermTransformer', () => {
   let termTransformer: TermTransformer;
   beforeEach(() => {
-    termTransformer = new TermTransformer(getDefaultCompleteEEContext().superTypeProvider);
+    termTransformer = new TermTransformer(getMockSuperTypeProvider());
   });
 
   function simpleLiteralCreator(value: string, dataType?: string, language?: string): RDF.Literal {
@@ -84,6 +84,24 @@ describe('TermTransformer', () => {
 
     it('default graph', () => {
       expect(termTransformer.transformRDFTermUnsafe(DF.defaultGraph())).toEqual(new E.DefaultGraph());
+    });
+
+    it('Quad', () => {
+      const quad = DF.quad(
+        DF.namedNode('foo'),
+        DF.namedNode('foo'),
+        DF.namedNode('foo'),
+        DF.defaultGraph(),
+      );
+      expect(termTransformer.transformRDFTermUnsafe(quad))
+        .toEqual(new E.Quad(
+          new E.NamedNode('foo'),
+          new E.NamedNode('foo'),
+          new E.NamedNode('foo'),
+          new E.DefaultGraph(),
+        ));
+      expect(termTransformer.transformRDFTermUnsafe(quad).str())
+        .toEqual('Quad: [foo, foo, foo, DefaultGraph]');
     });
 
     it('null', () => {

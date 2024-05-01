@@ -1,11 +1,13 @@
 import { bindingsToString } from '@comunica/bindings-factory';
+import type {
+  MediatorExpressionEvaluatorFactory,
+} from '@comunica/bus-expression-evaluator-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
-import type { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
 import { isExpressionError } from '@comunica/expression-evaluator';
 import type { Bindings, IActionContext, IQueryOperationResult } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -14,16 +16,17 @@ import type { Algebra } from 'sparqlalgebrajs';
  * A comunica Filter Sparqlee Query Operation Actor.
  */
 export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedMediated<Algebra.Filter> {
-  private readonly expressionEvaluatorFactory: ExpressionEvaluatorFactory;
+  private readonly mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
 
   public constructor(args: IActorQueryOperationFilterSparqleeArgs) {
     super(args, 'filter');
-    this.expressionEvaluatorFactory = args.expressionEvaluatorFactory;
+    this.mediatorExpressionEvaluatorFactory = args.mediatorExpressionEvaluatorFactory;
   }
 
   public async testOperation(operation: Algebra.Filter, context: IActionContext): Promise<IActorTest> {
     // Will throw error for unsupported operators
-    const _ = this.expressionEvaluatorFactory.createEvaluator(operation.expression, context);
+    const _ = await this.mediatorExpressionEvaluatorFactory.mediate({ algExpr: operation.expression,
+      context });
     return true;
   }
 
@@ -33,7 +36,8 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
     const output = ActorQueryOperation.getSafeBindings(outputRaw);
     ActorQueryOperation.validateQueryOutput(output, 'bindings');
 
-    const evaluator = this.expressionEvaluatorFactory.createEvaluator(operation.expression, context);
+    const evaluator = await this.mediatorExpressionEvaluatorFactory
+      .mediate({ algExpr: operation.expression, context });
 
     const transform = async(item: Bindings, next: any, push: (bindings: Bindings) => void): Promise<void> => {
       try {
@@ -68,5 +72,5 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
 }
 
 interface IActorQueryOperationFilterSparqleeArgs extends IActorQueryOperationTypedMediatedArgs {
-  expressionEvaluatorFactory: ExpressionEvaluatorFactory;
+  mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
 }

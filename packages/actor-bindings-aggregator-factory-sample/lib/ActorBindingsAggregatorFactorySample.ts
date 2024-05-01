@@ -24,10 +24,12 @@ export class ActorBindingsAggregatorFactorySample extends ActorBindingsAggregato
     return {};
   }
 
-  public async run(action: IActionBindingsAggregatorFactory): Promise<IActorBindingsAggregatorFactoryOutput> {
-    return {
-      aggregator: new SampleAggregator(action.expr, action.factory, action.context),
-    };
+  public async run({ context, expr }: IActionBindingsAggregatorFactory):
+  Promise<IActorBindingsAggregatorFactoryOutput> {
+    return new SampleAggregator(
+      await this.mediatorExpressionEvaluatorFactory.mediate({ algExpr: expr.expression, context }),
+      expr.distinct,
+    );
   }
 }
 

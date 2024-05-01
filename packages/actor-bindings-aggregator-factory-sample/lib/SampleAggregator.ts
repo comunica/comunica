@@ -1,15 +1,15 @@
-import { AggregateEvaluator } from '@comunica/expression-evaluator';
-import type { IActionContext, IBindingsAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
+import type { IBindingsAggregator } from '@comunica/bus-bindings-aggeregator-factory';
+import { AggregateEvaluator } from '@comunica/bus-bindings-aggeregator-factory';
+import type { IExpressionEvaluator } from '@comunica/expression-evaluator';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra } from 'sparqlalgebrajs';
 
 export class SampleAggregator extends AggregateEvaluator implements IBindingsAggregator {
   private state: RDF.Term | undefined = undefined;
 
-  public constructor(aggregateExpression: Algebra.AggregateExpression,
-    expressionEvaluatorFactory: IExpressionEvaluatorFactory, context: IActionContext,
+  public constructor(evaluator: IExpressionEvaluator,
+    distinct: boolean,
     throwError?: boolean) {
-    super(aggregateExpression, expressionEvaluatorFactory, context, throwError);
+    super(evaluator, distinct, throwError);
   }
 
   public putTerm(term: RDF.Term): void {

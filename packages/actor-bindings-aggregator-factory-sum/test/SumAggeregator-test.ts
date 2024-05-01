@@ -1,10 +1,22 @@
-import { ActionContext } from '@comunica/core';
-import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
-import { BF, decimal, DF, float, int, makeAggregate, nonLiteral } from '@comunica/jest';
-import type { IActionContext, IBindingsAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
+import { createFuncMediator } from '@comunica/actor-function-factory-wrapper-all/test/util';
+import type { IBindingsAggregator } from '@comunica/bus-bindings-aggeregator-factory';
+import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
+import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
+import { RegularOperator } from '@comunica/expression-evaluator';
+import {
+  BF,
+  decimal,
+  DF,
+  float,
+  getMockEEActionContext,
+  getMockEEFactory,
+  int,
+  makeAggregate,
+  nonLiteral,
+} from '@comunica/jest';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { ArrayIterator } from 'asynciterator';
-import { SumAggregator } from '../lib/SumAggregator';
+import { SumAggregator } from '../lib';
 
 async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Bindings[]): Promise<RDF.Term | undefined> {
   for (const bindings of input) {
@@ -13,41 +25,48 @@ async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Binding
   return aggregator.result();
 }
 
-describe('SampleAggregator', () => {
-  let expressionEvaluatorFactory: IExpressionEvaluatorFactory;
+async function createAggregator({ expressionEvaluatorFactory, mediatorFunctionFactory, context, distinct }: {
+  expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
+  mediatorFunctionFactory: MediatorFunctionFactory;
+  context: IActionContext;
+  distinct: boolean;
+}): Promise<SumAggregator> {
+  return new SumAggregator(
+    await expressionEvaluatorFactory.run({
+      algExpr: makeAggregate('sum', distinct).expression,
+      context,
+    }),
+    distinct,
+    await mediatorFunctionFactory.mediate({
+      context,
+      functionName: RegularOperator.ADDITION,
+      requireTermExpression: true,
+    }),
+  );
+}
+
+describe('SumAggregator', () => {
+  let expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
+  let mediatorFunctionFactory: MediatorFunctionFactory;
   let context: IActionContext;
 
   beforeEach(() => {
-    const mediatorQueryOperation: any = {
-      mediate: (arg: any) => Promise.resolve({
-        bindingsStream: new ArrayIterator([
-          BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
-          BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),
-          BF.bindings([[ DF.variable('x'), DF.literal('3') ]]),
-        ], { autoStart: false }),
-        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('x') ]}),
-        operated: arg,
-        type: 'bindings',
-      }),
-    };
+    expressionEvaluatorFactory = getMockEEFactory();
+    mediatorFunctionFactory = createFuncMediator();
 
-    expressionEvaluatorFactory = new ExpressionEvaluatorFactory({
-      mediatorQueryOperation,
-      mediatorBindingsAggregatorFactory: mediatorQueryOperation,
-    });
-
-    context = new ActionContext();
+    context = getMockEEActionContext();
   });
 
   describe('non distinctive sum', () => {
     let aggregator: IBindingsAggregator;
 
-    beforeEach(() => {
-      aggregator = new SumAggregator(
-        makeAggregate('sum', false),
+    beforeEach(async() => {
+      aggregator = await createAggregator({
         expressionEvaluatorFactory,
+        mediatorFunctionFactory,
         context,
-      );
+        distinct: false,
+      });
     });
 
     it('a list of bindings', async() => {
@@ -112,12 +131,13 @@ describe('SampleAggregator', () => {
   describe('distinctive sum', () => {
     let aggregator: IBindingsAggregator;
 
-    beforeEach(() => {
-      aggregator = new SumAggregator(
-        makeAggregate('sum', true),
+    beforeEach(async() => {
+      aggregator = await createAggregator({
         expressionEvaluatorFactory,
+        mediatorFunctionFactory,
         context,
-      );
+        distinct: true,
+      });
     });
 
     it('a list of bindings', async() => {

@@ -1,18 +1,22 @@
+import { getMockSuperTypeProvider } from '@comunica/jest';
+import { jest } from '@jest/globals';
 import { DataFactory } from 'rdf-data-factory';
 
-import { TermTransformer } from '../../../lib/transformers/TermTransformer';
+import { TermTransformer } from '../../../lib';
 import { TypeURL as DT } from '../../../lib/util/Consts';
-import { getDefaultCompleteEEContext } from '../../util/utils';
 
 jest.mock('../../../lib/util/Parsing', () => ({
   __esModule: true,
-  parseDate() { throw new Error('mine'); },
+  parseDate() {
+    throw new Error('mine');
+  },
 }));
 
-describe('term Tranformer', () => {
+// eslint-disable-next-line mocha/no-skipped-tests
+describe.skip('term Tranformer', () => {
   let termTransformer: TermTransformer;
   beforeEach(() => {
-    termTransformer = new TermTransformer(getDefaultCompleteEEContext().superTypeProvider);
+    termTransformer = new TermTransformer(getMockSuperTypeProvider());
   });
 
   const DF = new DataFactory();

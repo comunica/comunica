@@ -341,8 +341,7 @@ describe('System test: QuerySparql', () => {
           });
       });
 
-      // eslint-disable-next-line mocha/no-skipped-tests
-      describe.skip('extension function', () => {
+      describe('extension function', () => {
         let funcAllow: string;
         let store: Store;
         let baseFunctions: Record<string, (args: RDF.Term[]) => Promise<RDF.Term>>;
@@ -379,13 +378,13 @@ describe('System test: QuerySparql', () => {
         it('rejects when record does not match', async() => {
           const context = <any> { sources: [ store ]};
           context.extensionFunctions = baseFunctions;
-          await expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow('Unknown named operator');
+          await expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow('actors rejected');
         });
 
         it('rejects when creator returns null', async() => {
           const context = <any> { sources: [ store ]};
           context.extensionFunctionCreator = () => null;
-          await expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow('Unknown named operator');
+          await expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow('actors rejected');
         });
 
         it('with results and pointless custom filter given by creator', async() => {
@@ -807,8 +806,8 @@ SELECT * WHERE {
 
         // Execute query
         const result = <RDF.QueryVoid> await engine.query(`INSERT DATA {
-      <ex:s> <ex:p> <ex:o>.
-    }`, {
+          <ex:s> <ex:p> <ex:o>.
+        }`, {
           sources: [ 'dummy' ],
           destination: store,
         });
@@ -826,8 +825,8 @@ SELECT * WHERE {
 
         // Execute query
         const result = <RDF.QueryVoid> await engine.query(`INSERT DATA {
-      <ex:s> <ex:p> <ex:o>.
-    }`, {
+          <ex:s> <ex:p> <ex:o>.
+        }`, {
           sources: [ store ],
         });
         await result.execute();

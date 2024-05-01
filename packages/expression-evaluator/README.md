@@ -58,7 +58,7 @@ For regular functions, the sync and async evaluation is the same, to avoid overh
 ### Layout and control flow
 
 The only important external facing API is creating an Evaluator.
-When you create one, the SPARQL Algebra expression that is passed will be transformed to an internal representation (see [AlgebraTransformer.ts](./lib/transformers/AlgebraTransformer.ts)).
+When you create one, the SPARQL Algebra expression that is passed will be transformed to an internal representation (see [AlgebraTransformer.ts](../actor-expression-evaluator-factory-default/lib/AlgebraTransformer.ts)).
 This will build objects (see [expressions module](./lib/expressions)) that contain all the logic and data for evaluation,
 for example the implementations for SPARQL functions (see [functions module](./lib/functions)).
 After transformation, the evaluator will recursively evaluate all the expressions.

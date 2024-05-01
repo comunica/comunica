@@ -1,7 +1,10 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
+import type {
+  IBindingsAggregator,
+  MediatorBindingsAggregatorFactory,
+} from '@comunica/bus-bindings-aggeregator-factory';
 import type { HashFunction } from '@comunica/bus-hash-bindings';
-import type { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
-import type { Bindings, IActionContext, IBindingsAggregator } from '@comunica/types';
+import type { Bindings, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -42,7 +45,7 @@ export class GroupsState {
   public constructor(
     private readonly hashFunction: HashFunction,
     private readonly pattern: Algebra.Group,
-    private readonly expressionEvaluatorFactory: ExpressionEvaluatorFactory,
+    private readonly mediatorBindingsAggregatorFactory: MediatorBindingsAggregatorFactory,
     private readonly context: IActionContext,
   ) {
     this.groups = new Map();
@@ -85,7 +88,8 @@ export class GroupsState {
         const aggregators: Record<string, IBindingsAggregator> = {};
         await Promise.all(this.pattern.aggregates.map(async aggregate => {
           const key = aggregate.variable.value;
-          aggregators[key] = await this.expressionEvaluatorFactory.createAggregator(aggregate, this.context);
+          aggregators[key] = await this.mediatorBindingsAggregatorFactory
+            .mediate({ expr: aggregate, context: this.context });
           await aggregators[key].putBindings(bindings);
         }));
 
@@ -95,7 +99,7 @@ export class GroupsState {
         }
         const group = { aggregators, bindings: grouper };
         this.groups.set(groupHash, group);
-        this.subtractWaitCounterAndCollect();
+        await this.subtractWaitCounterAndCollect();
         return group;
       })();
       this.groupsInitializer.set(groupHash, groupInitializer);
@@ -117,18 +121,16 @@ export class GroupsState {
           const variable = aggregate.variable.value;
           await group.aggregators[variable].putBindings(bindings);
         }));
-      })().then(() => {
-        this.subtractWaitCounterAndCollect();
+      })().then(async() => {
+        await this.subtractWaitCounterAndCollect();
       });
     }
     return res;
   }
 
-  private subtractWaitCounterAndCollect(): void {
+  private async subtractWaitCounterAndCollect(): Promise<void> {
     if (--this.waitCounter === 0) {
-      this.handleResultCollection().catch(error => {
-        throw error;
-      });
+      await this.handleResultCollection();
     }
   }
 
@@ -159,7 +161,8 @@ export class GroupsState {
       const single: [RDF.Variable, RDF.Term][] = [];
       await Promise.all(this.pattern.aggregates.map(async aggregate => {
         const key = aggregate.variable;
-        const aggregator = await this.expressionEvaluatorFactory.createAggregator(aggregate, this.context);
+        const aggregator = await this.mediatorBindingsAggregatorFactory
+          .mediate({ expr: aggregate, context: this.context });
         const value = await aggregator.result();
         if (value !== undefined) {
           single.push([ key, value ]);
@@ -183,7 +186,7 @@ export class GroupsState {
    * You can only call this method once, after calling this method,
    * calling any function on this will result in an error being thrown.
    */
-  public collectResults(): Promise<Bindings[]> {
+  public async collectResults(): Promise<Bindings[]> {
     const check = this.resultCheck<Bindings[]>();
     if (check) {
       return check;
@@ -192,7 +195,7 @@ export class GroupsState {
     const res = new Promise<Bindings[]>(resolve => {
       this.waitResolver = resolve;
     });
-    this.subtractWaitCounterAndCollect();
+    await this.subtractWaitCounterAndCollect();
     return res;
   }
 

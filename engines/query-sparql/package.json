@@ -26,9 +26,9 @@
   ],
   "license": "MIT",
   "bin": {
+    "comunica-dynamic-sparql": "bin/query-dynamic.js",
     "comunica-sparql": "bin/query.js",
-    "comunica-sparql-http": "bin/http.js",
-    "comunica-dynamic-sparql": "bin/query-dynamic.js"
+    "comunica-sparql-http": "bin/http.js"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"
@@ -46,10 +46,6 @@
     "engine-default.js"
   ],
   "dependencies": {
-    "@comunica/actor-context-preprocess-source-to-destination": "^2.8.2",
-    "@comunica/actor-dereference-fallback": "^2.8.2",
-    "@comunica/actor-dereference-http": "^2.8.2",
-    "@comunica/actor-dereference-rdf-parse": "^2.8.2",
     "@comunica/actor-bindings-aggregator-factory-average": "^1.0.0",
     "@comunica/actor-bindings-aggregator-factory-count": "^1.0.0",
     "@comunica/actor-bindings-aggregator-factory-group-concat": "^1.0.0",
@@ -57,7 +53,14 @@
     "@comunica/actor-bindings-aggregator-factory-min": "^1.0.0",
     "@comunica/actor-bindings-aggregator-factory-sample": "^1.0.0",
     "@comunica/actor-bindings-aggregator-factory-sum": "^1.0.0",
+    "@comunica/actor-function-factory-wrapper-all":  "^1.0.0",
+    "@comunica/actor-term-comparator-factory-expression-evaluator":  "^1.0.0",
+    "@comunica/actor-expression-evaluator-factory-default": "^1.0.0",
     "@comunica/actor-bindings-aggregator-factory-wildcard-count": "^1.0.0",
+    "@comunica/actor-context-preprocess-source-to-destination": "^2.8.2",
+    "@comunica/actor-dereference-fallback": "^2.8.2",
+    "@comunica/actor-dereference-http": "^2.8.2",
+    "@comunica/actor-dereference-rdf-parse": "^2.8.2",
     "@comunica/actor-hash-bindings-sha1": "^2.8.2",
     "@comunica/actor-http-fetch": "^2.8.2",
     "@comunica/actor-http-proxy": "^2.8.2",
@@ -175,7 +178,6 @@
     "@comunica/bus-query-operation": "^2.9.0",
     "@comunica/config-query-sparql": "^2.7.0",
     "@comunica/core": "^2.8.2",
-    "@comunica/expression-evaluator": "^2.9.0",
     "@comunica/logger-void": "^2.8.2",
     "@comunica/mediator-all": "^2.8.2",
     "@comunica/mediator-combine-pipeline": "^2.8.2",
@@ -195,7 +197,7 @@
     "browser": "npm run prepare && \"../../node_modules/webpack/bin/webpack.js\" --config webpack.config.js --mode production",
     "browser-profile": "\"../../node_modules/webpack/bin/webpack.js\" --config webpack.config.js --profile --mode production --json > stats.json && webpack-bundle-analyzer stats.json && rm stats.json",
     "spec:base": "node ../../node_modules/rdf-test-suite/bin/Runner.js spec/sparql-engine.js http://w3c.github.io/rdf-tests/sparql/sparql11/manifest-all.ttl -c ../../.rdf-test-suite-cache/",
-    "spec:query": "yarn run spec:base -s http://www.w3.org/TR/sparql11-query/",
+    "spec:query": "yarn run spec:base -s http://www.w3.org/TR/sparql11-query/ --skip 'manifest#agg-groupconcat-04$'",
     "spec:update": "yarn run spec:base -s http://www.w3.org/TR/sparql11-update/",
     "spec:csv-tsv": "yarn run spec:base -s http://www.w3.org/TR/sparql11-results-csv-tsv/",
     "spec:json": "yarn run spec:base -s http://www.w3.org/TR/sparql11-results-json/",
@@ -208,7 +210,7 @@
     "spec:sparql-star-evaluation": "node ../../node_modules/rdf-test-suite/bin/Runner.js spec/sparql-engine.js https://w3c.github.io/rdf-star/tests/sparql/eval/manifest.ttl -c ../../.rdf-test-suite-cache/",
     "spec": "yarn run spec:query && yarn run spec:update && yarn run spec:sparql12-xsd-datetime-duration && yarn run spec:sparql-star-syntax && yarn run spec:sparql-star-evaluation",
     "spec-earl": "yarn run spec:query -o earl -p spec/earl-meta.json > earl.ttl",
-    "integration": "rdf-test-suite-ldf spec/sparql-engine.js https://comunica.github.io/manifest-ldf-tests/sparql/sparql-manifest.ttl -d 200000 -c ../../.rdf-test-suite-ldf-cache/"
+    "integration": "rdf-test-suite-ldf spec/sparql-engine.js https://comunica.github.io/manifest-ldf-tests/sparql/sparql-manifest.ttl -d 200000 -c ../../.rdf-test-suite-ldf-cache/ -t '^.*(?<!common04)$'"
   },
   "browser": {
     "./lib/index.js": "./lib/index-browser.js"

@@ -6,6 +6,7 @@ import type {
 import {
   ActorBindingsAggregatorFactory,
 } from '@comunica/bus-bindings-aggeregator-factory';
+
 import type { IActorTest } from '@comunica/core';
 import { Algebra } from 'sparqlalgebrajs';
 import { CountAggregator } from './CountAggregator';
@@ -26,10 +27,11 @@ export class ActorBindingsAggregatorFactoryCount extends ActorBindingsAggregator
     return {};
   }
 
-  public async run(action: IActionBindingsAggregatorFactory): Promise<IActorBindingsAggregatorFactoryOutput> {
-    return {
-      aggregator: new CountAggregator(action.expr, action.factory, action.context),
-    };
+  public async run({ context, expr }: IActionBindingsAggregatorFactory):
+  Promise<IActorBindingsAggregatorFactoryOutput> {
+    return new CountAggregator(
+      await this.mediatorExpressionEvaluatorFactory.mediate({ algExpr: expr.expression, context }),
+      expr.distinct,
+    );
   }
 }
-

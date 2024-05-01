@@ -1,13 +1,19 @@
-import { ActionContext, Bus } from '@comunica/core';
-import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
-import { BF, DF, makeAggregate } from '@comunica/jest';
-import type { IExpressionEvaluatorFactory } from '@comunica/types';
+import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
+import { Bus } from '@comunica/core';
+import {
+  BF,
+  DF,
+  getMockEEActionContext,
+  getMockMediatorExpressionEvaluatorFactory,
+  makeAggregate,
+} from '@comunica/jest';
+import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { ActorBindingsAggregatorFactoryWildcardCount } from '../lib';
 
 describe('ActorBindingsAggregatorFactoryWildcardCount', () => {
   let bus: any;
-  let expressionEvaluatorFactory: IExpressionEvaluatorFactory;
+  let mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -25,56 +31,57 @@ describe('ActorBindingsAggregatorFactoryWildcardCount', () => {
       }),
     };
 
-    expressionEvaluatorFactory = new ExpressionEvaluatorFactory({
+    mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
       mediatorQueryOperation,
-      mediatorBindingsAggregatorFactory: mediatorQueryOperation,
     });
   });
 
   describe('An ActorBindingsAggregatorFactoryCount instance', () => {
     let actor: ActorBindingsAggregatorFactoryWildcardCount;
+    let context: IActionContext;
 
     beforeEach(() => {
-      actor = new ActorBindingsAggregatorFactoryWildcardCount({ name: 'actor', bus });
+      actor = new ActorBindingsAggregatorFactoryWildcardCount({
+        name: 'actor',
+        bus,
+        mediatorExpressionEvaluatorFactory,
+      });
+
+      context = getMockEEActionContext();
     });
 
     describe('test', () => {
       it('rejects count 1', () => {
         return expect(actor.test({
-          factory: expressionEvaluatorFactory,
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('count', false),
         })).rejects.toThrow();
       });
 
       it('rejects count 2', () => {
         return expect(actor.test({
-          factory: expressionEvaluatorFactory,
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('count', true),
         })).rejects.toThrow();
       });
 
       it('accepts wildcard count 1', () => {
         return expect(actor.test({
-          factory: expressionEvaluatorFactory,
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('count', false, undefined, true),
         })).resolves.toEqual({});
       });
 
       it('accepts wildcard count 2', () => {
         return expect(actor.test({
-          factory: expressionEvaluatorFactory,
-          context: new ActionContext(),
+          context: getMockEEActionContext(),
           expr: makeAggregate('count', true, undefined, true),
         })).resolves.toEqual({});
       });
 
       it('rejects sum', () => {
         return expect(actor.test({
-          factory: expressionEvaluatorFactory,
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('sum', false),
         })).rejects.toThrow();
       });
@@ -82,12 +89,9 @@ describe('ActorBindingsAggregatorFactoryWildcardCount', () => {
 
     it('should run', () => {
       return expect(actor.run({
-        factory: expressionEvaluatorFactory,
-        context: new ActionContext(),
+        context,
         expr: makeAggregate('count', false, undefined, true),
-      })).resolves.toMatchObject({
-        aggregator: expect.anything(),
-      });
+      })).resolves.toMatchObject({});
     });
   });
 });

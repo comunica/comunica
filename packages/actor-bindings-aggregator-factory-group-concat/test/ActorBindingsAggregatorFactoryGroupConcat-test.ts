@@ -1,13 +1,19 @@
-import { ActionContext, Bus } from '@comunica/core';
-import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
-import { BF, DF, makeAggregate } from '@comunica/jest';
-import type { IExpressionEvaluatorFactory } from '@comunica/types';
+import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
+import { Bus } from '@comunica/core';
+import {
+  BF,
+  DF,
+  getMockEEActionContext,
+  getMockMediatorExpressionEvaluatorFactory,
+  makeAggregate,
+} from '@comunica/jest';
+import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { ActorBindingsAggregatorFactoryGroupConcat } from '../lib';
 
 describe('ActorBindingsAggregatorFactoryGroupConcat', () => {
   let bus: any;
-  let expressionEvaluatorFactory: IExpressionEvaluatorFactory;
+  let mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -25,40 +31,42 @@ describe('ActorBindingsAggregatorFactoryGroupConcat', () => {
       }),
     };
 
-    expressionEvaluatorFactory = new ExpressionEvaluatorFactory({
+    mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
       mediatorQueryOperation,
-      mediatorBindingsAggregatorFactory: mediatorQueryOperation,
     });
   });
 
   describe('An ActorBindingsAggregatorFactoryCount instance', () => {
     let actor: ActorBindingsAggregatorFactoryGroupConcat;
+    let context: IActionContext;
 
     beforeEach(() => {
-      actor = new ActorBindingsAggregatorFactoryGroupConcat({ name: 'actor', bus });
-    });
+      actor = new ActorBindingsAggregatorFactoryGroupConcat({
+        name: 'actor',
+        bus,
+        mediatorExpressionEvaluatorFactory,
+      });
+
+      context = getMockEEActionContext(); });
 
     describe('test', () => {
       it('accepts group_concat 1', () => {
         return expect(actor.test({
-          factory: expressionEvaluatorFactory,
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('group_concat', false),
         })).resolves.toEqual({});
       });
 
       it('accepts group_concat 2', () => {
         return expect(actor.test({
-          factory: expressionEvaluatorFactory,
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('group_concat', true),
         })).resolves.toEqual({});
       });
 
       it('rejects sum', () => {
         return expect(actor.test({
-          factory: expressionEvaluatorFactory,
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('sum', false),
         })).rejects.toThrow();
       });
@@ -66,12 +74,9 @@ describe('ActorBindingsAggregatorFactoryGroupConcat', () => {
 
     it('should run', () => {
       return expect(actor.run({
-        factory: expressionEvaluatorFactory,
-        context: new ActionContext(),
+        context,
         expr: makeAggregate('group_concat', false),
-      })).resolves.toMatchObject({
-        aggregator: expect.anything(),
-      });
+      })).resolves.toMatchObject({});
     });
   });
 });

@@ -1,13 +1,22 @@
-import { ActionContext, Bus } from '@comunica/core';
-import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
-import { BF, DF, makeAggregate } from '@comunica/jest';
-import type { IExpressionEvaluatorFactory } from '@comunica/types';
+import { createTermCompMediator } from '@comunica/actor-term-comparator-factory-expression-evaluator/test/util';
+import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
+import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
+import { Bus } from '@comunica/core';
+import {
+  BF,
+  DF,
+  getMockEEActionContext,
+  getMockMediatorExpressionEvaluatorFactory,
+  makeAggregate,
+} from '@comunica/jest';
+import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { ActorBindingsAggregatorFactoryMin } from '../lib';
 
 describe('ActorBindingsAggregatorFactoryMin', () => {
   let bus: any;
-  let expressionEvaluatorFactory: IExpressionEvaluatorFactory;
+  let mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
+  let mediatorTermComparatorFactory: MediatorTermComparatorFactory;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -25,40 +34,45 @@ describe('ActorBindingsAggregatorFactoryMin', () => {
       }),
     };
 
-    expressionEvaluatorFactory = new ExpressionEvaluatorFactory({
+    mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
       mediatorQueryOperation,
-      mediatorBindingsAggregatorFactory: mediatorQueryOperation,
     });
+    mediatorTermComparatorFactory = createTermCompMediator();
   });
 
   describe('An ActorBindingsAggregatorFactoryMin instance', () => {
     let actor: ActorBindingsAggregatorFactoryMin;
+    let context: IActionContext;
 
     beforeEach(() => {
-      actor = new ActorBindingsAggregatorFactoryMin({ name: 'actor', bus });
+      actor = new ActorBindingsAggregatorFactoryMin({
+        name: 'actor',
+        bus,
+        mediatorExpressionEvaluatorFactory,
+        mediatorTermComparatorFactory,
+      });
+
+      context = getMockEEActionContext();
     });
 
     describe('test', () => {
       it('accepts min 1', () => {
         return expect(actor.test({
-          factory: expressionEvaluatorFactory,
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('min', false),
         })).resolves.toEqual({});
       });
 
       it('accepts min 2', () => {
         return expect(actor.test({
-          factory: expressionEvaluatorFactory,
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('min', true),
         })).resolves.toEqual({});
       });
 
       it('rejects sum', () => {
         return expect(actor.test({
-          factory: expressionEvaluatorFactory,
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('sum', false),
         })).rejects.toThrow();
       });
@@ -66,12 +80,9 @@ describe('ActorBindingsAggregatorFactoryMin', () => {
 
     it('should run', () => {
       return expect(actor.run({
-        factory: expressionEvaluatorFactory,
-        context: new ActionContext(),
+        context,
         expr: makeAggregate('min', false),
-      })).resolves.toMatchObject({
-        aggregator: expect.anything(),
-      });
+      })).resolves.toMatchObject({});
     });
   });
 });

@@ -1,10 +1,13 @@
-import type { ExpressionEvaluator } from '../../../lib';
-import type { Builder } from '../../../lib/functions/Helpers';
+import type { ExpressionEvaluator } from '@comunica/actor-expression-evaluator-factory-default/lib/ExpressionEvaluator';
+import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
+import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
+import type { ISuperTypeProvider } from '@comunica/types';
+import { TypeURL } from '../../../lib';
 import { bool, declare } from '../../../lib/functions/Helpers';
+import type { Builder } from '../../../lib/functions/Helpers';
 import type { FunctionArgumentsCache } from '../../../lib/functions/OverloadTree';
-import { TypeURL } from '../../../lib/util/Consts';
-import type { ISuperTypeProvider } from '../../../lib/util/TypeHandling';
-import { getMockEEActionContext, getMockEEFactory, getMockExpression } from '../../util/utils';
+import { getMockExpression } from '../../util/utils';
+
 import fn = jest.fn;
 
 describe('The function helper file', () => {
@@ -13,11 +16,14 @@ describe('The function helper file', () => {
     let expressionEvaluator: ExpressionEvaluator;
     let superTypeProvider: ISuperTypeProvider;
     let functionArgumentsCache: FunctionArgumentsCache;
-    beforeEach(() => {
+    beforeEach(async() => {
       builder = declare('non cacheable');
-      expressionEvaluator = getMockEEFactory().createEvaluator(getMockExpression('1+1'), getMockEEActionContext());
-      superTypeProvider = expressionEvaluator.context.superTypeProvider;
-      functionArgumentsCache = expressionEvaluator.context.functionArgumentsCache;
+      expressionEvaluator = <ExpressionEvaluator> await getMockEEFactory().run({
+        algExpr: getMockExpression('true'),
+        context: getMockEEActionContext(),
+      });
+      superTypeProvider = expressionEvaluator.context.getSafe(KeysExpressionEvaluator.superTypeProvider);
+      functionArgumentsCache = expressionEvaluator.context.getSafe(KeysInitQuery.functionArgumentsCache);
     });
 
     it('can only be collected once', () => {
@@ -34,7 +40,9 @@ describe('The function helper file', () => {
       const func = fn();
       const args = [ bool(true) ];
       builder.onUnaryTyped(TypeURL.XSD_BOOLEAN, () => func).collect()
-        .search(args, superTypeProvider, functionArgumentsCache)!(expressionEvaluator)(args);
+        .search(args, superTypeProvider, functionArgumentsCache)!(
+        expressionEvaluator,
+      )(args);
       expect(func).toBeCalledTimes(1);
     });
 
@@ -42,7 +50,9 @@ describe('The function helper file', () => {
       const func = fn();
       const args = [ bool(true) ];
       builder.onBoolean1(() => func).collect()
-        .search(args, superTypeProvider, functionArgumentsCache)!(expressionEvaluator)(args);
+        .search(args, superTypeProvider, functionArgumentsCache)!(
+        expressionEvaluator,
+      )(args);
       expect(func).toBeCalledTimes(1);
     });
   });

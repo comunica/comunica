@@ -1,15 +1,16 @@
-import type { ExpressionEvaluator } from '@comunica/expression-evaluator';
-import { AggregateEvaluator } from '@comunica/expression-evaluator';
-import type { IActionContext, IBindingsAggregator, IExpressionEvaluatorFactory } from '@comunica/types';
+import type { IBindingsAggregator } from '@comunica/bus-bindings-aggeregator-factory';
+import { AggregateEvaluator } from '@comunica/bus-bindings-aggeregator-factory';
+import type { ITermComparator } from '@comunica/bus-term-comparator-factory';
+import type { IExpressionEvaluator } from '@comunica/expression-evaluator';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra } from 'sparqlalgebrajs';
 
 export class MaxAggregator extends AggregateEvaluator implements IBindingsAggregator {
   private state: RDF.Term | undefined = undefined;
-  public constructor(aggregateExpression: Algebra.AggregateExpression,
-    expressionEvaluatorFactory: IExpressionEvaluatorFactory, context: IActionContext,
+  public constructor(evaluator: IExpressionEvaluator,
+    distinct: boolean,
+    private readonly orderByEvaluator: ITermComparator,
     throwError?: boolean) {
-    super(aggregateExpression, expressionEvaluatorFactory, context, throwError);
+    super(evaluator, distinct, throwError);
   }
 
   public putTerm(term: RDF.Term): void {
@@ -18,7 +19,7 @@ export class MaxAggregator extends AggregateEvaluator implements IBindingsAggreg
     }
     if (this.state === undefined) {
       this.state = term;
-    } else if ((<ExpressionEvaluator> this.evaluator).orderTypes(this.state, term) === -1) {
+    } else if (this.orderByEvaluator.orderTypes(this.state, term) === -1) {
       this.state = term;
     }
   }

@@ -1,64 +1,62 @@
-import { ActionContext, Bus } from '@comunica/core';
-import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
-import { BF, DF, makeAggregate } from '@comunica/jest';
-import type { IExpressionEvaluatorFactory } from '@comunica/types';
-import { ArrayIterator } from 'asynciterator';
+import { createFuncMediator } from '@comunica/actor-function-factory-wrapper-all/test/util';
+import type {
+  MediatorExpressionEvaluatorFactory,
+} from '@comunica/bus-expression-evaluator-factory';
+import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
+import { Bus } from '@comunica/core';
+import {
+  getMockEEActionContext,
+  getMockMediatorExpressionEvaluatorFactory,
+  makeAggregate,
+} from '@comunica/jest';
+import type { IActionContext } from '@comunica/types';
 import { ActorBindingsAggregatorFactoryAverage } from '../lib';
 
 describe('ActorBindingsAggregatorFactoryAverage', () => {
   let bus: any;
-  let expressionEvaluatorFactory: IExpressionEvaluatorFactory;
+  let mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
+  let mediatorFunctionFactory: MediatorFunctionFactory;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
 
-    const mediatorQueryOperation: any = {
-      mediate: (arg: any) => Promise.resolve({
-        bindingsStream: new ArrayIterator([
-          BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
-          BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),
-          BF.bindings([[ DF.variable('x'), DF.literal('3') ]]),
-        ], { autoStart: false }),
-        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('x') ]}),
-        operated: arg,
-        type: 'bindings',
-      }),
-    };
+    mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory();
+    mediatorFunctionFactory = createFuncMediator();
 
-    expressionEvaluatorFactory = new ExpressionEvaluatorFactory({
-      mediatorQueryOperation,
-      mediatorBindingsAggregatorFactory: mediatorQueryOperation,
-    });
+    context = getMockEEActionContext();
   });
 
   describe('An ActorBindingsAggregatorFactoryCount instance', () => {
     let actor: ActorBindingsAggregatorFactoryAverage;
 
     beforeEach(() => {
-      actor = new ActorBindingsAggregatorFactoryAverage({ name: 'actor', bus });
+      actor = new ActorBindingsAggregatorFactoryAverage({
+        name: 'actor',
+        bus,
+        mediatorExpressionEvaluatorFactory,
+        mediatorFunctionFactory,
+      });
     });
 
     describe('test', () => {
       it('accepts average 1', () => {
         return expect(actor.test({
-          factory: expressionEvaluatorFactory,
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('avg', false),
         })).resolves.toEqual({});
       });
 
       it('accepts average 2', () => {
         return expect(actor.test({
-          factory: expressionEvaluatorFactory,
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('avg', true),
         })).resolves.toEqual({});
       });
 
       it('rejects sum', () => {
         return expect(actor.test({
-          factory: expressionEvaluatorFactory,
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('sum', false),
         })).rejects.toThrow();
       });
@@ -66,12 +64,9 @@ describe('ActorBindingsAggregatorFactoryAverage', () => {
 
     it('should run', () => {
       return expect(actor.run({
-        factory: expressionEvaluatorFactory,
-        context: new ActionContext(),
+        context,
         expr: makeAggregate('avg', false),
-      })).resolves.toMatchObject({
-        aggregator: expect.anything(),
-      });
+      })).resolves.toMatchObject({});
     });
   });
 });

@@ -1,5 +1,6 @@
 import { ActionContextKey, CONTEXT_KEY_LOGGER } from '@comunica/core';
-import type { Bindings,
+import type {
+  Bindings,
   IPhysicalQueryPlanLogger,
   QueryExplainMode,
   IProxyHandler,
@@ -7,8 +8,14 @@ import type { Bindings,
   DataSources,
   IDataSource,
   IDataDestination,
-  MetadataBindings, FunctionArgumentsCache,
-  IAggregatedStore } from '@comunica/types';
+  MetadataBindings,
+  FunctionArgumentsCache,
+  IAggregatedStore,
+  IActionContext,
+  ITimeZoneRepresentation,
+  AsyncExtensionFunctionCreator,
+  ISuperTypeProvider,
+} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { IDocumentLoader } from 'jsonld-context-parser';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -136,10 +143,9 @@ export const KeysInitQuery = {
    *
    * The dictionary-based extensionFunctions context entry may be used instead, but not simultaneously.
    */
-  extensionFunctionCreator: new ActionContextKey<
-  (functionNamedNode: RDF.NamedNode) => ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined
-  // eslint-disable-next-line @typescript-eslint/no-extra-parens
-  >('@comunica/actor-init-query:extensionFunctionCreator'),
+  extensionFunctionCreator: new ActionContextKey<AsyncExtensionFunctionCreator>(
+    '@comunica/actor-init-query:extensionFunctionCreator',
+  ),
   /**
    * Dictionary of extension functions.
    * Key is the IRI of the function, and value is the async function implementation.
@@ -173,6 +179,15 @@ export const KeysInitQuery = {
    * A JSON-LD context
    */
   jsonLdContext: new ActionContextKey<any>('@context'),
+};
+
+export const KeysExpressionEvaluator = {
+  extensionFunctionCreator: new ActionContextKey<AsyncExtensionFunctionCreator>(
+    '@comunica/expression-evaluator:extensionFunctionCreator',
+  ),
+  superTypeProvider: new ActionContextKey<ISuperTypeProvider>('@comunica/expression-evaluator:superTypeProvider'),
+  defaultTimeZone: new ActionContextKey<ITimeZoneRepresentation>('@comunica/expression-evaluator:defaultTimeZone'),
+  actionContext: new ActionContextKey<IActionContext>('@comunica/expression-evaluator:actionContext'),
 };
 
 export const KeysQueryOperation = {

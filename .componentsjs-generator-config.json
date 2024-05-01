@@ -44,8 +44,6 @@
     "Response",
     "RequestInfo",
     "RequestInit",
-
-
     "IQueryableResultStream",
     "IQueryableResultBindings",
     "IQueryableResultQuads",
@@ -54,25 +52,37 @@
     "PathVariableObjectIterator",
     "ClosableTransformIterator",
     "MetadataValidationState",
-
     "RDF.Stream",
     "Omit",
     "Partial",
     "MediateMediaTyped",
     "IActorDereferenceOutput",
     "Factory",
-
     "UriTemplate",
     "LRUCache",
-
-    "isExpressionError",
     "AggregateEvaluator",
     "ExpressionEvaluator",
     "AggregateEvaluator",
     "Expression",
     "TypeURL",
     "RegularOperator",
-    "typedLiteral"
+    "typedLiteral",
+    "TypeAlias",
+    "isSubTypeOf",
+    "TermTransformer",
+    "TermTransformer",
+    "ExpressionError",
+    "isExpressionError",
+    "EmptyAggregateError",
+    "typedLiteral",
+    "TypeURL",
+    "TypeAlias",
+    "RegularOperator",
+    "isSubTypeOf",
+    "IInternalEvaluator",
+    "FunctionApplication",
+    "IEvalContext",
+    "IExpressionEvaluator"
   ],
   "modulePrefix": {
     "@comunica/actor-query-operation-service": "caqoser",

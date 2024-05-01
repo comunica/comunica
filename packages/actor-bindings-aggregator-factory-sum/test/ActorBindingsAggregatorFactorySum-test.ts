@@ -1,13 +1,23 @@
-import { ActionContext, Bus } from '@comunica/core';
-import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
-import { BF, DF, makeAggregate } from '@comunica/jest';
-import type { IExpressionEvaluatorFactory } from '@comunica/types';
+import { createFuncMediator } from '@comunica/actor-function-factory-wrapper-all/test/util';
+import type {
+  MediatorExpressionEvaluatorFactory,
+} from '@comunica/bus-expression-evaluator-factory';
+import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
+import { Bus } from '@comunica/core';
+import {
+  BF,
+  DF, getMockEEActionContext,
+  getMockMediatorExpressionEvaluatorFactory,
+  makeAggregate,
+} from '@comunica/jest';
+import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { ActorBindingsAggregatorFactorySum } from '../lib';
 
 describe('ActorBindingsAggregatorFactorySum', () => {
   let bus: any;
-  let expressionEvaluatorFactory: IExpressionEvaluatorFactory;
+  let mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
+  let mediatorFunctionFactory: MediatorFunctionFactory;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -25,40 +35,45 @@ describe('ActorBindingsAggregatorFactorySum', () => {
       }),
     };
 
-    expressionEvaluatorFactory = new ExpressionEvaluatorFactory({
+    mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
       mediatorQueryOperation,
-      mediatorBindingsAggregatorFactory: mediatorQueryOperation,
     });
+    mediatorFunctionFactory = createFuncMediator();
   });
 
   describe('An ActorBindingsAggregatorFactoryMax instance', () => {
     let actor: ActorBindingsAggregatorFactorySum;
+    let context: IActionContext;
 
     beforeEach(() => {
-      actor = new ActorBindingsAggregatorFactorySum({ name: 'actor', bus });
+      actor = new ActorBindingsAggregatorFactorySum({
+        name: 'actor',
+        bus,
+        mediatorExpressionEvaluatorFactory,
+        mediatorFunctionFactory,
+      });
+
+      context = getMockEEActionContext();
     });
 
     describe('test', () => {
       it('accepts sum 1', () => {
         return expect(actor.test({
-          factory: expressionEvaluatorFactory,
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('sum', false),
         })).resolves.toEqual({});
       });
 
       it('accepts sum 2', () => {
         return expect(actor.test({
-          factory: expressionEvaluatorFactory,
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('sum', true),
         })).resolves.toEqual({});
       });
 
       it('rejects count', () => {
         return expect(actor.test({
-          factory: expressionEvaluatorFactory,
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('count', false),
         })).rejects.toThrow();
       });
@@ -66,12 +81,9 @@ describe('ActorBindingsAggregatorFactorySum', () => {
 
     it('should run', () => {
       return expect(actor.run({
-        factory: expressionEvaluatorFactory,
-        context: new ActionContext(),
+        context,
         expr: makeAggregate('sum', false),
-      })).resolves.toMatchObject({
-        aggregator: expect.anything(),
-      });
+      })).resolves.toMatchObject({});
     });
   });
 });

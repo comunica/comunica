@@ -1,19 +1,31 @@
-import type { ExpressionEvaluator } from '../evaluators/ExpressionEvaluator';
-import type * as E from '../expressions';
+import type { GeneralSuperTypeDict, IActionContext, ISuperTypeProvider } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { isLiteralTermExpression } from '../expressions';
-import type { KnownLiteralTypes } from '../util/Consts';
-import type { GeneralSuperTypeDict, ISuperTypeProvider, OverrideType } from '../util/TypeHandling';
+import type * as E from '../expressions';
+import type * as C from '../util/Consts';
+import type { OverrideType } from '../util/TypeHandling';
 import {
   asGeneralType,
   asKnownLiteralType,
   asOverrideType,
   getSuperTypes,
-  superTypeDictTable, typePromotion,
+  superTypeDictTable,
+  typePromotion,
 } from '../util/TypeHandling';
-import type { ArgumentType } from './Core';
+
+// Function and operator arguments are 'flattened' in the SPARQL spec.
+// If the argument is a literal, the datatype often also matters.
+export type ArgumentType = 'term' | E.TermType | C.TypeURL | C.TypeAlias;
 
 export type SearchStack = OverloadTree[];
-export type ImplementationFunction = (expressionEvaluator: ExpressionEvaluator) => E.SimpleApplication;
+
+export interface IInternalEvaluator {
+  evaluatorExpressionEvaluation: (expr: E.Expression, mapping: RDF.Bindings) => Promise<E.Term>;
+
+  context: IActionContext;
+}
+
+export type ImplementationFunction = (expressionEvaluator: IInternalEvaluator) => E.SimpleApplication;
 interface IFunctionArgumentsCacheObj {
   func?: ImplementationFunction; cache?: FunctionArgumentsCache;
 }
@@ -223,7 +235,7 @@ export class OverloadTree {
       }
       const matches: [number, OverloadTree][] = this.literalOverLoads.filter(([ matchType, _ ]) =>
         matchType in subExtensionTable)
-        .map(([ matchType, tree ]) => [ subExtensionTable[<KnownLiteralTypes> matchType], tree ]);
+        .map(([ matchType, tree ]) => [ subExtensionTable[<C.KnownLiteralTypes> matchType], tree ]);
       matches.sort(([ prioA, matchTypeA ], [ prioB, matchTypeB ]) => prioA - prioB);
       res.push(...matches.map(([ _, sortedType ]) => sortedType));
     }
@@ -231,3 +243,10 @@ export class OverloadTree {
   }
 }
 
+export interface IEvalContext {
+  args: E.Expression[];
+  mapping: RDF.Bindings;
+  exprEval: IInternalEvaluator;
+}
+
+export type FunctionApplication = (evalContext: IEvalContext) => Promise<E.TermExpression>;

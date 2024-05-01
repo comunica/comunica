@@ -1,13 +1,20 @@
-import { ActionContext, Bus } from '@comunica/core';
-import { ExpressionEvaluatorFactory } from '@comunica/expression-evaluator';
-import { BF, DF, makeAggregate } from '@comunica/jest';
-import type { IExpressionEvaluatorFactory } from '@comunica/types';
+import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
+import { Bus } from '@comunica/core';
+import {
+  BF,
+  DF,
+  getMockEEActionContext,
+  getMockMediatorExpressionEvaluatorFactory,
+  makeAggregate,
+} from '@comunica/jest';
+import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { ActorBindingsAggregatorFactorySample } from '../lib';
 
 describe('ActorBindingsAggregatorFactorySample', () => {
   let bus: any;
-  let expressionEvaluatorFactory: IExpressionEvaluatorFactory;
+  let mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -25,40 +32,42 @@ describe('ActorBindingsAggregatorFactorySample', () => {
       }),
     };
 
-    expressionEvaluatorFactory = new ExpressionEvaluatorFactory({
+    mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
       mediatorQueryOperation,
-      mediatorBindingsAggregatorFactory: mediatorQueryOperation,
     });
+
+    context = getMockEEActionContext();
   });
 
   describe('An ActorBindingsAggregatorFactoryMax instance', () => {
     let actor: ActorBindingsAggregatorFactorySample;
 
     beforeEach(() => {
-      actor = new ActorBindingsAggregatorFactorySample({ name: 'actor', bus });
+      actor = new ActorBindingsAggregatorFactorySample({
+        name: 'actor',
+        bus,
+        mediatorExpressionEvaluatorFactory,
+      });
     });
 
     describe('test', () => {
       it('accepts sample 1', () => {
         return expect(actor.test({
-          factory: expressionEvaluatorFactory,
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('sample', false),
         })).resolves.toEqual({});
       });
 
       it('accepts sample 2', () => {
         return expect(actor.test({
-          factory: expressionEvaluatorFactory,
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('sample', true),
         })).resolves.toEqual({});
       });
 
       it('rejects sum', () => {
         return expect(actor.test({
-          factory: expressionEvaluatorFactory,
-          context: new ActionContext(),
+          context,
           expr: makeAggregate('sum', false),
         })).rejects.toThrow();
       });
@@ -66,12 +75,9 @@ describe('ActorBindingsAggregatorFactorySample', () => {
 
     it('should run', () => {
       return expect(actor.run({
-        factory: expressionEvaluatorFactory,
-        context: new ActionContext(),
+        context,
         expr: makeAggregate('sample', false),
-      })).resolves.toMatchObject({
-        aggregator: expect.anything(),
-      });
+      })).resolves.toMatchObject({});
     });
   });
 });

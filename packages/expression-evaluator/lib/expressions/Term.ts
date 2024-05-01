@@ -1,18 +1,17 @@
-import type * as RDF from '@rdfjs/types';
-import { DataFactory } from 'rdf-data-factory';
-import { TermTransformer } from '../transformers/TermTransformer';
-import * as C from '../util/Consts';
-import { TypeAlias, TypeURL } from '../util/Consts';
-
 import type {
   IDateRepresentation,
   IDateTimeRepresentation,
-  IDurationRepresentation,
-  ITimeRepresentation, IYearMonthDurationRepresentation,
-} from '../util/DateTimeHelpers';
+  IDurationRepresentation, ISuperTypeProvider,
+  ITimeRepresentation,
+  IYearMonthDurationRepresentation,
+} from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
+import { DataFactory } from 'rdf-data-factory';
+import * as C from '../util/Consts';
+import { TypeAlias, TypeURL } from '../util/Consts';
+
 import * as Err from '../util/Errors';
 import { serializeDateTime, serializeDuration, serializeTime, serializeDate } from '../util/Serialization';
-import type { ISuperTypeProvider } from '../util/TypeHandling';
 import { isSubTypeOf } from '../util/TypeHandling';
 import type { TermExpression, TermType } from './Expressions';
 import { ExpressionType } from './Expressions';
@@ -69,49 +68,20 @@ export class BlankNode extends Term {
 // Quads -----------------------------------------------------------------
 export class Quad extends Term {
   public termType: TermType = 'quad';
-  private readonly transformer: TermTransformer;
-  private readonly valueTerm: RDF.BaseQuad;
 
-  public constructor(input: RDF.BaseQuad, superTypeProvider: ISuperTypeProvider) {
+  public constructor(public readonly subject: Term, public readonly predicate: Term, public readonly object: Term,
+    public readonly graph: Term) {
     super();
-    this.transformer = new TermTransformer(superTypeProvider);
-    this.valueTerm = input;
   }
 
   public toRDF(): RDF.BaseQuad {
-    return this.valueTerm;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    return DF.quad(this.subject.toRDF(), this.predicate.toRDF(), this.object.toRDF(), this.graph.toRDF());
   }
 
-  public get subject(): Term {
-    return this.transformer.transformRDFTermUnsafe(this.RDFsubject);
-  }
-
-  public get predicate(): Term {
-    return this.transformer.transformRDFTermUnsafe(this.RDFpredicate);
-  }
-
-  public get object(): Term {
-    return this.transformer.transformRDFTermUnsafe(this.RDFobject);
-  }
-
-  public get graph(): Term {
-    return this.transformer.transformRDFTermUnsafe(this.RDFgraph);
-  }
-
-  public get RDFsubject(): RDF.Term {
-    return this.toRDF().subject;
-  }
-
-  public get RDFpredicate(): RDF.Term {
-    return this.toRDF().predicate;
-  }
-
-  public get RDFobject(): RDF.Term {
-    return this.toRDF().object;
-  }
-
-  public get RDFgraph(): RDF.Term {
-    return this.toRDF().graph;
+  public str(): string {
+    return `Quad: [${this.subject.str()}, ${this.predicate.str()}, ${this.object.str()}, ${this.graph.str()}]`;
   }
 }
 
@@ -124,6 +94,10 @@ export class DefaultGraph extends Term {
 
   public toRDF(): RDF.DefaultGraph {
     return DF.defaultGraph();
+  }
+
+  public str(): string {
+    return 'DefaultGraph';
   }
 }
 

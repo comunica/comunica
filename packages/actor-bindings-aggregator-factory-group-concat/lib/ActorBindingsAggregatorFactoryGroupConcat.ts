@@ -1,6 +1,5 @@
 import type {
-  IActionBindingsAggregatorFactory,
-  IActorBindingsAggregatorFactoryArgs,
+  IActionBindingsAggregatorFactory, IActorBindingsAggregatorFactoryArgs,
   IActorBindingsAggregatorFactoryOutput,
 } from '@comunica/bus-bindings-aggeregator-factory';
 import {
@@ -24,10 +23,13 @@ export class ActorBindingsAggregatorFactoryGroupConcat extends ActorBindingsAggr
     return {};
   }
 
-  public async run(action: IActionBindingsAggregatorFactory): Promise<IActorBindingsAggregatorFactoryOutput> {
-    return {
-      aggregator: new GroupConcatAggregator(action.expr, action.factory, action.context),
-    };
+  public async run({ context, expr }: IActionBindingsAggregatorFactory):
+  Promise<IActorBindingsAggregatorFactoryOutput> {
+    return new GroupConcatAggregator(
+      await this.mediatorExpressionEvaluatorFactory.mediate({ algExpr: expr.expression, context }),
+      expr.distinct,
+      expr.separator,
+    );
   }
 }
 

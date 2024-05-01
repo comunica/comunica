@@ -1,7 +1,4 @@
-import type {
-  IDurationRepresentation,
-  IDateTimeRepresentation, ITimeZoneRepresentation,
-} from './DateTimeHelpers';
+import type { IDateTimeRepresentation, IDurationRepresentation, ITimeZoneRepresentation } from '@comunica/types';
 import { toUTCDate } from './DateTimeHelpers';
 
 function fDiv(arg: number, high: number, low = 0): { intDiv: number; remainder: number } {

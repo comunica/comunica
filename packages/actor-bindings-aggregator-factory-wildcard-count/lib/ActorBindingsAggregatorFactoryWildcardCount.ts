@@ -1,6 +1,5 @@
 import type {
-  IActionBindingsAggregatorFactory,
-  IActorBindingsAggregatorFactoryArgs,
+  IActionBindingsAggregatorFactory, IActorBindingsAggregatorFactoryArgs,
   IActorBindingsAggregatorFactoryOutput,
 } from '@comunica/bus-bindings-aggeregator-factory';
 import {
@@ -24,9 +23,11 @@ export class ActorBindingsAggregatorFactoryWildcardCount extends ActorBindingsAg
     return {};
   }
 
-  public async run(action: IActionBindingsAggregatorFactory): Promise<IActorBindingsAggregatorFactoryOutput> {
-    return {
-      aggregator: new WildcardCountAggregator(action.expr, action.factory, action.context),
-    };
+  public async run({ context, expr }: IActionBindingsAggregatorFactory):
+  Promise<IActorBindingsAggregatorFactoryOutput> {
+    return new WildcardCountAggregator(
+      await this.mediatorExpressionEvaluatorFactory.mediate({ algExpr: expr.expression, context }),
+      expr.distinct,
+    );
   }
 }

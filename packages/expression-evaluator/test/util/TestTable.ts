@@ -36,25 +36,25 @@ abstract class Table<RowType extends Row> {
   public abstract test(): void;
 
   protected async testExpression(expr: string, result: string) {
-    const { config, additionalPrefixes, legacyContext } = this.def;
+    const { config, additionalPrefixes, exprEvalFactory } = this.def;
     const aliases = this.def.aliases || {};
     result = aliases[result] || result;
     const evaluated = await generalEvaluate({
       expression: template(expr, additionalPrefixes),
       expectEquality: true,
       generalEvaluationConfig: config,
-      legacyContext,
+      exprEvalFactory,
     });
     expect(evaluated.asyncResult).toEqual(stringToTermPrefix(result, additionalPrefixes));
   }
 
   protected async testErrorExpression(expr: string, error: string) {
-    const { config, additionalPrefixes, legacyContext } = this.def;
+    const { config, additionalPrefixes, exprEvalFactory } = this.def;
     const result = await generalErrorEvaluation({
       expression: template(expr, additionalPrefixes),
       expectEquality: false,
       generalEvaluationConfig: config,
-      legacyContext,
+      exprEvalFactory,
     });
     expect(result).not.toBeUndefined();
     expect(() => { throw result?.asyncError; }).toThrow(error);
@@ -158,7 +158,7 @@ export class BinaryTable extends Table<[string, string, string]> {
   }
 
   public test(): void {
-    this.parser.table.forEach(row => {
+    for (const row of this.parser.table) {
       const result = row[2];
       const { operation } = this.def;
       const aliases = this.def.aliases || {};
@@ -166,9 +166,9 @@ export class BinaryTable extends Table<[string, string, string]> {
         const expr = this.format(operation, <[string, string, string]> row.map(el => aliases[el] || el));
         await this.testExpression(expr, result);
       });
-    });
+    }
 
-    this.parser.errorTable.forEach(row => {
+    for (const row of this.parser.errorTable) {
       const error = row[2];
       const { operation } = this.def;
       const aliases = this.def.aliases || {};
@@ -176,7 +176,7 @@ export class BinaryTable extends Table<[string, string, string]> {
         const expr = this.format(operation, <[string, string, string]> row.map(el => aliases[el] || el));
         await this.testErrorExpression(expr, error);
       });
-    });
+    }
   }
 
   protected format(operation: string, row: [string, string, string]): string {

@@ -9,7 +9,9 @@
   "actors": [
     {
       "@id": "urn:comunica:default:bindings-aggregator-factory/actors#average",
-      "@type": "ActorBindingsAggregatorFactoryAverage"
+      "@type": "ActorBindingsAggregatorFactoryAverage",
+      "mediatorExpressionEvaluatorFactory": { "@id":  "urn:comunica:default:expression-evaluator-factory/mediators#main" },
+      "mediatorFunctionFactory": { "@id": "urn:comunica:default:function-factory/mediators#main" }
     }
   ]
 }
