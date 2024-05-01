@@ -1,6 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
-import type { ITermFunction, MediatorFunctions } from '@comunica/bus-functions';
+import type { ITermFunction, MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
 import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -29,12 +29,12 @@ describe('evaluators', () => {
         supportsTermExpressions: true,
       };
     });
-    const resolveAsTwoFuncMediator = <MediatorFunctions> {
+    const resolveAsTwoFuncMediator = <MediatorFunctionFactory> {
       mediate: <any> mediate,
     };
 
     factory = getMockEEFactory({
-      mediatorFunctions: resolveAsTwoFuncMediator,
+      mediatorFunctionFactory: resolveAsTwoFuncMediator,
     });
   });
 

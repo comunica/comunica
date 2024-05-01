@@ -1,4 +1,4 @@
-import { createFuncMediator } from '@comunica/actor-functions-wrapper-all/test/util';
+import { createFuncMediator } from '@comunica/actor-function-factory-wrapper-all/test/util';
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import { Bus } from '@comunica/core';
 import { getMockMediatorQueryOperation } from '@comunica/jest';
@@ -17,7 +17,7 @@ export function createTermCompActor() {
   const actor = new ActorTermComparatorFactoryExpressionEvaluator({
     name: 'actor',
     bus,
-    mediatorFunctions: createFuncMediator(),
+    mediatorFunctionFactory: createFuncMediator(),
     mediatorQueryOperation: getMockMediatorQueryOperation(),
   });
   return { actor, bus };

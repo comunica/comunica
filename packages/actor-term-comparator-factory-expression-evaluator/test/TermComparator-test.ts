@@ -1,5 +1,5 @@
-import { regularFunctions } from '@comunica/actor-functions-wrapper-all/lib/implementation/RegularFunctions';
-import type { TermSparqlFunction } from '@comunica/bus-functions/lib/implementation';
+import { regularFunctions } from '@comunica/actor-function-factory-wrapper-all/lib/implementation/RegularFunctions';
+import type { TermSparqlFunction } from '@comunica/bus-function-factory/lib/implementation';
 import type { ITermComparator } from '@comunica/bus-term-comparator-factory';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import type * as C from '@comunica/expression-evaluator/lib/util/Consts';
@@ -9,7 +9,7 @@ import type { SuperTypeCallback } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
 import { DataFactory } from 'rdf-data-factory';
-import { InequalityFunctionBasedComparator } from '../lib/InequalityFunctionBasedComparator';
+import { TermComparatorExpressionEvaluator } from '../lib/TermComparatorExpressionEvaluator';
 
 const DF = new DataFactory();
 
@@ -44,7 +44,7 @@ function orderByFactory(typeDiscoveryCallback?: SuperTypeCallback): ITermCompara
       cache: new LRUCache<string, any>({ max: 1_000 }),
     }) :
     getMockEEActionContext();
-  return new InequalityFunctionBasedComparator(
+  return new TermComparatorExpressionEvaluator(
     getMockInternalEvaluator(undefined, context),
     <TermSparqlFunction<C.RegularOperator>> regularFunctions['='],
     <TermSparqlFunction<C.RegularOperator>> regularFunctions['<'],

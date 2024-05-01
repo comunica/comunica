@@ -1,10 +1,10 @@
 import { AlgebraTransformer } from '@comunica/actor-expression-evaluator-factory-default/lib/AlgebraTransformer';
-import { NamedExtension } from '@comunica/actor-functions-wrapper-all/lib/implementation/NamedExtension';
-import { namedFunctions } from '@comunica/actor-functions-wrapper-all/lib/implementation/NamedFunctions';
-import { regularFunctions } from '@comunica/actor-functions-wrapper-all/lib/implementation/RegularFunctions';
-import { specialFunctions } from '@comunica/actor-functions-wrapper-all/lib/implementation/SpecialFunctions';
-import { createFuncMediator } from '@comunica/actor-functions-wrapper-all/test/util';
-import type { IExpressionFunction, MediatorFunctions } from '@comunica/bus-functions';
+import { NamedExtension } from '@comunica/actor-function-factory-wrapper-all/lib/implementation/NamedExtension';
+import { namedFunctions } from '@comunica/actor-function-factory-wrapper-all/lib/implementation/NamedFunctions';
+import { regularFunctions } from '@comunica/actor-function-factory-wrapper-all/lib/implementation/RegularFunctions';
+import { specialFunctions } from '@comunica/actor-function-factory-wrapper-all/lib/implementation/SpecialFunctions';
+import { createFuncMediator } from '@comunica/actor-function-factory-wrapper-all/test/util';
+import type { IExpressionFunction, MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import * as E from '@comunica/expression-evaluator/lib/expressions';
 import type * as C from '@comunica/expression-evaluator/lib/util/Consts';
 import { prepareEvaluatorActionContext } from '@comunica/expression-evaluator/lib/util/Context';
@@ -19,7 +19,7 @@ const DF = new DataFactory();
 describe('AlgebraTransformer', () => {
   let algebraTransformer: AlgebraTransformer;
   beforeEach(() => {
-    const factory = getMockEEFactory({ mediatorFunctions: <MediatorFunctions> {
+    const factory = getMockEEFactory({ mediatorFunctionFactory: <MediatorFunctionFactory> {
       async mediate({ functionName }) {
         const res: IExpressionFunction | undefined = {
           ...regularFunctions,

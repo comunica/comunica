@@ -1,4 +1,4 @@
-import { createFuncMediator } from '@comunica/actor-functions-wrapper-all/test/util';
+import { createFuncMediator } from '@comunica/actor-function-factory-wrapper-all/test/util';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
@@ -36,7 +36,7 @@ describe('ActorQueryOperationLeftJoin', () => {
     };
     mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
       mediatorQueryOperation,
-      mediatorFunctions: createFuncMediator(),
+      mediatorFunctionFactory: createFuncMediator(),
     });
     mediatorJoin = {
       mediate: (arg: any) => Promise.resolve({

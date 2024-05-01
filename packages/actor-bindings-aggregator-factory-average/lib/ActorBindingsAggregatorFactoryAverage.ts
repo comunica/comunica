@@ -4,24 +4,24 @@ import type {
 } from '@comunica/bus-bindings-aggeregator-factory';
 import { ActorBindingsAggregatorFactory } from '@comunica/bus-bindings-aggeregator-factory';
 
-import type { MediatorFunctions, MediatorFunctionsUnsafe } from '@comunica/bus-functions';
+import type { MediatorFunctionFactory, MediatorFunctionFactoryUnsafe } from '@comunica/bus-function-factory';
 import type { IActorTest } from '@comunica/core';
 import { RegularOperator } from '@comunica/expression-evaluator';
 import { AverageAggregator } from './AverageAggregator';
 
 export interface IActorBindingsAggregatorFactoryAverageArgs extends IActorBindingsAggregatorFactoryArgs {
-  mediatorFunctions: MediatorFunctionsUnsafe;
+  mediatorFunctionFactory: MediatorFunctionFactoryUnsafe;
 }
 
 /**
  * A comunica Average Expression Evaluator Aggregate Actor.
  */
 export class ActorBindingsAggregatorFactoryAverage extends ActorBindingsAggregatorFactory {
-  private readonly mediatorFunctions: MediatorFunctions;
+  private readonly mediatorFunctionFactory: MediatorFunctionFactory;
 
   public constructor(args: IActorBindingsAggregatorFactoryAverageArgs) {
     super(args);
-    this.mediatorFunctions = <MediatorFunctions>args.mediatorFunctions;
+    this.mediatorFunctionFactory = <MediatorFunctionFactory>args.mediatorFunctionFactory;
   }
 
   public async test(action: IActionBindingsAggregatorFactory): Promise<IActorTest> {
@@ -36,12 +36,12 @@ export class ActorBindingsAggregatorFactoryAverage extends ActorBindingsAggregat
     return new AverageAggregator(
       await this.mediatorExpressionEvaluatorFactory.mediate({ algExpr: expr.expression, context }),
       expr.distinct,
-      await this.mediatorFunctions.mediate({
+      await this.mediatorFunctionFactory.mediate({
         functionName: RegularOperator.ADDITION,
         context,
         requireTermExpression: true,
       }),
-      await this.mediatorFunctions.mediate({
+      await this.mediatorFunctionFactory.mediate({
         functionName: RegularOperator.DIVISION,
         context,
         requireTermExpression: true,

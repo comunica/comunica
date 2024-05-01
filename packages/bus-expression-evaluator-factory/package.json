@@ -31,7 +31,7 @@
     "lib/**/*.js.map"
   ],
   "dependencies": {
-    "@comunica/bus-functions": "^1.0.0",
+    "@comunica/bus-function-factory": "^1.0.0",
     "@comunica/bus-query-operation": "^2.8.2",
     "@comunica/core": "^2.8.2",
     "@comunica/expression-evaluator": "^2.8.2",

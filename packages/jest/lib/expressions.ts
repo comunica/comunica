@@ -7,7 +7,7 @@ import type {
   ActorExpressionEvaluatorFactory, IActorExpressionEvaluatorFactoryArgs,
   MediatorExpressionEvaluatorFactory,
 } from '@comunica/bus-expression-evaluator-factory';
-import type { MediatorFunctions } from '@comunica/bus-functions';
+import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
@@ -89,7 +89,7 @@ export function getMockInternalEvaluator(factory?: ActorExpressionEvaluatorFacto
   const defFactory = factory ?? getMockEEFactory();
   return new InternalEvaluator(
     prepareEvaluatorActionContext(getMockEEActionContext(context)),
-    getMockMediatorFunctions(),
+    getMockMediatorFunctionFactory(),
     <any>{
       async mediate(arg: any) {
         throw new Error('mediatorQueryOperation mock of mockEEFactory not implemented');
@@ -100,13 +100,13 @@ export function getMockInternalEvaluator(factory?: ActorExpressionEvaluatorFacto
 
 export function getMockEEFactory({
   mediatorQueryOperation,
-  mediatorFunctions,
+  mediatorFunctionFactory,
 }: Partial<IActorExpressionEvaluatorFactoryArgs> = {}): ActorExpressionEvaluatorFactory {
   return new ActorExpressionEvaluatorFactoryDefault({
     bus: new Bus({ name: 'testBusMock' }),
     name: 'mockEEFactory',
     mediatorQueryOperation: mediatorQueryOperation || getMockMediatorQueryOperation(),
-    mediatorFunctions: mediatorFunctions || getMockMediatorFunctions(),
+    mediatorFunctionFactory: mediatorFunctionFactory || getMockMediatorFunctionFactory(),
   });
 }
 
@@ -128,10 +128,10 @@ export function getMockMediatorExpressionEvaluatorFactory(
   };
 }
 
-export function getMockMediatorFunctions(): MediatorFunctions {
+export function getMockMediatorFunctionFactory(): MediatorFunctionFactory {
   return <any>{
     async mediate(arg: any) {
-      throw new Error('mediatorFunctions mock not implemented');
+      throw new Error('mediatorFunctionFactory mock not implemented');
     },
   };
 }

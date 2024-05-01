@@ -1,4 +1,4 @@
-import type { MediatorFunctions } from '@comunica/bus-functions';
+import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, materializeOperation } from '@comunica/bus-query-operation';
 import * as E from '@comunica/expression-evaluator/lib/expressions';
@@ -27,11 +27,11 @@ export class InternalEvaluator {
       };
 
   public constructor(public readonly context: IActionContext,
-    mediatorFunctions: MediatorFunctions,
+    mediatorFunctionFactory: MediatorFunctionFactory,
     private readonly mediatorQueryOperation: MediatorQueryOperation) {
     this.transformer = new AlgebraTransformer(
       context,
-      mediatorFunctions,
+      mediatorFunctionFactory,
     );
   }
 

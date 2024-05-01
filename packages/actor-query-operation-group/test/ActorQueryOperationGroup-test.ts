@@ -6,7 +6,7 @@ import { MinAggregator } from '@comunica/actor-bindings-aggregator-factory-min';
 import { SampleAggregator } from '@comunica/actor-bindings-aggregator-factory-sample';
 import { SumAggregator } from '@comunica/actor-bindings-aggregator-factory-sum';
 import { WildcardCountAggregator } from '@comunica/actor-bindings-aggregator-factory-wildcard-count';
-import { createFuncMediator } from '@comunica/actor-functions-wrapper-all/test/util';
+import { createFuncMediator } from '@comunica/actor-function-factory-wrapper-all/test/util';
 import { createTermCompMediator } from '@comunica/actor-term-comparator-factory-expression-evaluator/test/util';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type {
@@ -15,7 +15,7 @@ import type {
   MediatorBindingsAggregatorFactory,
 } from '@comunica/bus-bindings-aggeregator-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
-import type { MediatorFunctions } from '@comunica/bus-functions';
+import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
@@ -110,7 +110,7 @@ interface ICaseOutput {
 async function aggregatorFactory(factory: ActorExpressionEvaluatorFactory, { expr, context }:
 IActionBindingsAggregatorFactory):
   Promise<IActorBindingsAggregatorFactoryOutput> {
-  const mediatorFunctions: MediatorFunctions = createFuncMediator();
+  const mediatorFunctionFactory: MediatorFunctionFactory = createFuncMediator();
   const mediatorTermComparatorFactory: MediatorTermComparatorFactory = createTermCompMediator();
   context = getMockEEActionContext(context);
 
@@ -127,7 +127,7 @@ IActionBindingsAggregatorFactory):
     return new SumAggregator(
       evaluator,
       expr.distinct,
-      await mediatorFunctions.mediate({
+      await mediatorFunctionFactory.mediate({
         functionName: RegularOperator.ADDITION,
         context,
         requireTermExpression: true,
@@ -137,12 +137,12 @@ IActionBindingsAggregatorFactory):
     return new AverageAggregator(
       evaluator,
       expr.distinct,
-      await mediatorFunctions.mediate({
+      await mediatorFunctionFactory.mediate({
         functionName: RegularOperator.ADDITION,
         context,
         requireTermExpression: true,
       }),
-      await mediatorFunctions.mediate({
+      await mediatorFunctionFactory.mediate({
         functionName: RegularOperator.DIVISION,
         context,
         requireTermExpression: true,
@@ -198,7 +198,7 @@ function constructCase(
   };
   const expressionEvaluatorFactory = getMockEEFactory({
     mediatorQueryOperation,
-    mediatorFunctions: createFuncMediator(),
+    mediatorFunctionFactory: createFuncMediator(),
   });
   const mediatorBindingsAggregatorFactory = <MediatorBindingsAggregatorFactory> {
     async mediate(args: IActionBindingsAggregatorFactory):
@@ -250,7 +250,7 @@ describe('ActorQueryOperationGroup', () => {
     };
     const expressionEvaluatorFactory = getMockEEFactory({
       mediatorQueryOperation,
-      mediatorFunctions: createFuncMediator(),
+      mediatorFunctionFactory: createFuncMediator(),
     });
     mediatorBindingsAggregatorFactory = <MediatorBindingsAggregatorFactory> {
       async mediate(args: IActionBindingsAggregatorFactory):

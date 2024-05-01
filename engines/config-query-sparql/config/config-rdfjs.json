@@ -9,8 +9,8 @@
     "ccqs:config/context-preprocess/mediators.json",
     "ccqs:config/expression-evaluator-factory/actors.json",
     "ccqs:config/expression-evaluator-factory/mediators.json",
-    "ccqs:config/functions/actors.json",
-    "ccqs:config/functions/mediators.json",
+    "ccqs:config/function-factory/actors.json",
+    "ccqs:config/function-factory/mediators.json",
     "ccqs:config/hash-bindings/actors.json",
     "ccqs:config/hash-bindings/mediators.json",
 

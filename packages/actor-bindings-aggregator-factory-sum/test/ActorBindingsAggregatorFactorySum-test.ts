@@ -1,8 +1,8 @@
-import { createFuncMediator } from '@comunica/actor-functions-wrapper-all/test/util';
+import { createFuncMediator } from '@comunica/actor-function-factory-wrapper-all/test/util';
 import type {
   MediatorExpressionEvaluatorFactory,
 } from '@comunica/bus-expression-evaluator-factory';
-import type { MediatorFunctions } from '@comunica/bus-functions';
+import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import { Bus } from '@comunica/core';
 import {
   BF,
@@ -17,7 +17,7 @@ import { ActorBindingsAggregatorFactorySum } from '../lib';
 describe('ActorBindingsAggregatorFactorySum', () => {
   let bus: any;
   let mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
-  let mediatorFunctions: MediatorFunctions;
+  let mediatorFunctionFactory: MediatorFunctionFactory;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -38,7 +38,7 @@ describe('ActorBindingsAggregatorFactorySum', () => {
     mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
       mediatorQueryOperation,
     });
-    mediatorFunctions = createFuncMediator();
+    mediatorFunctionFactory = createFuncMediator();
   });
 
   describe('An ActorBindingsAggregatorFactoryMax instance', () => {
@@ -50,7 +50,7 @@ describe('ActorBindingsAggregatorFactorySum', () => {
         name: 'actor',
         bus,
         mediatorExpressionEvaluatorFactory,
-        mediatorFunctions,
+        mediatorFunctionFactory,
       });
 
       context = getMockEEActionContext();

@@ -1,5 +1,5 @@
 import type { ExpressionEvaluator } from '@comunica/actor-expression-evaluator-factory-default/lib/ExpressionEvaluator';
-import { regularFunctions } from '@comunica/actor-functions-wrapper-all/lib/implementation/RegularFunctions';
+import { regularFunctions } from '@comunica/actor-function-factory-wrapper-all/lib/implementation/RegularFunctions';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
 import type { ISuperTypeProvider } from '@comunica/types';

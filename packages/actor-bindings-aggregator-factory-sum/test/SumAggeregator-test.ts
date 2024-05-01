@@ -1,7 +1,7 @@
-import { createFuncMediator } from '@comunica/actor-functions-wrapper-all/test/util';
+import { createFuncMediator } from '@comunica/actor-function-factory-wrapper-all/test/util';
 import type { IBindingsAggregator } from '@comunica/bus-bindings-aggeregator-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
-import type { MediatorFunctions } from '@comunica/bus-functions';
+import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import { RegularOperator } from '@comunica/expression-evaluator';
 import {
   BF,
@@ -25,9 +25,9 @@ async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Binding
   return aggregator.result();
 }
 
-async function createAggregator({ expressionEvaluatorFactory, mediatorFunctions, context, distinct }: {
+async function createAggregator({ expressionEvaluatorFactory, mediatorFunctionFactory, context, distinct }: {
   expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
-  mediatorFunctions: MediatorFunctions;
+  mediatorFunctionFactory: MediatorFunctionFactory;
   context: IActionContext;
   distinct: boolean;
 }): Promise<SumAggregator> {
@@ -37,7 +37,7 @@ async function createAggregator({ expressionEvaluatorFactory, mediatorFunctions,
       context,
     }),
     distinct,
-    await mediatorFunctions.mediate({
+    await mediatorFunctionFactory.mediate({
       context,
       functionName: RegularOperator.ADDITION,
       requireTermExpression: true,
@@ -47,12 +47,12 @@ async function createAggregator({ expressionEvaluatorFactory, mediatorFunctions,
 
 describe('SumAggregator', () => {
   let expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
-  let mediatorFunctions: MediatorFunctions;
+  let mediatorFunctionFactory: MediatorFunctionFactory;
   let context: IActionContext;
 
   beforeEach(() => {
     expressionEvaluatorFactory = getMockEEFactory();
-    mediatorFunctions = createFuncMediator();
+    mediatorFunctionFactory = createFuncMediator();
 
     context = getMockEEActionContext();
   });
@@ -63,7 +63,7 @@ describe('SumAggregator', () => {
     beforeEach(async() => {
       aggregator = await createAggregator({
         expressionEvaluatorFactory,
-        mediatorFunctions,
+        mediatorFunctionFactory,
         context,
         distinct: false,
       });
@@ -134,7 +134,7 @@ describe('SumAggregator', () => {
     beforeEach(async() => {
       aggregator = await createAggregator({
         expressionEvaluatorFactory,
-        mediatorFunctions,
+        mediatorFunctionFactory,
         context,
         distinct: true,
       });

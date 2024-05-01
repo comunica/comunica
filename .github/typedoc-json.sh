@@ -2,7 +2,7 @@
 
 typedocjson='{
   "extends": [
-    "../../typedoc.default.json"
+    "../../typedoc.base.json"
   ],
   "entryPoints": [
     "lib/index.ts"

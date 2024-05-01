@@ -33,7 +33,7 @@
   ],
   "dependencies": {
     "@comunica/bus-expression-evaluator-factory": "^1.0.0",
-    "@comunica/bus-functions": "^1.0.0",
+    "@comunica/bus-function-factory": "^1.0.0",
     "@comunica/bus-query-operation": "^2.9.0",
     "@comunica/context-entries": "^2.8.2",
     "@comunica/core": "^2.8.2",

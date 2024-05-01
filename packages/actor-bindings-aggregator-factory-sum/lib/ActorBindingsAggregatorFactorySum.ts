@@ -6,24 +6,24 @@ import type {
 import {
   ActorBindingsAggregatorFactory,
 } from '@comunica/bus-bindings-aggeregator-factory';
-import type { MediatorFunctions, MediatorFunctionsUnsafe } from '@comunica/bus-functions';
+import type { MediatorFunctionFactory, MediatorFunctionFactoryUnsafe } from '@comunica/bus-function-factory';
 import type { IActorTest } from '@comunica/core';
 import { RegularOperator } from '@comunica/expression-evaluator';
 import { SumAggregator } from './SumAggregator';
 
 export interface IActorBindingsAggregatorFactorySumArgs extends IActorBindingsAggregatorFactoryArgs {
-  mediatorFunctions: MediatorFunctionsUnsafe;
+  mediatorFunctionFactory: MediatorFunctionFactoryUnsafe;
 }
 
 /**
  * A comunica Sum Expression Evaluator Aggregate Actor.
  */
 export class ActorBindingsAggregatorFactorySum extends ActorBindingsAggregatorFactory {
-  private readonly mediatorFunctions: MediatorFunctions;
+  private readonly mediatorFunctionFactory: MediatorFunctionFactory;
 
   public constructor(args: IActorBindingsAggregatorFactorySumArgs) {
     super(args);
-    this.mediatorFunctions = <MediatorFunctions> args.mediatorFunctions;
+    this.mediatorFunctionFactory = <MediatorFunctionFactory> args.mediatorFunctionFactory;
   }
 
   public async test(action: IActionBindingsAggregatorFactory): Promise<IActorTest> {
@@ -38,7 +38,7 @@ export class ActorBindingsAggregatorFactorySum extends ActorBindingsAggregatorFa
     return new SumAggregator(
       await this.mediatorExpressionEvaluatorFactory.mediate({ algExpr: expr.expression, context }),
       expr.distinct,
-      await this.mediatorFunctions.mediate({
+      await this.mediatorFunctionFactory.mediate({
         functionName: RegularOperator.ADDITION,
         context,
         requireTermExpression: true,

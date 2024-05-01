@@ -1,4 +1,4 @@
-import { createFuncMediator } from '@comunica/actor-functions-wrapper-all/test/util';
+import { createFuncMediator } from '@comunica/actor-function-factory-wrapper-all/test/util';
 import { createTermCompMediator } from '@comunica/actor-term-comparator-factory-expression-evaluator/test/util';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type {
@@ -26,7 +26,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
 
   beforeEach(() => {
     mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
-      mediatorFunctions: createFuncMediator(),
+      mediatorFunctionFactory: createFuncMediator(),
     });
     mediatorTermComparatorFactory = createTermCompMediator();
     context = getMockEEActionContext();

@@ -1,4 +1,4 @@
-import type { MediatorFunctionsUnsafe } from '@comunica/bus-functions';
+import type { MediatorFunctionFactoryUnsafe } from '@comunica/bus-function-factory';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
@@ -8,9 +8,9 @@ import type * as RDF from '@rdfjs/types';
  * A comunica actor for term-comparator-factory events.
  *
  * Actor types:
- * * Input:  IActionTermComparatorFactory:      TODO: fill in.
+ * * Input:  IActionTermComparatorFactory: the Query Operation Mediator and Function Factory Mediator.
  * * Test:   <none>
- * * Output: IActorTermComparatorFactoryOutput: TODO: fill in.
+ * * Output: IActorTermComparatorFactoryOutput: An object that can order RDF terms.
  *
  * @see IActionTermComparatorFactory
  * @see IActorTermComparatorFactoryOutput
@@ -43,7 +43,7 @@ export interface IActorTermComparatorFactoryOutput extends IActorOutput, ITermCo
 export interface IActorTermComparatorFactoryArgs extends IActorArgs<
 IActionTermComparatorFactory, IActorTest, IActorTermComparatorFactoryOutput> {
   mediatorQueryOperation: MediatorQueryOperation;
-  mediatorFunctions: MediatorFunctionsUnsafe;
+  mediatorFunctionFactory: MediatorFunctionFactoryUnsafe;
 }
 
 export type MediatorTermComparatorFactory = Mediate<

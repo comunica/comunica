@@ -1,5 +1,4 @@
-import type { MediatorFunctions,
-  MediatorFunctionsUnsafe } from '@comunica/bus-functions';
+import type { MediatorFunctionFactory, MediatorFunctionFactoryUnsafe } from '@comunica/bus-function-factory';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
@@ -10,7 +9,7 @@ import type { Algebra as Alg } from 'sparqlalgebrajs';
  * A comunica actor for expression-evaluator-factory events.
  *
  * Actor types:
- * * Input:  IActionExpressionEvaluatorFactory:      TODO: fill in.
+ * * Input:  IActionExpressionEvaluatorFactory: The Query Operation and Function factory mediators.
  * * Test:   <none>
  * * Output: IActorExpressionEvaluatorFactoryOutput: TODO: fill in.
  *
@@ -20,7 +19,7 @@ import type { Algebra as Alg } from 'sparqlalgebrajs';
 export abstract class ActorExpressionEvaluatorFactory extends
   Actor<IActionExpressionEvaluatorFactory, IActorTest, IActorExpressionEvaluatorFactoryOutput> {
   protected mediatorQueryOperation: MediatorQueryOperation;
-  protected mediatorFunctions: MediatorFunctions;
+  protected mediatorFunctionFactory: MediatorFunctionFactory;
 
   /**
   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
@@ -28,7 +27,7 @@ export abstract class ActorExpressionEvaluatorFactory extends
   public constructor(args: IActorExpressionEvaluatorFactoryArgs) {
     super(args);
     this.mediatorQueryOperation = args.mediatorQueryOperation;
-    this.mediatorFunctions = <MediatorFunctions> args.mediatorFunctions;
+    this.mediatorFunctionFactory = <MediatorFunctionFactory> args.mediatorFunctionFactory;
   }
 }
 
@@ -41,7 +40,7 @@ export interface IActorExpressionEvaluatorFactoryOutput extends IActorOutput, IE
 export interface IActorExpressionEvaluatorFactoryArgs extends IActorArgs<
 IActionExpressionEvaluatorFactory, IActorTest, IActorExpressionEvaluatorFactoryOutput> {
   mediatorQueryOperation: MediatorQueryOperation;
-  mediatorFunctions: MediatorFunctionsUnsafe;
+  mediatorFunctionFactory: MediatorFunctionFactoryUnsafe;
 }
 
 export type MediatorExpressionEvaluatorFactory = Mediate<

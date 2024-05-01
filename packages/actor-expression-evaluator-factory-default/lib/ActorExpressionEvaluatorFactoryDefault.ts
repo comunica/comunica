@@ -29,9 +29,9 @@ export class ActorExpressionEvaluatorFactoryDefault extends ActorExpressionEvalu
       fullContext,
       await new AlgebraTransformer(
         fullContext,
-        this.mediatorFunctions,
+        this.mediatorFunctionFactory,
       ).transformAlgebra(action.algExpr),
-      this.mediatorFunctions,
+      this.mediatorFunctionFactory,
       this.mediatorQueryOperation,
     );
   }

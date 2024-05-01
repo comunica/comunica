@@ -53,7 +53,7 @@
     "@comunica/actor-bindings-aggregator-factory-min": "^1.0.0",
     "@comunica/actor-bindings-aggregator-factory-sample": "^1.0.0",
     "@comunica/actor-bindings-aggregator-factory-sum": "^1.0.0",
-    "@comunica/actor-functions-wrapper-all":  "^1.0.0",
+    "@comunica/actor-function-factory-wrapper-all":  "^1.0.0",
     "@comunica/actor-term-comparator-factory-expression-evaluator":  "^1.0.0",
     "@comunica/actor-expression-evaluator-factory-default": "^1.0.0",
     "@comunica/actor-bindings-aggregator-factory-wildcard-count": "^1.0.0",

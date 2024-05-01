@@ -1,4 +1,4 @@
-import { createFuncMediator } from '@comunica/actor-functions-wrapper-all/test/util';
+import { createFuncMediator } from '@comunica/actor-function-factory-wrapper-all/test/util';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type {
   MediatorExpressionEvaluatorFactory,
@@ -89,7 +89,7 @@ describe('ActorQueryOperationExtend', () => {
     };
     mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
       mediatorQueryOperation,
-      mediatorFunctions: createFuncMediator(),
+      mediatorFunctionFactory: createFuncMediator(),
     });
 
     context = getMockEEActionContext();
