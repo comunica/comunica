@@ -1,0 +1,16 @@
+{
+  "name": "benchmark-watdiv-file",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "jbr": "cross-env NODE_OPTIONS=--max-old-space-size=8192 jbr",
+    "validate": "jbr validate",
+    "performance": "jbr prepare && jbr run"
+  },
+  "dependencies": {
+    "@jbr-experiment/watdiv": "^4.2.2",
+    "@jbr-hook/cli": "^4.2.2",
+    "cross-env": "^7.0.3",
+    "jbr": "^4.2.2"
+  }
+}

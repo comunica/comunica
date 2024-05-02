@@ -1,0 +1,32 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/jbr/^4.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-experiment/watdiv/^4.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-hook/cli/^4.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:jbr:benchmark-watdiv-file",
+  "@type": "ExperimentWatDiv",
+  "datasetScale": 10,
+  "queryCount": 5,
+  "queryRecurrence": 1,
+  "generateHdt": false,
+  "endpointUrl": "http://localhost:3001/sparql",
+  "queryRunnerReplication": 3,
+  "queryRunnerWarmupRounds": 1,
+  "queryRunnerRecordTimestamps": true,
+  "queryRunnerRecordHttpRequests": true,
+  "queryRunnerUrlParamsInit": {},
+  "queryRunnerUrlParamsRun": {},
+  "hookSparqlEndpoint": {
+    "@id": "urn:jbr:benchmark-watdiv-file:hookSparqlEndpoint",
+    "@type": "HookCli",
+    "entrypoint": [
+      "node",
+      "../../engines/query-sparql-file/bin/http.js",
+      "file@generated/dataset.nt",
+      "-p",
+      "3001"
+    ],
+    "statsFilePath": "output/stats.csv"
+  }
+}

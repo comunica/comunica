@@ -141,7 +141,10 @@ async function depfixTask(log) {
 }
 
 async function depcheckTask(log) {
-  const packages = await (log.packages || loadPackages());
+  const packages = (await (log.packages || loadPackages())).filter(
+    package => package.location.startsWith(path.join(__dirname, '/packages')) ||
+      package.location.startsWith(path.join(__dirname, '/engines')),
+  );
   const resolutions = Object.keys(JSON.parse(readFileSync(path.join(__dirname, 'package.json'), 'utf8')).resolutions ?? {});
 
   // eslint-disable-next-line unicorn/no-array-for-each
