@@ -34,34 +34,30 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
   }
 
   public async runOperation(operation: Algebra.Distinct, context: IActionContext): Promise<IQueryOperationResult> {
-    // How to know if we'll get quads or bindings?
-    if (operation.input.type === "construct") {
+    const output = await this.mediatorQueryOperation.mediate({ operation: operation.input, context });
+    if (output.type === 'quads') {
       const outputQuads: IQueryOperationResultQuads = ActorQueryOperation.getSafeQuads(
-        await this.mediatorQueryOperation.mediate({ operation: operation.input, context }),
+        output
       );
 
       const quadStream: QuadStream = outputQuads.quadStream.filter(await this.newHashFilterQuads(context)); // TODO typing
-
       return {
         type: 'quads',
         quadStream,
         metadata: outputQuads.metadata,
       };
-    }
-
-    const output: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(
-      await this.mediatorQueryOperation.mediate({ operation: operation.input, context }),
+    } 
+    
+    const outputBindings: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(
+      output
     );
-    // Check if the input resulted in quads or in bindings
-    // If bindings then 
-    const bindingsStream: BindingsStream = output.bindingsStream.filter(await this.newHashFilter(context));
+
+    const bindingsStream: BindingsStream = outputBindings.bindingsStream.filter(await this.newHashFilter(context));
     return {
       type: 'bindings',
       bindingsStream,
-      metadata: output.metadata,
+      metadata: outputBindings.metadata,
     };
-    // If quads then
-    // Use another filter function which uses another hash function
   }
 
   /**
