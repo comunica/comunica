@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { HashFunction } from '@comunica/bus-hash-bindings';
 import type { IAsyncEvaluatorContext } from '@comunica/expression-evaluator';
@@ -86,11 +87,13 @@ export class GroupsState {
         await Promise.all(this.pattern.aggregates.map(async(aggregate) => {
           // If distinct, check first whether we have inserted these values already
           if (aggregate.distinct) {
-            const hash = this.hashBindings(bindings);
-            if (this.distinctHashes!.get(groupHash)!.has(hash)) {
+            const bindingsHash = this.hashBindings(bindings);
+            const hashBindingsAndAggregate = createHash('sha256')
+              .update(aggregate.variable.value).update(bindingsHash).digest().toString();
+            if (this.distinctHashes!.get(groupHash)!.has(hashBindingsAndAggregate)) {
               return;
             }
-            this.distinctHashes!.get(groupHash)!.add(hash);
+            this.distinctHashes!.get(groupHash)!.add(hashBindingsAndAggregate);
           }
 
           const variable = aggregate.variable.value;
@@ -107,12 +110,15 @@ export class GroupsState {
           const key = aggregate.variable.value;
           aggregators[key] = new AsyncAggregateEvaluator(aggregate, this.sparqleeConfig);
           await aggregators[key].put(bindings);
+
+          if (this.distinctHashes) {
+            const bindingsHash = this.hashBindings(bindings);
+            const hashBindingsAndAggregate = createHash('sha256')
+              .update(aggregate.variable.value).update(bindingsHash).digest().toString();
+            this.distinctHashes.set(groupHash, new Set([ hashBindingsAndAggregate ]));
+          }
         }));
 
-        if (this.distinctHashes) {
-          const bindingsHash = this.hashBindings(bindings);
-          this.distinctHashes.set(groupHash, new Set([ bindingsHash ]));
-        }
         const group = { aggregators, bindings: grouper };
         this.groups.set(groupHash, group);
         this.subtractWaitCounterAndCollect();
