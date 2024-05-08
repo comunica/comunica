@@ -8,3 +8,4 @@
 !/combinations/*/generated/.keep
 /combinations/*/output/*
 !/combinations/*/output/.keep
+plot_queries_data.*

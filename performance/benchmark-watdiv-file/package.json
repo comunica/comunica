@@ -5,12 +5,14 @@
   "scripts": {
     "jbr": "cross-env NODE_OPTIONS=--max-old-space-size=8192 jbr",
     "validate": "jbr validate",
-    "performance": "jbr prepare && jbr run"
+    "performance": "docker pull comunica/query-sparql-file:latest && jbr prepare && jbr run && psbr tex query output/combination_* --svg --logY --overrideCombinationLabels Current,Previous",
+    "performance:ci": "jbr prepare -c 0 && jbr run -c 0"
   },
   "dependencies": {
-    "@jbr-experiment/watdiv": "^4.2.2",
-    "@jbr-hook/cli": "^4.2.2",
+    "@jbr-experiment/watdiv": "^4.2.3",
+    "@jbr-hook/cli": "^4.2.3",
+    "@jbr-hook/sparql-endpoint-comunica": "^4.2.3",
     "cross-env": "^7.0.3",
-    "jbr": "^4.2.2"
+    "jbr": "^4.2.3"
   }
 }

@@ -164,11 +164,11 @@ jobs:
       - name: Install dependencies
         run: yarn install
       - name: Run benchmarks
-        run: npx lerna run performance --concurrency 1
+        run: npx lerna run performance:ci --concurrency 1
       - name: Process benchmark detailed results
-        run: npx psbr csv ghbench performance/benchmark-watdiv-file/output/ --overrideCombinationLabels WatDiv-File --total false --detailed true --name ghbench-detail.json
+        run: npx psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File --total false --detailed true --name ghbench-detail.json
       - name: Process benchmark total results
-        run: npx psbr csv ghbench performance/benchmark-watdiv-file/output/ --overrideCombinationLabels WatDiv-File --total true --detailed false --name ghbench-total.json
+        run: npx psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File --total true --detailed false --name ghbench-total.json
       - name: Determine benchmark detailed results target directory name
         run: echo "BENCHMARK_DATA_DIR_PATH_DETAIL=comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-detail" >> $GITHUB_ENV
       - name: Determine benchmarks total results target directory name
