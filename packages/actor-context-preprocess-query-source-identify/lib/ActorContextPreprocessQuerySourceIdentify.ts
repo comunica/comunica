@@ -68,13 +68,9 @@ export class ActorContextPreprocessQuerySourceIdentify extends ActorContextPrepr
     }
     return {
       ...<Omit<IQuerySourceUnidentifiedExpanded, 'context'>>querySource,
-      ...querySource.context ?
-          {
-            context: (await this.mediatorContextPreprocess.mediate({
-              context: ActionContext.ensureActionContext(querySource.context),
-            })).context,
-          } :
-          {},
+      context: (await this.mediatorContextPreprocess.mediate({
+        context: ActionContext.ensureActionContext(querySource.context ?? {}),
+      })).context,
     };
   }
 
