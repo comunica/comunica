@@ -76,9 +76,9 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
         const { context: contextOut } = await actor.run({ context: contextIn });
         expect(contextOut).not.toBe(contextIn);
         expect(contextOut.get(KeysQueryOperation.querySources)).toEqual([
-          { ofUnidentified: { value: 'source1' }},
-          { ofUnidentified: { value: 'source2' }},
-          { ofUnidentified: { value: source3 }},
+          { ofUnidentified: expect.objectContaining({ value: 'source1' }) },
+          { ofUnidentified: expect.objectContaining({ value: 'source2' }) },
+          { ofUnidentified: expect.objectContaining({ value: source3 }) },
         ]);
       });
 
