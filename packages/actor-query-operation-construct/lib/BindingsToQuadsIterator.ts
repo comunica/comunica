@@ -53,7 +53,7 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
    */
   public static bindQuad(bindings: Bindings, pattern: RDF.BaseQuad): RDF.Quad | undefined {
     try {
-      return mapTermsNested(<RDF.Quad> pattern, term => {
+      return mapTermsNested(<RDF.Quad> pattern, (term) => {
         const boundTerm = BindingsToQuadsIterator.bindTerm(bindings, term);
         if (!boundTerm) {
           throw new Error('Unbound term');
@@ -72,8 +72,7 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
    * @param {RDF.Term}  term             The term that should be localized.
    * @return {RDF.Term}                  A term.
    */
-  public static localizeBlankNode(blankNodeCounter: number,
-    term: RDF.Term): RDF.Term {
+  public static localizeBlankNode(blankNodeCounter: number, term: RDF.Term): RDF.Term {
     if (term.termType === 'BlankNode') {
       return DF.blankNode(`${term.value}${blankNodeCounter}`);
     }
@@ -86,8 +85,7 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
    * @param {RDF.BaseQuad} pattern          The pattern that should be localized.
    * @return {RDF.BaseQuad}                 A quad.
    */
-  public static localizeQuad(blankNodeCounter: number,
-    pattern: RDF.BaseQuad): RDF.BaseQuad {
+  public static localizeQuad(blankNodeCounter: number, pattern: RDF.BaseQuad): RDF.BaseQuad {
     return mapTermsNested(pattern, term => BindingsToQuadsIterator.localizeBlankNode(blankNodeCounter, term));
   }
 
@@ -109,9 +107,11 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
     return <RDF.Quad[]> quads;
   }
 
-  public _createTransformer(bindings: Bindings): AsyncIterator<RDF.Quad> {
+  public override _createTransformer(bindings: Bindings): AsyncIterator<RDF.Quad> {
     return new ArrayIterator(this.bindTemplate(
-      bindings, this.template, this.blankNodeCounter++,
+      bindings,
+      this.template,
+      this.blankNodeCounter++,
     ), { autoStart: false });
   }
 }

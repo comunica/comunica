@@ -1,19 +1,18 @@
 {
   "name": "@comunica/actor-hash-bindings-sha1",
-  "version": "2.8.2",
+  "version": "3.0.3",
   "description": "A hash bindings actor that provides the SHA1 function",
   "lsd:module": true,
-  "main": "lib/index.js",
-  "typings": "lib/index",
+  "license": "MIT",
+  "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
     "directory": "packages/actor-hash-bindings-sha1"
   },
-  "publishConfig": {
-    "access": "public"
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
   },
-  "sideEffects": false,
   "keywords": [
     "comunica",
     "actor",
@@ -21,27 +20,28 @@
     "bindings",
     "sha1"
   ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/comunica/comunica/issues"
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "publishConfig": {
+    "access": "public"
   },
-  "homepage": "https://comunica.dev/",
   "files": [
     "components",
     "lib/**/*.d.ts",
     "lib/**/*.js",
     "lib/**/*.js.map"
   ],
+  "scripts": {
+    "build": "yarn run build:ts && yarn run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
+  },
   "dependencies": {
-    "@comunica/bus-hash-bindings": "^2.8.2",
-    "@comunica/core": "^2.8.2",
+    "@comunica/bus-hash-bindings": "^3.0.3",
+    "@comunica/core": "^3.0.3",
     "canonicalize": "^2.0.0",
     "hash.js": "^1.1.7",
     "rdf-string": "^1.6.1"
-  },
-  "scripts": {
-    "build": "npm run build:ts && npm run build:components",
-    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
-    "build:components": "componentsjs-generator"
   }
 }

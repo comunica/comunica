@@ -28,7 +28,7 @@ export class ActorFunctionFactoryWrapperAll extends ActorFunctionFactory {
     super(args);
   }
 
-  public async test(action: IActionFunctionFactory): Promise<IActorTest> {
+  public async test(_: IActionFunctionFactory): Promise<IActorTest> {
     return true;
   }
 

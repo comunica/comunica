@@ -10,7 +10,7 @@ export class ActorDereferenceFallback extends ActorDereference {
     super(args);
   }
 
-  public async test(action: IActionDereference): Promise<IActorTest> {
+  public async test(_action: IActionDereference): Promise<IActorTest> {
     return true;
   }
 

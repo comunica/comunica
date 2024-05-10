@@ -23,11 +23,11 @@ describe('ActorOptimizeQueryOperationJoinConnected', () => {
       actor = new ActorOptimizeQueryOperationJoinConnected({ name: 'actor', bus });
     });
 
-    it('should test', () => {
-      return expect(actor.test({ operation: <any> undefined, context })).resolves.toBeTruthy();
+    it('should test', async() => {
+      await expect(actor.test({ operation: <any> undefined, context })).resolves.toBeTruthy();
     });
 
-    it('should run', () => {
+    it('should run', async() => {
       const operation = factory.createJoin([
         factory.createPattern(DF.variable('s1'), DF.namedNode('p1'), DF.variable('s2')),
         factory.createPattern(DF.variable('s2'), DF.namedNode('p2'), DF.variable('s3')),
@@ -35,7 +35,7 @@ describe('ActorOptimizeQueryOperationJoinConnected', () => {
         factory.createPattern(DF.variable('s1x'), DF.namedNode('p1'), DF.variable('s2x')),
         factory.createPattern(DF.variable('s2x'), DF.namedNode('p2'), DF.variable('s3x')),
       ]);
-      return expect(actor.run({ operation, context })).resolves.toEqual({
+      await expect(actor.run({ operation, context })).resolves.toEqual({
         context,
         operation: factory.createJoin([
           factory.createJoin([

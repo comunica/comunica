@@ -7,11 +7,11 @@ const BF = new BindingsFactory();
 
 describe('toEqualBindingsArray', () => {
   it('should succeed for equal empty bindings', () => {
-    return expect([]).toEqualBindingsArray([]);
+    expect([]).toEqualBindingsArray([]);
   });
 
   it('should succeed for equal non-empty bindings', () => {
-    return expect([
+    expect([
       BF.bindings([
         [ DF.variable('a'), DF.namedNode('a1') ],
         [ DF.variable('b'), DF.namedNode('b1') ],
@@ -33,7 +33,7 @@ describe('toEqualBindingsArray', () => {
   });
 
   it('should not succeed for non-equal bindings', () => {
-    return expect([
+    expect([
       BF.bindings([
         [ DF.variable('a'), DF.namedNode('a1') ],
         [ DF.variable('b'), DF.namedNode('b1') ],
@@ -55,7 +55,7 @@ describe('toEqualBindingsArray', () => {
   });
 
   it('should not succeed for non-equal bindings due to different length', () => {
-    return expect([
+    expect([
       BF.bindings([
         [ DF.variable('a'), DF.namedNode('a1') ],
         [ DF.variable('b'), DF.namedNode('b1') ],
@@ -73,12 +73,12 @@ describe('toEqualBindingsArray', () => {
   });
 
   it('should not fail for equal empty bindings', () => {
-    return expect(() => expect([]).not.toEqualBindingsArray([]))
-      .toThrowError(`expected [  ] not to equal [  ]`);
+    expect(() => expect([]).not.toEqualBindingsArray([]))
+      .toThrow(`expected [  ] not to equal [  ]`);
   });
 
   it('should not fail for equal non-empty bindings', () => {
-    return expect(() => expect([
+    expect(() => expect([
       BF.bindings([
         [ DF.variable('a'), DF.namedNode('a1') ],
         [ DF.variable('b'), DF.namedNode('b1') ],
@@ -97,7 +97,7 @@ describe('toEqualBindingsArray', () => {
         [ DF.variable('c'), DF.namedNode('c1') ],
       ]),
     ]))
-      .toThrowError(`expected [ {
+      .toThrow(`expected [ {
   "a": "a1",
   "b": "b1"
 }, {
@@ -113,7 +113,7 @@ describe('toEqualBindingsArray', () => {
   });
 
   it('should fail for non-equal non-empty bindings', () => {
-    return expect(() => expect([
+    expect(() => expect([
       BF.bindings([
         [ DF.variable('a'), DF.namedNode('a1') ],
         [ DF.variable('b'), DF.namedNode('b1') ],
@@ -132,7 +132,7 @@ describe('toEqualBindingsArray', () => {
         [ DF.variable('c'), DF.namedNode('c1') ],
       ]),
     ]))
-      .toThrowError(`expected [ {
+      .toThrow(`expected [ {
   "a": "a1",
   "b": "b1"
 }, {
@@ -149,7 +149,7 @@ Index 0 is different.`);
   });
 
   it('should fail for non-equal non-empty bindings due to different length', () => {
-    return expect(() => expect([
+    expect(() => expect([
       BF.bindings([
         [ DF.variable('a'), DF.namedNode('a1') ],
         [ DF.variable('b'), DF.namedNode('b1') ],
@@ -164,7 +164,7 @@ Index 0 is different.`);
         [ DF.variable('b'), DF.namedNode('b2') ],
       ]),
     ]))
-      .toThrowError(`expected [ {
+      .toThrow(`expected [ {
   "a": "a1",
   "b": "b1"
 }, {

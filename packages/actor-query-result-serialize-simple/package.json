@@ -1,46 +1,46 @@
 {
   "name": "@comunica/actor-query-result-serialize-simple",
-  "version": "2.8.2",
+  "version": "3.0.3",
   "description": "A simple query-result-serialize actor",
   "lsd:module": true,
-  "main": "lib/index.js",
-  "typings": "lib/index",
+  "license": "MIT",
+  "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
     "directory": "packages/actor-query-result-serialize-simple"
   },
-  "publishConfig": {
-    "access": "public"
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
   },
-  "sideEffects": false,
   "keywords": [
     "comunica",
     "actor",
     "query-result-serialize",
     "simple"
   ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/comunica/comunica/issues"
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "publishConfig": {
+    "access": "public"
   },
-  "homepage": "https://comunica.dev/",
   "files": [
     "components",
     "lib/**/*.d.ts",
     "lib/**/*.js",
     "lib/**/*.js.map"
   ],
+  "scripts": {
+    "build": "yarn run build:ts && yarn run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
+  },
   "dependencies": {
-    "@comunica/bus-query-result-serialize": "^2.8.2",
-    "@comunica/types": "^2.8.2",
+    "@comunica/bus-query-result-serialize": "^3.0.3",
+    "@comunica/types": "^3.0.3",
     "@rdfjs/types": "*",
     "rdf-string": "^1.6.3",
     "readable-stream": "^4.4.2"
-  },
-  "scripts": {
-    "build": "npm run build:ts && npm run build:components",
-    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
-    "build:components": "componentsjs-generator"
   }
 }

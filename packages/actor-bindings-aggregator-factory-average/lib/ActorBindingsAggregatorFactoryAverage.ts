@@ -1,6 +1,7 @@
 import type {
   IActionBindingsAggregatorFactory,
-  IActorBindingsAggregatorFactoryArgs, IActorBindingsAggregatorFactoryOutput,
+  IActorBindingsAggregatorFactoryArgs,
+  IActorBindingsAggregatorFactoryOutput,
 } from '@comunica/bus-bindings-aggeregator-factory';
 import { ActorBindingsAggregatorFactory } from '@comunica/bus-bindings-aggeregator-factory';
 
@@ -49,4 +50,3 @@ export class ActorBindingsAggregatorFactoryAverage extends ActorBindingsAggregat
     );
   }
 }
-

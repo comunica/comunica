@@ -20,7 +20,7 @@
     "engines/*",
     "packages/*"
   ],
-  "version": "2.9.0",
+  "version": "3.0.3",
   "loglevel": "success",
   "registry": "https://registry.npmjs.org/",
   "npmClient": "yarn",

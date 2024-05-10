@@ -18,12 +18,15 @@ import type { Algebra } from 'sparqlalgebrajs';
  * @see IActorBindingsAggregatorFactoryOutput
  */
 export abstract class ActorBindingsAggregatorFactory extends Actor<
-IActionBindingsAggregatorFactory, IActorTest, IActorBindingsAggregatorFactoryOutput> {
+IActionBindingsAggregatorFactory,
+IActorTest,
+IActorBindingsAggregatorFactoryOutput
+> {
   protected readonly mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
 
   /**
-  * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
-  */
+   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   */
   protected constructor(args: IActorBindingsAggregatorFactoryArgs) {
     super(args);
     this.mediatorExpressionEvaluatorFactory = args.mediatorExpressionEvaluatorFactory;
@@ -54,9 +57,14 @@ export interface IBindingsAggregator {
 export interface IActorBindingsAggregatorFactoryOutput extends IActorOutput, IBindingsAggregator {}
 
 export interface IActorBindingsAggregatorFactoryArgs extends IActorArgs<
-IActionBindingsAggregatorFactory, IActorTest, IActorBindingsAggregatorFactoryOutput> {
+IActionBindingsAggregatorFactory,
+IActorTest,
+IActorBindingsAggregatorFactoryOutput
+> {
   mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
 }
 
 export type MediatorBindingsAggregatorFactory = Mediate<
-IActionBindingsAggregatorFactory, IActorBindingsAggregatorFactoryOutput>;
+IActionBindingsAggregatorFactory,
+IActorBindingsAggregatorFactoryOutput
+>;

@@ -51,18 +51,6 @@ export function getContextDestination(context: IActionContext): IDataDestination
 }
 
 /**
- * Get the single destination if the context contains just a single destination.
- * @param {ActionContext} context A context, can be null.
- * @return {IDataDestination} The single datadestination or undefined.
- */
-export function getContextDestinationFirst(context: IActionContext): IDataDestination | undefined {
-  if (context.has(KeysRdfUpdateQuads.destination)) {
-    // If the single destination is set
-    return context.get(KeysRdfUpdateQuads.destination);
-  }
-}
-
-/**
  * Get the destination's raw URL value from the given context.
  * @param {IDataDestination} destination A destination.
  * @return {string} The URL or undefined.

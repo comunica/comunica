@@ -63,8 +63,9 @@ Or jump right into one of the available query engines:
 
  - Source Customisation
    * [Comunica SPARQL File](https://github.com/comunica/comunica/tree/master/engines/query-sparql-file#readme): Engine to query over local RDF files
-   * [Comunica SPARQL RDFJS](https://github.com/comunica/comunica/tree/master/engines/query-sparql-rdfjs#readme): Engine to query over in-memory [RDFJS-compliant sources](https://rdf.js.org/stream-spec/#source-interface).
-   * [Comunica SPARQL HDT](https://github.com/comunica/comunica-actor-init-sparql-hdt#readme): Library to query over local [HDT](https://www.rdfhdt.org/) files
+   * [Comunica SPARQL RDF/JS](https://github.com/comunica/comunica/tree/master/engines/query-sparql-rdfjs#readme): Engine to query over in-memory [RDF/JS-compliant sources](https://rdf.js.org/stream-spec/#source-interface).
+   * [Comunica SPARQL RDF/JS Lite](https://github.com/comunica/comunica/tree/master/engines/query-sparql-rdfjs-lite#readme): Engine optimized for bundle size to query over in-memory [RDF/JS-compliant sources](https://rdf.js.org/stream-spec/#source-interface).
+   * [Comunica SPARQL HDT](https://github.com/comunica/comunica-feature-hdt/tree/master/engines/query-sparql-hdt#readme): Library to query over local [HDT](https://www.rdfhdt.org/) files
 
  - Solid Customisation
    * [Comunica SPARQL Solid](https://github.com/comunica/comunica-feature-solid/tree/master/engines/query-sparql-solid#readme): Engine to query over files behind [Solid access control](https://solidproject.org/).
@@ -122,8 +123,7 @@ This will install the dependencies of all modules, and bootstrap the Lerna monor
 After that, all [Comunica packages](https://github.com/comunica/comunica/tree/master/packages) are available in the `packages/` folder
 and can be used in a development environment, such as querying with [Comunica SPARQL (`@comunica/query-sparql`)](https://github.com/comunica/comunica/tree/master/engines/query-sparql).
 
-Furthermore, this will add [pre-commit hooks](https://www.npmjs.com/package/pre-commit)
-to build, lint and test.
+Furthermore, this will add pre-commit hooks using [husky](https://www.npmjs.com/package/husky) to build, lint and test.
 These hooks can temporarily be disabled at your own risk by adding the `-n` flag to the commit command.
 
 ## Benchmarking

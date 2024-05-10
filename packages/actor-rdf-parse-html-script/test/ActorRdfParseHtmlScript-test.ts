@@ -31,10 +31,10 @@ describe('ActorRdfParseHtml', () => {
     mediator = {
       async mediate(action: any) {
         if (action.mediaTypes === true) {
-          return Promise.resolve({ mediaTypes: {
+          return { mediaTypes: {
             'application/ld+json': 1,
             fail: 1,
-          }});
+          }};
         }
         action.data = action.handle.data;
         action.metadata = action.handle.metadata;
@@ -45,11 +45,11 @@ describe('ActorRdfParseHtml', () => {
             output = await jsonldParser.runHandle(action, action.handleMediaType, context);
             break;
           case 'fail':
-            return Promise.reject(new Error('Parsing failure'));
+            throw new Error('Parsing failure');
         }
-        return Promise.resolve({
+        return {
           handle: { data: output.data },
-        });
+        };
       },
     };
 
@@ -69,7 +69,7 @@ describe('ActorRdfParseHtml', () => {
     it('should not be able to create new ActorRdfParseHtml objects without \'new\'', () => {
       expect(() => {
         (<any> ActorRdfParseHtmlScript)();
-      }).toThrow();
+      }).toThrow(`Class constructor ActorRdfParseHtmlScript cannot be invoked without 'new'`);
     });
   });
 
@@ -87,7 +87,7 @@ describe('ActorRdfParseHtml', () => {
 
     describe('test', () => {
       it('should return true', async() => {
-        expect(await actor.test(<any> {})).toBeTruthy();
+        await expect(actor.test(<any> {})).resolves.toBeTruthy();
       });
     });
 
@@ -218,22 +218,22 @@ describe('ActorRdfParseHtml', () => {
 
           expect(emit).toHaveBeenCalledTimes(4);
           // / Use fn calls
-          expect(emit.mock.calls[0][0].subject.value).toEqual('http://example.org/a');
-          expect(emit.mock.calls[0][0].predicate.value).toEqual('http://example.org/b');
-          expect(emit.mock.calls[0][0].object.value).toEqual('http://example.org/c');
+          expect(emit.mock.calls[0][0].subject.value).toBe('http://example.org/a');
+          expect(emit.mock.calls[0][0].predicate.value).toBe('http://example.org/b');
+          expect(emit.mock.calls[0][0].object.value).toBe('http://example.org/c');
 
-          expect(emit.mock.calls[1][0].subject.value).toEqual('http://example.org/a');
-          expect(emit.mock.calls[1][0].predicate.value).toEqual('http://example.org/d');
-          expect(emit.mock.calls[1][0].object.value).toEqual('http://example.org/e');
+          expect(emit.mock.calls[1][0].subject.value).toBe('http://example.org/a');
+          expect(emit.mock.calls[1][0].predicate.value).toBe('http://example.org/d');
+          expect(emit.mock.calls[1][0].object.value).toBe('http://example.org/e');
           expect(emit.mock.calls[1][0].graph).toEqual(emit.mock.calls[0][0].graph);
 
-          expect(emit.mock.calls[2][0].subject.value).toEqual('http://example.org/A');
-          expect(emit.mock.calls[2][0].predicate.value).toEqual('http://example.org/b');
-          expect(emit.mock.calls[2][0].object.value).toEqual('http://example.org/c');
+          expect(emit.mock.calls[2][0].subject.value).toBe('http://example.org/A');
+          expect(emit.mock.calls[2][0].predicate.value).toBe('http://example.org/b');
+          expect(emit.mock.calls[2][0].object.value).toBe('http://example.org/c');
 
-          expect(emit.mock.calls[3][0].subject.value).toEqual('http://example.org/A');
-          expect(emit.mock.calls[3][0].predicate.value).toEqual('http://example.org/d');
-          expect(emit.mock.calls[3][0].object.value).toEqual('http://example.org/e');
+          expect(emit.mock.calls[3][0].subject.value).toBe('http://example.org/A');
+          expect(emit.mock.calls[3][0].predicate.value).toBe('http://example.org/d');
+          expect(emit.mock.calls[3][0].object.value).toBe('http://example.org/e');
           expect(emit.mock.calls[3][0].graph).toEqual(emit.mock.calls[2][0].graph);
 
           expect(emit.mock.calls[0][0].graph).not.toEqual(emit.mock.calls[2][0].graph);

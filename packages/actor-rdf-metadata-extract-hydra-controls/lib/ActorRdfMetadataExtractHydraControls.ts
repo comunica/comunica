@@ -1,5 +1,8 @@
-import type { IActionRdfMetadataExtract,
-  IActorRdfMetadataExtractOutput, IActorRdfMetadataExtractArgs } from '@comunica/bus-rdf-metadata-extract';
+import type {
+  IActionRdfMetadataExtract,
+  IActorRdfMetadataExtractOutput,
+  IActorRdfMetadataExtractArgs,
+} from '@comunica/bus-rdf-metadata-extract';
 import { ActorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { IActorTest } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
@@ -18,7 +21,7 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
     super(args);
   }
 
-  public async test(action: IActionRdfMetadataExtract): Promise<IActorTest> {
+  public async test(_action: IActionRdfMetadataExtract): Promise<IActorTest> {
     return true;
   }
 
@@ -30,11 +33,11 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
    */
   public getLinks(pageUrl: string, hydraProperties: Record<string, Record<string, string[]>>):
   Record<string, any> {
-    return Object.fromEntries(ActorRdfMetadataExtractHydraControls.LINK_TYPES.map(link => {
+    return Object.fromEntries(ActorRdfMetadataExtractHydraControls.LINK_TYPES.map((link) => {
       // First check the correct hydra:next, then the deprecated hydra:nextPage
       const links = hydraProperties[link] || hydraProperties[`${link}Page`];
       const linkTargets = links && links[pageUrl];
-      return [ link, linkTargets && linkTargets.length > 0 ? linkTargets[0] : null ];
+      return [ link, linkTargets && linkTargets.length > 0 ? [ linkTargets[0] ] : [] ];
     }));
   }
 
@@ -48,7 +51,7 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
     if (cachedUriTemplate) {
       return cachedUriTemplate;
     }
-    // eslint-disable-next-line no-return-assign
+
     return this.parsedUriTemplateCache[template] = parseUriTemplate(template);
   }
 
@@ -75,7 +78,7 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
           // Parse the template mappings
           const mappings: Record<string, string> = Object
             .fromEntries(((hydraProperties.mapping || {})[searchFormId] || [])
-              .map(mapping => {
+              .map((mapping) => {
                 const variable = ((hydraProperties.variable || {})[mapping] || [])[0];
                 const property = ((hydraProperties.property || {})[mapping] || [])[0];
                 if (!variable) {
@@ -110,7 +113,7 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
 
       // Collect all hydra properties in a nice convenient nested hash (property / subject / objects).
       const hydraProperties: Record<string, Record<string, string[]>> = {};
-      metadata.on('data', quad => {
+      metadata.on('data', (quad) => {
         if (quad.predicate.value.startsWith(ActorRdfMetadataExtractHydraControls.HYDRA)) {
           const property = quad.predicate.value.slice(ActorRdfMetadataExtractHydraControls.HYDRA.length);
           const subjectProperties = hydraProperties[property] || (hydraProperties[property] = {});

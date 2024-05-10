@@ -16,7 +16,10 @@ describe('ActorRdfJoinMultiEmpty', () => {
   describe('An ActorRdfJoinMultiEmpty instance', () => {
     let mediatorJoinSelectivity: Mediator<
     Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
-    IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>;
+    IActionRdfJoinSelectivity,
+IActorTest,
+IActorRdfJoinSelectivityOutput
+>;
     let actor: ActorRdfJoinMultiEmpty;
     let context: IActionContext;
 
@@ -49,11 +52,11 @@ describe('ActorRdfJoinMultiEmpty', () => {
             },
           ],
           context,
-        })).rejects.toThrowError('Actor actor can only join entries where at least one is empty');
+        })).rejects.toThrow('Actor actor can only join entries where at least one is empty');
       });
 
       it('should test on a 0 cardinality', async() => {
-        expect(await actor.test({
+        await expect(actor.test({
           type: 'inner',
           entries: [
             {
@@ -72,7 +75,7 @@ describe('ActorRdfJoinMultiEmpty', () => {
             },
           ],
           context,
-        })).toEqual({
+        })).resolves.toEqual({
           iterations: 0,
           persistedItems: 0,
           blockingItems: 0,
@@ -105,7 +108,7 @@ describe('ActorRdfJoinMultiEmpty', () => {
           context,
         });
         await expect(output.bindingsStream).toEqualBindingsStream([]);
-        expect(await output.metadata())
+        await expect(output.metadata()).resolves
           .toMatchObject({ cardinality: { type: 'exact', value: 0 }, canContainUndefs: false, variables: []});
       });
     });

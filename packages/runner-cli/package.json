@@ -1,44 +1,44 @@
 {
   "name": "@comunica/runner-cli",
-  "version": "2.8.2",
+  "version": "3.0.3",
   "description": "A comunica runner that sends an 'init' event from a commandline process.",
-  "main": "lib/index.js",
-  "typings": "lib/index",
+  "license": "MIT",
+  "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
     "directory": "packages/runner-cli"
   },
-  "publishConfig": {
-    "access": "public"
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
   },
-  "sideEffects": false,
   "keywords": [
     "comunica",
     "runner",
     "cli"
   ],
-  "license": "MIT",
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "publishConfig": {
+    "access": "public"
+  },
   "bin": {
     "comunica-run": "./bin/run.js"
   },
-  "bugs": {
-    "url": "https://github.com/comunica/comunica/issues"
-  },
-  "homepage": "https://comunica.dev/",
   "files": [
     "bin/**/*.d.ts",
     "bin/**/*.js",
     "lib/**/*.d.ts",
     "lib/**/*.js"
   ],
-  "dependencies": {
-    "@comunica/core": "^2.8.2",
-    "@comunica/runner": "^2.8.2",
-    "@comunica/types": "^2.8.2",
-    "process": "^0.11.10"
-  },
   "scripts": {
     "build": "node \"../../node_modules/typescript/bin/tsc\""
+  },
+  "dependencies": {
+    "@comunica/core": "^3.0.3",
+    "@comunica/runner": "^3.0.3",
+    "@comunica/types": "^3.0.3",
+    "process": "^0.11.10"
   }
 }

@@ -22,13 +22,13 @@ describe('LinkQueueFifo', () => {
 
   describe('getSize', () => {
     it('checks the internal array size', () => {
-      expect(queue.getSize()).toEqual(0);
+      expect(queue.getSize()).toBe(0);
       expect(queue.push({ url: 'a' })).toBeTruthy();
-      expect(queue.getSize()).toEqual(1);
+      expect(queue.getSize()).toBe(1);
       expect(queue.push({ url: 'b' })).toBeTruthy();
-      expect(queue.getSize()).toEqual(2);
+      expect(queue.getSize()).toBe(2);
       expect(queue.push({ url: 'c' })).toBeTruthy();
-      expect(queue.getSize()).toEqual(3);
+      expect(queue.getSize()).toBe(3);
     });
   });
 

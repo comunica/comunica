@@ -24,7 +24,7 @@ export interface ITermTransformer {
 }
 
 export class TermTransformer implements ITermTransformer {
-  public constructor(protected readonly superTypeProvider: ISuperTypeProvider) { }
+  public constructor(protected readonly superTypeProvider: ISuperTypeProvider) {}
 
   /**
    * Transforms an RDF term to the internal representation of a term,

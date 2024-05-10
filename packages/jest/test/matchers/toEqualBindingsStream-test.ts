@@ -75,7 +75,7 @@ describe('toEqualBindingsStream', () => {
 
   it('should not fail for equal empty bindings', async() => {
     await expect(() => expect(new ArrayIterator([], { autoStart: false })).not.toEqualBindingsStream([]))
-      .rejects.toThrowError(`expected [  ] not to equal [  ]`);
+      .rejects.toThrow(`expected [  ] not to equal [  ]`);
   });
 
   it('should not fail for equal non-empty bindings', async() => {
@@ -98,7 +98,7 @@ describe('toEqualBindingsStream', () => {
         [ DF.variable('c'), DF.namedNode('c1') ],
       ]),
     ]))
-      .rejects.toThrowError(`expected [ {
+      .rejects.toThrow(`expected [ {
   "a": "a1",
   "b": "b1"
 }, {
@@ -133,7 +133,7 @@ describe('toEqualBindingsStream', () => {
         [ DF.variable('c'), DF.namedNode('c1') ],
       ]),
     ]))
-      .rejects.toThrowError(`expected [ {
+      .rejects.toThrow(`expected [ {
   "a": "a1",
   "b": "b1"
 }, {
@@ -165,7 +165,7 @@ Index 0 is different.`);
         [ DF.variable('b'), DF.namedNode('b2') ],
       ]),
     ]))
-      .rejects.toThrowError(`expected [ {
+      .rejects.toThrow(`expected [ {
   "a": "a1",
   "b": "b1"
 }, {

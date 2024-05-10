@@ -11,7 +11,7 @@ export class MediatorAll<A extends Actor<I, T, O>, I extends IAction, T extends 
     super(args);
   }
 
-  public async mediate(action: I): Promise<O> {
+  public override async mediate(action: I): Promise<O> {
     // Collect all actors that resolve their test
     const validActors: A[] = [];
     let testResults: IActorReply<A, I, T, O>[];

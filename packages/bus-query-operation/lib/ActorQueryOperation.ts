@@ -1,14 +1,18 @@
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorArgs, IActorTest, IAction, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
-import type { IQueryOperationResult,
+import type {
+  IQueryOperationResult,
   IQueryOperationResultBindings,
   IQueryOperationResultBoolean,
   IQueryOperationResultQuads,
   IQueryOperationResultVoid,
   Bindings,
-  IMetadata, IActionContext,
-  FunctionArgumentsCache } from '@comunica/types';
+  IActionContext,
+  FunctionArgumentsCache,
+  IQuerySourceWrapper,
+  FragmentSelectorShape,
+} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -76,30 +80,6 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
   }
 
   /**
-   * Convert a metadata callback to a lazy callback where the response value is cached.
-   * @param {() => Promise<IMetadata>} metadata A metadata callback
-   * @return {() => Promise<{[p: string]: any}>} The callback where the response will be cached.
-   */
-  public static cachifyMetadata<M extends IMetadata<T>, T extends RDF.Variable | RDF.QuadTermName>(
-    metadata: () => Promise<M>,
-  ): () => Promise<M> {
-    let lastReturn: Promise<M> | undefined;
-    return () => {
-      if (!lastReturn) {
-        lastReturn = metadata();
-        lastReturn
-          .then(lastReturnValue => lastReturnValue.state.addInvalidateListener(() => {
-            lastReturn = undefined;
-          }))
-          .catch(() => {
-            // Ignore error
-          });
-      }
-      return lastReturn;
-    };
-  }
-
-  /**
    * Throw an error if the output type does not match the expected type.
    * @param {IQueryOperationResult} output A query operation output.
    * @param {string} expectedType The expected output type.
@@ -118,6 +98,75 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
     if (context.get(KeysQueryOperation.readOnly)) {
       throw new Error(`Attempted a write operation in read-only mode`);
     }
+  }
+
+  /**
+   * Obtain the query source attached to the given operation.
+   * @param operation An algebra operation.
+   */
+  public static getOperationSource(operation: Algebra.Operation): IQuerySourceWrapper | undefined {
+    return <IQuerySourceWrapper> operation.metadata?.scopedSource;
+  }
+
+  /**
+   * Assign a source wrapper to the given operation.
+   * The operation is copied and returned.
+   * @param operation An operation.
+   * @param source A source wrapper.
+   */
+  public static assignOperationSource<O extends Algebra.Operation>(operation: O, source: IQuerySourceWrapper): O {
+    operation = { ...operation };
+    operation.metadata = operation.metadata ? { ...operation.metadata } : {};
+    operation.metadata.scopedSource = source;
+    return operation;
+  }
+
+  /**
+   * Remove the source wrapper from the given operation.
+   * The operation is mutated.
+   * @param operation An operation.
+   */
+  public static removeOperationSource(operation: Algebra.Operation): void {
+    delete operation.metadata?.scopedSource;
+    if (operation.metadata && Object.keys(operation.metadata).length === 0) {
+      delete operation.metadata;
+    }
+  }
+
+  /**
+   * Check if the given shape accepts the given query operation.
+   * @param shape A shape to test the query operation against.
+   * @param operation A query operation to test.
+   * @param options Additional options to consider.
+   * @param options.joinBindings If additional bindings will be pushed down to the source for joining.
+   * @param options.filterBindings If additional bindings will be pushed down to the source for filtering.
+   */
+  public static doesShapeAcceptOperation(
+    shape: FragmentSelectorShape,
+    operation: Algebra.Operation,
+    options?: {
+      joinBindings?: boolean;
+      filterBindings?: boolean;
+    },
+  ): boolean {
+    if (shape.type === 'conjunction') {
+      return shape.children.every(child => ActorQueryOperation.doesShapeAcceptOperation(child, operation, options));
+    }
+    if (shape.type === 'disjunction') {
+      return shape.children.some(child => ActorQueryOperation.doesShapeAcceptOperation(child, operation, options));
+    }
+    if (shape.type === 'arity') {
+      return ActorQueryOperation.doesShapeAcceptOperation(shape.child, operation, options);
+    }
+
+    if ((options?.joinBindings && !shape.joinBindings) ?? (options?.filterBindings && !shape.filterBindings)) {
+      return false;
+    }
+
+    if (shape.operation.operationType === 'type') {
+      return shape.operation.type === 'project' || shape.operation.type === operation.type;
+    }
+    return shape.operation.pattern.type === operation.type;
   }
 }
 

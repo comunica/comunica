@@ -13,7 +13,7 @@ export function emptyReadable<S extends Readable>(): S {
 
 /**
  * Check if hard errors should occur on HTTP or parse errors.
- * @param {IActionDereference} action A dereference action.
+ * @param {IActionContext} context An action context.
  * @return {boolean} If hard errors are enabled.
  */
 export function isHardError(context: IActionContext): boolean {
@@ -52,7 +52,7 @@ export abstract class ActorDereferenceBase<I extends IAction, T extends IActorTe
     if (isHardError(action.context)) {
       throw error;
     }
-    this.logError(action.context, (<Error> error).message);
+    this.logWarn(action.context, (<Error> error).message);
     return { ...output, data: emptyReadable<M>() };
   }
 }

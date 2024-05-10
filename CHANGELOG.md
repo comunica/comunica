@@ -1,6 +1,84 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v3.0.3"></a>
+## [v3.0.3](https://github.com/comunica/comunica/compare/v3.0.2...v3.0.3) - 2024-04-12
+
+### Changed
+* [Add generic type to LinkQueueWrapper (#1322)](https://github.com/comunica/comunica/commit/9e70a6475f6fb581a0ca783826e7307177adfac9)
+
+### Fixed
+* [Fix broken LIMITs on CONSTRUCT queries on SPARQL endpoints, Closes #1319](https://github.com/comunica/comunica/commit/f3f7e05518fb30ee19ffc2fd2a5edeb998d91368)
+
+<a name="v3.0.2"></a>
+## [v3.0.2](https://github.com/comunica/comunica/compare/v3.0.1...v3.0.2) - 2024-04-10
+
+### Fixed
+* [Lower q-value of application/json in fetch requests](https://github.com/comunica/comunica/commit/4409517db9e1f05317589dc23af382fcf76f154b)
+
+<a name="v3.0.1"></a>
+## [v3.0.1](https://github.com/comunica/comunica/compare/v2.10.2...v3.0.1) - 2024-03-19
+
+### BREAKING CHANGES
+* [Rename sparqlee-specific package names](https://github.com/comunica/comunica/commit/8a035723e210d2d08fee279638151af0eeeb1fbe)
+  * `@comunica/actor-query-operation-filter-sparqlee` -> `@comunica/actor-query-operation-filter`
+  * `@comunica/actor-query-operation-orderby-sparqlee` -> `@comunica/actor-query-operation-orderby`
+* [Generalize sources to accept all query operations](https://github.com/comunica/comunica/commit/8fc4be58db42ceef7137462940b2b3a6585bef09)
+  * The `rdf-resolve-quad-pattern` bus has been removed in favor of the new `query-source-identify` bus. This bus enables identification of `IQuerySource`'s which can accept any kind of query operation, not just quad patterns like before.
+  * brTPF support is added.
+  * Bound joins are supported: pushing bindings into sources (FedX)
+  * Several context-preprocess actors are added due to this, which offer:
+    * Grouping operations into sources during federated querying (FedX)
+    * Pushing down filters into sources
+    * Skolemization of blank nodes
+* [Move sequential query process steps to separate bus and actor](https://github.com/comunica/comunica/commit/00bdcc09c5e7b90324141bfa4c10802d55ddb83a)
+* [Move context shortcut handling to preprocess actor](https://github.com/comunica/comunica/commit/98e0b678fe47ec4eecc54002240b01b05a7db43e)
+
+### Added
+* [Allow Bindings to have contexts](https://github.com/comunica/comunica/commit/aeaa306bb06caeea480be31229287b753e84600a)
+* [Add timeout for sparql endpoint count queries](https://github.com/comunica/comunica/commit/323ab493e9ee7cf7675228cfab5faf069e46304b)
+* [Process source contexts to support shortcuts](https://github.com/comunica/comunica/commit/4a475fbb3409552b7b6a02a53826851ebdb9ad55)
+* [Add option to disable caching (#1297)](https://github.com/comunica/comunica/commit/53c7686c9324d15ee47e122d4355e59247128495)
+* [Allow sources to be annotated with traverse flag](https://github.com/comunica/comunica/commit/0b13082c2eef06a45298b30620323d0f956e1a3e)
+
+### Fixed
+* [Fix GROUP_CONCAT losing languages if equal](https://github.com/comunica/comunica/commit/0cf0bee1f41ea2d230f038fe57141ba4022ed5cb)
+
+### Changed
+* [Update to asynciterator 3.9.0 to make results async iterable](https://github.com/comunica/comunica/commit/80d717b7222eb98d5eec4e77ef4799bd916bceb8)
+* [Ensure QueryEngine instances are fully independent](https://github.com/comunica/comunica/commit/4d5b724a5866c625e47497d6ed17f7a7e5c2e11d)
+* [Update to Components.js v6](https://github.com/comunica/comunica/commit/86dd69e653f5bbf4de9c760e40fc1fcce3e1b679)
+
+<a name="v2.10.2"></a>
+## [v2.10.2](https://github.com/comunica/comunica/compare/v2.10.1...v2.10.2) - 2024-01-09
+
+### Fixed
+* [Migrate to @smessie/readable-web-to-node-stream](https://github.com/comunica/comunica/commit/309284eb98ad919da81d9d373517b24fa877a608)
+
+<a name="v2.10.1"></a>
+## [v2.10.1](https://github.com/comunica/comunica/compare/v2.10.0...v2.10.1) - 2023-11-29
+
+### Fixed
+* [Fix updates with body streams failing in Node >= 18](https://github.com/comunica/comunica/commit/6cb01741c01c493e96fea3ff3e3ed295bbcff333)
+* [Generalize fromBindings in BindingsFactory](https://github.com/comunica/comunica/commit/3cc20f76e6be0f83f13e2a349fef9cd5c37e6b64)
+
+<a name="v2.10.0"></a>
+## [v2.10.0](https://github.com/comunica/comunica/compare/v2.9.0...v2.10.0) - 2023-10-27
+
+### Added
+* [Convert raw source contexts to ActionContexts](https://github.com/comunica/comunica/commit/8f685d844477145996b3685ceb500b1b84d9448e)
+* [Support relative and absolute paths for COMUNICA_CONFIG](https://github.com/comunica/comunica/commit/304dd8e97bd8cb1f487cd5012ccbb79b3ca8d0e9)
+
+### Changed
+* [Log expression error messages](https://github.com/comunica/comunica/commit/402524c62ce1002db7142aa4fd4b2724e5d98153)
+* [Print log levels in different colors](https://github.com/comunica/comunica/commit/4e931fd606e3bf7cdb9cc3a7dd6529e638a11b18)
+* [Update readable-stream, yargs, lerna, typescript and eslint (#1271)](https://github.com/comunica/comunica/commit/05d1bd362b1ef28de7020ad17f88afa57ea59254)
+
+### Fixed
+* [Fix wrong cardinality for zero-or-one paths with one variable](https://github.com/comunica/comunica/commit/058f27728459c5305868c8dfe40fc1794222aa04)
+* [Support building with esModuleInterop TS flag](https://github.com/comunica/comunica/commit/29c308fcf84ac8a598df5c8cb8cda41c0212e6a3)
+* [Skip calling endsWith on mediaType when mediaType is undefined](https://github.com/comunica/comunica/commit/5d5fb8324b7281fad1e03bde01763d426c0a7987)
+
 <a name="v2.9.0"></a>
 ## [v2.9.0](https://github.com/comunica/comunica/compare/v2.8.3...v2.9.0) - 2023-09-07
 

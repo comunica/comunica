@@ -43,7 +43,7 @@ describe('The function helper file', () => {
         .search(args, superTypeProvider, functionArgumentsCache)!(
         expressionEvaluator,
       )(args);
-      expect(func).toBeCalledTimes(1);
+      expect(func).toHaveBeenCalledTimes(1);
     });
 
     it('defines a function onBoolean1', () => {
@@ -53,7 +53,7 @@ describe('The function helper file', () => {
         .search(args, superTypeProvider, functionArgumentsCache)!(
         expressionEvaluator,
       )(args);
-      expect(func).toBeCalledTimes(1);
+      expect(func).toHaveBeenCalledTimes(1);
     });
   });
 });

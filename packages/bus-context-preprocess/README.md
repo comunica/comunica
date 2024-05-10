@@ -17,9 +17,9 @@ $ yarn add @comunica/bus-context-preprocess
 
 ## Bus usage
 
-* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-context-preprocess/^2.0.0/components/context.jsonld"`
+* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-context-preprocess/^3.0.0/components/context.jsonld"`
 * **Bus name**: `ActorContextPreprocess:_default_bus`
 
 ## Creating actors on this bus
 
-Actors extending [`ActorContextPreprocess`](https://comunica.github.io/comunica/classes/bus_context_preprocess.actorcontextpreprocess.html) are automatically subscribed to this bus.
+Actors extending [`ActorContextPreprocess`](https://comunica.github.io/comunica/classes/_comunica_bus_context_preprocess.ActorContextPreprocess.html) are automatically subscribed to this bus.

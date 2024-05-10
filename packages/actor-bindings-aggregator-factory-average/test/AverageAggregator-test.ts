@@ -84,23 +84,21 @@ describe('AverageAggregator', () => {
         BF.bindings([[ DF.variable('x'), int('4') ]]),
       ];
 
-      expect(await runAggregator(aggregator, input)).toEqual(float('2.5'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(float('2.5'));
     });
 
     it('with respect to empty input', async() => {
-      expect(await runAggregator(aggregator, [])).toEqual(int('0'));
+      await expect(runAggregator(aggregator, [])).resolves.toEqual(int('0'));
     });
 
     it('with respect to type promotion and subtype substitution', async() => {
       const input = [
-        BF.bindings([[ DF.variable('x'),
-          DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#byte')) ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#byte')) ]]),
         BF.bindings([[ DF.variable('x'), int('2') ]]),
         BF.bindings([[ DF.variable('x'), float('3') ]]),
-        BF.bindings([[ DF.variable('x'), DF.literal('4',
-          DF.namedNode('http://www.w3.org/2001/XMLSchema#nonNegativeInteger')) ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('4', DF.namedNode('http://www.w3.org/2001/XMLSchema#nonNegativeInteger')) ]]),
       ];
-      expect(await runAggregator(aggregator, input)).toEqual(float('2.5'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(float('2.5'));
     });
 
     it('with respect to type preservation', async() => {
@@ -110,7 +108,7 @@ describe('AverageAggregator', () => {
         BF.bindings([[ DF.variable('x'), int('3') ]]),
         BF.bindings([[ DF.variable('x'), int('4') ]]),
       ];
-      expect(await runAggregator(aggregator, input)).toEqual(decimal('2.5'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(decimal('2.5'));
     });
 
     it('with respect to type promotion 2', async() => {
@@ -120,7 +118,7 @@ describe('AverageAggregator', () => {
         BF.bindings([[ DF.variable('x'), float('3000') ]]),
         BF.bindings([[ DF.variable('x'), double('4000') ]]),
       ];
-      expect(await runAggregator(aggregator, input)).toEqual(double('2.5E3'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(double('2.5E3'));
     });
   });
 
@@ -144,12 +142,11 @@ describe('AverageAggregator', () => {
         BF.bindings([[ DF.variable('x'), int('1') ], [ DF.variable('y'), int('1') ]]),
       ];
 
-      expect(await runAggregator(aggregator, input)).toEqual(decimal('1.5'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(decimal('1.5'));
     });
 
     it('with respect to empty input', async() => {
-      expect(await runAggregator(aggregator, [])).toEqual(int('0'));
+      await expect(runAggregator(aggregator, [])).resolves.toEqual(int('0'));
     });
   });
 });
-

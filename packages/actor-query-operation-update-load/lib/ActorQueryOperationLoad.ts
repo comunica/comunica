@@ -1,7 +1,8 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
+import type { MediatorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
 import type { MediatorRdfUpdateQuads } from '@comunica/bus-rdf-update-quads';
-import { KeysInitQuery, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import type { IActionContext, IQueryOperationResult } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -16,6 +17,7 @@ const DF = new DataFactory();
  */
 export class ActorQueryOperationLoad extends ActorQueryOperationTypedMediated<Algebra.Load> {
   public readonly mediatorUpdateQuads: MediatorRdfUpdateQuads;
+  public readonly mediatorQuerySourceIdentify: MediatorQuerySourceIdentify;
 
   private readonly factory: Factory;
   private readonly constructOperation: Algebra.Construct;
@@ -23,10 +25,6 @@ export class ActorQueryOperationLoad extends ActorQueryOperationTypedMediated<Al
   public constructor(args: IActorQueryOperationLoadArgs) {
     super(args, 'load');
     this.factory = new Factory();
-    this.constructOperation = this.factory.createConstruct(
-      this.factory.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
-      [ this.factory.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')) ],
-    );
   }
 
   public async testOperation(operation: Algebra.Load, context: IActionContext): Promise<IActorTest> {
@@ -36,13 +34,25 @@ export class ActorQueryOperationLoad extends ActorQueryOperationTypedMediated<Al
 
   public async runOperation(operation: Algebra.Load, context: IActionContext):
   Promise<IQueryOperationResult> {
-    // Create CONSTRUCT query on the given source
-    let subContext = context.set(KeysRdfResolveQuadPattern.sources, [ operation.source.value ]);
+    // Determine query source
+    let subContext = context;
     if (operation.silent) {
       subContext = subContext.set(KeysInitQuery.lenient, true);
     }
+    const { querySource } = await this.mediatorQuerySourceIdentify.mediate({
+      querySourceUnidentified: { value: operation.source.value },
+      context: subContext,
+    });
+
+    // Create CONSTRUCT query on the given source
     const output = ActorQueryOperationLoad.getSafeQuads(await this.mediatorQueryOperation.mediate({
-      operation: this.constructOperation,
+      operation: this.factory.createConstruct(
+        ActorQueryOperation.assignOperationSource(
+          this.factory.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+          querySource,
+        ),
+        [ this.factory.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')) ],
+      ),
       context: subContext,
     }));
 
@@ -70,4 +80,8 @@ export interface IActorQueryOperationLoadArgs extends IActorQueryOperationTypedM
    * The RDF Update Quads mediator
    */
   mediatorUpdateQuads: MediatorRdfUpdateQuads;
+  /**
+   * Mediator for identifying load sources.
+   */
+  mediatorQuerySourceIdentify: MediatorQuerySourceIdentify;
 }

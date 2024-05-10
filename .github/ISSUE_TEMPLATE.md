@@ -17,7 +17,7 @@ _Exact versions of the software in your environment, not just *latest*. Only nee
 | software         | version(s)
 | ---------------- | -------
 | Comunica Engine  | <!-- In most cases, this will be the version of `@comunica/query-sparql` -->
-| node             | 
+| node             |
 | npm              | <!-- Only if installed using npm -->
 | yarn             | <!-- Only if installed using yarn -->
-| Operating System | 
+| Operating System |

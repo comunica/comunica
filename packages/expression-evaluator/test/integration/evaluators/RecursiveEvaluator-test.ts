@@ -14,7 +14,7 @@ describe('recursive evaluators', () => {
     const evaluator = getMockInternalEvaluator();
 
     it('is able to evaluate operator', async() => {
-      expect(await evaluator.evaluatorExpressionEvaluation(new E.IntegerLiteral(1), BF.bindings()))
+      await expect(evaluator.evaluatorExpressionEvaluation(new E.IntegerLiteral(1), BF.bindings())).resolves
         .toEqual(new E.IntegerLiteral(1));
     });
 

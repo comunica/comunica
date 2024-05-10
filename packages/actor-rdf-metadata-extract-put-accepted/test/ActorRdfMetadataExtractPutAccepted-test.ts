@@ -1,4 +1,4 @@
-import type { Readable } from 'stream';
+import type { Readable } from 'node:stream';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { Headers } from 'cross-fetch';
@@ -22,31 +22,31 @@ describe('ActorRdfMetadataExtractPostAccepted', () => {
       context = new ActionContext();
     });
 
-    it('should test', () => {
-      return expect(actor.test({ url: 'http://example.org/', metadata: input, requestTime: 0, context }))
+    it('should test', async() => {
+      await expect(actor.test({ url: 'http://example.org/', metadata: input, requestTime: 0, context }))
         .resolves.toBeTruthy();
     });
 
-    it('should run without empty headers', () => {
-      return expect(actor.run({ url: 'http://example.org/', metadata: input, requestTime: 0, context }))
+    it('should run without empty headers', async() => {
+      await expect(actor.run({ url: 'http://example.org/', metadata: input, requestTime: 0, context }))
         .resolves.toEqual({ metadata: {}});
     });
 
-    it('should run with empty headers', () => {
+    it('should run with empty headers', async() => {
       const headers = new Headers({});
-      return expect(actor.run({ url: 'http://example.org/', metadata: input, headers, requestTime: 0, context }))
+      await expect(actor.run({ url: 'http://example.org/', metadata: input, headers, requestTime: 0, context }))
         .resolves.toEqual({ metadata: {}});
     });
 
-    it('should run with accept-put header with one value', () => {
+    it('should run with accept-put header with one value', async() => {
       const headers = new Headers({ 'accept-put': 'abc' });
-      return expect(actor.run({ url: 'http://example.org/', metadata: input, headers, requestTime: 0, context }))
+      await expect(actor.run({ url: 'http://example.org/', metadata: input, headers, requestTime: 0, context }))
         .resolves.toEqual({ metadata: { putAccepted: [ 'abc' ]}});
     });
 
-    it('should run with accept-put header with multiple values', () => {
+    it('should run with accept-put header with multiple values', async() => {
       const headers = new Headers({ 'accept-put': 'abc, def,ghi' });
-      return expect(actor.run({ url: 'http://example.org/', metadata: input, headers, requestTime: 0, context }))
+      await expect(actor.run({ url: 'http://example.org/', metadata: input, headers, requestTime: 0, context }))
         .resolves.toEqual({ metadata: { putAccepted: [ 'abc', 'def', 'ghi' ]}});
     });
   });

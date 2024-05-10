@@ -4,10 +4,12 @@
 /* Single-function HTTP(S) request module for browsers */
 /* Translated from https://github.com/LinkedDataFragments/Client.js/blob/master/lib/browser/Request.js */
 
-import { EventEmitter } from 'events';
-import type { IncomingHttpHeaders, IncomingMessage } from 'http';
-import { Readable } from 'stream';
-import * as parseLink from 'parse-link-header';
+import { EventEmitter } from 'node:events';
+import type { IncomingHttpHeaders, IncomingMessage } from 'node:http';
+import { Readable } from 'node:stream';
+
+// Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
+import parseLink = require('parse-link-header');
 
 // Headers we cannot send (see https://www.w3.org/TR/XMLHttpRequest/#the-setrequestheader()-method)
 const UNSAFE_REQUEST_HEADERS = { 'accept-encoding': true, 'user-agent': true, referer: true };
@@ -36,6 +38,7 @@ export default class Requester {
     request.timeout = settings.timeout;
     request.withCredentials = settings.withCredentials;
 
+    // eslint-disable-next-line unicorn/no-array-for-each
     reqHeaders.forEach((value, key) => {
       if (!(key in UNSAFE_REQUEST_HEADERS) && value) {
         request.setRequestHeader(key, value);

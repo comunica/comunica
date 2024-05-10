@@ -1,4 +1,4 @@
-import { URL } from 'url';
+import { URL } from 'node:url';
 import type { Stream } from 'bunyan';
 import type { IBunyanStreamProviderArgs } from './BunyanStreamProvider';
 import { BunyanStreamProvider } from './BunyanStreamProvider';

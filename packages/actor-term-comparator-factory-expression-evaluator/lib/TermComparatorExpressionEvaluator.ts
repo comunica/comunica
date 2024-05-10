@@ -5,10 +5,11 @@ import type * as E from '@comunica/expression-evaluator/lib/expressions';
 import type * as RDF from '@rdfjs/types';
 
 export class TermComparatorExpressionEvaluator implements ITermComparator {
-  public constructor(private readonly internalEvaluator: InternalEvaluator,
+  public constructor(
+    private readonly internalEvaluator: InternalEvaluator,
     private readonly equalityFunction: ITermFunction,
-    private readonly lessThanFunction: ITermFunction) {
-  }
+    private readonly lessThanFunction: ITermFunction,
+  ) {}
 
   // Determine the relative numerical order of the two given terms.
   // In accordance with https://www.w3.org/TR/sparql11-query/#modOrderBy
@@ -39,25 +40,29 @@ export class TermComparatorExpressionEvaluator implements ITermComparator {
     // Handle quoted triples
     if (termA.termType === 'Quad' && termB.termType === 'Quad') {
       const orderSubject = this.orderTypes(
-        termA.subject, termB.subject,
+        termA.subject,
+        termB.subject,
       );
       if (orderSubject !== 0) {
         return orderSubject;
       }
       const orderPredicate = this.orderTypes(
-        termA.predicate, termB.predicate,
+        termA.predicate,
+        termB.predicate,
       );
       if (orderPredicate !== 0) {
         return orderPredicate;
       }
       const orderObject = this.orderTypes(
-        termA.object, termB.object,
+        termA.object,
+        termB.object,
       );
       if (orderObject !== 0) {
         return orderObject;
       }
       return this.orderTypes(
-        termA.graph, termB.graph,
+        termA.graph,
+        termB.graph,
       );
     }
 
@@ -94,7 +99,6 @@ export class TermComparatorExpressionEvaluator implements ITermComparator {
   }
 
   private comparePrimitives(valueA: any, valueB: any): -1 | 0 | 1 {
-    // eslint-disable-next-line @typescript-eslint/no-extra-parens
     return valueA === valueB ? 0 : (valueA < valueB ? -1 : 1);
   }
 

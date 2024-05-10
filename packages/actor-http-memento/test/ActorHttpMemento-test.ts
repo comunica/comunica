@@ -26,7 +26,9 @@ describe('ActorHttpMemento', () => {
     });
 
     it('should not be able to create new ActorHttpMemento objects without \'new\'', () => {
-      expect(() => { (<any> ActorHttpMemento)(); }).toThrow();
+      expect(() => {
+        (<any> ActorHttpMemento)();
+      }).toThrow(`Class constructor ActorHttpMemento cannot be invoked without 'new'`);
     });
   });
 
@@ -115,44 +117,44 @@ describe('ActorHttpMemento', () => {
       actor = new ActorHttpMemento({ name: 'actor', bus, mediatorHttp });
     });
 
-    it('should test', () => {
+    it('should test', async() => {
       const action: IActionHttp = {
         context: new ActionContext({ [KeysHttpMemento.datetime.name]: new Date() }),
         input: new Request('https://www.google.com/'),
       };
-      return expect(actor.test(action)).resolves.toEqual(true);
+      await expect(actor.test(action)).resolves.toBe(true);
     });
 
-    it('should test with empty headers', () => {
+    it('should test with empty headers', async() => {
       const action: IActionHttp = {
         context: new ActionContext({ [KeysHttpMemento.datetime.name]: new Date() }),
         init: { headers: new Headers() },
         input: new Request('https://www.google.com/'),
       };
-      return expect(actor.test(action)).resolves.toBeTruthy();
+      await expect(actor.test(action)).resolves.toBeTruthy();
     });
 
-    it('should not test without datetime', () => {
+    it('should not test without datetime', async() => {
       const action: IActionHttp = { input: new Request('https://www.google.com/'), context };
-      return expect(actor.test(action)).rejects.toBeTruthy();
+      await expect(actor.test(action)).rejects.toBeTruthy();
     });
 
-    it('should test without init', () => {
+    it('should test without init', async() => {
       const action: IActionHttp = {
         context: new ActionContext({ [KeysHttpMemento.datetime.name]: new Date() }),
         init: {},
         input: new Request('https://www.google.com/'),
       };
-      return expect(actor.test(action)).resolves.toBeTruthy();
+      await expect(actor.test(action)).resolves.toBeTruthy();
     });
 
-    it('should not test with Accept-Datetime header', () => {
+    it('should not test with Accept-Datetime header', async() => {
       const action: IActionHttp = {
         context: new ActionContext({ [KeysHttpMemento.datetime.name]: new Date() }),
         init: { headers: new Headers({ 'Accept-Datetime': new Date().toUTCString() }) },
         input: new Request('https://www.google.com/'),
       };
-      return expect(actor.test(action)).rejects.toMatchObject(new Error('The request already has a set datetime.'));
+      await expect(actor.test(action)).rejects.toMatchObject(new Error('The request already has a set datetime.'));
     });
 
     it('should run with new memento', async() => {
@@ -161,10 +163,10 @@ describe('ActorHttpMemento', () => {
         input: new Request('http://example.com/or'),
       };
       const result = await actor.run(action);
-      expect(result.status).toEqual(200);
+      expect(result.status).toBe(200);
 
       const body: any = result.body;
-      expect(body.getReader().read()).toEqual('memento1');
+      expect(body.getReader().read()).toBe('memento1');
     });
 
     it('should run with new memento without timegate body', async() => {
@@ -173,10 +175,10 @@ describe('ActorHttpMemento', () => {
         input: new Request('http://example.com/nobody'),
       };
       const result = await actor.run(action);
-      expect(result.status).toEqual(200);
+      expect(result.status).toBe(200);
 
       const body: any = result.body;
-      expect(body.getReader().read()).toEqual('memento1');
+      expect(body.getReader().read()).toBe('memento1');
     });
 
     it('should run with old memento', async() => {
@@ -186,10 +188,10 @@ describe('ActorHttpMemento', () => {
       };
 
       const result = await actor.run(action);
-      expect(result.status).toEqual(200);
+      expect(result.status).toBe(200);
 
       const body: any = result.body;
-      expect(body.getReader().read()).toEqual('memento2');
+      expect(body.getReader().read()).toBe('memento2');
     });
 
     it('should not follow other link header', async() => {
@@ -199,10 +201,10 @@ describe('ActorHttpMemento', () => {
       };
 
       const result = await actor.run(action);
-      expect(result.status).toEqual(200);
+      expect(result.status).toBe(200);
 
       const body: any = result.body;
-      expect(body.getReader().read()).toEqual('nolink');
+      expect(body.getReader().read()).toBe('nolink');
     });
 
     it('should proxy request when memento', async() => {
@@ -213,10 +215,10 @@ describe('ActorHttpMemento', () => {
       };
 
       const result = await actor.run(action);
-      expect(result.status).toEqual(200);
+      expect(result.status).toBe(200);
 
       const body: any = result.body;
-      expect(body.getReader().read()).toEqual('memento1');
+      expect(body.getReader().read()).toBe('memento1');
     });
   });
 });

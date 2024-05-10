@@ -4,7 +4,9 @@ import type {
   IDateRepresentation,
   IDateTimeRepresentation,
   IDayTimeDurationRepresentation,
-  IDurationRepresentation, ITimeRepresentation, ITimeZoneRepresentation,
+  IDurationRepresentation,
+  ITimeRepresentation,
+  ITimeZoneRepresentation,
   IYearMonthDurationRepresentation,
 } from '@comunica/types';
 import { simplifyDurationRepresentation } from './DateTimeHelpers';
@@ -76,8 +78,8 @@ function parseTimeZone(timeZoneStr: string): Partial<ITimeZoneRepresentation> {
   if (timeZoneStr === 'Z') {
     return { zoneHours: 0, zoneMinutes: 0 };
   }
-  const timeZoneStrings = timeZoneStr.replace(/^([+|-])(\d\d):(\d\d)$/gu, '$11!$2!$3').split('!');
-  const timeZone = timeZoneStrings.map(str => Number(str));
+  const timeZoneStrings = timeZoneStr.replaceAll(/^([+|-])(\d\d):(\d\d)$/gu, '$11!$2!$3').split('!');
+  const timeZone = timeZoneStrings.map(Number);
   return {
     zoneHours: timeZone[0] * timeZone[1],
     zoneMinutes: timeZone[0] * timeZone[2],
@@ -86,14 +88,15 @@ function parseTimeZone(timeZoneStr: string): Partial<ITimeZoneRepresentation> {
 
 export function parseDate(dateStr: string): IDateRepresentation {
   // https://www.w3.org/TR/xmlschema-2/#date-lexical-representation
-  const formatted = dateStr.replace(
-    /^(-)?([123456789]*\d{4})-(\d\d)-(\d\d)(Z|([+-]\d\d:\d\d))?$/gu, '$11!$2!$3!$4!$5',
+  const formatted = dateStr.replaceAll(
+    /^(-)?([123456789]*\d{4})-(\d\d)-(\d\d)(Z|([+-]\d\d:\d\d))?$/gu,
+    '$11!$2!$3!$4!$5',
   );
   if (formatted === dateStr) {
     throw new ParseError(dateStr, 'date');
   }
   const dateStrings = formatted.split('!');
-  const date = dateStrings.slice(0, -1).map(str => Number(str));
+  const date = dateStrings.slice(0, -1).map(Number);
 
   const res = {
     year: date[0] * date[1],
@@ -101,7 +104,7 @@ export function parseDate(dateStr: string): IDateRepresentation {
     day: date[3],
     ...parseTimeZone(dateStrings[4]),
   };
-  if (!(1 <= res.month && res.month <= 12) || !(1 <= res.day && res.day <= maximumDayInMonthFor(res.year, res.month))) {
+  if (!(res.month >= 1 && res.month <= 12) || !(res.day >= 1 && res.day <= maximumDayInMonthFor(res.year, res.month))) {
     throw new ParseError(dateStr, 'date');
   }
   return res;
@@ -109,12 +112,12 @@ export function parseDate(dateStr: string): IDateRepresentation {
 
 function __parseTime(timeStr: string): ITimeRepresentation {
   // https://www.w3.org/TR/xmlschema-2/#time-lexical-repr
-  const formatted = timeStr.replace(/^(\d\d):(\d\d):(\d\d(\.\d+)?)(Z|([+-]\d\d:\d\d))?$/gu, '$1!$2!$3!$5');
+  const formatted = timeStr.replaceAll(/^(\d\d):(\d\d):(\d\d(\.\d+)?)(Z|([+-]\d\d:\d\d))?$/gu, '$1!$2!$3!$5');
   if (formatted === timeStr) {
     throw new ParseError(timeStr, 'time');
   }
   const timeStrings = formatted.split('!');
-  const time = timeStrings.slice(0, -1).map(str => Number(str));
+  const time = timeStrings.slice(0, -1).map(Number);
 
   const res = {
     hours: time[0],
@@ -144,14 +147,14 @@ export function parseDuration(durationStr: string): Partial<IDurationRepresentat
   const [ dayNotation, timeNotation ] = durationStr.split('T');
 
   // Handle date part
-  const formattedDayDur = dayNotation.replace(/^(-)?P(\d+Y)?(\d+M)?(\d+D)?$/gu, '$11S!$2!$3!$4');
+  const formattedDayDur = dayNotation.replaceAll(/^(-)?P(\d+Y)?(\d+M)?(\d+D)?$/gu, '$11S!$2!$3!$4');
   if (formattedDayDur === dayNotation) {
     throw new ParseError(durationStr, 'duration');
   }
 
   const durationStrings = formattedDayDur.split('!');
   if (timeNotation !== undefined) {
-    const formattedTimeDur = timeNotation.replace(/^(\d+H)?(\d+M)?(\d+(\.\d+)?S)?$/gu, '$1!$2!$3');
+    const formattedTimeDur = timeNotation.replaceAll(/^(\d+H)?(\d+M)?(\d+(\.\d+)?S)?$/gu, '$1!$2!$3');
 
     if (timeNotation === '' || timeNotation === formattedTimeDur) {
       throw new ParseError(durationStr, 'duration');
@@ -159,7 +162,7 @@ export function parseDuration(durationStr: string): Partial<IDurationRepresentat
     durationStrings.push(...formattedTimeDur.split('!'));
   }
   const duration = durationStrings.map(str => str.slice(0, -1));
-  if (!duration.slice(1).some(item => item)) {
+  if (!duration.slice(1).some(Boolean)) {
     throw new ParseError(durationStr, 'duration');
   }
 
@@ -176,8 +179,7 @@ export function parseDuration(durationStr: string): Partial<IDurationRepresentat
 
 export function parseYearMonthDuration(durationStr: string): Partial<IYearMonthDurationRepresentation> {
   const res = parseDuration(durationStr);
-  // @ts-expect-error: The usage of any is okey here since we just check whether something is there.
-  if ([ 'hours', 'minutes', 'seconds', 'day' ].some(key => Boolean(res[key]))) {
+  if ([ 'hours', 'minutes', 'seconds', 'day' ].some(key => Boolean((<any> res)[key]))) {
     throw new ParseError(durationStr, 'yearMonthDuration');
   }
   return res;
@@ -185,10 +187,8 @@ export function parseYearMonthDuration(durationStr: string): Partial<IYearMonthD
 
 export function parseDayTimeDuration(durationStr: string): Partial<IDayTimeDurationRepresentation> {
   const res = parseDuration(durationStr);
-  // @ts-expect-error: The usage of any is okey here since we just check whether something is there.
-  if ([ 'year', 'month' ].some(key => Boolean(res[key]))) {
+  if ([ 'year', 'month' ].some(key => Boolean((<any> res)[key]))) {
     throw new ParseError(durationStr, 'dayTimeDuration');
   }
   return res;
 }
-

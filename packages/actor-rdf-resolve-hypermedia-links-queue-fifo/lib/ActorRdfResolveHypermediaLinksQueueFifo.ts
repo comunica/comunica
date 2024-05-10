@@ -1,5 +1,6 @@
 import type {
-  IActionRdfResolveHypermediaLinksQueue, IActorRdfResolveHypermediaLinksQueueArgs,
+  IActionRdfResolveHypermediaLinksQueue,
+  IActorRdfResolveHypermediaLinksQueueArgs,
   IActorRdfResolveHypermediaLinksQueueOutput,
 } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import { ActorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
@@ -14,11 +15,13 @@ export class ActorRdfResolveHypermediaLinksQueueFifo extends ActorRdfResolveHype
     super(args);
   }
 
-  public async test(action: IActionRdfResolveHypermediaLinksQueue): Promise<IActorTest> {
+  public async test(_action: IActionRdfResolveHypermediaLinksQueue): Promise<IActorTest> {
     return true;
   }
 
-  public async run(action: IActionRdfResolveHypermediaLinksQueue): Promise<IActorRdfResolveHypermediaLinksQueueOutput> {
+  public async run(
+    _action: IActionRdfResolveHypermediaLinksQueue,
+  ): Promise<IActorRdfResolveHypermediaLinksQueueOutput> {
     return { linkQueue: new LinkQueueFifo() };
   }
 }

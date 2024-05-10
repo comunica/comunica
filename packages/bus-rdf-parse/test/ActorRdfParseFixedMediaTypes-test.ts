@@ -10,24 +10,27 @@ describe('ActorRdfParseFixedMediaTypes', () => {
     });
 
     it('should be a ActorRdfParseFixedMediaTypes constructor', () => {
-      expect(new (<any> ActorRdfParseFixedMediaTypes)({ bus: new Bus({ name: 'bus' }),
-        mediaTypes: {},
-        name: 'actor' })).toBeInstanceOf(ActorRdfParseFixedMediaTypes);
+      expect(new (<any> ActorRdfParseFixedMediaTypes)({ bus: new Bus({ name: 'bus' }), mediaTypes: {}, name: 'actor' }))
+        .toBeInstanceOf(ActorRdfParseFixedMediaTypes);
     });
 
     it('should not be able to create new ActorRdfParseFixedMediaTypes objects without \'new\'', () => {
-      expect(() => { (<any> ActorRdfParseFixedMediaTypes)(); }).toThrow();
+      expect(() => {
+        (<any> ActorRdfParseFixedMediaTypes)();
+      }).toThrow(`Class constructor ActorRdfParseFixedMediaTypes cannot be invoked without 'new'`);
     });
   });
 
   describe('An ActorRdfParseFixedMediaTypes instance', () => {
-    const actor = new (<any> ActorRdfParseFixedMediaTypes)({ bus,
+    const actor = new (<any> ActorRdfParseFixedMediaTypes)({
+      bus,
       mediaTypes: { a: 0.5 },
       name: 'actor',
-      priorityScale: 0.5 });
+      priorityScale: 0.5,
+    });
 
-    it('should always resolve testHandleChecked', () => {
-      return expect(actor.testHandleChecked()).resolves.toBeTruthy();
+    it('should always resolve testHandleChecked', async() => {
+      await expect(actor.testHandleChecked()).resolves.toBeTruthy();
     });
   });
 });

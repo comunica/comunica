@@ -4,7 +4,7 @@
 
 An [RDF Join Selectivity](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join-selectivity) actor
 that heuristically tries to estimate the selectivity of joins by counting the overlap of variables and non-variables
-in patterns. 
+in patterns.
 
 Based on the _"variable counting predicates"_ heuristic from
 [_Stocker, Markus, et al. "SPARQL basic graph pattern optimization using selectivity estimation." Proceedings of the 17th international conference on World Wide Web. 2008._](https://www.semanticscholar.org/paper/SPARQL-basic-graph-pattern-optimization-using-Stocker-Seaborne/da4d7bf764d918f6dfb2b285dfc3e12da7b62b00).
@@ -29,7 +29,7 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-selectivity-variable-counting/^2.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-selectivity-variable-counting/^3.0.0/components/context.jsonld"
   ],
   "actors": [
     ...

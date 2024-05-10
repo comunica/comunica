@@ -45,11 +45,11 @@ describe('evaluators', () => {
         context: actionContext,
       });
 
-      expect(mediate.mock.calls.length).toBe(1);
-      expect(await evaluator.evaluate(BF.bindings())).toEqual(two);
+      expect(mediate.mock.calls).toHaveLength(1);
+      await expect(evaluator.evaluate(BF.bindings())).resolves.toEqual(two);
     });
 
-    // eslint-disable-next-line mocha/no-skipped-tests
+    // eslint-disable-next-line jest/no-disabled-tests
     it.skip('has proper extended XSD type support', async() => {
       const evaluator = await factory.run({
         algExpr: getMockExpression('1 + "1"^^<http://example.com>'),
@@ -65,8 +65,8 @@ describe('evaluators', () => {
         algExpr: getMockExpression('1 + 1'),
         context: actionContext,
       });
-      expect(mediate.mock.calls.length).toBe(1);
-      expect(await evaluator.evaluateAsEBV(BF.bindings())).toEqual(true);
+      expect(mediate.mock.calls).toHaveLength(1);
+      await expect(evaluator.evaluateAsEBV(BF.bindings())).resolves.toBe(true);
     });
 
     it('is able to evaluate to false', async() => {
@@ -74,7 +74,7 @@ describe('evaluators', () => {
         algExpr: getMockExpression('0'),
         context: actionContext,
       });
-      expect(await evaluator.evaluateAsEBV(BF.bindings())).toEqual(false);
+      await expect(evaluator.evaluateAsEBV(BF.bindings())).resolves.toBe(false);
     });
   });
 
@@ -84,8 +84,8 @@ describe('evaluators', () => {
         algExpr: getMockExpression('1 + 1'),
         context: actionContext,
       });
-      expect(mediate.mock.calls.length).toBe(1);
-      expect(await evaluator.evaluateAsEvaluatorExpression(BF.bindings())).toEqual(new IntegerLiteral(2));
+      expect(mediate.mock.calls).toHaveLength(1);
+      await expect(evaluator.evaluateAsEvaluatorExpression(BF.bindings())).resolves.toEqual(new IntegerLiteral(2));
     });
   });
 });

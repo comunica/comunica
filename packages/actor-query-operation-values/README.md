@@ -22,14 +22,19 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-values/^2.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-values/^3.0.0/components/context.jsonld"
   ],
   "actors": [
     ...
     {
       "@id": "urn:comunica:default:query-operation/actors#values",
-      "@type": "ActorQueryOperationValues"
+      "@type": "ActorQueryOperationValues",
+      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" }
     }
   ]
 }
 ```
+
+### Config Parameters
+
+* `mediatorMergeBindingsContext`: A mediator over the [Merge Bindings Context bus](https://github.com/comunica/comunica/tree/master/packages/bus-merge-bindings-context).

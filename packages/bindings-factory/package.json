@@ -1,40 +1,43 @@
 {
   "name": "@comunica/bindings-factory",
-  "version": "2.7.0",
+  "version": "3.0.3",
   "description": "Bindings factory module for Comunica",
-  "main": "lib/index.js",
-  "typings": "lib/index",
+  "license": "MIT",
+  "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
     "directory": "packages/bindings-factory"
   },
-  "publishConfig": {
-    "access": "public"
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
   },
-  "sideEffects": false,
   "keywords": [
     "comunica",
     "types"
   ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/comunica/comunica/issues"
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "publishConfig": {
+    "access": "public"
   },
-  "homepage": "https://comunica.dev/",
   "files": [
     "components",
     "lib/**/*.d.ts",
     "lib/**/*.js",
     "lib/**/*.js.map"
   ],
+  "scripts": {
+    "build": "node \"../../node_modules/typescript/bin/tsc\""
+  },
   "dependencies": {
+    "@comunica/bus-merge-bindings-context": "^3.0.3",
+    "@comunica/core": "^3.0.3",
+    "@comunica/types": "^3.0.3",
     "@rdfjs/types": "*",
     "immutable": "^4.1.0",
     "rdf-data-factory": "^1.1.1",
     "rdf-string": "^1.6.1"
-  },
-  "scripts": {
-    "build": "node \"../../node_modules/typescript/bin/tsc\""
   }
 }

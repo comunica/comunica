@@ -28,8 +28,12 @@ export class ActorQueryParseSparql extends ActorQueryParse {
     const baseIRI = parsedSyntax.type === 'query' ? parsedSyntax.base : undefined;
     return {
       baseIRI,
-      operation: translate(parsedSyntax,
-        { quads: true, prefixes: this.prefixes, blankToVariable: true, baseIRI: action.baseIRI }),
+      operation: translate(parsedSyntax, {
+        quads: true,
+        prefixes: this.prefixes,
+        blankToVariable: true,
+        baseIRI: action.baseIRI,
+      }),
     };
   }
 }

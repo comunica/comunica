@@ -16,7 +16,7 @@ export class MediatorRace<A extends Actor<I, T, O>, I extends IAction, T extends
       for (const testResult of testResults) {
         testResult.reply.then(() => {
           resolve(testResult.actor);
-        }).catch(error => {
+        }).catch((error) => {
           // Reject if all replies were rejected
           errors.push(error);
           if (errors.length === testResults.length) {

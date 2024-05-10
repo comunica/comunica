@@ -1,5 +1,8 @@
-import type { IActionRdfMetadataAccumulate, IActorRdfMetadataAccumulateOutput,
-  IActorRdfMetadataAccumulateArgs } from '@comunica/bus-rdf-metadata-accumulate';
+import type {
+  IActionRdfMetadataAccumulate,
+  IActorRdfMetadataAccumulateOutput,
+  IActorRdfMetadataAccumulateArgs,
+} from '@comunica/bus-rdf-metadata-accumulate';
 import { ActorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
 import type { IActorTest } from '@comunica/core';
 
@@ -11,7 +14,7 @@ export class ActorRdfMetadataAccumulatePageSize extends ActorRdfMetadataAccumula
     super(args);
   }
 
-  public async test(action: IActionRdfMetadataAccumulate): Promise<IActorTest> {
+  public async test(_action: IActionRdfMetadataAccumulate): Promise<IActorTest> {
     return true;
   }
 
@@ -25,10 +28,10 @@ export class ActorRdfMetadataAccumulatePageSize extends ActorRdfMetadataAccumula
     return {
       metadata: {
         ...('pageSize' in action.accumulatedMetadata) || ('pageSize' in action.appendingMetadata) ?
-          {
-            pageSize: (action.accumulatedMetadata.pageSize || 0) + (action.appendingMetadata.pageSize || 0),
-          } :
-          {},
+            {
+              pageSize: (action.accumulatedMetadata.pageSize ?? 0) + (action.appendingMetadata.pageSize ?? 0),
+            } :
+            {},
       },
     };
   }

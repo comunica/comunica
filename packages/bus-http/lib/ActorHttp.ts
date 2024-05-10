@@ -1,6 +1,6 @@
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
-import { ReadableWebToNodeStream } from 'readable-web-to-node-stream';
+import { readableFromWeb } from 'readable-from-web';
 
 /* istanbul ignore next */
 if (!globalThis.ReadableStream) {
@@ -34,18 +34,18 @@ export abstract class ActorHttp extends Actor<IActionHttp, IActorTest, IActorHtt
    * Converts WhatWG streams to Node streams if required.
    * Returns the input in case the stream already is a Node stream.
    * @param {ReadableStream} body
-   * @returns {NodeJS.ReadableStream}
+   * @returns {NodeJS.ReadableStream} A node stream.
    */
   public static toNodeReadable(body: ReadableStream | null): NodeJS.ReadableStream {
     return isStream(body) || body === null ?
       <NodeJS.ReadableStream> <any> body :
-      <NodeJS.ReadableStream> <any> new ReadableWebToNodeStream(body);
+      <NodeJS.ReadableStream> <any> readableFromWeb(body);
   }
 
   /**
    * Converts Node streams to WhatWG streams.
    * @param {NodeJS.ReadableStream} body
-   * @returns {ReadableStream}
+   * @returns {ReadableStream} A web stream.
    */
   public static toWebReadableStream(body: NodeJS.ReadableStream | null): ReadableStream {
     return toWebReadableStream(body);
@@ -57,6 +57,7 @@ export abstract class ActorHttp extends Actor<IActionHttp, IActorTest, IActorHtt
    */
   public static headersToHash(headers: Headers): Record<string, string> {
     const hash: Record<string, string> = {};
+    // eslint-disable-next-line unicorn/no-array-for-each
     headers.forEach((value, key) => {
       hash[key] = value;
     });

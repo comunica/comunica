@@ -1,8 +1,10 @@
 node_modules
+.husky/_
 .rdf-test-suite-cache
 .rdf-test-suite-ldf-cache
 .idea
 .vscode
+.yarn
 lerna-debug.log
 yarn-error.log
 .eslintcache

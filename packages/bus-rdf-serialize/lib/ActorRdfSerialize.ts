@@ -1,11 +1,17 @@
-import type { IActionAbstractMediaTyped, IActorArgsMediaTyped,
-  IActorTestAbstractMediaTyped, IActorOutputAbstractMediaTypedHandle,
+import type {
+  IActionAbstractMediaTyped,
+  IActorArgsMediaTyped,
+  IActorTestAbstractMediaTyped,
+  IActorOutputAbstractMediaTypedHandle,
   IActionAbstractMediaTypedHandle,
   IActionAbstractMediaTypedMediaTypeFormats,
-  IActionAbstractMediaTypedMediaTypes, IActorOutputAbstractMediaTypedMediaTypeFormats,
+  IActionAbstractMediaTypedMediaTypes,
+  IActorOutputAbstractMediaTypedMediaTypeFormats,
   IActorOutputAbstractMediaTypedMediaTypes,
-  IActorTestAbstractMediaTypedHandle, IActorTestAbstractMediaTypedMediaTypeFormats,
-  IActorTestAbstractMediaTypedMediaTypes } from '@comunica/actor-abstract-mediatyped';
+  IActorTestAbstractMediaTypedHandle,
+  IActorTestAbstractMediaTypedMediaTypeFormats,
+  IActorTestAbstractMediaTypedMediaTypes,
+} from '@comunica/actor-abstract-mediatyped';
 import {
   ActorAbstractMediaTyped,
 } from '@comunica/actor-abstract-mediatyped';
@@ -72,13 +78,25 @@ export interface IActorRdfSerializeOutput extends IActorOutput {
 export type IActorRdfSerializeArgs = IActorArgsMediaTyped<IActionRdfSerialize, IActorTest, IActorRdfSerializeOutput>;
 
 export type MediatorRdfSerializeHandle = Mediate<
-IActionRdfSerializeHandle, IActorOutputRdfSerializeHandle, IActorTestRdfSerializeHandle>;
+IActionRdfSerializeHandle,
+IActorOutputRdfSerializeHandle,
+IActorTestRdfSerializeHandle
+>;
 
 export type MediatorRdfSerialize = Mediate<
-IActionRootRdfSerialize, IActorOutputRootRdfSerialize, IActorTestRootRdfSerialize>;
+IActionRootRdfSerialize,
+IActorOutputRootRdfSerialize,
+IActorTestRootRdfSerialize
+>;
 
 export type MediatorRdfSerializeMediaTypes = Mediate<
-IActionRdfSerializeMediaTypes, IActorOutputRdfSerializeMediaTypes, IActorTestRdfSerializeMediaTypes>;
+IActionRdfSerializeMediaTypes,
+IActorOutputRdfSerializeMediaTypes,
+IActorTestRdfSerializeMediaTypes
+>;
 
 export type MediatorRdfSerializeMediaTypeFormats = Mediate<
-IActionRdfSerializeMediaTypeFormats, IActorOutputRdfSerializeMediaTypeFormats, IActorTestRdfSerializeMediaTypeFormats>;
+IActionRdfSerializeMediaTypeFormats,
+IActorOutputRdfSerializeMediaTypeFormats,
+IActorTestRdfSerializeMediaTypeFormats
+>;

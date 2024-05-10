@@ -14,6 +14,7 @@ import { ActorBindingsAggregatorFactoryWildcardCount } from '../lib';
 describe('ActorBindingsAggregatorFactoryWildcardCount', () => {
   let bus: any;
   let mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
+  const exception = 'This actor only supports the \'count\' aggregator with wildcard.';
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -51,44 +52,44 @@ describe('ActorBindingsAggregatorFactoryWildcardCount', () => {
     });
 
     describe('test', () => {
-      it('rejects count 1', () => {
-        return expect(actor.test({
+      it('rejects count 1', async() => {
+        await expect(actor.test({
           context,
           expr: makeAggregate('count', false),
-        })).rejects.toThrow();
+        })).rejects.toThrow(exception);
       });
 
-      it('rejects count 2', () => {
-        return expect(actor.test({
+      it('rejects count 2', async() => {
+        await expect(actor.test({
           context,
           expr: makeAggregate('count', true),
-        })).rejects.toThrow();
+        })).rejects.toThrow(exception);
       });
 
-      it('accepts wildcard count 1', () => {
-        return expect(actor.test({
+      it('accepts wildcard count 1', async() => {
+        await expect(actor.test({
           context,
           expr: makeAggregate('count', false, undefined, true),
         })).resolves.toEqual({});
       });
 
-      it('accepts wildcard count 2', () => {
-        return expect(actor.test({
+      it('accepts wildcard count 2', async() => {
+        await expect(actor.test({
           context: getMockEEActionContext(),
           expr: makeAggregate('count', true, undefined, true),
         })).resolves.toEqual({});
       });
 
-      it('rejects sum', () => {
-        return expect(actor.test({
+      it('rejects sum', async() => {
+        await expect(actor.test({
           context,
           expr: makeAggregate('sum', false),
-        })).rejects.toThrow();
+        })).rejects.toThrow(exception);
       });
     });
 
-    it('should run', () => {
-      return expect(actor.run({
+    it('should run', async() => {
+      await expect(actor.run({
         context,
         expr: makeAggregate('count', false, undefined, true),
       })).resolves.toMatchObject({});

@@ -52,7 +52,7 @@ IDateTimeRepresentation {
   // We skip a part of the spec code since: Defined spec code can not happen since it would be an invalid literal
 
   newDate.day = date.day + duration.day + tempDiv.intDiv;
-  // eslint-disable-next-line no-constant-condition
+
   while (true) {
     let carry;
     if (newDate.day < 1) {
@@ -71,8 +71,11 @@ IDateTimeRepresentation {
   return newDate;
 }
 
-export function elapsedDuration(first: IDateTimeRepresentation,
-  second: IDateTimeRepresentation, defaultTimeZone: ITimeZoneRepresentation): Partial<IDurationRepresentation> {
+export function elapsedDuration(
+  first: IDateTimeRepresentation,
+  second: IDateTimeRepresentation,
+  defaultTimeZone: ITimeZoneRepresentation,
+): Partial<IDurationRepresentation> {
   const d1 = toUTCDate(first, defaultTimeZone);
   const d2 = toUTCDate(second, defaultTimeZone);
   const diff = d1.getTime() - d2.getTime();

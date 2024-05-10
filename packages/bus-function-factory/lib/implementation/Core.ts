@@ -60,7 +60,7 @@ export abstract class TermSparqlFunction<O extends C.RegularOperator | C.NamedOp
         args,
         exprEval.context.getSafe(KeysExpressionEvaluator.superTypeProvider),
         exprEval.context.getSafe(KeysInitQuery.functionArgumentsCache),
-      ) || this.handleInvalidTypes(args);
+      ) ?? this.handleInvalidTypes(args);
     return concreteFunction(exprEval)(args);
   }
 
@@ -74,7 +74,6 @@ export abstract class TermSparqlFunction<O extends C.RegularOperator | C.NamedOp
   }
 }
 
-export abstract class RegularFunction extends TermSparqlFunction<C.RegularOperator> { }
+export abstract class RegularFunction extends TermSparqlFunction<C.RegularOperator> {}
 
-export abstract class NamedFunction extends TermSparqlFunction<C.NamedOperator> { }
-
+export abstract class NamedFunction extends TermSparqlFunction<C.NamedOperator> {}

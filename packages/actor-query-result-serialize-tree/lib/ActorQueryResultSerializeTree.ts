@@ -1,6 +1,8 @@
-import type { IActionSparqlSerialize,
+import type {
+  IActionSparqlSerialize,
   IActorQueryResultSerializeFixedMediaTypesArgs,
-  IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
+  IActorQueryResultSerializeOutput,
+} from '@comunica/bus-query-result-serialize';
 import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-result-serialize';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
@@ -31,16 +33,18 @@ export class ActorQueryResultSerializeTree extends ActorQueryResultSerializeFixe
    * @param {IConverterSettings} converterSettings
    * @return {Promise<string>}
    */
-  public static bindingsStreamToGraphQl(bindingsStream: BindingsStream,
+  public static bindingsStreamToGraphQl(
+    bindingsStream: BindingsStream,
     context: IActionContext | Record<string, any> | undefined,
-    converterSettings?: IConverterSettings): Promise<any> {
+    converterSettings?: IConverterSettings,
+  ): Promise<any> {
     const actionContext: IActionContext = ActionContext.ensureActionContext(context);
     return new Promise((resolve, reject) => {
       const bindingsArray: Record<string, RDF.Term>[] = [];
       const converter: Converter = new Converter(converterSettings);
 
       const schema: ISchema = {
-        singularizeVariables: actionContext.get(KeysInitQuery.graphqlSingularizeVariables) || {},
+        singularizeVariables: actionContext.get(KeysInitQuery.graphqlSingularizeVariables) ?? {},
       };
 
       bindingsStream.on('error', reject);
@@ -54,14 +58,17 @@ export class ActorQueryResultSerializeTree extends ActorQueryResultSerializeFixe
     });
   }
 
-  public async testHandleChecked(action: IActionSparqlSerialize): Promise<boolean> {
+  public override async testHandleChecked(action: IActionSparqlSerialize): Promise<boolean> {
     if (action.type !== 'bindings') {
       throw new Error('This actor can only handle bindings streams.');
     }
     return true;
   }
 
-  public async runHandle(action: IActionSparqlSerialize, mediaType: string): Promise<IActorQueryResultSerializeOutput> {
+  public async runHandle(
+    action: IActionSparqlSerialize,
+    _mediaType: string,
+  ): Promise<IActorQueryResultSerializeOutput> {
     const data = new Readable();
     data._read = () => {
       // Do nothing

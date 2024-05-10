@@ -1,6 +1,5 @@
-const path = require('path');
+const path = require('node:path');
 const webpack = require('webpack');
-const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
 module.exports = {
   entry: [ path.resolve(__dirname, 'lib/index-browser.js') ],
@@ -8,26 +7,25 @@ module.exports = {
     filename: 'comunica-browser.js',
     path: __dirname,
     libraryTarget: 'var',
-    library: 'Comunica'
+    library: 'Comunica',
   },
   mode: 'production',
   devtool: 'source-map',
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.js$/u,
         loader: 'babel-loader',
-        exclude: /node_modules/,
+        exclude: /node_modules/u,
       },
-    ]
-  },
-  resolve: {
-    fallback: {
-      buffer: require.resolve("buffer/"),
-    }
+    ],
   },
   plugins: [
-    new NodePolyfillPlugin({ includeAliases: ['Buffer'] }),
-    new webpack.ProgressPlugin()
-  ]
+    new webpack.ProgressPlugin(),
+  ],
+  performance: {
+    hints: 'error',
+    maxAssetSize: 1750000,
+    maxEntrypointSize: 1750000,
+  },
 };

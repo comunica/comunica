@@ -1,47 +1,47 @@
 {
   "name": "@comunica/actor-http-memento",
-  "version": "2.8.2",
+  "version": "3.0.3",
   "description": "A memento http actor",
   "lsd:module": true,
-  "main": "lib/index.js",
-  "typings": "lib/index",
+  "license": "MIT",
+  "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
     "directory": "packages/actor-http-memento"
   },
-  "publishConfig": {
-    "access": "public"
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
   },
-  "sideEffects": false,
   "keywords": [
     "comunica",
     "actor",
     "http",
     "memento"
   ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/comunica/comunica/issues"
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "publishConfig": {
+    "access": "public"
   },
-  "homepage": "https://comunica.dev/",
   "files": [
     "components",
     "lib/**/*.d.ts",
     "lib/**/*.js",
     "lib/**/*.js.map"
   ],
+  "scripts": {
+    "build": "yarn run build:ts && yarn run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
+  },
   "dependencies": {
-    "@comunica/bus-http": "^2.8.2",
-    "@comunica/context-entries": "^2.8.2",
-    "@comunica/core": "^2.8.2",
+    "@comunica/bus-http": "^3.0.3",
+    "@comunica/context-entries": "^3.0.3",
+    "@comunica/core": "^3.0.3",
     "@types/parse-link-header": "^2.0.0",
     "cross-fetch": "^4.0.0",
     "parse-link-header": "^2.0.0"
-  },
-  "scripts": {
-    "build": "npm run build:ts && npm run build:components",
-    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
-    "build:components": "componentsjs-generator"
   }
 }

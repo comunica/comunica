@@ -18,10 +18,9 @@ $ yarn add @comunica/bus-init
 
 ## Bus usage
 
-* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-init/^2.0.0/components/context.jsonld"`
+* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-init/^3.0.0/components/context.jsonld"`
 * **Bus name**: `ActorInit:_default_bus`
 
 ## Creating actors on this bus
 
-Actors extending [`ActorInit`](https://comunica.github.io/comunica/classes/bus_init.actorinit.html) are automatically subscribed to this bus.
-
+Actors extending [`ActorInit`](https://comunica.github.io/comunica/classes/_comunica_bus_init.ActorInit.html) are automatically subscribed to this bus.

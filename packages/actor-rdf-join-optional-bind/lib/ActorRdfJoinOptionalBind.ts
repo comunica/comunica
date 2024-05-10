@@ -1,5 +1,7 @@
 import type { BindOrder } from '@comunica/actor-rdf-join-inner-multi-bind';
 import { ActorRdfJoinMultiBind } from '@comunica/actor-rdf-join-inner-multi-bind';
+import { BindingsFactory } from '@comunica/bindings-factory';
+import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
@@ -16,6 +18,7 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
   public readonly bindOrder: BindOrder;
   public readonly selectivityModifier: number;
   public readonly mediatorQueryOperation: MediatorQueryOperation;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   public constructor(args: IActorRdfJoinOptionalBindArgs) {
     super(args, {
@@ -27,6 +30,7 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
   }
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
+    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context);
     // Close the right stream, since we don't need that one
     action.entries[1].output.bindingsStream.close();
 
@@ -48,6 +52,7 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
         return output.bindingsStream;
       },
       true,
+      bindingsFactory,
     );
 
     return {
@@ -113,4 +118,9 @@ export interface IActorRdfJoinOptionalBindArgs extends IActorRdfJoinArgs {
    * The query operation mediator
    */
   mediatorQueryOperation: MediatorQueryOperation;
+  /**
+   * A mediator for creating binding context merge handlers
+   */
+  mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+
 }

@@ -1,5 +1,6 @@
 import type {
-  IActionBindingsAggregatorFactory, IActorBindingsAggregatorFactoryArgs,
+  IActionBindingsAggregatorFactory,
+  IActorBindingsAggregatorFactoryArgs,
   IActorBindingsAggregatorFactoryOutput,
 } from '@comunica/bus-bindings-aggeregator-factory';
 import {
@@ -32,4 +33,3 @@ export class ActorBindingsAggregatorFactoryGroupConcat extends ActorBindingsAggr
     );
   }
 }
-

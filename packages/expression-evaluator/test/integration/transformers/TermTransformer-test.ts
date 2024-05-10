@@ -35,23 +35,23 @@ function dateTime(value: string): RDF.Literal {
 
 const DF = new DataFactory();
 
+function simpleLiteralCreator(value: string, dataType?: string, language?: string): RDF.Literal {
+  return {
+    termType: 'Literal',
+    value,
+    // @ts-expect-error
+    language,
+    // @ts-expect-error
+    datatype: dataType === undefined ? undefined : DF.namedNode(dataType),
+    equals: _ => false,
+  };
+}
+
 describe('TermTransformer', () => {
   let termTransformer: TermTransformer;
   beforeEach(() => {
     termTransformer = new TermTransformer(getMockSuperTypeProvider());
   });
-
-  function simpleLiteralCreator(value: string, dataType?: string, language?: string): RDF.Literal {
-    return {
-      termType: 'Literal',
-      value,
-      // @ts-expect-error
-      language,
-      // @ts-expect-error
-      datatype: dataType === undefined ? undefined : DF.namedNode(dataType),
-      equals: _ => false,
-    };
-  }
 
   function returnNonLexicalTest(value: string, dataType: string) {
     const lit = DF.literal(value, DF.namedNode(dataType));
@@ -62,7 +62,7 @@ describe('TermTransformer', () => {
     // @ts-expect-error
     expect(res.strValue).toEqual(value);
     // @ts-expect-error
-    expect(res.typedValue.toString()).toEqual('undefined');
+    expect(res.typedValue.toString()).toBe('undefined');
   }
 
   describe('terms', () => {
@@ -101,7 +101,7 @@ describe('TermTransformer', () => {
           new E.DefaultGraph(),
         ));
       expect(termTransformer.transformRDFTermUnsafe(quad).str())
-        .toEqual('Quad: [foo, foo, foo, DefaultGraph]');
+        .toBe('Quad: [foo, foo, foo, DefaultGraph]');
     });
 
     it('null', () => {
@@ -119,77 +119,77 @@ describe('TermTransformer', () => {
       // @ts-expect-error
       num.termType = undefined;
       const res = termTransformer.transformLiteral(num);
-      expect(res.strValue).toEqual('11');
-      expect(res.typedValue).toEqual(11);
-      expect(res.language).toEqual(undefined);
+      expect(res.strValue).toBe('11');
+      expect(res.typedValue).toBe(11);
+      expect(res.language).toBeUndefined();
       expect(res.dataType).toEqual(DT.XSD_INTEGER);
       // No namednode but language is given
       num.language = 'en';
       const res2 = termTransformer.transformLiteral(num);
-      expect(res2.strValue).toEqual('11');
-      expect(res2.typedValue).toEqual(11);
-      expect(res2.language).toEqual(undefined);
+      expect(res2.strValue).toBe('11');
+      expect(res2.typedValue).toBe(11);
+      expect(res2.language).toBeUndefined();
       expect(res2.dataType).toEqual(DT.XSD_INTEGER);
     });
 
     it('boolean type transform', () => {
       const b = boolean('true');
       const res = termTransformer.transformLiteral(b);
-      expect(res.strValue).toEqual('true');
-      expect(res.termType).toEqual('literal');
+      expect(res.strValue).toBe('true');
+      expect(res.termType).toBe('literal');
       expect(res.dataType).toEqual(DT.XSD_BOOLEAN);
-      expect(res.typedValue).toEqual(true);
-      expect(res.expressionType).toEqual('term');
+      expect(res.typedValue).toBe(true);
+      expect(res.expressionType).toBe('term');
 
-      expect(termTransformer.transformLiteral(boolean('1')).typedValue).toEqual(true);
-      expect(termTransformer.transformLiteral(boolean('false')).typedValue).toEqual(false);
-      expect(termTransformer.transformLiteral(boolean('0')).typedValue).toEqual(false);
+      expect(termTransformer.transformLiteral(boolean('1')).typedValue).toBe(true);
+      expect(termTransformer.transformLiteral(boolean('false')).typedValue).toBe(false);
+      expect(termTransformer.transformLiteral(boolean('0')).typedValue).toBe(false);
     });
 
     it('integers type transform', () => {
       const num = int('11');
       const res = termTransformer.transformLiteral(num);
-      expect(res.strValue).toEqual('11');
-      expect(res.termType).toEqual('literal');
+      expect(res.strValue).toBe('11');
+      expect(res.termType).toBe('literal');
       expect(res.dataType).toEqual(DT.XSD_INTEGER);
-      expect(res.typedValue).toEqual(11);
-      expect(res.expressionType).toEqual('term');
+      expect(res.typedValue).toBe(11);
+      expect(res.expressionType).toBe('term');
     });
 
     it('double type transform', () => {
       const num = double('11');
       const res = termTransformer.transformLiteral(num);
-      expect(res.strValue).toEqual('11');
-      expect(res.termType).toEqual('literal');
+      expect(res.strValue).toBe('11');
+      expect(res.termType).toBe('literal');
       expect(res.dataType).toEqual(DT.XSD_DOUBLE);
-      expect(res.typedValue).toEqual(11);
-      expect(res.expressionType).toEqual('term');
+      expect(res.typedValue).toBe(11);
+      expect(res.expressionType).toBe('term');
     });
     it('decimal type transform', () => {
       const num = decimal('11');
       const res = termTransformer.transformLiteral(num);
-      expect(res.strValue).toEqual('11');
-      expect(res.termType).toEqual('literal');
+      expect(res.strValue).toBe('11');
+      expect(res.termType).toBe('literal');
       expect(res.dataType).toEqual(DT.XSD_DECIMAL);
-      expect(res.typedValue).toEqual(11);
-      expect(res.expressionType).toEqual('term');
+      expect(res.typedValue).toBe(11);
+      expect(res.expressionType).toBe('term');
     });
 
     it('float type transform', () => {
       const num = float('11');
       const res = termTransformer.transformLiteral(num);
-      expect(res.strValue).toEqual('11');
-      expect(res.termType).toEqual('literal');
+      expect(res.strValue).toBe('11');
+      expect(res.termType).toBe('literal');
       expect(res.dataType).toEqual(DT.XSD_FLOAT);
-      expect(res.typedValue).toEqual(11);
-      expect(res.expressionType).toEqual('term');
+      expect(res.typedValue).toBe(11);
+      expect(res.expressionType).toBe('term');
     });
 
     it('dateTime type transform', () => {
       const num = dateTime('2022-01-02T03:04:05Z');
       const res = termTransformer.transformLiteral(num);
-      expect(res.strValue).toEqual('2022-01-02T03:04:05Z');
-      expect(res.termType).toEqual('literal');
+      expect(res.strValue).toBe('2022-01-02T03:04:05Z');
+      expect(res.termType).toBe('literal');
       expect(res.dataType).toEqual(DT.XSD_DATE_TIME);
       expect(res.typedValue).toEqual({
         year: 2_022,
@@ -201,38 +201,38 @@ describe('TermTransformer', () => {
         zoneHours: 0,
         zoneMinutes: 0,
       });
-      expect(res.expressionType).toEqual('term');
+      expect(res.expressionType).toBe('term');
     });
 
     it('string type transform', () => {
       const lit = DF.literal('ab');
       const res = termTransformer.transformLiteral(lit);
-      expect(res.strValue).toEqual('ab');
-      expect(res.termType).toEqual('literal');
+      expect(res.strValue).toBe('ab');
+      expect(res.termType).toBe('literal');
       expect(res.dataType).toEqual(DT.XSD_STRING);
-      expect(res.typedValue).toEqual('ab');
-      expect(res.expressionType).toEqual('term');
+      expect(res.typedValue).toBe('ab');
+      expect(res.expressionType).toBe('term');
     });
 
     it('langString type transform', () => {
       const lit = DF.literal('ab', 'en');
       const res = termTransformer.transformLiteral(lit);
-      expect(res.strValue).toEqual('ab');
-      expect(res.termType).toEqual('literal');
+      expect(res.strValue).toBe('ab');
+      expect(res.termType).toBe('literal');
       expect(res.dataType).toEqual(DT.RDF_LANG_STRING);
-      expect(res.typedValue).toEqual('ab');
-      expect(res.language).toEqual('en');
-      expect(res.expressionType).toEqual('term');
+      expect(res.typedValue).toBe('ab');
+      expect(res.language).toBe('en');
+      expect(res.expressionType).toBe('term');
     });
 
     it('transforms other literals', () => {
       const lit = DF.literal('foo', DF.namedNode('http://example.com'));
       const res = termTransformer.transformLiteral(lit);
-      expect(res.strValue).toEqual('foo');
-      expect(res.termType).toEqual('literal');
-      expect(res.dataType).toEqual('http://example.com');
-      expect(res.typedValue).toEqual('foo');
-      expect(res.expressionType).toEqual('term');
+      expect(res.strValue).toBe('foo');
+      expect(res.termType).toBe('literal');
+      expect(res.dataType).toBe('http://example.com');
+      expect(res.typedValue).toBe('foo');
+      expect(res.expressionType).toBe('term');
     });
   });
 
@@ -318,8 +318,8 @@ describe('TermTransformer', () => {
         datatype: DF.namedNode(DT.XSD_FLOAT),
       });
       expect(res.strValue).toBeUndefined();
-      expect(res.str()).toEqual('');
-      expect(res.typedValue.toString()).toEqual('undefined');
+      expect(res.str()).toBe('');
+      expect(res.typedValue.toString()).toBe('undefined');
     });
   });
 });

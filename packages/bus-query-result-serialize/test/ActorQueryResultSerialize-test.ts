@@ -15,7 +15,9 @@ describe('ActorQueryResultSerialize', () => {
     });
 
     it('should not be able to create new ActorQueryResultSerialize objects without \'new\'', () => {
-      expect(() => { (<any> ActorQueryResultSerialize)(); }).toThrow();
+      expect(() => {
+        (<any> ActorQueryResultSerialize)();
+      }).toThrow(`Class constructor ActorQueryResultSerialize cannot be invoked without 'new'`);
     });
   });
 });

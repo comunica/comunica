@@ -24,11 +24,11 @@ describe('ActorOptimizeQueryOperationBgpToJoin', () => {
       context = new ActionContext();
     });
 
-    it('should test', () => {
-      return expect(actor.test({ operation: <any> undefined, context })).resolves.toBeTruthy();
+    it('should test', async() => {
+      await expect(actor.test({ operation: <any> undefined, context })).resolves.toBeTruthy();
     });
 
-    it('should run for a bgp', () => {
+    it('should run for a bgp', async() => {
       const operation = factory.createBgp([
         factory.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
         factory.createPattern(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
@@ -37,10 +37,10 @@ describe('ActorOptimizeQueryOperationBgpToJoin', () => {
         factory.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
         factory.createPattern(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
       ]);
-      return expect(actor.run({ operation, context })).resolves.toMatchObject({ operation: operationOut });
+      await expect(actor.run({ operation, context })).resolves.toMatchObject({ operation: operationOut });
     });
 
-    it('should run for an inner bgp', () => {
+    it('should run for an inner bgp', async() => {
       const operation = factory.createProject(
         factory.createBgp([
           factory.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
@@ -55,7 +55,7 @@ describe('ActorOptimizeQueryOperationBgpToJoin', () => {
         ]),
         [],
       );
-      return expect(actor.run({ operation, context })).resolves.toMatchObject({ operation: operationOut });
+      await expect(actor.run({ operation, context })).resolves.toMatchObject({ operation: operationOut });
     });
   });
 });

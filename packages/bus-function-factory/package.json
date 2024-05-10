@@ -3,42 +3,42 @@
   "version": "1.0.0",
   "description": "A comunica bus for function factory events.",
   "lsd:module": true,
-  "main": "lib/index.js",
-  "typings": "lib/index",
+  "license": "MIT",
+  "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
     "directory": "packages/bus-functions"
   },
-  "publishConfig": {
-    "access": "public"
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
   },
-  "sideEffects": false,
   "keywords": [
     "comunica",
     "bus",
     "functions"
   ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/comunica/comunica/issues"
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "publishConfig": {
+    "access": "public"
   },
-  "homepage": "https://comunica.dev/",
   "files": [
     "components",
     "lib/**/*.d.ts",
     "lib/**/*.js",
     "lib/**/*.js.map"
   ],
-  "dependencies": {
-    "@comunica/context-entries": "^2.8.2",
-    "@comunica/core": "^2.8.2",
-    "@comunica/expression-evaluator": "^2.9.0",
-    "sparqlalgebrajs": "^4.2.0"
-  },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
     "build:components": "componentsjs-generator"
+  },
+  "dependencies": {
+    "@comunica/context-entries": "^3.0.3",
+    "@comunica/core": "^3.0.3",
+    "@comunica/expression-evaluator": "3.0.1",
+    "sparqlalgebrajs": "^4.2.0"
   }
 }

@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import type {
   IActionAbstractMediaTypedHandle,
   IActionAbstractMediaTypedMediaTypes,
@@ -25,7 +25,7 @@ describe('ActorAbstractDereferenceParse', () => {
       mediatorDereference: {
         mediate: jest.fn(async(action: IActionDereference): Promise<IActorDereferenceOutput> => {
           const ext = (<any>action.context).hasRaw('extension') ?
-            (<any>action.context).getRaw('extension') :
+              (<any>action.context).getRaw('extension') :
             'index.html';
 
           return {
@@ -46,8 +46,9 @@ describe('ActorAbstractDereferenceParse', () => {
               data.emit('error', new Error('Parse error'));
             };
             return { handle: { data, metadata: { triples: true }}};
-          } if ((<any>action.context).hasRaw('parseReject')) {
-            return Promise.reject(new Error('Parse reject error'));
+          }
+          if ((<any>action.context).hasRaw('parseReject')) {
+            throw new Error('Parse reject error');
           }
           data._read = () => {
             action.handle.data.read(1);
@@ -74,9 +75,9 @@ describe('ActorAbstractDereferenceParse', () => {
   });
 
   it('Should resolve media mappings correctly (unknown extension)', async() => {
-    context = new ActionContext({ });
+    context = new ActionContext({});
     const output = await actor.run({ url: 'https://www.google.com/', context });
-    expect(output.url).toEqual('https://www.google.com/index.html');
+    expect(output.url).toBe('https://www.google.com/index.html');
     expect(actor.mediatorParse.mediate).toHaveBeenCalledWith({
       context,
       handle: expect.anything(),
@@ -85,9 +86,9 @@ describe('ActorAbstractDereferenceParse', () => {
   });
 
   it('Should resolve media mappings correctly (unknown extension - given mediaType)', async() => {
-    context = new ActionContext({ });
+    context = new ActionContext({});
     const output = await actor.run({ url: 'https://www.google.com/', context, mediaType: 'rdf' });
-    expect(output.url).toEqual('https://www.google.com/index.html');
+    expect(output.url).toBe('https://www.google.com/index.html');
     expect(actor.mediatorParse.mediate).toHaveBeenCalledWith({
       context,
       handle: expect.anything(),
@@ -98,7 +99,7 @@ describe('ActorAbstractDereferenceParse', () => {
   it('Should resolve media mappings correctly (known extension)', async() => {
     context = new ActionContext({ extension: 'other.x' });
     const output = await actor.run({ url: 'https://www.google.com/', context });
-    expect(output.url).toEqual('https://www.google.com/other.x');
+    expect(output.url).toBe('https://www.google.com/other.x');
     expect(actor.mediatorParse.mediate).toHaveBeenCalledWith({
       context,
       handle: expect.anything(),
@@ -109,53 +110,53 @@ describe('ActorAbstractDereferenceParse', () => {
   it('should run and receive parse errors', async() => {
     context = new ActionContext({ emitParseError: true });
     const output = await actor.run({ url: 'https://www.google.com/', context });
-    expect(output.url).toEqual('https://www.google.com/index.html');
+    expect(output.url).toBe('https://www.google.com/index.html');
     await expect(arrayifyStream(output.data)).rejects.toThrow(new Error('Parse error'));
   });
 
   it('should run and ignore parse errors in lenient mode', async() => {
     context = new ActionContext({ emitParseError: true, [KeysInitQuery.lenient.name]: true });
-    const spy = jest.spyOn(actor, <any> 'logError');
+    const spy = jest.spyOn(actor, <any> 'logWarn');
     const output = await actor.run({ url: 'https://www.google.com/', context });
-    expect(output.url).toEqual('https://www.google.com/index.html');
-    expect(await arrayifyStream(output.data)).toEqual([]);
+    expect(output.url).toBe('https://www.google.com/index.html');
+    await expect(arrayifyStream(output.data)).resolves.toEqual([]);
     expect(spy).toHaveBeenCalledTimes(1);
   });
 
   it('should run and ignore parse errors in lenient mode and log them', async() => {
     const logger = new LoggerVoid();
-    const spy = jest.spyOn(logger, 'error');
+    const spy = jest.spyOn(logger, 'warn');
     context = new ActionContext({
       emitParseError: true,
       [KeysInitQuery.lenient.name]: true,
       [KeysCore.log.name]: logger,
     });
     const output = await actor.run({ url: 'https://www.google.com/', context });
-    expect(await arrayifyStream(output.data)).toEqual([]);
+    await expect(arrayifyStream(output.data)).resolves.toEqual([]);
     expect(spy).toHaveBeenCalledWith('Parse error', {
       actor: 'actor',
       url: 'https://www.google.com/',
     });
   });
 
-  it('should not run on parse rejects', () => {
+  it('should not run on parse rejects', async() => {
     context = new ActionContext({ parseReject: true });
-    return expect(actor.run({ url: 'https://www.google.com/', context }))
+    await expect(actor.run({ url: 'https://www.google.com/', context }))
       .rejects.toThrow(new Error('Parse reject error'));
   });
 
   it('should run and ignore parse rejects in lenient mode', async() => {
     context = new ActionContext({ parseReject: true, [KeysInitQuery.lenient.name]: true });
-    const spy = jest.spyOn(actor, <any> 'logError');
+    const spy = jest.spyOn(actor, <any> 'logWarn');
     const output = await actor.run({ url: 'https://www.google.com/', context });
-    expect(output.url).toEqual('https://www.google.com/index.html');
-    expect(await arrayifyStream(output.data)).toEqual([]);
+    expect(output.url).toBe('https://www.google.com/index.html');
+    await expect(arrayifyStream(output.data)).resolves.toEqual([]);
     expect(spy).toHaveBeenCalledTimes(1);
   });
 
   it('should run and ignore parse rejects in lenient mode and log them', async() => {
     const logger = new LoggerVoid();
-    const spy = jest.spyOn(logger, 'error');
+    const spy = jest.spyOn(logger, 'warn');
     context = new ActionContext({
       parseReject: true,
       [KeysInitQuery.lenient.name]: true,

@@ -17,10 +17,7 @@ describe('Query with engine from QueryEngineFactory', () => {
   it('should return the valid result with a turtle data source', async() => {
     const value = '<ex:s> <ex:p> <ex:o>. <ex:s> <ex:p2> <ex:o2>.';
     const context: QueryStringContext = { sources: [
-      { type: 'stringSource',
-        value,
-        mediaType: 'text/turtle',
-        baseIRI: 'http://example.org/' },
+      { type: 'serialized', value, mediaType: 'text/turtle', baseIRI: 'http://example.org/' },
     ]};
 
     const expectedResult: RDF.Quad[] = [
@@ -31,7 +28,7 @@ describe('Query with engine from QueryEngineFactory', () => {
     const engine = await queryEngineFactory.create();
 
     const result = await arrayifyStream(await engine.queryQuads(query, context));
-    expect(result.length).toBe(expectedResult.length);
+    expect(result).toHaveLength(expectedResult.length);
     expect(result).toMatchObject(expectedResult);
   });
 });

@@ -1,22 +1,18 @@
 {
   "name": "@comunica/core",
-  "version": "2.8.2",
+  "version": "3.0.3",
   "description": "Lightweight, semantic and modular actor framework",
   "lsd:module": true,
-  "main": "lib/index.js",
-  "engines": {
-    "node": ">=14.0"
-  },
-  "typings": "lib/index",
+  "license": "MIT",
+  "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
     "directory": "packages/core"
   },
-  "publishConfig": {
-    "access": "public"
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
   },
-  "sideEffects": false,
   "keywords": [
     "semantic",
     "actor",
@@ -24,24 +20,28 @@
     "events",
     "messages"
   ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/comunica/comunica/issues"
-  },
-  "homepage": "https://comunica.dev/",
+  "sideEffects": false,
+  "main": "lib/index.js",
   "files": [
     "components",
     "lib/**/*.d.ts",
     "lib/**/*.js",
     "lib/**/*.js.map"
   ],
-  "dependencies": {
-    "@comunica/types": "^2.8.2",
-    "immutable": "^4.1.0"
+  "engines": {
+    "node": ">=14.0"
+  },
+  "typings": "lib/index",
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
-    "build": "npm run build:ts && npm run build:components",
+    "build": "yarn run build:ts && yarn run build:components",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
     "build:components": "componentsjs-generator"
+  },
+  "dependencies": {
+    "@comunica/types": "^3.0.3",
+    "immutable": "^4.1.0"
   }
 }

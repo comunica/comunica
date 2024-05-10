@@ -41,4 +41,3 @@ export class ActorBindingsAggregatorFactoryMin extends ActorBindingsAggregatorFa
     );
   }
 }
-

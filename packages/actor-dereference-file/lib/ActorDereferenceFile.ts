@@ -1,5 +1,5 @@
-import { accessSync, createReadStream, constants } from 'fs';
-import { fileURLToPath, pathToFileURL } from 'url';
+import { accessSync, createReadStream, constants } from 'node:fs';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import type { IActionDereference, IActorDereferenceArgs, IActorDereferenceOutput } from '@comunica/bus-dereference';
 import { ActorDereference } from '@comunica/bus-dereference';
 import type { IActorTest } from '@comunica/core';
@@ -16,6 +16,7 @@ export class ActorDereferenceFile extends ActorDereference {
     try {
       accessSync(getPath(url), constants.F_OK);
     } catch (error: unknown) {
+      // eslint-disable-next-line ts/restrict-template-expressions
       throw new Error(`This actor only works on existing local files. (${error})`);
     }
     return true;

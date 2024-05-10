@@ -17,22 +17,22 @@ describe('ActorDereferenceFallback', () => {
       actor = new ActorDereferenceFallback({ name: 'actor', bus });
     });
 
-    it('should test', () => {
+    it('should test', async() => {
       // @ts-expect-error
-      return expect(actor.test({})).resolves.toBeTruthy();
+      await expect(actor.test({})).resolves.toBeTruthy();
     });
 
-    it('should run and throw', () => {
-      return expect(actor.run({ url: 'URL', context: new ActionContext() }))
-        .rejects.toThrowError('Could not dereference \'URL\'');
+    it('should run and throw', async() => {
+      await expect(actor.run({ url: 'URL', context: new ActionContext() }))
+        .rejects.toThrow('Could not dereference \'URL\'');
     });
 
     it('should run and log on lenient mode', async() => {
       const context = new ActionContext({ [KeysInitQuery.lenient.name]: true });
-      const spy = jest.spyOn(actor, <any> 'logError');
+      const spy = jest.spyOn(actor, <any> 'logWarn');
       const output = await actor.run({ url: 'URL', context });
-      expect(output.url).toEqual('URL');
-      expect(await arrayifyStream(output.data)).toEqual([]);
+      expect(output.url).toBe('URL');
+      await expect(arrayifyStream(output.data)).resolves.toEqual([]);
       expect(spy).toHaveBeenCalledTimes(1);
     });
   });

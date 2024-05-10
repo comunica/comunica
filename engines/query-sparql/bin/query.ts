@@ -2,4 +2,5 @@
 
 import { runArgsInProcessStatic } from '@comunica/runner-cli';
 
-runArgsInProcessStatic(require('../engine-default.js'));
+// eslint-disable-next-line ts/no-require-imports,ts/no-var-requires,import/extensions
+runArgsInProcessStatic(require('../engine-default.js')());

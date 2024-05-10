@@ -7,9 +7,7 @@ import { AggregateEvaluator } from '../lib';
 const BF = new BindingsFactory();
 
 class EmptyEvaluator extends AggregateEvaluator {
-  public constructor(evaluator: IExpressionEvaluator,
-    distinct: boolean,
-    throwError = false) {
+  public constructor(evaluator: IExpressionEvaluator, distinct: boolean, throwError = false) {
     super(evaluator, distinct, throwError);
   }
 

@@ -1,45 +1,46 @@
 {
   "name": "@comunica/bus-http",
-  "version": "2.8.2",
+  "version": "3.0.3",
   "description": "A comunica bus for 'http' events.",
   "lsd:module": true,
-  "main": "lib/index.js",
-  "typings": "lib/index",
+  "license": "MIT",
+  "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
     "directory": "packages/bus-http"
   },
-  "publishConfig": {
-    "access": "public"
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
   },
-  "sideEffects": false,
   "keywords": [
     "comunica",
     "bus",
     "init"
   ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/comunica/comunica/issues"
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "publishConfig": {
+    "access": "public"
   },
-  "homepage": "https://comunica.dev/",
   "files": [
     "components",
     "lib/**/*.d.ts",
     "lib/**/*.js",
     "lib/**/*.js.map"
   ],
-  "dependencies": {
-    "@comunica/core": "^2.8.2",
-    "is-stream": "^2.0.1",
-    "readable-stream-node-to-web": "^1.0.1",
-    "readable-web-to-node-stream": "^3.0.2",
-    "web-streams-ponyfill": "^1.4.2"
-  },
   "scripts": {
-    "build": "npm run build:ts && npm run build:components",
+    "build": "yarn run build:ts && yarn run build:components",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
     "build:components": "componentsjs-generator"
+  },
+  "dependencies": {
+    "@comunica/core": "^3.0.3",
+    "is-stream": "^2.0.1",
+    "readable-from-web": "^1.0.0",
+    "readable-stream-node-to-web": "^1.0.1",
+    "stream-to-string": "^1.2.0",
+    "web-streams-ponyfill": "^1.4.2"
   }
 }

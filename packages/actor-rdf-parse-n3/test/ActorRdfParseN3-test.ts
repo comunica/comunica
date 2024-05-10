@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { ActorRdfParseFixedMediaTypes } from '@comunica/bus-rdf-parse';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
@@ -29,7 +29,9 @@ describe('ActorRdfParseN3', () => {
     });
 
     it('should not be able to create new ActorRdfParseN3 objects without \'new\'', () => {
-      expect(() => { (<any>ActorRdfParseN3)(); }).toThrow();
+      expect(() => {
+        (<any>ActorRdfParseN3)();
+      }).toThrow(`Class constructor ActorRdfParseN3 cannot be invoked without 'new'`);
     });
 
     it('should not throw an error when constructed with required arguments', () => {
@@ -58,7 +60,7 @@ describe('ActorRdfParseN3', () => {
       expect(new ActorRdfParseN3(
         { name: 'actor', bus, mediaTypePriorities: {}, mediaTypeFormats: {}, priorityScale: 0.5 },
       ).priorityScale)
-        .toEqual(0.5);
+        .toBe(0.5);
     });
 
     it('when constructed with optional priorityScale should scale the priorities', () => {
@@ -227,22 +229,22 @@ describe('ActorRdfParseN3', () => {
           .rejects.toBeTruthy();
       });
 
-      it('should run on text/turtle', () => {
-        return actor.run({
+      it('should run on text/turtle', async() => {
+        await actor.run({
           handle: { data: input, metadata: { baseIRI: '' }, context },
           handleMediaType: 'text/turtle',
           context,
         })
-          .then(async(output: any) => expect(await arrayifyStream(output.handle.data)).toHaveLength(2));
+          .then(async(output: any) => await expect(arrayifyStream(output.handle.data)).resolves.toHaveLength(2));
       });
 
-      it('should run on application/trig', () => {
-        return actor.run({
+      it('should run on application/trig', async() => {
+        await actor.run({
           handle: { data: input, metadata: { baseIRI: '' }, context },
           handleMediaType: 'application/trig',
           context,
         })
-          .then(async(output: any) => expect(await arrayifyStream(output.handle.data)).toHaveLength(2));
+          .then(async(output: any) => await expect(arrayifyStream(output.handle.data)).resolves.toHaveLength(2));
       });
 
       it('should forward stream errors', async() => {
@@ -346,12 +348,12 @@ describe('ActorRdfParseN3', () => {
     });
 
     describe('for getting media types', () => {
-      it('should test', () => {
-        return expect(actor.test({ mediaTypes: true, context })).resolves.toBeTruthy();
+      it('should test', async() => {
+        await expect(actor.test({ mediaTypes: true, context })).resolves.toBeTruthy();
       });
 
-      it('should run', () => {
-        return expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({
+      it('should run', async() => {
+        await expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({
           mediaTypes: {
             'application/trig': 1,
             'application/n-quads': 0.7,
@@ -362,11 +364,11 @@ describe('ActorRdfParseN3', () => {
         });
       });
 
-      it('should run with scaled priorities 0.5', () => {
+      it('should run with scaled priorities 0.5', async() => {
         actor = new ActorRdfParseN3(
           { name: 'actor', bus, mediaTypePriorities: { A: 2, B: 1, C: 0 }, mediaTypeFormats: {}, priorityScale: 0.5 },
         );
-        return expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({
+        await expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({
           mediaTypes: {
             A: 1,
             B: 0.5,
@@ -375,11 +377,11 @@ describe('ActorRdfParseN3', () => {
         });
       });
 
-      it('should run with scaled priorities 0', () => {
+      it('should run with scaled priorities 0', async() => {
         actor = new ActorRdfParseN3(
           { name: 'actor', bus, mediaTypePriorities: { A: 2, B: 1, C: 0 }, mediaTypeFormats: {}, priorityScale: 0 },
         );
-        return expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({
+        await expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({
           mediaTypes: {
             A: 0,
             B: 0,

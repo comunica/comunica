@@ -1,8 +1,8 @@
 // eslint-disable-next-line import/no-nodejs-modules
-import type { EventEmitter } from 'events';
+import type { EventEmitter } from 'node:events';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import type { MetadataQuads } from './IMetadata';
+import type { MetadataBindings } from './IMetadata';
 
 /**
  * A StreamingStore allows data lookup and insertion to happen in parallel.
@@ -13,7 +13,7 @@ import type { MetadataQuads } from './IMetadata';
  *
  * WARNING: `end()` MUST be called at some point, otherwise all `match` streams will remain unended.
  */
-export interface IAggregatedStore<Q extends RDF.BaseQuad = RDF.Quad, S extends RDF.Store<Q> = RDF.Store<Q>>
+export interface IAggregatedStore<Q extends RDF.BaseQuad = RDF.Quad>
   extends RDF.Source<Q>, RDF.Sink<RDF.Stream<Q>, EventEmitter> {
   /**
    * If this aggregated has started processing.
@@ -43,7 +43,18 @@ export interface IAggregatedStore<Q extends RDF.BaseQuad = RDF.Quad, S extends R
    * @param metadata The metadata object.
    * @param updateState If the metadata state of derived iterators should be immediately updated.
    */
-  setBaseMetadata: (metadata: MetadataQuads, updateStates: boolean) => void;
+  setBaseMetadata: (metadata: MetadataBindings, updateStates: boolean) => void;
+
+  /**
+   * Register a listener that will be invoked when a new iterator is returned from match().
+   * @param listener A listener.
+   */
+  addIteratorCreatedListener: (listener: () => void) => void;
+  /**
+   * Remove the given iterator creation listener.
+   * @param listener A listener.
+   */
+  removeIteratorCreatedListener: (listener: () => void) => void;
 
   match: (
     subject?: RDF.Term | null,

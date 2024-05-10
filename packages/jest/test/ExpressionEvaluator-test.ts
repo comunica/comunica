@@ -1,4 +1,3 @@
-import { describe } from 'node:test';
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { Algebra } from 'sparqlalgebrajs';
@@ -83,8 +82,8 @@ describe('The Expression evaluator util function', () => {
     it('returns the int as literal', () => {
       const value = int('5');
       expect(value.termType === 'Literal').toBeTruthy();
-      expect((<RDF.Literal> value).datatype.value).toEqual('http://www.w3.org/2001/XMLSchema#integer');
-      expect((<RDF.Literal> value).value).toEqual('5');
+      expect((<RDF.Literal> value).datatype.value).toBe('http://www.w3.org/2001/XMLSchema#integer');
+      expect((<RDF.Literal> value).value).toBe('5');
     });
   });
 
@@ -92,8 +91,8 @@ describe('The Expression evaluator util function', () => {
     it('returns the float as literal', () => {
       const value = float('5');
       expect(value.termType === 'Literal').toBeTruthy();
-      expect((<RDF.Literal> value).datatype.value).toEqual('http://www.w3.org/2001/XMLSchema#float');
-      expect((<RDF.Literal> value).value).toEqual('5');
+      expect((<RDF.Literal> value).datatype.value).toBe('http://www.w3.org/2001/XMLSchema#float');
+      expect((<RDF.Literal> value).value).toBe('5');
     });
   });
 
@@ -101,8 +100,8 @@ describe('The Expression evaluator util function', () => {
     it('returns the decimal as literal', () => {
       const value = decimal('5');
       expect(value.termType === 'Literal').toBeTruthy();
-      expect((<RDF.Literal> value).datatype.value).toEqual('http://www.w3.org/2001/XMLSchema#decimal');
-      expect((<RDF.Literal> value).value).toEqual('5');
+      expect((<RDF.Literal> value).datatype.value).toBe('http://www.w3.org/2001/XMLSchema#decimal');
+      expect((<RDF.Literal> value).value).toBe('5');
     });
   });
 
@@ -110,8 +109,8 @@ describe('The Expression evaluator util function', () => {
     it('returns the date as literal', () => {
       const value = date('5');
       expect(value.termType === 'Literal').toBeTruthy();
-      expect((<RDF.Literal> value).datatype.value).toEqual('http://www.w3.org/2001/XMLSchema#date');
-      expect((<RDF.Literal> value).value).toEqual('5');
+      expect((<RDF.Literal> value).datatype.value).toBe('http://www.w3.org/2001/XMLSchema#date');
+      expect((<RDF.Literal> value).value).toBe('5');
     });
   });
 
@@ -119,8 +118,8 @@ describe('The Expression evaluator util function', () => {
     it('returns the string as literal', () => {
       const value = string('5');
       expect(value.termType === 'Literal').toBeTruthy();
-      expect((<RDF.Literal> value).datatype.value).toEqual('http://www.w3.org/2001/XMLSchema#string');
-      expect((<RDF.Literal> value).value).toEqual('5');
+      expect((<RDF.Literal> value).datatype.value).toBe('http://www.w3.org/2001/XMLSchema#string');
+      expect((<RDF.Literal> value).value).toBe('5');
     });
   });
 
@@ -128,8 +127,8 @@ describe('The Expression evaluator util function', () => {
     it('returns the double as literal', () => {
       const value = double('5');
       expect(value.termType === 'Literal').toBeTruthy();
-      expect((<RDF.Literal> value).datatype.value).toEqual('http://www.w3.org/2001/XMLSchema#double');
-      expect((<RDF.Literal> value).value).toEqual('5');
+      expect((<RDF.Literal> value).datatype.value).toBe('http://www.w3.org/2001/XMLSchema#double');
+      expect((<RDF.Literal> value).value).toBe('5');
     });
   });
 
