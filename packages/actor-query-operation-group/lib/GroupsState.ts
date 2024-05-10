@@ -49,9 +49,6 @@ export class GroupsState {
     this.groups = new Map();
     this.groupsInitializer = new Map();
     this.groupVariables = new Set(this.pattern.variables.map(x => x.value));
-    this.distinctHashes = pattern.aggregates.some(({ distinct }) => distinct) ?
-      new Map() :
-      null;
     this.waitCounter = 1;
     this.resultHasBeenCalled = false;
   }
@@ -85,17 +82,7 @@ export class GroupsState {
       res = (async() => {
         const group = await groupInitializerDefined;
         await Promise.all(this.pattern.aggregates.map(async(aggregate) => {
-          // If distinct, check first whether we have inserted these values already
-          if (aggregate.distinct) {
-            const bindingsHash = this.hashBindings(bindings);
-            const hashBindingsAndAggregate = createHash('sha256')
-              .update(aggregate.variable.value).update(bindingsHash).digest().toString();
-            if (this.distinctHashes!.get(groupHash)!.has(hashBindingsAndAggregate)) {
-              return;
-            }
-            this.distinctHashes!.get(groupHash)!.add(hashBindingsAndAggregate);
-          }
-
+          // Distinct handling is done in the aggregator.
           const variable = aggregate.variable.value;
           await group.aggregators[variable].put(bindings);
         }));
@@ -110,13 +97,6 @@ export class GroupsState {
           const key = aggregate.variable.value;
           aggregators[key] = new AsyncAggregateEvaluator(aggregate, this.sparqleeConfig);
           await aggregators[key].put(bindings);
-
-          if (this.distinctHashes) {
-            const bindingsHash = this.hashBindings(bindings);
-            const hashBindingsAndAggregate = createHash('sha256')
-              .update(aggregate.variable.value).update(bindingsHash).digest().toString();
-            this.distinctHashes.set(groupHash, new Set([ hashBindingsAndAggregate ]));
-          }
         }));
 
         const group = { aggregators, bindings: grouper };
