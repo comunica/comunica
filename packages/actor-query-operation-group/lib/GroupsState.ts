@@ -1,4 +1,3 @@
-import { createHash } from 'node:crypto';
 import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { HashFunction } from '@comunica/bus-hash-bindings';
 import type { IAsyncEvaluatorContext } from '@comunica/expression-evaluator';
