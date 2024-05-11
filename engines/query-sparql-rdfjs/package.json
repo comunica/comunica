@@ -1,6 +1,6 @@
 {
   "name": "@comunica/query-sparql-rdfjs",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "A SPARQL query engine for querying over RDF/JS sources",
   "license": "MIT",
   "homepage": "https://comunica.dev/",
@@ -114,7 +114,7 @@
     "@comunica/actor-query-result-serialize-stats": "^3.1.0",
     "@comunica/actor-query-result-serialize-table": "^3.1.0",
     "@comunica/actor-query-result-serialize-tree": "^3.1.0",
-    "@comunica/actor-query-source-identify-hypermedia": "^3.1.0",
+    "@comunica/actor-query-source-identify-hypermedia": "^3.1.1",
     "@comunica/actor-query-source-identify-hypermedia-sparql": "^3.1.0",
     "@comunica/actor-query-source-identify-rdfjs": "^3.1.0",
     "@comunica/actor-rdf-join-entries-sort-cardinality": "^3.1.0",

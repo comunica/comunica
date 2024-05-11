@@ -1,6 +1,6 @@
 {
   "name": "@comunica/query-sparql-file",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "A SPARQL query engine for querying over local and remote RDF files",
   "license": "MIT",
   "homepage": "https://comunica.dev/",
@@ -129,7 +129,7 @@
     "@comunica/actor-query-result-serialize-stats": "^3.1.0",
     "@comunica/actor-query-result-serialize-table": "^3.1.0",
     "@comunica/actor-query-result-serialize-tree": "^3.1.0",
-    "@comunica/actor-query-source-identify-hypermedia": "^3.1.0",
+    "@comunica/actor-query-source-identify-hypermedia": "^3.1.1",
     "@comunica/actor-query-source-identify-hypermedia-none": "^3.1.0",
     "@comunica/actor-query-source-identify-hypermedia-qpf": "^3.1.0",
     "@comunica/actor-query-source-identify-hypermedia-sparql": "^3.1.0",

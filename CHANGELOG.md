@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v3.1.1"></a>
+## [v3.1.1](https://github.com/comunica/comunica/compare/v3.1.0...v3.1.1) - 2024-05-11
+
+### Fixed
+* [Fix queries over paged collections always being empty](https://github.com/comunica/comunica/commit/a2e47004bcefd82784d9324600aa6c0af13ab751)
+
 <a name="v3.1.0"></a>
 ## [v3.1.0](https://github.com/comunica/comunica/compare/v3.0.3...v3.1.0) - 2024-05-11
 
