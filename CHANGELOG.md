@@ -1,6 +1,21 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v3.1.0"></a>
+## [v3.1.0](https://github.com/comunica/comunica/compare/v3.0.3...v3.1.0) - 2024-05-11
+
+### Added
+* [Add @comunica/query-sparql-rdfjs-lite that is optimized for bundle size](https://github.com/comunica/comunica/commit/2c982b89ce059113ad6188fa38a322094fd5af15)
+
+### Changed
+* [Migrate from readable-web-to-node-stream to readable-from-web](https://github.com/comunica/comunica/commit/1cf3123f78aa16f901f475aa8bc206145e964256)
+* [Move validateHttpResponse helper to avoid interdependencies](https://github.com/comunica/comunica/commit/07323db89f9d404a744664797e8e9810ba591223)
+
+### Fixed
+* [Avoid race conditions during DELETE/INSERT operations](https://github.com/comunica/comunica/commit/6a3ebf5b7ae9699cac6176f25a1535e064568c7f)
+* [Catch 404 of non-existing resource when fetching the selector shape (#1324)](https://github.com/comunica/comunica/commit/246d83264e44b11eaee0e8ae5ae0b11375d04280)
+* [Always add preprocessed context to unidentified query sources (#1337)](https://github.com/comunica/comunica/commit/cc464d3626dc983a31e42efb5b6b52ae738180cc)
+
 <a name="v3.0.3"></a>
 ## [v3.0.3](https://github.com/comunica/comunica/compare/v3.0.2...v3.0.3) - 2024-04-12
 
