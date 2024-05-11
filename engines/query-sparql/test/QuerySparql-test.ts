@@ -732,7 +732,7 @@ SELECT * WHERE {
         expect(called).toBe(0);
       });
 
-      it('with two triple patterns over a paged collection', async() => {
+      it('with two triple patterns over a paged collection (no browser)', async() => {
         const bindingsStream = await engine.queryBindings(`
 SELECT *
 WHERE {
