@@ -161,6 +161,11 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
           const bindings = querySource.source.queryBindings(operation, context);
           await expect(new Promise(resolve => bindings.getProperty('metadata', resolve))).resolves
             .toEqual({
+              a: 1,
+              cardinality: {
+                type: 'estimate',
+                value: Number.POSITIVE_INFINITY,
+              },
               state: expect.any(MetadataValidationState),
               firstMeta: true,
             });
@@ -217,7 +222,14 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
           const { querySource } = await actor.run({ context, querySourceUnidentified });
           const bindings = querySource.source.queryBindings(operation, context);
           await expect(new Promise(resolve => bindings.getProperty('metadata', resolve))).resolves
-            .toEqual({ state: expect.any(MetadataValidationState), firstMeta: true });
+            .toEqual({
+              cardinality: {
+                type: 'estimate',
+                value: Number.POSITIVE_INFINITY,
+              },
+              state: expect.any(MetadataValidationState),
+              firstMeta: true,
+            });
 
           expect(spy).toHaveBeenCalledWith({
             map: expect.anything(),
@@ -343,6 +355,11 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
           const bindings = querySource.source.queryBindings(operation, context);
           await expect(new Promise(resolve => bindings.getProperty('metadata', resolve))).resolves
             .toEqual({
+              a: 1,
+              cardinality: {
+                type: 'estimate',
+                value: Number.POSITIVE_INFINITY,
+              },
               state: expect.any(MetadataValidationState),
               firstMeta: true,
             });
@@ -425,6 +442,11 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
           const bindings = querySource.source.queryBindings(operation, context);
           await expect(new Promise(resolve => bindings.getProperty('metadata', resolve))).resolves
             .toEqual({
+              a: 1,
+              cardinality: {
+                type: 'estimate',
+                value: Number.POSITIVE_INFINITY,
+              },
               state: expect.any(MetadataValidationState),
               firstMeta: true,
             });
