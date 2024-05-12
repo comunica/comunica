@@ -1,5 +1,5 @@
-import { IActorOutputAbstractMediaTyped } from '@comunica/actor-abstract-mediatyped';
 import type { MediatorHashBindings } from '@comunica/bus-hash-bindings';
+import type { MediatorHashQuads } from '@comunica/bus-hash-quads';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
@@ -16,7 +16,6 @@ import type {
 } from '@comunica/types';
 import { QuadStream } from '@comunica/types/lib/Quads';
 import type { Algebra } from 'sparqlalgebrajs';
-import { MediatorHashQuads } from '../../bus-hash-quads/lib';
 
 /**
  * A comunica Distinct Hash Query Operation Actor.
@@ -46,7 +45,7 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
         quadStream,
         metadata: outputQuads.metadata,
       };
-    } 
+    }
     
     const outputBindings: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(
       output

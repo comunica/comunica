@@ -1,5 +1,5 @@
-import { HashFunction } from '@comunica/bus-hash-bindings';
-import { Actor, IAction, IActorArgs, IActorOutput, IActorTest, Mediate, Mediator } from '@comunica/core';
+import { Actor, IAction, IActorArgs, IActorOutput, IActorTest, Mediator } from '@comunica/core';
+import { Quad } from 'rdf-data-factory';
 
 /**
  * A comunica actor for hash-quads events.
@@ -34,13 +34,15 @@ export interface IActorHashQuadsOutput extends IActorOutput {
    * @param {Bindings} bindings The bindings to hash.
    * @return {string} The object's hash.
    */
-  hashFunction: HashFunction; //TODO not sure if I should import from hashBindings
+  hashFunction: HashFunction;
 
   /**
   * If hash collisions are possible with the given hash function.
   */
   hashCollisions: boolean;
 }
+
+export type HashFunction = (quad: Quad) => string;
 
 export type IActorHashQuadsArgs = IActorArgs<
 IActionHashQuads, IActorTest, IActorHashQuadsOutput>;
