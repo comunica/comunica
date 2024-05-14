@@ -1,9 +1,9 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/jbr/^4.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-experiment/watdiv/^4.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-hook/sparql-endpoint-comunica/^4.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-hook/cli/^4.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/jbr/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-experiment/watdiv/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-hook/sparql-endpoint-comunica/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-hook/cli/^5.0.0/components/context.jsonld"
   ],
   "@id": "urn:jbr:benchmark-watdiv-file",
   "@type": "ExperimentWatDiv",
@@ -14,9 +14,8 @@
   "endpointUrl": "http://localhost:3001/sparql",
   "queryRunnerReplication": 3,
   "queryRunnerWarmupRounds": 1,
-  "queryRunnerRecordTimestamps": true,
-  "queryRunnerRecordHttpRequests": true,
-  "queryRunnerUrlParamsInit": {},
-  "queryRunnerUrlParamsRun": {},
+  "queryRunnerRequestDelay": 0,
+  "queryRunnerEndpointAvailabilityCheckTimeout": 1000,
+  "queryRunnerUrlParams": {},
   "hookSparqlEndpoint": %FACTOR-hookSparqlEndpoint%
 }
