@@ -1,14 +1,14 @@
 /** @jest-environment setup-polly-jest/jest-environment-node */
 
 import { QuerySourceSkolemized } from '@comunica/actor-context-preprocess-query-source-skolemize';
-import { KeysHttpWayback, KeysQuerySourceIdentify } from '@comunica/context-entries';
+import { KeysHttpWayback, KeysQueryOperation, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { BlankNodeScoped } from '@comunica/data-factory';
 import type { QueryBindings, QueryStringContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import 'jest-rdf';
 import arrayifyStream from 'arrayify-stream';
 import { Store } from 'n3';
-import { DataFactory } from 'rdf-data-factory';
+import { DataFactory, NamedNode, Variable } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { QueryEngine } from '../lib/QueryEngine';
 import { usePolly } from './util';
@@ -678,6 +678,54 @@ describe('System test: QuerySparql', () => {
           ],
         ];
 
+        const bindings = results.map(binding => [ ...binding ]);
+        expect(bindings).toMatchObject(expectedResult);
+      });
+
+      it.only(' [] should handle filters inside the optional block', async() => {
+        const store = new Store();
+
+        store.addQuad(
+          DF.namedNode('http://ex.org/Pluto'),
+          DF.namedNode('http://ex.org/type'),
+          DF.namedNode('http://ex.org/Dog'),
+        );
+        store.addQuad(
+          DF.namedNode('http://ex.org/Mickey'),
+          DF.namedNode('http://ex.org/name'),
+          DF.literal('Lorem ipsum', 'nl'),
+        );
+
+        const result = await engine.queryBindings(`
+        SELECT * WHERE { 
+          ?s ?p ?o .
+      
+          OPTIONAL {
+            ?s <http://ex.org/name> ?name .
+            FILTER(lang(?name) = 'nl')
+          }
+        }`, { sources: [ store ], [KeysQueryOperation.optPlus.name]: true });
+        const results = await result.toArray();
+
+        const expectedResult = [
+          [
+            [ DF.variable('s'), DF.namedNode('http://ex.org/Pluto') ],
+            [ DF.variable('p'), DF.namedNode('http://ex.org/type') ],
+            [ DF.variable('o'), DF.namedNode('http://ex.org/Dog') ],
+          ],
+          [
+            [ DF.variable('s'), DF.namedNode('http://ex.org/Mickey') ],
+            [ DF.variable('p'), DF.namedNode('http://ex.org/name') ],
+            [ DF.variable('o'), DF.literal('Lorem ipsum', 'nl') ],
+          ],
+          [
+            [ DF.variable('p'), DF.namedNode('http://ex.org/name') ],
+            [ DF.variable('o'), DF.literal('Lorem ipsum', 'nl') ],
+            [ DF.variable('s'), DF.namedNode('http://ex.org/Mickey') ],
+            [ DF.variable('name'), DF.literal('Lorem ipsum', 'nl') ],
+          ],
+        ];
+        
         const bindings = results.map(binding => [ ...binding ]);
         expect(bindings).toMatchObject(expectedResult);
       });

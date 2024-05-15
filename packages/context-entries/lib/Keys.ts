@@ -226,6 +226,10 @@ export const KeysQueryOperation = {
    * The sources to query over.
    */
   querySources: new ActionContextKey<IQuerySourceWrapper[]>('@comunica/bus-query-operation:querySources'),
+  /**
+   * Use the [OPT+](https://github.com/comunica/comunica/issues/825) algorithm for optional joins.
+   */
+  optPlus: new ActionContextKey<boolean>('@comunica/bus-query-operation:optPlus'),
 };
 
 export const KeysRdfParseJsonLd = {

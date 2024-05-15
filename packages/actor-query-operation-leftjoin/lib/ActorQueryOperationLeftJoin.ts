@@ -3,9 +3,17 @@ import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { MediatorRdfJoin } from '@comunica/bus-rdf-join';
+import { KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import { AsyncEvaluator, isExpressionError } from '@comunica/expression-evaluator';
-import type { IQueryOperationResult, Bindings, IActionContext, IJoinEntry } from '@comunica/types';
+import type {
+  Bindings,
+  IActionContext,
+  IJoinEntry,
+  IQueryOperationResult,
+  IQueryOperationResultBindings,
+} from '@comunica/types';
+import { UnionIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -35,7 +43,17 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
         output: ActorQueryOperation.getSafeBindings(output),
         operation,
       }));
-    const joined = await this.mediatorJoin.mediate({ type: 'optional', entries, context });
+
+    let joined: IQueryOperationResultBindings;
+
+    if (context.get(KeysQueryOperation.optPlus) === true) {
+      const clonedStream = entries[0].output.bindingsStream.clone();
+      entries[0].output.bindingsStream = entries[0].output.bindingsStream.clone();
+      joined = await this.mediatorJoin.mediate({ type: 'inner', entries, context });
+      joined.bindingsStream = new UnionIterator([ clonedStream, joined.bindingsStream ], { autoStart: false });
+    } else {
+      joined = await this.mediatorJoin.mediate({ type: 'optional', entries, context });
+    }
 
     // If the pattern contains an expression, filter the resulting stream
     if (operationOriginal.expression) {
