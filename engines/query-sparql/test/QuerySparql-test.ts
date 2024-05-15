@@ -8,7 +8,7 @@ import type * as RDF from '@rdfjs/types';
 import 'jest-rdf';
 import arrayifyStream from 'arrayify-stream';
 import { Store } from 'n3';
-import { DataFactory, NamedNode, Variable } from 'rdf-data-factory';
+import { DataFactory, NamedNode } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { QueryEngine } from '../lib/QueryEngine';
 import { usePolly } from './util';
@@ -682,7 +682,7 @@ describe('System test: QuerySparql', () => {
         expect(bindings).toMatchObject(expectedResult);
       });
 
-      it.only(' [] should handle filters inside the optional block', async() => {
+      it('should handle filters inside the optional block [OPT+ enabled]', async() => {
         const store = new Store();
 
         store.addQuad(
@@ -725,7 +725,7 @@ describe('System test: QuerySparql', () => {
             [ DF.variable('name'), DF.literal('Lorem ipsum', 'nl') ],
           ],
         ];
-        
+
         const bindings = results.map(binding => [ ...binding ]);
         expect(bindings).toMatchObject(expectedResult);
       });
