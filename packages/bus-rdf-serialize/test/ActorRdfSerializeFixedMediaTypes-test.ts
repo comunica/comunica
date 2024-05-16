@@ -15,15 +15,17 @@ describe('ActorRdfSerializeFixedMediaTypes', () => {
     });
 
     it('should not be able to create new ActorRdfSerializeFixedMediaTypes objects without \'new\'', () => {
-      expect(() => { (<any> ActorRdfSerializeFixedMediaTypes)(); }).toThrow();
+      expect(() => {
+        (<any> ActorRdfSerializeFixedMediaTypes)();
+      }).toThrow(`Class constructor ActorRdfSerializeFixedMediaTypes cannot be invoked without 'new'`);
     });
   });
 
   describe('An ActorRdfSerializeFixedMediaTypes instance', () => {
     const actor = new (<any> ActorRdfSerializeFixedMediaTypes)({ name: 'actor', bus });
 
-    it('should have a default testHandleChecked implementation', () => {
-      return expect(actor.testHandleChecked(null)).resolves.toBeTruthy();
+    it('should have a default testHandleChecked implementation', async() => {
+      await expect(actor.testHandleChecked(null)).resolves.toBeTruthy();
     });
   });
 });

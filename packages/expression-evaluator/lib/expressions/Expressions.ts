@@ -97,6 +97,7 @@ export type VariableExpression = IExpressionProps & {
 
 // Export type Application = SimpleApplication | SpecialApplication;
 export type SimpleApplication = (args: TermExpression[]) => TermExpression;
+export type SimpleApplicationTuple<T> = (args: T) => TermExpression;
 export type AsyncExtensionApplication = (args: TermExpression[]) => Promise<TermExpression>;
 
 export type SpecialApplicationAsync = (context: EvalContextAsync) => Promise<TermExpression>;

@@ -4,11 +4,11 @@ import { AggregatorComponent } from './Aggregator';
 
 export class Count extends AggregatorComponent {
   private state: number | undefined = undefined;
-  public static emptyValue(): RDF.Term {
+  public static override emptyValue(): RDF.Term {
     return integer(0).toRDF();
   }
 
-  public put(term: RDF.Term): void {
+  public put(): void {
     if (this.state === undefined) {
       this.state = 0;
     }

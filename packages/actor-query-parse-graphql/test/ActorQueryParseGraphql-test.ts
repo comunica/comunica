@@ -21,7 +21,9 @@ describe('ActorQueryParseGraphql', () => {
     });
 
     it('should not be able to create new ActorQueryParseGraphql objects without \'new\'', () => {
-      expect(() => { (<any> ActorQueryParseGraphql)(); }).toThrow();
+      expect(() => {
+        (<any> ActorQueryParseGraphql)();
+      }).toThrow(`Class constructor ActorQueryParseGraphql cannot be invoked without 'new'`);
     });
   });
 
@@ -34,28 +36,28 @@ describe('ActorQueryParseGraphql', () => {
       context = new ActionContext();
     });
 
-    it('should not test on the sparql format', () => {
-      return expect(actor.test({ query: 'a', queryFormat: { language: 'sparql', version: '1.1' }, context }))
+    it('should not test on the sparql format', async() => {
+      await expect(actor.test({ query: 'a', queryFormat: { language: 'sparql', version: '1.1' }, context }))
         .rejects.toBeTruthy();
     });
 
-    it('should not test on no format', () => {
-      return expect(actor.test({ query: 'a', context })).rejects.toBeTruthy();
+    it('should not test on no format', async() => {
+      await expect(actor.test({ query: 'a', context })).rejects.toBeTruthy();
     });
 
-    it('should test on the graphql format', () => {
-      return expect(actor.test({ query: 'a', queryFormat: { language: 'graphql', version: '1.1' }, context }))
+    it('should test on the graphql format', async() => {
+      await expect(actor.test({ query: 'a', queryFormat: { language: 'graphql', version: '1.1' }, context }))
         .resolves.toBeTruthy();
     });
 
-    it('should run', () => {
+    it('should run', async() => {
       const query = '{ label }';
       context = new ActionContext({
         '@context': {
           label: { '@id': 'http://www.w3.org/2000/01/rdf-schema#label' },
         },
       });
-      return expect(actor.run({ query, queryFormat: { language: 'graphql', version: '1.1' }, context })).resolves
+      await expect(actor.run({ query, queryFormat: { language: 'graphql', version: '1.1' }, context })).resolves
         .toMatchObject({
           operation: {
             input: { patterns: [
@@ -66,8 +68,7 @@ describe('ActorQueryParseGraphql', () => {
                 subject: { termType: 'Variable' },
                 type: 'pattern',
               },
-            ],
-            type: 'bgp' },
+            ], type: 'bgp' },
             type: 'project',
             variables: [
               {
@@ -78,10 +79,10 @@ describe('ActorQueryParseGraphql', () => {
         });
     });
 
-    it('should run with empty @context that has a required URI', () => {
+    it('should run with empty @context that has a required URI', async() => {
       const query = '{ label }';
       context = new ActionContext({});
-      return expect(actor.run({ query, queryFormat: { language: 'graphql', version: '1.1' }, context }))
+      await expect(actor.run({ query, queryFormat: { language: 'graphql', version: '1.1' }, context }))
         .resolves.toMatchObject({
           operation: {
             input: { patterns: [
@@ -92,8 +93,7 @@ describe('ActorQueryParseGraphql', () => {
                 subject: { termType: 'Variable' },
                 type: 'pattern',
               },
-            ],
-            type: 'bgp' },
+            ], type: 'bgp' },
             type: 'project',
             variables: [
               {

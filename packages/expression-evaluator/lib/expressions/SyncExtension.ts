@@ -9,5 +9,5 @@ export class SyncExtension implements SyncExtensionExpression {
     public name: RDF.NamedNode,
     public args: Expression[],
     public apply: SimpleApplication,
-  ) { }
+  ) {}
 }

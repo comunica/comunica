@@ -16,6 +16,11 @@ import '@comunica/jest';
 const DF = new DataFactory();
 const BF = new BindingsFactory();
 const FACTORY = new Factory();
+const mediatorMergeBindingsContext: any = {
+  mediate(arg: any) {
+    return {};
+  },
+};
 
 describe('ActorRdfJoinOptionalBind', () => {
   let bus: any;
@@ -29,9 +34,16 @@ describe('ActorRdfJoinOptionalBind', () => {
   describe('An ActorRdfJoinOptionalBind instance', () => {
     let mediatorJoinSelectivity: Mediator<
     Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
-    IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>;
-    let mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IQueryOperationResultBindings>,
-    IActionQueryOperation, IActorTest, IQueryOperationResultBindings>;
+    IActionRdfJoinSelectivity,
+IActorTest,
+IActorRdfJoinSelectivityOutput
+>;
+    let mediatorQueryOperation: Mediator<
+      Actor<IActionQueryOperation, IActorTest, IQueryOperationResultBindings>,
+IActionQueryOperation,
+IActorTest,
+IQueryOperationResultBindings
+>;
     let actor: ActorRdfJoinOptionalBind;
 
     beforeEach(() => {
@@ -78,12 +90,13 @@ describe('ActorRdfJoinOptionalBind', () => {
         selectivityModifier: 0.1,
         mediatorQueryOperation,
         mediatorJoinSelectivity,
+        mediatorMergeBindingsContext,
       });
     });
 
     describe('getJoinCoefficients', () => {
       it('should handle two entries', async() => {
-        expect(await actor.getJoinCoefficients(
+        await expect(actor.getJoinCoefficients(
           {
             type: 'optional',
             entries: [
@@ -116,7 +129,7 @@ describe('ActorRdfJoinOptionalBind', () => {
               variables: [ DF.variable('a') ],
             },
           ],
-        )).toEqual({
+        )).resolves.toEqual({
           iterations: 0.480_000_000_000_000_1,
           persistedItems: 0,
           blockingItems: 0,
@@ -125,7 +138,7 @@ describe('ActorRdfJoinOptionalBind', () => {
       });
 
       it('should handle two entries with a lower variable overlap', async() => {
-        expect(await actor.getJoinCoefficients(
+        await expect(actor.getJoinCoefficients(
           {
             type: 'optional',
             entries: [
@@ -158,7 +171,7 @@ describe('ActorRdfJoinOptionalBind', () => {
               variables: [ DF.variable('a'), DF.variable('c'), DF.variable('e') ],
             },
           ],
-        )).toEqual({
+        )).resolves.toEqual({
           iterations: 0.480_000_000_000_000_1,
           persistedItems: 0,
           blockingItems: 0,
@@ -200,7 +213,7 @@ describe('ActorRdfJoinOptionalBind', () => {
               variables: [ DF.variable('a') ],
             },
           ],
-        )).rejects.toThrowError('Actor actor can not bind on Extend and Group operations');
+        )).rejects.toThrow('Actor actor can not bind on Extend and Group operations');
       });
 
       it('should reject on a right stream of type group', async() => {
@@ -237,11 +250,11 @@ describe('ActorRdfJoinOptionalBind', () => {
               variables: [ DF.variable('a') ],
             },
           ],
-        )).rejects.toThrowError('Actor actor can not bind on Extend and Group operations');
+        )).rejects.toThrow('Actor actor can not bind on Extend and Group operations');
       });
 
       it('should not reject on a left stream of type group', async() => {
-        expect(await actor.getJoinCoefficients(
+        await expect(actor.getJoinCoefficients(
           {
             type: 'optional',
             entries: [
@@ -274,7 +287,7 @@ describe('ActorRdfJoinOptionalBind', () => {
               variables: [ DF.variable('a') ],
             },
           ],
-        )).toEqual({
+        )).resolves.toEqual({
           iterations: 0.480_000_000_000_000_1,
           persistedItems: 0,
           blockingItems: 0,
@@ -339,7 +352,7 @@ describe('ActorRdfJoinOptionalBind', () => {
         const result = await actor.run(action);
 
         // Validate output
-        expect(result.type).toEqual('bindings');
+        expect(result.type).toBe('bindings');
         await expect(result.bindingsStream).toEqualBindingsStream([
           BF.bindings([
             [ DF.variable('a'), DF.literal('1') ],
@@ -357,7 +370,7 @@ describe('ActorRdfJoinOptionalBind', () => {
             [ DF.variable('b'), DF.literal('2') ],
           ]),
         ]);
-        expect(await result.metadata()).toEqual({
+        await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: 7.2 },
           canContainUndefs: true,

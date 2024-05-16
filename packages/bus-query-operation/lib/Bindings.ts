@@ -1,12 +1,15 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
+import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { Bindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import { mapTermsNested, someTermsNested } from 'rdf-terms';
 import type { Algebra, Factory } from 'sparqlalgebrajs';
 import { Util } from 'sparqlalgebrajs';
 
-const BF = new BindingsFactory();
+const DF = new DataFactory();
+
+const TRUE = DF.literal('true', DF.namedNode('http://www.w3.org/2001/XMLSchema#boolean'));
 
 /**
  * Materialize a term with the given binding.
@@ -37,22 +40,20 @@ export function materializeTerm(term: RDF.Term, bindings: Bindings): RDF.Term {
  * Materialize the given operation (recursively) with the given bindings.
  * Essentially, all variables in the given operation will be replaced
  * by the terms bound to the variables in the given bindings.
- * @param {Operation} operation SPARQL algebra operation.
+ * @param {Algebra.Operation} operation SPARQL algebra operation.
  * @param {Bindings} bindings A bindings object.
+ * @param bindingsFactory The bindings factory.
  * @param options Options for materializations.
+ * @param options.strictTargetVariables If target variable bindings (such as on SELECT or BIND) should not be allowed.
+ * @param options.bindFilter If filter expressions should be materialized
  * @return Algebra.Operation A new operation materialized with the given bindings.
  */
 export function materializeOperation(
   operation: Algebra.Operation,
   bindings: Bindings,
+  bindingsFactory: BindingsFactory,
   options: {
-    /**
-     * If target variable bindings (such as on SELECT or BIND) should not be allowed.
-     */
     strictTargetVariables?: boolean;
-    /**
-     * If filter expressions should be materialized
-     */
     bindFilter?: boolean;
   } = {},
 ): Algebra.Operation {
@@ -67,24 +68,24 @@ export function materializeOperation(
       // The predicate expression will be recursed.
       return {
         recurse: false,
-        result: factory.createPath(
+        result: Object.assign(factory.createPath(
           materializeTerm(op.subject, bindings),
           op.predicate,
           materializeTerm(op.object, bindings),
           materializeTerm(op.graph, bindings),
-        ),
+        ), { metadata: op.metadata }),
       };
     },
     pattern(op: Algebra.Pattern, factory: Factory) {
       // Materialize variables in the quad pattern.
       return {
         recurse: false,
-        result: factory.createPattern(
+        result: Object.assign(factory.createPattern(
           materializeTerm(op.subject, bindings),
           materializeTerm(op.predicate, bindings),
           materializeTerm(op.object, bindings),
           materializeTerm(op.graph, bindings),
-        ),
+        ), { metadata: op.metadata }),
       };
     },
     extend(op: Algebra.Extend) {
@@ -97,7 +98,7 @@ export function materializeOperation(
         } else {
           return {
             recurse: true,
-            result: materializeOperation(op.input, bindings, options),
+            result: materializeOperation(op.input, bindings, bindingsFactory, options),
           };
         }
       }
@@ -151,14 +152,14 @@ export function materializeOperation(
 
       // Only include projected variables in the sub-bindings that will be passed down recursively.
       // If we don't do this, we may be binding variables that may have the same label, but are not considered equal.
-      const subBindings = BF.bindings(<[RDF.Variable, RDF.Term][]> op.variables.map(variable => {
+      const subBindings = bindingsFactory.bindings(<[RDF.Variable, RDF.Term][]> op.variables.map((variable) => {
         const binding = bindings.get(variable);
         if (binding) {
           return [ variable, binding ];
         }
-        // eslint-disable-next-line no-useless-return
+        // eslint-disable-next-line no-useless-return,array-callback-return
         return;
-      }).filter(entry => Boolean(entry)));
+      }).filter(Boolean));
 
       return {
         recurse: false,
@@ -166,6 +167,7 @@ export function materializeOperation(
           materializeOperation(
             op.input,
             subBindings,
+            bindingsFactory,
             options,
           ),
           variables,
@@ -184,10 +186,11 @@ export function materializeOperation(
         }
       } else {
         const variables = op.variables.filter(variable => !bindings.has(variable));
-        const valueBindings: Record<string, RDF.Literal | RDF.NamedNode>[] = <any> op.bindings.map(binding => {
+        const valueBindings: Record<string, RDF.Literal | RDF.NamedNode>[] = <any> op.bindings.map((binding) => {
           const newBinding = { ...binding };
           let valid = true;
-          bindings.forEach((value: RDF.NamedNode, key: RDF.Variable) => {
+          // eslint-disable-next-line unicorn/no-array-for-each
+          bindings.forEach((value: RDF.Term, key: RDF.Variable) => {
             const keyString = termToString(key);
             if (keyString in newBinding) {
               if (!value.equals(newBinding[keyString])) {
@@ -225,6 +228,19 @@ export function materializeOperation(
         return {
           recurse: false,
           result: factory.createTermExpression(materializeTerm(op.term, bindings)),
+        };
+      }
+      if (op.expressionType === 'operator') {
+        if (op.operator === 'bound' && op.args.length === 1 && op.args[0].expressionType === 'term' &&
+          [ ...bindings.keys() ].some(variable => op.args[0].term.equals(variable))) {
+          return {
+            recurse: false,
+            result: factory.createTermExpression(TRUE),
+          };
+        }
+        return {
+          recurse: true,
+          result: op,
         };
       }
       if (op.expressionType === 'aggregate' &&

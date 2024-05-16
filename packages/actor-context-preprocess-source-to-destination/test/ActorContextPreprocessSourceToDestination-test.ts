@@ -1,4 +1,4 @@
-import { KeysRdfResolveQuadPattern, KeysRdfUpdateQuads } from '@comunica/context-entries';
+import { KeysInitQuery, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { ActorContextPreprocessSourceToDestination } from '../lib/ActorContextPreprocessSourceToDestination';
 
@@ -16,66 +16,66 @@ describe('ActorContextPreprocessSourceToDestination', () => {
       actor = new ActorContextPreprocessSourceToDestination({ name: 'actor', bus });
     });
 
-    it('should test', () => {
-      return expect(actor.test({ context: new ActionContext() })).resolves.toEqual(true);
+    it('should test', async() => {
+      await expect(actor.test({ context: new ActionContext() })).resolves.toBe(true);
     });
 
     it('should run on no context', async() => {
-      expect(await actor.run({ context: new ActionContext() })).toEqual({ context: new ActionContext() });
+      await expect(actor.run({ context: new ActionContext() })).resolves.toEqual({ context: new ActionContext() });
     });
 
     it('should run on empty context', async() => {
-      expect(await actor.run({ context: new ActionContext() })).toEqual({
+      await expect(actor.run({ context: new ActionContext() })).resolves.toEqual({
         context: new ActionContext({}),
       });
     });
 
     it('should run on context with 0 sources', async() => {
-      expect(await actor.run({
+      await expect(actor.run({
         context: new ActionContext({
-          [KeysRdfResolveQuadPattern.sources.name]: [],
+          [KeysInitQuery.querySourcesUnidentified.name]: [],
         }),
-      })).toEqual({
+      })).resolves.toEqual({
         context: new ActionContext({
-          [KeysRdfResolveQuadPattern.sources.name]: [],
+          [KeysInitQuery.querySourcesUnidentified.name]: [],
         }),
       });
     });
 
     it('should run on context with 2 sources', async() => {
-      expect(await actor.run({
+      await expect(actor.run({
         context: new ActionContext({
-          [KeysRdfResolveQuadPattern.sources.name]: [ 'a', 'b' ],
+          [KeysInitQuery.querySourcesUnidentified.name]: [ 'a', 'b' ],
         }),
-      })).toEqual({
+      })).resolves.toEqual({
         context: new ActionContext({
-          [KeysRdfResolveQuadPattern.sources.name]: [ 'a', 'b' ],
+          [KeysInitQuery.querySourcesUnidentified.name]: [ 'a', 'b' ],
         }),
       });
     });
 
     it('should run on context with 1 source', async() => {
-      expect(await actor.run({
+      await expect(actor.run({
         context: new ActionContext({
-          [KeysRdfResolveQuadPattern.sources.name]: [ 'a' ],
+          [KeysInitQuery.querySourcesUnidentified.name]: [ 'a' ],
         }),
-      })).toEqual({
+      })).resolves.toEqual({
         context: new ActionContext({
-          [KeysRdfResolveQuadPattern.sources.name]: [ 'a' ],
+          [KeysInitQuery.querySourcesUnidentified.name]: [ 'a' ],
           [KeysRdfUpdateQuads.destination.name]: 'a',
         }),
       });
     });
 
     it('should run on context with 1 source and a destination', async() => {
-      expect(await actor.run({
+      await expect(actor.run({
         context: new ActionContext({
-          [KeysRdfResolveQuadPattern.sources.name]: [ 'a' ],
+          [KeysInitQuery.querySourcesUnidentified.name]: [ 'a' ],
           [KeysRdfUpdateQuads.destination.name]: 'existing',
         }),
-      })).toEqual({
+      })).resolves.toEqual({
         context: new ActionContext({
-          [KeysRdfResolveQuadPattern.sources.name]: [ 'a' ],
+          [KeysInitQuery.querySourcesUnidentified.name]: [ 'a' ],
           [KeysRdfUpdateQuads.destination.name]: 'existing',
         }),
       });

@@ -1,6 +1,6 @@
-import type { EventEmitter } from 'stream';
-import { FederatedQuadSource } from '@comunica/actor-rdf-resolve-quad-pattern-federated';
-import { KeysRdfResolveQuadPattern, KeysRdfUpdateQuads } from '@comunica/context-entries';
+import type { EventEmitter } from 'node:stream';
+import { skolemizeQuad } from '@comunica/actor-context-preprocess-query-source-skolemize';
+import { KeysQuerySourceIdentify, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -25,7 +25,9 @@ describe('ActorRdfUpdateQuadsDestination', () => {
     });
 
     it('should not be able to create new ActorRdfUpdateQuadsDestination objects without \'new\'', () => {
-      expect(() => { (<any> ActorRdfUpdateQuadsDestination)(); }).toThrow();
+      expect(() => {
+        (<any> ActorRdfUpdateQuadsDestination)();
+      }).toThrow(`Class constructor ActorRdfUpdateQuadsDestination cannot be invoked without 'new'`);
     });
   });
 
@@ -38,35 +40,34 @@ describe('ActorRdfUpdateQuadsDestination', () => {
 
     describe('getContextDestinationUrl', () => {
       it('should return undefined when no source is available', () => {
-        // eslint-disable-next-line unicorn/no-useless-undefined
-        return expect(getContextDestinationUrl(undefined)).toEqual(undefined);
+        expect(getContextDestinationUrl(undefined)).toBeUndefined();
       });
 
       it('should return undefined when no indirect source is available', () => {
-        return expect(getContextDestinationUrl({ value: <any> null })).toEqual(undefined);
+        expect(getContextDestinationUrl({ value: <any> null })).toBeUndefined();
       });
 
       it('should return when a source is available', () => {
-        return expect(getContextDestinationUrl({ value: 'abc' })).toEqual('abc');
+        expect(getContextDestinationUrl({ value: 'abc' })).toBe('abc');
       });
 
       it('should strip away everything after the hash', () => {
-        return expect(getContextDestinationUrl({ value: 'http://ex.org/#abcdef#xyz' })).toEqual('http://ex.org/');
+        expect(getContextDestinationUrl({ value: 'http://ex.org/#abcdef#xyz' })).toBe('http://ex.org/');
       });
     });
 
-    it('should have a default test implementation', () => {
-      return expect(actor.test(null)).resolves.toBeTruthy();
+    it('should have a default test implementation', async() => {
+      await expect(actor.test(null)).resolves.toBeTruthy();
     });
 
-    it('should run without streams', () => {
-      return actor.run({ context: new ActionContext() }).then(async(output: any) => {
+    it('should run without streams', async() => {
+      await actor.run({ context: new ActionContext() }).then(async(output: any) => {
         await expect(output.execute()).resolves.toBeUndefined();
       });
     });
 
-    it('should run with streams', () => {
-      return actor.run({
+    it('should run with streams', async() => {
+      await actor.run({
         quadStreamInsert: new ArrayIterator([]),
         quadStreamDelete: new ArrayIterator([]),
         context: new ActionContext(),
@@ -88,12 +89,12 @@ describe('ActorRdfUpdateQuadsDestination', () => {
       const store = new Store();
       const context: IActionContext = new ActionContext({
         [KeysRdfUpdateQuads.destination.name]: store,
-        [KeysRdfResolveQuadPattern.sourceIds.name]: new Map([[ store, '1' ]]),
+        [KeysQuerySourceIdentify.sourceIds.name]: new Map([[ store, '1' ]]),
       });
 
       const output: IActorRdfUpdateQuadsOutput = await actor.run({
         quadStreamInsert: new ArrayIterator([
-          FederatedQuadSource.skolemizeQuad(q, '1'),
+          skolemizeQuad(q, '1'),
         ], { autoStart: false }),
         quadStreamDelete: new ArrayIterator([], { autoStart: false }),
         context,
@@ -107,18 +108,20 @@ describe('ActorRdfUpdateQuadsDestination', () => {
     it('should not deskolemize quads retrieved from a different source', async() => {
       const q = quad(blankNode('i'), namedNode('http://example.org#type'), namedNode('http://example.org#thing'));
       const skolemized = quad(
-        blankNode('bc_1_i'), namedNode('http://example.org#type'), namedNode('http://example.org#thing'),
+        blankNode('bc_1_i'),
+        namedNode('http://example.org#type'),
+        namedNode('http://example.org#thing'),
       );
 
       const store = new Store();
       const context: IActionContext = new ActionContext({
         [KeysRdfUpdateQuads.destination.name]: store,
-        [KeysRdfResolveQuadPattern.sourceIds.name]: new Map([[ store, '2' ]]),
+        [KeysQuerySourceIdentify.sourceIds.name]: new Map([[ store, '2' ]]),
       });
 
       const output: IActorRdfUpdateQuadsOutput = await actor.run({
         quadStreamInsert: new ArrayIterator([
-          FederatedQuadSource.skolemizeQuad(q, '1'),
+          skolemizeQuad(q, '1'),
         ], { autoStart: false }),
         quadStreamDelete: new ArrayIterator([], { autoStart: false }),
         context,
@@ -127,6 +130,28 @@ describe('ActorRdfUpdateQuadsDestination', () => {
       await output.execute();
 
       expect(store.getQuads(null, null, null, null)).toEqual([ skolemized ]);
+    });
+
+    it('should not delete quads that are being inserted', async() => {
+      const q1 = quad(namedNode('http://example.org/1'), namedNode('http://example.org#type'), namedNode('http://example.org#thing'));
+      const q2 = quad(namedNode('http://example.org/2'), namedNode('http://example.org#type'), namedNode('http://example.org#thing'));
+
+      const store = new Store();
+      store.addQuads([ q1, q2 ]);
+      const context: IActionContext = new ActionContext({
+        [KeysRdfUpdateQuads.destination.name]: store,
+        [KeysQuerySourceIdentify.sourceIds.name]: new Map([[ store, '3' ]]),
+      });
+
+      const output: IActorRdfUpdateQuadsOutput = await actor.run({
+        quadStreamInsert: new ArrayIterator([ q1 ], { autoStart: false }),
+        quadStreamDelete: new ArrayIterator([ q1, q2 ], { autoStart: false }),
+        context,
+      });
+
+      await output.execute();
+
+      expect(store.getQuads(null, null, null, null)).toEqual([ q1 ]);
     });
   });
 });
@@ -156,4 +181,3 @@ class RdfJsQuadDestination {
     return this.promisifyEventEmitter(this.store.import(<any> quads));
   }
 }
-

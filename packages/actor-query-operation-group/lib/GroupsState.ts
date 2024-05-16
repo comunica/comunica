@@ -1,4 +1,4 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
+import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { HashFunction } from '@comunica/bus-hash-bindings';
 import type { IAsyncEvaluatorContext } from '@comunica/expression-evaluator';
 import { AsyncAggregateEvaluator } from '@comunica/expression-evaluator';
@@ -8,7 +8,6 @@ import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
 
 /**
  * A simple type alias for strings that should be hashes of Bindings
@@ -44,6 +43,7 @@ export class GroupsState {
     private readonly hashFunction: HashFunction,
     private readonly pattern: Algebra.Group,
     private readonly sparqleeConfig: IAsyncEvaluatorContext,
+    private readonly bindingsFactory: BindingsFactory,
   ) {
     this.groups = new Map();
     this.groupsInitializer = new Map();
@@ -79,11 +79,31 @@ export class GroupsState {
     let groupInitializer: Promise<IGroup> | undefined = this.groupsInitializer.get(groupHash);
 
     let res: Promise<any>;
-    if (!groupInitializer) {
+    if (groupInitializer) {
+      const groupInitializerDefined = groupInitializer;
+      res = (async() => {
+        const group = await groupInitializerDefined;
+        await Promise.all(this.pattern.aggregates.map(async(aggregate) => {
+          // If distinct, check first whether we have inserted these values already
+          if (aggregate.distinct) {
+            const hash = this.hashBindings(bindings);
+            if (this.distinctHashes!.get(groupHash)!.has(hash)) {
+              return;
+            }
+            this.distinctHashes!.get(groupHash)!.add(hash);
+          }
+
+          const variable = aggregate.variable.value;
+          await group.aggregators[variable].put(bindings);
+        }));
+      })().then(async() => {
+        this.subtractWaitCounterAndCollect();
+      });
+    } else {
       // Initialize state for all aggregators for new group
       groupInitializer = (async() => {
         const aggregators: Record<string, AsyncAggregateEvaluator> = {};
-        await Promise.all(this.pattern.aggregates.map(async aggregate => {
+        await Promise.all(this.pattern.aggregates.map(async(aggregate) => {
           const key = aggregate.variable.value;
           aggregators[key] = new AsyncAggregateEvaluator(aggregate, this.sparqleeConfig);
           await aggregators[key].put(bindings);
@@ -100,26 +120,6 @@ export class GroupsState {
       })();
       this.groupsInitializer.set(groupHash, groupInitializer);
       res = groupInitializer;
-    } else {
-      const groupInitializerDefined = groupInitializer;
-      res = (async() => {
-        const group = await groupInitializerDefined;
-        await Promise.all(this.pattern.aggregates.map(async aggregate => {
-          // If distinct, check first whether we have inserted these values already
-          if (aggregate.distinct) {
-            const hash = this.hashBindings(bindings);
-            if (this.distinctHashes!.get(groupHash)!.has(hash)) {
-              return;
-            }
-            this.distinctHashes!.get(groupHash)!.add(hash);
-          }
-
-          const variable = aggregate.variable.value;
-          await group.aggregators[variable].put(bindings);
-        }));
-      })().then(() => {
-        this.subtractWaitCounterAndCollect();
-      });
     }
     return res;
   }
@@ -162,7 +162,7 @@ export class GroupsState {
           single.push([ key, value ]);
         }
       }
-      rows = [ BF.bindings(single) ];
+      rows = [ this.bindingsFactory.bindings(single) ];
     }
     this.waitResolver(rows);
   }
@@ -185,7 +185,7 @@ export class GroupsState {
       return check;
     }
     this.resultHasBeenCalled = true;
-    const res = new Promise<Bindings[]>(resolve => {
+    const res = new Promise<Bindings[]>((resolve) => {
       this.waitResolver = resolve;
     });
     this.subtractWaitCounterAndCollect();

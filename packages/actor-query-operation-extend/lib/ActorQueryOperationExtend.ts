@@ -1,9 +1,12 @@
-import { bindingsToString } from '@comunica/bindings-factory';
+import { BindingsFactory, bindingsToString } from '@comunica/bindings-factory';
+import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
-  ActorQueryOperation, ActorQueryOperationTypedMediated,
+  ActorQueryOperation,
+  ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
+import type { ExpressionError } from '@comunica/expression-evaluator';
 import { AsyncEvaluator, isExpressionError } from '@comunica/expression-evaluator';
 import type { Bindings, IActionContext, IQueryOperationResult, IQueryOperationResultBindings } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -14,14 +17,19 @@ import type { Algebra } from 'sparqlalgebrajs';
  * See https://www.w3.org/TR/sparql11-query/#sparqlAlgebra;
  */
 export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<Algebra.Extend> {
-  public constructor(args: IActorQueryOperationTypedMediatedArgs) {
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+
+  public constructor(args: IActorQueryOperationExtendArgs) {
     super(args, 'extend');
   }
 
   public async testOperation(operation: Algebra.Extend, context: IActionContext): Promise<IActorTest> {
+    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context);
     // Will throw error for unsupported opperations
-    const _ = Boolean(new AsyncEvaluator(operation.expression,
-      ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation)));
+    const _ = Boolean(new AsyncEvaluator(
+      operation.expression,
+      ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation, bindingsFactory),
+    ));
     return true;
   }
 
@@ -38,7 +46,12 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
       throw new Error(`Illegal binding to variable '${variable.value}' that has already been bound`);
     }
 
-    const config = { ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation) };
+    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context);
+    const config = { ...ActorQueryOperation.getAsyncExpressionContext(
+      context,
+      this.mediatorQueryOperation,
+      bindingsFactory,
+    ) };
     const evaluator = new AsyncEvaluator(expression, config);
 
     // Transform the stream by extending each Bindings with the expression result
@@ -54,7 +67,8 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
           // Errors silently don't actually extend according to the spec
           push(bindings);
           // But let's warn anyway
-          this.logWarn(context, `Expression error for extend operation with bindings '${bindingsToString(bindings)}'`);
+          this.logWarn(context, `Expression error for extend operation (${(<ExpressionError> error).message})` +
+            `with bindings '${bindingsToString(bindings)}'`);
         } else {
           bindingsStream.emit('error', error);
         }
@@ -62,6 +76,7 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
       next();
     };
 
+    // eslint-disable-next-line ts/no-misused-promises
     const bindingsStream = output.bindingsStream.transform<Bindings>({ autoStart: false, transform });
     return {
       type: 'bindings',
@@ -72,4 +87,11 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
       },
     };
   }
+}
+
+export interface IActorQueryOperationExtendArgs extends IActorQueryOperationTypedMediatedArgs {
+  /**
+   * A mediator for creating binding context merge handlers
+   */
+  mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 }

@@ -54,7 +54,7 @@ export class ActionContext implements IActionContext {
   }
 
   public merge(...contexts: IActionContext[]): IActionContext {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias,consistent-this
+    // eslint-disable-next-line ts/no-this-alias
     let context: IActionContext = this;
     for (const source of contexts) {
       for (const key of source.keys()) {
@@ -90,7 +90,7 @@ export class ActionContext implements IActionContext {
   public static ensureActionContext(maybeActionContext?: IActionContext | Record<string, any>): IActionContext {
     return maybeActionContext instanceof ActionContext ?
       maybeActionContext :
-      new ActionContext(Map(maybeActionContext || {}));
+      new ActionContext(Map(maybeActionContext ?? {}));
   }
 }
 

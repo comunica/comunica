@@ -16,7 +16,7 @@ export class ActorQueryOperationAsk extends ActorQueryOperationTypedMediated<Alg
     super(args, 'ask');
   }
 
-  public async testOperation(operation: Algebra.Ask, context: IActionContext): Promise<IActorTest> {
+  public async testOperation(_operation: Algebra.Ask, _context: IActionContext): Promise<IActorTest> {
     return true;
   }
 

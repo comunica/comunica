@@ -1,7 +1,7 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IJoinEntry, IQueryOperationResultBindings } from '@comunica/types';
+import type { IJoinEntry } from '@comunica/types';
 import { ArrayIterator, UnionIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationJoin } from '../lib/ActorQueryOperationJoin';
@@ -56,7 +56,9 @@ describe('ActorQueryOperationJoin', () => {
     });
 
     it('should not be able to create new ActorQueryOperationJoin objects without \'new\'', () => {
-      expect(() => { (<any> ActorQueryOperationJoin)(); }).toThrow();
+      expect(() => {
+        (<any> ActorQueryOperationJoin)();
+      }).toThrow(`Class constructor ActorQueryOperationJoin cannot be invoked without 'new'`);
     });
   });
 
@@ -67,37 +69,36 @@ describe('ActorQueryOperationJoin', () => {
       actor = new ActorQueryOperationJoin({ name: 'actor', bus, mediatorQueryOperation, mediatorJoin });
     });
 
-    it('should test on join', () => {
+    it('should test on join', async() => {
       const op: any = { operation: { type: 'join' }};
-      return expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toBeTruthy();
     });
 
-    it('should not test on non-join', () => {
+    it('should not test on non-join', async() => {
       const op: any = { operation: { type: 'some-other-type' }};
-      return expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).rejects.toBeTruthy();
     });
 
-    it('should run', () => {
+    it('should run', async() => {
       const op: any = { operation: { type: 'join', input: [{}, {}, {}]}, context: new ActionContext() };
-      return actor.run(op).then(async(output: IQueryOperationResultBindings) => {
-        expect(output.type).toEqual('bindings');
-        expect(await output.metadata()).toEqual({
-          cardinality: 100,
-          canContainUndefs: false,
-          variables: [ DF.variable('a'), DF.variable('b') ],
-        });
-        await expect(output.bindingsStream).toEqualBindingsStream([
-          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
-          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
-          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
-          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
-          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
-          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
-          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
-          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
-          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
-        ]);
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      expect(output.type).toBe('bindings');
+      await expect(output.metadata()).resolves.toEqual({
+        cardinality: 100,
+        canContainUndefs: false,
+        variables: [ DF.variable('a'), DF.variable('b') ],
       });
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
+      ]);
     });
   });
 });

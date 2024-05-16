@@ -1,3 +1,5 @@
+import { BindingsFactory } from '@comunica/bindings-factory';
+import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, materializeOperation } from '@comunica/bus-query-operation';
 import type {
@@ -9,8 +11,7 @@ import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { Bindings, BindingsStream, IQueryOperationResultBindings,
-  MetadataBindings, IActionContext, IJoinEntryWithMetadata } from '@comunica/types';
+import type { Bindings, BindingsStream, IQueryOperationResultBindings, MetadataBindings } from '@comunica/types';
 import { MultiTransformIterator, TransformIterator, UnionIterator } from 'asynciterator';
 import { Factory, Algebra, Util } from 'sparqlalgebrajs';
 
@@ -22,6 +23,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
   public readonly selectivityModifier: number;
   public readonly mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort;
   public readonly mediatorQueryOperation: MediatorQueryOperation;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   public static readonly FACTORY = new Factory();
 
@@ -51,13 +53,14 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
     operationBinder: (boundOperations: Algebra.Operation[], operationBindings: Bindings)
     => Promise<BindingsStream>,
     optional: boolean,
+    bindingsFactory: BindingsFactory,
   ): BindingsStream {
     // Create bindings function
     const binder = (bindings: Bindings): BindingsStream => {
       // We don't bind the filter because filters are always handled last,
       // and we need to avoid binding filters of sub-queries, which are to be handled first. (see spec test bind10)
       const subOperations = operations
-        .map(operation => materializeOperation(operation, bindings, { bindFilter: false }));
+        .map(operation => materializeOperation(operation, bindings, bindingsFactory, { bindFilter: true }));
       const bindingsMerger = (subBindings: Bindings): Bindings | undefined => subBindings.merge(bindings);
       return new TransformIterator(async() => (await operationBinder(subOperations, bindings))
         .transform({ map: bindingsMerger }), { maxBufferSize: 128, autoStart: false });
@@ -73,90 +76,23 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
           optional,
         }), { autoStart: false });
       default:
+        // eslint-disable-next-line ts/restrict-template-expressions
         throw new Error(`Received request for unknown bind order: ${bindOrder}`);
     }
   }
 
-  /**
-   * Order the given join entries using the join-entries-sort bus.
-   * @param {IJoinEntryWithMetadata[]} entries An array of join entries.
-   * @param context The action context.
-   * @return {IJoinEntryWithMetadata[]} The sorted join entries.
-   */
-  public async sortJoinEntries(
-    entries: IJoinEntryWithMetadata[],
-    context: IActionContext,
-  ): Promise<IJoinEntryWithMetadata[]> {
-    // If there is a stream that can contain undefs, we don't modify the join order.
-    const canContainUndefs = entries.some(entry => entry.metadata.canContainUndefs);
-    if (canContainUndefs) {
-      return entries;
-    }
-
-    // Calculate number of occurrences of each variable
-    const variableOccurrences: Record<string, number> = {};
-    for (const entry of entries) {
-      for (const variable of entry.metadata.variables) {
-        let counter = variableOccurrences[variable.value];
-        if (!counter) {
-          counter = 0;
-        }
-        variableOccurrences[variable.value] = ++counter;
-      }
-    }
-
-    // Determine variables that occur in at least two join entries
-    const multiOccurrenceVariables: string[] = [];
-    for (const [ variable, count ] of Object.entries(variableOccurrences)) {
-      if (count >= 2) {
-        multiOccurrenceVariables.push(variable);
-      }
-    }
-
-    // Reject if no entries have common variables
-    if (multiOccurrenceVariables.length === 0) {
-      throw new Error(`Bind join can only join entries with at least one common variable`);
-    }
-
-    // Determine entries without common variables
-    // These will be placed in the back of the sorted array
-    const entriesWithoutCommonVariables: IJoinEntryWithMetadata[] = [];
-    for (const entry of entries) {
-      let hasCommon = false;
-      for (const variable of entry.metadata.variables) {
-        if (multiOccurrenceVariables.includes(variable.value)) {
-          hasCommon = true;
-          break;
-        }
-      }
-      if (!hasCommon) {
-        entriesWithoutCommonVariables.push(entry);
-      }
-    }
-
-    return (await this.mediatorJoinEntriesSort.mediate({ entries, context })).entries
-      .sort((entryLeft, entryRight) => {
-        // Sort to make sure that entries without common variables come last in the array.
-        // For all other entries, the original order is kept.
-        const leftWithoutCommonVariables = entriesWithoutCommonVariables.includes(entryLeft);
-        const rightWithoutCommonVariables = entriesWithoutCommonVariables.includes(entryRight);
-        if (leftWithoutCommonVariables === rightWithoutCommonVariables) {
-          return 0;
-        }
-        return leftWithoutCommonVariables ?
-          1 :
-          -1;
-      });
-  }
-
   public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
+    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context);
+
     // Order the entries so we can pick the first one (usually the one with the lowest cardinality)
     const entriesUnsorted = await ActorRdfJoin.getEntriesWithMetadatas(action.entries);
-    const entries = await this.sortJoinEntries(entriesUnsorted, action.context);
+    const entries = await ActorRdfJoin.sortJoinEntries(this.mediatorJoinEntriesSort, entriesUnsorted, action.context);
 
-    this.logDebug(action.context,
+    this.logDebug(
+      action.context,
       'First entry for Bind Join: ',
-      () => ({ entry: entries[0].operation, metadata: entries[0].metadata }));
+      () => ({ entry: entries[0].operation, metadata: entries[0].metadata }),
+    );
 
     // Close the non-smallest streams
     for (const [ i, element ] of entries.entries()) {
@@ -189,6 +125,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
         return output.bindingsStream;
       },
       false,
+      bindingsFactory,
     );
 
     return {
@@ -215,10 +152,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
         valid = false;
         return false;
       },
-      [Algebra.types.FILTER](): boolean {
-        valid = false;
-        return false;
-      },
+      // [Algebr
     });
 
     return valid;
@@ -229,7 +163,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
     metadatas: MetadataBindings[],
   ): Promise<IMediatorTypeJoinCoefficients> {
     // Order the entries so we can pick the first one (usually the one with the lowest cardinality)
-    const entries = await this.sortJoinEntries(action.entries
+    const entries = await ActorRdfJoin.sortJoinEntries(this.mediatorJoinEntriesSort, action.entries
       .map((entry, i) => ({ ...entry, metadata: metadatas[i] })), action.context);
     metadatas = entries.map(entry => entry.metadata);
 
@@ -247,7 +181,12 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
     // Reject binding on some operation types
     if (remainingEntries
       .some(entry => !this.canBindWithOperation(entry.operation))) {
-      throw new Error(`Actor ${this.name} can not bind on Extend, Group, and Filter operations`);
+      throw new Error(`Actor ${this.name} can not bind on Extend and Group operations`);
+    }
+
+    // Reject binding on modified operations, since using the output directly would be significantly more efficient.
+    if (remainingEntries.some(entry => entry.operationModified)) {
+      throw new Error(`Actor ${this.name} can not be used over remaining entries with modified operations`);
     }
 
     // Determine selectivities of smallest entry with all other entries
@@ -262,9 +201,9 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
       .map((entry, i) => entry.metadata.cardinality.value * selectivities[i])
       .reduce((sum, element) => sum + element, 0);
     const receiveInitialCostRemaining = remainingRequestInitialTimes
-      .reduce((sum, element, i) => sum + (element * selectivities[i]), 0);
+      .reduce((sum, element) => sum + element, 0);
     const receiveItemCostRemaining = remainingRequestItemTimes
-      .reduce((sum, element, i) => sum + (element * selectivities[i]), 0);
+      .reduce((sum, element) => sum + element, 0);
 
     return {
       iterations: metadatas[0].cardinality.value * cardinalityRemaining,
@@ -300,6 +239,10 @@ export interface IActorRdfJoinMultiBindArgs extends IActorRdfJoinArgs {
    * The query operation mediator
    */
   mediatorQueryOperation: MediatorQueryOperation;
+  /**
+   * A mediator for creating binding context merge handlers
+   */
+  mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 }
 
 export type BindOrder = 'depth-first' | 'breadth-first';

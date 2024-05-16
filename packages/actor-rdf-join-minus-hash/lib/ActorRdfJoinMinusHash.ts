@@ -1,7 +1,5 @@
 import { ClosableTransformIterator } from '@comunica/bus-query-operation';
-import type { IActionRdfJoin,
-  IActorRdfJoinOutputInner,
-  IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
+import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
 import {
   ActorRdfJoin,
 } from '@comunica/bus-rdf-join';
@@ -34,8 +32,8 @@ export class ActorRdfJoinMinusHash extends ActorRdfJoin {
        */
       const index: Record<string, boolean> = {};
       const bindingsStream = new ClosableTransformIterator(async() => {
-        await new Promise(resolve => {
-          buffer.bindingsStream.on('data', data => {
+        await new Promise((resolve) => {
+          buffer.bindingsStream.on('data', (data) => {
             index[ActorRdfJoin.hash(data, commonVariables)] = true;
           });
           buffer.bindingsStream.on('end', resolve);

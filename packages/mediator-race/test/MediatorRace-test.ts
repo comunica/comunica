@@ -35,8 +35,8 @@ describe('MediatorRace', () => {
         busm.subscribe(new DummyActor(1, 200, busm, false));
       });
 
-      it('should mediate to the earliest resolver', () => {
-        return expect(mediator.mediate({ context })).resolves.toEqual({ field: 100 });
+      it('should mediate to the earliest resolver', async() => {
+        await expect(mediator.mediate({ context })).resolves.toEqual({ field: 100 });
       });
     });
 
@@ -52,8 +52,8 @@ describe('MediatorRace', () => {
         busm.subscribe(new DummyActor(1, 200, busm, true));
       });
 
-      it('should reject when mediated', () => {
-        return expect(mediator.mediate({ context })).rejects.toBeTruthy();
+      it('should reject when mediated', async() => {
+        await expect(mediator.mediate({ context })).rejects.toBeTruthy();
       });
     });
 
@@ -72,8 +72,8 @@ describe('MediatorRace', () => {
         busm.subscribe(actor2 = new DummyActor(1, 200, busm, false));
       });
 
-      it('should mediate to the earliest non-rejecting resolver', () => {
-        return expect(mediator.mediate({ context })).resolves.toEqual({ field: 10 });
+      it('should mediate to the earliest non-rejecting resolver', async() => {
+        await expect(mediator.mediate({ context })).resolves.toEqual({ field: 10 });
       });
     });
   });
@@ -84,24 +84,26 @@ class DummyActor extends Actor<IAction, IDummyTest, IDummyTest> {
   public readonly delay: number;
   public readonly reject: boolean;
 
-  public constructor(id: number,
+  public constructor(
+    id: number,
     delay: number,
     bus: Bus<DummyActor, IAction, IDummyTest, IDummyTest>,
-    reject: boolean) {
+    reject: boolean,
+  ) {
     super({ name: `dummy${id}`, bus });
     this.id = id;
     this.delay = delay;
     this.reject = reject;
   }
 
-  public test(action: IAction): Promise<IDummyTest> {
+  public async test(action: IAction): Promise<IDummyTest> {
     if (this.reject) {
-      return Promise.reject(new Error(`${this.id}`));
+      throw new Error(`${this.id}`);
     }
     return new Promise((resolve, reject) => setTimeout(() => resolve({ field: this.id }), this.delay));
   }
 
-  public run(action: IAction): Promise<IDummyTest> {
+  public async run(action: IAction): Promise<IDummyTest> {
     return new Promise((resolve, reject) => setTimeout(() => resolve({ field: this.id }), this.delay));
   }
 }

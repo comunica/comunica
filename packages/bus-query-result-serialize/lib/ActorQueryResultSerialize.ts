@@ -1,4 +1,5 @@
-import type { IActionAbstractMediaTyped,
+import type {
+  IActionAbstractMediaTyped,
   IActionAbstractMediaTypedHandle,
   IActionAbstractMediaTypedMediaTypeFormats,
   IActionAbstractMediaTypedMediaTypes,
@@ -10,7 +11,8 @@ import type { IActionAbstractMediaTyped,
   IActorTestAbstractMediaTyped,
   IActorTestAbstractMediaTypedHandle,
   IActorTestAbstractMediaTypedMediaTypeFormats,
-  IActorTestAbstractMediaTypedMediaTypes } from '@comunica/actor-abstract-mediatyped';
+  IActorTestAbstractMediaTypedMediaTypes,
+} from '@comunica/actor-abstract-mediatyped';
 import {
   ActorAbstractMediaTyped,
 } from '@comunica/actor-abstract-mediatyped';
@@ -45,7 +47,8 @@ export type IActorOutputRootQueryResultSerialize = IActorOutputAbstractMediaType
 export type IActionQueryResultSerializeHandle = IActionAbstractMediaTypedHandle<IActionSparqlSerialize>;
 export type IActorTestQueryResultSerializeHandle = IActorTestAbstractMediaTypedHandle<IActorTest>;
 export type IActorOutputQueryResultSerializeHandle = IActorOutputAbstractMediaTypedHandle<
-IActorQueryResultSerializeOutput>;
+IActorQueryResultSerializeOutput
+>;
 
 export type IActionQueryResultSerializeMediaTypes = IActionAbstractMediaTypedMediaTypes;
 export type IActorTestQueryResultSerializeMediaTypes = IActorTestAbstractMediaTypedMediaTypes;
@@ -67,14 +70,25 @@ export interface IActorQueryResultSerializeOutput extends IActorOutput {
 }
 
 export type IActorQueryResultSerializeArgs = IActorArgsMediaTyped<
-IActionSparqlSerialize, IActorTest, IActorQueryResultSerializeOutput>;
+IActionSparqlSerialize,
+IActorTest,
+IActorQueryResultSerializeOutput
+>;
 
 export type MediatorQueryResultSerializeHandle = Mediate<
-IActionQueryResultSerializeHandle, IActorOutputQueryResultSerializeHandle, IActorTestQueryResultSerializeHandle>;
+IActionQueryResultSerializeHandle,
+IActorOutputQueryResultSerializeHandle,
+IActorTestQueryResultSerializeHandle
+>;
 
 export type MediatorQueryResultSerializeMediaTypes = Mediate<
-IActionQueryResultSerializeMediaTypes, IActorOutputQueryResultSerializeMediaTypes,
-IActorTestQueryResultSerializeMediaTypes>;
+IActionQueryResultSerializeMediaTypes,
+IActorOutputQueryResultSerializeMediaTypes,
+IActorTestQueryResultSerializeMediaTypes
+>;
 
-export type MediatorQueryResultSerializeMediaTypeFormats = Mediate<IActionQueryResultSerializeMediaTypeFormats,
-IActorOutputQueryResultSerializeMediaTypeFormats, IActorTestQueryResultSerializeMediaTypeFormats>;
+export type MediatorQueryResultSerializeMediaTypeFormats = Mediate<
+  IActionQueryResultSerializeMediaTypeFormats,
+IActorOutputQueryResultSerializeMediaTypeFormats,
+IActorTestQueryResultSerializeMediaTypeFormats
+>;

@@ -1,7 +1,5 @@
-import type { IActionRdfParse, IActorRdfParseFixedMediaTypesArgs,
-  IActorRdfParseOutput } from '@comunica/bus-rdf-parse';
+import type { IActionRdfParse, IActorRdfParseFixedMediaTypesArgs, IActorRdfParseOutput } from '@comunica/bus-rdf-parse';
 import { ActorRdfParseFixedMediaTypes } from '@comunica/bus-rdf-parse';
-import type { IActionContext } from '@comunica/types';
 import { RdfXmlParser } from 'rdfxml-streaming-parser';
 import type { Readable } from 'readable-stream';
 
@@ -22,8 +20,7 @@ export class ActorRdfParseRdfXml extends ActorRdfParseFixedMediaTypes {
     super(args);
   }
 
-  public async runHandle(action: IActionRdfParse, mediaType: string, context: IActionContext):
-  Promise<IActorRdfParseOutput> {
+  public async runHandle(action: IActionRdfParse): Promise<IActorRdfParseOutput> {
     action.data.on('error', error => data.emit('error', error));
     const data = <Readable> <any> action.data.pipe(new RdfXmlParser({ baseIRI: action.metadata?.baseIRI }));
     return {

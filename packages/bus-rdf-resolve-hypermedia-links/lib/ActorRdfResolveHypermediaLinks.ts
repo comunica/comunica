@@ -67,7 +67,12 @@ export interface ILink {
 }
 
 export type IActorRdfResolveHypermediaLinksArgs = IActorArgs<
-IActionRdfResolveHypermediaLinks, IActorTest, IActorRdfResolveHypermediaLinksOutput>;
+IActionRdfResolveHypermediaLinks,
+IActorTest,
+IActorRdfResolveHypermediaLinksOutput
+>;
 
 export type MediatorRdfResolveHypermediaLinks = Mediate<
-IActionRdfResolveHypermediaLinks, IActorRdfResolveHypermediaLinksOutput>;
+IActionRdfResolveHypermediaLinks,
+IActorRdfResolveHypermediaLinksOutput
+>;

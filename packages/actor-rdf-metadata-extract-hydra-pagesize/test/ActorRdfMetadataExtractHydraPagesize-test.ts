@@ -1,4 +1,4 @@
-import type { Readable } from 'stream';
+import type { Readable } from 'node:stream';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorRdfMetadataExtractHydraPagesize } from '../lib/ActorRdfMetadataExtractHydraPagesize';
@@ -33,17 +33,17 @@ describe('ActorRdfMetadataExtractHydraPagesize', () => {
       context = new ActionContext();
     });
 
-    it('should test', () => {
-      return expect(actor.test({ url: '', metadata: input, requestTime: 0, context })).resolves.toBeTruthy();
+    it('should test', async() => {
+      await expect(actor.test({ url: '', metadata: input, requestTime: 0, context })).resolves.toBeTruthy();
     });
 
-    it('should run on a stream where pageSize is given', () => {
-      return expect(actor.run({ url: '', metadata: input, requestTime: 0, context })).resolves
+    it('should run on a stream where pageSize is given', async() => {
+      await expect(actor.run({ url: '', metadata: input, requestTime: 0, context })).resolves
         .toEqual({ metadata: { pageSize: 12_345 }});
     });
 
-    it('should run on a stream where pageSize is not given', () => {
-      return expect(actor.run({ url: '', metadata: inputNone, requestTime: 0, context })).resolves
+    it('should run on a stream where pageSize is not given', async() => {
+      await expect(actor.run({ url: '', metadata: inputNone, requestTime: 0, context })).resolves
         .toEqual({ metadata: { pageSize: undefined }});
     });
   });

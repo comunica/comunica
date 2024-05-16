@@ -23,7 +23,9 @@ describe('ActorRdfResolveHypermediaLinksNext', () => {
     });
 
     it('should not be able to create new ActorRdfResolveHypermediaLinksNext objects without \'new\'', () => {
-      expect(() => { (<any> ActorRdfResolveHypermediaLinksNext)(); }).toThrow();
+      expect(() => {
+        (<any> ActorRdfResolveHypermediaLinksNext)();
+      }).toThrow(`Class constructor ActorRdfResolveHypermediaLinksNext cannot be invoked without 'new'`);
     });
   });
 
@@ -36,17 +38,17 @@ describe('ActorRdfResolveHypermediaLinksNext', () => {
       context = new ActionContext();
     });
 
-    it('should test on next metadata', () => {
-      return expect(actor.test({ metadata: { next: 'NEXT' }, context })).resolves.toBeTruthy();
+    it('should test on next metadata', async() => {
+      await expect(actor.test({ metadata: { next: 'NEXT' }, context })).resolves.toBeTruthy();
     });
 
-    it('should not test without next metadata', () => {
-      return expect(actor.test({ metadata: {}, context })).rejects
+    it('should not test without next metadata', async() => {
+      await expect(actor.test({ metadata: {}, context })).rejects
         .toThrow(new Error('Actor actor requires a \'next\' metadata entry.'));
     });
 
-    it('should run', () => {
-      return expect(actor.run({ metadata: { next: 'NEXT' }, context }))
+    it('should run', async() => {
+      await expect(actor.run({ metadata: { next: [ 'NEXT' ]}, context }))
         .resolves.toMatchObject({ links: [{ url: 'NEXT' }]});
     });
   });

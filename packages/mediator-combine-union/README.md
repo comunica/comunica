@@ -22,7 +22,7 @@ After installing, this mediator can be instantiated as follows:
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-union/^2.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-union/^3.0.0/components/context.jsonld"
   ],
   "actors": [
     ...
@@ -43,4 +43,4 @@ After installing, this mediator can be instantiated as follows:
 
 * `bus`: Identifier of the bus to mediate over.
 * `field`: The field name to mediate over.
-
+* `filterErrors`: Optional flag to indicate if actors that throw test errors should be filtered out of the pipeline, defaults to false.

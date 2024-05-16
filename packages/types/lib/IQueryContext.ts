@@ -1,6 +1,5 @@
 import type * as RDF from '@rdfjs/types';
 import type { IDataDestination } from './IDataDestination';
-import type { IDataSource } from './IDataSource';
 import type { IProxyHandler } from './IProxyHandler';
 import type { SourceType } from './IQueryEngine';
 import type { QueryExplainMode } from './IQueryOperationResult';
@@ -24,7 +23,6 @@ export interface IQueryContextCommon {
   // Types of these entries should be aligned with contextKeyShortcuts in ActorInitQueryBase
   // and Keys in @comunica/context-entries
 
-  source?: IDataSource;
   // Inherited from RDF.QueryStringContext: sources
   destination?: IDataDestination;
   initialBindings?: RDF.Bindings;

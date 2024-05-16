@@ -11,7 +11,7 @@ import { Util } from 'sparqlalgebrajs';
  * A comunica BGP to Join Optimize Query Operation Actor.
  */
 export class ActorOptimizeQueryOperationBgpToJoin extends ActorOptimizeQueryOperation {
-  public async test(action: IActionOptimizeQueryOperation): Promise<IActorTest> {
+  public async test(_action: IActionOptimizeQueryOperation): Promise<IActorTest> {
     return true;
   }
 

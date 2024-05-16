@@ -4,8 +4,12 @@ import {
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
-import type { IQueryOperationResultBindings, IActionContext, IQueryOperationResult,
-  MetadataQuads } from '@comunica/types';
+import type {
+  IQueryOperationResultBindings,
+  IActionContext,
+  IQueryOperationResult,
+  MetadataQuads,
+} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { getTermsNested, getVariables, uniqTerms } from 'rdf-terms';
@@ -30,7 +34,7 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
       .apply([], patterns.map(pattern => getVariables(getTermsNested(pattern)))));
   }
 
-  public async testOperation(operation: Algebra.Construct, context: IActionContext): Promise<IActorTest> {
+  public async testOperation(_operation: Algebra.Construct, _context: IActionContext): Promise<IActorTest> {
     return true;
   }
 

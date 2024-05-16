@@ -1,8 +1,10 @@
 import { BindingsToQuadsIterator } from '@comunica/actor-query-operation-construct';
 import { BindingsFactory } from '@comunica/bindings-factory';
+import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
-  ActorQueryOperation, ActorQueryOperationTypedMediated,
+  ActorQueryOperation,
+  ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { MediatorRdfUpdateQuads } from '@comunica/bus-rdf-update-quads';
 import type { IActorTest } from '@comunica/core';
@@ -12,12 +14,12 @@ import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 
-const BF = new BindingsFactory();
 /**
  * A comunica Update DeleteInsert Query Operation Actor.
  */
 export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTypedMediated<Algebra.DeleteInsert> {
   public readonly mediatorUpdateQuads: MediatorRdfUpdateQuads;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   protected blankNodeCounter = 0;
 
@@ -35,11 +37,12 @@ export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTy
 
   public async runOperation(operation: Algebra.DeleteInsert, context: IActionContext):
   Promise<IQueryOperationResult> {
+    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context);
     // Evaluate the where clause
     const whereBindings: BindingsStream = operation.where ?
       ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation
         .mediate({ operation: operation.where, context })).bindingsStream :
-      new ArrayIterator([ BF.bindings() ], { autoStart: false });
+      new ArrayIterator<RDF.Bindings>([ bindingsFactory.bindings() ], { autoStart: false });
 
     // Construct triples using the result based on the pattern.
     let quadStreamInsert: AsyncIterator<RDF.Quad> | undefined;
@@ -80,4 +83,9 @@ export interface IActorQueryOperationUpdateDeleteInsertArgs extends IActorQueryO
    * The RDF Update Quads mediator
    */
   mediatorUpdateQuads: MediatorRdfUpdateQuads;
+  /**
+   * A mediator for creating binding context merge handlers
+   */
+  mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+
 }

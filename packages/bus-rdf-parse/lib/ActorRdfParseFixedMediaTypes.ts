@@ -25,10 +25,13 @@ export abstract class ActorRdfParseFixedMediaTypes extends
   }
   /* eslint-enable max-len */
 
-  public async testHandleChecked(action: IActionRdfParse): Promise<boolean> {
+  public async testHandleChecked(_action: IActionRdfParse): Promise<boolean> {
     return true;
   }
 }
 
 export type IActorRdfParseFixedMediaTypesArgs = IActorArgsMediaTypedFixed<
-IActionRdfParse, IActorTest, IActorRdfParseOutput>;
+IActionRdfParse,
+IActorTest,
+IActorRdfParseOutput
+>;

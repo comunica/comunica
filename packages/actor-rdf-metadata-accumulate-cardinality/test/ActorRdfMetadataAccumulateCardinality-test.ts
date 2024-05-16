@@ -26,95 +26,95 @@ describe('ActorRdfMetadataAccumulateCardinality', () => {
 
     describe('run', () => {
       it('should handle initialization', async() => {
-        expect(await actor.run({ context, mode: 'initialize' }))
+        await expect(actor.run({ context, mode: 'initialize' })).resolves
           .toEqual({ metadata: { cardinality: { type: 'exact', value: 0 }}});
       });
 
       it('should handle appending with exact cardinalities', async() => {
-        expect(await actor.run({
+        await expect(actor.run({
           context,
           mode: 'append',
           accumulatedMetadata: <any> { cardinality: { type: 'exact', value: 2 }},
           appendingMetadata: <any> { cardinality: { type: 'exact', value: 3 }},
-        })).toEqual({ metadata: { cardinality: { type: 'exact', value: 5 }}});
+        })).resolves.toEqual({ metadata: { cardinality: { type: 'exact', value: 5 }}});
       });
 
       it('should handle appending with estimate cardinalities', async() => {
-        expect(await actor.run({
+        await expect(actor.run({
           context,
           mode: 'append',
           accumulatedMetadata: <any> { cardinality: { type: 'estimate', value: 2 }},
           appendingMetadata: <any> { cardinality: { type: 'estimate', value: 3 }},
-        })).toEqual({ metadata: { cardinality: { type: 'estimate', value: 5 }}});
+        })).resolves.toEqual({ metadata: { cardinality: { type: 'estimate', value: 5 }}});
       });
 
       it('should handle appending with exact and estimate cardinalities', async() => {
-        expect(await actor.run({
+        await expect(actor.run({
           context,
           mode: 'append',
           accumulatedMetadata: <any> { cardinality: { type: 'exact', value: 2 }},
           appendingMetadata: <any> { cardinality: { type: 'estimate', value: 3 }},
-        })).toEqual({ metadata: { cardinality: { type: 'estimate', value: 5 }}});
-        expect(await actor.run({
+        })).resolves.toEqual({ metadata: { cardinality: { type: 'estimate', value: 5 }}});
+        await expect(actor.run({
           context,
           mode: 'append',
           accumulatedMetadata: <any> { cardinality: { type: 'estimate', value: 2 }},
           appendingMetadata: <any> { cardinality: { type: 'exact', value: 3 }},
-        })).toEqual({ metadata: { cardinality: { type: 'estimate', value: 5 }}});
+        })).resolves.toEqual({ metadata: { cardinality: { type: 'estimate', value: 5 }}});
       });
 
       it('should handle appending with undefined cardinality', async() => {
-        expect(await actor.run({
+        await expect(actor.run({
           context,
           mode: 'append',
           accumulatedMetadata: <any> { cardinality: { type: 'estimate', value: 2 }},
           appendingMetadata: <any> {},
-        })).toEqual({ metadata: { cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }}});
+        })).resolves.toEqual({ metadata: { cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }}});
       });
 
       it('should handle appending with infinite cardinality', async() => {
-        expect(await actor.run({
+        await expect(actor.run({
           context,
           mode: 'append',
           accumulatedMetadata: <any> { cardinality: { type: 'estimate', value: 2 }},
           appendingMetadata: <any> { cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }},
-        })).toEqual({ metadata: { cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }}});
+        })).resolves.toEqual({ metadata: { cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY }}});
       });
 
       it('should handle appending with dataset-wide cardinality', async() => {
-        expect(await actor.run({
+        await expect(actor.run({
           context,
           mode: 'append',
           accumulatedMetadata: <any> { cardinality: { type: 'estimate', value: 200, dataset: 'abc' }},
           appendingMetadata: <any> { cardinality: { type: 'estimate', value: 3 }},
-        })).toEqual({ metadata: { cardinality: { type: 'estimate', value: 200, dataset: 'abc' }}});
+        })).resolves.toEqual({ metadata: { cardinality: { type: 'estimate', value: 200, dataset: 'abc' }}});
       });
 
       it('should handle appending with the same dataset-wide cardinality', async() => {
-        expect(await actor.run({
+        await expect(actor.run({
           context,
           mode: 'append',
           accumulatedMetadata: <any> { cardinality: { type: 'estimate', value: 200, dataset: 'abc' }},
           appendingMetadata: <any> { cardinality: { type: 'estimate', value: 3, dataset: 'abc' }},
-        })).toEqual({ metadata: { cardinality: { type: 'estimate', value: 200, dataset: 'abc' }}});
+        })).resolves.toEqual({ metadata: { cardinality: { type: 'estimate', value: 200, dataset: 'abc' }}});
       });
 
       it('should handle appending with different dataset-wide cardinalities', async() => {
-        expect(await actor.run({
+        await expect(actor.run({
           context,
           mode: 'append',
           accumulatedMetadata: <any> { cardinality: { type: 'estimate', value: 200, dataset: 'abc' }},
           appendingMetadata: <any> { cardinality: { type: 'estimate', value: 3, dataset: 'def' }},
-        })).toEqual({ metadata: { cardinality: { type: 'estimate', value: 203 }}});
+        })).resolves.toEqual({ metadata: { cardinality: { type: 'estimate', value: 203 }}});
       });
 
       it('should handle appending with different dataset-wide cardinalities that are subsets', async() => {
-        expect(await actor.run({
+        await expect(actor.run({
           context,
           mode: 'append',
           accumulatedMetadata: <any> { cardinality: { type: 'estimate', value: 200, dataset: 'abc' }},
           appendingMetadata: <any> { cardinality: { type: 'estimate', value: 3, dataset: 'def' }, subsetOf: 'abc' },
-        })).toEqual({ metadata: { cardinality: { type: 'estimate', value: 3, dataset: 'def' }}});
+        })).resolves.toEqual({ metadata: { cardinality: { type: 'estimate', value: 3, dataset: 'def' }}});
       });
     });
   });

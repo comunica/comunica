@@ -5,6 +5,7 @@ import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinOptionalNestedLoop } from '../lib/ActorRdfJoinOptionalNestedLoop';
@@ -25,7 +26,10 @@ describe('ActorRdfJoinOptionalNestedLoop', () => {
   describe('An ActorRdfJoinOptionalNestedLoop instance', () => {
     let mediatorJoinSelectivity: Mediator<
     Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
-    IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>;
+    IActionRdfJoinSelectivity,
+IActorTest,
+IActorRdfJoinSelectivityOutput
+>;
     let actor: ActorRdfJoinOptionalNestedLoop;
 
     beforeEach(() => {
@@ -69,7 +73,7 @@ describe('ActorRdfJoinOptionalNestedLoop', () => {
       });
 
       it('should test on two entries', async() => {
-        expect(await actor.test({
+        await expect(actor.test({
           type: 'optional',
           entries: <any> [
             {
@@ -94,7 +98,7 @@ describe('ActorRdfJoinOptionalNestedLoop', () => {
             },
           ],
           context,
-        })).toEqual({
+        })).resolves.toEqual({
           iterations: 16,
           blockingItems: 0,
           persistedItems: 0,
@@ -110,7 +114,7 @@ describe('ActorRdfJoinOptionalNestedLoop', () => {
           entries: [
             {
               output: {
-                bindingsStream: new ArrayIterator([
+                bindingsStream: new ArrayIterator<RDF.Bindings>([
                   BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
                   BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
                   BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
@@ -127,7 +131,7 @@ describe('ActorRdfJoinOptionalNestedLoop', () => {
             },
             {
               output: {
-                bindingsStream: new ArrayIterator([
+                bindingsStream: new ArrayIterator<RDF.Bindings>([
                   BF.bindings([
                     [ DF.variable('a'), DF.literal('1') ],
                     [ DF.variable('b'), DF.literal('1') ],
@@ -157,8 +161,8 @@ describe('ActorRdfJoinOptionalNestedLoop', () => {
         const result = await actor.run(action);
 
         // Validate output
-        expect(result.type).toEqual('bindings');
-        expect(await result.metadata())
+        expect(result.type).toBe('bindings');
+        await expect(result.metadata()).resolves
           .toEqual({
             state: expect.any(MetadataValidationState),
             cardinality: { type: 'estimate', value: 9 },

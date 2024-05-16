@@ -1,8 +1,10 @@
 node_modules
+.husky/_
 .rdf-test-suite-cache
 .rdf-test-suite-ldf-cache
 .idea
 .vscode
+.yarn
 lerna-debug.log
 yarn-error.log
 .eslintcache
@@ -18,6 +20,9 @@ yarn-error.log
 **/index.js
 **/index.js.map
 **/index.d.ts
+**/benchmarks/**/*.js
+**/benchmarks/**/*.js.map
+**/benchmarks/**/*.d.ts
 coverage
 documentation
 earl.ttl

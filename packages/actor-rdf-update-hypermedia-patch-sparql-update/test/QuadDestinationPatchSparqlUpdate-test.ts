@@ -44,8 +44,8 @@ describe('QuadDestinationPatchSparqlUpdate', () => {
         },
         input: 'abc',
       });
-      expect(await stringifyStream(ActorHttp.toNodeReadable(mediatorHttp.mediate.mock.calls[0][0].init.body)))
-        .toEqual(`INSERT DATA {
+      await expect(stringifyStream(ActorHttp.toNodeReadable(mediatorHttp.mediate.mock.calls[0][0].init.body))).resolves
+        .toBe(`INSERT DATA {
   <ex:s1> <ex:p1> <ex:o1> .
   GRAPH <ex:g2> { <ex:s2> <ex:p2> <ex:o2> . }
 }`);
@@ -70,8 +70,8 @@ describe('QuadDestinationPatchSparqlUpdate', () => {
         },
         input: 'abc',
       });
-      expect(await stringifyStream(ActorHttp.toNodeReadable(mediatorHttp.mediate.mock.calls[0][0].init.body)))
-        .toEqual(`INSERT DATA {
+      await expect(stringifyStream(ActorHttp.toNodeReadable(mediatorHttp.mediate.mock.calls[0][0].init.body))).resolves
+        .toBe(`INSERT DATA {
   <ex:s1> <ex:p1> <<<ex:s1> <ex:p1> <ex:o1>>> .
   GRAPH <ex:g2> { <ex:s2> <ex:p2> <ex:o2> . }
 }`);
@@ -92,8 +92,8 @@ describe('QuadDestinationPatchSparqlUpdate', () => {
         },
         input: 'abc',
       });
-      expect(await stringifyStream(ActorHttp.toNodeReadable(mediatorHttp.mediate.mock.calls[0][0].init.body)))
-        .toEqual(`INSERT DATA {
+      await expect(stringifyStream(ActorHttp.toNodeReadable(mediatorHttp.mediate.mock.calls[0][0].init.body))).resolves
+        .toBe(`INSERT DATA {
   <ex:s1> <ex:p1> <ex:o1> .
   GRAPH <ex:g2> { <ex:s2> <ex:p2> <ex:o2> . }
 }`);
@@ -112,7 +112,7 @@ describe('QuadDestinationPatchSparqlUpdate', () => {
         body: { cancel },
       });
       await destination.insert(fromArray<RDF.Quad>([]));
-      expect(cancel).toHaveBeenCalled();
+      expect(cancel).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -132,8 +132,8 @@ describe('QuadDestinationPatchSparqlUpdate', () => {
         },
         input: 'abc',
       });
-      expect(await stringifyStream(ActorHttp.toNodeReadable(mediatorHttp.mediate.mock.calls[0][0].init.body)))
-        .toEqual(`DELETE DATA {
+      await expect(stringifyStream(ActorHttp.toNodeReadable(mediatorHttp.mediate.mock.calls[0][0].init.body))).resolves
+        .toBe(`DELETE DATA {
   <ex:s1> <ex:p1> <ex:o1> .
   GRAPH <ex:g2> { <ex:s2> <ex:p2> <ex:o2> . }
 }`);

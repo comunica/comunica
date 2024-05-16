@@ -21,10 +21,10 @@ describe('exists', () => {
     // Called 2 times (once by sync and once by async)
     // We will check if async truly cals only once.
     // We need to double this because of the type system tests
-    expect(hookMock).toBeCalledTimes(2);
+    expect(hookMock).toHaveBeenCalledTimes(2);
     expect(evaluated.asyncResult).toEqual(DF.literal('true', DF.namedNode('http://www.w3.org/2001/XMLSchema#boolean')));
   });
-  it('rus with mock existence hooks and async calls but once', async() => {
+  it('runs with mock existence hooks and async calls but once', async() => {
     const hookMock = fn(() => Promise.resolve(true));
     const evaluated = await generalEvaluate({
       expression: template('EXISTS {?s ?p ?o}'),
@@ -37,7 +37,7 @@ describe('exists', () => {
       },
     });
     // We need to double this because of the type system tests
-    expect(hookMock).toBeCalledTimes(1);
+    expect(hookMock).toHaveBeenCalledTimes(1);
     expect(evaluated.asyncResult).toEqual(DF.literal('true', DF.namedNode('http://www.w3.org/2001/XMLSchema#boolean')));
   });
 });

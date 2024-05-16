@@ -9,9 +9,13 @@ import type { SuperTypeCallback, TypeCache } from './TypeHandling';
 
 // Determine the relative numerical order of the two given terms.
 // In accordance with https://www.w3.org/TR/sparql11-query/#modOrderBy
-export function orderTypes(termA: RDF.Term | undefined, termB: RDF.Term | undefined,
+export function orderTypes(
+  termA: RDF.Term | undefined,
+  termB: RDF.Term | undefined,
   strict = false,
-  typeDiscoveryCallback?: SuperTypeCallback, typeCache?: TypeCache): -1 | 0 | 1 {
+  typeDiscoveryCallback?: SuperTypeCallback,
+  typeCache?: TypeCache,
+): -1 | 0 | 1 {
   // Check if terms are the same by reference
   if (termA === termB) {
     return 0;
@@ -38,25 +42,41 @@ export function orderTypes(termA: RDF.Term | undefined, termB: RDF.Term | undefi
   // Handle quoted triples
   if (termA.termType === 'Quad' && termB.termType === 'Quad') {
     const orderSubject = orderTypes(
-      termA.subject, termB.subject, strict, typeDiscoveryCallback, typeCache,
+      termA.subject,
+      termB.subject,
+      strict,
+      typeDiscoveryCallback,
+      typeCache,
     );
     if (orderSubject !== 0) {
       return orderSubject;
     }
     const orderPredicate = orderTypes(
-      termA.predicate, termB.predicate, strict, typeDiscoveryCallback, typeCache,
+      termA.predicate,
+      termB.predicate,
+      strict,
+      typeDiscoveryCallback,
+      typeCache,
     );
     if (orderPredicate !== 0) {
       return orderPredicate;
     }
     const orderObject = orderTypes(
-      termA.object, termB.object, strict, typeDiscoveryCallback, typeCache,
+      termA.object,
+      termB.object,
+      strict,
+      typeDiscoveryCallback,
+      typeCache,
     );
     if (orderObject !== 0) {
       return orderObject;
     }
     return orderTypes(
-      termA.graph, termB.graph, strict, typeDiscoveryCallback, typeCache,
+      termA.graph,
+      termB.graph,
+      strict,
+      typeDiscoveryCallback,
+      typeCache,
     );
   }
 
@@ -72,16 +92,20 @@ export function orderTypes(termA: RDF.Term | undefined, termB: RDF.Term | undefi
   return comparePrimitives(termA.value, termB.value);
 }
 
-function orderLiteralTypes(litA: RDF.Literal, litB: RDF.Literal,
-  typeDiscoveryCallback?: SuperTypeCallback, typeCache?: TypeCache): -1 | 0 | 1 {
+function orderLiteralTypes(
+  litA: RDF.Literal,
+  litB: RDF.Literal,
+  typeDiscoveryCallback?: SuperTypeCallback,
+  typeCache?: TypeCache,
+): -1 | 0 | 1 {
   const isGreater = regularFunctions[C.RegularOperator.GT];
   const isEqual = regularFunctions[C.RegularOperator.EQUAL];
   const context = {
     now: new Date(),
     functionArgumentsCache: {},
     superTypeProvider: {
-      discoverer: typeDiscoveryCallback || (() => 'term'),
-      cache: typeCache || new LRUCache({ max: 1_000 }),
+      discoverer: typeDiscoveryCallback ?? (() => 'term'),
+      cache: typeCache ?? new LRUCache({ max: 1_000 }),
     },
     defaultTimeZone: { zoneHours: 0, zoneMinutes: 0 },
   };
@@ -109,7 +133,6 @@ function orderLiteralTypes(litA: RDF.Literal, litB: RDF.Literal,
 }
 
 function comparePrimitives(valueA: any, valueB: any): -1 | 0 | 1 {
-  // eslint-disable-next-line @typescript-eslint/no-extra-parens
   return valueA === valueB ? 0 : (valueA < valueB ? -1 : 1);
 }
 

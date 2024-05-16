@@ -21,7 +21,7 @@ export interface IQueryOperationResultBase {
  */
 export interface IQueryOperationResultStream<
   M extends IMetadata<OrderItemsType>,
-  OrderItemsType extends RDF.Variable | RDF.QuadTermName
+  OrderItemsType extends RDF.Variable | RDF.QuadTermName,
 > extends IQueryOperationResultBase {
   /**
    * Callback that returns a promise that resolves to the metadata about the stream.

@@ -23,7 +23,8 @@ describe('evaluation of \'bound\'', () => {
 
   it('\'bound\' on unbounded variable returns false', async() => {
     const evaluated = await generalEvaluate({
-      expression: 'SELECT * WHERE { ?s ?p ?o FILTER(BOUND(?s))}', expectEquality: true,
+      expression: 'SELECT * WHERE { ?s ?p ?o FILTER(BOUND(?s))}',
+      expectEquality: true,
     });
     expect(evaluated.asyncResult).toEqual(DF.literal('false', DF.namedNode(DT.XSD_BOOLEAN)));
   });

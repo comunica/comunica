@@ -1,3 +1,5 @@
+import { BindingsFactory } from '@comunica/bindings-factory';
+import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { MediatorRdfJoin } from '@comunica/bus-rdf-join';
@@ -11,12 +13,13 @@ import type { Algebra } from 'sparqlalgebrajs';
  */
 export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediated<Algebra.LeftJoin> {
   public readonly mediatorJoin: MediatorRdfJoin;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   public constructor(args: IActorQueryOperationLeftJoinArgs) {
     super(args, 'leftjoin');
   }
 
-  public async testOperation(operation: Algebra.LeftJoin, context: IActionContext): Promise<IActorTest> {
+  public async testOperation(_operation: Algebra.LeftJoin, _context: IActionContext): Promise<IActorTest> {
     return true;
   }
 
@@ -38,11 +41,18 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
     if (operationOriginal.expression) {
       const rightMetadata = await entries[1].output.metadata();
       const expressionVariables = rightMetadata.variables;
-      const config = { ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation) };
+
+      const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context);
+      const config = { ...ActorQueryOperation.getAsyncExpressionContext(
+        context,
+        this.mediatorQueryOperation,
+        bindingsFactory,
+      ) };
       const evaluator = new AsyncEvaluator(operationOriginal.expression, config);
       const bindingsStream = joined.bindingsStream
         .transform({
           autoStart: false,
+          // eslint-disable-next-line ts/no-misused-promises
           transform: async(bindings: Bindings, done: () => void, push: (item: Bindings) => void) => {
             // If variables of the right-hand entry are missing, we skip expression evaluation
             if (!expressionVariables.every(variable => bindings.has(variable.value))) {
@@ -83,4 +93,8 @@ export interface IActorQueryOperationLeftJoinArgs extends IActorQueryOperationTy
    * A mediator for joining Bindings streams
    */
   mediatorJoin: MediatorRdfJoin;
+  /**
+   * A mediator for creating binding context merge handlers
+   */
+  mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 }

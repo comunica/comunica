@@ -1,5 +1,6 @@
 import type {
-  IActionRdfResolveHypermediaLinks, IActorRdfResolveHypermediaLinksArgs,
+  IActionRdfResolveHypermediaLinks,
+  IActorRdfResolveHypermediaLinksArgs,
   IActorRdfResolveHypermediaLinksOutput,
 } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import { ActorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
@@ -14,13 +15,13 @@ export class ActorRdfResolveHypermediaLinksNext extends ActorRdfResolveHypermedi
   }
 
   public async test(action: IActionRdfResolveHypermediaLinks): Promise<IActorTest> {
-    if (!action.metadata.next) {
+    if (!action.metadata.next || action.metadata.next.length === 0) {
       throw new Error(`Actor ${this.name} requires a 'next' metadata entry.`);
     }
     return true;
   }
 
   public async run(action: IActionRdfResolveHypermediaLinks): Promise<IActorRdfResolveHypermediaLinksOutput> {
-    return { links: [{ url: action.metadata.next }]};
+    return { links: action.metadata.next.map((url: string) => ({ url })) };
   }
 }

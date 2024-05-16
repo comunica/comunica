@@ -9,5 +9,5 @@ export class AsyncExtension implements AsyncExtensionExpression {
     public name: RDF.NamedNode,
     public args: Expression[],
     public apply: AsyncExtensionApplication,
-  ) { }
+  ) {}
 }

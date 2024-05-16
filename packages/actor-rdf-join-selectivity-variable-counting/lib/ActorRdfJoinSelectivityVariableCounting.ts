@@ -19,7 +19,7 @@ export class ActorRdfJoinSelectivityVariableCounting extends ActorRdfJoinSelecti
     super(args);
   }
 
-  public async test(action: IActionRdfJoinSelectivity): Promise<IMediatorTypeAccuracy> {
+  public async test(_action: IActionRdfJoinSelectivity): Promise<IMediatorTypeAccuracy> {
     return { accuracy: 0.5 };
   }
 

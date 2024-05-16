@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { ActorDereference } from '@comunica/bus-dereference';
 import { KeysCore, KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
@@ -50,7 +50,9 @@ describe('ActorDereferenceHttp', () => {
     });
 
     it('should not be able to create new ActorDereferenceHttp objects without \'new\'', () => {
-      expect(() => { (<any> ActorDereferenceHttp)(); }).toThrow();
+      expect(() => {
+        (<any> ActorDereferenceHttp)();
+      }).toThrow(`Class constructor ActorDereferenceHttp cannot be invoked without 'new'`);
     });
   });
 
@@ -104,6 +106,7 @@ describe('ActorDereferenceHttp', () => {
         let body = action.input === 'https://www.google.com/noweb' ?
           require('readable-stream-node-to-web')(dummyBodyStream) :
           dummyBodyStream;
+        // eslint-disable-next-line jest/prefer-spy-on
         body.cancel = jest.fn();
         if (action.input.includes('nobody')) {
           body = undefined;
@@ -124,16 +127,16 @@ describe('ActorDereferenceHttp', () => {
       });
     });
 
-    it('should test on https', () => {
-      return expect(actor.test({ url: 'https://www.google.com/', context })).resolves.toBeTruthy();
+    it('should test on https', async() => {
+      await expect(actor.test({ url: 'https://www.google.com/', context })).resolves.toBeTruthy();
     });
 
-    it('should test on http', () => {
-      return expect(actor.test({ url: 'http://www.google.com/', context })).resolves.toBeTruthy();
+    it('should test on http', async() => {
+      await expect(actor.test({ url: 'http://www.google.com/', context })).resolves.toBeTruthy();
     });
 
-    it('should not test on ftp', () => {
-      return expect(actor.test({ url: 'ftp://www.google.com/', context })).rejects.toBeTruthy();
+    it('should not test on ftp', async() => {
+      await expect(actor.test({ url: 'ftp://www.google.com/', context })).rejects.toBeTruthy();
     });
 
     it('should run with a web stream', async() => {
@@ -141,8 +144,8 @@ describe('ActorDereferenceHttp', () => {
         'content-type': 'a; charset=utf-8',
       });
       const output = await actor.run({ url: 'https://www.google.com/', context });
-      expect(output.url).toEqual('https://www.google.com/index.html');
-      expect(output.exists).toEqual(true);
+      expect(output.url).toBe('https://www.google.com/index.html');
+      expect(output.exists).toBe(true);
       expect(output.headers).toEqual(headers);
       // Expect(await arrayifyStream(output.quads)).toEqual([]);
     });
@@ -150,7 +153,7 @@ describe('ActorDereferenceHttp', () => {
     it('should run with a web stream with a known extension', async() => {
       const headers = new Headers({});
       const output = await actor.run({ url: 'https://www.google.com/abc.x', context });
-      expect(output.url).toEqual('https://www.google.com/abc.x');
+      expect(output.url).toBe('https://www.google.com/abc.x');
       expect(output.headers).toEqual(headers);
       // Expect(await arrayifyStream(output.quads)).toEqual([]);
     });
@@ -160,18 +163,17 @@ describe('ActorDereferenceHttp', () => {
         'content-type': '',
       });
       const output = await actor.run({ url: 'https://www.google.com/emptycontenttype', context });
-      expect(output.url).toEqual('https://www.google.com/index.html');
+      expect(output.url).toBe('https://www.google.com/index.html');
       expect(output.headers).toEqual(headers);
-      expect(output.mediaType).toEqual('');
+      expect(output.mediaType).toBe('');
     });
 
     it('should run with an text/plain content type', async() => {
-      const headers = new Headers({
-      });
+      const headers = new Headers({});
       const output = await actor.run({ url: 'https://www.google.com/plaincontenttype', context });
-      expect(output.url).toEqual('https://www.google.com/index.html');
+      expect(output.url).toBe('https://www.google.com/index.html');
       expect(output.headers).toEqual(new Headers({ 'content-type': 'text/plain' }));
-      expect(output.mediaType).toEqual(undefined);
+      expect(output.mediaType).toBeUndefined();
     });
 
     it('should run with an empty content type and default to given content type', async() => {
@@ -179,28 +181,28 @@ describe('ActorDereferenceHttp', () => {
         'content-type': '',
       });
       const output = await actor.run({ url: 'https://www.google.com/emptycontenttype', context });
-      expect(output.url).toEqual('https://www.google.com/index.html');
+      expect(output.url).toBe('https://www.google.com/index.html');
       expect(output.headers).toEqual(headers);
     });
 
     it('should run with a missing content type', async() => {
       const headers = new Headers({});
       const output = await actor.run({ url: 'https://www.google.com/missingcontenttype', context });
-      expect(output.url).toEqual('https://www.google.com/index.html');
+      expect(output.url).toBe('https://www.google.com/index.html');
       expect(output.headers).toEqual(headers);
     });
 
     it('should run with a web stream with another known extension', async() => {
       const headers = new Headers({});
       const output = await actor.run({ url: 'https://www.google.com/abc.y', context });
-      expect(output.url).toEqual('https://www.google.com/abc.y');
+      expect(output.url).toBe('https://www.google.com/abc.y');
       expect(output.headers).toEqual(headers);
     });
 
     it('should run with a web stream with a relative response URL', async() => {
       const headers = new Headers({});
       const output = await actor.run({ url: 'https://www.google.com/rel.txt', context });
-      expect(output.url).toEqual('https://www.google.com/relative');
+      expect(output.url).toBe('https://www.google.com/relative');
       expect(output.headers).toEqual(headers);
     });
 
@@ -209,31 +211,31 @@ describe('ActorDereferenceHttp', () => {
         'content-type': 'a; charset=utf-8',
       });
       const output = await actor.run({ url: 'https://www.google.com/noweb', context });
-      expect(output.url).toEqual('https://www.google.com/index.html');
+      expect(output.url).toBe('https://www.google.com/index.html');
       expect(output.headers).toEqual(headers);
     });
 
-    it('should not run on a 404', () => {
-      return expect(actor.run({ url: 'https://www.nogoogle.com/notfound', context })).rejects
+    it('should not run on a 404', async() => {
+      await expect(actor.run({ url: 'https://www.nogoogle.com/notfound', context })).rejects
         .toThrow(new Error('Could not retrieve https://www.nogoogle.com/notfound (HTTP status 400):\nDUMMY BODY'));
     });
 
-    it('should not run on a 404 without a body', () => {
-      return expect(actor.run({ url: 'https://www.nogoogle.com/nobody', context })).rejects
+    it('should not run on a 404 without a body', async() => {
+      await expect(actor.run({ url: 'https://www.nogoogle.com/nobody', context })).rejects
         .toThrow(new Error('Could not retrieve https://www.nogoogle.com/nobody (HTTP status 400):\nempty response'));
     });
 
     it('should run on a 404 when acceptErrors is true', async() => {
       const output = await actor.run({ url: 'https://www.nogoogle.com/notfound', acceptErrors: true, context });
-      expect(output.url).toEqual('https://www.google.com/index.html');
-      expect(output.exists).toEqual(false);
+      expect(output.url).toBe('https://www.google.com/index.html');
+      expect(output.exists).toBe(false);
     });
 
     it('should run on a 404 in lenient mode', async() => {
       context = new ActionContext({ [KeysInitQuery.lenient.name]: true });
-      const spy = jest.spyOn(actor, <any> 'logError');
+      const spy = jest.spyOn(actor, <any> 'logWarn');
       const output = await actor.run({ url: 'https://www.nogoogle.com/notfound', context });
-      expect(output.url).toEqual('https://www.nogoogle.com/notfound');
+      expect(output.url).toBe('https://www.nogoogle.com/notfound');
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
@@ -242,7 +244,7 @@ describe('ActorDereferenceHttp', () => {
         'content-type': 'a; charset=utf-8',
       });
       const output = await actor.run({ url: 'https://www.google.com/', method: 'PUT', context });
-      expect(output.url).toEqual('https://www.google.com/PUT.html');
+      expect(output.url).toBe('https://www.google.com/PUT.html');
       expect(output.headers).toEqual(headers);
     });
 
@@ -255,32 +257,32 @@ describe('ActorDereferenceHttp', () => {
         headers: new Headers({ SomeKey: 'V' }),
         context,
       });
-      expect(output.url).toEqual('https://www.google.com/V.html');
+      expect(output.url).toBe('https://www.google.com/V.html');
       expect(output.headers).toEqual(headers);
     });
 
     it('should run and receive stream errors', async() => {
       const output = await actor.run({ url: 'https://www.google.com/error', context });
-      expect(output.url).toEqual('https://www.google.com/error');
+      expect(output.url).toBe('https://www.google.com/error');
     });
 
-    it('should not run on http rejects', () => {
+    it('should not run on http rejects', async() => {
       context = new ActionContext({ httpReject: true });
-      return expect(actor.run({ url: 'https://www.google.com/', context }))
+      await expect(actor.run({ url: 'https://www.google.com/', context }))
         .rejects.toThrow(new Error('Http reject error'));
     });
 
     it('should run and ignore http rejects in lenient mode', async() => {
       context = new ActionContext({ httpReject: true, [KeysInitQuery.lenient.name]: true });
-      const spy = jest.spyOn(actor, <any> 'logError');
+      const spy = jest.spyOn(actor, <any> 'logWarn');
       const output = await actor.run({ url: 'https://www.google.com/', context });
-      expect(output.url).toEqual('https://www.google.com/');
+      expect(output.url).toBe('https://www.google.com/');
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
     it('should run and ignore http rejects in lenient mode and log them', async() => {
       const logger = new LoggerVoid();
-      const spy = jest.spyOn(logger, 'error');
+      const spy = jest.spyOn(logger, 'warn');
       context = new ActionContext({
         httpReject: true,
         [KeysInitQuery.lenient.name]: true,

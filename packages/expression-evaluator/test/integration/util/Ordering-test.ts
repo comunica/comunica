@@ -31,25 +31,31 @@ function dateTime(value: string): RDF.Literal {
   return DF.literal(value, DF.namedNode(DT.XSD_DATE_TIME));
 }
 
-function orderTestIsLower(litA: RDF.Term | undefined, litB: RDF.Term | undefined,
-  typeDiscoveryCallback?: SuperTypeCallback) {
-  expect(orderTypes(litA, litB, false, typeDiscoveryCallback)).toEqual(-1);
-  expect(orderTypes(litB, litA, false, typeDiscoveryCallback)).toEqual(1);
+function orderTestIsLower(
+  litA: RDF.Term | undefined,
+  litB: RDF.Term | undefined,
+  typeDiscoveryCallback?: SuperTypeCallback,
+) {
+  expect(orderTypes(litA, litB, false, typeDiscoveryCallback)).toBe(-1);
+  expect(orderTypes(litB, litA, false, typeDiscoveryCallback)).toBe(1);
 }
 
-function genericOrderTestLower(litA: RDF.Term | undefined, litB: RDF.Term | undefined,
-  typeDiscoveryCallback?: SuperTypeCallback) {
+function genericOrderTestLower(
+  litA: RDF.Term | undefined,
+  litB: RDF.Term | undefined,
+  typeDiscoveryCallback?: SuperTypeCallback,
+) {
   orderTestIsLower(litA, litB, typeDiscoveryCallback);
 }
 
 function orderTestIsEqual(litA: RDF.Term | undefined, litB: RDF.Term | undefined) {
-  expect(orderTypes(litA, litB)).toEqual(0);
-  expect(orderTypes(litB, litA)).toEqual(0);
+  expect(orderTypes(litA, litB)).toBe(0);
+  expect(orderTypes(litB, litA)).toBe(0);
 }
 
 describe('terms order', () => {
   it('undefined is equal to undefined', () => {
-    orderTestIsEqual(undefined, undefined); // eslint-disable-line unicorn/no-useless-undefined
+    orderTestIsEqual(undefined, undefined);
   });
 
   it('undefined is lower than everything else', () => {
@@ -103,10 +109,9 @@ describe('terms order', () => {
   it('dateTime type comparison', () => {
     genericOrderTestLower(dateTime('2000-01-01T00:00:00Z'), dateTime('2001-01-01T00:00:00Z'));
   });
-  // eslint-disable-next-line mocha/no-skipped-tests
-  it.skip('langString type comparison', () => {
-    // Skip for now, spec does not say anything about order of langStrings
-    genericOrderTestLower(DF.literal('a', 'de'), DF.literal('a', 'en'));
+  it('langString type comparison', () => {
+    // Spec does not say anything about order of langStrings, but we use Operator Extensibility to define it.
+    orderTestIsEqual(DF.literal('a', 'de'), DF.literal('a', 'en'));
     genericOrderTestLower(DF.literal('a', 'en'), DF.literal('b', 'en'));
   });
   it('boolean type comparison', () => {

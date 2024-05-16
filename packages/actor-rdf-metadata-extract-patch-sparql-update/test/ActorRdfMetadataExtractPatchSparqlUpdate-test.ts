@@ -1,4 +1,4 @@
-import type { Readable } from 'stream';
+import type { Readable } from 'node:stream';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { Headers } from 'cross-fetch';
@@ -22,37 +22,37 @@ describe('ActorRdfMetadataExtractPatchSparqlUpdate', () => {
       context = new ActionContext();
     });
 
-    it('should test', () => {
-      return expect(actor.test({ url: 'http://example.org/', metadata: input, requestTime: 0, context }))
+    it('should test', async() => {
+      await expect(actor.test({ url: 'http://example.org/', metadata: input, requestTime: 0, context }))
         .resolves.toBeTruthy();
     });
 
-    it('should run without empty headers', () => {
-      return expect(actor.run({ url: 'http://example.org/', metadata: input, requestTime: 0, context }))
+    it('should run without empty headers', async() => {
+      await expect(actor.run({ url: 'http://example.org/', metadata: input, requestTime: 0, context }))
         .resolves.toEqual({ metadata: {}});
     });
 
-    it('should run with empty headers', () => {
+    it('should run with empty headers', async() => {
       const headers = new Headers({});
-      return expect(actor.run({ url: 'http://example.org/', metadata: input, headers, requestTime: 0, context }))
+      await expect(actor.run({ url: 'http://example.org/', metadata: input, headers, requestTime: 0, context }))
         .resolves.toEqual({ metadata: {}});
     });
 
-    it('should run with invalid accept-patch header', () => {
+    it('should run with invalid accept-patch header', async() => {
       const headers = new Headers({ 'accept-patch': 'abc' });
-      return expect(actor.run({ url: 'http://example.org/', metadata: input, headers, requestTime: 0, context }))
+      await expect(actor.run({ url: 'http://example.org/', metadata: input, headers, requestTime: 0, context }))
         .resolves.toEqual({ metadata: {}});
     });
 
-    it('should run with valid accept-patch header', () => {
+    it('should run with valid accept-patch header', async() => {
       const headers = new Headers({ 'accept-patch': 'application/sparql-update' });
-      return expect(actor.run({ url: 'http://example.org/', metadata: input, headers, requestTime: 0, context }))
+      await expect(actor.run({ url: 'http://example.org/', metadata: input, headers, requestTime: 0, context }))
         .resolves.toEqual({ metadata: { patchSparqlUpdate: true }});
     });
 
-    it('should run with valid ms-author-via header', () => {
+    it('should run with valid ms-author-via header', async() => {
       const headers = new Headers({ 'ms-author-via': 'SPARQL' });
-      return expect(actor.run({ url: 'http://example.org/', metadata: input, headers, requestTime: 0, context }))
+      await expect(actor.run({ url: 'http://example.org/', metadata: input, headers, requestTime: 0, context }))
         .resolves.toEqual({ metadata: { patchSparqlUpdate: true }});
     });
   });

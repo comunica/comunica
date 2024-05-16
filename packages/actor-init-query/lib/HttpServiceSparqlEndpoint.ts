@@ -1,32 +1,33 @@
-/* eslint-disable import/no-nodejs-modules */
-import * as clusterUntyped from 'cluster';
-import type { Cluster } from 'cluster';
-import type { EventEmitter } from 'events';
-import * as http from 'http';
-import type { IncomingMessage, ServerResponse } from 'http';
-
-import * as querystring from 'querystring';
-import type { Writable } from 'stream';
-import * as url from 'url';
+/* eslint-disable import/no-nodejs-modules,ts/no-require-imports,ts/no-var-requires */
+import type { Cluster } from 'node:cluster';
+import type { EventEmitter } from 'node:events';
+import * as http from 'node:http';
+import type { IncomingMessage, ServerResponse } from 'node:http';
+import * as querystring from 'node:querystring';
+import type { Writable } from 'node:stream';
+import * as url from 'node:url';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { ICliArgsHandler, QueryQuads, QueryType } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
+
 import yargs from 'yargs';
-// eslint-disable-next-line import/no-useless-path-segments
-import { QueryEngineBase, QueryEngineFactoryBase } from '..';
-// eslint-disable-next-line import/no-useless-path-segments
+
 import type { IDynamicQueryEngineOptions } from '..';
+
+import { QueryEngineBase, QueryEngineFactoryBase } from '..';
+
 import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase';
 import { CliArgsHandlerHttp } from './cli/CliArgsHandlerHttp';
 
+// Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
+const clusterUntyped = require('node:cluster');
 const process: NodeJS.Process = require('process/');
-
 const quad = require('rdf-quad');
 
 // Force type on Cluster, because there are issues with the Node.js typings since v18
-const cluster: Cluster = <any> clusterUntyped;
+const cluster: Cluster = clusterUntyped;
 
 /**
  * An HTTP service that exposes a Comunica engine as a SPARQL endpoint.
@@ -76,7 +77,7 @@ export class HttpServiceSparqlEndpoint {
    * @param {ICliArgsHandler[]} cliArgsHandlers Enables manipulation of the CLI arguments and their processing.
    * @return {Promise<void>} A promise that resolves when the server has been started.
    */
-  public static async runArgsInProcess<Q>(
+  public static async runArgsInProcess(
     argv: string[],
     stdout: Writable,
     stderr: Writable,
@@ -89,10 +90,10 @@ export class HttpServiceSparqlEndpoint {
     const options = await HttpServiceSparqlEndpoint
       .generateConstructorArguments(argv, moduleRootPath, env, defaultConfigPath, stderr, exit, cliArgsHandlers);
 
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       new HttpServiceSparqlEndpoint(options || {}).run(stdout, stderr)
         .then(resolve)
-        .catch(error => {
+        .catch((error) => {
           stderr.write(error);
           exit(1);
           resolve();
@@ -102,22 +103,30 @@ export class HttpServiceSparqlEndpoint {
 
   /**
    * Takes parsed commandline arguments and turns them into an object used in the HttpServiceSparqlEndpoint constructor
-   * @param {args: minimist.ParsedArgs} args The commandline arguments that the script was called with
+   * @param {args: string[]} argv The commandline arguments that the script was called with
    * @param {string} moduleRootPath The path to the invoking module.
    * @param {NodeJS.ProcessEnv} env The process env to get constants from.
    * @param {string} defaultConfigPath The path to get the config from if none is defined in the environment.
+   * @param stderr The error stream.
+   * @param exit An exit process callback.
    * @param {ICliArgsHandler[]} cliArgsHandlers Enables manipulation of the CLI arguments and their processing.
    */
-  public static async generateConstructorArguments(argv: string[], moduleRootPath: string,
-    env: NodeJS.ProcessEnv, defaultConfigPath: string, stderr: Writable,
-    exit: (code: number) => void, cliArgsHandlers: ICliArgsHandler[]): Promise<IHttpServiceSparqlEndpointArgs> {
+  public static async generateConstructorArguments(
+    argv: string[],
+    moduleRootPath: string,
+    env: NodeJS.ProcessEnv,
+    defaultConfigPath: string,
+    stderr: Writable,
+    exit: (code: number) => void,
+    cliArgsHandlers: ICliArgsHandler[],
+  ): Promise<IHttpServiceSparqlEndpointArgs> {
     // Populate yargs arguments object
     cliArgsHandlers = [
       new CliArgsHandlerBase(),
       new CliArgsHandlerHttp(),
       ...cliArgsHandlers,
     ];
-    let argumentsBuilder = yargs({});
+    let argumentsBuilder = yargs([]);
     for (const cliArgsHandler of cliArgsHandlers) {
       argumentsBuilder = cliArgsHandler.populateYargs(argumentsBuilder);
     }
@@ -128,7 +137,7 @@ export class HttpServiceSparqlEndpoint {
       args = await argumentsBuilder.parse(argv);
     } catch (error: unknown) {
       stderr.write(`${await argumentsBuilder.getHelp()}\n\n${(<Error> error).message}\n`);
-      return exit(1)!;
+      return <any> exit(1);
     }
 
     // Invoke args handlers to process any remaining args
@@ -193,7 +202,7 @@ export class HttpServiceSparqlEndpoint {
     }
 
     // Attach listeners to each new worker
-    cluster.on('listening', worker => {
+    cluster.on('listening', (worker) => {
       // Respawn crashed workers
       worker.once('exit', (code, signal) => {
         if (!worker.exitedAfterDisconnect) {
@@ -253,6 +262,7 @@ export class HttpServiceSparqlEndpoint {
     }
 
     // Start the server
+    // eslint-disable-next-line ts/no-misused-promises
     const server = http.createServer(this.handleRequest.bind(this, engine, variants, stdout, stderr));
     server.listen(this.port);
     stderr.write(`Server worker (${process.pid}) running on http://localhost:${this.port}/sparql\n`);
@@ -267,6 +277,7 @@ export class HttpServiceSparqlEndpoint {
     });
 
     // Subscribe to shutdown messages
+    // eslint-disable-next-line ts/no-misused-promises
     process.on('message', async(message: string): Promise<void> => {
       if (message === 'shutdown') {
         stderr.write(`Shutting down worker ${process.pid} with ${openConnections.size} open connections.\n`);
@@ -285,7 +296,8 @@ export class HttpServiceSparqlEndpoint {
     });
 
     // Catch global errors, and cleanly close open connections
-    process.on('uncaughtException', async error => {
+    // eslint-disable-next-line ts/no-misused-promises
+    process.on('uncaughtException', async(error) => {
       stderr.write(`Terminating worker ${process.pid} with ${openConnections.size} open connections due to uncaught exception.\n`);
       stderr.write(error.stack);
 
@@ -327,21 +339,20 @@ export class HttpServiceSparqlEndpoint {
     const mediaType: string = variant && variant.qts > 2 ? variant.type : null;
 
     // Verify the path
+    // eslint-disable-next-line node/no-deprecated-api
     const requestUrl = url.parse(request.url ?? '', true);
     if (requestUrl.pathname === '/' || request.url === '/') {
       stdout.write('[301] Permanently moved. Redirected to /sparql.');
-      response.writeHead(301,
-        { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON,
-          'Access-Control-Allow-Origin': '*',
-          Location: `http://localhost:${this.port}/sparql${requestUrl.search || ''}` });
+      response.writeHead(301, { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*', Location: `http://localhost:${this.port}/sparql${requestUrl.search ?? ''}` });
       response.end(JSON.stringify({ message: 'Queries are accepted on /sparql. Redirected.' }));
       return;
     }
     if (requestUrl.pathname !== '/sparql') {
       stdout.write('[404] Resource not found. Queries are accepted on /sparql.\n');
-      response.writeHead(404,
-        { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON,
-          'Access-Control-Allow-Origin': '*' });
+      response.writeHead(
+        404,
+        { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*' },
+      );
       response.end(JSON.stringify({ message: 'Resource not found. Queries are accepted on /sparql.' }));
       return;
     }
@@ -391,8 +402,10 @@ export class HttpServiceSparqlEndpoint {
         break;
       default:
         stdout.write(`[405] ${request.method} to ${request.url}\n`);
-        response.writeHead(405,
-          { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*' });
+        response.writeHead(
+          405,
+          { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*' },
+        );
         response.end(JSON.stringify({ message: 'Incorrect HTTP method' }));
     }
   }
@@ -453,8 +466,10 @@ export class HttpServiceSparqlEndpoint {
       }
     } catch (error: unknown) {
       stdout.write('[400] Bad request\n');
-      response.writeHead(400,
-        { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' });
+      response.writeHead(
+        400,
+        { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' },
+      );
       response.end((<Error> error).message);
       return;
     }
@@ -497,8 +512,10 @@ export class HttpServiceSparqlEndpoint {
       eventEmitter = data;
     } catch {
       stdout.write('[400] Bad request, invalid media type\n');
-      response.writeHead(400,
-        { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' });
+      response.writeHead(
+        400,
+        { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' },
+      );
       response.end('The response for the given query could not be serialized for the requested media type\n');
     }
 
@@ -529,7 +546,6 @@ export class HttpServiceSparqlEndpoint {
       return;
     }
 
-    // eslint-disable-next-line id-length
     const s = request.url;
     const sd = 'http://www.w3.org/ns/sparql-service-description#';
     const quads: RDF.Quad[] = [
@@ -566,8 +582,10 @@ export class HttpServiceSparqlEndpoint {
       eventEmitter = data;
     } catch {
       stdout.write('[400] Bad request, invalid media type\n');
-      response.writeHead(400,
-        { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' });
+      response.writeHead(
+        400,
+        { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' },
+      );
       response.end('The response for the given query could not be serialized for the requested media type\n');
       return;
     }
@@ -582,7 +600,7 @@ export class HttpServiceSparqlEndpoint {
    */
   public stopResponse(response: http.ServerResponse, queryId: number, eventEmitter?: EventEmitter): void {
     response.on('close', killClient);
-    // eslint-disable-next-line @typescript-eslint/no-this-alias,consistent-this
+    // eslint-disable-next-line ts/no-this-alias
     const self = this;
     function killClient(): void {
       if (eventEmitter) {
@@ -618,7 +636,7 @@ export class HttpServiceSparqlEndpoint {
       let body = '';
       request.setEncoding('utf8');
       request.on('error', reject);
-      request.on('data', chunk => {
+      request.on('data', (chunk) => {
         body += chunk;
       });
       request.on('end', () => {
@@ -637,7 +655,7 @@ export class HttpServiceSparqlEndpoint {
               try {
                 context = JSON.parse(<string>bodyStructure.context);
               } catch (error: unknown) {
-                reject(new Error(`Invalid POST body with context received ('${bodyStructure.context}'): ${(<Error> error).message}`));
+                reject(new Error(`Invalid POST body with context received ('${(<any> bodyStructure).context}'): ${(<Error> error).message}`));
               }
             }
             if (bodyStructure.query) {

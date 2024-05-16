@@ -59,7 +59,7 @@ export class CliArgsHandlerHttp implements ICliArgsHandler {
           default: false,
         },
       })
-      .check(args => {
+      .check((args) => {
         if (args.version) {
           return true;
         }
@@ -70,7 +70,7 @@ export class CliArgsHandlerHttp implements ICliArgsHandler {
       });
   }
 
-  public async handleArgs(args: Record<string, any>, context: Record<string, any>): Promise<void> {
+  public async handleArgs(_args: Record<string, any>, _context: Record<string, any>): Promise<void> {
     // Do nothing
   }
 }

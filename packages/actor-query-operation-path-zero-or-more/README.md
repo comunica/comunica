@@ -22,14 +22,15 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-path-zero-or-more/^2.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-path-zero-or-more/^3.0.0/components/context.jsonld"
   ],
   "actors": [
     ...
     {
       "@id": "urn:comunica:default:query-operation/actors#path-zero-or-more",
       "@type": "ActorQueryOperationPathZeroOrMore",
-      "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" }
+      "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
+      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" }
     }
   ]
 }
@@ -38,3 +39,4 @@ After installing, this package can be added to your engine's configuration as fo
 ### Config Parameters
 
 * `mediatorQueryOperation`: A mediator over the [Query Operation bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation).
+* `mediatorMergeBindingsContext`: A mediator over the [Merge Bindings Context bus](https://github.com/comunica/comunica/tree/master/packages/bus-merge-bindings-context).

@@ -19,7 +19,7 @@ describe('adjust time duration', () => {
    */
 
   // ADJUST has jet to be implemented
-  // eslint-disable-next-line mocha/no-skipped-tests
+  // eslint-disable-next-line jest/no-disabled-tests
   describe.skip('respect the adjust_time-01 spec', () => {
     runTestTable({
       operation: 'ADJUST',
@@ -31,7 +31,6 @@ describe('adjust time duration', () => {
         '${timeTyped('10:00:00-07:00')}' '${dayTimeDurationTyped('PT10H')}' = '${timeTyped('03:00:00+10:00')}'
         '${timeTyped('10:00:00')}' '' = '${timeTyped('10:00:00')}'
         '${timeTyped('10:00:00-07:00')}' '' = '${timeTyped('10:00:00')}'
-        
       `,
     });
   });

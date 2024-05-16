@@ -1,6 +1,0 @@
-node_modules
-coverage
-
-**/*.js
-**/*.d.ts
-**/*.js.map

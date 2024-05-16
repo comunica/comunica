@@ -33,8 +33,8 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
       ]);
     });
 
-    it('should test', () => {
-      return expect(actor.test({
+    it('should test', async() => {
+      await expect(actor.test({
         quadStreamInsert: <any> null,
         quadStreamDelete: <any> null,
         context: new ActionContext(
@@ -43,8 +43,8 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
       })).resolves.toBeTruthy();
     });
 
-    it('should test on raw store form', () => {
-      return expect(actor.test({
+    it('should test on raw store form', async() => {
+      await expect(actor.test({
         quadStreamInsert: <any> null,
         quadStreamDelete: <any> null,
         context: new ActionContext(
@@ -53,16 +53,16 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
       })).resolves.toBeTruthy();
     });
 
-    it('should not test without a destination', () => {
-      return expect(actor.test({
+    it('should not test without a destination', async() => {
+      await expect(actor.test({
         quadStreamInsert: <any> null,
         quadStreamDelete: <any> null,
         context: new ActionContext({}),
       })).rejects.toBeTruthy();
     });
 
-    it('should not test on an invalid destination', () => {
-      return expect(actor.test({
+    it('should not test on an invalid destination', async() => {
+      await expect(actor.test({
         quadStreamInsert: <any> null,
         quadStreamDelete: <any> null,
         context: new ActionContext(
@@ -71,8 +71,8 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
       })).rejects.toBeTruthy();
     });
 
-    it('should not test on an invalid destination type', () => {
-      return expect(actor.test({
+    it('should not test on an invalid destination type', async() => {
+      await expect(actor.test({
         quadStreamInsert: <any> null,
         quadStreamDelete: <any> null,
         context: new ActionContext(
@@ -81,8 +81,8 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
       })).rejects.toBeTruthy();
     });
 
-    it('should not test on no destination', () => {
-      return expect(actor.test({
+    it('should not test on no destination', async() => {
+      await expect(actor.test({
         quadStreamInsert: <any> null,
         quadStreamDelete: <any> null,
         context: new ActionContext(
@@ -91,15 +91,15 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
       })).rejects.toBeTruthy();
     });
 
-    it('should get the destination', () => {
-      return expect((<any> actor).getDestination(new ActionContext({
+    it('should get the destination', async() => {
+      await expect((<any> actor).getDestination(new ActionContext({
         [KeysRdfUpdateQuads.destination.name]: { type: 'rdfjsStore', value: store },
       })))
         .resolves.toMatchObject(new RdfJsQuadDestination(store));
     });
 
-    it('should get the destination on raw destination form', () => {
-      return expect((<any> actor).getDestination(new ActionContext({
+    it('should get the destination on raw destination form', async() => {
+      await expect((<any> actor).getDestination(new ActionContext({
         [KeysRdfUpdateQuads.destination.name]: store,
       })))
         .resolves.toMatchObject(new RdfJsQuadDestination(store));
@@ -111,7 +111,7 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
       const quadStreamDelete = undefined;
       const { execute } = await actor.run({ quadStreamInsert, quadStreamDelete, context });
       await expect(execute()).resolves.toBeUndefined();
-      expect(await arrayifyStream(store.match())).toBeRdfIsomorphic([
+      await expect(arrayifyStream(store.match())).resolves.toBeRdfIsomorphic([
         DF.quad(DF.namedNode('sd1'), DF.namedNode('pd1'), DF.namedNode('od1')),
       ]);
     });
@@ -127,7 +127,7 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
         ]);
         const { execute } = await actor.run({ quadStreamInsert, quadStreamDelete, context });
         await expect(execute()).resolves.toBeUndefined();
-        expect(await arrayifyStream(store.match())).toBeRdfIsomorphic([
+        await expect(arrayifyStream(store.match())).resolves.toBeRdfIsomorphic([
           DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
         ]);
       });
@@ -141,7 +141,7 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
         };
         const { execute } = await actor.run({ deleteGraphs, context });
         await expect(execute()).resolves.toBeUndefined();
-        expect(await arrayifyStream(store.match())).toBeRdfIsomorphic([]);
+        await expect(arrayifyStream(store.match())).resolves.toBeRdfIsomorphic([]);
       });
 
       it('should run for a named graph graph', async() => {
@@ -157,7 +157,7 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
         };
         const { execute } = await actor.run({ deleteGraphs, context });
         await expect(execute()).resolves.toBeUndefined();
-        expect(await arrayifyStream(store.match())).toBeRdfIsomorphic([
+        await expect(arrayifyStream(store.match())).resolves.toBeRdfIsomorphic([
           DF.quad(DF.namedNode('sd1'), DF.namedNode('pd1'), DF.namedNode('od1')),
           DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'), DF.namedNode('g2')),
         ]);
@@ -176,7 +176,7 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
         };
         const { execute } = await actor.run({ deleteGraphs, context });
         await expect(execute()).resolves.toBeUndefined();
-        expect(await arrayifyStream(store.match())).toBeRdfIsomorphic([
+        await expect(arrayifyStream(store.match())).resolves.toBeRdfIsomorphic([
           DF.quad(DF.namedNode('sd1'), DF.namedNode('pd1'), DF.namedNode('od1')),
         ]);
       });
@@ -194,7 +194,7 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
         };
         const { execute } = await actor.run({ deleteGraphs, context });
         await expect(execute()).resolves.toBeUndefined();
-        expect(await arrayifyStream(store.match())).toBeRdfIsomorphic([]);
+        await expect(arrayifyStream(store.match())).resolves.toBeRdfIsomorphic([]);
       });
     });
 
@@ -229,7 +229,7 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
           requireNonExistence: true,
         };
         const { execute } = await actor.run({ createGraphs, context });
-        await expect(execute()).rejects.toThrowError('Unable to create graph g1 as it already exists');
+        await expect(execute()).rejects.toThrow('Unable to create graph g1 as it already exists');
       });
 
       it('should run for an existing graph without requireNonExistence', async() => {

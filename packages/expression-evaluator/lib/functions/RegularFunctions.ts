@@ -146,8 +146,10 @@ const subtraction = {
     .set([ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DAY_TIME_DURATION ], () =>
       ([ date, dur ]: [ E.DateTimeLiteral, E.DayTimeDurationLiteral ]) =>
         // https://www.w3.org/TR/xpath-functions/#func-subtract-dayTimeDuration-from-dateTime
-        new E.DateTimeLiteral(addDurationToDateTime(date.typedValue,
-          defaultedDurationRepresentation(negateDuration(dur.typedValue)))))
+        new E.DateTimeLiteral(addDurationToDateTime(
+          date.typedValue,
+          defaultedDurationRepresentation(negateDuration(dur.typedValue)),
+        )))
     .copy({
       from: [ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DAY_TIME_DURATION ],
       to: [ TypeURL.XSD_DATE_TIME, TypeURL.XSD_YEAR_MONTH_DURATION ],
@@ -155,8 +157,10 @@ const subtraction = {
     .set([ TypeURL.XSD_DATE, TypeURL.XSD_DAY_TIME_DURATION ], () =>
       ([ date, dur ]: [ E.DateLiteral, E.DayTimeDurationLiteral ]) =>
         // https://www.w3.org/TR/xpath-functions/#func-subtract-dayTimeDuration-from-date
-        new E.DateLiteral(addDurationToDateTime(defaultedDateTimeRepresentation(date.typedValue),
-          defaultedDurationRepresentation(negateDuration(dur.typedValue)))))
+        new E.DateLiteral(addDurationToDateTime(
+          defaultedDateTimeRepresentation(date.typedValue),
+          defaultedDurationRepresentation(negateDuration(dur.typedValue)),
+        )))
     .copy({
       from: [ TypeURL.XSD_DATE, TypeURL.XSD_DAY_TIME_DURATION ],
       to: [ TypeURL.XSD_DATE, TypeURL.XSD_YEAR_MONTH_DURATION ],
@@ -164,8 +168,10 @@ const subtraction = {
     .set([ TypeURL.XSD_TIME, TypeURL.XSD_DAY_TIME_DURATION ], () =>
       ([ time, dur ]: [ E.TimeLiteral, E.DayTimeDurationLiteral ]) =>
         // https://www.w3.org/TR/xpath-functions/#func-subtract-dayTimeDuration-from-date
-        new E.TimeLiteral(addDurationToDateTime(defaultedDateTimeRepresentation(time.typedValue),
-          defaultedDurationRepresentation(negateDuration(dur.typedValue)))))
+        new E.TimeLiteral(addDurationToDateTime(
+          defaultedDateTimeRepresentation(time.typedValue),
+          defaultedDurationRepresentation(negateDuration(dur.typedValue)),
+        )))
     .collect(),
 };
 
@@ -374,7 +380,7 @@ const STR = {
 const lang = {
   arity: 1,
   overloads: declare(C.RegularOperator.LANG)
-    .onLiteral1(() => lit => string(lit.language || ''))
+    .onLiteral1(() => lit => string(lit.language ?? ''))
     .collect(),
 };
 
@@ -394,13 +400,13 @@ const datatype = {
 const IRI = {
   arity: 1,
   overloads: declare(C.RegularOperator.IRI)
-    .set([ 'namedNode' ], context => args => {
+    .set([ 'namedNode' ], context => (args) => {
       const lit = <E.NamedNode> args[0];
-      const iri = resolveRelativeIri(lit.str(), context.baseIRI || '');
+      const iri = resolveRelativeIri(lit.str(), context.baseIRI ?? '');
       return new E.NamedNode(iri);
     })
-    .onString1(context => lit => {
-      const iri = resolveRelativeIri(lit.str(), context.baseIRI || '');
+    .onString1(context => (lit) => {
+      const iri = resolveRelativeIri(lit.str(), context.baseIRI ?? '');
       return new E.NamedNode(iri);
     })
     .collect(),
@@ -487,15 +493,21 @@ const SUBSTR = {
         return langString(sub, source.language);
       },
     )
-    .onTernaryTyped([ TypeURL.XSD_STRING, TypeURL.XSD_INTEGER, TypeURL.XSD_INTEGER ],
-      () => (source: string, startingLoc: number, length: number) =>
-        string([ ...source ].slice(startingLoc - 1, length + startingLoc - 1).join('')))
-    .onTernary([ TypeURL.RDF_LANG_STRING, TypeURL.XSD_INTEGER, TypeURL.XSD_INTEGER ],
-      () => (source: E.LangStringLiteral, startingLoc: E.NumericLiteral, length: E.NumericLiteral) => {
-        const sub = [ ...source.typedValue ].slice(startingLoc.typedValue - 1,
-          length.typedValue + startingLoc.typedValue - 1).join('');
-        return langString(sub, source.language);
-      })
+    .onTernaryTyped([
+      TypeURL.XSD_STRING,
+      TypeURL.XSD_INTEGER,
+      TypeURL.XSD_INTEGER,
+    ], () => (source: string, startingLoc: number, length: number) =>
+      string([ ...source ].slice(startingLoc - 1, length + startingLoc - 1).join('')))
+    .onTernary([
+      TypeURL.RDF_LANG_STRING,
+      TypeURL.XSD_INTEGER,
+      TypeURL.XSD_INTEGER,
+    ], () => (source: E.LangStringLiteral, startingLoc: E.NumericLiteral, length: E.NumericLiteral) => {
+      const sub = [ ...source.typedValue ]
+        .slice(startingLoc.typedValue - 1, length.typedValue + startingLoc.typedValue - 1).join('');
+      return langString(sub, source.language);
+    })
     .collect(),
 };
 
@@ -677,10 +689,12 @@ const langmatches = {
     ).collect(),
 };
 
-const regex2: (context: ICompleteSharedContext) => (text: string, pattern: string) => E.BooleanLiteral =
-  () => (text: string, pattern: string) => bool(X.matches(text, pattern));
-const regex3: (context: ICompleteSharedContext) => (text: string, pattern: string, flags: string) => E.BooleanLiteral =
-  () => (text: string, pattern: string, flags: string) => bool(X.matches(text, pattern, flags));
+function regex2(): (text: string, pattern: string) => E.BooleanLiteral {
+  return (text: string, pattern: string) => bool(X.matches(text, pattern));
+}
+function regex3(): (text: string, pattern: string, flags: string) => E.BooleanLiteral {
+  return (text: string, pattern: string, flags: string) => bool(X.matches(text, pattern, flags));
+}
 /**
  * https://www.w3.org/TR/sparql11-query/#func-regex
  */
@@ -878,7 +892,7 @@ const timezone = {
   arity: 1,
   overloads: declare(C.RegularOperator.TIMEZONE)
     .onDateTime1(
-      () => date => {
+      () => (date) => {
         const duration: Partial<IDayTimeDurationRepresentation> = {
           hours: date.typedValue.zoneHours,
           minutes: date.typedValue.zoneMinutes,

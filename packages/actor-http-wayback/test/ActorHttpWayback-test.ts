@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import type { MediatorHttp, IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
 import { KeysHttpWayback, KeysHttpProxy } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
@@ -58,17 +58,17 @@ describe('ActorHttpInterceptWayback', () => {
         await expect(actor.test({
           context,
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
-        })).resolves.toEqual(true);
+        })).resolves.toBe(true);
 
         await expect(actor.test({
           context: context.delete(KeysHttpWayback.recoverBrokenLinks),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
-        })).resolves.toEqual(true);
+        })).resolves.toBe(true);
 
         await expect(actor.test({
           context: context.set(KeysHttpWayback.recoverBrokenLinks, false),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
-        })).resolves.toEqual(true);
+        })).resolves.toBe(true);
       });
 
       it('should return 200 on foaf when wayback machine is already the url', async() => {
@@ -77,8 +77,8 @@ describe('ActorHttpInterceptWayback', () => {
           input: 'http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf',
         });
 
-        expect(result.status).toEqual(200);
-        expect(result.url).toEqual('http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf');
+        expect(result.status).toBe(200);
+        expect(result.url).toBe('http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf');
       });
 
       it('should return 200 on foaf', async() => {
@@ -87,18 +87,20 @@ describe('ActorHttpInterceptWayback', () => {
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
         });
 
-        expect(result.status).toEqual(200);
-        expect(result.url).toEqual('http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf');
+        expect(result.status).toBe(200);
+        expect(result.url).toBe('http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf');
       });
 
       it('should return 200 on foaf with existing proxy', async() => {
         const result = await actor.run({
-          context: context.set(KeysHttpProxy.httpProxyHandler, { async getProxy(url: IRequest) { return url; } }),
+          context: context.set(KeysHttpProxy.httpProxyHandler, { async getProxy(url: IRequest) {
+            return url;
+          } }),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
         });
 
-        expect(result.status).toEqual(200);
-        expect(result.url).toEqual('http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf');
+        expect(result.status).toBe(200);
+        expect(result.url).toBe('http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf');
       });
     });
 
@@ -141,17 +143,17 @@ describe('ActorHttpInterceptWayback', () => {
         await expect(actor.test({
           context,
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
-        })).resolves.toEqual(true);
+        })).resolves.toBe(true);
 
         await expect(actor.test({
           context: context.delete(KeysHttpWayback.recoverBrokenLinks),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
-        })).resolves.toEqual(true);
+        })).resolves.toBe(true);
 
         await expect(actor.test({
           context: context.set(KeysHttpWayback.recoverBrokenLinks, false),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
-        })).resolves.toEqual(true);
+        })).resolves.toBe(true);
       });
 
       it('should return 200 on foaf when wayback machine is already the url', async() => {
@@ -160,8 +162,8 @@ describe('ActorHttpInterceptWayback', () => {
           input: 'http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf',
         });
 
-        expect(result.status).toEqual(200);
-        expect(result.url).toEqual('http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf');
+        expect(result.status).toBe(200);
+        expect(result.url).toBe('http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf');
       });
 
       it('should return 200 on foaf', async() => {
@@ -170,18 +172,20 @@ describe('ActorHttpInterceptWayback', () => {
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
         });
 
-        expect(result.status).toEqual(200);
-        expect(result.url).toEqual('http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf');
+        expect(result.status).toBe(200);
+        expect(result.url).toBe('http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf');
       });
 
       it('should return 200 on foaf with existing proxy', async() => {
         const result = await actor.run({
-          context: context.set(KeysHttpProxy.httpProxyHandler, { async getProxy(url: IRequest) { return url; } }),
+          context: context.set(KeysHttpProxy.httpProxyHandler, { async getProxy(url: IRequest) {
+            return url;
+          } }),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
         });
 
-        expect(result.status).toEqual(200);
-        expect(result.url).toEqual('http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf');
+        expect(result.status).toBe(200);
+        expect(result.url).toBe('http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf');
       });
     });
 
@@ -223,27 +227,29 @@ describe('ActorHttpInterceptWayback', () => {
         await expect(actor.test({
           context,
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
-        })).resolves.toEqual(true);
+        })).resolves.toBe(true);
 
         await expect(actor.test({
           context: context.delete(KeysHttpWayback.recoverBrokenLinks),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
-        })).resolves.toEqual(true);
+        })).resolves.toBe(true);
 
         await expect(actor.test({
           context: context.set(KeysHttpWayback.recoverBrokenLinks, false),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
-        })).resolves.toEqual(true);
+        })).resolves.toBe(true);
       });
 
       it('should return foaf url when foaf is 200', async() => {
         const result = await actor.run({
-          context: context.set(KeysHttpProxy.httpProxyHandler, { async getProxy(url: IRequest) { return url; } }),
+          context: context.set(KeysHttpProxy.httpProxyHandler, { async getProxy(url: IRequest) {
+            return url;
+          } }),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
         });
 
-        expect(result.status).toEqual(200);
-        expect(result.url).toEqual('http://xmlns.com/foaf/spec/20140114.rdf');
+        expect(result.status).toBe(200);
+        expect(result.url).toBe('http://xmlns.com/foaf/spec/20140114.rdf');
       });
     });
 
@@ -285,27 +291,29 @@ describe('ActorHttpInterceptWayback', () => {
         await expect(actor.test({
           context,
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
-        })).resolves.toEqual(true);
+        })).resolves.toBe(true);
 
         await expect(actor.test({
           context: context.delete(KeysHttpWayback.recoverBrokenLinks),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
-        })).resolves.toEqual(true);
+        })).resolves.toBe(true);
 
         await expect(actor.test({
           context: context.set(KeysHttpWayback.recoverBrokenLinks, false),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
-        })).resolves.toEqual(true);
+        })).resolves.toBe(true);
       });
 
       it('should return foaf url when foaf is 200', async() => {
         const result = await actor.run({
-          context: context.set(KeysHttpProxy.httpProxyHandler, { async getProxy(url: IRequest) { return url; } }),
+          context: context.set(KeysHttpProxy.httpProxyHandler, { async getProxy(url: IRequest) {
+            return url;
+          } }),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
         });
 
-        expect(result.status).toEqual(200);
-        expect(result.url).toEqual('http://xmlns.com/foaf/spec/20140114.rdf');
+        expect(result.status).toBe(200);
+        expect(result.url).toBe('http://xmlns.com/foaf/spec/20140114.rdf');
       });
     });
 
@@ -347,27 +355,29 @@ describe('ActorHttpInterceptWayback', () => {
         await expect(actor.test({
           context,
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
-        })).resolves.toEqual(true);
+        })).resolves.toBe(true);
 
         await expect(actor.test({
           context: context.delete(KeysHttpWayback.recoverBrokenLinks),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
-        })).resolves.toEqual(true);
+        })).resolves.toBe(true);
 
         await expect(actor.test({
           context: context.set(KeysHttpWayback.recoverBrokenLinks, false),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
-        })).resolves.toEqual(true);
+        })).resolves.toBe(true);
       });
 
       it('should return foaf url when wayback gives a 404', async() => {
         const result = await actor.run({
-          context: context.set(KeysHttpProxy.httpProxyHandler, { async getProxy(url: IRequest) { return url; } }),
+          context: context.set(KeysHttpProxy.httpProxyHandler, { async getProxy(url: IRequest) {
+            return url;
+          } }),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
         });
 
-        expect(result.status).toEqual(404);
-        expect(result.url).toEqual('http://xmlns.com/foaf/spec/20140114.rdf');
+        expect(result.status).toBe(404);
+        expect(result.url).toBe('http://xmlns.com/foaf/spec/20140114.rdf');
       });
     });
 
@@ -412,12 +422,14 @@ describe('ActorHttpInterceptWayback', () => {
 
       it('should return foaf url when wayback gives a 404', async() => {
         const result = await actor.run({
-          context: context.set(KeysHttpProxy.httpProxyHandler, { async getProxy(url: IRequest) { return url; } }),
+          context: context.set(KeysHttpProxy.httpProxyHandler, { async getProxy(url: IRequest) {
+            return url;
+          } }),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
         });
 
-        expect(result.status).toEqual(404);
-        expect(result.url).toEqual('http://xmlns.com/foaf/spec/20140114.rdf');
+        expect(result.status).toBe(404);
+        expect(result.url).toBe('http://xmlns.com/foaf/spec/20140114.rdf');
       });
     });
 
@@ -449,6 +461,10 @@ describe('ActorHttpInterceptWayback', () => {
                   async read() {
                     return { done: true };
                   },
+                  async cancel() {
+                    /* Noop */
+                  },
+                  closed: new Promise(() => { /* Noop */ }),
                 };
               },
             };
@@ -480,12 +496,14 @@ describe('ActorHttpInterceptWayback', () => {
 
       it('should return foaf url when wayback gives a 404', async() => {
         const result = await actor.run({
-          context: context.set(KeysHttpProxy.httpProxyHandler, { async getProxy(url: IRequest) { return url; } }),
+          context: context.set(KeysHttpProxy.httpProxyHandler, { async getProxy(url: IRequest) {
+            return url;
+          } }),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
         });
 
-        expect(result.status).toEqual(404);
-        expect(result.url).toEqual('http://xmlns.com/foaf/spec/20140114.rdf');
+        expect(result.status).toBe(404);
+        expect(result.url).toBe('http://xmlns.com/foaf/spec/20140114.rdf');
       });
     });
   });

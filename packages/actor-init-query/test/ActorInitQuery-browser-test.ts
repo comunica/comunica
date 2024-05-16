@@ -1,49 +1,36 @@
-import { Transform } from 'stream';
+import { Transform } from 'node:stream';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import type { IActorInitQueryBaseArgs } from '../lib';
 import { ActorInitQuery } from '../lib/ActorInitQuery-browser';
 
 describe('ActorInitQuery', () => {
   let bus: any;
-  let logger: any;
-  let mediatorOptimizeQueryOperation: any;
-  let mediatorQueryOperation: any;
-  let mediatorSparqlParse: any;
+  let mediatorQueryProcess: any;
   let mediatorSparqlSerialize: any;
   let mediatorHttpInvalidate: any;
   let context: IActionContext;
-  const mediatorContextPreprocess: any = {
-    mediate: (action: any) => Promise.resolve(action),
-  };
-  const contextKeyShortcuts = {
-    initialBindings: '@comunica/actor-init-query:initialBindings',
-    log: '@comunica/core:log',
-    queryFormat: '@comunica/actor-init-query:queryFormat',
-    source: '@comunica/bus-rdf-resolve-quad-pattern:source',
-    sources: '@comunica/bus-rdf-resolve-quad-pattern:sources',
-  };
   const defaultQueryInputFormat = 'sparql';
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    logger = null;
-    mediatorOptimizeQueryOperation = {
-      mediate: (arg: any) => Promise.resolve(arg),
+    mediatorQueryProcess = <any>{
+      mediate: jest.fn((action: any) => {
+        return Promise.reject(new Error('Invalid query'));
+      }),
     };
-    mediatorQueryOperation = {};
-    mediatorSparqlParse = {};
     mediatorSparqlSerialize = {
       mediate: (arg: any) => Promise.resolve(arg.mediaTypes ?
-        { mediaTypes: arg } :
-        {
-          handle: {
-            data: arg.handle.bindingsStream
-              .pipe(new Transform({
-                objectMode: true,
-                transform: (e: any, enc: any, cb: any) => cb(null, JSON.stringify(e)),
-              })),
-          },
-        }),
+          { mediaTypes: arg } :
+          {
+            handle: {
+              data: arg.handle.bindingsStream
+                .pipe(new Transform({
+                  objectMode: true,
+                  transform: (e: any, enc: any, cb: any) => cb(null, JSON.stringify(e)),
+                })),
+            },
+          }),
     };
     mediatorHttpInvalidate = {
       mediate: (arg: any) => Promise.resolve(true),
@@ -53,18 +40,12 @@ describe('ActorInitQuery', () => {
 
   describe('An ActorInitQuery instance', () => {
     let actor: ActorInitQuery;
-
     beforeEach(() => {
-      actor = new ActorInitQuery({
+      actor = new ActorInitQuery(<IActorInitQueryBaseArgs> {
         bus,
-        contextKeyShortcuts,
         defaultQueryInputFormat,
-        logger,
-        mediatorContextPreprocess,
         mediatorHttpInvalidate,
-        mediatorOptimizeQueryOperation,
-        mediatorQueryOperation,
-        mediatorQueryParse: mediatorSparqlParse,
+        mediatorQueryProcess,
         mediatorQueryResultSerialize: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
         mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
@@ -74,7 +55,7 @@ describe('ActorInitQuery', () => {
 
     describe('test', () => {
       it('should be true', async() => {
-        expect(await actor.test(<any> {})).toBeTruthy();
+        await expect(actor.test(<any> {})).resolves.toBeTruthy();
       });
     });
 

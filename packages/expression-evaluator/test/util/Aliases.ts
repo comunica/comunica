@@ -4,7 +4,7 @@ import { stringToTerm } from 'rdf-string';
 /**
  * Maps short strings to longer RDF term-literals for easy use in making test tables.
  * Ex: { 'true': '"true"^^xsd:boolean' }
-  */
+ */
 export type AliasMap = Record<string, string>;
 
 export function merge(...maps: AliasMap[]): AliasMap {
@@ -30,15 +30,19 @@ export const defaultPrefixes: Record<string, string> = {
  */
 export function stringToTermPrefix(str: string, additionalPrefixes?: Record<string, string>): RDF.Term {
   const term = <RDF.Literal> stringToTerm(str);
-  if (term.termType !== 'Literal') { return term; }
-  if (!term.datatype) { return term; }
+  if (term.termType !== 'Literal') {
+    return term;
+  }
+  if (!term.datatype) {
+    return term;
+  }
 
   const url = term.datatype.value;
   try {
     const matched = url.match(/.*:/ug);
     const prefix = matched ? matched[0].slice(0, -1) : '';
     const prefixes: Record<string, string> = additionalPrefixes ?
-      { ...defaultPrefixes, ...additionalPrefixes } :
+        { ...defaultPrefixes, ...additionalPrefixes } :
       defaultPrefixes;
     if (prefixes[prefix]) {
       term.datatype.value = url.replace(`${prefix}:`, prefixes[prefix]);
@@ -145,6 +149,9 @@ export const bool: AliasMap = {
 
 export const error: AliasMap = {
   invalidDateTime: '"not a dateTime"^^xsd:dateTime',
+  invalidBool: '"not a boolean"^^xsd:boolean',
+  invalidInt: '"not an integer"^^xsd:integer',
+  invalidShort: '"not a short"^^xsd:short',
 };
 
 export const numeric: AliasMap = {

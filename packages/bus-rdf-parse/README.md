@@ -17,10 +17,9 @@ $ yarn add @comunica/bus-rdf-parse
 
 ## Bus usage
 
-* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-parse/^2.0.0/components/context.jsonld"`
+* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-parse/^3.0.0/components/context.jsonld"`
 * **Bus name**: `ActorRdfParse:_default_bus`
 
 ## Creating actors on this bus
 
-Actors extending [`ActorRdfParse`](https://comunica.github.io/comunica/classes/bus_rdf_parse.actorrdfparse.html) are automatically subscribed to this bus.
-
+Actors extending [`ActorRdfParse`](https://comunica.github.io/comunica/classes/_comunica_bus_rdf_parse.ActorRdfParse.html) are automatically subscribed to this bus.

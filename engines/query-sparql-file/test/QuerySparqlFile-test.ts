@@ -1,12 +1,10 @@
 /** @jest-environment setup-polly-jest/jest-environment-node */
 
-import * as path from 'path';
+import * as path from 'node:path';
 import type { QueryStringContext } from '@comunica/types';
 import 'jest-rdf';
 import arrayifyStream from 'arrayify-stream';
 import { QueryEngine } from '../lib/QueryEngine';
-
-const stringifyStream = require('stream-to-string');
 
 describe('System test: QuerySparqlFile', () => {
   let engine: QueryEngine;
@@ -25,7 +23,7 @@ describe('System test: QuerySparqlFile', () => {
         const context: QueryStringContext = { sources: [{ value: p }]};
 
         const result = await arrayifyStream(await engine.queryBindings(query, context));
-        expect(result.length).toBe(2);
+        expect(result).toHaveLength(2);
       });
     });
   });

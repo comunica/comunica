@@ -39,14 +39,14 @@ describe('ActorQueryOperationBgpJoin', () => {
       actor = new ActorQueryOperationBgpJoin({ name: 'actor', bus, mediatorQueryOperation });
     });
 
-    it('should test on bgp', () => {
+    it('should test on bgp', async() => {
       const op = <any> { operation: { type: 'bgp' }};
-      return expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toBeTruthy();
     });
 
-    it('should not test on non-bgp', () => {
+    it('should not test on non-bgp', async() => {
       const op = <any> { operation: { type: 'some-other-type' }};
-      return expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run', async() => {
@@ -55,9 +55,9 @@ describe('ActorQueryOperationBgpJoin', () => {
       const op = <any> { operation: { type: 'bgp', patterns }, context };
 
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
-      expect(await output.metadata())
+      await expect(output.metadata()).resolves
         .toEqual({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]});
-      expect(output.type).toEqual('bindings');
+      expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
         BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),

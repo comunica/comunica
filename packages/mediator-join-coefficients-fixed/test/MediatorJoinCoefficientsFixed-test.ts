@@ -75,7 +75,7 @@ Actor 3 rejects`);
         requestTime: 50,
       }, bus);
 
-      expect(await mediator.mediate(action)).toEqual({ id: 1 });
+      await expect(mediator.mediate(action)).resolves.toEqual({ id: 1 });
 
       expect(debugLog).toHaveBeenCalledWith(
         `Determined physical join operator 'LOGICAL-PHYSICAL1'`,
@@ -106,7 +106,7 @@ Actor 3 rejects`);
       }, bus);
       actor.includeInLogs = false;
 
-      expect(await mediator.mediate(action)).toEqual({ id: 1 });
+      await expect(mediator.mediate(action)).resolves.toEqual({ id: 1 });
 
       expect(debugLog).not.toHaveBeenCalled();
     });
@@ -131,7 +131,7 @@ Actor 3 rejects`);
         requestTime: 10,
       }, bus);
 
-      expect(await mediator.mediate(action)).toEqual({ id: 2 });
+      await expect(mediator.mediate(action)).resolves.toEqual({ id: 2 });
 
       expect(debugLog).toHaveBeenCalledWith(
         `Determined physical join operator 'LOGICAL-PHYSICAL2'`,
@@ -187,7 +187,7 @@ Actor 3 rejects`);
         requestTime: 10,
       }, bus);
 
-      expect(await mediator.mediate(action)).toEqual({ id: 1 });
+      await expect(mediator.mediate(action)).resolves.toEqual({ id: 1 });
 
       expect(debugLog).toHaveBeenCalledWith(
         `Determined physical join operator 'LOGICAL-PHYSICAL1'`,
@@ -245,7 +245,7 @@ Actor 3 rejects`);
         requestTime: 10,
       }, bus);
 
-      expect(await mediator.mediate(action)).toEqual({ id: 3 });
+      await expect(mediator.mediate(action)).resolves.toEqual({ id: 3 });
 
       expect(debugLog).toHaveBeenCalledWith(
         `Determined physical join operator 'LOGICAL-PHYSICAL3'`,
@@ -302,7 +302,7 @@ Actor 3 rejects`);
       }, bus);
 
       action.context = action.context.set(KeysQueryOperation.limitIndicator, 10);
-      expect(await mediator.mediate(action)).toEqual({ id: 3 });
+      await expect(mediator.mediate(action)).resolves.toEqual({ id: 3 });
 
       expect(debugLog).toHaveBeenCalledWith(
         `Determined physical join operator 'LOGICAL-PHYSICAL3'`,
@@ -359,7 +359,7 @@ Actor 3 rejects`);
       }, bus);
 
       action.context = action.context.set(KeysQueryOperation.limitIndicator, 10);
-      expect(await mediator.mediate(action)).toEqual({ id: 1 });
+      await expect(mediator.mediate(action)).resolves.toEqual({ id: 1 });
 
       expect(debugLog).toHaveBeenCalledWith(
         `Determined physical join operator 'LOGICAL-PHYSICAL1'`,
@@ -416,7 +416,7 @@ Actor 3 rejects`);
       }, bus);
 
       action.context = action.context.set(KeysQueryOperation.limitIndicator, 200);
-      expect(await mediator.mediate(action)).toEqual({ id: 2 });
+      await expect(mediator.mediate(action)).resolves.toEqual({ id: 2 });
 
       expect(debugLog).toHaveBeenCalledWith(
         `Determined physical join operator 'LOGICAL-PHYSICAL2'`,

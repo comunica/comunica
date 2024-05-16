@@ -25,7 +25,7 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-native/^2.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-native/^3.0.0/components/context.jsonld"
   ],
   "actors": [
     ...
@@ -39,4 +39,4 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `agentOptions`: The agent JSON options for the HTTP agent. _(optional)_ 
+* `agentOptions`: The agent JSON options for the HTTP agent. _(optional)_

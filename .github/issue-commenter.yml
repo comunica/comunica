@@ -1,17 +1,17 @@
 labels:
-  - name: "bug 🐛"
+  - name: bug 🐛
     labeled:
       issue:
         body: Thanks for reporting!
-  - name: "feature ➕"
+  - name: feature ➕
     labeled:
       issue:
         body: Thanks for the suggestion!
-  - name: "performance 🐌"
+  - name: performance 🐌
     labeled:
       issue:
         body: Thanks for reporting!
-  - name: "question ❓"
+  - name: question ❓
     labeled:
       issue:
         body: Someone will answer your question soon. In the meantime, you might be able to get help more quickly on our [Gitter channel](https://gitter.im/comunica/Lobby).

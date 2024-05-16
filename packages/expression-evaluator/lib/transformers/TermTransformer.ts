@@ -16,8 +16,7 @@ import {
 } from '../util/Parsing';
 import * as P from '../util/Parsing';
 import { getSuperTypeDict } from '../util/TypeHandling';
-import type { ISuperTypeProvider,
-  GeneralSuperTypeDict } from '../util/TypeHandling';
+import type { ISuperTypeProvider, GeneralSuperTypeDict } from '../util/TypeHandling';
 
 export interface ITermTransformer {
   transformRDFTermUnsafe: (term: RDF.Term) => E.Term;
@@ -25,7 +24,7 @@ export interface ITermTransformer {
 }
 
 export class TermTransformer implements ITermTransformer {
-  public constructor(protected readonly superTypeProvider: ISuperTypeProvider) { }
+  public constructor(protected readonly superTypeProvider: ISuperTypeProvider) {}
 
   /**
    * Transforms an RDF term to the internal representation of a term,

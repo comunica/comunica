@@ -1,8 +1,7 @@
 import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { Bindings,
-  MetadataBindings } from '@comunica/types';
+import type { Bindings, MetadataBindings } from '@comunica/types';
 import { HashJoin } from 'asyncjoin';
 
 /**

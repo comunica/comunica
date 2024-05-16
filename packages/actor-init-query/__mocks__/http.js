@@ -1,20 +1,23 @@
-const EventEmitter = require('events');
-const { PassThrough } = require("readable-stream");
+const EventEmitter = require('node:events');
+const { PassThrough } = require('readable-stream');
 
 class ServerResponseMock extends PassThrough {
-  constructor(){
+  // eslint-disable-next-line ts/explicit-member-accessibility
+  constructor() {
     super();
     this.writeHead = jest.fn();
-    this.end = jest.fn((message) => this.onEnd && this.onEnd(message));
+    this.end = jest.fn(message => this.onEnd && this.onEnd(message));
   }
 }
 
+// eslint-disable-next-line unused-imports/no-unused-vars
 function getServerResponseMock() {
   return new ServerResponseMock();
 }
 
 class ServerMock extends EventEmitter {
-  constructor(){
+  // eslint-disable-next-line ts/explicit-member-accessibility
+  constructor() {
     super();
     this.listen = jest.fn();
     this.setTimeout = jest.fn();
@@ -23,11 +26,9 @@ class ServerMock extends EventEmitter {
 }
 
 const http = {
-  ...jest.requireActual("http"),
+  ...jest.requireActual('http'),
 };
-http.createServer = jest.fn(() => {
-  return new ServerMock();
-});
+http.createServer = jest.fn(() => new ServerMock());
 
 module.exports = {
   ServerResponseMock,

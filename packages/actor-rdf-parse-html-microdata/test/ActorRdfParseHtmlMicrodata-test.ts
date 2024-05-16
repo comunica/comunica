@@ -23,7 +23,9 @@ describe('ActorRdfParseHtmlMicrodata', () => {
     });
 
     it('should not be able to create new ActorRdfParseHtmlMicrodata objects without \'new\'', () => {
-      expect(() => { (<any> ActorRdfParseHtmlMicrodata)(); }).toThrow();
+      expect(() => {
+        (<any> ActorRdfParseHtmlMicrodata)();
+      }).toThrow(`Class constructor ActorRdfParseHtmlMicrodata cannot be invoked without 'new'`);
     });
   });
 
@@ -36,7 +38,7 @@ describe('ActorRdfParseHtmlMicrodata', () => {
 
     describe('test', () => {
       it('should return true', async() => {
-        expect(await actor.test(<any> {})).toBeTruthy();
+        await expect(actor.test(<any> {})).resolves.toBeTruthy();
       });
     });
 
@@ -71,7 +73,7 @@ describe('ActorRdfParseHtmlMicrodata', () => {
 
       it('should set the profile, baseIRI and language', async() => {
         const listener = (await actor.run(action)).htmlParseListener;
-        expect((<any> listener).util.baseIRI).toEqual('http://example.org/');
+        expect((<any> listener).util.baseIRI).toBe('http://example.org/');
       });
 
       it('should set the profile, baseIRI and language for empty headers', async() => {
@@ -79,7 +81,7 @@ describe('ActorRdfParseHtmlMicrodata', () => {
         action = { baseIRI, headers, emit, error, end };
 
         const listener = (await actor.run(action)).htmlParseListener;
-        expect((<any> listener).util.baseIRI).toEqual('http://example.org/');
+        expect((<any> listener).util.baseIRI).toBe('http://example.org/');
       });
 
       it('should set the profile, baseIRI and language for null headers', async() => {
@@ -87,7 +89,7 @@ describe('ActorRdfParseHtmlMicrodata', () => {
         action = { baseIRI, headers, emit, error, end };
 
         const listener = (await actor.run(action)).htmlParseListener;
-        expect((<any> listener).util.baseIRI).toEqual('http://example.org/');
+        expect((<any> listener).util.baseIRI).toBe('http://example.org/');
       });
 
       it('should be a valid html listener', async() => {
@@ -113,9 +115,7 @@ describe('ActorRdfParseHtmlMicrodata', () => {
         expect(emit).toHaveBeenCalledTimes(3);
         expect(emit).toHaveBeenNthCalledWith(
           1,
-          quad('http://example.org/',
-            'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
-            'http://purl.org/dc/terms/Thing'),
+          quad('http://example.org/', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://purl.org/dc/terms/Thing'),
         );
         expect(emit).toHaveBeenNthCalledWith(
           2,

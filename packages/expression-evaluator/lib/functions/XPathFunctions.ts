@@ -12,7 +12,7 @@ export function matches(text: string, pattern: string, flags?: string): boolean 
 export function replace(arg: string, pattern: string, replacement: string, flags?: string): string {
   let reg = new RegExp(pattern, flags);
   if (!reg.global) {
-    const flags_ = flags || '';
+    const flags_ = flags ?? '';
     reg = new RegExp(pattern, `${flags_}g`);
   }
   return arg.replace(reg, replacement);

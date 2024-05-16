@@ -16,13 +16,13 @@ describe('ActorRdfResolveHypermediaLinksQueueFifo', () => {
       actor = new ActorRdfResolveHypermediaLinksQueueFifo({ name: 'actor', bus });
     });
 
-    it('should test', () => {
-      return expect(actor.test({ firstUrl: 'A', context: new ActionContext() }))
-        .resolves.toEqual(true);
+    it('should test', async() => {
+      await expect(actor.test({ firstUrl: 'A', context: new ActionContext() }))
+        .resolves.toBe(true);
     });
 
-    it('should run', () => {
-      return expect(actor.run({ firstUrl: 'A', context: new ActionContext() }))
+    it('should run', async() => {
+      await expect(actor.run({ firstUrl: 'A', context: new ActionContext() }))
         .resolves.toEqual({ linkQueue: new LinkQueueFifo() });
     });
   });
