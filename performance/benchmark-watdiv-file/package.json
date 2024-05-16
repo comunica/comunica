@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@jbr-experiment/watdiv": "^4.2.3",
-    "@jbr-hook/cli": "^4.2.3",
+    "@jbr-hook/cli": "^5.0.0",
     "@jbr-hook/sparql-endpoint-comunica": "^4.2.3",
     "cross-env": "^7.0.3",
     "jbr": "^4.2.3"

@@ -1438,10 +1438,10 @@
     fs-extra "^10.0.0"
     sparql-benchmark-runner "^2.9.4"
 
-"@jbr-hook/cli@^4.2.3":
-  version "4.2.3"
-  resolved "https://registry.yarnpkg.com/@jbr-hook/cli/-/cli-4.2.3.tgz#5b0baa017a53dbfcf07554f7d1ad4cdbdcc8ec30"
-  integrity sha512-7mNR80henJp7MGc/XQDycNaXlX8mpXNE4OHqpwB331+TaTkB8sYqbffuaVPvV6sfK6sVOPg+I/qSonGx2c1TGg==
+"@jbr-hook/cli@^5.0.0":
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/@jbr-hook/cli/-/cli-5.0.0.tgz#1dacdd253efedbab00ed93c210b85b693a0051f2"
+  integrity sha512-Qb2dR2A08bXDqgsi0ou7w4KF69brEMrh4txmzdPhRKtssJo9WgPWA+10DVU7lc7TsmiakPO9IxccEROzxdhKvw==
   dependencies:
     "@types/fs-extra" "^9.0.11"
     fs-extra "^10.0.0"
