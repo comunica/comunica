@@ -78,9 +78,11 @@ export class ActorQueryResultSerializeSparqlCsv extends ActorQueryResultSerializ
     const data = new Readable();
 
     const metadata = await bindingsAction.metadata();
-    data.push(`${metadata.variables.map(variable => variable.value).join(',')}\r\n`);
 
     // Write head
+    data.push(`${metadata.variables.map(variable => variable.value).join(',')}\r\n`);
+
+    // Write body
     data.wrap(<any> bindingsAction.bindingsStream.map((bindings: Bindings) => `${metadata.variables
         .map(key => ActorQueryResultSerializeSparqlCsv.bindingToCsvBindings(bindings.get(key)))
         .join(',')}\r\n`));
