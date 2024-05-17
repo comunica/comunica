@@ -65,35 +65,33 @@ export class ActorQueryResultSerializeTable extends ActorQueryResultSerializeFix
   }
 
   public pushRow(data: Readable, labels: RDF.Variable[], bindings: Bindings): void {
-    data.push(`${labels
+    // instanbul ignore next
+    data.push(this.createRow(labels, bindings));
+  }
+
+  public createRow(labels: RDF.Variable[], bindings: Bindings): string {
+    return `${labels
       .map(label => bindings.has(label) ? this.termToString(bindings.get(label)!) : '')
       .map(label => this.pad(label))
-      .join(' ')}\n`);
+      .join(' ')}\n`;
   }
 
   public async runHandle(action: IActionSparqlSerialize, _mediaType: string, _context: IActionContext):
   Promise<IActorQueryResultSerializeOutput> {
     const data = new Readable();
-    data._read = () => {
-      // Do nothing
-    };
 
     let resultStream: NodeJS.EventEmitter;
     if (action.type === 'bindings') {
-      resultStream = (<IQueryOperationResultBindings> action).bindingsStream;
-      const labels = (await (<IQueryOperationResultBindings> action).metadata()).variables;
+      resultStream = (<IQueryOperationResultBindings>action).bindingsStream.map(
+        bindings => this.createRow(labels, bindings),
+      );
+      const labels = (await (<IQueryOperationResultBindings>action).metadata()).variables;
       this.pushHeader(data, labels);
-      resultStream.on('error', error => data.emit('error', error));
-      resultStream.on('data', bindings => this.pushRow(data, labels, bindings));
     } else {
-      resultStream = (<IQueryOperationResultQuads> action).quadStream;
+      resultStream = (<IQueryOperationResultQuads>action).quadStream.map(quad => `${getTerms(quad).map(term => this.pad(this.termToString(term))).join(' ')}\n`);
       this.pushHeader(data, QUAD_TERM_NAMES_VARS);
-      resultStream.on('error', error => data.emit('error', error));
-      resultStream.on('data', quad => data.push(
-        `${getTerms(quad).map(term => this.pad(this.termToString(term))).join(' ')}\n`,
-      ));
     }
-    resultStream.on('end', () => data.push(null));
+    data.wrap(<any> resultStream);
 
     return { data };
   }

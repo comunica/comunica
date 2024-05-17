@@ -13,6 +13,7 @@ import type {
 import type * as RDF from '@rdfjs/types';
 import * as RdfString from 'rdf-string';
 import { Readable } from 'readable-stream';
+import { wrap } from 'asynciterator';
 
 /**
  * A comunica JSON Query Result Serialize Actor.
@@ -41,45 +42,28 @@ export class ActorQueryResultSerializeJson extends ActorQueryResultSerializeFixe
   public async runHandle(action: IActionSparqlSerialize, _mediaType: string, _context: IActionContext):
   Promise<IActorQueryResultSerializeOutput> {
     const data = new Readable();
-    data._read = () => {
-      // Do nothing
-    };
+    if (action.type === 'bindings' || action.type === 'quads') {
+      let stream = action.type === 'bindings'
+        ? wrap((<IQueryOperationResultBindings> action).bindingsStream).map(element => JSON.stringify(Object.fromEntries([ ...element ].map(([ key, value ]) => [ key.value, RdfString.termToString(value) ]))))
+        : wrap((<IQueryOperationResultQuads> action).quadStream).map(element => JSON.stringify(RdfString.quadToStringQuad(element)));
 
-    let empty = true;
-    if (action.type === 'bindings') {
-      const resultStream = (<IQueryOperationResultBindings> action).bindingsStream;
-      data.push('[');
-      resultStream.on('error', error => data.emit('error', error));
-      resultStream.on('data', (element: RDF.Bindings) => {
-        data.push(empty ? '\n' : ',\n');
-        data.push(JSON.stringify(Object.fromEntries([ ...element ]
-          .map(([ key, value ]) => [ key.value, RdfString.termToString(value) ]))));
+      let empty = true;
+      stream = stream.map(element => {
+        const ret = `${empty ? '' : ','}\n${element}`;
         empty = false;
-      });
-      resultStream.on('end', () => {
-        data.push(empty ? ']\n' : '\n]\n');
-        data.push(null);
-      });
-    } else if (action.type === 'quads') {
-      const resultStream = (<IQueryOperationResultQuads> action).quadStream;
-      data.push('[');
-      resultStream.on('error', error => data.emit('error', error));
-      resultStream.on('data', (element) => {
-        data.push(empty ? '\n' : ',\n');
-        data.push(JSON.stringify(RdfString.quadToStringQuad(element)));
-        empty = false;
-      });
-      resultStream.on('end', () => {
-        data.push(empty ? ']\n' : '\n]\n');
-        data.push(null);
-      });
-    } else {
+        return ret;
+      }).prepend(['[']).append(['\n]\n']);
+      
+      data.wrap(<any> stream);
+    } else if (action.type === 'boolean') {
       try {
         data.push(`${JSON.stringify(await (<IQueryOperationResultBoolean> action).execute())}\n`);
         data.push(null);
       } catch (error: unknown) {
         setTimeout(() => data.emit('error', error));
       }
+    } else {
+      throw new Error(`Unknown action type [${action.type}] for ${this.name}.`);
     }
 
     return { data };

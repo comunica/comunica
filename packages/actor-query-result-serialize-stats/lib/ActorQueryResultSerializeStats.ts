@@ -61,11 +61,8 @@ export class ActorQueryResultSerializeStats extends ActorQueryResultSerializeFix
   public async runHandle(action: IActionSparqlSerialize, _mediaType: string, _context: IActionContext):
   Promise<IActorQueryResultSerializeOutput> {
     const data = new Readable();
-    data._read = () => {
-      // Do nothing
-    };
 
-    const resultStream: NodeJS.EventEmitter = action.type === 'bindings' ?
+    const resultStream = action.type === 'bindings' ?
         (<IQueryOperationResultBindings> action).bindingsStream :
         (<IQueryOperationResultQuads> action).quadStream;
 
@@ -74,7 +71,17 @@ export class ActorQueryResultSerializeStats extends ActorQueryResultSerializeFix
 
     this.pushHeader(data);
     resultStream.on('error', error => data.emit('error', error));
-    resultStream.on('data', () => this.pushStat(data, startTime, result++));
+    const read = data._read = (items: number) => {
+      while (items > 0) {
+        const item = resultStream.read();
+        if (item === null) {
+          resultStream.once('readable', () => read(items));
+          return;
+        }
+        items--;
+        this.pushStat(data, startTime, result++);
+      }
+    };
     resultStream.on('end', () => this.pushFooter(data, startTime));
 
     return { data };

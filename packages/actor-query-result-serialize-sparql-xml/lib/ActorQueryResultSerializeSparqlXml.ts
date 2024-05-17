@@ -5,7 +5,6 @@ import type {
 } from '@comunica/bus-query-result-serialize';
 import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-result-serialize';
 import type {
-  Bindings,
   IActionContext,
   IQueryOperationResultBindings,
   IQueryOperationResultBoolean,
@@ -93,17 +92,25 @@ export class ActorQueryResultSerializeSparqlXml extends ActorQueryResultSerializ
     });
     if (action.type === 'bindings') {
       serializer.open('results');
-      const resultStream: NodeJS.EventEmitter = (<IQueryOperationResultBindings> action).bindingsStream;
+      const resultStream = (<IQueryOperationResultBindings> action).bindingsStream;
 
       // Write bindings
       resultStream.on('error', (error: Error) => {
         data.emit('error', error);
       });
-      resultStream.on('data', (bindings: Bindings) => {
-        // XML SPARQL results spec does not allow unbound variables and blank node bindings
-        serializer.add({ name: 'result', children: [ ...bindings ]
-          .map(([ key, value ]) => ActorQueryResultSerializeSparqlXml.bindingToXmlBindings(value, key)) });
-      });
+
+      data._read = (size) => {
+        while (size > 0) {
+          const result = resultStream.read();
+          if (result === null) {
+            resultStream.once('readable', () => data._read(size));
+            return;
+          }
+          size--;
+          serializer.add({ name: 'result', children: [ ...result ]
+              .map(([ key, value ]) => ActorQueryResultSerializeSparqlXml.bindingToXmlBindings(value, key)) });
+        }
+      };
 
       // Close streams
       resultStream.on('end', () => {
