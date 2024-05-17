@@ -1,9 +1,9 @@
 import type { IQuadDestination } from '@comunica/bus-rdf-update-quads';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
+import { promisifyEventEmitter } from 'event-emitter-promisify';
 import { DataFactory } from 'rdf-data-factory';
 import { stringToTerm, termToString } from 'rdf-string';
-import { promisifyEventEmitter } from 'event-emitter-promisify';
 
 const DF = new DataFactory();
 
