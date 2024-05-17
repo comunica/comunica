@@ -25,27 +25,22 @@ export class ActorRdfMetadataAll extends ActorRdfMetadata {
       metadata.emit('error', error);
     });
 
-    // Delay attachment of listeners until the data or metadata stream is being read.
-    const attachListeners = (): void => {
-      // Attach listeners only once
-      data._read = metadata._read = () => {
-        // Do nothing
-      };
+    // Terminate both streams on-end
+    action.quads.on('end', () => {
+      data.push(null);
+      metadata.push(null);
+    });
 
-      // Forward quads to both streams
-      action.quads.on('data', (quad) => {
-        data.push(quad);
-        metadata.push(quad);
-      });
-
-      // Terminate both streams on-end
-      action.quads.on('end', () => {
-        data.push(null);
-        metadata.push(null);
-      });
-    };
-    data._read = metadata._read = () => {
-      attachListeners();
+    const read: (size: number) => void = data._read = metadata._read = (size) => {
+      while (size > 0) {
+        const item = action.quads.read();
+        if (item === null) {
+          return action.quads.once('readable', () => read(size));
+        }
+        size--;
+        data.push(item);
+        metadata.push(item);
+      }
     };
 
     return { data, metadata };
