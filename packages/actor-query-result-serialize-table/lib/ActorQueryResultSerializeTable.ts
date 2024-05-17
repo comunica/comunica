@@ -64,8 +64,11 @@ export class ActorQueryResultSerializeTable extends ActorQueryResultSerializeFix
     data.push(`${header}\n${ActorQueryResultSerializeTable.repeat('-', header.length)}\n`);
   }
 
+  /**
+   * @deprecated Use {@link createRow} instead.
+   */
   public pushRow(data: Readable, labels: RDF.Variable[], bindings: Bindings): void {
-    // instanbul ignore next
+    /* istanbul ignore next */
     data.push(this.createRow(labels, bindings));
   }
 

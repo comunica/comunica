@@ -82,8 +82,12 @@ export class ActorQueryResultSerializeSparqlXml extends ActorQueryResultSerializ
       // Do nothing
     };
 
+    let size = 0;
     // Write head
-    const serializer = new XmlSerializer(chunk => data.push(chunk));
+    const serializer = new XmlSerializer((chunk) => {
+      size--;
+      data.push(chunk);
+    });
     serializer.open('sparql', { xmlns: 'http://www.w3.org/2005/sparql-results#' });
     const metadata = await (<IQueryOperationResultBindings> action).metadata();
     serializer.add({
@@ -99,16 +103,17 @@ export class ActorQueryResultSerializeSparqlXml extends ActorQueryResultSerializ
         data.emit('error', error);
       });
 
-      data._read = (size) => {
+      data._read = (isize) => {
+        size = Math.max(size, isize);
+        // eslint-disable-next-line no-unmodified-loop-condition
         while (size > 0) {
           const result = resultStream.read();
           if (result === null) {
-            resultStream.once('readable', () => data._read(size));
+            resultStream.once('readable', () => data._read(0));
             return;
           }
-          size--;
           serializer.add({ name: 'result', children: [ ...result ]
-              .map(([ key, value ]) => ActorQueryResultSerializeSparqlXml.bindingToXmlBindings(value, key)) });
+            .map(([ key, value ]) => ActorQueryResultSerializeSparqlXml.bindingToXmlBindings(value, key)) });
         }
       };
 

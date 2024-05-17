@@ -10,10 +10,9 @@ import type {
   IQueryOperationResultBoolean,
   IQueryOperationResultQuads,
 } from '@comunica/types';
-import type * as RDF from '@rdfjs/types';
+import { wrap } from 'asynciterator';
 import * as RdfString from 'rdf-string';
 import { Readable } from 'readable-stream';
-import { wrap } from 'asynciterator';
 
 /**
  * A comunica JSON Query Result Serialize Actor.
@@ -43,17 +42,20 @@ export class ActorQueryResultSerializeJson extends ActorQueryResultSerializeFixe
   Promise<IActorQueryResultSerializeOutput> {
     const data = new Readable();
     if (action.type === 'bindings' || action.type === 'quads') {
-      let stream = action.type === 'bindings'
-        ? wrap((<IQueryOperationResultBindings> action).bindingsStream).map(element => JSON.stringify(Object.fromEntries([ ...element ].map(([ key, value ]) => [ key.value, RdfString.termToString(value) ]))))
-        : wrap((<IQueryOperationResultQuads> action).quadStream).map(element => JSON.stringify(RdfString.quadToStringQuad(element)));
+      let stream = action.type === 'bindings' ?
+        wrap((<IQueryOperationResultBindings> action).bindingsStream)
+          .map(element => JSON.stringify(Object.fromEntries([ ...element ]
+            .map(([ key, value ]) => [ key.value, RdfString.termToString(value) ])))) :
+        wrap((<IQueryOperationResultQuads> action).quadStream)
+          .map(element => JSON.stringify(RdfString.quadToStringQuad(element)));
 
       let empty = true;
-      stream = stream.map(element => {
+      stream = stream.map((element) => {
         const ret = `${empty ? '' : ','}\n${element}`;
         empty = false;
         return ret;
-      }).prepend(['[']).append(['\n]\n']);
-      
+      }).prepend([ '[' ]).append([ '\n]\n' ]);
+
       data.wrap(<any> stream);
     } else if (action.type === 'boolean') {
       try {

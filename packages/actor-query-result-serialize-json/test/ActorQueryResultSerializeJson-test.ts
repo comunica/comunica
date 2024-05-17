@@ -303,7 +303,7 @@ describe('ActorQueryResultSerializeJson', () => {
             handleMediaType: 'application/json',
             context,
           },
-        )).rejects.toThrowError('Unknown action type [invalid] for actor.');
+        )).rejects.toThrow('Unknown action type [invalid] for actor.');
       });
     });
   });

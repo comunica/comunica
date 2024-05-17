@@ -9,6 +9,7 @@ import type {
   IQueryOperationResultBindings,
   IQueryOperationResultQuads,
 } from '@comunica/types';
+import { wrap } from 'asynciterator';
 import { Readable } from 'readable-stream';
 import type { ActionObserverHttp } from './ActionObserverHttp';
 
@@ -45,17 +46,34 @@ export class ActorQueryResultSerializeStats extends ActorQueryResultSerializeFix
     data.push(`${header}\n`);
   }
 
+  /**
+   * @deprecated Use {@link createStat} instead.
+   */
   public pushStat(data: Readable, startTime: number, result: number): void {
-    const row: string = [ result, this.delay(startTime), this.httpObserver.requests,
-    ].join(',');
-    data.push(`${row}\n`);
+    /* istanbul ignore next */
+    data.push(this.createStat(startTime, result));
   }
 
+  public createStat(startTime: number, result: number): string {
+    const row: string = [ result, this.delay(startTime), this.httpObserver.requests,
+    ].join(',');
+    return `${row}\n`;
+  }
+
+  /**
+   * @deprecated Use {@link createFooter} instead.
+   */
   public pushFooter(data: Readable, startTime: number): void {
+    /* istanbul ignore next */
+    data.push(this.createFooter(startTime));
+    /* istanbul ignore next */
+    data.push(null);
+  }
+
+  public createFooter(startTime: number): string {
     const footer: string = [ 'TOTAL', this.delay(startTime), this.httpObserver.requests,
     ].join(',');
-    data.push(`${footer}\n`);
-    data.push(null);
+    return `${footer}\n`;
   }
 
   public async runHandle(action: IActionSparqlSerialize, _mediaType: string, _context: IActionContext):
@@ -68,21 +86,12 @@ export class ActorQueryResultSerializeStats extends ActorQueryResultSerializeFix
 
     const startTime = this.now();
     let result = 1;
+    const stream = wrap(resultStream)
+      .map(() => this.createStat(startTime, result++))
+      .append([ this.createFooter(startTime) ]);
 
     this.pushHeader(data);
-    resultStream.on('error', error => data.emit('error', error));
-    const read = data._read = (items: number) => {
-      while (items > 0) {
-        const item = resultStream.read();
-        if (item === null) {
-          resultStream.once('readable', () => read(items));
-          return;
-        }
-        items--;
-        this.pushStat(data, startTime, result++);
-      }
-    };
-    resultStream.on('end', () => this.pushFooter(data, startTime));
+    data.wrap(<any> stream);
 
     return { data };
   }
