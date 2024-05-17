@@ -141,7 +141,9 @@ export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
         .on('error', error)
         .on('end', () => parser.end());
     } catch (e) {
-      setTimeout(() => { data.emit('error', e)});
+      setTimeout(() => {
+        data.emit('error', e);
+      });
     }
 
     return { data };

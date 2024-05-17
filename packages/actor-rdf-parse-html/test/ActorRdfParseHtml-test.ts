@@ -221,8 +221,8 @@ describe('ActorRdfParseHtml', () => {
           .rejects.toThrow(new Error('Unexpected COMMA(",") in state KEY'));
       });
 
-      it.only('should produce an error in the stream if there is an error getting html parsers', async() => {
-        (<any>actor).busRdfParseHtml.publish = () => [Promise.reject(new Error('boo')), Promise.resolve()];
+      it('should produce an error in the stream if there is an error getting html parsers', async() => {
+        (<any>actor).busRdfParseHtml.publish = () => [ Promise.reject(new Error('boo')), Promise.resolve() ];
         const readable = new Readable();
         readable._read = () => {
           // Do nothing
