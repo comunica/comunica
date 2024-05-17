@@ -9,6 +9,7 @@ import type {
 } from '@comunica/bus-rdf-parse-html';
 import type { Actor, Bus, IActorTest } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { Parser } from 'htmlparser2';
 import { Readable } from 'readable-stream';
 
@@ -60,7 +61,7 @@ export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
     const htmlAction: IActionRdfParseHtml = {
       baseIRI: action.metadata?.baseIRI ?? '',
       context,
-      emit: (quad) => {
+      emit: (quad: RDF.Quad) => {
         maxSize--;
         data.push(quad);
       },
