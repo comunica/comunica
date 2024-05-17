@@ -79,7 +79,9 @@ export class ActorQueryResultSerializeSparqlXml extends ActorQueryResultSerializ
   public async runHandle(action: IActionSparqlSerialize, _mediaType: string, _context: IActionContext):
   Promise<IActorQueryResultSerializeOutput> {
     const data = new Readable();
-    data._read = () => {};
+    data._read = () => {
+      // Do nothing
+    };
 
     const serializer = new XmlSerializer();
     const metadata = await (<IQueryOperationResultBindings> action).metadata();

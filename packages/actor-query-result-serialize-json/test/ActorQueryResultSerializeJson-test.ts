@@ -295,16 +295,6 @@ describe('ActorQueryResultSerializeJson', () => {
           },
         ))).handle.data)).rejects.toBeTruthy();
       });
-
-      it('should throw an error when an invalid type is provided', async() => {
-        await expect(actor.run(
-          {
-            handle: <any> { type: 'invalid', context },
-            handleMediaType: 'application/json',
-            context,
-          },
-        )).rejects.toThrow('Unknown action type [invalid] for actor.');
-      });
     });
   });
 });

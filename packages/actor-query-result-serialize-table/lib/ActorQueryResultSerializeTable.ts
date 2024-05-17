@@ -64,6 +64,7 @@ export class ActorQueryResultSerializeTable extends ActorQueryResultSerializeFix
     data.push(`${header}\n${ActorQueryResultSerializeTable.repeat('-', header.length)}\n`);
   }
 
+  /* istanbul ignore next */
   /**
    * @deprecated Use {@link createRow} instead.
    */

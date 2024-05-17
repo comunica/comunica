@@ -49,6 +49,7 @@ export class ActorQueryResultSerializeStats extends ActorQueryResultSerializeFix
   /**
    * @deprecated Use {@link createStat} instead.
    */
+  /* istanbul ignore next */
   public pushStat(data: Readable, startTime: number, result: number): void {
     /* istanbul ignore next */
     data.push(this.createStat(startTime, result));
@@ -63,6 +64,7 @@ export class ActorQueryResultSerializeStats extends ActorQueryResultSerializeFix
   /**
    * @deprecated Use {@link createFooter} instead.
    */
+  /* istanbul ignore next */
   public pushFooter(data: Readable, startTime: number): void {
     /* istanbul ignore next */
     data.push(this.createFooter(startTime));

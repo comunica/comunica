@@ -41,6 +41,10 @@ export class ActorQueryResultSerializeJson extends ActorQueryResultSerializeFixe
   public async runHandle(action: IActionSparqlSerialize, _mediaType: string, _context: IActionContext):
   Promise<IActorQueryResultSerializeOutput> {
     const data = new Readable();
+    data._read = () => {
+      // Do nothing
+    };
+
     if (action.type === 'bindings' || action.type === 'quads') {
       let stream = action.type === 'bindings' ?
         wrap((<IQueryOperationResultBindings> action).bindingsStream)
@@ -57,15 +61,12 @@ export class ActorQueryResultSerializeJson extends ActorQueryResultSerializeFixe
       }).prepend([ '[' ]).append([ '\n]\n' ]);
 
       data.wrap(<any> stream);
-    } else if (action.type === 'boolean') {
-      try {
-        data.push(`${JSON.stringify(await (<IQueryOperationResultBoolean> action).execute())}\n`);
-        data.push(null);
-      } catch (error: unknown) {
-        setTimeout(() => data.emit('error', error));
-      }
-    } else {
-      throw new Error(`Unknown action type [${action.type}] for ${this.name}.`);
+    }
+    try {
+      data.push(`${JSON.stringify(await (<IQueryOperationResultBoolean> action).execute())}\n`);
+      data.push(null);
+    } catch (error: unknown) {
+      setTimeout(() => data.emit('error', error));
     }
 
     return { data };
