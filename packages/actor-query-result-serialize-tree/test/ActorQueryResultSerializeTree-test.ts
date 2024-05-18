@@ -65,7 +65,9 @@ describe('ActorQueryResultSerializeTree', () => {
         quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
       ]);
       streamError = new Readable();
-      streamError._read = () => streamError.emit('error', new Error('actor sparql serialize tree test error'));
+      streamError._read = () => {
+        setTimeout(() => streamError.emit('error', new Error('actor sparql serialize tree test error')));
+      };
       variables = [ DF.variable('k1'), DF.variable('k2') ];
     });
 
