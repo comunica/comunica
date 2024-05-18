@@ -145,6 +145,32 @@ describe('ActorQueryResultSerializeTree', () => {
         );
       });
 
+      it('should run on a bindings stream when #_read() is called excessively in advance', async() => {
+        const data = (<any> (await actor.run(
+          {
+            handle: <any> { type: 'bindings', bindingsStream: bindingsStream(), variables, context },
+            handleMediaType: 'tree',
+            context,
+          },
+        ))).handle.data;
+        data._read();
+        data._read(10);
+        data._read();
+        await new Promise(resolve => setTimeout(resolve, 10));
+        await expect(stringifyStream(data)).resolves.toBe(
+          `[
+  {
+    "k2": [
+      "v2"
+    ],
+    "k1": [
+      "v1"
+    ]
+  }
+]`,
+        );
+      });
+
       it('should run on a bindings stream with a context', async() => {
         context = new ActionContext({
           [KeysInitQuery.graphqlSingularizeVariables.name]: { k1: true, k2: false },
