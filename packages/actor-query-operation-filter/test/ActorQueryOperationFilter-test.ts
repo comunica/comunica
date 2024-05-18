@@ -106,12 +106,18 @@ describe('ActorQueryOperationFilter', () => {
     });
 
     it('should test on filter', async() => {
-      const op: any = { operation: { type: 'filter', expression: truthyExpression }, context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'filter', expression: truthyExpression },
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
       await expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should fail on unsupported operators', async() => {
-      const op: any = { operation: { type: 'filter', expression: unknownExpression }, context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'filter', expression: unknownExpression },
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
       await expect(actor.test(op)).rejects.toBeTruthy();
     });
 
@@ -123,7 +129,7 @@ describe('ActorQueryOperationFilter', () => {
     it('should return the full stream for a truthy filter', async() => {
       const op: any = {
         operation: { type: 'filter', input: {}, expression: truthyExpression },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -139,7 +145,7 @@ describe('ActorQueryOperationFilter', () => {
     it('should return an empty stream for a falsy filter', async() => {
       const op: any = {
         operation: { type: 'filter', input: {}, expression: falsyExpression },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
       await expect(output.bindingsStream).toEqualBindingsStream([]);
@@ -151,7 +157,7 @@ describe('ActorQueryOperationFilter', () => {
     it('should return an empty stream when the expressions error', async() => {
       const op: any = {
         operation: { type: 'filter', input: {}, expression: erroringExpression },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
       await expect(output.bindingsStream).toEqualBindingsStream([]);
@@ -165,7 +171,7 @@ describe('ActorQueryOperationFilter', () => {
       const logWarnSpy = jest.spyOn(<any> actor, 'logWarn');
       const op: any = {
         operation: { type: 'filter', input: {}, expression: erroringExpression },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
       output.bindingsStream.on('data', () => {
@@ -193,7 +199,7 @@ describe('ActorQueryOperationFilter', () => {
       (<any> sparqlee).isExpressionError = jest.fn(() => false);
       const op: any = {
         operation: { type: 'filter', input: {}, expression: erroringExpression },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
       output.bindingsStream.on('data', () => {
@@ -205,6 +211,7 @@ describe('ActorQueryOperationFilter', () => {
     it('should use and respect the baseIRI from the expression context', async() => {
       const expression = parse('str(IRI(?a)) = concat("http://example.com/", ?a)');
       const context = new ActionContext({
+        [KeysInitQuery.dataFactory.name]: DF,
         [KeysInitQuery.baseIRI.name]: 'http://example.com',
       });
       const op: any = { operation: { type: 'filter', input: {}, expression }, context };
@@ -222,7 +229,11 @@ describe('ActorQueryOperationFilter', () => {
     describe('should be able to handle EXIST filters', () => {
       it('like a simple EXIST that is true', async() => {
         const resolver = ActorQueryOperation
-          .createExistenceResolver(new ActionContext(), actor.mediatorQueryOperation, BF);
+          .createExistenceResolver(
+            new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+            actor.mediatorQueryOperation,
+            BF,
+          );
         const expr: Algebra.ExistenceExpression = factory.createExistenceExpression(
           false,
           factory.createBgp([]),
@@ -233,7 +244,11 @@ describe('ActorQueryOperationFilter', () => {
 
       it('like a simple EXIST that is false', async() => {
         const resolver = ActorQueryOperation
-          .createExistenceResolver(new ActionContext(), actor.mediatorQueryOperation, BF);
+          .createExistenceResolver(
+            new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+            actor.mediatorQueryOperation,
+            BF,
+          );
         mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
           bindingsStream: new ArrayIterator([], { autoStart: false }),
           metadata: () => Promise.resolve({ cardinality: 0, canContainUndefs: false }),
@@ -251,7 +266,11 @@ describe('ActorQueryOperationFilter', () => {
 
       it('like a NOT EXISTS', async() => {
         const resolver = ActorQueryOperation
-          .createExistenceResolver(new ActionContext(), actor.mediatorQueryOperation, BF);
+          .createExistenceResolver(
+            new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+            actor.mediatorQueryOperation,
+            BF,
+          );
         mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
           bindingsStream: new ArrayIterator([], { autoStart: false }),
           metadata: () => Promise.resolve({ cardinality: 0, canContainUndefs: false }),
@@ -269,7 +288,11 @@ describe('ActorQueryOperationFilter', () => {
 
       it('like an EXIST that errors', async() => {
         const resolver = ActorQueryOperation
-          .createExistenceResolver(new ActionContext(), actor.mediatorQueryOperation, BF);
+          .createExistenceResolver(
+            new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+            actor.mediatorQueryOperation,
+            BF,
+          );
         const bindingsStream = new ArrayIterator([{}, {}, {}]).transform({
           autoStart: false,
           transform(item, done, push) {

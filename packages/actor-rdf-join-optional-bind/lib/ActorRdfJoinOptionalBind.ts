@@ -6,10 +6,10 @@ import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
-import { KeysQueryOperation } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { Bindings, BindingsStream, MetadataBindings } from '@comunica/types';
-import { Algebra } from 'sparqlalgebrajs';
+import type { Bindings, BindingsStream, ComunicaDataFactory, MetadataBindings } from '@comunica/types';
+import { Algebra, Factory } from 'sparqlalgebrajs';
 
 /**
  * A comunica Optional Bind RDF Join Actor.
@@ -30,7 +30,13 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
   }
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
-    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context);
+    const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
+    const algebraFactory = new Factory(dataFactory);
+    const bindingsFactory = await BindingsFactory.create(
+      this.mediatorMergeBindingsContext,
+      action.context,
+      dataFactory,
+    );
     // Close the right stream, since we don't need that one
     action.entries[1].output.bindingsStream.close();
 
@@ -52,6 +58,7 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
         return output.bindingsStream;
       },
       true,
+      algebraFactory,
       bindingsFactory,
     );
 

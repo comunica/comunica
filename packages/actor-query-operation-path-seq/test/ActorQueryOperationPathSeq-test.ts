@@ -2,6 +2,7 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { Bindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -14,7 +15,7 @@ import { ActorQueryOperationPathSeq } from '../lib/ActorQueryOperationPathSeq';
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 
 describe('ActorQueryOperationPathSeq', () => {
   let bus: any;
@@ -130,7 +131,7 @@ describe('ActorQueryOperationPathSeq', () => {
           factory.createLink(DF.namedNode('p2')),
         ]),
         DF.variable('x'),
-      ), context: new ActionContext() };
+      ), context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: 3,
@@ -171,7 +172,7 @@ describe('ActorQueryOperationPathSeq', () => {
           ]),
           DF.variable('x'),
         ),
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({

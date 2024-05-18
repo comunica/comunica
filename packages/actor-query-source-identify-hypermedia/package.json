@@ -56,7 +56,6 @@
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0",
     "lru-cache": "^10.0.0",
-    "rdf-data-factory": "^1.1.2",
     "rdf-streaming-store": "^1.1.4",
     "readable-stream": "^4.4.2",
     "sparqlalgebrajs": "^4.3.3"

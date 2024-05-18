@@ -67,7 +67,8 @@ export interface IActorContextPreprocessConvertShortcutsArgs extends IActorConte
    *   "explain": "@comunica/actor-init-query:explain",
    *   "unionDefaultGraph": "@comunica/bus-query-operation:unionDefaultGraph",
    *   "traverse": "@comunica/bus-query-source-identify:traverse",
-   *   "noCache": "@comunica/actor-init-query:noCache"
+   *   "noCache": "@comunica/actor-init-query:noCache",
+   *   "dataFactory": "@comunica/actor-init-query:dataFactory"
    * }}
    */
   contextKeyShortcuts: Record<string, string>;

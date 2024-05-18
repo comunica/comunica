@@ -1,5 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { BlankNodeBindingsScoped, BlankNodeScoped } from '@comunica/data-factory';
 import { ArrayIterator, SingletonIterator } from 'asynciterator';
@@ -8,7 +9,7 @@ import { ActorQueryOperationProject } from '../lib/ActorQueryOperationProject';
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 
 describe('ActorQueryOperationProject', () => {
   let bus: any;
@@ -54,19 +55,25 @@ describe('ActorQueryOperationProject', () => {
     });
 
     it('should test on projects', async() => {
-      const op: any = { operation: { type: 'project', input: 'in' }, context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'project', input: 'in' },
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
       await expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-projects', async() => {
-      const op: any = { operation: { type: 'bgp', input: 'in' }, context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'bgp', input: 'in' },
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
       await expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run on a stream with variables that should not be deleted or are missing', async() => {
       const op: any = {
         operation: { type: 'project', input: 'in', variables: [ DF.variable('a'), DF.variable('delet') ]},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves
@@ -83,7 +90,7 @@ describe('ActorQueryOperationProject', () => {
     it('should run on a stream with variables that should be deleted', async() => {
       const op: any = {
         operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves
@@ -99,7 +106,7 @@ describe('ActorQueryOperationProject', () => {
     it('should error run on a stream with variables that should be deleted and are missing', async() => {
       const op: any = {
         operation: { type: 'project', input: 'in', variables: [ DF.variable('a'), DF.variable('missing') ]},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       await expect(actor.run(op)).rejects
         .toThrow('Variables \'?missing\' are used in the projection result, but are not assigned.');
@@ -127,7 +134,7 @@ describe('ActorQueryOperationProject', () => {
       });
       const op: any = {
         operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves
@@ -171,7 +178,7 @@ describe('ActorQueryOperationProject', () => {
       });
       const op: any = {
         operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves
@@ -215,7 +222,7 @@ describe('ActorQueryOperationProject', () => {
       });
       const op: any = {
         operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves
@@ -251,7 +258,7 @@ describe('ActorQueryOperationProject', () => {
       });
       const op: any = {
         operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves

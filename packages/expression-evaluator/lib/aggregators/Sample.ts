@@ -13,7 +13,7 @@ export class Sample extends AggregatorComponent {
 
   public result(): RDF.Term | undefined {
     if (this.state === undefined) {
-      return Sample.emptyValue();
+      return Sample.emptyValue(this.sharedContext.dataFactory);
     }
     return this.state;
   }

@@ -1,11 +1,8 @@
-import type { Bindings, BindingsStream } from '@comunica/types';
+import type { Bindings, BindingsStream, ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, MultiTransformIterator } from 'asynciterator';
-import { DataFactory } from 'rdf-data-factory';
 import { mapTermsNested } from 'rdf-terms';
-
-const DF = new DataFactory();
 
 /**
  * Transforms a bindings stream into a quad stream given a quad template.
@@ -14,11 +11,13 @@ const DF = new DataFactory();
  * https://www.w3.org/TR/sparql11-query/#rConstructTriples
  */
 export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RDF.Quad> {
+  protected readonly dataFactory: ComunicaDataFactory;
   protected readonly template: RDF.BaseQuad[];
   protected blankNodeCounter: number;
 
-  public constructor(template: RDF.BaseQuad[], bindingsStream: BindingsStream) {
+  public constructor(dataFactory: ComunicaDataFactory, template: RDF.BaseQuad[], bindingsStream: BindingsStream) {
     super(bindingsStream, { autoStart: false });
+    this.dataFactory = dataFactory;
     this.template = template;
     this.blankNodeCounter = 0;
   }
@@ -68,25 +67,38 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
   /**
    * Convert a blank node to a unique blank node in the given context.
    * If the given term is not a blank node, the term itself will be returned.
+   * @param dataFactory The data factory.
    * @param             blankNodeCounter A counter value for the blank node.
    * @param {RDF.Term}  term             The term that should be localized.
    * @return {RDF.Term}                  A term.
    */
-  public static localizeBlankNode(blankNodeCounter: number, term: RDF.Term): RDF.Term {
+  public static localizeBlankNode(
+    dataFactory: ComunicaDataFactory,
+    blankNodeCounter: number,
+    term: RDF.Term,
+  ): RDF.Term {
     if (term.termType === 'BlankNode') {
-      return DF.blankNode(`${term.value}${blankNodeCounter}`);
+      return dataFactory.blankNode(`${term.value}${blankNodeCounter}`);
     }
     return term;
   }
 
   /**
    * Convert the given quad to a quad that only contains unique blank nodes.
+   * @param dataFactory The data factory.
    * @param            blankNodeCounter A counter value for the blank node.
    * @param {RDF.BaseQuad} pattern          The pattern that should be localized.
    * @return {RDF.BaseQuad}                 A quad.
    */
-  public static localizeQuad(blankNodeCounter: number, pattern: RDF.BaseQuad): RDF.BaseQuad {
-    return mapTermsNested(pattern, term => BindingsToQuadsIterator.localizeBlankNode(blankNodeCounter, term));
+  public static localizeQuad(
+    dataFactory: ComunicaDataFactory,
+    blankNodeCounter: number,
+    pattern: RDF.BaseQuad,
+  ): RDF.BaseQuad {
+    return mapTermsNested(
+      pattern,
+      term => BindingsToQuadsIterator.localizeBlankNode(dataFactory, blankNodeCounter, term),
+    );
   }
 
   /**
@@ -99,7 +111,7 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
   public bindTemplate(bindings: Bindings, template: RDF.BaseQuad[], blankNodeCounter: number): RDF.Quad[] {
     const quads: RDF.BaseQuad[] = <RDF.BaseQuad[]> template
       // Make sure the multiple instantiations of the template contain different blank nodes, as required by SPARQL 1.1.
-      .map(BindingsToQuadsIterator.localizeQuad.bind(null, blankNodeCounter))
+      .map(BindingsToQuadsIterator.localizeQuad.bind(null, this.dataFactory, blankNodeCounter))
       // Bind variables to bound terms
       .map(x => BindingsToQuadsIterator.bindQuad.bind(null, bindings)(x))
       // Remove quads that contained unbound terms, i.e., variables.

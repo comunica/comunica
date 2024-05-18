@@ -15,12 +15,10 @@ import type {
   IActionContext,
   IJoinEntry,
   IJoinEntryWithMetadata,
+  ComunicaDataFactory,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
-
-const DF = new DataFactory();
 
 /**
  * A comunica actor for joining 2 binding streams.
@@ -102,12 +100,13 @@ export abstract class ActorRdfJoin
 
   /**
    * Returns the variables that will occur in the joined bindings.
+   * @param dataFactory The data factory.
    * @param {MetadataBindings[]} metadatas An array of metadata objects for the entries.
    * @returns {RDF.Variable[]} An array of joined variables.
    */
-  public static joinVariables(metadatas: MetadataBindings[]): RDF.Variable[] {
+  public static joinVariables(dataFactory: ComunicaDataFactory, metadatas: MetadataBindings[]): RDF.Variable[] {
     return [ ...new Set(metadatas.flatMap(metadata => metadata.variables.map(variable => variable.value))) ]
-      .map(variable => DF.variable(variable));
+      .map(variable => dataFactory.variable(variable));
   }
 
   /**
@@ -222,7 +221,7 @@ export abstract class ActorRdfJoin
         value: cardinalityJoined.value,
       },
       canContainUndefs: partialMetadata.canContainUndefs ?? metadatas.some(metadata => metadata.canContainUndefs),
-      variables: ActorRdfJoin.joinVariables(metadatas),
+      variables: ActorRdfJoin.joinVariables(context.getSafe(KeysInitQuery.dataFactory), metadatas),
     };
   }
 

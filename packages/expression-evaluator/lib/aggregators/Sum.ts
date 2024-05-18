@@ -1,3 +1,4 @@
+import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type * as E from '../expressions';
 import { regularFunctions } from '../functions';
@@ -11,8 +12,8 @@ export class Sum extends AggregatorComponent {
   private state: SumState | undefined = undefined;
   private readonly summer = regularFunctions[C.RegularOperator.ADDITION];
 
-  public static override emptyValue(): RDF.Term {
-    return integer(0).toRDF();
+  public static override emptyValue(dataFactory: ComunicaDataFactory): RDF.Term {
+    return integer(0).toRDF(dataFactory);
   }
 
   public put(term: RDF.Term): void {
@@ -26,8 +27,8 @@ export class Sum extends AggregatorComponent {
 
   public result(): RDF.Term {
     if (this.state === undefined) {
-      return Sum.emptyValue();
+      return Sum.emptyValue(this.sharedContext.dataFactory);
     }
-    return this.state.toRDF();
+    return this.state.toRDF(this.sharedContext.dataFactory);
   }
 }

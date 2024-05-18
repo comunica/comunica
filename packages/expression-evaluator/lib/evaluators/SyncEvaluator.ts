@@ -1,3 +1,4 @@
+import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
@@ -38,10 +39,15 @@ export class SyncEvaluator {
       aggregate: context.aggregate,
       bnode: context.bnode,
       defaultTimeZone: context.defaultTimeZone ?? extractTimeZone(now),
+      dataFactory: context.dataFactory,
     };
   }
 
-  public constructor(public algExpr: Alg.Expression, public context: ISyncEvaluatorContext = {}) {
+  public constructor(
+    public dataFactory: ComunicaDataFactory,
+    public algExpr: Alg.Expression,
+    public context: ISyncEvaluatorContext = { dataFactory },
+  ) {
     // eslint-disable-next-line unicorn/no-useless-undefined
     const creator = context.extensionFunctionCreator ?? (() => undefined);
     const baseContext = SyncEvaluator.completeContext(context);
@@ -58,7 +64,7 @@ export class SyncEvaluator {
 
   public evaluate(mapping: RDF.Bindings): RDF.Term {
     const result = this.evaluator.evaluate(this.expr, mapping);
-    return result.toRDF();
+    return result.toRDF(this.dataFactory);
   }
 
   public evaluateAsEBV(mapping: RDF.Bindings): boolean {

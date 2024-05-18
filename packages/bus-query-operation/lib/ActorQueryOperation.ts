@@ -14,9 +14,11 @@ import type {
   FunctionArgumentsCache,
   IQuerySourceWrapper,
   FragmentSelectorShape,
+  ComunicaDataFactory,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
+import { Factory } from 'sparqlalgebrajs';
 import { materializeOperation } from './Bindings';
 
 /**
@@ -102,6 +104,7 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
   }
 
   protected static getBaseExpressionContext(context: IActionContext): IBaseExpressionContext {
+    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
     const now: Date | undefined = context.get(KeysInitQuery.queryTimestamp);
     const baseIRI: string | undefined = context.get(KeysInitQuery.baseIRI);
     const functionArgumentsCache: FunctionArgumentsCache = context.get(KeysInitQuery.functionArgumentsCache) ?? {};
@@ -120,7 +123,7 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
       extensionFunctionCreator = functionNamedNode => extensionFunctions[functionNamedNode.value];
     }
 
-    return { now, baseIRI, extensionFunctionCreator, functionArgumentsCache };
+    return { now, baseIRI, extensionFunctionCreator, functionArgumentsCache, dataFactory };
   }
 
   /**
@@ -168,8 +171,11 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
     bindingsFactory: BindingsFactory,
   ):
     (expr: Algebra.ExistenceExpression, bindings: Bindings) => Promise<boolean> {
+    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+    const algebraFactory = new Factory(dataFactory);
+
     return async(expr, bindings) => {
-      const operation = materializeOperation(expr.input, bindings, bindingsFactory);
+      const operation = materializeOperation(expr.input, bindings, algebraFactory, bindingsFactory);
 
       const outputRaw = await mediatorQueryOperation.mediate({ operation, context });
       const output = ActorQueryOperation.getSafeBindings(outputRaw);
@@ -289,6 +295,7 @@ export interface IBaseExpressionContext {
   extensionFunctionCreator?: (functionNamedNode: RDF.NamedNode) =>
   ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined;
   functionArgumentsCache?: FunctionArgumentsCache;
+  dataFactory: ComunicaDataFactory;
 }
 
 export interface ISyncExpressionContext extends IBaseExpressionContext {

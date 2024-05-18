@@ -4,11 +4,13 @@ import { ActionContext, Bus } from '@comunica/core';
 import { cachifyMetadata, MetadataValidationState } from '@comunica/metadata';
 import type { FunctionArgumentsCache } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperation } from '..';
 
-const BF = new BindingsFactory();
+const DF = new DataFactory();
 const AF = new Factory();
+const BF = new BindingsFactory(DF);
 
 describe('ActorQueryOperation', () => {
   const bus = new Bus({ name: 'bus' });
@@ -103,12 +105,16 @@ describe('ActorQueryOperation', () => {
   describe('#getExpressionContext', () => {
     describe('without mediatorQueryOperation', () => {
       it('should create an object for an empty contexts save for the bnode function', () => {
-        expect(ActorQueryOperation.getExpressionContext(new ActionContext()).bnode)
+        expect(ActorQueryOperation.getExpressionContext(
+          new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+        ).bnode)
           .toEqual(expect.any(Function));
       });
 
       it('the bnode function should synchronously return a blank node', () => {
-        const context = ActorQueryOperation.getExpressionContext(new ActionContext());
+        const context = ActorQueryOperation.getExpressionContext(new ActionContext({
+          [KeysInitQuery.dataFactory.name]: DF,
+        }));
         const blankNode = context.bnode();
         expect(blankNode).toBeDefined();
         expect(blankNode).toHaveProperty('termType');
@@ -133,12 +139,16 @@ describe('ActorQueryOperation', () => {
     });
 
     it('should create an object for an empty contexts save for the bnode function', () => {
-      expect(ActorQueryOperation.getAsyncExpressionContext(new ActionContext(), mediatorQueryOperation, BF).bnode)
+      expect(ActorQueryOperation.getAsyncExpressionContext(new ActionContext({
+        [KeysInitQuery.dataFactory.name]: DF,
+      }), mediatorQueryOperation, BF).bnode)
         .toEqual(expect.any(Function));
     });
 
     it('the bnode function should asynchronously return a blank node', async() => {
-      const context = ActorQueryOperation.getAsyncExpressionContext(new ActionContext(), mediatorQueryOperation, BF);
+      const context = ActorQueryOperation.getAsyncExpressionContext(new ActionContext({
+        [KeysInitQuery.dataFactory.name]: DF,
+      }), mediatorQueryOperation, BF);
       const blankNodePromise = context.bnode();
       expect(blankNodePromise).toBeInstanceOf(Promise);
       const blankNode = await blankNodePromise;
@@ -151,10 +161,12 @@ describe('ActorQueryOperation', () => {
       const date = new Date();
       const functionArgumentsCache: FunctionArgumentsCache = { apple: {}};
       expect(ActorQueryOperation.getAsyncExpressionContext(new ActionContext({
+        [KeysInitQuery.dataFactory.name]: DF,
         [KeysInitQuery.queryTimestamp.name]: date,
         [KeysInitQuery.baseIRI.name]: 'http://base.org/',
         [KeysInitQuery.functionArgumentsCache.name]: functionArgumentsCache,
       }), mediatorQueryOperation, BF)).toEqual({
+        dataFactory: DF,
         now: date,
         bnode: expect.any(Function),
         baseIRI: 'http://base.org/',
@@ -165,13 +177,17 @@ describe('ActorQueryOperation', () => {
 
     it('should create an object with a resolver', () => {
       const resolver = (<any>ActorQueryOperation
-        .getAsyncExpressionContext(new ActionContext(), mediatorQueryOperation, BF)).exists;
+        .getAsyncExpressionContext(new ActionContext({
+          [KeysInitQuery.dataFactory.name]: DF,
+        }), mediatorQueryOperation, BF)).exists;
       expect(resolver).toBeTruthy();
     });
 
     it('should allow a resolver to be invoked', async() => {
       const resolver = (<any>ActorQueryOperation
-        .getAsyncExpressionContext(new ActionContext(), mediatorQueryOperation, BF)).exists;
+        .getAsyncExpressionContext(new ActionContext({
+          [KeysInitQuery.dataFactory.name]: DF,
+        }), mediatorQueryOperation, BF)).exists;
       const factory = new Factory();
       const expr: Algebra.ExistenceExpression = factory.createExistenceExpression(
         true,

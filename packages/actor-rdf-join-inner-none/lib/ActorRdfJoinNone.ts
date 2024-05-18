@@ -2,8 +2,10 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import { MetadataValidationState } from '@comunica/metadata';
+import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 
@@ -30,7 +32,12 @@ export class ActorRdfJoinNone extends ActorRdfJoin {
   }
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
-    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context);
+    const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
+    const bindingsFactory = await BindingsFactory.create(
+      this.mediatorMergeBindingsContext,
+      action.context,
+      dataFactory,
+    );
     return {
       result: {
         bindingsStream: new ArrayIterator<RDF.Bindings>([ bindingsFactory.bindings() ], { autoStart: false }),

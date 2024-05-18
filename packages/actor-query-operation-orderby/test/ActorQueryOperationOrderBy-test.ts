@@ -1,5 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import * as sparqlee from '@comunica/expression-evaluator';
 import arrayifyStream from 'arrayify-stream';
@@ -9,7 +10,7 @@ import { Algebra } from 'sparqlalgebrajs';
 import { ActorQueryOperationOrderBy } from '../lib/ActorQueryOperationOrderBy';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 
 describe('ActorQueryOperationOrderBy with mixed term types', () => {
   let bus: any;
@@ -74,7 +75,7 @@ describe('ActorQueryOperationOrderBy with mixed term types', () => {
     it('should sort as an ascending undefined < blank node < named node < literal', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
@@ -101,7 +102,7 @@ describe('ActorQueryOperationOrderBy with mixed term types', () => {
     it('should sort as an descending undefined < blank node < named node < literal', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
@@ -215,32 +216,41 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     });
 
     it('should test on orderby', async() => {
-      const op: any = { operation: { type: 'orderby', expressions: []}, context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'orderby', expressions: []},
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
       await expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should test on a descending orderby', async() => {
-      const op: any = { operation: { type: 'orderby', expressions: [ descOrderA ]}, context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'orderby', expressions: [ descOrderA ]},
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
       await expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should test on multiple expressions', async() => {
       const op: any = {
         operation: { type: 'orderby', expressions: [ orderA, descOrderA, orderA1 ]},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       await expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-orderby', async() => {
-      const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'some-other-type' },
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
       await expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = await actor.run(op);
       await expect(ActorQueryOperation.getSafeBindings(output).metadata()).resolves
@@ -263,7 +273,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
       });
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = await actor.run(op);
       await expect(ActorQueryOperation.getSafeBindings(output).metadata()).resolves
@@ -279,7 +289,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     it('should run operator expressions', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderA1 ]},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = await actor.run(op);
       await expect(ActorQueryOperation.getSafeBindings(output).metadata()).resolves
@@ -295,7 +305,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     it('should run descend', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = await actor.run(op);
       await expect(ActorQueryOperation.getSafeBindings(output).metadata()).resolves
@@ -311,7 +321,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     it('should ignore undefined results', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderB ]},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = await actor.run(op);
       await expect(ActorQueryOperation.getSafeBindings(output).metadata()).resolves
@@ -332,7 +342,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
       (<any> sparqlee).isExpressionError = jest.fn(() => false);
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderB ]},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <any> await actor.run(op);
       await new Promise<void>(resolve => output.bindingsStream.on('error', () => resolve()));
@@ -424,7 +434,7 @@ describe('ActorQueryOperationOrderBy with multiple comparators', () => {
     it('should order A', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
@@ -447,7 +457,7 @@ describe('ActorQueryOperationOrderBy with multiple comparators', () => {
     it('should order B', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderB ]},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
@@ -470,7 +480,7 @@ describe('ActorQueryOperationOrderBy with multiple comparators', () => {
     it('should order priority B and secondary A, ascending', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderB, orderA ]},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
@@ -493,7 +503,7 @@ describe('ActorQueryOperationOrderBy with multiple comparators', () => {
     it('descending order A multiple orderby', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
@@ -516,7 +526,7 @@ describe('ActorQueryOperationOrderBy with multiple comparators', () => {
     it('descending order B multiple orderby', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ descOrderB ]},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
@@ -540,7 +550,7 @@ describe('ActorQueryOperationOrderBy with multiple comparators', () => {
       // Priority goes to orderB1 then we secondarily sort by orderA1
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderB1, orderA1 ]},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
@@ -620,7 +630,7 @@ describe('ActorQueryOperationOrderBy with integer type', () => {
     it('should sort as an ascending integer', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
@@ -640,7 +650,7 @@ describe('ActorQueryOperationOrderBy with integer type', () => {
     it('should sort as an descending integer', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
@@ -717,7 +727,7 @@ describe('ActorQueryOperationOrderBy with double type', () => {
     it('should sort as an ascending double', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
@@ -737,7 +747,7 @@ describe('ActorQueryOperationOrderBy with double type', () => {
     it('should sort as an descending double', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
@@ -814,7 +824,7 @@ describe('ActorQueryOperationOrderBy with decimal type', () => {
     it('should sort as an ascending decimal', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
@@ -834,7 +844,7 @@ describe('ActorQueryOperationOrderBy with decimal type', () => {
     it('should sort as an descending decimal', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
@@ -911,7 +921,7 @@ describe('ActorQueryOperationOrderBy with float type', () => {
     it('should sort as an ascending float', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
@@ -931,7 +941,7 @@ describe('ActorQueryOperationOrderBy with float type', () => {
     it('should sort as an descending float', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
@@ -1008,7 +1018,7 @@ describe('ActorQueryOperationOrderBy with mixed literal types', () => {
     it('should sort as an ascending integer', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
@@ -1028,7 +1038,7 @@ describe('ActorQueryOperationOrderBy with mixed literal types', () => {
     it('should sort as an descending integer', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
@@ -1106,7 +1116,7 @@ describe('Another ActorQueryOperationOrderBy with mixed types', () => {
       try {
         const op: any = {
           operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
-          context: new ActionContext(),
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
         };
         const output = await actor.run(op);
         const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);

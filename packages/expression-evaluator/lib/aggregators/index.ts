@@ -1,3 +1,4 @@
+import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import type { ICompleteSharedContext } from '../evaluators/evaluatorHelpers/BaseExpressionEvaluator';
@@ -13,7 +14,7 @@ import { Sum } from './Sum';
 
 export interface IAggregatorComponentClass {
   new(expr: Algebra.AggregateExpression, sharedContext: ICompleteSharedContext): AggregatorComponent;
-  emptyValue: () => RDF.Term | undefined;
+  emptyValue: (dataFactory: ComunicaDataFactory) => RDF.Term | undefined;
 }
 
 export const aggregators: Readonly<{[key in SetFunction]: IAggregatorComponentClass }> = {

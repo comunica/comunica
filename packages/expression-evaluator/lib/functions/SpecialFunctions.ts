@@ -1,3 +1,4 @@
+import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import * as uuid from 'uuid';
 import * as E from '../expressions';
@@ -22,20 +23,22 @@ type PTerm = Promise<E.TermExpression>;
  */
 const bound: ISpecialDefinition = {
   arity: 1,
-  async applyAsync({ args, mapping }: EvalContextAsync): PTerm {
-    return bound_({ args, mapping });
+  async applyAsync({ args, mapping, dataFactory }: EvalContextAsync): PTerm {
+    return bound_({ args, mapping, dataFactory });
   },
-  applySynchronously({ args, mapping }: EvalContextSync): Term {
-    return bound_({ args, mapping });
+  applySynchronously({ args, mapping, dataFactory }: EvalContextSync): Term {
+    return bound_({ args, mapping, dataFactory });
   },
 };
 
-function bound_({ args, mapping }: { args: E.Expression[]; mapping: RDF.Bindings }): E.BooleanLiteral {
+function bound_(
+  { args, mapping, dataFactory }: { args: E.Expression[]; mapping: RDF.Bindings; dataFactory: ComunicaDataFactory },
+): E.BooleanLiteral {
   const variable = <E.VariableExpression> args[0];
   if (variable.expressionType !== E.ExpressionType.Variable) {
     throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.BOUND);
   }
-  const val = mapping.has(expressionToVar(variable));
+  const val = mapping.has(expressionToVar(dataFactory, variable));
   return bool(val);
 }
 
@@ -203,14 +206,14 @@ const logicalAnd: ISpecialDefinition = {
  */
 const sameTerm: ISpecialDefinition = {
   arity: 2,
-  async applyAsync({ args, mapping, evaluate }: EvalContextAsync): PTerm {
+  async applyAsync({ args, mapping, evaluate, dataFactory }: EvalContextAsync): PTerm {
     const [ leftExpr, rightExpr ] = args.map(arg => evaluate(arg, mapping));
     const [ left, right ] = await Promise.all([ leftExpr, rightExpr ]);
-    return bool(left.toRDF().equals(right.toRDF()));
+    return bool(left.toRDF(dataFactory).equals(right.toRDF(dataFactory)));
   },
-  applySynchronously({ args, mapping, evaluate }: EvalContextSync): Term {
+  applySynchronously({ args, mapping, evaluate, dataFactory }: EvalContextSync): Term {
     const [ left, right ] = args.map(arg => evaluate(arg, mapping));
-    return bool(left.toRDF().equals(right.toRDF()));
+    return bool(left.toRDF(dataFactory).equals(right.toRDF(dataFactory)));
   },
 };
 

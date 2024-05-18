@@ -12,7 +12,7 @@ import { ActorRdfJoinMinusHash } from '../lib/ActorRdfJoinMinusHash';
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 
 describe('ActorRdfJoinMinusHash', () => {
   let bus: any;

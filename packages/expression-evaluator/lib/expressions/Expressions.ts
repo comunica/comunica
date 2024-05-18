@@ -1,3 +1,4 @@
+import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import type { EvalContextAsync, EvalContextSync } from '../functions';
@@ -87,7 +88,7 @@ export type TermExpression = IExpressionProps & {
   termType: TermType;
   str: () => string;
   coerceEBV: () => boolean;
-  toRDF: () => RDF.Term;
+  toRDF: (dataFactory: ComunicaDataFactory) => RDF.Term;
 };
 
 export type VariableExpression = IExpressionProps & {

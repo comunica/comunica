@@ -11,14 +11,14 @@ export class Min extends AggregatorComponent {
     }
     if (this.state === undefined) {
       this.state = term;
-    } else if (orderTypes(this.state, term) === 1) {
+    } else if (orderTypes(this.state, term, this.sharedContext.dataFactory) === 1) {
       this.state = term;
     }
   }
 
   public result(): RDF.Term | undefined {
     if (this.state === undefined) {
-      return Min.emptyValue();
+      return Min.emptyValue(this.sharedContext.dataFactory);
     }
     return this.state;
   }

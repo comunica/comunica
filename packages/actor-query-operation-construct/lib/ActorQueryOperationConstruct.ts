@@ -3,12 +3,14 @@ import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import type {
   IQueryOperationResultBindings,
   IActionContext,
   IQueryOperationResult,
   MetadataQuads,
+  ComunicaDataFactory,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -40,6 +42,8 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
 
   public async runOperation(operationOriginal: Algebra.Construct, context: IActionContext):
   Promise<IQueryOperationResult> {
+    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+
     // Apply a projection on our CONSTRUCT variables first, as the query may contain other variables as well.
     const variables: RDF.Variable[] = ActorQueryOperationConstruct.getVariables(operationOriginal.template);
     const operation: Algebra.Operation = { type: Algebra.types.PROJECT, input: operationOriginal.input, variables };
@@ -52,6 +56,7 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
     // Construct triples using the result based on the pattern.
     // If it's a DESCRIBE query don't apply the blank node localisation.
     const quadStream: AsyncIterator<RDF.Quad> = new BindingsToQuadsIterator(
+      dataFactory,
       operationOriginal.template,
       output.bindingsStream,
     );

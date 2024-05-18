@@ -34,6 +34,7 @@ export class ActorRdfParseShaclc extends ActorRdfParseFixedMediaTypes {
   public async runHandle(action: IActionRdfParse, mediaType: string, _context: IActionContext):
   Promise<IActorRdfParseOutput> {
     const prefixIterator = new PrefixWrappingIterator(
+      // TODO: pass data factory
       streamToString(action.data).then(str => parse(str, {
         extendedSyntax: mediaType === 'text/shaclc-ext',
         baseIRI: action.metadata?.baseIRI,

@@ -12,7 +12,7 @@ import type { IActionRdfJoin } from '../lib/ActorRdfJoin';
 import { ActorRdfJoin } from '../lib/ActorRdfJoin';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 
 // Dummy class to test instance of abstract class
 class Dummy extends ActorRdfJoin {
@@ -112,7 +112,7 @@ IActorRdfJoinSelectivityOutput
           operation: <any>{},
         },
       ],
-      context: new ActionContext(),
+      context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
     };
   });
 
@@ -220,7 +220,7 @@ IActorRdfJoinSelectivityOutput
 
   describe('joinVariables', () => {
     it('should join variables', () => {
-      expect(ActorRdfJoin.joinVariables([
+      expect(ActorRdfJoin.joinVariables(DF, [
         {
           state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 10 },
@@ -235,7 +235,7 @@ IActorRdfJoinSelectivityOutput
         },
       ])).toEqual([]);
 
-      expect(ActorRdfJoin.joinVariables([
+      expect(ActorRdfJoin.joinVariables(DF, [
         {
           state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 10 },
@@ -257,7 +257,7 @@ IActorRdfJoinSelectivityOutput
     });
 
     it('should deduplicate the result', () => {
-      expect(ActorRdfJoin.joinVariables([
+      expect(ActorRdfJoin.joinVariables(DF, [
         {
           state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 10 },
@@ -272,7 +272,7 @@ IActorRdfJoinSelectivityOutput
         },
       ])).toEqual([ DF.variable('a'), DF.variable('b'), DF.variable('d') ]);
 
-      expect(ActorRdfJoin.joinVariables([
+      expect(ActorRdfJoin.joinVariables(DF, [
         {
           state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 10 },

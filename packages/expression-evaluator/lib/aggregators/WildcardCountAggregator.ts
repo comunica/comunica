@@ -1,3 +1,4 @@
+import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import * as RdfString from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -15,7 +16,10 @@ export class WildcardCountAggregator {
   private readonly bindingValues: Map<string, Set<string>> = new Map();
   private counter = 0;
 
-  public constructor(expr: Algebra.AggregateExpression) {
+  public constructor(
+    protected readonly dataFactory: ComunicaDataFactory,
+    expr: Algebra.AggregateExpression,
+  ) {
     this.distinct = expr.distinct;
   }
 
@@ -25,12 +29,12 @@ export class WildcardCountAggregator {
     }
   }
 
-  public static emptyValue(): RDF.Term {
-    return integer(0).toRDF();
+  public static emptyValue(dataFactory: ComunicaDataFactory): RDF.Term {
+    return integer(0).toRDF(dataFactory);
   }
 
   public result(): RDF.Term {
-    return integer(this.counter).toRDF();
+    return integer(this.counter).toRDF(this.dataFactory);
   }
 
   /**

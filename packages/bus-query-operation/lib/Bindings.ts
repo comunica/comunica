@@ -1,15 +1,10 @@
 import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { Bindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import { mapTermsNested, someTermsNested } from 'rdf-terms';
 import type { Algebra, Factory } from 'sparqlalgebrajs';
 import { Util } from 'sparqlalgebrajs';
-
-const DF = new DataFactory();
-
-const TRUE = DF.literal('true', DF.namedNode('http://www.w3.org/2001/XMLSchema#boolean'));
 
 /**
  * Materialize a term with the given binding.
@@ -42,6 +37,7 @@ export function materializeTerm(term: RDF.Term, bindings: Bindings): RDF.Term {
  * by the terms bound to the variables in the given bindings.
  * @param {Algebra.Operation} operation SPARQL algebra operation.
  * @param {Bindings} bindings A bindings object.
+ * @param algebraFactory The algebra factory.
  * @param bindingsFactory The bindings factory.
  * @param options Options for materializations.
  * @param options.strictTargetVariables If target variable bindings (such as on SELECT or BIND) should not be allowed.
@@ -51,6 +47,7 @@ export function materializeTerm(term: RDF.Term, bindings: Bindings): RDF.Term {
 export function materializeOperation(
   operation: Algebra.Operation,
   bindings: Bindings,
+  algebraFactory: Factory,
   bindingsFactory: BindingsFactory,
   options: {
     strictTargetVariables?: boolean;
@@ -98,7 +95,7 @@ export function materializeOperation(
         } else {
           return {
             recurse: true,
-            result: materializeOperation(op.input, bindings, bindingsFactory, options),
+            result: materializeOperation(op.input, bindings, algebraFactory, bindingsFactory, options),
           };
         }
       }
@@ -167,6 +164,7 @@ export function materializeOperation(
           materializeOperation(
             op.input,
             subBindings,
+            algebraFactory,
             bindingsFactory,
             options,
           ),
@@ -235,7 +233,10 @@ export function materializeOperation(
           [ ...bindings.keys() ].some(variable => op.args[0].term.equals(variable))) {
           return {
             recurse: false,
-            result: factory.createTermExpression(TRUE),
+            result: factory.createTermExpression(factory.dataFactory.literal(
+              'true',
+              factory.dataFactory.namedNode('http://www.w3.org/2001/XMLSchema#boolean'),
+            )),
           };
         }
         return {
@@ -263,5 +264,5 @@ export function materializeOperation(
         result: op,
       };
     },
-  });
+  }, algebraFactory);
 }

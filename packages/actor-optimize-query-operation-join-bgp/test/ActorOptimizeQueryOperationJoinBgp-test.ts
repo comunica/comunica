@@ -1,4 +1,5 @@
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -14,7 +15,7 @@ describe('ActorOptimizeQueryOperationJoinBgp', () => {
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    context = new ActionContext();
+    context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
     factory = new Factory();
   });
 

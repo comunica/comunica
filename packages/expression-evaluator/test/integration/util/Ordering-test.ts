@@ -36,8 +36,8 @@ function orderTestIsLower(
   litB: RDF.Term | undefined,
   typeDiscoveryCallback?: SuperTypeCallback,
 ) {
-  expect(orderTypes(litA, litB, false, typeDiscoveryCallback)).toBe(-1);
-  expect(orderTypes(litB, litA, false, typeDiscoveryCallback)).toBe(1);
+  expect(orderTypes(litA, litB, DF, false, typeDiscoveryCallback)).toBe(-1);
+  expect(orderTypes(litB, litA, DF, false, typeDiscoveryCallback)).toBe(1);
 }
 
 function genericOrderTestLower(
@@ -49,8 +49,8 @@ function genericOrderTestLower(
 }
 
 function orderTestIsEqual(litA: RDF.Term | undefined, litB: RDF.Term | undefined) {
-  expect(orderTypes(litA, litB)).toBe(0);
-  expect(orderTypes(litB, litA)).toBe(0);
+  expect(orderTypes(litA, litB, DF)).toBe(0);
+  expect(orderTypes(litB, litA, DF)).toBe(0);
 }
 
 describe('terms order', () => {

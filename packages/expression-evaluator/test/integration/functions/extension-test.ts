@@ -8,7 +8,8 @@ import { generalEvaluate } from '../../util/generalEvaluation';
 import { Notation } from '../../util/TestTable';
 import { runTestTable } from '../../util/utils';
 
-const BF = new BindingsFactory();
+const DF = new DataFactory();
+const BF = new BindingsFactory(DF);
 
 describe('extension functions:', () => {
   describe('term-equal', () => {
@@ -33,6 +34,7 @@ describe('extension functions:', () => {
 
     describe('Can be evaluated', () => {
       const generalEvaluationConfig: GeneralEvaluationConfig = { type: 'sync', config: {
+        dataFactory: DF,
         extensionFunctionCreator: extensionFunctions,
       }};
       runTestTable({
@@ -102,6 +104,7 @@ describe('extension functions:', () => {
 
     describe('throws error when providing a failing implementation', () => {
       const generalEvaluationConfig: GeneralEvaluationConfig = { type: 'sync', config: {
+        dataFactory: DF,
         extensionFunctionCreator: extensionFunctions,
       }};
       runTestTable({
@@ -136,7 +139,7 @@ describe('extension functions:', () => {
       ]);
       const generalEvaluationConfig: GeneralEvaluationConfig = {
         type: 'sync',
-        config: { extensionFunctionCreator: creator },
+        config: { extensionFunctionCreator: creator, dataFactory: DF },
       };
       const evaluated = await generalEvaluate({
         expression: complexQuery,

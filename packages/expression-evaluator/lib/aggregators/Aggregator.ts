@@ -1,3 +1,4 @@
+import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import * as RdfString from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -16,7 +17,7 @@ export abstract class AggregatorComponent {
   protected separator: string;
   protected termTransformer: ITermTransformer;
 
-  public static emptyValue(): RDF.Term | undefined {
+  public static emptyValue(_dataFactory: ComunicaDataFactory): RDF.Term | undefined {
     return undefined;
   }
 
@@ -48,8 +49,11 @@ export class Aggregator {
     this.distinct = expr.distinct;
   }
 
-  public static emptyValue(component: IAggregatorComponentClass): RDF.Term | undefined {
-    return component.emptyValue();
+  public static emptyValue(
+    dataFactory: ComunicaDataFactory,
+    component: IAggregatorComponentClass,
+  ): RDF.Term | undefined {
+    return component.emptyValue(dataFactory);
   }
 
   public result(): RDF.Term | undefined {

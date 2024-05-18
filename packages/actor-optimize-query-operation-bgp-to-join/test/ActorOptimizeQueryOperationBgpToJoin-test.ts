@@ -1,3 +1,4 @@
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -21,7 +22,7 @@ describe('ActorOptimizeQueryOperationBgpToJoin', () => {
 
     beforeEach(() => {
       actor = new ActorOptimizeQueryOperationBgpToJoin({ name: 'actor', bus });
-      context = new ActionContext();
+      context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
     });
 
     it('should test', async() => {

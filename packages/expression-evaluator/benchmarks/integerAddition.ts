@@ -19,7 +19,7 @@ import { template } from '../test/util/Aliases';
 
 const benchSuite = new Suite();
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 
 function integerTerm(int: number): RDF.Term {
   return DF.literal(int.toString(), DF.namedNode(TypeURL.XSD_INTEGER));
@@ -27,7 +27,7 @@ function integerTerm(int: number): RDF.Term {
 
 const benchmark = new Benchmark('bench addition', () => {
   const query = translate(template('?a + ?b = ?c'));
-  const evaluator = new SyncEvaluator(query.input.expression);
+  const evaluator = new SyncEvaluator(DF, query.input.expression);
   const max = 100;
   for (let fst = 0; fst < max; fst++) {
     for (let snd = 0; snd < max; snd++) {

@@ -9,6 +9,7 @@ describe('evaluations of \'bnode\' with custom blank node generator function', (
   const config: ISyncEvaluatorContext = {
     // eslint-disable-next-line ts/prefer-nullish-coalescing
     bnode: (input?: string) => DF.blankNode(`${input || 'b'}cd`),
+    dataFactory: DF,
   };
   runTestTable({
     operation: 'BNODE',

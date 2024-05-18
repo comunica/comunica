@@ -20,7 +20,7 @@ const EventEmitter = require('node:events');
 
 const DF = new DataFactory();
 const AF = new Factory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 const v = DF.variable('v');
 
 // Dummy class for testing

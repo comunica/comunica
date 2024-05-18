@@ -1,4 +1,5 @@
 import { LRUCache } from 'lru-cache';
+import { DataFactory } from 'rdf-data-factory';
 import type { ICompleteSharedContext } from '../../lib/evaluators/evaluatorHelpers/BaseExpressionEvaluator';
 import type { AliasMap } from './Aliases';
 import type { GeneralEvaluationConfig } from './generalEvaluation';
@@ -77,5 +78,6 @@ export function getDefaultSharedContext(): ICompleteSharedContext {
     },
     functionArgumentsCache: {},
     defaultTimeZone: { zoneMinutes: 0, zoneHours: 0 },
+    dataFactory: new DataFactory(),
   };
 }

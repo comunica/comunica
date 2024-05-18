@@ -17,7 +17,7 @@ const streamifyString = require('streamify-string');
 
 const DF = new DataFactory();
 const AF = new Factory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 const v1 = DF.variable('v1');
 const v2 = DF.variable('v2');
 const v3 = DF.variable('v3');
@@ -76,7 +76,7 @@ describe('QuerySourceSparql', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    source = new QuerySourceSparql('http://example.org/sparql', ctx, mediatorHttp, 'values', BF, false, 64, 10);
+    source = new QuerySourceSparql('http://example.org/sparql', ctx, mediatorHttp, 'values', DF, AF, BF, false, 64, 10);
   });
 
   describe('getSelectorShape', () => {
@@ -181,7 +181,7 @@ describe('QuerySourceSparql', () => {
           };
         }),
       };
-      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', BF, false, 64, 10);
+      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', DF, AF, BF, false, 64, 10);
       await expect(source.queryBindings(AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.namedNode('o')), ctx))
         .toEqualBindingsStream([
           BF.fromRecord({
@@ -235,7 +235,7 @@ describe('QuerySourceSparql', () => {
           };
         }),
       };
-      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', BF, false, 64, 10);
+      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', DF, AF, BF, false, 64, 10);
       await expect(
         source.queryBindings(AF.createPattern(
           DF.quad(DF.variable('s'), DF.namedNode('p'), DF.namedNode('o')),
@@ -295,7 +295,7 @@ describe('QuerySourceSparql', () => {
           };
         },
       };
-      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', BF, false, 64, 10);
+      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', DF, AF, BF, false, 64, 10);
       await expect(source.queryBindings(AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')), ctx))
         .toEqualBindingsStream([
           BF.fromRecord({
@@ -405,7 +405,7 @@ describe('QuerySourceSparql', () => {
     });
 
     it('should not cache if cache is disabled', async() => {
-      source = new QuerySourceSparql('http://example.org/sparql', ctx, mediatorHttp, 'values', BF, false, 0, 10);
+      source = new QuerySourceSparql('http://example.org/sparql', ctx, mediatorHttp, 'values', DF, AF, BF, false, 0, 10);
 
       const stream1 = source.queryBindings(AF.createPattern(
         DF.namedNode('s'),
@@ -452,7 +452,7 @@ describe('QuerySourceSparql', () => {
           };
         },
       };
-      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', BF, false, 64, 10);
+      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', DF, AF, BF, false, 64, 10);
       await expect(source.queryBindings(
         AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')),
         ctx,
@@ -499,7 +499,7 @@ describe('QuerySourceSparql', () => {
           };
         },
       };
-      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', BF, false, 64, 10);
+      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', DF, AF, BF, false, 64, 10);
       await expect(source.queryBindings(
         AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph()),
         ctx,
@@ -519,7 +519,7 @@ describe('QuerySourceSparql', () => {
           };
         },
       };
-      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', BF, false, 64, 10);
+      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', DF, AF, BF, false, 64, 10);
       await expect(source
         .queryBindings(
           AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph()),
@@ -567,7 +567,7 @@ describe('QuerySourceSparql', () => {
           };
         },
       };
-      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', BF, false, 64, 10);
+      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', DF, AF, BF, false, 64, 10);
       const stream = source.queryBindings(
         AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')),
         ctx,
@@ -619,7 +619,7 @@ describe('QuerySourceSparql', () => {
           };
         },
       };
-      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', BF, false, 64, 10);
+      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', DF, AF, BF, false, 64, 10);
       const stream = source.queryBindings(
         AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')),
         ctx,
@@ -682,7 +682,7 @@ describe('QuerySourceSparql', () => {
           };
         },
       };
-      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', BF, true, 64, 10);
+      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', DF, AF, BF, true, 64, 10);
       await expect(source.queryBindings(AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')), ctx))
         .toEqualBindingsStream([
           BF.fromRecord({
@@ -826,7 +826,7 @@ describe('QuerySourceSparql', () => {
           });
         },
       };
-      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', BF, false, 64, 10);
+      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', DF, AF, BF, false, 64, 10);
       const stream = source.queryBindings(
         AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')),
         ctx,
@@ -883,7 +883,7 @@ describe('QuerySourceSparql', () => {
           };
         }),
       };
-      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', BF, false, 64, 10);
+      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', DF, AF, BF, false, 64, 10);
 
       await expect(source.queryQuads(
         AF.createConstruct(AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')), []),
@@ -932,7 +932,7 @@ WHERE { undefined:s ?p undefined:o. }` }),
           };
         }),
       };
-      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', BF, false, 64, 10);
+      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', DF, AF, BF, false, 64, 10);
 
       const stream = source.queryQuads(
         AF.createConstruct(AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')), []),
@@ -960,7 +960,7 @@ WHERE { undefined:s ?p undefined:o. }` }),
           };
         }),
       };
-      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', BF, false, 64, 10);
+      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', DF, AF, BF, false, 64, 10);
 
       await expect(source.queryQuads(
         AF.createConstruct(AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')), []),
@@ -998,7 +998,7 @@ WHERE { undefined:s ?p undefined:o. }` }),
           };
         }),
       };
-      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', BF, false, 64, 10);
+      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', DF, AF, BF, false, 64, 10);
 
       await expect(source.queryBoolean(
         AF.createAsk(AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'))),
@@ -1030,7 +1030,7 @@ WHERE { undefined:s ?p undefined:o. }` }),
           };
         }),
       };
-      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', BF, false, 64, 10);
+      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', DF, AF, BF, false, 64, 10);
 
       await expect(source.queryBoolean(
         AF.createAsk(AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'))),
@@ -1060,7 +1060,7 @@ WHERE { undefined:s ?p undefined:o. }` }),
           };
         }),
       };
-      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', BF, false, 64, 10);
+      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', DF, AF, BF, false, 64, 10);
 
       await source.queryVoid(
         AF.createDrop(DF.namedNode('s')),
@@ -1091,7 +1091,7 @@ WHERE { undefined:s ?p undefined:o. }` }),
           };
         }),
       };
-      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', BF, false, 64, 10);
+      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', DF, AF, BF, false, 64, 10);
 
       await source.queryVoid(
         AF.createDrop(DF.namedNode('s')),
@@ -1115,31 +1115,23 @@ WHERE { undefined:s ?p undefined:o. }` }),
 
   describe('addBindingsToOperation', () => {
     it('should handle an empty stream for values', async() => {
-      await expect(QuerySourceSparql.addBindingsToOperation(
-        'values',
-        AF.createNop(),
-        {
-          bindings: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
-          metadata: <any> { variables: []},
-        },
-      )).resolves.toEqual(AF.createJoin([
+      await expect(QuerySourceSparql.addBindingsToOperation(AF, 'values', AF.createNop(), {
+        bindings: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
+        metadata: <any> { variables: []},
+      })).resolves.toEqual(AF.createJoin([
         AF.createValues([], []),
         AF.createNop(),
       ]));
     });
 
     it('should handle a non-empty stream for values', async() => {
-      await expect(QuerySourceSparql.addBindingsToOperation(
-        'values',
-        AF.createNop(),
-        {
-          bindings: new ArrayIterator<RDF.Bindings>([
-            BF.fromRecord({ a: DF.namedNode('a1') }),
-            BF.fromRecord({ a: DF.namedNode('a2') }),
-          ], { autoStart: false }),
-          metadata: <any> { variables: [ DF.variable('a') ]},
-        },
-      )).resolves.toEqual(AF.createJoin([
+      await expect(QuerySourceSparql.addBindingsToOperation(AF, 'values', AF.createNop(), {
+        bindings: new ArrayIterator<RDF.Bindings>([
+          BF.fromRecord({ a: DF.namedNode('a1') }),
+          BF.fromRecord({ a: DF.namedNode('a2') }),
+        ], { autoStart: false }),
+        metadata: <any> { variables: [ DF.variable('a') ]},
+      })).resolves.toEqual(AF.createJoin([
         AF.createValues([ DF.variable('a') ], [
           { '?a': DF.namedNode('a1') },
           { '?a': DF.namedNode('a2') },
@@ -1149,25 +1141,17 @@ WHERE { undefined:s ?p undefined:o. }` }),
     });
 
     it('should throw on union', async() => {
-      await expect(QuerySourceSparql.addBindingsToOperation(
-        'union',
-        AF.createNop(),
-        {
-          bindings: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
-          metadata: <any> { variables: []},
-        },
-      )).rejects.toThrow(`Not implemented yet: "union" case`);
+      await expect(QuerySourceSparql.addBindingsToOperation(AF, 'union', AF.createNop(), {
+        bindings: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
+        metadata: <any> { variables: []},
+      })).rejects.toThrow(`Not implemented yet: "union" case`);
     });
 
     it('should throw on filter', async() => {
-      await expect(QuerySourceSparql.addBindingsToOperation(
-        'filter',
-        AF.createNop(),
-        {
-          bindings: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
-          metadata: <any> { variables: []},
-        },
-      )).rejects.toThrow(`Not implemented yet: "filter" case`);
+      await expect(QuerySourceSparql.addBindingsToOperation(AF, 'filter', AF.createNop(), {
+        bindings: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
+        metadata: <any> { variables: []},
+      })).rejects.toThrow(`Not implemented yet: "filter" case`);
     });
   });
 });

@@ -8,10 +8,11 @@ import type {
 } from '@comunica/bus-rdf-join';
 import { ChunkedIterator, ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
-import { KeysRdfJoin } from '@comunica/context-entries';
+import { KeysInitQuery, KeysRdfJoin } from '@comunica/context-entries';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type {
   BindingsStream,
+  ComunicaDataFactory,
   IActionContext,
   IJoinEntry,
   IJoinEntryWithMetadata,
@@ -32,7 +33,6 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
   public readonly mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort;
   public readonly mediatorJoin: MediatorRdfJoin;
 
-  public static readonly FACTORY = new Factory();
   public constructor(args: IActorRdfJoinMultiSmallestFilterBindingsArgs) {
     super(args, {
       logicalType: 'inner',
@@ -95,6 +95,9 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
   }
 
   public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
+    const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
+    const algebraFactory = new Factory(dataFactory);
+
     // Determine the two smallest streams by sorting (e.g. via cardinality)
     const entriesUnsorted = await ActorRdfJoin.getEntriesWithMetadatas([ ...action.entries ]);
     const { first, second: secondIn, remaining: remainingIn } = await this.sortJoinEntries(
@@ -166,8 +169,7 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
           entries: [ first, second ],
           context: action.context.set(KeysRdfJoin.lastPhysicalJoin, this.physicalName),
         })),
-      operation: ActorRdfJoinMultiSmallestFilterBindings.FACTORY
-        .createJoin([ first.operation, second.operation ], false),
+      operation: algebraFactory.createJoin([ first.operation, second.operation ], false),
       operationModified: true,
     };
 

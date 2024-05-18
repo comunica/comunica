@@ -14,6 +14,7 @@ describe('exists', () => {
       generalEvaluationConfig: {
         type: 'sync',
         config: {
+          dataFactory: DF,
           exists: hookMock,
         },
       },
@@ -32,6 +33,7 @@ describe('exists', () => {
       generalEvaluationConfig: {
         type: 'async',
         config: {
+          dataFactory: DF,
           exists: hookMock,
         },
       },

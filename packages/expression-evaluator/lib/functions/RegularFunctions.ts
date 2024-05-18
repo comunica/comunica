@@ -1,3 +1,4 @@
+import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { BigNumber } from 'bignumber.js';
 import { sha1, sha256, sha384, sha512 } from 'hash.js';
@@ -210,7 +211,7 @@ const equality = {
     )
     .set(
       [ 'term', 'term' ],
-      () => ([ left, right ]) => bool(RDFTermEqual(left, right)),
+      context => ([ left, right ]) => bool(RDFTermEqual(left, right, context.dataFactory)),
       false,
     )
     .set([ TypeURL.XSD_DURATION, TypeURL.XSD_DURATION ], () =>
@@ -227,9 +228,9 @@ const equality = {
     .collect(),
 };
 
-function RDFTermEqual(_left: Term, _right: Term): boolean {
-  const left = _left.toRDF();
-  const right = _right.toRDF();
+function RDFTermEqual(_left: Term, _right: Term, dataFactory: ComunicaDataFactory): boolean {
+  const left = _left.toRDF(dataFactory);
+  const right = _right.toRDF(dataFactory);
   const val = left.equals(right);
   if (!val && (left.termType === 'Literal') && (right.termType === 'Literal')) {
     throw new Err.RDFEqualTypeError([ _left, _right ]);
@@ -255,7 +256,12 @@ const lesserThan = {
     .booleanTest(() => (left, right) => left < right)
     .set(
       [ 'quad', 'quad' ],
-      () => ([ left, right ]) => bool(orderTypes(left.toRDF(), right.toRDF(), true) === -1),
+      context => ([ left, right ]) => bool(orderTypes(
+        left.toRDF(context.dataFactory),
+        right.toRDF(context.dataFactory),
+        context.dataFactory,
+        true,
+      ) === -1),
       false,
     )
     .dateTimeTest(({ defaultTimeZone }) => (left, right) =>
@@ -990,7 +996,11 @@ const triple = {
   overloads: declare(C.RegularOperator.TRIPLE)
     .onTerm3(
       context => (...args) => new E.Quad(
-        DF.quad(args[0].toRDF(), args[1].toRDF(), args[2].toRDF()),
+        DF.quad(
+          args[0].toRDF(context.dataFactory),
+          args[1].toRDF(context.dataFactory),
+          args[2].toRDF(context.dataFactory),
+        ),
         context.superTypeProvider,
       ),
     )

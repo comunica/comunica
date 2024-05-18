@@ -1,3 +1,4 @@
+import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
 import type * as E from '../expressions';
@@ -12,6 +13,7 @@ import type { SuperTypeCallback, TypeCache } from './TypeHandling';
 export function orderTypes(
   termA: RDF.Term | undefined,
   termB: RDF.Term | undefined,
+  dataFactory: ComunicaDataFactory,
   strict = false,
   typeDiscoveryCallback?: SuperTypeCallback,
   typeCache?: TypeCache,
@@ -44,6 +46,7 @@ export function orderTypes(
     const orderSubject = orderTypes(
       termA.subject,
       termB.subject,
+      dataFactory,
       strict,
       typeDiscoveryCallback,
       typeCache,
@@ -54,6 +57,7 @@ export function orderTypes(
     const orderPredicate = orderTypes(
       termA.predicate,
       termB.predicate,
+      dataFactory,
       strict,
       typeDiscoveryCallback,
       typeCache,
@@ -64,6 +68,7 @@ export function orderTypes(
     const orderObject = orderTypes(
       termA.object,
       termB.object,
+      dataFactory,
       strict,
       typeDiscoveryCallback,
       typeCache,
@@ -74,6 +79,7 @@ export function orderTypes(
     return orderTypes(
       termA.graph,
       termB.graph,
+      dataFactory,
       strict,
       typeDiscoveryCallback,
       typeCache,
@@ -82,7 +88,7 @@ export function orderTypes(
 
   // Handle literals
   if (termA.termType === 'Literal') {
-    return orderLiteralTypes(termA, <RDF.Literal>termB, typeDiscoveryCallback, typeCache);
+    return orderLiteralTypes(termA, <RDF.Literal>termB, dataFactory, typeDiscoveryCallback, typeCache);
   }
 
   // Handle all other types
@@ -95,6 +101,7 @@ export function orderTypes(
 function orderLiteralTypes(
   litA: RDF.Literal,
   litB: RDF.Literal,
+  dataFactory: ComunicaDataFactory,
   typeDiscoveryCallback?: SuperTypeCallback,
   typeCache?: TypeCache,
 ): -1 | 0 | 1 {
@@ -108,6 +115,7 @@ function orderLiteralTypes(
       cache: typeCache ?? new LRUCache({ max: 1_000 }),
     },
     defaultTimeZone: { zoneHours: 0, zoneMinutes: 0 },
+    dataFactory,
   };
 
   const termTransformer = new TermTransformer(context.superTypeProvider);

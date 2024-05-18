@@ -1,13 +1,11 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { MediatorRdfUpdateQuads } from '@comunica/bus-rdf-update-quads';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
-import type { IActionContext, IQueryOperationResult } from '@comunica/types';
+import type { ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
-
-const DF = new DataFactory();
 
 /**
  * A [Query Operation](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation) actor
@@ -27,10 +25,12 @@ export class ActorQueryOperationDrop extends ActorQueryOperationTypedMediated<Al
 
   public async runOperation(operation: Algebra.Drop, context: IActionContext):
   Promise<IQueryOperationResult> {
+    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+
     // Delegate to update-quads bus
     let graphs: RDF.DefaultGraph | 'NAMED' | 'ALL' | RDF.NamedNode[];
     if (operation.source === 'DEFAULT') {
-      graphs = DF.defaultGraph();
+      graphs = dataFactory.defaultGraph();
     } else if (typeof operation.source === 'string') {
       graphs = operation.source;
     } else {

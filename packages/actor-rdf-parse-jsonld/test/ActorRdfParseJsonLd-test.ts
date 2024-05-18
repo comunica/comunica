@@ -1,14 +1,17 @@
 import type { Readable } from 'node:stream';
-import { KeysRdfParseHtmlScript, KeysRdfParseJsonLd } from '@comunica/context-entries';
+import { KeysInitQuery, KeysRdfParseHtmlScript, KeysRdfParseJsonLd } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
 import type { IActionContext } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
+import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfParseJsonLd } from '../lib/ActorRdfParseJsonLd';
 
 const quad = require('rdf-quad');
 const stringToStream = require('streamify-string');
 const streamifyString = require('streamify-string');
+
+const DF = new DataFactory();
 
 describe('ActorRdfParseJsonLd', () => {
   let bus: any;
@@ -41,7 +44,7 @@ describe('ActorRdfParseJsonLd', () => {
         });
       },
     };
-    context = new ActionContext();
+    context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
   });
 
   describe('The ActorRdfParseJsonLd module', () => {

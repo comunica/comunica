@@ -14,7 +14,7 @@ import { MediatedLinkedRdfSourcesAsyncRdfIterator } from '../lib/MediatedLinkedR
 
 const DF = new DataFactory();
 const AF = new Factory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 
 setTaskScheduler(task => setImmediate(task));
 
@@ -64,6 +64,8 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         mediatorMetadataAccumulate,
         mediatorRdfResolveHypermediaLinks,
         mediatorRdfResolveHypermediaLinksQueue,
+        DF,
+        AF,
       );
     });
 
@@ -92,6 +94,8 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
           mediatorMetadataAccumulate,
           mediatorRdfResolveHypermediaLinks,
           mediatorRdfResolveHypermediaLinksQueue,
+          DF,
+          AF,
         );
 
         source.close();
@@ -127,6 +131,8 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
           mediatorMetadataAccumulate,
           mediatorRdfResolveHypermediaLinks,
           mediatorRdfResolveHypermediaLinksQueue,
+          DF,
+          AF,
         );
 
         source.close();
@@ -185,6 +191,8 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
           mediatorMetadataAccumulate,
           mediatorRdfResolveHypermediaLinks,
           mediatorRdfResolveHypermediaLinksQueue,
+          DF,
+          AF,
         );
 
         source.destroy();
@@ -219,6 +227,8 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
           mediatorMetadataAccumulate,
           mediatorRdfResolveHypermediaLinks,
           mediatorRdfResolveHypermediaLinksQueue,
+          DF,
+          AF,
         );
 
         source.destroy();

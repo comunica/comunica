@@ -1,3 +1,4 @@
+import type { ComunicaDataFactory } from '@comunica/types';
 import { Algebra as Alg } from 'sparqlalgebrajs';
 import type { AsyncExtensionFunction, AsyncExtensionFunctionCreator } from '../evaluators/AsyncEvaluator';
 import type { ICompleteSharedContext } from '../evaluators/evaluatorHelpers/BaseExpressionEvaluator';
@@ -22,9 +23,13 @@ export interface IAlgebraTransformer extends ITermTransformer {
 
 export class AlgebraTransformer extends TermTransformer implements IAlgebraTransformer {
   private readonly creatorConfig: FunctionCreatorConfig;
-  public constructor(protected readonly algebraConfig: AlgebraTransformConfig) {
+  protected readonly dataFactory: ComunicaDataFactory;
+  public constructor(
+    protected readonly algebraConfig: AlgebraTransformConfig,
+  ) {
     super(algebraConfig.superTypeProvider);
     this.creatorConfig = <FunctionCreatorConfig> { type: algebraConfig.type, creator: algebraConfig.creator };
+    this.dataFactory = algebraConfig.dataFactory;
   }
 
   public transformAlgebra(expr: Alg.Expression): E.Expression {
@@ -76,7 +81,7 @@ export class AlgebraTransformer extends TermTransformer implements IAlgebraTrans
   private wrapSyncFunction(func: SyncExtensionFunction, name: string): SimpleApplication {
     return (args) => {
       try {
-        const res = func(args.map(arg => arg.toRDF()));
+        const res = func(args.map(arg => arg.toRDF(this.dataFactory)));
         return this.transformRDFTermUnsafe(res);
       } catch (error: unknown) {
         throw new ExtensionFunctionError(name, error);
@@ -87,7 +92,7 @@ export class AlgebraTransformer extends TermTransformer implements IAlgebraTrans
   private wrapAsyncFunction(func: AsyncExtensionFunction, name: string): AsyncExtensionApplication {
     return async(args) => {
       try {
-        const res = await func(args.map(arg => arg.toRDF()));
+        const res = await func(args.map(arg => arg.toRDF(this.dataFactory)));
         return this.transformRDFTermUnsafe(res);
       } catch (error: unknown) {
         throw new ExtensionFunctionError(name, error);

@@ -6,7 +6,7 @@ import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-a
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
-import { KeysQuerySourceIdentify } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext, QuerySourceUnidentifiedExpanded } from '@comunica/types';
@@ -18,9 +18,9 @@ import { mediators as utilMediators } from './MediatorDereferenceRdf-util';
 import 'jest-rdf';
 import '@comunica/jest';
 
-const BF = new BindingsFactory();
 const DF = new DataFactory();
 const AF = new Factory();
+const BF = new BindingsFactory(DF);
 
 const mediatorMergeBindingsContext: any = {
   mediate(arg: any) {
@@ -89,7 +89,7 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
           mediatorMergeBindingsContext,
           name: 'actor',
         });
-        context = new ActionContext();
+        context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
         operation = <any> {};
         querySourceUnidentified = { value: 'firstUrl' };
       });
@@ -309,7 +309,7 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
 
       describe('run without hypermediaSourcesAggregatedStores', () => {
         beforeEach(() => {
-          context = new ActionContext();
+          context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
         });
 
         it('should return a source that can produce a bindings stream and metadata', async() => {
@@ -395,6 +395,7 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
       describe('run with hypermediaSourcesAggregatedStores', () => {
         beforeEach(() => {
           context = new ActionContext({
+            [KeysInitQuery.dataFactory.name]: DF,
             [KeysQuerySourceIdentify.hypermediaSourcesAggregatedStores.name]: new Map(),
           });
         });

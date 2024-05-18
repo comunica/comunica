@@ -2,40 +2,49 @@ import type { BindingsFactory } from '@comunica/bindings-factory';
 import { filterMatchingQuotedQuads, quadsToBindings } from '@comunica/bus-query-source-identify';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { MetadataValidationState } from '@comunica/metadata';
-import type { IQuerySource, BindingsStream, IActionContext, FragmentSelectorShape } from '@comunica/types';
+import type {
+  IQuerySource,
+  BindingsStream,
+  IActionContext,
+  FragmentSelectorShape,
+  ComunicaDataFactory,
+} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { AsyncIterator, wrap as wrapAsyncIterator } from 'asynciterator';
-import { DataFactory } from 'rdf-data-factory';
 import { someTermsNested, filterTermsNested, someTerms, uniqTerms } from 'rdf-terms';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
 import type { IRdfJsSourceExtended } from './IRdfJsSourceExtended';
 
-const AF = new Factory();
-const DF = new DataFactory<RDF.BaseQuad>();
-
 export class QuerySourceRdfJs implements IQuerySource {
-  protected static readonly SELECTOR_SHAPE: FragmentSelectorShape = {
-    type: 'operation',
-    operation: {
-      operationType: 'pattern',
-      pattern: AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
-    },
-    variablesOptional: [
-      DF.variable('s'),
-      DF.variable('p'),
-      DF.variable('o'),
-    ],
-  };
-
+  protected readonly selectorShape: FragmentSelectorShape;
   public referenceValue: string | RDF.Source;
   protected readonly source: IRdfJsSourceExtended;
+  private readonly dataFactory: ComunicaDataFactory;
   private readonly bindingsFactory: BindingsFactory;
 
-  public constructor(source: RDF.Source, bindingsFactory: BindingsFactory) {
+  public constructor(source: RDF.Source, dataFactory: ComunicaDataFactory, bindingsFactory: BindingsFactory) {
     this.source = source;
     this.referenceValue = source;
+    this.dataFactory = dataFactory;
     this.bindingsFactory = bindingsFactory;
+    const AF = new Factory(<RDF.DataFactory> this.dataFactory);
+    this.selectorShape = {
+      type: 'operation',
+      operation: {
+        operationType: 'pattern',
+        pattern: AF.createPattern(
+          this.dataFactory.variable('s'),
+          this.dataFactory.variable('p'),
+          this.dataFactory.variable('o'),
+        ),
+      },
+      variablesOptional: [
+        this.dataFactory.variable('s'),
+        this.dataFactory.variable('p'),
+        this.dataFactory.variable('o'),
+      ],
+    };
   }
 
   public static nullifyVariables(term: RDF.Term | undefined, quotedTripleFiltering: boolean): RDF.Term | undefined {
@@ -51,7 +60,7 @@ export class QuerySourceRdfJs implements IQuerySource {
   }
 
   public async getSelectorShape(): Promise<FragmentSelectorShape> {
-    return QuerySourceRdfJs.SELECTOR_SHAPE;
+    return this.selectorShape;
   }
 
   public queryBindings(operation: Algebra.Operation, context: IActionContext): BindingsStream {
@@ -87,6 +96,7 @@ export class QuerySourceRdfJs implements IQuerySource {
     return quadsToBindings(
       it,
       operation,
+      this.dataFactory,
       this.bindingsFactory,
       Boolean(context.get(KeysQueryOperation.unionDefaultGraph)),
     );

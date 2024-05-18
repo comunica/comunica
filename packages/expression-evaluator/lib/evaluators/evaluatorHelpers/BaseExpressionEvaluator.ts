@@ -1,3 +1,4 @@
+import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type * as E from '../../expressions';
 import { expressionToVar } from '../../functions/Helpers';
@@ -14,6 +15,7 @@ export interface ISharedContext {
   getSuperType?: SuperTypeCallback;
   functionArgumentsCache?: FunctionArgumentsCache;
   defaultTimeZone?: ITimeZoneRepresentation;
+  dataFactory: ComunicaDataFactory;
 }
 
 export interface ICompleteSharedContext {
@@ -22,17 +24,21 @@ export interface ICompleteSharedContext {
   functionArgumentsCache: FunctionArgumentsCache;
   superTypeProvider: ISuperTypeProvider;
   defaultTimeZone: ITimeZoneRepresentation;
+  dataFactory: ComunicaDataFactory;
 }
 
 export class BaseExpressionEvaluator {
-  public constructor(protected readonly termTransformer: ITermTransformer) {}
+  public constructor(
+    protected readonly termTransformer: ITermTransformer,
+    protected readonly dataFactory: ComunicaDataFactory,
+  ) {}
 
   protected term(expr: E.Term): E.Term {
     return expr;
   }
 
   protected variable(expr: E.Variable, mapping: RDF.Bindings): E.Term {
-    const term = mapping.get(expressionToVar(expr));
+    const term = mapping.get(expressionToVar(this.dataFactory, expr));
     if (!term) {
       throw new Err.UnboundVariableError(expr.name, mapping);
     }

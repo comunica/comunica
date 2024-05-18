@@ -4,7 +4,7 @@ import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinEntriesSort, MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
-import { KeysQueryOperation } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
@@ -17,7 +17,7 @@ import { ActorRdfJoinMultiBind } from '../lib/ActorRdfJoinMultiBind';
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 const FACTORY = new Factory();
 const mediatorMergeBindingsContext: any = {
   mediate(arg: any) {
@@ -61,7 +61,7 @@ IQueryOperationResultBindings
           return { entries };
         },
       };
-      context = new ActionContext({ a: 'b' });
+      context = new ActionContext({ a: 'b', [KeysInitQuery.dataFactory.name]: DF });
       mediatorQueryOperation = <any> {
         mediate: jest.fn(async(arg: IActionQueryOperation): Promise<IQueryOperationResultBindings> => {
           return {
@@ -1040,6 +1040,7 @@ IQueryOperationResultBindings
           operation: FACTORY.createPattern(DF.namedNode('ex:a1'), DF.namedNode('ex:p1'), DF.variable('b')),
           context: new ActionContext({
             a: 'b',
+            [KeysInitQuery.dataFactory.name]: DF,
             [KeysQueryOperation.joinLeftMetadata.name]: {
               state: expect.any(MetadataValidationState),
               cardinality: { type: 'estimate', value: 1 },
@@ -1061,6 +1062,7 @@ IQueryOperationResultBindings
           operation: FACTORY.createPattern(DF.namedNode('ex:a2'), DF.namedNode('ex:p1'), DF.variable('b')),
           context: new ActionContext({
             a: 'b',
+            [KeysInitQuery.dataFactory.name]: DF,
             [KeysQueryOperation.joinLeftMetadata.name]: {
               state: expect.any(MetadataValidationState),
               cardinality: { type: 'estimate', value: 1 },
@@ -1396,6 +1398,7 @@ IQueryOperationResultBindings
           ]),
           context: new ActionContext({
             a: 'b',
+            [KeysInitQuery.dataFactory.name]: DF,
             [KeysQueryOperation.joinLeftMetadata.name]: {
               state: expect.any(MetadataValidationState),
               cardinality: { type: 'estimate', value: 1 },
@@ -1428,6 +1431,7 @@ IQueryOperationResultBindings
           ]),
           context: new ActionContext({
             a: 'b',
+            [KeysInitQuery.dataFactory.name]: DF,
             [KeysQueryOperation.joinLeftMetadata.name]: {
               state: expect.any(MetadataValidationState),
               cardinality: { type: 'estimate', value: 1 },

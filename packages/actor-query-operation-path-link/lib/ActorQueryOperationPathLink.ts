@@ -1,7 +1,8 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import type { IActionContext, IQueryOperationResult } from '@comunica/types';
-import { Algebra } from 'sparqlalgebrajs';
+import { KeysInitQuery } from '@comunica/context-entries';
+import type { ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
+import { Algebra, Factory } from 'sparqlalgebrajs';
 
 /**
  * A comunica Path Link Query Operation Actor.
@@ -15,8 +16,11 @@ export class ActorQueryOperationPathLink extends ActorAbstractPath {
     operationOriginal: Algebra.Path,
     context: IActionContext,
   ): Promise<IQueryOperationResult> {
+    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+    const algebraFactory = new Factory(dataFactory);
+
     const predicate = <Algebra.Link> operationOriginal.predicate;
-    const operation = Object.assign(ActorAbstractPath.FACTORY.createPattern(
+    const operation = Object.assign(algebraFactory.createPattern(
       operationOriginal.subject,
       predicate.iri,
       operationOriginal.object,

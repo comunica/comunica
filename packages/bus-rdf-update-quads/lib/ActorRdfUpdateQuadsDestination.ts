@@ -1,19 +1,24 @@
 import { deskolemizeQuad } from '@comunica/actor-context-preprocess-query-source-skolemize';
-import { KeysQuerySourceIdentify, KeysRdfUpdateQuads } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQuerySourceIdentify, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
-import type { IActionContext } from '@comunica/types';
+import type { ComunicaDataFactory, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput } from './ActorRdfUpdateQuads';
 import { ActorRdfUpdateQuads } from './ActorRdfUpdateQuads';
 import type { IQuadDestination } from './IQuadDestination';
 
-export function deskolemizeStream(stream: AsyncIterator<RDF.Quad> | undefined, id: string):
+export function deskolemizeStream(
+  dataFactory: ComunicaDataFactory,
+  stream: AsyncIterator<RDF.Quad> | undefined,
+  id: string,
+):
 AsyncIterator<RDF.Quad> | undefined {
-  return stream?.map(quad => deskolemizeQuad(quad, id));
+  return stream?.map(quad => deskolemizeQuad(dataFactory, quad, id));
 }
 
 export function deskolemize(action: IActionRdfUpdateQuads): IActionRdfUpdateQuads {
+  const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
   const destination = action.context.get(KeysRdfUpdateQuads.destination);
   const id = action.context.get<Map<any, string>>(KeysQuerySourceIdentify.sourceIds)?.get(destination);
   if (!id) {
@@ -21,8 +26,8 @@ export function deskolemize(action: IActionRdfUpdateQuads): IActionRdfUpdateQuad
   }
   return {
     ...action,
-    quadStreamInsert: deskolemizeStream(action.quadStreamInsert, id),
-    quadStreamDelete: deskolemizeStream(action.quadStreamDelete, id),
+    quadStreamInsert: deskolemizeStream(dataFactory, action.quadStreamInsert, id),
+    quadStreamDelete: deskolemizeStream(dataFactory, action.quadStreamDelete, id),
   };
 }
 

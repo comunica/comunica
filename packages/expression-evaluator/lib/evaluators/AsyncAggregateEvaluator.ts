@@ -1,3 +1,4 @@
+import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import type { IAsyncEvaluatorContext } from './AsyncEvaluator';
@@ -7,9 +8,14 @@ import { BaseAggregateEvaluator } from './evaluatorHelpers/BaseAggregateEvaluato
 export class AsyncAggregateEvaluator extends BaseAggregateEvaluator {
   private readonly evaluator: AsyncEvaluator;
 
-  public constructor(expr: Algebra.AggregateExpression, context?: IAsyncEvaluatorContext, throwError?: boolean) {
-    super(expr, AsyncEvaluator.completeContext(context ?? {}), throwError);
-    this.evaluator = new AsyncEvaluator(expr.expression, context);
+  public constructor(
+    expr: Algebra.AggregateExpression,
+    public dataFactory: ComunicaDataFactory,
+    context?: IAsyncEvaluatorContext,
+    throwError?: boolean,
+  ) {
+    super(expr, AsyncEvaluator.completeContext(context ?? { dataFactory }), throwError);
+    this.evaluator = new AsyncEvaluator(dataFactory, expr.expression, context);
     this.errorOccurred = false;
   }
 

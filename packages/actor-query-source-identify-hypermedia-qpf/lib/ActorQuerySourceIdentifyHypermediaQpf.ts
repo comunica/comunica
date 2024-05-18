@@ -12,8 +12,10 @@ import {
 } from '@comunica/bus-query-source-identify-hypermedia';
 import type { MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
-import type { IActionContext } from '@comunica/types';
+import { KeysInitQuery } from '@comunica/context-entries';
+import type { ComunicaDataFactory, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import { Factory } from 'sparqlalgebrajs';
 import { QuerySourceQpf } from './QuerySourceQpf';
 
 /**
@@ -81,11 +83,15 @@ export class ActorQuerySourceIdentifyHypermediaQpf extends ActorQuerySourceIdent
     bindingsRestricted: boolean,
     quads?: RDF.Stream,
   ): Promise<QuerySourceQpf> {
+    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+    const algebraFactory = new Factory(dataFactory);
     return new QuerySourceQpf(
       this.mediatorMetadata,
       this.mediatorMetadataExtract,
       this.mediatorDereferenceRdf,
-      await BindingsFactory.create(this.mediatorMergeBindingsContext, context),
+      dataFactory,
+      algebraFactory,
+      await BindingsFactory.create(this.mediatorMergeBindingsContext, context, dataFactory),
       this.subjectUri,
       this.predicateUri,
       this.objectUri,

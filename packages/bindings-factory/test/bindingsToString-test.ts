@@ -22,7 +22,7 @@ describe('bindingsToString', () => {
   });
 
   it('should stringify non-empty bindings consistently', () => {
-    expect(bindingsToString(new BindingsFactory().bindings([
+    expect(bindingsToString(new BindingsFactory(DF).bindings([
       [ DF.variable('c'), DF.namedNode('ex:c') ],
       [ DF.variable('a'), DF.namedNode('ex:a') ],
       [ DF.variable('b'), DF.namedNode('ex:b') ],

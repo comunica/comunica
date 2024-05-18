@@ -3,9 +3,10 @@ import type { MediatorHashBindings } from '@comunica/bus-hash-bindings';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import { AsyncEvaluator } from '@comunica/expression-evaluator';
-import type { BindingsStream, IActionContext, IQueryOperationResult } from '@comunica/types';
+import type { BindingsStream, ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
 import { ArrayIterator, TransformIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 import { GroupsState } from './GroupsState';
@@ -22,10 +23,16 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
   }
 
   public async testOperation(operation: Algebra.Group, context: IActionContext): Promise<IActorTest> {
-    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context);
+    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+    const bindingsFactory = await BindingsFactory.create(
+      this.mediatorMergeBindingsContext,
+      context,
+      dataFactory,
+    );
     for (const aggregate of operation.aggregates) {
       // Will throw for unsupported expressions
       const _ = new AsyncEvaluator(
+        dataFactory,
         aggregate.expression,
         ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation, bindingsFactory),
       );
@@ -35,7 +42,8 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
 
   public async runOperation(operation: Algebra.Group, context: IActionContext):
   Promise<IQueryOperationResult> {
-    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context);
+    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context, dataFactory);
     // Create a hash function
     const { hashFunction } = await this.mediatorHashBindings.mediate({ allowHashCollisions: true, context });
 

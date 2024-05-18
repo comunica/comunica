@@ -1,5 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Actor, Bus } from '@comunica/core';
 import * as sparqlee from '@comunica/expression-evaluator';
 import type { IQueryOperationResultBindings } from '@comunica/types';
@@ -118,17 +119,26 @@ describe('ActorQueryOperationExtend', () => {
     });
 
     it('should test on extend', async() => {
-      const op: any = { operation: example(defaultExpression), context: new ActionContext() };
+      const op: any = {
+        operation: example(defaultExpression),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
       await expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-extend', async() => {
-      const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'some-other-type' },
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
       await expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run', async() => {
-      const op: any = { operation: example(defaultExpression), context: new ActionContext() };
+      const op: any = {
+        operation: example(defaultExpression),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
@@ -154,7 +164,10 @@ describe('ActorQueryOperationExtend', () => {
       const warn = jest.fn();
       jest.spyOn(Actor, 'getContextLogger').mockImplementation(() => (<any>{ warn }));
 
-      const op: any = { operation: example(faultyExpression), context: new ActionContext() };
+      const op: any = {
+        operation: example(faultyExpression),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
 
       await expect(arrayifyStream(output.bindingsStream)).resolves.toMatchObject(input);
@@ -172,7 +185,10 @@ describe('ActorQueryOperationExtend', () => {
       // eslint-disable-next-line jest/prefer-spy-on
       (<any> sparqlee).isExpressionError = jest.fn(() => false);
 
-      const op: any = { operation: example(faultyExpression), context: new ActionContext() };
+      const op: any = {
+        operation: example(faultyExpression),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
       await new Promise<void>((resolve, reject) => {
         output.bindingsStream.on('error', () => resolve());
@@ -198,7 +214,7 @@ describe('ActorQueryOperationExtend', () => {
           variable: { termType: 'Variable', value: 'a' },
           defaultExpression,
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       await expect(actor.run(op)).rejects.toThrow(`Illegal binding to variable 'a' that has already been bound`);
     });

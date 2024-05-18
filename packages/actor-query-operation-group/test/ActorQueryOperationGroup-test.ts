@@ -1,6 +1,7 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { Bindings } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
@@ -129,7 +130,7 @@ function constructCase(
     variables: groupVariables.map(name => DF.variable(name)) || [],
     aggregates: aggregates || [],
   };
-  const op: any = { operation, context: new ActionContext() };
+  const op: any = { operation, context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }) };
 
   const actor = new ActorQueryOperationGroup({
     name: 'actor',
@@ -188,14 +189,14 @@ describe('ActorQueryOperationGroup', () => {
   describe('A GroupState instance', () => {
     it('should throw an error if collectResults is called multiple times', async() => {
       const { actor, op } = constructCase({});
-      const temp = new GroupsState(hashFunction, <Algebra.Group> op.operation, {}, BF);
+      const temp = new GroupsState(hashFunction, <Algebra.Group> op.operation, { dataFactory: DF }, BF);
       await expect(temp.collectResults()).resolves.toBeTruthy();
       await expect(temp.collectResults()).rejects.toThrow('collectResult');
     });
 
     it('should throw an error if consumeBindings is called after collectResults', async() => {
       const { actor, op } = constructCase({});
-      const temp = new GroupsState(hashFunction, <Algebra.Group> op.operation, {}, BF);
+      const temp = new GroupsState(hashFunction, <Algebra.Group> op.operation, { dataFactory: DF }, BF);
       await expect(temp.collectResults()).resolves.toBeTruthy();
       await expect(temp.consumeBindings(BF.bindings([[ DF.variable('x'), DF.literal('aaa') ]])))
         .rejects.toThrow('collectResult');

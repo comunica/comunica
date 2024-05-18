@@ -1,3 +1,4 @@
+import { DataFactory } from 'rdf-data-factory';
 import { TypeURL } from '../../../lib/util/Consts';
 import { bool, dateTime, dateTyped, merge, numeric, str, timeTyped } from '../../util/Aliases';
 import { Notation } from '../../util/TestTable';
@@ -10,6 +11,7 @@ const config: ITestTableConfigBase = {
   aliases: merge(numeric, str, dateTime, bool),
   notation: Notation.Infix,
 };
+const DF = new DataFactory();
 
 describe('evaluation of \'=\'', () => {
   describe('with numeric operands like', () => {
@@ -46,6 +48,7 @@ describe('evaluation of \'=\'', () => {
         type: 'sync',
         config: {
           getSuperType: unknownType => TypeURL.XSD_INTEGER,
+          dataFactory: DF,
         },
       },
       testTable: `         

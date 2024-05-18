@@ -8,6 +8,8 @@ import type {
   IActorQuerySourceIdentifyHypermediaTest,
 } from '@comunica/bus-query-source-identify-hypermedia';
 import { ActorQuerySourceIdentifyHypermedia } from '@comunica/bus-query-source-identify-hypermedia';
+import { KeysInitQuery } from '@comunica/context-entries';
+import type { ComunicaDataFactory } from '@comunica/types';
 import { storeStream } from 'rdf-store-stream';
 
 /**
@@ -28,9 +30,11 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
 
   public async run(action: IActionQuerySourceIdentifyHypermedia): Promise<IActorQuerySourceIdentifyHypermediaOutput> {
     this.logInfo(action.context, `Identified as file source: ${action.url}`);
+    const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const source = new QuerySourceRdfJs(
       await storeStream(action.quads),
-      await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context),
+      dataFactory,
+      await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context, dataFactory),
     );
     source.toString = () => `QuerySourceRdfJs(${action.url})`;
     source.referenceValue = action.url;

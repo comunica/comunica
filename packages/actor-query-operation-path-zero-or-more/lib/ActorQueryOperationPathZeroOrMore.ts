@@ -3,11 +3,12 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import type { Bindings, IQueryOperationResult, IActionContext } from '@comunica/types';
+import { KeysInitQuery } from '@comunica/context-entries';
+import type { Bindings, IQueryOperationResult, IActionContext, ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { MultiTransformIterator, TransformIterator, EmptyIterator, BufferedIterator } from 'asynciterator';
 import { termToString } from 'rdf-string';
-import { Algebra } from 'sparqlalgebrajs';
+import { Algebra, Factory } from 'sparqlalgebrajs';
 
 /**
  * A comunica Path ZeroOrMore Query Operation Actor.
@@ -20,9 +21,11 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
   }
 
   public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryOperationResult> {
-    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context);
+    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+    const algebraFactory = new Factory(dataFactory);
+    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context, dataFactory);
 
-    const distinct = await this.isPathArbitraryLengthDistinct(context, operation);
+    const distinct = await this.isPathArbitraryLengthDistinct(algebraFactory, context, operation);
     if (distinct.operation) {
       return distinct.operation;
     }
@@ -37,8 +40,8 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
 
     if (operation.subject.termType === 'Variable' && operation.object.termType === 'Variable') {
       // Query ?s ?p ?o, to get all possible namedNodes in de the db
-      const predVar = this.generateVariable(operation);
-      const single = this.assignPatternSources(ActorAbstractPath.FACTORY
+      const predVar = this.generateVariable(dataFactory, operation);
+      const single = this.assignPatternSources(algebraFactory, algebraFactory
         .createPattern(operation.subject, predVar, operation.object, operation.graph), sources);
       const results = ActorQueryOperation.getSafeBindings(
         await this.mediatorQueryOperation.mediate({ context, operation: single }),
@@ -88,6 +91,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
                     {},
                     it,
                     counter,
+                    algebraFactory,
                     bindingsFactory,
                   );
                 }
@@ -106,6 +110,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
                     {},
                     it,
                     counter,
+                    algebraFactory,
                     bindingsFactory,
                   );
                 }
@@ -134,7 +139,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
       };
     }
     if (!sVar && !oVar) {
-      const variable = this.generateVariable();
+      const variable = this.generateVariable(dataFactory);
       const starEval = await this.getObjectsPredicateStarEval(
         operation.subject,
         predicate.path,
@@ -142,6 +147,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
         operation.graph,
         context,
         true,
+        algebraFactory,
         bindingsFactory,
       );
       // Check this
@@ -168,7 +174,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
     // If (sVar || oVar)
     const subject = sVar ? operation.object : operation.subject;
     const value: RDF.Variable = <RDF.Variable> (sVar ? operation.subject : operation.object);
-    const pred = sVar ? ActorAbstractPath.FACTORY.createInv(predicate.path) : predicate.path;
+    const pred = sVar ? algebraFactory.createInv(predicate.path) : predicate.path;
     const starEval = await this.getObjectsPredicateStarEval(
       subject,
       pred,
@@ -176,6 +182,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
       operation.graph,
       context,
       true,
+      algebraFactory,
       bindingsFactory,
     );
     const variables: RDF.Variable[] = operation.graph.termType === 'Variable' ? [ value, operation.graph ] : [ value ];

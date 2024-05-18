@@ -1,11 +1,12 @@
+import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { integer } from '../functions/Helpers';
 import { AggregatorComponent } from './Aggregator';
 
 export class Count extends AggregatorComponent {
   private state: number | undefined = undefined;
-  public static override emptyValue(): RDF.Term {
-    return integer(0).toRDF();
+  public static override emptyValue(dataFactory: ComunicaDataFactory): RDF.Term {
+    return integer(0).toRDF(dataFactory);
   }
 
   public put(): void {
@@ -17,8 +18,8 @@ export class Count extends AggregatorComponent {
 
   public result(): RDF.Term {
     if (this.state === undefined) {
-      return Count.emptyValue();
+      return Count.emptyValue(this.sharedContext.dataFactory);
     }
-    return integer(this.state).toRDF();
+    return integer(this.state).toRDF(this.sharedContext.dataFactory);
   }
 }

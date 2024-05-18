@@ -1,3 +1,4 @@
+import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { Algebra } from 'sparqlalgebrajs';
 import { aggregators } from '../../aggregators';
@@ -25,7 +26,7 @@ export abstract class BaseAggregateEvaluator {
     this.throwError = throwError ?? false;
     this.isWildcard = expr.expression.expressionType === Algebra.expressionTypes.WILDCARD;
     if (this.isWildcard) {
-      this.wildcardAggregator = new WildcardCountAggregator(expr);
+      this.wildcardAggregator = new WildcardCountAggregator(sharedContext.dataFactory, expr);
     }
   }
 
@@ -34,16 +35,20 @@ export abstract class BaseAggregateEvaluator {
    * set (unless explicitly mentioned otherwise like COUNT).
    * However, aggregate error handling says to not bind the result in case of an
    * error. So to simplify logic in the caller, we return undefined by default.
-   *
+   * @param dataFactory The data factory.
    * @param expr the aggregate expression
    * @param throwError whether this function should respect the spec and throw an error if no empty value is defined
    */
-  public static emptyValue(expr: Algebra.AggregateExpression, throwError = false): RDF.Term | undefined {
+  public static emptyValue(
+    dataFactory: ComunicaDataFactory,
+    expr: Algebra.AggregateExpression,
+    throwError = false,
+  ): RDF.Term | undefined {
     let val: RDF.Term | undefined;
     if (expr.expression.expressionType === Algebra.expressionTypes.WILDCARD) {
-      val = WildcardCountAggregator.emptyValue();
+      val = WildcardCountAggregator.emptyValue(dataFactory);
     } else {
-      val = Aggregator.emptyValue(aggregators[<SetFunction> expr.aggregator]);
+      val = Aggregator.emptyValue(dataFactory, aggregators[<SetFunction> expr.aggregator]);
     }
     if (val === undefined && throwError) {
       throw new Err.EmptyAggregateError();

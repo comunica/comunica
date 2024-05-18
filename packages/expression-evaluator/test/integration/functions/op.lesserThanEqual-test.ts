@@ -1,3 +1,4 @@
+import { DataFactory } from 'rdf-data-factory';
 import {
   bool,
   dateTime,
@@ -19,6 +20,8 @@ const config: ITestTableConfigBase = {
   aliases: merge(numeric, str, dateTime, bool),
   notation: Notation.Infix,
 };
+
+const DF = new DataFactory();
 
 describe('evaluation of \'<=\'', () => {
   describe('with numeric operands like', () => {
@@ -145,6 +148,7 @@ describe('evaluation of \'<=\'', () => {
       aliases: bool,
       config: {
         config: {
+          dataFactory: DF,
           defaultTimeZone: { zoneHours: -5, zoneMinutes: 0 },
         },
         type: 'sync',

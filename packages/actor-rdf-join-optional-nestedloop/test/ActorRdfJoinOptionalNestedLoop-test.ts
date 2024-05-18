@@ -1,6 +1,7 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
@@ -12,7 +13,7 @@ import { ActorRdfJoinOptionalNestedLoop } from '../lib/ActorRdfJoinOptionalNeste
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 
 describe('ActorRdfJoinOptionalNestedLoop', () => {
   let bus: any;
@@ -20,7 +21,7 @@ describe('ActorRdfJoinOptionalNestedLoop', () => {
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    context = new ActionContext();
+    context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
   });
 
   describe('An ActorRdfJoinOptionalNestedLoop instance', () => {

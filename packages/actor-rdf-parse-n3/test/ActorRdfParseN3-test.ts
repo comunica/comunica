@@ -1,11 +1,15 @@
 import { Readable } from 'node:stream';
 import { ActorRdfParseFixedMediaTypes } from '@comunica/bus-rdf-parse';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
+import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfParseN3 } from '../lib/ActorRdfParseN3';
 
 const stringToStream = require('streamify-string');
+
+const DF = new DataFactory();
 
 describe('ActorRdfParseN3', () => {
   let bus: any;
@@ -13,7 +17,7 @@ describe('ActorRdfParseN3', () => {
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    context = new ActionContext();
+    context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
   });
 
   describe('The ActorRdfParseN3 module', () => {

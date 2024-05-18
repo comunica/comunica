@@ -1,4 +1,5 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { BlankNodeScoped } from '@comunica/data-factory';
 import { MetadataValidationState } from '@comunica/metadata';
@@ -10,8 +11,8 @@ import { QuerySourceSkolemized } from '../lib/QuerySourceSkolemized';
 import '@comunica/jest';
 import 'jest-rdf';
 
-const BF = new BindingsFactory();
 const DF = new DataFactory();
+const BF = new BindingsFactory(DF);
 const AF = new Factory();
 
 describe('QuerySourceSkolemized', () => {
@@ -47,14 +48,14 @@ describe('QuerySourceSkolemized', () => {
   });
 
   it('should delegate getSelectorShape', async() => {
-    const context = new ActionContext();
+    const context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
     await expect(source.getSelectorShape(context)).resolves.toBe('SHAPE');
     expect(sourceInner.getSelectorShape).toHaveBeenCalledWith(context);
   });
 
   it('should delegate queryBindings', async() => {
     const op = AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o'));
-    const context = new ActionContext();
+    const context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
     const opts: any = {};
     await expect(source.queryBindings(op, context, opts)).toEqualBindingsStream([
       BF.fromRecord({ a: DF.namedNode('a0') }),
@@ -74,7 +75,7 @@ describe('QuerySourceSkolemized', () => {
       DF.namedNode('p'),
       new BlankNodeScoped('bc_0_a1', DF.namedNode('urn:comunica_skolem:source_0:a1')),
     );
-    const context = new ActionContext();
+    const context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
     const opts: any = {};
     await expect(source.queryBindings(op, context, opts)).toEqualBindingsStream([
       BF.fromRecord({ a: DF.namedNode('a0') }),
@@ -98,7 +99,7 @@ describe('QuerySourceSkolemized', () => {
       AF.createNps([]),
       new BlankNodeScoped('bc_0_a1', DF.namedNode('urn:comunica_skolem:source_0:a1')),
     );
-    const context = new ActionContext();
+    const context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
     const opts: any = {};
     await expect(source.queryBindings(op, context, opts)).toEqualBindingsStream([
       BF.fromRecord({ a: DF.namedNode('a0') }),
@@ -122,7 +123,7 @@ describe('QuerySourceSkolemized', () => {
       DF.namedNode('p'),
       new BlankNodeScoped('bc_0_a1', DF.namedNode('urn:comunica_skolem:source_1:a1')),
     );
-    const context = new ActionContext();
+    const context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
     const opts: any = {};
     const it = source.queryBindings(op, context, opts);
     await expect(it).toEqualBindingsStream([]);
@@ -145,7 +146,7 @@ describe('QuerySourceSkolemized', () => {
         new BlankNodeScoped('bc_0_a1', DF.namedNode('urn:comunica_skolem:source_1:a1')),
       ),
     );
-    const context = new ActionContext();
+    const context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
     const opts: any = {};
     const it = source.queryBindings(op, context, opts);
     await expect(it).toEqualBindingsStream([]);
@@ -160,7 +161,7 @@ describe('QuerySourceSkolemized', () => {
 
   it('should delegate queryBoolean', async() => {
     const op: any = {};
-    const context = new ActionContext();
+    const context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
     await expect(source.queryBoolean(op, context)).resolves.toBe(true);
     expect(sourceInner.queryBoolean).toHaveBeenCalledWith(op, context);
   });
@@ -170,7 +171,7 @@ describe('QuerySourceSkolemized', () => {
       AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
       [],
     );
-    const context = new ActionContext();
+    const context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
     await expect(source.queryQuads(op, context).toArray()).resolves.toEqual([
       DF.quad(
         DF.namedNode('s1'),
@@ -195,7 +196,7 @@ describe('QuerySourceSkolemized', () => {
       ),
       [],
     );
-    const context = new ActionContext();
+    const context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
     await expect(source.queryQuads(op, context).toArray()).resolves.toEqual([
       DF.quad(
         DF.namedNode('s1'),
@@ -227,7 +228,7 @@ describe('QuerySourceSkolemized', () => {
       ),
       [],
     );
-    const context = new ActionContext();
+    const context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
     const it = source.queryQuads(op, context);
     await expect(source.queryQuads(op, context).toArray()).resolves.toEqual([]);
     await expect(new Promise(resolve => it.getProperty('metadata', resolve))).resolves.toEqual({
@@ -239,7 +240,7 @@ describe('QuerySourceSkolemized', () => {
 
   it('should delegate queryVoid', async() => {
     const op: any = {};
-    const context = new ActionContext();
+    const context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
     await source.queryVoid(op, context);
     expect(sourceInner.queryVoid).toHaveBeenCalledWith(op, context);
   });

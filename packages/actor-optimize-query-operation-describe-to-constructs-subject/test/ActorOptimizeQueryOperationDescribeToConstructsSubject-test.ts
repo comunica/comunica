@@ -1,3 +1,4 @@
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
@@ -35,7 +36,7 @@ describe('ActorOptimizeQueryOperationDescribeToConstructsSubject', () => {
 
     it('should run without variable terms', async() => {
       const op: any = {
-        context: new ActionContext({ name: 'context' }),
+        context: new ActionContext({ name: 'context', [KeysInitQuery.dataFactory.name]: DF }),
         operation: {
           type: 'describe',
           terms: [ DF.namedNode('a'), DF.namedNode('b') ],
@@ -65,7 +66,7 @@ describe('ActorOptimizeQueryOperationDescribeToConstructsSubject', () => {
 
     it('should run with variable terms and an input', async() => {
       const op: any = {
-        context: new ActionContext({ name: 'context' }),
+        context: new ActionContext({ name: 'context', [KeysInitQuery.dataFactory.name]: DF }),
         operation: {
           input: { type: 'bgp', patterns: [
             AF.createPattern(DF.variable('a'), DF.variable('b'), DF.namedNode('dummy')),
@@ -96,7 +97,7 @@ describe('ActorOptimizeQueryOperationDescribeToConstructsSubject', () => {
 
     it('should run with and without variable terms and an input', async() => {
       const op: any = {
-        context: new ActionContext({ name: 'context' }),
+        context: new ActionContext({ name: 'context', [KeysInitQuery.dataFactory.name]: DF }),
         operation: {
           input: {
             type: 'bgp',

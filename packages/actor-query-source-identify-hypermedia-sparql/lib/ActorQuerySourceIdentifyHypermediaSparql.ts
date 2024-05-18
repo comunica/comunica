@@ -10,6 +10,9 @@ import type {
 import {
   ActorQuerySourceIdentifyHypermedia,
 } from '@comunica/bus-query-source-identify-hypermedia';
+import { KeysInitQuery } from '@comunica/context-entries';
+import type { ComunicaDataFactory } from '@comunica/types';
+import { Factory } from 'sparqlalgebrajs';
 import { QuerySourceSparql } from './QuerySourceSparql';
 
 /**
@@ -40,12 +43,17 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
 
   public async run(action: IActionQuerySourceIdentifyHypermedia): Promise<IActorQuerySourceIdentifyHypermediaOutput> {
     this.logInfo(action.context, `Identified ${action.url} as sparql source with service URL: ${action.metadata.sparqlService || action.url}`);
+
+    const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
+    const algebraFactory = new Factory(dataFactory);
     const source = new QuerySourceSparql(
       action.forceSourceType ? action.url : action.metadata.sparqlService || action.url,
       action.context,
       this.mediatorHttp,
       this.bindMethod,
-      await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context),
+      dataFactory,
+      algebraFactory,
+      await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context, dataFactory),
       this.forceHttpGet,
       this.cacheSize,
       this.countTimeout,

@@ -5,9 +5,10 @@ import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import { AsyncEvaluator, isExpressionError } from '@comunica/expression-evaluator';
-import type { Bindings, IActionContext, IQueryOperationResult } from '@comunica/types';
+import type { Bindings, ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -22,13 +23,14 @@ export class ActorQueryOperationFilter extends ActorQueryOperationTypedMediated<
 
   public async testOperation(operation: Algebra.Filter, context: IActionContext): Promise<IActorTest> {
     // Will throw error for unsupported operators
-    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context);
+    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context, dataFactory);
     const config = { ...ActorQueryOperation.getAsyncExpressionContext(
       context,
       this.mediatorQueryOperation,
       bindingsFactory,
     ) };
-    const _ = new AsyncEvaluator(operation.expression, config);
+    const _ = new AsyncEvaluator(dataFactory, operation.expression, config);
     return true;
   }
 
@@ -38,13 +40,18 @@ export class ActorQueryOperationFilter extends ActorQueryOperationTypedMediated<
     const output = ActorQueryOperation.getSafeBindings(outputRaw);
     ActorQueryOperation.validateQueryOutput(output, 'bindings');
 
-    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context);
+    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+    const bindingsFactory = await BindingsFactory.create(
+      this.mediatorMergeBindingsContext,
+      context,
+      dataFactory,
+    );
     const config = { ...ActorQueryOperation.getAsyncExpressionContext(
       context,
       this.mediatorQueryOperation,
       bindingsFactory,
     ) };
-    const evaluator = new AsyncEvaluator(operation.expression, config);
+    const evaluator = new AsyncEvaluator(dataFactory, operation.expression, config);
 
     const transform = async(item: Bindings, next: any, push: (bindings: Bindings) => void): Promise<void> => {
       try {

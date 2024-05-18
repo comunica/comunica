@@ -1,12 +1,13 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationValues } from '../lib/ActorQueryOperationValues';
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 const mediatorMergeBindingsContext: any = {
   mediate(arg: any) {
     return {};
@@ -47,19 +48,28 @@ describe('ActorQueryOperationValues', () => {
     });
 
     it('should test on values', async() => {
-      const op: any = { operation: { type: 'values' }, context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'values' },
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
       await expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-values', async() => {
-      const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'some-other-type' },
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
       await expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run on a 1 variable and 1 value', async() => {
       const variables = [ DF.variable('v') ];
       const bindings = [{ '?v': DF.namedNode('v1') }];
-      const op: any = { operation: { type: 'values', variables, bindings }, context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'values', variables, bindings },
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toMatchObject({
         cardinality: { type: 'exact', value: 1 },
@@ -77,7 +87,10 @@ describe('ActorQueryOperationValues', () => {
     it('should run on a 1 variable and 2 values', async() => {
       const variables = [ DF.variable('v') ];
       const bindings = [{ '?v': DF.namedNode('v1') }, { '?v': DF.namedNode('v2') }];
-      const op: any = { operation: { type: 'values', variables, bindings }, context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'values', variables, bindings },
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toMatchObject({
         cardinality: { type: 'exact', value: 2 },
@@ -101,7 +114,10 @@ describe('ActorQueryOperationValues', () => {
         { '?v': DF.namedNode('v1'), '?w': DF.namedNode('w1') },
         { '?v': DF.namedNode('v2'), '?w': DF.namedNode('w2') },
       ];
-      const op: any = { operation: { type: 'values', variables, bindings }, context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'values', variables, bindings },
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toMatchObject({
         cardinality: { type: 'exact', value: 2 },
@@ -127,7 +143,10 @@ describe('ActorQueryOperationValues', () => {
         { '?v': DF.namedNode('v1') },
         { '?v': DF.namedNode('v2'), '?w': DF.namedNode('w2') },
       ];
-      const op: any = { operation: { type: 'values', variables, bindings }, context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'values', variables, bindings },
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toMatchObject({
         cardinality: { type: 'exact', value: 2 },

@@ -3,9 +3,10 @@ import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { MediatorRdfJoin } from '@comunica/bus-rdf-join';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import { AsyncEvaluator, isExpressionError } from '@comunica/expression-evaluator';
-import type { IQueryOperationResult, Bindings, IActionContext, IJoinEntry } from '@comunica/types';
+import type { IQueryOperationResult, Bindings, IActionContext, IJoinEntry, ComunicaDataFactory } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -42,13 +43,14 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
       const rightMetadata = await entries[1].output.metadata();
       const expressionVariables = rightMetadata.variables;
 
-      const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context);
+      const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+      const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context, dataFactory);
       const config = { ...ActorQueryOperation.getAsyncExpressionContext(
         context,
         this.mediatorQueryOperation,
         bindingsFactory,
       ) };
-      const evaluator = new AsyncEvaluator(operationOriginal.expression, config);
+      const evaluator = new AsyncEvaluator(config.dataFactory, operationOriginal.expression, config);
       const bindingsStream = joined.bindingsStream
         .transform({
           autoStart: false,

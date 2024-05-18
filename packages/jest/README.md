@@ -53,7 +53,7 @@ All examples below make use of these helpers:
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { DataFactory } from 'rdf-data-factory';
 
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 const DF = new DataFactory();
 ```
 

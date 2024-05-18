@@ -3,7 +3,7 @@ import { DataFactory } from 'rdf-data-factory';
 import '../../lib';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 
 describe('toEqualBindings', () => {
   it('should succeed for equal empty bindings', () => {

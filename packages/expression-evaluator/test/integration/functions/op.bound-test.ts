@@ -7,7 +7,7 @@ import * as Err from '../../../lib/util/Errors';
 import { generalEvaluate } from '../../util/generalEvaluation';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 
 describe('evaluation of \'bound\'', () => {
   it('\'bound\' on bounded variable returns true', async() => {
@@ -30,7 +30,7 @@ describe('evaluation of \'bound\'', () => {
   });
 
   it('\'bound\' on term returns error', async() => {
-    const evaluator = new SyncEvaluator({
+    const evaluator = new SyncEvaluator(DF, {
       type: types.EXPRESSION,
       expressionType: expressionTypes.OPERATOR,
       operator: 'bound',

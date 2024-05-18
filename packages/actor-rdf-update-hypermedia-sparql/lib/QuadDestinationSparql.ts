@@ -1,6 +1,6 @@
 import type { MediatorHttp } from '@comunica/bus-http';
 import type { IQuadDestination } from '@comunica/bus-rdf-update-quads';
-import type { IActionContext } from '@comunica/types';
+import type { ComunicaDataFactory, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
@@ -24,6 +24,7 @@ export class QuadDestinationSparql implements IQuadDestination {
     url: string,
     context: IActionContext,
     mediatorHttp: MediatorHttp,
+    dataFactory: ComunicaDataFactory,
   ) {
     this.url = url;
     this.context = context;
@@ -33,6 +34,7 @@ export class QuadDestinationSparql implements IQuadDestination {
         { input, init, context: this.context },
       ),
       prefixVariableQuestionMark: true,
+      dataFactory,
     });
   }
 

@@ -37,7 +37,6 @@
     "@comunica/types": "^3.1.0",
     "@rdfjs/types": "*",
     "immutable": "^4.1.0",
-    "rdf-data-factory": "^1.1.1",
     "rdf-string": "^1.6.1"
   }
 }

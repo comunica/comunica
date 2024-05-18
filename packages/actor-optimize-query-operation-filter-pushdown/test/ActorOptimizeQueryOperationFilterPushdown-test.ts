@@ -1,3 +1,4 @@
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -28,7 +29,10 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
     describe('run', () => {
       it('for an operation without filter', async() => {
         const operationIn = AF.createNop();
-        const { operation: operationOut } = await actor.run({ context: new ActionContext(), operation: operationIn });
+        const { operation: operationOut } = await actor.run({
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+          operation: operationIn,
+        });
         expect(operationOut).toEqual(operationIn);
       });
 
@@ -40,7 +44,10 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           ),
           AF.createTermExpression(DF.variable('s')),
         );
-        const { operation: operationOut } = await actor.run({ context: new ActionContext(), operation: operationIn });
+        const { operation: operationOut } = await actor.run({
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+          operation: operationIn,
+        });
         expect(operationOut).toEqual(AF.createProject(
           AF.createFilter(
             AF.createBgp([]),

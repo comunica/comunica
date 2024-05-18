@@ -1,19 +1,18 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import { BlankNodeBindingsScoped } from '@comunica/data-factory';
 import type {
   Bindings,
   BindingsStream,
+  ComunicaDataFactory,
   IActionContext,
   IQueryOperationResult,
   IQueryOperationResultBindings,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
-
-const DF = new DataFactory();
 
 /**
  * A comunica Project Query Operation Actor.
@@ -29,6 +28,8 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
 
   public async runOperation(operation: Algebra.Project, context: IActionContext):
   Promise<IQueryOperationResult> {
+    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+
     // Resolve the input
     const output: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: operation.input, context }),
@@ -73,7 +74,7 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
           if (term instanceof BlankNodeBindingsScoped) {
             let scopedBlankNode = scopedBlankNodesCache.get(term.value);
             if (!scopedBlankNode) {
-              scopedBlankNode = DF.blankNode(`${term.value}${blankNodeCounter}`);
+              scopedBlankNode = dataFactory.blankNode(`${term.value}${blankNodeCounter}`);
               scopedBlankNodesCache.set(term.value, scopedBlankNode);
             }
             return scopedBlankNode;

@@ -12,11 +12,11 @@ import type {
   FragmentSelectorShape,
   IQueryBindingsOptions,
   MetadataBindings,
+  ComunicaDataFactory,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, TransformIterator, wrap } from 'asynciterator';
-import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import { termToString as termToStringTtl } from 'rdf-string-ttl';
 import {
@@ -24,47 +24,18 @@ import {
   mapTerms,
   matchPattern,
 } from 'rdf-terms';
-import type { Algebra } from 'sparqlalgebrajs';
-import { Factory } from 'sparqlalgebrajs';
-
-const AF = new Factory();
-const DF = new DataFactory<RDF.BaseQuad>();
+import type { Algebra, Factory } from 'sparqlalgebrajs';
 
 export class QuerySourceQpf implements IQuerySource {
-  protected static readonly SELECTOR_SHAPE: FragmentSelectorShape = {
-    type: 'operation',
-    operation: {
-      operationType: 'pattern',
-      pattern: AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'), DF.variable('g')),
-    },
-    variablesOptional: [
-      DF.variable('s'),
-      DF.variable('p'),
-      DF.variable('o'),
-      DF.variable('g'),
-    ],
-  };
-
-  protected static readonly SELECTOR_SHAPE_BR: FragmentSelectorShape = {
-    type: 'operation',
-    operation: {
-      operationType: 'pattern',
-      pattern: AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'), DF.variable('g')),
-    },
-    variablesOptional: [
-      DF.variable('s'),
-      DF.variable('p'),
-      DF.variable('o'),
-      DF.variable('g'),
-    ],
-    filterBindings: true,
-  };
+  protected readonly selectorShape: FragmentSelectorShape;
 
   public readonly searchForm: ISearchForm;
 
   private readonly mediatorMetadata: MediatorRdfMetadata;
   private readonly mediatorMetadataExtract: MediatorRdfMetadataExtract;
   private readonly mediatorDereferenceRdf: MediatorDereferenceRdf;
+  private readonly dataFactory: ComunicaDataFactory;
+  private readonly algebraFactory: Factory;
   private readonly bindingsFactory: BindingsFactory;
 
   public readonly referenceValue: string;
@@ -81,6 +52,8 @@ export class QuerySourceQpf implements IQuerySource {
     mediatorMetadata: MediatorRdfMetadata,
     mediatorMetadataExtract: MediatorRdfMetadataExtract,
     mediatorDereferenceRdf: MediatorDereferenceRdf,
+    dataFactory: ComunicaDataFactory,
+    algebraFactory: Factory,
     bindingsFactory: BindingsFactory,
     subjectUri: string,
     predicateUri: string,
@@ -95,6 +68,8 @@ export class QuerySourceQpf implements IQuerySource {
     this.mediatorMetadata = mediatorMetadata;
     this.mediatorMetadataExtract = mediatorMetadataExtract;
     this.mediatorDereferenceRdf = mediatorDereferenceRdf;
+    this.dataFactory = dataFactory;
+    this.algebraFactory = algebraFactory;
     this.bindingsFactory = bindingsFactory;
     this.subjectUri = subjectUri;
     this.predicateUri = predicateUri;
@@ -108,19 +83,64 @@ export class QuerySourceQpf implements IQuerySource {
       throw new Error('Illegal state: found no TPF/QPF search form anymore in metadata.');
     }
     this.searchForm = searchForm;
-    this.defaultGraph = metadata.defaultGraph ? DF.namedNode(metadata.defaultGraph) : undefined;
+    this.defaultGraph = metadata.defaultGraph ? this.dataFactory.namedNode(metadata.defaultGraph) : undefined;
     if (initialQuads) {
       let wrappedQuads: AsyncIterator<RDF.Quad> = wrap<RDF.Quad>(initialQuads);
       if (this.defaultGraph) {
         wrappedQuads = this.reverseMapQuadsToDefaultGraph(wrappedQuads);
       }
       wrappedQuads.setProperty('metadata', metadata);
-      this.cacheQuads(wrappedQuads, DF.variable(''), DF.variable(''), DF.variable(''), DF.variable(''));
+      this.cacheQuads(
+        wrappedQuads,
+        this.dataFactory.variable(''),
+        this.dataFactory.variable(''),
+        this.dataFactory.variable(''),
+        this.dataFactory.variable(''),
+      );
     }
+
+    this.selectorShape = this.bindingsRestricted ?
+        {
+          type: 'operation',
+          operation: {
+            operationType: 'pattern',
+            pattern: this.algebraFactory.createPattern(
+              this.dataFactory.variable('s'),
+              this.dataFactory.variable('p'),
+              this.dataFactory.variable('o'),
+              this.dataFactory.variable('g'),
+            ),
+          },
+          variablesOptional: [
+            this.dataFactory.variable('s'),
+            this.dataFactory.variable('p'),
+            this.dataFactory.variable('o'),
+            this.dataFactory.variable('g'),
+          ],
+          filterBindings: true,
+        } :
+        {
+          type: 'operation',
+          operation: {
+            operationType: 'pattern',
+            pattern: this.algebraFactory.createPattern(
+              this.dataFactory.variable('s'),
+              this.dataFactory.variable('p'),
+              this.dataFactory.variable('o'),
+              this.dataFactory.variable('g'),
+            ),
+          },
+          variablesOptional: [
+            this.dataFactory.variable('s'),
+            this.dataFactory.variable('p'),
+            this.dataFactory.variable('o'),
+            this.dataFactory.variable('g'),
+          ],
+        };
   }
 
   public async getSelectorShape(): Promise<FragmentSelectorShape> {
-    return this.bindingsRestricted ? QuerySourceQpf.SELECTOR_SHAPE_BR : QuerySourceQpf.SELECTOR_SHAPE;
+    return this.selectorShape;
   }
 
   public queryBindings(
@@ -146,7 +166,7 @@ export class QuerySourceQpf implements IQuerySource {
     );
 
     it = filterMatchingQuotedQuads(operation, it);
-    return quadsToBindings(it, operation, this.bindingsFactory, unionDefaultGraph);
+    return quadsToBindings(it, operation, this.dataFactory, this.bindingsFactory, unionDefaultGraph);
   }
 
   /**
@@ -233,7 +253,7 @@ export class QuerySourceQpf implements IQuerySource {
         // If the sd:defaultGraph is not declared on a QPF endpoint
         if (unionDefaultGraph) {
           // With union-default-graph, take union of graphs.
-          graph = DF.variable('g');
+          graph = this.dataFactory.variable('g');
         } else {
           // Without union-default-graph, the default graph must be empty.
           const quads = new ArrayIterator<RDF.Quad>([], { autoStart: false });
@@ -249,7 +269,7 @@ export class QuerySourceQpf implements IQuerySource {
         }
       } else if (Object.keys(this.searchForm.mappings).length === 3) {
         // If have a TPF endpoint, set graph to variable so we could get the cached triples
-        graph = DF.variable('g');
+        graph = this.dataFactory.variable('g');
       }
     }
 
@@ -309,7 +329,7 @@ export class QuerySourceQpf implements IQuerySource {
       // The server is free to send any data in its response (such as metadata),
       // including quads that do not match the given matter.
       // Therefore, we have to filter away all non-matching quads here.
-      const actualDefaultGraph = DF.defaultGraph();
+      const actualDefaultGraph = this.dataFactory.defaultGraph();
       let filteredOutput: AsyncIterator<RDF.Quad> = wrap<RDF.Quad>(dataStream)
         .transform({
           filter(quad: RDF.Quad) {
@@ -384,7 +404,7 @@ export class QuerySourceQpf implements IQuerySource {
   }
 
   protected reverseMapQuadsToDefaultGraph(quads: AsyncIterator<RDF.Quad>): AsyncIterator<RDF.Quad> {
-    const actualDefaultGraph = DF.defaultGraph();
+    const actualDefaultGraph = this.dataFactory.defaultGraph();
     return quads.map(
       quad => mapTerms(
         quad,

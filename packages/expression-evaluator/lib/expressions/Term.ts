@@ -1,5 +1,5 @@
+import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { DataFactory } from 'rdf-data-factory';
 import { TermTransformer } from '../transformers/TermTransformer';
 import * as C from '../util/Consts';
 import { TypeAlias, TypeURL } from '../util/Consts';
@@ -18,13 +18,11 @@ import { isSubTypeOf } from '../util/TypeHandling';
 import type { TermExpression, TermType } from './Expressions';
 import { ExpressionType } from './Expressions';
 
-const DF = new DataFactory();
-
 export abstract class Term implements TermExpression {
   public expressionType: ExpressionType.Term = ExpressionType.Term;
   public abstract termType: TermType;
 
-  public abstract toRDF(): RDF.Term;
+  public abstract toRDF(dataFactory: ComunicaDataFactory): RDF.Term;
 
   public str(): string {
     throw new Err.InvalidArgumentTypes([ this ], C.RegularOperator.STR);
@@ -42,8 +40,8 @@ export class NamedNode extends Term {
     super();
   }
 
-  public toRDF(): RDF.Term {
-    return DF.namedNode(this.value);
+  public toRDF(dataFactory: ComunicaDataFactory): RDF.Term {
+    return dataFactory.namedNode(this.value);
   }
 
   public override str(): string {
@@ -54,16 +52,16 @@ export class NamedNode extends Term {
 // BlankNodes -----------------------------------------------------------------
 
 export class BlankNode extends Term {
-  public value: RDF.BlankNode;
+  public value: RDF.BlankNode | string;
   public termType: TermType = 'blankNode';
 
   public constructor(value: RDF.BlankNode | string) {
     super();
-    this.value = typeof value === 'string' ? DF.blankNode(value) : value;
+    this.value = value;
   }
 
-  public toRDF(): RDF.Term {
-    return this.value;
+  public toRDF(dataFactory: ComunicaDataFactory): RDF.Term {
+    return typeof this.value === 'string' ? dataFactory.blankNode(this.value) : this.value;
   }
 }
 
@@ -137,10 +135,10 @@ export class Literal<T extends ISerializable> extends Term {
     super();
   }
 
-  public toRDF(): RDF.Literal {
-    return DF.literal(
+  public toRDF(dataFactory: ComunicaDataFactory): RDF.Literal {
+    return dataFactory.literal(
       this.strValue ?? this.str(),
-      this.language ?? DF.namedNode(this.dataType),
+      this.language ?? dataFactory.namedNode(this.dataType),
     );
   }
 
@@ -165,8 +163,8 @@ export abstract class NumericLiteral extends Literal<number> {
     return Boolean(this.typedValue);
   }
 
-  public override toRDF(): RDF.Literal {
-    const term = super.toRDF();
+  public override toRDF(dataFactory: ComunicaDataFactory): RDF.Literal {
+    const term = super.toRDF(dataFactory);
     if (!Number.isFinite(this.typedValue)) {
       term.value = term.value.replace('Infinity', 'INF');
     }
@@ -417,10 +415,10 @@ export class NonLexicalLiteral extends Literal<{ toString: () => 'undefined' }> 
     throw new Err.EBVCoercionError(this);
   }
 
-  public override toRDF(): RDF.Literal {
-    return DF.literal(
+  public override toRDF(dataFactory: ComunicaDataFactory): RDF.Literal {
+    return dataFactory.literal(
       this.str(),
-      this.language ?? DF.namedNode(this.dataType),
+      this.language ?? dataFactory.namedNode(this.dataType),
     );
   }
 

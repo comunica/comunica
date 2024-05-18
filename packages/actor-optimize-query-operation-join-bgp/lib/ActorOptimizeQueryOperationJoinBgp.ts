@@ -3,9 +3,11 @@ import type {
   IActorOptimizeQueryOperationOutput,
 } from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
-import type { Algebra, Factory } from 'sparqlalgebrajs';
-import { Util } from 'sparqlalgebrajs';
+import type { ComunicaDataFactory } from '@comunica/types';
+import type { Algebra } from 'sparqlalgebrajs';
+import { Util, Factory } from 'sparqlalgebrajs';
 
 /**
  * A comunica Join BGP Optimize Query Operation Actor.
@@ -16,6 +18,9 @@ export class ActorOptimizeQueryOperationJoinBgp extends ActorOptimizeQueryOperat
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
+    const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
+    const algebraFactory = new Factory(dataFactory);
+
     const operation = Util.mapOperation(action.operation, {
       join(op: Algebra.Join, factory: Factory) {
         if (op.input.every(subInput => subInput.type === 'bgp')) {
@@ -29,7 +34,7 @@ export class ActorOptimizeQueryOperationJoinBgp extends ActorOptimizeQueryOperat
           result: op,
         };
       },
-    });
+    }, algebraFactory);
     return { operation, context: action.context };
   }
 }

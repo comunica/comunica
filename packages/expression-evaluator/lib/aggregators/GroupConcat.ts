@@ -1,3 +1,4 @@
+import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { langString, string } from '../functions/Helpers';
 import { AggregatorComponent } from './Aggregator';
@@ -7,8 +8,8 @@ export class GroupConcat extends AggregatorComponent {
   private lastLanguageValid = true;
   private lastLanguage: string | undefined = undefined;
 
-  public static override emptyValue(): RDF.Term {
-    return string('').toRDF();
+  public static override emptyValue(dataFactory: ComunicaDataFactory): RDF.Term {
+    return string('').toRDF(dataFactory);
   }
 
   public put(term: RDF.Term): void {
@@ -28,11 +29,11 @@ export class GroupConcat extends AggregatorComponent {
 
   public result(): RDF.Term {
     if (this.state === undefined) {
-      return GroupConcat.emptyValue();
+      return GroupConcat.emptyValue(this.sharedContext.dataFactory);
     }
     if (this.lastLanguageValid && this.lastLanguage) {
-      return langString(this.state, this.lastLanguage).toRDF();
+      return langString(this.state, this.lastLanguage).toRDF(this.sharedContext.dataFactory);
     }
-    return string(this.state).toRDF();
+    return string(this.state).toRDF(this.sharedContext.dataFactory);
   }
 }

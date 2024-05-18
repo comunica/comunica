@@ -1,10 +1,13 @@
+import { DataFactory } from 'rdf-data-factory';
 import { Notation } from '../util/TestTable';
 import type { ITestTableConfigBase } from '../util/utils';
 import { runTestTable } from '../util/utils';
 
+const DF = new DataFactory();
+
 describe('We should respect the iri01 spec', () => {
   const config: ITestTableConfigBase = {
-    config: { type: 'sync', config: { baseIRI: 'http://example.org' }},
+    config: { type: 'sync', config: { baseIRI: 'http://example.org', dataFactory: DF }},
     arity: 1,
     operation: '',
     notation: Notation.Function,

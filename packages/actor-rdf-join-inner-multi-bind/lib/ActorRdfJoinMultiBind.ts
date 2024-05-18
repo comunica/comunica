@@ -9,9 +9,15 @@ import type {
 } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
-import { KeysQueryOperation } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { Bindings, BindingsStream, IQueryOperationResultBindings, MetadataBindings } from '@comunica/types';
+import type {
+  Bindings,
+  BindingsStream,
+  ComunicaDataFactory,
+  IQueryOperationResultBindings,
+  MetadataBindings,
+} from '@comunica/types';
 import { MultiTransformIterator, TransformIterator, UnionIterator } from 'asynciterator';
 import { Factory, Algebra, Util } from 'sparqlalgebrajs';
 
@@ -24,8 +30,6 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
   public readonly mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort;
   public readonly mediatorQueryOperation: MediatorQueryOperation;
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
-
-  public static readonly FACTORY = new Factory();
 
   public constructor(args: IActorRdfJoinMultiBindArgs) {
     super(args, {
@@ -53,14 +57,20 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
     operationBinder: (boundOperations: Algebra.Operation[], operationBindings: Bindings)
     => Promise<BindingsStream>,
     optional: boolean,
+    algebraFactory: Factory,
     bindingsFactory: BindingsFactory,
   ): BindingsStream {
     // Create bindings function
     const binder = (bindings: Bindings): BindingsStream => {
       // We don't bind the filter because filters are always handled last,
       // and we need to avoid binding filters of sub-queries, which are to be handled first. (see spec test bind10)
-      const subOperations = operations
-        .map(operation => materializeOperation(operation, bindings, bindingsFactory, { bindFilter: true }));
+      const subOperations = operations.map(operation => materializeOperation(
+        operation,
+        bindings,
+        algebraFactory,
+        bindingsFactory,
+        { bindFilter: true },
+      ));
       const bindingsMerger = (subBindings: Bindings): Bindings | undefined => subBindings.merge(bindings);
       return new TransformIterator(async() => (await operationBinder(subOperations, bindings))
         .transform({ map: bindingsMerger }), { maxBufferSize: 128, autoStart: false });
@@ -82,7 +92,13 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
   }
 
   public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
-    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context);
+    const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
+    const algebraFactory = new Factory(dataFactory);
+    const bindingsFactory = await BindingsFactory.create(
+      this.mediatorMergeBindingsContext,
+      action.context,
+      dataFactory,
+    );
 
     // Order the entries so we can pick the first one (usually the one with the lowest cardinality)
     const entriesUnsorted = await ActorRdfJoin.getEntriesWithMetadatas(action.entries);
@@ -118,13 +134,14 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
         // Send the materialized patterns to the mediator for recursive join evaluation.
         const operation = operations.length === 1 ?
           operations[0] :
-          ActorRdfJoinMultiBind.FACTORY.createJoin(operations);
+          algebraFactory.createJoin(operations);
         const output = ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate(
           { operation, context: subContext?.set(KeysQueryOperation.joinBindings, operationBindings) },
         ));
         return output.bindingsStream;
       },
       false,
+      algebraFactory,
       bindingsFactory,
     );
 

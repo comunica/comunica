@@ -4,10 +4,7 @@ import type { IAsyncEvaluatorContext } from '@comunica/expression-evaluator';
 import { AsyncAggregateEvaluator } from '@comunica/expression-evaluator';
 import type { Bindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
-
-const DF = new DataFactory();
 
 /**
  * A simple type alias for strings that should be hashes of Bindings
@@ -105,7 +102,11 @@ export class GroupsState {
         const aggregators: Record<string, AsyncAggregateEvaluator> = {};
         await Promise.all(this.pattern.aggregates.map(async(aggregate) => {
           const key = aggregate.variable.value;
-          aggregators[key] = new AsyncAggregateEvaluator(aggregate, this.sparqleeConfig);
+          aggregators[key] = new AsyncAggregateEvaluator(
+            aggregate,
+            this.sparqleeConfig.dataFactory,
+            this.sparqleeConfig,
+          );
           await aggregators[key].put(bindings);
         }));
 
@@ -142,7 +143,7 @@ export class GroupsState {
         const value = aggregators[variable].result();
         if (value) {
           // Filter undefined
-          returnBindings = returnBindings.set(DF.variable(variable), value);
+          returnBindings = returnBindings.set(this.sparqleeConfig.dataFactory.variable(variable), value);
         }
       }
 
@@ -157,7 +158,7 @@ export class GroupsState {
       const single: [RDF.Variable, RDF.Term][] = [];
       for (const aggregate of this.pattern.aggregates) {
         const key = aggregate.variable;
-        const value = AsyncAggregateEvaluator.emptyValue(aggregate);
+        const value = AsyncAggregateEvaluator.emptyValue(this.sparqleeConfig.dataFactory, aggregate);
         if (value !== undefined) {
           single.push([ key, value ]);
         }

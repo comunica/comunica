@@ -1,5 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type * as RDF from '@rdfjs/types';
+import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 import { translate } from 'sparqlalgebrajs';
@@ -7,7 +8,8 @@ import { AsyncEvaluator, SyncEvaluator } from '../../lib';
 import type { IAsyncEvaluatorContext, AsyncExtensionFunctionCreator } from '../../lib/evaluators/AsyncEvaluator';
 import type { ISyncEvaluatorContext, SyncExtensionFunctionCreator } from '../../lib/evaluators/SyncEvaluator';
 
-const BF = new BindingsFactory();
+const DF = new DataFactory();
+const BF = new BindingsFactory(DF);
 
 export type GeneralEvaluationConfig = { type: 'sync'; config: ISyncEvaluatorContext } |
 { type: 'async'; config: IAsyncEvaluatorContext };
@@ -120,11 +122,11 @@ function parse(query: string) {
 }
 
 function evaluateAsync(expr: string, bindings: RDF.Bindings, config?: IAsyncEvaluatorContext): Promise<RDF.Term> {
-  const evaluator = new AsyncEvaluator(parse(expr), config);
+  const evaluator = new AsyncEvaluator(DF, parse(expr), config);
   return evaluator.evaluate(bindings);
 }
 
 function evaluateSync(expr: string, bindings: RDF.Bindings, config?: ISyncEvaluatorContext): RDF.Term {
-  const evaluator = new SyncEvaluator(parse(expr), config);
+  const evaluator = new SyncEvaluator(DF, parse(expr), config);
   return evaluator.evaluate(bindings);
 }

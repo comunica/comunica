@@ -104,6 +104,7 @@ module.exports = config([
       '**/comunica-browser.js',
       '.github/**',
       '**/performance/*/combinations/**',
+      '**/bintest/**',
       // TODO: Remove this once solid-client-authn supports node 18.
       '**/QuerySparql-solid-test.ts',
     ],

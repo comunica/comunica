@@ -4,10 +4,12 @@ import type {
   IActorOptimizeQueryOperationArgs,
 } from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
+import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
-import { Algebra, Util } from 'sparqlalgebrajs';
+import { Algebra, Factory, Util } from 'sparqlalgebrajs';
 
 const DF = new DataFactory<RDF.BaseQuad>();
 
@@ -24,6 +26,9 @@ export class ActorOptimizeQueryOperationRewriteAdd extends ActorOptimizeQueryOpe
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
+    const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
+    const algebraFactory = new Factory(dataFactory);
+
     const operation = Util.mapOperation(action.operation, {
       [Algebra.types.ADD](operationOriginal, factory) {
         // CONSTRUCT all quads from the source, and INSERT them into the destination
@@ -41,7 +46,7 @@ export class ActorOptimizeQueryOperationRewriteAdd extends ActorOptimizeQueryOpe
           recurse: false,
         };
       },
-    });
+    }, algebraFactory);
 
     return { operation, context: action.context };
   }

@@ -9,8 +9,8 @@ import { ExpressionType } from '../../../lib/expressions';
 import * as E from '../../../lib/expressions';
 import * as Err from '../../../lib/util/Errors';
 
-const BF = new BindingsFactory();
 const DF = new DataFactory();
+const BF = new BindingsFactory(DF);
 
 describe('recursive evaluators', () => {
   const defaultTimeZone = { zoneMinutes: 0, zoneHours: 0 };
@@ -24,6 +24,7 @@ describe('recursive evaluators', () => {
         discoverer: _ => 'term',
       },
       defaultTimeZone,
+      dataFactory: DF,
     });
 
     it('is able to evaluate operator', () => {
@@ -53,6 +54,7 @@ describe('recursive evaluators', () => {
         },
         exists: _ => true,
         defaultTimeZone,
+        dataFactory: DF,
       });
 
       expect(customEvaluator.evaluate(new E.Existence({
@@ -91,6 +93,7 @@ describe('recursive evaluators', () => {
         },
         aggregate: _ => DF.literal('42'),
         defaultTimeZone,
+        dataFactory: DF,
       });
 
       expect(customEvaluator.evaluate(new E.Aggregate('count', {
@@ -127,6 +130,7 @@ describe('recursive evaluators', () => {
         discoverer: _ => 'term',
       },
       defaultTimeZone,
+      dataFactory: DF,
     });
 
     it('is able to evaluate operator', async() => {
@@ -157,6 +161,7 @@ describe('recursive evaluators', () => {
         },
         exists: async _ => true,
         defaultTimeZone,
+        dataFactory: DF,
       });
 
       await expect(customEvaluator.evaluate(new E.Existence({
@@ -195,6 +200,7 @@ describe('recursive evaluators', () => {
         },
         aggregate: async _ => DF.literal('42'),
         defaultTimeZone,
+        dataFactory: DF,
       });
 
       await expect(customEvaluator.evaluate(new E.Aggregate('count', {

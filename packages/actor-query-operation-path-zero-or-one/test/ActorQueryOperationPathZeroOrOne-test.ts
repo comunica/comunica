@@ -1,7 +1,7 @@
 import type { Bindings } from '@comunica/bindings-factory';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import { KeysQueryOperation } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
 import type { IQuerySourceWrapper } from '@comunica/types';
@@ -14,7 +14,7 @@ import { ActorQueryOperationPathZeroOrOne } from '../lib/ActorQueryOperationPath
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 const AF = new Factory();
 
 describe('ActorQueryOperationPathZeroOrOne', () => {
@@ -127,7 +127,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
 
     it('should test on ZeroOrOne paths', async() => {
       const op: any = {
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
         operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.ZERO_OR_ONE_PATH }},
       };
       await expect(actor.test(op)).resolves.toBeTruthy();
@@ -135,7 +135,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
 
     it('should test on different paths', async() => {
       const op: any = {
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
         operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }},
       };
       await expect(actor.test(op)).rejects.toBeTruthy();
@@ -148,7 +148,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
           ActorQueryOperation.assignOperationSource(factory.createLink(DF.namedNode('p')), source1),
         ),
         DF.variable('x'),
-      ), context: new ActionContext() };
+      ), context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
@@ -168,7 +168,10 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
           ActorQueryOperation.assignOperationSource(factory.createLink(DF.namedNode('p')), source1),
         ),
         DF.variable('x'),
-      ), context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: false }) };
+      ), context: new ActionContext({
+        [KeysInitQuery.dataFactory.name]: DF,
+        [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: false,
+      }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
@@ -188,7 +191,10 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
           ActorQueryOperation.assignOperationSource(factory.createLink(DF.namedNode('p')), source1),
         ),
         DF.variable('x'),
-      ), context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
+      ), context: new ActionContext({
+        [KeysInitQuery.dataFactory.name]: DF,
+        [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
+      }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
@@ -211,7 +217,10 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
           ActorQueryOperation.assignOperationSource(factory.createLink(DF.namedNode('p')), source1),
         ),
         DF.namedNode('o'),
-      ), context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
+      ), context: new ActionContext({
+        [KeysInitQuery.dataFactory.name]: DF,
+        [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
+      }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
@@ -234,7 +243,10 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
           ActorQueryOperation.assignOperationSource(factory.createLink(DF.namedNode('p')), source1),
         ),
         DF.namedNode('1'),
-      ), context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
+      ), context: new ActionContext({
+        [KeysInitQuery.dataFactory.name]: DF,
+        [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
+      }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
@@ -254,7 +266,10 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
           ActorQueryOperation.assignOperationSource(factory.createLink(DF.namedNode('p')), source1),
         ),
         DF.namedNode('s'),
-      ), context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
+      ), context: new ActionContext({
+        [KeysInitQuery.dataFactory.name]: DF,
+        [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
+      }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
@@ -274,7 +289,10 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
           ActorQueryOperation.assignOperationSource(factory.createLink(DF.namedNode('p')), source1),
         ),
         DF.variable('y'),
-      ), context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
+      ), context: new ActionContext({
+        [KeysInitQuery.dataFactory.name]: DF,
+        [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
+      }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
@@ -311,7 +329,10 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
           ])),
           DF.variable('y'),
         ),
-        context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }),
+        context: new ActionContext({
+          [KeysInitQuery.dataFactory.name]: DF,
+          [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
+        }),
       };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({

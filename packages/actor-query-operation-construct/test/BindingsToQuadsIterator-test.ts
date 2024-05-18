@@ -7,7 +7,7 @@ import { DataFactory } from 'rdf-data-factory';
 import { BindingsToQuadsIterator } from '../lib/BindingsToQuadsIterator';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 
 describe('BindingsToQuadsIterator', () => {
   describe('#bindTerm', () => {
@@ -270,60 +270,60 @@ describe('BindingsToQuadsIterator', () => {
 
   describe('#localizeBlankNode', () => {
     it('should not localize a literal', () => {
-      expect(BindingsToQuadsIterator.localizeBlankNode(0, DF.literal('abc')).termType)
+      expect(BindingsToQuadsIterator.localizeBlankNode(DF, 0, DF.literal('abc')).termType)
         .toBe('Literal');
     });
 
     it('should not localize a variable', () => {
-      expect(BindingsToQuadsIterator.localizeBlankNode(0, DF.variable('abc')).termType)
+      expect(BindingsToQuadsIterator.localizeBlankNode(DF, 0, DF.variable('abc')).termType)
         .toBe('Variable');
     });
 
     it('should not localize a named node', () => {
-      expect(BindingsToQuadsIterator.localizeBlankNode(0, DF.namedNode('abc')).termType)
+      expect(BindingsToQuadsIterator.localizeBlankNode(DF, 0, DF.namedNode('abc')).termType)
         .toBe('NamedNode');
     });
 
     it('should not localize a default graph', () => {
-      expect(BindingsToQuadsIterator.localizeBlankNode(0, DF.defaultGraph()).termType)
+      expect(BindingsToQuadsIterator.localizeBlankNode(DF, 0, DF.defaultGraph()).termType)
         .toBe('DefaultGraph');
     });
 
     it('should localize a blank node with a different counter', () => {
-      expect(BindingsToQuadsIterator.localizeBlankNode(0, DF.blankNode('abc')))
+      expect(BindingsToQuadsIterator.localizeBlankNode(DF, 0, DF.blankNode('abc')))
         .toEqual(DF.blankNode('abc0'));
-      expect(BindingsToQuadsIterator.localizeBlankNode(1, DF.blankNode('abc')))
+      expect(BindingsToQuadsIterator.localizeBlankNode(DF, 1, DF.blankNode('abc')))
         .toEqual(DF.blankNode('abc1'));
     });
 
     it('should localize a blank node with the same counter', () => {
-      expect(BindingsToQuadsIterator.localizeBlankNode(0, DF.blankNode('abc')))
+      expect(BindingsToQuadsIterator.localizeBlankNode(DF, 0, DF.blankNode('abc')))
         .toEqual(DF.blankNode('abc0'));
-      expect(BindingsToQuadsIterator.localizeBlankNode(0, DF.blankNode('abc')))
+      expect(BindingsToQuadsIterator.localizeBlankNode(DF, 0, DF.blankNode('abc')))
         .toEqual(DF.blankNode('abc0'));
     });
 
     it('should localize a blank node with mixed counters', () => {
-      expect(BindingsToQuadsIterator.localizeBlankNode(0, DF.blankNode('abc')))
+      expect(BindingsToQuadsIterator.localizeBlankNode(DF, 0, DF.blankNode('abc')))
         .toEqual(DF.blankNode('abc0'));
-      expect(BindingsToQuadsIterator.localizeBlankNode(0, DF.blankNode('abc')))
+      expect(BindingsToQuadsIterator.localizeBlankNode(DF, 0, DF.blankNode('abc')))
         .toEqual(DF.blankNode('abc0'));
 
-      expect(BindingsToQuadsIterator.localizeBlankNode(1, DF.blankNode('abc')))
+      expect(BindingsToQuadsIterator.localizeBlankNode(DF, 1, DF.blankNode('abc')))
         .toEqual(DF.blankNode('abc1'));
-      expect(BindingsToQuadsIterator.localizeBlankNode(1, DF.blankNode('abc')))
+      expect(BindingsToQuadsIterator.localizeBlankNode(DF, 1, DF.blankNode('abc')))
         .toEqual(DF.blankNode('abc1'));
     });
 
     it('should localize a blank node scoped to a single set of bindings', () => {
-      expect(BindingsToQuadsIterator.localizeBlankNode(0, new BlankNodeBindingsScoped('abc')))
+      expect(BindingsToQuadsIterator.localizeBlankNode(DF, 0, new BlankNodeBindingsScoped('abc')))
         .toEqual(DF.blankNode('abc0'));
     });
   });
 
   describe('#localizeQuad', () => {
     it('should not change a quad without blank nodes', () => {
-      expect(BindingsToQuadsIterator.localizeQuad(0, DF.quad(
+      expect(BindingsToQuadsIterator.localizeQuad(DF, 0, DF.quad(
         DF.variable('s'),
         DF.namedNode('p'),
         DF.literal('o'),
@@ -337,7 +337,7 @@ describe('BindingsToQuadsIterator', () => {
     });
 
     it('should localize a quad with a subject blank node', () => {
-      expect(BindingsToQuadsIterator.localizeQuad(0, DF.quad(
+      expect(BindingsToQuadsIterator.localizeQuad(DF, 0, DF.quad(
         DF.blankNode('s'),
         DF.namedNode('p'),
         DF.literal('o'),
@@ -351,7 +351,7 @@ describe('BindingsToQuadsIterator', () => {
     });
 
     it('should localize a quad with a predicate blank node', () => {
-      expect(BindingsToQuadsIterator.localizeQuad(0, <any> DF.quad(
+      expect(BindingsToQuadsIterator.localizeQuad(DF, 0, <any> DF.quad(
         DF.variable('s'),
         <any> DF.blankNode('p'),
         DF.literal('o'),
@@ -365,7 +365,7 @@ describe('BindingsToQuadsIterator', () => {
     });
 
     it('should localize a quad with a object blank node', () => {
-      expect(BindingsToQuadsIterator.localizeQuad(0, DF.quad(
+      expect(BindingsToQuadsIterator.localizeQuad(DF, 0, DF.quad(
         DF.variable('s'),
         DF.namedNode('p'),
         DF.blankNode('o'),
@@ -379,7 +379,7 @@ describe('BindingsToQuadsIterator', () => {
     });
 
     it('should localize a quad with a graph blank node', () => {
-      expect(BindingsToQuadsIterator.localizeQuad(0, DF.quad(
+      expect(BindingsToQuadsIterator.localizeQuad(DF, 0, DF.quad(
         DF.variable('s'),
         DF.namedNode('p'),
         DF.literal('o'),
@@ -393,7 +393,7 @@ describe('BindingsToQuadsIterator', () => {
     });
 
     it('should localize a quad with subject, predicate, object and graph blank nodes', () => {
-      expect(BindingsToQuadsIterator.localizeQuad(0, DF.quad(
+      expect(BindingsToQuadsIterator.localizeQuad(DF, 0, DF.quad(
         DF.blankNode('s'),
         <any> DF.blankNode('p'),
         DF.blankNode('o'),
@@ -407,7 +407,7 @@ describe('BindingsToQuadsIterator', () => {
     });
 
     it('should localize a quad with equal subject, predicate, object and graph blank nodes', () => {
-      expect(BindingsToQuadsIterator.localizeQuad(0, DF.quad(
+      expect(BindingsToQuadsIterator.localizeQuad(DF, 0, DF.quad(
         DF.blankNode('a'),
         <any> DF.blankNode('a'),
         DF.blankNode('a'),
@@ -421,7 +421,7 @@ describe('BindingsToQuadsIterator', () => {
     });
 
     it('should localize a quad with equal subject, predicate, object and graph blank nodes in quoted triples', () => {
-      expect(BindingsToQuadsIterator.localizeQuad(0, DF.quad(
+      expect(BindingsToQuadsIterator.localizeQuad(DF, 0, DF.quad(
         DF.quad(
           DF.blankNode('a'),
           <any> DF.blankNode('a'),
@@ -443,7 +443,7 @@ describe('BindingsToQuadsIterator', () => {
     });
 
     it('should localize a quad multiple times with blank nodes with different counters', () => {
-      expect(BindingsToQuadsIterator.localizeQuad(0, DF.quad(
+      expect(BindingsToQuadsIterator.localizeQuad(DF, 0, DF.quad(
         DF.blankNode('s'),
         <any> DF.blankNode('p'),
         DF.blankNode('o'),
@@ -455,7 +455,7 @@ describe('BindingsToQuadsIterator', () => {
         DF.blankNode('g0'),
       ));
 
-      expect(BindingsToQuadsIterator.localizeQuad(1, DF.quad(
+      expect(BindingsToQuadsIterator.localizeQuad(DF, 1, DF.quad(
         DF.blankNode('s'),
         <any> DF.blankNode('p'),
         DF.blankNode('o'),
@@ -467,7 +467,7 @@ describe('BindingsToQuadsIterator', () => {
         DF.blankNode('g1'),
       ));
 
-      expect(BindingsToQuadsIterator.localizeQuad(2, DF.quad(
+      expect(BindingsToQuadsIterator.localizeQuad(DF, 2, DF.quad(
         DF.blankNode('s'),
         <any> DF.blankNode('p'),
         DF.blankNode('o'),
@@ -484,7 +484,7 @@ describe('BindingsToQuadsIterator', () => {
   describe('instantiated for a template', () => {
     let iterator: BindingsToQuadsIterator;
     beforeEach(() => {
-      iterator = new BindingsToQuadsIterator([
+      iterator = new BindingsToQuadsIterator(DF, [
         DF.quad(DF.variable('a'), DF.namedNode('p1'), DF.namedNode('o1')),
         DF.quad(DF.blankNode('bnode'), DF.variable('b'), DF.blankNode('bnode')),
         DF.quad(DF.blankNode('bnode'), DF.variable('a'), DF.variable('b')),

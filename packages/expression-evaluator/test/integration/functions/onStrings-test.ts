@@ -1,8 +1,11 @@
+import { DataFactory } from 'rdf-data-factory';
 import { TypeURL } from '../../../lib/util/Consts';
 import { bool, int, numeric } from '../../util/Aliases';
 import { Notation } from '../../util/TestTable';
 import type { ITestTableConfigBase } from '../../util/utils';
 import { runTestTable } from '../../util/utils';
+
+const DF = new DataFactory();
 
 describe('string functions', () => {
   describe('evaluation of \'strlen\' like', () => {
@@ -27,6 +30,7 @@ describe('string functions', () => {
       config: {
         type: 'sync',
         config: {
+          dataFactory: DF,
           getSuperType(unknownType) {
             if (unknownType.includes('specialString')) {
               return 'https://example.org/string';
@@ -174,6 +178,7 @@ describe('string functions', () => {
       config: {
         type: 'sync',
         config: {
+          dataFactory: DF,
           getSuperType: unknownType => TypeURL.XSD_STRING,
         },
       },

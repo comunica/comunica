@@ -1,3 +1,4 @@
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -13,7 +14,7 @@ describe('ActorOptimizeQueryOperationJoinConnected', () => {
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    context = new ActionContext();
+    context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
   });
 
   describe('An ActorOptimizeQueryOperationJoinConnected instance', () => {

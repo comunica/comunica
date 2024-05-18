@@ -1,3 +1,4 @@
+import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import * as E from '../expressions';
 import { regularFunctions } from '../functions';
@@ -15,8 +16,8 @@ export class Average extends AggregatorComponent {
   private readonly divider = regularFunctions[C.RegularOperator.DIVISION];
   private state: IAverageState | undefined = undefined;
 
-  public static override emptyValue(): RDF.Term {
-    return integer(0).toRDF();
+  public static override emptyValue(dataFactory: ComunicaDataFactory): RDF.Term {
+    return integer(0).toRDF(dataFactory);
   }
 
   public put(term: RDF.Term): void {
@@ -32,10 +33,10 @@ export class Average extends AggregatorComponent {
 
   public result(): RDF.Term {
     if (this.state === undefined) {
-      return Average.emptyValue();
+      return Average.emptyValue(this.sharedContext.dataFactory);
     }
     const count = new E.IntegerLiteral(this.state.count);
     const result = this.divider.apply([ this.state.sum, count ], this.sharedContext);
-    return result.toRDF();
+    return result.toRDF(this.sharedContext.dataFactory);
   }
 }

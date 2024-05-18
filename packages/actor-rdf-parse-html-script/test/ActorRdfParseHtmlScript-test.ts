@@ -1,12 +1,16 @@
 import { ActorRdfParseJsonLd } from '@comunica/actor-rdf-parse-jsonld';
 import type { IActionRdfParseHtml, IHtmlParseListener } from '@comunica/bus-rdf-parse-html';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
 import type { IActionContext } from '@comunica/types';
+import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfParseHtmlScript } from '../lib/ActorRdfParseHtmlScript';
 import { HtmlScriptListener } from '../lib/HtmlScriptListener';
 
 const quad = require('rdf-quad');
+
+const DF = new DataFactory();
 
 describe('ActorRdfParseHtml', () => {
   let bus: any;
@@ -108,7 +112,9 @@ describe('ActorRdfParseHtml', () => {
           end = jest.fn(resolve);
           error = jest.fn(reject);
         });
-        action = { baseIRI, headers, emit, error, end, context: new ActionContext({}) };
+        action = { baseIRI, headers, emit, error, end, context: new ActionContext({
+          [KeysInitQuery.dataFactory.name]: DF,
+        }) };
       });
 
       it('should return an HtmlScriptListener', async() => {
@@ -218,16 +224,16 @@ describe('ActorRdfParseHtml', () => {
 
           expect(emit).toHaveBeenCalledTimes(4);
           expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"', '_:df_9_0'),
+            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"', '_:df_4_2'),
           );
           expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"', '_:df_9_0'),
+            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"', '_:df_4_2'),
           );
           expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/A', 'http://example.org/b', '"http://example.org/c"', '_:df_9_1'),
+            quad('http://example.org/A', 'http://example.org/b', '"http://example.org/c"', '_:df_4_3'),
           );
           expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/A', 'http://example.org/d', '"http://example.org/e"', '_:df_9_1'),
+            quad('http://example.org/A', 'http://example.org/d', '"http://example.org/e"', '_:df_4_3'),
           );
           expect(error).not.toHaveBeenCalled();
           expect(end).toHaveBeenCalledTimes(1);
@@ -413,7 +419,9 @@ describe('ActorRdfParseHtml', () => {
           end = jest.fn(resolve);
           error = jest.fn(reject);
         });
-        action = { baseIRI, headers, emit, error, end, context: new ActionContext({}) };
+        action = { baseIRI, headers, emit, error, end, context: new ActionContext({
+          [KeysInitQuery.dataFactory.name]: DF,
+        }) };
       });
 
       it('should return an HtmlScriptListener', async() => {
@@ -565,7 +573,10 @@ describe('ActorRdfParseHtml', () => {
           end = jest.fn(resolve);
           error = jest.fn(reject);
         });
-        action = { baseIRI, headers, emit, error, end, context: new ActionContext({ extractAllScripts: false }) };
+        action = { baseIRI, headers, emit, error, end, context: new ActionContext({
+          [KeysInitQuery.dataFactory.name]: DF,
+          extractAllScripts: false,
+        }) };
       });
 
       it('should return an HtmlScriptListener', async() => {
@@ -632,7 +643,10 @@ describe('ActorRdfParseHtml', () => {
           end = jest.fn(resolve);
           error = jest.fn(reject);
         });
-        action = { baseIRI, headers, emit, error, end, context: new ActionContext({ extractAllScripts: false }) };
+        action = { baseIRI, headers, emit, error, end, context: new ActionContext({
+          [KeysInitQuery.dataFactory.name]: DF,
+          extractAllScripts: false,
+        }) };
       });
 
       it('should return an HtmlScriptListener', async() => {

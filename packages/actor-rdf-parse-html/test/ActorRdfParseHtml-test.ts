@@ -4,15 +4,19 @@ import { ActorRdfParseHtmlScript } from '@comunica/actor-rdf-parse-html-script';
 import { ActorRdfParseJsonLd } from '@comunica/actor-rdf-parse-jsonld';
 import type { IActionRdfParse, IActorRdfParseOutput } from '@comunica/bus-rdf-parse';
 import type { IActionRdfParseHtml, IActorRdfParseHtmlOutput } from '@comunica/bus-rdf-parse-html';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IBus } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
 import type { IActionContext } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
+import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfParseHtml } from '../lib/ActorRdfParseHtml';
 
 const quad = require('rdf-quad');
 const stringToStream = require('streamify-string');
+
+const DF = new DataFactory();
 
 describe('ActorRdfParseHtml', () => {
   let bus: any;
@@ -21,7 +25,7 @@ describe('ActorRdfParseHtml', () => {
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    context = new ActionContext();
+    context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
     const mediatorHttp: any = null;
     jsonldParser = new ActorRdfParseJsonLd(
       {
@@ -96,7 +100,7 @@ describe('ActorRdfParseHtml', () => {
       inputSimple = stringToStream(
         `<strong>Hi!</strong>`,
       );
-      context = new ActionContext({});
+      context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
     });
 
     describe('test', () => {

@@ -5,7 +5,9 @@ import type {
   IActorRdfUpdateHypermediaArgs,
 } from '@comunica/bus-rdf-update-hypermedia';
 import { ActorRdfUpdateHypermedia } from '@comunica/bus-rdf-update-hypermedia';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
+import type { ComunicaDataFactory } from '@comunica/types';
 import { QuadDestinationSparql } from './QuadDestinationSparql';
 
 /**
@@ -31,11 +33,14 @@ export class ActorRdfUpdateHypermediaSparql extends ActorRdfUpdateHypermedia {
 
   public async run(action: IActionRdfUpdateHypermedia): Promise<IActorRdfUpdateHypermediaOutput> {
     this.logInfo(action.context, `Identified as sparql destination: ${action.url}`);
+
+    const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     return {
       destination: new QuadDestinationSparql(
         action.metadata.sparqlService || action.url,
         action.context,
         this.mediatorHttp,
+        dataFactory,
       ),
     };
   }

@@ -1,7 +1,10 @@
-import { KeysRdfUpdateQuads } from '@comunica/context-entries';
+import { KeysInitQuery, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfUpdateHypermediaSparql } from '../lib/ActorRdfUpdateHypermediaSparql';
 import { QuadDestinationSparql } from '../lib/QuadDestinationSparql';
+
+const DF = new DataFactory();
 
 describe('ActorRdfUpdateHypermediaSparql', () => {
   let bus: any;
@@ -106,7 +109,10 @@ describe('ActorRdfUpdateHypermediaSparql', () => {
     });
 
     it('should run', async() => {
-      const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
+      const context = new ActionContext({
+        [KeysInitQuery.dataFactory.name]: DF,
+        [KeysRdfUpdateQuads.destination.name]: 'abc',
+      });
       const url = 'abc';
       const metadata = { sparqlService: 'service' };
       const exists = true;
@@ -116,7 +122,10 @@ describe('ActorRdfUpdateHypermediaSparql', () => {
     });
 
     it('should run without sparqlService metadata', async() => {
-      const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
+      const context = new ActionContext({
+        [KeysInitQuery.dataFactory.name]: DF,
+        [KeysRdfUpdateQuads.destination.name]: 'abc',
+      });
       const url = 'abc';
       const metadata = {};
       const exists = true;

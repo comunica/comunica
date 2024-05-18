@@ -1,8 +1,11 @@
+import { DataFactory } from 'rdf-data-factory';
 import { TypeURL } from '../../../lib/util/Consts';
 import { dateTimeTyped, dayTimeDurationTyped, int, numeric } from '../../util/Aliases';
 import { Notation } from '../../util/TestTable';
 import type { ITestTableConfigBase } from '../../util/utils';
 import { runTestTable } from '../../util/utils';
+
+const DF = new DataFactory();
 
 describe('evaluation of \'+\' like', () => {
   const baseConfig: ITestTableConfigBase = {
@@ -61,6 +64,7 @@ describe('evaluation of \'+\' like', () => {
     config: {
       type: 'sync',
       config: {
+        dataFactory: DF,
         getSuperType: unknownType => TypeURL.XSD_INTEGER,
       },
     },

@@ -3,7 +3,7 @@ import { DataFactory } from 'rdf-data-factory';
 import { BindingsIndex } from '../lib/BindingsIndex';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 
 describe('BindingsIndex', () => {
   let index: BindingsIndex;

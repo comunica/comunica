@@ -1,4 +1,5 @@
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -72,7 +73,7 @@ describe('ActorOptimizeQueryOperationGroupSources', () => {
     },
   };
 
-  const ctx = new ActionContext();
+  const ctx = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });

@@ -37,7 +37,7 @@ export class SyncRecursiveEvaluator extends BaseExpressionEvaluator
   };
 
   public constructor(private readonly context: ICompleteSyncEvaluatorContext, termTransformer?: ITermTransformer) {
-    super(termTransformer ?? new TermTransformer(context.superTypeProvider));
+    super(termTransformer ?? new TermTransformer(context.superTypeProvider), context.dataFactory);
   }
 
   public evaluate(expr: E.Expression, mapping: RDF.Bindings): E.Term {
@@ -67,6 +67,7 @@ export class SyncRecursiveEvaluator extends BaseExpressionEvaluator
       evaluate,
       bnode: this.context.bnode,
       defaultTimeZone: this.context.defaultTimeZone,
+      dataFactory: this.dataFactory,
     };
     return expr.applySynchronously(context);
   }

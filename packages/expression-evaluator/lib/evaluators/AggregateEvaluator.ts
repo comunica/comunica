@@ -1,3 +1,4 @@
+import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import { BaseAggregateEvaluator } from './evaluatorHelpers/BaseAggregateEvaluator';
@@ -8,9 +9,14 @@ import { SyncEvaluator } from './SyncEvaluator';
 export class AggregateEvaluator extends BaseAggregateEvaluator {
   private readonly evaluator: SyncEvaluator;
 
-  public constructor(expr: Algebra.AggregateExpression, context?: ISyncEvaluatorContext, throwError?: boolean) {
-    super(expr, SyncEvaluator.completeContext(context ?? {}), throwError);
-    this.evaluator = new SyncEvaluator(expr.expression, context);
+  public constructor(
+    expr: Algebra.AggregateExpression,
+    dataFactory: ComunicaDataFactory,
+    context?: ISyncEvaluatorContext,
+    throwError?: boolean,
+  ) {
+    super(expr, SyncEvaluator.completeContext(context ?? { dataFactory }), throwError);
+    this.evaluator = new SyncEvaluator(dataFactory, expr.expression, context);
   }
 
   public put(bindings: RDF.Bindings): void {

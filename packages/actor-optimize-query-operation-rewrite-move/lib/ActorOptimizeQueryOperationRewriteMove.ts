@@ -4,8 +4,10 @@ import type {
   IActorOptimizeQueryOperationArgs,
 } from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
-import { Algebra, Util } from 'sparqlalgebrajs';
+import type { ComunicaDataFactory } from '@comunica/types';
+import { Algebra, Factory, Util } from 'sparqlalgebrajs';
 
 /**
  * A comunica Rewrite Move Optimize Query Operation Actor.
@@ -20,6 +22,9 @@ export class ActorOptimizeQueryOperationRewriteMove extends ActorOptimizeQueryOp
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
+    const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
+    const algebraFactory = new Factory(dataFactory);
+
     const operation = Util.mapOperation(action.operation, {
       [Algebra.types.MOVE](operationOriginal, factory) {
         // No-op if source === destination
@@ -44,7 +49,7 @@ export class ActorOptimizeQueryOperationRewriteMove extends ActorOptimizeQueryOp
           recurse: false,
         };
       },
-    });
+    }, algebraFactory);
 
     return { operation, context: action.context };
   }

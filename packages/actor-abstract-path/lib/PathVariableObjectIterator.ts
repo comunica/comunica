@@ -4,13 +4,8 @@ import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { BufferedIterator } from 'asynciterator';
-import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
-import type { Algebra } from 'sparqlalgebrajs';
-import { Factory } from 'sparqlalgebrajs';
-
-const DF = new DataFactory();
-const FACTORY = new Factory();
+import type { Algebra, Factory } from 'sparqlalgebrajs';
 
 /**
  * An iterator that implements the multi-length property path operation (* and +)
@@ -22,6 +17,7 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
   private readonly pendingOperations: { variable: RDF.Variable; operation: Algebra.Path }[] = [];
 
   public constructor(
+    private readonly algebraFactory: Factory,
     private readonly subject: RDF.Term,
     private readonly predicate: Algebra.PropertyPathSymbol,
     private readonly graph: RDF.Term,
@@ -57,10 +53,10 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
     }
 
     // Add a pending path operation for this item
-    const variable = DF.variable('b');
+    const variable = this.algebraFactory.dataFactory.variable!('b');
     this.pendingOperations.push({
       variable,
-      operation: FACTORY.createPath(item, this.predicate, variable, this.graph),
+      operation: this.algebraFactory.createPath(item, this.predicate, variable, this.graph),
     });
 
     // Otherwise, push the subject
