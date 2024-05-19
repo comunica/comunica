@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-parse-rdfxml",
-  "version": "3.0.3",
+  "version": "3.1.0",
   "description": "A rdfxml rdf-parse actor",
   "lsd:module": true,
   "license": "MIT",
@@ -32,12 +32,12 @@
     "lib/**/*.js.map"
   ],
   "scripts": {
-    "build": "npm run build:ts && npm run build:components",
+    "build": "yarn run build:ts && yarn run build:components",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-rdf-parse": "^3.0.3",
+    "@comunica/bus-rdf-parse": "^3.1.0",
     "rdfxml-streaming-parser": "^2.2.3"
   }
 }

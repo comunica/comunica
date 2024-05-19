@@ -460,6 +460,10 @@ describe('ActorHttpInterceptWayback', () => {
                   async read() {
                     return { done: true };
                   },
+                  async cancel() {
+                    /* Noop */
+                  },
+                  closed: new Promise(() => { /* Noop */ }),
                 };
               },
             };

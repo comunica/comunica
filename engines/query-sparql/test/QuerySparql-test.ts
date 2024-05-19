@@ -731,6 +731,18 @@ SELECT * WHERE {
         });
         expect(called).toBe(0);
       });
+
+      it('with two triple patterns over a paged collection (no browser)', async() => {
+        const bindingsStream = await engine.queryBindings(`
+SELECT *
+WHERE {
+  <https://opendata.picturae.com/dataset/dre_a2a_webservice> <http://purl.org/dc/terms/identifier> ?i.
+  <https://opendata.picturae.com/dataset/dre_a2a_webservice> <http://purl.org/dc/terms/issued> ?issued.
+}`, {
+          sources: [ 'https://opendata.picturae.com/catalog.ttl?page=1' ],
+        });
+        expect((await bindingsStream.toArray()).length > 0).toBeTruthy();
+      });
     });
 
     describe('property paths', () => {

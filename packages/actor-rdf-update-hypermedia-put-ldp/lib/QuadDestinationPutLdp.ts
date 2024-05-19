@@ -1,8 +1,7 @@
 import type { MediatorHttp } from '@comunica/bus-http';
-import { ActorHttp } from '@comunica/bus-http';
+import { validateAndCloseHttpResponse, ActorHttp } from '@comunica/bus-http';
 import type { MediatorRdfSerialize, MediatorRdfSerializeMediaTypes } from '@comunica/bus-rdf-serialize';
 import type { IQuadDestination } from '@comunica/bus-rdf-update-quads';
-import { validateHttpResponse } from '@comunica/bus-rdf-update-quads';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -79,7 +78,7 @@ export class QuadDestinationPutLdp implements IQuadDestination {
       input: this.url,
     });
 
-    await validateHttpResponse(this.url, httpResponse);
+    await validateAndCloseHttpResponse(this.url, httpResponse);
   }
 
   public async deleteGraphs(
