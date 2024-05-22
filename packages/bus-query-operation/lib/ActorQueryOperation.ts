@@ -173,22 +173,7 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
 
       const outputRaw = await mediatorQueryOperation.mediate({ operation, context });
       const output = ActorQueryOperation.getSafeBindings(outputRaw);
-
-      return new Promise<boolean>(
-        (resolve, reject) => {
-          output.bindingsStream.on('end', () => {
-            resolve(false);
-          });
-
-          output.bindingsStream.on('error', reject);
-
-          output.bindingsStream.on('data', () => {
-            output.bindingsStream.close();
-            resolve(true);
-          });
-        },
-      )
-        .then((exists: boolean) => expr.not ? !exists : exists);
+      return expr.not !== ((await output.bindingsStream.take(1).toArray()).length === 1);
     };
   }
 
