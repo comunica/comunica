@@ -2,16 +2,13 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
-import type { MediatorRdfJoin } from '@comunica/bus-rdf-join';
+import type { IActionRdfJoin, MediatorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActorTest } from '@comunica/core';
 import { AsyncEvaluator, isExpressionError } from '@comunica/expression-evaluator';
-import type { IQueryOperationResult, Bindings, IActionContext, IJoinEntry } from '@comunica/types';
+import type { IQueryOperationResult, Bindings, IActionContext, IJoinEntry, IQueryOperationResultBindings } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
-/**
- * A comunica LeftJoin Query Operation Actor.
- */
-export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediated<Algebra.LeftJoin> {
+export abstract class ActorQueryOperationLeftJoinAbstract extends ActorQueryOperationTypedMediated<Algebra.LeftJoin> {
   public readonly mediatorJoin: MediatorRdfJoin;
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
@@ -22,6 +19,8 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
   public async testOperation(_operation: Algebra.LeftJoin, _context: IActionContext): Promise<IActorTest> {
     return true;
   }
+
+  public abstract join(action: IActionRdfJoin): Promise<IQueryOperationResultBindings>;
 
   public async runOperation(operationOriginal: Algebra.LeftJoin, context: IActionContext):
   Promise<IQueryOperationResult> {
@@ -35,7 +34,7 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
         output: ActorQueryOperation.getSafeBindings(output),
         operation,
       }));
-    const joined = await this.mediatorJoin.mediate({ type: 'optional', entries, context });
+    const joined = await this.join({ type: 'optional', entries, context });
 
     // If the pattern contains an expression, filter the resulting stream
     if (operationOriginal.expression) {
@@ -85,6 +84,15 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
     }
 
     return joined;
+  }
+}
+
+/**
+ * A comunica LeftJoin Query Operation Actor.
+ */
+export class ActorQueryOperationLeftJoin extends ActorQueryOperationLeftJoinAbstract {
+  public async join(action: IActionRdfJoin): Promise<IQueryOperationResultBindings> {
+    return this.mediatorJoin.mediate(action);
   }
 }
 

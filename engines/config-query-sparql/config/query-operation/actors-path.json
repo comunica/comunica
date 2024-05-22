@@ -1,0 +1,15 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/config-query-sparql/^3.0.0/components/context.jsonld"
+  ],
+  "import": [
+    "ccqs:config/query-operation/actors/query/path-alt.json",
+    "ccqs:config/query-operation/actors/query/path-inv.json",
+    "ccqs:config/query-operation/actors/query/path-link.json",
+    "ccqs:config/query-operation/actors/query/path-nps.json",
+    "ccqs:config/query-operation/actors/query/path-one-or-more.json",
+    "ccqs:config/query-operation/actors/query/path-seq.json",
+    "ccqs:config/query-operation/actors/query/path-zero-or-more.json",
+    "ccqs:config/query-operation/actors/query/path-zero-or-one.json"
+  ]
+}

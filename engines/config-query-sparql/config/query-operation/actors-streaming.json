@@ -5,7 +5,7 @@
   "import": [
     "ccqs:config/query-operation/actors-common.json",
 
-    "ccqs:config/query-operation/actors/query/leftjoin.json",
+    "ccqs:config/query-operation/actors/query/leftjoin-optplus.json",
 
     "ccqs:config/query-operation/actors-path.json",
     "ccqs:config/query-operation/actors-update.json"
