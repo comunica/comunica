@@ -64,15 +64,6 @@ export class ActorQueryResultSerializeTable extends ActorQueryResultSerializeFix
     data.push(`${header}\n${ActorQueryResultSerializeTable.repeat('-', header.length)}\n`);
   }
 
-  /* istanbul ignore next */
-  /**
-   * @deprecated Use {@link createRow} instead.
-   */
-  public pushRow(data: Readable, labels: RDF.Variable[], bindings: Bindings): void {
-    /* istanbul ignore next */
-    data.push(this.createRow(labels, bindings));
-  }
-
   public createRow(labels: RDF.Variable[], bindings: Bindings): string {
     return `${labels
       .map(label => bindings.has(label) ? this.termToString(bindings.get(label)!) : '')

@@ -46,30 +46,10 @@ export class ActorQueryResultSerializeStats extends ActorQueryResultSerializeFix
     data.push(`${header}\n`);
   }
 
-  /**
-   * @deprecated Use {@link createStat} instead.
-   */
-  /* istanbul ignore next */
-  public pushStat(data: Readable, startTime: number, result: number): void {
-    /* istanbul ignore next */
-    data.push(this.createStat(startTime, result));
-  }
-
   public createStat(startTime: number, result: number): string {
     const row: string = [ result, this.delay(startTime), this.httpObserver.requests,
     ].join(',');
     return `${row}\n`;
-  }
-
-  /**
-   * @deprecated Use {@link createFooter} instead.
-   */
-  /* istanbul ignore next */
-  public pushFooter(data: Readable, startTime: number): void {
-    /* istanbul ignore next */
-    data.push(this.createFooter(startTime));
-    /* istanbul ignore next */
-    data.push(null);
   }
 
   public createFooter(startTime: number): string {
