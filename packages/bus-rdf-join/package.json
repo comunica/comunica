@@ -45,7 +45,6 @@
     "@comunica/types": "^3.1.0",
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0",
-    "rdf-data-factory": "^1.1.1",
-    "rdf-string": "^1.6.1"
+    "rdf-data-factory": "^1.1.1"
   }
 }
