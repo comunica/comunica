@@ -114,7 +114,9 @@ export function quadsToBindings(
  * @return {any} If the term is a variable or blank node.
  */
 export function isTermVariable(term: RDF.Term): term is RDF.Variable {
-  return term.termType === 'Variable';
+  // Encoded terms never represent variables.
+  return (<any> term).encoding === undefined &&
+    term.termType === 'Variable';
 }
 
 /**

@@ -52,9 +52,10 @@ export class ActorContextPreprocessQuerySourceIdentify extends ActorContextPrepr
         .get(KeysInitQuery.querySourcesUnidentified)!;
       const querySourcesUnidentifiedExpanded = await Promise.all(querySourcesUnidentified
         .map(querySource => this.expandSource(querySource)));
+
       const querySources: IQuerySourceWrapper[] = await Promise.all(querySourcesUnidentifiedExpanded
-        .map(async querySourceUnidentified => this.identifySource(querySourceUnidentified, action.context)));
-      context = action.context
+        .map(async querySourceUnidentified => this.identifySource(querySourceUnidentified, context)));
+      context = context
         .delete(KeysInitQuery.querySourcesUnidentified)
         .set(KeysQueryOperation.querySources, querySources);
     }

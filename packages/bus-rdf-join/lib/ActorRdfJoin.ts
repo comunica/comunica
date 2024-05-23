@@ -78,10 +78,22 @@ export abstract class ActorRdfJoin
    * @returns {string} A hash string.
    */
   public static hash(bindings: Bindings, variables: RDF.Variable[]): string {
-    return variables
-      .filter(variable => bindings.has(variable))
-      .map(variable => termToString(bindings.get(variable)))
-      .join('');
+    let stringified = false;
+    const hashes = variables
+      .map((variable) => {
+        const term = bindings.get(variable);
+        if (term) {
+          const encoding = (<any> term).encoding; // TODO: cleanup
+          if (encoding !== undefined) {
+            return encoding;
+          }
+          stringified = true;
+          return termToString(term);
+        }
+        return 0;
+      });
+
+    return stringified ? hashes.join('') : hashes.reduce((prev, curr) => prev | curr, 0);
   }
 
   /**
