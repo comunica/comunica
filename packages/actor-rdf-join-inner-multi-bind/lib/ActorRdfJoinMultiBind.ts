@@ -63,7 +63,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
         .map(operation => materializeOperation(operation, bindings, bindingsFactory, { bindFilter: true }));
       const bindingsMerger = (subBindings: Bindings): Bindings | undefined => subBindings.merge(bindings);
       return new TransformIterator(async() => (await operationBinder(subOperations, bindings))
-        .map(bindingsMerger), { maxBufferSize: 128, autoStart: false });
+        .transform({ map: bindingsMerger }), { maxBufferSize: 128, autoStart: false });
     };
 
     // Create an iterator that binds elements from the base stream in different orders
