@@ -124,7 +124,7 @@ IActorRdfJoinSelectivityOutput
           [ DF.variable('y'), DF.literal('XYZ', DF.namedNode('ex:abc')) ],
         ]),
         [ DF.variable('x'), DF.variable('y') ],
-      )).toBe('http://www.example.org/instance#a"XYZ"^^ex:abc');
+      )).toBe('http://www.example.org/instance#aXYZ');
     });
 
     it('should not let hash being influenced by a variable that is not present in bindings', () => {
@@ -134,7 +134,7 @@ IActorRdfJoinSelectivityOutput
           [ DF.variable('y'), DF.literal('XYZ', DF.namedNode('ex:abc')) ],
         ]),
         [ DF.variable('x'), DF.variable('y'), DF.variable('z') ],
-      )).toBe('http://www.example.org/instance#a"XYZ"^^ex:abc');
+      )).toBe('http://www.example.org/instance#aXYZ');
     });
   });
 

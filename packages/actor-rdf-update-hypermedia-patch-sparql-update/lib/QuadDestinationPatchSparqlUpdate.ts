@@ -66,9 +66,7 @@ export class QuadDestinationPatchSparqlUpdate implements IQuadDestination {
 
   private async wrapSparqlUpdateRequest(queryStream: AsyncIterator<string>): Promise<void> {
     const readable = new Readable();
-    readable._read = () => true;
-    queryStream.on('data', (quad: RDF.Quad) => readable.push(quad));
-    queryStream.on('end', () => readable.push(null));
+    readable.wrap(<any> queryStream);
 
     // Send data in PUT request
     const headers: Headers = new Headers({ 'content-type': 'application/sparql-update' });

@@ -95,10 +95,7 @@ export function skolemizeQuadStream(
   iterator: AsyncIterator<RDF.Quad>,
   sourceId: string,
 ): AsyncIterator<RDF.Quad> {
-  const ret = iterator.transform({
-    map: quad => skolemizeQuad(dataFactory, quad, sourceId),
-    autoStart: false,
-  });
+  const ret = iterator.map(quad => skolemizeQuad(dataFactory, quad, sourceId));
   function inheritMetadata(): void {
     iterator.getProperty('metadata', (metadata: MetadataQuads) => {
       ret.setProperty('metadata', metadata);
@@ -121,10 +118,7 @@ export function skolemizeBindingsStream(
   iterator: BindingsStream,
   sourceId: string,
 ): BindingsStream {
-  const ret = iterator.transform({
-    map: bindings => skolemizeBindings(dataFactory, bindings, sourceId),
-    autoStart: false,
-  });
+  const ret = iterator.map(bindings => skolemizeBindings(dataFactory, bindings, sourceId));
   function inheritMetadata(): void {
     iterator.getProperty('metadata', (metadata: MetadataBindings) => {
       ret.setProperty('metadata', metadata);

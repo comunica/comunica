@@ -302,6 +302,9 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
       });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
+          [ DF.variable('z'), DF.namedNode('1') ],
+        ]),
+        BF.bindings([
           [ DF.variable('x'), DF.namedNode('1') ],
           [ DF.variable('y'), DF.namedNode('2') ],
         ]),
@@ -312,9 +315,6 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
         BF.bindings([
           [ DF.variable('x'), DF.namedNode('3') ],
           [ DF.variable('y'), DF.namedNode('4') ],
-        ]),
-        BF.bindings([
-          [ DF.variable('z'), DF.namedNode('1') ],
         ]),
       ]);
     });
@@ -343,6 +343,9 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
       });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
+          [ DF.variable('z'), DF.namedNode('1') ],
+        ]),
+        BF.bindings([
           [ DF.variable('x'), DF.namedNode('1') ],
           [ DF.variable('y'), DF.namedNode('2') ],
         ]),
@@ -353,9 +356,6 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
         BF.bindings([
           [ DF.variable('x'), DF.namedNode('3') ],
           [ DF.variable('y'), DF.namedNode('4') ],
-        ]),
-        BF.bindings([
-          [ DF.variable('z'), DF.namedNode('1') ],
         ]),
       ]);
 

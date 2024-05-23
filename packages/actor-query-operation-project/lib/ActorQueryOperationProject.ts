@@ -52,37 +52,31 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
     // Make sure the project variables are the only variables that are present in the bindings.
     let bindingsStream: BindingsStream = deleteVariables.length === 0 ?
       output.bindingsStream :
-      output.bindingsStream.transform({
-        map(bindings: Bindings) {
-          for (const deleteVariable of deleteVariables) {
-            bindings = bindings.delete(deleteVariable);
-          }
-          return bindings;
-        },
-        autoStart: false,
+      output.bindingsStream.map((bindings: Bindings) => {
+        for (const deleteVariable of deleteVariables) {
+          bindings = bindings.delete(deleteVariable);
+        }
+        return bindings;
       });
 
     // Make sure that blank nodes with same labels are not reused over different bindings, as required by SPARQL 1.1.
     // Required for the BNODE() function: https://www.w3.org/TR/sparql11-query/#func-bnode
     // When we have a scoped blank node, make sure the skolemized value is maintained.
     let blankNodeCounter = 0;
-    bindingsStream = bindingsStream.transform({
-      map(bindings: Bindings) {
-        blankNodeCounter++;
-        const scopedBlankNodesCache = new Map<string, RDF.BlankNode>();
-        return bindings.map((term) => {
-          if (term instanceof BlankNodeBindingsScoped) {
-            let scopedBlankNode = scopedBlankNodesCache.get(term.value);
-            if (!scopedBlankNode) {
-              scopedBlankNode = dataFactory.blankNode(`${term.value}${blankNodeCounter}`);
-              scopedBlankNodesCache.set(term.value, scopedBlankNode);
-            }
-            return scopedBlankNode;
+    bindingsStream = bindingsStream.map((bindings: Bindings) => {
+      blankNodeCounter++;
+      const scopedBlankNodesCache = new Map<string, RDF.BlankNode>();
+      return bindings.map((term) => {
+        if (term instanceof BlankNodeBindingsScoped) {
+          let scopedBlankNode = scopedBlankNodesCache.get(term.value);
+          if (!scopedBlankNode) {
+            scopedBlankNode = dataFactory.blankNode(`${term.value}${blankNodeCounter}`);
+            scopedBlankNodesCache.set(term.value, scopedBlankNode);
           }
-          return term;
-        });
-      },
-      autoStart: false,
+          return scopedBlankNode;
+        }
+        return term;
+      });
     });
 
     return {

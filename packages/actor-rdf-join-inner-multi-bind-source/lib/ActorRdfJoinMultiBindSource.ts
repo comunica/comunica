@@ -75,14 +75,11 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin {
     );
 
     // For each chunk, pass the query and the bindings to the source for execution
-    const bindingsStream = new UnionIterator(chunkedStreams.transform({
-      map: chunk => sourceWrapper.source.queryBindings(
-        operation,
-        sourceWrapper.context ? action.context.merge(sourceWrapper.context) : action.context,
-        { joinBindings: { bindings: chunk, metadata: smallestMetadata }},
-      ),
-      autoStart: false,
-    }));
+    const bindingsStream = new UnionIterator(chunkedStreams.map(chunk => sourceWrapper.source.queryBindings(
+      operation,
+      sourceWrapper.context ? action.context.merge(sourceWrapper.context) : action.context,
+      { joinBindings: { bindings: chunk, metadata: smallestMetadata }},
+    )));
 
     return {
       result: {

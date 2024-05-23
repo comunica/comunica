@@ -182,15 +182,12 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
           this.dataFactory.variable('g'),
         ),
         this.context.set(KeysQueryOperation.unionDefaultGraph, true),
-      ).transform({
-        map: bindings => (<RDF.DataFactory<RDF.BaseQuad>> this.dataFactory).quad(
-          bindings.get('s')!,
-          bindings.get('p')!,
-          bindings.get('o')!,
-          bindings.get('g'),
-        ),
-        autoStart: false,
-      });
+      ).map(bindings => (<RDF.DataFactory<RDF.BaseQuad>> this.dataFactory).quad(
+        bindings.get('s')!,
+        bindings.get('p')!,
+        bindings.get('o')!,
+        bindings.get('g'),
+      ));
       this.aggregatedStore.import(<RDF.Stream> stream)
         .on('end', () => {
           super.startIterator(startSource);

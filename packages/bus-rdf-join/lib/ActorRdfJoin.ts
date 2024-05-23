@@ -18,7 +18,6 @@ import type {
   ComunicaDataFactory,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { termToString } from 'rdf-string';
 
 /**
  * A comunica actor for joining 2 binding streams.
@@ -79,8 +78,13 @@ export abstract class ActorRdfJoin
    */
   public static hash(bindings: Bindings, variables: RDF.Variable[]): string {
     return variables
-      .filter(variable => bindings.has(variable))
-      .map(variable => termToString(bindings.get(variable)))
+      .map((variable) => {
+        const term = bindings.get(variable);
+        if (term) {
+          return term.value;
+        }
+        return '';
+      })
       .join('');
   }
 
