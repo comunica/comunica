@@ -60,8 +60,10 @@ export class ActorHttpWayback extends ActorHttp {
       if (body) {
         if ('destroy' in body && typeof (<any>body).destroy === 'function') {
           (<any>body).destroy();
+        } else if ('cancel' in body && typeof body.cancel === 'function') {
+          await body.cancel();
         } else {
-          await stringifyStream(ActorHttp.toNodeReadable(fallbackResult.body));
+          await stringifyStream(ActorHttp.toNodeReadable(body));
         }
       }
     }
