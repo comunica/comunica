@@ -77,7 +77,7 @@ describe('SumAggregator', () => {
         BF.bindings([[ DF.variable('x'), int('4') ]]),
       ];
 
-      expect(await runAggregator(aggregator, input)).toEqual(int('10'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(int('10'));
     });
 
     it('undefined when sum is undefined', async() => {
@@ -86,19 +86,17 @@ describe('SumAggregator', () => {
         BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
       ];
 
-      expect(await runAggregator(aggregator, input)).toEqual(undefined);
+      await expect(runAggregator(aggregator, input)).resolves.toBeUndefined();
     });
 
     it('with respect to type promotion', async() => {
       const input = [
-        BF.bindings([[ DF.variable('x'),
-          DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#byte')) ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#byte')) ]]),
         BF.bindings([[ DF.variable('x'), int('2') ]]),
         BF.bindings([[ DF.variable('x'), float('3') ]]),
-        BF.bindings([[ DF.variable('x'),
-          DF.literal('4', DF.namedNode('http://www.w3.org/2001/XMLSchema#nonNegativeInteger')) ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('4', DF.namedNode('http://www.w3.org/2001/XMLSchema#nonNegativeInteger')) ]]),
       ];
-      expect(await runAggregator(aggregator, input)).toEqual(float('10'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(float('10'));
     });
 
     it('with accurate results', async() => {
@@ -109,7 +107,7 @@ describe('SumAggregator', () => {
         BF.bindings([[ DF.variable('x'), decimal('2.2') ]]),
         BF.bindings([[ DF.variable('x'), decimal('3.5') ]]),
       ];
-      expect(await runAggregator(aggregator, input)).toEqual(decimal('11.1'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(decimal('11.1'));
     });
 
     it('passing a non-literal should not be accepted', async() => {
@@ -120,11 +118,11 @@ describe('SumAggregator', () => {
         BF.bindings([[ DF.variable('x'), int('4') ]]),
       ];
 
-      expect(await runAggregator(aggregator, input)).toBeUndefined();
+      await expect(runAggregator(aggregator, input)).resolves.toBeUndefined();
     });
 
     it('with respect to empty input', async() => {
-      expect(await runAggregator(aggregator, [])).toEqual(int('0'));
+      await expect(runAggregator(aggregator, [])).resolves.toEqual(int('0'));
     });
   });
 
@@ -148,11 +146,11 @@ describe('SumAggregator', () => {
         BF.bindings([[ DF.variable('x'), int('1') ], [ DF.variable('y'), int('1') ]]),
       ];
 
-      expect(await runAggregator(aggregator, input)).toEqual(int('3'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(int('3'));
     });
 
     it('with respect to empty input', async() => {
-      expect(await runAggregator(aggregator, [])).toEqual(int('0'));
+      await expect(runAggregator(aggregator, [])).resolves.toEqual(int('0'));
     });
   });
 });

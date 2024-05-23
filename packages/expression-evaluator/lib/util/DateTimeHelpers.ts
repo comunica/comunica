@@ -14,18 +14,18 @@ import type {
 export function defaultedDayTimeDurationRepresentation(rep: Partial<IDayTimeDurationRepresentation>):
 IDayTimeDurationRepresentation {
   return {
-    day: rep.day || 0,
-    hours: rep.hours || 0,
-    minutes: rep.minutes || 0,
-    seconds: rep.seconds || 0,
+    day: rep.day ?? 0,
+    hours: rep.hours ?? 0,
+    minutes: rep.minutes ?? 0,
+    seconds: rep.seconds ?? 0,
   };
 }
 
 export function defaultedYearMonthDurationRepresentation(rep: Partial<IYearMonthDurationRepresentation>):
 IYearMonthDurationRepresentation {
   return {
-    year: rep.year || 0,
-    month: rep.month || 0,
+    year: rep.year ?? 0,
+    month: rep.month ?? 0,
   };
 }
 
@@ -83,12 +83,12 @@ Partial<IDurationRepresentation> {
 export function defaultedDateTimeRepresentation(rep: Partial<IDateTimeRepresentation>): IDateTimeRepresentation {
   return {
     ...rep,
-    day: rep.day || 1,
-    hours: rep.hours || 0,
-    month: rep.month || 1,
-    year: rep.year || 0,
-    seconds: rep.seconds || 0,
-    minutes: rep.minutes || 0,
+    day: rep.day ?? 1,
+    hours: rep.hours ?? 0,
+    month: rep.month ?? 1,
+    year: rep.year ?? 0,
+    seconds: rep.seconds ?? 0,
+    minutes: rep.minutes ?? 0,
   };
 }
 
@@ -108,12 +108,12 @@ export function toDateTimeRepresentation({ date, timeZone }:
 
 export function negateDuration(dur: Partial<IDurationRepresentation>): Partial<IDurationRepresentation> {
   return {
-    year: dur.year !== undefined ? -1 * dur.year : undefined,
-    month: dur.month !== undefined ? -1 * dur.month : undefined,
-    day: dur.day !== undefined ? -1 * dur.day : undefined,
-    hours: dur.hours !== undefined ? -1 * dur.hours : undefined,
-    minutes: dur.minutes !== undefined ? -1 * dur.minutes : undefined,
-    seconds: dur.seconds !== undefined ? -1 * dur.seconds : undefined,
+    year: dur.year === undefined ? undefined : -1 * dur.year,
+    month: dur.month === undefined ? undefined : -1 * dur.month,
+    day: dur.day === undefined ? undefined : -1 * dur.day,
+    hours: dur.hours === undefined ? undefined : -1 * dur.hours,
+    minutes: dur.minutes === undefined ? undefined : -1 * dur.minutes,
+    seconds: dur.seconds === undefined ? undefined : -1 * dur.seconds,
   };
 }
 
@@ -128,9 +128,9 @@ export function toJSDate(date: IDateTimeRepresentation): Date {
     Math.trunc(date.seconds),
     (date.seconds % 1) * 1_000,
   );
-  if (0 <= date.year && date.year < 100) {
+  if (date.year >= 0 && date.year < 100) {
     // Special rule of date has gone int action:
-    // eslint-disable-next-line max-len
+
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/Date#individual_date_and_time_component_values
 
     const jumpDeltaOfDate = 1_900;
@@ -139,16 +139,15 @@ export function toJSDate(date: IDateTimeRepresentation): Date {
   return res;
 }
 
-export function toUTCDate(date: Partial<IDateTimeRepresentation>,
-  defaultTimezone: ITimeZoneRepresentation): Date {
+export function toUTCDate(date: Partial<IDateTimeRepresentation>, defaultTimezone: ITimeZoneRepresentation): Date {
   const localTime = toJSDate(defaultedDateTimeRepresentation(date));
   // This date has been constructed in machine local time, now we alter it to become UTC and convert to correct timezone
 
   // Correction needed from local machine timezone to UTC
   const minutesCorrectionLocal = localTime.getTimezoneOffset();
   // Correction needed from UTC to provided timeZone
-  const hourCorrectionUTC = date.zoneHours === undefined ? defaultTimezone.zoneHours : date.zoneHours;
-  const minutesCorrectionUTC = date.zoneMinutes === undefined ? defaultTimezone.zoneMinutes : date.zoneMinutes;
+  const hourCorrectionUTC = date.zoneHours ?? defaultTimezone.zoneHours;
+  const minutesCorrectionUTC = date.zoneMinutes ?? defaultTimezone.zoneMinutes;
   return new Date(
     localTime.getTime() - (minutesCorrectionLocal + hourCorrectionUTC * 60 + minutesCorrectionUTC) * 60 * 1_000,
   );

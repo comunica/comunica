@@ -1,3 +1,4 @@
+import { BindingsFactory } from '@comunica/bindings-factory';
 import type {
   IActionExpressionEvaluatorFactory,
   IActorExpressionEvaluatorFactoryArgs,
@@ -19,7 +20,7 @@ export class ActorExpressionEvaluatorFactoryDefault extends ActorExpressionEvalu
     super(args);
   }
 
-  public async test(action: IActionExpressionEvaluatorFactory): Promise<IActorTest> {
+  public async test(_action: IActionExpressionEvaluatorFactory): Promise<IActorTest> {
     return true;
   }
 
@@ -33,6 +34,7 @@ export class ActorExpressionEvaluatorFactoryDefault extends ActorExpressionEvalu
       ).transformAlgebra(action.algExpr),
       this.mediatorFunctionFactory,
       this.mediatorQueryOperation,
+      await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context),
     );
   }
 }

@@ -1,8 +1,8 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^3.0.0/components/context.jsonld",
 
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-group/^2.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-group/^3.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:default:Runner",
   "@type": "Runner",
@@ -12,6 +12,7 @@
       "@type": "ActorQueryOperationGroup",
       "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
       "mediatorHashBindings": { "@id": "urn:comunica:default:hash-bindings/mediators#main" },
+      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" },
       "mediatorBindingsAggregatorFactory": { "@id": "urn:comunica:default:bindings-aggregator-factory/mediators#main" }
     }
   ]

@@ -17,19 +17,19 @@ describe('the coercion of RDF terms to it\'s EBV like', () => {
 
   function testCoercesTo(someVaridk: string, type: RDF.NamedNode, value: boolean) {
     it(`should coerce ${someVaridk}^^${type.value} to ${value}`, () => {
-      return expect(transformer.transformLiteral(DF.literal(someVaridk, type)).coerceEBV()).toEqual(value);
+      expect(transformer.transformLiteral(DF.literal(someVaridk, type)).coerceEBV()).toEqual(value);
     });
   }
 
   function testLiteralCoercesTo(someVaridk: RDF.Literal, value: boolean) {
     it(`should coerce ${someVaridk.value}@"${someVaridk.language}"^^${someVaridk.datatype.value} to ${value}`, () => {
-      return expect(transformer.transformLiteral(someVaridk).coerceEBV()).toEqual(value);
+      expect(transformer.transformLiteral(someVaridk).coerceEBV()).toEqual(value);
     });
   }
 
   function testCannotCoerce(someVaridk: string, type: RDF.NamedNode) {
     it(`should not coerce ${someVaridk}^^${type.value}`, () => {
-      return expect(() => transformer.transformLiteral(DF.literal(someVaridk, type)).coerceEBV())
+      expect(() => transformer.transformLiteral(DF.literal(someVaridk, type)).coerceEBV())
         .toThrow('Cannot coerce term to EBV');
     });
   }
@@ -86,7 +86,7 @@ describe('the coercion of RDF terms to it\'s EBV like', () => {
 
   // TODO: Can be removed in final version of this PR!
   //  These tests are dublicates f the once above (I think), i keep them here in case I need tests for 100% coverage)
-  // eslint-disable-next-line mocha/no-skipped-tests
+  // eslint-disable-next-line jest/no-disabled-tests
   describe.skip('using \'!\' like', () => {
     const baseConfig: ITestTableConfigBase = {
       arity: 1,

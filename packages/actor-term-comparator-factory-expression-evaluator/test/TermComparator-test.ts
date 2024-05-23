@@ -51,23 +51,29 @@ function orderByFactory(typeDiscoveryCallback?: SuperTypeCallback): ITermCompara
   );
 }
 
-async function orderTestIsLower(litA: RDF.Term | undefined, litB: RDF.Term | undefined,
-  typeDiscoveryCallback?: SuperTypeCallback) {
+async function orderTestIsLower(
+  litA: RDF.Term | undefined,
+  litB: RDF.Term | undefined,
+  typeDiscoveryCallback?: SuperTypeCallback,
+) {
   const evaluator = orderByFactory(typeDiscoveryCallback);
-  expect(evaluator.orderTypes(litA, litB)).toEqual(-1);
-  expect(evaluator.orderTypes(litB, litA)).toEqual(1);
+  expect(evaluator.orderTypes(litA, litB)).toBe(-1);
+  expect(evaluator.orderTypes(litB, litA)).toBe(1);
 }
 
-async function orderTestIsEqual(litA: RDF.Term | undefined, litB: RDF.Term | undefined,
-  typeDiscoveryCallback?: SuperTypeCallback) {
+async function orderTestIsEqual(
+  litA: RDF.Term | undefined,
+  litB: RDF.Term | undefined,
+  typeDiscoveryCallback?: SuperTypeCallback,
+) {
   const evaluator = orderByFactory(typeDiscoveryCallback);
-  expect(evaluator.orderTypes(litA, litB)).toEqual(0);
-  expect(evaluator.orderTypes(litB, litA)).toEqual(0);
+  expect(evaluator.orderTypes(litA, litB)).toBe(0);
+  expect(evaluator.orderTypes(litB, litA)).toBe(0);
 }
 
 describe('terms order', () => {
   it('undefined is equal to undefined', async() => {
-    await orderTestIsEqual(undefined, undefined); // eslint-disable-line unicorn/no-useless-undefined
+    await orderTestIsEqual(undefined, undefined);
   });
 
   it('undefined is lower than everything else', async() => {

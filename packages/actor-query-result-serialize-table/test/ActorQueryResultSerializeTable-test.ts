@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActionContext, Bus } from '@comunica/core';
 import type { BindingsStream, IActionContext, MetadataBindings } from '@comunica/types';
@@ -33,7 +33,9 @@ describe('ActorQueryResultSerializeTable', () => {
     });
 
     it('should not be able to create new ActorQueryResultSerializeTable objects without \'new\'', () => {
-      expect(() => { (<any> ActorQueryResultSerializeTable)(); }).toThrow();
+      expect(() => {
+        (<any> ActorQueryResultSerializeTable)();
+      }).toThrow(`Class constructor ActorQueryResultSerializeTable cannot be invoked without 'new'`);
     });
   });
 
@@ -47,14 +49,10 @@ describe('ActorQueryResultSerializeTable', () => {
     let metadata: MetadataBindings;
 
     beforeEach(() => {
-      actor = new ActorQueryResultSerializeTable({ bus,
-        columnWidth: 10,
-        mediaTypePriorities: {
-          table: 1,
-        },
-        mediaTypeFormats: {},
-        name: 'actor' });
-      bindingsStream = () => new ArrayIterator([
+      actor = new ActorQueryResultSerializeTable({ bus, columnWidth: 10, mediaTypePriorities: {
+        table: 1,
+      }, mediaTypeFormats: {}, name: 'actor' });
+      bindingsStream = () => new ArrayIterator<RDF.Bindings>([
         BF.bindings([
           [ DF.variable('k1'), DF.namedNode('v1') ],
         ]),
@@ -62,7 +60,7 @@ describe('ActorQueryResultSerializeTable', () => {
           [ DF.variable('k2'), DF.namedNode('v2') ],
         ]),
       ]);
-      bindingsStreamQuoted = () => new ArrayIterator([
+      bindingsStreamQuoted = () => new ArrayIterator<RDF.Bindings>([
         BF.bindings([
           [ DF.variable('k1'), DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')) ],
         ]),
@@ -84,12 +82,12 @@ describe('ActorQueryResultSerializeTable', () => {
     });
 
     describe('for getting media types', () => {
-      it('should test', () => {
-        return expect(actor.test({ mediaTypes: true, context })).resolves.toBeTruthy();
+      it('should test', async() => {
+        await expect(actor.test({ mediaTypes: true, context })).resolves.toBeTruthy();
       });
 
-      it('should run', () => {
-        return expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({ mediaTypes: {
+      it('should run', async() => {
+        await expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({ mediaTypes: {
           table: 1,
         }});
       });
@@ -98,36 +96,42 @@ describe('ActorQueryResultSerializeTable', () => {
     describe('for serializing', () => {
       it('should test on table', async() => {
         const stream = quadStream();
-        await expect(actor.test({ handle: <any> { type: 'quads', quadStream: stream },
+        await expect(actor.test({
+          handle: <any> { type: 'quads', quadStream: stream },
           handleMediaType: 'table',
-          context })).resolves.toBeTruthy();
+          context,
+        })).resolves.toBeTruthy();
 
         stream.destroy();
       });
 
       it('should not test on N-Triples', async() => {
         const stream = quadStream();
-        await expect(actor.test({ handle: <any> { type: 'quads', quadStream: stream },
+        await expect(actor.test({
+          handle: <any> { type: 'quads', quadStream: stream },
           handleMediaType: 'application/n-triples',
-          context }))
+          context,
+        }))
           .rejects.toBeTruthy();
 
         stream.destroy();
       });
 
-      it('should not test on unknown types', () => {
-        return expect(actor.test(
+      it('should not test on unknown types', async() => {
+        await expect(actor.test(
           { handle: <any> { type: 'unknown' }, handleMediaType: 'table', context },
         ))
           .rejects.toBeTruthy();
       });
 
       it('should run on a bindings stream', async() => {
-        expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'bindings', bindingsStream: bindingsStream(), metadata: async() => metadata },
+        await expect(stringifyStream((<any> (await actor.run(
+          {
+            handle: <any> { type: 'bindings', bindingsStream: bindingsStream(), metadata: async() => metadata },
             handleMediaType: 'table',
-            context },
-        ))).handle.data)).toEqual(
+            context,
+          },
+        ))).handle.data)).resolves.toBe(
           `k1         k2        
 ---------------------
 v1                   
@@ -137,11 +141,13 @@ v1
       });
 
       it('should run on a bindings stream with quoted triples', async() => {
-        expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'bindings', bindingsStream: bindingsStreamQuoted(), metadata: async() => metadata },
+        await expect(stringifyStream((<any> (await actor.run(
+          {
+            handle: <any> { type: 'bindings', bindingsStream: bindingsStreamQuoted(), metadata: async() => metadata },
             handleMediaType: 'table',
-            context },
-        ))).handle.data)).toEqual(
+            context,
+          },
+        ))).handle.data)).resolves.toBe(
           `k1         k2        
 ---------------------
 <<s1 p1 o…           
@@ -151,11 +157,9 @@ v1
       });
 
       it('should run on a quad stream', async() => {
-        expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'quads', quadStream: quadStream() },
-            handleMediaType: 'table',
-            context },
-        ))).handle.data)).toEqual(
+        await expect(stringifyStream((<any> (await actor.run(
+          { handle: <any> { type: 'quads', quadStream: quadStream() }, handleMediaType: 'table', context },
+        ))).handle.data)).resolves.toBe(
           `subject    predicate  object     graph     
 -------------------------------------------
 http://ex… http://ex… http://ex…           
@@ -165,11 +169,9 @@ http://ex… http://ex… http://ex…
       });
 
       it('should run on a quad stream with quoted triples', async() => {
-        expect(await stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'quads', quadStream: quadStreamQuoted() },
-            handleMediaType: 'table',
-            context },
-        ))).handle.data)).toEqual(
+        await expect(stringifyStream((<any> (await actor.run(
+          { handle: <any> { type: 'quads', quadStream: quadStreamQuoted() }, handleMediaType: 'table', context },
+        ))).handle.data)).resolves.toBe(
           `subject    predicate  object     graph     
 -------------------------------------------
 <<ex:s1 e… http://ex… http://ex…           
@@ -180,17 +182,21 @@ http://ex… http://ex… http://ex…
 
       it('should emit an error when a bindings stream emits an error', async() => {
         await expect(stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'bindings', bindingsStream: streamError, metadata: async() => metadata },
+          {
+            handle: <any> { type: 'bindings', bindingsStream: streamError, metadata: async() => metadata },
             handleMediaType: 'application/json',
-            context },
+            context,
+          },
         ))).handle.data)).rejects.toBeTruthy();
       });
 
       it('should emit an error when a quad stream emits an error', async() => {
         await expect(stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'quads', quadStream: streamError, metadata: async() => metadata },
+          {
+            handle: <any> { type: 'quads', quadStream: streamError, metadata: async() => metadata },
             handleMediaType: 'application/json',
-            context },
+            context,
+          },
         ))).handle.data)).rejects.toBeTruthy();
       });
     });

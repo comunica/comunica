@@ -17,10 +17,9 @@ $ yarn add @comunica/bus-dereference-rdf
 
 ## Bus usage
 
-* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-dereference-rdf/^2.0.0/components/context.jsonld"`
+* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-dereference-rdf/^3.0.0/components/context.jsonld"`
 * **Bus name**: `ActorDereferenceRdf:_default_bus`
 
 ## Creating actors on this bus
 
-Actors extending [`ActorDereferenceRdf`](https://comunica.github.io/comunica/classes/bus_dereference_rdf.actordereferencerdf.html) are automatically subscribed to this bus.
-
+Actors extending [`ActorDereferenceRdf`](https://comunica.github.io/comunica/classes/_comunica_bus_dereference_rdf.ActorDereferenceRdf.html) are automatically subscribed to this bus.

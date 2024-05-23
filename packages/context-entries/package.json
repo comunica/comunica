@@ -1,43 +1,43 @@
 {
   "name": "@comunica/context-entries",
-  "version": "2.8.2",
+  "version": "3.0.3",
   "description": "A collection of reusable Comunica context key definitions.",
-  "main": "lib/index.js",
-  "typings": "lib/index",
+  "license": "MIT",
+  "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
     "directory": "packages/context-entries"
   },
-  "publishConfig": {
-    "access": "public"
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
   },
-  "sideEffects": false,
   "keywords": [
     "comunica",
     "context",
     "entries",
     "keys"
   ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/comunica/comunica/issues"
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "publishConfig": {
+    "access": "public"
   },
-  "homepage": "https://comunica.dev/",
   "files": [
     "components",
     "lib/**/*.d.ts",
     "lib/**/*.js",
     "lib/**/*.js.map"
   ],
-  "dependencies": {
-    "@comunica/core": "^2.8.2",
-    "@comunica/types": "^2.8.2",
-    "@rdfjs/types": "*",
-    "jsonld-context-parser": "^2.2.2",
-    "sparqlalgebrajs": "^4.2.0"
-  },
   "scripts": {
     "build": "node \"../../node_modules/typescript/bin/tsc\""
+  },
+  "dependencies": {
+    "@comunica/core": "^3.0.3",
+    "@comunica/types": "^3.0.3",
+    "@rdfjs/types": "*",
+    "jsonld-context-parser": "^2.2.2",
+    "sparqlalgebrajs": "^4.3.3"
   }
 }

@@ -8,7 +8,7 @@ import { SymmetricHashJoin } from 'asyncjoin';
  * A comunica Hash RDF Join Actor.
  */
 export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
-  public constructor(args: IActorRdfJoinArgs) {
+  public constructor(args: IActorRdfJoinSymmetricHashArgs) {
     super(args, {
       logicalType: 'inner',
       physicalName: 'symmetric-hash',
@@ -48,4 +48,7 @@ export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
         requestInitialTimes[1] + metadatas[1].cardinality.value * requestItemTimes[1],
     };
   }
+}
+
+export interface IActorRdfJoinSymmetricHashArgs extends IActorRdfJoinArgs {
 }

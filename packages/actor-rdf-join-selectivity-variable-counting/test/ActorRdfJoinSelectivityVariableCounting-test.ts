@@ -26,7 +26,7 @@ describe('ActorRdfJoinSelectivityVariableCounting', () => {
 
     describe('test', () => {
       it('should return 0.5', async() => {
-        expect(await actor.test(<any> {})).toEqual({ accuracy: 0.5 });
+        await expect(actor.test(<any> {})).resolves.toEqual({ accuracy: 0.5 });
       });
     });
 
@@ -46,7 +46,7 @@ describe('ActorRdfJoinSelectivityVariableCounting', () => {
           DF.variable('ex:p'),
           DF.variable('ex:o'),
           DF.variable('ex:g'),
-        ))).toEqual(1);
+        ))).toBe(1);
       });
 
       it('should handle a pattern with some variables', async() => {
@@ -339,7 +339,7 @@ describe('ActorRdfJoinSelectivityVariableCounting', () => {
             DF.namedNode('ex:o'),
             DF.namedNode('ex:g'),
           ),
-        )).toEqual(1);
+        )).toBe(1);
       });
 
       it('should handle equal patterns without variables with different predicates', async() => {
@@ -390,7 +390,7 @@ describe('ActorRdfJoinSelectivityVariableCounting', () => {
             DF.namedNode('ex:o2'),
             DF.namedNode('ex:g2'),
           ),
-        )).toEqual(1);
+        )).toBe(1);
       });
 
       it('should handle unequal patterns with variables', async() => {
@@ -407,7 +407,7 @@ describe('ActorRdfJoinSelectivityVariableCounting', () => {
             DF.namedNode('ex:o2'),
             DF.namedNode('ex:g2'),
           ),
-        )).toEqual(1);
+        )).toBe(1);
       });
 
       it('should handle overlapping patterns without variables', async() => {
@@ -637,20 +637,20 @@ describe('ActorRdfJoinSelectivityVariableCounting', () => {
               },
             ],
           ),
-        ])).toEqual(1);
+        ])).toBe(1);
       });
     });
 
     describe('run', () => {
       it('should handle zero entries', async() => {
-        expect(await actor.run({
+        await expect(actor.run({
           entries: [],
           context,
-        })).toEqual({ selectivity: 1 });
+        })).resolves.toEqual({ selectivity: 1 });
       });
 
       it('should handle one entry', async() => {
-        expect(await actor.run({
+        await expect(actor.run({
           entries: [
             {
               output: <any> {},
@@ -663,52 +663,52 @@ describe('ActorRdfJoinSelectivityVariableCounting', () => {
             },
           ],
           context,
-        })).toEqual({ selectivity: 1 });
+        })).resolves.toEqual({ selectivity: 1 });
       });
 
       it('should produce sensible rounded selectivities', async() => {
-        expect(await runCompact(
+        await expect(runCompact(
           F.createPattern(DF.variable('s'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1'), DF.namedNode('ex:g')),
           F.createPattern(DF.variable('s'), DF.namedNode('ex:p2'), DF.variable('o'), DF.namedNode('ex:g')),
-        )).toEqual(`0.390`);
+        )).resolves.toBe(`0.390`);
 
-        expect(await runCompact(
+        await expect(runCompact(
           F.createPattern(DF.variable('s'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1'), DF.namedNode('ex:g')),
           F.createPattern(DF.variable('s'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g')),
-        )).toEqual(`0.279`);
+        )).resolves.toBe(`0.279`);
 
-        expect(await runCompact(
+        await expect(runCompact(
           F.createPattern(DF.variable('s'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1'), DF.namedNode('ex:g')),
           F.createPattern(DF.variable('s'), DF.namedNode('ex:p2'), DF.variable('o'), DF.namedNode('ex:g')),
           F.createPattern(DF.variable('s2'), DF.namedNode('ex:p3'), DF.variable('o'), DF.namedNode('ex:g')),
-        )).toEqual(`0.307`);
+        )).resolves.toBe(`0.307`);
 
-        expect(await runCompact(
+        await expect(runCompact(
           F.createPattern(DF.variable('s'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1'), DF.namedNode('ex:g')),
           F.createPattern(DF.variable('s'), DF.namedNode('ex:p2'), DF.variable('o'), DF.namedNode('ex:g')),
           F.createPattern(DF.variable('s2'), DF.namedNode('ex:p3'), DF.variable('o'), DF.namedNode('ex:g2')),
-        )).toEqual(`0.324`);
+        )).resolves.toBe(`0.324`);
 
-        expect(await runCompact(
+        await expect(runCompact(
           F.createPattern(DF.variable('s'), DF.namedNode('ex:p1'), DF.variable('o1'), DF.namedNode('ex:g')),
           F.createPattern(DF.variable('s'), DF.namedNode('ex:p2'), DF.variable('o2'), DF.namedNode('ex:g')),
           F.createPattern(DF.variable('s'), DF.namedNode('ex:p3'), DF.variable('o3'), DF.namedNode('ex:g')),
           F.createPattern(DF.variable('s'), DF.namedNode('ex:p4'), DF.variable('o4'), DF.namedNode('ex:g')),
-        )).toEqual(`0.330`);
+        )).resolves.toBe(`0.330`);
 
-        expect(await runCompact(
+        await expect(runCompact(
           F.createPattern(DF.variable('s1'), DF.namedNode('ex:p1'), DF.variable('o1'), DF.namedNode('ex:g')),
           F.createPattern(DF.variable('s1'), DF.namedNode('ex:p2'), DF.variable('o2'), DF.namedNode('ex:g')),
           F.createPattern(DF.variable('s2'), DF.namedNode('ex:p3'), DF.variable('o3'), DF.namedNode('ex:g')),
           F.createPattern(DF.variable('s2'), DF.namedNode('ex:p4'), DF.variable('o4'), DF.namedNode('ex:g')),
-        )).toEqual(`0.336`);
+        )).resolves.toBe(`0.336`);
 
-        expect(await runCompact(
+        await expect(runCompact(
           F.createPattern(DF.variable('s'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1'), DF.namedNode('ex:g')),
           F.createPattern(DF.variable('s'), DF.namedNode('ex:p2'), DF.variable('o2'), DF.namedNode('ex:g')),
           F.createPattern(DF.variable('s'), DF.namedNode('ex:p3'), DF.namedNode('ex:o3'), DF.namedNode('ex:g')),
           F.createPattern(DF.variable('s'), DF.namedNode('ex:p4'), DF.variable('o4'), DF.namedNode('ex:g')),
-        )).toEqual(`0.168`);
+        )).resolves.toBe(`0.168`);
       });
     });
 

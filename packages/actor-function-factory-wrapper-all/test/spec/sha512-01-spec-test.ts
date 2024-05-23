@@ -2,6 +2,7 @@
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
 import { runFuncTestTable } from '../util';
 import * as Data from './_data';
+
 /**
  * REQUEST: sha512-01.rq
  *

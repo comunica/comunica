@@ -24,7 +24,7 @@ export class AverageAggregator extends AggregateEvaluator implements IBindingsAg
     super(evaluator, distinct, throwError);
   }
 
-  public emptyValueTerm(): RDF.Term {
+  public override emptyValueTerm(): RDF.Term {
     return typedLiteral('0', TypeURL.XSD_INTEGER);
   }
 
@@ -34,8 +34,8 @@ export class AverageAggregator extends AggregateEvaluator implements IBindingsAg
       this.state = { sum, count: 1 };
     } else {
       const internalTerm = this.termToNumericOrError(term);
-      this.state.sum = <E.NumericLiteral> this.additionFunction.applyOnTerms([ this.state.sum, internalTerm ],
-        this.evaluator);
+      this.state.sum = <E.NumericLiteral> this.additionFunction
+        .applyOnTerms([ this.state.sum, internalTerm ], this.evaluator);
       this.state.count++;
     }
   }
@@ -45,8 +45,7 @@ export class AverageAggregator extends AggregateEvaluator implements IBindingsAg
       return this.emptyValue();
     }
     const count = new E.IntegerLiteral(this.state.count);
-    const result = this.divisionFunction.applyOnTerms([ this.state.sum, count ],
-      this.evaluator);
+    const result = this.divisionFunction.applyOnTerms([ this.state.sum, count ], this.evaluator);
     return result.toRDF();
   }
 }

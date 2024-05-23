@@ -17,10 +17,9 @@ $ yarn add @comunica/bus-rdf-join
 
 ## Bus usage
 
-* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-join/^2.0.0/components/context.jsonld"`
+* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-join/^3.0.0/components/context.jsonld"`
 * **Bus name**: `ActorRdfJoin:_default_bus`
 
 ## Creating actors on this bus
 
-Actors extending [`ActorRdfJoin`](https://comunica.github.io/comunica/classes/bus_rdf_join.actorrdfjoin.html) are automatically subscribed to this bus.
-
+Actors extending [`ActorRdfJoin`](https://comunica.github.io/comunica/classes/_comunica_bus_rdf_join.ActorRdfJoin.html) are automatically subscribed to this bus.

@@ -10,7 +10,7 @@ export class CountAggregator extends AggregateEvaluator implements IBindingsAggr
     super(evaluator, distinct, throwError);
   }
 
-  public emptyValueTerm(): RDF.Term {
+  public override emptyValueTerm(): RDF.Term {
     return typedLiteral('0', TypeURL.XSD_INTEGER);
   }
 

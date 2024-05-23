@@ -1,18 +1,17 @@
 {
   "name": "@comunica/jest",
-  "version": "2.8.2",
+  "version": "3.0.3",
   "description": "Jest utilities for Comunica",
-  "main": "lib/index.js",
-  "typings": "lib/index",
+  "license": "MIT",
+  "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
     "directory": "packages/jest"
   },
-  "publishConfig": {
-    "access": "public"
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
   },
-  "sideEffects": false,
   "keywords": [
     "jest",
     "rdf",
@@ -22,37 +21,39 @@
     "matchers",
     "extend"
   ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/comunica/comunica/issues"
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "publishConfig": {
+    "access": "public"
   },
-  "homepage": "https://comunica.dev/",
   "files": [
     "components",
     "lib/**/*.d.ts",
     "lib/**/*.js",
     "lib/**/*.js.map"
   ],
+  "scripts": {
+    "build": "yarn run build:ts",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\""
+  },
   "dependencies": {
     "@comunica/actor-expression-evaluator-factory-default": "^1.0.0",
-    "@comunica/bindings-factory": "^2.7.0",
+    "@comunica/bindings-factory": "^3.0.3",
     "@comunica/bus-expression-evaluator-factory": "^1.0.0",
     "@comunica/bus-function-factory": "^1.0.0",
-    "@comunica/bus-query-operation": "^2.9.0",
+    "@comunica/bus-merge-bindings-context": "^3.0.3",
+    "@comunica/bus-query-operation": "^3.0.3",
     "@comunica/bus-term-comparator-factory": "^1.0.0",
-    "@comunica/expression-evaluator": "^2.9.0",
-    "@comunica/context-entries": "^2.8.2",
-    "@comunica/core": "^2.8.2",
-    "@comunica/types": "^2.8.2",
+    "@comunica/context-entries": "^3.0.3",
+    "@comunica/core": "^3.0.3",
+    "@comunica/expression-evaluator": "3.0.1",
+    "@comunica/types": "^3.0.3",
     "@rdfjs/types": "*",
     "arrayify-stream": "^2.0.1",
     "lru-cache": "^10.2.0",
     "rdf-data-factory": "^1.1.2",
     "sparqlalgebrajs": "^4.2.0",
     "sparqljs": "^3.7.1"
-  },
-  "scripts": {
-    "build": "npm run build:ts",
-    "build:ts": "node \"../../node_modules/typescript/bin/tsc\""
   }
 }

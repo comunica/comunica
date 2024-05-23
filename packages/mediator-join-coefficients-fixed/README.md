@@ -30,7 +30,7 @@ After installing, this mediator can be instantiated as follows:
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-all/^2.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-all/^3.0.0/components/context.jsonld"
   ],
   "actors": [
     ...
@@ -57,4 +57,3 @@ After installing, this mediator can be instantiated as follows:
 * `"timeWeight"`: Weight for the execution time cost. Higher values lead to higher overall costs.
 * `"ioWeight"`: Weight for the I/O cost. Higher values lead to higher overall costs.
 * `"bus"`: Identifier of the bus to mediate over.
-

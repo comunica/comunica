@@ -34,7 +34,12 @@ export interface IActorOptimizeQueryOperationOutput extends IActorOutput {
 }
 
 export type IActorOptimizeQueryOperationArgs = IActorArgs<
-IActionOptimizeQueryOperation, IActorTest, IActorOptimizeQueryOperationOutput>;
+IActionOptimizeQueryOperation,
+IActorTest,
+IActorOptimizeQueryOperationOutput
+>;
 
 export type MediatorOptimizeQueryOperation = Mediate<
-IActionOptimizeQueryOperation, IActorOptimizeQueryOperationOutput>;
+IActionOptimizeQueryOperation,
+IActorOptimizeQueryOperationOutput
+>;

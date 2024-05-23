@@ -1,42 +1,42 @@
 {
   "name": "@comunica/actor-rdf-parse-n3",
-  "version": "2.8.2",
+  "version": "3.0.3",
   "description": "A N3 RDF Parse actor",
   "lsd:module": true,
-  "main": "lib/index.js",
-  "typings": "lib/index",
+  "license": "MIT",
+  "homepage": "https://github.com/comunica/actor-rdf-parse-n3#readme",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
     "directory": "packages/actor-rdf-parse-n3"
   },
-  "publishConfig": {
-    "access": "public"
+  "bugs": {
+    "url": "https://github.com/comunica/actor-rdf-parse-n3/issues"
   },
-  "sideEffects": false,
   "keywords": [
     "comunica",
     "runner"
   ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/comunica/actor-rdf-parse-n3/issues"
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "publishConfig": {
+    "access": "public"
   },
-  "homepage": "https://github.com/comunica/actor-rdf-parse-n3#readme",
   "files": [
     "components",
     "lib/**/*.d.ts",
     "lib/**/*.js",
     "lib/**/*.js.map"
   ],
-  "dependencies": {
-    "@comunica/bus-rdf-parse": "^2.8.2",
-    "@comunica/types": "^2.8.2",
-    "n3": "^1.17.0"
-  },
   "scripts": {
-    "build": "npm run build:ts && npm run build:components",
+    "build": "yarn run build:ts && yarn run build:components",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
     "build:components": "componentsjs-generator"
+  },
+  "dependencies": {
+    "@comunica/bus-rdf-parse": "^3.0.3",
+    "@comunica/types": "^3.0.3",
+    "n3": "^1.17.0"
   }
 }

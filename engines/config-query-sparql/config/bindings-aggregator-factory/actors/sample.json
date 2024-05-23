@@ -1,6 +1,6 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^3.0.0/components/context.jsonld",
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-bindings-aggregator-factory-sample/^1.0.0/components/context.jsonld"
   ],
@@ -10,7 +10,7 @@
     {
       "@id": "urn:comunica:default:bindings-aggregator-factory/actors#sample",
       "@type": "ActorBindingsAggregatorFactorySample",
-      "mediatorExpressionEvaluatorFactory": { "@id":  "urn:comunica:default:expression-evaluator-factory/mediators#main" }
+      "mediatorExpressionEvaluatorFactory": { "@id": "urn:comunica:default:expression-evaluator-factory/mediators#main" }
     }
   ]
 }

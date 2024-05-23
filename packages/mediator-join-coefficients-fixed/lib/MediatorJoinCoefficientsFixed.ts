@@ -28,7 +28,7 @@ export class MediatorJoinCoefficientsFixed
     const errors: Error[] = [];
     const promises = testResults
       .map(({ reply }) => reply)
-      .map(promise => promise.catch(error => {
+      .map(promise => promise.catch((error) => {
         errors.push(error);
       }));
     const coefficients = await Promise.all(promises);
@@ -36,7 +36,7 @@ export class MediatorJoinCoefficientsFixed
     // Calculate costs
     let costs: (number | undefined)[] = coefficients
       // eslint-disable-next-line array-callback-return
-      .map((coeff, i) => {
+      .map((coeff) => {
         if (coeff) {
           return coeff.iterations * this.cpuWeight +
             coeff.persistedItems * this.memoryWeight +
@@ -52,7 +52,9 @@ export class MediatorJoinCoefficientsFixed
     const limitIndicator: number | undefined = action.context.get(KeysQueryOperation.limitIndicator);
     if (limitIndicator) {
       costs = costs.map((cost, i) => {
-        if (cost !== undefined && coefficients[i]!.persistedItems > 0 && coefficients[i]!.iterations > limitIndicator) {
+        if (cost !== undefined && (<any> coefficients[i]).persistedItems > 0 &&
+
+          (<any> coefficients[i]).iterations > limitIndicator) {
           return cost + maxCost;
         }
         return cost;

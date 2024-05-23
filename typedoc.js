@@ -4,4 +4,4 @@ module.exports = {
   theme: 'default',
   entryPointStrategy: 'packages',
   entryPoints: [ 'engines/*', 'packages/*' ],
-}
+};

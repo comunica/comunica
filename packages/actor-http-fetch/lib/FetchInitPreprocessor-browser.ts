@@ -31,7 +31,7 @@ export class FetchInitPreprocessor implements IFetchInitPreprocessor {
     if (init.body && typeof init.body !== 'string' && 'getReader' in init.body) {
       const reader = init.body.getReader();
       const chunks = [];
-      // eslint-disable-next-line no-constant-condition
+
       while (true) {
         const { done, value } = await reader.read();
         if (done) {

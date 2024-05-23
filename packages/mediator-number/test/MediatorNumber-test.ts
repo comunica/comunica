@@ -25,23 +25,29 @@ describe('MediatorNumber', () => {
     });
 
     it('should not throw an error when constructed with \'field\' and \'type\' parameters', () => {
-      expect(() => { new MediatorNumber({ name: 'mediator', bus, field: 'field', type: 'min' }); })
-        .not.toThrow();
-      expect(() => { new MediatorNumber({ name: 'mediator', bus, field: 'field', type: 'max' }); })
-        .not.toThrow();
+      expect(() => {
+        new MediatorNumber({ name: 'mediator', bus, field: 'field', type: 'min' });
+      })
+        .not.toThrow('TODO');
+      expect(() => {
+        new MediatorNumber({ name: 'mediator', bus, field: 'field', type: 'max' });
+      })
+        .not.toThrow('TODO');
     });
 
     it('should throw an error when constructed without arguments', () => {
-      expect(() => { new MediatorNumber(
-        { name: 'mediator', bus, field: 'field', type: <any> 'invalidType' },
-      ); }).toThrow();
+      expect(() => {
+        new MediatorNumber(
+          { name: 'mediator', bus, field: 'field', type: <any> 'invalidType' },
+        );
+      }).toThrow(`No valid "type" value was given, must be either 'min' or 'max', but got: invalidType`);
     });
 
     it('should store the \'field\' and \'type\' parameters', () => {
       expect(new MediatorNumber({ name: 'mediator', bus, field: 'field', type: 'min' }).field)
-        .toEqual('field');
+        .toBe('field');
       expect(new MediatorNumber({ name: 'mediator', bus, field: 'field', type: 'min' }).type)
-        .toEqual('min');
+        .toBe('min');
     });
   });
 
@@ -61,12 +67,12 @@ describe('MediatorNumber', () => {
         bus.subscribe(new DummyActor(1, bus));
       });
 
-      it('should mediate to the minimum value for type MIN', () => {
-        return expect(mediatorMin.mediate({ context })).resolves.toEqual({ field: 1 });
+      it('should mediate to the minimum value for type MIN', async() => {
+        await expect(mediatorMin.mediate({ context })).resolves.toEqual({ field: 1 });
       });
 
-      it('should mediate to the maximum value for type MAX', () => {
-        return expect(mediatorMax.mediate({ context })).resolves.toEqual({ field: 100 });
+      it('should mediate to the maximum value for type MAX', async() => {
+        await expect(mediatorMax.mediate({ context })).resolves.toEqual({ field: 100 });
       });
     });
 
@@ -75,23 +81,23 @@ describe('MediatorNumber', () => {
         bus.subscribe(new DummyActor(undefined, bus));
       });
 
-      it('should mediate to the minimum value for type MIN', () => {
-        return expect(mediatorMin.mediate({ context })).resolves.toEqual({ field: undefined });
+      it('should mediate to the minimum value for type MIN', async() => {
+        await expect(mediatorMin.mediate({ context })).resolves.toEqual({ field: undefined });
       });
 
-      it('should mediate to the maximum value for type MAX', () => {
-        return expect(mediatorMax.mediate({ context })).resolves.toEqual({ field: undefined });
+      it('should mediate to the maximum value for type MAX', async() => {
+        await expect(mediatorMax.mediate({ context })).resolves.toEqual({ field: undefined });
       });
     });
 
     describe('without actors', () => {
-      it('should mediate to the minimum value for type MIN', () => {
-        return expect(mediatorMin.mediate({ context })).rejects
+      it('should mediate to the minimum value for type MIN', async() => {
+        await expect(mediatorMin.mediate({ context })).rejects
           .toThrow(new Error('No actors are able to reply to a message in the bus bus'));
       });
 
-      it('should mediate to the maximum value for type MAX', () => {
-        return expect(mediatorMax.mediate({ context })).rejects
+      it('should mediate to the maximum value for type MAX', async() => {
+        await expect(mediatorMax.mediate({ context })).rejects
           .toThrow(new Error('No actors are able to reply to a message in the bus bus'));
       });
     });
@@ -107,12 +113,12 @@ describe('MediatorNumber', () => {
         bus.subscribe(new DummyActor(undefined, bus));
       });
 
-      it('should mediate to the minimum value for type MIN', () => {
-        return expect(mediatorMin.mediate({ context })).resolves.toEqual({ field: 1 });
+      it('should mediate to the minimum value for type MIN', async() => {
+        await expect(mediatorMin.mediate({ context })).resolves.toEqual({ field: 1 });
       });
 
-      it('should mediate to the maximum value for type MAX', () => {
-        return expect(mediatorMax.mediate({ context })).resolves.toEqual({ field: 100 });
+      it('should mediate to the maximum value for type MAX', async() => {
+        await expect(mediatorMax.mediate({ context })).resolves.toEqual({ field: 100 });
       });
     });
 
@@ -124,66 +130,74 @@ describe('MediatorNumber', () => {
         bus.subscribe(new DummyActorInvalid(4, bus));
       });
 
-      it('should mediate to the first value for type MIN', () => {
-        return expect(mediatorMin.mediate({ context })).resolves.toEqual({ field: 1 });
+      it('should mediate to the first value for type MIN', async() => {
+        await expect(mediatorMin.mediate({ context })).resolves.toEqual({ field: 1 });
       });
 
-      it('should mediate to the first value for type MAX', () => {
-        return expect(mediatorMax.mediate({ context })).resolves.toEqual({ field: 1 });
+      it('should mediate to the first value for type MAX', async() => {
+        await expect(mediatorMax.mediate({ context })).resolves.toEqual({ field: 1 });
       });
     });
 
     describe('with actors throwing errors', () => {
       beforeEach(() => {
-        mediatorMin = new MediatorNumber({ bus,
+        mediatorMin = new MediatorNumber({
+          bus,
           field: 'field',
           ignoreErrors: true,
           name: 'mediatorMin',
-          type: 'min' });
-        mediatorMax = new MediatorNumber({ bus,
+          type: 'min',
+        });
+        mediatorMax = new MediatorNumber({
+          bus,
           field: 'field',
           ignoreErrors: true,
           name: 'mediatorMax',
-          type: 'max' });
+          type: 'max',
+        });
         bus.subscribe(new ErrorDummyActor(undefined, bus));
         bus.subscribe(new DummyActor(100, bus));
         bus.subscribe(new DummyActor(1, bus));
       });
 
-      it('should mediate to the minimum value for type MIN', () => {
-        return expect(mediatorMin.mediate({ context })).resolves.toEqual({ field: 1 });
+      it('should mediate to the minimum value for type MIN', async() => {
+        await expect(mediatorMin.mediate({ context })).resolves.toEqual({ field: 1 });
       });
 
-      it('should mediate to the maximum value for type MAX', () => {
-        return expect(mediatorMax.mediate({ context })).resolves.toEqual({ field: 100 });
+      it('should mediate to the maximum value for type MAX', async() => {
+        await expect(mediatorMax.mediate({ context })).resolves.toEqual({ field: 100 });
       });
     });
 
     describe('with only an actor throwing errors, where errors are ignored', () => {
       beforeEach(() => {
-        mediatorMin = new MediatorNumber({ bus,
+        mediatorMin = new MediatorNumber({
+          bus,
           field: 'field',
           ignoreErrors: true,
           name: 'mediatorMin',
-          type: 'min' });
-        mediatorMax = new MediatorNumber({ bus,
+          type: 'min',
+        });
+        mediatorMax = new MediatorNumber({
+          bus,
           field: 'field',
           ignoreErrors: true,
           name: 'mediatorMax',
-          type: 'max' });
+          type: 'max',
+        });
         bus.subscribe(new ErrorDummyActor(undefined, bus));
       });
 
-      it('should not mediate to the minimum value for type MIN', () => {
-        return expect(mediatorMin.mediate({ context })).rejects.toThrow(new Error(
+      it('should not mediate to the minimum value for type MIN', async() => {
+        await expect(mediatorMin.mediate({ context })).rejects.toThrow(new Error(
           'All actors rejected their test in mediatorMin\n' +
           'abc\n' +
           'abc',
         ));
       });
 
-      it('should not mediate to the maximum value for type MAX', () => {
-        return expect(mediatorMax.mediate({ context })).rejects.toThrow(new Error(
+      it('should not mediate to the maximum value for type MAX', async() => {
+        await expect(mediatorMax.mediate({ context })).rejects.toThrow(new Error(
           'All actors rejected their test in mediatorMax\n' +
           'abc\n' +
           'abc',
@@ -193,25 +207,29 @@ describe('MediatorNumber', () => {
 
     describe('with only an actor throwing errors, where errors are not ignored', () => {
       beforeEach(() => {
-        mediatorMin = new MediatorNumber({ bus,
+        mediatorMin = new MediatorNumber({
+          bus,
           field: 'field',
           ignoreErrors: false,
           name: 'mediatorMin',
-          type: 'min' });
-        mediatorMax = new MediatorNumber({ bus,
+          type: 'min',
+        });
+        mediatorMax = new MediatorNumber({
+          bus,
           field: 'field',
           ignoreErrors: false,
           name: 'mediatorMax',
-          type: 'max' });
+          type: 'max',
+        });
         bus.subscribe(new ErrorDummyActor(undefined, bus));
       });
 
-      it('should not mediate to the minimum value for type MIN', () => {
-        return expect(mediatorMin.mediate({ context })).rejects.toThrow(new Error('abc'));
+      it('should not mediate to the minimum value for type MIN', async() => {
+        await expect(mediatorMin.mediate({ context })).rejects.toThrow(new Error('abc'));
       });
 
-      it('should not mediate to the maximum value for type MAX', () => {
-        return expect(mediatorMax.mediate({ context })).rejects.toThrow(new Error('abc'));
+      it('should not mediate to the maximum value for type MAX', async() => {
+        await expect(mediatorMax.mediate({ context })).rejects.toThrow(new Error('abc'));
       });
     });
   });
@@ -252,7 +270,7 @@ class DummyActorInvalid extends Actor<IAction, IDummyTest, IDummyTest> {
 }
 
 class ErrorDummyActor extends DummyActor {
-  public async test(action: IAction): Promise<IDummyTest> {
+  public override async test(action: IAction): Promise<IDummyTest> {
     throw new Error('abc');
   }
 }

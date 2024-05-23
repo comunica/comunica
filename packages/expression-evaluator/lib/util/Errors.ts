@@ -16,7 +16,7 @@ import type * as C from './Consts';
  *
  * @see isExpressionError
  */
-export class ExpressionError extends Error { }
+export class ExpressionError extends Error {}
 
 /**
  * Checks whether a given error is an {@link ExpressionError}.

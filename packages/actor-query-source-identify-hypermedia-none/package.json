@@ -1,0 +1,46 @@
+{
+  "name": "@comunica/actor-query-source-identify-hypermedia-none",
+  "version": "3.0.3",
+  "description": "A none query-source-identify-hypermedia actor",
+  "lsd:module": true,
+  "license": "MIT",
+  "homepage": "https://comunica.dev/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/actor-query-source-identify-hypermedia-none"
+  },
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
+  "keywords": [
+    "comunica",
+    "actor",
+    "query-source-identify-hypermedia",
+    "none"
+  ],
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.js.map"
+  ],
+  "scripts": {
+    "build": "yarn run build:ts && yarn run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
+  },
+  "dependencies": {
+    "@comunica/actor-query-source-identify-rdfjs": "^3.0.3",
+    "@comunica/bindings-factory": "^3.0.3",
+    "@comunica/bus-merge-bindings-context": "^3.0.3",
+    "@comunica/bus-query-source-identify-hypermedia": "^3.0.3",
+    "rdf-store-stream": "^2.0.0"
+  }
+}

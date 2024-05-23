@@ -51,11 +51,11 @@ describe('WildcardCountAggregator', () => {
         BF.bindings([]),
       ];
 
-      expect(await runAggregator(aggregator, input)).toEqual(int('4'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(int('4'));
     });
 
     it('with respect to empty input', async() => {
-      expect(await runAggregator(aggregator, [])).toEqual(int('0'));
+      await expect(runAggregator(aggregator, [])).resolves.toEqual(int('0'));
     });
 
     it('extends the AggregateEvaluator', () => {
@@ -82,7 +82,7 @@ describe('WildcardCountAggregator', () => {
         BF.bindings([]),
       ];
 
-      expect(await runAggregator(aggregator, input)).toEqual(int('4'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(int('4'));
     });
 
     it('a list of bindings containing 2 empty', async() => {
@@ -94,7 +94,7 @@ describe('WildcardCountAggregator', () => {
         BF.bindings([]),
       ];
 
-      expect(await runAggregator(aggregator, input)).toEqual(int('4'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(int('4'));
     });
 
     it('a list of bindings 2', async() => {
@@ -106,7 +106,7 @@ describe('WildcardCountAggregator', () => {
         BF.bindings([[ DF.variable('x'), int('1') ], [ DF.variable('y'), int('1') ]]),
       ];
 
-      expect(await runAggregator(aggregator, input)).toEqual(int('4'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(int('4'));
     });
 
     it('a list of bindings 3', async() => {
@@ -118,11 +118,11 @@ describe('WildcardCountAggregator', () => {
         BF.bindings([]),
       ];
 
-      expect(await runAggregator(aggregator, input)).toEqual(int('4'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(int('4'));
     });
 
     it('with respect to empty input', async() => {
-      expect(await runAggregator(aggregator, [])).toEqual(int('0'));
+      await expect(runAggregator(aggregator, [])).resolves.toEqual(int('0'));
     });
   });
 });

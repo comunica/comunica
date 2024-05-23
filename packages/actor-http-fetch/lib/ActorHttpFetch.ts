@@ -28,7 +28,7 @@ export class ActorHttpFetch extends ActorHttp {
       `Browser-${globalThis.navigator.userAgent}`})`;
   }
 
-  public async test(action: IActionHttp): Promise<IMediatorTypeTime> {
+  public async test(_action: IActionHttp): Promise<IMediatorTypeTime> {
     return { time: Number.POSITIVE_INFINITY };
   }
 
@@ -108,7 +108,7 @@ export class ActorHttpFetch extends ActorHttp {
       action.input :
       action.input.url}`, () => ({
       headers: ActorHttp.headersToHash(new Headers(action.init!.headers)),
-      method: action.init!.method || 'GET',
+      method: action.init!.method ?? 'GET',
     }));
 
     // TODO: remove this workaround once this has a fix: https://github.com/inrupt/solid-client-authn-js/issues/1708
@@ -138,18 +138,24 @@ export class ActorHttpFetch extends ActorHttp {
       const retryCount: number = action.context?.get(KeysHttp.httpRetryCount) ?? 0;
       const retryDelay: number = action.context?.get(KeysHttp.httpRetryDelay) ?? 0;
       const retryOnSeverError: boolean = action.context?.get(KeysHttp.httpRetryOnServerError) ?? false;
-      const customFetch: ((input: RequestInfo, init?: RequestInit) => Promise<Response>) | undefined = action
+      const customFetch: ((input: RequestInfo | URL, init?: RequestInit) => Promise<Response>) | undefined = action
         .context?.get(KeysHttp.fetch);
 
       // Execute the fetch (with retries and timeouts, if applicable).
       const response = await ActorHttpFetch.getResponse(
-        customFetch || fetch, action.input, requestInit, retryCount, retryDelay, retryOnSeverError,
+        customFetch ?? fetch,
+        action.input,
+        requestInit,
+        retryCount,
+        retryDelay,
+        retryOnSeverError,
       );
 
       // We remove or update the timeout
       if (requestTimeout !== undefined) {
         const httpBodyTimeout = action.context?.get(KeysHttp.httpBodyTimeout) || false;
         if (httpBodyTimeout && response.body) {
+          // eslint-disable-next-line ts/no-misused-promises
           onTimeout = () => response.body?.cancel(new Error(`HTTP timeout when reading the body of ${response.url}.
 This error can be disabled by modifying the 'httpBodyTimeout' and/or 'httpTimeout' options.`));
           (<Readable><any>response.body).on('close', () => {

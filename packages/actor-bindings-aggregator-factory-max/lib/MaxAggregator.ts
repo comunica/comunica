@@ -6,10 +6,12 @@ import type * as RDF from '@rdfjs/types';
 
 export class MaxAggregator extends AggregateEvaluator implements IBindingsAggregator {
   private state: RDF.Term | undefined = undefined;
-  public constructor(evaluator: IExpressionEvaluator,
+  public constructor(
+    evaluator: IExpressionEvaluator,
     distinct: boolean,
     private readonly orderByEvaluator: ITermComparator,
-    throwError?: boolean) {
+    throwError?: boolean,
+  ) {
     super(evaluator, distinct, throwError);
   }
 

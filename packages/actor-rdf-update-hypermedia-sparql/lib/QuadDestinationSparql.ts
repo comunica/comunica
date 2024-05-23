@@ -48,10 +48,10 @@ export class QuadDestinationSparql implements IQuadDestination {
     const dataWrapped = quads
       .map((quad: RDF.Quad) => {
         let stringQuad = `${termToString(quad.subject)} ${termToString(quad.predicate)} ${termToString(quad.object)} .`;
-        if (quad.graph.termType !== 'DefaultGraph') {
-          stringQuad = `  GRAPH ${termToString(quad.graph)} { ${stringQuad} }\n`;
-        } else {
+        if (quad.graph.termType === 'DefaultGraph') {
           stringQuad = `  ${stringQuad}\n`;
+        } else {
+          stringQuad = `  GRAPH ${termToString(quad.graph)} { ${stringQuad} }\n`;
         }
         return stringQuad;
       })
@@ -72,7 +72,7 @@ export class QuadDestinationSparql implements IQuadDestination {
   ): Promise<void> {
     const graphs: (RDF.DefaultGraph | 'NAMED' | 'ALL' | RDF.NamedNode)[] = Array.isArray(graphsIn) ?
       graphsIn :
-      [ graphsIn ];
+        [ graphsIn ];
     const queries: string[] = [];
     for (const graph of graphs) {
       let graphValue: string;

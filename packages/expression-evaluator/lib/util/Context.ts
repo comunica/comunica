@@ -20,8 +20,10 @@ export function prepareEvaluatorActionContext(orgContext: IActionContext): IActi
     const extensionFunctions: Record<string, AsyncExtensionFunction> = context.getSafe(
       KeysInitQuery.extensionFunctions,
     );
-    context = context.set(KeysExpressionEvaluator.extensionFunctionCreator,
-      async(functionNamedNode: RDF.NamedNode) => extensionFunctions[functionNamedNode.value]);
+    context = context.set(
+      KeysExpressionEvaluator.extensionFunctionCreator,
+      async(functionNamedNode: RDF.NamedNode) => extensionFunctions[functionNamedNode.value],
+    );
   } else {
     // eslint-disable-next-line unicorn/no-useless-undefined
     context = context.setDefault(KeysExpressionEvaluator.extensionFunctionCreator, async() => undefined);

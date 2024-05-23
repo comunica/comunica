@@ -1,4 +1,4 @@
-import * as path from 'path';
+import * as path from 'node:path';
 import type { KeyPair } from '@inrupt/solid-client-authn-core';
 import {
   createDpopHeader,
@@ -108,7 +108,7 @@ describe('System test: QuerySparql over Solid Pods', () => {
 
     // Override global fetch with auth fetch
     // @ts-expect-error
-    globalThis.fetch = jest.fn(authFetch);
+    jest.spyOn(globalThis, 'fetch').mockImplementation(authFetch);
   });
 
   afterAll(async() => {
@@ -181,67 +181,66 @@ describe('System test: QuerySparql over Solid Pods', () => {
       });
     });
 
-    describe('A single resource containing <ex:s> <ex:p> <ex:o1> . <ex:s> <ex:p> <ex:o1.1> [linkRecovery: true]',
-      () => {
+    describe('A single resource containing <ex:s> <ex:p> <ex:o1> . <ex:s> <ex:p> <ex:o1.1> [linkRecovery: true]', () => {
       // Create a new file in the Pod
-        beforeEach(async() => {
-          resource = `http://localhost:3001/${config[0].podName}/myContainer/myFile-${i++}.ttl`;
-          // Create test.ttl (did not exist before)
-          await engine.queryVoid(`INSERT DATA { <ex:s> <ex:p> <ex:o1> . <ex:s> <ex:p> <ex:o1.1> }`, {
-            sources: [ resource ],
-            destination: resource,
-            recoverBrokenLinks: true,
-          });
-        });
-
-        it('Should return 2 quads from resource', async() => {
-        // Get data in resource file
-          const quads = await engine.queryQuads(`CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }`, {
-            sources: [ resource ],
-          }).then(res => res.toArray());
-
-          expect(quads).toBeRdfIsomorphic([
-            squad('ex:s', 'ex:p', 'ex:o1'),
-            squad('ex:s', 'ex:p', 'ex:o1.1'),
-          ]);
-        });
-
-        it('Should return 1 quads from when doing more restricted query', async() => {
-        // Get data in resource file
-          const quads = await engine.queryQuads(`CONSTRUCT { ?s ?p 1 } WHERE { ?s ?p <ex:o1.1> }`, {
-            sources: [ resource ],
-          }).then(res => res.toArray());
-
-          expect(quads).toBeRdfIsomorphic([
-            squad('ex:s', 'ex:p', 1),
-          ]);
-        });
-
-        it('Should return 2 quads from resource [Link Recovery Enabled]', async() => {
-        // Get data in resource file
-          const quads = await engine.queryQuads(`CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }`, {
-            sources: [ resource ],
-            recoverBrokenLinks: true,
-          }).then(res => res.toArray());
-
-          expect(quads).toBeRdfIsomorphic([
-            squad('ex:s', 'ex:p', 'ex:o1'),
-            squad('ex:s', 'ex:p', 'ex:o1.1'),
-          ]);
-        });
-
-        it('Should return 1 quads from when doing more restricted query [Link Recovery Enabled]', async() => {
-        // Get data in resource file
-          const quads = await engine.queryQuads(`CONSTRUCT { ?s ?p 1 } WHERE { ?s ?p <ex:o1.1> }`, {
-            sources: [ resource ],
-            recoverBrokenLinks: true,
-          }).then(res => res.toArray());
-
-          expect(quads).toBeRdfIsomorphic([
-            squad('ex:s', 'ex:p', 1),
-          ]);
+      beforeEach(async() => {
+        resource = `http://localhost:3001/${config[0].podName}/myContainer/myFile-${i++}.ttl`;
+        // Create test.ttl (did not exist before)
+        await engine.queryVoid(`INSERT DATA { <ex:s> <ex:p> <ex:o1> . <ex:s> <ex:p> <ex:o1.1> }`, {
+          sources: [ resource ],
+          destination: resource,
+          recoverBrokenLinks: true,
         });
       });
+
+      it('Should return 2 quads from resource', async() => {
+        // Get data in resource file
+        const quads = await engine.queryQuads(`CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }`, {
+          sources: [ resource ],
+        }).then(res => res.toArray());
+
+        expect(quads).toBeRdfIsomorphic([
+          squad('ex:s', 'ex:p', 'ex:o1'),
+          squad('ex:s', 'ex:p', 'ex:o1.1'),
+        ]);
+      });
+
+      it('Should return 1 quads from when doing more restricted query', async() => {
+        // Get data in resource file
+        const quads = await engine.queryQuads(`CONSTRUCT { ?s ?p 1 } WHERE { ?s ?p <ex:o1.1> }`, {
+          sources: [ resource ],
+        }).then(res => res.toArray());
+
+        expect(quads).toBeRdfIsomorphic([
+          squad('ex:s', 'ex:p', 1),
+        ]);
+      });
+
+      it('Should return 2 quads from resource [Link Recovery Enabled]', async() => {
+        // Get data in resource file
+        const quads = await engine.queryQuads(`CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }`, {
+          sources: [ resource ],
+          recoverBrokenLinks: true,
+        }).then(res => res.toArray());
+
+        expect(quads).toBeRdfIsomorphic([
+          squad('ex:s', 'ex:p', 'ex:o1'),
+          squad('ex:s', 'ex:p', 'ex:o1.1'),
+        ]);
+      });
+
+      it('Should return 1 quads from when doing more restricted query [Link Recovery Enabled]', async() => {
+        // Get data in resource file
+        const quads = await engine.queryQuads(`CONSTRUCT { ?s ?p 1 } WHERE { ?s ?p <ex:o1.1> }`, {
+          sources: [ resource ],
+          recoverBrokenLinks: true,
+        }).then(res => res.toArray());
+
+        expect(quads).toBeRdfIsomorphic([
+          squad('ex:s', 'ex:p', 1),
+        ]);
+      });
+    });
 
     // TODO: Enable this once https://github.com/comunica/comunica-feature-solid/issues/43 is solved
     // eslint-disable-next-line mocha/no-skipped-tests

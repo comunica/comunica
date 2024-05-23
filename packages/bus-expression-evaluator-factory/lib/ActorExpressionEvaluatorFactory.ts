@@ -1,4 +1,5 @@
 import type { MediatorFunctionFactory, MediatorFunctionFactoryUnsafe } from '@comunica/bus-function-factory';
+import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
@@ -20,14 +21,16 @@ export abstract class ActorExpressionEvaluatorFactory extends
   Actor<IActionExpressionEvaluatorFactory, IActorTest, IActorExpressionEvaluatorFactoryOutput> {
   protected mediatorQueryOperation: MediatorQueryOperation;
   protected mediatorFunctionFactory: MediatorFunctionFactory;
+  protected mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   /**
-  * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
-  */
+   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   */
   public constructor(args: IActorExpressionEvaluatorFactoryArgs) {
     super(args);
     this.mediatorQueryOperation = args.mediatorQueryOperation;
     this.mediatorFunctionFactory = <MediatorFunctionFactory> args.mediatorFunctionFactory;
+    this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
   }
 }
 
@@ -38,10 +41,19 @@ export interface IActionExpressionEvaluatorFactory extends IAction {
 export interface IActorExpressionEvaluatorFactoryOutput extends IActorOutput, IExpressionEvaluator {}
 
 export interface IActorExpressionEvaluatorFactoryArgs extends IActorArgs<
-IActionExpressionEvaluatorFactory, IActorTest, IActorExpressionEvaluatorFactoryOutput> {
+IActionExpressionEvaluatorFactory,
+IActorTest,
+IActorExpressionEvaluatorFactoryOutput
+> {
   mediatorQueryOperation: MediatorQueryOperation;
   mediatorFunctionFactory: MediatorFunctionFactoryUnsafe;
+  /**
+   * A mediator for creating binding context merge handlers
+   */
+  mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 }
 
 export type MediatorExpressionEvaluatorFactory = Mediate<
-IActionExpressionEvaluatorFactory, IActorExpressionEvaluatorFactoryOutput>;
+IActionExpressionEvaluatorFactory,
+IActorExpressionEvaluatorFactoryOutput
+>;

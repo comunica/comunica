@@ -17,9 +17,9 @@ $ yarn add @comunica/bus-dereference
 
 ## Bus usage
 
-* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-dereference/^2.0.0/components/context.jsonld"`
+* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-dereference/^3.0.0/components/context.jsonld"`
 * **Bus name**: `cbd:Bus/Dereference`
 
 ## Creating actors on this bus
 
-Actors extending [`ActorDereference`](https://comunica.github.io/comunica/classes/bus_dereference.actordereference.html) are automatically subscribed to this bus.
+Actors extending [`ActorDereference`](https://comunica.github.io/comunica/classes/_comunica_bus_dereference.ActorDereference.html) are automatically subscribed to this bus.

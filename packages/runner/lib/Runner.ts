@@ -12,7 +12,7 @@ import type { Actor, Bus, IAction, IActorOutput, IActorReply, IActorTest } from 
 export class Runner {
   /* eslint-disable max-len */
   /**
-   * @param busInit - The 'init' event bus. @default {<npmd:@comunica/bus-init/^2.0.0/components/ActorInit.jsonld#ActorInit_default_bus>}
+   * @param busInit - The 'init' event bus. @default {<npmd:@comunica/bus-init/^3.0.0/components/ActorInit.jsonld#ActorInit_default_bus>}
    * @param actors - The list of all actors that are part of the comunica workflow.
    */
   public constructor(

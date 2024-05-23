@@ -66,13 +66,13 @@ export type TestTableConfig = ITestTableConfigBase & {
 };
 
 export function runTestTable(arg: TestTableConfig): void {
-  if (!(arg.testTable || arg.testArray || arg.errorTable || arg.errorArray)) {
+  if (!(arg.testTable ?? arg.testArray ?? arg.errorTable ?? arg.errorArray)) {
     // We throw this error and don't just say all is well because not providing a table is probably a user mistake.
     throw new Error('Can not test if no testTable, testArray, or errorTable is provided');
   }
 
   let testTable: ArrayTable | UnaryTable | BinaryTable | VariableTable;
-  if (arg.testArray || arg.errorArray) {
+  if (arg.testArray ?? arg.errorArray) {
     testTable = new ArrayTable(arg);
   } else if (arg.arity === 1) {
     testTable = new UnaryTable(arg);

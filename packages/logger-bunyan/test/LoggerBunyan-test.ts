@@ -1,8 +1,8 @@
 import { LoggerBunyan } from '../lib/LoggerBunyan';
 import { BunyanStreamProviderStderr } from '../lib/stream/BunyanStreamProviderStderr';
 
-jest.mock('bunyan', () => {
-  return {
+jest.mock<typeof import('bunyan')>('bunyan', () => {
+  return <any>{
     createLogger: (args: any) => ({
       ...args,
       trace: jest.fn(() => null),
@@ -32,40 +32,40 @@ describe('LoggerBunyan', () => {
     });
 
     it('should pass all args except for streamProviders', () => {
-      expect((<any> logger).bunyanLogger.name).toEqual('abc');
-      expect((<any> logger).bunyanLogger.a).toEqual('a');
-      expect((<any> logger).bunyanLogger.b).toEqual('b');
+      expect((<any> logger).bunyanLogger.name).toBe('abc');
+      expect((<any> logger).bunyanLogger.a).toBe('a');
+      expect((<any> logger).bunyanLogger.b).toBe('b');
       expect((<any> logger).bunyanLogger.streamProviders).toEqual([]);
     });
 
     it('should forward trace', () => {
       logger.trace('bla', {});
-      return expect((<any> logger).bunyanLogger.trace).toHaveBeenCalledTimes(1);
+      expect((<any> logger).bunyanLogger.trace).toHaveBeenCalledTimes(1);
     });
 
     it('should forward debug', () => {
       logger.debug('bla', {});
-      return expect((<any> logger).bunyanLogger.debug).toHaveBeenCalledTimes(1);
+      expect((<any> logger).bunyanLogger.debug).toHaveBeenCalledTimes(1);
     });
 
     it('should forward info', () => {
       logger.info('bla', {});
-      return expect((<any> logger).bunyanLogger.info).toHaveBeenCalledTimes(1);
+      expect((<any> logger).bunyanLogger.info).toHaveBeenCalledTimes(1);
     });
 
     it('should forward warn', () => {
       logger.warn('bla', {});
-      return expect((<any> logger).bunyanLogger.warn).toHaveBeenCalledTimes(1);
+      expect((<any> logger).bunyanLogger.warn).toHaveBeenCalledTimes(1);
     });
 
     it('should forward error', () => {
       logger.error('bla', {});
-      return expect((<any> logger).bunyanLogger.error).toHaveBeenCalledTimes(1);
+      expect((<any> logger).bunyanLogger.error).toHaveBeenCalledTimes(1);
     });
 
     it('should forward fatal', () => {
       logger.fatal('bla', {});
-      return expect((<any> logger).bunyanLogger.fatal).toHaveBeenCalledTimes(1);
+      expect((<any> logger).bunyanLogger.fatal).toHaveBeenCalledTimes(1);
     });
   });
 });

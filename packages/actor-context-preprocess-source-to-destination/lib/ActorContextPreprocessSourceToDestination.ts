@@ -1,8 +1,8 @@
 import type { IActorContextPreprocessOutput, IActorContextPreprocessArgs } from '@comunica/bus-context-preprocess';
 import { ActorContextPreprocess } from '@comunica/bus-context-preprocess';
-import { KeysRdfResolveQuadPattern, KeysRdfUpdateQuads } from '@comunica/context-entries';
+import { KeysInitQuery, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import type { IActorTest, IAction } from '@comunica/core';
-import type { DataSources } from '@comunica/types';
+import type { QuerySourceUnidentified } from '@comunica/types';
 
 /**
  * A comunica Source To Destination Context Preprocess Actor.
@@ -12,13 +12,14 @@ export class ActorContextPreprocessSourceToDestination extends ActorContextPrepr
     super(args);
   }
 
-  public async test(action: IAction): Promise<IActorTest> {
+  public async test(_action: IAction): Promise<IActorTest> {
     return true;
   }
 
   public async run(action: IAction): Promise<IActorContextPreprocessOutput> {
-    if (action.context.get(KeysRdfResolveQuadPattern.sources) && !action.context.get(KeysRdfUpdateQuads.destination)) {
-      const sources: DataSources = action.context.get(KeysRdfResolveQuadPattern.sources)!;
+    if (action.context.get(KeysInitQuery.querySourcesUnidentified) &&
+      !action.context.get(KeysRdfUpdateQuads.destination)) {
+      const sources: QuerySourceUnidentified[] = action.context.get(KeysInitQuery.querySourcesUnidentified)!;
       if (sources.length === 1) {
         return { context: action.context.set(KeysRdfUpdateQuads.destination, sources[0]) };
       }

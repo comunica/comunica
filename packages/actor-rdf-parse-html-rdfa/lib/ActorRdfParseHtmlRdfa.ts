@@ -1,5 +1,8 @@
-import type { IActionRdfParseHtml, IActorRdfParseHtmlOutput,
-  IActorRdfParseHtmlArgs } from '@comunica/bus-rdf-parse-html';
+import type {
+  IActionRdfParseHtml,
+  IActorRdfParseHtmlOutput,
+  IActorRdfParseHtmlArgs,
+} from '@comunica/bus-rdf-parse-html';
 import { ActorRdfParseHtml } from '@comunica/bus-rdf-parse-html';
 import type { IActorTest } from '@comunica/core';
 import { RdfaParser } from 'rdfa-streaming-parser';
@@ -12,7 +15,7 @@ export class ActorRdfParseHtmlRdfa extends ActorRdfParseHtml {
     super(args);
   }
 
-  public async test(action: IActionRdfParseHtml): Promise<IActorTest> {
+  public async test(_action: IActionRdfParseHtml): Promise<IActorTest> {
     return true;
   }
 
@@ -24,7 +27,7 @@ export class ActorRdfParseHtmlRdfa extends ActorRdfParseHtml {
     const htmlParseListener = new RdfaParser({ baseIRI: action.baseIRI, profile, language });
     htmlParseListener.on('error', action.error);
     htmlParseListener.on('data', action.emit);
-    // eslint-disable-next-line @typescript-eslint/unbound-method
+    // eslint-disable-next-line ts/unbound-method
     const onTagEndOld = htmlParseListener.onEnd;
     htmlParseListener.onEnd = () => {
       onTagEndOld.call(htmlParseListener);

@@ -3,10 +3,15 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
 import type {
-  Bindings, BindingsStream, IActionContext, IQueryOperationResult, IQueryOperationResultBindings,
+  Bindings,
+  BindingsStream,
+  IActionContext,
+  IQueryOperationResult,
+  IQueryOperationResultBindings,
 } from '@comunica/types';
 import { LRUCache } from 'lru-cache';
 import type { Algebra } from 'sparqlalgebrajs';
+
 /**
  * A comunica Reduced Hash Query Operation Actor.
  */
@@ -18,7 +23,7 @@ export class ActorQueryOperationReducedHash extends ActorQueryOperationTypedMedi
     super(args, 'reduced');
   }
 
-  public async testOperation(operation: Algebra.Reduced, context: IActionContext): Promise<IActorTest> {
+  public async testOperation(_operation: Algebra.Reduced, _context: IActionContext): Promise<IActorTest> {
     return true;
   }
 

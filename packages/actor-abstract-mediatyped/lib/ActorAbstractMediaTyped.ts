@@ -101,8 +101,11 @@ export abstract class ActorAbstractMediaTyped<HI, HT, HO>
   public abstract getMediaTypeFormats(context: IActionContext): Promise<Record<string, string>>;
 }
 
-export interface IActorArgsMediaTyped<HI, HT, HO> extends IActorArgs<IActionAbstractMediaTyped<HI>,
-IActorTestAbstractMediaTyped<HT>, IActorOutputAbstractMediaTyped<HO>> {}
+export interface IActorArgsMediaTyped<HI, HT, HO> extends IActorArgs<
+    IActionAbstractMediaTyped<HI>,
+IActorTestAbstractMediaTyped<HT>,
+IActorOutputAbstractMediaTyped<HO>
+> {}
 
 export type IActionAbstractMediaTyped<HI> = IActionAbstractMediaTypedHandle<HI> | IActionAbstractMediaTypedMediaTypes
 | IActionAbstractMediaTypedMediaTypeFormats;
@@ -184,7 +187,10 @@ export interface IActorOutputAbstractMediaTypedMediaTypeFormats extends IActorOu
 }
 
 export type MediateMediaTypes = Mediate<
-IActionAbstractMediaTypedMediaTypes, IActorOutputAbstractMediaTypedMediaTypes, IActorTestAbstractMediaTypedMediaTypes>;
+IActionAbstractMediaTypedMediaTypes,
+IActorOutputAbstractMediaTypedMediaTypes,
+IActorTestAbstractMediaTypedMediaTypes
+>;
 
 export type MediateMediaTyped<I extends IAction, T extends IActorTest, O extends IActorOutput> = Mediate<
 IActionAbstractMediaTypedHandle<I>,

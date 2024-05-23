@@ -19,6 +19,7 @@ describe('ActorBindingsAggregatorFactoryMax', () => {
   let mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
   let mediatorTermComparatorFactory: MediatorTermComparatorFactory;
   let context: IActionContext;
+  const exception = 'This actor only supports the \'max\' aggregator.';
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -57,30 +58,30 @@ describe('ActorBindingsAggregatorFactoryMax', () => {
     });
 
     describe('test', () => {
-      it('accepts max 1', () => {
-        return expect(actor.test({
+      it('accepts max 1', async() => {
+        await expect(actor.test({
           context,
           expr: makeAggregate('max', false),
         })).resolves.toEqual({});
       });
 
-      it('accepts max 2', () => {
-        return expect(actor.test({
+      it('accepts max 2', async() => {
+        await expect(actor.test({
           context,
           expr: makeAggregate('max', true),
         })).resolves.toEqual({});
       });
 
-      it('rejects sum', () => {
-        return expect(actor.test({
+      it('rejects sum', async() => {
+        await expect(actor.test({
           context,
           expr: makeAggregate('sum', false),
-        })).rejects.toThrow();
+        })).rejects.toThrow(exception);
       });
     });
 
-    it('should run', () => {
-      return expect(actor.run({
+    it('should run', async() => {
+      await expect(actor.run({
         context,
         expr: makeAggregate('max', false),
       })).resolves.toMatchObject({});

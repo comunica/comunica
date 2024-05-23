@@ -16,7 +16,7 @@ export class ActorQueryOperationBgpJoin extends ActorQueryOperationTypedMediated
     super(args, 'bgp');
   }
 
-  public async testOperation(operation: Algebra.Bgp, context: IActionContext): Promise<IActorTest> {
+  public async testOperation(_operation: Algebra.Bgp, _context: IActionContext): Promise<IActorTest> {
     return true;
   }
 

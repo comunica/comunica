@@ -1,0 +1,44 @@
+{
+  "name": "@comunica/actor-context-preprocess-convert-shortcuts",
+  "version": "3.0.3",
+  "description": "A convert-shortcuts context-preprocess actor",
+  "lsd:module": true,
+  "license": "MIT",
+  "homepage": "https://comunica.dev/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/actor-context-preprocess-convert-shortcuts"
+  },
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
+  "keywords": [
+    "comunica",
+    "actor",
+    "context-preprocess",
+    "convert-shortcuts"
+  ],
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.js.map"
+  ],
+  "scripts": {
+    "build": "yarn run build:ts && yarn run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
+  },
+  "dependencies": {
+    "@comunica/bus-context-preprocess": "^3.0.3",
+    "@comunica/core": "^3.0.3",
+    "@comunica/types": "^3.0.3"
+  }
+}

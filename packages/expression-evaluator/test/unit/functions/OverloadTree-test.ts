@@ -31,8 +31,13 @@ describe('OverloadTree', () => {
     functionArgumentsCache = expressionEvaluator.context.getSafe(KeysInitQuery.functionArgumentsCache);
   });
 
-  function typePromotionTest<T extends ISerializable>(tree: OverloadTree, promoteFrom: KnownLiteralTypes,
-    promoteTo: KnownLiteralTypes, value: T, valueToEqual?: T) {
+  function typePromotionTest<T extends ISerializable>(
+    tree: OverloadTree,
+    promoteFrom: KnownLiteralTypes,
+    promoteTo: KnownLiteralTypes,
+    value: T,
+    valueToEqual?: T,
+  ): void {
     tree.addOverload([ promoteTo ], () => ([ arg ]) => arg);
     const arg = new Literal<T>(value, promoteFrom);
     const res = isLiteralTermExpression(tree
@@ -41,11 +46,15 @@ describe('OverloadTree', () => {
     )([ arg ]));
     expect(res).toBeTruthy();
     expect(res!.dataType).toEqual(promoteTo);
-    expect(res!.typedValue).toEqual(valueToEqual || value);
+    expect(res!.typedValue).toEqual(valueToEqual ?? value);
   }
 
-  function subtypeSubstitutionTest<T extends ISerializable>(tree: OverloadTree, argumentType: KnownLiteralTypes,
-    expectedType: KnownLiteralTypes, value: T) {
+  function subtypeSubstitutionTest<T extends ISerializable>(
+    tree: OverloadTree,
+    argumentType: KnownLiteralTypes,
+    expectedType: KnownLiteralTypes,
+    value: T,
+  ): void {
     tree.addOverload([ expectedType ], () => ([ arg ]) => arg);
     const arg = new Literal<T>(value, argumentType);
     const res = isLiteralTermExpression(tree
@@ -95,7 +104,7 @@ describe('OverloadTree', () => {
     )([ arg ]));
     expect(res).toBeTruthy();
     expect(res!.dataType).toEqual(TypeURL.XSD_DOUBLE);
-    expect(res!.typedValue).toEqual(0);
+    expect(res!.typedValue).toBe(0);
   });
 
   it('can handle unknown literal dataType', () => {
@@ -116,21 +125,18 @@ describe('OverloadTree', () => {
     const one = new IntegerLiteral(1);
     const two = new IntegerLiteral(2);
     expect(functionArgumentsCache['+']).toBeUndefined();
-    const res = regularFunctions['+'].applyOnTerms([ one, two ],
-      expressionEvaluator);
-    expect(res.str()).toEqual('3');
+    const res = regularFunctions['+'].applyOnTerms([ one, two ], expressionEvaluator);
+    expect(res.str()).toBe('3');
     // One time lookup + one time add
-    expect(functionArgumentsCache['+']).not.toBeUndefined();
-    regularFunctions['+'].applyOnTerms([ two, one ],
-      expressionEvaluator);
+    expect(functionArgumentsCache['+']).toBeDefined();
+    regularFunctions['+'].applyOnTerms([ two, one ], expressionEvaluator);
 
     const innerSpy = jest.fn();
     const spy = jest.fn(() => innerSpy);
-    functionArgumentsCache['+']!.cache![TypeURL.XSD_INTEGER].cache![TypeURL.XSD_INTEGER]!.func = spy;
-    regularFunctions['+'].applyOnTerms([ one, two ],
-      expressionEvaluator);
-    expect(spy).toHaveBeenCalled();
-    expect(innerSpy).toHaveBeenCalled();
+    functionArgumentsCache['+'].cache![TypeURL.XSD_INTEGER].cache![TypeURL.XSD_INTEGER].func = spy;
+    regularFunctions['+'].applyOnTerms([ one, two ], expressionEvaluator);
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(innerSpy).toHaveBeenCalledTimes(1);
   });
 
   it('searches the cache arity aware', () => {
@@ -138,8 +144,7 @@ describe('OverloadTree', () => {
     const one = new IntegerLiteral(1);
     const two = new IntegerLiteral(2);
     expect(functionArgumentsCache.substr).toBeUndefined();
-    expect(regularFunctions.substr.applyOnTerms([ apple, one, two ],
-      expressionEvaluator).str()).toBe('ap');
+    expect(regularFunctions.substr.applyOnTerms([ apple, one, two ], expressionEvaluator).str()).toBe('ap');
 
     expect(functionArgumentsCache.substr).toBeDefined();
     const interestCache = functionArgumentsCache.substr
@@ -147,8 +152,7 @@ describe('OverloadTree', () => {
     expect(interestCache.func).toBeUndefined();
     expect(interestCache.cache![TypeURL.XSD_INTEGER]).toBeDefined();
 
-    expect(regularFunctions.substr.applyOnTerms([ apple, one ],
-      expressionEvaluator).str()).toBe(String('apple'));
+    expect(regularFunctions.substr.applyOnTerms([ apple, one ], expressionEvaluator).str()).toBe(String('apple'));
     const interestCacheNew = functionArgumentsCache.substr
       .cache![TypeURL.XSD_STRING].cache![TypeURL.XSD_INTEGER];
     expect(interestCacheNew).toBeDefined();

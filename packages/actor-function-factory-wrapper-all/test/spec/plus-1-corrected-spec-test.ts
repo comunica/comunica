@@ -28,14 +28,20 @@ import * as Data from './_data';
 
 describe('We should respect the plus-1-corrected spec', () => {
   const {
-    x1p, x1q,
+    x1p,
+    x1q,
     x2q,
     x3q,
-    x4p, x4q,
-    x5p, x5q,
-    x6p, x6q,
-    x7p, x7q,
-    x8p, x8q,
+    x4p,
+    x4q,
+    x5p,
+    x5q,
+    x6p,
+    x6q,
+    x7p,
+    x7q,
+    x8p,
+    x8q,
   } = Data.dataBuiltin3();
   runFuncTestTable({
     notation: Notation.Infix,

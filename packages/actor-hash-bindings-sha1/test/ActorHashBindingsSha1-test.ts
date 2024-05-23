@@ -29,7 +29,9 @@ describe('ActorHashBindingsSha1', () => {
     });
 
     it('should not be able to create new ActorHashBindingsSha1 objects without \'new\'', () => {
-      expect(() => { (<any> ActorHashBindingsSha1)(); }).toThrow();
+      expect(() => {
+        (<any> ActorHashBindingsSha1)();
+      }).toThrow(`Class constructor ActorHashBindingsSha1 cannot be invoked without 'new'`);
     });
   });
 
@@ -40,20 +42,20 @@ describe('ActorHashBindingsSha1', () => {
       actor = new ActorHashBindingsSha1({ name: 'actor', bus });
     });
 
-    it('should test with allowHashCollisions true', () => {
+    it('should test with allowHashCollisions true', async() => {
       const action: IActionHashBindings = {
         context: new ActionContext(),
         allowHashCollisions: true,
       };
-      return expect(actor.test(action)).resolves.toEqual(true);
+      await expect(actor.test(action)).resolves.toBe(true);
     });
 
-    it('should not test with allowHashCollisions false', () => {
+    it('should not test with allowHashCollisions false', async() => {
       const action: IActionHashBindings = {
         context: new ActionContext(),
         allowHashCollisions: false,
       };
-      return expect(actor.test(action)).rejects.toBeTruthy();
+      await expect(actor.test(action)).rejects.toBeTruthy();
     });
 
     it('should run', async() => {
@@ -62,11 +64,18 @@ describe('ActorHashBindingsSha1', () => {
         allowHashCollisions: false,
       };
       const result = await actor.run(action);
-      expect(result.hashCollisions).toEqual(true);
+      expect(result.hashCollisions).toBe(true);
 
       expect(result.hashFunction(BF.bindings([
         [ DF.variable('a'), DF.namedNode('ex:a') ],
         [ DF.variable('b'), DF.namedNode('ex:b') ],
+      ]))).toEqual(result.hashFunction(BF.bindings([
+        [ DF.variable('a'), DF.namedNode('ex:a') ],
+        [ DF.variable('b'), DF.namedNode('ex:b') ],
+      ])));
+      expect(result.hashFunction(BF.bindings([
+        [ DF.variable('b'), DF.namedNode('ex:b') ],
+        [ DF.variable('a'), DF.namedNode('ex:a') ],
       ]))).toEqual(result.hashFunction(BF.bindings([
         [ DF.variable('a'), DF.namedNode('ex:a') ],
         [ DF.variable('b'), DF.namedNode('ex:b') ],

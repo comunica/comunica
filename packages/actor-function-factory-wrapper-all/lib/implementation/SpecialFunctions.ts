@@ -169,7 +169,7 @@ class InSPARQL extends BaseFunctionDefinition {
 
   protected arity = Number.POSITIVE_INFINITY;
 
-  public checkArity(args: E.Expression[]): boolean {
+  public override checkArity(args: E.Expression[]): boolean {
     return args.length > 0;
   }
 
@@ -214,7 +214,7 @@ class InSPARQL extends BaseFunctionDefinition {
 class NotInSPARQL extends BaseFunctionDefinition {
   protected arity = Number.POSITIVE_INFINITY;
 
-  public checkArity(args: E.Expression[]): boolean {
+  public override checkArity(args: E.Expression[]): boolean {
     return args.length > 0;
   }
 
@@ -247,7 +247,7 @@ class Concat extends BaseFunctionDefinition {
     const { args, mapping, exprEval } = context;
     const pLits: Promise<E.Literal<string>>[] = args
       .map(async expr => exprEval.evaluatorExpressionEvaluation(expr, mapping))
-      .map(async pTerm => {
+      .map(async(pTerm) => {
         const operation = concatTree.search(
           [ await pTerm ],
           exprEval.context.getSafe(KeysExpressionEvaluator.superTypeProvider),
@@ -290,10 +290,10 @@ class BNode extends BaseFunctionDefinition {
    * A counter that keeps track blank node generated through BNODE() SPARQL
    * expressions.
    */
-  private bnodeCounter = 0;
+  private static bnodeCounter = 0;
 
   protected arity = Number.POSITIVE_INFINITY;
-  public checkArity(args: E.Expression[]): boolean {
+  public override checkArity(args: E.Expression[]): boolean {
     return args.length === 0 || args.length === 1;
   }
 
@@ -316,7 +316,7 @@ class BNode extends BaseFunctionDefinition {
       strInput = operation(exprEval)([ input ]).str();
     }
 
-    const bnode = new BlankNodeBindingsScoped(strInput || `BNODE_${this.bnodeCounter++}`);
+    const bnode = new BlankNodeBindingsScoped(strInput ?? `BNODE_${BNode.bnodeCounter++}`);
     return new E.BlankNode(bnode);
   };
 }

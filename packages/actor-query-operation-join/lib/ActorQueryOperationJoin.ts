@@ -18,7 +18,7 @@ export class ActorQueryOperationJoin extends ActorQueryOperationTypedMediated<Al
     super(args, 'join');
   }
 
-  public async testOperation(operation: Algebra.Join, context: IActionContext): Promise<IActorTest> {
+  public async testOperation(_operation: Algebra.Join, _context: IActionContext): Promise<IActorTest> {
     return true;
   }
 

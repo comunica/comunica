@@ -23,47 +23,47 @@ describe('ActorRdfUpdateHypermediaPatchSparqlUpdate', () => {
       actor = new ActorRdfUpdateHypermediaPatchSparqlUpdate({ name: 'actor', bus, mediatorHttp });
     });
 
-    it('should test', () => {
+    it('should test', async() => {
       const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       const url = 'abc';
       const metadata = { patchSparqlUpdate: true };
       const exists = true;
-      return expect(actor.test({ context, url, metadata, exists })).resolves.toBeTruthy();
+      await expect(actor.test({ context, url, metadata, exists })).resolves.toBeTruthy();
     });
 
-    it('should not test on invalid metadata', () => {
+    it('should not test on invalid metadata', async() => {
       const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       const url = 'abc';
       const metadata = { somethingElse: true };
       const exists = true;
-      return expect(actor.test({ context, url, metadata, exists })).rejects
+      await expect(actor.test({ context, url, metadata, exists })).rejects
         .toThrow(`Actor actor could not detect a destination with 'application/sparql-update' as 'Accept-Patch' header.`);
     });
 
-    it('should not test on a non-existing destination', () => {
+    it('should not test on a non-existing destination', async() => {
       const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       const url = 'abc';
       const metadata = { patchSparqlUpdate: true };
       const exists = false;
-      return expect(actor.test({ context, url, metadata, exists })).rejects
+      await expect(actor.test({ context, url, metadata, exists })).rejects
         .toThrow(`Actor actor can only patch a destination that already exists.`);
     });
 
-    it('should test on invalid metadata with forced destination type', () => {
+    it('should test on invalid metadata with forced destination type', async() => {
       const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       const url = 'abc';
       const metadata = { somethingElse: true };
       const exists = true;
-      return expect(actor.test({ context, url, metadata, exists, forceDestinationType: 'patchSparqlUpdate' }))
+      await expect(actor.test({ context, url, metadata, exists, forceDestinationType: 'patchSparqlUpdate' }))
         .resolves.toBeTruthy();
     });
 
-    it('should not test on invalid metadata with forced destination type for different destination type', () => {
+    it('should not test on invalid metadata with forced destination type for different destination type', async() => {
       const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
       const url = 'abc';
       const metadata = { somethingElse: true };
       const exists = true;
-      return expect(actor.test({ context, url, metadata, exists, forceDestinationType: 'different' }))
+      await expect(actor.test({ context, url, metadata, exists, forceDestinationType: 'different' }))
         .rejects.toThrow('Actor actor is not able to handle destination type different.');
     });
 
@@ -72,7 +72,7 @@ describe('ActorRdfUpdateHypermediaPatchSparqlUpdate', () => {
       const url = 'abc';
       const metadata = { patchSparqlUpdate: true };
       const exists = true;
-      expect(await actor.run({ context, url, metadata, exists })).toEqual({
+      await expect(actor.run({ context, url, metadata, exists })).resolves.toEqual({
         destination: expect.any(QuadDestinationPatchSparqlUpdate),
       });
     });

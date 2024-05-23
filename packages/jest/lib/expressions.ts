@@ -4,10 +4,12 @@ import {
 import { InternalEvaluator } from '@comunica/actor-expression-evaluator-factory-default/lib/InternalEvaluator';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type {
-  ActorExpressionEvaluatorFactory, IActorExpressionEvaluatorFactoryArgs,
+  ActorExpressionEvaluatorFactory,
+  IActorExpressionEvaluatorFactoryArgs,
   MediatorExpressionEvaluatorFactory,
 } from '@comunica/bus-expression-evaluator-factory';
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
+import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
@@ -28,16 +30,16 @@ export const BF = new BindingsFactory();
 export function makeAggregate(aggregator: string, distinct = false, separator?: string, wildcard = false):
 Algebra.AggregateExpression {
   const inner: Algebra.Expression = wildcard ?
-    {
-      type: Algebra.types.EXPRESSION,
-      expressionType: Algebra.expressionTypes.WILDCARD,
-      wildcard: new Wildcard(),
-    } :
-    {
-      type: Algebra.types.EXPRESSION,
-      expressionType: Algebra.expressionTypes.TERM,
-      term: DF.variable('x'),
-    };
+      {
+        type: Algebra.types.EXPRESSION,
+        expressionType: Algebra.expressionTypes.WILDCARD,
+        wildcard: new Wildcard(),
+      } :
+      {
+        type: Algebra.types.EXPRESSION,
+        expressionType: Algebra.expressionTypes.TERM,
+        term: DF.variable('x'),
+      };
   return {
     type: Algebra.types.EXPRESSION,
     expressionType: Algebra.expressionTypes.AGGREGATE,
@@ -84,36 +86,46 @@ export function getMockEEActionContext(actionContext?: IActionContext): IActionC
   }).merge(actionContext ?? new ActionContext());
 }
 
-export function getMockInternalEvaluator(factory?: ActorExpressionEvaluatorFactory,
-  context?: IActionContext): InternalEvaluator {
-  const defFactory = factory ?? getMockEEFactory();
+export function getMockInternalEvaluator(factory?: ActorExpressionEvaluatorFactory, context?: IActionContext):
+InternalEvaluator {
   return new InternalEvaluator(
     prepareEvaluatorActionContext(getMockEEActionContext(context)),
     getMockMediatorFunctionFactory(),
     <any>{
-      async mediate(arg: any) {
+      async mediate(_: any) {
         throw new Error('mediatorQueryOperation mock of mockEEFactory not implemented');
       },
     },
+    <any> {},
   );
 }
 
 export function getMockEEFactory({
   mediatorQueryOperation,
   mediatorFunctionFactory,
+  mediatorMergeBindingsContext,
 }: Partial<IActorExpressionEvaluatorFactoryArgs> = {}): ActorExpressionEvaluatorFactory {
   return new ActorExpressionEvaluatorFactoryDefault({
     bus: new Bus({ name: 'testBusMock' }),
     name: 'mockEEFactory',
-    mediatorQueryOperation: mediatorQueryOperation || getMockMediatorQueryOperation(),
-    mediatorFunctionFactory: mediatorFunctionFactory || getMockMediatorFunctionFactory(),
+    mediatorQueryOperation: mediatorQueryOperation ?? getMockMediatorQueryOperation(),
+    mediatorFunctionFactory: mediatorFunctionFactory ?? getMockMediatorFunctionFactory(),
+    mediatorMergeBindingsContext: mediatorMergeBindingsContext ?? getMockMediatorMergeBindingsContext(),
   });
 }
 
 export function getMockMediatorQueryOperation(): MediatorQueryOperation {
   return <any>{
-    async mediate(arg: any) {
+    async mediate(_: any) {
       throw new Error('mediatorQueryOperation mock not implemented');
+    },
+  };
+}
+
+export function getMockMediatorMergeBindingsContext(): MediatorMergeBindingsContext {
+  return <any>{
+    async mediate(_: any) {
+      return BF;
     },
   };
 }
@@ -130,7 +142,7 @@ export function getMockMediatorExpressionEvaluatorFactory(
 
 export function getMockMediatorFunctionFactory(): MediatorFunctionFactory {
   return <any>{
-    async mediate(arg: any) {
+    async mediate(_: any) {
       throw new Error('mediatorFunctionFactory mock not implemented');
     },
   };
@@ -138,7 +150,7 @@ export function getMockMediatorFunctionFactory(): MediatorFunctionFactory {
 
 export function getMockMediatorTermComparatorFactory(): MediatorTermComparatorFactory {
   return <any>{
-    async mediate(arg: any) {
+    async mediate(_: any) {
       throw new Error('mediatorTermComparatorFactory mock not implemented');
     },
   };

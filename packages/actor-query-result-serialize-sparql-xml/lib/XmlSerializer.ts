@@ -12,10 +12,10 @@ export class XmlSerializer {
   }
 
   /**
-     *
-     * @param name should be a valid XML tag name
-     * @param attributes keys should be valid attribute names
-     */
+   *
+   * @param name should be a valid XML tag name
+   * @param attributes keys should be valid attribute names
+   */
   public open(name: string, attributes?: Record<string, string>): void {
     this.push(`${this.identation() + this.formatTag(name, attributes, 'open')}\n`);
     this.stack.push(name);
@@ -56,13 +56,16 @@ export class XmlSerializer {
   }
 
   private formatTag(
-    name: string, attributes: Record<string, string> | undefined, state: 'open' | 'close' | 'self-closing',
+    name: string,
+    attributes: Record<string, string> | undefined,
+    state: 'open' | 'close' | 'self-closing',
   ): string {
-    return `<${state === 'close' ? '/' : ''}${name}${Object.entries(attributes || {}).map(attr => ` ${attr[0]}="${this.escape(attr[1])}"`)}${state === 'self-closing' ? '/' : ''}>`;
+    // eslint-disable-next-line ts/restrict-template-expressions
+    return `<${state === 'close' ? '/' : ''}${name}${Object.entries(attributes ?? {}).map(attr => ` ${attr[0]}="${this.escape(attr[1])}"`)}${state === 'self-closing' ? '/' : ''}>`;
   }
 
   private escape(text: string): string {
-    return text.replace(/["&'<>]/gu, (char: '"' | '&' | '\'' | '<' | '>') => {
+    return text.replaceAll(/["&'<>]/gu, <(substring: string) => string> ((char: '"' | '&' | '\'' | '<' | '>') => {
       switch (char) {
         case '<': return '&lt;';
         case '>': return '&gt;';
@@ -70,7 +73,7 @@ export class XmlSerializer {
         case '\'': return '&apos;';
         case '"': return '&quot;';
       }
-    });
+    }));
   }
 }
 

@@ -50,11 +50,11 @@ describe('SampleAggregator', () => {
         BF.bindings([[ DF.variable('x'), int('4') ]]),
       ];
 
-      expect(await runAggregator(aggregator, input)).toEqual(int('1'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(int('1'));
     });
 
     it('with respect to empty input', async() => {
-      expect(await runAggregator(aggregator, [])).toEqual(undefined);
+      await expect(runAggregator(aggregator, [])).resolves.toBeUndefined();
     });
   });
 
@@ -73,11 +73,11 @@ describe('SampleAggregator', () => {
         BF.bindings([[ DF.variable('x'), int('1') ], [ DF.variable('y'), int('1') ]]),
       ];
 
-      expect(await runAggregator(aggregator, input)).toEqual(int('1'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(int('1'));
     });
 
     it('with respect to empty input', async() => {
-      expect(await runAggregator(aggregator, [])).toEqual(undefined);
+      await expect(runAggregator(aggregator, [])).resolves.toBeUndefined();
     });
   });
 });

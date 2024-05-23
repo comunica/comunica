@@ -11,9 +11,9 @@ export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbst
     super(args);
     const scale: number = this.priorityScale || this.priorityScale === 0 ? this.priorityScale : 1;
     if (this.mediaTypePriorities) {
-      Object.entries(this.mediaTypePriorities).forEach(([ key, value ], index) => {
+      for (const [ _index, [ key, value ]] of Object.entries(this.mediaTypePriorities).entries()) {
         this.mediaTypePriorities[key] = scale * value;
-      });
+      }
     }
     this.mediaTypePriorities = Object.freeze(this.mediaTypePriorities);
     this.mediaTypeFormats = Object.freeze(this.mediaTypeFormats);
@@ -35,19 +35,19 @@ export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbst
    */
   public abstract testHandleChecked(action: HI, context: IActionContext): Promise<HT>;
 
-  public async testMediaType(context: IActionContext): Promise<boolean> {
+  public async testMediaType(_context: IActionContext): Promise<boolean> {
     return true;
   }
 
-  public async getMediaTypes(context: IActionContext): Promise<Record<string, number>> {
+  public async getMediaTypes(_context: IActionContext): Promise<Record<string, number>> {
     return this.mediaTypePriorities;
   }
 
-  public async testMediaTypeFormats(context: IActionContext): Promise<boolean> {
+  public async testMediaTypeFormats(_context: IActionContext): Promise<boolean> {
     return true;
   }
 
-  public async getMediaTypeFormats(context: IActionContext): Promise<Record<string, string>> {
+  public async getMediaTypeFormats(_context: IActionContext): Promise<Record<string, string>> {
     return this.mediaTypeFormats;
   }
 }

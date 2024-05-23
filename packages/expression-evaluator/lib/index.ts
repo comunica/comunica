@@ -6,4 +6,3 @@ export { IInternalEvaluator } from './functions/OverloadTree';
 export { FunctionApplication } from './functions/OverloadTree';
 export { IEvalContext } from './functions/OverloadTree';
 export { IExpressionEvaluator } from './types';
-

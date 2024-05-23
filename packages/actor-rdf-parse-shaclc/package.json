@@ -1,48 +1,48 @@
 {
   "name": "@comunica/actor-rdf-parse-shaclc",
-  "version": "2.8.2",
+  "version": "3.0.3",
   "description": "A shaclc rdf-parse actor",
   "lsd:module": true,
-  "main": "lib/index.js",
-  "typings": "lib/index",
+  "license": "MIT",
+  "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
     "directory": "packages/actor-rdf-parse-shaclc"
   },
-  "publishConfig": {
-    "access": "public"
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
   },
-  "sideEffects": false,
   "keywords": [
     "comunica",
     "actor",
     "rdf-parse",
     "shaclc"
   ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/comunica/comunica/issues"
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "publishConfig": {
+    "access": "public"
   },
-  "homepage": "https://comunica.dev/",
   "files": [
     "components",
     "lib/**/*.d.ts",
     "lib/**/*.js",
     "lib/**/*.js.map"
   ],
+  "scripts": {
+    "build": "yarn run build:ts && yarn run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
+  },
   "dependencies": {
-    "@comunica/bus-rdf-parse": "^2.8.2",
-    "@comunica/types": "^2.8.2",
+    "@comunica/bus-rdf-parse": "^3.0.3",
+    "@comunica/types": "^3.0.3",
     "@rdfjs/types": "*",
-    "asynciterator": "^3.8.1",
+    "asynciterator": "^3.9.0",
     "readable-stream": "^4.4.2",
     "shaclc-parse": "^1.4.0",
     "stream-to-string": "^1.2.0"
-  },
-  "scripts": {
-    "build": "npm run build:ts && npm run build:components",
-    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
-    "build:components": "componentsjs-generator"
   }
 }

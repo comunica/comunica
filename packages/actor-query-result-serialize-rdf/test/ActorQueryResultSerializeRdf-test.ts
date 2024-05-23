@@ -23,7 +23,9 @@ describe('ActorQueryResultSerializeRdf', () => {
     });
 
     it('should not be able to create new ActorQueryResultSerializeRdf objects without \'new\'', () => {
-      expect(() => { (<any> ActorQueryResultSerializeRdf)(); }).toThrow();
+      expect(() => {
+        (<any> ActorQueryResultSerializeRdf)();
+      }).toThrow(`Class constructor ActorQueryResultSerializeRdf cannot be invoked without 'new'`);
     });
   });
 
@@ -37,20 +39,20 @@ describe('ActorQueryResultSerializeRdf', () => {
     beforeEach(() => {
       mediatorRdfSerialize = {
         mediate: (arg: any) => Promise.resolve(arg.mediaTypes ?
-          {
-            mediaTypes: {
-              'application/ld+json': 1,
-              'text/turtle': 1,
-            },
-          } :
-          (arg.mediaTypeFormats ?
             {
-              mediaTypeFormats: {
-                'application/ld+json': 'JSON-LD',
-                'text/turtle': 'TURTLE',
+              mediaTypes: {
+                'application/ld+json': 1,
+                'text/turtle': 1,
               },
             } :
-            { handle: arg.handle })),
+            (arg.mediaTypeFormats ?
+                {
+                  mediaTypeFormats: {
+                    'application/ld+json': 'JSON-LD',
+                    'text/turtle': 'TURTLE',
+                  },
+                } :
+                { handle: arg.handle })),
       };
       mediatorMediaTypeCombiner = mediatorRdfSerialize;
       mediatorMediaTypeFormatCombiner = mediatorRdfSerialize;
@@ -61,36 +63,36 @@ describe('ActorQueryResultSerializeRdf', () => {
     });
 
     describe('for serializing', () => {
-      it('should not test for an invalid media type and a quad stream', () => {
+      it('should not test for an invalid media type and a quad stream', async() => {
         const handle: any = { quadStream: true, type: 'quads' };
-        return expect(actor.test({ handle, handleMediaType: 'abc', context })).rejects.toBeTruthy();
+        await expect(actor.test({ handle, handleMediaType: 'abc', context })).rejects.toBeTruthy();
       });
 
-      it('should not test for a valid media type and a bindings stream', () => {
+      it('should not test for a valid media type and a bindings stream', async() => {
         const handle: any = { bindingsStream: true, type: 'bindings' };
-        return expect(actor.test({ handle, handleMediaType: 'text/turtle', context })).rejects.toBeTruthy();
+        await expect(actor.test({ handle, handleMediaType: 'text/turtle', context })).rejects.toBeTruthy();
       });
 
-      it('should test for a valid media type and a quad stream', () => {
+      it('should test for a valid media type and a quad stream', async() => {
         const handle: any = { quadStream: true, type: 'quads' };
-        return expect(actor.test({ handle, handleMediaType: 'text/turtle', context })).resolves.toBeTruthy();
+        await expect(actor.test({ handle, handleMediaType: 'text/turtle', context })).resolves.toBeTruthy();
       });
 
-      it('should run for a valid media type and a quad stream', () => {
+      it('should run for a valid media type and a quad stream', async() => {
         const handle: any = { quadStream: true, type: 'quads' };
-        return expect(actor.run({ handle, handleMediaType: 'text/turtle', context })).resolves.toEqual(
+        await expect(actor.run({ handle, handleMediaType: 'text/turtle', context })).resolves.toEqual(
           { handle: { quadStream: true, context }},
         );
       });
     });
 
     describe('for getting media types', () => {
-      it('should test', () => {
-        return expect(actor.test({ mediaTypes: true, context })).resolves.toBeTruthy();
+      it('should test', async() => {
+        await expect(actor.test({ mediaTypes: true, context })).resolves.toBeTruthy();
       });
 
-      it('should run', () => {
-        return expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({ mediaTypes: {
+      it('should run', async() => {
+        await expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({ mediaTypes: {
           'application/ld+json': 1,
           'text/turtle': 1,
         }});
@@ -98,12 +100,12 @@ describe('ActorQueryResultSerializeRdf', () => {
     });
 
     describe('for getting media type formats', () => {
-      it('should test', () => {
-        return expect(actor.test({ mediaTypeFormats: true, context })).resolves.toBeTruthy();
+      it('should test', async() => {
+        await expect(actor.test({ mediaTypeFormats: true, context })).resolves.toBeTruthy();
       });
 
-      it('should run', () => {
-        return expect(actor.run({ mediaTypeFormats: true, context })).resolves.toEqual({ mediaTypeFormats: {
+      it('should run', async() => {
+        await expect(actor.run({ mediaTypeFormats: true, context })).resolves.toEqual({ mediaTypeFormats: {
           'application/ld+json': 'JSON-LD',
           'text/turtle': 'TURTLE',
         }});

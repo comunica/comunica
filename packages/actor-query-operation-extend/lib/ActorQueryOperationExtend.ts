@@ -3,6 +3,7 @@ import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expressio
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
+import type { ExpressionError } from '@comunica/expression-evaluator';
 import { isExpressionError } from '@comunica/expression-evaluator';
 import type { Bindings, IActionContext, IQueryOperationResult, IQueryOperationResultBindings } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -42,7 +43,7 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
     }
 
     const evaluator = await this.mediatorExpressionEvaluatorFactory
-      .mediate({ algExpr: operation.expression, context });
+      .mediate({ algExpr: expression, context });
 
     // Transform the stream by extending each Bindings with the expression result
     const transform = async(bindings: Bindings, next: any, push: (pusbBindings: Bindings) => void): Promise<void> => {
@@ -57,7 +58,8 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
           // Errors silently don't actually extend according to the spec
           push(bindings);
           // But let's warn anyway
-          this.logWarn(context, `Expression error for extend operation with bindings '${bindingsToString(bindings)}'`);
+          this.logWarn(context, `Expression error for extend operation (${(<ExpressionError> error).message})` +
+            `with bindings '${bindingsToString(bindings)}'`);
         } else {
           bindingsStream.emit('error', error);
         }
@@ -65,6 +67,7 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
       next();
     };
 
+    // eslint-disable-next-line ts/no-misused-promises
     const bindingsStream = output.bindingsStream.transform<Bindings>({ autoStart: false, transform });
     return {
       type: 'bindings',
@@ -77,6 +80,6 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
   }
 }
 
-interface IActorQueryOperationExtendArgs extends IActorQueryOperationTypedMediatedArgs {
+export interface IActorQueryOperationExtendArgs extends IActorQueryOperationTypedMediatedArgs {
   mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
 }

@@ -15,12 +15,8 @@ describe('ActorFunctionsWrapperAll', () => {
       actor = new ActorFunctionFactoryWrapperAll({ name: 'actor', bus });
     });
 
-    it('should test', () => {
-      // Return expect(actor.test({ todo: true })).resolves.toEqual({ todo: true }); // TODO
-    });
+    it.todo('should test');
 
-    it('should run', () => {
-      // Return expect(actor.run({ todo: true })).resolves.toMatchObject({ todo: true }); // TODO
-    });
+    it.todo('should run');
   });
 });

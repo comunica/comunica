@@ -71,26 +71,26 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
     });
 
     describe('test', () => {
-      it('should test', () => {
-        return expect(actor.test({ context: new ActionContext(
+      it('should test', async() => {
+        await expect(actor.test({ context: new ActionContext(
           { [KeysRdfUpdateQuads.destination.name]: { value: 'abc' }},
         ) }))
           .resolves.toBeTruthy();
       });
 
-      it('should test on raw destination form', () => {
-        return expect(actor.test({ context: new ActionContext(
+      it('should test on raw destination form', async() => {
+        await expect(actor.test({ context: new ActionContext(
           { [KeysRdfUpdateQuads.destination.name]: 'abc' },
         ) }))
           .resolves.toBeTruthy();
       });
 
-      it('should not test without a destination', () => {
-        return expect(actor.test({ context: new ActionContext({}) })).rejects.toBeTruthy();
+      it('should not test without a destination', async() => {
+        await expect(actor.test({ context: new ActionContext({}) })).rejects.toBeTruthy();
       });
 
-      it('should not test on an invalid destination value', () => {
-        return expect(actor.test({ context: new ActionContext(
+      it('should not test on an invalid destination value', async() => {
+        await expect(actor.test({ context: new ActionContext(
           { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: null }},
         ) }))
           .rejects.toBeTruthy();
@@ -104,7 +104,7 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
 
       it('should return a mediated destination', async() => {
         const destination = await actor.getDestination(context);
-        expect(destination).toEqual('DEST0');
+        expect(destination).toBe('DEST0');
 
         expect(mediatorDereferenceRdf.mediate).toHaveBeenCalledWith<[IActionDereferenceRdf]>({
           context,
@@ -138,7 +138,7 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
       it('should return a mediated destination with a forced type', async() => {
         context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: { type: 'x', value: 'abc' }});
         const destination = await actor.getDestination(context);
-        expect(destination).toEqual('DEST0');
+        expect(destination).toBe('DEST0');
 
         expect(mediatorRdfUpdateHypermedia.mediate).toHaveBeenCalledWith({
           context,
@@ -154,8 +154,8 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
         const context2 = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'dest2' });
         const destination1 = await actor.getDestination(context1);
         const destination2 = await actor.getDestination(context2);
-        expect(await actor.getDestination(context1)).toEqual(destination1);
-        expect(await actor.getDestination(context2)).toEqual(destination2);
+        await expect(actor.getDestination(context1)).resolves.toEqual(destination1);
+        await expect(actor.getDestination(context2)).resolves.toEqual(destination2);
       });
 
       it('should cache the destination and allow invalidation for a specific url', async() => {
@@ -166,8 +166,8 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
 
         httpInvalidatorListener({ url: 'dest1' });
 
-        expect(await actor.getDestination(context1)).not.toEqual(destination1);
-        expect(await actor.getDestination(context2)).toEqual(destination2);
+        await expect(actor.getDestination(context1)).resolves.not.toEqual(destination1);
+        await expect(actor.getDestination(context2)).resolves.toEqual(destination2);
       });
 
       it('should cache the destination and allow invalidation for no specific url', async() => {
@@ -178,8 +178,8 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
 
         httpInvalidatorListener({});
 
-        expect(await actor.getDestination(context1)).not.toEqual(destination1);
-        expect(await actor.getDestination(context2)).not.toEqual(destination2);
+        await expect(actor.getDestination(context1)).resolves.not.toEqual(destination1);
+        await expect(actor.getDestination(context2)).resolves.not.toEqual(destination2);
       });
 
       it('should not cache the source with cache size 0', async() => {
@@ -199,8 +199,8 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
         const destination1 = await actor.getDestination(context1);
         const destination2 = await actor.getDestination(context2);
 
-        expect(await actor.getDestination(context1)).not.toEqual(destination1);
-        expect(await actor.getDestination(context2)).not.toEqual(destination2);
+        await expect(actor.getDestination(context1)).resolves.not.toEqual(destination1);
+        await expect(actor.getDestination(context2)).resolves.not.toEqual(destination2);
       });
 
       it('should delegate dereference errors to the destination', async() => {
@@ -218,7 +218,7 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
       });
 
       it('should delegate exist-false dereferences to the destination', async() => {
-        mediatorDereferenceRdf.mediate = jest.fn(async({ url }: any) => {
+        jest.spyOn(mediatorDereferenceRdf, 'mediate').mockImplementation(async({ url }: any) => {
           const data = {
             quads: 'QUADS',
             exists: false,

@@ -1,4 +1,4 @@
-name: "Publish GitHub release on version tags"
+name: Publish GitHub release on version tags
 on:
   push:
     tags:
@@ -8,11 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Determine release version
-        run: echo "RELEASE_VERSION=${GITHUB_REF:10}" >> $GITHUB_OUTPUT
-      - name: Create a Release
-        uses: elgohr/Github-Release-Action@v4
+      - name: Release
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
-        with:
-          title: "${{ env.STATE_RELEASE_VERSION }}"

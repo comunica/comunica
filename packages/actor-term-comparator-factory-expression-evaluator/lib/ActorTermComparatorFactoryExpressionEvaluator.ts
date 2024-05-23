@@ -1,10 +1,8 @@
 import { InternalEvaluator } from '@comunica/actor-expression-evaluator-factory-default/lib/InternalEvaluator';
-import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
-import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
+import { BindingsFactory } from '@comunica/bindings-factory';
 import type {
   IActionTermComparatorFactory,
   IActorTermComparatorFactoryOutput,
-  IActorTermComparatorFactoryArgs,
 } from '@comunica/bus-term-comparator-factory';
 import { ActorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import type { IActorTest } from '@comunica/core';
@@ -16,21 +14,14 @@ import { TermComparatorExpressionEvaluator } from './TermComparatorExpressionEva
  * A comunica Expression Evaluator Based Term Comparator Factory Actor.
  */
 export class ActorTermComparatorFactoryExpressionEvaluator extends ActorTermComparatorFactory {
-  private readonly mediatorQueryOperation: MediatorQueryOperation;
-  private readonly mediatorFunctionFactory: MediatorFunctionFactory;
-  public constructor(args: IActorTermComparatorFactoryArgs) {
-    super(args);
-    this.mediatorQueryOperation = args.mediatorQueryOperation;
-    this.mediatorFunctionFactory = <MediatorFunctionFactory> args.mediatorFunctionFactory;
-  }
-
-  public async test(action: IActionTermComparatorFactory): Promise<IActorTest> {
+  public async test(_action: IActionTermComparatorFactory): Promise<IActorTest> {
     return true;
   }
 
   /**
    * Context item superTypeProvider can be expected here
-   * @param context
+   * @param context IActionTermComparatorFactory
+   * @param context.context IActionContext
    */
   public async run({ context }: IActionTermComparatorFactory): Promise<IActorTermComparatorFactoryOutput> {
     context = prepareEvaluatorActionContext(context);
@@ -39,6 +30,7 @@ export class ActorTermComparatorFactoryExpressionEvaluator extends ActorTermComp
         context,
         this.mediatorFunctionFactory,
         this.mediatorQueryOperation,
+        await BindingsFactory.create(this.mediatorMergeBindingsContext, context),
       ),
       await this.mediatorFunctionFactory
         .mediate({ functionName: RegularOperator.EQUAL, context, requireTermExpression: true }),

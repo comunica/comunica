@@ -46,4 +46,3 @@ export class ActorBindingsAggregatorFactorySum extends ActorBindingsAggregatorFa
     );
   }
 }
-

@@ -1,8 +1,9 @@
 /** @jest-environment setup-polly-jest/jest-environment-node */
 
-import { KeysHttpWayback, KeysInitQuery, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
+import { QuerySourceSkolemized } from '@comunica/actor-context-preprocess-query-source-skolemize';
+import { KeysHttpWayback, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { BlankNodeScoped } from '@comunica/data-factory';
-import type { IActionContext, QueryBindings, QueryStringContext } from '@comunica/types';
+import type { QueryBindings, QueryStringContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import 'jest-rdf';
 import arrayifyStream from 'arrayify-stream';
@@ -12,6 +13,7 @@ import { Factory } from 'sparqlalgebrajs';
 import { QueryEngine } from '../lib/QueryEngine';
 import { usePolly } from './util';
 
+// Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
 const stringifyStream = require('stream-to-string');
 
 const DF = new DataFactory();
@@ -23,6 +25,16 @@ describe('System test: QuerySparql', () => {
   let engine: QueryEngine;
   beforeEach(() => {
     engine = new QueryEngine();
+  });
+
+  describe('instantiated multiple times', () => {
+    it('should contain different actors', () => {
+      const engine2 = new QueryEngine();
+
+      expect((<any> engine).actorInitQuery).toBe((<any> engine).actorInitQuery);
+      expect((<any> engine2).actorInitQuery).toBe((<any> engine2).actorInitQuery);
+      expect((<any> engine).actorInitQuery).not.toBe((<any> engine2).actorInitQuery);
+    });
   });
 
   describe('query', () => {
@@ -38,7 +50,7 @@ describe('System test: QuerySparql', () => {
         const result = <QueryBindings> await engine.query(`SELECT * WHERE {
       ?s <ex:dummy> ?o.
     }`, { sources: [ 'https://www.rubensworks.net/' ]});
-        expect((await arrayifyStream(await result.execute()))).toEqual([]);
+        await expect((arrayifyStream(await result.execute()))).resolves.toEqual([]);
       });
 
       it('for the single source context entry', async() => {
@@ -70,15 +82,15 @@ describe('System test: QuerySparql', () => {
       ?s <ex:dummy> ?o.
     }`;
         const context: QueryStringContext = { sources: [ 'https://www.rubensworks.net/' ]};
-        expect((await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute())))
+        await expect((arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute()))).resolves
           .toEqual([]);
-        expect((await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute())))
+        await expect((arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute()))).resolves
           .toEqual([]);
-        expect((await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute())))
+        await expect((arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute()))).resolves
           .toEqual([]);
-        expect((await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute())))
+        await expect((arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute()))).resolves
           .toEqual([]);
-        expect((await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute())))
+        await expect((arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute()))).resolves
           .toEqual([]);
       });
 
@@ -92,10 +104,7 @@ describe('System test: QuerySparql', () => {
         it('should return the valid result with a turtle data source', async() => {
           const value = '<ex:s> <ex:p> <ex:o>. <ex:s> <ex:p2> <ex:o2>.';
           const context: QueryStringContext = { sources: [
-            { type: 'stringSource',
-              value,
-              mediaType: 'text/turtle',
-              baseIRI: 'http://example.org/' },
+            { type: 'serialized', value, mediaType: 'text/turtle', baseIRI: 'http://example.org/' },
           ]};
 
           const expectedResult: RDF.Quad[] = [
@@ -104,7 +113,7 @@ describe('System test: QuerySparql', () => {
           ];
 
           const result = await arrayifyStream(await engine.queryQuads(query, context));
-          expect(result.length).toBe(expectedResult.length);
+          expect(result).toHaveLength(expectedResult.length);
           expect(result).toMatchObject(expectedResult);
         });
 
@@ -116,10 +125,7 @@ describe('System test: QuerySparql', () => {
           }
           `;
           const context: QueryStringContext = { sources: [
-            { type: 'stringSource',
-              value,
-              mediaType: 'application/ld+json',
-              baseIRI: 'http://example.org/' },
+            { type: 'serialized', value, mediaType: 'application/ld+json', baseIRI: 'http://example.org/' },
           ]};
 
           const expectedResult: RDF.Quad[] = [
@@ -128,7 +134,7 @@ describe('System test: QuerySparql', () => {
           ];
 
           const result = await arrayifyStream(await engine.queryQuads(query, context));
-          expect(result.length).toBe(expectedResult.length);
+          expect(result).toHaveLength(expectedResult.length);
           expect(result).toMatchObject(expectedResult);
         });
 
@@ -139,9 +145,7 @@ describe('System test: QuerySparql', () => {
             "ex:p2":{"@id":"ex:o2"}
           }`;
           const context: QueryStringContext = { sources: [
-            { type: 'stringSource',
-              value,
-              mediaType: 'application/ld+json' },
+            { type: 'serialized', value, mediaType: 'application/ld+json' },
           ]};
 
           const expectedResult: RDF.Quad[] = [
@@ -150,11 +154,11 @@ describe('System test: QuerySparql', () => {
           ];
 
           const result = await arrayifyStream(await engine.queryQuads(query, context));
-          expect(result.length).toBe(expectedResult.length);
+          expect(result).toHaveLength(expectedResult.length);
           expect(result).toMatchObject(expectedResult);
         });
 
-        it('should return the valid result with multiple stringSource', async() => {
+        it('should return the valid result with multiple serialized', async() => {
           const value1 = `{
             "@id":"ex:s",
             "ex:p":{"@id":"ex:o"},
@@ -162,8 +166,8 @@ describe('System test: QuerySparql', () => {
           }`;
           const value2 = '<ex:s> <ex:p3> <ex:o3>. <ex:s> <ex:p4> <ex:o4>.';
           const context: QueryStringContext = { sources: [
-            { type: 'stringSource', value: value1, mediaType: 'application/ld+json' },
-            { type: 'stringSource', value: value2, mediaType: 'text/turtle' },
+            { type: 'serialized', value: value1, mediaType: 'application/ld+json' },
+            { type: 'serialized', value: value2, mediaType: 'text/turtle' },
           ]};
 
           const expectedResult: RDF.Quad[] = [
@@ -174,7 +178,7 @@ describe('System test: QuerySparql', () => {
           ];
 
           const result = await arrayifyStream(await engine.queryQuads(query, context));
-          expect(result.length).toBe(expectedResult.length);
+          expect(result).toHaveLength(expectedResult.length);
           expect(result).toMatchObject(expectedResult);
         });
 
@@ -192,22 +196,17 @@ describe('System test: QuerySparql', () => {
           }`;
           const value2 = '<ex:s> <ex:p3> <ex:o3>. <ex:s> <ex:p4> <ex:o4>.';
           const context: QueryStringContext = { sources: [
-            { type: 'stringSource', value: value1, mediaType: 'application/ld+json' },
-            { type: 'stringSource', value: value2, mediaType: 'text/turtle' },
+            { type: 'serialized', value: value1, mediaType: 'application/ld+json' },
+            { type: 'serialized', value: value2, mediaType: 'text/turtle' },
             store,
           ]};
-
-          const expectedResult: RDF.Quad[] = [
+          await expect(arrayifyStream(await engine.queryQuads(query, context))).resolves.toBeRdfIsomorphic([
             DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o')),
             DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p3'), DF.namedNode('ex:o3')),
             DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p5'), DF.namedNode('ex:o5')),
             DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')),
             DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p4'), DF.namedNode('ex:o4')),
-          ];
-
-          const result = await arrayifyStream(await engine.queryQuads(query, context));
-          expect(result.length).toBe(expectedResult.length);
-          expect(result).toMatchObject(expectedResult);
+          ]);
         });
       });
 
@@ -243,7 +242,7 @@ describe('System test: QuerySparql', () => {
 
           const result = await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute());
 
-          expect(result.length).toBe(expectedResult.length);
+          expect(result).toHaveLength(expectedResult.length);
           expect(result).toMatchObject(expectedResult);
         });
 
@@ -279,7 +278,7 @@ describe('System test: QuerySparql', () => {
 
           const result = await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute());
 
-          expect(result.length).toBe(expectedResult.length);
+          expect(result).toHaveLength(expectedResult.length);
           expect(result).toMatchObject(expectedResult);
         });
 
@@ -308,37 +307,36 @@ describe('System test: QuerySparql', () => {
 
           const result = await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute());
 
-          expect(result.length).toBe(expectedResult.length);
+          expect(result).toHaveLength(expectedResult.length);
           expect(result).toMatchObject(expectedResult);
         });
 
-        it('return consistent blank nodes with a data source that should return one blank node and one named node',
-          async() => {
-            quads = [
-              DF.quad(DF.namedNode('a'), DF.namedNode('b'), DF.namedNode('c')),
+        it(`return consistent blank nodes with a data source that should return one blank node and one named node`, async() => {
+          quads = [
+            DF.quad(DF.namedNode('a'), DF.namedNode('b'), DF.namedNode('c')),
 
-              DF.quad(DF.namedNode('a'), DF.namedNode('d'), DF.blankNode('e')),
+            DF.quad(DF.namedNode('a'), DF.namedNode('d'), DF.blankNode('e')),
 
-              DF.quad(DF.blankNode('e'), DF.namedNode('f'), DF.namedNode('g')),
-              DF.quad(DF.blankNode('e'), DF.namedNode('h'), DF.namedNode('i')),
+            DF.quad(DF.blankNode('e'), DF.namedNode('f'), DF.namedNode('g')),
+            DF.quad(DF.blankNode('e'), DF.namedNode('h'), DF.namedNode('i')),
 
-              DF.quad(DF.namedNode('c'), DF.namedNode('i'), DF.namedNode('j')),
-            ];
-            store.addQuads(quads);
-            const context = <any> { sources: [ store ]};
+            DF.quad(DF.namedNode('c'), DF.namedNode('i'), DF.namedNode('j')),
+          ];
+          store.addQuads(quads);
+          const context = <any> { sources: [ store ]};
 
-            const blankNode = new BlankNodeScoped('bc_0_e', DF.namedNode('urn:comunica_skolem:source_0:e'));
-            const expectedResult = [
-              DF.quad(DF.namedNode('c'), DF.namedNode('i'), DF.namedNode('j')),
-              DF.quad(blankNode, DF.namedNode('f'), DF.namedNode('g')),
-              DF.quad(blankNode, DF.namedNode('h'), DF.namedNode('i')),
-            ];
+          const blankNode = new BlankNodeScoped('bc_0_e', DF.namedNode('urn:comunica_skolem:source_0:e'));
+          const expectedResult = [
+            DF.quad(DF.namedNode('c'), DF.namedNode('i'), DF.namedNode('j')),
+            DF.quad(blankNode, DF.namedNode('f'), DF.namedNode('g')),
+            DF.quad(blankNode, DF.namedNode('h'), DF.namedNode('i')),
+          ];
 
-            const result = await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute());
+          const result = await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute());
 
-            expect(result.length).toBe(expectedResult.length);
-            expect(result).toMatchObject(expectedResult);
-          });
+          expect(result).toHaveLength(expectedResult.length);
+          expect(result).toMatchObject(expectedResult);
+        });
       });
 
       describe('extension function', () => {
@@ -391,14 +389,14 @@ describe('System test: QuerySparql', () => {
           const context = <any> { sources: [ store ]};
           context.extensionFunctionCreator = baseFunctionCreator;
           const result = <QueryBindings> await engine.query(baseQuery(funcAllow), context);
-          expect((await arrayifyStream(await result.execute())).length).toEqual(store.size);
+          await expect((arrayifyStream(await result.execute()))).resolves.toHaveLength(store.size);
         });
 
         it('with results and pointless custom filter given by record', async() => {
           const context = <any> { sources: [ store ]};
           context.extensionFunctions = baseFunctions;
           const result = <QueryBindings> await engine.query(baseQuery(funcAllow), context);
-          expect((await arrayifyStream(await result.execute())).length).toEqual(4);
+          await expect((arrayifyStream(await result.execute()))).resolves.toHaveLength(4);
         });
 
         it('with results but all filtered away', async() => {
@@ -406,7 +404,7 @@ describe('System test: QuerySparql', () => {
           context.extensionFunctionCreator = () => () =>
             DF.literal('false', booleanType);
           const result = <QueryBindings> await engine.query(baseQuery('rejectAll'), context);
-          expect(await arrayifyStream(await result.execute())).toEqual([]);
+          await expect(arrayifyStream(await result.execute())).resolves.toEqual([]);
         });
 
         it('throws error when supplying both record and creator', async() => {
@@ -426,7 +424,7 @@ describe('System test: QuerySparql', () => {
         }
           `;
           context.extensionFunctions = {
-            async 'http://example.org/functions#to-upper-case'(args: RDF.Term[]) {
+            'http://example.org/functions#to-upper-case': async function(args: RDF.Term[]) {
               const arg = args[0];
               if (arg.termType === 'Literal' && arg.datatype.equals(DF.literal('', stringType).datatype)) {
                 return DF.literal(arg.value.toUpperCase(), stringType);
@@ -497,7 +495,8 @@ describe('System test: QuerySparql', () => {
           stringType = DF.namedNode('http://www.w3.org/2001/XMLSchema#string');
           store = new Store();
           quads = [
-            DF.quad(DF.namedNode(':a'), DF.namedNode(':p'), DF.literal('apple', stringType)) ];
+            DF.quad(DF.namedNode(':a'), DF.namedNode(':p'), DF.literal('apple', stringType)),
+          ];
           store.addQuads(quads);
         });
 
@@ -512,47 +511,6 @@ describe('System test: QuerySparql', () => {
           );
           expect(Object.keys(functionArgumentsCache)).toContain('strlen');
         });
-
-        it('is used when defaulted', async() => {
-          const alternativeEngine = new QueryEngine();
-          const context = <any> { sources: [ store ]};
-
-          // This cumbersome way is needed because evaluating with mock with isCalledWith gives you the reference
-          // to the cache and will make it seem like it was filled in from the beginning.
-          const original_function = (<any> alternativeEngine).actorInitQuery.mediatorContextPreprocess.mediate;
-          let firstFuncArgCache: object | undefined;
-          let secondFuncArgCache: object | undefined;
-          (<any> alternativeEngine).actorInitQuery.mediatorContextPreprocess.mediate =
-            (arg: { context: IActionContext }) => {
-              firstFuncArgCache = arg.context.get(KeysInitQuery.functionArgumentsCache);
-              expect(firstFuncArgCache).toEqual({});
-              return original_function(arg);
-            };
-
-          // Evaluate query once
-          const firstBindingsStream = await alternativeEngine.queryBindings(query, context);
-          expect((await firstBindingsStream.toArray()).map(res => res.get(DF.variable('len'))!.value)).toEqual(
-            quads.map(q => String(q.object.value.length)),
-          );
-
-          (<any> alternativeEngine).actorInitQuery.mediatorContextPreprocess.mediate =
-            (arg: { context: IActionContext }) => {
-              secondFuncArgCache = arg.context.get(KeysInitQuery.functionArgumentsCache);
-              expect(secondFuncArgCache).not.toBeUndefined();
-              expect(Object.keys(secondFuncArgCache!)).toContain('strlen');
-              return original_function(arg);
-            };
-          // Evaluate query a second time
-          const secondBindingsStream = await alternativeEngine.queryBindings(query, context);
-          expect((await secondBindingsStream.toArray()).map(res => res.get(DF.variable('len'))!.value)).toEqual(
-            quads.map(q => String(q.object.value.length)),
-          );
-
-          expect(firstFuncArgCache).toBe(secondFuncArgCache);
-
-          // Reset the function again!
-          (<any> alternativeEngine).actorInitQuery.mediatorContextPreprocess.mediate = original_function;
-        });
       });
     });
 
@@ -561,7 +519,7 @@ describe('System test: QuerySparql', () => {
         const result = <QueryBindings> await engine.query(`SELECT * WHERE {
       ?s ?p ?s.
     }`, { sources: [ 'https://www.rubensworks.net/' ]});
-        expect(((await arrayifyStream(await result.execute())).length)).toEqual(1);
+        await expect(((arrayifyStream(await result.execute())))).resolves.toHaveLength(1);
       });
 
       it('RDFJS Source', async() => {
@@ -572,7 +530,7 @@ describe('System test: QuerySparql', () => {
         const result = <QueryBindings> await engine.query(`SELECT * WHERE {
       ?s ?p ?s.
     }`, { sources: [ store ]});
-        expect((await arrayifyStream(await result.execute())).length).toEqual(1);
+        await expect((arrayifyStream(await result.execute()))).resolves.toHaveLength(1);
       });
     });
 
@@ -590,7 +548,7 @@ describe('System test: QuerySparql', () => {
   <https://www.rubensworks.net/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
   ?v0 <ex:dummy> ?name.
     }`, { sources: [ 'https://www.rubensworks.net/' ]});
-        expect((await arrayifyStream(await result.execute()))).toEqual([]);
+        await expect((arrayifyStream(await result.execute()))).resolves.toEqual([]);
       });
 
       it('for the single source entry', async() => {
@@ -609,7 +567,7 @@ describe('System test: QuerySparql', () => {
             'https://raw.githubusercontent.com/w3c/data-shapes/gh-pages/shacl-compact-syntax/' +
           'tests/valid/basic-shape-iri.shaclc',
           ]});
-          expect((await arrayifyStream(await result.execute())).length).toEqual(1);
+          await expect((arrayifyStream(await result.execute()))).resolves.toHaveLength(1);
         });
 
         it('correctly serializes construct query on a shape in .shaclc as shaclc', async() => {
@@ -620,10 +578,9 @@ describe('System test: QuerySparql', () => {
           'tests/valid/basic-shape-iri.shaclc',
           ]});
 
-          const { data } = await engine.resultToString(result,
-            'text/shaclc');
+          const { data } = await engine.resultToString(result, 'text/shaclc');
 
-          expect((await stringifyStream(data))).toEqual('BASE <http://example.org/basic-shape-iri>\n\n' +
+          await expect((stringifyStream(data))).resolves.toEqual('BASE <http://example.org/basic-shape-iri>\n\n' +
     'shape <http://example.org/test#TestShape> {\n' +
     '}\n');
         });
@@ -636,10 +593,9 @@ describe('System test: QuerySparql', () => {
           'tests/valid/basic-shape-iri.ttl',
           ]});
 
-          const { data } = await engine.resultToString(result,
-            'text/shaclc');
+          const { data } = await engine.resultToString(result, 'text/shaclc');
 
-          expect((await stringifyStream(data))).toEqual('BASE <http://example.org/basic-shape-iri>\n\n' +
+          await expect((stringifyStream(data))).resolves.toEqual('BASE <http://example.org/basic-shape-iri>\n\n' +
     'shape <http://example.org/test#TestShape> {\n' +
     '}\n');
         });
@@ -651,7 +607,7 @@ describe('System test: QuerySparql', () => {
         const result = <QueryBindings> await engine.query(`SELECT * WHERE {
       ?s ?p ?o.
     } LIMIT 300`, { sources: [ 'https://fragments.dbpedia.org/2016-04/en' ]});
-        expect((await arrayifyStream(await result.execute())).length).toEqual(300);
+        await expect((arrayifyStream(await result.execute()))).resolves.toHaveLength(300);
         await new Promise(resolve => setTimeout(resolve, 10)); // To avoid unhandled errors
       });
 
@@ -659,7 +615,7 @@ describe('System test: QuerySparql', () => {
         const result = <QueryBindings> await engine.query(`SELECT * WHERE {
       ?s a ?o.
     } LIMIT 300`, { sources: [ 'https://fragments.dbpedia.org/2016-04/en' ]});
-        expect((await arrayifyStream(await result.execute())).length).toEqual(300);
+        await expect((arrayifyStream(await result.execute()))).resolves.toHaveLength(300);
         await new Promise(resolve => setTimeout(resolve, 10)); // To avoid unhandled errors
       });
     });
@@ -670,7 +626,7 @@ describe('System test: QuerySparql', () => {
       ?city a <http://dbpedia.org/ontology/Airport>;
             <http://dbpedia.org/property/cityServed> <http://dbpedia.org/resource/Italy>.
     }`, { sources: [ 'https://fragments.dbpedia.org/2016-04/en' ]});
-        expect((await arrayifyStream(await result.execute())).length).toEqual(19);
+        await expect((arrayifyStream(await result.execute()))).resolves.toHaveLength(19);
       });
 
       it('without results', async() => {
@@ -678,7 +634,7 @@ describe('System test: QuerySparql', () => {
       ?city a <http://dbpedia.org/ontology/Airport>;
             <http://dbpedia.org/property/cityServed> <http://dbpedia.org/resource/UNKNOWN>.
     }`, { sources: [ 'https://fragments.dbpedia.org/2016-04/en' ]});
-        expect((await arrayifyStream(await result.execute()))).toEqual([]);
+        await expect((arrayifyStream(await result.execute()))).resolves.toEqual([]);
       });
     });
 
@@ -773,7 +729,50 @@ SELECT * WHERE {
           bindingsStream.on('error', reject);
           bindingsStream.on('end', resolve);
         });
-        expect(called).toEqual(0);
+        expect(called).toBe(0);
+      });
+    });
+
+    describe('property paths', () => {
+      it('should handle zero-or-more paths with lists', async() => {
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: `
+PREFIX fhir: <http://hl7.org/fhir/>
+
+<http://hl7.org/fhir/Observation/58671>
+  fhir:id [ fhir:v "58671" ];
+  fhir:value [
+    fhir:coding ( [
+      a <http://snomed.info/id/8517006>;
+    ] )
+  ];
+  fhir:component ( [
+    fhir:value [
+      fhir:coding [] # comment this line
+    ];
+  ] ).
+`,
+              mediaType: 'text/turtle',
+              baseIRI: 'http://example.org/',
+            },
+          ],
+        };
+
+        await expect((arrayifyStream(await engine.queryBindings(`
+PREFIX fhir: <http://hl7.org/fhir/>
+SELECT ?obsId {
+  ?obs
+    fhir:id [ fhir:v ?obsId ].
+  ?obs fhir:value [
+      fhir:coding [ rdf:rest*/rdf:first [
+        a <http://snomed.info/id/8517006> ;
+      ] ]
+    ].
+}
+`, context)))).resolves.toHaveLength(1);
       });
     });
   });
@@ -787,14 +786,14 @@ SELECT * WHERE {
         sources: [ 'http://xmlns.com/foaf/spec/20140114.rdf' ],
         [KeysHttpWayback.recoverBrokenLinks.name]: true,
       });
-      expect((await arrayifyStream(await result.execute())).length).toEqual(1);
+      await expect((arrayifyStream(await result.execute()))).resolves.toHaveLength(1);
     });
 
     it('returns results with link recovery on [using shortcut key]', async() => {
       const result = <QueryBindings> await engine.query(`SELECT * WHERE {
     <http://xmlns.com/foaf/0.1/> a <http://www.w3.org/2002/07/owl#Ontology>.
   }`, { sources: [ 'http://xmlns.com/foaf/spec/20140114.rdf' ], recoverBrokenLinks: true });
-      expect((await arrayifyStream(await result.execute())).length).toEqual(1);
+      await expect((arrayifyStream(await result.execute()))).resolves.toHaveLength(1);
     });
   });
 
@@ -814,9 +813,9 @@ SELECT * WHERE {
         await result.execute();
 
         // Check store contents
-        expect(store.size).toEqual(1);
+        expect(store.size).toBe(1);
         expect(store.countQuads(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'), DF.defaultGraph()))
-          .toEqual(1);
+          .toBe(1);
       });
 
       it('with direct insert on a single source', async() => {
@@ -832,9 +831,9 @@ SELECT * WHERE {
         await result.execute();
 
         // Check store contents
-        expect(store.size).toEqual(1);
+        expect(store.size).toBe(1);
         expect(store.countQuads(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'), DF.defaultGraph()))
-          .toEqual(1);
+          .toBe(1);
       });
 
       it('with insert where on a single source', async() => {
@@ -856,33 +855,33 @@ SELECT * WHERE {
         await result.execute();
 
         // Check store contents
-        expect(store.size).toEqual(8);
+        expect(store.size).toBe(8);
         expect(store.countQuads(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'), DF.defaultGraph()))
-          .toEqual(1);
+          .toBe(1);
         expect(store.countQuads(DF.blankNode('s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'), DF.defaultGraph()))
-          .toEqual(1);
+          .toBe(1);
         expect(store.countQuads(DF.blankNode('s'), DF.namedNode('ex:a'), DF.namedNode('ex:thing'), DF.defaultGraph()))
-          .toEqual(1);
+          .toBe(1);
         expect(
           store.countQuads(DF.blankNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'), DF.defaultGraph()),
         )
-          .toEqual(1);
+          .toBe(1);
         expect(
           store.countQuads(DF.blankNode('ex:s'), DF.namedNode('ex:a'), DF.namedNode('ex:thing'), DF.defaultGraph()),
         )
-          .toEqual(1);
+          .toBe(1);
         expect(
           store.countQuads(DF.namedNode('ex:s'), DF.namedNode('ex:a'), DF.namedNode('ex:thing'), DF.defaultGraph()),
         )
-          .toEqual(1);
+          .toBe(1);
         expect(
           store.countQuads(DF.namedNode('ex:p'), DF.namedNode('ex:a'), DF.namedNode('ex:thing'), DF.defaultGraph()),
         )
-          .toEqual(1);
+          .toBe(1);
         expect(
           store.countQuads(DF.namedNode('ex:o'), DF.namedNode('ex:a'), DF.namedNode('ex:thing'), DF.defaultGraph()),
         )
-          .toEqual(1);
+          .toBe(1);
       });
 
       it('with insert where on two sources', async() => {
@@ -900,7 +899,7 @@ SELECT * WHERE {
         } WHERE { ?s ?p ?o }`, {
           sources: [ store, store2 ],
           destination: store,
-          [KeysRdfResolveQuadPattern.sourceIds.name]: new Map(),
+          [KeysQuerySourceIdentify.sourceIds.name]: new Map(),
         });
         await result.execute();
 
@@ -909,9 +908,9 @@ SELECT * WHERE {
         // (1) The quad that was originally there
         // (2) The quad _:ex:s <ex:a> <ex:thing>, i.e. the insert applied to the bnode from the destination store
         // (3) The quad _:bc_1_ex:s <ex:a> <ex:thing>, i.e. insert applied the the *different* bnode from store2
-        expect(store.size).toEqual(3);
+        expect(store.size).toBe(3);
         expect(store.countQuads(DF.blankNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'), DF.defaultGraph()))
-          .toEqual(1);
+          .toBe(1);
         expect(
           store.countQuads(
             DF.blankNode('bc_1_ex:s'),
@@ -919,10 +918,10 @@ SELECT * WHERE {
             DF.namedNode('ex:thing'),
             DF.defaultGraph(),
           ),
-        ).toEqual(1);
+        ).toBe(1);
         expect(
           store.countQuads(DF.blankNode('ex:s'), DF.namedNode('ex:a'), DF.namedNode('ex:thing'), DF.defaultGraph()),
-        );
+        ).toBe(1);
       });
 
       it('with direct insert and delete', async() => {
@@ -943,12 +942,12 @@ SELECT * WHERE {
         await result.execute();
 
         // Check store contents
-        expect(store.size).toEqual(1);
+        expect(store.size).toBe(1);
         expect(store.countQuads(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'), DF.defaultGraph()))
-          .toEqual(1);
+          .toBe(1);
         expect(store
           .countQuads(DF.namedNode('ex:s-pre'), DF.namedNode('ex:p-pre'), DF.namedNode('ex:o-pre'), DF.defaultGraph()))
-          .toEqual(0);
+          .toBe(0);
       });
 
       it('with variable delete', async() => {
@@ -960,7 +959,7 @@ SELECT * WHERE {
           DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p3'), DF.namedNode('ex:o3')),
           DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p4'), DF.namedNode('ex:o4')),
         ]);
-        expect(store.size).toEqual(4);
+        expect(store.size).toBe(4);
 
         // Execute query
         const result = <RDF.QueryVoid> await engine.query(`DELETE WHERE {
@@ -972,9 +971,9 @@ SELECT * WHERE {
         await result.execute();
 
         // Check store contents
-        expect(store.size).toEqual(1);
+        expect(store.size).toBe(1);
         expect(store.countQuads(DF.namedNode('ex:s2'), DF.namedNode('ex:p4'), DF.namedNode('ex:o4'), DF.defaultGraph()))
-          .toEqual(1);
+          .toBe(1);
       });
 
       it('with load', async() => {
@@ -1004,7 +1003,7 @@ SELECT * WHERE {
           DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p3'), DF.namedNode('ex:o3'), DF.namedNode('ex:g3')),
           DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p4'), DF.namedNode('ex:o4'), DF.defaultGraph()),
         ]);
-        expect(store.size).toEqual(4);
+        expect(store.size).toBe(4);
 
         // Execute query
         const result = <RDF.QueryVoid> await engine.query(`CLEAR NAMED`, {
@@ -1014,9 +1013,9 @@ SELECT * WHERE {
         await result.execute();
 
         // Check store contents
-        expect(store.size).toEqual(1);
+        expect(store.size).toBe(1);
         expect(store.countQuads(DF.namedNode('ex:s2'), DF.namedNode('ex:p4'), DF.namedNode('ex:o4'), DF.defaultGraph()))
-          .toEqual(1);
+          .toBe(1);
       });
 
       it('with drop', async() => {
@@ -1028,7 +1027,7 @@ SELECT * WHERE {
           DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p3'), DF.namedNode('ex:o3'), DF.namedNode('ex:g3')),
           DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p4'), DF.namedNode('ex:o4'), DF.defaultGraph()),
         ]);
-        expect(store.size).toEqual(4);
+        expect(store.size).toBe(4);
 
         // Execute query
         const result = <RDF.QueryVoid> await engine.query(`DROP DEFAULT`, {
@@ -1038,9 +1037,9 @@ SELECT * WHERE {
         await result.execute();
 
         // Check store contents
-        expect(store.size).toEqual(3);
+        expect(store.size).toBe(3);
         expect(store.countQuads(DF.namedNode('ex:s4'), DF.namedNode('ex:p4'), DF.namedNode('ex:o4'), DF.defaultGraph()))
-          .toEqual(0);
+          .toBe(0);
       });
 
       it('with create', async() => {
@@ -1050,7 +1049,7 @@ SELECT * WHERE {
           DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1'), DF.namedNode('ex:g1')),
           DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p4'), DF.namedNode('ex:o4'), DF.defaultGraph()),
         ]);
-        expect(store.size).toEqual(2);
+        expect(store.size).toBe(2);
 
         // Resolve for non-existing graph
         await expect((<RDF.QueryVoid> await engine.query(`CREATE GRAPH <ex:g2>`, {
@@ -1062,7 +1061,7 @@ SELECT * WHERE {
         await expect((<RDF.QueryVoid> await engine.query(`CREATE GRAPH <ex:g1>`, {
           sources: [ store ],
           destination: store,
-        })).execute()).rejects.toThrowError('Unable to create graph ex:g1 as it already exists');
+        })).execute()).rejects.toThrow('Unable to create graph ex:g1 as it already exists');
 
         // Resolve for existing graph in silent mode
         await expect((<RDF.QueryVoid> await engine.query(`CREATE SILENT GRAPH <ex:g1>`, {
@@ -1078,7 +1077,7 @@ SELECT * WHERE {
           DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1'), DF.namedNode('ex:g1')),
           DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.defaultGraph()),
         ]);
-        expect(store.size).toEqual(2);
+        expect(store.size).toBe(2);
 
         // Execute query
         const result = <RDF.QueryVoid> await engine.query(`ADD DEFAULT TO <ex:g1>`, {
@@ -1088,10 +1087,10 @@ SELECT * WHERE {
         await result.execute();
 
         // Check store contents
-        expect(store.size).toEqual(3);
+        expect(store.size).toBe(3);
         expect(store
           .countQuads(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g1')))
-          .toEqual(1);
+          .toBe(1);
       });
 
       it('with move', async() => {
@@ -1101,7 +1100,7 @@ SELECT * WHERE {
           DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1'), DF.namedNode('ex:g1')),
           DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.defaultGraph()),
         ]);
-        expect(store.size).toEqual(2);
+        expect(store.size).toBe(2);
 
         // Execute query
         const result = <RDF.QueryVoid> await engine.query(`MOVE DEFAULT TO <ex:g1>`, {
@@ -1111,10 +1110,10 @@ SELECT * WHERE {
         await result.execute();
 
         // Check store contents
-        expect(store.size).toEqual(1);
+        expect(store.size).toBe(1);
         expect(store
           .countQuads(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g1')))
-          .toEqual(1);
+          .toBe(1);
       });
 
       it('with copy', async() => {
@@ -1124,7 +1123,7 @@ SELECT * WHERE {
           DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1'), DF.namedNode('ex:g1')),
           DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.defaultGraph()),
         ]);
-        expect(store.size).toEqual(2);
+        expect(store.size).toBe(2);
 
         // Execute query
         const result = <RDF.QueryVoid> await engine.query(`COPY DEFAULT TO <ex:g1>`, {
@@ -1134,10 +1133,10 @@ SELECT * WHERE {
         await result.execute();
 
         // Check store contents
-        expect(store.size).toEqual(2);
+        expect(store.size).toBe(2);
         expect(store
           .countQuads(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g1')))
-          .toEqual(1);
+          .toBe(1);
       });
     });
   });
@@ -1180,16 +1179,25 @@ SELECT * WHERE {
     }`, {
           sources: [ 'https://www.rubensworks.net/' ],
         }, 'logical');
-        expect(result).toEqual({
+        expect(result).toMatchObject({
           explain: true,
           type: 'logical',
           data: {
             input: {
               input: [
-                factory.createPattern(
-                  DF.variable('s'),
-                  DF.variable('p'),
-                  DF.variable('o'),
+                Object.assign(
+                  factory.createPattern(
+                    DF.variable('s'),
+                    DF.variable('p'),
+                    DF.variable('o'),
+                  ),
+                  {
+                    metadata: {
+                      scopedSource: {
+                        source: expect.any(QuerySourceSkolemized),
+                      },
+                    },
+                  },
                 ),
               ],
               type: 'join',

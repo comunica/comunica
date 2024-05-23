@@ -81,7 +81,7 @@ describe('MinAggregator', () => {
         BF.bindings([[ DF.variable('x'), int('4') ]]),
       ];
 
-      expect(await runAggregator(aggregator, input)).toEqual(int('1'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(int('1'));
     });
 
     it('a list of string bindings', async() => {
@@ -92,7 +92,7 @@ describe('MinAggregator', () => {
         BF.bindings([[ DF.variable('x'), string('3') ]]),
       ];
 
-      expect(await runAggregator(aggregator, input)).toEqual(string('1'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(string('1'));
     });
 
     it('a list of date bindings', async() => {
@@ -103,7 +103,7 @@ describe('MinAggregator', () => {
         BF.bindings([[ DF.variable('x'), date('2010-06-21+09:00') ]]),
       ];
 
-      expect(await runAggregator(aggregator, input)).toEqual(date('2001-07-23'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(date('2001-07-23'));
     });
 
     it('should work with different types', async() => {
@@ -113,7 +113,7 @@ describe('MinAggregator', () => {
         BF.bindings([[ DF.variable('x'), float('3') ]]),
       ];
 
-      expect(await runAggregator(aggregator, input)).toEqual(int('2'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(int('2'));
     });
 
     it('passing a non-literal should not be accepted', async() => {
@@ -122,7 +122,7 @@ describe('MinAggregator', () => {
         BF.bindings([[ DF.variable('x'), int('2') ]]),
         BF.bindings([[ DF.variable('x'), int('3') ]]),
       ];
-      expect(await runAggregator(aggregator, input)).toEqual(undefined);
+      await expect(runAggregator(aggregator, input)).resolves.toBeUndefined();
     });
 
     it('passing a non-literal should not be accepted even in non-first place', async() => {
@@ -131,11 +131,11 @@ describe('MinAggregator', () => {
         BF.bindings([[ DF.variable('x'), nonLiteral() ]]),
         BF.bindings([[ DF.variable('x'), int('3') ]]),
       ];
-      expect(await runAggregator(aggregator, input)).toEqual(undefined);
+      await expect(runAggregator(aggregator, input)).resolves.toBeUndefined();
     });
 
     it('with respect to empty input', async() => {
-      expect(await runAggregator(aggregator, [])).toEqual(undefined);
+      await expect(runAggregator(aggregator, [])).resolves.toBeUndefined();
     });
   });
 
@@ -159,11 +159,11 @@ describe('MinAggregator', () => {
         BF.bindings([[ DF.variable('x'), int('1') ], [ DF.variable('y'), int('1') ]]),
       ];
 
-      expect(await runAggregator(aggregator, input)).toEqual(int('1'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(int('1'));
     });
 
     it('with respect to empty input', async() => {
-      expect(await runAggregator(aggregator, [])).toEqual(undefined);
+      await expect(runAggregator(aggregator, [])).resolves.toBeUndefined();
     });
   });
 });

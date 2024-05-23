@@ -19,13 +19,13 @@ import type { Algebra as Alg } from 'sparqlalgebrajs';
 export abstract class ActorFunctionFactory extends
   Actor<IActionFunctionFactory, IActorTest, IActorFunctionFactoryOutput> {
   /**
-  * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
-  */
+   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   */
   public constructor(args: IActorFunctionFactoryArgs) {
     super(args);
   }
 
-  public abstract run<T extends IActionFunctionFactory>(action: T):
+  public abstract override run<T extends IActionFunctionFactory>(action: T):
   Promise<T extends { requireTermExpression: true } ? IActorFunctionFactoryOutputTerm : IActorFunctionFactoryOutput>;
 }
 
@@ -62,13 +62,19 @@ export interface IActorFunctionFactoryOutput extends IActorOutput, IExpressionFu
 export interface IActorFunctionFactoryOutputTerm extends IActorOutput, ITermFunction {}
 
 export type IActorFunctionFactoryArgs = IActorArgs<
-IActionFunctionFactory, IActorTest, IActorFunctionFactoryOutput>;
+IActionFunctionFactory,
+IActorTest,
+IActorFunctionFactoryOutput
+>;
 
 export type MediatorFunctionFactoryUnsafe = Mediate<IActionFunctionFactory, IActorFunctionFactoryOutput>;
 
 export abstract class MediatorFunctionFactory extends Mediator<
 Actor<IActionFunctionFactory, IActorTest, IActorFunctionFactoryOutput>,
-IActionFunctionFactory, IActorTest, IActorFunctionFactoryOutput> {
-  public abstract mediate: <T extends IActionFunctionFactory>(action: T) =>
+IActionFunctionFactory,
+IActorTest,
+IActorFunctionFactoryOutput
+> {
+  public abstract override mediate: <T extends IActionFunctionFactory>(action: T) =>
   Promise<T extends { requireTermExpression: true } ? IActorFunctionFactoryOutputTerm : IActorFunctionFactoryOutput>;
 }

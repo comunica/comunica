@@ -19,13 +19,17 @@ import {
   trimToYearMonthDuration,
 } from '@comunica/expression-evaluator/lib/util/DateTimeHelpers';
 import * as Err from '@comunica/expression-evaluator/lib/util/Errors';
-import { parseDate,
+import {
+  parseDate,
   parseDateTime,
   parseDayTimeDuration,
   parseDuration,
   parseTime,
   parseYearMonthDuration,
-  parseXSDDecimal, parseXSDFloat, parseXSDInteger } from '@comunica/expression-evaluator/lib/util/Parsing';
+  parseXSDDecimal,
+  parseXSDFloat,
+  parseXSDInteger,
+} from '@comunica/expression-evaluator/lib/util/Parsing';
 
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------

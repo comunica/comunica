@@ -1,48 +1,50 @@
 {
   "name": "@comunica/actor-rdf-join-optional-bind",
-  "version": "2.9.0",
+  "version": "3.0.3",
   "description": "A optional-bind rdf-join actor",
   "lsd:module": true,
-  "main": "lib/index.js",
-  "typings": "lib/index",
+  "license": "MIT",
+  "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
     "directory": "packages/actor-rdf-join-optional-bind"
   },
-  "publishConfig": {
-    "access": "public"
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
   },
-  "sideEffects": false,
   "keywords": [
     "comunica",
     "actor",
     "rdf-join",
     "optional-bind"
   ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/comunica/comunica/issues"
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "publishConfig": {
+    "access": "public"
   },
-  "homepage": "https://comunica.dev/",
   "files": [
     "components",
     "lib/**/*.d.ts",
     "lib/**/*.js",
     "lib/**/*.js.map"
   ],
-  "dependencies": {
-    "@comunica/actor-rdf-join-inner-multi-bind": "^2.9.0",
-    "@comunica/bus-query-operation": "^2.9.0",
-    "@comunica/bus-rdf-join": "^2.9.0",
-    "@comunica/context-entries": "^2.8.2",
-    "@comunica/mediatortype-join-coefficients": "^2.8.2",
-    "@comunica/types": "^2.8.2",
-    "sparqlalgebrajs": "^4.2.0"
-  },
   "scripts": {
-    "build": "npm run build:ts && npm run build:components",
+    "build": "yarn run build:ts && yarn run build:components",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
     "build:components": "componentsjs-generator"
+  },
+  "dependencies": {
+    "@comunica/actor-rdf-join-inner-multi-bind": "^3.0.3",
+    "@comunica/bindings-factory": "^3.0.3",
+    "@comunica/bus-merge-bindings-context": "^3.0.3",
+    "@comunica/bus-query-operation": "^3.0.3",
+    "@comunica/bus-rdf-join": "^3.0.3",
+    "@comunica/context-entries": "^3.0.3",
+    "@comunica/mediatortype-join-coefficients": "^3.0.3",
+    "@comunica/types": "^3.0.3",
+    "sparqlalgebrajs": "^4.3.3"
   }
 }

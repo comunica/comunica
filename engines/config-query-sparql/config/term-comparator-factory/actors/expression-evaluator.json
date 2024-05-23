@@ -1,6 +1,6 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^2.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^3.0.0/components/context.jsonld",
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-term-comparator-factory-expression-evaluator/^1.0.0/components/context.jsonld"
   ],
@@ -11,7 +11,8 @@
       "@id": "urn:comunica:default:term-comparator-factory/actors#expression-evaluator",
       "@type": "ActorTermComparatorFactoryExpressionEvaluator",
       "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
-      "mediatorFunctionFactory": { "@id": "urn:comunica:default:function-factory/mediators#main" }
+      "mediatorFunctionFactory": { "@id": "urn:comunica:default:function-factory/mediators#main" },
+      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" }
     }
   ]
 }

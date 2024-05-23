@@ -21,7 +21,9 @@ describe('ActorQueryParseSparql', () => {
     });
 
     it('should not be able to create new ActorQueryParseSparql objects without \'new\'', () => {
-      expect(() => { (<any> ActorQueryParseSparql)(); }).toThrow();
+      expect(() => {
+        (<any> ActorQueryParseSparql)();
+      }).toThrow(`Class constructor ActorQueryParseSparql cannot be invoked without 'new'`);
     });
   });
 
@@ -34,17 +36,28 @@ describe('ActorQueryParseSparql', () => {
       context = new ActionContext();
     });
 
-    it('should not test on the graphql format', () => {
-      return expect(actor.test({ query: 'a', queryFormat: { language: 'graphql', version: '1.0' }, context }))
+    it('should not test on the graphql format', async() => {
+      await expect(actor.test({
+        query: 'a',
+        queryFormat: { language: 'graphql', version: '1.0' },
+        context,
+      }))
         .rejects.toBeTruthy();
     });
 
-    it('should test on no format', () => {
-      return expect(actor.test({ query: 'a', context })).resolves.toBeTruthy();
+    it('should test on no format', async() => {
+      await expect(actor.test({
+        query: 'a',
+        context,
+      })).resolves.toBeTruthy();
     });
 
-    it('should test on the sparql format', () => {
-      return expect(actor.test({ query: 'a', queryFormat: { language: 'sparql', version: '1.1' }, context }))
+    it('should test on the sparql format', async() => {
+      await expect(actor.test({
+        query: 'a',
+        queryFormat: { language: 'sparql', version: '1.1' },
+        context,
+      }))
         .resolves.toBeTruthy();
     });
 
@@ -61,8 +74,7 @@ describe('ActorQueryParseSparql', () => {
                 subject: { value: 'a' },
                 type: 'pattern',
               },
-            ],
-            type: 'bgp' },
+            ], type: 'bgp' },
             type: 'project',
             variables: [
               {
@@ -119,8 +131,7 @@ describe('ActorQueryParseSparql', () => {
               subject: { value: 'a' },
               type: 'pattern',
             },
-          ],
-          type: 'bgp' },
+          ], type: 'bgp' },
           type: 'project',
           variables: [
             {

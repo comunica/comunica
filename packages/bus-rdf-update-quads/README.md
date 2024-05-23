@@ -19,12 +19,12 @@ $ yarn add @comunica/bus-rdf-update-quads
 
 ## Bus usage
 
-* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-update-quads/^2.0.0/components/context.jsonld"`
+* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-update-quads/^3.0.0/components/context.jsonld"`
 * **Bus name**: `ActorRdfUpdateQuads:_default_bus`
 
 ## Creating actors on this bus
 
-Actors extending [`ActorRdfUpdateQuads`](https://comunica.github.io/comunica/classes/bus_rdf_update_quads.actorrdfupdatequads.html) are automatically subscribed to this bus.
+Actors extending [`ActorRdfUpdateQuads`](https://comunica.github.io/comunica/classes/_comunica_bus_rdf_update_quads.ActorRdfUpdateQuads.html) are automatically subscribed to this bus.
 
-[`ActorRdfUpdateQuadsDestination`](https://comunica.github.io/comunica/classes/bus_rdf_update_quads.actorrdfupdatequadsdestination.html) is an extension of `ActorRdfUpdateQuads`
-that delegates insert and delete streams to an [`IQuadDestination`](https://comunica.github.io/comunica/classes/bus_rdf_update_quads.iquaddestination.html).
+[`ActorRdfUpdateQuadsDestination`](https://comunica.github.io/comunica/classes/_comunica_bus_rdf_update_quads.ActorRdfUpdateQuadsDestination.html) is an extension of `ActorRdfUpdateQuads`
+that delegates insert and delete streams to an [`IQuadDestination`](https://comunica.github.io/comunica/interfaces/_comunica_bus_rdf_update_quads.IQuadDestination.html).

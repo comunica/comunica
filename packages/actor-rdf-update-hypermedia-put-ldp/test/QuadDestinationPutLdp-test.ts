@@ -78,8 +78,8 @@ describe('QuadDestinationPutLdp', () => {
         },
         input: 'abc',
       });
-      expect(await stringifyStream(ActorHttp.toNodeReadable(mediatorHttp.mediate.mock.calls[0][0].init.body)))
-        .toEqual('TRIPLES');
+      await expect(stringifyStream(ActorHttp.toNodeReadable(mediatorHttp.mediate.mock.calls[0][0].init.body))).resolves
+        .toBe('TRIPLES');
     });
 
     it('should handle a valid insert when the server does not provide any suggestions', async() => {
@@ -115,8 +115,8 @@ describe('QuadDestinationPutLdp', () => {
         },
         input: 'abc',
       });
-      expect(await stringifyStream(ActorHttp.toNodeReadable(mediatorHttp.mediate.mock.calls[0][0].init.body)))
-        .toEqual('TRIPLES');
+      await expect(stringifyStream(ActorHttp.toNodeReadable(mediatorHttp.mediate.mock.calls[0][0].init.body))).resolves
+        .toBe('TRIPLES');
     });
 
     it('should throw on a server error', async() => {
@@ -132,7 +132,7 @@ describe('QuadDestinationPutLdp', () => {
         body: { cancel },
       });
       await destination.insert(<any> 'QUADS');
-      expect(cancel).toHaveBeenCalled();
+      expect(cancel).toHaveBeenCalledTimes(1);
     });
   });
 

@@ -1,4 +1,4 @@
-/* eslint mocha/no-exports: 0 */
+/* eslint-disable jest/no-export,jest/no-standalone-expect,jest/require-top-level-describe,jest/prefer-each */
 import { stringToTermPrefix, template } from './Aliases';
 import { generalErrorEvaluation, generalEvaluate } from './generalEvaluation';
 import type { TestTableConfig } from './utils';
@@ -28,7 +28,7 @@ type Row = string[];
  * true true = false
  * false false = false
  * `
-*/
+ */
 abstract class Table<RowType extends Row> {
   protected abstract readonly parser: TableParser<RowType>;
   protected abstract readonly def: TestTableConfig;
@@ -37,7 +37,7 @@ abstract class Table<RowType extends Row> {
 
   protected async testExpression(expr: string, result: string) {
     const { config, additionalPrefixes, exprEvalFactory } = this.def;
-    const aliases = this.def.aliases || {};
+    const aliases = this.def.aliases ?? {};
     result = aliases[result] || result;
     const evaluated = await generalEvaluate({
       expression: template(expr, additionalPrefixes),
@@ -56,10 +56,14 @@ abstract class Table<RowType extends Row> {
       generalEvaluationConfig: config,
       exprEvalFactory,
     });
-    expect(result).not.toBeUndefined();
-    expect(() => { throw result?.asyncError; }).toThrow(error);
+    expect(result).toBeDefined();
+    expect(() => {
+      throw result?.asyncError;
+    }).toThrow(error);
     if (result?.syncError) {
-      expect(() => { throw result?.syncError; }).toThrow(error);
+      expect(() => {
+        throw result?.syncError;
+      }).toThrow(error);
     }
   }
 
@@ -76,25 +80,25 @@ export class VariableTable extends Table<string[]> {
   }
 
   public test(): void {
-    this.parser.table.forEach(row => {
-      const result = row[row.length - 1];
+    for (const row of this.parser.table) {
+      const result = row.at(-1);
       const { operation } = this.def;
-      const aliases = this.def.aliases || {};
-      it(`${this.format(operation, row)} should return ${result}`, async() => {
+      const aliases = this.def.aliases ?? {};
+      test(`${this.format(operation, row)} should return ${result}`, async() => {
         const expr = this.format(operation, row.map(el => aliases[el] || el));
-        await this.testExpression(expr, result);
+        await this.testExpression(expr, result!);
       });
-    });
+    }
 
-    this.parser.errorTable.forEach(row => {
-      const error = row[row.length - 1];
+    for (const row of this.parser.errorTable) {
+      const error = row.at(-1);
       const { operation } = this.def;
-      const aliases = this.def.aliases || {};
-      it(`${this.format(operation, row)} should error`, async() => {
+      const aliases = this.def.aliases ?? {};
+      test(`${this.format(operation, row)} should error`, async() => {
         const expr = this.format(operation, row.map(el => aliases[el] || el));
-        await this.testErrorExpression(expr, error);
+        await this.testErrorExpression(expr, error!);
       });
-    });
+    }
   }
 
   protected format(operation: string, row: string[]): string {
@@ -115,25 +119,25 @@ export class UnaryTable extends Table<[string, string]> {
   }
 
   public test(): void {
-    this.parser.table.forEach(row => {
+    for (const row of this.parser.table) {
       const [ arg, result ] = row;
       const { operation } = this.def;
-      const aliases = this.def.aliases || {};
-      it(`${this.format(operation, row)} should return ${result}`, async() => {
+      const aliases = this.def.aliases ?? {};
+      test(`${this.format(operation, row)} should return ${result}`, async() => {
         const expr = this.format(operation, <[string, string]> row.map(el => aliases[el] || el));
         await this.testExpression(expr, result);
       });
-    });
+    }
 
-    this.parser.errorTable.forEach(row => {
+    for (const row of this.parser.errorTable) {
       const [ _, error ] = row;
       const { operation } = this.def;
-      const aliases = this.def.aliases || {};
-      it(`${this.format(operation, row)} should error`, async() => {
+      const aliases = this.def.aliases ?? {};
+      test(`${this.format(operation, row)} should error`, async() => {
         const expr = this.format(operation, <[string, string]> row.map(el => aliases[el] || el));
         await this.testErrorExpression(expr, error);
       });
-    });
+    }
   }
 
   protected format(operation: string, row: [string, string]): string {
@@ -161,8 +165,8 @@ export class BinaryTable extends Table<[string, string, string]> {
     for (const row of this.parser.table) {
       const result = row[2];
       const { operation } = this.def;
-      const aliases = this.def.aliases || {};
-      it(`${this.format(operation, row)} should return ${result}`, async() => {
+      const aliases = this.def.aliases ?? {};
+      test(`${this.format(operation, row)} should return ${result}`, async() => {
         const expr = this.format(operation, <[string, string, string]> row.map(el => aliases[el] || el));
         await this.testExpression(expr, result);
       });
@@ -171,8 +175,8 @@ export class BinaryTable extends Table<[string, string, string]> {
     for (const row of this.parser.errorTable) {
       const error = row[2];
       const { operation } = this.def;
-      const aliases = this.def.aliases || {};
-      it(`${this.format(operation, row)} should error`, async() => {
+      const aliases = this.def.aliases ?? {};
+      test(`${this.format(operation, row)} should error`, async() => {
         const expr = this.format(operation, <[string, string, string]> row.map(el => aliases[el] || el));
         await this.testErrorExpression(expr, error);
       });
@@ -199,23 +203,23 @@ export class ArrayTable extends Table<string[]> {
   }
 
   public test(): void {
-    for (const row of this.def.testArray || []) {
-      const result = row[row.length - 1];
+    for (const row of this.def.testArray ?? []) {
+      const result = row.at(-1);
       const { operation } = this.def;
-      const aliases = this.def.aliases || {};
-      it(`${this.format(operation, row)} should return ${result}`, async() => {
+      const aliases = this.def.aliases ?? {};
+      test(`${this.format(operation, row)} should return ${result}`, async() => {
         const expr = this.format(operation, row.map(el => aliases[el] || el));
-        await this.testExpression(expr, result);
+        await this.testExpression(expr, result!);
       });
     }
 
-    for (const row of this.def.errorArray || []) {
-      const error = row[row.length - 1];
+    for (const row of this.def.errorArray ?? []) {
+      const error = row.at(-1);
       const { operation } = this.def;
-      const aliases = this.def.aliases || {};
-      it(`${this.format(operation, row)} should error`, async() => {
+      const aliases = this.def.aliases ?? {};
+      test(`${this.format(operation, row)} should error`, async() => {
         const expr = this.format(operation, <[string, string, string]> row.map(el => aliases[el] || el));
-        await this.testErrorExpression(expr, error);
+        await this.testErrorExpression(expr, error!);
       });
     }
   }
@@ -238,24 +242,24 @@ abstract class TableParser<RowType extends Row> {
   public constructor(table?: string, errTable?: string) {
     this.table = table ?
       this.splitTable(table).map(row => this.parseRow(row)) :
-      [];
+        [];
     this.errorTable = (errTable) ?
       this.splitTable(errTable).map(r => this.parseRow(r)) :
-      [];
+        [];
   }
 
   protected abstract parseRow(row: string): RowType;
 
   private splitTable(table: string): string[] {
     // Trim whitespace, and remove blank lines
-    table = table.trim().replace(/^\s*[\n\r]/ugm, '');
+    table = table.trim().replaceAll(/^\s*[\n\r]/ugm, '');
     return table.split('\n');
   }
 }
 
 class VariableTableParser extends TableParser<string[]> {
   protected parseRow(row: string): string[] {
-    row = row.trim().replace(/ +/ug, ' ');
+    row = row.trim().replaceAll(/ +/ug, ' ');
     const match = row.match(/([^\s']+|'[^']*')+/ug)?.filter(str => str !== '=')
       ?.map(i => i.replace(/'([^']*)'/u, '$1'));
     if (match === undefined) {
@@ -267,7 +271,7 @@ class VariableTableParser extends TableParser<string[]> {
 
 class BinaryTableParser extends TableParser<[string, string, string]> {
   protected parseRow(row: string): [string, string, string] {
-    row = row.trim().replace(/ +/ug, ' ');
+    row = row.trim().replaceAll(/ +/ug, ' ');
     const matched = row.match(/([^\s']+|'[^']*')+/ug)
       ?.map(i => i.replace(/'([^']*)'/u, '$1'));
     if (matched === undefined) {
@@ -281,7 +285,7 @@ class BinaryTableParser extends TableParser<[string, string, string]> {
 class UnaryTableParser extends TableParser<[string, string]> {
   protected parseRow(row: string): [string, string] {
     // Trim whitespace and remove double spaces
-    row = row.trim().replace(/ +/ug, ' ');
+    row = row.trim().replaceAll(/ +/ug, ' ');
     const matched = row.match(/([^\s']+|'[^']*')+/ug)
       ?.map(i => i.replace(/'([^']*)'/u, '$1'));
     if (matched === undefined) {
@@ -291,3 +295,4 @@ class UnaryTableParser extends TableParser<[string, string]> {
     return [ arg, result ];
   }
 }
+/* eslint-enable jest/no-export */

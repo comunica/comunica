@@ -20,15 +20,14 @@ $ yarn add @comunica/expression-evaluator
 ## Exposed classes
 
 * [`ExpressionEvaluator`](https://comunica.github.io/comunica/classes/_comunica_expression_evaluator.AsyncEvaluator.html): An evaluator for SPARQL expressions working with Promises.
-* [`IAsyncEvaluatorContext`](https://comunica.github.io/comunica/classes/_comunica_expression_evaluator.IAsyncEvaluatorContext.html): Context used to configure the `ExpressionEvaluator`. See [Config](https://comunica.dev/docs/modify/advanced/expression-evaluator/#config). 
+* [`IAsyncEvaluatorContext`](https://comunica.github.io/comunica/classes/_comunica_expression_evaluator.IAsyncEvaluatorContext.html): Context used to configure the `ExpressionEvaluator`. See [Config](https://comunica.dev/docs/modify/advanced/expression-evaluator/#config).
 * [`SyncEvaluator`](https://comunica.github.io/comunica/classes/_comunica_expression_evaluator.SyncEvaluator.html): An evaluator for SPARQL expressions working without Promises.
-* [`ISyncEvaluatorContext`](https://comunica.github.io/comunica/classes/_comunica_expression_evaluator.ISyncEvaluatorContext.html): Context used to configure the `SyncEvaluator`. See [Config](https://comunica.dev/docs/modify/advanced/expression-evaluator/#config).
+* [`ISyncEvaluatorContext`](https://comunica.github.io/comunica/interfaces/_comunica_expression_evaluator.ISyncEvaluatorContext.html): Context used to configure the `SyncEvaluator`. See [Config](https://comunica.dev/docs/modify/advanced/expression-evaluator/#config).
 * [`AggregateEvaluator`](https://comunica.github.io/comunica/classes/_comunica_expression_evaluator.AggregateEvaluator.html): An evaluator for SPARQL aggregate expressions working without promises. See [Aggregates](https://comunica.dev/docs/modify/advanced/expression-evaluator/#aggregates).
 * [`ExpressionError`](https://comunica.github.io/comunica/classes/_comunica_expression_evaluator.ExpressionError.html): An error class for SPARQL expression errors as defined in the [error section](https://comunica.dev/docs/modify/advanced/expression-evaluator/#errors).
-* [`isExpressionError`](https://comunica.github.io/comunica/classes/_comunica_expression_evaluator.isExpressionError.html): A way to check if an error is of type `ExpressionError`.
-* [`orderTypes`](https://comunica.github.io/comunica/classes/_comunica_expression_evaluator.orderTypes.html): A function to order types according to the [SPARQL ORDER BY specification](https://www.w3.org/TR/sparql11-query/#modOrderBy).
+* [`isExpressionError`](https://comunica.github.io/comunica/functions/_comunica_expression_evaluator.isExpressionError.html): A way to check if an error is of type `ExpressionError`.
+* [`orderTypes`](https://comunica.github.io/comunica/functions/_comunica_expression_evaluator.orderTypes.html): A function to order types according to the [SPARQL ORDER BY specification](https://www.w3.org/TR/sparql11-query/#modOrderBy).
 * [`AsyncAggregateEvaluator`](https://comunica.github.io/comunica/classes/_comunica_expression_evaluator.AsyncAggregateEvaluator.html): An evaluator for SPARQL aggregate expressions working with promises. See [Aggregates](https://comunica.dev/docs/modify/advanced/expression-evaluator/#aggregates).
-
 
 ## Development
 
@@ -49,7 +48,7 @@ Three kinds exists:
 
 - Regular functions: Functions with a uniform interface, that only need their arguments to calculate their result.
 - Special functions: whose behaviour deviates enough from the norm to warrant the implementations taking full control
-over type checking and evaluation (these are mostly the functional forms). 
+over type checking and evaluation (these are mostly the functional forms).
 They are seperated from the regular functions because they are able to take control over the evaluation.
 Since we have support both async and sync evaluations, each having a distinct context, special functions require an implementation for both.
 For regular functions, the sync and async evaluation is the same, to avoid overhead, we differentiate between these two.
@@ -66,28 +65,28 @@ After transformation, the evaluator will recursively evaluate all the expression
 ### Testing
 
 The testing environment is set up to do a lot of tests with little code.
-The files responsible for fluent behaviour reside in the [`test/util`](./test/util) module.  
+The files responsible for fluent behaviour reside in the [`test/util`](./test/util) module.
 Most tests can be run by running the `runTestTable` method in [utils](test/util/utils.ts).
 This method expects a TestTable. Multiple test are run over a TestTable (one for every line).
 A TestTable may contain aliases if the aliases are also provided
 (Some handy aliases reside in [Aliases.ts](test/util/Aliases.ts)).
 This means that when testing something like `"3"^^xsd:integer equals "3"^^xsd:integer` is `"true"^^xsd:boolean`.
 We would write a small table (for this example some more tests are added) and test it like this:
-```ts
+```js
 import { bool, merge, numeric } from './util/Aliases';
 import { Notation } from './util/TruthTable';
 import { runTestTable } from './util/utils';
 runTestTable({
-   testTable: `
+  testTable: `
        3i 3i = true
        3i -5i = false
        -0f 0f = true
        NaN  NaN = false
    `,
-   arity: 2,
-   operation: '=',
-   aliases: merge(numeric, bool),
-   notation: Notation.Infix,
+  arity: 2,
+  operation: '=',
+  aliases: merge(numeric, bool),
+  notation: Notation.Infix,
 });
 ```
 More options can be provided and are explained with the type definition of the argument of `runTestTable`.
@@ -96,21 +95,21 @@ We can also provide an `errorTable` to the `runTestTable` method.
 This is used when we want to test if calling certain functions on certain arguments throws the error we want.
 An example is testing whether `Unknown named operator` error is thrown when
 we don't provide the implementation for an extension function.
-```ts
+```js
 import { bool, merge, numeric } from './util/Aliases';
 import { Notation } from './util/TruthTable';
 import { runTestTable } from './util/utils';
 runTestTable({
-   errorTable: `
+  errorTable: `
        3i 3i = 'Unknown named operator'
        3i -5i = 'Unknown named operator'
        -0f 0f = 'Unknown named operator'
        NaN  NaN = 'Unknown named operator'
    `,
-   arity: 2,
-   operation: '<https://example.org/functions#equal>',
-   aliases: merge(numeric, bool),
-   notation: Notation.Infix,
+  arity: 2,
+  operation: '<https://example.org/functions#equal>',
+  aliases: merge(numeric, bool),
+  notation: Notation.Infix,
 });
 ```
 When you don't care what the error is, you can just test for `''`.

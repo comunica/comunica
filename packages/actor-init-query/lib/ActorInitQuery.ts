@@ -1,5 +1,5 @@
 /* eslint-disable import/no-nodejs-modules */
-import { readFileSync } from 'fs';
+import { readFileSync } from 'node:fs';
 import type { IActionInit, IActorOutputInit } from '@comunica/bus-init';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { ICliArgsHandler, IQueryContextCommon } from '@comunica/types';
@@ -11,18 +11,18 @@ import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase';
 import { CliArgsHandlerQuery } from './cli/CliArgsHandlerQuery';
 import { QueryEngineBase } from './QueryEngineBase';
 
+// eslint-disable-next-line ts/no-require-imports,ts/no-var-requires
 const streamifyString = require('streamify-string');
 
 /**
  * A comunica Query Init Actor.
  */
-export class ActorInitQuery<QueryContext extends IQueryContextCommon = IQueryContextCommon>
-  extends ActorInitQueryBase<QueryContext> {
-  public constructor(args: IActorInitQueryBaseArgs<QueryContext>) {
+export class ActorInitQuery<QueryContext extends IQueryContextCommon = IQueryContextCommon> extends ActorInitQueryBase {
+  public constructor(args: IActorInitQueryBaseArgs) {
     super(args);
   }
 
-  public async run(action: IActionInit): Promise<IActorOutputInit> {
+  public override async run(action: IActionInit): Promise<IActorOutputInit> {
     // Wrap this actor in a query engine so we can conveniently execute queries
     const queryEngine = new QueryEngineBase<QueryContext>(this);
 
@@ -34,12 +34,11 @@ export class ActorInitQuery<QueryContext extends IQueryContextCommon = IQueryCon
         this.context,
         this.allowNoSources,
       ),
-      // eslint-disable-next-line @typescript-eslint/non-nullable-type-assertion-style
       ...(<ICliArgsHandler[]> action.context?.get(KeysInitQuery.cliArgsHandlers)) || [],
     ];
 
     // Populate yargs arguments object
-    let argumentsBuilder = yargs({});
+    let argumentsBuilder = yargs([]);
     for (const cliArgsHandler of cliArgsHandlers) {
       argumentsBuilder = cliArgsHandler.populateYargs(argumentsBuilder);
     }
@@ -50,14 +49,14 @@ export class ActorInitQuery<QueryContext extends IQueryContextCommon = IQueryCon
       args = await argumentsBuilder.parse(action.argv);
     } catch (error: unknown) {
       return {
-        stderr: require('streamify-string')(`${await argumentsBuilder.getHelp()}\n\n${(<Error> error).message}\n`),
+        stderr: streamifyString(`${await argumentsBuilder.getHelp()}\n\n${(<Error> error).message}\n`),
       };
     }
 
     // Print supported MIME types
     if (args.listformats) {
       const mediaTypes: Record<string, number> = await queryEngine.getResultMediaTypes();
-      return { stdout: require('streamify-string')(`${Object.keys(mediaTypes).join('\n')}\n`) };
+      return { stdout: streamifyString(`${Object.keys(mediaTypes).join('\n')}\n`) };
     }
 
     // Define query
@@ -68,7 +67,7 @@ export class ActorInitQuery<QueryContext extends IQueryContextCommon = IQueryCon
     } else if (args.file) {
       query = readFileSync(args.file, { encoding: 'utf8' });
     } else if (args.sources.length > 0) {
-      query = args.sources[args.sources.length - 1];
+      query = args.sources.at(-1);
       args.sources.pop();
     }
 
@@ -79,6 +78,7 @@ export class ActorInitQuery<QueryContext extends IQueryContextCommon = IQueryCon
         await cliArgsHandler.handleArgs(args, context);
       }
     } catch (error: unknown) {
+      // eslint-disable-next-line ts/no-require-imports,ts/no-var-requires
       return { stderr: require('streamify-string')((<Error> error).message) };
     }
 
@@ -88,7 +88,12 @@ export class ActorInitQuery<QueryContext extends IQueryContextCommon = IQueryCon
     // Output query explanations in a different way
     if ('explain' in queryResult) {
       return {
-        stdout: streamifyString(JSON.stringify(queryResult.data, null, '  ')),
+        stdout: streamifyString(JSON.stringify(queryResult.data, (key: string, value: any) => {
+          if (key === 'scopedSource') {
+            return value.source.toString();
+          }
+          return value;
+        }, '  ')),
       };
     }
 

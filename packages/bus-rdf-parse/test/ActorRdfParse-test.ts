@@ -13,7 +13,9 @@ describe('ActorRdfParse', () => {
     });
 
     it('should not be able to create new ActorRdfParse objects without \'new\'', () => {
-      expect(() => { (<any> ActorRdfParse)(); }).toThrow();
+      expect(() => {
+        (<any> ActorRdfParse)();
+      }).toThrow(`Class constructor ActorRdfParse cannot be invoked without 'new'`);
     });
   });
 });

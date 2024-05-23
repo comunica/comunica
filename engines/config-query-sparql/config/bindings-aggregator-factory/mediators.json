@@ -1,7 +1,7 @@
 {
   "@context": [
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-bindings-aggeregator-factory/^1.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^2.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^3.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:default:bindings-aggregator-factory/mediators#main",
   "@type": "MediatorRace",

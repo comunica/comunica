@@ -10,15 +10,15 @@ const DF = new DataFactory();
 describe('Errors', () => {
   describe('isExpressionError', () => {
     it('on ExpressionError subclass', () => {
-      expect(isExpressionError(new InvalidLexicalForm(DF.literal('foo')))).toEqual(true);
+      expect(isExpressionError(new InvalidLexicalForm(DF.literal('foo')))).toBe(true);
     });
 
     it('on ExpressionError', () => {
-      expect(isExpressionError(new ExpressionError('apple'))).toEqual(true);
+      expect(isExpressionError(new ExpressionError('apple'))).toBe(true);
     });
 
     it('on plain Error', () => {
-      expect(isExpressionError(new Error('foo'))).toEqual(false);
+      expect(isExpressionError(new Error('foo'))).toBe(false);
     });
   });
 
@@ -31,11 +31,11 @@ describe('Errors', () => {
     it('with Error without backtrace', () => {
       const error = new Error('error');
       error.stack = undefined;
-      expect((new ExtensionFunctionError('test', error)).message).toEqual('Error thrown in test: error');
+      expect((new ExtensionFunctionError('test', error)).message).toBe('Error thrown in test: error');
     });
 
     it('with other input', () => {
-      expect((new ExtensionFunctionError('test', 'error')).message).toEqual('Error thrown in test');
+      expect((new ExtensionFunctionError('test', 'error')).message).toBe('Error thrown in test');
     });
   });
 });

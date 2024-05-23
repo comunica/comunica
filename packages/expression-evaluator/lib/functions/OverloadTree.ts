@@ -1,6 +1,6 @@
 import type { GeneralSuperTypeDict, IActionContext, ISuperTypeProvider } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { isLiteralTermExpression } from '../expressions';
+import { isLiteralTermExpression, TermExpression } from '../expressions';
 import type * as E from '../expressions';
 import type * as C from '../util/Consts';
 import type { OverrideType } from '../util/TypeHandling';
@@ -26,8 +26,11 @@ export interface IInternalEvaluator {
 }
 
 export type ImplementationFunction = (expressionEvaluator: IInternalEvaluator) => E.SimpleApplication;
+export type ImplementationFunctionTuple<T> = (expressionEvaluator: IInternalEvaluator) => E.SimpleApplicationTuple<T>;
+
 interface IFunctionArgumentsCacheObj {
-  func?: ImplementationFunction; cache?: FunctionArgumentsCache;
+  func?: ImplementationFunction;
+  cache?: FunctionArgumentsCache;
 }
 export type FunctionArgumentsCache = Record<string, IFunctionArgumentsCacheObj>;
 /**
@@ -47,7 +50,7 @@ export class OverloadTree {
     this.implementation = undefined;
     this.generalOverloads = Object.create(null);
     this.literalOverLoads = [];
-    this.depth = depth || 0;
+    this.depth = depth ?? 0;
     this.promotionCount = undefined;
   }
 
@@ -68,7 +71,7 @@ export class OverloadTree {
    * Get the implementation for the types that exactly match @param args .
    */
   public getImplementationExact(args: ArgumentType[]): ImplementationFunction | undefined {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias,consistent-this
+    // eslint-disable-next-line ts/no-this-alias
     let node: OverloadTree | undefined = this;
     for (const expression of args) {
       node = node.getSubtree(expression);
@@ -82,11 +85,14 @@ export class OverloadTree {
   /**
    * Searches in a depth first way for the best matching overload. considering this a the tree's root.
    * @param args the arguments to the function.
-   * @param functionArgumentsCache
    * @param superTypeProvider
+   * @param functionArgumentsCache
    */
-  public search(args: E.TermExpression[], superTypeProvider: ISuperTypeProvider,
-    functionArgumentsCache: FunctionArgumentsCache):
+  public search(
+    args: E.TermExpression[],
+    superTypeProvider: ISuperTypeProvider,
+    functionArgumentsCache: FunctionArgumentsCache,
+  ):
     ImplementationFunction | undefined {
     let cacheIter: IFunctionArgumentsCacheObj | undefined = functionArgumentsCache[this.identifier];
     let searchIndex = 0;
@@ -128,19 +134,22 @@ export class OverloadTree {
     return undefined;
   }
 
-  private addToCache(functionArgumentsCache: FunctionArgumentsCache, args: E.TermExpression[],
-    func?: ImplementationFunction | undefined): void {
+  private addToCache(
+    functionArgumentsCache: FunctionArgumentsCache,
+    args: E.TermExpression[],
+    func?: ImplementationFunction | undefined,
+  ): void {
     function getDefault(lruCache: FunctionArgumentsCache, key: string): IFunctionArgumentsCacheObj {
       if (!(key in lruCache)) {
-        lruCache[key] = { };
+        lruCache[key] = {};
       }
-      return lruCache[key]!;
+      return lruCache[key];
     }
     let cache = getDefault(functionArgumentsCache, this.identifier);
     for (const term of args) {
       const literalExpression = isLiteralTermExpression(term);
       const key = literalExpression ? literalExpression.dataType : term.termType;
-      cache.cache = cache.cache || {};
+      cache.cache = cache.cache ?? {};
       cache = getDefault(cache.cache, key);
     }
     cache.func = func;
@@ -156,8 +165,7 @@ export class OverloadTree {
     this._addOverload([ ...argumentTypes ], func, 0);
   }
 
-  private _addOverload(argumentTypes: ArgumentType[],
-    func: ImplementationFunction, promotionCount: number): void {
+  private _addOverload(argumentTypes: ArgumentType[], func: ImplementationFunction, promotionCount: number): void {
     const [ argumentType, ..._argumentTypes ] = argumentTypes;
     if (!argumentType) {
       if (this.promotionCount === undefined || promotionCount <= this.promotionCount) {
@@ -181,15 +189,26 @@ export class OverloadTree {
     }
     nextTree._addOverload(_argumentTypes, func, promotionCount);
 
-    typePromotion[argumentType]?.forEach(ret =>
-      this.addPromotedOverload(
-        ret.typeToPromote, func, ret.conversionFunction, _argumentTypes, promotionCount,
-      ));
+    if (typePromotion[argumentType]) {
+      for (const ret of typePromotion[argumentType]!) {
+        this.addPromotedOverload(
+          ret.typeToPromote,
+          func,
+          ret.conversionFunction,
+          _argumentTypes,
+          promotionCount,
+        );
+      }
+    }
   }
 
-  private addPromotedOverload(typeToPromote: OverrideType, func: ImplementationFunction,
+  private addPromotedOverload(
+    typeToPromote: OverrideType,
+    func: ImplementationFunction,
     conversionFunction: (arg: E.TermExpression) => E.TermExpression,
-    argumentTypes: ArgumentType[], promotionCount: number): void {
+    argumentTypes: ArgumentType[],
+    promotionCount: number,
+  ): void {
     let nextTree = this.getSubtree(typeToPromote);
     if (!nextTree) {
       const newNode = new OverloadTree(this.identifier, this.depth + 1);
@@ -236,6 +255,7 @@ export class OverloadTree {
       const matches: [number, OverloadTree][] = this.literalOverLoads.filter(([ matchType, _ ]) =>
         matchType in subExtensionTable)
         .map(([ matchType, tree ]) => [ subExtensionTable[<C.KnownLiteralTypes> matchType], tree ]);
+      // eslint-disable-next-line unused-imports/no-unused-vars
       matches.sort(([ prioA, matchTypeA ], [ prioB, matchTypeB ]) => prioA - prioB);
       res.push(...matches.map(([ _, sortedType ]) => sortedType));
     }

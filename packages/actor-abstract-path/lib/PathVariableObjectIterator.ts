@@ -37,7 +37,7 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
     this._push(this.subject, emitFirstSubject);
   }
 
-  protected _end(destroy?: boolean): void {
+  protected override _end(destroy?: boolean): void {
     // Close all running iterators
     for (const it of this.runningOperations) {
       it.destroy();
@@ -46,7 +46,7 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
     super._end(destroy);
   }
 
-  protected _push(item: RDF.Term, pushAsResult = true): void {
+  protected override _push(item: RDF.Term, pushAsResult = true): void {
     let termString;
     if (pushAsResult) {
       // Don't push if this subject was already found
@@ -70,8 +70,8 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
     }
   }
 
-  protected _read(count: number, done: () => void): void {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias,consistent-this
+  protected override _read(count: number, done: () => void): void {
+    // eslint-disable-next-line ts/no-this-alias
     const self = this;
     (async function() {
       // Open as many operations as possible

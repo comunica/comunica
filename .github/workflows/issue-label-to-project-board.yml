@@ -1,4 +1,4 @@
-name: "Add labeled issues to project board"
+name: Add labeled issues to project board
 on:
   issues:
     types: [labeled]
@@ -10,19 +10,19 @@ jobs:
   assign:
     runs-on: ubuntu-latest
     steps:
-    - name: Maintenance Issues
-      uses: srggrs/assign-one-project-github-action@1.3.1
-      if: |
-        contains(github.event.issue.labels.*.name, 'bug 🐛') ||
-        contains(github.event.issue.labels.*.name, 'performance 🐌') ||
-        contains(github.event.issue.labels.*.name, 'question ❓')
-      with:
-        project: 'https://github.com/orgs/comunica/projects/2'
-        column_name: 'Triage'
-    - name: Development Issues
-      uses: srggrs/assign-one-project-github-action@1.3.1
-      if: |
-        contains(github.event.issue.labels.*.name, 'feature ➕')
-      with:
-        project: 'https://github.com/orgs/comunica/projects/3'
-        column_name: 'Triage'
+      - name: Maintenance Issues
+        uses: srggrs/assign-one-project-github-action@1.3.1
+        if: |
+          contains(github.event.issue.labels.*.name, 'bug 🐛') ||
+          contains(github.event.issue.labels.*.name, 'performance 🐌') ||
+          contains(github.event.issue.labels.*.name, 'question ❓')
+        with:
+          project: 'https://github.com/orgs/comunica/projects/2'
+          column_name: Triage
+      - name: Development Issues
+        uses: srggrs/assign-one-project-github-action@1.3.1
+        if: |
+          contains(github.event.issue.labels.*.name, 'feature ➕')
+        with:
+          project: 'https://github.com/orgs/comunica/projects/3'
+          column_name: Triage

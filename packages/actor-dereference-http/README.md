@@ -7,7 +7,6 @@ resolves the URL using the [HTTP bus](https://github.com/comunica/comunica/tree/
 
 An Dereference actor implementation for Comunica that resolves the URL using the HTTP bus.
 
-
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
 
@@ -26,7 +25,7 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-dereference-http/^2.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-dereference-http/^3.0.0/components/context.jsonld"
   ],
   "actors": [
     ...

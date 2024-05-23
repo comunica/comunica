@@ -1,9 +1,12 @@
-import type { IActionSparqlSerialize,
+import type {
+  IActionSparqlSerialize,
   IActorQueryResultSerializeFixedMediaTypesArgs,
-  IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
+  IActorQueryResultSerializeOutput,
+} from '@comunica/bus-query-result-serialize';
 import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-result-serialize';
 import type {
-  IActionContext, IQueryOperationResultBindings,
+  IActionContext,
+  IQueryOperationResultBindings,
   IQueryOperationResultQuads,
 } from '@comunica/types';
 import { Readable } from 'readable-stream';
@@ -29,7 +32,7 @@ export class ActorQueryResultSerializeStats extends ActorQueryResultSerializeFix
   }
   /* eslint-enable max-len */
 
-  public async testHandleChecked(action: IActionSparqlSerialize, context: IActionContext): Promise<boolean> {
+  public override async testHandleChecked(action: IActionSparqlSerialize, _context: IActionContext): Promise<boolean> {
     if (![ 'bindings', 'quads' ].includes(action.type)) {
       throw new Error('This actor can only handle bindings streams or quad streams.');
     }
@@ -55,7 +58,7 @@ export class ActorQueryResultSerializeStats extends ActorQueryResultSerializeFix
     data.push(null);
   }
 
-  public async runHandle(action: IActionSparqlSerialize, mediaType: string, context: IActionContext):
+  public async runHandle(action: IActionSparqlSerialize, _mediaType: string, _context: IActionContext):
   Promise<IActorQueryResultSerializeOutput> {
     const data = new Readable();
     data._read = () => {
@@ -63,8 +66,8 @@ export class ActorQueryResultSerializeStats extends ActorQueryResultSerializeFix
     };
 
     const resultStream: NodeJS.EventEmitter = action.type === 'bindings' ?
-      (<IQueryOperationResultBindings> action).bindingsStream :
-      (<IQueryOperationResultQuads> action).quadStream;
+        (<IQueryOperationResultBindings> action).bindingsStream :
+        (<IQueryOperationResultQuads> action).quadStream;
 
     const startTime = this.now();
     let result = 1;

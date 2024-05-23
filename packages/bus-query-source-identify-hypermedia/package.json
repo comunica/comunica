@@ -1,0 +1,43 @@
+{
+  "name": "@comunica/bus-query-source-identify-hypermedia",
+  "version": "3.0.3",
+  "description": "A comunica bus for query-source-identify-hypermedia events.",
+  "lsd:module": true,
+  "license": "MIT",
+  "homepage": "https://comunica.dev/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/bus-query-source-identify-hypermedia"
+  },
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
+  "keywords": [
+    "comunica",
+    "bus",
+    "query-source-identify-hypermedia"
+  ],
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.js.map"
+  ],
+  "scripts": {
+    "build": "yarn run build:ts && yarn run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
+  },
+  "dependencies": {
+    "@comunica/core": "^3.0.3",
+    "@comunica/types": "^3.0.3",
+    "@rdfjs/types": "*"
+  }
+}

@@ -1,48 +1,48 @@
 {
   "name": "@comunica/expression-evaluator",
-  "version": "2.9.0",
+  "version": "3.0.1",
   "description": "A simple SPARQL expression evaluator",
   "lsd:module": true,
-  "main": "lib/index.js",
-  "typings": "lib/index",
+  "license": "MIT",
+  "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
     "directory": "packages/expression-evaluator"
   },
-  "publishConfig": {
-    "access": "public"
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
   },
-  "sideEffects": false,
   "keywords": [
     "sparql",
     "expression",
     "rdf",
     "evaluator"
   ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/comunica/comunica/issues"
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "publishConfig": {
+    "access": "public"
   },
-  "homepage": "https://comunica.dev/",
   "files": [
     "lib/**/*.d.ts",
     "lib/**/*.js",
     "lib/**/*.js.map"
   ],
-  "dependencies": {
-    "@comunica/types": "^2.8.2",
-    "@comunica/context-entries": "^2.8.2",
-    "lru-cache": "^10.0.0",
-    "@rdfjs/types": "*",
-    "rdf-data-factory": "^1.1.2",
-    "rdf-string": "^1.6.3",
-    "sparqlalgebrajs": "^4.2.0"
-  },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
     "build:components": "componentsjs-generator",
     "bench": "node \"../../node_modules/typescript/bin/tsc\" && node benchmarks/*.js"
+  },
+  "dependencies": {
+    "@comunica/context-entries": "^3.0.3",
+    "@comunica/types": "^3.0.3",
+    "@rdfjs/types": "*",
+    "lru-cache": "^10.0.0",
+    "rdf-data-factory": "^1.1.2",
+    "rdf-string": "^1.6.3",
+    "sparqlalgebrajs": "^4.2.0"
   }
 }

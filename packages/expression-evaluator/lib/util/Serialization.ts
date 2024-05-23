@@ -2,7 +2,8 @@ import type {
   IDateRepresentation,
   IDateTimeRepresentation,
   IDurationRepresentation,
-  ITimeRepresentation, ITimeZoneRepresentation,
+  ITimeRepresentation,
+  ITimeZoneRepresentation,
 } from '@comunica/types';
 
 function numSerializer(num: number, min = 2): string {
@@ -49,6 +50,7 @@ export function serializeDuration(dur: Partial<IDurationRepresentation>, zeroStr
   const day = dur.day ? `${Math.abs(dur.day)}D` : '';
 
   const dayNotation = `${sign}P${year}${month}${day}`;
+  // eslint-disable-next-line ts/prefer-nullish-coalescing
   if (!(dur.hours || dur.minutes || dur.seconds)) {
     return dayNotation;
   }
