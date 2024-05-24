@@ -434,7 +434,7 @@ describe('ActorHttpInterceptWayback', () => {
     });
 
     describe('404 foaf, 404 wayback with body to consume but no destroy function', () => {
-      let responseBody: () => ReadableStream<Uint8Array> | null
+      let responseBody: () => ReadableStream<Uint8Array> | null;
       beforeEach(() => {
         responseBody = () => new Response('').body;
 
@@ -473,13 +473,10 @@ describe('ActorHttpInterceptWayback', () => {
       });
 
       it('should return foaf url when wayback gives a 404 [no cancel on response body]', async() => {
-        // @ts-expect-error
-        responseBody = () => {
-          let readable = new Readable();
-          readable._read = () => { /* Noop */ };
-          readable.push(null);
-          return readable;
-        };
+        responseBody = () => Object.assign(new Response('').body!, {
+          cancel: undefined,
+          destory: undefined,
+        });
 
         const result = await actor.run({
           context: context.set(KeysHttpProxy.httpProxyHandler, { async getProxy(url: IRequest) {

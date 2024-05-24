@@ -58,10 +58,10 @@ export class ActorHttpWayback extends ActorHttp {
       // Consume stream to avoid process
       const { body } = fallbackResult;
       if (body) {
-        if ('destroy' in body && typeof (<any>body).destroy === 'function') {
-          (<any>body).destroy();
-        } else if ('cancel' in body && typeof body.cancel === 'function') {
+        if ('cancel' in body && typeof body.cancel === 'function') {
           await body.cancel();
+        } else if ('destroy' in body && typeof (<any>body).destroy === 'function') {
+          (<any>body).destroy();
         } else {
           await stringifyStream(ActorHttp.toNodeReadable(body));
         }
