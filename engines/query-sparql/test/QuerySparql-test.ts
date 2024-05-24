@@ -184,7 +184,9 @@ describe('System test: QuerySparql', () => {
           ]};
 
           const resultString = await engine.resultToString(await engine.query(query, context), 'application/n-quads');
-          return expect(stringifyStream(resultString.data)).resolves.toBe('<ex:s> <ex:p> <ex:o> .\n<ex:s> <ex:p2> <ex:o2> .\n');
+          await expect(stringifyStream(resultString.data)).resolves.toBe(
+            '<ex:s> <ex:p> <ex:o> .\n<ex:s> <ex:p2> <ex:o2> .\n',
+          );
         });
       });
 
