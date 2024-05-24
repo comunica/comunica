@@ -61,12 +61,13 @@ export class ActorQueryResultSerializeJson extends ActorQueryResultSerializeFixe
       }).prepend([ '[' ]).append([ '\n]\n' ]);
 
       data.wrap(<any> stream);
-    }
-    try {
-      data.push(`${JSON.stringify(await (<IQueryOperationResultBoolean> action).execute())}\n`);
-      data.push(null);
-    } catch (error: unknown) {
-      setTimeout(() => data.emit('error', error));
+    } else {
+      try {
+        data.push(`${JSON.stringify(await (<IQueryOperationResultBoolean> action).execute())}\n`);
+        data.push(null);
+      } catch (error: unknown) {
+        setTimeout(() => data.emit('error', error));
+      }
     }
 
     return { data };
