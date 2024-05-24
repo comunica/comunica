@@ -75,6 +75,11 @@ describe('System test: QuerySparql', () => {
           .length).toBeGreaterThan(100);
         expect((await arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute()))
           .length).toBeGreaterThan(100);
+
+        const resultObject = JSON.parse(await stringifyStream(
+          (await engine.resultToString(await engine.query(query, context))).data,
+        ));
+        expect(resultObject.length).toBeGreaterThan(100);
       });
 
       it('repeated with the same engine without results', async() => {
@@ -92,6 +97,11 @@ describe('System test: QuerySparql', () => {
           .toEqual([]);
         await expect((arrayifyStream(await (<QueryBindings> await engine.query(query, context)).execute()))).resolves
           .toEqual([]);
+
+        const resultObject = JSON.parse(await stringifyStream(
+          (await engine.resultToString(await engine.query(query, context))).data,
+        ));
+        expect(resultObject).toEqual([]);
       });
 
       describe('string source query', () => {
