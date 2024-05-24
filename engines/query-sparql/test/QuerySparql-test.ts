@@ -1229,16 +1229,4 @@ SELECT ?obsId {
       });
     });
   });
-
-  // Describe.only('stats', () => {
-  //   describe('simple SPO on a raw RDF document', () => {
-  //     it('with results', async() => {
-  //       const result = await engine.queryQuads(`SELECT * WHERE { ?s ?p ?o.
-  //   }`, { sources: [ 'https://www.rubensworks.net/' ]});
-  //     console.log(result)
-
-  //   // expect((await arrayifyStream(await result.execute())).length).toBeGreaterThan(100);
-  //     });
-  //   });
-  // });
 });
