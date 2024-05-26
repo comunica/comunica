@@ -7,11 +7,43 @@ concurrency:
 
 jobs:
 
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - name: Ensure line endings are consistent
+        run: git config --global core.autocrlf input
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - name: Load cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/node_modules
+            .rdf-test-suite-cache
+            .rdf-test-suite-ldf-cache
+          key: ${{ runner.os }}-test-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      - name: Build project
+        run: yarn run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: engines
+          path: engines
+      - uses: actions/upload-artifact@v4
+        with:
+          name: packages
+          path: packages
   test:
+    needs: build
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         node-version:
           - 18.x
           - 20.x
@@ -32,16 +64,20 @@ jobs:
             .rdf-test-suite-cache
             .rdf-test-suite-ldf-cache
           key: ${{ runner.os }}-test-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: engines
+          path: engines
+      - uses: actions/download-artifact@v4
+        with:
+          name: packages
+          path: packages
       - name: Setup firefox
         uses: browser-actions/setup-firefox@latest
         with:
           firefox-version: latest
       - name: Install dependencies
         run: yarn install --frozen-lockfile
-      - name: Build project
-        run: yarn run build
-      - name: Build project -- esModuleInterop true
-        run: yarn run build:ts --esModuleInterop true
       - name: Run depcheck
         run: yarn run depcheck
       - name: Run tests
@@ -75,6 +111,7 @@ jobs:
           parallel-finished: true
 
   lint:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Use Node.js
@@ -88,6 +125,14 @@ jobs:
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-lint-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: engines
+          path: engines
+      - uses: actions/download-artifact@v4
+        with:
+          name: packages
+          path: packages
       - name: Install dependencies
         run: yarn install --frozen-lockfile
       - name: Run linter
@@ -110,6 +155,14 @@ jobs:
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-browser-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: engines
+          path: engines
+      - uses: actions/download-artifact@v4
+        with:
+          name: packages
+          path: packages
       - name: Install dependencies
         run: yarn install --frozen-lockfile
       - name: Build for browser
@@ -137,6 +190,14 @@ jobs:
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-docker-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: engines
+          path: engines
+      - uses: actions/download-artifact@v4
+        with:
+          name: packages
+          path: packages
       - name: Install dependencies
         run: yarn install --frozen-lockfile
       - name: Install Lerna Docker
@@ -229,6 +290,14 @@ jobs:
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-docs-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: engines
+          path: engines
+      - uses: actions/download-artifact@v4
+        with:
+          name: packages
+          path: packages
       - name: Install dependencies
         run: yarn install --frozen-lockfile
       - name: Build docs
