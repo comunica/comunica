@@ -48,7 +48,6 @@ jobs:
       - name: Run tests
         run: yarn run test:ci
       - name: Run browser tests
-        uses: nick-fields/retry@v3
         if: ${{ matrix.os == 'ubuntu-latest' }}
         uses: nick-fields/retry@v3
         with:
