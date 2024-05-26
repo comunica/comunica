@@ -13,8 +13,7 @@ import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { QueryEngine } from '../lib/QueryEngine';
-
-const md5 = require('md5');
+import { fetch as cachedFetch } from './util';
 
 // Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
 const stringifyStream = require('stream-to-string');
@@ -22,26 +21,7 @@ const stringifyStream = require('stream-to-string');
 const DF = new DataFactory();
 const factory = new Factory();
 
-const fetchFn = globalThis.fetch;
-globalThis.fetch = async(...args: Parameters<typeof fetch>): ReturnType<typeof fetch> => {
-  // eslint-disable-next-line ts/no-base-to-string
-  const pth = path.join(__dirname, 'networkCache', md5(args[0].toString()));
-  if (!fs.existsSync(pth)) {
-    const res = await fetchFn(...args);
-    const headersObject: Record<string, string> = {};
-    for (const key in res.headers) {
-      headersObject[key] = res.headers.get(key)!;
-    }
-    fs.writeFileSync(pth, JSON.stringify({
-      content: await res.text().catch(() => ''),
-      headers: headersObject,
-      status: res.status,
-      statusText: res.statusText,
-    }));
-  }
-  const { content, headers, status, statusText } = JSON.parse(fs.readFileSync(pth).toString());
-  return new Response(content, { headers, status, statusText });
-};
+globalThis.fetch = cachedFetch;
 
 describe('System test: QuerySparql', () => {
   let engine: QueryEngine;
