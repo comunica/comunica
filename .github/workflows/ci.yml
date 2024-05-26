@@ -28,8 +28,6 @@ jobs:
           key: ${{ runner.os }}-test-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
       - name: Install dependencies
         run: yarn install --frozen-lockfile
-      - name: Build project
-        run: yarn run build
       - uses: actions/upload-artifact@v4
         with:
           name: engines
@@ -77,7 +75,7 @@ jobs:
         with:
           firefox-version: latest
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --frozen-lockfile --ignore-scripts
       - name: Run depcheck
         run: yarn run depcheck
       - name: Run tests
@@ -134,7 +132,7 @@ jobs:
           name: packages
           path: packages
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --frozen-lockfile --ignore-scripts
       - name: Run linter
         run: yarn run lint
 
@@ -165,7 +163,7 @@ jobs:
           name: packages
           path: packages
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --frozen-lockfile --ignore-scripts
       - name: Build for browser
         run: npx lerna run browser --concurrency 1
       - name: Deploy browser build
@@ -201,7 +199,7 @@ jobs:
           name: packages
           path: packages
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --frozen-lockfile --ignore-scripts
       - name: Install Lerna Docker
         run: sh -c "`curl -fsSl https://raw.githubusercontent.com/rubensworks/lerna-docker/master/install.sh`"
       - name: Build Docker images
@@ -316,7 +314,7 @@ jobs:
           name: packages
           path: packages
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --frozen-lockfile --ignore-scripts
       - name: Build docs
         run: yarn run doc
       - name: Deploy TSDoc to GitHub Pages
