@@ -26,8 +26,7 @@ export class ActorQueryOperationPathNps extends ActorAbstractPath {
 
     // Remove the generated blank nodes from the bindings
     const bindingsStream = output.bindingsStream
-      .filter(bindings => !predicate.iris.some(iri => iri.equals(bindings.get(blank))))  
-      .map(item => item.delete(blank))
+      .map(bindings => predicate.iris.some(iri => iri.equals(bindings.get(blank))) ? null : bindings.delete(blank));
 
     return {
       type: 'bindings',
