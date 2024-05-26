@@ -4,6 +4,6 @@
   ],
   "import": [
     "ccqs:config/config-base.json",
-    "ccqs:config/query-operation/actors.json"
+    "ccqs:config/query-operation/actors-streaming.json"
   ]
 }
