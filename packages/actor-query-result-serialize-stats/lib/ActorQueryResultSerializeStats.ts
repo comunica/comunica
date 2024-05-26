@@ -68,9 +68,14 @@ export class ActorQueryResultSerializeStats extends ActorQueryResultSerializeFix
 
     const startTime = this.now();
     let result = 1;
+    
+    const createFooter = (startTime: number) => this.createFooter(startTime);
+    function *end() {
+      yield createFooter(startTime)
+    }
     const stream = wrap(resultStream)
       .map(() => this.createStat(startTime, result++))
-      .append([ this.createFooter(startTime) ]);
+      .append(wrap(end()));
 
     this.pushHeader(data);
     data.wrap(<any> stream);
