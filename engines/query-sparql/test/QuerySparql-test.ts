@@ -1,5 +1,7 @@
 /** @jest-environment setup-polly-jest/jest-environment-node */
 
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { QuerySourceSkolemized } from '@comunica/actor-context-preprocess-query-source-skolemize';
 import { KeysHttpWayback, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { BlankNodeScoped } from '@comunica/data-factory';
@@ -8,8 +10,6 @@ import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import 'jest-rdf';
 import { Store } from 'n3';
-import * as fs from 'node:fs';
-import * as path from 'node:path';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { QueryEngine } from '../lib/QueryEngine';
@@ -36,7 +36,7 @@ globalThis.fetch = async(...args: Parameters<typeof fetch>): ReturnType<typeof f
       content: await res.text().catch(() => ''),
       headers: headersObject,
       status: res.status,
-      statusText: res.statusText
+      statusText: res.statusText,
     }));
   }
   const { content, headers, status, statusText } = JSON.parse(fs.readFileSync(pth).toString());
