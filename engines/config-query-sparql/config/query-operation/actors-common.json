@@ -1,0 +1,29 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/config-query-sparql/^3.0.0/components/context.jsonld"
+  ],
+  "import": [
+    "ccqs:config/query-operation/actors/query/ask.json",
+    "ccqs:config/query-operation/actors/query/bgp.json",
+    "ccqs:config/query-operation/actors/query/construct.json",
+    "ccqs:config/query-operation/actors/query/distinct.json",
+    "ccqs:config/query-operation/actors/query/extend.json",
+    "ccqs:config/query-operation/actors/query/filter.json",
+    "ccqs:config/query-operation/actors/query/from.json",
+    "ccqs:config/query-operation/actors/query/group.json",
+    "ccqs:config/query-operation/actors/query/join.json",
+    "ccqs:config/query-operation/actors/query/minus.json",
+    "ccqs:config/query-operation/actors/query/nop.json",
+    "ccqs:config/query-operation/actors/query/orderby.json",
+    "ccqs:config/query-operation/actors/query/project.json",
+    "ccqs:config/query-operation/actors/query/reduced.json",
+    "ccqs:config/query-operation/actors/query/service.json",
+    "ccqs:config/query-operation/actors/query/slice.json",
+    "ccqs:config/query-operation/actors/query/source.json",
+    "ccqs:config/query-operation/actors/query/union.json",
+    "ccqs:config/query-operation/actors/query/values.json",
+
+    "ccqs:config/query-operation/actors-path.json",
+    "ccqs:config/query-operation/actors-update.json"
+  ]
+}
