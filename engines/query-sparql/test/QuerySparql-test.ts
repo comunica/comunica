@@ -29,8 +29,8 @@ globalThis.fetch = async(...args: Parameters<typeof fetch>): ReturnType<typeof f
   if (!fs.existsSync(pth)) {
     const res = await fetchFn(...args);
     const headersObject: Record<string, string> = {};
-    for (const [ key, value ] of res.headers.entries()) {
-      headersObject[key] = value;
+    for (const key in res.headers) {
+      headersObject[key] = res.headers.get(key)!;
     }
     fs.writeFileSync(pth, JSON.stringify({
       content: await res.text().catch(() => ''),
