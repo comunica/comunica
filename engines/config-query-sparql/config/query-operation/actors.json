@@ -25,12 +25,6 @@
     "ccqs:config/query-operation/actors/query/values.json",
 
     "ccqs:config/query-operation/actors-path.json",
-
-    "ccqs:config/query-operation/actors/update/clear.json",
-    "ccqs:config/query-operation/actors/update/composite.json",
-    "ccqs:config/query-operation/actors/update/create.json",
-    "ccqs:config/query-operation/actors/update/delete-insert.json",
-    "ccqs:config/query-operation/actors/update/drop.json",
-    "ccqs:config/query-operation/actors/update/load.json"
+    "ccqs:config/query-operation/actors-update.json"
   ]
 }
