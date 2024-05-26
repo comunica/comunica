@@ -5,14 +5,15 @@ import { KeysHttpWayback, KeysQuerySourceIdentify } from '@comunica/context-entr
 import { BlankNodeScoped } from '@comunica/data-factory';
 import type { QueryBindings, QueryStringContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import 'jest-rdf';
 import arrayifyStream from 'arrayify-stream';
+import 'jest-rdf';
 import { Store } from 'n3';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { QueryEngine } from '../lib/QueryEngine';
-import * as fs from 'fs';
-import * as path from 'path';
+
 const md5 = require('md5');
 
 // Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
@@ -22,19 +23,25 @@ const DF = new DataFactory();
 const factory = new Factory();
 
 const fetchFn = globalThis.fetch;
-globalThis.fetch = async (...args: Parameters<typeof fetch>): ReturnType<typeof fetch> => {
+globalThis.fetch = async(...args: Parameters<typeof fetch>): ReturnType<typeof fetch> => {
+  // eslint-disable-next-line ts/no-base-to-string
   const pth = path.join(__dirname, 'networkCache', md5(args[0].toString()));
   if (!fs.existsSync(pth)) {
     const res = await fetchFn(...args);
     const headersObject: Record<string, string> = {};
-    res.headers.forEach((value, key) => {
+    for (const [ key, value ] of res.headers.entries()) {
       headersObject[key] = value;
-    })
-    fs.writeFileSync(pth, JSON.stringify({ content: await res.text().catch(() => ''), headers: headersObject, status: res.status, statusText: res.statusText }));
+    }
+    fs.writeFileSync(pth, JSON.stringify({
+      content: await res.text().catch(() => ''),
+      headers: headersObject,
+      status: res.status,
+      statusText: res.statusText
+    }));
   }
   const { content, headers, status, statusText } = JSON.parse(fs.readFileSync(pth).toString());
   return new Response(content, { headers, status, statusText });
-}
+};
 
 describe('System test: QuerySparql', () => {
   let engine: QueryEngine;
