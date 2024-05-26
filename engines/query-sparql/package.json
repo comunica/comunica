@@ -216,5 +216,8 @@
   "browser": {
     "./lib/index.js": "./lib/index-browser.js"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/md5": "^2.3.5",
+    "md5": "^2.3.0"
+  }
 }
