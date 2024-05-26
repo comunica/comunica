@@ -5,10 +5,17 @@ import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica
 import type { IActionRdfJoin, MediatorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActorTest } from '@comunica/core';
 import { AsyncEvaluator, isExpressionError } from '@comunica/expression-evaluator';
-import type { IQueryOperationResult, Bindings, IActionContext, IJoinEntry, IQueryOperationResultBindings } from '@comunica/types';
+import type {
+  IQueryOperationResult,
+  Bindings,
+  IActionContext,
+  IJoinEntry,
+  IQueryOperationResultBindings,
+} from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
-export abstract class ActorQueryOperationLeftJoinAbstract extends ActorQueryOperationTypedMediated<Algebra.LeftJoin> {
+export abstract class ActorQueryOperationLeftJoinAbstract
+  extends ActorQueryOperationTypedMediated<Algebra.LeftJoin> {
   public readonly mediatorJoin: MediatorRdfJoin;
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 

@@ -38,6 +38,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
+    "@comunica/actor-query-operation-leftjoin": "^3.1.0",
     "@comunica/bindings-factory": "^3.1.0",
     "@comunica/bus-merge-bindings-context": "^3.1.0",
     "@comunica/bus-query-operation": "^3.1.0",
@@ -45,6 +46,7 @@
     "@comunica/core": "^3.1.0",
     "@comunica/expression-evaluator": "^3.1.0",
     "@comunica/types": "^3.1.0",
+    "asynciterator": "^3.9.0",
     "sparqlalgebrajs": "^4.3.3"
   }
 }

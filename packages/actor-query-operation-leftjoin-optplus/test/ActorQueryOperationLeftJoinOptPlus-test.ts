@@ -17,7 +17,9 @@ describe('ActorQueryOperationLeftJoinOptPlus', () => {
   let mediatorQueryOperation: any;
   let mediatorJoin: any;
   let mediatorMergeBindingsContext: any;
+  let results: number[] = [];
   beforeEach(() => {
+    results = [ 1, 1, 2, 1, 3, 2, 2, 3, 3 ];
     mediatorMergeBindingsContext = {
       mediate(arg: any) {
         return {};
@@ -56,9 +58,13 @@ describe('ActorQueryOperationLeftJoinOptPlus', () => {
     });
 
     it('should be a ActorQueryOperationLeftJoinOptPlus constructor', () => {
-      expect(new (<any> ActorQueryOperationLeftJoinOptPlus)({ name: 'actor', bus, mediatorQueryOperation, mediatorJoin }))
+      expect(
+        new (<any> ActorQueryOperationLeftJoinOptPlus)({ name: 'actor', bus, mediatorQueryOperation, mediatorJoin }),
+      )
         .toBeInstanceOf(ActorQueryOperationLeftJoinOptPlus);
-      expect(new (<any> ActorQueryOperationLeftJoinOptPlus)({ name: 'actor', bus, mediatorQueryOperation, mediatorJoin }))
+      expect(
+        new (<any> ActorQueryOperationLeftJoinOptPlus)({ name: 'actor', bus, mediatorQueryOperation, mediatorJoin }),
+      )
         .toBeInstanceOf(ActorQueryOperation);
     });
 
@@ -92,48 +98,38 @@ describe('ActorQueryOperationLeftJoinOptPlus', () => {
       await expect(actor.test(op)).rejects.toBeTruthy();
     });
 
-    // it('should run', async() => {
-    //   const op: any = { operation: { type: 'leftjoin', input: [{}, {}]}, context: new ActionContext() };
-    //   const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-    //   expect(output.type).toBe('bindings');
-    //   await expect(output.metadata()).resolves.toEqual({
-    //     cardinality: 100,
-    //     canContainUndefs: true,
-    //     variables: [ DF.variable('a'), DF.variable('b') ],
-    //   });
-    //   await expect(output.bindingsStream).toEqualBindingsStream([
-    //     BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
-    //     BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
-    //     BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
-    //     BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
-    //     BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
-    //     BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
-    //   ]);
-    // });
+    it('should run', async() => {
+      const op: any = { operation: { type: 'leftjoin', input: [{}, {}]}, context: new ActionContext() };
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      expect(output.type).toBe('bindings');
+      await expect(output.metadata()).resolves.toEqual({
+        cardinality: 100,
+        canContainUndefs: true,
+        variables: [ DF.variable('a'), DF.variable('b') ],
+      });
+      await expect(output.bindingsStream).toEqualBindingsStream(
+        results.map(result => BF.bindings([[ DF.variable('a'), DF.literal(String(result)) ]])),
+      );
+    });
 
-    // it('should correctly handle truthy expressions', async() => {
-    //   const expression = {
-    //     expressionType: 'term',
-    //     term: DF.literal('nonemptystring'),
-    //     type: 'expression',
-    //   };
-    //   const op: any = { operation: { type: 'leftjoin', input: [{}, {}], expression }, context: new ActionContext() };
-    //   const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-    //   await expect(output.bindingsStream).toEqualBindingsStream([
-    //     BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
-    //     BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
-    //     BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
-    //     BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
-    //     BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
-    //     BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
-    //   ]);
-    //   await expect(output.metadata()).resolves.toMatchObject({
-    //     cardinality: 100,
-    //     canContainUndefs: true,
-    //     variables: [ DF.variable('a'), DF.variable('b') ],
-    //   });
-    //   expect(output.type).toBe('bindings');
-    // });
+    it('should correctly handle truthy expressions', async() => {
+      const expression = {
+        expressionType: 'term',
+        term: DF.literal('nonemptystring'),
+        type: 'expression',
+      };
+      const op: any = { operation: { type: 'leftjoin', input: [{}, {}], expression }, context: new ActionContext() };
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      await expect(output.bindingsStream).toEqualBindingsStream(
+        results.map(result => BF.bindings([[ DF.variable('a'), DF.literal(String(result)) ]])),
+      );
+      await expect(output.metadata()).resolves.toMatchObject({
+        cardinality: 100,
+        canContainUndefs: true,
+        variables: [ DF.variable('a'), DF.variable('b') ],
+      });
+      expect(output.type).toBe('bindings');
+    });
 
     it('should correctly handle left hand bindings that are missing the variables of the expression', async() => {
       mediatorQueryOperation.mediate = (arg: any) => {
@@ -222,7 +218,7 @@ describe('ActorQueryOperationLeftJoinOptPlus', () => {
         expect(isExpressionError(error)).toBeTruthy();
         expect(bindings).toEqual(BF.bindings([[
           DF.variable('a'),
-          DF.literal(String(1 + Math.floor(index / 2)), DF.namedNode('http://www.w3.org/2001/XMLSchema#string')),
+          DF.literal(String(results[index]), DF.namedNode('http://www.w3.org/2001/XMLSchema#string')),
         ]]));
       }
     });
