@@ -93,12 +93,12 @@ jobs:
           github-token: ${{ secrets.github_token }}
           flag-name: run-${{ matrix.node-version }}
           parallel: true
-      - name: Run spec tests individually
-        run: cd engines/query-sparql && yarn run spec
       - name: Run spec tests
-        run: yarn run spec --loglevel silly
-      - name: Run integration tests
-        run: yarn run integration
+        run: cd engines/query-sparql && yarn run spec
+      - run: cd engines/query-sparql && yarn run integration
+      - run: cd engines/query-sparql-file && yarn run integration
+      - run: cd engines/query-sparql-rdfjs && yarn run integration
+      - run: cd engines/query-sparql-rdfjs-lite && yarn run integration
 
   coveralls:
     needs: test
