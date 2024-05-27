@@ -94,7 +94,7 @@ jobs:
           flag-name: run-${{ matrix.node-version }}
           parallel: true
       - name: Run spec tests
-        run: npx lerna run spec --concurrency 1
+        run: npx lerna run spec --concurrency 1 --loglevel silly
       - name: Run integration tests
         run: npx lerna run integration --concurrency 1
 
