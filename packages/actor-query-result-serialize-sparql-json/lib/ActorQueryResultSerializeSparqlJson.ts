@@ -1,12 +1,11 @@
-import type { Bindings } from '@comunica/bindings-factory';
 import type {
   IActionSparqlSerialize,
   IActorQueryResultSerializeFixedMediaTypesArgs,
   IActorQueryResultSerializeOutput,
 } from '@comunica/bus-query-result-serialize';
 import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-result-serialize';
-import { KeysMergeBindingsContext } from '@comunica/context-entries';
 import type {
+  Bindings,
   IActionContext,
   IQueryOperationResultBindings,
   IQueryOperationResultBoolean,
@@ -20,7 +19,6 @@ import type { ActionObserverHttp } from './ActionObserverHttp';
  */
 export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSerializeFixedMediaTypes {
   private readonly emitMetadata: boolean;
-  private readonly addSourceAttributionToBinding: boolean;
   public readonly httpObserver: ActionObserverHttp;
 
   /* eslint-disable max-len */
@@ -33,7 +31,6 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
    *       "application/sparql-results+json": "http://www.w3.org/ns/formats/SPARQL_Results_JSON"
    *     }} mediaTypeFormats
    *   \ @defaultNested {true} emitMetadata
-   *   \ @defaultNested {false} addSourceAttributionToBinding
    *   \ @defaultNested {<default_observer> a <caqrssj:components/ActionObserverHttp.jsonld#ActionObserverHttp>} httpObserver
    */
   public constructor(args: IActorQueryResultSerializeSparqlJsonArgs) {
@@ -117,14 +114,6 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
         // JSON SPARQL results spec does not allow unbound variables and blank node bindings
         const bindingsJson = Object.fromEntries([ ...bindings ]
           .map(([ key, value ]) => [ key.value, ActorQueryResultSerializeSparqlJson.bindingToJsonBindings(value) ]));
-
-        if (this.addSourceAttributionToBinding) {
-          bindingsJson._source = {
-            value: bindings.getContextEntry(KeysMergeBindingsContext.sourceBinding),
-            type: 'uri',
-          };
-        }
-
         data.push(JSON.stringify(bindingsJson));
         empty = false;
       });
@@ -163,6 +152,5 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
 
 export interface IActorQueryResultSerializeSparqlJsonArgs extends IActorQueryResultSerializeFixedMediaTypesArgs {
   emitMetadata: boolean;
-  addSourceAttributionToBinding: boolean;
   httpObserver: ActionObserverHttp;
 }

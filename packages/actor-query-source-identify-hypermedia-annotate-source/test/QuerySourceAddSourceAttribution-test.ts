@@ -76,7 +76,7 @@ describe('QuerySourcAddSourceAttribution', () => {
     const producedBindings = await sourceAttributionBindingsStream.toArray();
     const bindingSources = producedBindings.map(x => (<Bindings> x)
       .getContextEntry(KeysMergeBindingsContext.sourceBinding));
-    expect(bindingSources).toEqual([ 'REF', 'REF', 'REF' ]);
+    expect(bindingSources).toEqual([[ 'REF' ], [ 'REF' ], [ 'REF' ]]);
   });
 
   it('should delegate queryBoolean', async() => {

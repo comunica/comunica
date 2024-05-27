@@ -1,7 +1,6 @@
 import { PassThrough } from 'node:stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { ActorHttpInvalidateListenable, IInvalidateListener } from '@comunica/bus-http-invalidate';
-import { KeysMergeBindingsContext } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { BindingsStream, IActionContext, MetadataBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -100,7 +99,6 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
     let httpObserver: ActionObserverHttp;
     let actor: ActorQueryResultSerializeSparqlJson;
     let bindingsStream: () => BindingsStream;
-    let bindingsStreamWithSource: () => BindingsStream;
     let bindingsStreamPartial: () => BindingsStream;
     let bindingsStreamEmpty: BindingsStream;
     let bindingsStreamError: BindingsStream;
@@ -129,7 +127,6 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
         mediaTypeFormats: {},
         name: 'actor',
         emitMetadata: true,
-        addSourceAttributionToBinding: false,
         httpObserver,
       });
       bindingsStream = () => new ArrayIterator<RDF.Bindings>([
@@ -139,15 +136,6 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
         BF.bindings([
           [ DF.variable('k2'), DF.namedNode('v2') ],
         ]),
-      ]);
-
-      bindingsStreamWithSource = () => new ArrayIterator<RDF.Bindings>([
-        BF.bindings([
-          [ DF.variable('k1'), DF.namedNode('v1') ],
-        ]).setContextEntry(KeysMergeBindingsContext.sourceBinding, 'S1'),
-        BF.bindings([
-          [ DF.variable('k2'), DF.namedNode('v2') ],
-        ]).setContextEntry(KeysMergeBindingsContext.sourceBinding, 'S2'),
       ]);
       bindingsStreamPartial = () => new ArrayIterator<RDF.Bindings>([
         BF.bindings([
@@ -303,7 +291,6 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
           mediaTypeFormats: {},
           name: 'actor',
           emitMetadata: false,
-          addSourceAttributionToBinding: false,
           httpObserver,
         });
         await expect(stringifyStream((<any> (await actor.run(
@@ -443,63 +430,6 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
           handleMediaType: 'simple',
         },
       ))).handle.data)).rejects.toBeTruthy();
-    });
-    it('should add source attribution to serialization', async() => {
-      actor = new ActorQueryResultSerializeSparqlJson({
-        bus,
-        mediaTypePriorities: {
-          'sparql-results+json': 1,
-        },
-        mediaTypeFormats: {},
-        name: 'actor',
-        emitMetadata: true,
-        addSourceAttributionToBinding: true,
-        httpObserver,
-      });
-      await expect(stringifyStream((<any> (await actor.run(
-        {
-          context,
-          handle: <any> { bindingsStream: bindingsStreamWithSource(), type: 'bindings', metadata: async() => metadata },
-          handleMediaType: 'json',
-        },
-      ))).handle.data)).resolves.toBe(
-        `{"head": {"vars":["k1","k2"]},
-"results": { "bindings": [
-{"k1":{"value":"v1","type":"uri"},"_source":{"value":"S1","type":"uri"}},
-{"k2":{"value":"v2","type":"uri"},"_source":{"value":"S2","type":"uri"}}
-]},
-"metadata": { "httpRequests": 0 }}
-`,
-      );
-    });
-
-    it('should add empty source attribution to serialization when no source is available', async() => {
-      actor = new ActorQueryResultSerializeSparqlJson({
-        bus,
-        mediaTypePriorities: {
-          'sparql-results+json': 1,
-        },
-        mediaTypeFormats: {},
-        name: 'actor',
-        emitMetadata: true,
-        addSourceAttributionToBinding: true,
-        httpObserver,
-      });
-      await expect(stringifyStream((<any> (await actor.run(
-        {
-          context,
-          handle: <any> { bindingsStream: bindingsStream(), type: 'bindings', metadata: async() => metadata },
-          handleMediaType: 'json',
-        },
-      ))).handle.data)).resolves.toBe(
-        `{"head": {"vars":["k1","k2"]},
-"results": { "bindings": [
-{"k1":{"value":"v1","type":"uri"},"_source":{"type":"uri"}},
-{"k2":{"value":"v2","type":"uri"},"_source":{"type":"uri"}}
-]},
-"metadata": { "httpRequests": 0 }}
-`,
-      );
     });
   });
 });

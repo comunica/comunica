@@ -33,6 +33,9 @@ export class ActorQueryProcessAnnotateSourceBinding extends ActorQueryProcess {
   }
 
   public async run(action: IActionQueryProcess): Promise<IActorQueryProcessOutput> {
+    const context = action.context.set(KEY_CONTEXT_WRAPPED, true);
+    action.context = context;
+
     // Run all query processing steps in sequence
     const { result } = await this.mediatorQueryProcess.mediate(action);
     // Currently this only supports adding source provenance to bindings
