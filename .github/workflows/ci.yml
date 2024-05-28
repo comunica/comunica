@@ -94,7 +94,11 @@ jobs:
           flag-name: run-${{ matrix.node-version }}
           parallel: true
       - name: Run spec tests
+      #  TODO: Reintroduce `npx lerna run` command when https://github.com/lerna/lerna/issues/4014 is resolved
+      #  run: npx lerna run spec --concurrency 1
         run: cd engines/query-sparql && yarn run spec
+      #  TODO: Reintroduce `npx lerna run` command when https://github.com/lerna/lerna/issues/4014 is resolved
+      #  npx lerna run integration --concurrency 1
       - run: cd engines/query-sparql && yarn run integration
       - run: cd engines/query-sparql-file && yarn run integration
       - run: cd engines/query-sparql-rdfjs && yarn run integration
