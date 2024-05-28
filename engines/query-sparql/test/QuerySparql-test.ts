@@ -194,8 +194,10 @@ describe('System test: QuerySparql', () => {
             { type: 'serialized', value, mediaType: 'application/ld+json', baseIRI: 'http://example.org/' },
           ]};
 
-          const resultString: string = await stringifyStream((await engine.resultToString(await engine.query(query, context), 'stats')).data);
-          const times = resultString.split('\n').slice(1, -1).map(line => parseFloat(line.split(',')[1]));
+          const resultString: string = await stringifyStream(
+            (await engine.resultToString(await engine.query(query, context), 'stats')).data,
+          );
+          const times = resultString.split('\n').slice(1, -1).map(line => Number.parseFloat(line.split(',')[1]));
           expect(times).toHaveLength(3);
           for (let i = 0; i < 2; i++) {
             expect(times[i]).toBeLessThan(times[i + 1]);
