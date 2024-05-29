@@ -68,9 +68,13 @@ export class ActorQueryResultSerializeStats extends ActorQueryResultSerializeFix
 
     const startTime = this.now();
     let result = 1;
+
+    function* end(cb: () => string): Generator<string> {
+      yield cb();
+    }
     const stream = wrap(resultStream)
       .map(() => this.createStat(startTime, result++))
-      .append([ this.createFooter(startTime) ]);
+      .append(wrap(end(() => this.createFooter(startTime))));
 
     this.pushHeader(data);
     data.wrap(<any> stream);

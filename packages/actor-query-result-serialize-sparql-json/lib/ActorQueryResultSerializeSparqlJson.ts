@@ -96,6 +96,11 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
       data.push('"results": { "bindings": [\n');
 
       let first = true;
+
+      function* end(cb: () => string): Generator<string> {
+        yield cb();
+      }
+
       // Write bindings
       data.wrap(
         // JSON SPARQL results spec does not allow unbound variables and blank node bindings
@@ -104,7 +109,7 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
           .map(([ key, value ]) => [ key.value, ActorQueryResultSerializeSparqlJson.bindingToJsonBindings(value) ])))}`;
           first = false;
           return res;
-        }).append([ `\n]}${this.emitMetadata ? `,\n"metadata": { "httpRequests": ${this.httpObserver.requests} }` : ''}}\n` ]),
+        }).append(wrap(end(() => `\n]}${this.emitMetadata ? `,\n"metadata": { "httpRequests": ${this.httpObserver.requests} }` : ''}}\n`))),
       );
     } else {
       data.wrap(<any> wrap((<IQueryOperationResultBoolean> action).execute().then(value => [ `"boolean":${value}\n}\n` ])));
