@@ -1,6 +1,25 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v3.1.2"></a>
+## [v3.1.2](https://github.com/comunica/comunica/compare/v3.1.1...v3.1.2) - 2024-05-30
+
+### Fixed
+* [Fix next page requests not being logged anymore](https://github.com/comunica/comunica/commit/2077d5f56060eabf90b4cdd1255b05d99d921707)
+* [Fix performance regression of TPF queries](https://github.com/comunica/comunica/commit/ae893cb62dc47c5fab4ea334526fa0a28af10581)
+
+### Changed
+* Improve performance:
+  * [Use AsyncIterator.map and .filter instead of expensive .transform](https://github.com/comunica/comunica/commit/50f5fe5f37ce037d66ab67f851ad652d37bbdfbf)
+  * [Improve performance of hashing during hash joins](https://github.com/comunica/comunica/commit/cbfdc3135607c257f37d91a13a8bfb55b9c147d8)
+  * [Optimize usage of bindingsStream transform in PathNps actor](https://github.com/comunica/comunica/commit/c134d3223fd8645820bb4b12cac73b3e5518dbe8)
+* [Use event-emitter-promisify package](https://github.com/comunica/comunica/commit/511d5cf29255b0d7d889378611e8183060c15ea5)
+* [Cleanup stream operations (#1349)](https://github.com/comunica/comunica/commit/15f0aca1759cff91cec1b8680a1e9369cab6f6ba)
+* [Maintain backpressure in result serializers](https://github.com/comunica/comunica/commit/0d7538cb154284af91a5027f89772bb3cc09f6fa)
+* [Maintain backpressure on internal actors](https://github.com/comunica/comunica/commit/18b3ff35f94f720fcc5a50313322d0740f65b848)
+* [Don't log if no sources are pruned](https://github.com/comunica/comunica/commit/718d67ef3ccf19a0d5b839e90e47f88e1fd71e4f)
+* [Use cancel in wayback actor when available, Closes #1351](https://github.com/comunica/comunica/commit/d7ba1239d075da65f272045f0a8850bbc7b2a473)
+
 <a name="v3.1.1"></a>
 ## [v3.1.1](https://github.com/comunica/comunica/compare/v3.1.0...v3.1.1) - 2024-05-11
 

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-bgp-join",
-  "version": "3.1.0",
+  "version": "3.1.2",
   "description": "A bgp-join query-operation actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,7 +37,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-query-operation": "^3.1.0",
+    "@comunica/bus-query-operation": "^3.1.2",
     "@comunica/core": "^3.1.0",
     "@comunica/types": "^3.1.0",
     "sparqlalgebrajs": "^4.3.3"
