@@ -1,0 +1,19 @@
+{
+  "name": "benchmark-watdiv-tpf",
+  "version": "3.1.0",
+  "private": true,
+  "scripts": {
+    "jbr": "cross-env NODE_OPTIONS=--max-old-space-size=8192 jbr",
+    "validate": "jbr validate",
+    "performance": "docker pull comunica/query-sparql:latest && jbr prepare && jbr run && psbr tex query output/combination_* --svg --logY --overrideCombinationLabels Current,Previous",
+    "performance:ci": "jbr prepare && jbr run -c 0"
+  },
+  "dependencies": {
+    "@jbr-experiment/watdiv": "^5.0.1",
+    "@jbr-hook/cli": "^5.0.0",
+    "@jbr-hook/sparql-endpoint-comunica": "^5.0.0",
+    "@jbr-hook/sparql-endpoint-ldf": "^5.1.0",
+    "cross-env": "^7.0.3",
+    "jbr": "^5.0.0"
+  }
+}
