@@ -37,6 +37,9 @@ export class ActorRdfJoinMinusHash extends ActorRdfJoin {
             index[ActorRdfJoin.hash(data, commonVariables)] = true;
           });
           buffer.bindingsStream.on('end', resolve);
+          buffer.bindingsStream.on('error', (error) => {
+            bindingsStream.emit('error', error);
+          });
         });
         return output.bindingsStream.filter(data => !index[ActorRdfJoin.hash(data, commonVariables)]);
       }, {

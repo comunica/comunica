@@ -6,7 +6,7 @@ import type {
 import {
   ActorQueryResultSerializeFixedMediaTypes,
 } from '@comunica/bus-query-result-serialize';
-import type { Bindings, IActionContext, IQueryOperationResultBindings } from '@comunica/types';
+import type { IActionContext, IQueryOperationResultBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { termToString } from 'rdf-string-ttl';
 import { Readable } from 'readable-stream';
@@ -57,27 +57,15 @@ export class ActorQueryResultSerializeSparqlTsv extends ActorQueryResultSerializ
     const bindingsAction = <IQueryOperationResultBindings> action;
 
     const data = new Readable();
-    data._read = () => {
-      // Do nothing
-    };
-
     // Write head
     const metadata = await bindingsAction.metadata();
     data.push(`${metadata.variables.map((variable: RDF.Variable) => variable.value).join('\t')}\n`);
 
-    // Write bindings
-    bindingsAction.bindingsStream.on('error', (error: Error) => {
-      data.emit('error', error);
-    });
-    bindingsAction.bindingsStream.on('data', (bindings: Bindings) => {
-      data.push(`${metadata.variables
-        .map((key: RDF.Variable) => ActorQueryResultSerializeSparqlTsv
-          .bindingToTsvBindings(bindings.get(key)))
-        .join('\t')}\n`);
-    });
-    bindingsAction.bindingsStream.on('end', () => {
-      data.push(null);
-    });
+    // Write Bindings
+    data.wrap(<any> bindingsAction.bindingsStream.map((bindings: RDF.Bindings) => `${metadata.variables
+      .map((key: RDF.Variable) => ActorQueryResultSerializeSparqlTsv
+        .bindingToTsvBindings(bindings.get(key)))
+      .join('\t')}\n`));
 
     return { data };
   }

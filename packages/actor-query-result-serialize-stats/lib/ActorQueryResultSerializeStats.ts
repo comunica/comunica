@@ -9,6 +9,7 @@ import type {
   IQueryOperationResultBindings,
   IQueryOperationResultQuads,
 } from '@comunica/types';
+import { wrap } from 'asynciterator';
 import { Readable } from 'readable-stream';
 import type { ActionObserverHttp } from './ActionObserverHttp';
 
@@ -45,37 +46,38 @@ export class ActorQueryResultSerializeStats extends ActorQueryResultSerializeFix
     data.push(`${header}\n`);
   }
 
-  public pushStat(data: Readable, startTime: number, result: number): void {
+  public createStat(startTime: number, result: number): string {
     const row: string = [ result, this.delay(startTime), this.httpObserver.requests,
     ].join(',');
-    data.push(`${row}\n`);
+    return `${row}\n`;
   }
 
-  public pushFooter(data: Readable, startTime: number): void {
+  public createFooter(startTime: number): string {
     const footer: string = [ 'TOTAL', this.delay(startTime), this.httpObserver.requests,
     ].join(',');
-    data.push(`${footer}\n`);
-    data.push(null);
+    return `${footer}\n`;
   }
 
   public async runHandle(action: IActionSparqlSerialize, _mediaType: string, _context: IActionContext):
   Promise<IActorQueryResultSerializeOutput> {
     const data = new Readable();
-    data._read = () => {
-      // Do nothing
-    };
 
-    const resultStream: NodeJS.EventEmitter = action.type === 'bindings' ?
+    const resultStream = action.type === 'bindings' ?
         (<IQueryOperationResultBindings> action).bindingsStream :
         (<IQueryOperationResultQuads> action).quadStream;
 
     const startTime = this.now();
     let result = 1;
 
+    function* end(cb: () => string): Generator<string> {
+      yield cb();
+    }
+    const stream = wrap(resultStream)
+      .map(() => this.createStat(startTime, result++))
+      .append(wrap(end(() => this.createFooter(startTime))));
+
     this.pushHeader(data);
-    resultStream.on('error', error => data.emit('error', error));
-    resultStream.on('data', () => this.pushStat(data, startTime, result++));
-    resultStream.on('end', () => this.pushFooter(data, startTime));
+    data.wrap(<any> stream);
 
     return { data };
   }

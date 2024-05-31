@@ -81,12 +81,7 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
             ]),
           ),
         }),
-      ).bindingsStream.transform({
-        map(bindings) {
-          return bindings.delete(varP);
-        },
-        autoStart: false,
-      });
+      ).bindingsStream.map(bindings => bindings.delete(varP));
       bindingsStream = new UnionIterator([
         bindingsZero,
         bindingsOne.bindingsStream,

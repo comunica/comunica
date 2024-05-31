@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-process-sequential",
-  "version": "3.1.0",
+  "version": "3.1.2",
   "description": "A sequential query-process actor",
   "lsd:module": true,
   "license": "MIT",
@@ -38,10 +38,10 @@
   },
   "dependencies": {
     "@comunica/bindings-factory": "^3.1.0",
-    "@comunica/bus-context-preprocess": "^3.1.0",
+    "@comunica/bus-context-preprocess": "^3.1.2",
     "@comunica/bus-merge-bindings-context": "^3.1.0",
     "@comunica/bus-optimize-query-operation": "^3.1.0",
-    "@comunica/bus-query-operation": "^3.1.0",
+    "@comunica/bus-query-operation": "^3.1.2",
     "@comunica/bus-query-parse": "^3.1.0",
     "@comunica/bus-query-process": "^3.1.0",
     "@comunica/context-entries": "^3.1.0",

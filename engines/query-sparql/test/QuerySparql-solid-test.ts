@@ -88,11 +88,9 @@ describe('System test: QuerySparql over Solid Pods', () => {
   let token: ITokenData;
   let authFetch: typeof fetch;
 
-  beforeEach(() => {
-    engine = new QueryEngine();
-  });
-
   beforeAll(async() => {
+    engine = new QueryEngine();
+
     // Start up the server
     app = await createApp();
     await app.start();

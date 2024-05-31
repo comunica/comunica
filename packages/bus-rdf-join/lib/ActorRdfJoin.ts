@@ -18,7 +18,6 @@ import type {
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
-import { termToString } from 'rdf-string';
 
 const DF = new DataFactory();
 
@@ -81,8 +80,13 @@ export abstract class ActorRdfJoin
    */
   public static hash(bindings: Bindings, variables: RDF.Variable[]): string {
     return variables
-      .filter(variable => bindings.has(variable))
-      .map(variable => termToString(bindings.get(variable)))
+      .map((variable) => {
+        const term = bindings.get(variable);
+        if (term) {
+          return term.value;
+        }
+        return '';
+      })
       .join('');
   }
 

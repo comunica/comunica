@@ -286,10 +286,7 @@ export function quadsOrderToBindingsOrder(
  */
 export function filterMatchingQuotedQuads(pattern: RDF.BaseQuad, it: AsyncIterator<RDF.Quad>): AsyncIterator<RDF.Quad> {
   if (someTerms(pattern, term => term.termType === 'Quad')) {
-    it = it.transform({
-      filter: quad => matchPatternMappings(quad, pattern),
-      autoStart: false,
-    });
+    it = it.filter(quad => matchPatternMappings(quad, pattern));
   }
   return it;
 }

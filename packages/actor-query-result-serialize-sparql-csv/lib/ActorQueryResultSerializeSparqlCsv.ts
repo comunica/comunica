@@ -76,26 +76,16 @@ export class ActorQueryResultSerializeSparqlCsv extends ActorQueryResultSerializ
     const bindingsAction = <IQueryOperationResultBindings> action;
 
     const data = new Readable();
-    data._read = () => {
-      // Do nothing
-    };
+
+    const metadata = await bindingsAction.metadata();
 
     // Write head
-    const metadata = await bindingsAction.metadata();
     data.push(`${metadata.variables.map(variable => variable.value).join(',')}\r\n`);
 
-    // Write bindings
-    bindingsAction.bindingsStream.on('error', (error: Error) => {
-      data.emit('error', error);
-    });
-    bindingsAction.bindingsStream.on('data', (bindings: Bindings) => {
-      data.push(`${metadata.variables
+    // Write body
+    data.wrap(<any> bindingsAction.bindingsStream.map((bindings: Bindings) => `${metadata.variables
         .map(key => ActorQueryResultSerializeSparqlCsv.bindingToCsvBindings(bindings.get(key)))
-        .join(',')}\r\n`);
-    });
-    bindingsAction.bindingsStream.on('end', () => {
-      data.push(null);
-    });
+        .join(',')}\r\n`));
 
     return { data };
   }

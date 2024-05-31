@@ -5,12 +5,12 @@ import type {
 } from '@comunica/bus-query-result-serialize';
 import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-result-serialize';
 import type {
-  Bindings,
   IActionContext,
   IQueryOperationResultBindings,
   IQueryOperationResultBoolean,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import { wrap } from 'asynciterator';
 import { Readable } from 'readable-stream';
 import { XmlSerializer, type IXmlNode } from './XmlSerializer';
 
@@ -83,39 +83,38 @@ export class ActorQueryResultSerializeSparqlXml extends ActorQueryResultSerializ
       // Do nothing
     };
 
-    // Write head
-    const serializer = new XmlSerializer(chunk => data.push(chunk));
-    serializer.open('sparql', { xmlns: 'http://www.w3.org/2005/sparql-results#' });
+    const serializer = new XmlSerializer();
     const metadata = await (<IQueryOperationResultBindings> action).metadata();
-    serializer.add({
-      name: 'head',
-      children: metadata.variables.map(variable => ({ name: 'variable', attributes: { name: variable.value }})),
-    });
+
+    data.push(XmlSerializer.header);
+    data.push(serializer.open('sparql', { xmlns: 'http://www.w3.org/2005/sparql-results#' }));
+    data.push(
+      serializer.serializeNode({
+        name: 'head',
+        children: metadata.variables.map(variable => ({ name: 'variable', attributes: { name: variable.value }})),
+      }),
+    );
+
     if (action.type === 'bindings') {
-      serializer.open('results');
-      const resultStream: NodeJS.EventEmitter = (<IQueryOperationResultBindings> action).bindingsStream;
-
-      // Write bindings
-      resultStream.on('error', (error: Error) => {
-        data.emit('error', error);
-      });
-      resultStream.on('data', (bindings: Bindings) => {
-        // XML SPARQL results spec does not allow unbound variables and blank node bindings
-        serializer.add({ name: 'result', children: [ ...bindings ]
-          .map(([ key, value ]) => ActorQueryResultSerializeSparqlXml.bindingToXmlBindings(value, key)) });
-      });
-
-      // Close streams
-      resultStream.on('end', () => {
-        serializer.close();
-        serializer.close();
-        setTimeout(() => data.push(null));
-      });
+      function* end(): Generator<string, void> {
+        yield serializer.close();
+        yield serializer.close();
+      }
+      data.push(serializer.open('results'));
+      const stream = wrap((<IQueryOperationResultBindings> action).bindingsStream).map(
+        (bindings: RDF.Bindings) => serializer.serializeNode({
+          name: 'result',
+          children: [ ...bindings ].map(
+            ([ key, value ]) => ActorQueryResultSerializeSparqlXml.bindingToXmlBindings(value, key),
+          ),
+        }),
+      ).append(wrap(end()));
+      data.wrap(<any> stream);
     } else {
       try {
         const result = await (<IQueryOperationResultBoolean> action).execute();
-        serializer.add({ name: 'boolean', children: result.toString() });
-        serializer.close();
+        data.push(serializer.serializeNode({ name: 'boolean', children: result.toString() }));
+        data.push(serializer.close());
         setTimeout(() => data.push(null));
       } catch (error: unknown) {
         setTimeout(() => data.emit('error', error));

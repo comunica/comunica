@@ -21,14 +21,14 @@ export class ActorContextPreprocessQuerySourceSkolemize extends ActorContextPrep
   public async run(action: IAction): Promise<IActorContextPreprocessOutput> {
     let context = action.context;
 
-    // Determine map of source id's
-    if (!context.has(KeysQuerySourceIdentify.sourceIds)) {
-      context = context.set(KeysQuerySourceIdentify.sourceIds, new Map());
-    }
-    const sourceIds: Map<QuerySourceReference, string> = context.getSafe(KeysQuerySourceIdentify.sourceIds);
-
     // Wrap sources in skolemized sources
     if (context.has(KeysQueryOperation.querySources)) {
+      // Determine map of source id's
+      if (!context.has(KeysQuerySourceIdentify.sourceIds)) {
+        context = context.set(KeysQuerySourceIdentify.sourceIds, new Map());
+      }
+      const sourceIds: Map<QuerySourceReference, string> = context.getSafe(KeysQuerySourceIdentify.sourceIds);
+
       let sources: IQuerySourceWrapper[] = context.getSafe(KeysQueryOperation.querySources);
       sources = sources.map(sourceWrapper => ({
         source: new QuerySourceSkolemized(sourceWrapper.source, getSourceId(sourceIds, sourceWrapper.source)),
