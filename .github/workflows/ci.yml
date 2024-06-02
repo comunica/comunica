@@ -7,37 +7,7 @@ concurrency:
 
 jobs:
 
-  build:
-    runs-on: ubuntu-latest
-    
-    steps:
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 20
-      - name: Ensure line endings are consistent
-        run: git config --global core.autocrlf input
-      - name: Check out repository
-        uses: actions/checkout@v3
-      - name: Load cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            **/node_modules
-            .rdf-test-suite-cache
-            .rdf-test-suite-ldf-cache
-          key: ${{ runner.os }}-test-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-      - uses: actions/upload-artifact@v4
-        with:
-          name: engines
-          path: engines
-      - uses: actions/upload-artifact@v4
-        with:
-          name: packages
-          path: packages
   test:
-    needs: build
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -62,20 +32,16 @@ jobs:
             .rdf-test-suite-cache
             .rdf-test-suite-ldf-cache
           key: ${{ runner.os }}-test-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/download-artifact@v4
-        with:
-          name: engines
-          path: engines
-      - uses: actions/download-artifact@v4
-        with:
-          name: packages
-          path: packages
       - name: Setup firefox
         uses: browser-actions/setup-firefox@latest
         with:
           firefox-version: latest
       - name: Install dependencies
-        run: yarn install --frozen-lockfile --ignore-scripts
+        run: yarn install --frozen-lockfile
+      - name: Build project
+        run: yarn run build
+      - name: Build project -- esModuleInterop true
+        run: yarn run build:ts --esModuleInterop true
       - name: Run depcheck
         run: yarn run depcheck
       - name: Run tests
@@ -95,15 +61,9 @@ jobs:
           flag-name: run-${{ matrix.node-version }}
           parallel: true
       - name: Run spec tests
-      #  TODO: Reintroduce `npx lerna run` command when https://github.com/lerna/lerna/issues/4014 is resolved
-      #  run: npx lerna run spec --concurrency 1
-        run: cd engines/query-sparql && yarn run spec
-      #  TODO: Reintroduce `npx lerna run` command when https://github.com/lerna/lerna/issues/4014 is resolved
-      #  npx lerna run integration --concurrency 1
-      - run: cd engines/query-sparql && yarn run integration
-      - run: cd engines/query-sparql-file && yarn run integration
-      - run: cd engines/query-sparql-rdfjs && yarn run integration
-      - run: cd engines/query-sparql-rdfjs-lite && yarn run integration
+        run: npx lerna run spec --concurrency 1
+      - name: Run integration tests
+        run: npx lerna run integration --concurrency 1
 
   coveralls:
     needs: test
@@ -116,7 +76,6 @@ jobs:
           parallel-finished: true
 
   lint:
-    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Use Node.js
@@ -130,16 +89,8 @@ jobs:
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-lint-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/download-artifact@v4
-        with:
-          name: engines
-          path: engines
-      - uses: actions/download-artifact@v4
-        with:
-          name: packages
-          path: packages
       - name: Install dependencies
-        run: yarn install --frozen-lockfile --ignore-scripts
+        run: yarn install --frozen-lockfile
       - name: Run linter
         run: yarn run lint
 
@@ -147,7 +98,6 @@ jobs:
     needs:
       - test
       - lint
-      - build
     runs-on: ubuntu-latest
     steps:
       - name: Use Node.js
@@ -161,16 +111,8 @@ jobs:
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-browser-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/download-artifact@v4
-        with:
-          name: engines
-          path: engines
-      - uses: actions/download-artifact@v4
-        with:
-          name: packages
-          path: packages
       - name: Install dependencies
-        run: yarn install --frozen-lockfile --ignore-scripts
+        run: yarn install --frozen-lockfile
       - name: Build for browser
         run: npx lerna run browser --concurrency 1
       - name: Deploy browser build
@@ -183,7 +125,6 @@ jobs:
     needs:
       - test
       - lint
-      - build
     runs-on: ubuntu-latest
     steps:
       - name: Use Node.js
@@ -197,16 +138,8 @@ jobs:
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-docker-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/download-artifact@v4
-        with:
-          name: engines
-          path: engines
-      - uses: actions/download-artifact@v4
-        with:
-          name: packages
-          path: packages
       - name: Install dependencies
-        run: yarn install --frozen-lockfile --ignore-scripts
+        run: yarn install --frozen-lockfile
       - name: Install Lerna Docker
         run: sh -c "`curl -fsSl https://raw.githubusercontent.com/rubensworks/lerna-docker/master/install.sh`"
       - name: Build Docker images
@@ -218,11 +151,10 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
-  performance:
+  performance-watdiv-file:
     needs:
       - test
       - lint
-      - build
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -231,27 +163,60 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18.x
-      - name: Load cache
-        uses: actions/cache@v3
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-docker-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/download-artifact@v4
-        with:
-          name: engines
-          path: engines
-      - uses: actions/download-artifact@v4
-        with:
-          name: packages
-          path: packages
       - name: Install dependencies
         run: yarn install
       - name: Run benchmarks
-        run: npx lerna run performance:ci --concurrency 1
+        run: cd performance/benchmark-watdiv-file/ && yarn run performance:ci
+      - uses: actions/upload-artifact@v4
+        with:
+          name: performance-benchmark-watdiv-file
+          path: performance/benchmark-watdiv-file/combinations/combination_0/output/
+
+  performance-watdiv-tpf:
+    needs:
+      - test
+      - lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+      - name: Install dependencies
+        run: yarn install
+      - name: Run benchmarks
+        run: cd performance/benchmark-watdiv-tpf/ && yarn run performance:ci
+      - uses: actions/upload-artifact@v4
+        with:
+          name: performance-benchmark-watdiv-tpf
+          path: performance/benchmark-watdiv-tpf/combinations/combination_0/output/
+
+  performance-consolidate:
+    needs:
+      - performance-watdiv-file
+      - performance-watdiv-tpf
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+      - uses: actions/download-artifact@v4
+        with:
+          name: performance-benchmark-watdiv-file
+          path: performance/benchmark-watdiv-file/combinations/combination_0/output/
+      - uses: actions/download-artifact@v4
+        with:
+          name: performance-benchmark-watdiv-tpf
+          path: performance/benchmark-watdiv-tpf/combinations/combination_0/output/
       - name: Process benchmark detailed results
-        run: npx psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File --total false --detailed true --name ghbench-detail.json
+        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF --total false --detailed true --name ghbench-detail.json
       - name: Process benchmark total results
-        run: npx psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File --total true --detailed false --name ghbench-total.json
+        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF --total true --detailed false --name ghbench-total.json
       - name: Determine benchmark detailed results target directory name
         run: echo "BENCHMARK_DATA_DIR_PATH_DETAIL=comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-detail" >> $GITHUB_ENV
       - name: Determine benchmarks total results target directory name
@@ -298,7 +263,6 @@ jobs:
           body-path: ./commit-comment-body.txt
 
   docs:
-    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Use Node.js
@@ -312,16 +276,8 @@ jobs:
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-docs-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/download-artifact@v4
-        with:
-          name: engines
-          path: engines
-      - uses: actions/download-artifact@v4
-        with:
-          name: packages
-          path: packages
       - name: Install dependencies
-        run: yarn install --frozen-lockfile --ignore-scripts
+        run: yarn install --frozen-lockfile
       - name: Build docs
         run: yarn run doc
       - name: Deploy TSDoc to GitHub Pages

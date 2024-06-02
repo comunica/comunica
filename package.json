@@ -34,8 +34,8 @@
     "ncu:all": "lerna-script updateTask",
     "ncu:major:all": "lerna-script updateTaskMajor",
     "clean": "git status --untracked-files=all --ignored=traditional | grep \"^[^a-z]*packages/[^/]*/lib/\" | grep \"\\.\\(\\(js\\)\\|\\(d\\.ts\\)\\|\\(js\\.map\\)\\)$\" | xargs rm && git status --untracked-files=all --ignored=traditional | grep \"^[^a-z]*packages/[^/]*/components/\" | xargs rm",
-    "spec": "lerna run spec --concurrency 1",
-    "integration": "lerna run integration --concurrency 1"
+    "spec": "npx lerna run spec --concurrency 1",
+    "integration": "npx lerna run integration --concurrency 1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.2",
