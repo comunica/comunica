@@ -1,4 +1,9 @@
-import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs, MediatorRdfJoin } from '@comunica/bus-rdf-join';
+import type {
+  IActionRdfJoin,
+  IActorRdfJoinOutputInner,
+  IActorRdfJoinArgs,
+  MediatorRdfJoin
+} from '@comunica/bus-rdf-join';
 import {
   ActorRdfJoin,
 } from '@comunica/bus-rdf-join';
