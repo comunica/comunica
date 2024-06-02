@@ -98,7 +98,6 @@ jobs:
     needs:
       - test
       - lint
-      - build
     runs-on: ubuntu-latest
     steps:
       - name: Use Node.js
@@ -126,7 +125,6 @@ jobs:
     needs:
       - test
       - lint
-      - build
     runs-on: ubuntu-latest
     steps:
       - name: Use Node.js
@@ -157,7 +155,6 @@ jobs:
     needs:
       - test
       - lint
-      - build
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -166,19 +163,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18.x
-      - name: Load cache
-        uses: actions/cache@v3
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-docker-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/download-artifact@v4
-        with:
-          name: engines
-          path: engines
-      - uses: actions/download-artifact@v4
-        with:
-          name: packages
-          path: packages
       - name: Install dependencies
         run: yarn install
       - name: Run benchmarks
@@ -279,7 +263,6 @@ jobs:
           body-path: ./commit-comment-body.txt
 
   docs:
-    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Use Node.js
