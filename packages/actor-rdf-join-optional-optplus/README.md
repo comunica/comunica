@@ -1,6 +1,6 @@
 # Comunica Optional OptPlus Loop RDF Join Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-rdf-join-optional-nestedloop.svg)](https://www.npmjs.com/package/@comunica/actor-rdf-join-optional-optplus)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-rdf-join-optional-optplus.svg)](https://www.npmjs.com/package/@comunica/actor-rdf-join-optional-optplus)
 
 An [RDF Join](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join) actor that handles ["OPT+: A Monotonic Alternative to OPTIONAL in SPARQL" (by Sijin Cheng and Olaf Hartig)](https://www.researchgate.net/publication/333627321_OPT_A_Monotonic_Alternativeto_OPTIONAL_in_SPARQL) operations
 by delegating back to the [RDF Join bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join) bus.
