@@ -8,7 +8,6 @@ import {
   ActorRdfJoin,
 } from '@comunica/bus-rdf-join';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import { MetadataValidationState } from '@comunica/metadata';
 import type { MetadataBindings } from '@comunica/types';
 import { UnionIterator } from 'asynciterator';
 
@@ -36,12 +35,6 @@ export class ActorRdfJoinOptionalOptPlus extends ActorRdfJoin {
       bindingsStream: new UnionIterator([ clonedStream, joined.bindingsStream ], { autoStart: false }),
       metadata: async(): Promise<MetadataBindings> => {
         const [ leftMeta, joinedMeta ] = await Promise.all([ entries[0].output.metadata(), joined.metadata() ]);
-        // Propagate metadata invalidations
-        const state = new MetadataValidationState();
-        const invalidateListener = (): void => state.invalidate();
-        for (const metadata of [ leftMeta, joinedMeta ]) {
-          metadata.state.addInvalidateListener(invalidateListener);
-        }
         return {
           variables: joinedMeta.variables,
           canContainUndefs: true,
@@ -49,7 +42,7 @@ export class ActorRdfJoinOptionalOptPlus extends ActorRdfJoin {
             type: joinedMeta.cardinality.type,
             value: leftMeta.cardinality.value + joinedMeta.cardinality.value,
           },
-          state,
+          state: this.constructState([ leftMeta, joinedMeta ]),
         };
       },
     }};
