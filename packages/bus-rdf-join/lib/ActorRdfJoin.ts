@@ -182,7 +182,11 @@ export abstract class ActorRdfJoin
       .map(metadata => metadata.pageSize ? (metadata.requestTime ?? 0) / metadata.pageSize : 0);
   }
 
-  public constructState(metadatas: MetadataBindings[]) {
+  /**
+   * Construct a metadata validation state for the given metadata entries.
+   * @param metadatas An array of checked metadata.
+   */
+  public constructState(metadatas: MetadataBindings[]): MetadataValidationState {
     // Propagate metadata invalidations
     const state = new MetadataValidationState();
     const invalidateListener = (): void => state.invalidate();
