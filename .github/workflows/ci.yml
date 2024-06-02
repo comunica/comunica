@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         node-version:
           - 18.x
           - 20.x
@@ -48,6 +48,7 @@ jobs:
       - name: Run tests
         run: yarn run test:ci
       - name: Run browser tests
+        if: ${{ matrix.os == 'ubuntu-latest' }}
         uses: nick-fields/retry@v3
         with:
           timeout_minutes: 2
