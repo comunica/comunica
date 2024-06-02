@@ -4,6 +4,6 @@
   ],
   "import": [
     "ccqs:config/rdf-join/actors-base.json",
-    "ccqs:config/rdf-join/actors-optional.json"
+    "ccqs:config/rdf-join/actors-optional-optplus.json"
   ]
 }
