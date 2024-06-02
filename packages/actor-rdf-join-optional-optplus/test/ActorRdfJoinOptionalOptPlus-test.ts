@@ -1,5 +1,6 @@
+import { ActorRdfJoinNestedLoop } from '@comunica/actor-rdf-join-inner-nestedloop';
 import { BindingsFactory } from '@comunica/bindings-factory';
-import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
+import type { IActionRdfJoin, MediatorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
@@ -8,13 +9,13 @@ import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { ActorRdfJoinOptionalNestedLoop } from '../lib/ActorRdfJoinOptionalNestedLoop';
+import { ActorRdfJoinOptionalOptPlus } from '../lib/ActorRdfJoinOptionalOptPlus';
 import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
 
-describe('ActorRdfJoinOptionalNestedLoop', () => {
+describe('ActorRdfJoinOptionalOptPlus', () => {
   let bus: any;
   let context: IActionContext;
 
@@ -23,20 +24,27 @@ describe('ActorRdfJoinOptionalNestedLoop', () => {
     context = new ActionContext();
   });
 
-  describe('An ActorRdfJoinOptionalNestedLoop instance', () => {
+  describe('An ActorRdfJoinOptionalOptPlus instance', () => {
     let mediatorJoinSelectivity: Mediator<
     Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
     IActionRdfJoinSelectivity,
 IActorTest,
 IActorRdfJoinSelectivityOutput
 >;
-    let actor: ActorRdfJoinOptionalNestedLoop;
+    let actor: ActorRdfJoinOptionalOptPlus;
+    let mediatorJoin: MediatorRdfJoin;
 
     beforeEach(() => {
       mediatorJoinSelectivity = <any> {
         mediate: async() => ({ selectivity: 1 }),
       };
-      actor = new ActorRdfJoinOptionalNestedLoop({ name: 'actor', bus, mediatorJoinSelectivity });
+      mediatorJoin = <any> {
+        mediate: async(action: IActionRdfJoin) => {
+          const actor = new ActorRdfJoinNestedLoop({ name: 'actor', bus, mediatorJoinSelectivity });
+          return actor.run(action);
+        },
+      };
+      actor = new ActorRdfJoinOptionalOptPlus({ name: 'actor', bus, mediatorJoinSelectivity, mediatorJoin });
     });
 
     describe('test', () => {
@@ -99,10 +107,10 @@ IActorRdfJoinSelectivityOutput
           ],
           context,
         })).resolves.toEqual({
-          iterations: 16,
+          iterations: 8,
           blockingItems: 0,
           persistedItems: 0,
-          requestTime: 0.8,
+          requestTime: 0,
         });
       });
     });
@@ -165,17 +173,23 @@ IActorRdfJoinSelectivityOutput
         await expect(result.metadata()).resolves
           .toEqual({
             state: expect.any(MetadataValidationState),
-            cardinality: { type: 'estimate', value: 9 },
+            cardinality: { type: 'estimate', value: 12 },
             canContainUndefs: true,
             variables: [ DF.variable('a'), DF.variable('b') ],
           });
         await expect(result.bindingsStream).toEqualBindingsStream([
           BF.bindings([
             [ DF.variable('a'), DF.literal('1') ],
-            [ DF.variable('b'), DF.literal('1') ],
           ]),
           BF.bindings([
             [ DF.variable('a'), DF.literal('2') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('a'), DF.literal('3') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('a'), DF.literal('1') ],
+            [ DF.variable('b'), DF.literal('1') ],
           ]),
           BF.bindings([
             [ DF.variable('a'), DF.literal('3') ],
