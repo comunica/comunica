@@ -126,6 +126,7 @@
     "@comunica/actor-query-operation-update-drop": "^3.1.0",
     "@comunica/actor-query-operation-update-load": "^3.1.0",
     "@comunica/actor-query-operation-values": "^3.1.0",
+    "@comunica/actor-query-operation-reduced-my": "^1.0.0",
     "@comunica/actor-query-parse-graphql": "^3.1.0",
     "@comunica/actor-query-parse-sparql": "^3.1.0",
     "@comunica/actor-query-process-explain-logical": "^3.1.0",

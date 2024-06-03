@@ -2,16 +2,15 @@
   "@context": [
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^3.0.0/components/context.jsonld",
 
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-reduced-hash/^3.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-reduced-my/^1.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:default:Runner",
   "@type": "Runner",
   "actors": [
     {
       "@id": "urn:comunica:default:query-operation/actors#reduced",
-      "@type": "ActorQueryOperationReducedHash",
-      "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
-      "mediatorHashBindings": { "@id": "urn:comunica:default:hash-bindings/mediators#main" }
+      "@type": "ActorQueryOperationReducedMy",
+      "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" }
     }
   ]
 }
