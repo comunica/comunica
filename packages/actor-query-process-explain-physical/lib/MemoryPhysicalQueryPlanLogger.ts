@@ -64,21 +64,27 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
   }
 
   private getLogicalMetadata(rawNode: any): IPlanNodeJsonLogicalMetadata {
+    const data: IPlanNodeJsonLogicalMetadata = {};
+
     if ('type' in rawNode) {
       const operation: Algebra.Operation = rawNode;
+
+      if (operation.metadata?.scopedSource) {
+        data.source = (<any> operation.metadata.scopedSource).source.toString();
+      }
+
       // eslint-disable-next-line ts/switch-exhaustiveness-check
       switch (operation.type) {
         case 'pattern':
-          return {
-            pattern: this.quadToString(operation),
-          };
+          data.pattern = this.quadToString(operation);
+          break;
         case 'project':
-          return {
-            variables: operation.variables.map(variable => variable.value),
-          };
+          data.variables = operation.variables.map(variable => variable.value);
+          break;
       }
     }
-    return {};
+
+    return data;
   }
 
   private quadToString(quad: RDF.BaseQuad): string {
@@ -104,5 +110,6 @@ interface IPlanNodeJson extends IPlanNodeJsonLogicalMetadata {
 
 interface IPlanNodeJsonLogicalMetadata {
   pattern?: string;
+  source?: string;
   variables?: string[];
 }

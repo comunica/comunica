@@ -1237,6 +1237,7 @@ SELECT ?obsId {
                   {
                     logical: 'pattern',
                     pattern: '?s ?p ?o',
+                    source: 'QuerySourceHypermedia(https://www.rubensworks.net/)(SkolemID:0)',
                   },
                 ],
               },

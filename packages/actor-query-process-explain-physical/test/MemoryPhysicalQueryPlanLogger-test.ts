@@ -1,3 +1,5 @@
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import type { IQuerySource } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { MemoryPhysicalQueryPlanLogger } from '../lib/MemoryPhysicalQueryPlanLogger';
@@ -112,6 +114,31 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
       expect(logger.toJson()).toEqual({
         logical: 'pattern',
         pattern: 'ex:s1 ex:p1 ?o1 ex:g1',
+      });
+    });
+
+    it('for a single pattern with source', () => {
+      logger.logOperation(
+        'pattern',
+        undefined,
+        ActorQueryOperation.assignOperationSource(
+          factory.createPattern(
+            DF.namedNode('ex:s1'),
+            DF.namedNode('ex:p1'),
+            DF.variable('o1'),
+            DF.namedNode('ex:g1'),
+          ),
+          { source: <IQuerySource> { toString: () => 'SRC' }},
+        ),
+        undefined,
+        'actor-pattern',
+        {},
+      );
+
+      expect(logger.toJson()).toEqual({
+        logical: 'pattern',
+        pattern: 'ex:s1 ex:p1 ?o1 ex:g1',
+        source: 'SRC',
       });
     });
 
