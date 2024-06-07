@@ -57,6 +57,11 @@ export abstract class ActorRdfJoin
    * If this actor can handle undefs in the bindings.
    */
   protected readonly canHandleUndefs: boolean;
+  /**
+   * If this join operator will not invoke any other join or query operations below,
+   * and can therefore be considered a leaf of the join plan.
+   */
+  protected readonly isLeaf: boolean;
 
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
@@ -69,6 +74,7 @@ export abstract class ActorRdfJoin
     this.limitEntries = options.limitEntries ?? Number.POSITIVE_INFINITY;
     this.limitEntriesMin = options.limitEntriesMin ?? false;
     this.canHandleUndefs = options.canHandleUndefs ?? false;
+    this.isLeaf = options.isLeaf ?? true;
   }
 
   /**
@@ -378,6 +384,11 @@ export abstract class ActorRdfJoin
     let planMetadata: any;
     if (this.includeInLogs && physicalQueryPlanLogger) {
       planMetadata = {};
+      // Stash non-join children, as they will be unstashed later in sub-joins.
+      physicalQueryPlanLogger.stashChildren(
+        parentPhysicalQueryPlanNode,
+        node => node.logicalOperator.startsWith('join'),
+      );
       physicalQueryPlanLogger.logOperation(
         `join-${this.logicalType}`,
         this.physicalName,
@@ -395,8 +406,21 @@ export abstract class ActorRdfJoin
     // Fill in the physical plan metadata after determining action output
     if (planMetadata) {
       Object.assign(planMetadata, physicalPlanMetadata);
-      planMetadata.cardinalities = metadatas.map(ActorRdfJoin.getCardinality);
+      const cardinalities = metadatas.map(ActorRdfJoin.getCardinality);
+      planMetadata.cardinalities = cardinalities;
       planMetadata.joinCoefficients = await this.getJoinCoefficients(action, metadatas);
+
+      // If this is a leaf operation, include join entries in plan metadata.
+      if (this.isLeaf) {
+        for (let i = 0; i < action.entries.length; i++) {
+          const entry = action.entries[i];
+          physicalQueryPlanLogger!.unstashChild(
+            entry.operation,
+            action,
+          );
+          physicalQueryPlanLogger!.appendMetadata(entry.operation, { cardinality: cardinalities[i] });
+        }
+      }
     }
 
     // Cache metadata
@@ -457,6 +481,12 @@ export interface IActorRdfJoinInternalOptions {
    * Defaults to false.
    */
   canHandleUndefs?: boolean;
+  /**
+   * If this join operator will not invoke any other join or query operations below,
+   * and can therefore be considered a leaf of the join plan.
+   * Defaults to true.
+   */
+  isLeaf?: boolean;
 }
 
 /**

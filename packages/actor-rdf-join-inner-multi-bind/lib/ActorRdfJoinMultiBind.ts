@@ -32,6 +32,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
       logicalType: 'inner',
       physicalName: 'bind',
       canHandleUndefs: true,
+      isLeaf: false,
     });
   }
 
@@ -140,6 +141,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
       physicalPlanMetadata: {
         bindIndex: entriesUnsorted.indexOf(entries[0]),
         bindOperation: entries[0].operation,
+        bindOperationCardinality: entries[0].metadata.cardinality,
         bindOrder: this.bindOrder,
       },
     };

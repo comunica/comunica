@@ -1,4 +1,4 @@
-import type { IPhysicalQueryPlanLogger } from '@comunica/types';
+import type { IPhysicalQueryPlanLogger, IPlanNode } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { termToString } from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -7,11 +7,11 @@ import type { Algebra } from 'sparqlalgebrajs';
  * A physical query plan logger that stores everything in memory.
  */
 export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
-  private readonly children: Map<any, IPlanNode[]>;
+  private readonly planNodes: Map<any, IPlanNode>;
   private rootNode: IPlanNode | undefined;
 
   public constructor() {
-    this.children = new Map();
+    this.planNodes = new Map();
   }
 
   public logOperation(
@@ -30,17 +30,17 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
       children: [],
       metadata,
     };
-    this.children.set(node, planNode.children);
+    this.planNodes.set(node, planNode);
 
     if (this.rootNode) {
       if (!parentNode) {
         throw new Error(`Detected more than one parent-less node`);
       }
-      const children = this.children.get(parentNode);
-      if (!children) {
+      const planParentNode = this.planNodes.get(parentNode);
+      if (!planParentNode) {
         throw new Error(`Could not find parent node`);
       }
-      children.push(planNode);
+      planParentNode.children.push(planNode);
     } else {
       if (parentNode) {
         throw new Error(`No root node has been set yet, while a parent is being referenced`);
@@ -49,7 +49,42 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
     }
   }
 
-  public toJson(): any {
+  public stashChildren(node: any, filter?: (planNodeFilter: IPlanNode) => boolean): void {
+    const planNode = this.planNodes.get(node);
+    if (!planNode) {
+      throw new Error(`Could not find plan node`);
+    }
+    planNode.children = filter ? planNode.children.filter(filter) : [];
+  }
+
+  public unstashChild(
+    node: any,
+    parentNode: any,
+  ): void {
+    const planNode = this.planNodes.get(node);
+    if (planNode) {
+      const planParentNode = this.planNodes.get(parentNode);
+      if (!planParentNode) {
+        throw new Error(`Could not find plan parent node`);
+      }
+      planParentNode.children.push(planNode);
+    }
+  }
+
+  public appendMetadata(
+    node: any,
+    metadata: any,
+  ): void {
+    const planNode = this.planNodes.get(node);
+    if (planNode) {
+      planNode.metadata = {
+        ...planNode.metadata,
+        ...metadata,
+      };
+    }
+  }
+
+  public toJson(): IPlanNodeJson | Record<string, never> {
     return this.rootNode ? this.planNodeToJson(this.rootNode) : {};
   }
 
@@ -70,7 +105,7 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
       // Group children by query plan format
       const childrenGrouped: Record<string, IPlanNodeJson[]> = {};
       for (const child of data.children) {
-        const lastSubChild = <IPlanNodeJson> child.children?.at(-1);
+        const lastSubChild = child.children?.at(-1) ?? child;
         const key = this.getPlanHash(lastSubChild).join(',');
         if (!childrenGrouped[key]) {
           childrenGrouped[key] = [];
@@ -147,15 +182,62 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
   private quadToString(quad: RDF.BaseQuad): string {
     return `${termToString(quad.subject)} ${termToString(quad.predicate)} ${termToString(quad.object)}${quad.graph.termType === 'DefaultGraph' ? '' : ` ${termToString(quad.graph)}`}`;
   }
-}
 
-interface IPlanNode {
-  actor: string;
-  logicalOperator: string;
-  physicalOperator?: string;
-  rawNode: any;
-  children: IPlanNode[];
-  metadata: any;
+  public toCompactString(): string {
+    const node = this.toJson();
+    const lines: string[] = [];
+    const sources: Map<string, number> = new Map();
+
+    if ('logical' in node) {
+      this.nodeToCompactString(lines, sources, '', <IPlanNodeJson> node);
+    } else {
+      lines.push('Empty');
+    }
+
+    if (sources.size > 0) {
+      lines.push('');
+      lines.push('sources:');
+      for (const [ key, id ] of sources.entries()) {
+        lines.push(`  ${id}: ${key}`);
+      }
+    }
+
+    return lines.join('\n');
+  }
+
+  public nodeToCompactString(
+    lines: string[],
+    sources: Map<string, number>,
+    indent: string,
+    node: IPlanNodeJson,
+    metadata?: string,
+  ): void {
+    let sourceId: number | undefined;
+    if (node.source) {
+      sourceId = sources.get(node.source);
+      if (sourceId === undefined) {
+        sourceId = sources.size;
+        sources.set(node.source, sourceId);
+      }
+    }
+
+    lines.push(`${
+      indent}${
+      node.logical}${
+      node.physical ? `(${node.physical})` : ''}${
+      node.pattern ? ` (${node.pattern})` : ''}${
+      node.variables ? ` (${node.variables.join(',')})` : ''}${
+      node.bindOperation ? ` bindOperation:(${node.bindOperation.pattern}) bindCardEst:${node.bindOperationCardinality.type === 'estimate' ? '~' : ''}${node.bindOperationCardinality.value}` : ''}${
+      node.cardinality ? ` cardEst:${node.cardinality.type === 'estimate' ? '~' : ''}${node.cardinality.value}` : ''}${
+      node.source ? ` src:${sourceId}` : ''}${
+      metadata ? ` ${metadata}` : ''}`);
+    for (const child of node.children ?? []) {
+      this.nodeToCompactString(lines, sources, `${indent}  `, child);
+    }
+    for (const child of node.childrenCompact ?? []) {
+      this.nodeToCompactString(lines, sources, `${indent}  `, child.firstOccurrence, `compacted-occurrences:${child.occurrences}`);
+    }
+  }
 }
 
 interface IPlanNodeJson extends IPlanNodeJsonLogicalMetadata {
@@ -175,4 +257,5 @@ interface IPlanNodeJsonLogicalMetadata {
   pattern?: string;
   source?: string;
   variables?: string[];
+  cardinality?: RDF.QueryResultCardinality;
 }

@@ -39,6 +39,7 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
       physicalName: 'multi-smallest-filter-bindings',
       limitEntries: 2,
       limitEntriesMin: true,
+      isLeaf: false,
     });
   }
 

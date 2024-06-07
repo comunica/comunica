@@ -5,7 +5,7 @@ import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import { MetadataValidationState } from '@comunica/metadata';
-import type { IPhysicalQueryPlanLogger, MetadataBindings } from '@comunica/types';
+import type { IPhysicalQueryPlanLogger, IPlanNode, MetadataBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import type { IActionRdfJoin } from '../lib/ActorRdfJoin';
@@ -851,6 +851,9 @@ IActorRdfJoinSelectivityOutput
       const logger: IPhysicalQueryPlanLogger = {
         logOperation: jest.fn(),
         toJson: jest.fn(),
+        stashChildren: jest.fn((node, filter) => filter ? filter(<IPlanNode> { logicalOperator: 'abc' }) : undefined),
+        unstashChild: jest.fn(),
+        appendMetadata: jest.fn(),
       };
       action.context = new ActionContext({
         [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
