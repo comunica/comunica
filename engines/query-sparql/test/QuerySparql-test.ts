@@ -1227,6 +1227,24 @@ SELECT ?obsId {
         expect(result).toEqual({
           explain: true,
           type: 'physical',
+          data: `project (o,p,s)
+  join
+    pattern (?s ?p ?o) src:0
+
+sources:
+  0: QuerySourceHypermedia(https://www.rubensworks.net/)(SkolemID:0)`,
+        });
+      });
+
+      it('explaining physical-json plan', async() => {
+        const result = await engine.explain(`SELECT * WHERE {
+      ?s ?p ?o.
+    }`, {
+          sources: [ 'https://www.rubensworks.net/' ],
+        }, 'physical-json');
+        expect(result).toEqual({
+          explain: true,
+          type: 'physical-json',
           data: {
             logical: 'project',
             variables: [ 'o', 'p', 's' ],

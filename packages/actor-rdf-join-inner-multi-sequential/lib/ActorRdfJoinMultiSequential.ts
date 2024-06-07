@@ -28,6 +28,7 @@ export class ActorRdfJoinMultiSequential extends ActorRdfJoin {
       limitEntries: 3,
       limitEntriesMin: true,
       canHandleUndefs: true,
+      isLeaf: false,
     });
   }
 

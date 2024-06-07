@@ -23,9 +23,9 @@ export class ActorQueryProcessExplainPhysical extends ActorQueryProcess {
   }
 
   public async test(action: IActionQueryProcess): Promise<IActorTest> {
-    if ((action.context.get(KeysInitQuery.explain) ||
-      action.context.get(new ActionContextKey('explain'))) !== 'physical') {
-      throw new Error(`${this.name} can only explain in 'physical' mode.`);
+    const mode = (action.context.get(KeysInitQuery.explain) || action.context.get(new ActionContextKey('explain')));
+    if (mode !== 'physical' && mode !== 'physical-json') {
+      throw new Error(`${this.name} can only explain in 'physical' or 'physical-json' mode.`);
     }
     return true;
   }
@@ -58,11 +58,13 @@ export class ActorQueryProcessExplainPhysical extends ActorQueryProcess {
         break;
     }
 
+    const mode: 'physical' | 'physical-json' = (action.context.get(KeysInitQuery.explain) ??
+      action.context.getSafe(new ActionContextKey('explain')));
     return {
       result: {
         explain: true,
-        type: 'physical',
-        data: physicalQueryPlanLogger.toJson(),
+        type: mode,
+        data: mode === 'physical' ? physicalQueryPlanLogger.toCompactString() : physicalQueryPlanLogger.toJson(),
       },
     };
   }

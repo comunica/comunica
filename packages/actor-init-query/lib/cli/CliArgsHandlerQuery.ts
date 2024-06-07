@@ -86,6 +86,7 @@ export class CliArgsHandlerQuery implements ICliArgsHandler {
             'parsed',
             'logical',
             'physical',
+            'physical-json',
           ],
         },
         recoverBrokenLinks: {

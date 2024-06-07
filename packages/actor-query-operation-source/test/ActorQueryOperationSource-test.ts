@@ -194,6 +194,9 @@ describe('ActorQueryOperationSource', () => {
         const logger: IPhysicalQueryPlanLogger = {
           logOperation: jest.fn(),
           toJson: jest.fn(),
+          stashChildren: jest.fn(),
+          unstashChild: jest.fn(),
+          appendMetadata: jest.fn(),
         };
         ctx = new ActionContext({
           [KeysInitQuery.physicalQueryPlanLogger.name]: logger,

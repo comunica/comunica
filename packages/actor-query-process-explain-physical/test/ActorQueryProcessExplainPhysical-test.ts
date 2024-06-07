@@ -37,12 +37,12 @@ describe('ActorQueryProcessExplainPhysical', () => {
     describe('test', () => {
       it('rejects on no explain in context', async() => {
         await expect(actor.test({ query: 'q', context: new ActionContext() }))
-          .rejects.toThrow(`actor can only explain in 'physical' mode.`);
+          .rejects.toThrow(`actor can only explain in 'physical' or 'physical-json' mode.`);
       });
 
       it('rejects on wrong explain in context', async() => {
         await expect(actor.test({ query: 'q', context: new ActionContext().set(KeysInitQuery.explain, 'parsed') }))
-          .rejects.toThrow(`actor can only explain in 'physical' mode.`);
+          .rejects.toThrow(`actor can only explain in 'physical' or 'physical-json' mode.`);
       });
 
       it('handles physical explain in context', async() => {
@@ -69,11 +69,28 @@ describe('ActorQueryProcessExplainPhysical', () => {
             result: {
               explain: true,
               type: 'physical',
-              data: {},
+              data: 'Empty',
             },
           });
         expect(queryProcessor.evaluate).toHaveBeenCalledWith('qPARSEOPT', new ActionContext()
           .set(KeysInitQuery.explain, 'physical')
+          .set(KeysInitQuery.physicalQueryPlanLogger, new MemoryPhysicalQueryPlanLogger()));
+      });
+
+      it('handles physical-json explain in context', async() => {
+        await expect(actor.run({
+          query: 'q',
+          context: new ActionContext().set(KeysInitQuery.explain, 'physical-json'),
+        })).resolves
+          .toEqual({
+            result: {
+              explain: true,
+              type: 'physical-json',
+              data: {},
+            },
+          });
+        expect(queryProcessor.evaluate).toHaveBeenCalledWith('qPARSEOPT', new ActionContext()
+          .set(KeysInitQuery.explain, 'physical-json')
           .set(KeysInitQuery.physicalQueryPlanLogger, new MemoryPhysicalQueryPlanLogger()));
       });
 
@@ -93,7 +110,7 @@ describe('ActorQueryProcessExplainPhysical', () => {
             result: {
               explain: true,
               type: 'physical',
-              data: {},
+              data: 'Empty',
             },
           });
       });
@@ -114,7 +131,7 @@ describe('ActorQueryProcessExplainPhysical', () => {
             result: {
               explain: true,
               type: 'physical',
-              data: {},
+              data: 'Empty',
             },
           });
       });
@@ -135,7 +152,7 @@ describe('ActorQueryProcessExplainPhysical', () => {
             result: {
               explain: true,
               type: 'physical',
-              data: {},
+              data: 'Empty',
             },
           });
       });

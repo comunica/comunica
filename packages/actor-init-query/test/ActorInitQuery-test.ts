@@ -966,7 +966,7 @@ LIMIT 100
             stdin: <Readable><any> new PassThrough(),
             context,
           })).stdout);
-          expect(stdout).toContain(`"EXPLAINED"`);
+          expect(stdout).toContain(`EXPLAINED`);
           expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
             [KeysInitQuery.explain.name]: 'parsed',
             [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
@@ -982,7 +982,7 @@ LIMIT 100
             stdin: <Readable><any> new PassThrough(),
             context,
           })).stdout);
-          expect(stdout).toContain(`"EXPLAINED"`);
+          expect(stdout).toContain(`EXPLAINED`);
           expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
             [KeysInitQuery.explain.name]: 'logical',
             [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
@@ -998,9 +998,25 @@ LIMIT 100
             stdin: <Readable><any> new PassThrough(),
             context,
           })).stdout);
-          expect(stdout).toContain(`"EXPLAINED"`);
+          expect(stdout).toContain(`EXPLAINED`);
           expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
             [KeysInitQuery.explain.name]: 'physical',
+            [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
+            sources: [{ value: 'SOURCE' }],
+            log: expect.any(LoggerPretty),
+          });
+        });
+
+        it('in physical-json mode', async() => {
+          const stdout = await stringifyStream(<any> (await actor.run({
+            argv: [ 'SOURCE', '-q', queryString, '--explain', 'physical-json' ],
+            env: {},
+            stdin: <Readable><any> new PassThrough(),
+            context,
+          })).stdout);
+          expect(stdout).toContain(`EXPLAINED`);
+          expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
+            [KeysInitQuery.explain.name]: 'physical-json',
             [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
             sources: [{ value: 'SOURCE' }],
             log: expect.any(LoggerPretty),

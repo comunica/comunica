@@ -25,8 +25,48 @@ export interface IPhysicalQueryPlanLogger {
     actor: string,
     metadata: any,
   ) => void;
+
+  /**
+   * Remove all matching children from the given node,
+   * @param node The node to remove children from.
+   * @param filter The filter to keep children by. If undefined, all children will be removed.
+   */
+  stashChildren: (
+    node: any,
+    filter?: (planNodeFilter: IPlanNode) => boolean,
+  ) => void;
+
+  /**
+   * Add the given child to the given parent node.
+   * @param node A node to add to the parent.
+   * @param parentNode The parent to add to.
+   */
+  unstashChild: (
+    node: any,
+    parentNode: any,
+  ) => void;
+
+  /**
+   * Append the given metadata to the given node.
+   * @param node The node to add metadata to.
+   * @param metadata The metadata to add.
+   */
+  appendMetadata: (
+    node: any,
+    metadata: any,
+  ) => void;
+
   /**
    * Serialize the collected query plan to JSON.
    */
   toJson: () => any;
+}
+
+export interface IPlanNode {
+  actor: string;
+  logicalOperator: string;
+  physicalOperator?: string;
+  rawNode: any;
+  children: IPlanNode[];
+  metadata: any;
 }
