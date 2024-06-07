@@ -53,7 +53,7 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
     return this.rootNode ? this.planNodeToJson(this.rootNode) : {};
   }
 
-  private planNodeToJson(node: IPlanNode): any {
+  private planNodeToJson(node: IPlanNode): IPlanNodeJson {
     return {
       logical: node.logicalOperator,
       physical: node.physicalOperator,
@@ -63,7 +63,7 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
     };
   }
 
-  private getLogicalMetadata(rawNode: any): any {
+  private getLogicalMetadata(rawNode: any): IPlanNodeJsonLogicalMetadata {
     if ('type' in rawNode) {
       const operation: Algebra.Operation = rawNode;
       // eslint-disable-next-line ts/switch-exhaustiveness-check
@@ -93,4 +93,16 @@ interface IPlanNode {
   rawNode: any;
   children: IPlanNode[];
   metadata: any;
+}
+
+interface IPlanNodeJson extends IPlanNodeJsonLogicalMetadata {
+  logical: string;
+  physical?: string;
+  [metadataKey: string]: any;
+  children?: IPlanNodeJson[];
+}
+
+interface IPlanNodeJsonLogicalMetadata {
+  pattern?: string;
+  variables?: string[];
 }
