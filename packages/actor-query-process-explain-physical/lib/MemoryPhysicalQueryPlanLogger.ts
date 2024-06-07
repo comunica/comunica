@@ -54,13 +54,70 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
   }
 
   private planNodeToJson(node: IPlanNode): IPlanNodeJson {
-    return {
+    const data: IPlanNodeJson = {
       logical: node.logicalOperator,
       physical: node.physicalOperator,
       ...this.getLogicalMetadata(node.rawNode),
-      ...node.metadata,
-      ...node.children.length > 0 ? { children: node.children.map(child => this.planNodeToJson(child)) } : {},
+      ...this.compactMetadata(node.metadata),
     };
+
+    if (node.children.length > 0) {
+      data.children = node.children.map(child => this.planNodeToJson(child));
+    }
+
+    // Special case: compact children for bind joins.
+    if (data.physical === 'bind' && data.children) {
+      // Group children by query plan format
+      const childrenGrouped: Record<string, IPlanNodeJson[]> = {};
+      for (const child of data.children) {
+        const lastSubChild = <IPlanNodeJson> child.children?.at(-1);
+        const key = this.getPlanHash(lastSubChild).join(',');
+        if (!childrenGrouped[key]) {
+          childrenGrouped[key] = [];
+        }
+        childrenGrouped[key].push(child);
+      }
+
+      // Compact query plan occurrences
+      const childrenCompact: IPlanNodeJsonChildCompact[] = [];
+      for (const children of Object.values(childrenGrouped)) {
+        childrenCompact.push({
+          occurrences: children.length,
+          firstOccurrence: children[0],
+        });
+      }
+
+      // Replace children with compacted representation
+      data.childrenCompact = childrenCompact;
+      delete data.children;
+    }
+
+    return data;
+  }
+
+  private getPlanHash(node: IPlanNodeJson): string[] {
+    let entries = [ `${node.logical}-${node.physical}` ];
+    if (node.children) {
+      entries = [
+        ...entries,
+        ...node.children.flatMap(child => this.getPlanHash(child)),
+      ];
+    } else if (node.childrenCompact) {
+      entries = [
+        ...entries,
+        ...node.childrenCompact.flatMap(child => this.getPlanHash(child.firstOccurrence)),
+      ];
+    }
+    return entries;
+  }
+
+  private compactMetadata(metadata: any): any {
+    return Object.fromEntries(Object.entries(metadata)
+      .map(([ key, value ]) => [ key, this.compactMetadataValue(value) ]));
+  }
+
+  private compactMetadataValue(value: any): any {
+    return value && typeof value === 'object' && 'termType' in value ? this.getLogicalMetadata(value) : value;
   }
 
   private getLogicalMetadata(rawNode: any): IPlanNodeJsonLogicalMetadata {
@@ -106,6 +163,12 @@ interface IPlanNodeJson extends IPlanNodeJsonLogicalMetadata {
   physical?: string;
   [metadataKey: string]: any;
   children?: IPlanNodeJson[];
+  childrenCompact?: IPlanNodeJsonChildCompact[];
+}
+
+interface IPlanNodeJsonChildCompact {
+  occurrences: number;
+  firstOccurrence: IPlanNodeJson;
 }
 
 interface IPlanNodeJsonLogicalMetadata {
