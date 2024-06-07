@@ -312,5 +312,273 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
         ],
       });
     });
+
+    it('for a bind join', () => {
+      const joinNode = factory.createJoin([]);
+      logger.logOperation(
+        'join',
+        undefined,
+        joinNode,
+        undefined,
+        'actor-join',
+        {},
+      );
+
+      const bjNode = {};
+      logger.logOperation(
+        'join-inner',
+        'bind',
+        bjNode,
+        joinNode,
+        'actor-bind',
+        {
+          bindOperation: factory.createPattern(
+            DF.namedNode('ex:s2'),
+            DF.namedNode('ex:p2'),
+            DF.variable('o2'),
+            DF.namedNode('ex:g2'),
+          ),
+        },
+      );
+
+      const subJoinNode1 = {};
+      logger.logOperation(
+        'join',
+        undefined,
+        subJoinNode1,
+        bjNode,
+        'actor-join',
+        {},
+      );
+      logger.logOperation(
+        'pattern',
+        undefined,
+        factory.createPattern(
+          DF.namedNode('ex:s2'),
+          DF.namedNode('ex:p2'),
+          DF.variable('o2'),
+          DF.namedNode('ex:g2'),
+        ),
+        subJoinNode1,
+        'actor-pattern',
+        {},
+      );
+
+      const subJoinNode2 = {};
+      logger.logOperation(
+        'join',
+        undefined,
+        subJoinNode2,
+        bjNode,
+        'actor-join',
+        {},
+      );
+      logger.logOperation(
+        'pattern',
+        undefined,
+        factory.createPattern(
+          DF.namedNode('ex:s2'),
+          DF.namedNode('ex:p2'),
+          DF.variable('o2'),
+          DF.namedNode('ex:g2'),
+        ),
+        subJoinNode2,
+        'actor-pattern',
+        {},
+      );
+
+      const subJoinNode3 = {};
+      logger.logOperation(
+        'join',
+        undefined,
+        subJoinNode3,
+        bjNode,
+        'actor-join',
+        {},
+      );
+      logger.logOperation(
+        'bgp',
+        undefined,
+        factory.createBgp([]),
+        subJoinNode3,
+        'actor-bgp',
+        {},
+      );
+
+      expect(logger.toJson()).toEqual({
+        logical: 'join',
+        children: [
+          {
+            logical: 'join-inner',
+            physical: 'bind',
+            bindOperation: {
+              pattern: 'ex:s2 ex:p2 ?o2 ex:g2',
+            },
+            childrenCompact: [
+              {
+                occurrences: 2,
+                firstOccurrence: {
+                  children: [
+                    {
+                      logical: 'pattern',
+                      pattern: 'ex:s2 ex:p2 ?o2 ex:g2',
+                    },
+                  ],
+                  logical: 'join',
+                },
+              },
+              {
+                occurrences: 1,
+                firstOccurrence: {
+                  children: [
+                    {
+                      logical: 'bgp',
+                    },
+                  ],
+                  logical: 'join',
+                },
+              },
+            ],
+          },
+        ],
+      });
+    });
+
+    it('for a bind join with nesting', () => {
+      const joinNode = factory.createJoin([]);
+      logger.logOperation(
+        'join',
+        undefined,
+        joinNode,
+        undefined,
+        'actor-join',
+        {},
+      );
+
+      const bjNode = {};
+      logger.logOperation(
+        'join-inner',
+        'bind',
+        bjNode,
+        joinNode,
+        'actor-bind',
+        {},
+      );
+
+      const subJoinNode1 = {};
+      logger.logOperation(
+        'join',
+        undefined,
+        subJoinNode1,
+        bjNode,
+        'actor-join',
+        {},
+      );
+      logger.logOperation(
+        'pattern',
+        undefined,
+        factory.createPattern(
+          DF.namedNode('ex:s2'),
+          DF.namedNode('ex:p2'),
+          DF.variable('o2'),
+          DF.namedNode('ex:g2'),
+        ),
+        subJoinNode1,
+        'actor-pattern',
+        {},
+      );
+
+      const subJoinNode2 = {};
+      logger.logOperation(
+        'join',
+        undefined,
+        subJoinNode2,
+        bjNode,
+        'actor-join',
+        {},
+      );
+      const subBjNode1 = {};
+      logger.logOperation(
+        'join-inner',
+        'bind',
+        subBjNode1,
+        subJoinNode2,
+        'actor-bind',
+        {},
+      );
+
+      const subSubJoinNode1 = {};
+      logger.logOperation(
+        'join',
+        undefined,
+        subSubJoinNode1,
+        subBjNode1,
+        'actor-join',
+        {},
+      );
+      logger.logOperation(
+        'pattern',
+        undefined,
+        factory.createPattern(
+          DF.namedNode('ex:s2'),
+          DF.namedNode('ex:p2'),
+          DF.variable('o2'),
+          DF.namedNode('ex:g2'),
+        ),
+        subSubJoinNode1,
+        'actor-pattern',
+        {},
+      );
+
+      expect(logger.toJson()).toEqual({
+        logical: 'join',
+        children: [
+          {
+            logical: 'join-inner',
+            physical: 'bind',
+            childrenCompact: [
+              {
+                occurrences: 1,
+                firstOccurrence: {
+                  logical: 'join',
+                  children: [
+                    {
+                      logical: 'pattern',
+                      pattern: 'ex:s2 ex:p2 ?o2 ex:g2',
+                    },
+                  ],
+                },
+              },
+              {
+                occurrences: 1,
+                firstOccurrence: {
+                  children: [
+                    {
+                      logical: 'join-inner',
+                      physical: 'bind',
+                      childrenCompact: [
+                        {
+                          occurrences: 1,
+                          firstOccurrence: {
+                            logical: 'join',
+                            children: [
+                              {
+                                logical: 'pattern',
+                                pattern: 'ex:s2 ex:p2 ?o2 ex:g2',
+                              },
+                            ],
+                          },
+                        },
+                      ],
+                    },
+                  ],
+                  logical: 'join',
+                },
+              },
+            ],
+          },
+        ],
+      });
+    });
   });
 });
