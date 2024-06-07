@@ -139,6 +139,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
       },
       physicalPlanMetadata: {
         bindIndex: entriesUnsorted.indexOf(entries[0]),
+        bindOperation: entries[0].operation,
         bindOrder: this.bindOrder,
       },
     };
