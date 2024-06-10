@@ -4,7 +4,8 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
-import { translate } from 'sparqlalgebrajs';
+import type * as RDF from '@rdfjs/types';
+import { translate, Algebra } from 'sparqlalgebrajs';
 import { Parser as SparqlParser } from 'sparqljs';
 
 /**
@@ -35,16 +36,37 @@ export class ActorQueryParseSparql extends ActorQueryParse {
     });
     const parsedSyntax = parser.parse(action.query);
     const baseIRI = parsedSyntax.type === 'query' ? parsedSyntax.base : undefined;
-    return {
-      baseIRI,
-      operation: translate(parsedSyntax, {
-        quads: true,
-        prefixes: this.prefixes,
-        blankToVariable: true,
-        baseIRI: action.baseIRI,
-        dataFactory,
-      }),
-    };
+    const operation = this.overrideGraphs(action, translate(parsedSyntax, {
+      quads: true,
+      prefixes: this.prefixes,
+      blankToVariable: true,
+      baseIRI: action.baseIRI,
+      dataFactory,
+    }));
+    return { baseIRI, operation };
+  }
+
+  public overrideGraphs(action: IActionQueryParse, operation: Algebra.Operation): Algebra.Operation {
+    const defaultGraphUris = action.context.get<RDF.NamedNode[]>(KeysInitQuery.defaultGraphUris);
+    const namedGraphUris = action.context.get<RDF.NamedNode[]>(KeysInitQuery.namedGraphUris);
+    switch (operation.type) {
+      case Algebra.types.FROM:
+        operation.default = defaultGraphUris ?? operation.default;
+        operation.named = namedGraphUris ?? operation.named;
+        break;
+      default:
+        if (defaultGraphUris !== undefined || namedGraphUris !== undefined) {
+          operation = {
+            type: Algebra.types.FROM,
+            default: defaultGraphUris ?? [],
+            named: namedGraphUris ?? [],
+            input: operation,
+            metadata: undefined,
+          };
+        }
+        break;
+    }
+    return operation;
   }
 }
 
