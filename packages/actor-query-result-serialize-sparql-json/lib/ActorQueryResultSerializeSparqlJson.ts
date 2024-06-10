@@ -5,12 +5,12 @@ import type {
 } from '@comunica/bus-query-result-serialize';
 import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-result-serialize';
 import type {
-  Bindings,
   IActionContext,
   IQueryOperationResultBindings,
   IQueryOperationResultBoolean,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import { wrap } from 'asynciterator';
 import { Readable } from 'readable-stream';
 import type { ActionObserverHttp } from './ActionObserverHttp';
 
@@ -47,8 +47,7 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
     if (value.termType === 'Literal') {
       const literal: RDF.Literal = value;
       const jsonValue: any = { value: literal.value, type: 'literal' };
-      const { language } = literal;
-      const { datatype } = literal;
+      const { language, datatype } = literal;
       if (language) {
         jsonValue['xml:lang'] = language;
       } else if (datatype && datatype.value !== 'http://www.w3.org/2001/XMLSchema#string') {
@@ -82,10 +81,6 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
   public async runHandle(action: IActionSparqlSerialize, _mediaType: string | undefined, _context: IActionContext):
   Promise<IActorQueryResultSerializeOutput> {
     const data = new Readable();
-    data._read = () => {
-      // Do nothing
-    };
-
     // Write head
     const head: any = {};
     if (action.type === 'bindings') {
@@ -95,55 +90,29 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
       }
     }
     data.push(`{"head": ${JSON.stringify(head)},\n`);
-    let empty = true;
 
     if (action.type === 'bindings') {
-      const resultStream: NodeJS.EventEmitter = (<IQueryOperationResultBindings> action).bindingsStream;
+      const resultStream = (<IQueryOperationResultBindings> action).bindingsStream;
+      data.push('"results": { "bindings": [\n');
+
+      let first = true;
+
+      function* end(cb: () => string): Generator<string> {
+        yield cb();
+      }
 
       // Write bindings
-      resultStream.on('error', (error: Error) => {
-        data.emit('error', error);
-      });
-      resultStream.on('data', (bindings: Bindings) => {
-        if (empty) {
-          data.push('"results": { "bindings": [\n');
-        } else {
-          data.push(',\n');
-        }
-
+      data.wrap(
         // JSON SPARQL results spec does not allow unbound variables and blank node bindings
-        const bindingsJson = Object.fromEntries([ ...bindings ]
-          .map(([ key, value ]) => [ key.value, ActorQueryResultSerializeSparqlJson.bindingToJsonBindings(value) ]));
-        data.push(JSON.stringify(bindingsJson));
-        empty = false;
-      });
-
-      // Close streams
-      resultStream.on('end', () => {
-        // Push bindings header if empty
-        if (empty) {
-          data.push('"results": { "bindings": [\n');
-        }
-
-        // End bindings array
-        data.push('\n]}');
-
-        // Push metadata footer
-        if (this.emitMetadata) {
-          data.push(`,\n"metadata": { "httpRequests": ${this.httpObserver.requests} }`);
-        }
-
-        // End stream
-        data.push('}\n');
-        data.push(null);
-      });
+        <any> wrap(resultStream).map((bindings) => {
+          const res = `${first ? '' : ',\n'}${JSON.stringify(Object.fromEntries([ ...bindings ]
+          .map(([ key, value ]) => [ key.value, ActorQueryResultSerializeSparqlJson.bindingToJsonBindings(value) ])))}`;
+          first = false;
+          return res;
+        }).append(wrap(end(() => `\n]}${this.emitMetadata ? `,\n"metadata": { "httpRequests": ${this.httpObserver.requests} }` : ''}}\n`))),
+      );
     } else {
-      try {
-        data.push(`"boolean":${await (<IQueryOperationResultBoolean> action).execute()}\n}\n`);
-        data.push(null);
-      } catch (error: unknown) {
-        data.once('newListener', () => data.emit('error', error));
-      }
+      data.wrap(<any> wrap((<IQueryOperationResultBoolean> action).execute().then(value => [ `"boolean":${value}\n}\n` ])));
     }
 
     return { data };

@@ -37,12 +37,12 @@ export class ActorQueryProcessAnnotateSourceBinding extends ActorQueryProcess {
     action.context = context;
 
     // Run all query processing steps in sequence
-    const { result } = await this.mediatorQueryProcess.mediate(action);
+    const output = await this.mediatorQueryProcess.mediate(action);
     // Currently this only supports adding source provenance to bindings
-    if (result.type === 'bindings') {
-      result.bindingsStream = this.addSourcesToBindings(result.bindingsStream);
+    if (output.result.type === 'bindings') {
+      output.result.bindingsStream = this.addSourcesToBindings(output.result.bindingsStream);
     }
-    return { result };
+    return output;
   }
 
   public addSourcesToBindings(iterator: BindingsStream): BindingsStream {
@@ -57,11 +57,11 @@ export class ActorQueryProcessAnnotateSourceBinding extends ActorQueryProcess {
           this.dataFactory.literal(JSON.stringify([]));
 
         bindings = bindings.set('_source', sourceAsLiteral);
+
         return bindings;
       },
       autoStart: false,
     });
-
     function inheritMetadata(): void {
       iterator.getProperty('metadata', (metadata: MetadataBindings) => {
         ret.setProperty('metadata', metadata);

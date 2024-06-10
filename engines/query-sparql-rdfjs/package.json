@@ -100,6 +100,7 @@
     "@comunica/actor-query-operation-values": "^3.0.3",
     "@comunica/actor-query-parse-graphql": "^3.0.3",
     "@comunica/actor-query-parse-sparql": "^3.0.3",
+    "@comunica/actor-query-process-annotate-source-binding": "^3.0.3",
     "@comunica/actor-query-process-explain-logical": "^3.0.3",
     "@comunica/actor-query-process-explain-parsed": "^3.0.3",
     "@comunica/actor-query-process-explain-physical": "^3.0.3",
