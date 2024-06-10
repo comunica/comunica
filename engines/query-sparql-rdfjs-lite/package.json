@@ -54,6 +54,7 @@
     "@comunica/actor-context-preprocess-source-to-destination": "^3.1.2",
     "@comunica/actor-hash-bindings-sha1": "^3.1.0",
     "@comunica/actor-init-query": "^3.1.0",
+    "@comunica/actor-merge-bindings-context-union": "^3.1.0",
     "@comunica/actor-optimize-query-operation-assign-sources-exhaustive": "^3.1.2",
     "@comunica/actor-optimize-query-operation-bgp-to-join": "^3.1.0",
     "@comunica/actor-optimize-query-operation-describe-to-constructs-subject": "^3.1.0",
