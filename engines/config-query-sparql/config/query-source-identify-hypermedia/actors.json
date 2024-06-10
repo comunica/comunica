@@ -29,17 +29,6 @@
       "@id": "urn:comunica:default:query-source-identify-hypermedia/actors#none",
       "@type": "ActorQuerySourceIdentifyHypermediaNone",
       "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" }
-    },
-    {
-      "@id": "urn:comunica:default:query-source-identify-hypermedia/actors#annotate-source",
-      "@type": "ActorQuerySourceIdentifyHypermediaAnnotateSource",
-      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" },
-      "mediatorQuerySourceIdentifyHypermedia": { "@id": "urn:comunica:default:query-source-identify-hypermedia/mediators#main" },
-      "beforeActors": [
-        { "@id": "urn:comunica:default:query-source-identify-hypermedia/actors#none" },
-        { "@id": "urn:comunica:default:rdf-resolve-quad-pattern/actors#sparql" },
-        { "@id": "urn:comunica:default:query-source-identify-hypermedia/actors#qpf" }
-      ]
     }
   ]
 }

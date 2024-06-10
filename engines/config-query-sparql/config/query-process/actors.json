@@ -4,7 +4,6 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^3.0.0/components/context.jsonld"
   ],
   "import": [
-    "ccqs:config/query-process/actors/annotate-source-binding.json",
     "ccqs:config/query-process/actors/sequential.json",
     "ccqs:config/query-process/actors/explain-parsed.json",
     "ccqs:config/query-process/actors/explain-logical.json",

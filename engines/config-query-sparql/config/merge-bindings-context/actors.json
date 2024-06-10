@@ -3,6 +3,5 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/config-query-sparql/^3.0.0/components/context.jsonld"
   ],
   "import": [
-    "ccqs:config/merge-bindings-context/source-binding-union.json"
   ]
 }
