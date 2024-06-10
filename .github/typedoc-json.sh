@@ -4,6 +4,7 @@ typedocjson='{
   "extends": [
     "../../typedoc.base.json"
   ],
+  "skipErrorChecking": true,
   "entryPoints": [
     "lib/index.ts"
   ]

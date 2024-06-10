@@ -18,7 +18,6 @@ import type {
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
-import { termToString } from 'rdf-string';
 
 const DF = new DataFactory();
 
@@ -81,8 +80,13 @@ export abstract class ActorRdfJoin
    */
   public static hash(bindings: Bindings, variables: RDF.Variable[]): string {
     return variables
-      .filter(variable => bindings.has(variable))
-      .map(variable => termToString(bindings.get(variable)))
+      .map((variable) => {
+        const term = bindings.get(variable);
+        if (term) {
+          return term.value;
+        }
+        return '';
+      })
       .join('');
   }
 
@@ -179,6 +183,20 @@ export abstract class ActorRdfJoin
   }
 
   /**
+   * Construct a metadata validation state for the given metadata entries.
+   * @param metadatas An array of checked metadata.
+   */
+  public constructState(metadatas: MetadataBindings[]): MetadataValidationState {
+    // Propagate metadata invalidations
+    const state = new MetadataValidationState();
+    const invalidateListener = (): void => state.invalidate();
+    for (const metadata of metadatas) {
+      metadata.state.addInvalidateListener(invalidateListener);
+    }
+    return state;
+  }
+
+  /**
    * Helper function to create a new metadata object for the join result.
    * For required metadata entries that are not provided, sane defaults are calculated.
    * @param entries Join entries.
@@ -207,15 +225,8 @@ export abstract class ActorRdfJoin
       cardinalityJoined.value *= (await this.mediatorJoinSelectivity.mediate({ entries, context })).selectivity;
     }
 
-    // Propagate metadata invalidations
-    const state = new MetadataValidationState();
-    const invalidateListener = (): void => state.invalidate();
-    for (const metadata of metadatas) {
-      metadata.state.addInvalidateListener(invalidateListener);
-    }
-
     return {
-      state,
+      state: this.constructState(metadatas),
       ...partialMetadata,
       cardinality: {
         type: cardinalityJoined.type,

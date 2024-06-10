@@ -1,7 +1,6 @@
 import type { MediatorHttp } from '@comunica/bus-http';
-import { ActorHttp } from '@comunica/bus-http';
+import { validateAndCloseHttpResponse, ActorHttp } from '@comunica/bus-http';
 import type { IQuadDestination } from '@comunica/bus-rdf-update-quads';
-import { validateHttpResponse } from '@comunica/bus-rdf-update-quads';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -51,9 +50,7 @@ export class QuadDestinationPatchSparqlUpdate implements IQuadDestination {
       .prepend([ `${type} DATA {\n` ])
       .append([ '}' ]);
     const readable = new Readable();
-    readable._read = () => true;
-    dataWrapped.on('data', (quad: RDF.Quad) => readable.push(quad));
-    dataWrapped.on('end', () => readable.push(null));
+    readable.wrap(<any> dataWrapped);
 
     // Send data in PUT request
     const headers: Headers = new Headers({ 'content-type': 'application/sparql-update' });
@@ -67,7 +64,7 @@ export class QuadDestinationPatchSparqlUpdate implements IQuadDestination {
       input: this.url,
     });
 
-    await validateHttpResponse(this.url, httpResponse);
+    await validateAndCloseHttpResponse(this.url, httpResponse);
   }
 
   public async deleteGraphs(

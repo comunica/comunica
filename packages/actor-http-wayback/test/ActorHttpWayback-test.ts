@@ -434,7 +434,10 @@ describe('ActorHttpInterceptWayback', () => {
     });
 
     describe('404 foaf, 404 wayback with body to consume but no destroy function', () => {
+      let responseBody: () => ReadableStream<Uint8Array> | null;
       beforeEach(() => {
+        responseBody = () => new Response('').body;
+
         // @ts-expect-error
         mediatorHttp = {
           async mediate(action: IActionHttp): Promise<IActorHttpOutput> {
@@ -444,41 +447,8 @@ describe('ActorHttpInterceptWayback', () => {
 
             const request = new Request(input, init);
 
-            const _body: any = new Readable();
-            _body._read = () => { /* Noop */ };
-
-            const body: any = {
-              read(...args: any[]) {
-                return _body.read(...args);
-              },
-
-              on(...args: any[]) {
-                return _body.on(...args);
-              },
-
-              getReader(...args: any[]) {
-                return {
-                  async read() {
-                    return { done: true };
-                  },
-                };
-              },
-            };
-
-            if (request.url === 'http://xmlns.com/foaf/spec/20140114.rdf') {
-              return <Response> {
-                status: 404,
-                url: request.url,
-                body,
-              };
-            }
-
-            if (request.url === 'http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf') {
-              return <Response> {
-                status: 404,
-                url: request.url,
-                body,
-              };
+            if (request.url === 'http://xmlns.com/foaf/spec/20140114.rdf' || request.url === 'http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf') {
+              return <Response> { url: request.url, status: 404, body: responseBody() };
             }
 
             throw new Error('Unexpected URL');
@@ -491,6 +461,23 @@ describe('ActorHttpInterceptWayback', () => {
       });
 
       it('should return foaf url when wayback gives a 404', async() => {
+        const result = await actor.run({
+          context: context.set(KeysHttpProxy.httpProxyHandler, { async getProxy(url: IRequest) {
+            return url;
+          } }),
+          input: 'http://xmlns.com/foaf/spec/20140114.rdf',
+        });
+
+        expect(result.status).toBe(404);
+        expect(result.url).toBe('http://xmlns.com/foaf/spec/20140114.rdf');
+      });
+
+      it('should return foaf url when wayback gives a 404 [no cancel on response body]', async() => {
+        responseBody = () => Object.assign(new Response('').body!, {
+          cancel: undefined,
+          destory: undefined,
+        });
+
         const result = await actor.run({
           context: context.set(KeysHttpProxy.httpProxyHandler, { async getProxy(url: IRequest) {
             return url;

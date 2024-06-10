@@ -22,7 +22,7 @@ describe('System test: QuerySparql', () => {
   usePolly();
 
   let engine: QueryEngine;
-  beforeEach(() => {
+  beforeAll(() => {
     engine = new QueryEngine();
   });
 
@@ -95,21 +95,23 @@ describe('System test: QuerySparql', () => {
 
       describe('string source query', () => {
         const query = 'CONSTRUCT WHERE { ?s ?p ?o }';
-
-        beforeEach(() => {
-          engine = new QueryEngine();
-        });
+        const value = `{
+          "@id":"ex:s",
+          "ex:p":{"@id":"ex:o"},
+          "ex:p2":{"@id":"ex:o2"}
+        }
+        `;
+        const value2 = '<ex:s> <ex:p3> <ex:o3>. <ex:s> <ex:p4> <ex:o4>.';
+        const expectedResult: RDF.Quad[] = [
+          DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o')),
+          DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')),
+        ];
 
         it('should return the valid result with a turtle data source', async() => {
-          const value = '<ex:s> <ex:p> <ex:o>. <ex:s> <ex:p2> <ex:o2>.';
+          const turtleValue = '<ex:s> <ex:p> <ex:o>. <ex:s> <ex:p2> <ex:o2>.';
           const context: QueryStringContext = { sources: [
-            { type: 'serialized', value, mediaType: 'text/turtle', baseIRI: 'http://example.org/' },
+            { type: 'serialized', value: turtleValue, mediaType: 'text/turtle', baseIRI: 'http://example.org/' },
           ]};
-
-          const expectedResult: RDF.Quad[] = [
-            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o')),
-            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')),
-          ];
 
           const result = await arrayifyStream(await engine.queryQuads(query, context));
           expect(result).toHaveLength(expectedResult.length);
@@ -117,20 +119,9 @@ describe('System test: QuerySparql', () => {
         });
 
         it('should return the valid result with a json-ld data source', async() => {
-          const value = `{
-            "@id":"ex:s",
-            "ex:p":{"@id":"ex:o"},
-            "ex:p2":{"@id":"ex:o2"}
-          }
-          `;
           const context: QueryStringContext = { sources: [
             { type: 'serialized', value, mediaType: 'application/ld+json', baseIRI: 'http://example.org/' },
           ]};
-
-          const expectedResult: RDF.Quad[] = [
-            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o')),
-            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')),
-          ];
 
           const result = await arrayifyStream(await engine.queryQuads(query, context));
           expect(result).toHaveLength(expectedResult.length);
@@ -138,19 +129,9 @@ describe('System test: QuerySparql', () => {
         });
 
         it('should return the valid result with no base IRI', async() => {
-          const value = `{
-            "@id":"ex:s",
-            "ex:p":{"@id":"ex:o"},
-            "ex:p2":{"@id":"ex:o2"}
-          }`;
           const context: QueryStringContext = { sources: [
             { type: 'serialized', value, mediaType: 'application/ld+json' },
           ]};
-
-          const expectedResult: RDF.Quad[] = [
-            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o')),
-            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')),
-          ];
 
           const result = await arrayifyStream(await engine.queryQuads(query, context));
           expect(result).toHaveLength(expectedResult.length);
@@ -158,14 +139,8 @@ describe('System test: QuerySparql', () => {
         });
 
         it('should return the valid result with multiple serialized', async() => {
-          const value1 = `{
-            "@id":"ex:s",
-            "ex:p":{"@id":"ex:o"},
-            "ex:p2":{"@id":"ex:o2"}
-          }`;
-          const value2 = '<ex:s> <ex:p3> <ex:o3>. <ex:s> <ex:p4> <ex:o4>.';
           const context: QueryStringContext = { sources: [
-            { type: 'serialized', value: value1, mediaType: 'application/ld+json' },
+            { type: 'serialized', value, mediaType: 'application/ld+json' },
             { type: 'serialized', value: value2, mediaType: 'text/turtle' },
           ]};
 
@@ -188,14 +163,8 @@ describe('System test: QuerySparql', () => {
           const store = new Store();
           store.addQuads(quads);
 
-          const value1 = `{
-            "@id":"ex:s",
-            "ex:p":{"@id":"ex:o"},
-            "ex:p2":{"@id":"ex:o2"}
-          }`;
-          const value2 = '<ex:s> <ex:p3> <ex:o3>. <ex:s> <ex:p4> <ex:o4>.';
           const context: QueryStringContext = { sources: [
-            { type: 'serialized', value: value1, mediaType: 'application/ld+json' },
+            { type: 'serialized', value, mediaType: 'application/ld+json' },
             { type: 'serialized', value: value2, mediaType: 'text/turtle' },
             store,
           ]};
@@ -207,6 +176,32 @@ describe('System test: QuerySparql', () => {
             DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p4'), DF.namedNode('ex:o4')),
           ]);
         });
+
+        it('should serialise results correctly', async() => {
+          const context: QueryStringContext = { sources: [
+            { type: 'serialized', value, mediaType: 'application/ld+json', baseIRI: 'http://example.org/' },
+          ]};
+
+          const resultString = await engine.resultToString(await engine.query(query, context), 'application/n-quads');
+          await expect(stringifyStream(resultString.data)).resolves.toBe(
+            '<ex:s> <ex:p> <ex:o> .\n<ex:s> <ex:p2> <ex:o2> .\n',
+          );
+        });
+
+        it('should have stats that are strictly increasing', async() => {
+          const context: QueryStringContext = { sources: [
+            { type: 'serialized', value, mediaType: 'application/ld+json', baseIRI: 'http://example.org/' },
+          ]};
+
+          const resultString: string = await stringifyStream(
+            (await engine.resultToString(await engine.query(query, context), 'stats')).data,
+          );
+          const times = resultString.split('\n').slice(1, -1).map(line => Number.parseFloat(line.split(',')[1]));
+          expect(times).toHaveLength(3);
+          for (let i = 0; i < 2; i++) {
+            expect(times[i]).toBeLessThanOrEqual(times[i + 1]);
+          }
+        });
       });
 
       describe('handle blank nodes with DESCRIBE queries', () => {
@@ -217,7 +212,6 @@ describe('System test: QuerySparql', () => {
       }`;
 
         beforeEach(() => {
-          engine = new QueryEngine();
           store = new Store();
         });
 
@@ -732,6 +726,18 @@ SELECT * WHERE {
           bindingsStream.on('end', resolve);
         });
         expect(called).toBe(0);
+      });
+
+      it('with two triple patterns over a paged collection (no browser)', async() => {
+        const bindingsStream = await engine.queryBindings(`
+SELECT *
+WHERE {
+  <https://opendata.picturae.com/dataset/dre_a2a_webservice> <http://purl.org/dc/terms/identifier> ?i.
+  <https://opendata.picturae.com/dataset/dre_a2a_webservice> <http://purl.org/dc/terms/issued> ?issued.
+}`, {
+          sources: [ 'https://opendata.picturae.com/catalog.ttl?page=1' ],
+        });
+        expect((await bindingsStream.toArray()).length > 0).toBeTruthy();
       });
     });
 

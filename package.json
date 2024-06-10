@@ -1,9 +1,11 @@
 {
   "private": true,
+  "packageManager": "yarn@1.22.22",
   "repository": "https://github.com/comunica/comunica/",
   "workspaces": [
     "engines/*",
-    "packages/*"
+    "packages/*",
+    "performance/*"
   ],
   "scripts": {
     "test-changed": "lerna run test --since HEAD",
@@ -13,7 +15,7 @@
     "test:browser": "karma start karma.config.js --single-run",
     "lint": "eslint . --cache",
     "lint-fix": "eslint . --fix",
-    "build": "npm run build:ts && npm run build:components",
+    "build": "yarn run build:ts && yarn run build:components",
     "build:ts": "tsc",
     "build:components": "componentsjs-generator engines/* packages/*",
     "build-watch": "nodemon -e ts --ignore '*.d.ts' --exec yarn run build",
@@ -26,6 +28,7 @@
     "doc": "./.github/typedoc-json.sh create && typedoc && ./.github/typedoc-json.sh remove",
     "preinstall": "node -e \"if (!fs.existsSync('packages/runner-cli/bin/run.js')) { var os = fs.createWriteStream('packages/runner-cli/bin/run.js'); os.write('#!/usr/bin/env node\\nconsole.error(\\'Temporary runner script during lerna installation. If you see this, please run yarn install again.\\');\\nprocess.exit(1);'); os.end(); }\" && node -e \"if (!fs.existsSync('packages/runner/bin/compile-config.js')) { var os = fs.createWriteStream('packages/runner/bin/compile-config.js'); os.write('#!/usr/bin/env node\\nconsole.error(\\'Temporary compile-config script during lerna installation. If you see this, please run yarn install again.\\');\\nprocess.exit(1);'); os.end(); }\"",
     "postinstall": "yarn run build && lerna run prepare",
+    "prepare": "yarn husky",
     "version": "manual-git-changelog onversion",
     "depcheck": "lerna-script depcheckTask",
     "depcheck:fix": "lerna-script depfixTask",
@@ -40,6 +43,7 @@
     "@pollyjs/core": "^6.0.5",
     "@pollyjs/persister-fs": "^6.0.5",
     "@rubensworks/eslint-config": "^3.0.0",
+    "@rubensworks/process-sparql-benchmark-results": "^1.1.6",
     "@types/benchmark": "^2.0.0",
     "@types/jest": "^29.4.0",
     "@types/node": "^20.0.0",
@@ -54,6 +58,7 @@
     "componentsjs-generator": "^4.0.1",
     "depcheck": "^1.4.3",
     "eslint": "^8.57.0",
+    "husky": "^9.0.0",
     "jest": "^29.5.0",
     "jest-mock": "^29.3.1",
     "jest-rdf": "^1.7.1",
@@ -70,7 +75,6 @@
     "node-polyfill-webpack-plugin": "^3.0.0",
     "nodemon": "^3.0.0",
     "npm-check-updates": "^16.4.1",
-    "pre-commit": "^1.2.2",
     "rdf-data-factory": "^1.1.1",
     "rdf-quad": "^1.5.0",
     "rdf-stores": "^1.0.0",
@@ -88,11 +92,6 @@
     "webpack": "^5.75.0",
     "webpack-cli": "^5.0.0"
   },
-  "pre-commit": [
-    "build",
-    "lint",
-    "test"
-  ],
   "resolutions": {
     "@rdfjs/types": "1.1.0"
   }

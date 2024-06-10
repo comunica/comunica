@@ -23,4 +23,9 @@ module.exports = {
   plugins: [
     new webpack.ProgressPlugin(),
   ],
+  performance: {
+    hints: 'error',
+    maxAssetSize: 1750000,
+    maxEntrypointSize: 1750000,
+  },
 };

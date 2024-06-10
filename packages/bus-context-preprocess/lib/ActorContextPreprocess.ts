@@ -14,13 +14,22 @@ import type { IActionContext } from '@comunica/types';
  * @see IActorContextPreprocessOutput
  */
 export abstract class ActorContextPreprocess
-  extends Actor<IAction, IActorTest, IActorContextPreprocessOutput> {
+  extends Actor<IActionContextPreprocess, IActorTest, IActorContextPreprocessOutput> {
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
   public constructor(args: IActorContextPreprocessArgs) {
     super(args);
   }
+}
+
+export interface IActionContextPreprocess extends IAction {
+  /**
+   * If the query processing is being initialized.
+   * This is typically used for setting query-wide defaults.
+   * This will be false for initializing source-specific contexts.
+   */
+  initialize?: boolean;
 }
 
 export interface IActorContextPreprocessOutput extends IActorOutput {
@@ -31,6 +40,10 @@ export interface IActorContextPreprocessOutput extends IActorOutput {
   context: IActionContext;
 }
 
-export type IActorContextPreprocessArgs = IActorArgs<IAction, IActorTest, IActorContextPreprocessOutput>;
+export type IActorContextPreprocessArgs = IActorArgs<
+IActionContextPreprocess,
+IActorTest,
+IActorContextPreprocessOutput
+>;
 
-export type MediatorContextPreprocess = Mediate<IAction, IActorContextPreprocessOutput>;
+export type MediatorContextPreprocess = Mediate<IActionContextPreprocess, IActorContextPreprocessOutput>;

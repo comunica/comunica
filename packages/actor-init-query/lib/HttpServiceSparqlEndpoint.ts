@@ -524,7 +524,7 @@ export class HttpServiceSparqlEndpoint {
       process.send!({ type: 'end', queryId });
     });
 
-    this.stopResponse(response, queryId, eventEmitter);
+    this.stopResponse(response, queryId, process.stderr, eventEmitter);
   }
 
   public async writeServiceDescription(
@@ -589,16 +589,22 @@ export class HttpServiceSparqlEndpoint {
       response.end('The response for the given query could not be serialized for the requested media type\n');
       return;
     }
-    this.stopResponse(response, 0, eventEmitter);
+    this.stopResponse(response, 0, process.stderr, eventEmitter);
   }
 
   /**
    * Stop after timeout or if the connection is terminated
    * @param {module:http.ServerResponse} response Response object.
    * @param queryId The unique query id.
+   * @param stderr Error stream to write to.
    * @param {NodeJS.ReadableStream} eventEmitter Query result stream.
    */
-  public stopResponse(response: http.ServerResponse, queryId: number, eventEmitter?: EventEmitter): void {
+  public stopResponse(
+    response: http.ServerResponse,
+    queryId: number,
+    stderr: Writable,
+    eventEmitter?: EventEmitter,
+  ): void {
     response.on('close', killClient);
     // eslint-disable-next-line ts/no-this-alias
     const self = this;
@@ -619,7 +625,7 @@ export class HttpServiceSparqlEndpoint {
 
       // Kill the worker if we want fresh workers per query
       if (self.freshWorkerPerQuery) {
-        process.stderr.write(`Killing fresh worker ${process.pid} after query ${queryId}.\n`);
+        stderr.write(`Killing fresh worker ${process.pid} after query ${queryId}.\n`);
         // eslint-disable-next-line unicorn/no-process-exit
         process.exit(15);
       }
