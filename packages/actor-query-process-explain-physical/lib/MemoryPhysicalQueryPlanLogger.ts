@@ -228,8 +228,11 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
       node.pattern ? ` (${node.pattern})` : ''}${
       node.variables ? ` (${node.variables.join(',')})` : ''}${
       node.bindOperation ? ` bindOperation:(${node.bindOperation.pattern}) bindCardEst:${node.bindOperationCardinality.type === 'estimate' ? '~' : ''}${node.bindOperationCardinality.value}` : ''}${
-      node.cardinality ? ` cardEst:${node.cardinality.type === 'estimate' ? '~' : ''}${node.cardinality.value}` : ''}${
+      node.cardinality ? ` cardEst:${node.cardinality.type === 'estimate' ? '~' : ''}${numberToString(node.cardinality.value)}` : ''}${
       node.source ? ` src:${sourceId}` : ''}${
+      node.cardinalityReal ? ` cardReal:${node.cardinalityReal}` : ''}${
+      node.timeSelf ? ` timeSelf:${numberToString(node.timeSelf)}ms` : ''}${
+      node.timeLife ? ` timeLife:${numberToString(node.timeLife)}ms` : ''}${
       metadata ? ` ${metadata}` : ''}`);
     for (const child of node.children ?? []) {
       this.nodeToCompactString(lines, sources, `${indent}  `, child);
@@ -238,6 +241,10 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
       this.nodeToCompactString(lines, sources, `${indent}  `, child.firstOccurrence, `compacted-occurrences:${child.occurrences}`);
     }
   }
+}
+
+export function numberToString(value: number): string {
+  return value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 3 });
 }
 
 interface IPlanNodeJson extends IPlanNodeJsonLogicalMetadata {

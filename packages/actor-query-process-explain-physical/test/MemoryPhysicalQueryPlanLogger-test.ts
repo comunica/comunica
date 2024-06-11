@@ -900,10 +900,13 @@ sources:
         {
           metaKey: 'metaValue',
           cardinality: { type: 'estimate', value: 3 },
+          cardinalityReal: 1,
+          timeSelf: 0.12345,
+          timeLife: 0.6789,
         },
       );
 
-      expect(logger.toCompactString()).toBe('pattern (ex:s1 ex:p1 ?o1 ex:g1) cardEst:~3');
+      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1) cardEst:~3 cardReal:1 timeSelf:0.123ms timeLife:0.679ms`);
     });
 
     it('for a single pattern with metadata and exact cardinality', () => {

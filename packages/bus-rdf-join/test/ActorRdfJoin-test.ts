@@ -7,6 +7,7 @@ import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-
 import { MetadataValidationState } from '@comunica/metadata';
 import type { IPhysicalQueryPlanLogger, IPlanNode, MetadataBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import { BufferedIterator, MultiTransformIterator, SingletonIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type { IActionRdfJoin } from '../lib/ActorRdfJoin';
 import { ActorRdfJoin } from '../lib/ActorRdfJoin';
@@ -41,7 +42,21 @@ IActorRdfJoinSelectivityOutput
   }
 
   public async getOutput(action: IActionRdfJoin) {
-    const result = <any> { dummy: 'dummy' };
+    const bufferedIterator = new BufferedIterator({ autoStart: false });
+    (<any> bufferedIterator)._read = (count: number, done: any) => {
+      (<any> bufferedIterator)._push(BF.fromRecord({ a: DF.namedNode('a') }));
+      bufferedIterator.close();
+      done();
+    };
+    const result = <any> {
+      dummy: 'dummy',
+      bindingsStream: new MultiTransformIterator(
+        bufferedIterator,
+        {
+          multiTransform: bindings => new SingletonIterator(bindings),
+        },
+      ),
+    };
 
     result.metadata = async() => this.constructResultMetadata(
       action.entries,
@@ -861,7 +876,9 @@ IActorRdfJoinSelectivityOutput
       });
       jest.spyOn(instance, 'getOutput');
 
-      await instance.run(action);
+      const result = await instance.run(action);
+      await result.bindingsStream.toArray();
+      await new Promise(setImmediate);
 
       expect(logger.logOperation).toHaveBeenCalledWith(
         'join-inner',
@@ -883,6 +900,17 @@ IActorRdfJoinSelectivityOutput
           },
         },
       );
+      expect(logger.appendMetadata).toHaveBeenCalledWith({}, {
+        cardinality: { type: 'estimate', value: 10 },
+      });
+      expect(logger.appendMetadata).toHaveBeenCalledWith({}, {
+        cardinality: { type: 'estimate', value: 5 },
+      });
+      expect(logger.appendMetadata).toHaveBeenCalledWith(expect.anything(), {
+        cardinalityReal: 1,
+        timeLife: expect.anything(),
+        timeSelf: expect.anything(),
+      });
       expect(instance.getOutput).toHaveBeenCalledWith({
         ...action,
         context: new ActionContext({

@@ -18,6 +18,7 @@ import type {
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
+import { instrumentIterator } from './instrumentIterator';
 
 const DF = new DataFactory();
 
@@ -405,6 +406,16 @@ export abstract class ActorRdfJoin
 
     // Fill in the physical plan metadata after determining action output
     if (planMetadata) {
+      // eslint-disable-next-line ts/no-floating-promises
+      instrumentIterator(result.bindingsStream)
+        .then((counters) => {
+          physicalQueryPlanLogger!.appendMetadata(action, {
+            cardinalityReal: counters.count,
+            timeSelf: counters.timeSelf,
+            timeLife: counters.timeLife,
+          });
+        });
+
       Object.assign(planMetadata, physicalPlanMetadata);
       const cardinalities = metadatas.map(ActorRdfJoin.getCardinality);
       planMetadata.cardinalities = cardinalities;
