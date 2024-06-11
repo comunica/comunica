@@ -283,7 +283,7 @@ export const KeysRdfUpdateQuads = {
 
 export const KeysMergeBindingsContext = {
   /**
-   * The data source of the binding
+   * The data sources required to produce the binding
    */
   sourceBinding: new ActionContextKey<string[]>('@comunica/bus-merge-bindings-context:sourceBinding'),
 };

@@ -2,7 +2,6 @@ import type { Bindings } from '@comunica/bindings-factory';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { KeysMergeBindingsContext } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext, IQueryOperationResultBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -134,27 +133,6 @@ describe('ActorQueryProcessAnnotateSourceBinding', () => {
           _source: DF.literal('[]'),
         }),
       ]);
-    });
-
-    it('should add retain metadata of bindingsStream', async() => {
-      bindings = bindings.setContextEntry(KeysMergeBindingsContext.sourceBinding, [ 'S1' ]);
-      const bindingsStream = new ArrayIterator([ bindings ]);
-      bindingsStream.setProperty('metadata', { state: new MetadataValidationState() });
-
-      mediatorQueryProcess = {
-        async mediate(arg: any) {
-          return { result: { type: 'bindings', bindingsStream }};
-        },
-      };
-
-      const actorWithSource = new ActorQueryProcessAnnotateSourceBinding({ name: 'actor', bus, mediatorQueryProcess });
-
-      const queryResult = actorWithSource.run({ query: 'irrelevantQuery', context });
-      const bindingsStreamResult = (<IQueryOperationResultBindings> (await queryResult).result).bindingsStream;
-
-      await expect(new Promise(resolve => bindingsStreamResult.getProperty('metadata', resolve))).resolves.toEqual({
-        state: expect.any(MetadataValidationState),
-      });
     });
   });
 });

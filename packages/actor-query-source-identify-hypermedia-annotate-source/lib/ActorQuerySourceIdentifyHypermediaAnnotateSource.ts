@@ -35,11 +35,7 @@ export class ActorQuerySourceIdentifyHypermediaAnnotateSource extends ActorQuery
     action.context = context;
 
     const { source, dataset } = await this.mediatorQuerySourceIdentifyHypermedia.mediate(action);
-    source.referenceValue = action.url;
-
-    const wrappedSource = new QuerySourceAddSourceAttribution(source);
-    wrappedSource.toString = () => `QuerySourceAddSourceAttribution(${action.url})`;
-    return { source: wrappedSource, dataset };
+    return { source: new QuerySourceAddSourceAttribution(source), dataset };
   }
 }
 

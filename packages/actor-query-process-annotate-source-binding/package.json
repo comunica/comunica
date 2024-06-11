@@ -37,6 +37,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
+    "@comunica/bindings-factory": "^3.0.3",
     "@comunica/bus-query-process": "^3.0.3",
     "@comunica/context-entries": "^3.0.3",
     "@comunica/core": "^3.0.3",

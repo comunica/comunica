@@ -1,4 +1,5 @@
 /** @jest-environment setup-polly-jest/jest-environment-node */
+
 import { QuerySourceSkolemized } from '@comunica/actor-context-preprocess-query-source-skolemize';
 import { KeysHttpWayback, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { BlankNodeScoped } from '@comunica/data-factory';
@@ -655,7 +656,6 @@ describe('System test: QuerySparql', () => {
             FILTER(lang(?name) = 'nl')
           }
         }`, { sources: [ store ]});
-
         const results = await arrayifyStream(await result.execute());
 
         const expectedResult = [

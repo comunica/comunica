@@ -57,7 +57,6 @@ describe('ActorQuerySourceIdentifyHypermediaSourceAttribution', () => {
       ]);
       const { source } = await actor.run({ metadata: <any> null, quads, url: 'URL', context });
       expect(source.queryBindings).toBeTruthy();
-      expect(source.toString()).toBe(`QuerySourceAddSourceAttribution(URL)`);
       const stream: BindingsStream = source.queryBindings(AF.createPattern(v1, v2, v3), new ActionContext());
       await expect(new Promise((resolve, reject) => {
         stream.getProperty('metadata', resolve);

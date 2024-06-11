@@ -1,4 +1,4 @@
-import type { Bindings } from '@comunica/bindings-factory';
+import { Bindings } from '@comunica/bindings-factory';
 import type {
   IActionQueryProcess,
   IActorQueryProcessOutput,
@@ -9,7 +9,7 @@ import { ActorQueryProcess } from '@comunica/bus-query-process';
 import { KeysMergeBindingsContext } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import { ActionContextKey } from '@comunica/core';
-import type { BindingsStream, MetadataBindings } from '@comunica/types';
+import type { BindingsStream } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 
@@ -46,29 +46,15 @@ export class ActorQueryProcessAnnotateSourceBinding extends ActorQueryProcess {
   }
 
   public addSourcesToBindings(iterator: BindingsStream): BindingsStream {
-    const ret = iterator.transform({
-      map: (bindings) => {
-        // Get source from bindings context. If no source is found, this should produce binding with empty literal
-        const source = <string []> (<Bindings> bindings).getContextEntry(KeysMergeBindingsContext.sourceBinding);
-
-        // Handle empty binding source
-        const sourceAsLiteral = source ?
-          this.dataFactory.literal(JSON.stringify(source)) :
-          this.dataFactory.literal(JSON.stringify([]));
-
+    const ret = iterator.map((bindings) => {
+      if (bindings instanceof Bindings) {
+        // Get sources from bindings context. If no sources are found, this should produce binding with empty literal
+        const source = <string []> bindings.getContextEntry(KeysMergeBindingsContext.sourceBinding);
+        const sourceAsLiteral = this.dataFactory.literal(JSON.stringify(source ?? []));
         bindings = bindings.set('_source', sourceAsLiteral);
-
-        return bindings;
-      },
-      autoStart: false,
+      }
+      return bindings;
     });
-    function inheritMetadata(): void {
-      iterator.getProperty('metadata', (metadata: MetadataBindings) => {
-        ret.setProperty('metadata', metadata);
-        metadata.state.addInvalidateListener(inheritMetadata);
-      });
-    }
-    inheritMetadata();
 
     return ret;
   }

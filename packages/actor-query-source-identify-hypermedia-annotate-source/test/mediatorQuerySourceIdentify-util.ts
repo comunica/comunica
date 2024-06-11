@@ -13,11 +13,12 @@ const AF = new Factory();
 
 // @ts-expect-error
 export const mediatorQuerySourceIdentifyHypermedia: MediatorQuerySourceIdentifyHypermedia = {
-  async mediate({ quads }: IActionQuerySourceIdentifyHypermedia) {
+  async mediate({ quads, url }: IActionQuerySourceIdentifyHypermedia) {
     const quadsIterator = wrap(quads);
     return {
       dataset: 'MYDATASET',
       source: <IQuerySource> <any> {
+        referenceValue: url,
         queryBindings() {
           const it = quadsIterator.clone().transform({
             map: q => BF.fromRecord({

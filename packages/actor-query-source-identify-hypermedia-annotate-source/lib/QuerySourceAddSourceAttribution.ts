@@ -38,19 +38,16 @@ export class QuerySourceAddSourceAttribution implements IQuerySource {
   }
 
   public addSourceUrlToBindingContext(iterator: BindingsStream): BindingsStream {
-    const ret = iterator.transform({
-      map: (bindings) => {
-        // Cast to our own Bindings object
-        if (bindings instanceof Bindings) {
-          bindings = bindings.setContextEntry(
-            KeysMergeBindingsContext.sourceBinding,
-            [ this.innerSource.referenceValue ],
-          );
-        }
-        return bindings;
-      },
-      autoStart: false,
+    const ret = iterator.map((bindings) => {
+      if (bindings instanceof Bindings) {
+        bindings = bindings.setContextEntry(
+          KeysMergeBindingsContext.sourceBinding,
+          [ this.innerSource.referenceValue ],
+        );
+      }
+      return bindings;
     });
+
     function inheritMetadata(): void {
       iterator.getProperty('metadata', (metadata: MetadataBindings) => {
         ret.setProperty('metadata', metadata);
@@ -58,6 +55,7 @@ export class QuerySourceAddSourceAttribution implements IQuerySource {
       });
     }
     inheritMetadata();
+
     return ret;
   }
 
