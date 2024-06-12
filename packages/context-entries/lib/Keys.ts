@@ -285,7 +285,7 @@ export const KeysMergeBindingsContext = {
   /**
    * The data sources required to produce the binding
    */
-  sourceBinding: new ActionContextKey<string[]>('@comunica/bus-merge-bindings-context:sourceBinding'),
+  sourcesBinding: new ActionContextKey<string[]>('@comunica/bus-merge-bindings-context:sourcesBinding'),
 };
 
 export const KeysRdfJoin = {
