@@ -73,7 +73,7 @@ describe('ActorDereferenceFile', () => {
         {
           data: expect.anything(),
           exists: true,
-          url: `file://${p}`,
+          url: process.platform === 'win32' ? p : `file://${p}`,
         },
       );
     });

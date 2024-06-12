@@ -34,7 +34,9 @@
     "depcheck:fix": "lerna-script depfixTask",
     "ncu:all": "lerna-script updateTask",
     "ncu:major:all": "lerna-script updateTaskMajor",
-    "clean": "git status --untracked-files=all --ignored=traditional | grep \"^[^a-z]*packages/[^/]*/lib/\" | grep \"\\.\\(\\(js\\)\\|\\(d\\.ts\\)\\|\\(js\\.map\\)\\)$\" | xargs rm && git status --untracked-files=all --ignored=traditional | grep \"^[^a-z]*packages/[^/]*/components/\" | xargs rm"
+    "clean": "git status --untracked-files=all --ignored=traditional | grep \"^[^a-z]*packages/[^/]*/lib/\" | grep \"\\.\\(\\(js\\)\\|\\(d\\.ts\\)\\|\\(js\\.map\\)\\)$\" | xargs rm && git status --untracked-files=all --ignored=traditional | grep \"^[^a-z]*packages/[^/]*/components/\" | xargs rm",
+    "spec": "npx lerna run spec --concurrency 1",
+    "integration": "npx lerna run integration --concurrency 1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.2",
@@ -46,6 +48,7 @@
     "@rubensworks/process-sparql-benchmark-results": "^1.1.6",
     "@types/benchmark": "^2.0.0",
     "@types/jest": "^29.4.0",
+    "@types/md5": "^2.3.5",
     "@types/node": "^20.0.0",
     "@types/object-inspect": "^1.8.1",
     "@types/readable-stream": "^4.0.0",
@@ -72,6 +75,7 @@
     "lerna": "^8.1.2",
     "lerna-script": "^1.4.0",
     "manual-git-changelog": "^1.0.2",
+    "md5": "^2.3.0",
     "node-polyfill-webpack-plugin": "^3.0.0",
     "nodemon": "^3.0.0",
     "npm-check-updates": "^16.4.1",

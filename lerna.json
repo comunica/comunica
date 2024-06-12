@@ -27,5 +27,6 @@
   "npmClient": "yarn",
   "npmClientArgs": [
     "--pure-lockfile"
-  ]
+  ],
+  "lerna-script-tasks": "./lerna-custom-script.js"
 }

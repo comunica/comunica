@@ -5,13 +5,13 @@ import { KeysHttpWayback, KeysQuerySourceIdentify } from '@comunica/context-entr
 import { BlankNodeScoped } from '@comunica/data-factory';
 import type { QueryBindings, QueryStringContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import 'jest-rdf';
 import arrayifyStream from 'arrayify-stream';
+import 'jest-rdf';
 import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { QueryEngine } from '../lib/QueryEngine';
-import { usePolly } from './util';
+import { fetch as cachedFetch } from './util';
 
 // Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
 const stringifyStream = require('stream-to-string');
@@ -19,9 +19,9 @@ const stringifyStream = require('stream-to-string');
 const DF = new DataFactory();
 const factory = new Factory();
 
-describe('System test: QuerySparql', () => {
-  usePolly();
+globalThis.fetch = cachedFetch;
 
+describe('System test: QuerySparql', () => {
   let engine: QueryEngine;
   beforeAll(() => {
     engine = new QueryEngine();
