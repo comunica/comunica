@@ -281,6 +281,13 @@ export const KeysRdfUpdateQuads = {
   destination: new ActionContextKey<IDataDestination>('@comunica/bus-rdf-update-quads:destination'),
 };
 
+export const KeysMergeBindingsContext = {
+  /**
+   * The data sources required to produce the binding
+   */
+  sourcesBinding: new ActionContextKey<string[]>('@comunica/bus-merge-bindings-context:sourcesBinding'),
+};
+
 export const KeysRdfJoin = {
   /**
    * The last physical join actor that was executed.

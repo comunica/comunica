@@ -13142,7 +13142,7 @@ sparql-benchmark-runner@^4.0.0:
     rdf-string "^1.0.0"
     yargs "^17.0.0"
 
-sparqlalgebrajs@^4.0.0, sparqlalgebrajs@^4.2.0, sparqlalgebrajs@^4.3.0, sparqlalgebrajs@^4.3.3:
+sparqlalgebrajs@^4.0.0, sparqlalgebrajs@^4.2.0, sparqlalgebrajs@^4.3.0, sparqlalgebrajs@^4.3.3, sparqlalgebrajs@^4.3.4:
   version "4.3.4"
   resolved "https://registry.npmjs.org/sparqlalgebrajs/-/sparqlalgebrajs-4.3.4.tgz"
   integrity sha512-BUpd79w3SfrfRPyA+gHA23B3masuD2wLK47IOnglyIK6hx4BC+4TWtOmP5D8RTbmbPCuLKYfLGyLDF/RQsKgWg==
