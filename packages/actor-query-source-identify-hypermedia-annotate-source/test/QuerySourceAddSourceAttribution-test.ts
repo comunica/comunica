@@ -75,7 +75,7 @@ describe('QuerySourcAddSourceAttribution', () => {
     const sourceAttributionBindingsStream = source.queryBindings(op, context, opts);
     const producedBindings = await sourceAttributionBindingsStream.toArray();
     const bindingSources = producedBindings.map(x => (<Bindings> x)
-      .getContextEntry(KeysMergeBindingsContext.sourceBinding));
+      .getContextEntry(KeysMergeBindingsContext.sourcesBinding));
     expect(bindingSources).toEqual([[ 'REF' ], [ 'REF' ], [ 'REF' ]]);
   });
 

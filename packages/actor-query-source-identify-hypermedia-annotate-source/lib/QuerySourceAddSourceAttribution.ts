@@ -41,7 +41,7 @@ export class QuerySourceAddSourceAttribution implements IQuerySource {
     const ret = iterator.map((bindings) => {
       if (bindings instanceof Bindings) {
         bindings = bindings.setContextEntry(
-          KeysMergeBindingsContext.sourceBinding,
+          KeysMergeBindingsContext.sourcesBinding,
           [ this.innerSource.referenceValue ],
         );
       }

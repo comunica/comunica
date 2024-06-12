@@ -49,7 +49,7 @@ export class ActorQueryProcessAnnotateSourceBinding extends ActorQueryProcess {
     const ret = iterator.map((bindings) => {
       if (bindings instanceof Bindings) {
         // Get sources from bindings context. If no sources are found, this should produce binding with empty literal
-        const source = <string []> bindings.getContextEntry(KeysMergeBindingsContext.sourceBinding);
+        const source = <string []> bindings.getContextEntry(KeysMergeBindingsContext.sourcesBinding);
         const sourceAsLiteral = this.dataFactory.literal(JSON.stringify(source ?? []));
         bindings = bindings.set('_source', sourceAsLiteral);
       }

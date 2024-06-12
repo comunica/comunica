@@ -50,7 +50,7 @@ describe('ActorQueryProcessAnnotateSourceBinding', () => {
     });
 
     it('should add single source in context to binding', async() => {
-      bindings = bindings.setContextEntry(KeysMergeBindingsContext.sourceBinding, [ 'S1' ]);
+      bindings = bindings.setContextEntry(KeysMergeBindingsContext.sourcesBinding, [ 'S1' ]);
 
       mediatorQueryProcess = {
         async mediate(arg: any) {
@@ -72,7 +72,7 @@ describe('ActorQueryProcessAnnotateSourceBinding', () => {
     });
 
     it('should add array of sources in context to binding', async() => {
-      bindings = bindings.setContextEntry(KeysMergeBindingsContext.sourceBinding, [ 'S1', 'S2' ]);
+      bindings = bindings.setContextEntry(KeysMergeBindingsContext.sourcesBinding, [ 'S1', 'S2' ]);
 
       mediatorQueryProcess = {
         async mediate(arg: any) {
@@ -114,7 +114,7 @@ describe('ActorQueryProcessAnnotateSourceBinding', () => {
     });
 
     it('should fail gracefully when bindingcontext has no source', async() => {
-      bindings = bindings.setContextEntry(KeysMergeBindingsContext.sourceBinding, []);
+      bindings = bindings.setContextEntry(KeysMergeBindingsContext.sourcesBinding, []);
 
       mediatorQueryProcess = {
         async mediate(arg: any) {
