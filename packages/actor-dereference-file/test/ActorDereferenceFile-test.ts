@@ -5,8 +5,8 @@ import type { IActorDereferenceOutput } from '@comunica/bus-dereference';
 import { ActorDereference } from '@comunica/bus-dereference';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
-import { ActorDereferenceFile } from '../lib/ActorDereferenceFile';
 import streamToString from '@jeswr/stream-to-string';
+import { ActorDereferenceFile } from '../lib/ActorDereferenceFile';
 
 function fileUrl(str: string): string {
   let pathName = path.resolve(str).replaceAll('\\', '/');

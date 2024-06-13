@@ -7,7 +7,7 @@
 import { EventEmitter } from 'node:events';
 import type { IncomingHttpHeaders, IncomingMessage } from 'node:http';
 import { Readable } from 'node:stream';
-import { parseLinkHeader } from '@web3-storage/parse-link-header'
+import { parseLinkHeader } from '@web3-storage/parse-link-header';
 
 // Headers we cannot send (see https://www.w3.org/TR/XMLHttpRequest/#the-setrequestheader()-method)
 const UNSAFE_REQUEST_HEADERS = { 'accept-encoding': true, 'user-agent': true, referer: true };

@@ -13,13 +13,12 @@ import {
 import { ActionContext, Bus } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
 import type { IActionContext, ICliArgsHandler } from '@comunica/types';
+import stringifyStream from '@jeswr/stream-to-string';
 import { PassThrough, Readable, Transform } from 'readable-stream';
 
 import { CliArgsHandlerBase } from '../lib';
 import { ActorInitQuery } from '../lib/ActorInitQuery';
 import { QueryEngineBase } from '../lib/QueryEngineBase';
-
-import stringifyStream from '@jeswr/stream-to-string';
 
 describe('ActorInitQuery', () => {
   let bus: any;

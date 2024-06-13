@@ -3,6 +3,7 @@ import type { Cluster } from 'node:cluster';
 import { PassThrough } from 'node:stream';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { LoggerPretty } from '@comunica/logger-pretty';
+import stringifyStream from '@jeswr/stream-to-string';
 import { ArrayIterator } from 'asynciterator';
 
 // @ts-expect-error
@@ -27,7 +28,6 @@ const querystring = require('node:querystring');
 const cluster: Cluster = clusterUntyped;
 
 const quad = require('rdf-quad');
-import stringifyStream from '@jeswr/stream-to-string';
 const stringToStream = require('streamify-string');
 
 jest.mock<typeof import('..')>('..', () => {
