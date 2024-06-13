@@ -1,31 +1,38 @@
-import type { IActionHttp, IActorHttpOutput, IActorHttpArgs, MediatorHttp } from '@comunica/bus-http';
-import { ActorHttp } from '@comunica/bus-http';
-import type { IActorTest } from '@comunica/core';
+import { LRUCache } from "lru-cache";
 
-/**
- * A comunica Cache Http Actor.
- */
-export class ActorHttpCache extends ActorHttp {
-  public readonly mediatorHttp: MediatorHttp;
+const options = {
+max: 500,
 
-  public constructor(args: IActorHttpCacheArgs) {
-    super(args);
-  }
+// for use with tracking overall storage size
+maxSize: 5000,
+sizeCalculation: () => {
+    return 1
+},
 
-  public async test(action: IActionHttp): Promise<IActorTest> {
-    // Console.log('\n\ntest cache request reached!!\n\n');
-    if (action) {
-      return true;
-    };
-    return true;
-  }
+// for use when you need to clean up something when objects
+// are evicted from the cache
+dispose: () => {
+},
 
-  public async run(action: IActionHttp): Promise<IActorHttpOutput> {
-    const result = await this.mediatorHttp.mediate(action);
-    return result;
-  }
+// how long to live in ms
+ttl: 1000 * 60 * 5,
+
+// return stale items before removing from cache?
+allowStale: false,
+
+updateAgeOnGet: false,
+updateAgeOnHas: false,
 }
 
-export interface IActorHttpCacheArgs extends IActorHttpArgs {
-  mediatorHttp: MediatorHttp;
+const cache:Cache = new LRUCache(options);
+export default cache
+
+interface Cache {
+  get(key: string): any;
+  set(key: string, value: any): void;
+  has(key: string): boolean;
+  delete(key: string): void;
+  clear(): void;
+  keys(): Iterable<string>;
+  values(): Iterable<any>;
 }

@@ -1,1 +1,1 @@
-export * from './ActorHttpCache';
+export * as cache from './ActorHttpCache';

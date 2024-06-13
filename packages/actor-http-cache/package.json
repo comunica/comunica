@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "@comunica/bus-http": "^3.0.3",
-    "@comunica/core": "^3.0.3"
+    "@comunica/core": "^3.0.3",
+    "lru-cache": "^10.2.2"
   }
 }
