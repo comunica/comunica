@@ -4,7 +4,6 @@ import { KeysHttpMemento } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorHttpMemento } from '../lib/ActorHttpMemento';
-import 'cross-fetch/polyfill';
 
 describe('ActorHttpMemento', () => {
   let bus: any;

@@ -8,7 +8,6 @@ import type { Event } from 'benchmark';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Suite } from 'benchmark';
 
-// Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
 // eslint-disable-next-line ts/no-require-imports
 import Benchmark = require('benchmark');
 import { DataFactory } from 'rdf-data-factory';

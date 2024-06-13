@@ -12,7 +12,7 @@ import { ActorQueryResultSerializeTree, bindingsStreamToGraphQl } from '..';
 const DF = new DataFactory();
 const BF = new BindingsFactory();
 const quad = require('rdf-quad');
-const stringifyStream = require('stream-to-string');
+import stringifyStream from '@jeswr/stream-to-string';
 
 describe('ActorQueryResultSerializeTree', () => {
   let bus: any;

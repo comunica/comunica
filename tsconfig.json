@@ -7,7 +7,6 @@
       "dom"
     ],
     "module": "commonjs",
-    "resolveJsonModule": true,
 
     "strict": true,
     "strictFunctionTypes": true,

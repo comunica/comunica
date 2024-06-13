@@ -7,7 +7,7 @@ import type { AsyncIterator } from 'asynciterator';
 import { ActorRdfSerializeN3 } from '../lib/ActorRdfSerializeN3';
 
 const quad = require('rdf-quad');
-const stringifyStream = require('stream-to-string');
+import stringifyStream from '@jeswr/stream-to-string';
 const streamifyArray = require('streamify-array');
 
 describe('ActorRdfSerializeN3', () => {

@@ -3,7 +3,7 @@
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-http-fetch.svg)](https://www.npmjs.com/package/@comunica/actor-http-fetch)
 
 An [HTTP](https://github.com/comunica/comunica/tree/master/packages/bus-http) actor that
-uses [cross-fetch](https://www.npmjs.com/package/cross-fetch) to perform HTTP requests.
+uses the global `fetch` function to perform HTTP requests.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).

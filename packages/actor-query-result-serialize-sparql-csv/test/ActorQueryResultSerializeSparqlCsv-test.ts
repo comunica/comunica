@@ -9,7 +9,7 @@ import { ActorQueryResultSerializeSparqlCsv } from '..';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
-const stringifyStream = require('stream-to-string');
+import stringifyStream from '@jeswr/stream-to-string';
 
 describe('ActorQueryResultSerializeSparqlCsv', () => {
   let bus: any;

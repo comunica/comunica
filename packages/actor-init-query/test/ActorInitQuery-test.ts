@@ -19,8 +19,7 @@ import { CliArgsHandlerBase } from '../lib';
 import { ActorInitQuery } from '../lib/ActorInitQuery';
 import { QueryEngineBase } from '../lib/QueryEngineBase';
 
-// Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
-const stringifyStream = require('stream-to-string');
+import stringifyStream from '@jeswr/stream-to-string';
 
 describe('ActorInitQuery', () => {
   let bus: any;

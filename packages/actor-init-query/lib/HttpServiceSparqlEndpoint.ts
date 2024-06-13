@@ -21,7 +21,6 @@ import { QueryEngineBase, QueryEngineFactoryBase } from '..';
 import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase';
 import { CliArgsHandlerHttp } from './cli/CliArgsHandlerHttp';
 
-// Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
 const clusterUntyped = require('node:cluster');
 const process: NodeJS.Process = require('process/');
 const quad = require('rdf-quad');

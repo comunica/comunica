@@ -11,7 +11,7 @@ import { ActorQueryResultSerializeTable } from '../lib/ActorQueryResultSerialize
 const DF = new DataFactory();
 const BF = new BindingsFactory();
 const quad = require('rdf-quad');
-const stringifyStream = require('stream-to-string');
+import stringifyStream from '@jeswr/stream-to-string';
 
 describe('ActorQueryResultSerializeTable', () => {
   let bus: any;

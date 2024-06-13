@@ -37,10 +37,10 @@
   },
   "dependencies": {
     "@comunica/core": "^3.1.0",
+    "@jeswr/stream-to-string": "^1.0.0",
     "is-stream": "^2.0.1",
     "readable-from-web": "^1.0.0",
     "readable-stream-node-to-web": "^1.0.1",
-    "stream-to-string": "^1.2.0",
     "web-streams-ponyfill": "^1.4.2"
   }
 }

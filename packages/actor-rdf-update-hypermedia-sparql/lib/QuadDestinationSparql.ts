@@ -6,7 +6,7 @@ import type { AsyncIterator } from 'asynciterator';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import { termToString } from 'rdf-string-ttl';
 
-const stringifyStream = require('stream-to-string');
+import stringifyStream from '@jeswr/stream-to-string';
 
 /**
  * A quad destination that represents an LDP resource.

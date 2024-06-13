@@ -6,7 +6,6 @@ import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 
-import 'cross-fetch/polyfill';
 
 // Needed to load Headers
 import 'jest-rdf';

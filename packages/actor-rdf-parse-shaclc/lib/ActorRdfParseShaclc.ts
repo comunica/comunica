@@ -9,7 +9,7 @@ import {
 import type { IActionContext } from '@comunica/types';
 import { Readable } from 'readable-stream';
 import { parse } from 'shaclc-parse';
-import streamToString = require('stream-to-string');
+import streamToString from '@jeswr/stream-to-string';
 import { PrefixWrappingIterator } from './PrefixWrappingIterator';
 
 /**
