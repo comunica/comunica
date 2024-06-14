@@ -133,7 +133,7 @@ IQueryOperationResultBindings
           iterations: 0.480_000_000_000_000_1,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 0.120_000_000_000_000_02,
+          requestTime: 0.396,
         });
       });
 
@@ -175,7 +175,7 @@ IQueryOperationResultBindings
           iterations: 0.480_000_000_000_000_1,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 0.120_000_000_000_000_02,
+          requestTime: 0.396,
         });
       });
 
@@ -291,7 +291,7 @@ IQueryOperationResultBindings
           iterations: 0.480_000_000_000_000_1,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 0.120_000_000_000_000_02,
+          requestTime: 0.396,
         });
       });
     });

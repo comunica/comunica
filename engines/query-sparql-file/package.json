@@ -149,6 +149,7 @@
     "@comunica/actor-rdf-join-minus-hash": "^3.1.2",
     "@comunica/actor-rdf-join-minus-hash-undef": "^3.1.2",
     "@comunica/actor-rdf-join-optional-bind": "^3.1.2",
+    "@comunica/actor-rdf-join-optional-hash": "^3.1.2",
     "@comunica/actor-rdf-join-optional-nestedloop": "^3.1.2",
     "@comunica/actor-rdf-join-selectivity-variable-counting": "^3.1.0",
     "@comunica/actor-rdf-metadata-accumulate-cancontainundefs": "^3.1.0",

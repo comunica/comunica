@@ -94,10 +94,10 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
       persistedItems: 0,
       blockingItems: 0,
       requestTime: requestInitialTimes[0] +
-        metadatas[0].cardinality.value * selectivity * (
+        metadatas[0].cardinality.value * (
           requestItemTimes[0] +
           requestInitialTimes[1] +
-          metadatas[1].cardinality.value * requestItemTimes[1]
+          selectivity * metadatas[1].cardinality.value * requestItemTimes[1]
         ),
     };
   }
@@ -112,7 +112,7 @@ export interface IActorRdfJoinOptionalBindArgs extends IActorRdfJoinArgs {
   /**
    * Multiplier for selectivity values
    * @range {double}
-   * @default {0.0001}
+   * @default {0.000001}
    */
   selectivityModifier: number;
   /**
