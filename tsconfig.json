@@ -28,6 +28,7 @@
     "performance/*/lib/**/*"
   ],
   "exclude": [
+    "packages/expression-evaluator/benchmarks/**/*",
     "**/node_modules"
   ]
 }
