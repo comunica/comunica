@@ -227,7 +227,7 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
       node.physical ? `(${node.physical})` : ''}${
       node.pattern ? ` (${node.pattern})` : ''}${
       node.variables ? ` (${node.variables.join(',')})` : ''}${
-      node.bindOperation ? ` bindOperation:(${node.bindOperation.pattern}) bindCardEst:${node.bindOperationCardinality.type === 'estimate' ? '~' : ''}${node.bindOperationCardinality.value}` : ''}${
+      node.bindOperation ? ` bindOperation:(${node.bindOperation.pattern}) bindCardEst:${node.bindOperationCardinality.type === 'estimate' ? '~' : ''}${numberToString(node.bindOperationCardinality.value)}` : ''}${
       node.cardinality ? ` cardEst:${node.cardinality.type === 'estimate' ? '~' : ''}${numberToString(node.cardinality.value)}` : ''}${
       node.source ? ` src:${sourceId}` : ''}${
       node.cardinalityReal ? ` cardReal:${node.cardinalityReal}` : ''}${
