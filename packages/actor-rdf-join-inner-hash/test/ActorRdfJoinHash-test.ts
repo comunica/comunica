@@ -313,14 +313,14 @@ IActorRdfJoinSelectivityOutput
           [ DF.variable('a'), DF.literal('a') ],
           [ DF.variable('b'), DF.literal('b') ],
         ]),
-      ]);
+      ], { autoStart: false });
       variables0 = [ DF.variable('a'), DF.variable('b') ];
       action.entries[1].output.bindingsStream = new ArrayIterator<RDF.Bindings>([
         BF.bindings([
           [ DF.variable('a'), DF.literal('a') ],
           [ DF.variable('c'), DF.literal('c') ],
         ]),
-      ]);
+      ], { autoStart: false });
       variables1 = [ DF.variable('a'), DF.variable('c') ];
       await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
         await expect(output.metadata()).resolves
@@ -402,7 +402,7 @@ IActorRdfJoinSelectivityOutput
           [ DF.variable('a'), DF.literal('3') ],
           [ DF.variable('b'), DF.literal('4') ],
         ]),
-      ]);
+      ], { autoStart: false });
       variables0 = [ DF.variable('a'), DF.variable('b') ];
       action.entries[1].output.bindingsStream = new ArrayIterator<RDF.Bindings>([
         BF.bindings([
@@ -429,7 +429,7 @@ IActorRdfJoinSelectivityOutput
           [ DF.variable('a'), DF.literal('0') ],
           [ DF.variable('c'), DF.literal('4') ],
         ]),
-      ]);
+      ], { autoStart: false });
       variables1 = [ DF.variable('a'), DF.variable('c') ];
       await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
         const expected = [

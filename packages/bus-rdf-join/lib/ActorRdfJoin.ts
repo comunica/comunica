@@ -18,6 +18,7 @@ import type {
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
+import { termToString } from 'rdf-string';
 import { instrumentIterator } from './instrumentIterator';
 
 const DF = new DataFactory();
@@ -80,6 +81,7 @@ export abstract class ActorRdfJoin
 
   /**
    * Creates a hash of the given bindings by concatenating the results of the given variables.
+   * This can cause clashes for equal terms.
    * This function will not sort the variables and expects them to be in the same order for every call.
    * @param {Bindings} bindings
    * @param {string[]} variables
@@ -91,6 +93,26 @@ export abstract class ActorRdfJoin
         const term = bindings.get(variable);
         if (term) {
           return term.value;
+        }
+        return '';
+      })
+      .join('');
+  }
+
+  /**
+   * Creates a hash of the given bindings by concatenating the results of the given variables.
+   * This is guaranteed to not produce clashing bindings for unequal terms.
+   * This function will not sort the variables and expects them to be in the same order for every call.
+   * @param {Bindings} bindings
+   * @param {string[]} variables
+   * @returns {string} A hash string.
+   */
+  public static hashNonClashing(bindings: RDF.Bindings, variables: RDF.Variable[]): string {
+    return variables
+      .map((variable) => {
+        const term = bindings.get(variable);
+        if (term) {
+          return termToString(term);
         }
         return '';
       })
