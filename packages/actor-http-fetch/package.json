@@ -38,8 +38,7 @@
     "@comunica/bus-http": "^3.1.0",
     "@comunica/context-entries": "^3.1.0",
     "@comunica/mediatortype-time": "^3.1.0",
-    "abort-controller": "^3.0.0",
-    "cross-fetch": "^4.0.0"
+    "abort-controller": "^3.0.0"
   },
   "browser": {
     "./lib/FetchInitPreprocessor.js": "./lib/FetchInitPreprocessor-browser.js"

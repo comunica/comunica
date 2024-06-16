@@ -1,7 +1,6 @@
 import type { Readable } from 'node:stream';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
-import { Headers } from 'cross-fetch';
 import { ActorRdfMetadataExtractPutAccepted } from '../lib/ActorRdfMetadataExtractPutAccepted';
 
 describe('ActorRdfMetadataExtractPostAccepted', () => {

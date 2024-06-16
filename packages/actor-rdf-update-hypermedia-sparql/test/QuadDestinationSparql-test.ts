@@ -4,7 +4,6 @@ import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
-import { Headers } from 'cross-fetch';
 import { DataFactory } from 'rdf-data-factory';
 import { QuadDestinationSparql } from '../lib/QuadDestinationSparql';
 

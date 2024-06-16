@@ -85,7 +85,6 @@ module.exports = config([
   },
   {
     // Some test files import 'jest-rdf' which triggers this
-    // The http actors import 'cross-fetch/polyfill' which also triggers this
     // Some jest tests import '../../lib' which triggers this
     files: [
       '**/test/*-test.ts',
