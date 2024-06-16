@@ -2,7 +2,7 @@ import type { IActionHttp, IActorHttpArgs, IActorHttpOutput, MediatorHttp } from
 import { ActorHttp } from '@comunica/bus-http';
 import { KeysHttpMemento } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
-import { parseLinkHeader } from '@web3-storage/parse-link-header';
+import { parse } from 'http-link-header';
 
 /**
  * A comunica Memento Http Actor.
@@ -43,11 +43,12 @@ export class ActorHttpMemento extends ActorHttp {
     // Did we ask for a time-negotiated response, but haven't received one?
     if (headers.has('accept-datetime') && result.headers && !result.headers.has('memento-datetime')) {
       // The links might have a timegate that can help us
-      const links = result.headers.has('link') && parseLinkHeader(result.headers.get('link'));
-      if (links && links.timegate) {
+      const header = result.headers.get('link');
+      const timegate = header && parse(header)?.get('rel', 'timegate');
+      if (timegate && timegate.length > 0) {
         await result.body?.cancel();
         // Respond with a time-negotiated response from the timegate instead
-        const followLink: IActionHttp = { context: action.context, input: links.timegate.url, init };
+        const followLink: IActionHttp = { context: action.context, input: timegate[0].uri, init };
         return this.mediatorHttp.mediate(followLink);
       }
     }
