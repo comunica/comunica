@@ -25,6 +25,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.mjs",
   "files": [
     "components",
     "lib/**/*.d.ts",
@@ -42,6 +43,5 @@
     "arrayify-stream": "^2.0.1",
     "readable-stream": "^4.4.2",
     "shaclc-write": "^1.4.2"
-  },
-  "module": "lib/index.mjs"
+  }
 }

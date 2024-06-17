@@ -25,6 +25,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.mjs",
   "files": [
     "components",
     "lib/**/*.d.ts",
@@ -41,6 +42,5 @@
     "@comunica/bus-rdf-parse": "^3.1.0",
     "@comunica/types": "^3.1.0",
     "rdfa-streaming-parser": "^2.0.1"
-  },
-  "module": "lib/index.mjs"
+  }
 }

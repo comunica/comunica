@@ -20,6 +20,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "bin/package.mjs",
   "bin": {
     "comunica-package": "./bin/package.js"
   },
@@ -36,6 +37,5 @@
     "componentsjs": "^6.0.1",
     "minimist": "^1.2.7",
     "process": "^0.11.10"
-  },
-  "module": "bin/package.mjs"
+  }
 }

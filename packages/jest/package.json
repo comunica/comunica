@@ -27,6 +27,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.mjs",
   "files": [
     "components",
     "lib/**/*.d.ts",
@@ -43,6 +44,5 @@
     "@comunica/types": "^3.1.0",
     "@rdfjs/types": "*",
     "arrayify-stream": "^2.0.1"
-  },
-  "module": "lib/index.mjs"
+  }
 }

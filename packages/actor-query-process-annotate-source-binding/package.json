@@ -25,6 +25,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.mjs",
   "files": [
     "components",
     "lib/**/*.d.ts",
@@ -44,6 +45,5 @@
     "@comunica/core": "^3.0.3",
     "@comunica/types": "^3.0.3",
     "rdf-data-factory": "^1.1.2"
-  },
-  "module": "lib/index.mjs"
+  }
 }

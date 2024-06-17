@@ -25,6 +25,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.mjs",
   "files": [
     "components",
     "lib/**/*.d.ts",
@@ -43,6 +44,5 @@
     "@rdfjs/types": "*",
     "@types/uritemplate": "^0.3.4",
     "uritemplate": "0.3.4"
-  },
-  "module": "lib/index.mjs"
+  }
 }

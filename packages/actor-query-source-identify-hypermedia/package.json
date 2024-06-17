@@ -25,6 +25,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.mjs",
   "files": [
     "components",
     "lib/**/*.d.ts",
@@ -61,6 +62,5 @@
     "rdf-streaming-store": "^1.1.4",
     "readable-stream": "^4.4.2",
     "sparqlalgebrajs": "^4.3.3"
-  },
-  "module": "lib/index.mjs"
+  }
 }

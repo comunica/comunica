@@ -25,6 +25,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.mjs",
   "files": [
     "components",
     "lib/**/*.d.ts",
@@ -46,6 +47,5 @@
     "event-emitter-promisify": "^1.1.0",
     "rdf-data-factory": "^1.1.1",
     "rdf-string": "^1.6.1"
-  },
-  "module": "lib/index.mjs"
+  }
 }

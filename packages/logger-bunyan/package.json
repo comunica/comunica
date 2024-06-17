@@ -24,6 +24,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.mjs",
   "files": [
     "components",
     "lib/**/*.d.ts",
@@ -41,6 +42,5 @@
     "@types/bunyan": "^1.8.8",
     "bunyan": "^1.8.15",
     "process": "^0.11.10"
-  },
-  "module": "lib/index.mjs"
+  }
 }

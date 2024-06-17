@@ -1,10 +1,10 @@
 {
-    "extends": "../../tsconfig.json",
-    "compilerOptions": {
-        "lib": [
-            "es2021",
-            "dom"
-        ],
-        "outDir": "./lib"
-    }
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "lib": [
+      "es2021",
+      "dom"
+    ],
+    "outDir": "./lib"
+  }
 }

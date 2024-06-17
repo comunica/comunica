@@ -25,6 +25,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.mjs",
   "files": [
     "components",
     "lib/**/*.d.ts",
@@ -43,6 +44,5 @@
     "@comunica/bus-rdf-join": "^3.1.2",
     "@comunica/types": "^3.1.0",
     "sparqlalgebrajs": "^4.3.3"
-  },
-  "module": "lib/index.mjs"
+  }
 }

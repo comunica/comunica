@@ -25,6 +25,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.mjs",
   "files": [
     "components",
     "lib/**/*.d.ts",
@@ -49,6 +50,5 @@
     "rdf-data-factory": "^1.1.2",
     "rdf-terms": "^1.11.0",
     "sparqlalgebrajs": "^4.3.0"
-  },
-  "module": "lib/index.mjs"
+  }
 }

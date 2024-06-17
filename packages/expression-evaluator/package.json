@@ -25,6 +25,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.mjs",
   "files": [
     "lib/**/*.d.ts",
     "lib/**/*.js",
@@ -48,6 +49,5 @@
     "spark-md5": "^3.0.1",
     "sparqlalgebrajs": "^4.2.0",
     "uuid": "^9.0.0"
-  },
-  "module": "lib/index.mjs"
+  }
 }

@@ -24,6 +24,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.mjs",
   "files": [
     "components",
     "lib/**/*.d.ts",
@@ -43,6 +44,5 @@
     "readable-from-web": "^1.0.0",
     "readable-stream-node-to-web": "^1.0.1",
     "web-streams-ponyfill": "^1.4.2"
-  },
-  "module": "lib/index.mjs"
+  }
 }

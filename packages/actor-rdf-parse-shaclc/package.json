@@ -25,6 +25,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.mjs",
   "files": [
     "components",
     "lib/**/*.d.ts",
@@ -45,6 +46,5 @@
     "asynciterator": "^3.9.0",
     "readable-stream": "^4.4.2",
     "shaclc-parse": "^1.4.0"
-  },
-  "module": "lib/index.mjs"
+  }
 }

@@ -25,6 +25,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.mjs",
   "files": [
     "components",
     "lib/**/*.d.ts",
@@ -46,6 +47,5 @@
     "asynciterator": "^3.9.0",
     "rdf-string": "^1.6.1",
     "sparqlalgebrajs": "^4.3.3"
-  },
-  "module": "lib/index.mjs"
+  }
 }

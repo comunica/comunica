@@ -25,6 +25,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.mjs",
   "files": [
     "components",
     "lib/**/*.d.ts",
@@ -46,6 +47,5 @@
     "@rdfjs/types": "*",
     "readable-stream": "^4.4.2",
     "relative-to-absolute-iri": "^1.0.7"
-  },
-  "module": "lib/index.mjs"
+  }
 }

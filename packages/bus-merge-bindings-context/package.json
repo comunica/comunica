@@ -24,6 +24,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.mjs",
   "files": [
     "components",
     "lib/**/*.d.ts",
@@ -39,6 +40,5 @@
   "dependencies": {
     "@comunica/core": "^3.1.0",
     "@comunica/types": "^3.1.0"
-  },
-  "module": "lib/index.mjs"
+  }
 }

@@ -25,6 +25,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.mjs",
   "files": [
     "lib/**/*.d.ts",
     "lib/**/*.js",
@@ -36,6 +37,5 @@
   },
   "dependencies": {
     "@rdfjs/types": "*"
-  },
-  "module": "lib/index.mjs"
+  }
 }
