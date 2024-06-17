@@ -34,7 +34,8 @@
   "scripts": {
     "build": "yarn run build:ts && yarn run build:components",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
-    "build:components": "componentsjs-generator"
+    "build:components": "componentsjs-generator",
+    "rollup": "rollup --config rollup.config.mjs"
   },
   "dependencies": {
     "@comunica/bus-query-parse": "^3.1.0",
@@ -42,5 +43,6 @@
     "@types/sparqljs": "^3.1.3",
     "sparqlalgebrajs": "^4.3.3",
     "sparqljs": "^3.7.1"
-  }
+  },
+  "module": "lib/index.mjs"
 }

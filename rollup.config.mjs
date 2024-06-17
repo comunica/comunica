@@ -24,26 +24,43 @@ const { include } = config;
 
 export default [
     {
-        input: "./src/index.ts",
+        input: "./packages/types/lib/index.ts",
     output: [
-    //   {
-    //     file: pkg.module,
-    //     format: "esm",
-    //     sourcemap: true,
-    //     plugins: [
-    //         typescript({
-    //             compilerOptions: {
-    //                 module: 'ESNext',
-    //             },
-    //             include: include.filter((path) => !path.includes("bin")),
-    //             exclude: [ ...config.exclude, "packages/*/bin/**/*" ]
-    //         })
-    //     ]
-    //   },
       {
-        file: pkg.main,
+        file: "./packages/types/lib/index.mjs",
+        format: "esm",
+        sourcemap: true,
+        plugins: [
+            typescript({
+                ...config,
+                compilerOptions: {
+                    module: 'ESNext',
+                },
+                include: include.filter((path) => !path.includes("bin")),
+                exclude: [ ...config.exclude, "packages/*/bin/**/*" ],
+                // outDir: "./packages/types/lib",
+                declaration: true,
+            })
+        ],
+        // dir: "./packages/types/lib",
+      },
+      {
+        file: "./packages/types/lib/index.js",
         format: "cjs",
         sourcemap: true,
+        plugins: [
+          typescript({
+              compilerOptions: {
+                  module: 'ESNext',
+                  outDir: "./packages/types/lib",
+                  declaration: true,
+              },
+              include: include.filter((path) => !path.includes("bin")),
+              exclude: [ ...config.exclude, "packages/*/bin/**/*" ],
+              
+          })
+      ],
+      // dir: "./packages/types/lib",
       },
     ],
     ...createSharedConfig(pkg),

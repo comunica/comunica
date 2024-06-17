@@ -34,7 +34,8 @@
   "scripts": {
     "build": "yarn run build:ts && yarn run build:components",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
-    "build:components": "componentsjs-generator"
+    "build:components": "componentsjs-generator",
+    "rollup": "rollup --config rollup.config.mjs"
   },
   "dependencies": {
     "@comunica/bus-query-result-serialize": "^3.1.0",
@@ -43,5 +44,6 @@
     "asynciterator": "^3.9.0",
     "rdf-string": "^1.6.3",
     "readable-stream": "^4.4.2"
-  }
+  },
+  "module": "lib/index.mjs"
 }

@@ -17,8 +17,6 @@
     "packager"
   ],
   "sideEffects": false,
-  "main": "lib/index.js",
-  "typings": "lib/index",
   "publishConfig": {
     "access": "public"
   },
@@ -31,12 +29,13 @@
     "bin/package.js.map"
   ],
   "scripts": {
-    "build": "node \"../../node_modules/typescript/bin/tsc\""
+    "rollup": "tsc && cp -r ./dist ./bin && rm -rf ./dist"
   },
   "dependencies": {
     "@types/minimist": "^1.2.2",
     "componentsjs": "^6.0.1",
     "minimist": "^1.2.7",
     "process": "^0.11.10"
-  }
+  },
+  "module": "bin/package.mjs"
 }

@@ -34,7 +34,8 @@
   "scripts": {
     "build": "yarn run build:ts && yarn run build:components",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
-    "build:components": "componentsjs-generator"
+    "build:components": "componentsjs-generator",
+    "rollup": "rollup --config rollup.config.mjs"
   },
   "dependencies": {
     "@comunica/bus-rdf-update-quads": "^3.1.2",
@@ -45,5 +46,6 @@
     "event-emitter-promisify": "^1.1.0",
     "rdf-data-factory": "^1.1.1",
     "rdf-string": "^1.6.1"
-  }
+  },
+  "module": "lib/index.mjs"
 }

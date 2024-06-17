@@ -31,9 +31,11 @@
     "lib/**/*.js.map"
   ],
   "scripts": {
-    "build": "node \"../../node_modules/typescript/bin/tsc\""
+    "build": "node \"../../node_modules/typescript/bin/tsc\"",
+    "rollup": "rollup --config rollup.config.mjs"
   },
   "dependencies": {
     "@comunica/core": "^3.1.0"
-  }
+  },
+  "module": "lib/index.mjs"
 }

@@ -32,7 +32,8 @@
   "scripts": {
     "build": "yarn run build:ts && yarn run build:components",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
-    "build:components": "componentsjs-generator"
+    "build:components": "componentsjs-generator",
+    "rollup": "rollup --config rollup.config.mjs"
   },
   "dependencies": {
     "@comunica/bus-rdf-join": "^3.1.2",
@@ -40,5 +41,6 @@
     "@comunica/core": "^3.1.0",
     "@comunica/mediatortype-join-coefficients": "^3.1.0",
     "@comunica/types": "^3.1.0"
-  }
+  },
+  "module": "lib/index.mjs"
 }

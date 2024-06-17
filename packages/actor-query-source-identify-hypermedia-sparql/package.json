@@ -34,7 +34,8 @@
   "scripts": {
     "build": "yarn run build:ts && yarn run build:components",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
-    "build:components": "componentsjs-generator"
+    "build:components": "componentsjs-generator",
+    "rollup": "rollup --config rollup.config.mjs"
   },
   "dependencies": {
     "@comunica/bindings-factory": "^3.1.0",
@@ -49,5 +50,6 @@
     "lru-cache": "^10.0.0",
     "rdf-data-factory": "^1.1.1",
     "sparqlalgebrajs": "^4.3.3"
-  }
+  },
+  "module": "lib/index.mjs"
 }
