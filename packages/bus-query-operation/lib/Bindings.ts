@@ -25,6 +25,7 @@ const TRUE = DF.literal('true', DF.namedNode('http://www.w3.org/2001/XMLSchema#b
  */
 export function materializeTerm(term: RDF.Term, bindings: Bindings): RDF.Term {
   if (term.termType === 'Variable') {
+    // Replace the variable with it's value in the InitialBindings
     const value = bindings.get(term);
     if (value) {
       return value;
@@ -153,7 +154,7 @@ export function materializeOperation(
       }
 
       // Only include non-projected variables in the sub-bindings that will be passed down recursively.
-      // This will result in non-projected variables being replaced with their InitialBindings values. // TODO reset
+      // This will result in non-projected variables being replaced with their InitialBindings values.
       let subBindings = bindingsFactory.fromBindings(bindings);
       bindings.forEach((_, key) => {
         for (let curVariable of op.variables) {
@@ -169,7 +170,7 @@ export function materializeOperation(
       const values: Algebra.Operation[] = [];
       const overlappingVariables: RDF.Variable[] = [];
       const overlappingBindings: Record<string, RDF.Literal | RDF.NamedNode>[] = [];
-      originalBindings = originalBindings ? originalBindings : bindings; //TODO code duplication?
+      originalBindings = originalBindings ? originalBindings : bindings;
       for (const currentVariable of op.variables) {
         if (originalBindings.has(currentVariable)) {
           const newBinding = { [termToString(currentVariable)]:
@@ -190,7 +191,6 @@ export function materializeOperation(
       );
 
       if (values.length > 0) {
-        // const values: Algebra.Operation = factory.createValues(overlappingVariables, overlappingBindings);
         recursionResult = factory.createJoin(values.concat([recursionResult]));
       }
 
@@ -200,49 +200,43 @@ export function materializeOperation(
       };
     },
     filter(op: Algebra.Filter, factory: Factory) {
-      if (op.expression.expressionType !== "operator") {
+      let relevantBindings = originalBindings ? originalBindings : bindings;
+
+      if (op.expression.expressionType !== "operator" || relevantBindings.size === 0) {
         return {
-          recurse: false,
+          recurse: true,
           result: op,
         }
       }
-      let relevantBindings = originalBindings ? originalBindings : bindings;
 
-      // Make a values clause using all the variables from IB
-      const values: Algebra.Operation[] = []; // TODO don't copy code
+      // Make a values clause using all the variables from InitialBindings
+      const values: Algebra.Operation[] = [];
       for (let [variable, binding] of relevantBindings) {
-        const newBinding = { [<string> termToString(variable)]: <RDF.NamedNode | RDF.Literal> binding }; // TODO don't want cast
+        const newBinding = { [termToString(variable)]: <RDF.NamedNode | RDF.Literal> binding };
         values.push(factory.createValues([variable], [newBinding]));
       }
 
-      if (values.length === 0) {
-        return {
-          recurse: false, //TODO should be recurse true
-          result: op,
-        }          
-      }
-
-      // Recursively handle the filter-expression
+      // Recursively materialize the filter expression
       let recursionResultExpression: Algebra.Expression = <Algebra.Expression> materializeOperation(
         op.expression,
-        bindings, // TODO This will NOT result in non-projected variables being replaced with their InitialBindings values
+        bindings,
         bindingsFactory,
         options,
         originalBindings ? originalBindings : bindings,
       );
 
-
+      // Recursively materialize the filter input
       let recursionResultInput: Algebra.Operation = materializeOperation(
         op.input,
-        bindings, // TODO This will NOT result in non-projected variables being replaced with their InitialBindings values
+        bindings,
         bindingsFactory,
         options,
         originalBindings ? originalBindings : bindings,
       );
 
       return {
-        recurse: false,
-        result: factory.createFilter(factory.createJoin(values.concat([recursionResultInput])), recursionResultExpression), values //TODO remove ', values'?
+        recurse: false, // Recursion already taken care of above.
+        result: factory.createFilter(factory.createJoin(values.concat([recursionResultInput])), recursionResultExpression),
       }
     },
     values(op: Algebra.Values, factory: Factory) {
