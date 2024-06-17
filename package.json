@@ -20,7 +20,7 @@
     "build:ts:module": "tsc",
     "build:ts:commonjs": "tsc -d --module commonjs",
     "rollup": "npx lerna run rollup",
-    "build:components": "componentsjs-generator enginesgit /* packages/*",
+    "build:components": "componentsjs-generator engines/* packages/*",
     "build-watch": "nodemon -e ts --ignore '*.d.ts' --exec yarn run build",
     "build-watch:ts": "tsc --watch",
     "build-watch:components": "nodemon -e d.ts --exec yarn run build:components",
