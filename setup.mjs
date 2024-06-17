@@ -2,11 +2,7 @@ import fs from "fs";
 import path from "path";
 
 for (const pkg of fs.readdirSync(path.join("packages"))) {
-    if (pkg.includes('init-sparql')) {
-        continue;
-    }
-
-    if (pkg === 'packager') {
+    if (pkg.includes('init-sparql') || pkg === 'packager') {
         continue;
     }
 
