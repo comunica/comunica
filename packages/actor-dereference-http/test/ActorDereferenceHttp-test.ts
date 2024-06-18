@@ -4,7 +4,6 @@ import { KeysCore, KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { LoggerVoid } from '@comunica/logger-void';
 import { MediatorRace } from '@comunica/mediator-race';
-import 'cross-fetch/polyfill';
 import type { IActionContext } from '@comunica/types';
 import { ActorDereferenceHttp } from '../lib/ActorDereferenceHttp';
 

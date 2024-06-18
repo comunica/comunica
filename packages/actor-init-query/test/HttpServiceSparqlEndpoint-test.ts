@@ -3,6 +3,7 @@ import type { Cluster } from 'node:cluster';
 import { PassThrough } from 'node:stream';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { LoggerPretty } from '@comunica/logger-pretty';
+import stringifyStream from '@jeswr/stream-to-string';
 import { ArrayIterator } from 'asynciterator';
 
 // @ts-expect-error
@@ -20,7 +21,6 @@ import { CliArgsHandlerBase } from '../lib/cli/CliArgsHandlerBase';
 import type { IQueryBody } from '../lib/HttpServiceSparqlEndpoint';
 import { HttpServiceSparqlEndpoint } from '../lib/HttpServiceSparqlEndpoint';
 
-// Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
 const clusterUntyped = require('node:cluster');
 const EventEmitter = require('node:events');
 const querystring = require('node:querystring');
@@ -28,7 +28,6 @@ const querystring = require('node:querystring');
 const cluster: Cluster = clusterUntyped;
 
 const quad = require('rdf-quad');
-const stringifyStream = require('stream-to-string');
 const stringToStream = require('streamify-string');
 
 jest.mock<typeof import('..')>('..', () => {

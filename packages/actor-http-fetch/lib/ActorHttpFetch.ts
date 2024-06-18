@@ -3,7 +3,6 @@ import { ActorHttp } from '@comunica/bus-http';
 import { KeysHttp } from '@comunica/context-entries';
 import type { IMediatorTypeTime } from '@comunica/mediatortype-time';
 import type { Readable } from 'readable-stream';
-import 'cross-fetch/polyfill';
 import { FetchInitPreprocessor } from './FetchInitPreprocessor';
 import type { IFetchInitPreprocessor } from './IFetchInitPreprocessor';
 

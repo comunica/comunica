@@ -10,6 +10,8 @@ yarn-error.log
 .eslintcache
 **/lib/**/*.js
 **/lib/**/*.js.map
+**/lib/**/*.mjs
+**/lib/**/*.mjs.map
 **/lib/**/*.d.ts
 **/test/**/*.js
 **/test/**/*.js.map
@@ -29,3 +31,7 @@ earl.ttl
 componentsjs-error-state.json
 engines/*/components
 packages/*/components
+packages/*/tsconfig.json
+packages/*/rollup.config.mjs
+!packages/packager/tsconfig.json
+!packages/packager/rollup.config.mjs

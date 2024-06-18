@@ -19,6 +19,7 @@
   ],
   "sideEffects": false,
   "main": "lib/index.js",
+  "module": "lib/index.mjs",
   "typings": "lib/index",
   "publishConfig": {
     "access": "public"
@@ -33,6 +34,7 @@
     "lib/**/*.js.map"
   ],
   "scripts": {
+    "rollup": "rollup --config rollup.config.mjs",
     "build": "yarn run build:ts && yarn run build:components",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
     "build:components": "componentsjs-generator"

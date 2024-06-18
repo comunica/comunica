@@ -17,11 +17,10 @@
     "packager"
   ],
   "sideEffects": false,
-  "main": "lib/index.js",
-  "typings": "lib/index",
   "publishConfig": {
     "access": "public"
   },
+  "module": "bin/package.mjs",
   "bin": {
     "comunica-package": "./bin/package.js"
   },
@@ -31,7 +30,7 @@
     "bin/package.js.map"
   ],
   "scripts": {
-    "build": "node \"../../node_modules/typescript/bin/tsc\""
+    "rollup": "tsc && cp -r ./dist ./bin && rm -rf ./dist"
   },
   "dependencies": {
     "@types/minimist": "^1.2.2",

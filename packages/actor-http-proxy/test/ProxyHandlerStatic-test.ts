@@ -1,4 +1,3 @@
-import 'cross-fetch/polyfill';
 import { ProxyHandlerStatic } from '../lib/ProxyHandlerStatic';
 
 describe('ProxyHandlerStatic', () => {

@@ -24,6 +24,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.mjs",
   "files": [
     "components",
     "lib/**/*.d.ts",
@@ -33,14 +34,15 @@
   "scripts": {
     "build": "yarn run build:ts && yarn run build:components",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
-    "build:components": "componentsjs-generator"
+    "build:components": "componentsjs-generator",
+    "rollup": "rollup --config rollup.config.mjs"
   },
   "dependencies": {
     "@comunica/core": "^3.1.0",
+    "@jeswr/stream-to-string": "^1.0.0",
     "is-stream": "^2.0.1",
     "readable-from-web": "^1.0.0",
     "readable-stream-node-to-web": "^1.0.1",
-    "stream-to-string": "^1.2.0",
     "web-streams-ponyfill": "^1.4.2"
   }
 }

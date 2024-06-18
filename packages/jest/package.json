@@ -27,6 +27,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.mjs",
   "files": [
     "components",
     "lib/**/*.d.ts",
@@ -35,7 +36,8 @@
   ],
   "scripts": {
     "build": "yarn run build:ts",
-    "build:ts": "node \"../../node_modules/typescript/bin/tsc\""
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "rollup": "rollup --config rollup.config.mjs"
   },
   "dependencies": {
     "@comunica/bindings-factory": "^3.1.0",

@@ -26,6 +26,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.mjs",
   "files": [
     "components",
     "lib/**/*.d.ts",
@@ -35,7 +36,8 @@
   "scripts": {
     "build": "yarn run build:ts && yarn run build:components",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
-    "build:components": "componentsjs-generator"
+    "build:components": "componentsjs-generator",
+    "rollup": "rollup --config rollup.config.mjs"
   },
   "dependencies": {
     "@comunica/bus-dereference": "^3.1.0",

@@ -15,7 +15,6 @@ import type { ISourceState, SourceStateGetter } from '../lib/LinkedRdfSourcesAsy
 import { LinkedRdfSourcesAsyncRdfIterator } from '../lib/LinkedRdfSourcesAsyncRdfIterator';
 import '@comunica/jest';
 
-// Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
 const EventEmitter = require('node:events');
 
 const DF = new DataFactory();

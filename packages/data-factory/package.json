@@ -25,13 +25,15 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.mjs",
   "files": [
     "lib/**/*.d.ts",
     "lib/**/*.js",
     "lib/**/*.js.map"
   ],
   "scripts": {
-    "build": "node \"../../node_modules/typescript/bin/tsc\""
+    "build": "node \"../../node_modules/typescript/bin/tsc\"",
+    "rollup": "rollup --config rollup.config.mjs"
   },
   "dependencies": {
     "@rdfjs/types": "*"

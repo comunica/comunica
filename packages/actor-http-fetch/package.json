@@ -23,6 +23,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.mjs",
   "files": [
     "components",
     "lib/**/*.d.ts",
@@ -32,14 +33,14 @@
   "scripts": {
     "build": "yarn run build:ts && yarn run build:components",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
-    "build:components": "componentsjs-generator"
+    "build:components": "componentsjs-generator",
+    "rollup": "rollup --config rollup.config.mjs"
   },
   "dependencies": {
     "@comunica/bus-http": "^3.1.0",
     "@comunica/context-entries": "^3.1.0",
     "@comunica/mediatortype-time": "^3.1.0",
-    "abort-controller": "^3.0.0",
-    "cross-fetch": "^4.0.0"
+    "abort-controller": "^3.0.0"
   },
   "browser": {
     "./lib/FetchInitPreprocessor.js": "./lib/FetchInitPreprocessor-browser.js"

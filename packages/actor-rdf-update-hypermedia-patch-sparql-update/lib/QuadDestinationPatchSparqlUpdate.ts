@@ -4,7 +4,6 @@ import type { IQuadDestination } from '@comunica/bus-rdf-update-quads';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import { Headers } from 'cross-fetch';
 import { termToString } from 'rdf-string-ttl';
 import { Readable } from 'readable-stream';
 

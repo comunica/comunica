@@ -23,6 +23,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.mjs",
   "bin": {
     "comunica-run": "./bin/run.js"
   },
@@ -33,7 +34,8 @@
     "lib/**/*.js"
   ],
   "scripts": {
-    "build": "node \"../../node_modules/typescript/bin/tsc\""
+    "build": "node \"../../node_modules/typescript/bin/tsc\"",
+    "rollup": "rollup --config rollup.config.mjs"
   },
   "dependencies": {
     "@comunica/core": "^3.1.0",
