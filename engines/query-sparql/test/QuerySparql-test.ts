@@ -775,6 +775,48 @@ SELECT ?obsId {
 `, context)))).resolves.toHaveLength(1);
       });
     });
+
+    describe('commutative count', () => {
+      it('should count commutatively', async() => {
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: `
+              @prefix ex: <http://example.org/> .
+            
+              <http://foo.org/id/graph/foo> {
+                <http://foo.org/id/object/foo>
+                  ex:foo ex:Foo ;
+                  ex:bar [] ;
+                  ex:baz "baz1", "baz2", "baz3" .
+              }
+              `,
+              mediaType: 'text/turtle',
+              baseIRI: 'http://example.org/',
+            },
+          ],
+        };
+
+        const expected = await (arrayifyStream(await engine.queryBindings(`
+        SELECT (COUNT(DISTINCT ?o) as ?objects) (COUNT(DISTINCT ?s) AS ?subjects) ?p
+        FROM <http://foo.org/id/graph/foo>
+        {
+          ?s ?p ?o .
+        }
+        GROUP BY ?p
+        `, context)));
+
+        await expect(arrayifyStream(await engine.queryBindings(`
+        SELECT (COUNT(DISTINCT ?s) AS ?subjects) (COUNT(DISTINCT ?o) as ?objects) ?p
+        FROM <http://foo.org/id/graph/foo>
+        {
+          ?s ?p ?o .
+        }
+        GROUP BY ?p
+        `, context))).resolves.toEqualBindingsArray(expected);
+      });
+    });
   });
 
   // We skip these tests in browsers due to CORS issues
