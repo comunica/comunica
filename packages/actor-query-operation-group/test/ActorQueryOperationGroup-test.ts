@@ -720,19 +720,17 @@ describe('ActorQueryOperationGroup', () => {
         variables: [ DF.variable('c') ],
       });
     });
-
     it('should be able to count distinct', async() => {
       const aggregate = aggregateOn('count', 'x', 'c');
       aggregate.distinct = true;
-      const i = int('1');
       const { op, actor } = constructCase({
         inputBindings: [
-          BF.bindings([[ DF.variable('x'), i ]]),
-          BF.bindings([[ DF.variable('x'), i ]]),
-          BF.bindings([[ DF.variable('x'), i ]]),
-          BF.bindings([[ DF.variable('x'), i ]]),
+          BF.bindings([[ DF.variable('x'), int('3') ]]),
+          BF.bindings([[ DF.variable('x'), int('3') ]]),
+          BF.bindings([[ DF.variable('x'), int('3') ]]),
+          BF.bindings([[ DF.variable('x'), int('3') ]]),
         ],
-        groupVariables: [],
+        groupVariables: [ ],
         inputVariables: [ 'x', 'y', 'z' ],
         inputOp: simpleXYZinput,
         aggregates: [ aggregate ],
@@ -745,7 +743,7 @@ describe('ActorQueryOperationGroup', () => {
         ]),
       ]);
       await expect(output.metadata()).resolves.toEqual({
-        cardinality: 1,
+        cardinality: 4,
         canContainUndefs: false,
         variables: [ DF.variable('c') ],
       });
