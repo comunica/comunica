@@ -187,7 +187,7 @@ export function materializeOperation(
         subBindings,
         bindingsFactory,
         options,
-        originalBindings ? originalBindings : bindings,
+        originalBindings,
       );
 
       if (values.length > 0) {
@@ -200,18 +200,18 @@ export function materializeOperation(
       };
     },
     filter(op: Algebra.Filter, factory: Factory) {
-      let relevantBindings = originalBindings ? originalBindings : bindings;
+      originalBindings = originalBindings ? originalBindings : bindings;
 
-      if (op.expression.expressionType !== "operator" || relevantBindings.size === 0) {
+      if (op.expression.expressionType !== "operator" || originalBindings.size === 0) {
         return {
-          recurse: true,
+          recurse: false,
           result: op,
         }
       }
 
       // Make a values clause using all the variables from InitialBindings
       const values: Algebra.Operation[] = [];
-      for (let [variable, binding] of relevantBindings) {
+      for (let [variable, binding] of originalBindings) {
         const newBinding = { [termToString(variable)]: <RDF.NamedNode | RDF.Literal> binding };
         values.push(factory.createValues([variable], [newBinding]));
       }
@@ -222,7 +222,7 @@ export function materializeOperation(
         bindings,
         bindingsFactory,
         options,
-        originalBindings ? originalBindings : bindings,
+        originalBindings,
       );
 
       // Recursively materialize the filter input
@@ -231,7 +231,7 @@ export function materializeOperation(
         bindings,
         bindingsFactory,
         options,
-        originalBindings ? originalBindings : bindings,
+        originalBindings,
       );
 
       return {
