@@ -151,11 +151,18 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
-  performance-watdiv-file:
+  performance:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        benchmark:
+          - watdiv-file
+          - watdiv-tpf
+          - bsbm-file
+          - bsbm-tpf
     needs:
       - test
       - lint
-    runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -166,37 +173,15 @@ jobs:
       - name: Install dependencies
         run: yarn install
       - name: Run benchmarks
-        run: cd performance/benchmark-watdiv-file/ && yarn run performance:ci
+        run: cd performance/benchmark-${{ matrix.benchmark }}/ && yarn run performance:ci
       - uses: actions/upload-artifact@v4
         with:
-          name: performance-benchmark-watdiv-file
-          path: performance/benchmark-watdiv-file/combinations/combination_0/output/
-
-  performance-watdiv-tpf:
-    needs:
-      - test
-      - lint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18.x
-      - name: Install dependencies
-        run: yarn install
-      - name: Run benchmarks
-        run: cd performance/benchmark-watdiv-tpf/ && yarn run performance:ci
-      - uses: actions/upload-artifact@v4
-        with:
-          name: performance-benchmark-watdiv-tpf
-          path: performance/benchmark-watdiv-tpf/combinations/combination_0/output/
+          name: performance-benchmark-${{ matrix.benchmark }}
+          path: performance/benchmark-${{ matrix.benchmark }}/combinations/combination_0/output/
 
   performance-consolidate:
     needs:
-      - performance-watdiv-file
-      - performance-watdiv-tpf
+      - performance
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -213,10 +198,18 @@ jobs:
         with:
           name: performance-benchmark-watdiv-tpf
           path: performance/benchmark-watdiv-tpf/combinations/combination_0/output/
+      - uses: actions/download-artifact@v4
+        with:
+          name: performance-benchmark-bsbm-file
+          path: performance/benchmark-bsbm-file/combinations/combination_0/output/
+      - uses: actions/download-artifact@v4
+        with:
+          name: performance-benchmark-bsbm-tpf
+          path: performance/benchmark-bsbm-tpf/combinations/combination_0/output/
       - name: Process benchmark detailed results
-        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF --total false --detailed true --name ghbench-detail.json
+        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-TPF --total false --detailed true --name ghbench-detail.json
       - name: Process benchmark total results
-        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF --total true --detailed false --name ghbench-total.json
+        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-TPF --total true --detailed false --name ghbench-total.json
       - name: Determine benchmark detailed results target directory name
         run: echo "BENCHMARK_DATA_DIR_PATH_DETAIL=comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-detail" >> $GITHUB_ENV
       - name: Determine benchmarks total results target directory name
