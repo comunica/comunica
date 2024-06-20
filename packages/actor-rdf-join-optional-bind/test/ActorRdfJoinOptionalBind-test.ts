@@ -95,6 +95,43 @@ IQueryOperationResultBindings
     });
 
     describe('getJoinCoefficients', () => {
+      it('should throw on non-overlapping variables', async() => {
+        await expect(actor.getJoinCoefficients(
+          {
+            type: 'optional',
+            entries: [
+              {
+                output: <any>{},
+                operation: <any>{},
+              },
+              {
+                output: <any>{},
+                operation: <any>{},
+              },
+            ],
+            context,
+          },
+          [
+            {
+              state: new MetadataValidationState(),
+              cardinality: { type: 'estimate', value: 3 },
+              pageSize: 100,
+              requestTime: 10,
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+            {
+              state: new MetadataValidationState(),
+              cardinality: { type: 'estimate', value: 2 },
+              pageSize: 100,
+              requestTime: 20,
+              canContainUndefs: false,
+              variables: [ DF.variable('b') ],
+            },
+          ],
+        )).rejects.toThrow('Actor actor only join entries with at least one common variable');
+      });
+
       it('should handle two entries', async() => {
         await expect(actor.getJoinCoefficients(
           {

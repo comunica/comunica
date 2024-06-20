@@ -79,6 +79,37 @@ describe('ActorRdfJoinOptionalHash', () => {
         })).rejects.toThrow(`actor can only handle logical joins of type 'optional', while 'inner' was given.`);
       });
 
+      it('should not test on entries without overlapping variables', async() => {
+        await expect(actor.test({
+          type: 'optional',
+          entries: <any> [
+            {
+              output: {
+                type: 'bindings',
+                metadata: () => Promise.resolve({
+                  cardinality: { type: 'estimate', value: 4 },
+                  pageSize: 100,
+                  requestTime: 10,
+                  variables: [ DF.variable('a') ],
+                }),
+              },
+            },
+            {
+              output: {
+                type: 'bindings',
+                metadata: () => Promise.resolve({
+                  cardinality: { type: 'estimate', value: 4 },
+                  pageSize: 100,
+                  requestTime: 10,
+                  variables: [ DF.variable('b') ],
+                }),
+              },
+            },
+          ],
+          context,
+        })).rejects.toThrow('Actor actor only join entries with at least one common variable');
+      });
+
       it('should test on two entries', async() => {
         await expect(actor.test({
           type: 'optional',
@@ -90,6 +121,7 @@ describe('ActorRdfJoinOptionalHash', () => {
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
+                  variables: [ DF.variable('a') ],
                 }),
               },
             },
@@ -100,6 +132,7 @@ describe('ActorRdfJoinOptionalHash', () => {
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
+                  variables: [ DF.variable('a') ],
                 }),
               },
             },
@@ -125,6 +158,7 @@ describe('ActorRdfJoinOptionalHash', () => {
                   pageSize: 100,
                   requestTime: 10,
                   canContainUndefs: true,
+                  variables: [ DF.variable('a') ],
                 }),
               },
             },
@@ -136,6 +170,7 @@ describe('ActorRdfJoinOptionalHash', () => {
                   pageSize: 100,
                   requestTime: 10,
                   canContainUndefs: true,
+                  variables: [ DF.variable('a') ],
                 }),
               },
             },
@@ -343,6 +378,37 @@ describe('ActorRdfJoinOptionalHash', () => {
         })).rejects.toThrow(`actor can only handle logical joins of type 'optional', while 'inner' was given.`);
       });
 
+      it('should not test on entries without overlapping variables', async() => {
+        await expect(actor.test({
+          type: 'optional',
+          entries: <any> [
+            {
+              output: {
+                type: 'bindings',
+                metadata: () => Promise.resolve({
+                  cardinality: { type: 'estimate', value: 4 },
+                  pageSize: 100,
+                  requestTime: 10,
+                  variables: [ DF.variable('a') ],
+                }),
+              },
+            },
+            {
+              output: {
+                type: 'bindings',
+                metadata: () => Promise.resolve({
+                  cardinality: { type: 'estimate', value: 4 },
+                  pageSize: 100,
+                  requestTime: 10,
+                  variables: [ DF.variable('b') ],
+                }),
+              },
+            },
+          ],
+          context,
+        })).rejects.toThrow('Actor actor only join entries with at least one common variable');
+      });
+
       it('should test on two entries', async() => {
         await expect(actor.test({
           type: 'optional',
@@ -354,6 +420,7 @@ describe('ActorRdfJoinOptionalHash', () => {
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
+                  variables: [ DF.variable('a') ],
                 }),
               },
             },
@@ -364,6 +431,7 @@ describe('ActorRdfJoinOptionalHash', () => {
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
+                  variables: [ DF.variable('a') ],
                 }),
               },
             },
@@ -389,6 +457,7 @@ describe('ActorRdfJoinOptionalHash', () => {
                   pageSize: 100,
                   requestTime: 10,
                   canContainUndefs: true,
+                  variables: [ DF.variable('a') ],
                 }),
               },
             },
@@ -400,6 +469,7 @@ describe('ActorRdfJoinOptionalHash', () => {
                   pageSize: 100,
                   requestTime: 10,
                   canContainUndefs: true,
+                  variables: [ DF.variable('a') ],
                 }),
               },
             },
@@ -697,6 +767,37 @@ describe('ActorRdfJoinOptionalHash', () => {
         })).rejects.toThrow(`actor can only handle logical joins of type 'optional', while 'inner' was given.`);
       });
 
+      it('should not test on entries without overlapping variables', async() => {
+        await expect(actor.test({
+          type: 'optional',
+          entries: <any> [
+            {
+              output: {
+                type: 'bindings',
+                metadata: () => Promise.resolve({
+                  cardinality: { type: 'estimate', value: 4 },
+                  pageSize: 100,
+                  requestTime: 10,
+                  variables: [ DF.variable('a') ],
+                }),
+              },
+            },
+            {
+              output: {
+                type: 'bindings',
+                metadata: () => Promise.resolve({
+                  cardinality: { type: 'estimate', value: 4 },
+                  pageSize: 100,
+                  requestTime: 10,
+                  variables: [ DF.variable('b') ],
+                }),
+              },
+            },
+          ],
+          context,
+        })).rejects.toThrow('Actor actor only join entries with at least one common variable');
+      });
+
       it('should test on two entries', async() => {
         await expect(actor.test({
           type: 'optional',
@@ -708,6 +809,7 @@ describe('ActorRdfJoinOptionalHash', () => {
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
+                  variables: [ DF.variable('a') ],
                 }),
               },
             },
@@ -718,6 +820,7 @@ describe('ActorRdfJoinOptionalHash', () => {
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
+                  variables: [ DF.variable('a') ],
                 }),
               },
             },
@@ -956,6 +1059,37 @@ describe('ActorRdfJoinOptionalHash', () => {
         })).rejects.toThrow(`actor can only handle logical joins of type 'optional', while 'inner' was given.`);
       });
 
+      it('should not test on entries without overlapping variables', async() => {
+        await expect(actor.test({
+          type: 'optional',
+          entries: <any> [
+            {
+              output: {
+                type: 'bindings',
+                metadata: () => Promise.resolve({
+                  cardinality: { type: 'estimate', value: 4 },
+                  pageSize: 100,
+                  requestTime: 10,
+                  variables: [ DF.variable('a') ],
+                }),
+              },
+            },
+            {
+              output: {
+                type: 'bindings',
+                metadata: () => Promise.resolve({
+                  cardinality: { type: 'estimate', value: 4 },
+                  pageSize: 100,
+                  requestTime: 10,
+                  variables: [ DF.variable('b') ],
+                }),
+              },
+            },
+          ],
+          context,
+        })).rejects.toThrow('Actor actor only join entries with at least one common variable');
+      });
+
       it('should test on two entries', async() => {
         await expect(actor.test({
           type: 'optional',
@@ -967,6 +1101,7 @@ describe('ActorRdfJoinOptionalHash', () => {
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
+                  variables: [ DF.variable('a') ],
                 }),
               },
             },
@@ -977,6 +1112,7 @@ describe('ActorRdfJoinOptionalHash', () => {
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
+                  variables: [ DF.variable('a') ],
                 }),
               },
             },

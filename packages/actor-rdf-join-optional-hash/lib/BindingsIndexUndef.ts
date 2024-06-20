@@ -43,7 +43,7 @@ export class BindingsIndexUndef<V> implements IBindingsIndex<V> {
   protected isBindingsValid(bindings: Bindings): boolean {
     let validKeys = false;
     for (const key of this.keys) {
-      if (bindings.get(key)) {
+      if (bindings.has(key)) {
         validKeys = true;
         break;
       }

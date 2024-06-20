@@ -74,6 +74,11 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
     action: IActionRdfJoin,
     metadatas: MetadataBindings[],
   ): Promise<IMediatorTypeJoinCoefficients> {
+    // This actor only works well with common variables
+    if (ActorRdfJoin.overlappingVariables(metadatas).length === 0) {
+      throw new Error(`Actor ${this.name} only join entries with at least one common variable`);
+    }
+
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
 
