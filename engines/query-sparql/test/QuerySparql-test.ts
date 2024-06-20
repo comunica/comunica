@@ -798,23 +798,29 @@ SELECT ?obsId {
           ],
         };
 
-        const expected = await (arrayifyStream(await engine.queryBindings(`
-        SELECT (COUNT(DISTINCT ?o) as ?objects) (COUNT(DISTINCT ?s) AS ?subjects) ?p
-        FROM <http://foo.org/id/graph/foo>
-        {
-          ?s ?p ?o .
-        }
-        GROUP BY ?p
-        `, context)));
-
-        await expect(arrayifyStream(await engine.queryBindings(`
+        const received = (await arrayifyStream(await engine.queryBindings(`
         SELECT (COUNT(DISTINCT ?s) AS ?subjects) (COUNT(DISTINCT ?o) as ?objects) ?p
         FROM <http://foo.org/id/graph/foo>
         {
           ?s ?p ?o .
         }
         GROUP BY ?p
-        `, context))).resolves.toEqualBindingsArray(expected);
+        `, context))).sort((a, b) => a - b);
+
+        const expected = (await arrayifyStream(await engine.queryBindings(`
+        SELECT (COUNT(DISTINCT ?o) as ?objects) (COUNT(DISTINCT ?s) AS ?subjects) ?p
+        FROM <http://foo.org/id/graph/foo>
+        {
+          ?s ?p ?o .
+        }
+        GROUP BY ?p
+        `, context))).sort((a, b) => a - b);
+
+        expect(received).toHaveLength(expected.length);
+        for (const [ index, receivedBindings ] of received.entries()) {
+          expect([ ...receivedBindings.entries ].sort((a, b) => a[0].localeCompare(b[0])))
+            .toEqual([ ...expected[index].entries ].sort((a, b) => a[0].localeCompare(b[0])));
+        }
       });
     });
   });
