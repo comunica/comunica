@@ -107,56 +107,58 @@ export class Bindings implements RDF.Bindings {
   }
 
   public merge(other: RDF.Bindings | Bindings): Bindings | undefined {
-    // Determine the union of keys
-    const keys = new Set([
-      ...this.iteratorToIterable(this.entries.keys()),
-      ...[ ...other.keys() ].map(key => key.value),
-    ]);
-
     // Collect entries
     const entries: [string, RDF.Term][] = [];
-    for (const key of keys) {
-      const left = this.entries.get(key)!;
-      const right = other.get(this.dataFactory.variable!(key));
-      if (left && right && !left.equals(right)) {
+    let nonCompatibleElements = false;
+    // Benchmarking this function showed that foreach was faster than for...of
+    // eslint-disable-next-line unicorn/no-array-for-each
+    other.forEach((right, variable) => {
+      if (nonCompatibleElements) {
         return;
       }
-      const value = left || right;
-      entries.push([ key, value ]);
+      const left = this.entries.get(variable.value)!;
+      if (left && !left.equals(right)) {
+        // Set nonCompatibleElements to true to prevent further processing
+        nonCompatibleElements = true;
+      } else {
+        entries.push([ variable.value, right ]);
+      }
+    });
+    if (nonCompatibleElements) {
+      // If there are non-compatible elements, we return undefined
+      return;
     }
 
-    return this.createBindingsWithContexts(entries, other);
+    // We use the concat methode of the immutable.js Map to merge the entries
+    // eslint-disable-next-line unicorn/prefer-spread
+    return this.createBindingsWithContexts(this.entries.concat(entries), other);
   }
 
   public mergeWith(
     merger: (self: RDF.Term, other: RDF.Term, key: RDF.Variable) => RDF.Term,
     other: RDF.Bindings | Bindings,
   ): Bindings {
-    // Determine the union of keys
-    const keys = new Set([
-      ...this.iteratorToIterable(this.entries.keys()),
-      ...[ ...other.keys() ].map(key => key.value),
-    ]);
-
     // Collect entries
     const entries: [string, RDF.Term][] = [];
-    for (const key of keys) {
-      const variable = this.dataFactory.variable!(key);
-      const left = this.entries.get(key)!;
-      const right = other.get(variable);
+    // Benchmarking this function showed that foreach was faster than for...of
+    // eslint-disable-next-line unicorn/no-array-for-each
+    other.forEach((right, variable) => {
+      const left = this.entries.get(variable.value)!;
       let value: RDF.Term;
-      if (left && right && !left.equals(right)) {
+      if (left && !left.equals(right)) {
         value = merger(left, right, variable);
       } else {
-        value = left || right;
+        value = right;
       }
-      entries.push([ key, value ]);
-    }
+      entries.push([ variable.value, value ]);
+    });
 
-    return this.createBindingsWithContexts(entries, other);
+    // We use the concat methode of the immutable.js Map to merge the entries
+    // eslint-disable-next-line unicorn/prefer-spread
+    return this.createBindingsWithContexts(this.entries.concat(entries), other);
   }
 
-  protected createBindingsWithContexts(entries: [string, RDF.Term][], other: RDF.Bindings | Bindings): Bindings {
+  protected createBindingsWithContexts(entries: Map<string, RDF.Term>, other: RDF.Bindings | Bindings): Bindings {
     // If any context is empty, we skip merging contexts
     if (this.contextHolder && this.contextHolder.context) {
       let mergedContext = this.contextHolder.context;
@@ -167,13 +169,13 @@ export class Bindings implements RDF.Bindings {
       }
       return new Bindings(
         this.dataFactory,
-        Map(entries),
+        entries,
         { contextMergeHandlers: this.contextHolder.contextMergeHandlers, context: mergedContext },
       );
     }
 
     // Otherwise, use optional context from other
-    return new Bindings(this.dataFactory, Map(entries), (<Bindings> other).contextHolder);
+    return new Bindings(this.dataFactory, entries, (<Bindings> other).contextHolder);
   }
 
   private static mergeContext(
