@@ -107,55 +107,84 @@ export class Bindings implements RDF.Bindings {
   }
 
   public merge(other: RDF.Bindings | Bindings): Bindings | undefined {
-    // Collect entries
-    const entries: [string, RDF.Term][] = [];
+    let entries = this.entries;
     let nonCompatibleElements = false;
-    // Benchmarking this function showed that foreach was faster than for...of
-    // eslint-disable-next-line unicorn/no-array-for-each
-    other.forEach((right, variable) => {
-      if (nonCompatibleElements) {
-        return;
-      }
-      const left = this.entries.get(variable.value)!;
-      if (left && !left.equals(right)) {
-        // Set nonCompatibleElements to true to prevent further processing
-        nonCompatibleElements = true;
-      } else {
-        entries.push([ variable.value, right ]);
-      }
-    });
+
+    // Check if other is of type Bindings, in that case we can access entries immediately.
+    // This skips the unnecessary conversion from string to variable.
+    if (other instanceof Bindings) {
+      // Benchmarking this function showed that foreach was faster than for...of, That's why we are disabling eslint.
+      // eslint-disable-next-line unicorn/no-array-for-each
+      other.entries.forEach((right, variable) => {
+        if (nonCompatibleElements) {
+          return;
+        }
+        const left = this.entries.get(variable);
+        if (left && !left.equals(right)) {
+          // Set nonCompatibleElements to true to prevent further processing.
+          nonCompatibleElements = true;
+        } else {
+          entries = entries.set(variable, right);
+        }
+      });
+    } else {
+      // Benchmarking this function showed that foreach was faster than for...of, That's why we are disabling eslint.
+      // eslint-disable-next-line unicorn/no-array-for-each
+      other.forEach((right, variable) => {
+        if (nonCompatibleElements) {
+          return;
+        }
+        const left = this.entries.get(variable.value);
+        if (left && !left.equals(right)) {
+          // Set nonCompatibleElements to true to prevent further processing.
+          nonCompatibleElements = true;
+        } else {
+          entries = entries.set(variable.value, right);
+        }
+      });
+    }
     if (nonCompatibleElements) {
-      // If there are non-compatible elements, we return undefined
+      // If there are no compatible elements, we return undefined.
       return;
     }
 
-    // We use the concat methode of the immutable.js Map to merge the entries
-    // eslint-disable-next-line unicorn/prefer-spread
-    return this.createBindingsWithContexts(this.entries.concat(entries), other);
+    return this.createBindingsWithContexts(entries, other);
   }
 
   public mergeWith(
     merger: (self: RDF.Term, other: RDF.Term, key: RDF.Variable) => RDF.Term,
     other: RDF.Bindings | Bindings,
   ): Bindings {
-    // Collect entries
-    const entries: [string, RDF.Term][] = [];
-    // Benchmarking this function showed that foreach was faster than for...of
-    // eslint-disable-next-line unicorn/no-array-for-each
-    other.forEach((right, variable) => {
-      const left = this.entries.get(variable.value)!;
-      let value: RDF.Term;
-      if (left && !left.equals(right)) {
-        value = merger(left, right, variable);
-      } else {
-        value = right;
-      }
-      entries.push([ variable.value, value ]);
-    });
+    let entries = this.entries;
 
-    // We use the concat methode of the immutable.js Map to merge the entries
-    // eslint-disable-next-line unicorn/prefer-spread
-    return this.createBindingsWithContexts(this.entries.concat(entries), other);
+    // For code comments see Bindings.merge function
+    if (other instanceof Bindings) {
+      // eslint-disable-next-line unicorn/no-array-for-each
+      other.entries.forEach((right, variable) => {
+        const left = this.entries.get(variable);
+        let value: RDF.Term;
+        if (left && !left.equals(right)) {
+          value = merger(left, right, this.dataFactory.variable!(variable));
+        } else {
+          value = right;
+        }
+        entries = entries.set(variable, value);
+      });
+    } else {
+      // eslint-disable-next-line unicorn/no-array-for-each
+      other.forEach((right, variable) => {
+        const left = this.entries.get(variable.value);
+        let value: RDF.Term;
+        if (left && !left.equals(right)) {
+          value = merger(left, right, variable);
+        } else {
+          value = right;
+        }
+        entries = entries.set(variable.value, value);
+      });
+    }
+
+    return this.createBindingsWithContexts(entries, other);
   }
 
   protected createBindingsWithContexts(entries: Map<string, RDF.Term>, other: RDF.Bindings | Bindings): Bindings {
