@@ -798,29 +798,44 @@ SELECT ?obsId {
           ],
         };
 
-        const received = (await arrayifyStream(await engine.queryBindings(`
-        SELECT (COUNT(DISTINCT ?s) AS ?subjects) (COUNT(DISTINCT ?o) as ?objects) ?p
-        FROM <http://foo.org/id/graph/foo>
-        {
-          ?s ?p ?o .
-        }
-        GROUP BY ?p
-        `, context)));
+        const expectedResult = [
+          [
+            [ DF.variable('objects'), DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) ],
+            [ DF.variable('p'), DF.namedNode('http://example.org/foo') ],
+            [ DF.variable('subjects'), DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) ],
+          ],
+          [
+            [ DF.variable('objects'), DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) ],
+            [ DF.variable('p'), DF.namedNode('http://example.org/bar') ],
+            [ DF.variable('subjects'), DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) ],
+          ],
+          [
+            [ DF.variable('objects'), DF.literal('3', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) ],
+            [ DF.variable('p'), DF.namedNode('http://example.org/baz') ],
+            [ DF.variable('subjects'), DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) ],
+          ],
+        ];
 
-        const expected = (await arrayifyStream(await engine.queryBindings(`
+        const bindings1 = (await arrayifyStream(await engine.queryBindings(`
         SELECT (COUNT(DISTINCT ?o) as ?objects) (COUNT(DISTINCT ?s) AS ?subjects) ?p
         FROM <http://foo.org/id/graph/foo>
         {
           ?s ?p ?o .
         }
         GROUP BY ?p
-        `, context)));
+        `, context))).map(binding => [ ...binding ].sort(([ var1, _c1 ], [ var2, _c2 ]) => var1.value.localeCompare(var2.value)));
 
-        expect(received).toHaveLength(expected.length);
-        for (const [ index, receivedBindings ] of received.entries()) {
-          expect([ ...receivedBindings.entries ].sort((a, b) => a[0].localeCompare(b[0])))
-            .toEqual([ ...expected[index].entries ].sort((a, b) => a[0].localeCompare(b[0])));
+        const bindings2 = (await arrayifyStream(await engine.queryBindings(`
+        SELECT (COUNT(DISTINCT ?s) AS ?subjects) (COUNT(DISTINCT ?o) as ?objects) ?p
+        FROM <http://foo.org/id/graph/foo>
+        {
+          ?s ?p ?o .
         }
+        GROUP BY ?p
+        `, context))).map(binding => [ ...binding ].sort(([var1, _c1], [var2, _c2]) => var1.value.localeCompare(var2.value)));
+
+        expect(bindings1).toMatchObject(expectedResult);
+        expect(bindings2).toMatchObject(expectedResult);
       });
     });
   });
