@@ -832,7 +832,7 @@ SELECT ?obsId {
           ?s ?p ?o .
         }
         GROUP BY ?p
-        `, context))).map(binding => [ ...binding ].sort(([var1, _c1], [var2, _c2]) => var1.value.localeCompare(var2.value)));
+        `, context))).map(binding => [ ...binding ].sort(([ var1, _c1 ], [ var2, _c2 ]) => var1.value.localeCompare(var2.value)));
 
         expect(bindings1).toMatchObject(expectedResult);
         expect(bindings2).toMatchObject(expectedResult);
