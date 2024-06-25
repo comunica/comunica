@@ -805,7 +805,7 @@ SELECT ?obsId {
           ?s ?p ?o .
         }
         GROUP BY ?p
-        `, context))).sort((a, b) => a - b);
+        `, context)));
 
         const expected = (await arrayifyStream(await engine.queryBindings(`
         SELECT (COUNT(DISTINCT ?o) as ?objects) (COUNT(DISTINCT ?s) AS ?subjects) ?p
@@ -814,7 +814,7 @@ SELECT ?obsId {
           ?s ?p ?o .
         }
         GROUP BY ?p
-        `, context))).sort((a, b) => a - b);
+        `, context)));
 
         expect(received).toHaveLength(expected.length);
         for (const [ index, receivedBindings ] of received.entries()) {
