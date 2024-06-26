@@ -796,6 +796,69 @@ SELECT ?obsId {
 `, context)))).resolves.toHaveLength(1);
       });
     });
+
+    describe('commutative count', () => {
+      it('should count commutatively', async() => {
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: `
+              @prefix ex: <http://example.org/> .
+            
+              <http://foo.org/id/graph/foo> {
+                <http://foo.org/id/object/foo>
+                  ex:foo ex:Foo ;
+                  ex:bar [] ;
+                  ex:baz "baz1", "baz2", "baz3" .
+              }
+              `,
+              mediaType: 'text/turtle',
+              baseIRI: 'http://example.org/',
+            },
+          ],
+        };
+
+        const expectedResult = [
+          [
+            [ DF.variable('objects'), DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) ],
+            [ DF.variable('p'), DF.namedNode('http://example.org/foo') ],
+            [ DF.variable('subjects'), DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) ],
+          ],
+          [
+            [ DF.variable('objects'), DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) ],
+            [ DF.variable('p'), DF.namedNode('http://example.org/bar') ],
+            [ DF.variable('subjects'), DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) ],
+          ],
+          [
+            [ DF.variable('objects'), DF.literal('3', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) ],
+            [ DF.variable('p'), DF.namedNode('http://example.org/baz') ],
+            [ DF.variable('subjects'), DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) ],
+          ],
+        ];
+
+        const bindings1 = (await arrayifyStream(await engine.queryBindings(`
+        SELECT (COUNT(DISTINCT ?o) as ?objects) (COUNT(DISTINCT ?s) AS ?subjects) ?p
+        FROM <http://foo.org/id/graph/foo>
+        {
+          ?s ?p ?o .
+        }
+        GROUP BY ?p
+        `, context))).map(binding => [ ...binding ].sort(([ var1, _c1 ], [ var2, _c2 ]) => var1.value.localeCompare(var2.value)));
+
+        const bindings2 = (await arrayifyStream(await engine.queryBindings(`
+        SELECT (COUNT(DISTINCT ?s) AS ?subjects) (COUNT(DISTINCT ?o) as ?objects) ?p
+        FROM <http://foo.org/id/graph/foo>
+        {
+          ?s ?p ?o .
+        }
+        GROUP BY ?p
+        `, context))).map(binding => [ ...binding ].sort(([ var1, _c1 ], [ var2, _c2 ]) => var1.value.localeCompare(var2.value)));
+
+        expect(bindings1).toMatchObject(expectedResult);
+        expect(bindings2).toMatchObject(expectedResult);
+      });
+    });
   });
 
   // We skip these tests in browsers due to CORS issues
