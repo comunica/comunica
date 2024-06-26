@@ -4,10 +4,13 @@ import type {
   IActionContextPreprocess,
 } from '@comunica/bus-context-preprocess';
 import { ActorContextPreprocess } from '@comunica/bus-context-preprocess';
-import { KeysCore, KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
+import { KeysCore, KeysInitQuery, KeysQuerySourceIdentify, KeysStatisticsTracker } from '@comunica/context-entries';
 import type { IAction, IActorTest } from '@comunica/core';
 import type { FunctionArgumentsCache, Logger } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+// TODO MAKE THIS NICE
+import type { ILoggerBunyanArgs, BunyanStreamProvider } from '@comunica/logger-bunyan';
+import { LoggerBunyan, BunyanStreamProviderStdout, BunyanStreamProviderFile } from '@comunica/logger-bunyan';
 
 /**
  * A comunica Set Defaults Context Preprocess Actor.
@@ -35,8 +38,21 @@ export class ActorContextPreprocessSetDefaults extends ActorContextPreprocess {
         .setDefault(KeysQuerySourceIdentify.sourceIds, new Map())
         .setDefault(KeysCore.log, this.logger)
         .setDefault(KeysInitQuery.functionArgumentsCache, this.defaultFunctionArgumentsCache)
-        .setDefault(KeysQuerySourceIdentify.hypermediaSourcesAggregatedStores, new Map());
+        .setDefault(KeysQuerySourceIdentify.hypermediaSourcesAggregatedStores, new Map())
+        .setDefault(KeysStatisticsTracker.statistics, new Map());
 
+      if (context.get(KeysStatisticsTracker.statisticsSaveLocation)){
+        
+        const streamProvider: BunyanStreamProvider = new BunyanStreamProviderFile(
+          { path: `file:///${action.context.get(KeysStatisticsTracker.statisticsSaveLocation)!}` }
+        );
+        const loggerParams: ILoggerBunyanArgs = {
+          name: 'comunica',
+          level: 'trace',
+          streamProviders: [ streamProvider ],
+        };
+        context = context.setDefault(KeysStatisticsTracker.statiticsLogger, new LoggerBunyan(loggerParams));
+      }
       // Handle default query format
       let queryFormat: RDF.QueryFormat = { language: 'sparql', version: '1.1' };
       if (context.has(KeysInitQuery.queryFormat)) {

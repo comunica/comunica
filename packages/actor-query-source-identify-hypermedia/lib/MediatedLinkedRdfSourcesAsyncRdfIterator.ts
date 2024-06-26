@@ -147,7 +147,6 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   protected async getSourceLinks(metadata: Record<string, any>): Promise<ILink[]> {
     try {
       const { links } = await this.mediatorRdfResolveHypermediaLinks.mediate({ context: this.context, metadata });
-
       // Filter URLs to avoid cyclic next-page loops
       return links.filter((link) => {
         if (this.handledUrls[link.url]) {

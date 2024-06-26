@@ -1,21 +1,21 @@
 import type { IActionSparqlSerialize, IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import type {
-  IActionContext,
-  IQueryOperationResult,
-  IQueryEngine,
-  IQueryExplained,
-  QueryFormatType,
-  QueryType,
-  QueryExplainMode,
-  BindingsStream,
-  QueryAlgebraContext,
-  QueryStringContext,
-  IQueryBindingsEnhanced,
-  IQueryQuadsEnhanced,
-  QueryEnhanced,
-  IQueryContextCommon,
+import {
+  type IActionContext,
+  type IQueryOperationResult,
+  type IQueryEngine,
+  type IQueryExplained,
+  type QueryFormatType,
+  type QueryType,
+  type QueryExplainMode,
+  type BindingsStream,
+  type QueryAlgebraContext,
+  type QueryStringContext,
+  type IQueryBindingsEnhanced,
+  type IQueryQuadsEnhanced,
+  type QueryEnhanced,
+  type IQueryContextCommon,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -136,6 +136,7 @@ implements IQueryEngine<QueryStringContextInner, QueryAlgebraContextInner> {
     if ('explain' in result) {
       return result;
     }
+    
     return QueryEngineBase.internalToFinalResult(result);
   }
 
