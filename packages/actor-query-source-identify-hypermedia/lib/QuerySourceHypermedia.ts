@@ -7,7 +7,7 @@ import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-a
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { ILink, MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
-import { KeysQuerySourceIdentify } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import type {
   BindingsStream,
   FragmentSelectorShape,
@@ -18,11 +18,13 @@ import type {
   MetadataBindings,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { AsyncIterator, UnionIterator } from 'asynciterator';
-import { TransformIterator } from 'asynciterator';
+import type { AsyncIterator } from 'asynciterator';
+import { UnionIterator, TransformIterator } from 'asynciterator';
 import { LRUCache } from 'lru-cache';
+import { DataFactory } from 'rdf-data-factory';
 import { Readable } from 'readable-stream';
 import type { Algebra } from 'sparqlalgebrajs';
+import { Factory, Util } from 'sparqlalgebrajs';
 import type { ISourceState } from './LinkedRdfSourcesAsyncRdfIterator';
 import { MediatedLinkedRdfSourcesAsyncRdfIterator } from './MediatedLinkedRdfSourcesAsyncRdfIterator';
 import { StreamingStoreMetadata } from './StreamingStoreMetadata';
@@ -43,6 +45,8 @@ export class QuerySourceHypermedia implements IQuerySource {
 
   private readonly cacheSize: number;
   private readonly maxIterators: number;
+
+  private lastLinkedIterator: MediatedLinkedRdfSourcesAsyncRdfIterator;
 
   public constructor(
     cacheSize: number,
@@ -122,6 +126,7 @@ export class QuerySourceHypermedia implements IQuerySource {
       this.mediators.mediatorRdfResolveHypermediaLinks,
       this.mediators.mediatorRdfResolveHypermediaLinksQueue,
     );
+    this.lastLinkedIterator = it;
     if (aggregatedStore) {
       aggregatedStore.started = true;
 
@@ -238,6 +243,66 @@ export class QuerySourceHypermedia implements IQuerySource {
     // TODO: for now, we just check if source is a SPARQL ep, but let's check filterFactor in the future.
     if (aggregatedStore && source.constructor.name === 'QuerySourceSparql') {
       (<any> aggregatedStore.auxiliarySources)._push(source);
+
+      // Send a query to extract links
+      // TODO: for now, we just make it hacky
+      const DF = new DataFactory();
+      const AF = new Factory();
+      const currentQueryOperation: Algebra.Operation = context.get(KeysInitQuery.query)!;
+      const queryLeafPatterns: Algebra.Operation[] = [];
+      // TODO: we should populate the following dynamically based on all link extract actors somehow
+      // Add all common predicates
+      for (const commonPredicate of [
+        'http://www.w3.org/2000/01/rdf-schema#seeAlso',
+        'http://www.w3.org/2002/07/owl##sameAs',
+        'http://xmlns.com/foaf/0.1/isPrimaryTopicOf',
+        'http://rdfs.org/ns/void#sparqlEndpoint',
+      ]) {
+        queryLeafPatterns.push(AF.createPattern(
+          DF.variable('s'),
+          DF.namedNode(commonPredicate),
+          DF.variable('link'),
+        ));
+      }
+      // Add all predicates from the current query
+      Util.recurseOperation(currentQueryOperation, {
+        pattern(pattern: Algebra.Pattern) {
+          if (pattern.subject.termType === 'Variable') {
+            queryLeafPatterns.push(AF.createPattern(DF.variable('link'), pattern.predicate, pattern.object));
+          }
+          if (pattern.object.termType === 'Variable') {
+            queryLeafPatterns.push(AF.createPattern(pattern.subject, pattern.predicate, DF.variable('link')));
+          }
+          return false;
+        },
+        path(pattern: Algebra.Path) {
+          if (pattern.subject.termType === 'Variable') {
+            queryLeafPatterns.push(AF.createPath(DF.variable('link'), pattern.predicate, pattern.object));
+          }
+          if (pattern.object.termType === 'Variable') {
+            queryLeafPatterns.push(AF.createPath(pattern.subject, pattern.predicate, DF.variable('link')));
+          }
+          return false;
+        },
+      });
+      const reachabilityQuery = AF.createDistinct(
+        AF.createProject(
+          AF.createUnion(queryLeafPatterns),
+          [ DF.variable('link') ],
+        ),
+      );
+
+      // Send the reachabily query to the endpoint, and push all found links into the queue
+      const bindings = source.queryBindings(reachabilityQuery, context);
+      this.lastLinkedIterator.getLinkQueue()
+        .then(async(queue) => {
+          for await (const b of bindings) {
+            const l = b.get('link');
+            if (l && l.termType === 'NamedNode') {
+              queue.push({ url: l.value }, link);
+            }
+          }
+        });
     }
 
     if (dataset) {
