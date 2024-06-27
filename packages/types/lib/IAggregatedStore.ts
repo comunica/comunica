@@ -3,6 +3,7 @@ import type { EventEmitter } from 'node:events';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { MetadataBindings } from './IMetadata';
+import { IQuerySource } from './IQuerySource';
 
 /**
  * A StreamingStore allows data lookup and insertion to happen in parallel.
@@ -29,6 +30,11 @@ export interface IAggregatedStore<Q extends RDF.BaseQuad = RDF.Quad>
    * If iterators created during the `match` call are still running.
    */
   hasRunningIterators: () => boolean;
+
+  /**
+   * Sources that are not contained within this store, but need to be queried to ensure completeness.
+   */
+  auxiliarySources: AsyncIterator<IQuerySource>;
 
   /**
    * Mark this store as ended.

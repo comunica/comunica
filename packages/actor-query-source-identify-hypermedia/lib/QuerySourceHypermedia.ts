@@ -18,7 +18,7 @@ import type {
   MetadataBindings,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import type { AsyncIterator } from 'asynciterator';
+import { AsyncIterator, UnionIterator } from 'asynciterator';
 import { TransformIterator } from 'asynciterator';
 import { LRUCache } from 'lru-cache';
 import { Readable } from 'readable-stream';
@@ -79,7 +79,27 @@ export class QuerySourceHypermedia implements IQuerySource {
     // Optimized match with aggregated store if enabled and started.
     const aggregatedStore: IAggregatedStore | undefined = this.getAggregateStore(context);
     if (aggregatedStore && operation.type === 'pattern' && aggregatedStore.started) {
-      return new QuerySourceRdfJs(aggregatedStore, this.bindingsFactory).queryBindings(operation, context);
+      // Combine the results of the aggregated store with the auxiliary sources
+      const querySourceRdfJs = new QuerySourceRdfJs(aggregatedStore, this.bindingsFactory);
+      const querySourceRdfJsBindings = querySourceRdfJs.queryBindings(operation, context);
+      const bindings = querySourceRdfJsBindings
+        .transform({
+          append: new UnionIterator(aggregatedStore.auxiliarySources
+            .map(source => source.queryBindings(operation, context))),
+          autoStart: false,
+        });
+
+      // Forward metadata
+      // TODO: in the future, this should be the union of all metadatas!
+      function setMetadata(): void {
+        querySourceRdfJsBindings.getProperty('metadata', (metadata: MetadataBindings) => {
+          metadata.state.addInvalidateListener(setMetadata);
+          bindings.setProperty('metadata', metadata);
+        });
+      }
+      setMetadata();
+
+      return bindings;
     }
 
     // Initialize the sources state on first call
@@ -180,7 +200,6 @@ export class QuerySourceHypermedia implements IQuerySource {
         requestTime: dereferenceRdfOutput.requestTime,
       })).metadata;
       quads = rdfMetadataOutput.data;
-
       // Optionally filter the resulting data
       if (link.transform) {
         quads = await link.transform(quads);
@@ -214,6 +233,12 @@ export class QuerySourceHypermedia implements IQuerySource {
       quads,
       url,
     });
+
+    // If source has a filterFactor > 0, add as auxiliary source to aggregated store
+    // TODO: for now, we just check if source is a SPARQL ep, but let's check filterFactor in the future.
+    if (aggregatedStore && source.constructor.name === 'QuerySourceSparql') {
+      (<any> aggregatedStore.auxiliarySources)._push(source);
+    }
 
     if (dataset) {
       // Mark the dataset as applied

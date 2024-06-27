@@ -2,9 +2,9 @@
 import type { EventEmitter } from 'node:events';
 import { ClosableTransformIterator } from '@comunica/bus-query-operation';
 import { MetadataValidationState } from '@comunica/metadata';
-import type { MetadataQuads, IAggregatedStore, MetadataBindings } from '@comunica/types';
+import { MetadataQuads, IAggregatedStore, MetadataBindings, IQuerySource } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import type { AsyncIterator } from 'asynciterator';
+import { AsyncIterator, BufferedIterator } from 'asynciterator';
 import { StreamingStore } from 'rdf-streaming-store';
 
 /**
@@ -14,6 +14,7 @@ export class StreamingStoreMetadata extends StreamingStore implements IAggregate
   public started = false;
   public containedSources = new Set<string>();
   public readonly runningIterators: Set<AsyncIterator<RDF.Quad>> = new Set<AsyncIterator<RDF.Quad>>();
+  public readonly auxiliarySources: AsyncIterator<IQuerySource> = new BufferedIterator({ autoStart: false });
   protected readonly iteratorCreatedListeners: Set<() => void> = new Set();
   protected readonly metadataAccumulator:
   (accumulatedMetadata: MetadataBindings, appendingMetadata: MetadataBindings) => Promise<MetadataBindings>;
@@ -32,6 +33,12 @@ export class StreamingStoreMetadata extends StreamingStore implements IAggregate
   ) {
     super(store);
     this.metadataAccumulator = metadataAccumulator;
+  }
+
+  public override end(): void {
+    (<any> this.auxiliarySources)._push(null);
+    this.auxiliarySources.close();
+    super.end();
   }
 
   public override import(stream: RDF.Stream): EventEmitter {
