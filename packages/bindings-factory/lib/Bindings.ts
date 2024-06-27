@@ -107,6 +107,10 @@ export class Bindings implements RDF.Bindings {
   }
 
   public merge(other: RDF.Bindings | Bindings): Bindings | undefined {
+    if (this.size < other.size && other instanceof Bindings) {
+      return other.merge(this);
+    }
+
     let entries = this.entries;
     let nonCompatibleElements = false;
 
@@ -155,6 +159,9 @@ export class Bindings implements RDF.Bindings {
     merger: (self: RDF.Term, other: RDF.Term, key: RDF.Variable) => RDF.Term,
     other: RDF.Bindings | Bindings,
   ): Bindings {
+    if (this.size < other.size && other instanceof Bindings) {
+      return other.mergeWith(merger, this);
+    }
     let entries = this.entries;
 
     // For code comments see Bindings.merge function
