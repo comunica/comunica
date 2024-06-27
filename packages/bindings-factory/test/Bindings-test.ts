@@ -275,116 +275,266 @@ describe('Bindings', () => {
     });
 
     describe('merge', () => {
-      it('should merge distinct bindings', () => {
-        const bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
-          [ 'd', DF.namedNode('ex:d') ],
-          [ 'e', DF.namedNode('ex:e') ],
-          [ 'f', DF.namedNode('ex:f') ],
-        ]), { contextMergeHandlers });
+      describe('with RDF.Bindings', () => {
+        it('should merge distinct bindings', () => {
+          const OriginalBindings = new Bindings(DF, Map<string, RDF.Term>([
+            [ 'd', DF.namedNode('ex:d') ],
+            [ 'e', DF.namedNode('ex:e') ],
+            [ 'f', DF.namedNode('ex:f') ],
+          ]), { contextMergeHandlers });
+          const bindingsOther: RDF.Bindings = <any> {
+            forEach: OriginalBindings.forEach.bind(OriginalBindings),
+            equals: OriginalBindings.equals.bind(OriginalBindings),
+          };
+          expect(bindingsOther instanceof Bindings).toBeFalsy();
 
-        const bindingsNew: Bindings = bindings.merge(bindingsOther)!;
-        expect(bindingsNew).toBeDefined();
-        expect(bindingsNew).not.toBe(bindings);
-        expect(bindingsNew.size).toBe(6);
+          const bindingsNew: Bindings = bindings.merge(bindingsOther)!;
+          expect(bindingsNew).toBeDefined();
+          expect(bindingsNew).not.toBe(bindings);
+          expect(bindingsNew.size).toBe(6);
 
-        expect(bindingsNew.get(DF.variable('a'))).toEqual(DF.namedNode('ex:a'));
-        expect(bindingsNew.get(DF.variable('b'))).toEqual(DF.namedNode('ex:b'));
-        expect(bindingsNew.get(DF.variable('c'))).toEqual(DF.namedNode('ex:c'));
-        expect(bindingsNew.get(DF.variable('d'))).toEqual(DF.namedNode('ex:d'));
-        expect(bindingsNew.get(DF.variable('e'))).toEqual(DF.namedNode('ex:e'));
-        expect(bindingsNew.get(DF.variable('f'))).toEqual(DF.namedNode('ex:f'));
+          expect(bindingsNew.get(DF.variable('a'))).toEqual(DF.namedNode('ex:a'));
+          expect(bindingsNew.get(DF.variable('b'))).toEqual(DF.namedNode('ex:b'));
+          expect(bindingsNew.get(DF.variable('c'))).toEqual(DF.namedNode('ex:c'));
+          expect(bindingsNew.get(DF.variable('d'))).toEqual(DF.namedNode('ex:d'));
+          expect(bindingsNew.get(DF.variable('e'))).toEqual(DF.namedNode('ex:e'));
+          expect(bindingsNew.get(DF.variable('f'))).toEqual(DF.namedNode('ex:f'));
+        });
+
+        it('should merge overlapping compatible bindings', () => {
+          const OriginalBindings = new Bindings(DF, Map<string, RDF.Term>([
+            [ 'd', DF.namedNode('ex:d') ],
+            [ 'a', DF.namedNode('ex:a') ],
+            [ 'b', DF.namedNode('ex:b') ],
+          ]), { contextMergeHandlers });
+          const bindingsOther: RDF.Bindings = <any> {
+            forEach: OriginalBindings.forEach.bind(OriginalBindings),
+            equals: OriginalBindings.equals.bind(OriginalBindings),
+          };
+          expect(bindingsOther instanceof Bindings).toBeFalsy();
+
+          const bindingsNew: Bindings = bindings.merge(bindingsOther)!;
+          expect(bindingsNew).toBeDefined();
+          expect(bindingsNew).not.toBe(bindings);
+          expect(bindingsNew.size).toBe(4);
+
+          expect(bindingsNew.get(DF.variable('a'))).toEqual(DF.namedNode('ex:a'));
+          expect(bindingsNew.get(DF.variable('b'))).toEqual(DF.namedNode('ex:b'));
+          expect(bindingsNew.get(DF.variable('c'))).toEqual(DF.namedNode('ex:c'));
+          expect(bindingsNew.get(DF.variable('d'))).toEqual(DF.namedNode('ex:d'));
+        });
+
+        it('should return undefined on overlapping incompatible bindings', () => {
+          const OriginalBindings = new Bindings(DF, Map<string, RDF.Term>([
+            [ 'a', DF.namedNode('ex:b') ],
+            [ 'b', DF.namedNode('ex:b') ],
+          ]), { contextMergeHandlers });
+          const bindingsOther: RDF.Bindings = <any> {
+            forEach: OriginalBindings.forEach.bind(OriginalBindings),
+            equals: OriginalBindings.equals.bind(OriginalBindings),
+          };
+          expect(bindingsOther instanceof Bindings).toBeFalsy();
+
+          const bindingsNew: Bindings = bindings.merge(bindingsOther)!;
+          expect(bindingsNew).toBeUndefined();
+        });
       });
 
-      it('should merge overlapping compatible bindings', () => {
-        const bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
-          [ 'd', DF.namedNode('ex:d') ],
-          [ 'a', DF.namedNode('ex:a') ],
-          [ 'b', DF.namedNode('ex:b') ],
-        ]), { contextMergeHandlers });
+      describe('with native Bindings', () => {
+        it('should merge distinct bindings', () => {
+          const bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
+            [ 'd', DF.namedNode('ex:d') ],
+            [ 'e', DF.namedNode('ex:e') ],
+            [ 'f', DF.namedNode('ex:f') ],
+          ]), { contextMergeHandlers });
 
-        const bindingsNew: Bindings = bindings.merge(bindingsOther)!;
-        expect(bindingsNew).toBeDefined();
-        expect(bindingsNew).not.toBe(bindings);
-        expect(bindingsNew.size).toBe(4);
+          const bindingsNew: Bindings = bindings.merge(bindingsOther)!;
+          expect(bindingsNew).toBeDefined();
+          expect(bindingsNew).not.toBe(bindings);
+          expect(bindingsNew.size).toBe(6);
 
-        expect(bindingsNew.get(DF.variable('a'))).toEqual(DF.namedNode('ex:a'));
-        expect(bindingsNew.get(DF.variable('b'))).toEqual(DF.namedNode('ex:b'));
-        expect(bindingsNew.get(DF.variable('c'))).toEqual(DF.namedNode('ex:c'));
-        expect(bindingsNew.get(DF.variable('d'))).toEqual(DF.namedNode('ex:d'));
-      });
+          expect(bindingsNew.get(DF.variable('a'))).toEqual(DF.namedNode('ex:a'));
+          expect(bindingsNew.get(DF.variable('b'))).toEqual(DF.namedNode('ex:b'));
+          expect(bindingsNew.get(DF.variable('c'))).toEqual(DF.namedNode('ex:c'));
+          expect(bindingsNew.get(DF.variable('d'))).toEqual(DF.namedNode('ex:d'));
+          expect(bindingsNew.get(DF.variable('e'))).toEqual(DF.namedNode('ex:e'));
+          expect(bindingsNew.get(DF.variable('f'))).toEqual(DF.namedNode('ex:f'));
+        });
 
-      it('should return undefined on overlapping incompatible bindings', () => {
-        const bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
-          [ 'a', DF.namedNode('ex:b') ],
-        ]), { contextMergeHandlers });
+        it('should merge overlapping compatible bindings', () => {
+          const bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
+            [ 'd', DF.namedNode('ex:d') ],
+            [ 'a', DF.namedNode('ex:a') ],
+            [ 'b', DF.namedNode('ex:b') ],
+          ]), { contextMergeHandlers });
 
-        const bindingsNew: Bindings = bindings.merge(bindingsOther)!;
-        expect(bindingsNew).toBeUndefined();
+          const bindingsNew: Bindings = bindings.merge(bindingsOther)!;
+          expect(bindingsNew).toBeDefined();
+          expect(bindingsNew).not.toBe(bindings);
+          expect(bindingsNew.size).toBe(4);
+
+          expect(bindingsNew.get(DF.variable('a'))).toEqual(DF.namedNode('ex:a'));
+          expect(bindingsNew.get(DF.variable('b'))).toEqual(DF.namedNode('ex:b'));
+          expect(bindingsNew.get(DF.variable('c'))).toEqual(DF.namedNode('ex:c'));
+          expect(bindingsNew.get(DF.variable('d'))).toEqual(DF.namedNode('ex:d'));
+        });
+
+        it('should return undefined on overlapping incompatible bindings', () => {
+          const bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
+            [ 'a', DF.namedNode('ex:b') ],
+            [ 'b', DF.namedNode('ex:b') ],
+          ]), { contextMergeHandlers });
+
+          const bindingsNew: Bindings = bindings.merge(bindingsOther)!;
+          expect(bindingsNew).toBeUndefined();
+        });
       });
     });
 
     describe('mergeWith', () => {
-      it('should merge distinct bindings', () => {
-        const bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
-          [ 'd', DF.namedNode('ex:d') ],
-          [ 'e', DF.namedNode('ex:e') ],
-          [ 'f', DF.namedNode('ex:f') ],
-        ]), { contextMergeHandlers });
+      describe('with RDF.Bindings', () => {
+        it('should merge distinct bindings', () => {
+          const OriginalBindings = new Bindings(DF, Map<string, RDF.Term>([
+            [ 'd', DF.namedNode('ex:d') ],
+            [ 'e', DF.namedNode('ex:e') ],
+            [ 'f', DF.namedNode('ex:f') ],
+          ]), { contextMergeHandlers });
+          const bindingsOther: RDF.Bindings = <any> {
+            forEach: OriginalBindings.forEach.bind(OriginalBindings),
+            equals: OriginalBindings.equals.bind(OriginalBindings),
+          };
+          expect(bindingsOther instanceof Bindings).toBeFalsy();
 
-        const cb = jest.fn();
-        const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
-        expect(bindingsNew).toBeDefined();
-        expect(bindingsNew).not.toBe(bindings);
-        expect(bindingsNew.size).toBe(6);
+          const cb = jest.fn();
+          const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
+          expect(bindingsNew).toBeDefined();
+          expect(bindingsNew).not.toBe(bindings);
+          expect(bindingsNew.size).toBe(6);
 
-        expect(bindingsNew.get(DF.variable('a'))).toEqual(DF.namedNode('ex:a'));
-        expect(bindingsNew.get(DF.variable('b'))).toEqual(DF.namedNode('ex:b'));
-        expect(bindingsNew.get(DF.variable('c'))).toEqual(DF.namedNode('ex:c'));
-        expect(bindingsNew.get(DF.variable('d'))).toEqual(DF.namedNode('ex:d'));
-        expect(bindingsNew.get(DF.variable('e'))).toEqual(DF.namedNode('ex:e'));
-        expect(bindingsNew.get(DF.variable('f'))).toEqual(DF.namedNode('ex:f'));
+          expect(bindingsNew.get(DF.variable('a'))).toEqual(DF.namedNode('ex:a'));
+          expect(bindingsNew.get(DF.variable('b'))).toEqual(DF.namedNode('ex:b'));
+          expect(bindingsNew.get(DF.variable('c'))).toEqual(DF.namedNode('ex:c'));
+          expect(bindingsNew.get(DF.variable('d'))).toEqual(DF.namedNode('ex:d'));
+          expect(bindingsNew.get(DF.variable('e'))).toEqual(DF.namedNode('ex:e'));
+          expect(bindingsNew.get(DF.variable('f'))).toEqual(DF.namedNode('ex:f'));
 
-        expect(cb).not.toHaveBeenCalled();
+          expect(cb).not.toHaveBeenCalled();
+        });
+
+        it('should merge overlapping compatible bindings', () => {
+          const OriginalBindings = new Bindings(DF, Map<string, RDF.Term>([
+            [ 'd', DF.namedNode('ex:d') ],
+            [ 'a', DF.namedNode('ex:a') ],
+            [ 'b', DF.namedNode('ex:b') ],
+          ]), { contextMergeHandlers });
+          const bindingsOther: RDF.Bindings = <any> {
+            forEach: OriginalBindings.forEach.bind(OriginalBindings),
+            equals: OriginalBindings.equals.bind(OriginalBindings),
+          };
+          expect(bindingsOther instanceof Bindings).toBeFalsy();
+
+          const cb = jest.fn();
+          const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
+          expect(bindingsNew).toBeDefined();
+          expect(bindingsNew).not.toBe(bindings);
+          expect(bindingsNew.size).toBe(4);
+
+          expect(bindingsNew.get(DF.variable('a'))).toEqual(DF.namedNode('ex:a'));
+          expect(bindingsNew.get(DF.variable('b'))).toEqual(DF.namedNode('ex:b'));
+          expect(bindingsNew.get(DF.variable('c'))).toEqual(DF.namedNode('ex:c'));
+          expect(bindingsNew.get(DF.variable('d'))).toEqual(DF.namedNode('ex:d'));
+
+          expect(cb).not.toHaveBeenCalled();
+        });
+
+        it('should return undefined on overlapping incompatible bindings', () => {
+          const OriginalBindings = new Bindings(DF, Map<string, RDF.Term>([
+            [ 'a', DF.namedNode('ex:b') ],
+          ]), { contextMergeHandlers });
+          const bindingsOther: RDF.Bindings = <any> {
+            forEach: OriginalBindings.forEach.bind(OriginalBindings),
+            equals: OriginalBindings.equals.bind(OriginalBindings),
+          };
+          expect(bindingsOther instanceof Bindings).toBeFalsy();
+
+          const cb = jest.fn((left: RDF.Term, right: RDF.Term) => DF.namedNode(`${left.value}+${right.value}`));
+          const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
+          expect(bindingsNew).toBeDefined();
+          expect(bindingsNew).not.toBe(bindings);
+          expect(bindingsNew.size).toBe(3);
+
+          expect(bindingsNew.get(DF.variable('a'))).toEqual(DF.namedNode('ex:a+ex:b'));
+          expect(bindingsNew.get(DF.variable('b'))).toEqual(DF.namedNode('ex:b'));
+          expect(bindingsNew.get(DF.variable('c'))).toEqual(DF.namedNode('ex:c'));
+
+          expect(cb).toHaveBeenCalledTimes(1);
+          expect(cb).toHaveBeenNthCalledWith(1, DF.namedNode('ex:a'), DF.namedNode('ex:b'), DF.variable('a'));
+        });
       });
 
-      it('should merge overlapping compatible bindings', () => {
-        const bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
-          [ 'd', DF.namedNode('ex:d') ],
-          [ 'a', DF.namedNode('ex:a') ],
-          [ 'b', DF.namedNode('ex:b') ],
-        ]), { contextMergeHandlers });
+      describe('with native Bindings', () => {
+        it('should merge distinct bindings', () => {
+          const bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
+            [ 'd', DF.namedNode('ex:d') ],
+            [ 'e', DF.namedNode('ex:e') ],
+            [ 'f', DF.namedNode('ex:f') ],
+          ]), { contextMergeHandlers });
 
-        const cb = jest.fn();
-        const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
-        expect(bindingsNew).toBeDefined();
-        expect(bindingsNew).not.toBe(bindings);
-        expect(bindingsNew.size).toBe(4);
+          const cb = jest.fn();
+          const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
+          expect(bindingsNew).toBeDefined();
+          expect(bindingsNew).not.toBe(bindings);
+          expect(bindingsNew.size).toBe(6);
 
-        expect(bindingsNew.get(DF.variable('a'))).toEqual(DF.namedNode('ex:a'));
-        expect(bindingsNew.get(DF.variable('b'))).toEqual(DF.namedNode('ex:b'));
-        expect(bindingsNew.get(DF.variable('c'))).toEqual(DF.namedNode('ex:c'));
-        expect(bindingsNew.get(DF.variable('d'))).toEqual(DF.namedNode('ex:d'));
+          expect(bindingsNew.get(DF.variable('a'))).toEqual(DF.namedNode('ex:a'));
+          expect(bindingsNew.get(DF.variable('b'))).toEqual(DF.namedNode('ex:b'));
+          expect(bindingsNew.get(DF.variable('c'))).toEqual(DF.namedNode('ex:c'));
+          expect(bindingsNew.get(DF.variable('d'))).toEqual(DF.namedNode('ex:d'));
+          expect(bindingsNew.get(DF.variable('e'))).toEqual(DF.namedNode('ex:e'));
+          expect(bindingsNew.get(DF.variable('f'))).toEqual(DF.namedNode('ex:f'));
 
-        expect(cb).not.toHaveBeenCalled();
-      });
+          expect(cb).not.toHaveBeenCalled();
+        });
 
-      it('should return undefined on overlapping incompatible bindings', () => {
-        const bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
-          [ 'a', DF.namedNode('ex:b') ],
-        ]), { contextMergeHandlers });
+        it('should merge overlapping compatible bindings', () => {
+          const bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
+            [ 'd', DF.namedNode('ex:d') ],
+            [ 'a', DF.namedNode('ex:a') ],
+            [ 'b', DF.namedNode('ex:b') ],
+          ]), { contextMergeHandlers });
 
-        const cb = jest.fn((left: RDF.Term, right: RDF.Term) => DF.namedNode(`${left.value}+${right.value}`));
-        const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
-        expect(bindingsNew).toBeDefined();
-        expect(bindingsNew).not.toBe(bindings);
-        expect(bindingsNew.size).toBe(3);
+          const cb = jest.fn();
+          const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
+          expect(bindingsNew).toBeDefined();
+          expect(bindingsNew).not.toBe(bindings);
+          expect(bindingsNew.size).toBe(4);
 
-        expect(bindingsNew.get(DF.variable('a'))).toEqual(DF.namedNode('ex:a+ex:b'));
-        expect(bindingsNew.get(DF.variable('b'))).toEqual(DF.namedNode('ex:b'));
-        expect(bindingsNew.get(DF.variable('c'))).toEqual(DF.namedNode('ex:c'));
+          expect(bindingsNew.get(DF.variable('a'))).toEqual(DF.namedNode('ex:a'));
+          expect(bindingsNew.get(DF.variable('b'))).toEqual(DF.namedNode('ex:b'));
+          expect(bindingsNew.get(DF.variable('c'))).toEqual(DF.namedNode('ex:c'));
+          expect(bindingsNew.get(DF.variable('d'))).toEqual(DF.namedNode('ex:d'));
 
-        expect(cb).toHaveBeenCalledTimes(1);
-        expect(cb).toHaveBeenNthCalledWith(1, DF.namedNode('ex:a'), DF.namedNode('ex:b'), DF.variable('a'));
+          expect(cb).not.toHaveBeenCalled();
+        });
+
+        it('should return undefined on overlapping incompatible bindings', () => {
+          const bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
+            [ 'a', DF.namedNode('ex:b') ],
+          ]), { contextMergeHandlers });
+
+          const cb = jest.fn((left: RDF.Term, right: RDF.Term) => DF.namedNode(`${left.value}+${right.value}`));
+          const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
+          expect(bindingsNew).toBeDefined();
+          expect(bindingsNew).not.toBe(bindings);
+          expect(bindingsNew.size).toBe(3);
+
+          expect(bindingsNew.get(DF.variable('a'))).toEqual(DF.namedNode('ex:a+ex:b'));
+          expect(bindingsNew.get(DF.variable('b'))).toEqual(DF.namedNode('ex:b'));
+          expect(bindingsNew.get(DF.variable('c'))).toEqual(DF.namedNode('ex:c'));
+
+          expect(cb).toHaveBeenCalledTimes(1);
+          expect(cb).toHaveBeenNthCalledWith(1, DF.namedNode('ex:a'), DF.namedNode('ex:b'), DF.variable('a'));
+        });
       });
     });
 
