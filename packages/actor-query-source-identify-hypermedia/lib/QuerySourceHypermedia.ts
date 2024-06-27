@@ -84,7 +84,7 @@ export class QuerySourceHypermedia implements IQuerySource {
       const querySourceRdfJsBindings = querySourceRdfJs.queryBindings(operation, context);
       const bindings = querySourceRdfJsBindings
         .transform({
-          append: new UnionIterator(aggregatedStore.auxiliarySources
+          append: new UnionIterator(aggregatedStore.auxiliarySources.clone()
             .map(source => source.queryBindings(operation, context))),
           autoStart: false,
         });
