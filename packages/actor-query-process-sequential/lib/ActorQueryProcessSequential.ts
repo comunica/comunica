@@ -15,7 +15,7 @@ import type {
 import {
   ActorQueryProcess,
 } from '@comunica/bus-query-process';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysInitQuery, KeysStatisticsTracker } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import { ActionContextKey } from '@comunica/core';
 import type {

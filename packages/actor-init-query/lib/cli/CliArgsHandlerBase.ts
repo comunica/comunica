@@ -3,7 +3,7 @@ import { exec } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import * as OS from 'node:os';
 import * as Path from 'node:path';
-import { KeysHttp, KeysInitQuery, KeysQueryOperation, KeysRdfUpdateQuads } from '@comunica/context-entries';
+import { KeysHttp, KeysInitQuery, KeysQueryOperation, KeysRdfUpdateQuads, KeysStatisticsTracker } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
 import type { IActionContext, ICliArgsHandler } from '@comunica/types';
@@ -146,6 +146,7 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
           type: 'boolean',
           describe: 'If the cache should be disabled',
         },
+      
       })
       .exitProcess(false)
       .fail(false)
@@ -262,6 +263,10 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
     if (args.noCache) {
       context[KeysInitQuery.noCache.name] = true;
     }
+
+    if (args.statisticsSaveLocation){
+      context[KeysStatisticsTracker.statisticsSaveLocation.name] = args.statisticsSaveLocation;
+    } 
   }
 }
 /* eslint-enable import/no-nodejs-modules */

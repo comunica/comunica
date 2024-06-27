@@ -1,21 +1,25 @@
 import { ActionContextKey, CONTEXT_KEY_LOGGER } from '@comunica/core';
-import type {
-  Bindings,
-  IPhysicalQueryPlanLogger,
-  QueryExplainMode,
-  IProxyHandler,
-  ICliArgsHandler,
-  IDataDestination,
-  MetadataBindings,
-  FunctionArgumentsCache,
-  IAggregatedStore,
-  QuerySourceUnidentified,
-  IQuerySourceWrapper,
-  QuerySourceReference,
+import {
+  type Bindings,
+  type IPhysicalQueryPlanLogger,
+  type QueryExplainMode,
+  type IProxyHandler,
+  type ICliArgsHandler,
+  type IDataDestination,
+  type MetadataBindings,
+  type FunctionArgumentsCache,
+  type IAggregatedStore,
+  type QuerySourceUnidentified,
+  type IQuerySourceWrapper,
+  type QuerySourceReference,
+  type IActionContextKey,
+  type IStatisticDereferencedLinks,
+  Logger,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { IDocumentLoader } from 'jsonld-context-parser';
 import type { Algebra } from 'sparqlalgebrajs';
+import type { IStatisticDiscoveredLinks } from '@comunica/types';
 
 /**
  * When adding entries to this file, also add a shortcut for them in the contextKeyShortcuts TSDoc comment in
@@ -293,4 +297,31 @@ export const KeysRdfJoin = {
    * The last physical join actor that was executed.
    */
   lastPhysicalJoin: new ActionContextKey<string>('@comunica/bus-rdf-join:lastPhysicalJoin'),
+};
+
+export const KeysStatisticsTracker = {
+  /**
+   * Map holding all statistics being tracked, filled with keys from KeysTrackableStatistics
+   */
+  statistics: new ActionContextKey<Map<IActionContextKey<any>, any>>('@comunica/actor-context-preprocess-set-default:statistics'),
+  /**
+   * TODO: Make nicer. Directory to log statistics information to. 
+   */
+  statisticsSaveLocation: new ActionContextKey<string>('@comunica/actor-context-preprocess-set-default:statisticsSaveLocation'),
+  /**
+   * TODO: Make nicer. Statistic logger.
+   */
+  statiticsLogger: new ActionContextKey<Logger>('@comunica/actor-context-preprocess-set-default:statisticsLogger')
+
+};
+
+export const KeysTrackableStatistics = {
+  /**
+   * All discovered links during traversal (not only the relevant ones) in form of parent, child
+   */
+  discoveredLinks: new ActionContextKey<IStatisticDiscoveredLinks>('@comunica/bus-context-preprocess:discoveredLinks'),
+  /**
+   * Information about what links are dereferenced and when
+   */
+  dereferencedLinks: new ActionContextKey<IStatisticDereferencedLinks>('@comunica/bus-context-preprocess:dereferenceLink')
 };

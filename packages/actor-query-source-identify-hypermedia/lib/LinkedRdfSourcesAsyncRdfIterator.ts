@@ -1,11 +1,13 @@
 import type { ILink } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { ILinkQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
+import { KeysStatisticsTracker, KeysTrackableStatistics } from '@comunica/context-entries';
 import { MetadataValidationState } from '@comunica/metadata';
-import type { IQuerySource, IActionContext, MetadataBindings, IQueryBindingsOptions } from '@comunica/types';
+import type { IQuerySource, IActionContext, MetadataBindings, IQueryBindingsOptions, IStatisticDiscoveredLinks, IStatisticDereferencedLinks } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator, BufferedIteratorOptions } from 'asynciterator';
 import { BufferedIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
+import type { IActionContextKey } from '../../types/lib';
 
 export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<RDF.Bindings> {
   protected readonly operation: Algebra.Operation;
@@ -260,6 +262,19 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
                   const linkQueue = await this.getLinkQueue();
                   for (const nextUrl of nextUrls) {
                     linkQueue.push(nextUrl, startSource.link);
+
+                    // If any statistic trackers that track discovered links exist in the context,
+                    // we call its function and pass the statistic to it.
+                    // Currently only ONE tracker per key
+                    const statistics = <Map<IActionContextKey<any>, any>> this.context.get(KeysStatisticsTracker.statistics);
+                    const traversalTracker = <IStatisticDiscoveredLinks> statistics?.get(KeysTrackableStatistics.discoveredLinks);
+                    if (traversalTracker) {
+                      const linkStatistic: ILink = {
+                        url: nextUrl.url,
+                        metadata: { ...nextUrl.metadata },
+                      };
+                      traversalTracker.setDiscoveredLink(linkStatistic, startSource.link);
+                    }
                   }
 
                   receivedMetadata = true;
@@ -308,6 +323,18 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
             this.iteratorsPendingCreation++;
             this.sourceStateGetter(nextLink, handledDatasets)
               .then((nextSourceState) => {
+                // INSERT DEREFERENCE EVENT TRACKING HERE
+                const statistics = <Map<IActionContextKey<any>, any>> this.context.get(KeysStatisticsTracker.statistics);
+                const traversalTracker = <IStatisticDereferencedLinks> statistics?.get(KeysTrackableStatistics.dereferencedLinks);
+
+                if (traversalTracker) {
+                  const linkStatistic: ILink = {
+                    url: nextSourceState.link.url,
+                    metadata: { ...nextSourceState.metadata, ...nextSourceState.link.metadata },
+                  };
+                  traversalTracker.setDereferenced(linkStatistic, nextSourceState.source);
+                }
+
                 this.iteratorsPendingCreation--;
                 this.startIterator(nextSourceState);
               })

@@ -23,6 +23,7 @@
     "IQueryEngine",
     "ActionContext",
     "Map",
+    "StatisticLinkDiscovery",
     "Readable",
     "EventEmitter",
     "FetchDocumentLoader",

@@ -6,7 +6,8 @@ import type {
 import { ActorContextPreprocess } from '@comunica/bus-context-preprocess';
 import type { ActorHttpInvalidateListenable, IActionHttpInvalidate } from '@comunica/bus-http-invalidate';
 import type { MediatorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
-import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
+import { ILink } from '@comunica/bus-rdf-resolve-hypermedia-links';
+import { KeysInitQuery, KeysQueryOperation, KeysStatisticsTracker, KeysTrackableStatistics } from '@comunica/context-entries';
 import type { IAction, IActorTest } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
 import type {
@@ -15,6 +16,8 @@ import type {
   QuerySourceUnidentifiedExpanded,
   IActionContext,
   IQuerySourceUnidentifiedExpanded,
+  IActionContextKey,
+  IStatisticDereferencedLinks,
 } from '@comunica/types';
 import { LRUCache } from 'lru-cache';
 
@@ -45,7 +48,6 @@ export class ActorContextPreprocessQuerySourceIdentify extends ActorContextPrepr
 
   public async run(action: IAction): Promise<IActorContextPreprocessOutput> {
     let context = action.context;
-
     // Rewrite sources
     if (context.has(KeysInitQuery.querySourcesUnidentified)) {
       const querySourcesUnidentified: QuerySourceUnidentified[] = action.context
@@ -54,6 +56,21 @@ export class ActorContextPreprocessQuerySourceIdentify extends ActorContextPrepr
         .map(querySource => this.expandSource(querySource)));
       const querySources: IQuerySourceWrapper[] = await Promise.all(querySourcesUnidentifiedExpanded
         .map(async querySourceUnidentified => this.identifySource(querySourceUnidentified, action.context)));
+
+      const statistics = <Map<IActionContextKey<any>, any>> action.context.get(KeysStatisticsTracker.statistics);
+      const traversalTracker = <IStatisticDereferencedLinks> statistics?.get(KeysTrackableStatistics.dereferencedLinks);
+      if (traversalTracker) {
+        for (let i = 0; i < querySources.length; i++){
+          const linkStatistic: ILink = {
+            url: querySources[i].source.referenceValue.toString(),
+            metadata: {
+              seed: true, 
+            },
+          };
+          traversalTracker.setDereferenced(linkStatistic, querySources[i].source);  
+        }
+      }
+
       context = action.context
         .delete(KeysInitQuery.querySourcesUnidentified)
         .set(KeysQueryOperation.querySources, querySources);
