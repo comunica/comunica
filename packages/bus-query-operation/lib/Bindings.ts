@@ -156,21 +156,21 @@ export function materializeOperation(
       // Only include non-projected variables in the sub-bindings that will be passed down recursively.
       // This will result in non-projected variables being replaced with their InitialBindings values.
       let subBindings = bindingsFactory.fromBindings(bindings);
-      bindings.forEach((_, key) => {
-        for (let curVariable of op.variables) {
-          if (termToString(curVariable) === termToString(key)) {
-            subBindings = subBindings.delete(key);
+      for (const binding of bindings) {
+        for (const curVariable of op.variables) {
+          if (termToString(curVariable) === termToString(binding[0])) {
+            subBindings = subBindings.delete(binding[0]);
             break;
           }
         }
-      });
+      }
 
       // Find projected variables which are present in the InitialBindings
       // This will result in projected variables being handled via a values clause.
       const values: Algebra.Operation[] = [];
       const overlappingVariables: RDF.Variable[] = [];
       const overlappingBindings: Record<string, RDF.Literal | RDF.NamedNode>[] = [];
-      originalBindings = originalBindings ? originalBindings : bindings;
+      originalBindings = originalBindings ?? bindings;
       for (const currentVariable of op.variables) {
         if (originalBindings.has(currentVariable)) {
           const newBinding = { [termToString(currentVariable)]:
@@ -178,7 +178,7 @@ export function materializeOperation(
 
           overlappingVariables.push(currentVariable);
           overlappingBindings.push(newBinding);
-          values.push(factory.createValues([currentVariable], [newBinding]));
+          values.push(factory.createValues([ currentVariable ], [ newBinding ]));
         }
       }
 
@@ -191,7 +191,7 @@ export function materializeOperation(
       );
 
       if (values.length > 0) {
-        recursionResult = factory.createJoin(values.concat([recursionResult]));
+        recursionResult = factory.createJoin([ ...values, recursionResult ]);
       }
 
       return {
@@ -200,24 +200,24 @@ export function materializeOperation(
       };
     },
     filter(op: Algebra.Filter, factory: Factory) {
-      originalBindings = originalBindings ? originalBindings : bindings;
+      originalBindings = originalBindings ?? bindings;
 
-      if (op.expression.expressionType !== "operator" || originalBindings.size === 0) {
+      if (op.expression.expressionType !== 'operator' || originalBindings.size === 0) {
         return {
           recurse: false,
           result: op,
-        }
+        };
       }
 
       // Make a values clause using all the variables from InitialBindings
       const values: Algebra.Operation[] = [];
-      for (let [variable, binding] of originalBindings) {
+      for (const [ variable, binding ] of originalBindings) {
         const newBinding = { [termToString(variable)]: <RDF.NamedNode | RDF.Literal> binding };
-        values.push(factory.createValues([variable], [newBinding]));
+        values.push(factory.createValues([ variable ], [ newBinding ]));
       }
 
       // Recursively materialize the filter expression
-      let recursionResultExpression: Algebra.Expression = <Algebra.Expression> materializeOperation(
+      const recursionResultExpression: Algebra.Expression = <Algebra.Expression> materializeOperation(
         op.expression,
         bindings,
         bindingsFactory,
@@ -226,7 +226,7 @@ export function materializeOperation(
       );
 
       // Recursively materialize the filter input
-      let recursionResultInput: Algebra.Operation = materializeOperation(
+      const recursionResultInput: Algebra.Operation = materializeOperation(
         op.input,
         bindings,
         bindingsFactory,
@@ -235,9 +235,13 @@ export function materializeOperation(
       );
 
       return {
-        recurse: false, // Recursion already taken care of above.
-        result: factory.createFilter(factory.createJoin(values.concat([recursionResultInput])), recursionResultExpression),
-      }
+        // Recursion already taken care of above.
+        recurse: false,
+        result: factory.createFilter(
+          factory.createJoin([ ...values, recursionResultInput ]),
+          recursionResultExpression,
+        ),
+      };
     },
     values(op: Algebra.Values, factory: Factory) {
       // Materialize a values operation.
