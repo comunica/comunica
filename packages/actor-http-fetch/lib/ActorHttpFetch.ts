@@ -6,6 +6,7 @@ import type { Readable } from 'readable-stream';
 import 'cross-fetch/polyfill';
 import { FetchInitPreprocessor } from './FetchInitPreprocessor';
 import type { IFetchInitPreprocessor } from './IFetchInitPreprocessor';
+import * as lrucache from '@comunica/actor-http-cache'
 
 /**
  * A node-fetch actor that listens on the 'init' bus.
@@ -91,6 +92,12 @@ export class ActorHttpFetch extends ActorHttp {
   }
 
   public async run(action: IActionHttp): Promise<IActorHttpOutput> {
+    const cache = lrucache.cache.default
+    const url = action.input.toString()
+    console.log('hasthisurl => ', cache.has(url), cache.get(url))
+    cache.set(url, 'test')
+    console.log('hasthisurl => ' , cache.has(url), cache.get(url))
+    
     // Prepare headers
     const initHeaders = action.init?.headers ?? {};
     action.init = action.init ?? {};

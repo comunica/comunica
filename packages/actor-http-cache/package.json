@@ -1,21 +1,23 @@
 {
-  "name": "@comunica/actor-http-fetch",
-  "version": "3.1.0",
-  "description": "A node-fetch http actor",
+  "name": "@comunica/actor-http-cache",
+  "version": "1.0.0",
+  "description": "A cache http actor",
   "lsd:module": true,
   "license": "MIT",
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-http-fetch"
+    "directory": "packages/actor-http-cache"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"
   },
   "keywords": [
     "comunica",
-    "runner"
+    "actor",
+    "http",
+    "cache"
   ],
   "sideEffects": false,
   "main": "lib/index.js",
@@ -35,14 +37,8 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-http": "^3.1.0",
-    "@comunica/actor-http-cache": "^1.0.0",
-    "@comunica/context-entries": "^3.1.0",
-    "@comunica/mediatortype-time": "^3.1.0",
-    "abort-controller": "^3.0.0",
-    "cross-fetch": "^4.0.0"
-  },
-  "browser": {
-    "./lib/FetchInitPreprocessor.js": "./lib/FetchInitPreprocessor-browser.js"
+    "@comunica/bus-http": "^3.0.3",
+    "@comunica/core": "^3.0.3",
+    "lru-cache": "^10.2.2"
   }
 }
