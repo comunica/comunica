@@ -178,7 +178,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           );
         });
 
-        it('is not pushed down FILTER(false)', async() => {
+        it('is not pushed down for FILTER(false)', async() => {
           expect(filterPushdown(
             AF.createTermExpression(DF.literal('false')),
             AF.createExtend(AF.createBgp([]), DF.variable('v'), AF.createTermExpression(DF.namedNode('o'))),
@@ -479,7 +479,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           );
         });
 
-        it('is not pushed down for SELECT(false)', async() => {
+        it('is not pushed down for FILTER(false)', async() => {
           expect(filterPushdown(
             AF.createTermExpression(DF.literal('false')),
             AF.createUnion([

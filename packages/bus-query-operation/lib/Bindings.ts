@@ -25,7 +25,7 @@ const TRUE = DF.literal('true', DF.namedNode('http://www.w3.org/2001/XMLSchema#b
  */
 export function materializeTerm(term: RDF.Term, bindings: Bindings): RDF.Term {
   if (term.termType === 'Variable') {
-    // Replace the variable with it's value in the InitialBindings
+    // Replace the variable with its value in the InitialBindings
     const value = bindings.get(term);
     if (value) {
       return value;
@@ -254,7 +254,7 @@ export function materializeOperation(
           }
         }
       } else {
-        const variablesNotInitialBindings = op.variables.filter(variable => !bindings.has(variable));
+        const variables = op.variables.filter(variable => !bindings.has(variable));
         const valueBindings: Record<string, RDF.Literal | RDF.NamedNode>[] = <any> op.bindings.map((binding) => {
           const newBinding = { ...binding };
           let valid = true;
@@ -274,7 +274,7 @@ export function materializeOperation(
         return {
           recurse: true,
           result: factory.createValues(
-            variablesNotInitialBindings,
+            variables,
             valueBindings,
           ),
         };
