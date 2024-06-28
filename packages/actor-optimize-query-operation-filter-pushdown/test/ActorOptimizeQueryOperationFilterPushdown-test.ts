@@ -177,6 +177,22 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             ),
           );
         });
+
+        it('is not pushed down FILTER(false)', async() => {
+          expect(filterPushdown(
+            AF.createTermExpression(DF.literal('false')),
+            AF.createExtend(AF.createBgp([]), DF.variable('v'), AF.createTermExpression(DF.namedNode('o'))),
+          )).toEqual(
+            AF.createFilter(
+              AF.createExtend(
+                AF.createBgp([]),
+                DF.variable('v'),
+                AF.createTermExpression(DF.namedNode('o')),
+              ),
+              AF.createTermExpression(DF.literal('false')),
+            ),
+          );
+        });
       });
 
       describe('for a filter operation', () => {
@@ -202,6 +218,17 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             AF.createFilter(
               AF.createFilter(AF.createBgp([]), AF.createTermExpression(DF.variable('a'))),
               AF.createOperatorExpression('id', [ AF.createTermExpression(DF.variable('a')) ]),
+            ),
+          );
+        });
+        it('is not pushed down for FILTER(false)', async() => {
+          expect(filterPushdown(
+            AF.createTermExpression(DF.literal('false')),
+            AF.createFilter(AF.createBgp([]), AF.createTermExpression(DF.variable('b'))),
+          )).toEqual(
+            AF.createFilter(
+              AF.createFilter(AF.createBgp([]), AF.createTermExpression(DF.literal('false'))),
+              AF.createTermExpression(DF.variable('b')),
             ),
           );
         });
@@ -249,6 +276,24 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
                 AF.createTermExpression(DF.variable('s')),
                 AF.createTermExpression(DF.variable('x')),
               ]),
+            ),
+          );
+        });
+
+        it('is not pushed down for FILTER(false)', async() => {
+          expect(filterPushdown(
+            AF.createTermExpression(DF.literal('false')),
+            AF.createJoin([
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+              AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
+            ]),
+          )).toEqual(
+            AF.createFilter(
+              AF.createJoin([
+                AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+                AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
+              ]),
+              AF.createTermExpression(DF.literal('false')),
             ),
           );
         });
@@ -354,6 +399,24 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           );
         });
 
+        it('is not pushed down for FILTER(false)', async() => {
+          expect(filterPushdown(
+            AF.createTermExpression(DF.literal('false')),
+            AF.createProject(
+              AF.createBgp([]),
+              [ DF.variable('s'), DF.variable('p') ],
+            ),
+          )).toEqual(
+            AF.createFilter(
+              AF.createProject(
+                AF.createBgp([]),
+                [ DF.variable('s'), DF.variable('p') ],
+              ),
+              AF.createTermExpression(DF.literal('false')),
+            ),
+          );
+        });
+
         it('is voided when variables do not overlap', async() => {
           expect(filterPushdown(
             AF.createTermExpression(DF.variable('s')),
@@ -412,6 +475,24 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
                 AF.createTermExpression(DF.variable('s')),
                 AF.createTermExpression(DF.variable('x')),
               ]),
+            ),
+          );
+        });
+
+        it('is not pushed down for SELECT(false)', async() => {
+          expect(filterPushdown(
+            AF.createTermExpression(DF.literal('false')),
+            AF.createUnion([
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+              AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
+            ]),
+          )).toEqual(
+            AF.createFilter(
+              AF.createUnion([
+                AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+                AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
+              ]),
+              AF.createTermExpression(DF.literal('false')),
             ),
           );
         });
@@ -490,6 +571,24 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
                 [],
               ),
               AF.createTermExpression(DF.variable('s')),
+            ),
+          );
+        });
+
+        it('is not pushed down for FILTER(false)', async() => {
+          expect(filterPushdown(
+            AF.createTermExpression(DF.literal('false')),
+            AF.createValues(
+              [ DF.variable('s'), DF.variable('p') ],
+              [],
+            ),
+          )).toEqual(
+            AF.createFilter(
+              AF.createValues(
+                [ DF.variable('s'), DF.variable('p') ],
+                [],
+              ),
+              AF.createTermExpression(DF.literal('false')),
             ),
           );
         });
