@@ -11,7 +11,8 @@
       "@id": "urn:comunica:default:query-operation/actors#distinct",
       "@type": "ActorQueryOperationDistinctHash",
       "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
-      "mediatorHashBindings": { "@id": "urn:comunica:default:hash-bindings/mediators#main" }
+      "mediatorHashBindings": { "@id": "urn:comunica:default:hash-bindings/mediators#main" },
+      "mediatorHashQuads": { "@id": "urn:comunica:default:hash-quads/mediators#main" }
     }
   ]
 }

@@ -31,7 +31,7 @@ export interface IActionHashQuads extends IAction {
 export interface IActorHashQuadsOutput extends IActorOutput {
   /**
    * A string-based hash of the given object.
-   * @param {Bindings} bindings The bindings to hash.
+   * @param {Quads} quads The quads to hash.
    * @return {string} The object's hash.
    */
   hashFunction: HashFunction;

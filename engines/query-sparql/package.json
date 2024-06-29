@@ -77,6 +77,7 @@
     "@comunica/actor-dereference-http": "^3.0.3",
     "@comunica/actor-dereference-rdf-parse": "^3.0.3",
     "@comunica/actor-hash-bindings-sha1": "^3.0.3",
+    "@comunica/actor-hash-quads-sha1": "^1.0.0",
     "@comunica/actor-http-fetch": "^3.0.3",
     "@comunica/actor-http-proxy": "^3.0.3",
     "@comunica/actor-http-wayback": "^3.0.3",

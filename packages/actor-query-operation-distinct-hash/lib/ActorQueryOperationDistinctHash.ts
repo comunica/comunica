@@ -34,6 +34,7 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
 
   public async runOperation(operation: Algebra.Distinct, context: IActionContext): Promise<IQueryOperationResult> {
     const output = await this.mediatorQueryOperation.mediate({ operation: operation.input, context });
+
     if (output.type === 'quads') {
       const outputQuads: IQueryOperationResultQuads = ActorQueryOperation.getSafeQuads(
         output
@@ -94,4 +95,5 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
 
 export interface IActorQueryOperationDistinctHashArgs extends IActorQueryOperationTypedMediatedArgs {
   mediatorHashBindings: MediatorHashBindings;
+  mediatorHashQuads: MediatorHashQuads;
 }
