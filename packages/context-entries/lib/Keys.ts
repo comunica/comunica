@@ -188,7 +188,7 @@ export const KeysInitQuery = {
   /**
    * A boolean value denoting whether results should be deduplicated or not.
    */
-  distinct: new ActionContextKey<boolean>('@comunica/actor-init-query:noCache'),
+  distinct: new ActionContextKey<boolean>('@comunica/actor-init-query:distinct'),
 };
 
 export const KeysQueryOperation = {

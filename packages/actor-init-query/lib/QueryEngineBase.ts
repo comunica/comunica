@@ -131,7 +131,7 @@ implements IQueryEngine<QueryStringContextInner, QueryAlgebraContextInner> {
       await this.invalidateHttpCache();
     }
 
-    if (actionContext.get(KeysInitQuery.distinct)) {
+    if (actionContext.get(KeysInitQuery.distinct)) { //TODO remove
       console.log('distinct mode');
     }
 

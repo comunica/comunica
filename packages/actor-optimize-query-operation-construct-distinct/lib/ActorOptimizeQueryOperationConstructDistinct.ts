@@ -17,7 +17,10 @@ export class ActorOptimizeQueryOperationConstructDistinct extends ActorOptimizeQ
   }
 
   public async test(action: IActionOptimizeQueryOperation): Promise<IActorTest> {
-    return action.context.has(KeysInitQuery.distinct);
+    if (! action.context.has(KeysInitQuery.distinct)) {
+      throw new Error(`${this.name} was not disabled by the query.`);
+    }
+    return true;
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
