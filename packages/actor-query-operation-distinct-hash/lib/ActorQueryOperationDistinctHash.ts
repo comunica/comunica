@@ -43,7 +43,7 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
       const quadStream: QuadStream = outputQuads.quadStream.filter(await this.newHashFilterQuads(context)); // TODO typing
       return {
         type: 'quads',
-        quadStream: outputQuads.quadStream,
+        quadStream,
         metadata: outputQuads.metadata,
       };
     }
