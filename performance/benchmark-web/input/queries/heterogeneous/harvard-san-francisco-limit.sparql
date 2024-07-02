@@ -1,0 +1,8 @@
+# Datasources: https://fragments.dbpedia.org/2016-04/en http://data.linkeddatafragments.org/viaf http://data.linkeddatafragments.org/harvard
+SELECT ?person ?name ?book ?title {
+  ?person dbpedia-owl:birthPlace [ rdfs:label "San Francisco"@en ].
+  ?viafID schema:sameAs ?person;
+               schema:name ?name.
+  ?book dc:contributor [ foaf:name ?name ];
+              dc:title ?title.
+} LIMIT 100

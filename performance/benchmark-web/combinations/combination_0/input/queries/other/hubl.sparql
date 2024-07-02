@@ -1,0 +1,9 @@
+# Datasource: https://api.community.hubl.world/skills/
+SELECT * WHERE {
+  <https://api.community.hubl.world/skills/> <http://www.w3.org/ns/ldp#contains> ?contains.
+  {
+    { ?contains <http://www.w3.org/2000/01/rdf-schema#label> ?preload_0. }
+    UNION
+    { ?contains <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?preload_1. }
+  }
+}

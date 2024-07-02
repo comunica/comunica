@@ -1437,15 +1437,25 @@
     "@types/yargs" "^17.0.0"
     fs-extra "^10.0.0"
 
-"@jbr-experiment/watdiv@^5.2.0":
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/@jbr-experiment/watdiv/-/watdiv-5.2.0.tgz#321b3b69c9fb979b9ac9dce45a580f9a6c02c90e"
-  integrity sha512-B/5/4QXnWe/HHYPD5KQ8pIltBEBG1NprpDOEUuaSxd/u0W21dI0ZIFE6p58KDnyuFK5QAgFJ9Bo5syfx4XVIqA==
+"@jbr-experiment/sparql-custom@^5.3.0":
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/@jbr-experiment/sparql-custom/-/sparql-custom-5.3.0.tgz#086cd885ad459c80f9b7e1b568947790fba232ba"
+  integrity sha512-HZRzCCEzz0ni3VCwzIdMko7+6EKxJ8mGXGbb3VuXuKb5DABMVERtVE0kOiCXuA30ebUt26TNrzI7g+2HYWOoaw==
   dependencies:
     "@types/fs-extra" "^9.0.11"
     "@types/yargs" "^17.0.0"
     fs-extra "^10.0.0"
-    sparql-benchmark-runner "^4.0.0"
+    sparql-benchmark-runner "^4.2.0"
+
+"@jbr-experiment/watdiv@^5.3.0":
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/@jbr-experiment/watdiv/-/watdiv-5.3.0.tgz#f1c44325c32d507b8bd5dd18254fc24cbb937ba0"
+  integrity sha512-4qW05hpc3pXyWEDeZCcR3vGC5FZdyqiAyxUxM/guJXAHmsec6bokwOZ6Mze7iS9w16IOo3UtWyiXo8BAGTV61g==
+  dependencies:
+    "@types/fs-extra" "^9.0.11"
+    "@types/yargs" "^17.0.0"
+    fs-extra "^10.0.0"
+    sparql-benchmark-runner "^4.2.0"
 
 "@jbr-hook/cli@^5.2.0":
   version "5.2.0"
@@ -6784,10 +6794,10 @@ fetch-sparql-endpoint@^4.0.0, fetch-sparql-endpoint@^4.1.0:
     sparqlxml-parse "^2.1.1"
     stream-to-string "^1.1.0"
 
-fetch-sparql-endpoint@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/fetch-sparql-endpoint/-/fetch-sparql-endpoint-5.0.0.tgz#89b4338752b5a537625458006d89f842697f9948"
-  integrity sha512-I22MKV+A02I1uK5vnDfUxp/dIWwXySgam7FMpbaSvACl3l8FkNzaDg6eolC6WLV+gfLt//I9DnrL0Eqn2DGxwA==
+fetch-sparql-endpoint@^5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/fetch-sparql-endpoint/-/fetch-sparql-endpoint-5.1.0.tgz#95000b48aca1cb601ebd345af24ddbcd173d665c"
+  integrity sha512-ylROBEdVOVzaGdngq3hSGuA/cDtmRiMmPMU75dsu9xatdKEtU39vRp3HbVxdgzqDDX4HU0FnTBQ/+ciMaEBdbA==
   dependencies:
     "@rdfjs/types" "*"
     "@types/n3" "^1.0.0"
@@ -13152,12 +13162,12 @@ spark-md5@^3.0.1:
   resolved "https://registry.npmjs.org/spark-md5/-/spark-md5-3.0.2.tgz"
   integrity sha512-wcFzz9cDfbuqe0FZzfi2or1sgyIrsDwmPwfZC4hiNidPdPINjeUwNfv5kldczoEAcjl9Y1L3SM7Uz2PUEQzxQw==
 
-sparql-benchmark-runner@^4.0.0:
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/sparql-benchmark-runner/-/sparql-benchmark-runner-4.0.2.tgz#8aed69ce6ae4c970861c41f0d95c35417d60ccf4"
-  integrity sha512-5L4gNk2at6CrCjw745BqdGZnP9Zhq/dizARhR0wyWDnAdYGgG/AzDC+dhylWsbVwyfCYvIcuz3CS6pCD+zNXkw==
+sparql-benchmark-runner@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/sparql-benchmark-runner/-/sparql-benchmark-runner-4.2.0.tgz#b7920c10211f102411dc7fe94ec2b5a1a679b09d"
+  integrity sha512-HwLRV9qePW/4CVqsH8y22gfsVqIl9IIJB8CyfQdvhV1GkZsWdijJ9HHg4KEK9URZ7RInE6pwUOzvjLRdYnaFYA==
   dependencies:
-    fetch-sparql-endpoint "^5.0.0"
+    fetch-sparql-endpoint "^5.1.0"
     rdf-string "^1.0.0"
     yargs "^17.0.0"
 
