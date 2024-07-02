@@ -1,0 +1,8 @@
+# Devices with the same OS as the Raspberry Pi
+# Datasource: https://fragments.dbpedia.org/2016-04/en
+SELECT DISTINCT ?device WHERE {
+  dbpedia:Raspberry_Pi dbpprop:os ?operatingSystem.
+  ?device a dbpedia-owl:Device;
+          dbpprop:os ?operatingSystem.
+  FILTER (!(?device = dbpedia:Raspberry_Pi))
+}

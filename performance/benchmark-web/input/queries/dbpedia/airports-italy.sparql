@@ -1,0 +1,6 @@
+# Airports in Italy
+# Datasource: https://fragments.dbpedia.org/2016-04/en
+SELECT DISTINCT ?entity WHERE {
+  ?entity a dbpedia-owl:Airport;
+          dbpprop:cityServed dbpedia:Italy.
+}

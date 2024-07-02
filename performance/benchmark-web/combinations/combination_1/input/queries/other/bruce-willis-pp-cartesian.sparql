@@ -1,0 +1,8 @@
+# Datasource: https://fragments.dbpedia.org/2016-04/en
+SELECT *
+WHERE {
+  [ rdfs:label "Bruce Willis"@en ]
+    (dbpedia-owl:spouse|dbpedia-owl:child) [ rdfs:label ?person ].
+  ?s dbpprop:cityServed dbpedia:Italy.
+}
+

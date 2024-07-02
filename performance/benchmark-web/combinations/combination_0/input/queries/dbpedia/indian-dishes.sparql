@@ -1,0 +1,11 @@
+# Indian dishes that have ingredients in common with Belgian dishes
+# Datasource: https://fragments.dbpedia.org/2016-04/en
+SELECT ?indDish ?belDish ?ingredient
+WHERE {
+  ?indDish a dbpedia-owl:Food;
+           dbpedia-owl:origin dbpedia:India;
+           dbpedia-owl:ingredient ?ingredient.
+  ?belDish a dbpedia-owl:Food;
+           dbpedia-owl:origin dbpedia:Belgium;
+           dbpedia-owl:ingredient ?ingredient.
+}

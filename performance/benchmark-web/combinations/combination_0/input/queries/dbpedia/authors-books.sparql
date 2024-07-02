@@ -1,0 +1,8 @@
+# Authors of books
+# Datasource: https://fragments.dbpedia.org/2016-04/en
+SELECT DISTINCT ?book ?author
+WHERE {
+  ?book rdf:type dbpedia-owl:Book;
+        dbpedia-owl:author ?author.
+}
+LIMIT 100

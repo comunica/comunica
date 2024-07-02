@@ -29,6 +29,6 @@
     "workers": 4,
     "maxMemory": 2084,
     "dataset": "generated/dataset.hdt",
-    "hookSparqlEndpointLdfEngine": {"@id": "urn:jbr:benchmark-bsbm-tpf:hookSparqlEndpoint_hookSparqlEndpointLdfEngine","@type": "HookCli","entrypoint": [  "node",  "../../engines/query-sparql/bin/http.js",  "http://localhost:3000/dataset",  "-p",  "3001",  "-i"],"statsFilePath": "output/stats.csv"  }
+    "hookSparqlEndpointLdfEngine": {"@id": "urn:jbr:benchmark-bsbm-tpf:combination_0:hookSparqlEndpoint_hookSparqlEndpointLdfEngine","@type": "HookCli","entrypoint": [  "node",  "../../engines/query-sparql/bin/http.js",  "http://localhost:3000/dataset",  "-p",  "3001",  "-i"],"statsFilePath": "output/stats.csv"  }
   }
 }
