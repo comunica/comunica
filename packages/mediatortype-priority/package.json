@@ -1,6 +1,6 @@
 {
   "name": "@comunica/mediatortype-priority",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "description": "A comunica mediator type for the 'priority' parameter.",
   "lsd:module": true,
   "license": "MIT",
@@ -34,6 +34,6 @@
     "build": "node \"../../node_modules/typescript/bin/tsc\""
   },
   "dependencies": {
-    "@comunica/core": "^3.0.1"
+    "@comunica/core": "^3.1.0"
   }
 }

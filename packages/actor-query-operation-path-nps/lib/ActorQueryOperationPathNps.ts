@@ -3,7 +3,7 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import {
   ActorQueryOperation,
 } from '@comunica/bus-query-operation';
-import type { Bindings, IActionContext, IQueryOperationResult } from '@comunica/types';
+import type { IActionContext, IQueryOperationResult } from '@comunica/types';
 import { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -25,15 +25,8 @@ export class ActorQueryOperationPathNps extends ActorAbstractPath {
     );
 
     // Remove the generated blank nodes from the bindings
-    const bindingsStream = output.bindingsStream.transform<Bindings>({
-      filter(bindings) {
-        return !predicate.iris.some(iri => iri.equals(bindings.get(blank)));
-      },
-      transform(item, next, push) {
-        push(item.delete(blank));
-        next();
-      },
-    });
+    const bindingsStream = output.bindingsStream
+      .map(bindings => predicate.iris.some(iri => iri.equals(bindings.get(blank))) ? null : bindings.delete(blank));
 
     return {
       type: 'bindings',

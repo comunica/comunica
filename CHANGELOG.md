@@ -1,6 +1,61 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v3.1.2"></a>
+## [v3.1.2](https://github.com/comunica/comunica/compare/v3.1.1...v3.1.2) - 2024-05-30
+
+### Fixed
+* [Fix next page requests not being logged anymore](https://github.com/comunica/comunica/commit/2077d5f56060eabf90b4cdd1255b05d99d921707)
+* [Fix performance regression of TPF queries](https://github.com/comunica/comunica/commit/ae893cb62dc47c5fab4ea334526fa0a28af10581)
+
+### Changed
+* Improve performance:
+  * [Use AsyncIterator.map and .filter instead of expensive .transform](https://github.com/comunica/comunica/commit/50f5fe5f37ce037d66ab67f851ad652d37bbdfbf)
+  * [Improve performance of hashing during hash joins](https://github.com/comunica/comunica/commit/cbfdc3135607c257f37d91a13a8bfb55b9c147d8)
+  * [Optimize usage of bindingsStream transform in PathNps actor](https://github.com/comunica/comunica/commit/c134d3223fd8645820bb4b12cac73b3e5518dbe8)
+* [Use event-emitter-promisify package](https://github.com/comunica/comunica/commit/511d5cf29255b0d7d889378611e8183060c15ea5)
+* [Cleanup stream operations (#1349)](https://github.com/comunica/comunica/commit/15f0aca1759cff91cec1b8680a1e9369cab6f6ba)
+* [Maintain backpressure in result serializers](https://github.com/comunica/comunica/commit/0d7538cb154284af91a5027f89772bb3cc09f6fa)
+* [Maintain backpressure on internal actors](https://github.com/comunica/comunica/commit/18b3ff35f94f720fcc5a50313322d0740f65b848)
+* [Don't log if no sources are pruned](https://github.com/comunica/comunica/commit/718d67ef3ccf19a0d5b839e90e47f88e1fd71e4f)
+* [Use cancel in wayback actor when available, Closes #1351](https://github.com/comunica/comunica/commit/d7ba1239d075da65f272045f0a8850bbc7b2a473)
+
+<a name="v3.1.1"></a>
+## [v3.1.1](https://github.com/comunica/comunica/compare/v3.1.0...v3.1.1) - 2024-05-11
+
+### Fixed
+* [Fix queries over paged collections always being empty](https://github.com/comunica/comunica/commit/a2e47004bcefd82784d9324600aa6c0af13ab751)
+
+<a name="v3.1.0"></a>
+## [v3.1.0](https://github.com/comunica/comunica/compare/v3.0.3...v3.1.0) - 2024-05-11
+
+### Added
+* [Add @comunica/query-sparql-rdfjs-lite that is optimized for bundle size](https://github.com/comunica/comunica/commit/2c982b89ce059113ad6188fa38a322094fd5af15)
+
+### Changed
+* [Migrate from readable-web-to-node-stream to readable-from-web](https://github.com/comunica/comunica/commit/1cf3123f78aa16f901f475aa8bc206145e964256)
+* [Move validateHttpResponse helper to avoid interdependencies](https://github.com/comunica/comunica/commit/07323db89f9d404a744664797e8e9810ba591223)
+
+### Fixed
+* [Avoid race conditions during DELETE/INSERT operations](https://github.com/comunica/comunica/commit/6a3ebf5b7ae9699cac6176f25a1535e064568c7f)
+* [Catch 404 of non-existing resource when fetching the selector shape (#1324)](https://github.com/comunica/comunica/commit/246d83264e44b11eaee0e8ae5ae0b11375d04280)
+* [Always add preprocessed context to unidentified query sources (#1337)](https://github.com/comunica/comunica/commit/cc464d3626dc983a31e42efb5b6b52ae738180cc)
+
+<a name="v3.0.3"></a>
+## [v3.0.3](https://github.com/comunica/comunica/compare/v3.0.2...v3.0.3) - 2024-04-12
+
+### Changed
+* [Add generic type to LinkQueueWrapper (#1322)](https://github.com/comunica/comunica/commit/9e70a6475f6fb581a0ca783826e7307177adfac9)
+
+### Fixed
+* [Fix broken LIMITs on CONSTRUCT queries on SPARQL endpoints, Closes #1319](https://github.com/comunica/comunica/commit/f3f7e05518fb30ee19ffc2fd2a5edeb998d91368)
+
+<a name="v3.0.2"></a>
+## [v3.0.2](https://github.com/comunica/comunica/compare/v3.0.1...v3.0.2) - 2024-04-10
+
+### Fixed
+* [Lower q-value of application/json in fetch requests](https://github.com/comunica/comunica/commit/4409517db9e1f05317589dc23af382fcf76f154b)
+
 <a name="v3.0.1"></a>
 ## [v3.0.1](https://github.com/comunica/comunica/compare/v2.10.2...v3.0.1) - 2024-03-19
 

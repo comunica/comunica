@@ -74,6 +74,17 @@ describe('ActorQueryOperationSource', () => {
     });
 
     describe('run', () => {
+      it('should handle sliced construct operations', async() => {
+        const opIn = ActorQueryOperation.assignOperationSource(
+          AF.createSlice(AF.createConstruct(AF.createNop(), []), 1),
+          source1,
+        );
+        const result: IQueryOperationResultQuads = <any> await actor.run({ operation: opIn, context: ctx });
+        expect(result.type).toBe('quads');
+        await expect(result.metadata()).resolves.toEqual({ cardinality: { value: 10 }});
+        await expect(result.quadStream.toArray()).resolves.toBeRdfIsomorphic([]);
+      });
+
       it('should handle construct operations', async() => {
         const opIn = ActorQueryOperation.assignOperationSource(AF.createConstruct(AF.createNop(), []), source1);
         const result: IQueryOperationResultQuads = <any> await actor.run({ operation: opIn, context: ctx });
@@ -166,11 +177,26 @@ describe('ActorQueryOperationSource', () => {
         await expect(result.bindingsStream).toEqualBindingsStream([]);
       });
 
+      it('should handle sliced bindings operations', async() => {
+        const opIn = ActorQueryOperation.assignOperationSource(AF.createSlice(AF.createNop(), 1), source1);
+        const result: IQueryOperationResultBindings = <any> await actor.run({ operation: opIn, context: ctx });
+        expect(result.type).toBe('bindings');
+        await expect(result.metadata()).resolves.toEqual({
+          cardinality: { value: 10 },
+          canContainUndefs: false,
+          variables: [],
+        });
+        await expect(result.bindingsStream).toEqualBindingsStream([]);
+      });
+
       it('should handle bindings operations and invokes the logger', async() => {
         const parentNode = '';
         const logger: IPhysicalQueryPlanLogger = {
           logOperation: jest.fn(),
           toJson: jest.fn(),
+          stashChildren: jest.fn(),
+          unstashChild: jest.fn(),
+          appendMetadata: jest.fn(),
         };
         ctx = new ActionContext({
           [KeysInitQuery.physicalQueryPlanLogger.name]: logger,

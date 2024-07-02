@@ -163,7 +163,7 @@ export const KeysInitQuery = {
    */
   cliArgsHandlers: new ActionContextKey<ICliArgsHandler[]>('@comunica/actor-init-query:cliArgsHandlers'),
   /**
-   * Explain mode of the query. Can be 'parsed', 'logical', or 'physical'.
+   * Explain mode of the query. Can be 'parsed', 'logical', 'physical', or 'physical-json'.
    */
   explain: new ActionContextKey<QueryExplainMode>('@comunica/actor-init-query:explain'),
   /**
@@ -279,6 +279,13 @@ export const KeysRdfUpdateQuads = {
    * A data destination.
    */
   destination: new ActionContextKey<IDataDestination>('@comunica/bus-rdf-update-quads:destination'),
+};
+
+export const KeysMergeBindingsContext = {
+  /**
+   * The data sources required to produce the binding
+   */
+  sourcesBinding: new ActionContextKey<string[]>('@comunica/bus-merge-bindings-context:sourcesBinding'),
 };
 
 export const KeysRdfJoin = {

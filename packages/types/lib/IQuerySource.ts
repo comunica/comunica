@@ -89,7 +89,7 @@ export interface IQuerySource {
    * @return {AsyncIterator<RDF.Quad>}    The resulting quads stream.
    */
   queryQuads: (
-    operation: Algebra.Construct,
+    operation: Algebra.Operation,
     context: IActionContext,
   ) => AsyncIterator<RDF.Quad>;
 

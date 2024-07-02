@@ -1021,6 +1021,9 @@ IQueryOperationResultBindings
         // Validate physicalPlanMetadata
         expect(physicalPlanMetadata).toEqual({
           bindIndex: 1,
+          bindOperation: FACTORY
+            .createPattern(DF.variable('a'), DF.namedNode('ex:p2'), DF.namedNode('ex:o')),
+          bindOperationCardinality: { type: 'estimate', value: 1 },
           bindOrder: 'depth-first',
         });
 

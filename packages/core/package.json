@@ -1,6 +1,6 @@
 {
   "name": "@comunica/core",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "description": "Lightweight, semantic and modular actor framework",
   "lsd:module": true,
   "license": "MIT",
@@ -36,12 +36,12 @@
     "access": "public"
   },
   "scripts": {
-    "build": "npm run build:ts && npm run build:components",
+    "build": "yarn run build:ts && yarn run build:components",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/types": "^3.0.1",
+    "@comunica/types": "^3.1.0",
     "immutable": "^4.1.0"
   }
 }

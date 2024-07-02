@@ -88,12 +88,16 @@ export class ActorInitQuery<QueryContext extends IQueryContextCommon = IQueryCon
     // Output query explanations in a different way
     if ('explain' in queryResult) {
       return {
-        stdout: streamifyString(JSON.stringify(queryResult.data, (key: string, value: any) => {
-          if (key === 'scopedSource') {
-            return value.source.toString();
-          }
-          return value;
-        }, '  ')),
+        stdout: streamifyString(typeof queryResult.data === 'string' ?
+          // eslint-disable-next-line prefer-template
+          queryResult.data + '\n' :
+          // eslint-disable-next-line prefer-template
+          JSON.stringify(queryResult.data, (key: string, value: any) => {
+            if (key === 'scopedSource') {
+              return value.source.toString();
+            }
+            return value;
+          }, '  ') + '\n'),
       };
     }
 

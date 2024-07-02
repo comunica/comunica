@@ -69,8 +69,8 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     }));
 
     // Only perform next mapping if we have at least one empty operation
-    this.logDebug(action.context, `Pruning ${emptyOperations.size} source-specific operations`);
     if (emptyOperations.size > 0) {
+      this.logDebug(action.context, `Pruning ${emptyOperations.size} source-specific operations`);
       // Rewrite operations by removing the empty children
       operation = Util.mapOperation(operation, {
         [Algebra.types.UNION](subOperation, factory) {

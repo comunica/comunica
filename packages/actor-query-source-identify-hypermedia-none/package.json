@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-source-identify-hypermedia-none",
-  "version": "3.0.1",
+  "version": "3.1.2",
   "description": "A none query-source-identify-hypermedia actor",
   "lsd:module": true,
   "license": "MIT",
@@ -32,15 +32,15 @@
     "lib/**/*.js.map"
   ],
   "scripts": {
-    "build": "npm run build:ts && npm run build:components",
+    "build": "yarn run build:ts && yarn run build:components",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/actor-query-source-identify-rdfjs": "^3.0.1",
-    "@comunica/bindings-factory": "^3.0.1",
-    "@comunica/bus-merge-bindings-context": "^3.0.1",
-    "@comunica/bus-query-source-identify-hypermedia": "^3.0.1",
+    "@comunica/actor-query-source-identify-rdfjs": "^3.1.2",
+    "@comunica/bindings-factory": "^3.1.0",
+    "@comunica/bus-merge-bindings-context": "^3.1.0",
+    "@comunica/bus-query-source-identify-hypermedia": "^3.1.0",
     "rdf-store-stream": "^2.0.0"
   }
 }

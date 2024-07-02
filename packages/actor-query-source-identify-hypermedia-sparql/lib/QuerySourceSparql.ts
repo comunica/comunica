@@ -127,7 +127,7 @@ export class QuerySourceSparql implements IQuerySource {
     return bindings;
   }
 
-  public queryQuads(operation: Algebra.Construct, context: IActionContext): AsyncIterator<RDF.Quad> {
+  public queryQuads(operation: Algebra.Operation, context: IActionContext): AsyncIterator<RDF.Quad> {
     this.lastSourceContext = this.context.merge(context);
     const rawStream = this.endpointFetcher.fetchTriples(
       this.url,

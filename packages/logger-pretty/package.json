@@ -1,6 +1,6 @@
 {
   "name": "@comunica/logger-pretty",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "description": "A comunica logger that pretty-prints.",
   "lsd:module": true,
   "license": "MIT",
@@ -31,12 +31,12 @@
     "lib/**/*.js.map"
   ],
   "scripts": {
-    "build": "npm run build:ts && npm run build:components",
+    "build": "yarn run build:ts && yarn run build:components",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/types": "^3.0.1",
+    "@comunica/types": "^3.1.0",
     "object-inspect": "^1.12.2",
     "process": "^0.11.10"
   }
