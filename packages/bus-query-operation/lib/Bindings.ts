@@ -43,7 +43,7 @@ export function materializeTerm(term: RDF.Term, bindings: Bindings): RDF.Term {
  * which don't appear in the projection operation will be replaced
  * by the terms bound to the variables in the given bindings.
  * @param {Algebra.Operation} operation SPARQL algebra operation.
- * And the variables that appear in the SELECT clause
+ * And the variables that appear in the projection operation
  * will be added to a VALUES clause.
  * @param {Bindings} bindings A bindings object.
  * @param bindingsFactory The bindings factory.
