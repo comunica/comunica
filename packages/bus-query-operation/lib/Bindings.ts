@@ -50,6 +50,7 @@ export function materializeTerm(term: RDF.Term, bindings: Bindings): RDF.Term {
  * @param options Options for materializations.
  * @param options.strictTargetVariables If target variable bindings (such as on SELECT or BIND) should not be allowed.
  * @param options.bindFilter If filter expressions should be materialized
+ * @param options.bindFilter The bindings object as it was at the top level call of the recursive materializeOperation.
  * @return Algebra.Operation A new operation materialized with the given bindings.
  */
 export function materializeOperation(
@@ -59,12 +60,14 @@ export function materializeOperation(
   options: {
     strictTargetVariables?: boolean;
     bindFilter?: boolean;
+    originalBindings?: Bindings;
   } = {},
-  originalBindings?: Bindings,
+  
 ): Algebra.Operation {
   options = {
     strictTargetVariables: 'strictTargetVariables' in options ? options.strictTargetVariables : false,
     bindFilter: 'bindFilter' in options ? options.bindFilter : true,
+    originalBindings: 'originalBindings' in options ? options.originalBindings : bindings,
   };
 
   return Util.mapOperation(operation, {
@@ -170,7 +173,7 @@ export function materializeOperation(
       const values: Algebra.Operation[] = [];
       const overlappingVariables: RDF.Variable[] = [];
       const overlappingBindings: Record<string, RDF.Literal | RDF.NamedNode>[] = [];
-      originalBindings = originalBindings ?? bindings;
+      const originalBindings: Bindings = options.originalBindings ?? bindings;
       for (const currentVariable of op.variables) {
         if (originalBindings.has(currentVariable)) {
           const newBinding = { [termToString(currentVariable)]:
@@ -187,7 +190,6 @@ export function materializeOperation(
         subBindings,
         bindingsFactory,
         options,
-        originalBindings,
       );
 
       if (values.length > 0) {
@@ -200,8 +202,7 @@ export function materializeOperation(
       };
     },
     filter(op: Algebra.Filter, factory: Factory) {
-      originalBindings = originalBindings ?? bindings;
-
+      const originalBindings: Bindings = options.originalBindings ?? bindings;
       if (op.expression.expressionType !== 'operator' || originalBindings.size === 0) {
         return {
           recurse: false,
@@ -222,7 +223,6 @@ export function materializeOperation(
         bindings,
         bindingsFactory,
         options,
-        originalBindings,
       );
 
       // Recursively materialize the filter input
@@ -231,7 +231,6 @@ export function materializeOperation(
         bindings,
         bindingsFactory,
         options,
-        originalBindings,
       );
 
       return {
