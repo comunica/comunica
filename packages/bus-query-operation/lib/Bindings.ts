@@ -25,6 +25,7 @@ const TRUE = DF.literal('true', DF.namedNode('http://www.w3.org/2001/XMLSchema#b
  */
 export function materializeTerm(term: RDF.Term, bindings: Bindings): RDF.Term {
   if (term.termType === 'Variable') {
+    // Replace the variable with its value in the InitialBindings
     const value = bindings.get(term);
     if (value) {
       return value;
@@ -38,9 +39,12 @@ export function materializeTerm(term: RDF.Term, bindings: Bindings): RDF.Term {
 
 /**
  * Materialize the given operation (recursively) with the given bindings.
- * Essentially, all variables in the given operation will be replaced
+ * Essentially, the variables in the given operation
+ * which don't appear in the projection operation will be replaced
  * by the terms bound to the variables in the given bindings.
  * @param {Algebra.Operation} operation SPARQL algebra operation.
+ * And the variables that appear in the projection operation
+ * will be added to a new values operation.
  * @param {Bindings} bindings A bindings object.
  * @param bindingsFactory The bindings factory.
  * @param options Options for materializations.
@@ -56,6 +60,7 @@ export function materializeOperation(
     strictTargetVariables?: boolean;
     bindFilter?: boolean;
   } = {},
+  originalBindings?: Bindings,
 ): Algebra.Operation {
   options = {
     strictTargetVariables: 'strictTargetVariables' in options ? options.strictTargetVariables : false,
@@ -135,7 +140,7 @@ export function materializeOperation(
     project(op: Algebra.Project, factory: Factory) {
       // Materialize a project operation.
       // If strictTargetVariables is true, we throw if the project target variable is attempted to be bound.
-      // Otherwise, we just filter out the bound variables.
+      // Otherwise, we make a values clause out of the target variable and its value in InitialBindings.
       if (options.strictTargetVariables) {
         for (const variable of op.variables) {
           if (bindings.has(variable)) {
@@ -148,29 +153,93 @@ export function materializeOperation(
         };
       }
 
-      const variables = op.variables.filter(variable => !bindings.has(variable));
-
-      // Only include projected variables in the sub-bindings that will be passed down recursively.
-      // If we don't do this, we may be binding variables that may have the same label, but are not considered equal.
-      const subBindings = bindingsFactory.bindings(<[RDF.Variable, RDF.Term][]> op.variables.map((variable) => {
-        const binding = bindings.get(variable);
-        if (binding) {
-          return [ variable, binding ];
+      // Only include non-projected variables in the sub-bindings that will be passed down recursively.
+      // This will result in non-projected variables being replaced with their InitialBindings values.
+      let subBindings = bindingsFactory.fromBindings(bindings);
+      for (const binding of bindings) {
+        for (const curVariable of op.variables) {
+          if (termToString(curVariable) === termToString(binding[0])) {
+            subBindings = subBindings.delete(binding[0]);
+            break;
+          }
         }
-        // eslint-disable-next-line no-useless-return,array-callback-return
-        return;
-      }).filter(Boolean));
+      }
+
+      // Find projected variables which are present in the InitialBindings
+      // This will result in projected variables being handled via a values clause.
+      const values: Algebra.Operation[] = [];
+      const overlappingVariables: RDF.Variable[] = [];
+      const overlappingBindings: Record<string, RDF.Literal | RDF.NamedNode>[] = [];
+      originalBindings = originalBindings ?? bindings;
+      for (const currentVariable of op.variables) {
+        if (originalBindings.has(currentVariable)) {
+          const newBinding = { [termToString(currentVariable)]:
+            <RDF.NamedNode | RDF.Literal> originalBindings.get(currentVariable) };
+
+          overlappingVariables.push(currentVariable);
+          overlappingBindings.push(newBinding);
+          values.push(factory.createValues([ currentVariable ], [ newBinding ]));
+        }
+      }
+
+      let recursionResult: Algebra.Operation = materializeOperation(
+        op.input,
+        subBindings,
+        bindingsFactory,
+        options,
+        originalBindings,
+      );
+
+      if (values.length > 0) {
+        recursionResult = factory.createJoin([ ...values, recursionResult ]);
+      }
 
       return {
         recurse: false,
-        result: factory.createProject(
-          materializeOperation(
-            op.input,
-            subBindings,
-            bindingsFactory,
-            options,
-          ),
-          variables,
+        result: factory.createProject(recursionResult, op.variables),
+      };
+    },
+    filter(op: Algebra.Filter, factory: Factory) {
+      originalBindings = originalBindings ?? bindings;
+
+      if (op.expression.expressionType !== 'operator' || originalBindings.size === 0) {
+        return {
+          recurse: false,
+          result: op,
+        };
+      }
+
+      // Make a values clause using all the variables from InitialBindings
+      const values: Algebra.Operation[] = [];
+      for (const [ variable, binding ] of originalBindings) {
+        const newBinding = { [termToString(variable)]: <RDF.NamedNode | RDF.Literal> binding };
+        values.push(factory.createValues([ variable ], [ newBinding ]));
+      }
+
+      // Recursively materialize the filter expression
+      const recursionResultExpression: Algebra.Expression = <Algebra.Expression> materializeOperation(
+        op.expression,
+        bindings,
+        bindingsFactory,
+        options,
+        originalBindings,
+      );
+
+      // Recursively materialize the filter input
+      const recursionResultInput: Algebra.Operation = materializeOperation(
+        op.input,
+        bindings,
+        bindingsFactory,
+        options,
+        originalBindings,
+      );
+
+      return {
+        // Recursion already taken care of above.
+        recurse: false,
+        result: factory.createFilter(
+          factory.createJoin([ ...values, recursionResultInput ]),
+          recursionResultExpression,
         ),
       };
     },

@@ -48,6 +48,6 @@
     "fetch-sparql-endpoint": "^4.1.0",
     "lru-cache": "^10.0.0",
     "rdf-data-factory": "^1.1.1",
-    "sparqlalgebrajs": "^4.3.3"
+    "sparqlalgebrajs": "^4.3.7"
   }
 }

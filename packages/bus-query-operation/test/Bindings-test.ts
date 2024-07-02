@@ -1,4 +1,5 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
+import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { materializeOperation, materializeTerm } from '..';
@@ -35,6 +36,11 @@ const bindingsAB = BF.bindings([
   [ DF.variable('a'), valueA ],
   [ DF.variable('b'), valueB ],
 ]);
+
+const valuesBindingsA: Record<string, RDF.Literal | RDF.NamedNode> = {};
+valuesBindingsA[`?${termVariableA.value}`] = <RDF.Literal> bindingsA.get(termVariableA);
+const valuesBindingsB: Record<string, RDF.Literal | RDF.NamedNode> = {};
+valuesBindingsB[`?${termVariableB.value}`] = <RDF.Literal> bindingsAB.get(termVariableB);
 
 describe('materializeTerm', () => {
   it('should not materialize a named node with empty bindings', () => {
@@ -485,8 +491,11 @@ describe('materializeOperation', () => {
       BF,
     ))
       .toEqual(factory.createProject(
-        factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
-        [ termVariableB, termVariableD ],
+        factory.createJoin([
+          factory.createValues([ termVariableA ], [ valuesBindingsA ]),
+          factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
+        ]),
+        [ termVariableA, termVariableB, termVariableD ],
       ));
   });
 
@@ -529,8 +538,11 @@ describe('materializeOperation', () => {
       BF,
     ))
       .toEqual(factory.createProject(
-        factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
-        [ termVariableD ],
+        factory.createJoin([
+          factory.createValues([ termVariableA ], [ valuesBindingsA ]),
+          factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
+        ]),
+        [ termVariableA, termVariableD ],
       ));
   });
 
@@ -544,8 +556,38 @@ describe('materializeOperation', () => {
       BF,
     ))
       .toEqual(factory.createProject(
-        factory.createPattern(termVariableA, termNamedNode, valueB, termNamedNode),
-        [ termVariableD ],
+        factory.createJoin([
+          factory.createValues([ termVariableB ], [ valuesBindingsB ]),
+          factory.createPattern(valueA, termNamedNode, termVariableB, termNamedNode),
+        ]),
+        [ termVariableD, termVariableB ],
+      ));
+  });
+
+  it('should use the original InitialBindings in recursive calls with nested project expressions', () => {
+    expect(materializeOperation(
+      factory.createProject(
+        factory.createProject(
+          factory.createPattern(termVariableA, termNamedNode, termVariableB, termNamedNode),
+          [ termVariableD, termVariableB ],
+        ),
+        [ termVariableD, termVariableB ],
+      ),
+      bindingsAB,
+      BF,
+    ))
+      .toEqual(factory.createProject(
+        factory.createJoin([
+          factory.createValues([ termVariableB ], [ valuesBindingsB ]),
+          factory.createProject(
+            factory.createJoin([
+              factory.createValues([ termVariableB ], [ valuesBindingsB ]),
+              factory.createPattern(valueA, termNamedNode, termVariableB, termNamedNode),
+            ]),
+            [ termVariableD, termVariableB ],
+          ),
+        ]),
+        [ termVariableD, termVariableB ],
       ));
   });
 
@@ -627,6 +669,33 @@ describe('materializeOperation', () => {
       ));
   });
 
+  it('should not modify a filter expression without operator as expression', () => {
+    expect(materializeOperation(
+      factory.createFilter(
+        factory.createJoin([
+          factory.createValues([ termVariableA ], [ valuesBindingsA ]),
+          factory.createBgp([
+            factory.createPattern(termVariableB, termNamedNode, termVariableC, termNamedNode),
+            factory.createPattern(termNamedNode, termVariableB, termVariableC, termNamedNode),
+          ]),
+        ]),
+        factory.createTermExpression(termNamedNode),
+      ),
+      bindingsA,
+      BF,
+    ))
+      .toEqual(factory.createFilter(
+        factory.createJoin([
+          factory.createValues([ termVariableA ], [ valuesBindingsA ]),
+          factory.createBgp([
+            factory.createPattern(termVariableB, termNamedNode, termVariableC, termNamedNode),
+            factory.createPattern(termNamedNode, termVariableB, termVariableC, termNamedNode),
+          ]),
+        ]),
+        factory.createTermExpression(termNamedNode),
+      ));
+  });
+
   it('should not modify a filter expression without matching variables', () => {
     expect(materializeOperation(
       factory.createFilter(
@@ -643,9 +712,12 @@ describe('materializeOperation', () => {
       BF,
     ))
       .toEqual(factory.createFilter(
-        factory.createBgp([
-          factory.createPattern(termVariableB, termNamedNode, termVariableC, termNamedNode),
-          factory.createPattern(termNamedNode, termVariableB, termVariableC, termNamedNode),
+        factory.createJoin([
+          factory.createValues([ termVariableA ], [ valuesBindingsA ]),
+          factory.createBgp([
+            factory.createPattern(termVariableB, termNamedNode, termVariableC, termNamedNode),
+            factory.createPattern(termNamedNode, termVariableB, termVariableC, termNamedNode),
+          ]),
         ]),
         factory.createOperatorExpression('contains', [
           factory.createTermExpression(termVariableB),
@@ -670,9 +742,12 @@ describe('materializeOperation', () => {
       BF,
     ))
       .toEqual(factory.createFilter(
-        factory.createBgp([
-          factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
-          factory.createPattern(termNamedNode, termVariableB, termVariableC, termNamedNode),
+        factory.createJoin([
+          factory.createValues([ termVariableA ], [ valuesBindingsA ]),
+          factory.createBgp([
+            factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
+            factory.createPattern(termNamedNode, termVariableB, termVariableC, termNamedNode),
+          ]),
         ]),
         factory.createOperatorExpression('contains', [
           factory.createTermExpression(valueA),
@@ -697,9 +772,12 @@ describe('materializeOperation', () => {
       BF,
     ))
       .toEqual(factory.createFilter(
-        factory.createBgp([
-          factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
-          factory.createPattern(termNamedNode, termVariableB, termVariableC, termNamedNode),
+        factory.createJoin([
+          factory.createValues([ termVariableA ], [ valuesBindingsA ]),
+          factory.createBgp([
+            factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
+            factory.createPattern(termNamedNode, termVariableB, termVariableC, termNamedNode),
+          ]),
         ]),
         factory.createOperatorExpression('contains', [
           factory.createTermExpression(DF.literal('true', DF.namedNode('http://www.w3.org/2001/XMLSchema#boolean'))),
@@ -727,9 +805,12 @@ describe('materializeOperation', () => {
       BF,
     ))
       .toEqual(factory.createFilter(
-        factory.createBgp([
-          factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
-          factory.createPattern(termNamedNode, termVariableB, termVariableC, termNamedNode),
+        factory.createJoin([
+          factory.createValues([ termVariableA ], [ valuesBindingsA ]),
+          factory.createBgp([
+            factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
+            factory.createPattern(termNamedNode, termVariableB, termVariableC, termNamedNode),
+          ]),
         ]),
         factory.createOperatorExpression('contains', [
           factory.createOperatorExpression('bound', [
@@ -761,9 +842,12 @@ describe('materializeOperation', () => {
       BF,
     ))
       .toEqual(factory.createFilter(
-        factory.createBgp([
-          factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
-          factory.createPattern(termNamedNode, termVariableB, termVariableC, termNamedNode),
+        factory.createJoin([
+          factory.createValues([ termVariableA ], [ valuesBindingsA ]),
+          factory.createBgp([
+            factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
+            factory.createPattern(termNamedNode, termVariableB, termVariableC, termNamedNode),
+          ]),
         ]),
         factory.createOperatorExpression('contains', [
           factory.createOperatorExpression('bound', [
@@ -793,12 +877,61 @@ describe('materializeOperation', () => {
       { bindFilter: false },
     ))
       .toEqual(factory.createFilter(
-        factory.createBgp([
-          factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
-          factory.createPattern(termNamedNode, termVariableB, termVariableC, termNamedNode),
+        factory.createJoin([
+          factory.createValues([ termVariableA ], [ valuesBindingsA ]),
+          factory.createBgp([
+            factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
+            factory.createPattern(termNamedNode, termVariableB, termVariableC, termNamedNode),
+          ]),
         ]),
+
         factory.createOperatorExpression('contains', [
           factory.createTermExpression(termVariableA),
+          factory.createTermExpression(termVariableB),
+        ]),
+      ));
+  });
+
+  it('should use the original InitialBindings in recursive calls with nested filter expressions', () => {
+    expect(materializeOperation(
+      factory.createFilter(
+        factory.createFilter(
+          factory.createBgp([
+            factory.createPattern(termVariableB, termNamedNode, termVariableC, termNamedNode),
+            factory.createPattern(termNamedNode, termVariableB, termVariableC, termNamedNode),
+          ]),
+          factory.createOperatorExpression('contains', [
+            factory.createTermExpression(termVariableB),
+            factory.createTermExpression(termVariableB),
+          ]),
+        ),
+        factory.createOperatorExpression('contains', [
+          factory.createTermExpression(termVariableB),
+          factory.createTermExpression(termVariableB),
+        ]),
+      ),
+      bindingsA,
+      BF,
+    ))
+      .toEqual(factory.createFilter(
+        factory.createJoin([
+          factory.createValues([ termVariableA ], [ valuesBindingsA ]),
+          factory.createFilter(
+            factory.createJoin([
+              factory.createValues([ termVariableA ], [ valuesBindingsA ]),
+              factory.createBgp([
+                factory.createPattern(termVariableB, termNamedNode, termVariableC, termNamedNode),
+                factory.createPattern(termNamedNode, termVariableB, termVariableC, termNamedNode),
+              ]),
+            ]),
+            factory.createOperatorExpression('contains', [
+              factory.createTermExpression(termVariableB),
+              factory.createTermExpression(termVariableB),
+            ]),
+          ),
+        ]),
+        factory.createOperatorExpression('contains', [
+          factory.createTermExpression(termVariableB),
           factory.createTermExpression(termVariableB),
         ]),
       ));
