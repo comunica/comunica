@@ -25,7 +25,6 @@ const TRUE = DF.literal('true', DF.namedNode('http://www.w3.org/2001/XMLSchema#b
  */
 export function materializeTerm(term: RDF.Term, bindings: Bindings): RDF.Term {
   if (term.termType === 'Variable') {
-    // Replace the variable with its value in the InitialBindings
     const value = bindings.get(term);
     if (value) {
       return value;
