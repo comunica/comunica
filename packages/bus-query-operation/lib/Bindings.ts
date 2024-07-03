@@ -160,7 +160,7 @@ export function materializeOperation(
       const originalBindings: Bindings = options.originalBindings ?? bindings;
       for (const binding of bindings) {
         for (const curVariable of op.variables) {
-          if (termToString(curVariable) === termToString(binding[0])) {
+          if (curVariable.equals(binding[0])) {
             bindings = bindings.delete(binding[0]);
             break;
           }
