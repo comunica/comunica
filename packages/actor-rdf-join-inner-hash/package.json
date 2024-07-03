@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-inner-hash",
-  "version": "3.0.3",
+  "version": "3.1.2",
   "description": "A hash rdf-join actor",
   "lsd:module": true,
   "license": "MIT",
@@ -32,14 +32,14 @@
     "lib/**/*.js.map"
   ],
   "scripts": {
-    "build": "npm run build:ts && npm run build:components",
+    "build": "yarn run build:ts && yarn run build:components",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-rdf-join": "^3.0.3",
-    "@comunica/mediatortype-join-coefficients": "^3.0.3",
-    "@comunica/types": "^3.0.3",
-    "asyncjoin": "^1.2.0"
+    "@comunica/bus-rdf-join": "^3.1.2",
+    "@comunica/mediatortype-join-coefficients": "^3.1.0",
+    "@comunica/types": "^3.1.0",
+    "asyncjoin": "^1.2.3"
   }
 }

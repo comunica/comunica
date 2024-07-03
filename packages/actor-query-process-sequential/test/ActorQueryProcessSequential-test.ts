@@ -110,6 +110,7 @@ describe('ActorQueryProcessSequential', () => {
 
         expect(mediatorContextPreprocess.mediate).toHaveBeenCalledWith({
           context: new ActionContext(),
+          initialize: true,
         });
         expect(mediatorQueryParse.mediate).not.toHaveBeenCalled();
         expect(mediatorOptimizeQueryOperation.mediate).toHaveBeenCalledWith({
@@ -138,6 +139,7 @@ describe('ActorQueryProcessSequential', () => {
 
         expect(mediatorContextPreprocess.mediate).toHaveBeenCalledWith({
           context: new ActionContext(),
+          initialize: true,
         });
         expect(mediatorQueryParse.mediate).toHaveBeenCalledWith({
           context: new ActionContext()
@@ -155,6 +157,7 @@ describe('ActorQueryProcessSequential', () => {
 
         expect(mediatorContextPreprocess.mediate).toHaveBeenCalledWith({
           context: new ActionContext(),
+          initialize: true,
         });
         expect(mediatorQueryParse.mediate).toHaveBeenCalledWith({
           context: new ActionContext()
@@ -179,6 +182,7 @@ describe('ActorQueryProcessSequential', () => {
 
         expect(mediatorContextPreprocess.mediate).toHaveBeenCalledWith({
           context: new ActionContext(),
+          initialize: true,
         });
         expect(mediatorQueryParse.mediate).toHaveBeenCalledWith({
           context: new ActionContext()
@@ -200,6 +204,7 @@ describe('ActorQueryProcessSequential', () => {
 
         expect(mediatorContextPreprocess.mediate).toHaveBeenCalledWith({
           context: new ActionContext(),
+          initialize: true,
         });
         expect(mediatorQueryParse.mediate).not.toHaveBeenCalled();
       });
@@ -223,6 +228,7 @@ describe('ActorQueryProcessSequential', () => {
         expect(mediatorContextPreprocess.mediate).toHaveBeenCalledWith({
           context: new ActionContext()
             .set(KeysInitQuery.initialBindings, BF.fromRecord({ vo: DF.namedNode('o') })),
+          initialize: true,
         });
         expect(mediatorQueryParse.mediate).not.toHaveBeenCalled();
       });

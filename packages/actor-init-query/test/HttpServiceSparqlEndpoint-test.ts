@@ -71,6 +71,9 @@ describe('HttpServiceSparqlEndpoint', () => {
     // Assume worker thread in all tests by default
     (<any> cluster).isMaster = false;
     jest.clearAllMocks();
+
+    process.removeAllListeners('message');
+    process.removeAllListeners('uncaughtException');
   });
 
   afterAll(() => {
@@ -1774,21 +1777,23 @@ describe('HttpServiceSparqlEndpoint', () => {
       let response: any;
       let eventEmitter: any;
       const endListener = jest.fn();
+      let stderr: PassThrough;
       beforeEach(() => {
         endListener.mockClear();
         (<any> instance).timeout = 1_500;
         response = new ServerResponseMock();
         eventEmitter = stringToStream('queryresult');
         eventEmitter.addListener('test', endListener);
+        stderr = new PassThrough();
       });
 
       it('should not error when eventEmitter is undefined', async() => {
-        instance.stopResponse(response, 0);
+        instance.stopResponse(response, 0, stderr);
         response.emit('close');
       });
 
       it('should do nothing when no timeout or close event occurs', async() => {
-        instance.stopResponse(response, 0, eventEmitter);
+        instance.stopResponse(response, 0, stderr, eventEmitter);
         // Not waiting for timeout to occur
 
         expect(eventEmitter.listeners('test')).toHaveLength(1);
@@ -1798,7 +1803,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       it('should remove event eventlisteners from eventEmitter when response is closed', async() => {
-        instance.stopResponse(response, 0, eventEmitter);
+        instance.stopResponse(response, 0, stderr, eventEmitter);
         response.emit('close');
 
         expect(eventEmitter.listeners('test')).toHaveLength(0);
@@ -1807,7 +1812,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       it('should void error events', async() => {
-        instance.stopResponse(response, 0, eventEmitter);
+        instance.stopResponse(response, 0, stderr, eventEmitter);
         response.emit('close');
 
         eventEmitter.emit('error', new Error('Ignored stopResponse error'));
@@ -1816,7 +1821,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       it('should exit when freshWorkerPerQuery is enabled', async() => {
         instance = new HttpServiceSparqlEndpoint({ ...argsDefault, workers: 4, freshWorkerPerQuery: true });
 
-        instance.stopResponse(response, 0, eventEmitter);
+        instance.stopResponse(response, 0, stderr, eventEmitter);
         response.emit('close');
 
         expect(process.exit).toHaveBeenCalledWith(15);

@@ -32,6 +32,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
       logicalType: 'inner',
       physicalName: 'bind',
       canHandleUndefs: true,
+      isLeaf: false,
     });
   }
 
@@ -55,6 +56,9 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
     optional: boolean,
     bindingsFactory: BindingsFactory,
   ): BindingsStream {
+    // Enable auto-start on sub-bindings during depth-first binding for best performance.
+    const autoStartSubBindings = bindOrder === 'depth-first';
+
     // Create bindings function
     const binder = (bindings: Bindings): BindingsStream => {
       // We don't bind the filter because filters are always handled last,
@@ -63,7 +67,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
         .map(operation => materializeOperation(operation, bindings, bindingsFactory, { bindFilter: true }));
       const bindingsMerger = (subBindings: Bindings): Bindings | undefined => subBindings.merge(bindings);
       return new TransformIterator(async() => (await operationBinder(subOperations, bindings))
-        .transform({ map: bindingsMerger }), { maxBufferSize: 128, autoStart: false });
+        .transform({ map: bindingsMerger }), { maxBufferSize: 128, autoStart: autoStartSubBindings });
     };
 
     // Create an iterator that binds elements from the base stream in different orders
@@ -136,6 +140,8 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
       },
       physicalPlanMetadata: {
         bindIndex: entriesUnsorted.indexOf(entries[0]),
+        bindOperation: entries[0].operation,
+        bindOperationCardinality: entries[0].metadata.cardinality,
         bindOrder: this.bindOrder,
       },
     };

@@ -1,42 +1,36 @@
-/* eslint-disable jest/require-top-level-describe */
-import { resolve } from 'node:path';
-import { Polly } from '@pollyjs/core';
-import { setupPolly } from 'setup-polly-jest';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 
-const NodeHttpAdapter = require('@pollyjs/adapter-node-http');
-const FSPersister = require('@pollyjs/persister-fs');
+const md5 = require('md5');
 
-const recordingsDir = resolve(__dirname, './assets/http');
+const fetchFn = globalThis.fetch;
 
-Polly.register(FSPersister);
-Polly.register(NodeHttpAdapter);
+export async function fetch(...args: Parameters<typeof fetchFn>): ReturnType<typeof fetchFn> {
+  const options = { ...args[1] };
+  for (const key in options) {
+    if (typeof options[<keyof typeof options> key] === 'undefined') {
+      delete options[<keyof typeof options> key];
+    }
+  }
 
-// Configure everything related to PollyJS
-export function usePolly() {
-  const pollyContext = mockHttp();
+  // @ts-expect-error
+  options.headers = Object.fromEntries(options.headers?.entries() ?? []);
 
-  beforeEach(() => {
-    pollyContext.polly.server.any().on('beforePersist', (req, recording) => {
-      recording.request.headers = recording.request.headers.filter(({ name }: any) => name !== 'user-agent');
-    });
-  });
-
-  afterEach(async() => {
-    await pollyContext.polly.flush();
-  });
-}
-
-// Mocks HTTP requests using Polly.JS
-export function mockHttp() {
-  return setupPolly({
-    adapters: [ NodeHttpAdapter ],
-    persister: FSPersister,
-    persisterOptions: { fs: { recordingsDir }},
-    recordFailedRequests: true,
-    matchRequestsBy: {
-      headers: {
-        exclude: [ 'user-agent' ],
-      },
-    },
-  });
-}
+  const json = JSON.stringify([
+    // eslint-disable-next-line ts/no-base-to-string
+    args[0].toString(),
+    Object.entries(options).sort(([ a ], [ b ]) => a.localeCompare(b)),
+  ]);
+  const pth = path.join(__dirname, 'networkCache', md5(json));
+  if (!fs.existsSync(pth)) {
+    const res = await fetchFn(...args);
+    fs.writeFileSync(pth, JSON.stringify({
+      ...res,
+      content: await res.text(),
+      // @ts-expect-error
+      headers: [ ...res.headers.entries() ],
+    }));
+  }
+  const { content, ...init } = JSON.parse(fs.readFileSync(pth).toString());
+  return new Response(content, init);
+};

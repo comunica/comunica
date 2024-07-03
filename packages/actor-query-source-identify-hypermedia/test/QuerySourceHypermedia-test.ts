@@ -167,6 +167,11 @@ describe('QuerySourceHypermedia', () => {
           }),
         ]);
         await expect(metaPromise).resolves.toEqual({
+          a: 1,
+          cardinality: {
+            type: 'estimate',
+            value: Number.POSITIVE_INFINITY,
+          },
           state: expect.any(MetadataValidationState),
           firstMeta: true,
         });
@@ -291,8 +296,10 @@ describe('QuerySourceHypermedia', () => {
           }),
         ]);
         await expect(metaPromise).resolves.toEqual({
+          a: 2,
           state: expect.any(MetadataValidationState),
-          cardinality: { type: 'exact', value: 1 },
+          cardinality: { type: 'exact', value: 2 },
+          canContainUndefs: false,
           firstMeta: true,
         });
       });
@@ -731,6 +738,7 @@ describe('QuerySourceHypermedia', () => {
 
         expect(it1Meta).toHaveBeenCalledTimes(4);
         expect(it1Meta).toHaveBeenNthCalledWith(1, {
+          a: 1,
           state: expect.any(MetadataValidationState),
           firstMeta: true,
           cardinality: { type: 'exact', value: 2 },

@@ -89,11 +89,11 @@ export class MediatorJoinCoefficientsFixed
         costs: Object.fromEntries(costs.map((coeff, i) => [
           `${testResults[i].actor.logicalType}-${testResults[i].actor.physicalName}`,
           coeff,
-        ])),
+        ]).filter(entry => entry[1] !== undefined)),
         coefficients: Object.fromEntries(coefficients.map((coeff, i) => [
           `${testResults[i].actor.logicalType}-${testResults[i].actor.physicalName}`,
           coeff,
-        ])),
+        ]).filter(entry => entry[1] !== undefined)),
       });
     }
 

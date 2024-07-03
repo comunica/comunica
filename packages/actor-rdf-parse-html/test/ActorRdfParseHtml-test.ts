@@ -1,4 +1,4 @@
-import type { Readable } from 'node:stream';
+import { Readable } from 'node:stream';
 import { ActorRdfParseHtmlRdfa } from '@comunica/actor-rdf-parse-html-rdfa';
 import { ActorRdfParseHtmlScript } from '@comunica/actor-rdf-parse-html-script';
 import { ActorRdfParseJsonLd } from '@comunica/actor-rdf-parse-jsonld';
@@ -113,7 +113,7 @@ describe('ActorRdfParseHtml', () => {
           handle: { data: input, metadata: { baseIRI: '' }, context },
           handleMediaType: 'application/json',
           context,
-        })).rejects.toBeTruthy();
+        })).rejects.toEqual(new Error('Unrecognized media type: application/json'));
       });
 
       it('should reject on application/ld+json', async() => {
@@ -121,7 +121,7 @@ describe('ActorRdfParseHtml', () => {
           handle: { data: input, metadata: { baseIRI: '' }, context },
           handleMediaType: 'application/ld+json',
           context,
-        })).rejects.toBeTruthy();
+        })).rejects.toEqual(new Error('Unrecognized media type: application/ld+json'));
       });
     });
 
@@ -219,6 +219,22 @@ describe('ActorRdfParseHtml', () => {
           })))
           .handle.data))
           .rejects.toThrow(new Error('Unexpected COMMA(",") in state KEY'));
+      });
+
+      it('should produce an error in the stream if there is an error getting html parsers', async() => {
+        (<any>actor).busRdfParseHtml.publish = () => [ Promise.reject(new Error('boo')), Promise.resolve() ];
+        const readable = new Readable();
+        readable._read = () => {
+          // Do nothing
+        };
+        await expect(arrayifyStream((<any> (await actor
+          .run({
+            context,
+            handle: { data: readable, context },
+            handleMediaType: 'text/html',
+          })))
+          .handle.data))
+          .rejects.toThrow(new Error('boo'));
       });
 
       it('should allow multiple reads', async() => {

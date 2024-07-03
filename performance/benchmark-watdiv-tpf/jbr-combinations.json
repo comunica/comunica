@@ -1,0 +1,14 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/jbr/^5.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:jbr:benchmark-watdiv-tpf-combinations",
+  "@type": "FullFactorialCombinationProvider",
+  "commonGenerated": true,
+  "factors": {
+    "hookSparqlEndpointLdfEngine": [
+      "{\"@id\": \"urn:jbr:benchmark-watdiv-tpf:combination_0:hookSparqlEndpoint_hookSparqlEndpointLdfEngine\",\"@type\": \"HookCli\",\"entrypoint\": [  \"node\",  \"../../engines/query-sparql/bin/http.js\",  \"http://localhost:3000/dataset\",  \"-p\",  \"3001\",  \"-t\",  \"500\",  \"-i\"],\"statsFilePath\": \"output/stats.csv\"  }",
+      "{\"@id\": \"urn:jbr:benchmark-watdiv-tpf:combination_1:hookSparqlEndpoint_hookSparqlEndpointLdfEngine\",  \"@type\": \"HookSparqlEndpointComunica\",  \"dockerfileClient\": \"input/dockerfiles/Dockerfile-client\",  \"resourceConstraints\": {\"@type\": \"StaticDockerResourceConstraints\",\"cpu_percentage\": 100  },  \"configClient\": \"input/config-client.json\",  \"contextClient\": \"input/context-client.json\",  \"additionalBinds\": [],  \"clientPort\": 3001,  \"clientLogLevel\": \"info\",  \"queryTimeout\": 500,  \"maxMemory\": 8192}"
+    ]
+  }
+}

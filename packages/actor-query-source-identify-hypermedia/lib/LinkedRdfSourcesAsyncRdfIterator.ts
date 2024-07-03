@@ -71,8 +71,19 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
               const bindingsStream = sourceState.source.queryBindings(this.operation, this.context);
               bindingsStream.getProperty('metadata', (metadata: MetadataBindings) => {
                 metadata.state = new MetadataValidationState();
-                resolve(metadata);
                 bindingsStream.destroy();
+                this.accumulateMetadata(sourceState.metadata, metadata)
+                  .then((accumulatedMetadata) => {
+                    // Also merge fields that were not explicitly accumulated
+                    const returnMetadata = { ...sourceState.metadata, ...metadata, ...accumulatedMetadata };
+                    resolve(returnMetadata);
+                  })
+                  .catch(() => {
+                    resolve({
+                      ...sourceState.metadata,
+                      state: new MetadataValidationState(),
+                    });
+                  });
               });
             })
             .catch(reject);

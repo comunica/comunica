@@ -226,7 +226,7 @@ describe('ActorQueryResultSerializeJson', () => {
             context,
           },
         ))).handle.data)).resolves
-          .toBe(`[]
+          .toBe(`[\n]
 `);
       });
 
@@ -238,7 +238,7 @@ describe('ActorQueryResultSerializeJson', () => {
             context,
           },
         ))).handle.data)).resolves
-          .toBe(`[]
+          .toBe(`[\n]
 `);
       });
 

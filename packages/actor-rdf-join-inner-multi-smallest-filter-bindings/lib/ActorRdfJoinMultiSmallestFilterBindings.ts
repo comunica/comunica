@@ -39,6 +39,7 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
       physicalName: 'multi-smallest-filter-bindings',
       limitEntries: 2,
       limitEntriesMin: true,
+      isLeaf: false,
     });
   }
 
@@ -113,19 +114,11 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
         .some(variableSecond => variableFirst.equals(variableSecond)));
     const hashes: Record<string, boolean> = {};
     const smallestStream1Projected: BindingsStream = smallestStream1.clone()
-      .transform({
-        // Project on common variables
-        map: binding => binding
-          .filter((value, key) => commonVariables.some(commonVariable => commonVariable.equals(key))),
-        autoStart: false,
-      }).transform({
-        // Filter out duplicates
-        filter(binding) {
-          const hash: string = bindingsToString(binding);
-
-          return !(hash in hashes) && (hashes[hash] = true);
-        },
-        autoStart: false,
+      .map(binding => binding.filter((value, key) =>
+        commonVariables.some(commonVariable => commonVariable.equals(key))))
+      .filter((binding) => {
+        const hash: string = bindingsToString(binding);
+        return !(hash in hashes) && (hashes[hash] = true);
       });
 
     // Slice the first stream into chunks according to the block size, so we avoid blocking too long.
@@ -137,14 +130,11 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
 
     // Push down bindings of first stream when querying for second stream
     const sourceWrapper: IQuerySourceWrapper = ActorQueryOperation.getOperationSource(secondIn.operation)!;
-    const secondStream = new UnionIterator(chunkedStreams.transform({
-      map: chunk => sourceWrapper.source.queryBindings(
-        secondIn.operation,
-        sourceWrapper.context ? action.context.merge(sourceWrapper.context) : action.context,
-        { filterBindings: { bindings: chunk, metadata: first.metadata }},
-      ),
-      autoStart: false,
-    }));
+    const secondStream = new UnionIterator(chunkedStreams.map(chunk => sourceWrapper.source.queryBindings(
+      secondIn.operation,
+      sourceWrapper.context ? action.context.merge(sourceWrapper.context) : action.context,
+      { filterBindings: { bindings: chunk, metadata: first.metadata }},
+    )));
     const second: IJoinEntry = {
       output: {
         type: 'bindings',

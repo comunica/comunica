@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-init-sparql-rdfjs",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "description": "Deprecated: A SPARQL query engine for querying over RDF/JS sources",
   "license": "MIT",
   "homepage": "https://comunica.dev/",

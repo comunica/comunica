@@ -5,13 +5,13 @@ import { KeysHttpWayback, KeysQuerySourceIdentify } from '@comunica/context-entr
 import { BlankNodeScoped } from '@comunica/data-factory';
 import type { QueryBindings, QueryStringContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import 'jest-rdf';
 import arrayifyStream from 'arrayify-stream';
+import 'jest-rdf';
 import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { QueryEngine } from '../lib/QueryEngine';
-import { usePolly } from './util';
+import { fetch as cachedFetch } from './util';
 
 // Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
 const stringifyStream = require('stream-to-string');
@@ -19,11 +19,11 @@ const stringifyStream = require('stream-to-string');
 const DF = new DataFactory();
 const factory = new Factory();
 
-describe('System test: QuerySparql', () => {
-  usePolly();
+globalThis.fetch = cachedFetch;
 
+describe('System test: QuerySparql', () => {
   let engine: QueryEngine;
-  beforeEach(() => {
+  beforeAll(() => {
     engine = new QueryEngine();
   });
 
@@ -96,21 +96,23 @@ describe('System test: QuerySparql', () => {
 
       describe('string source query', () => {
         const query = 'CONSTRUCT WHERE { ?s ?p ?o }';
-
-        beforeEach(() => {
-          engine = new QueryEngine();
-        });
+        const value = `{
+          "@id":"ex:s",
+          "ex:p":{"@id":"ex:o"},
+          "ex:p2":{"@id":"ex:o2"}
+        }
+        `;
+        const value2 = '<ex:s> <ex:p3> <ex:o3>. <ex:s> <ex:p4> <ex:o4>.';
+        const expectedResult: RDF.Quad[] = [
+          DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o')),
+          DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')),
+        ];
 
         it('should return the valid result with a turtle data source', async() => {
-          const value = '<ex:s> <ex:p> <ex:o>. <ex:s> <ex:p2> <ex:o2>.';
+          const turtleValue = '<ex:s> <ex:p> <ex:o>. <ex:s> <ex:p2> <ex:o2>.';
           const context: QueryStringContext = { sources: [
-            { type: 'serialized', value, mediaType: 'text/turtle', baseIRI: 'http://example.org/' },
+            { type: 'serialized', value: turtleValue, mediaType: 'text/turtle', baseIRI: 'http://example.org/' },
           ]};
-
-          const expectedResult: RDF.Quad[] = [
-            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o')),
-            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')),
-          ];
 
           const result = await arrayifyStream(await engine.queryQuads(query, context));
           expect(result).toHaveLength(expectedResult.length);
@@ -118,20 +120,9 @@ describe('System test: QuerySparql', () => {
         });
 
         it('should return the valid result with a json-ld data source', async() => {
-          const value = `{
-            "@id":"ex:s",
-            "ex:p":{"@id":"ex:o"},
-            "ex:p2":{"@id":"ex:o2"}
-          }
-          `;
           const context: QueryStringContext = { sources: [
             { type: 'serialized', value, mediaType: 'application/ld+json', baseIRI: 'http://example.org/' },
           ]};
-
-          const expectedResult: RDF.Quad[] = [
-            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o')),
-            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')),
-          ];
 
           const result = await arrayifyStream(await engine.queryQuads(query, context));
           expect(result).toHaveLength(expectedResult.length);
@@ -139,19 +130,9 @@ describe('System test: QuerySparql', () => {
         });
 
         it('should return the valid result with no base IRI', async() => {
-          const value = `{
-            "@id":"ex:s",
-            "ex:p":{"@id":"ex:o"},
-            "ex:p2":{"@id":"ex:o2"}
-          }`;
           const context: QueryStringContext = { sources: [
             { type: 'serialized', value, mediaType: 'application/ld+json' },
           ]};
-
-          const expectedResult: RDF.Quad[] = [
-            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o')),
-            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')),
-          ];
 
           const result = await arrayifyStream(await engine.queryQuads(query, context));
           expect(result).toHaveLength(expectedResult.length);
@@ -159,14 +140,8 @@ describe('System test: QuerySparql', () => {
         });
 
         it('should return the valid result with multiple serialized', async() => {
-          const value1 = `{
-            "@id":"ex:s",
-            "ex:p":{"@id":"ex:o"},
-            "ex:p2":{"@id":"ex:o2"}
-          }`;
-          const value2 = '<ex:s> <ex:p3> <ex:o3>. <ex:s> <ex:p4> <ex:o4>.';
           const context: QueryStringContext = { sources: [
-            { type: 'serialized', value: value1, mediaType: 'application/ld+json' },
+            { type: 'serialized', value, mediaType: 'application/ld+json' },
             { type: 'serialized', value: value2, mediaType: 'text/turtle' },
           ]};
 
@@ -189,14 +164,8 @@ describe('System test: QuerySparql', () => {
           const store = new Store();
           store.addQuads(quads);
 
-          const value1 = `{
-            "@id":"ex:s",
-            "ex:p":{"@id":"ex:o"},
-            "ex:p2":{"@id":"ex:o2"}
-          }`;
-          const value2 = '<ex:s> <ex:p3> <ex:o3>. <ex:s> <ex:p4> <ex:o4>.';
           const context: QueryStringContext = { sources: [
-            { type: 'serialized', value: value1, mediaType: 'application/ld+json' },
+            { type: 'serialized', value, mediaType: 'application/ld+json' },
             { type: 'serialized', value: value2, mediaType: 'text/turtle' },
             store,
           ]};
@@ -208,6 +177,32 @@ describe('System test: QuerySparql', () => {
             DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p4'), DF.namedNode('ex:o4')),
           ]);
         });
+
+        it('should serialise results correctly', async() => {
+          const context: QueryStringContext = { sources: [
+            { type: 'serialized', value, mediaType: 'application/ld+json', baseIRI: 'http://example.org/' },
+          ]};
+
+          const resultString = await engine.resultToString(await engine.query(query, context), 'application/n-quads');
+          await expect(stringifyStream(resultString.data)).resolves.toBe(
+            '<ex:s> <ex:p> <ex:o> .\n<ex:s> <ex:p2> <ex:o2> .\n',
+          );
+        });
+
+        it('should have stats that are strictly increasing', async() => {
+          const context: QueryStringContext = { sources: [
+            { type: 'serialized', value, mediaType: 'application/ld+json', baseIRI: 'http://example.org/' },
+          ]};
+
+          const resultString: string = await stringifyStream(
+            (await engine.resultToString(await engine.query(query, context), 'stats')).data,
+          );
+          const times = resultString.split('\n').slice(1, -1).map(line => Number.parseFloat(line.split(',')[1]));
+          expect(times).toHaveLength(3);
+          for (let i = 0; i < 2; i++) {
+            expect(times[i]).toBeLessThanOrEqual(times[i + 1]);
+          }
+        });
       });
 
       describe('handle blank nodes with DESCRIBE queries', () => {
@@ -218,7 +213,6 @@ describe('System test: QuerySparql', () => {
       }`;
 
         beforeEach(() => {
-          engine = new QueryEngine();
           store = new Store();
         });
 
@@ -731,6 +725,33 @@ SELECT * WHERE {
         });
         expect(called).toBe(0);
       });
+
+      it('with two triple patterns over a paged collection (no browser)', async() => {
+        const bindingsStream = await engine.queryBindings(`
+SELECT *
+WHERE {
+  <https://opendata.picturae.com/dataset/dre_a2a_webservice> <http://purl.org/dc/terms/identifier> ?i.
+  <https://opendata.picturae.com/dataset/dre_a2a_webservice> <http://purl.org/dc/terms/issued> ?issued.
+}`, {
+          sources: [ 'https://opendata.picturae.com/catalog.ttl?page=1' ],
+        });
+        expect((await bindingsStream.toArray()).length > 0).toBeTruthy();
+      });
+
+      it('with join over union', async() => {
+        const bindingsStream = await engine.queryBindings(`
+SELECT * WHERE {
+  <https://api.community.hubl.world/skills/> <http://www.w3.org/ns/ldp#contains> ?contains.
+  {
+    { ?contains <http://www.w3.org/2000/01/rdf-schema#label> ?preload_0. }
+    UNION
+    { ?contains <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?preload_1. }
+  }
+}`, {
+          sources: [ 'https://api.community.hubl.world/skills/' ],
+        });
+        expect((await bindingsStream.toArray()).length > 0).toBeTruthy();
+      });
     });
 
     describe('property paths', () => {
@@ -773,6 +794,69 @@ SELECT ?obsId {
     ].
 }
 `, context)))).resolves.toHaveLength(1);
+      });
+    });
+
+    describe('commutative count', () => {
+      it('should count commutatively', async() => {
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: `
+              @prefix ex: <http://example.org/> .
+            
+              <http://foo.org/id/graph/foo> {
+                <http://foo.org/id/object/foo>
+                  ex:foo ex:Foo ;
+                  ex:bar [] ;
+                  ex:baz "baz1", "baz2", "baz3" .
+              }
+              `,
+              mediaType: 'text/turtle',
+              baseIRI: 'http://example.org/',
+            },
+          ],
+        };
+
+        const expectedResult = [
+          [
+            [ DF.variable('objects'), DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) ],
+            [ DF.variable('p'), DF.namedNode('http://example.org/foo') ],
+            [ DF.variable('subjects'), DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) ],
+          ],
+          [
+            [ DF.variable('objects'), DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) ],
+            [ DF.variable('p'), DF.namedNode('http://example.org/bar') ],
+            [ DF.variable('subjects'), DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) ],
+          ],
+          [
+            [ DF.variable('objects'), DF.literal('3', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) ],
+            [ DF.variable('p'), DF.namedNode('http://example.org/baz') ],
+            [ DF.variable('subjects'), DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')) ],
+          ],
+        ];
+
+        const bindings1 = (await arrayifyStream(await engine.queryBindings(`
+        SELECT (COUNT(DISTINCT ?o) as ?objects) (COUNT(DISTINCT ?s) AS ?subjects) ?p
+        FROM <http://foo.org/id/graph/foo>
+        {
+          ?s ?p ?o .
+        }
+        GROUP BY ?p
+        `, context))).map(binding => [ ...binding ].sort(([ var1, _c1 ], [ var2, _c2 ]) => var1.value.localeCompare(var2.value)));
+
+        const bindings2 = (await arrayifyStream(await engine.queryBindings(`
+        SELECT (COUNT(DISTINCT ?s) AS ?subjects) (COUNT(DISTINCT ?o) as ?objects) ?p
+        FROM <http://foo.org/id/graph/foo>
+        {
+          ?s ?p ?o .
+        }
+        GROUP BY ?p
+        `, context))).map(binding => [ ...binding ].sort(([ var1, _c1 ], [ var2, _c2 ]) => var1.value.localeCompare(var2.value)));
+
+        expect(bindings1).toMatchObject(expectedResult);
+        expect(bindings2).toMatchObject(expectedResult);
       });
     });
   });
@@ -1221,6 +1305,24 @@ SELECT ?obsId {
         expect(result).toEqual({
           explain: true,
           type: 'physical',
+          data: `project (o,p,s)
+  join
+    pattern (?s ?p ?o) src:0
+
+sources:
+  0: QuerySourceHypermedia(https://www.rubensworks.net/)(SkolemID:0)`,
+        });
+      });
+
+      it('explaining physical-json plan', async() => {
+        const result = await engine.explain(`SELECT * WHERE {
+      ?s ?p ?o.
+    }`, {
+          sources: [ 'https://www.rubensworks.net/' ],
+        }, 'physical-json');
+        expect(result).toEqual({
+          explain: true,
+          type: 'physical-json',
           data: {
             logical: 'project',
             variables: [ 'o', 'p', 's' ],
@@ -1231,6 +1333,7 @@ SELECT ?obsId {
                   {
                     logical: 'pattern',
                     pattern: '?s ?p ?o',
+                    source: 'QuerySourceHypermedia(https://www.rubensworks.net/)(SkolemID:0)',
                   },
                 ],
               },
