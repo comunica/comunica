@@ -1,7 +1,7 @@
 import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { Bindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { DataFactory } from 'rdf-data-factory';
+import {  DataFactory, Variable } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import { mapTermsNested, someTermsNested } from 'rdf-terms';
 import type { Algebra, Factory } from 'sparqlalgebrajs';
@@ -169,15 +169,7 @@ export function materializeOperation(
 
       // Find projected variables which are present in the originalBindings.
       // This will result in projected variables being handled via a values clause.
-      const values: Algebra.Operation[] = [];
-      for (const currentVariable of op.variables) {
-        if (originalBindings.has(currentVariable)) {
-          const newBinding = { [termToString(currentVariable)]:
-            <RDF.NamedNode | RDF.Literal> originalBindings.get(currentVariable) };
-
-          values.push(factory.createValues([ currentVariable ], [ newBinding ]));
-        }
-      }
+      const values: Algebra.Operation[] = createValuesOperationFromBindings(factory, originalBindings, op.variables);
 
       let recursionResult: Algebra.Operation = materializeOperation(
         op.input,
@@ -204,12 +196,8 @@ export function materializeOperation(
         };
       }
 
-      // Make a values clause using all the variables from originalBindings
-      const values: Algebra.Operation[] = [];
-      for (const [ variable, binding ] of originalBindings) {
-        const newBinding = { [termToString(variable)]: <RDF.NamedNode | RDF.Literal> binding };
-        values.push(factory.createValues([ variable ], [ newBinding ]));
-      }
+      // Make a values clause using all the variables from originalBindings.
+      const values: Algebra.Operation[] = createValuesOperationFromBindings(factory, originalBindings);
 
       // Recursively materialize the filter expression
       const recursionResultExpression: Algebra.Expression = <Algebra.Expression> materializeOperation(
@@ -326,4 +314,27 @@ export function materializeOperation(
       };
     },
   });
+
+}
+
+/**
+   * Make a values operation containing the values that are present in `bindings` for variables present in `variables`.
+   * If no `variables` argument is given, this method returns a values operation containing every binding from `bindings`.
+   * @param {Factory} factory The Factory used to create the values operation.
+   * @param {Bindings} bindings A bindings object.
+   * @param {Variable[]} variables A list of variables.
+   * @returns Algebra.Values A new values operation the given bindings.
+   */
+function createValuesOperationFromBindings(factory: Factory, bindings: Bindings, variables?: Variable[]) {
+  const values: Algebra.Operation[] = [];
+
+  for (const [ variable, binding ] of bindings) {
+    if (!variables || variables.some((v) => v.equals(variable))) {
+      const newBinding = { [termToString(variable)]: <RDF.NamedNode | RDF.Literal> binding };
+  
+      values.push(factory.createValues([ variable ], [ newBinding ]));
+    }
+  }
+  
+  return values;
 }
