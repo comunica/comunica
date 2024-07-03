@@ -113,12 +113,12 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     factory: Factory,
     context: IActionContext,
   ): Algebra.Operation {
+    if (this.isExpressionFalse(expression)) {
+      return factory.createUnion([]);
+    }
+
     switch (operation.type) {
       case Algebra.types.EXTEND:
-        // Don't push down the 'FILTER(false)' construction
-        if (this.isExpressionFalse(expression)) {
-          return factory.createFilter(operation, expression);
-        }
         // Pass if the variable is not part of the expression
         if (!this.variablesIntersect([ operation.variable ], expressionVariables)) {
           return factory.createExtend(
@@ -135,10 +135,6 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
           operation.expression,
         );
       case Algebra.types.JOIN: {
-        // Don't push down the 'FILTER(false)' construction
-        if (this.isExpressionFalse(expression)) {
-          return factory.createFilter(operation, expression);
-        }
         // Don't push down for empty join
         if (operation.input.length === 0) {
           return factory.createFilter(operation, expression);
@@ -169,10 +165,6 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
       case Algebra.types.NOP:
         return operation;
       case Algebra.types.PROJECT:
-        // Don't push down the 'FILTER(false)' construction
-        if (this.isExpressionFalse(expression)) {
-          return factory.createFilter(operation, expression);
-        }
         // Push down if variables overlap
         if (this.variablesIntersect(operation.variables, expressionVariables)) {
           return factory.createProject(
@@ -183,10 +175,6 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
         // Void expression otherwise
         return operation;
       case Algebra.types.UNION: {
-        // Don't push down the 'FILTER(false)' construction
-        if (this.isExpressionFalse(expression)) {
-          return factory.createFilter(operation, expression);
-        }
         // Determine overlapping operations
         const {
           fullyOverlapping,
@@ -210,10 +198,6 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
         return unions.length === 1 ? unions[0] : factory.createUnion(unions);
       }
       case Algebra.types.VALUES:
-        // Don't push down the 'FILTER(false)' construction
-        if (this.isExpressionFalse(expression)) {
-          return factory.createFilter(operation, expression);
-        }
         // Only keep filter if it overlaps with the variables
         if (this.variablesIntersect(operation.variables, expressionVariables)) {
           return factory.createFilter(operation, expression);
