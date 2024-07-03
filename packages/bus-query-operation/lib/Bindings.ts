@@ -157,11 +157,11 @@ export function materializeOperation(
 
       // Only include non-projected variables in the sub-bindings that will be passed down recursively.
       // This will result in non-projected variables being replaced with their InitialBindings values.
-      let subBindings = bindingsFactory.fromBindings(bindings);
+      const originalBindings: Bindings = options.originalBindings ?? bindings;
       for (const binding of bindings) {
         for (const curVariable of op.variables) {
           if (termToString(curVariable) === termToString(binding[0])) {
-            subBindings = subBindings.delete(binding[0]);
+            bindings = bindings.delete(binding[0]);
             break;
           }
         }
@@ -172,7 +172,6 @@ export function materializeOperation(
       const values: Algebra.Operation[] = [];
       const overlappingVariables: RDF.Variable[] = [];
       const overlappingBindings: Record<string, RDF.Literal | RDF.NamedNode>[] = [];
-      const originalBindings: Bindings = options.originalBindings ?? bindings;
       for (const currentVariable of op.variables) {
         if (originalBindings.has(currentVariable)) {
           const newBinding = { [termToString(currentVariable)]:
@@ -186,7 +185,7 @@ export function materializeOperation(
 
       let recursionResult: Algebra.Operation = materializeOperation(
         op.input,
-        subBindings,
+        bindings,
         bindingsFactory,
         options,
       );
