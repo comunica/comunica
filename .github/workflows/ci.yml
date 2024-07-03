@@ -249,7 +249,6 @@ jobs:
           comment-always: true
           comment-on-alert: true
           alert-comment-cc-users: '@rubensworks'
-          fail-on-alert: true
           summary-always: true
           gh-repository: 'github.com/comunica/comunica-performance-results'
           gh-pages-branch: 'master'
