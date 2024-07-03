@@ -1,5 +1,6 @@
-import { Actor, IAction, IActorArgs, IActorOutput, IActorTest, Mediator } from '@comunica/core';
-import { Quad } from 'rdf-data-factory';
+import { Actor } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediator } from '@comunica/core';
+import type { Quad } from 'rdf-data-factory';
 
 /**
  * A comunica actor for hash-quads events.
@@ -14,8 +15,8 @@ import { Quad } from 'rdf-data-factory';
  */
 export abstract class ActorHashQuads extends Actor<IActionHashQuads, IActorTest, IActorHashQuadsOutput> {
   /**
-  * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
-  */
+   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   */
   public constructor(args: IActorHashQuadsArgs) {
     super(args);
   }
@@ -37,15 +38,17 @@ export interface IActorHashQuadsOutput extends IActorOutput {
   hashFunction: HashFunction;
 
   /**
-  * If hash collisions are possible with the given hash function.
-  */
+   * If hash collisions are possible with the given hash function.
+   */
   hashCollisions: boolean;
 }
 
 export type HashFunction = (quad: Quad) => string;
 
 export type IActorHashQuadsArgs = IActorArgs<
-IActionHashQuads, IActorTest, IActorHashQuadsOutput>;
+IActionHashQuads,
+IActorTest,
+IActorHashQuadsOutput>;
 
 export type MediatorHashQuads = Mediator<
 Actor<IActionHashQuads, IActorTest, IActorHashQuadsOutput>,

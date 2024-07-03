@@ -21,19 +21,6 @@ export class ActorHashBindingsSha1 extends ActorHashBindings {
   public async run(_action: IActionHashBindings): Promise<IActorHashBindingsOutput> {
     return {
       hashFunction: bindings => {
-        console.log("bindings");
-        console.log(bindings);
-        console.log("[ ...bindings ]");
-        console.log([ ...bindings ]);
-        console.log("[ ...bindings ].map(");
-        console.log([ ...bindings ]
-          .map(([ key, value ]) => [ termToString(key), termToString(value) ]));
-        console.log("object.fromEntries(Bindings.Map");
-        console.log(Object.fromEntries([ ...bindings ]
-          .map(([ key, value ]) => [ termToString(key), termToString(value) ])));
-        console.log("canonicalize");
-        console.log(canonicalize(Object.fromEntries([ ...bindings ]
-          .map(([ key, value ]) => [ termToString(key), termToString(value) ]))));
         return sha1()
         .update(canonicalize(Object.fromEntries([ ...bindings ]
           .map(([ key, value ]) => [ termToString(key), termToString(value) ]))))

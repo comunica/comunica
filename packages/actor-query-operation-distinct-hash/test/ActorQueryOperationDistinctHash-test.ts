@@ -13,6 +13,7 @@ describe('ActorQueryOperationDistinctHash', () => {
   let bus: any;
   let mediatorQueryOperation: any;
   let mediatorHashBindings: any;
+  let mediatorHashQuads: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -33,6 +34,9 @@ describe('ActorQueryOperationDistinctHash', () => {
     mediatorHashBindings = {
       mediate: () => Promise.resolve({ hashFunction: (bindings: any) => JSON.stringify(bindings) }),
     };
+    mediatorHashQuads = {
+      mediate: () => Promise.resolve({ hashFunction: (bindings: any) => JSON.stringify(bindings) }),
+    };
   });
 
   describe('#newDistinctHashFilter', () => {
@@ -40,7 +44,7 @@ describe('ActorQueryOperationDistinctHash', () => {
 
     beforeEach(() => {
       actor = new ActorQueryOperationDistinctHash(
-        { name: 'actor', bus, mediatorQueryOperation, mediatorHashBindings },
+        { name: 'actor', bus, mediatorQueryOperation, mediatorHashBindings, mediatorHashQuads },
       );
     });
     it('should create a filter', async() => {
@@ -84,7 +88,7 @@ describe('ActorQueryOperationDistinctHash', () => {
     let actor: ActorQueryOperationDistinctHash;
     beforeEach(() => {
       actor = new ActorQueryOperationDistinctHash(
-        { name: 'actor', bus, mediatorQueryOperation, mediatorHashBindings },
+        { name: 'actor', bus, mediatorQueryOperation, mediatorHashBindings, mediatorHashQuads },
       );
     });
 
