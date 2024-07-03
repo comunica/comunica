@@ -10,7 +10,6 @@ import { ActorInitQueryBase } from './ActorInitQueryBase';
 import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase';
 import { CliArgsHandlerQuery } from './cli/CliArgsHandlerQuery';
 import { QueryEngineBase } from './QueryEngineBase';
-const N3Store = require('n3').Store;
 
 // eslint-disable-next-line ts/no-require-imports,ts/no-var-requires
 const streamifyString = require('streamify-string');
@@ -109,7 +108,7 @@ export class ActorInitQuery<QueryContext extends IQueryContextCommon = IQueryCon
       queryResult.context,
     )).data;
 
-    // const store = new N3Store();
+    // Const store = new N3Store();
     // store.addQuads(stdout.read());
 
     return { stdout };

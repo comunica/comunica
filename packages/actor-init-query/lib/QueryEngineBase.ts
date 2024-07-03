@@ -131,10 +131,6 @@ implements IQueryEngine<QueryStringContextInner, QueryAlgebraContextInner> {
       await this.invalidateHttpCache();
     }
 
-    if (actionContext.get(KeysInitQuery.distinct)) { //TODO remove
-      console.log('distinct mode');
-    }
-
     // Invoke query process
     const { result } = await this.actorInitQuery.mediatorQueryProcess.mediate({ query, context: actionContext });
     if ('explain' in result) {

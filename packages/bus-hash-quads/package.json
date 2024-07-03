@@ -5,25 +5,25 @@
   "lsd:module": true,
   "typings": "lib/index",
   "license": "MIT",
+  "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
     "directory": "packages/bus-hash-quads"
   },
-  "homepage": "https://comunica.dev/",
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
   "keywords": [
     "comunica",
     "bus",
     "hash-quads"
   ],
+  "sideEffects": false,
   "main": "lib/index.js",
   "publishConfig": {
     "access": "public"
   },
-  "bugs": {
-    "url": "https://github.com/comunica/comunica/issues"
-  },
-  "sideEffects": false,
   "files": [
     "components",
     "lib/**/*.d.ts",

@@ -2,7 +2,6 @@ import type { IActionHashQuads, IActorHashQuadsOutput } from '@comunica/bus-hash
 import { ActorHashQuads } from '@comunica/bus-hash-quads';
 import type { IActorTest } from '@comunica/core';
 import { sha1 } from 'hash.js';
-import { termToString } from 'rdf-string';
 
 // eslint-disable-next-line ts/no-require-imports,ts/no-var-requires
 const canonicalize = require('canonicalize');
@@ -20,11 +19,9 @@ export class ActorHashQuadsSha1 extends ActorHashQuads {
 
   public async run(_action: IActionHashQuads): Promise<IActorHashQuadsOutput> {
     return {
-      hashFunction: quads => {
-        return sha1()
+      hashFunction: quads => sha1()
         .update(canonicalize(Object.entries(quads)))
-        .digest('hex')
-      },
+        .digest('hex'),
       hashCollisions: true,
     };
   }

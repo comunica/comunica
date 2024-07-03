@@ -2,7 +2,8 @@ import type { IActionHashQuads } from '@comunica/bus-hash-quads';
 import { ActorHashQuads } from '@comunica/bus-hash-quads';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
-import { DataFactory, Quad } from 'rdf-data-factory';
+import type { Quad } from 'rdf-data-factory';
+import { DataFactory } from 'rdf-data-factory';
 import { ActorHashQuadsSha1 } from '../lib/ActorHashQuadsSha1';
 
 const DF = new DataFactory();

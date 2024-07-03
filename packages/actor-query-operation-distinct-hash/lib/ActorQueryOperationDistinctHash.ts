@@ -14,7 +14,7 @@ import type {
   IQueryOperationResultBindings,
   IQueryOperationResultQuads,
 } from '@comunica/types';
-import { QuadStream } from '@comunica/types/lib/Quads';
+import type { Quad, QuadStream } from '@comunica/types/lib/Quads';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -37,19 +37,19 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
 
     if (output.type === 'quads') {
       const outputQuads: IQueryOperationResultQuads = ActorQueryOperation.getSafeQuads(
-        output
+        output,
       );
 
-      const quadStream: QuadStream = outputQuads.quadStream.filter(await this.newHashFilterQuads(context)); // TODO typing
+      const quadStream: QuadStream = outputQuads.quadStream.filter(await this.newHashFilterQuads(context));
       return {
         type: 'quads',
         quadStream,
         metadata: outputQuads.metadata,
       };
     }
-    
+
     const outputBindings: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(
-      output
+      output,
     );
 
     const bindingsStream: BindingsStream = outputBindings.bindingsStream.filter(await this.newHashFilter(context));
@@ -80,13 +80,13 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
    * Create a new distinct filter function to hash Quads.
    * This will maintain an internal hash datastructure so that every bindings object only returns true once.
    * @param context The action context.
-   * @return {(quads: any) => boolean} A distinct filter for bindings. //TODO typing
+   * @return {(quad: quad) => boolean} A distinct filter for bindings.
    */
-  public async newHashFilterQuads(context: IActionContext): Promise<(quads: any) => boolean> { //TODO typing
+  public async newHashFilterQuads(context: IActionContext): Promise<(quad: Quad) => boolean> {
     const { hashFunction } = await this.mediatorHashQuads.mediate({ allowHashCollisions: true, context });
     const hashes: Record<string, boolean> = {};
-    return (quads: any) => { //TODO typ
-      const hash: string = hashFunction(quads);
+    return (quad: Quad) => {
+      const hash: string = hashFunction(quad);
 
       return !(hash in hashes) && (hashes[hash] = true);
     };

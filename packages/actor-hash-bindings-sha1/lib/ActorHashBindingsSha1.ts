@@ -20,12 +20,10 @@ export class ActorHashBindingsSha1 extends ActorHashBindings {
 
   public async run(_action: IActionHashBindings): Promise<IActorHashBindingsOutput> {
     return {
-      hashFunction: bindings => {
-        return sha1()
+      hashFunction: bindings => sha1()
         .update(canonicalize(Object.fromEntries([ ...bindings ]
           .map(([ key, value ]) => [ termToString(key), termToString(value) ]))))
-        .digest('hex')
-      },
+        .digest('hex'),
       hashCollisions: true,
     };
   }

@@ -101,7 +101,7 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
     // Save original query in context
     context = context.set(KeysInitQuery.query, operation);
 
-  return { operation, context };
+    return { operation, context };
   }
 
   public async evaluate(operation: Algebra.Operation, context: IActionContext): Promise<IQueryOperationResult> {

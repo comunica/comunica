@@ -48,7 +48,8 @@ export type HashFunction = (quad: Quad) => string;
 export type IActorHashQuadsArgs = IActorArgs<
 IActionHashQuads,
 IActorTest,
-IActorHashQuadsOutput>;
+IActorHashQuadsOutput
+>;
 
 export type MediatorHashQuads = Mediator<
 Actor<IActionHashQuads, IActorTest, IActorHashQuadsOutput>,
