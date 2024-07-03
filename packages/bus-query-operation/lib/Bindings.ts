@@ -158,10 +158,10 @@ export function materializeOperation(
       // Only include non-projected variables in the sub-bindings that will be passed down recursively.
       // This will result in non-projected variables being replaced with their InitialBindings values.
       const originalBindings: Bindings = options.originalBindings ?? bindings;
-      for (const binding of bindings) {
+      for (const bindingKey of bindings.keys()) {
         for (const curVariable of op.variables) {
-          if (curVariable.equals(binding[0])) {
-            bindings = bindings.delete(binding[0]);
+          if (curVariable.equals(bindingKey)) {
+            bindings = bindings.delete(bindingKey);
             break;
           }
         }
