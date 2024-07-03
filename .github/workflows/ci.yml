@@ -179,6 +179,8 @@ jobs:
         with:
           name: performance-benchmark-${{ matrix.benchmark }}
           path: performance/benchmark-${{ matrix.benchmark }}/combinations/combination_0/output/
+      - name: Print raw output
+        run: cat performance/benchmark-${{ matrix.benchmark }}/combinations/combination_0/output/query-times.csv
 
   performance-consolidate:
     needs:
