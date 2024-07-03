@@ -155,7 +155,7 @@ export function materializeOperation(
         };
       }
 
-      // Only include non-projected variables in the sub-bindings that will be passed down recursively.
+      // Only include non-projected variables in the bindings that will be passed down recursively.
       // This will result in non-projected variables being replaced with their InitialBindings values.
       const originalBindings: Bindings = options.originalBindings ?? bindings;
       for (const bindingKey of bindings.keys()) {
@@ -167,7 +167,7 @@ export function materializeOperation(
         }
       }
 
-      // Find projected variables which are present in the InitialBindings
+      // Find projected variables which are present in the originalBindings.
       // This will result in projected variables being handled via a values clause.
       const values: Algebra.Operation[] = [];
       const overlappingVariables: RDF.Variable[] = [];
