@@ -170,15 +170,11 @@ export function materializeOperation(
       // Find projected variables which are present in the originalBindings.
       // This will result in projected variables being handled via a values clause.
       const values: Algebra.Operation[] = [];
-      const overlappingVariables: RDF.Variable[] = [];
-      const overlappingBindings: Record<string, RDF.Literal | RDF.NamedNode>[] = [];
       for (const currentVariable of op.variables) {
         if (originalBindings.has(currentVariable)) {
           const newBinding = { [termToString(currentVariable)]:
             <RDF.NamedNode | RDF.Literal> originalBindings.get(currentVariable) };
 
-          overlappingVariables.push(currentVariable);
-          overlappingBindings.push(newBinding);
           values.push(factory.createValues([ currentVariable ], [ newBinding ]));
         }
       }
@@ -208,7 +204,7 @@ export function materializeOperation(
         };
       }
 
-      // Make a values clause using all the variables from InitialBindings
+      // Make a values clause using all the variables from originalBindings
       const values: Algebra.Operation[] = [];
       for (const [ variable, binding ] of originalBindings) {
         const newBinding = { [termToString(variable)]: <RDF.NamedNode | RDF.Literal> binding };
