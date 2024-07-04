@@ -36,6 +36,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/core": "^3.0.3"
+    "@comunica/core": "^3.0.3",
+    "rdf-data-factory": "^1.1.2"
   }
 }
