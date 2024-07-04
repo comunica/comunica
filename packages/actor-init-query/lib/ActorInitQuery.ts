@@ -108,9 +108,6 @@ export class ActorInitQuery<QueryContext extends IQueryContextCommon = IQueryCon
       queryResult.context,
     )).data;
 
-    // Const store = new N3Store();
-    // store.addQuads(stdout.read());
-
     return { stdout };
   }
 }
