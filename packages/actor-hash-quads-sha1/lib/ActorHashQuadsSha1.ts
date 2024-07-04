@@ -2,10 +2,7 @@ import type { IActionHashQuads, IActorHashQuadsOutput } from '@comunica/bus-hash
 import { ActorHashQuads } from '@comunica/bus-hash-quads';
 import type { IActorTest } from '@comunica/core';
 import { sha1 } from 'hash.js';
-import { quadToStringQuad, termToString } from 'rdf-string';
-
-// eslint-disable-next-line ts/no-require-imports,ts/no-var-requires
-const canonicalize = require('canonicalize');
+import { termToString } from 'rdf-string';
 
 /**
  * A comunica Memento Http Actor.
@@ -20,11 +17,10 @@ export class ActorHashQuadsSha1 extends ActorHashQuads {
 
   public async run(_action: IActionHashQuads): Promise<IActorHashQuadsOutput> {
     return {
-      hashFunction: quad => {
-        return sha1()
+      hashFunction: quad =>
+        sha1()
           .update(termToString(quad))
-          .digest('hex');
-      },
+          .digest('hex'),
       hashCollisions: true,
     };
   }

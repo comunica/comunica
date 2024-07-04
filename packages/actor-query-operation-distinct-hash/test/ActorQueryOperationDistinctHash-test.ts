@@ -49,9 +49,9 @@ describe('ActorQueryOperationDistinctHash', () => {
             DF.namedNode('s'),
             DF.namedNode('p'),
             DF.namedNode('o'),
-          )
+          ),
         ]),
-        metadata: () => Promise.resolve({ cardinality: 3}),
+        metadata: () => Promise.resolve({ cardinality: 3 }),
         operated: arg,
         type: 'quads',
       }),
@@ -108,7 +108,6 @@ describe('ActorQueryOperationDistinctHash', () => {
       expect(filter3(BF.bindings([[ DF.variable('a'), DF.literal('b') ]]))).toBe(false);
     });
   });
-  
 
   describe('#newHashFilterQuads', () => {
     let actor: ActorQueryOperationDistinctHash;
@@ -170,6 +169,7 @@ describe('ActorQueryOperationDistinctHash', () => {
     let actor: ActorQueryOperationDistinctHash;
     beforeEach(() => {
       actor = new ActorQueryOperationDistinctHash(
+        // eslint-disable-next-line max-len
         { name: 'actor', bus, mediatorQueryOperation: mediatorQueryOperationBindings, mediatorHashBindings, mediatorHashQuads },
       );
     });
@@ -187,6 +187,7 @@ describe('ActorQueryOperationDistinctHash', () => {
     describe('with bindings input', () => {
       beforeEach(() => {
         actor = new ActorQueryOperationDistinctHash(
+          // eslint-disable-next-line max-len
           { name: 'actor', bus, mediatorQueryOperation: mediatorQueryOperationBindings, mediatorHashBindings, mediatorHashQuads },
         );
       });
@@ -207,6 +208,7 @@ describe('ActorQueryOperationDistinctHash', () => {
     describe('with quad input', () => {
       beforeEach(() => {
         actor = new ActorQueryOperationDistinctHash(
+          // eslint-disable-next-line max-len
           { name: 'actor', bus, mediatorQueryOperation: mediatorQueryOperationQuads, mediatorHashBindings, mediatorHashQuads },
         );
       });
@@ -214,9 +216,9 @@ describe('ActorQueryOperationDistinctHash', () => {
       it('should filter duplicate quads', async() => {
         const op: any = { operation: { type: 'distinct' }, context: new ActionContext() };
         const output = ActorQueryOperation.getSafeQuads(await actor.run(op));
-        await expect(output.metadata()).resolves.toEqual({ cardinality: 3});
+        await expect(output.metadata()).resolves.toEqual({ cardinality: 3 });
         expect(output.type).toBe('quads');
-        await expect(await output.quadStream.toArray()).toEqual([
+        await expect(output.quadStream.toArray()).resolves.toEqual([
           DF.quad(
             DF.namedNode('s'),
             DF.namedNode('p'),
@@ -226,7 +228,7 @@ describe('ActorQueryOperationDistinctHash', () => {
             DF.namedNode('s2'),
             DF.namedNode('p'),
             DF.namedNode('o'),
-          )
+          ),
         ]);
       });
     });
