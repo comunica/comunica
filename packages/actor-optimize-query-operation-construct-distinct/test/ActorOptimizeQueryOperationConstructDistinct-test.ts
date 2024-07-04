@@ -26,7 +26,7 @@ describe('ActorOptimizeQueryOperationConstructDistinct', () => {
 
     it('should throw when distinct key is not present', async() => {
       context = context.delete(KeysInitQuery.distinct);
-      await expect(actor.test({ operation: <any> undefined, context })).resolves.toBeTruthy();
+      await expect(actor.test({ operation: <any> undefined, context })).rejects.toThrow('actor was not enabled by the query.');
     });
 
     it('should test when distinct key is present', async() => {
