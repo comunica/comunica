@@ -77,10 +77,10 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
   }
 
   /**
-   * Create a new distinct filter function to hash Quads.
-   * This will maintain an internal hash datastructure so that every bindings object only returns true once.
+   * Create a new distinct filter function to hash quads.
+   * This will maintain an internal hash datastructure so that every quad object only returns true once.
    * @param context The action context.
-   * @return {(quad: quad) => boolean} A distinct filter for bindings.
+   * @return {(quad: quad) => boolean} A distinct filter for quads.
    */
   public async newHashFilterQuads(context: IActionContext): Promise<(quad: Quad) => boolean> {
     if (this.mediatorHashQuads === undefined) { //TODO can be removed when mediatorHashQuads is made required

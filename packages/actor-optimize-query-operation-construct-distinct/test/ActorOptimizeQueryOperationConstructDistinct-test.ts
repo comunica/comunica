@@ -21,15 +21,15 @@ describe('ActorOptimizeQueryOperationConstructDistinct', () => {
 
     beforeEach(() => {
       actor = new ActorOptimizeQueryOperationConstructDistinct({ name: 'actor', bus });
-      context = new ActionContext().set(KeysInitQuery.distinct, true);
+      context = new ActionContext().set(KeysInitQuery.distinctConstruct, true);
     });
 
-    it('should throw when distinct key is not present', async() => {
-      context = context.delete(KeysInitQuery.distinct);
+    it('should throw when distinctConstruct key is not present', async() => {
+      context = context.delete(KeysInitQuery.distinctConstruct);
       await expect(actor.test({ operation: <any> undefined, context })).rejects.toThrow('actor was not enabled by the query.');
     });
 
-    it('should test when distinct key is present', async() => {
+    it('should test when distinctConstruct key is present', async() => {
       await expect(actor.test({ operation: <any> undefined, context })).resolves.toBe(true);
     });
 
