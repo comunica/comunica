@@ -509,6 +509,63 @@ describe('QuerySourceSparql', () => {
         .rejects.toThrow(new Error('The endpoint http://example.org/sparql failed to provide a binding for p.'));
     });
 
+    it('should not emit an error for undef binding results for optionals', async() => {
+      const thisMediator: any = {
+        mediate(action: any) {
+          const query = action.init.body.toString();
+          return {
+            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+            body: query.indexOf('COUNT') > 0 ?
+              streamifyString(`{
+  "head": { "vars": [ "count" ]
+  } ,
+  "results": { 
+    "bindings": [
+      {
+        "count": { "type": "literal" , "value": "3" }
+      }
+    ]
+  }
+}`) :
+              streamifyString(`{
+  "head": { "vars": [ "p" ]
+  } ,
+  "results": { 
+    "bindings": [
+      {
+        "notp": { "type": "uri" , "value": "p1" }
+      },
+      {
+        "notp": { "type": "uri" , "value": "p2" }
+      },
+      {
+        "notp": { "type": "uri" , "value": "p3" }
+      }
+    ]
+  }
+}`),
+            ok: true,
+          };
+        },
+      };
+      source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', BF, false, 64, 10);
+      const stream = source.queryBindings(
+        AF.createLeftJoin(
+          AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph()),
+          AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph()),
+        ),
+        ctx,
+      );
+
+      await expect(new Promise(resolve => stream.getProperty('metadata', resolve))).resolves
+        .toEqual({
+          cardinality: { type: 'exact', value: 3 },
+          canContainUndefs: true,
+          variables: [ DF.variable('p') ],
+        });
+      await stream.toArray();
+    });
+
     it('should emit an error for an erroring stream', async() => {
       const thisMediator: any = {
         mediate() {
@@ -1170,6 +1227,59 @@ WHERE { undefined:s ?p undefined:o. }` }),
           metadata: <any> { variables: []},
         },
       )).rejects.toThrow(`Not implemented yet: "filter" case`);
+    });
+  });
+
+  describe('operationCanContainUndefs', () => {
+    it('should be false for a triple pattern', () => {
+      expect(QuerySourceSparql.operationCanContainUndefs(
+        AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')),
+      )).toBe(false);
+    });
+
+    it('should be true for a left join', () => {
+      expect(QuerySourceSparql.operationCanContainUndefs(
+        AF.createLeftJoin(
+          AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')),
+          AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')),
+        ),
+      )).toBe(true);
+    });
+
+    it('should be true for a nested left join', () => {
+      expect(QuerySourceSparql.operationCanContainUndefs(
+        AF.createProject(
+          AF.createLeftJoin(
+            AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')),
+            AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')),
+          ),
+          [],
+        ),
+      )).toBe(true);
+    });
+
+    it('should be true for values with undefs', () => {
+      expect(QuerySourceSparql.operationCanContainUndefs(
+        AF.createValues(
+          [ DF.variable('v'), DF.variable('w') ],
+          [
+            { '?v': DF.namedNode('v1') },
+            { '?v': DF.namedNode('v2'), '?w': DF.namedNode('w2') },
+          ],
+        ),
+      )).toBe(true);
+    });
+
+    it('should be false for values without undefs', () => {
+      expect(QuerySourceSparql.operationCanContainUndefs(
+        AF.createValues(
+          [ DF.variable('v'), DF.variable('w') ],
+          [
+            { '?v': DF.namedNode('v1'), '?w': DF.namedNode('w1') },
+            { '?v': DF.namedNode('v2'), '?w': DF.namedNode('w2') },
+          ],
+        ),
+      )).toBe(false);
     });
   });
 });

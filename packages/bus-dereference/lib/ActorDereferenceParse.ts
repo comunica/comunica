@@ -99,7 +99,8 @@ export abstract class ActorDereferenceParse<
       result = (await this.mediatorParse.mediate({
         context,
         handle: { context, ...dereference, metadata: await this.getMetadata(dereference) },
-        handleMediaType: (dereference.mediaType ??
+        // eslint-disable-next-line ts/prefer-nullish-coalescing
+        handleMediaType: (dereference.mediaType ||
           getMediaTypeFromExtension(dereference.url, this.mediaMappings)) ||
           action.mediaType,
       })).handle;
