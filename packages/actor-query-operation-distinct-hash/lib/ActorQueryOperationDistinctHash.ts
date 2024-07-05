@@ -101,6 +101,6 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
 
 export interface IActorQueryOperationDistinctHashArgs extends IActorQueryOperationTypedMediatedArgs {
   mediatorHashBindings: MediatorHashBindings;
-  // TODO this field should be made required in the next major update
+  // TODO: In next/major, this field should be made required in the next major update
   mediatorHashQuads?: MediatorHashQuads;
 }
