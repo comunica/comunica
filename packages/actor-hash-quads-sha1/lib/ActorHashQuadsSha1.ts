@@ -2,7 +2,7 @@ import type { IActionHashQuads, IActorHashQuadsOutput } from '@comunica/bus-hash
 import { ActorHashQuads } from '@comunica/bus-hash-quads';
 import type { IActorTest } from '@comunica/core';
 import { sha1 } from 'hash.js';
-import { termToString } from 'rdf-string';
+import { quadToStringQuad, termToString } from 'rdf-string';
 
 /**
  * A comunica Memento Http Actor.
@@ -17,9 +17,8 @@ export class ActorHashQuadsSha1 extends ActorHashQuads {
 
   public async run(_action: IActionHashQuads): Promise<IActorHashQuadsOutput> {
     return {
-      hashFunction: quad =>
-        sha1()
-          .update(termToString(quad))
+      hashFunction: quad => sha1()
+          .update(JSON.stringify(quadToStringQuad(quad)))
           .digest('hex'),
       hashCollisions: true,
     };
