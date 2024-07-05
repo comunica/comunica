@@ -51,7 +51,7 @@ describe('ActorOptimizeQueryOperationConstructDistinct', () => {
           ) ],
         ), context })).resolves.toMatchObject(
         {
-          context,
+          context: context.delete(KeysInitQuery.distinctConstruct),
           operation:
                   factory.createDistinct(
                     factory.createConstruct(
