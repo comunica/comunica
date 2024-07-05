@@ -1,4 +1,5 @@
 import type { MediatorHashBindings } from '@comunica/bus-hash-bindings';
+import type { MediatorHashQuads } from '@comunica/bus-hash-quads';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
@@ -11,7 +12,10 @@ import type {
   IActionContext,
   IQueryOperationResult,
   IQueryOperationResultBindings,
+  IQueryOperationResultQuads,
 } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
+import type { AsyncIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -19,6 +23,7 @@ import type { Algebra } from 'sparqlalgebrajs';
  */
 export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMediated<Algebra.Distinct> {
   public readonly mediatorHashBindings: MediatorHashBindings;
+  public readonly mediatorHashQuads: MediatorHashQuads;
 
   public constructor(args: IActorQueryOperationDistinctHashArgs) {
     super(args, 'distinct');
@@ -29,14 +34,31 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
   }
 
   public async runOperation(operation: Algebra.Distinct, context: IActionContext): Promise<IQueryOperationResult> {
-    const output: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(
-      await this.mediatorQueryOperation.mediate({ operation: operation.input, context }),
+    const output = await this.mediatorQueryOperation.mediate({ operation: operation.input, context });
+
+    // TODO: In next/major, remove undefined check when mediatorHashQuads is made required
+    if (output.type === 'quads' && this.mediatorHashQuads !== undefined) {
+      const outputQuads: IQueryOperationResultQuads = ActorQueryOperation.getSafeQuads(
+        output,
+      );
+
+      const quadStream: AsyncIterator<RDF.Quad> = outputQuads.quadStream.filter(await this.newHashFilterQuads(context));
+      return {
+        type: 'quads',
+        quadStream,
+        metadata: outputQuads.metadata,
+      };
+    }
+
+    const outputBindings: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(
+      output,
     );
-    const bindingsStream: BindingsStream = output.bindingsStream.filter(await this.newHashFilter(context));
+
+    const bindingsStream: BindingsStream = outputBindings.bindingsStream.filter(await this.newHashFilter(context));
     return {
       type: 'bindings',
       bindingsStream,
-      metadata: output.metadata,
+      metadata: outputBindings.metadata,
     };
   }
 
@@ -55,8 +77,30 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
       return !(hash in hashes) && (hashes[hash] = true);
     };
   }
+
+  /**
+   * Create a new distinct filter function to hash quads.
+   * This will maintain an internal hash datastructure so that every quad object only returns true once.
+   * @param context The action context.
+   * @return {(quad: RDF.Quad) => boolean} A distinct filter for quads.
+   */
+  public async newHashFilterQuads(context: IActionContext): Promise<(quad: RDF.Quad) => boolean> {
+    // TODO: In next/major, this check can be removed when mediatorHashQuads is made required
+    if (this.mediatorHashQuads === undefined) {
+      return _quad => true;
+    }
+    const { hashFunction } = await this.mediatorHashQuads.mediate({ allowHashCollisions: true, context });
+    const hashes: Record<string, boolean> = {};
+    return (quad: RDF.Quad) => {
+      const hash: string = hashFunction(quad);
+
+      return !(hash in hashes) && (hashes[hash] = true);
+    };
+  }
 }
 
 export interface IActorQueryOperationDistinctHashArgs extends IActorQueryOperationTypedMediatedArgs {
   mediatorHashBindings: MediatorHashBindings;
+  // TODO: In next/major, this field should be made required in the next major update
+  mediatorHashQuads?: MediatorHashQuads;
 }
