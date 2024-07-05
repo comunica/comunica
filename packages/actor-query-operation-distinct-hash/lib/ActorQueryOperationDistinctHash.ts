@@ -14,7 +14,8 @@ import type {
   IQueryOperationResultBindings,
   IQueryOperationResultQuads,
 } from '@comunica/types';
-import type { Quad, QuadStream } from '@comunica/types/lib/Quads';
+import type * as RDF from '@rdfjs/types';
+import type { AsyncIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -41,7 +42,7 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
         output,
       );
 
-      const quadStream: QuadStream = outputQuads.quadStream.filter(await this.newHashFilterQuads(context));
+      const quadStream: AsyncIterator<RDF.Quad> = outputQuads.quadStream.filter(await this.newHashFilterQuads(context));
       return {
         type: 'quads',
         quadStream,
@@ -81,16 +82,16 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
    * Create a new distinct filter function to hash quads.
    * This will maintain an internal hash datastructure so that every quad object only returns true once.
    * @param context The action context.
-   * @return {(quad: quad) => boolean} A distinct filter for quads.
+   * @return {(quad: RDF.Quad) => boolean} A distinct filter for quads.
    */
-  public async newHashFilterQuads(context: IActionContext): Promise<(quad: Quad) => boolean> {
+  public async newHashFilterQuads(context: IActionContext): Promise<(quad: RDF.Quad) => boolean> {
     // TODO this check can be removed when mediatorHashQuads is made required
     if (this.mediatorHashQuads === undefined) {
       return _quad => true;
     }
     const { hashFunction } = await this.mediatorHashQuads.mediate({ allowHashCollisions: true, context });
     const hashes: Record<string, boolean> = {};
-    return (quad: Quad) => {
+    return (quad: RDF.Quad) => {
       const hash: string = hashFunction(quad);
 
       return !(hash in hashes) && (hashes[hash] = true);
