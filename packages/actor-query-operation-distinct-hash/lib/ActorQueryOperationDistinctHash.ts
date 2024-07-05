@@ -85,7 +85,7 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
    * @return {(quad: RDF.Quad) => boolean} A distinct filter for quads.
    */
   public async newHashFilterQuads(context: IActionContext): Promise<(quad: RDF.Quad) => boolean> {
-    // TODO this check can be removed when mediatorHashQuads is made required
+    // TODO: In next/major, this check can be removed when mediatorHashQuads is made required
     if (this.mediatorHashQuads === undefined) {
       return _quad => true;
     }
