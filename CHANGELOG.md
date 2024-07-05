@@ -1,6 +1,34 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v3.2.0"></a>
+## [v3.2.0](https://github.com/comunica/comunica/compare/v3.1.2...v3.2.0) - 2024-07-05
+
+### Added
+* Performance improvements:
+  * [Add optional hash join actor](https://github.com/comunica/comunica/commit/de90db0140cd10e2bfdf23c26f9eeff5e94f3ef2)
+* [Add actors for bindings source attribution](https://github.com/comunica/comunica/commit/c3dd70a424e175877fd883277e9d0191bc15bf62)
+* [Add OPT+ operator](https://github.com/comunica/comunica/commit/8ffeff5e286c6ef7db7d163bd8ceee8c49f9f513)
+
+### Changed
+* Performance improvements:
+  * [Lower default ioWeight to tweak overall performance](https://github.com/comunica/comunica/commit/50333c92ed1cf5410f172f608a213424e510986e)
+  * [Make optional hash and bind join only work with common variables](https://github.com/comunica/comunica/commit/df40c20e001121cd0ae9a9adf67ed221dc2966ba)
+* Debugging and performance tracking:
+  * [Omit undefined join coefficients in debug logger](https://github.com/comunica/comunica/commit/f81af2fe0f4f3739580436545f628c3c6312be4e)
+  * [Emit timings and actual cardinalities in physical explain output](https://github.com/comunica/comunica/commit/0c84f9e33aaecc81e5b78c4c83f629b8cc1ff00d)
+  * [Make physical query plan explain output compact and human-readable](https://github.com/comunica/comunica/commit/d85c5bcae0045a4ff848a7d767a0b716af463913)
+  * [Compact Bind-Join operations in physical query explain output](https://github.com/comunica/comunica/commit/addc8de2737dc595cb443d27129ea499d48deb73)
+  * [Add BJ bindOperation to physical query explain output](https://github.com/comunica/comunica/commit/7781e16cb63a67266e8303ab3304dbc5ba40929d)
+  * [Emit pattern source in physical query explain output](https://github.com/comunica/comunica/commit/c334b6c248bc417a9664e561674a1f18ccc291ea)
+
+### Fixed
+* [Fix undef sanity check for SPARQL endpoints sometimes going rogue](https://github.com/comunica/comunica/commit/100aab2c2d011257887609a995a101e38c8355d9)
+* [Fix CONSTRUCT FROM not being sent to endpoints, Closes #1389](https://github.com/comunica/comunica/commit/0e0cb446d855cd29dee9685ec5e3edb8ce90fbca)
+* [Fix empty media type not falling back to extension handling](https://github.com/comunica/comunica/commit/5fa2663e240d1ca041d9898f0464111d6d46867c)
+* [Fixed the order of count operations influencing the result](https://github.com/comunica/comunica/commit/cb1bebd7eb194edc73ded2fb4460a20edb8db6ea)
+* [Fix minus-hash using incorrect hash function](https://github.com/comunica/comunica/commit/23302320498293d658a08c637b715a6c5744579b)
+
 <a name="v3.1.2"></a>
 ## [v3.1.2](https://github.com/comunica/comunica/compare/v3.1.1...v3.1.2) - 2024-05-30
 
