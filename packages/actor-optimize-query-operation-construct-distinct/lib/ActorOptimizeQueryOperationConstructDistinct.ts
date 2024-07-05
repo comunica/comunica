@@ -33,6 +33,6 @@ export class ActorOptimizeQueryOperationConstructDistinct extends ActorOptimizeQ
         };
       },
     });
-    return { operation, context: action.context };
+    return { operation, context: action.context.delete(KeysInitQuery.distinctConstruct) };
   }
 }
