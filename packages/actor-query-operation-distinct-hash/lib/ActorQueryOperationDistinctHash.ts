@@ -36,7 +36,7 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
   public async runOperation(operation: Algebra.Distinct, context: IActionContext): Promise<IQueryOperationResult> {
     const output = await this.mediatorQueryOperation.mediate({ operation: operation.input, context });
 
-    // TODO remove undefined check when mediatorHashQuads is made required
+    // TODO: In next/major, remove undefined check when mediatorHashQuads is made required
     if (output.type === 'quads' && this.mediatorHashQuads !== undefined) {
       const outputQuads: IQueryOperationResultQuads = ActorQueryOperation.getSafeQuads(
         output,
