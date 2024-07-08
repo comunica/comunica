@@ -33,6 +33,6 @@
     "workers": 4,
     "maxMemory": 2084,
     "dataset": "generated/dataset.hdt",
-    "hookSparqlEndpointLdfEngine": {"@id": "urn:jbr:benchmark-watdiv-tpf:hookSparqlEndpoint_hookSparqlEndpointLdfEngine",  "@type": "HookSparqlEndpointComunica",  "dockerfileClient": "input/dockerfiles/Dockerfile-client",  "resourceConstraints": {"@type": "StaticDockerResourceConstraints","cpu_percentage": 100  },  "configClient": "input/config-client.json",  "contextClient": "input/context-client.json",  "additionalBinds": [],  "clientPort": 3001,  "clientLogLevel": "info",  "queryTimeout": 500,  "maxMemory": 8192}
+    "hookSparqlEndpointLdfEngine": {"@id": "urn:jbr:benchmark-watdiv-tpf:combination_1:hookSparqlEndpoint_hookSparqlEndpointLdfEngine",  "@type": "HookSparqlEndpointComunica",  "dockerfileClient": "input/dockerfiles/Dockerfile-client",  "resourceConstraints": {"@type": "StaticDockerResourceConstraints","cpu_percentage": 100  },  "configClient": "input/config-client.json",  "contextClient": "input/context-client.json",  "additionalBinds": [],  "clientPort": 3001,  "clientLogLevel": "info",  "queryTimeout": 500,  "maxMemory": 8192}
   }
 }

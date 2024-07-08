@@ -1,0 +1,11 @@
+# Women in Greek mythology
+# Datasource: https://fragments.dbpedia.org/2016-04/en
+SELECT ?entity ?label ?comment
+WHERE {
+  ?entity a dbpedia-owl:MythologicalFigure;
+          rdfs:label ?label;
+          dc:subject <http://dbpedia.org/resource/Category:Women_in_Greek_mythology>;
+          rdfs:comment ?comment
+  FILTER(langMatches(lang(?label), "EN"))
+  FILTER(langMatches(lang(?comment), "EN"))
+}
