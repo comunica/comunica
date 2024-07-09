@@ -47,6 +47,6 @@
     "rdf-data-factory": "^1.1.2",
     "rdf-string": "^1.6.1",
     "rdf-terms": "^1.11.0",
-    "sparqlalgebrajs": "^4.3.3"
+    "sparqlalgebrajs": "^4.3.7"
   }
 }

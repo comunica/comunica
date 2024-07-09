@@ -46,6 +46,6 @@
     "@comunica/types": "^3.2.0",
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0",
-    "sparqlalgebrajs": "^4.3.3"
+    "sparqlalgebrajs": "^4.3.7"
   }
 }

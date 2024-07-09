@@ -45,6 +45,6 @@
     "@comunica/types": "^3.2.0",
     "asynciterator": "^3.9.0",
     "rdf-data-factory": "^1.1.1",
-    "sparqlalgebrajs": "^4.3.3"
+    "sparqlalgebrajs": "^4.3.7"
   }
 }
