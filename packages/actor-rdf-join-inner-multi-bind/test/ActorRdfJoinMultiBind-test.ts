@@ -139,7 +139,7 @@ IQueryOperationResultBindings
             },
             {
               state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 5 },
+              cardinality: { type: 'estimate', value: 500 },
               pageSize: 100,
               requestTime: 30,
               canContainUndefs: false,
@@ -147,10 +147,10 @@ IQueryOperationResultBindings
             },
           ],
         )).resolves.toEqual({
-          iterations: 1.280_000_000_000_000_2,
+          iterations: 80.48000000000002,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 0.912_000_000_000_000_1,
+          requestTime: 32.592000000000006,
         });
       });
 
@@ -193,7 +193,7 @@ IQueryOperationResultBindings
             },
             {
               state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 5 },
+              cardinality: { type: 'estimate', value: 500 },
               pageSize: 100,
               requestTime: 30,
               canContainUndefs: false,
@@ -201,10 +201,10 @@ IQueryOperationResultBindings
             },
           ],
         )).resolves.toEqual({
-          iterations: 1.280_000_000_000_000_2,
+          iterations: 80.48000000000002,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 0.912_000_000_000_000_1,
+          requestTime: 32.592000000000006,
         });
       });
 
@@ -349,7 +349,7 @@ IQueryOperationResultBindings
           [
             {
               state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 3 },
+              cardinality: { type: 'estimate', value: 300 },
               pageSize: 100,
               requestTime: 10,
               canContainUndefs: false,
@@ -365,10 +365,10 @@ IQueryOperationResultBindings
             },
           ],
         )).resolves.toEqual({
-          iterations: 0.480_000_000_000_000_1,
+          iterations: 48.00000000000001,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 0.448_000_000_000_000_06,
+          requestTime: 5.200000000000001,
         });
       });
 
@@ -408,6 +408,55 @@ IQueryOperationResultBindings
             },
           ],
         )).rejects.toThrow('Actor actor can not be used over remaining entries with modified operations');
+      });
+
+      it('should reject if smallest is not significantly smaller than the largest', async() => {
+        await expect(actor.getJoinCoefficients(
+          {
+            type: 'inner',
+            entries: [
+              {
+                output: <any>{},
+                operation: FACTORY.createNop(),
+              },
+              {
+                output: <any>{},
+                operation: FACTORY.createNop(),
+              },
+              {
+                output: <any>{},
+                operation: FACTORY.createNop(),
+              },
+            ],
+            context: new ActionContext(),
+          },
+          [
+            {
+              state: new MetadataValidationState(),
+              cardinality: { type: 'estimate', value: 3 },
+              pageSize: 100,
+              requestTime: 10,
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+            {
+              state: new MetadataValidationState(),
+              cardinality: { type: 'estimate', value: 2 },
+              pageSize: 100,
+              requestTime: 20,
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+            {
+              state: new MetadataValidationState(),
+              cardinality: { type: 'estimate', value: 5 },
+              pageSize: 100,
+              requestTime: 30,
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+          ],
+        )).rejects.toThrow(`Actor actor can only run if the smallest stream is much smaller than largest stream`);
       });
     });
 
@@ -1089,6 +1138,7 @@ IQueryOperationResultBindings
           bus,
           bindOrder: 'breadth-first',
           selectivityModifier: 0.1,
+          minMaxCardinalityRatio: 100,
           mediatorQueryOperation,
           mediatorJoinSelectivity,
           mediatorJoinEntriesSort,

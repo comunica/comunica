@@ -47,12 +47,12 @@ export class MediatorJoinCoefficientsFixed
     const maxCost = Math.max(...(<number[]> costs.filter(cost => cost !== undefined)));
 
     // If we have a limit indicator in the context,
-    // increase cost of entries that have a number of iterations that is higher than the limit AND persist items.
+    // increase cost of entries that have a number of iterations that is higher than the limit AND block items.
     // In these cases, join operators that produce results early on will be preferred.
     const limitIndicator: number | undefined = action.context.get(KeysQueryOperation.limitIndicator);
     if (limitIndicator) {
       costs = costs.map((cost, i) => {
-        if (cost !== undefined && (<any> coefficients[i]).persistedItems > 0 &&
+        if (cost !== undefined && (<any> coefficients[i]).blockingItems > 0 &&
 
           (<any> coefficients[i]).iterations > limitIndicator) {
           return cost + maxCost;

@@ -21,6 +21,7 @@ import { Factory, Algebra, Util } from 'sparqlalgebrajs';
 export class ActorRdfJoinMultiBind extends ActorRdfJoin {
   public readonly bindOrder: BindOrder;
   public readonly selectivityModifier: number;
+  public readonly minMaxCardinalityRatio: number;
   public readonly mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort;
   public readonly mediatorQueryOperation: MediatorQueryOperation;
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
@@ -28,6 +29,10 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
   public static readonly FACTORY = new Factory();
 
   public constructor(args: IActorRdfJoinMultiBindArgs) {
+    // TODO: remove this fallback in the next major update
+    if (args.minMaxCardinalityRatio === undefined) {
+      args.minMaxCardinalityRatio = 100;
+    }
     super(args, {
       logicalType: 'inner',
       physicalName: 'bind',
@@ -158,7 +163,6 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
         valid = false;
         return false;
       },
-      // [Algebr
     });
 
     return valid;
@@ -193,6 +197,11 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
     // Reject binding on modified operations, since using the output directly would be significantly more efficient.
     if (remainingEntries.some(entry => entry.operationModified)) {
       throw new Error(`Actor ${this.name} can not be used over remaining entries with modified operations`);
+    }
+
+    // Only run this actor if the smallest stream is significantly smaller than the largest stream.
+    if (metadatas[0].cardinality.value * this.minMaxCardinalityRatio > metadatas.at(-1)!.cardinality.value) {
+      throw new Error(`Actor ${this.name} can only run if the smallest stream is much smaller than largest stream`);
     }
 
     // Determine selectivities of smallest entry with all other entries
@@ -237,6 +246,12 @@ export interface IActorRdfJoinMultiBindArgs extends IActorRdfJoinArgs {
    * @default {0.0001}
    */
   selectivityModifier: number;
+  /**
+   * The number of times the smallest cardinality should fit in the maximum cardinality.
+   * @range {double}
+   * @default {100}
+   */
+  minMaxCardinalityRatio?: number;
   /**
    * The join entries sort mediator
    */
