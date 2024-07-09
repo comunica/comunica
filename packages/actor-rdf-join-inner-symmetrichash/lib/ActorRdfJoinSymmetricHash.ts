@@ -13,6 +13,7 @@ export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
       logicalType: 'inner',
       physicalName: 'symmetric-hash',
       limitEntries: 2,
+      requiresVariableOverlap: true,
     });
   }
 

@@ -13,6 +13,7 @@ export class ActorRdfJoinHash extends ActorRdfJoin {
       logicalType: 'inner',
       physicalName: 'hash',
       limitEntries: 2,
+      requiresVariableOverlap: true,
     });
   }
 

@@ -107,7 +107,7 @@ describe('ActorRdfJoinOptionalHash', () => {
             },
           ],
           context,
-        })).rejects.toThrow('Actor actor only join entries with at least one common variable');
+        })).rejects.toThrow('Actor actor can only join entries with at least one common variable');
       });
 
       it('should test on two entries', async() => {
@@ -406,7 +406,7 @@ describe('ActorRdfJoinOptionalHash', () => {
             },
           ],
           context,
-        })).rejects.toThrow('Actor actor only join entries with at least one common variable');
+        })).rejects.toThrow('Actor actor can only join entries with at least one common variable');
       });
 
       it('should test on two entries', async() => {
@@ -795,7 +795,7 @@ describe('ActorRdfJoinOptionalHash', () => {
             },
           ],
           context,
-        })).rejects.toThrow('Actor actor only join entries with at least one common variable');
+        })).rejects.toThrow('Actor actor can only join entries with at least one common variable');
       });
 
       it('should test on two entries', async() => {
@@ -1087,7 +1087,7 @@ describe('ActorRdfJoinOptionalHash', () => {
             },
           ],
           context,
-        })).rejects.toThrow('Actor actor only join entries with at least one common variable');
+        })).rejects.toThrow('Actor actor can only join entries with at least one common variable');
       });
 
       it('should test on two entries', async() => {

@@ -27,6 +27,7 @@ export class ActorRdfJoinOptionalHash extends ActorRdfJoin {
       physicalName: `hash-${args.canHandleUndefs ? 'undef' : 'def'}-${args.blocking ? 'blocking' : 'nonblocking'}`,
       limitEntries: 2,
       canHandleUndefs: args.canHandleUndefs,
+      requiresVariableOverlap: true,
     });
   }
 
@@ -165,11 +166,6 @@ export class ActorRdfJoinOptionalHash extends ActorRdfJoin {
     action: IActionRdfJoin,
     metadatas: MetadataBindings[],
   ): Promise<IMediatorTypeJoinCoefficients> {
-    // This actor only works with common variables
-    if (ActorRdfJoin.overlappingVariables(metadatas).length === 0) {
-      throw new Error(`Actor ${this.name} only join entries with at least one common variable`);
-    }
-
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
     let iterations = metadatas[0].cardinality.value + metadatas[1].cardinality.value;

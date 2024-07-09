@@ -65,8 +65,8 @@ IActorRdfJoinSelectivityOutput
         mediate: async() => ({ selectivity: 1 }),
       };
       actor = new ActorRdfJoinSymmetricHash({ name: 'actor', bus, mediatorJoinSelectivity });
-      variables0 = [];
-      variables1 = [];
+      variables0 = [ DF.variable('a') ];
+      variables1 = [ DF.variable('a'), DF.variable('b') ];
       action = {
         type: 'inner',
         entries: [
@@ -219,6 +219,49 @@ IActorRdfJoinSelectivityOutput
           .toThrow(new Error('Actor actor can not join streams containing undefs'));
       });
 
+      it('should fail on non-overlapping variables', async() => {
+        action = {
+          type: 'inner',
+          entries: [
+            {
+              output: {
+                bindingsStream: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
+                metadata: () => Promise.resolve(
+                  {
+                    state: new MetadataValidationState(),
+                    cardinality: { type: 'estimate', value: 4 },
+                    pageSize: 100,
+                    requestTime: 10,
+                    canContainUndefs: false,
+                    variables: [ DF.variable('a') ],
+                  },
+                ),
+                type: 'bindings',
+              },
+              operation: <any>{},
+            },
+            {
+              output: {
+                bindingsStream: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
+                metadata: () => Promise.resolve({
+                  state: new MetadataValidationState(),
+                  cardinality: { type: 'estimate', value: 5 },
+                  pageSize: 100,
+                  requestTime: 20,
+                  canContainUndefs: false,
+                  variables: [ DF.variable('b') ],
+                }),
+                type: 'bindings',
+              },
+              operation: <any>{},
+            },
+          ],
+          context,
+        };
+        await expect(actor.test(action)).rejects
+          .toThrow(new Error('Actor actor can only join entries with at least one common variable'));
+      });
+
       it('should generate correct test metadata', async() => {
         await expect(actor.test(action)).resolves
           .toHaveProperty('iterations', (await (<any> action.entries[0].output).metadata()).cardinality.value +
@@ -244,7 +287,7 @@ IActorRdfJoinSelectivityOutput
           state: expect.any(MetadataValidationState),
           canContainUndefs: false,
           cardinality: { type: 'estimate', value: 20 },
-          variables: [],
+          variables: [ DF.variable('a'), DF.variable('b') ],
         });
         await expect(output.bindingsStream).toEqualBindingsStream([]);
       });

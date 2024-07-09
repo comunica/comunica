@@ -64,6 +64,10 @@ export abstract class ActorRdfJoin
    * and can therefore be considered a leaf of the join plan.
    */
   protected readonly isLeaf: boolean;
+  /**
+   * If this join operator must only be used for join entries with (at least partially) common variables.
+   */
+  protected readonly requiresVariableOverlap?: boolean;
 
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
@@ -77,6 +81,7 @@ export abstract class ActorRdfJoin
     this.limitEntriesMin = options.limitEntriesMin ?? false;
     this.canHandleUndefs = options.canHandleUndefs ?? false;
     this.isLeaf = options.isLeaf ?? true;
+    this.requiresVariableOverlap = options.requiresVariableOverlap ?? false;
   }
 
   /**
@@ -384,6 +389,11 @@ export abstract class ActorRdfJoin
       }
     }
 
+    // This actor only works with common variables
+    if (this.requiresVariableOverlap && ActorRdfJoin.overlappingVariables(metadatas).length === 0) {
+      throw new Error(`Actor ${this.name} can only join entries with at least one common variable`);
+    }
+
     return await this.getJoinCoefficients(action, metadatas);
   }
 
@@ -520,6 +530,10 @@ export interface IActorRdfJoinInternalOptions {
    * Defaults to true.
    */
   isLeaf?: boolean;
+  /**
+   * If this join operator must only be used for join entries with (at least partially) common variables.
+   */
+  requiresVariableOverlap?: boolean;
 }
 
 /**
