@@ -208,20 +208,21 @@ export function materializeOperation(
       );
 
       // Recursively materialize the filter input
-      const recursionResultInput: Algebra.Operation = materializeOperation(
+      let recursionResultInput: Algebra.Operation = materializeOperation(
         op.input,
         bindings,
         bindingsFactory,
         options,
       );
 
+      if (values.length > 0) {
+        recursionResultInput = factory.createJoin([ ...values, recursionResultInput ]);
+      }
+
       return {
         // Recursion already taken care of above.
         recurse: false,
-        result: factory.createFilter(
-          factory.createJoin([ ...values, recursionResultInput ]),
-          recursionResultExpression,
-        ),
+        result: factory.createFilter(recursionResultInput, recursionResultExpression),
       };
     },
     values(op: Algebra.Values, factory: Factory) {
