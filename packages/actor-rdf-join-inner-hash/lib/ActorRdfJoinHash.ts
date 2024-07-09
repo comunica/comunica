@@ -18,7 +18,14 @@ export class ActorRdfJoinHash extends ActorRdfJoin {
   }
 
   public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
-    const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
+    let metadatas = await ActorRdfJoin.getMetadatas(action.entries);
+
+    // Ensure the left build stream is the smallest
+    if (metadatas[1].cardinality.value < metadatas[0].cardinality.value) {
+      metadatas = [ metadatas[1], metadatas[0] ];
+      action = { ...action, entries: [ action.entries[1], action.entries[0] ]};
+    }
+
     const variables = ActorRdfJoin.overlappingVariables(metadatas);
     const join = new HashJoin<Bindings, string, Bindings>(
       action.entries[0].output.bindingsStream,
@@ -39,6 +46,11 @@ export class ActorRdfJoinHash extends ActorRdfJoin {
     action: IActionRdfJoin,
     metadatas: MetadataBindings[],
   ): Promise<IMediatorTypeJoinCoefficients> {
+    // Ensure the left build stream is the smallest
+    if (metadatas[1].cardinality.value < metadatas[0].cardinality.value) {
+      metadatas = [ metadatas[1], metadatas[0] ];
+    }
+
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
     return {

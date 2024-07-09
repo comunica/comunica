@@ -324,6 +324,75 @@ IActorRdfJoinSelectivityOutput
       }
     });
 
+    it('should generate correct test metadata when right is smaller than left', async() => {
+      // Close the iterators already declared since we will not be using them
+      for (const iter of iterators) {
+        iter.destroy();
+      }
+      action = {
+        type: 'inner',
+        entries: [
+          {
+            output: {
+              bindingsStream: new ArrayIterator<RDF.Bindings>([
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a') ],
+                  [ DF.variable('b'), DF.literal('b') ],
+                ]),
+              ], { autoStart: false }),
+              metadata: () => Promise.resolve(
+                {
+                  state: new MetadataValidationState(),
+                  cardinality: { type: 'estimate', value: 5 },
+                  pageSize: 100,
+                  requestTime: 10,
+                  canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('b') ],
+                },
+              ),
+              type: 'bindings',
+            },
+            operation: <any>{},
+          },
+          {
+            output: {
+              bindingsStream: new ArrayIterator<RDF.Bindings>([
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a') ],
+                  [ DF.variable('c'), DF.literal('c') ],
+                ]),
+              ], { autoStart: false }),
+              metadata: () => Promise.resolve(
+                {
+                  state: new MetadataValidationState(),
+                  cardinality: { type: 'estimate', value: 4 },
+                  pageSize: 100,
+                  requestTime: 20,
+                  canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('c') ],
+                },
+              ),
+              type: 'bindings',
+            },
+            operation: <any>{},
+          },
+        ],
+        context,
+      };
+
+      await expect(actor.test(action)).resolves
+        .toEqual({
+          iterations: 9,
+          persistedItems: 4,
+          blockingItems: 4,
+          requestTime: 1.3,
+        });
+
+      for (const iter of iterators) {
+        iter.destroy();
+      }
+    });
+
     it('should generate correct metadata', async() => {
       await actor.run(action).then(async(result: IQueryOperationResultBindings) => {
         await expect((<any> result).metadata()).resolves.toHaveProperty('cardinality', {
@@ -530,6 +599,81 @@ IActorRdfJoinSelectivityOutput
         // Mapping to string and sorting since we don't know order (well, we sort of know, but we might not!)
         expect((await arrayifyStream(output.bindingsStream)).map(bindingsToString).sort())
           .toEqual(expected.map(bindingsToString).sort());
+      });
+    });
+
+    it('should flip when right is smaller than left', async() => {
+      // Close the iterators already declared since we will not be using them
+      for (const iter of iterators) {
+        iter.destroy();
+      }
+
+      action = {
+        type: 'inner',
+        entries: [
+          {
+            output: {
+              bindingsStream: new ArrayIterator<RDF.Bindings>([
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a') ],
+                  [ DF.variable('b'), DF.literal('b') ],
+                ]),
+              ], { autoStart: false }),
+              metadata: () => Promise.resolve(
+                {
+                  state: new MetadataValidationState(),
+                  cardinality: { type: 'estimate', value: 5 },
+                  pageSize: 100,
+                  requestTime: 10,
+                  canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('b') ],
+                },
+              ),
+              type: 'bindings',
+            },
+            operation: <any>{},
+          },
+          {
+            output: {
+              bindingsStream: new ArrayIterator<RDF.Bindings>([
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a') ],
+                  [ DF.variable('c'), DF.literal('c') ],
+                ]),
+              ], { autoStart: false }),
+              metadata: () => Promise.resolve(
+                {
+                  state: new MetadataValidationState(),
+                  cardinality: { type: 'estimate', value: 4 },
+                  pageSize: 100,
+                  requestTime: 20,
+                  canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('c') ],
+                },
+              ),
+              type: 'bindings',
+            },
+            operation: <any>{},
+          },
+        ],
+        context,
+      };
+
+      await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
+        await expect(output.metadata()).resolves
+          .toEqual({
+            state: expect.any(MetadataValidationState),
+            cardinality: { type: 'estimate', value: 20 },
+            canContainUndefs: false,
+            variables: [ DF.variable('a'), DF.variable('c'), DF.variable('b') ],
+          });
+        await expect(output.bindingsStream).toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('a'), DF.literal('a') ],
+            [ DF.variable('c'), DF.literal('c') ],
+            [ DF.variable('b'), DF.literal('b') ],
+          ]),
+        ]);
       });
     });
   });
