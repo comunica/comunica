@@ -31,7 +31,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
   public constructor(args: IActorRdfJoinMultiBindArgs) {
     // TODO: remove this fallback in the next major update
     if (args.minMaxCardinalityRatio === undefined) {
-      args.minMaxCardinalityRatio = 100;
+      args.minMaxCardinalityRatio = 60;
     }
     super(args, {
       logicalType: 'inner',
@@ -200,7 +200,9 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
     }
 
     // Only run this actor if the smallest stream is significantly smaller than the largest stream.
-    if (metadatas[0].cardinality.value * this.minMaxCardinalityRatio > metadatas.at(-1)!.cardinality.value) {
+    // We must use Math.max, because the last metadata is not necessarily the biggest, but it's the least preferred.
+    if (metadatas[0].cardinality.value * this.minMaxCardinalityRatio >
+      Math.max(...metadatas.map(metadata => metadata.cardinality.value))) {
       throw new Error(`Actor ${this.name} can only run if the smallest stream is much smaller than largest stream`);
     }
 
@@ -249,7 +251,7 @@ export interface IActorRdfJoinMultiBindArgs extends IActorRdfJoinArgs {
   /**
    * The number of times the smallest cardinality should fit in the maximum cardinality.
    * @range {double}
-   * @default {100}
+   * @default {60}
    */
   minMaxCardinalityRatio?: number;
   /**

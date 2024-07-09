@@ -2432,10 +2432,10 @@
     eslint-plugin-style "^0.2.0"
     eslint-plugin-tsdoc "^0.2.17"
 
-"@rubensworks/process-sparql-benchmark-results@^1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@rubensworks/process-sparql-benchmark-results/-/process-sparql-benchmark-results-1.2.1.tgz#e657d924a54a5a97cf9b3a93e8846eb045be16e9"
-  integrity sha512-g69vE8aYMTObZen1QHoGcp44/RRoiAI+K40KR1eHg821RdS0FWNZsuZRMjqI0h/us57y7/9JyYnJdexrVMgdNQ==
+"@rubensworks/process-sparql-benchmark-results@^1.2.2":
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/@rubensworks/process-sparql-benchmark-results/-/process-sparql-benchmark-results-1.2.2.tgz#ae5cb475a55e78bf697d08cc2aeaed06c84d14bc"
+  integrity sha512-XVwHvkEHw6GGH4xbPQiA7FnpTAOc8uQeFIqUZP0fMXw7ruMOfpWv+7MvQOmEVvmWPLgw0Q0wMka92R+BCbmYDg==
   dependencies:
     "@rubensworks/saxes" "^6.0.1"
     "@types/cross-spawn" "^6.0.2"
