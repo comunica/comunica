@@ -21,6 +21,7 @@ export class ActorRdfJoinHash extends ActorRdfJoin {
     let metadatas = await ActorRdfJoin.getMetadatas(action.entries);
 
     // Ensure the left build stream is the smallest
+    // TODO: in the next major version, use ActorRdfJoin.sortJoinEntries, which requires mediatorJoinEntriesSort
     if (metadatas[1].cardinality.value < metadatas[0].cardinality.value) {
       metadatas = [ metadatas[1], metadatas[0] ];
       action = { ...action, entries: [ action.entries[1], action.entries[0] ]};
