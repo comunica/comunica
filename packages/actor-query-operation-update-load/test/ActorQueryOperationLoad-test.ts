@@ -1,7 +1,7 @@
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultVoid } from '@comunica/types';
-import { assignOperationSource } from '@comunica/utils-query-operation';
+import { assignOperationSource, KEY_CONTEXT_WRAPPED_QUERY_OPERATION } from '@comunica/utils-query-operation';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -100,6 +100,7 @@ describe('ActorQueryOperationLoad', () => {
         context: new ActionContext({
           [KeysInitQuery.dataFactory.name]: DF,
           [KeysQueryOperation.operation.name]: expect.anything(),
+          [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: expect.anything(),
         }),
       });
     });
@@ -124,6 +125,7 @@ describe('ActorQueryOperationLoad', () => {
         context: new ActionContext({
           [KeysInitQuery.dataFactory.name]: DF,
           '@comunica/bus-query-operation:operation': expect.anything(),
+          [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: expect.anything(),
         }),
       });
     });
@@ -205,6 +207,7 @@ describe('ActorQueryOperationLoad', () => {
           [KeysInitQuery.dataFactory.name]: DF,
           [KeysInitQuery.lenient.name]: true,
           [KeysQueryOperation.operation.name]: expect.anything(),
+          [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: expect.anything(),
         }),
       });
     });

@@ -4,7 +4,7 @@ import type {
 } from '@comunica/bus-rdf-join-selectivity';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IAction, IActorArgs, Mediate, TestResult } from '@comunica/core';
-import { passTest, failTest, Actor } from '@comunica/core';
+import {ActionContextKey, passTest, failTest, Actor } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type {
   IQueryOperationResultBindings,
@@ -16,6 +16,7 @@ import type {
   IJoinEntryWithMetadata,
   ComunicaDataFactory,
   MetadataVariable,
+  LogicalJoinType,
 } from '@comunica/types';
 import { instrumentIterator } from '@comunica/utils-iterator';
 import { cachifyMetadata, MetadataValidationState } from '@comunica/utils-metadata';
@@ -39,7 +40,6 @@ IQueryOperationResultBindings,
 TS
 > {
   public readonly mediatorJoinSelectivity: MediatorRdfJoinSelectivity;
-
   /**
    * If this actor will be logged in the debugger and physical query plan logger
    */
@@ -433,6 +433,8 @@ TS
       );
     }
 
+    action.context = this.setContextWrapped(action, action.context);
+
     // Get action output
     const { result, physicalPlanMetadata } = await this.getOutput(action, sideData);
 
@@ -470,6 +472,16 @@ TS
     result.metadata = cachifyMetadata(result.metadata);
 
     return result;
+  }
+
+  /**
+   * Sets KEY_CONTEXT_WRAPPED_RDF_JOIN key in the context to the entries being joined.
+   * @param action The join action being executed
+   * @param context The ActionContext
+   * @returns The updated ActionContext
+   */
+  public setContextWrapped(action: IActionRdfJoin, context: IActionContext): IActionContext {
+    return context.set(KEY_CONTEXT_WRAPPED_RDF_JOIN, action.entries);
   }
 
   /**
@@ -544,11 +556,6 @@ export interface IActorRdfJoinInternalOptions {
   requiresVariableOverlap?: boolean;
 }
 
-/**
- * Represents a logical join type.
- */
-export type LogicalJoinType = 'inner' | 'optional' | 'minus';
-
 export interface IActionRdfJoin extends IAction {
   /**
    * The logical join type.
@@ -574,5 +581,11 @@ export interface IActorRdfJoinOutputInner {
 export interface IActorRdfJoinTestSideData {
   metadatas: MetadataBindings[];
 }
+/**
+ * Key that shows if the query operation has already been wrapped by a process iterator call
+ */
+export const KEY_CONTEXT_WRAPPED_RDF_JOIN = new ActionContextKey<IJoinEntry[]>(
+  '@comunica/actor-rdf-join:wrapped',
+);
 
 export type MediatorRdfJoin = Mediate<IActionRdfJoin, IQueryOperationResultBindings, IMediatorTypeJoinCoefficients>;

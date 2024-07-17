@@ -85,7 +85,7 @@ describe('ActorQuerySourceIdentifyHypermediaSourceAttribution', () => {
         quad('s1', 'p1', 'o1'),
         quad('s2', 'p2', 'o2'),
       ]);
-      context = context.set(KEY_CONTEXT_WRAPPED, true);
+      context = context.set(KEY_CONTEXT_WRAPPED, actor);
       await expect(actor.test({ metadata: <any> null, quads, url: 'URL', context }))
         .rejects
         .toThrow('Unable to wrap query source multiple times');
