@@ -28,3 +28,8 @@ export interface IJoinEntry {
  * A joinable entry with resolved metadata.
  */
 export type IJoinEntryWithMetadata = IJoinEntry & { metadata: MetadataBindings };
+
+/**
+ * Represents a logical join type.
+ */
+export type LogicalJoinType = 'inner' | 'optional' | 'minus';

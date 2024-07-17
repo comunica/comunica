@@ -1,7 +1,7 @@
 import type { BindingsFactory } from '@comunica/bindings-factory';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorArgs, IActorTest, IAction, Mediate } from '@comunica/core';
-import { Actor } from '@comunica/core';
+import { ActionContextKey, Actor } from '@comunica/core';
 import { BlankNodeBindingsScoped } from '@comunica/data-factory';
 import type {
   IQueryOperationResult,
@@ -255,6 +255,16 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
     }
     return shape.operation.pattern.type === operation.type;
   }
+
+  /**
+   * Sets KEY_CONTEXT_WRAPPED_QUERY_OPERATION to the operation being executed.
+   * @param action The query operation action.
+   * @param context The current action context.
+   * @returns A new action context with the operation marked as wrapped.
+   */
+  public setContextWrapped(action: IActionQueryOperation, context: IActionContext): IActionContext {
+    return context.set(KEY_CONTEXT_WRAPPED_QUERY_OPERATION, action.operation);
+  }
 }
 
 export interface IActionQueryOperation extends IAction {
@@ -284,3 +294,10 @@ export interface IAsyncExpressionContext extends IBaseExpressionContext {
   bnode: (input?: string | undefined) => Promise<RDF.BlankNode>;
   exists?: (expr: Algebra.ExistenceExpression, bindings: Bindings) => Promise<boolean>;
 }
+
+/**
+ * Key that that stores the last executed operation
+ */
+export const KEY_CONTEXT_WRAPPED_QUERY_OPERATION = new ActionContextKey<Algebra.Operation>(
+  '@comunica/actor-query-operation:wrapped',
+);
