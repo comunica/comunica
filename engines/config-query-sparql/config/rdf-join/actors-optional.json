@@ -14,12 +14,14 @@
       "@type": "ActorRdfJoinOptionalBind",
       "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
       "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
-      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" }
+      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" },
+      "mediatorProcessIterator": { "@id": "urn:comunica:default:process-iterator/mediators#main" }
     },
     {
       "@id": "urn:comunica:default:rdf-join/actors#optional-hash-def-nonblocking",
       "@type": "ActorRdfJoinOptionalHash",
       "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
+      "mediatorProcessIterator": { "@id": "urn:comunica:default:process-iterator/mediators#main" },
       "canHandleUndefs": false,
       "blocking": false
     },
@@ -27,6 +29,7 @@
       "@id": "urn:comunica:default:rdf-join/actors#optional-hash-def-blocking",
       "@type": "ActorRdfJoinOptionalHash",
       "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
+      "mediatorProcessIterator": { "@id": "urn:comunica:default:process-iterator/mediators#main" },
       "canHandleUndefs": false,
       "blocking": true
     },
@@ -34,6 +37,7 @@
       "@id": "urn:comunica:default:rdf-join/actors#optional-hash-undef-nonblocking",
       "@type": "ActorRdfJoinOptionalHash",
       "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
+      "mediatorProcessIterator": { "@id": "urn:comunica:default:process-iterator/mediators#main" },
       "canHandleUndefs": true,
       "blocking": false
     },
@@ -41,13 +45,15 @@
       "@id": "urn:comunica:default:rdf-join/actors#optional-hash-undef-blocking",
       "@type": "ActorRdfJoinOptionalHash",
       "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
+      "mediatorProcessIterator": { "@id": "urn:comunica:default:process-iterator/mediators#main" },
       "canHandleUndefs": true,
       "blocking": true
     },
     {
       "@id": "urn:comunica:default:rdf-join/actors#optional-nested-loop",
       "@type": "ActorRdfJoinOptionalNestedLoop",
-      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" }
+      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
+      "mediatorProcessIterator": { "@id": "urn:comunica:default:process-iterator/mediators#main" }
     }
   ]
 }

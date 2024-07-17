@@ -20,6 +20,7 @@ import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import { instrumentIterator } from './instrumentIterator';
+import { MediatorProcessIterator } from '@comunica/bus-process-iterator';
 
 const DF = new DataFactory();
 
@@ -37,6 +38,7 @@ const DF = new DataFactory();
 export abstract class ActorRdfJoin
   extends Actor<IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryOperationResultBindings> {
   public readonly mediatorJoinSelectivity: MediatorRdfJoinSelectivity;
+  public readonly mediatorProcessIterator: MediatorProcessIterator;
 
   /**
    * If this actor will be logged in the debugger and physical query plan logger
@@ -438,6 +440,26 @@ export abstract class ActorRdfJoin
     const { result, physicalPlanMetadata } = await this.getOutput(action);
     const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
 
+    // Apply iterator processing actors on join stream
+    const { stream } = await this.mediatorProcessIterator.mediate({
+      type: "binding",
+      streamSource: this.name,
+      stream: result.bindingsStream, 
+      context: action.context
+    });
+    result.bindingsStream = stream;
+
+    // // Add listener to bindingstream to invoke prioritisation
+    // if (true) {
+    //   result.bindingsStream = result.bindingsStream.transform({
+    //     map: (bindings: Bindings) => {
+    //       console.log(`Binding in join: actor ${this.name}`)
+    //       console.log(Array.from(bindings.keys()))
+    //       return bindings;
+    //     }
+    //   });
+    // }
+    
     // Fill in the physical plan metadata after determining action output
     if (planMetadata) {
       // eslint-disable-next-line ts/no-floating-promises
@@ -497,6 +519,7 @@ export abstract class ActorRdfJoin
 export interface IActorRdfJoinArgs
   extends IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryOperationResultBindings> {
   mediatorJoinSelectivity: MediatorRdfJoinSelectivity;
+  mediatorProcessIterator: MediatorProcessIterator;
 }
 
 export interface IActorRdfJoinInternalOptions {

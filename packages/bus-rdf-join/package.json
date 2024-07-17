@@ -42,6 +42,7 @@
     "@comunica/core": "^3.2.1",
     "@comunica/mediatortype-join-coefficients": "^3.2.1",
     "@comunica/metadata": "^3.2.1",
+    "@comunica/bus-process-iterator": "^3.2.1",
     "@comunica/types": "^3.2.1",
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0",

@@ -1,0 +1,10 @@
+{
+    "@context": [
+      "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-process-iterator/^3.0.0/components/context.jsonld",
+      "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-pipeline/^3.0.0/components/context.jsonld"
+    ],
+    "@id": "urn:comunica:default:process-iterator/mediators#main",
+    "@type": "MediatorCombinePipeline",
+    "bus": { "@id": "ActorProcessIterator:_default_bus" }
+  }
+  
