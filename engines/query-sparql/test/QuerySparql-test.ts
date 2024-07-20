@@ -10,11 +10,9 @@ import 'jest-rdf';
 import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
+import stringifyStream from '@jeswr/stream-to-string';
 import { QueryEngine } from '../lib/QueryEngine';
 import { fetch as cachedFetch } from './util';
-
-// Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
-const stringifyStream = require('stream-to-string');
 
 const DF = new DataFactory();
 const factory = new Factory();
