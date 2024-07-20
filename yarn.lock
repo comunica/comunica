@@ -1682,6 +1682,13 @@
   optionalDependencies:
     fsevents "^2.3.2"
 
+"@jeswr/stream-to-string@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@jeswr/stream-to-string/-/stream-to-string-1.0.0.tgz#55435f8b7dfbe13d7ef9c48a7173c63c6571a8e5"
+  integrity sha512-ZO9UsjFcVtue+rkYfTvuwgez7JKE3UjE9/PC+70J9S9C405yroYcNfs6PAH0Y3OJA3ki5n5paStcb6jiUbZsPg==
+  dependencies:
+    event-emitter-promisify "^1.1.0"
+
 "@jridgewell/gen-mapping@^0.3.5":
   version "0.3.5"
   resolved "https://registry.npmjs.org/@jridgewell/gen-mapping/-/gen-mapping-0.3.5.tgz"
