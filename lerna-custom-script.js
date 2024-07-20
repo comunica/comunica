@@ -2,6 +2,7 @@ const { readFileSync, writeFileSync, readdirSync } = require('node:fs');
 const path = require('node:path');
 const checkDeps = require('depcheck');
 const { loadPackages, exec, iter } = require('lerna-script');
+const rollup = require('rollup');
 
 function ensureDependency({ checkedDeps, dependency, dependant }) {
   if (!checkedDeps.dependencies.includes(dependency)) {
@@ -148,7 +149,7 @@ async function depcheckTask(log) {
   const resolutions = Object.keys(JSON.parse(readFileSync(path.join(__dirname, 'package.json'), 'utf8')).resolutions ?? {});
 
   // eslint-disable-next-line unicorn/no-array-for-each
-  return iter.forEach(packages, { log })(async(package) => {
+  return iter.parallel(packages, { log })(async(package) => {
     const { missingDeps, unusedDeps, allDeps } = await depInfo(package);
 
     if (missingDeps.length > 0) {
@@ -209,5 +210,60 @@ async function updateTaskMajor(log) {
   });
 }
 
+const typescript = require("@rollup/plugin-typescript");
+
+async function rollupScript(log) {
+  // FIXME: 
+  const packages = (await (log.packages || loadPackages())).filter(package => package.location.startsWith(path.join(__dirname, '/packages')) && !package.location.includes('init-sparql') && !package.location.includes('packager'));
+  const plugins = [typescript.default({
+    compilerOptions: {
+      module: 'ESNext',
+    },
+    skipLibCheck: true,
+    checkJs: false,
+  })];
+
+  // eslint-disable-next-line unicorn/no-array-for-each
+  await iter.batched(packages, { log })(async(package) => {
+    const pkg = JSON.parse(readFileSync(path.join(package.location, 'package.json'), 'utf8'));
+    const config = {
+      plugins,
+      external: [
+        ...Object.keys(pkg.dependencies || {}),
+        ...Object.keys(pkg.peerDependencies || {}),
+      ],
+      // The following option is useful because symlinks are used in monorepos
+      // preserveSymlinks: true,
+      input: path.join(package.location, 'lib', 'index.ts'),
+      output: [
+        {
+          dir: path.join(package.location, 'lib'),
+          format: 'cjs',
+          // sourcemap: true,
+          preserveModules: true,
+        },
+        {
+          file: pkg.module,
+          format: 'esm',
+          // sourcemap: true,
+        },
+      ],
+    };
+
+    // log.warn(package.name, ...build.watchFiles)
+    const build = await rollup.rollup(config);
+
+    log.warn(package.name, ...build.watchFiles)
+    // await new Promise(res => setTimeout(res, 10))
+    // console.log(package)
+    // const upgraded = await ncu.run({
+    //   // Pass any cli option
+    //   packageFile: path.join(package.location, 'package.json'),
+    // });
+    // log.info(package.name, upgraded);
+  });
+}
+
 module.exports.updateTask = updateTask;
 module.exports.updateTaskMajor = updateTaskMajor;
+module.exports.rollup = rollupScript;

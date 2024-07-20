@@ -1,0 +1,2 @@
+ - https://github.com/microsoft/TypeScript/issues/49462
+ - https://github.com/azu/tsconfig-to-dual-package

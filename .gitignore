@@ -12,6 +12,12 @@ yarn-error.log
 **/lib/**/*.js.map
 **/lib/**/*.mjs
 **/lib/**/*.mjs.map
+**/lib/**/*.cjs
+**/lib/**/*.cjs.map
+**/lib/**/*.mts
+**/lib/**/*.mts.map
+**/lib/**/*.cts
+**/lib/**/*.cts.map
 **/lib/**/*.d.ts
 **/test/**/*.js
 **/test/**/*.js.map

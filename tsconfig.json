@@ -1,12 +1,12 @@
 {
   "compileOnSave": true,
   "compilerOptions": {
-    "target": "es2021",
+    "target": "ES2018",
     "lib": [
       "es2021",
       "dom"
     ],
-    "module": "NodeNext",
+    "module": "ESNext",
 
     "strict": true,
     "strictFunctionTypes": true,
@@ -28,7 +28,6 @@
     "performance/*/lib/**/*"
   ],
   "exclude": [
-    "packages/expression-evaluator/benchmarks/**/*",
     "**/node_modules"
   ]
 }
