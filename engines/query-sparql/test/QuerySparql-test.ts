@@ -4,13 +4,13 @@ import { QuerySourceSkolemized } from '@comunica/actor-context-preprocess-query-
 import { KeysHttpWayback, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { BlankNodeScoped } from '@comunica/data-factory';
 import type { QueryBindings, QueryStringContext } from '@comunica/types';
+import stringifyStream from '@jeswr/stream-to-string';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import 'jest-rdf';
 import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
-import stringifyStream from '@jeswr/stream-to-string';
 import { QueryEngine } from '../lib/QueryEngine';
 import { fetch as cachedFetch } from './util';
 
