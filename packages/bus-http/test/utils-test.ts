@@ -18,7 +18,7 @@ describe('validateAndCloseHttpResponse', () => {
   });
 
   it('should throw with an invalid response with body', async() => {
-    const body = Readable.from([ 'BODY' ]);
+    const body = <any> Readable.from([ 'BODY' ]);
     await expect(validateAndCloseHttpResponse('URL', <Response> { status: 400, body })).rejects
       .toThrow('Could not update URL (HTTP status 400):\nBODY');
   });
