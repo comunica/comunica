@@ -5,6 +5,7 @@ import type { IActionContext } from '@comunica/types';
 import stringifyStream from '@jeswr/stream-to-string';
 import { Headers } from 'cross-fetch';
 import { DataFactory } from 'rdf-data-factory';
+import { Readable } from 'readable-stream';
 import { QuadDestinationPutLdp } from '../lib/QuadDestinationPutLdp';
 
 const DF = new DataFactory();
@@ -36,7 +37,7 @@ describe('QuadDestinationPutLdp', () => {
     mediatorRdfSerialize = {
       mediate: jest.fn(() => ({
         handle: {
-          data: streamifyString(`TRIPLES`),
+          data: Readable.from([ 'triples' ]),
         },
       })),
     };

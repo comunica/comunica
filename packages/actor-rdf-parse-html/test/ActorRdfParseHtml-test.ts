@@ -12,7 +12,6 @@ import arrayifyStream from 'arrayify-stream';
 import { ActorRdfParseHtml } from '../lib/ActorRdfParseHtml';
 
 const quad = require('rdf-quad');
-const stringToStream = require('streamify-string');
 
 describe('ActorRdfParseHtml', () => {
   let bus: any;
@@ -66,24 +65,24 @@ describe('ActorRdfParseHtml', () => {
       actor = new ActorRdfParseHtml(
         { name: 'actor', bus, busRdfParseHtml, mediaTypePriorities, mediaTypeFormats: {}},
       );
-      input = stringToStream(
+      input = Readable.from([
         ``,
-      );
-      inputScript = stringToStream(
+      ]);
+      inputScript = Readable.from([
         `<script type="application/ld+json">{
             "@id": "http://example.org/a",
             "http://example.org/b": "http://example.org/c",
             "http://example.org/d": "http://example.org/e"
         }</script>`,
-      );
-      inputScriptError = stringToStream(
+      ]);
+      inputScriptError = Readable.from([
         `<script type="application/ld+json">{
             "@id": "http://example.org/a",
             "http://example.org/b": "http://example.org/c",
             "http://example.org/d": "http://example.org/e",,,
         }</script>`,
-      );
-      inputScriptRdfa = stringToStream(
+      ]);
+      inputScriptRdfa = Readable.from([
         `<body>
         <p property="dc:title">Title</p>
         <script type="application/ld+json">{
@@ -92,10 +91,10 @@ describe('ActorRdfParseHtml', () => {
             "http://example.org/d": "http://example.org/e"
         }</script>
         </body>`,
-      );
-      inputSimple = stringToStream(
+      ]);
+      inputSimple = Readable.from([
         `<strong>Hi!</strong>`,
-      );
+      ]);
       context = new ActionContext({});
     });
 

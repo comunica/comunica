@@ -6,8 +6,6 @@ import type { IActionContext, IProxyHandler, IRequest } from '@comunica/types';
 import { ActorHttpWayback } from '../lib';
 import 'cross-fetch/polyfill';
 
-const stringToStream = require('streamify-string');
-
 describe('ActorHttpInterceptWayback', () => {
   let bus: any;
 
@@ -118,7 +116,7 @@ describe('ActorHttpInterceptWayback', () => {
             if (request.url === 'http://xmlns.com/foaf/spec/20140114.rdf') {
               return <Response> <unknown> {
                 status: 404,
-                body: stringToStream('page not found'),
+                body: Readable.from([ 'page not found' ]),
                 url: request.url,
               };
             }

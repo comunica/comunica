@@ -7,6 +7,7 @@ import stringifyStream from '@jeswr/stream-to-string';
 import { ArrayIterator } from 'asynciterator';
 
 // @ts-expect-error
+import { Readable } from 'readable-stream';
 import { QueryEngineFactoryBase, QueryEngineBase } from '../__mocks__';
 
 // @ts-expect-error
@@ -29,7 +30,6 @@ const querystring = require('node:querystring');
 const cluster: Cluster = clusterUntyped;
 
 const quad = require('rdf-quad');
-const stringToStream = require('streamify-string');
 
 jest.mock<typeof import('..')>('..', () => {
   return <any> {
@@ -943,7 +943,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       function makeRequest() {
-        request = stringToStream('default_test_request_content');
+        request = Readable.from([ 'default_test_request_content' ]);
         request.url = 'url_sparql';
         request.headers = { 'content-type': 'contenttypewhichdefinitelydoesnotexist', accept: '*/*' };
         return request;
@@ -1782,7 +1782,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         endListener.mockClear();
         (<any> instance).timeout = 1_500;
         response = new ServerResponseMock();
-        eventEmitter = stringToStream('queryresult');
+        eventEmitter = Readable.from([ 'queryresult' ]);
         eventEmitter.addListener('test', endListener);
         stderr = new PassThrough();
       });

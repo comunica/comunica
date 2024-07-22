@@ -10,12 +10,10 @@ import 'cross-fetch/polyfill';
 
 // Needed to load Headers
 import 'jest-rdf';
+import { Readable } from 'readable-stream';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 import { QuerySourceSparql } from '../lib/QuerySourceSparql';
 import '@comunica/jest';
-
-const quad = require('rdf-quad');
-const streamifyString = require('streamify-string');
 
 const DF = new DataFactory();
 const AF = new Factory();
@@ -42,7 +40,7 @@ describe('QuerySourceSparql', () => {
       return {
         headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
         body: query.indexOf('COUNT') > 0 ?
-          streamifyString(`{
+          Readable.from([ `{
   "head": { "vars": [ "count" ]
   } ,
   "results": {
@@ -52,8 +50,8 @@ describe('QuerySourceSparql', () => {
       }
     ]
   }
-}`) :
-          streamifyString(`{
+}` ]) :
+          Readable.from([ `{
   "head": { "vars": [ "p" ]
   } ,
   "results": {
@@ -69,7 +67,7 @@ describe('QuerySourceSparql', () => {
       }
     ]
   }
-}`),
+}` ]),
         ok: true,
       };
     }),
@@ -151,7 +149,7 @@ describe('QuerySourceSparql', () => {
           return {
             headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
             body: query.indexOf('COUNT') > 0 ?
-              streamifyString(`{
+              Readable.from([ `{
   "head": { "vars": [ "count" ]
   } ,
   "results": {
@@ -161,8 +159,8 @@ describe('QuerySourceSparql', () => {
       }
     ]
   }
-}`) :
-              streamifyString(`{
+}` ]) :
+              Readable.from([ `{
   "head": { "vars": [ "s" ]
   } ,
   "results": {
@@ -178,7 +176,7 @@ describe('QuerySourceSparql', () => {
       }
     ]
   }
-}`),
+}` ]),
             ok: true,
           };
         }),
@@ -205,7 +203,7 @@ describe('QuerySourceSparql', () => {
           return {
             headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
             body: query.indexOf('COUNT') > 0 ?
-              streamifyString(`{
+              Readable.from([ `{
   "head": { "vars": [ "count" ]
   } ,
   "results": {
@@ -215,8 +213,8 @@ describe('QuerySourceSparql', () => {
       }
     ]
   }
-}`) :
-              streamifyString(`{
+}` ]) :
+              Readable.from([ `{
   "head": { "vars": [ "s" ]
   } ,
   "results": {
@@ -232,7 +230,7 @@ describe('QuerySourceSparql', () => {
       }
     ]
   }
-}`),
+}` ]),
             ok: true,
           };
         }),
@@ -265,7 +263,7 @@ describe('QuerySourceSparql', () => {
           return {
             headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
             body: require('readable-stream-node-to-web')(query.indexOf('COUNT') > 0 ?
-              streamifyString(`{
+              Readable.from([ `{
   "head": { "vars": [ "count" ]
   } ,
   "results": { 
@@ -275,8 +273,8 @@ describe('QuerySourceSparql', () => {
       }
     ]
   }
-}`) :
-              streamifyString(`{
+}` ]) :
+              Readable.from([ `{
   "head": { "vars": [ "p" ]
   } ,
   "results": { 
@@ -292,7 +290,7 @@ describe('QuerySourceSparql', () => {
       }
     ]
   }
-}`)),
+}` ])),
             ok: true,
           };
         },
@@ -447,7 +445,7 @@ describe('QuerySourceSparql', () => {
         mediate() {
           return {
             headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-            body: streamifyString(`empty body`),
+            body: Readable.from([ `empty body` ]),
             ok: false,
             status: 500,
             statusText: 'Error!',
@@ -469,7 +467,7 @@ describe('QuerySourceSparql', () => {
           return {
             headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
             body: query.indexOf('COUNT') > 0 ?
-              streamifyString(`{
+              Readable.from([ `{
   "head": { "vars": [ "count" ]
   } ,
   "results": { 
@@ -479,8 +477,8 @@ describe('QuerySourceSparql', () => {
       }
     ]
   }
-}`) :
-              streamifyString(`{
+}` ]) :
+              Readable.from([ `{
   "head": { "vars": [ "p" ]
   } ,
   "results": { 
@@ -496,7 +494,7 @@ describe('QuerySourceSparql', () => {
       }
     ]
   }
-}`),
+}` ]),
             ok: true,
           };
         },
@@ -516,7 +514,7 @@ describe('QuerySourceSparql', () => {
           return {
             headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
             body: query.indexOf('COUNT') > 0 ?
-              streamifyString(`{
+              Readable.from([ `{
   "head": { "vars": [ "count" ]
   } ,
   "results": { 
@@ -526,8 +524,8 @@ describe('QuerySourceSparql', () => {
       }
     ]
   }
-}`) :
-              streamifyString(`{
+}` ]) :
+              Readable.from([ `{
   "head": { "vars": [ "p" ]
   } ,
   "results": { 
@@ -543,7 +541,7 @@ describe('QuerySourceSparql', () => {
       }
     ]
   }
-}`),
+}` ]),
             ok: true,
           };
         },
@@ -594,7 +592,7 @@ describe('QuerySourceSparql', () => {
           return {
             headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
             body: query.indexOf('COUNT') > 0 ?
-              streamifyString(`{
+              Readable.from([ `{
   "head": { "vars": [ "count" ]
   } ,
   "results": { 
@@ -604,8 +602,8 @@ describe('QuerySourceSparql', () => {
       }
     ]
   }
-}`) :
-              streamifyString(`{
+}` ]) :
+              Readable.from([ `{
   "head": { "vars": [ "p" ]
   } ,
   "results": { 
@@ -621,7 +619,7 @@ describe('QuerySourceSparql', () => {
       }
     ]
   }
-}`),
+}` ]),
             ok: true,
           };
         },
@@ -646,7 +644,7 @@ describe('QuerySourceSparql', () => {
           return {
             headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
             body: query.indexOf('COUNT') > 0 ?
-              streamifyString(`{
+              Readable.from([ `{
   "head": { "vars": [ "count" ]
   } ,
   "results": { 
@@ -656,8 +654,8 @@ describe('QuerySourceSparql', () => {
       }
     ]
   }
-}`) :
-              streamifyString(`{
+}` ]) :
+              Readable.from([ `{
   "head": { "vars": [ "p" ]
   } ,
   "results": { 
@@ -673,7 +671,7 @@ describe('QuerySourceSparql', () => {
       }
     ]
   }
-}`),
+}` ]),
             ok: true,
           };
         },
@@ -709,7 +707,7 @@ describe('QuerySourceSparql', () => {
           return {
             headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
             body: query.indexOf('COUNT') > 0 ?
-              streamifyString(`{
+              Readable.from([ `{
   "head": { "vars": [ "count" ]
   } ,
   "results": { 
@@ -719,8 +717,8 @@ describe('QuerySourceSparql', () => {
       }
     ]
   }
-}`) :
-              streamifyString(`{
+}` ]) :
+              Readable.from([ `{
   "head": { "vars": [ "p" ]
   } ,
   "results": { 
@@ -736,7 +734,7 @@ describe('QuerySourceSparql', () => {
       }
     ]
   }
-}`),
+}` ]),
             ok: true,
           };
         },
@@ -937,7 +935,7 @@ describe('QuerySourceSparql', () => {
         mediate: jest.fn((action: any) => {
           return {
             headers: new Headers({ 'Content-Type': 'text/turtle' }),
-            body: streamifyString(`<s1> <p1> <o1>. <s2> <p2> <o2>.`),
+            body: Readable.from([ `<s1> <p1> <o1>. <s2> <p2> <o2>.` ]),
             ok: true,
           };
         }),
@@ -975,7 +973,7 @@ WHERE { undefined:s ?p undefined:o. }` }),
               'application/sparql-results+json' :
               'text/turtle' }),
             body: query.indexOf('COUNT') > 0 ?
-              streamifyString(`{
+              Readable.from([ `{
   "head": { "vars": [ "count" ]
   } ,
   "results": {
@@ -985,8 +983,8 @@ WHERE { undefined:s ?p undefined:o. }` }),
       }
     ]
   }
-}`) :
-              streamifyString(`<s1> <p1> <o1>. <s2> <p2> <o2>.`),
+}` ]) :
+              Readable.from([ `<s1> <p1> <o1>. <s2> <p2> <o2>.` ]),
             ok: true,
           };
         }),
@@ -1014,7 +1012,7 @@ WHERE { undefined:s ?p undefined:o. }` }),
         mediate: jest.fn((action: any) => {
           return {
             headers: new Headers({ 'Content-Type': 'text/turtle' }),
-            body: streamifyString(`<s1> <p1> <o1>. <s2> <p2> <o2>.`),
+            body: Readable.from([ `<s1> <p1> <o1>. <s2> <p2> <o2>.` ]),
             ok: true,
           };
         }),
@@ -1048,11 +1046,11 @@ WHERE { undefined:s ?p undefined:o. }` }),
         mediate: jest.fn((action: any) => {
           return {
             headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-            body: streamifyString(`{
+            body: Readable.from([ `{
   "head": { "vars": [ "p" ]
   } ,
   "boolean": true
-}`),
+}` ]),
             ok: true,
           };
         }),
@@ -1080,11 +1078,11 @@ WHERE { undefined:s ?p undefined:o. }` }),
         mediate: jest.fn((action: any) => {
           return {
             headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-            body: streamifyString(`{
+            body: Readable.from([ `{
   "head": { "vars": [ "p" ]
   } ,
   "boolean": true
-}`),
+}` ]),
             ok: true,
           };
         }),
@@ -1114,7 +1112,7 @@ WHERE { undefined:s ?p undefined:o. }` }),
         mediate: jest.fn((action: any) => {
           return {
             headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-            body: streamifyString(`OK`),
+            body: Readable.from([ `OK` ]),
             ok: true,
           };
         }),
@@ -1145,7 +1143,7 @@ WHERE { undefined:s ?p undefined:o. }` }),
         mediate: jest.fn((action: any) => {
           return {
             headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-            body: streamifyString(`OK`),
+            body: Readable.from([ `OK` ]),
             ok: true,
           };
         }),

@@ -8,7 +8,6 @@ import arrayifyStream from 'arrayify-stream';
 import { ActorRdfParseRdfXml } from '..';
 
 const quad = require('rdf-quad');
-const stringToStream = require('streamify-string');
 
 describe('ActorRdfParseRdfXml', () => {
   let bus: any;
@@ -100,7 +99,7 @@ describe('ActorRdfParseRdfXml', () => {
 
     describe('for parsing', () => {
       beforeEach(() => {
-        input = stringToStream(`
+        input = Readable.from([ `
           <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/"
           xmlns:ex="http://example.org/stuff/1.0/">
             <rdf:Description rdf:about="http://www.w3.org/TR/rdf-syntax-grammar" dc:title="RDF1.1 XML Syntax">
@@ -111,7 +110,7 @@ describe('ActorRdfParseRdfXml', () => {
                 </ex:editor>
             </rdf:Description>
           </rdf:RDF>
-      `);
+      ` ]);
         inputError = new Readable();
         inputError._read = () => inputError.emit('error', new Error('ParseRdfXml'));
       });

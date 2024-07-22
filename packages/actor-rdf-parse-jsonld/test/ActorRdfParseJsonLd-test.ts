@@ -1,4 +1,4 @@
-import type { Readable } from 'node:stream';
+import { Readable } from 'node:stream';
 import { KeysRdfParseHtmlScript, KeysRdfParseJsonLd } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
@@ -7,8 +7,6 @@ import arrayifyStream from 'arrayify-stream';
 import { ActorRdfParseJsonLd } from '../lib/ActorRdfParseJsonLd';
 
 const quad = require('rdf-quad');
-const stringToStream = require('streamify-string');
-const streamifyString = require('streamify-string');
 
 describe('ActorRdfParseJsonLd', () => {
   let bus: any;
@@ -30,11 +28,11 @@ describe('ActorRdfParseJsonLd', () => {
         }
 
         return Promise.resolve({
-          body: streamifyString(`{
+          body: Readable.from([ `{
           "@context": {
             "@vocab": "http://example.org/"
           }
-        }`),
+        }` ]),
           ok: true,
           status: 200,
           headers: new Headers({ 'Content-Type': 'application/ld+json' }),
@@ -115,16 +113,16 @@ describe('ActorRdfParseJsonLd', () => {
         'application/json': 1,
         'application/ld+json': 1,
       }, mediaTypeFormats: {}, mediatorHttp, name: 'actor' });
-      input = stringToStream(`{
+      input = Readable.from([ `{
             "@id": "http://example.org/a",
             "http://example.org/b": "http://example.org/c",
             "http://example.org/d": "http://example.org/e"
-          }`);
+          }` ]);
     });
 
     describe('for parsing', () => {
       beforeEach(() => {
-        inputGraphs = stringToStream(`[
+        inputGraphs = Readable.from([ `[
           {
             "@id": "http://example.org/g0",
             "@graph": [
@@ -144,27 +142,27 @@ describe('ActorRdfParseJsonLd', () => {
               }
             ]
           }
-            ]`);
-        inputRemoteContext = stringToStream(`{
+            ]` ]);
+        inputRemoteContext = Readable.from([ `{
             "@context": "http://schema.org/",
             "@id": "http://example.org/a",
             "b": "http://example.org/c",
             "d": "http://example.org/e"
-          }`);
-        inputRemoteContextErr = stringToStream(`{
+          }` ]);
+        inputRemoteContextErr = Readable.from([ `{
             "@context": "http://myschema.org/error",
             "@id": "http://example.org/a",
             "b": "http://example.org/c",
             "d": "http://example.org/e"
-          }`);
-        inputLinkHeader = stringToStream(`{
+          }` ]);
+        inputLinkHeader = Readable.from([ `{
           "@id": "http://www.example.org/",
           "term": "value"
-        }`);
-        inputSkipped = stringToStream(`{
+        }` ]);
+        inputSkipped = Readable.from([ `{
           "@id": "http://www.example.org/",
           "skipped": "value"
-        }`);
+        }` ]);
       });
 
       it('should test on application/json', async() => {
