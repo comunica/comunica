@@ -37,7 +37,7 @@ describe('QuadDestinationPutLdp', () => {
     mediatorRdfSerialize = {
       mediate: jest.fn(() => ({
         handle: {
-          data: Readable.from([ 'triples' ]),
+          data: Readable.from([ 'TRIPLES' ]),
         },
       })),
     };
