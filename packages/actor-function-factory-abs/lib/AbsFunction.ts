@@ -1,13 +1,11 @@
 import { RegularFunction } from '@comunica/bus-function-factory/lib/implementation';
-import { bool, declare } from '@comunica/expression-evaluator/lib/functions/Helpers';
-import * as C from '@comunica/expression-evaluator/lib/util/Consts';
+import { declare, RegularOperator } from '@comunica/expression-evaluator';
 
 export class Abs extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.ABS;
+  public operator = RegularOperator.ABS;
 
   protected overloads = declare(C.RegularOperator.ABS)
     .numericConverter(() => num => Math.abs(num))
     .collect();
 }
-

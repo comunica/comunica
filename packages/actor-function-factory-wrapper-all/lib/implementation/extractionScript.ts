@@ -38,7 +38,7 @@ import {
   ActorFunctionFactory,
 } from '@comunica/bus-function-factory';
 import type { IActorTest } from '@comunica/core';
-import * as C from '@comunica/expression-evaluator/lib/util/Consts';
+import { RegularOperator } from '@comunica/expression-evaluator';
 import { ${camelCaseName} } from './AbsFunction';
 
 /**
@@ -51,10 +51,10 @@ export class ActorFunctionFactory${camelCaseName} extends ActorFunctionFactory {
 
   public async test(action: IActionFunctionFactory): Promise<IActorTest> {
     // Does support action.requireTermExpression, so no need to check for that.
-    if (action.functionName === C.RegularOperator.${allCapsSnakeCaseName}) {
+    if (action.functionName === RegularOperator.${allCapsSnakeCaseName}) {
       return true;
     }
-    throw new Error(\`Actor \${this.name} can only test for \${C.RegularOperator.${allCapsSnakeCaseName}}\`);
+    throw new Error(\`Actor \${this.name} can only test for \${RegularOperator.${allCapsSnakeCaseName}}\`);
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):
@@ -65,13 +65,13 @@ export class ActorFunctionFactory${camelCaseName} extends ActorFunctionFactory {
     `.trim();
 
     const bodyFile = `packages/actor-function-factory-${snakeCaseName}/lib/${camelCaseName}Function.ts`;
+    const updatedFunctionBody = functionBody.replaceAll(/(\s+)C\./gu, '$1');
 
     const bodyFileContent = `
 import { RegularFunction } from '@comunica/bus-function-factory/lib/implementation';
-import { bool, declare } from '@comunica/expression-evaluator/lib/functions/Helpers';
-import * as C from '@comunica/expression-evaluator/lib/util/Consts';
+import { declare, RegularOperator } from '@comunica/expression-evaluator';
 
-export ${functionBody}
+export ${updatedFunctionBody}
 `.trimStart();
 
     const actorConfigFile = `engines/config-query-sparql/config/function-factory/actors/${snakeCaseName}.json`;
@@ -101,12 +101,20 @@ export ${functionBody}
       `$1    "ccqs:config/function-factory/actors/${snakeCaseName}.json",\n`,
     );
 
+    const packageJsonFile = `packages/actor-function-factory-${snakeCaseName}/package.json`;
+    const packageJsonContent = (await readFile(packageJsonFile)).toString();
+    const updatedPackageJsonContent = packageJsonContent.replaceAll(
+      /("dependencies":[^\n]*\n)/gu,
+      `$1    "@comunica/expression-evaluator": "^3.0.1",\n`,
+    );
+
     // Write the updated actor file.
     await Promise.all([
       writeFile(actorFilePath, actorFile),
       writeFile(bodyFile, bodyFileContent),
       writeFile(actorConfigFile, actorConfig),
       writeFile(configListFile, updatedConfigList),
+      writeFile(packageJsonFile, updatedPackageJsonContent),
     ]);
   }
 }

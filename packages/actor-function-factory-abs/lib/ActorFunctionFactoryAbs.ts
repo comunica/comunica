@@ -8,7 +8,7 @@ import {
   ActorFunctionFactory,
 } from '@comunica/bus-function-factory';
 import type { IActorTest } from '@comunica/core';
-import * as C from '@comunica/expression-evaluator/lib/util/Consts';
+import { RegularOperator } from '@comunica/expression-evaluator';
 import { Abs } from './AbsFunction';
 
 /**
@@ -21,10 +21,10 @@ export class ActorFunctionFactoryAbs extends ActorFunctionFactory {
 
   public async test(action: IActionFunctionFactory): Promise<IActorTest> {
     // Does support action.requireTermExpression, so no need to check for that.
-    if (action.functionName === C.RegularOperator.ABS) {
+    if (action.functionName === RegularOperator.ABS) {
       return true;
     }
-    throw new Error(`Actor ${this.name} can only test for ${C.RegularOperator.ABS}`);
+    throw new Error(`Actor ${this.name} can only test for ${RegularOperator.ABS}`);
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):
