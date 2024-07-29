@@ -1,5 +1,5 @@
 import { RegularFunction } from '@comunica/bus-function-factory/lib/implementation';
-import { declare } from '@comunica/expression-evaluator/lib/functions/Helpers';
+import { bool, declare } from '@comunica/expression-evaluator/lib/functions/Helpers';
 import * as C from '@comunica/expression-evaluator/lib/util/Consts';
 
 export class Abs extends RegularFunction {
@@ -10,3 +10,4 @@ export class Abs extends RegularFunction {
     .numericConverter(() => num => Math.abs(num))
     .collect();
 }
+

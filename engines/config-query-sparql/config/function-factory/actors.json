@@ -3,6 +3,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/config-query-sparql/^3.0.0/components/context.jsonld"
   ],
   "import": [
+    "ccqs:config/function-factory/actors/abs.json",
     "ccqs:config/function-factory/actors/wrapper-all.json"
   ]
 }
