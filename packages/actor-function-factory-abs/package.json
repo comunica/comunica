@@ -1,14 +1,14 @@
 {
-  "name": "@comunica/actor-function-factory-not",
+  "name": "@comunica/actor-function-factory-abs",
   "version": "1.0.0",
-  "description": "A not function-factory actor",
+  "description": "A abs function-factory actor",
   "lsd:module": true,
   "main": "lib/index.js",
   "typings": "lib/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-function-factory-not"
+    "directory": "packages/actor-function-factory-abs"
   },
   "publishConfig": {
     "access": "public"
@@ -18,7 +18,7 @@
     "comunica",
     "actor",
     "function-factory",
-    "not"
+    "abs"
   ],
   "license": "MIT",
   "bugs": {

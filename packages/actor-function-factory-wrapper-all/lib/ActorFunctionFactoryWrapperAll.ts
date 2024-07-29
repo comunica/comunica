@@ -10,7 +10,7 @@ import {
 } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
-import type * as C from '@comunica/expression-evaluator/lib/util/Consts';
+import * as C from '@comunica/expression-evaluator/lib/util/Consts';
 import { prepareEvaluatorActionContext } from '@comunica/expression-evaluator/lib/util/Context';
 import type { AsyncExtensionFunctionCreator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -28,12 +28,18 @@ export class ActorFunctionFactoryWrapperAll extends ActorFunctionFactory {
     super(args);
   }
 
-  public async test(_: IActionFunctionFactory): Promise<IActorTest> {
+  public async test(action: IActionFunctionFactory): Promise<IActorTest> {
+    if (action.functionName === C.RegularOperator.NOT) {
+      throw new Error(`Actor does not execute the NOT function (so we can test the test the dedicated actor)`);
+    }
     return true;
   }
 
   public async run<T extends IActionFunctionFactory>({ functionName, context }: T):
   Promise<T extends { requireTermExpression: true } ? IActorFunctionFactoryOutputTerm : IActorFunctionFactoryOutput> {
+    if (functionName === C.RegularOperator.ABS) {
+      throw new Error(`Actor does not execute the ABS function (so we can test the test the dedicated actor)`);
+    }
     context = prepareEvaluatorActionContext(context);
     const res: IExpressionFunction | undefined = {
       ...regularFunctions,

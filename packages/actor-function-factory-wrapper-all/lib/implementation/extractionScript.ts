@@ -10,9 +10,12 @@ async function main(): Promise<void> {
       .toString();
   // Match all functions.
   const matches = regFunctions.matchAll(/class ([^ ]+)(([^}][^\n]*)?\n)*\}\n/ug);
+  let match = matches.next().value;
+  while (match[1] !== 'Abs') {
+    match = matches.next().value;
+  }
 
   {
-    const match = matches.next().value;
     const camelCaseName: string = match[1];
     const functionBody: string = match[0];
     const snakeCaseName = camelCaseName.replaceAll(/([A-Z])/gu, '-$1').toLowerCase()
@@ -24,28 +27,45 @@ async function main(): Promise<void> {
     console.log(functionBody);
 
     const actorFilePath = `packages/actor-function-factory-${snakeCaseName}/lib/ActorFunctionFactory${camelCaseName}.ts`;
-    const actorFile = (await readFile(actorFilePath)).toString();
-    // Replace test method.
-    let updatedActor = actorFile.replaceAll(/(public async test[^\n]*)(\n[^\n]*){2}/gu, `
-$1
+    const actorFile = `
+import type {
+  IActionFunctionFactory,
+  IActorFunctionFactoryArgs,
+  IActorFunctionFactoryOutput,
+  IActorFunctionFactoryOutputTerm,
+} from '@comunica/bus-function-factory';
+import {
+  ActorFunctionFactory,
+} from '@comunica/bus-function-factory';
+import type { IActorTest } from '@comunica/core';
+import * as C from '@comunica/expression-evaluator/lib/util/Consts';
+import { ${camelCaseName} } from './AbsFunction';
+
+/**
+ * A comunica ${camelCaseName} Function Factory Actor.
+ */
+export class ActorFunctionFactory${camelCaseName} extends ActorFunctionFactory {
+  public constructor(args: IActorFunctionFactoryArgs) {
+    super(args);
+  }
+
+  public async test(action: IActionFunctionFactory): Promise<IActorTest> {
     // Does support action.requireTermExpression, so no need to check for that.
-    return action.functionName === C.RegularOperator.${capitalizedSnakeCaseName};
-  }\n
-`.trim());
-    updatedActor = updatedActor.replaceAll(/(public async run[^\n]*)(\n[^\n]*){2}/gu, `
-$1
+    if (action.functionName === C.RegularOperator.${capitalizedSnakeCaseName}) {
+      return true;
+    }
+    throw new Error(\`Actor \${this.name} can only test for \${C.RegularOperator.${capitalizedSnakeCaseName}}\`);
+  }
+
+  public async run<T extends IActionFunctionFactory>(_: T):
+  Promise<T extends { requireTermExpression: true } ? IActorFunctionFactoryOutputTerm : IActorFunctionFactoryOutput> {
     return new ${camelCaseName}();
   }
-    `.trim());
-    updatedActor = `
-import * as C from '@comunica/expression-evaluator/lib/util/Consts';
-import { ${camelCaseName} } from './${camelCaseName}Function';
-${updatedActor}
+}
     `.trim();
-    updatedActor = `${updatedActor}\n`;
-    console.log(updatedActor);
 
     const bodyFile = `packages/actor-function-factory-${snakeCaseName}/lib/${camelCaseName}Function.ts`;
+
     const bodyFileContent = `
 import { RegularFunction } from '@comunica/bus-function-factory/lib/implementation';
 import { bool, declare } from '@comunica/expression-evaluator/lib/functions/Helpers';
@@ -56,7 +76,7 @@ export ${functionBody}
 
     // Write the updated actor file.
     await Promise.all([
-      writeFile(actorFilePath, updatedActor),
+      writeFile(actorFilePath, actorFile),
       writeFile(bodyFile, bodyFileContent),
     ]);
   }

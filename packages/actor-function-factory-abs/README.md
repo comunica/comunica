@@ -1,8 +1,8 @@
-# Comunica Not Function Factory Actor
+# Comunica Abs Function Factory Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-not.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-not)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-abs.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-abs)
 
-A comunica Not Function Factory Actor.
+A comunica Abs Function Factory Actor.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
@@ -12,7 +12,7 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/actor-function-factory-not
+$ yarn add @comunica/actor-function-factory-abs
 ```
 
 ## Configure
@@ -22,13 +22,13 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-function-factory-not/^1.0.0/components/context.jsonld"  
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-function-factory-abs/^1.0.0/components/context.jsonld"  
   ],
   "actors": [
     ...
     {
-      "@id": "urn:comunica:default:function-factory/actors#not",
-      "@type": "ActorFunctionFactoryNot"
+      "@id": "urn:comunica:default:function-factory/actors#abs",
+      "@type": "ActorFunctionFactoryAbs"
     }
   ]
 }

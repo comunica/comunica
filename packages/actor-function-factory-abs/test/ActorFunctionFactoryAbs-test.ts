@@ -1,18 +1,18 @@
 import { Bus } from '@comunica/core';
-import { ActorFunctionFactoryNot } from '../lib/ActorFunctionFactoryNot';
+import { ActorFunctionFactoryAbs } from '../lib/ActorFunctionFactoryAbs';
 
-describe('ActorFunctionFactoryNot', () => {
+describe('ActorFunctionFactoryAbs', () => {
   let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
   });
 
-  describe('An ActorFunctionFactoryNot instance', () => {
-    let actor: ActorFunctionFactoryNot;
+  describe('An ActorFunctionFactoryAbs instance', () => {
+    let actor: ActorFunctionFactoryAbs;
 
     beforeEach(() => {
-      actor = new ActorFunctionFactoryNot({ name: 'actor', bus });
+      actor = new ActorFunctionFactoryAbs({ name: 'actor', bus });
     });
 
     it('should test', () => {
