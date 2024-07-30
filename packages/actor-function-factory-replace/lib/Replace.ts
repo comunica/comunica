@@ -1,0 +1,60 @@
+import { RegularFunction } from '@comunica/bus-function-factory';
+import type {
+  StringLiteral,
+
+  LangStringLiteral,
+} from '@comunica/expression-evaluator';
+import {
+  RegularOperator,
+  TypeURL,
+  declare,
+  langString,
+  string,
+} from '@comunica/expression-evaluator';
+
+/**
+ * https://www.w3.org/TR/sparql11-query/#func-replace
+ */
+export class Replace extends RegularFunction {
+  protected arity = [ 3, 4 ];
+  public operator = RegularOperator.REPLACE;
+
+  // TODO: Fix flags
+  // https://www.w3.org/TR/xpath-functions/#func-replace
+  private static replace(arg: string, pattern: string, replacement: string, flags?: string): string {
+    let reg = new RegExp(pattern, flags);
+    if (!reg.global) {
+      const flags_ = flags ?? '';
+      reg = new RegExp(pattern, `${flags_}g`);
+    }
+    return arg.replace(reg, replacement);
+  }
+
+  protected overloads = declare(RegularOperator.REPLACE)
+    .onTernaryTyped(
+      [ TypeURL.XSD_STRING, TypeURL.XSD_STRING, TypeURL.XSD_STRING ],
+      () => (arg: string, pattern: string, replacement: string) =>
+        string(Replace.replace(arg, pattern, replacement)),
+    )
+    .set(
+      [ TypeURL.RDF_LANG_STRING, TypeURL.XSD_STRING, TypeURL.XSD_STRING ],
+      () => ([ arg, pattern, replacement ]: [LangStringLiteral, StringLiteral, StringLiteral]) => {
+        const result = Replace.replace(arg.typedValue, pattern.typedValue, replacement.typedValue);
+        return langString(result, arg.language);
+      },
+    )
+    .onQuaternaryTyped(
+      [ TypeURL.XSD_STRING, TypeURL.XSD_STRING, TypeURL.XSD_STRING, TypeURL.XSD_STRING ],
+      () => (arg: string, pattern: string, replacement: string, flags: string) =>
+        string(Replace.replace(arg, pattern, replacement, flags)),
+    )
+    .set(
+      [ TypeURL.RDF_LANG_STRING, TypeURL.XSD_STRING, TypeURL.XSD_STRING, TypeURL.XSD_STRING ],
+      () => ([ arg, pattern, replacement, flags ]:
+      [LangStringLiteral, StringLiteral, StringLiteral, StringLiteral]) => {
+        const result = Replace.replace(arg.typedValue, pattern.typedValue, replacement.typedValue, flags.typedValue);
+        return langString(result, arg.language);
+      },
+    )
+    .collect();
+}

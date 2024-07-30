@@ -13,10 +13,6 @@ async function main(): Promise<void> {
   for (const match of matches) {
     const camelCaseName: string = match[3];
 
-    if (camelCaseName != 'Equality') {
-      continue;
-    }
-
     console.log(camelCaseName);
     const functionBody: string = match[0];
     const snakeCaseName = camelCaseName.replaceAll(/([A-Z])/gu, '-$1').toLowerCase()
