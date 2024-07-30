@@ -185,7 +185,7 @@ export enum RegularOperator {
   SUBJECT = 'subject',
   PREDICATE = 'predicate',
   OBJECT = 'object',
-  IS_TRIPLE = 'istriple',
+  IS_TRIPLE = 'isTriple',
 }
 
 export enum SpecialOperator {

@@ -299,6 +299,10 @@ class Equality extends RegularFunction {
 }
 
 class Inequality extends RegularFunction {
+  public constructor(private readonly equalityFunction: RegularFunction) {
+    super();
+  }
+
   protected arity = 2;
 
   public operator = RegularOperator.NOT_EQUAL;
@@ -306,7 +310,7 @@ class Inequality extends RegularFunction {
   protected overloads = declare(RegularOperator.NOT_EQUAL)
     .set([ 'term', 'term' ], expressionEvaluator =>
       ([ first, second ]) =>
-        bool(!(<BooleanLiteral> regularFunctions[RegularOperator.EQUAL]
+        bool(!(<BooleanLiteral> this.equalityFunction
           .applyOnTerms([ first, second ], expressionEvaluator)).typedValue))
     .collect();
 }
@@ -396,6 +400,10 @@ class LesserThan extends RegularFunction {
 }
 
 class GreaterThan extends RegularFunction {
+  public constructor(private readonly lessThanFunction: RegularFunction) {
+    super();
+  }
+
   protected arity = 2;
 
   public operator = RegularOperator.GT;
@@ -404,11 +412,18 @@ class GreaterThan extends RegularFunction {
     .set([ 'term', 'term' ], expressionEvaluator =>
       ([ first, second ]) =>
         // X < Y -> Y > X
-        regularFunctions[RegularOperator.LT].applyOnTerms([ second, first ], expressionEvaluator))
+        this.lessThanFunction.applyOnTerms([ second, first ], expressionEvaluator))
     .collect();
 }
 
 class LesserThanEqual extends RegularFunction {
+  public constructor(
+    private readonly equalityFunction: RegularFunction,
+    private readonly lessThanFunction: RegularFunction,
+  ) {
+    super();
+  }
+
   protected arity = 2;
   public operator = RegularOperator.LTE;
   protected overloads = declare(RegularOperator.LTE)
@@ -418,15 +433,19 @@ class LesserThanEqual extends RegularFunction {
         // First check if the first is lesser than the second, then check if they are equal.
         // Doing this, the correct error will be thrown, each type that has a lesserThanEqual has a matching lesserThan.
         bool(
-          (<BooleanLiteral> regularFunctions[RegularOperator.LT].applyOnTerms([ first, second ], exprEval))
+          (<BooleanLiteral> this.lessThanFunction.applyOnTerms([ first, second ], exprEval))
             .typedValue ||
-          (<BooleanLiteral> regularFunctions[RegularOperator.EQUAL].applyOnTerms([ first, second ], exprEval))
+          (<BooleanLiteral> this.equalityFunction.applyOnTerms([ first, second ], exprEval))
             .typedValue,
         ))
     .collect();
 }
 
 class GreaterThanEqual extends RegularFunction {
+  public constructor(private readonly lessThanEqualFunction: RegularFunction) {
+    super();
+  }
+
   protected arity = 2;
 
   public operator = RegularOperator.GTE;
@@ -434,7 +453,7 @@ class GreaterThanEqual extends RegularFunction {
     .set([ 'term', 'term' ], exprEval =>
       ([ first, second ]) =>
         // X >= Y -> Y <= X
-        regularFunctions[RegularOperator.LTE].applyOnTerms([ second, first ], exprEval))
+        this.lessThanEqualFunction.applyOnTerms([ second, first ], exprEval))
     .collect();
 }
 
@@ -1328,6 +1347,8 @@ class IsTriple extends RegularFunction {
 // ----------------------------------------------------------------------------
 
 const equality = new Equality();
+const lesserThan = new LesserThan(equality);
+const lesserThanEqual = new LesserThanEqual(equality, lesserThan);
 /**
  * Collect all the definitions from above into an object
  */
@@ -1344,11 +1365,11 @@ export const regularFunctions: Record<RegularOperator, RegularFunction> = {
   '+': new Addition(),
   '-': new Subtraction(),
   '=': equality,
-  '!=': new Inequality(),
-  '<': new LesserThan(equality),
-  '>': new GreaterThan(),
-  '<=': new LesserThanEqual(),
-  '>=': new GreaterThanEqual(),
+  '!=': new Inequality(equality),
+  '<': lesserThan,
+  '>': new GreaterThan(lesserThan),
+  '<=': lesserThanEqual,
+  '>=': new GreaterThanEqual(lesserThanEqual),
 
   // --------------------------------------------------------------------------
   // Functions on RDF Terms
@@ -1433,5 +1454,5 @@ export const regularFunctions: Record<RegularOperator, RegularFunction> = {
   subject: new Subject(),
   predicate: new Predicate(),
   object: new ObjectSparqlFunction(),
-  istriple: new IsTriple(),
+  isTriple: new IsTriple(),
 };
