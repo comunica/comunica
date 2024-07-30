@@ -1,10 +1,19 @@
 import { RegularFunction } from '@comunica/bus-function-factory/lib/implementation/Core';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 
-import type { IInternalEvaluator } from '@comunica/expression-evaluator';
-import * as E from '@comunica/expression-evaluator/lib/expressions';
-import type { Quad } from '@comunica/expression-evaluator/lib/expressions';
+import type {
+  IInternalEvaluator,
+  DurationLiteral,
+  Term,
+  YearMonthDurationLiteral,
+  NumericLiteral,
+  BooleanLiteral,
+  StringLiteral,
+} from '@comunica/expression-evaluator';
 import {
+  RegularOperator,
+  TypeAlias,
+  TypeURL,
   bool,
   decimal,
   declare,
@@ -12,11 +21,6 @@ import {
   integer,
   langString,
   string,
-} from '@comunica/expression-evaluator/lib/functions/Helpers';
-import { TermTransformer } from '@comunica/expression-evaluator/lib/transformers/TermTransformer';
-import * as C from '@comunica/expression-evaluator/lib/util/Consts';
-import { TypeAlias, TypeURL } from '@comunica/expression-evaluator/lib/util/Consts';
-import {
   dayTimeDurationsToSeconds,
   defaultedDateTimeRepresentation,
   defaultedDayTimeDurationRepresentation,
@@ -27,9 +31,22 @@ import {
   toDateTimeRepresentation,
   toUTCDate,
   yearMonthDurationsToMonths,
-} from '@comunica/expression-evaluator/lib/util/DateTimeHelpers';
-import * as Err from '@comunica/expression-evaluator/lib/util/Errors';
-import { addDurationToDateTime, elapsedDuration } from '@comunica/expression-evaluator/lib/util/SpecAlgos';
+  ExpressionError,
+  RDFEqualTypeError,
+  IncompatibleLanguageOperation,
+  InvalidTimezoneCall,
+  DateTimeLiteral,
+  DayTimeDurationLiteral,
+  DateLiteral,
+  TimeLiteral,
+  LangStringLiteral,
+  Quad,
+  NamedNode,
+  DefaultGraph,
+  TermTransformer,
+  addDurationToDateTime,
+  elapsedDuration,
+} from '@comunica/expression-evaluator';
 import type { IDayTimeDurationRepresentation } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { BigNumber } from 'bignumber.js';
@@ -38,7 +55,6 @@ import { DataFactory } from 'rdf-data-factory';
 import { resolve as resolveRelativeIri } from 'relative-to-absolute-iri';
 import { hash as md5 } from 'spark-md5';
 import * as uuid from 'uuid';
-import * as X from './XPathFunctions';
 
 const DF = new DataFactory<RDF.BaseQuad>();
 
@@ -55,9 +71,9 @@ const DF = new DataFactory<RDF.BaseQuad>();
 class Not extends RegularFunction {
   protected arity = 1;
 
-  public operator = C.RegularOperator.NOT;
+  public operator = RegularOperator.NOT;
 
-  protected overloads = declare(C.RegularOperator.NOT)
+  protected overloads = declare(RegularOperator.NOT)
     .onTerm1(() => val => bool(!val.coerceEBV()))
     .collect();
 }
@@ -65,9 +81,9 @@ class Not extends RegularFunction {
 class UnaryPlus extends RegularFunction {
   protected arity = 1;
 
-  public operator = C.RegularOperator.UPLUS;
+  public operator = RegularOperator.UPLUS;
 
-  protected overloads = declare(C.RegularOperator.UPLUS)
+  protected overloads = declare(RegularOperator.UPLUS)
     .numericConverter(() => val => val)
     .collect();
 }
@@ -75,9 +91,9 @@ class UnaryPlus extends RegularFunction {
 class UnaryMinus extends RegularFunction {
   protected arity = 1;
 
-  public operator = C.RegularOperator.UMINUS;
+  public operator = RegularOperator.UMINUS;
 
-  protected overloads = declare(C.RegularOperator.UMINUS)
+  protected overloads = declare(RegularOperator.UMINUS)
     .numericConverter(() => val => -val)
     .collect();
 }
@@ -85,9 +101,9 @@ class UnaryMinus extends RegularFunction {
 class Multiplication extends RegularFunction {
   protected arity = 2;
 
-  public operator = C.RegularOperator.MULTIPLICATION;
+  public operator = RegularOperator.MULTIPLICATION;
 
-  protected overloads = declare(C.RegularOperator.MULTIPLICATION)
+  protected overloads = declare(RegularOperator.MULTIPLICATION)
     .arithmetic(() => (left, right) => new BigNumber(left).times(right).toNumber())
     .collect();
 }
@@ -95,15 +111,15 @@ class Multiplication extends RegularFunction {
 class Division extends RegularFunction {
   protected arity = 2;
 
-  public operator = C.RegularOperator.DIVISION;
+  public operator = RegularOperator.DIVISION;
 
-  protected overloads = declare(C.RegularOperator.DIVISION)
+  protected overloads = declare(RegularOperator.DIVISION)
     .arithmetic(() => (left, right) => new BigNumber(left).div(right).toNumber())
     .onBinaryTyped(
       [ TypeURL.XSD_INTEGER, TypeURL.XSD_INTEGER ],
       () => (left: number, right: number) => {
         if (right === 0) {
-          throw new Err.ExpressionError('Integer division by 0');
+          throw new ExpressionError('Integer division by 0');
         }
         return decimal(new BigNumber(left).div(right).toNumber());
       },
@@ -114,22 +130,22 @@ class Division extends RegularFunction {
 class Addition extends RegularFunction {
   protected arity = 2;
 
-  public operator = C.RegularOperator.ADDITION;
+  public operator = RegularOperator.ADDITION;
 
-  protected overloads = declare(C.RegularOperator.ADDITION)
+  protected overloads = declare(RegularOperator.ADDITION)
     .arithmetic(() => (left, right) => new BigNumber(left).plus(right).toNumber())
     .set([ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DAY_TIME_DURATION ], () =>
-      ([ date, dur ]: [ E.DateTimeLiteral, E.DayTimeDurationLiteral ]) =>
+      ([ date, dur ]: [ DateTimeLiteral, DayTimeDurationLiteral ]) =>
         // https://www.w3.org/TR/xpath-functions/#func-add-dayTimeDuration-to-dateTime
-        new E.DateTimeLiteral(addDurationToDateTime(date.typedValue, defaultedDurationRepresentation(dur.typedValue))))
+        new DateTimeLiteral(addDurationToDateTime(date.typedValue, defaultedDurationRepresentation(dur.typedValue))))
     .copy({
       from: [ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DAY_TIME_DURATION ],
       to: [ TypeURL.XSD_DATE_TIME, TypeURL.XSD_YEAR_MONTH_DURATION ],
     })
     .set([ TypeURL.XSD_DATE, TypeURL.XSD_DAY_TIME_DURATION ], () =>
-      ([ date, dur ]: [E.DateLiteral, E.DurationLiteral]) =>
+      ([ date, dur ]: [DateLiteral, DurationLiteral]) =>
         // https://www.w3.org/TR/xpath-functions/#func-add-dayTimeDuration-to-date
-        new E.DateLiteral(
+        new DateLiteral(
           addDurationToDateTime(
             defaultedDateTimeRepresentation(date.typedValue),
             defaultedDurationRepresentation(dur.typedValue),
@@ -140,9 +156,9 @@ class Addition extends RegularFunction {
       to: [ TypeURL.XSD_DATE, TypeURL.XSD_YEAR_MONTH_DURATION ],
     })
     .set([ TypeURL.XSD_TIME, TypeURL.XSD_DAY_TIME_DURATION ], () =>
-      ([ time, dur ]: [E.TimeLiteral, E.DurationLiteral]) =>
+      ([ time, dur ]: [TimeLiteral, DurationLiteral]) =>
         // https://www.w3.org/TR/xpath-functions/#func-add-dayTimeDuration-to-time
-        new E.TimeLiteral(
+        new TimeLiteral(
           addDurationToDateTime(
             defaultedDateTimeRepresentation(time.typedValue),
             defaultedDurationRepresentation(dur.typedValue),
@@ -158,14 +174,14 @@ class Addition extends RegularFunction {
 class Subtraction extends RegularFunction {
   protected arity = 2;
 
-  public operator = C.RegularOperator.SUBTRACTION;
+  public operator = RegularOperator.SUBTRACTION;
 
-  protected overloads = declare(C.RegularOperator.SUBTRACTION)
+  protected overloads = declare(RegularOperator.SUBTRACTION)
     .arithmetic(() => (left, right) => new BigNumber(left).minus(right).toNumber())
     .set([ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DATE_TIME ], exprEval =>
-      ([ date1, date2 ]: [ E.DateTimeLiteral, E.DateTimeLiteral ]) =>
+      ([ date1, date2 ]: [ DateTimeLiteral, DateTimeLiteral ]) =>
         // https://www.w3.org/TR/xpath-functions/#func-subtract-dateTimes;
-        new E.DayTimeDurationLiteral(elapsedDuration(
+        new DayTimeDurationLiteral(elapsedDuration(
           date1.typedValue,
           date2.typedValue,
           exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone),
@@ -173,9 +189,9 @@ class Subtraction extends RegularFunction {
     .copy({ from: [ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DATE_TIME ], to: [ TypeURL.XSD_DATE, TypeURL.XSD_DATE ]})
     .copy({ from: [ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DATE_TIME ], to: [ TypeURL.XSD_TIME, TypeURL.XSD_TIME ]})
     .set([ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DAY_TIME_DURATION ], () =>
-      ([ date, dur ]: [ E.DateTimeLiteral, E.DayTimeDurationLiteral ]) =>
+      ([ date, dur ]: [ DateTimeLiteral, DayTimeDurationLiteral ]) =>
         // https://www.w3.org/TR/xpath-functions/#func-subtract-dayTimeDuration-from-dateTime
-        new E.DateTimeLiteral(addDurationToDateTime(
+        new DateTimeLiteral(addDurationToDateTime(
           date.typedValue,
           defaultedDurationRepresentation(negateDuration(dur.typedValue)),
         )))
@@ -184,9 +200,9 @@ class Subtraction extends RegularFunction {
       to: [ TypeURL.XSD_DATE_TIME, TypeURL.XSD_YEAR_MONTH_DURATION ],
     })
     .set([ TypeURL.XSD_DATE, TypeURL.XSD_DAY_TIME_DURATION ], () =>
-      ([ date, dur ]: [ E.DateLiteral, E.DayTimeDurationLiteral ]) =>
+      ([ date, dur ]: [ DateLiteral, DayTimeDurationLiteral ]) =>
         // https://www.w3.org/TR/xpath-functions/#func-subtract-dayTimeDuration-from-date
-        new E.DateLiteral(addDurationToDateTime(
+        new DateLiteral(addDurationToDateTime(
           defaultedDateTimeRepresentation(date.typedValue),
           defaultedDurationRepresentation(negateDuration(dur.typedValue)),
         )))
@@ -195,9 +211,9 @@ class Subtraction extends RegularFunction {
       to: [ TypeURL.XSD_DATE, TypeURL.XSD_YEAR_MONTH_DURATION ],
     })
     .set([ TypeURL.XSD_TIME, TypeURL.XSD_DAY_TIME_DURATION ], () =>
-      ([ time, dur ]: [ E.TimeLiteral, E.DayTimeDurationLiteral ]) =>
+      ([ time, dur ]: [ TimeLiteral, DayTimeDurationLiteral ]) =>
         // https://www.w3.org/TR/xpath-functions/#func-subtract-dayTimeDuration-from-date
-        new E.TimeLiteral(addDurationToDateTime(
+        new TimeLiteral(addDurationToDateTime(
           defaultedDateTimeRepresentation(time.typedValue),
           defaultedDurationRepresentation(negateDuration(dur.typedValue)),
         )))
@@ -208,14 +224,14 @@ class Subtraction extends RegularFunction {
 class Equality extends RegularFunction {
   protected arity = 2;
 
-  public operator = C.RegularOperator.EQUAL;
+  public operator = RegularOperator.EQUAL;
 
-  protected overloads = declare(C.RegularOperator.EQUAL)
+  protected overloads = declare(RegularOperator.EQUAL)
     .numberTest(() => (left, right) => left === right)
     .stringTest(() => (left, right) => left.localeCompare(right) === 0)
     .set(
       [ TypeURL.RDF_LANG_STRING, TypeURL.RDF_LANG_STRING ],
-      () => ([ left, right ]: E.LangStringLiteral[]) => bool(left.str() === right.str() &&
+      () => ([ left, right ]: LangStringLiteral[]) => bool(left.str() === right.str() &&
         left.language === right.language),
     )
     // Fall through: a TypeURL.XSD_STRING is never equal to a TypeURL.RDF_LANG_STRING.
@@ -235,13 +251,13 @@ class Equality extends RegularFunction {
       [ 'quad', 'quad' ],
       exprEval => ([ left, right ]) =>
         bool(
-          (<E.BooleanLiteral> this.applyOnTerms([ (<Quad> left).subject, (<Quad> right).subject ], exprEval))
+          (<BooleanLiteral> this.applyOnTerms([ (<Quad> left).subject, (<Quad> right).subject ], exprEval))
             .coerceEBV() &&
-          (<E.BooleanLiteral> this.applyOnTerms([ (<Quad> left).predicate, (<Quad> right).predicate ], exprEval))
+          (<BooleanLiteral> this.applyOnTerms([ (<Quad> left).predicate, (<Quad> right).predicate ], exprEval))
             .coerceEBV() &&
-          (<E.BooleanLiteral> this.applyOnTerms([ (<Quad> left).object, (<Quad> right).object ], exprEval))
+          (<BooleanLiteral> this.applyOnTerms([ (<Quad> left).object, (<Quad> right).object ], exprEval))
             .coerceEBV() &&
-          (<E.BooleanLiteral> this.applyOnTerms([ (<Quad> left).graph, (<Quad> right).graph ], exprEval))
+          (<BooleanLiteral> this.applyOnTerms([ (<Quad> left).graph, (<Quad> right).graph ], exprEval))
             .coerceEBV(),
         )
       ,
@@ -254,20 +270,20 @@ class Equality extends RegularFunction {
         const right = _right.toRDF();
         const val = left.equals(right);
         if (!val && (left.termType === 'Literal') && (right.termType === 'Literal')) {
-          throw new Err.RDFEqualTypeError([ _left, _right ]);
+          throw new RDFEqualTypeError([ _left, _right ]);
         }
         return bool(val);
       },
       false,
     )
     .set([ TypeURL.XSD_DURATION, TypeURL.XSD_DURATION ], () =>
-      ([ dur1, dur2 ]: [ E.DurationLiteral, E.DurationLiteral ]) =>
+      ([ dur1, dur2 ]: [ DurationLiteral, DurationLiteral ]) =>
         bool(yearMonthDurationsToMonths(defaultedYearMonthDurationRepresentation(dur1.typedValue)) ===
           yearMonthDurationsToMonths(defaultedYearMonthDurationRepresentation(dur2.typedValue)) &&
           dayTimeDurationsToSeconds(defaultedDayTimeDurationRepresentation(dur1.typedValue)) ===
           dayTimeDurationsToSeconds(defaultedDayTimeDurationRepresentation(dur2.typedValue))))
     .set([ TypeURL.XSD_TIME, TypeURL.XSD_TIME ], exprEval =>
-      ([ time1, time2 ]: [E.TimeLiteral, E.TimeLiteral]) =>
+      ([ time1, time2 ]: [TimeLiteral, TimeLiteral]) =>
         // https://www.w3.org/TR/xpath-functions/#func-time-equal
         bool(
           toUTCDate(
@@ -285,12 +301,12 @@ class Equality extends RegularFunction {
 class Inequality extends RegularFunction {
   protected arity = 2;
 
-  public operator = C.RegularOperator.NOT_EQUAL;
+  public operator = RegularOperator.NOT_EQUAL;
 
-  protected overloads = declare(C.RegularOperator.NOT_EQUAL)
+  protected overloads = declare(RegularOperator.NOT_EQUAL)
     .set([ 'term', 'term' ], expressionEvaluator =>
       ([ first, second ]) =>
-        bool(!(<E.BooleanLiteral> regularFunctions[C.RegularOperator.EQUAL]
+        bool(!(<BooleanLiteral> regularFunctions[RegularOperator.EQUAL]
           .applyOnTerms([ first, second ], expressionEvaluator)).typedValue))
     .collect();
 }
@@ -303,15 +319,15 @@ class LesserThan extends RegularFunction {
 
   protected arity = 2;
 
-  public operator = C.RegularOperator.LT;
+  public operator = RegularOperator.LT;
 
-  private quadComponentTest(left: E.Term, right: E.Term, exprEval: IInternalEvaluator): boolean | undefined {
+  private quadComponentTest(left: Term, right: Term, exprEval: IInternalEvaluator): boolean | undefined {
     // If components are equal, we don't have an answer
     const componentEqual = this.equalityFunction.applyOnTerms(
       [ left, right ],
       exprEval,
     );
-    if ((<E.BooleanLiteral> componentEqual).typedValue) {
+    if ((<BooleanLiteral> componentEqual).typedValue) {
       return undefined;
     }
 
@@ -319,10 +335,10 @@ class LesserThan extends RegularFunction {
       [ left, right ],
       exprEval,
     );
-    return (<E.BooleanLiteral>componentLess).typedValue;
+    return (<BooleanLiteral>componentLess).typedValue;
   }
 
-  protected overloads = declare(C.RegularOperator.LT)
+  protected overloads = declare(RegularOperator.LT)
     .numberTest(() => (left, right) => left < right)
     .stringTest(() => (left, right) => left.localeCompare(right) === -1)
     .booleanTest(() => (left, right) => left < right)
@@ -335,17 +351,17 @@ class LesserThan extends RegularFunction {
       to: [ TypeURL.XSD_DATE, TypeURL.XSD_DATE ],
     })
     .set([ TypeURL.XSD_YEAR_MONTH_DURATION, TypeURL.XSD_YEAR_MONTH_DURATION ], () =>
-      ([ dur1L, dur2L ]: [E.YearMonthDurationLiteral, E.YearMonthDurationLiteral]) =>
+      ([ dur1L, dur2L ]: [YearMonthDurationLiteral, YearMonthDurationLiteral]) =>
         // https://www.w3.org/TR/xpath-functions/#func-yearMonthDuration-less-than
         bool(yearMonthDurationsToMonths(defaultedYearMonthDurationRepresentation(dur1L.typedValue)) <
           yearMonthDurationsToMonths(defaultedYearMonthDurationRepresentation(dur2L.typedValue))))
     .set([ TypeURL.XSD_DAY_TIME_DURATION, TypeURL.XSD_DAY_TIME_DURATION ], () =>
-      ([ dur1, dur2 ]: [E.DayTimeDurationLiteral, E.DayTimeDurationLiteral]) =>
+      ([ dur1, dur2 ]: [DayTimeDurationLiteral, DayTimeDurationLiteral]) =>
         // https://www.w3.org/TR/xpath-functions/#func-dayTimeDuration-greater-than
         bool(dayTimeDurationsToSeconds(defaultedDayTimeDurationRepresentation(dur1.typedValue)) <
           dayTimeDurationsToSeconds(defaultedDayTimeDurationRepresentation(dur2.typedValue))))
     .set([ TypeURL.XSD_TIME, TypeURL.XSD_TIME ], exprEval =>
-      ([ time1, time2 ]: [E.TimeLiteral, E.TimeLiteral]) =>
+      ([ time1, time2 ]: [TimeLiteral, TimeLiteral]) =>
         // https://www.w3.org/TR/xpath-functions/#func-time-less-than
         bool(
           toUTCDate(
@@ -359,7 +375,7 @@ class LesserThan extends RegularFunction {
         ))
     .set(
       [ 'quad', 'quad' ],
-      exprEval => ([ left, right ]: [E.Quad, E.Quad]) => {
+      exprEval => ([ left, right ]: [Quad, Quad]) => {
         const subjectTest = this.quadComponentTest(left.subject, right.subject, exprEval);
         if (subjectTest !== undefined) {
           return bool(subjectTest);
@@ -382,29 +398,29 @@ class LesserThan extends RegularFunction {
 class GreaterThan extends RegularFunction {
   protected arity = 2;
 
-  public operator = C.RegularOperator.GT;
+  public operator = RegularOperator.GT;
 
-  protected overloads = declare(C.RegularOperator.GT)
+  protected overloads = declare(RegularOperator.GT)
     .set([ 'term', 'term' ], expressionEvaluator =>
       ([ first, second ]) =>
         // X < Y -> Y > X
-        regularFunctions[C.RegularOperator.LT].applyOnTerms([ second, first ], expressionEvaluator))
+        regularFunctions[RegularOperator.LT].applyOnTerms([ second, first ], expressionEvaluator))
     .collect();
 }
 
 class LesserThanEqual extends RegularFunction {
   protected arity = 2;
-  public operator = C.RegularOperator.LTE;
-  protected overloads = declare(C.RegularOperator.LTE)
+  public operator = RegularOperator.LTE;
+  protected overloads = declare(RegularOperator.LTE)
     .set([ 'term', 'term' ], exprEval =>
       ([ first, second ]) =>
         // X <= Y -> X < Y || X = Y
         // First check if the first is lesser than the second, then check if they are equal.
         // Doing this, the correct error will be thrown, each type that has a lesserThanEqual has a matching lesserThan.
         bool(
-          (<E.BooleanLiteral> regularFunctions[C.RegularOperator.LT].applyOnTerms([ first, second ], exprEval))
+          (<BooleanLiteral> regularFunctions[RegularOperator.LT].applyOnTerms([ first, second ], exprEval))
             .typedValue ||
-          (<E.BooleanLiteral> regularFunctions[C.RegularOperator.EQUAL].applyOnTerms([ first, second ], exprEval))
+          (<BooleanLiteral> regularFunctions[RegularOperator.EQUAL].applyOnTerms([ first, second ], exprEval))
             .typedValue,
         ))
     .collect();
@@ -413,12 +429,12 @@ class LesserThanEqual extends RegularFunction {
 class GreaterThanEqual extends RegularFunction {
   protected arity = 2;
 
-  public operator = C.RegularOperator.GTE;
-  protected overloads = declare(C.RegularOperator.GTE)
+  public operator = RegularOperator.GTE;
+  protected overloads = declare(RegularOperator.GTE)
     .set([ 'term', 'term' ], exprEval =>
       ([ first, second ]) =>
         // X >= Y -> Y <= X
-        regularFunctions[C.RegularOperator.LTE].applyOnTerms([ second, first ], exprEval))
+        regularFunctions[RegularOperator.LTE].applyOnTerms([ second, first ], exprEval))
     .collect();
 }
 
@@ -432,8 +448,8 @@ class GreaterThanEqual extends RegularFunction {
  */
 class IsIRI extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.IS_IRI;
-  protected overloads = declare(C.RegularOperator.IS_IRI)
+  public operator = RegularOperator.IS_IRI;
+  protected overloads = declare(RegularOperator.IS_IRI)
     .onTerm1(() => term => bool(term.termType === 'namedNode'))
     .collect();
 }
@@ -443,9 +459,9 @@ class IsIRI extends RegularFunction {
  */
 class IsBlank extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.IS_BLANK;
+  public operator = RegularOperator.IS_BLANK;
 
-  protected overloads = declare(C.RegularOperator.IS_BLANK)
+  protected overloads = declare(RegularOperator.IS_BLANK)
     .onTerm1(() => term => bool(term.termType === 'blankNode'))
     .collect();
 }
@@ -455,8 +471,8 @@ class IsBlank extends RegularFunction {
  */
 class IsLiteral extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.IS_LITERAL;
-  protected overloads = declare(C.RegularOperator.IS_LITERAL)
+  public operator = RegularOperator.IS_LITERAL;
+  protected overloads = declare(RegularOperator.IS_LITERAL)
     .onTerm1(() => term => bool(term.termType === 'literal'))
     .collect();
 }
@@ -466,9 +482,9 @@ class IsLiteral extends RegularFunction {
  */
 class IsNumeric extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.IS_NUMERIC;
+  public operator = RegularOperator.IS_NUMERIC;
 
-  protected overloads = declare(C.RegularOperator.IS_NUMERIC)
+  protected overloads = declare(RegularOperator.IS_NUMERIC)
     .onNumeric1(() => () => bool(true))
     .onTerm1(() => () => bool(false))
     .collect();
@@ -479,8 +495,8 @@ class IsNumeric extends RegularFunction {
  */
 class STR extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.STR;
-  protected overloads = declare(C.RegularOperator.STR)
+  public operator = RegularOperator.STR;
+  protected overloads = declare(RegularOperator.STR)
     .onTerm1(() => term => string(term.str()))
     .collect();
 }
@@ -490,9 +506,9 @@ class STR extends RegularFunction {
  */
 class Lang extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.LANG;
+  public operator = RegularOperator.LANG;
 
-  protected overloads = declare(C.RegularOperator.LANG)
+  protected overloads = declare(RegularOperator.LANG)
     .onLiteral1(() => lit => string(lit.language ?? ''))
     .collect();
 }
@@ -502,10 +518,10 @@ class Lang extends RegularFunction {
  */
 class Datatype extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.DATATYPE;
+  public operator = RegularOperator.DATATYPE;
 
-  protected overloads = declare(C.RegularOperator.DATATYPE)
-    .onLiteral1(() => lit => new E.NamedNode(lit.dataType))
+  protected overloads = declare(RegularOperator.DATATYPE)
+    .onLiteral1(() => lit => new NamedNode(lit.dataType))
     .collect();
 }
 
@@ -514,17 +530,17 @@ class Datatype extends RegularFunction {
  */
 class IRI extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.IRI;
+  public operator = RegularOperator.IRI;
 
-  protected overloads = declare(C.RegularOperator.IRI)
+  protected overloads = declare(RegularOperator.IRI)
     .set([ 'namedNode' ], exprEval => (args) => {
-      const lit = <E.NamedNode> args[0];
+      const lit = <NamedNode> args[0];
       const iri = resolveRelativeIri(lit.str(), exprEval.context.get(KeysInitQuery.baseIRI) ?? '');
-      return new E.NamedNode(iri);
+      return new NamedNode(iri);
     })
     .onString1(exprEval => (lit) => {
       const iri = resolveRelativeIri(lit.str(), exprEval.context.get(KeysInitQuery.baseIRI) ?? '');
-      return new E.NamedNode(iri);
+      return new NamedNode(iri);
     })
     .collect();
 }
@@ -537,11 +553,11 @@ class IRI extends RegularFunction {
  */
 class STRDT extends RegularFunction {
   protected arity = 2;
-  public operator = C.RegularOperator.STRDT;
+  public operator = RegularOperator.STRDT;
 
-  protected overloads = declare(C.RegularOperator.STRDT).set(
+  protected overloads = declare(RegularOperator.STRDT).set(
     [ TypeURL.XSD_STRING, 'namedNode' ],
-    exprEval => ([ str, iri ]: [E.StringLiteral, E.NamedNode]) => {
+    exprEval => ([ str, iri ]: [StringLiteral, NamedNode]) => {
       const lit = DF.literal(str.typedValue, DF.namedNode(iri.value));
       return new TermTransformer(exprEval.context.getSafe(KeysExpressionEvaluator.superTypeProvider))
         .transformLiteral(lit);
@@ -553,12 +569,12 @@ class STRDT extends RegularFunction {
  */
 class STRLANG extends RegularFunction {
   protected arity = 2;
-  public operator = C.RegularOperator.STRLANG;
+  public operator = RegularOperator.STRLANG;
 
-  protected overloads = declare(C.RegularOperator.STRLANG)
+  protected overloads = declare(RegularOperator.STRLANG)
     .onBinaryTyped(
       [ TypeURL.XSD_STRING, TypeURL.XSD_STRING ],
-      () => (val: string, language: string) => new E.LangStringLiteral(val, language.toLowerCase()),
+      () => (val: string, language: string) => new LangStringLiteral(val, language.toLowerCase()),
     )
     .collect();
 }
@@ -568,10 +584,10 @@ class STRLANG extends RegularFunction {
  */
 class UUID extends RegularFunction {
   protected arity = 0;
-  public operator = C.RegularOperator.UUID;
+  public operator = RegularOperator.UUID;
 
-  protected overloads = declare(C.RegularOperator.UUID)
-    .set([], () => () => new E.NamedNode(`urn:uuid:${uuid.v4()}`))
+  protected overloads = declare(RegularOperator.UUID)
+    .set([], () => () => new NamedNode(`urn:uuid:${uuid.v4()}`))
     .collect();
 }
 
@@ -580,9 +596,9 @@ class UUID extends RegularFunction {
  */
 class STRUUID extends RegularFunction {
   protected arity = 0;
-  public operator = C.RegularOperator.STRUUID;
+  public operator = RegularOperator.STRUUID;
 
-  protected overloads = declare(C.RegularOperator.STRUUID)
+  protected overloads = declare(RegularOperator.STRUUID)
     .set([], () => () => string(uuid.v4()))
     .collect();
 }
@@ -597,9 +613,9 @@ class STRUUID extends RegularFunction {
  */
 class STRLEN extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.STRLEN;
+  public operator = RegularOperator.STRLEN;
 
-  protected overloads = declare(C.RegularOperator.STRLEN)
+  protected overloads = declare(RegularOperator.STRLEN)
     .onStringly1(() => str => integer([ ...str.typedValue ].length))
     .collect();
 }
@@ -609,16 +625,16 @@ class STRLEN extends RegularFunction {
  */
 class SUBSTR extends RegularFunction {
   protected arity = [ 2, 3 ];
-  public operator = C.RegularOperator.SUBSTR;
+  public operator = RegularOperator.SUBSTR;
 
-  protected overloads = declare(C.RegularOperator.SUBSTR)
+  protected overloads = declare(RegularOperator.SUBSTR)
     .onBinaryTyped(
       [ TypeURL.XSD_STRING, TypeURL.XSD_INTEGER ],
       () => (source: string, startingLoc: number) => string([ ...source ].slice(startingLoc - 1).join('')),
     )
     .onBinary(
       [ TypeURL.RDF_LANG_STRING, TypeURL.XSD_INTEGER ],
-      () => (source: E.LangStringLiteral, startingLoc: E.NumericLiteral) => {
+      () => (source: LangStringLiteral, startingLoc: NumericLiteral) => {
         const sub = [ ...source.typedValue ].slice(startingLoc.typedValue - 1).join('');
         return langString(sub, source.language);
       },
@@ -630,7 +646,7 @@ class SUBSTR extends RegularFunction {
     )
     .onTernary(
       [ TypeURL.RDF_LANG_STRING, TypeURL.XSD_INTEGER, TypeURL.XSD_INTEGER ],
-      () => (source: E.LangStringLiteral, startingLoc: E.NumericLiteral, length: E.NumericLiteral) => {
+      () => (source: LangStringLiteral, startingLoc: NumericLiteral, length: NumericLiteral) => {
         const sub = [ ...source.typedValue ]
           .slice(startingLoc.typedValue - 1, length.typedValue + startingLoc.typedValue - 1)
           .join('');
@@ -645,9 +661,9 @@ class SUBSTR extends RegularFunction {
  */
 class UCASE extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.UCASE;
+  public operator = RegularOperator.UCASE;
 
-  protected overloads = declare(C.RegularOperator.UCASE)
+  protected overloads = declare(RegularOperator.UCASE)
     .onString1Typed(() => lit => string(lit.toUpperCase()))
     .onLangString1(() => lit => langString(lit.typedValue.toUpperCase(), lit.language))
     .collect();
@@ -658,9 +674,9 @@ class UCASE extends RegularFunction {
  */
 class LCASE extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.LCASE;
+  public operator = RegularOperator.LCASE;
 
-  protected overloads = declare(C.RegularOperator.LCASE)
+  protected overloads = declare(RegularOperator.LCASE)
     .onString1Typed(() => lit => string(lit.toLowerCase()))
     .onLangString1(() => lit => langString(lit.typedValue.toLowerCase(), lit.language))
     .collect();
@@ -673,18 +689,18 @@ class LCASE extends RegularFunction {
  */
 class STRSTARTS extends RegularFunction {
   protected arity = 2;
-  public operator = C.RegularOperator.STRSTARTS;
+  public operator = RegularOperator.STRSTARTS;
 
-  protected overloads = declare(C.RegularOperator.STRSTARTS)
+  protected overloads = declare(RegularOperator.STRSTARTS)
     .onBinaryTyped(
       [ TypeAlias.SPARQL_STRINGLY, TypeURL.XSD_STRING ],
       () => (arg1: string, arg2: string) => bool(arg1.startsWith(arg2)),
     )
     .onBinary(
       [ TypeURL.RDF_LANG_STRING, TypeURL.RDF_LANG_STRING ],
-      () => (arg1: E.LangStringLiteral, arg2: E.LangStringLiteral) => {
+      () => (arg1: LangStringLiteral, arg2: LangStringLiteral) => {
         if (arg1.language !== arg2.language) {
-          throw new Err.IncompatibleLanguageOperation(arg1, arg2);
+          throw new IncompatibleLanguageOperation(arg1, arg2);
         }
         return bool(arg1.typedValue.startsWith(arg2.typedValue));
       },
@@ -697,18 +713,18 @@ class STRSTARTS extends RegularFunction {
  */
 class STRENDS extends RegularFunction {
   protected arity = 2;
-  public operator = C.RegularOperator.STRENDS;
+  public operator = RegularOperator.STRENDS;
 
-  protected overloads = declare(C.RegularOperator.STRENDS)
+  protected overloads = declare(RegularOperator.STRENDS)
     .onBinaryTyped(
       [ TypeAlias.SPARQL_STRINGLY, TypeURL.XSD_STRING ],
       () => (arg1: string, arg2: string) => bool(arg1.endsWith(arg2)),
     )
     .onBinary(
       [ TypeURL.RDF_LANG_STRING, TypeURL.RDF_LANG_STRING ],
-      () => (arg1: E.LangStringLiteral, arg2: E.LangStringLiteral) => {
+      () => (arg1: LangStringLiteral, arg2: LangStringLiteral) => {
         if (arg1.language !== arg2.language) {
-          throw new Err.IncompatibleLanguageOperation(arg1, arg2);
+          throw new IncompatibleLanguageOperation(arg1, arg2);
         }
         return bool(arg1.typedValue.endsWith(arg2.typedValue));
       },
@@ -721,18 +737,18 @@ class STRENDS extends RegularFunction {
  */
 class CONTAINS extends RegularFunction {
   protected arity = 2;
-  public operator = C.RegularOperator.CONTAINS;
+  public operator = RegularOperator.CONTAINS;
 
-  protected overloads = declare(C.RegularOperator.CONTAINS)
+  protected overloads = declare(RegularOperator.CONTAINS)
     .onBinaryTyped(
       [ TypeAlias.SPARQL_STRINGLY, TypeURL.XSD_STRING ],
       () => (arg1: string, arg2: string) => bool(arg1.includes(arg2)),
     )
     .onBinary(
       [ TypeURL.RDF_LANG_STRING, TypeURL.RDF_LANG_STRING ],
-      () => (arg1: E.LangStringLiteral, arg2: E.LangStringLiteral) => {
+      () => (arg1: LangStringLiteral, arg2: LangStringLiteral) => {
         if (arg1.language !== arg2.language) {
-          throw new Err.IncompatibleLanguageOperation(arg1, arg2);
+          throw new IncompatibleLanguageOperation(arg1, arg2);
         }
         return bool(arg1.typedValue.includes(arg2.typedValue));
       },
@@ -745,16 +761,16 @@ class CONTAINS extends RegularFunction {
  */
 class STRBEFORE extends RegularFunction {
   protected arity = 2;
-  public operator = C.RegularOperator.STRBEFORE;
+  public operator = RegularOperator.STRBEFORE;
 
-  protected overloads = declare(C.RegularOperator.STRBEFORE)
+  protected overloads = declare(RegularOperator.STRBEFORE)
     .onBinaryTyped(
       [ TypeURL.XSD_STRING, TypeURL.XSD_STRING ],
       () => (arg1: string, arg2: string) => string(arg1.slice(0, Math.max(0, arg1.indexOf(arg2)))),
     )
     .onBinary(
       [ TypeURL.RDF_LANG_STRING, TypeURL.XSD_STRING ],
-      () => (arg1: E.LangStringLiteral, arg2: E.StringLiteral) => {
+      () => (arg1: LangStringLiteral, arg2: StringLiteral) => {
         const [ a1, a2 ] = [ arg1.typedValue, arg2.typedValue ];
         const sub = arg1.typedValue.slice(0, Math.max(0, a1.indexOf(a2)));
         return sub || !a2 ? langString(sub, arg1.language) : string(sub);
@@ -762,9 +778,9 @@ class STRBEFORE extends RegularFunction {
     )
     .onBinary(
       [ TypeURL.RDF_LANG_STRING, TypeURL.RDF_LANG_STRING ],
-      () => (arg1: E.LangStringLiteral, arg2: E.LangStringLiteral) => {
+      () => (arg1: LangStringLiteral, arg2: LangStringLiteral) => {
         if (arg1.language !== arg2.language) {
-          throw new Err.IncompatibleLanguageOperation(arg1, arg2);
+          throw new IncompatibleLanguageOperation(arg1, arg2);
         }
         const [ a1, a2 ] = [ arg1.typedValue, arg2.typedValue ];
         const sub = arg1.typedValue.slice(0, Math.max(0, a1.indexOf(a2)));
@@ -779,16 +795,16 @@ class STRBEFORE extends RegularFunction {
  */
 class STRAFTER extends RegularFunction {
   protected arity = 2;
-  public operator = C.RegularOperator.STRAFTER;
+  public operator = RegularOperator.STRAFTER;
 
-  protected overloads = declare(C.RegularOperator.STRAFTER)
+  protected overloads = declare(RegularOperator.STRAFTER)
     .onBinaryTyped(
       [ TypeURL.XSD_STRING, TypeURL.XSD_STRING ],
       () => (arg1: string, arg2: string) => string(arg1.slice(arg1.indexOf(arg2)).slice(arg2.length)),
     )
     .onBinary(
       [ TypeURL.RDF_LANG_STRING, TypeURL.XSD_STRING ],
-      () => (arg1: E.LangStringLiteral, arg2: E.StringLiteral) => {
+      () => (arg1: LangStringLiteral, arg2: StringLiteral) => {
         const [ a1, a2 ] = [ arg1.typedValue, arg2.typedValue ];
         const sub = a1.slice(a1.indexOf(a2)).slice(a2.length);
         return sub || !a2 ? langString(sub, arg1.language) : string(sub);
@@ -796,9 +812,9 @@ class STRAFTER extends RegularFunction {
     )
     .onBinary(
       [ TypeURL.RDF_LANG_STRING, TypeURL.RDF_LANG_STRING ],
-      () => (arg1: E.LangStringLiteral, arg2: E.LangStringLiteral) => {
+      () => (arg1: LangStringLiteral, arg2: LangStringLiteral) => {
         if (arg1.language !== arg2.language) {
-          throw new Err.IncompatibleLanguageOperation(arg1, arg2);
+          throw new IncompatibleLanguageOperation(arg1, arg2);
         }
         const [ a1, a2 ] = [ arg1.typedValue, arg2.typedValue ];
         const sub = a1.slice(a1.indexOf(a2)).slice(a2.length);
@@ -813,9 +829,9 @@ class STRAFTER extends RegularFunction {
  */
 class ENCODE_FOR_URI extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.ENCODE_FOR_URI;
+  public operator = RegularOperator.ENCODE_FOR_URI;
 
-  protected overloads = declare(C.RegularOperator.ENCODE_FOR_URI)
+  protected overloads = declare(RegularOperator.ENCODE_FOR_URI)
     .onStringly1Typed(() => val => string(encodeURI(val))).collect();
 }
 
@@ -827,31 +843,87 @@ class ENCODE_FOR_URI extends RegularFunction {
  */
 class Langmatches extends RegularFunction {
   protected arity = 2;
-  public operator = C.RegularOperator.LANG_MATCHES;
+  public operator = RegularOperator.LANG_MATCHES;
 
-  protected overloads = declare(C.RegularOperator.LANG_MATCHES)
+  // TODO: Not an XPath function
+  // TODO: Publish as package
+  // https://www.ietf.org/rfc/rfc4647.txt
+  // https://www.w3.org/TR/sparql11-query/#func-langMatches
+  private static langMatches(tag: string, range: string): boolean {
+    const langTags = tag.split('-');
+    const rangeTags = range.split('-');
+
+    if (!Langmatches.matchLangTag(rangeTags[0], langTags[0]) &&
+      !Langmatches.isWildCard(langTags[0])) {
+      return false;
+    }
+
+    let lI = 1;
+    let rI = 1;
+    while (rI < rangeTags.length) {
+      if (Langmatches.isWildCard(rangeTags[rI])) {
+        rI++;
+        continue;
+      }
+      if (lI === langTags.length) {
+        return false;
+      }
+      if (Langmatches.matchLangTag(rangeTags[rI], langTags[lI])) {
+        lI++;
+        rI++;
+        continue;
+      }
+      if (langTags[lI].length === 1) {
+        return false;
+      }
+      lI++;
+    }
+    return true;
+  }
+
+  private static isWildCard(tag: string): boolean {
+    return tag === '*';
+  }
+
+  private static matchLangTag(left: string, right: string): boolean {
+    const matchInitial = new RegExp(`/${left}/`, 'iu');
+    return matchInitial.test(`/${right}/`);
+  }
+
+  protected overloads = declare(RegularOperator.LANG_MATCHES)
     .onBinaryTyped(
       [ TypeURL.XSD_STRING, TypeURL.XSD_STRING ],
-      () => (tag: string, range: string) => bool(X.langMatches(tag, range)),
+      () => (tag: string, range: string) => bool(Langmatches.langMatches(tag, range)),
     ).collect();
 }
 
-function regex2(): (text: string, pattern: string) => E.BooleanLiteral {
-  return (text: string, pattern: string) => bool(X.matches(text, pattern));
-}
-function regex3(): (text: string, pattern: string, flags: string) => E.BooleanLiteral {
-  return (text: string, pattern: string, flags: string) => bool(X.matches(text, pattern, flags));
-}
 /**
  * https://www.w3.org/TR/sparql11-query/#func-regex
  */
 class REGEX extends RegularFunction {
   protected arity = [ 2, 3 ];
-  public operator = C.RegularOperator.REGEX;
+  public operator = RegularOperator.REGEX;
 
-  protected overloads = declare(C.RegularOperator.REGEX)
-    .onBinaryTyped([ TypeAlias.SPARQL_STRINGLY, TypeURL.XSD_STRING ], regex2)
-    .onTernaryTyped([ TypeAlias.SPARQL_STRINGLY, TypeURL.XSD_STRING, TypeURL.XSD_STRING ], regex3)
+  // https://www.w3.org/TR/xpath-functions/#func-matches
+  // https://www.w3.org/TR/xpath-functions/#flags
+  private static matches(text: string, pattern: string, flags?: string): boolean {
+    // TODO: Only flags 'i' and 'm' match between XPath and JS.
+    // 's', 'x', 'q', would need proper implementation.
+    const reg = new RegExp(pattern, flags);
+    return reg.test(text);
+  }
+
+  private static regex2(): (text: string, pattern: string) => BooleanLiteral {
+    return (text: string, pattern: string) => bool(REGEX.matches(text, pattern));
+  }
+
+  private static regex3(): (text: string, pattern: string, flags: string) => BooleanLiteral {
+    return (text: string, pattern: string, flags: string) => bool(REGEX.matches(text, pattern, flags));
+  }
+
+  protected overloads = declare(RegularOperator.REGEX)
+    .onBinaryTyped([ TypeAlias.SPARQL_STRINGLY, TypeURL.XSD_STRING ], REGEX.regex2)
+    .onTernaryTyped([ TypeAlias.SPARQL_STRINGLY, TypeURL.XSD_STRING, TypeURL.XSD_STRING ], REGEX.regex3)
     .collect();
 }
 
@@ -860,31 +932,42 @@ class REGEX extends RegularFunction {
  */
 class REPLACE extends RegularFunction {
   protected arity = [ 3, 4 ];
-  public operator = C.RegularOperator.REPLACE;
+  public operator = RegularOperator.REPLACE;
 
-  protected overloads = declare(C.RegularOperator.REPLACE)
+  // TODO: Fix flags
+  // https://www.w3.org/TR/xpath-functions/#func-replace
+  private static replace(arg: string, pattern: string, replacement: string, flags?: string): string {
+    let reg = new RegExp(pattern, flags);
+    if (!reg.global) {
+      const flags_ = flags ?? '';
+      reg = new RegExp(pattern, `${flags_}g`);
+    }
+    return arg.replace(reg, replacement);
+  }
+
+  protected overloads = declare(RegularOperator.REPLACE)
     .onTernaryTyped(
       [ TypeURL.XSD_STRING, TypeURL.XSD_STRING, TypeURL.XSD_STRING ],
       () => (arg: string, pattern: string, replacement: string) =>
-        string(X.replace(arg, pattern, replacement)),
+        string(REPLACE.replace(arg, pattern, replacement)),
     )
     .set(
       [ TypeURL.RDF_LANG_STRING, TypeURL.XSD_STRING, TypeURL.XSD_STRING ],
-      () => ([ arg, pattern, replacement ]: [E.LangStringLiteral, E.StringLiteral, E.StringLiteral]) => {
-        const result = X.replace(arg.typedValue, pattern.typedValue, replacement.typedValue);
+      () => ([ arg, pattern, replacement ]: [LangStringLiteral, StringLiteral, StringLiteral]) => {
+        const result = REPLACE.replace(arg.typedValue, pattern.typedValue, replacement.typedValue);
         return langString(result, arg.language);
       },
     )
     .onQuaternaryTyped(
       [ TypeURL.XSD_STRING, TypeURL.XSD_STRING, TypeURL.XSD_STRING, TypeURL.XSD_STRING ],
       () => (arg: string, pattern: string, replacement: string, flags: string) =>
-        string(X.replace(arg, pattern, replacement, flags)),
+        string(REPLACE.replace(arg, pattern, replacement, flags)),
     )
     .set(
       [ TypeURL.RDF_LANG_STRING, TypeURL.XSD_STRING, TypeURL.XSD_STRING, TypeURL.XSD_STRING ],
       () => ([ arg, pattern, replacement, flags ]:
-      [E.LangStringLiteral, E.StringLiteral, E.StringLiteral, E.StringLiteral]) => {
-        const result = X.replace(arg.typedValue, pattern.typedValue, replacement.typedValue, flags.typedValue);
+      [LangStringLiteral, StringLiteral, StringLiteral, StringLiteral]) => {
+        const result = REPLACE.replace(arg.typedValue, pattern.typedValue, replacement.typedValue, flags.typedValue);
         return langString(result, arg.language);
       },
     )
@@ -901,9 +984,9 @@ class REPLACE extends RegularFunction {
  */
 class Abs extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.ABS;
+  public operator = RegularOperator.ABS;
 
-  protected overloads = declare(C.RegularOperator.ABS)
+  protected overloads = declare(RegularOperator.ABS)
     .numericConverter(() => num => Math.abs(num))
     .collect();
 }
@@ -913,9 +996,9 @@ class Abs extends RegularFunction {
  */
 class Round extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.ROUND;
+  public operator = RegularOperator.ROUND;
 
-  protected overloads = declare(C.RegularOperator.ROUND)
+  protected overloads = declare(RegularOperator.ROUND)
     .numericConverter(() => num => Math.round(num))
     .collect();
 }
@@ -925,9 +1008,9 @@ class Round extends RegularFunction {
  */
 class Ceil extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.CEIL;
+  public operator = RegularOperator.CEIL;
 
-  protected overloads = declare(C.RegularOperator.CEIL)
+  protected overloads = declare(RegularOperator.CEIL)
     .numericConverter(() => num => Math.ceil(num))
     .collect();
 }
@@ -937,9 +1020,9 @@ class Ceil extends RegularFunction {
  */
 class Floor extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.FLOOR;
+  public operator = RegularOperator.FLOOR;
 
-  protected overloads = declare(C.RegularOperator.FLOOR)
+  protected overloads = declare(RegularOperator.FLOOR)
     .numericConverter(() => num => Math.floor(num))
     .collect();
 }
@@ -949,9 +1032,9 @@ class Floor extends RegularFunction {
  */
 class Rand extends RegularFunction {
   protected arity = 0;
-  public operator = C.RegularOperator.RAND;
+  public operator = RegularOperator.RAND;
 
-  protected overloads = declare(C.RegularOperator.RAND)
+  protected overloads = declare(RegularOperator.RAND)
     .set([], () => () => double(Math.random()))
     .collect();
 }
@@ -966,10 +1049,10 @@ class Rand extends RegularFunction {
  */
 class Now extends RegularFunction {
   protected arity = 0;
-  public operator = C.RegularOperator.NOW;
+  public operator = RegularOperator.NOW;
 
-  protected overloads = declare(C.RegularOperator.NOW).set([], exprEval => () =>
-    new E.DateTimeLiteral(toDateTimeRepresentation({
+  protected overloads = declare(RegularOperator.NOW).set([], exprEval => () =>
+    new DateTimeLiteral(toDateTimeRepresentation({
       date: exprEval.context.getSafe(KeysInitQuery.queryTimestamp),
       timeZone: exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone),
     }))).collect();
@@ -980,13 +1063,13 @@ class Now extends RegularFunction {
  */
 class Year extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.YEAR;
+  public operator = RegularOperator.YEAR;
 
-  protected overloads = declare(C.RegularOperator.YEAR)
+  protected overloads = declare(RegularOperator.YEAR)
     .onDateTime1(
       () => date => integer(date.typedValue.year),
     )
-    .set([ TypeURL.XSD_DATE ], () => ([ date ]: [E.DateLiteral ]) => integer(date.typedValue.year))
+    .set([ TypeURL.XSD_DATE ], () => ([ date ]: [DateLiteral ]) => integer(date.typedValue.year))
     .collect();
 }
 
@@ -995,13 +1078,13 @@ class Year extends RegularFunction {
  */
 class Month extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.MONTH;
+  public operator = RegularOperator.MONTH;
 
-  protected overloads = declare(C.RegularOperator.MONTH)
+  protected overloads = declare(RegularOperator.MONTH)
     .onDateTime1(
       () => date => integer(date.typedValue.month),
     )
-    .set([ TypeURL.XSD_DATE ], () => ([ date ]: [ E.DateLiteral]) => integer(date.typedValue.month))
+    .set([ TypeURL.XSD_DATE ], () => ([ date ]: [ DateLiteral]) => integer(date.typedValue.month))
     .collect();
 }
 
@@ -1010,13 +1093,13 @@ class Month extends RegularFunction {
  */
 class Day extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.DAY;
+  public operator = RegularOperator.DAY;
 
-  protected overloads = declare(C.RegularOperator.DAY)
+  protected overloads = declare(RegularOperator.DAY)
     .onDateTime1(
       () => date => integer(date.typedValue.day),
     )
-    .set([ TypeURL.XSD_DATE ], () => ([ date ]: [ E.DateLiteral]) => integer(date.typedValue.day))
+    .set([ TypeURL.XSD_DATE ], () => ([ date ]: [ DateLiteral]) => integer(date.typedValue.day))
     .collect();
 }
 
@@ -1025,13 +1108,13 @@ class Day extends RegularFunction {
  */
 class Hours extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.HOURS;
+  public operator = RegularOperator.HOURS;
 
-  protected overloads = declare(C.RegularOperator.HOURS)
+  protected overloads = declare(RegularOperator.HOURS)
     .onDateTime1(
       () => date => integer(date.typedValue.hours),
     )
-    .set([ TypeURL.XSD_TIME ], () => ([ time ]: [ E.TimeLiteral]) => integer(time.typedValue.hours))
+    .set([ TypeURL.XSD_TIME ], () => ([ time ]: [ TimeLiteral]) => integer(time.typedValue.hours))
     .collect();
 }
 
@@ -1040,11 +1123,11 @@ class Hours extends RegularFunction {
  */
 class Minutes extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.MINUTES;
+  public operator = RegularOperator.MINUTES;
 
-  protected overloads = declare(C.RegularOperator.MINUTES)
+  protected overloads = declare(RegularOperator.MINUTES)
     .onDateTime1(() => date => integer(date.typedValue.minutes))
-    .set([ TypeURL.XSD_TIME ], () => ([ time ]: [ E.TimeLiteral]) => integer(time.typedValue.minutes))
+    .set([ TypeURL.XSD_TIME ], () => ([ time ]: [ TimeLiteral]) => integer(time.typedValue.minutes))
     .collect();
 }
 
@@ -1053,11 +1136,11 @@ class Minutes extends RegularFunction {
  */
 class Seconds extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.SECONDS;
+  public operator = RegularOperator.SECONDS;
 
-  protected overloads = declare(C.RegularOperator.SECONDS)
+  protected overloads = declare(RegularOperator.SECONDS)
     .onDateTime1(() => date => decimal(date.typedValue.seconds))
-    .set([ TypeURL.XSD_TIME ], () => ([ time ]: [ E.TimeLiteral]) => integer(time.typedValue.seconds))
+    .set([ TypeURL.XSD_TIME ], () => ([ time ]: [ TimeLiteral]) => integer(time.typedValue.seconds))
     .collect();
 }
 
@@ -1066,9 +1149,9 @@ class Seconds extends RegularFunction {
  */
 class Timezone extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.TIMEZONE;
+  public operator = RegularOperator.TIMEZONE;
 
-  protected overloads = declare(C.RegularOperator.TIMEZONE)
+  protected overloads = declare(RegularOperator.TIMEZONE)
     .onDateTime1(
       () => (date) => {
         const duration: Partial<IDayTimeDurationRepresentation> = {
@@ -1076,9 +1159,9 @@ class Timezone extends RegularFunction {
           minutes: date.typedValue.zoneMinutes,
         };
         if (duration.hours === undefined && duration.minutes === undefined) {
-          throw new Err.InvalidTimezoneCall(date.str());
+          throw new InvalidTimezoneCall(date.str());
         }
-        return new E.DayTimeDurationLiteral(duration);
+        return new DayTimeDurationLiteral(duration);
       },
     )
     .copy({ from: [ TypeURL.XSD_DATE_TIME ], to: [ TypeURL.XSD_DATE ]})
@@ -1091,9 +1174,9 @@ class Timezone extends RegularFunction {
  */
 class TZ extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.TZ;
+  public operator = RegularOperator.TZ;
 
-  protected overloads = declare(C.RegularOperator.TZ)
+  protected overloads = declare(RegularOperator.TZ)
     .onDateTime1(
       () => date => string(extractRawTimeZone(date.str())),
     )
@@ -1112,9 +1195,9 @@ class TZ extends RegularFunction {
  */
 class MD5 extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.MD5;
+  public operator = RegularOperator.MD5;
 
-  protected overloads = declare(C.RegularOperator.MD5)
+  protected overloads = declare(RegularOperator.MD5)
     .onString1Typed(() => str => string(md5(str)))
     .collect();
 }
@@ -1124,9 +1207,9 @@ class MD5 extends RegularFunction {
  */
 class SHA1 extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.SHA1;
+  public operator = RegularOperator.SHA1;
 
-  protected overloads = declare(C.RegularOperator.SHA1)
+  protected overloads = declare(RegularOperator.SHA1)
     .onString1Typed(() => str => string(sha1().update(str).digest('hex')))
     .collect();
 }
@@ -1136,9 +1219,9 @@ class SHA1 extends RegularFunction {
  */
 class SHA256 extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.SHA256;
+  public operator = RegularOperator.SHA256;
 
-  protected overloads = declare(C.RegularOperator.SHA256)
+  protected overloads = declare(RegularOperator.SHA256)
     .onString1Typed(() => str => string(sha256().update(str).digest('hex')))
     .collect();
 }
@@ -1148,9 +1231,9 @@ class SHA256 extends RegularFunction {
  */
 class SHA384 extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.SHA384;
+  public operator = RegularOperator.SHA384;
 
-  protected overloads = declare(C.RegularOperator.SHA384)
+  protected overloads = declare(RegularOperator.SHA384)
     .onString1Typed(() => str => string(sha384().update(str).digest('hex')))
     .collect();
 }
@@ -1160,9 +1243,9 @@ class SHA384 extends RegularFunction {
  */
 class SHA512 extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.SHA512;
+  public operator = RegularOperator.SHA512;
 
-  protected overloads = declare(C.RegularOperator.SHA512)
+  protected overloads = declare(RegularOperator.SHA512)
     .onString1Typed(() => str => string(sha512().update(str).digest('hex')))
     .collect();
 }
@@ -1177,15 +1260,15 @@ class SHA512 extends RegularFunction {
  */
 class Triple extends RegularFunction {
   protected arity = 3;
-  public operator = C.RegularOperator.TRIPLE;
+  public operator = RegularOperator.TRIPLE;
 
-  protected overloads = declare(C.RegularOperator.TRIPLE)
+  protected overloads = declare(RegularOperator.TRIPLE)
     .onTerm3(
-      _ => (...args) => new E.Quad(
+      _ => (...args) => new Quad(
         args[0],
         args[1],
         args[2],
-        new E.DefaultGraph(),
+        new DefaultGraph(),
       ),
     )
     .collect();
@@ -1196,9 +1279,9 @@ class Triple extends RegularFunction {
  */
 class Subject extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.SUBJECT;
+  public operator = RegularOperator.SUBJECT;
 
-  protected overloads = declare(C.RegularOperator.SUBJECT)
+  protected overloads = declare(RegularOperator.SUBJECT)
     .onQuad1(() => quad => quad.subject)
     .collect();
 }
@@ -1208,9 +1291,9 @@ class Subject extends RegularFunction {
  */
 class Predicate extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.PREDICATE;
+  public operator = RegularOperator.PREDICATE;
 
-  protected overloads = declare(C.RegularOperator.PREDICATE)
+  protected overloads = declare(RegularOperator.PREDICATE)
     .onQuad1(() => quad => quad.predicate)
     .collect();
 }
@@ -1220,9 +1303,9 @@ class Predicate extends RegularFunction {
  */
 class ObjectSparqlFunction extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.OBJECT;
+  public operator = RegularOperator.OBJECT;
 
-  protected overloads = declare(C.RegularOperator.OBJECT)
+  protected overloads = declare(RegularOperator.OBJECT)
     .onQuad1(() => quad => quad.object)
     .collect();
 }
@@ -1232,9 +1315,9 @@ class ObjectSparqlFunction extends RegularFunction {
  */
 class Istriple extends RegularFunction {
   protected arity = 1;
-  public operator = C.RegularOperator.IS_TRIPLE;
+  public operator = RegularOperator.IS_TRIPLE;
 
-  protected overloads = declare(C.RegularOperator.IS_TRIPLE)
+  protected overloads = declare(RegularOperator.IS_TRIPLE)
     .onTerm1(() => term => bool(term.termType === 'quad'))
     .collect();
 }
@@ -1248,7 +1331,7 @@ const equality = new Equality();
 /**
  * Collect all the definitions from above into an object
  */
-export const regularFunctions: Record<C.RegularOperator, RegularFunction> = {
+export const regularFunctions: Record<RegularOperator, RegularFunction> = {
   // --------------------------------------------------------------------------
   // Operator Mapping
   // https://www.w3.org/TR/sparql11-query/#OperatorMapping

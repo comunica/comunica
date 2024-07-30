@@ -67,9 +67,63 @@ export class ActorFunctionFactory${camelCaseName} extends ActorFunctionFactory {
     const bodyFile = `packages/actor-function-factory-${snakeCaseName}/lib/${camelCaseName}Function.ts`;
     const updatedFunctionBody = functionBody.replaceAll(/(\s+)C\./gu, '$1');
 
+    // The excessive importing gets fixed by using yarn lint-fix
     const bodyFileContent = `
 import { RegularFunction } from '@comunica/bus-function-factory/lib/implementation';
-import { declare, RegularOperator } from '@comunica/expression-evaluator';
+import type {
+  IInternalEvaluator,
+  DurationLiteral,
+  Term,
+  YearMonthDurationLiteral,
+  NumericLiteral,
+  BooleanLiteral,
+  StringLiteral,
+} from '@comunica/expression-evaluator';
+import {
+  RegularOperator,
+  TypeAlias,
+  TypeURL,
+  bool,
+  decimal,
+  declare,
+  double,
+  integer,
+  langString,
+  string,
+  dayTimeDurationsToSeconds,
+  defaultedDateTimeRepresentation,
+  defaultedDayTimeDurationRepresentation,
+  defaultedDurationRepresentation,
+  defaultedYearMonthDurationRepresentation,
+  extractRawTimeZone,
+  negateDuration,
+  toDateTimeRepresentation,
+  toUTCDate,
+  yearMonthDurationsToMonths,
+  ExpressionError,
+  RDFEqualTypeError,
+  IncompatibleLanguageOperation,
+  InvalidTimezoneCall,
+  DateTimeLiteral,
+  DayTimeDurationLiteral,
+  DateLiteral,
+  TimeLiteral,
+  LangStringLiteral,
+  Quad,
+  NamedNode,
+  DefaultGraph,
+  TermTransformer,
+  addDurationToDateTime,
+  elapsedDuration,
+} from '@comunica/expression-evaluator';
+import type { IDayTimeDurationRepresentation } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
+import { BigNumber } from 'bignumber.js';
+import { sha1, sha256, sha384, sha512 } from 'hash.js';
+import { DataFactory } from 'rdf-data-factory';
+import { resolve as resolveRelativeIri } from 'relative-to-absolute-iri';
+import { hash as md5 } from 'spark-md5';
+import * as uuid from 'uuid';
 
 export ${updatedFunctionBody}
 `.trimStart();
