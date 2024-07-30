@@ -9,18 +9,19 @@ async function main(): Promise<void> {
     (await readFile('packages/actor-function-factory-wrapper-all/lib/implementation/RegularFunctions.ts'))
       .toString();
   // Match all functions.
-  const matches = regFunctions.matchAll(/class ([^ ]+)(([^}][^\n]*)?\n)*\}\n/ug);
-  let match = matches.next().value;
-  while (match[1] !== 'Abs') {
-    match = matches.next().value;
-  }
+  const matches = regFunctions.matchAll(/\n(\/\*\*\n( \*.*\n)* \*\/\n)?class ([^ ]+)(([^}][^\n]*)?\n)*\}\n/ug);
+  for (const match of matches) {
+    const camelCaseName: string = match[3];
 
-  {
-    const camelCaseName: string = match[1];
+    if (camelCaseName != 'Equality') {
+      continue;
+    }
+
+    console.log(camelCaseName);
     const functionBody: string = match[0];
     const snakeCaseName = camelCaseName.replaceAll(/([A-Z])/gu, '-$1').toLowerCase()
       .replaceAll(/^-/gu, '');
-    const allCapsSnakeCaseName = snakeCaseName.toUpperCase().replaceAll('-', '_');
+    const operatorName = /public operator = RegularOperator.([^; ]+);/u.exec(functionBody)![1];
     // Execute command.
     execSync(`yes "" | yo comunica:actor "${snakeCaseName}" "function-factory"`);
     console.log(snakeCaseName);
@@ -51,10 +52,10 @@ export class ActorFunctionFactory${camelCaseName} extends ActorFunctionFactory {
 
   public async test(action: IActionFunctionFactory): Promise<IActorTest> {
     // Does support action.requireTermExpression, so no need to check for that.
-    if (action.functionName === RegularOperator.${allCapsSnakeCaseName}) {
+    if (action.functionName === RegularOperator.${operatorName}) {
       return true;
     }
-    throw new Error(\`Actor \${this.name} can only test for \${RegularOperator.${allCapsSnakeCaseName}}\`);
+    throw new Error(\`Actor \${this.name} can only test for \${RegularOperator.${operatorName}}\`);
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):
@@ -65,7 +66,8 @@ export class ActorFunctionFactory${camelCaseName} extends ActorFunctionFactory {
     `.trim();
 
     const bodyFile = `packages/actor-function-factory-${snakeCaseName}/lib/${camelCaseName}.ts`;
-    const updatedFunctionBody = functionBody.replaceAll(/(\s+)C\./gu, '$1');
+    const updatedFunctionBody = functionBody.trim().replace('class', 'export class');
+    const dataFactoryCreation = '\nconst DF = new DataFactory<RDF.BaseQuad>();\n';
 
     // The excessive importing gets fixed by using yarn lint-fix
     const bodyFileContent = `
@@ -122,10 +124,11 @@ import { BigNumber } from 'bignumber.js';
 import { sha1, sha256, sha384, sha512 } from 'hash.js';
 import { DataFactory } from 'rdf-data-factory';
 import { resolve as resolveRelativeIri } from 'relative-to-absolute-iri';
+import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import { hash as md5 } from 'spark-md5';
 import * as uuid from 'uuid';
-
-export ${updatedFunctionBody}
+${/[ <(\[]DF\./u.test(functionBody) ? dataFactoryCreation : ''}
+${updatedFunctionBody}
 `.trimStart();
 
     const actorConfigFile = `engines/config-query-sparql/config/function-factory/actors/${snakeCaseName}.json`;

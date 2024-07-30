@@ -22,8 +22,9 @@ export {
   InvalidArgumentTypes,
   CoalesceError,
   InError,
+  CastError,
 } from './util/Errors';
-export { typedLiteral, TypeURL, TypeAlias, RegularOperator, SpecialOperator } from './util/Consts';
+export { typedLiteral, TypeURL, TypeAlias, RegularOperator, SpecialOperator, NamedOperator } from './util/Consts';
 export { isSubTypeOf } from './util/TypeHandling';
 export {
   dayTimeDurationsToSeconds,
@@ -71,3 +72,18 @@ export {
 } from './expressions';
 export { addDurationToDateTime, elapsedDuration } from './util/SpecAlgos';
 export { IExpressionEvaluator } from './types';
+export {
+  parseDateTime,
+  parseDayTimeDuration,
+  parseDuration,
+  parseTime,
+  parseYearMonthDuration,
+  parseXSDDecimal,
+  parseXSDFloat,
+  parseXSDInteger,
+  parseDate,
+} from './util/Parsing';
+export {
+  trimToYearMonthDuration,
+  trimToDayTimeDuration,
+} from './util/DateTimeHelpers';

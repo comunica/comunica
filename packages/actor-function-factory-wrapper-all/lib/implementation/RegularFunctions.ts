@@ -1,4 +1,4 @@
-import { RegularFunction } from '@comunica/bus-function-factory/lib/implementation/Core';
+import { RegularFunction } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 
 import type {
@@ -220,7 +220,9 @@ class Subtraction extends RegularFunction {
     .collect();
 }
 
-// https://www.w3.org/TR/sparql11-query/#func-RDFterm-equal
+/**
+ * https://www.w3.org/TR/sparql11-query/#func-RDFterm-equal
+ */
 class Equality extends RegularFunction {
   protected arity = 2;
 
@@ -583,6 +585,7 @@ class StrDt extends RegularFunction {
     },
   ).collect();
 }
+
 /**
  * https://www.w3.org/TR/sparql11-query/#func-strlang
  */
