@@ -1,6 +1,17 @@
 export { TermTransformer } from './transformers/TermTransformer';
-export { IInternalEvaluator, FunctionApplication, IEvalContext } from './functions/OverloadTree';
-export { declare, bool, string, double, integer, dateTime, langString, decimal, float } from './functions/Helpers';
+export { IInternalEvaluator, FunctionApplication, IEvalContext, OverloadTree } from './functions/OverloadTree';
+export {
+  declare,
+  bool,
+  string,
+  double,
+  integer,
+  dateTime,
+  langString,
+  decimal,
+  float,
+  expressionToVar,
+} from './functions/Helpers';
 export {
   ExpressionError,
   isExpressionError,
@@ -12,7 +23,7 @@ export {
   CoalesceError,
   InError,
 } from './util/Errors';
-export { typedLiteral, TypeURL, TypeAlias, RegularOperator } from './util/Consts';
+export { typedLiteral, TypeURL, TypeAlias, RegularOperator, SpecialOperator } from './util/Consts';
 export { isSubTypeOf } from './util/TypeHandling';
 export {
   dayTimeDurationsToSeconds,
@@ -42,7 +53,6 @@ export {
   NumericLiteral,
   BooleanLiteral,
   BlankNode,
-  SpecialOperator,
   DecimalLiteral,
   DefaultGraph,
   DoubleLiteral,
@@ -55,6 +65,9 @@ export {
   FloatLiteral,
   NonLexicalLiteral,
   StringLiteral,
+  TermExpression,
+  VariableExpression,
+  Expression,
 } from './expressions';
 export { addDurationToDateTime, elapsedDuration } from './util/SpecAlgos';
 export { IExpressionEvaluator } from './types';

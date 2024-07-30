@@ -446,7 +446,7 @@ class GreaterThanEqual extends RegularFunction {
 /**
  * https://www.w3.org/TR/sparql11-query/#func-isIRI
  */
-class IsIRI extends RegularFunction {
+class IsIri extends RegularFunction {
   protected arity = 1;
   public operator = RegularOperator.IS_IRI;
   protected overloads = declare(RegularOperator.IS_IRI)
@@ -493,7 +493,7 @@ class IsNumeric extends RegularFunction {
 /**
  * https://www.w3.org/TR/sparql11-query/#func-str
  */
-class STR extends RegularFunction {
+class Str extends RegularFunction {
   protected arity = 1;
   public operator = RegularOperator.STR;
   protected overloads = declare(RegularOperator.STR)
@@ -528,7 +528,7 @@ class Datatype extends RegularFunction {
 /**
  * https://www.w3.org/TR/sparql11-query/#func-iri
  */
-class IRI extends RegularFunction {
+class Iri extends RegularFunction {
   protected arity = 1;
   public operator = RegularOperator.IRI;
 
@@ -551,7 +551,7 @@ class IRI extends RegularFunction {
 /**
  * https://www.w3.org/TR/sparql11-query/#func-strdt
  */
-class STRDT extends RegularFunction {
+class StrDt extends RegularFunction {
   protected arity = 2;
   public operator = RegularOperator.STRDT;
 
@@ -567,7 +567,7 @@ class STRDT extends RegularFunction {
 /**
  * https://www.w3.org/TR/sparql11-query/#func-strlang
  */
-class STRLANG extends RegularFunction {
+class StrLan extends RegularFunction {
   protected arity = 2;
   public operator = RegularOperator.STRLANG;
 
@@ -582,7 +582,7 @@ class STRLANG extends RegularFunction {
 /**
  * https://www.w3.org/TR/sparql11-query/#func-uuid
  */
-class UUID extends RegularFunction {
+class Uuid extends RegularFunction {
   protected arity = 0;
   public operator = RegularOperator.UUID;
 
@@ -594,7 +594,7 @@ class UUID extends RegularFunction {
 /**
  * https://www.w3.org/TR/sparql11-query/#func-struuid
  */
-class STRUUID extends RegularFunction {
+class StrUuid extends RegularFunction {
   protected arity = 0;
   public operator = RegularOperator.STRUUID;
 
@@ -611,7 +611,7 @@ class STRUUID extends RegularFunction {
 /**
  * https://www.w3.org/TR/sparql11-query/#func-strlen
  */
-class STRLEN extends RegularFunction {
+class StrLen extends RegularFunction {
   protected arity = 1;
   public operator = RegularOperator.STRLEN;
 
@@ -623,7 +623,7 @@ class STRLEN extends RegularFunction {
 /**
  * https://www.w3.org/TR/sparql11-query/#func-substr
  */
-class SUBSTR extends RegularFunction {
+class SubStr extends RegularFunction {
   protected arity = [ 2, 3 ];
   public operator = RegularOperator.SUBSTR;
 
@@ -659,7 +659,7 @@ class SUBSTR extends RegularFunction {
 /**
  * https://www.w3.org/TR/sparql11-query/#func-ucase
  */
-class UCASE extends RegularFunction {
+class Ucase extends RegularFunction {
   protected arity = 1;
   public operator = RegularOperator.UCASE;
 
@@ -672,7 +672,7 @@ class UCASE extends RegularFunction {
 /**
  * https://www.w3.org/TR/sparql11-query/#func-lcase
  */
-class LCASE extends RegularFunction {
+class Lcase extends RegularFunction {
   protected arity = 1;
   public operator = RegularOperator.LCASE;
 
@@ -687,7 +687,7 @@ class LCASE extends RegularFunction {
  * for this and the following functions you'll see (string, langstring) is not allowed. This behaviour is defined in:
  * https://www.w3.org/TR/sparql11-query/#func-arg-compatibility
  */
-class STRSTARTS extends RegularFunction {
+class StrStarts extends RegularFunction {
   protected arity = 2;
   public operator = RegularOperator.STRSTARTS;
 
@@ -711,7 +711,7 @@ class STRSTARTS extends RegularFunction {
 /**
  * https://www.w3.org/TR/sparql11-query/#func-strends
  */
-class STRENDS extends RegularFunction {
+class StrEnds extends RegularFunction {
   protected arity = 2;
   public operator = RegularOperator.STRENDS;
 
@@ -735,7 +735,7 @@ class STRENDS extends RegularFunction {
 /**
  * https://www.w3.org/TR/sparql11-query/#func-contains
  */
-class CONTAINS extends RegularFunction {
+class Contains extends RegularFunction {
   protected arity = 2;
   public operator = RegularOperator.CONTAINS;
 
@@ -759,7 +759,7 @@ class CONTAINS extends RegularFunction {
 /**
  * https://www.w3.org/TR/sparql11-query/#func-strbefore
  */
-class STRBEFORE extends RegularFunction {
+class StrBefore extends RegularFunction {
   protected arity = 2;
   public operator = RegularOperator.STRBEFORE;
 
@@ -793,7 +793,7 @@ class STRBEFORE extends RegularFunction {
 /**
  * https://www.w3.org/TR/sparql11-query/#func-strafter
  */
-class STRAFTER extends RegularFunction {
+class StrAfter extends RegularFunction {
   protected arity = 2;
   public operator = RegularOperator.STRAFTER;
 
@@ -827,7 +827,7 @@ class STRAFTER extends RegularFunction {
 /**
  * https://www.w3.org/TR/sparql11-query/#func-encode
  */
-class ENCODE_FOR_URI extends RegularFunction {
+class EncodeForUri extends RegularFunction {
   protected arity = 1;
   public operator = RegularOperator.ENCODE_FOR_URI;
 
@@ -900,7 +900,7 @@ class Langmatches extends RegularFunction {
 /**
  * https://www.w3.org/TR/sparql11-query/#func-regex
  */
-class REGEX extends RegularFunction {
+class Regex extends RegularFunction {
   protected arity = [ 2, 3 ];
   public operator = RegularOperator.REGEX;
 
@@ -914,23 +914,23 @@ class REGEX extends RegularFunction {
   }
 
   private static regex2(): (text: string, pattern: string) => BooleanLiteral {
-    return (text: string, pattern: string) => bool(REGEX.matches(text, pattern));
+    return (text: string, pattern: string) => bool(Regex.matches(text, pattern));
   }
 
   private static regex3(): (text: string, pattern: string, flags: string) => BooleanLiteral {
-    return (text: string, pattern: string, flags: string) => bool(REGEX.matches(text, pattern, flags));
+    return (text: string, pattern: string, flags: string) => bool(Regex.matches(text, pattern, flags));
   }
 
   protected overloads = declare(RegularOperator.REGEX)
-    .onBinaryTyped([ TypeAlias.SPARQL_STRINGLY, TypeURL.XSD_STRING ], REGEX.regex2)
-    .onTernaryTyped([ TypeAlias.SPARQL_STRINGLY, TypeURL.XSD_STRING, TypeURL.XSD_STRING ], REGEX.regex3)
+    .onBinaryTyped([ TypeAlias.SPARQL_STRINGLY, TypeURL.XSD_STRING ], Regex.regex2)
+    .onTernaryTyped([ TypeAlias.SPARQL_STRINGLY, TypeURL.XSD_STRING, TypeURL.XSD_STRING ], Regex.regex3)
     .collect();
 }
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-replace
  */
-class REPLACE extends RegularFunction {
+class Replace extends RegularFunction {
   protected arity = [ 3, 4 ];
   public operator = RegularOperator.REPLACE;
 
@@ -949,25 +949,25 @@ class REPLACE extends RegularFunction {
     .onTernaryTyped(
       [ TypeURL.XSD_STRING, TypeURL.XSD_STRING, TypeURL.XSD_STRING ],
       () => (arg: string, pattern: string, replacement: string) =>
-        string(REPLACE.replace(arg, pattern, replacement)),
+        string(Replace.replace(arg, pattern, replacement)),
     )
     .set(
       [ TypeURL.RDF_LANG_STRING, TypeURL.XSD_STRING, TypeURL.XSD_STRING ],
       () => ([ arg, pattern, replacement ]: [LangStringLiteral, StringLiteral, StringLiteral]) => {
-        const result = REPLACE.replace(arg.typedValue, pattern.typedValue, replacement.typedValue);
+        const result = Replace.replace(arg.typedValue, pattern.typedValue, replacement.typedValue);
         return langString(result, arg.language);
       },
     )
     .onQuaternaryTyped(
       [ TypeURL.XSD_STRING, TypeURL.XSD_STRING, TypeURL.XSD_STRING, TypeURL.XSD_STRING ],
       () => (arg: string, pattern: string, replacement: string, flags: string) =>
-        string(REPLACE.replace(arg, pattern, replacement, flags)),
+        string(Replace.replace(arg, pattern, replacement, flags)),
     )
     .set(
       [ TypeURL.RDF_LANG_STRING, TypeURL.XSD_STRING, TypeURL.XSD_STRING, TypeURL.XSD_STRING ],
       () => ([ arg, pattern, replacement, flags ]:
       [LangStringLiteral, StringLiteral, StringLiteral, StringLiteral]) => {
-        const result = REPLACE.replace(arg.typedValue, pattern.typedValue, replacement.typedValue, flags.typedValue);
+        const result = Replace.replace(arg.typedValue, pattern.typedValue, replacement.typedValue, flags.typedValue);
         return langString(result, arg.language);
       },
     )
@@ -1172,7 +1172,7 @@ class Timezone extends RegularFunction {
 /**
  * https://www.w3.org/TR/sparql11-query/#func-tz
  */
-class TZ extends RegularFunction {
+class Tz extends RegularFunction {
   protected arity = 1;
   public operator = RegularOperator.TZ;
 
@@ -1193,7 +1193,7 @@ class TZ extends RegularFunction {
 /**
  * https://www.w3.org/TR/sparql11-query/#func-md5
  */
-class MD5 extends RegularFunction {
+class Md5 extends RegularFunction {
   protected arity = 1;
   public operator = RegularOperator.MD5;
 
@@ -1205,7 +1205,7 @@ class MD5 extends RegularFunction {
 /**
  * https://www.w3.org/TR/sparql11-query/#func-sha1
  */
-class SHA1 extends RegularFunction {
+class Sha1 extends RegularFunction {
   protected arity = 1;
   public operator = RegularOperator.SHA1;
 
@@ -1217,7 +1217,7 @@ class SHA1 extends RegularFunction {
 /**
  * https://www.w3.org/TR/sparql11-query/#func-sha256
  */
-class SHA256 extends RegularFunction {
+class Sha256 extends RegularFunction {
   protected arity = 1;
   public operator = RegularOperator.SHA256;
 
@@ -1229,7 +1229,7 @@ class SHA256 extends RegularFunction {
 /**
  * https://www.w3.org/TR/sparql11-query/#func-sha384
  */
-class SHA384 extends RegularFunction {
+class Sha384 extends RegularFunction {
   protected arity = 1;
   public operator = RegularOperator.SHA384;
 
@@ -1241,7 +1241,7 @@ class SHA384 extends RegularFunction {
 /**
  * https://www.w3.org/TR/sparql11-query/#func-sha512
  */
-class SHA512 extends RegularFunction {
+class Sha512 extends RegularFunction {
   protected arity = 1;
   public operator = RegularOperator.SHA512;
 
@@ -1313,7 +1313,7 @@ class ObjectSparqlFunction extends RegularFunction {
 /**
  * https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#istriple
  */
-class Istriple extends RegularFunction {
+class IsTriple extends RegularFunction {
   protected arity = 1;
   public operator = RegularOperator.IS_TRIPLE;
 
@@ -1354,40 +1354,40 @@ export const regularFunctions: Record<RegularOperator, RegularFunction> = {
   // Functions on RDF Terms
   // https://www.w3.org/TR/sparql11-query/#func-rdfTerms
   // --------------------------------------------------------------------------
-  isiri: new IsIRI(),
-  isuri: new IsIRI(),
+  isiri: new IsIri(),
+  isuri: new IsIri(),
   isblank: new IsBlank(),
   isliteral: new IsLiteral(),
   isnumeric: new IsNumeric(),
-  str: new STR(),
+  str: new Str(),
   lang: new Lang(),
   datatype: new Datatype(),
-  iri: new IRI(),
-  uri: new IRI(),
+  iri: new Iri(),
+  uri: new Iri(),
   // 'BNODE': BNODE (see special operators),
-  strdt: new STRDT(),
-  strlang: new STRLANG(),
-  uuid: new UUID(),
-  struuid: new STRUUID(),
+  strdt: new StrDt(),
+  strlang: new StrLan(),
+  uuid: new Uuid(),
+  struuid: new StrUuid(),
 
   // --------------------------------------------------------------------------
   // Functions on strings
   // https://www.w3.org/TR/sparql11-query/#func-forms
   // --------------------------------------------------------------------------
-  strlen: new STRLEN(),
-  substr: new SUBSTR(),
-  ucase: new UCASE(),
-  lcase: new LCASE(),
-  strstarts: new STRSTARTS(),
-  strends: new STRENDS(),
-  contains: new CONTAINS(),
-  strbefore: new STRBEFORE(),
-  strafter: new STRAFTER(),
-  encode_for_uri: new ENCODE_FOR_URI(),
+  strlen: new StrLen(),
+  substr: new SubStr(),
+  ucase: new Ucase(),
+  lcase: new Lcase(),
+  strstarts: new StrStarts(),
+  strends: new StrEnds(),
+  contains: new Contains(),
+  strbefore: new StrBefore(),
+  strafter: new StrAfter(),
+  encode_for_uri: new EncodeForUri(),
   // 'concat': CONCAT (see special operators)
   langmatches: new Langmatches(),
-  regex: new REGEX(),
-  replace: new REPLACE(),
+  regex: new Regex(),
+  replace: new Replace(),
 
   // --------------------------------------------------------------------------
   // Functions on numerics
@@ -1411,17 +1411,17 @@ export const regularFunctions: Record<RegularOperator, RegularFunction> = {
   minutes: new Minutes(),
   seconds: new Seconds(),
   timezone: new Timezone(),
-  tz: new TZ(),
+  tz: new Tz(),
 
   // --------------------------------------------------------------------------
   // Hash functions
   // https://www.w3.org/TR/sparql11-query/#func-hash
   // --------------------------------------------------------------------------
-  md5: new MD5(),
-  sha1: new SHA1(),
-  sha256: new SHA256(),
-  sha384: new SHA384(),
-  sha512: new SHA512(),
+  md5: new Md5(),
+  sha1: new Sha1(),
+  sha256: new Sha256(),
+  sha384: new Sha384(),
+  sha512: new Sha512(),
 
   // --------------------------------------------------------------------------
   // Functions for quoted triples
@@ -1433,5 +1433,5 @@ export const regularFunctions: Record<RegularOperator, RegularFunction> = {
   subject: new Subject(),
   predicate: new Predicate(),
   object: new ObjectSparqlFunction(),
-  istriple: new Istriple(),
+  istriple: new IsTriple(),
 };

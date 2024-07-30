@@ -37,7 +37,7 @@ export class ActorFunctionFactoryWrapperAll extends ActorFunctionFactory {
 
   public async run<T extends IActionFunctionFactory>({ functionName, context }: T):
   Promise<T extends { requireTermExpression: true } ? IActorFunctionFactoryOutputTerm : IActorFunctionFactoryOutput> {
-    if (functionName === C.RegularOperator.ABS) {
+    if (functionName in Object.values(C.RegularOperator)) {
       throw new Error(`Actor does not execute the ABS function (so we can test the test the dedicated actor)`);
     }
     context = prepareEvaluatorActionContext(context);

@@ -1,18 +1,34 @@
-import type { RegularFunction } from '@comunica/bus-function-factory/lib/implementation/Core';
-import { BaseFunctionDefinition } from '@comunica/bus-function-factory/lib/implementation/Core';
+import type { RegularFunction } from '@comunica/bus-function-factory';
+import { BaseFunctionDefinition } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import { BlankNodeBindingsScoped } from '@comunica/data-factory';
-import * as E from '@comunica/expression-evaluator/lib/expressions';
+import type {
+  IEvalContext,
+  OverloadTree,
+
+  TermExpression,
+
+  VariableExpression,
+  BooleanLiteral,
+
+  Expression,
+  Literal,
+} from '@comunica/expression-evaluator';
 import {
+  RegularOperator,
+
   bool,
   declare,
   expressionToVar,
   langString,
   string,
-} from '@comunica/expression-evaluator/lib/functions/Helpers';
-import type { IEvalContext, OverloadTree } from '@comunica/expression-evaluator/lib/functions/OverloadTree';
-import * as C from '@comunica/expression-evaluator/lib/util/Consts';
-import * as Err from '@comunica/expression-evaluator/lib/util/Errors';
+  ExpressionType,
+  InvalidArgumentTypes,
+  CoalesceError,
+  InError,
+  BlankNode,
+  SpecialOperator,
+} from '@comunica/expression-evaluator';
 import { regularFunctions } from './RegularFunctions';
 
 // ----------------------------------------------------------------------------
@@ -28,10 +44,10 @@ import { regularFunctions } from './RegularFunctions';
 class Bound extends BaseFunctionDefinition {
   protected arity = 1;
 
-  public apply = async({ args, mapping }: IEvalContext): Promise<E.TermExpression> => {
-    const variable = <E.VariableExpression> args[0];
-    if (variable.expressionType !== E.ExpressionType.Variable) {
-      throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.BOUND);
+  public apply = async({ args, mapping }: IEvalContext): Promise<TermExpression> => {
+    const variable = <VariableExpression> args[0];
+    if (variable.expressionType !== ExpressionType.Variable) {
+      throw new InvalidArgumentTypes(args, SpecialOperator.BOUND);
     }
     const val = mapping.has(expressionToVar(variable));
     return bool(val);
@@ -47,7 +63,7 @@ class Bound extends BaseFunctionDefinition {
 class IfSPARQL extends BaseFunctionDefinition {
   protected arity = 3;
 
-  public apply = async({ args, mapping, exprEval }: IEvalContext): Promise<E.TermExpression> => {
+  public apply = async({ args, mapping, exprEval }: IEvalContext): Promise<TermExpression> => {
     const valFirst = await exprEval.evaluatorExpressionEvaluation(args[0], mapping);
     const ebv = valFirst.coerceEBV();
     return ebv ?
@@ -65,7 +81,7 @@ class IfSPARQL extends BaseFunctionDefinition {
 class Coalesce extends BaseFunctionDefinition {
   protected arity = Number.POSITIVE_INFINITY;
 
-  public apply = async({ args, mapping, exprEval }: IEvalContext): Promise<E.TermExpression> => {
+  public apply = async({ args, mapping, exprEval }: IEvalContext): Promise<TermExpression> => {
     const errors: Error[] = [];
     for (const expr of args) {
       try {
@@ -74,7 +90,7 @@ class Coalesce extends BaseFunctionDefinition {
         errors.push(<Error> error);
       }
     }
-    throw new Err.CoalesceError(errors);
+    throw new CoalesceError(errors);
   };
 }
 
@@ -86,7 +102,7 @@ class Coalesce extends BaseFunctionDefinition {
  */
 class LogicalOr extends BaseFunctionDefinition {
   protected arity = 2;
-  public apply = async({ args, mapping, exprEval }: IEvalContext): Promise<E.TermExpression> => {
+  public apply = async({ args, mapping, exprEval }: IEvalContext): Promise<TermExpression> => {
     const [ leftExpr, rightExpr ] = args;
     try {
       const leftTerm = await exprEval.evaluatorExpressionEvaluation(leftExpr, mapping);
@@ -117,7 +133,7 @@ class LogicalOr extends BaseFunctionDefinition {
 class LogicalAnd extends BaseFunctionDefinition {
   protected arity = 2;
 
-  public apply = async({ args, mapping, exprEval }: IEvalContext): Promise<E.TermExpression> => {
+  public apply = async({ args, mapping, exprEval }: IEvalContext): Promise<TermExpression> => {
     const [ leftExpr, rightExpr ] = args;
     try {
       const leftTerm = await exprEval.evaluatorExpressionEvaluation(leftExpr, mapping);
@@ -148,7 +164,7 @@ class LogicalAnd extends BaseFunctionDefinition {
  */
 class SameTerm extends BaseFunctionDefinition {
   protected arity = 2;
-  public apply = async({ args, mapping, exprEval }: IEvalContext): Promise<E.TermExpression> => {
+  public apply = async({ args, mapping, exprEval }: IEvalContext): Promise<TermExpression> => {
     const [ leftExpr, rightExpr ] = args.map(arg => exprEval.evaluatorExpressionEvaluation(arg, mapping));
     const [ left, right ] = await Promise.all([ leftExpr, rightExpr ]);
     return bool(left.toRDF().equals(right.toRDF()));
@@ -169,11 +185,11 @@ class InSPARQL extends BaseFunctionDefinition {
 
   protected arity = Number.POSITIVE_INFINITY;
 
-  public override checkArity(args: E.Expression[]): boolean {
+  public override checkArity(args: Expression[]): boolean {
     return args.length > 0;
   }
 
-  public apply = async(context: IEvalContext): Promise<E.TermExpression> => {
+  public apply = async(context: IEvalContext): Promise<TermExpression> => {
     const { args, mapping, exprEval } = context;
     const [ leftExpr, ...remaining ] = args;
     const left = await exprEval.evaluatorExpressionEvaluation(leftExpr, mapping);
@@ -181,21 +197,21 @@ class InSPARQL extends BaseFunctionDefinition {
   };
 
   private async inRecursive(
-    needle: E.TermExpression,
+    needle: TermExpression,
     context: IEvalContext,
     results: (Error | false)[],
-  ): Promise<E.TermExpression> {
+  ): Promise<TermExpression> {
     const { args, mapping, exprEval } = context;
     if (args.length === 0) {
       const noErrors = results.every(val => !val);
-      return noErrors ? bool(false) : Promise.reject(new Err.InError(results));
+      return noErrors ? bool(false) : Promise.reject(new InError(results));
     }
 
     try {
       // We know this will not be undefined because we check args.length === 0
       const nextExpression = args.shift()!;
       const next = await exprEval.evaluatorExpressionEvaluation(nextExpression, mapping);
-      if ((<E.BooleanLiteral> this.equalityFunction.applyOnTerms([ needle, next ], exprEval)).typedValue) {
+      if ((<BooleanLiteral> this.equalityFunction.applyOnTerms([ needle, next ], exprEval)).typedValue) {
         return bool(true);
       }
       return this.inRecursive(needle, context, [ ...results, false ]);
@@ -214,14 +230,14 @@ class InSPARQL extends BaseFunctionDefinition {
 class NotInSPARQL extends BaseFunctionDefinition {
   protected arity = Number.POSITIVE_INFINITY;
 
-  public override checkArity(args: E.Expression[]): boolean {
+  public override checkArity(args: Expression[]): boolean {
     return args.length > 0;
   }
 
-  public apply = async(context: IEvalContext): Promise<E.TermExpression> => {
-    const _in = specialFunctions[C.SpecialOperator.IN];
+  public apply = async(context: IEvalContext): Promise<TermExpression> => {
+    const _in = specialFunctions[SpecialOperator.IN];
     const isIn = await _in.apply(context);
-    return bool(!(<E.BooleanLiteral> isIn).typedValue);
+    return bool(!(<BooleanLiteral> isIn).typedValue);
   };
 }
 
@@ -234,7 +250,7 @@ class NotInSPARQL extends BaseFunctionDefinition {
 /**
  * This OverloadTree with the constant function will handle both type promotion and subtype-substitution
  */
-const concatTree: OverloadTree = declare(C.SpecialOperator.CONCAT).onStringly1(() => expr => expr)
+const concatTree: OverloadTree = declare(SpecialOperator.CONCAT).onStringly1(() => expr => expr)
   .collect();
 
 /**
@@ -243,9 +259,9 @@ const concatTree: OverloadTree = declare(C.SpecialOperator.CONCAT).onStringly1((
 class Concat extends BaseFunctionDefinition {
   protected arity = Number.POSITIVE_INFINITY;
 
-  public apply = async(context: IEvalContext): Promise<E.TermExpression> => {
+  public apply = async(context: IEvalContext): Promise<TermExpression> => {
     const { args, mapping, exprEval } = context;
-    const pLits: Promise<E.Literal<string>>[] = args
+    const pLits: Promise<Literal<string>>[] = args
       .map(async expr => exprEval.evaluatorExpressionEvaluation(expr, mapping))
       .map(async(pTerm) => {
         const operation = concatTree.search(
@@ -254,9 +270,9 @@ class Concat extends BaseFunctionDefinition {
           exprEval.context.getSafe(KeysInitQuery.functionArgumentsCache),
         );
         if (!operation) {
-          throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.CONCAT);
+          throw new InvalidArgumentTypes(args, SpecialOperator.CONCAT);
         }
-        return <E.Literal<string>> operation(exprEval)([ await pTerm ]);
+        return <Literal<string>> operation(exprEval)([ await pTerm ]);
       });
     const lits = await Promise.all(pLits);
     const strings = lits.map(lit => lit.typedValue);
@@ -266,7 +282,7 @@ class Concat extends BaseFunctionDefinition {
   };
 }
 
-function langAllEqual(lits: E.Literal<string>[]): boolean {
+function langAllEqual(lits: Literal<string>[]): boolean {
   return lits.length > 0 && lits.every(lit => lit.language === lits[0].language);
 }
 
@@ -284,7 +300,7 @@ class BNode extends BaseFunctionDefinition {
   /**
    * This OverloadTree with the constant function will handle both type promotion and subtype-substitution
    */
-  private static readonly bnodeTree = declare(C.SpecialOperator.BNODE).onString1(() => arg => arg).collect();
+  private static readonly bnodeTree = declare(SpecialOperator.BNODE).onString1(() => arg => arg).collect();
 
   /**
    * A counter that keeps track blank node generated through BNODE() SPARQL
@@ -293,11 +309,11 @@ class BNode extends BaseFunctionDefinition {
   private static bnodeCounter = 0;
 
   protected arity = Number.POSITIVE_INFINITY;
-  public override checkArity(args: E.Expression[]): boolean {
+  public override checkArity(args: Expression[]): boolean {
     return args.length === 0 || args.length === 1;
   }
 
-  public apply = async(context: IEvalContext): Promise<E.TermExpression> => {
+  public apply = async(context: IEvalContext): Promise<TermExpression> => {
     const { args, mapping, exprEval } = context;
     const input = args.length === 1 ?
       await exprEval.evaluatorExpressionEvaluation(args[0], mapping) :
@@ -311,13 +327,13 @@ class BNode extends BaseFunctionDefinition {
         exprEval.context.getSafe(KeysInitQuery.functionArgumentsCache),
       );
       if (!operation) {
-        throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.BNODE);
+        throw new InvalidArgumentTypes(args, SpecialOperator.BNODE);
       }
       strInput = operation(exprEval)([ input ]).str();
     }
 
     const bnode = new BlankNodeBindingsScoped(strInput ?? `BNODE_${BNode.bnodeCounter++}`);
-    return new E.BlankNode(bnode);
+    return new BlankNode(bnode);
   };
 }
 
@@ -325,7 +341,7 @@ class BNode extends BaseFunctionDefinition {
 // Wrap these declarations into functions
 // ----------------------------------------------------------------------------
 
-export const specialFunctions: Record<C.SpecialOperator, BaseFunctionDefinition> = {
+export const specialFunctions: Record<SpecialOperator, BaseFunctionDefinition> = {
   // --------------------------------------------------------------------------
   // Functional Forms
   // https://www.w3.org/TR/sparql11-query/#func-forms
@@ -336,7 +352,7 @@ export const specialFunctions: Record<C.SpecialOperator, BaseFunctionDefinition>
   '&&': new LogicalAnd(),
   '||': new LogicalOr(),
   sameterm: new SameTerm(),
-  in: new InSPARQL(regularFunctions[C.RegularOperator.EQUAL]),
+  in: new InSPARQL(regularFunctions[RegularOperator.EQUAL]),
   notin: new NotInSPARQL(),
 
   // Annoying functions
