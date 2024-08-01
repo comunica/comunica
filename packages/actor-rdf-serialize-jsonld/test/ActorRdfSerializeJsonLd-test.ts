@@ -1,7 +1,7 @@
 import { Readable } from 'node:stream';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
-import stringifyStream from '@jeswr/stream-to-string';
+import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import { ArrayIterator } from 'asynciterator';
 import { ActorRdfSerializeJsonLd } from '../lib/ActorRdfSerializeJsonLd';
 

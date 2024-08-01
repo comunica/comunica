@@ -5,7 +5,7 @@ import type { IActorDereferenceOutput } from '@comunica/bus-dereference';
 import { ActorDereference } from '@comunica/bus-dereference';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
-import streamToString from '@jeswr/stream-to-string';
+import { stringify as streamToString } from '@jeswr/stream-to-string';
 import { ActorDereferenceFile } from '../lib/ActorDereferenceFile';
 
 function fileUrl(str: string): string {

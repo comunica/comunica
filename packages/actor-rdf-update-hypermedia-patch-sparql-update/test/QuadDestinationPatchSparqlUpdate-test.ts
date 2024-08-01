@@ -2,7 +2,7 @@ import { ActorHttp } from '@comunica/bus-http';
 import { KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
-import stringifyStream from '@jeswr/stream-to-string';
+import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import type * as RDF from '@rdfjs/types';
 import { fromArray, wrap } from 'asynciterator';
 import { Headers } from 'cross-fetch';

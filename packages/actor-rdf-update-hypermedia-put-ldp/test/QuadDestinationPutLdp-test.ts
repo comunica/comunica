@@ -2,7 +2,7 @@ import { ActorHttp } from '@comunica/bus-http';
 import { KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
-import stringifyStream from '@jeswr/stream-to-string';
+import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import { Headers } from 'cross-fetch';
 import { DataFactory } from 'rdf-data-factory';
 import { Readable } from 'readable-stream';

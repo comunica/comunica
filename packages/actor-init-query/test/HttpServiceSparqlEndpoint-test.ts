@@ -3,7 +3,7 @@ import type { Cluster } from 'node:cluster';
 import { PassThrough } from 'node:stream';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { LoggerPretty } from '@comunica/logger-pretty';
-import stringifyStream from '@jeswr/stream-to-string';
+import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import { ArrayIterator } from 'asynciterator';
 import { Readable } from 'readable-stream';
 

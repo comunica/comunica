@@ -1,7 +1,7 @@
 import type { MediatorHttp } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
 import type { IActionContext } from '@comunica/types';
-import stringifyStream from '@jeswr/stream-to-string';
+import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import { FetchDocumentLoader } from 'jsonld-context-parser';
 
 /**

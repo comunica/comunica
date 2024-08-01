@@ -1,4 +1,4 @@
-import stringifyStream from '@jeswr/stream-to-string';
+import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import { ActorHttp } from './ActorHttp';
 
 /**
