@@ -47,5 +47,8 @@
   },
   "browser": {
     "./lib/Requester.js": "./lib/Requester-browser.js"
+  },
+  "devDependencies": {
+    "@types/parse-link-header": "^2.0.3"
   }
 }
