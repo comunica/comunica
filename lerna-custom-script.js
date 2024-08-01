@@ -18,7 +18,7 @@ function filterTypeUsedTypeDependencies({ dependencies, using }) {
   const newDependencies = [];
   for (const dependency of dependencies) {
     if (dependency.startsWith('@types/') && Object.keys(using).includes(dependency.slice(7))) {
-      break;
+      continue;
     }
     newDependencies.push(dependency);
   }
