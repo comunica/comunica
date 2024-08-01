@@ -40,15 +40,13 @@
     "@comunica/bus-http": "^3.2.0",
     "@comunica/context-entries": "^3.2.0",
     "@comunica/mediatortype-time": "^3.2.0",
+    "@types/http-link-header": "^1.0.7",
     "cross-fetch": "^4.0.0",
     "follow-redirects": "^1.15.2",
-    "parse-link-header": "^2.0.0",
+    "http-link-header": "^1.1.3",
     "process": "^0.11.10"
   },
   "browser": {
     "./lib/Requester.js": "./lib/Requester-browser.js"
-  },
-  "devDependencies": {
-    "@types/parse-link-header": "^2.0.3"
   }
 }
