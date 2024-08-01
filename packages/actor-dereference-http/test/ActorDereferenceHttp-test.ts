@@ -8,8 +8,6 @@ import 'cross-fetch/polyfill';
 import type { IActionContext } from '@comunica/types';
 import { ActorDereferenceHttp } from '../lib/ActorDereferenceHttp';
 
-const streamifyString = require('streamify-string');
-
 // TODO: Remove when targeting NodeJS 18+
 if (!globalThis.ReadableStream) {
   globalThis.ReadableStream = require('web-streams-ponyfill').ReadableStream;
@@ -102,7 +100,7 @@ describe('ActorDereferenceHttp', () => {
         if (action.input.includes('missingcontenttype')) {
           headers.delete('content-type');
         }
-        const dummyBodyStream = streamifyString('DUMMY BODY');
+        const dummyBodyStream = Readable.from([ 'DUMMY BODY' ]);
         let body = action.input === 'https://www.google.com/noweb' ?
           require('readable-stream-node-to-web')(dummyBodyStream) :
           dummyBodyStream;

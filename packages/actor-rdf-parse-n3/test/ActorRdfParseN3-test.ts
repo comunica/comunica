@@ -5,8 +5,6 @@ import type { IActionContext } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
 import { ActorRdfParseN3 } from '../lib/ActorRdfParseN3';
 
-const stringToStream = require('streamify-string');
-
 describe('ActorRdfParseN3', () => {
   let bus: any;
   let context: IActionContext;
@@ -106,9 +104,9 @@ describe('ActorRdfParseN3', () => {
 
     describe('for parsing n3', () => {
       beforeEach(() => {
-        input = stringToStream(`
+        input = Readable.from([ `
         { ?uuu ?aaa ?yyy } => { ?aaa a <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> } .
-      `);
+      ` ]);
         inputError = new Readable();
         inputError._read = () => inputError.emit('error', new Error('ParseN3'));
       });
@@ -135,14 +133,14 @@ describe('ActorRdfParseN3', () => {
 
     describe('for parsing', () => {
       beforeEach(() => {
-        input = stringToStream(`
+        input = Readable.from([ `
           <a> <b> <c>.
           <d> <e> <f>.
-      `);
-        inputQuoted = stringToStream(`
+      ` ]);
+        inputQuoted = Readable.from([ `
           << <a> <b> <c> >> <b> <c>.
           <d> <e> <f>.
-      `);
+      ` ]);
         inputError = new Readable();
         inputError._read = () => inputError.emit('error', new Error('ParseN3'));
       });
@@ -266,10 +264,10 @@ describe('ActorRdfParseN3', () => {
 
     describe('for parsing with quads', () => {
       beforeEach(() => {
-        input = stringToStream(`
+        input = Readable.from([ `
           <a> <b> <c>.
           <d> <e> <f> <g>.
-      `);
+      ` ]);
         inputError = new Readable();
         inputError._read = () => inputError.emit('error', new Error('ParseN3'));
       });

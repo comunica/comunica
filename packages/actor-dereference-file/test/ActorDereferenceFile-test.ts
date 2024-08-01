@@ -5,10 +5,8 @@ import type { IActorDereferenceOutput } from '@comunica/bus-dereference';
 import { ActorDereference } from '@comunica/bus-dereference';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import { stringify as streamToString } from '@jeswr/stream-to-string';
 import { ActorDereferenceFile } from '../lib/ActorDereferenceFile';
-
-// Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
-const streamToString = require('stream-to-string');
 
 function fileUrl(str: string): string {
   let pathName = path.resolve(str).replaceAll('\\', '/');

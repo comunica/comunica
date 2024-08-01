@@ -2,6 +2,7 @@ import { PassThrough } from 'node:stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActionContext, Bus } from '@comunica/core';
 import type { BindingsStream, IActionContext, MetadataBindings } from '@comunica/types';
+import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
@@ -12,7 +13,6 @@ const DF = new DataFactory();
 const BF = new BindingsFactory();
 
 const quad = require('rdf-quad');
-const stringifyStream = require('stream-to-string');
 
 describe('ActorQueryResultSerializeSparqlXml', () => {
   let bus: any;

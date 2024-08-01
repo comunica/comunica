@@ -3,7 +3,9 @@ import type { Cluster } from 'node:cluster';
 import { PassThrough } from 'node:stream';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { LoggerPretty } from '@comunica/logger-pretty';
+import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import { ArrayIterator } from 'asynciterator';
+import { Readable } from 'readable-stream';
 
 // @ts-expect-error
 import { QueryEngineFactoryBase, QueryEngineBase } from '../__mocks__';
@@ -28,8 +30,6 @@ const querystring = require('node:querystring');
 const cluster: Cluster = clusterUntyped;
 
 const quad = require('rdf-quad');
-const stringifyStream = require('stream-to-string');
-const stringToStream = require('streamify-string');
 
 jest.mock<typeof import('..')>('..', () => {
   return <any> {
@@ -943,7 +943,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       function makeRequest() {
-        request = stringToStream('default_test_request_content');
+        request = Readable.from([ 'default_test_request_content' ]);
         request.url = 'url_sparql';
         request.headers = { 'content-type': 'contenttypewhichdefinitelydoesnotexist', accept: '*/*' };
         return request;
@@ -1273,7 +1273,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       let endCalledPromise: any;
       beforeEach(() => {
         response = new ServerResponseMock();
-        request = stringToStream('default_request_content');
+        request = Readable.from([ 'default_request_content' ]);
         request.url = 'http://example.org/sparql';
         query = {
           type: 'query',
@@ -1782,7 +1782,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         endListener.mockClear();
         (<any> instance).timeout = 1_500;
         response = new ServerResponseMock();
-        eventEmitter = stringToStream('queryresult');
+        eventEmitter = Readable.from([ 'queryresult' ]);
         eventEmitter.addListener('test', endListener);
         stderr = new PassThrough();
       });
@@ -1832,7 +1832,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       let httpRequestMock: any;
       const testRequestBody = 'teststring';
       beforeEach(() => {
-        httpRequestMock = stringToStream(testRequestBody);
+        httpRequestMock = Readable.from([ testRequestBody ]);
         httpRequestMock.headers = { 'content-type': 'contenttypewhichdefinitelydoesnotexist' };
       });
 
@@ -1864,7 +1864,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
       it('should parse query from url if the content-type is application/x-www-form-urlencoded', async() => {
         const exampleQueryString = 'query=SELECT%20*%20WHERE%20%7B%3Fs%20%3Fp%20%3Fo%7D';
-        httpRequestMock = stringToStream(exampleQueryString);
+        httpRequestMock = Readable.from([ exampleQueryString ]);
         httpRequestMock.headers = { 'content-type': 'application/x-www-form-urlencoded' };
 
         await expect(instance.parseBody(httpRequestMock)).resolves.toEqual({
@@ -1875,7 +1875,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
       it('should parse update from url if the content-type is application/x-www-form-urlencoded', async() => {
         const exampleQueryString = 'update=INSERT%20*%20WHERE%20%7B%3Fs%20%3Fp%20%3Fo%7D';
-        httpRequestMock = stringToStream(exampleQueryString);
+        httpRequestMock = Readable.from([ exampleQueryString ]);
         httpRequestMock.headers = { 'content-type': 'application/x-www-form-urlencoded' };
 
         await expect(instance.parseBody(httpRequestMock)).resolves.toEqual({
@@ -1886,7 +1886,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
       it('should parse context from url if the content-type is application/x-www-form-urlencoded', async() => {
         const exampleQueryString = 'query=SELECT%20*%20WHERE%20%7B%3Fs%20%3Fp%20%3Fo%7D&context={"a":"b"}';
-        httpRequestMock = stringToStream(exampleQueryString);
+        httpRequestMock = Readable.from([ exampleQueryString ]);
         httpRequestMock.headers = { 'content-type': 'application/x-www-form-urlencoded' };
 
         await expect(instance.parseBody(httpRequestMock)).resolves.toEqual({
@@ -1898,7 +1898,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
       it(`should reject if the context is invalid and the content-type is application/x-www-form-urlencoded`, async() => {
         const exampleQueryString = 'query=SELECT%20*%20WHERE%20%7B%3Fs%20%3Fp%20%3Fo%7D&context={"a:"b"}';
-        httpRequestMock = stringToStream(exampleQueryString);
+        httpRequestMock = Readable.from([ exampleQueryString ]);
         httpRequestMock.headers = { 'content-type': 'application/x-www-form-urlencoded' };
 
         await expect(instance.parseBody(httpRequestMock)).rejects

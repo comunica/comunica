@@ -1,10 +1,8 @@
 import type { MediatorHttp } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
 import type { IActionContext } from '@comunica/types';
+import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import { FetchDocumentLoader } from 'jsonld-context-parser';
-
-// Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
-import stringifyStream = require('stream-to-string');
 
 /**
  * A JSON-LD document loader that fetches over an HTTP bus using a given mediator.
