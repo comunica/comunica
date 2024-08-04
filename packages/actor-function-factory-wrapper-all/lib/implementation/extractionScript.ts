@@ -182,23 +182,24 @@ async function createActorPackage(camelCaseName: string, functionBody: string): 
   ]);
 }
 
+function parseFunctionClasses(body: string): { camelCaseName: string; functionBody: string }[] {
+  return [
+    ...body.matchAll(/\n(\/\*\*\n( \*.*\n)* \*\/\n)?class ([^ ]+)(([^}][^\n]*)?\n)*\}\n/ug),
+  ].map(x => ({ camelCaseName: x[3], functionBody: x[0] }));
+}
+
 async function main(): Promise<void> {
   // Read the RegularFunctions.
   const regFunctions =
     (await readFile('packages/actor-function-factory-wrapper-all/lib/implementation/RegularFunctions.ts'))
       .toString();
-  // Match all functions.
-  const matches = regFunctions.matchAll(/\n(\/\*\*\n( \*.*\n)* \*\/\n)?class ([^ ]+)(([^}][^\n]*)?\n)*\}\n/ug);
-  for (const match of matches) {
-    const camelCaseName: string = match[3];
-    const functionBody: string = match[0];
-
-    // Write the updated actor file.
+  const matches = parseFunctionClasses(regFunctions);
+  for await (const match of matches) {
+    const { camelCaseName, functionBody } = match;
     await Promise.all([
       createActorPackage(camelCaseName, functionBody),
       updateEngineConfig(camelCaseName),
     ]);
-    break;
   }
 }
 
