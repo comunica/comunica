@@ -537,7 +537,8 @@ describe('QuerySourceSparql', () => {
         "notp": { "type": "uri" , "value": "p2" }
       },
       {
-        "notp": { "type": "uri" , "value": "p3" }
+        "notp": { "type": "uri" , "value": "p3" },
+        "p": { "type": "uri" , "value": "p3" }
       }
     ]
   }
@@ -561,7 +562,13 @@ describe('QuerySourceSparql', () => {
           canContainUndefs: true,
           variables: [ DF.variable('p') ],
         });
-      await stream.toArray();
+      await expect(stream).toEqualBindingsStream([
+        BF.fromRecord({}),
+        BF.fromRecord({}),
+        BF.fromRecord({
+          p: DF.namedNode('p3'),
+        }),
+      ]);
     });
 
     it('should emit an error for an erroring stream', async() => {

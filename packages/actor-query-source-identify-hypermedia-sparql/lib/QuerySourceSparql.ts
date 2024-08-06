@@ -344,8 +344,9 @@ export class QuerySourceSparql implements IQuerySource {
           if (!canContainUndefs && !value) {
             it.emit('error', new Error(`The endpoint ${endpoint} failed to provide a binding for ${variable.value}.`));
           }
-          return [ variable, value ];
-        })));
+          return <[RDF.Variable, RDF.Term]> [ variable, value ];
+        })
+        .filter(([ _, v ]) => Boolean(v))));
     return it;
   }
 
