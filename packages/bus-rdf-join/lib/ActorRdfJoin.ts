@@ -237,12 +237,14 @@ export abstract class ActorRdfJoin
    * @param metadatas Metadata of the join entries.
    * @param context The action context.
    * @param partialMetadata Partial metadata entries.
+   * @param optional If metadata for an optional operation must be calculated.
    */
   public async constructResultMetadata(
     entries: IJoinEntry[],
     metadatas: MetadataBindings[],
     context: IActionContext,
     partialMetadata: Partial<MetadataBindings> = {},
+    optional = false,
   ): Promise<MetadataBindings> {
     let cardinalityJoined: RDF.QueryResultCardinality;
     if (partialMetadata.cardinality) {
@@ -253,7 +255,7 @@ export abstract class ActorRdfJoin
           const cardinalityThis = ActorRdfJoin.getCardinality(metadata);
           return {
             type: cardinalityThis.type === 'estimate' ? 'estimate' : acc.type,
-            value: acc.value * cardinalityThis.value,
+            value: acc.value * (optional ? Math.max(1, cardinalityThis.value) : cardinalityThis.value),
           };
         }, { type: 'exact', value: 1 });
       cardinalityJoined.value *= (await this.mediatorJoinSelectivity.mediate({ entries, context })).selectivity;

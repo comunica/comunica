@@ -65,6 +65,7 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
           await ActorRdfJoin.getMetadatas(action.entries),
           action.context,
           { canContainUndefs: true },
+          true,
         ),
       },
     };

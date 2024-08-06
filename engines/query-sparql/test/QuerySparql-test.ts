@@ -673,6 +673,35 @@ describe('System test: QuerySparql', () => {
         const bindings = results.map(binding => [ ...binding ]);
         expect(bindings).toMatchObject(expectedResult);
       });
+
+      it('should handle join with empty estimate cardinality', async() => {
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: `
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix ex: <http://example.org/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+ex:personA a ex:Person.
+#ex:personA ex:hasName "Homer".
+`,
+              mediaType: 'text/turtle',
+              baseIRI: 'http://example.org/',
+            },
+          ],
+        };
+
+        await expect((arrayifyStream(await engine.queryBindings(`
+PREFIX ex: <http://example.org/>
+SELECT ?person ?personName WHERE {
+    OPTIONAL {
+        ?person ex:hasName ?personName
+    }
+    ?person a ex:Person
+}
+`, context)))).resolves.toHaveLength(1);
+      });
     });
 
     describe('with a throwing fetch function', () => {

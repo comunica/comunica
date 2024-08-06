@@ -157,6 +157,7 @@ export class ActorRdfJoinOptionalHash extends ActorRdfJoin {
           await ActorRdfJoin.getMetadatas(action.entries),
           action.context,
           { canContainUndefs: true },
+          true,
         ),
       },
     };
