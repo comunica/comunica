@@ -44,8 +44,6 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
     const missingVariables = variables
       .filter(variable => !outputMetadata.variables.some(subVariable => variable.value === subVariable.value));
     if (missingVariables.length > 0) {
-      // eslint-disable-next-line ts/restrict-template-expressions
-      this.logWarn(context, `Variables '${missingVariables.map(variable => `?${variable.value}`)}' are used in the projection result, but are not assigned.`);
       outputMetadata.canContainUndefs = true;
     }
 
