@@ -1265,25 +1265,20 @@ SELECT ?obsId {
           explain: true,
           type: 'logical',
           data: {
-            input: {
-              input: [
-                Object.assign(
-                  factory.createPattern(
-                    DF.variable('s'),
-                    DF.variable('p'),
-                    DF.variable('o'),
-                  ),
-                  {
-                    metadata: {
-                      scopedSource: {
-                        source: expect.any(QuerySourceSkolemized),
-                      },
-                    },
+            input: Object.assign(
+              factory.createPattern(
+                DF.variable('s'),
+                DF.variable('p'),
+                DF.variable('o'),
+              ),
+              {
+                metadata: {
+                  scopedSource: {
+                    source: expect.any(QuerySourceSkolemized),
                   },
-                ),
-              ],
-              type: 'join',
-            },
+                },
+              },
+            ),
             type: 'project',
             variables: [
               DF.variable('o'),
@@ -1304,8 +1299,7 @@ SELECT ?obsId {
           explain: true,
           type: 'physical',
           data: `project (o,p,s)
-  join
-    pattern (?s ?p ?o) src:0
+  pattern (?s ?p ?o) src:0
 
 sources:
   0: QuerySourceHypermedia(https://www.rubensworks.net/)(SkolemID:0)`,
@@ -1326,14 +1320,9 @@ sources:
             variables: [ 'o', 'p', 's' ],
             children: [
               {
-                logical: 'join',
-                children: [
-                  {
-                    logical: 'pattern',
-                    pattern: '?s ?p ?o',
-                    source: 'QuerySourceHypermedia(https://www.rubensworks.net/)(SkolemID:0)',
-                  },
-                ],
+                logical: 'pattern',
+                pattern: '?s ?p ?o',
+                source: 'QuerySourceHypermedia(https://www.rubensworks.net/)(SkolemID:0)',
               },
             ],
           },

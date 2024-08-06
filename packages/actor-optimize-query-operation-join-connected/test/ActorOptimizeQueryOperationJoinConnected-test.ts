@@ -60,9 +60,7 @@ describe('ActorOptimizeQueryOperationJoinConnected', () => {
         expect(ActorOptimizeQueryOperationJoinConnected.cluster(factory.createJoin([
           factory.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
         ]), factory))
-          .toEqual(factory.createJoin([
-            factory.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
-          ]));
+          .toEqual(factory.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')));
       });
 
       it('should handle two entries without variables', () => {
@@ -71,12 +69,8 @@ describe('ActorOptimizeQueryOperationJoinConnected', () => {
           factory.createPattern(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
         ]), factory))
           .toEqual(factory.createJoin([
-            factory.createJoin([
-              factory.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
-            ]),
-            factory.createJoin([
-              factory.createPattern(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
-            ]),
+            factory.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
+            factory.createPattern(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
           ], false));
       });
 
@@ -86,12 +80,8 @@ describe('ActorOptimizeQueryOperationJoinConnected', () => {
           factory.createPattern(DF.variable('s2'), DF.namedNode('p2'), DF.variable('o2')),
         ]), factory))
           .toEqual(factory.createJoin([
-            factory.createJoin([
-              factory.createPattern(DF.variable('s1'), DF.namedNode('p1'), DF.variable('o1')),
-            ]),
-            factory.createJoin([
-              factory.createPattern(DF.variable('s2'), DF.namedNode('p2'), DF.variable('o2')),
-            ]),
+            factory.createPattern(DF.variable('s1'), DF.namedNode('p1'), DF.variable('o1')),
+            factory.createPattern(DF.variable('s2'), DF.namedNode('p2'), DF.variable('o2')),
           ], false));
       });
 
@@ -113,15 +103,9 @@ describe('ActorOptimizeQueryOperationJoinConnected', () => {
           factory.createPattern(DF.variable('s3'), DF.namedNode('p3'), DF.variable('o3')),
         ]), factory))
           .toEqual(factory.createJoin([
-            factory.createJoin([
-              factory.createPattern(DF.variable('s1'), DF.namedNode('p1'), DF.variable('o1')),
-            ]),
-            factory.createJoin([
-              factory.createPattern(DF.variable('s2'), DF.namedNode('p2'), DF.variable('o2')),
-            ]),
-            factory.createJoin([
-              factory.createPattern(DF.variable('s3'), DF.namedNode('p3'), DF.variable('o3')),
-            ]),
+            factory.createPattern(DF.variable('s1'), DF.namedNode('p1'), DF.variable('o1')),
+            factory.createPattern(DF.variable('s2'), DF.namedNode('p2'), DF.variable('o2')),
+            factory.createPattern(DF.variable('s3'), DF.namedNode('p3'), DF.variable('o3')),
           ], false));
       });
 
@@ -175,9 +159,7 @@ describe('ActorOptimizeQueryOperationJoinConnected', () => {
               factory.createPattern(DF.variable('s1'), DF.namedNode('p1'), DF.variable('s2')),
               factory.createPattern(DF.variable('s2'), DF.namedNode('p2'), DF.variable('s3')),
             ]),
-            factory.createJoin([
-              factory.createPattern(DF.variable('s3x'), DF.namedNode('p3'), DF.variable('s4')),
-            ]),
+            factory.createPattern(DF.variable('s3x'), DF.namedNode('p3'), DF.variable('s4')),
           ], false));
       });
 
