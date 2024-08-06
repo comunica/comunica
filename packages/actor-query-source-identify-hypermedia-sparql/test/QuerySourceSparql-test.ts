@@ -1286,5 +1286,41 @@ WHERE { undefined:s ?p undefined:o. }` }),
         ),
       )).toBe(false);
     });
+
+    it('should be true for union without equal variables', () => {
+      expect(QuerySourceSparql.operationCanContainUndefs(
+        AF.createUnion(
+          [
+            AF.createPattern(DF.variable('s'), DF.variable('p1'), DF.namedNode('o')),
+            AF.createPattern(DF.variable('s'), DF.variable('p2'), DF.namedNode('o')),
+          ],
+        ),
+      )).toBe(true);
+    });
+
+    it('should be false for union with equal variables', () => {
+      expect(QuerySourceSparql.operationCanContainUndefs(
+        AF.createUnion(
+          [
+            AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o')),
+            AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o')),
+          ],
+        ),
+      )).toBe(false);
+    });
+
+    it('should be true for union with equal variables but an inner with undefs', () => {
+      expect(QuerySourceSparql.operationCanContainUndefs(
+        AF.createUnion(
+          [
+            AF.createPattern(DF.namedNode('s'), DF.variable('p1'), DF.namedNode('o')),
+            AF.createLeftJoin(
+              AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')),
+              AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')),
+            ),
+          ],
+        ),
+      )).toBe(true);
+    });
   });
 });

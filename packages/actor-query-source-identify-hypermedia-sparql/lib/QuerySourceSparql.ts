@@ -313,6 +313,22 @@ export class QuerySourceSparql implements IQuerySource {
         canContainUndefs = values.bindings.some(bindings => values.variables.some(variable => !(`?${variable.value}` in bindings)));
         return false;
       },
+      union(union: Algebra.Union): boolean {
+        // Determine variables in scope of the union branches
+        const scopedVariables = union.input
+          .map(Util.inScopeVariables)
+          .map(variables => variables.map(v => v.value))
+          .map(variables => variables.sort((a, b) => a.localeCompare(b)))
+          .map(variables => variables.join(','));
+
+        // If not all scoped variables in union branches are equal, then we definitely can have undefs
+        if (!scopedVariables.every(val => val === scopedVariables[0])) {
+          canContainUndefs = true;
+          return false;
+        }
+
+        return true;
+      },
     });
     return canContainUndefs;
   }
