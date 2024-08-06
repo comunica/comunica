@@ -1,0 +1,49 @@
+{
+  "name": "@comunica/actor-rdf-join-inner-hash-undef",
+  "version": "3.2.0",
+  "description": "A hash rdf-join actor",
+  "lsd:module": true,
+  "license": "MIT",
+  "homepage": "https://comunica.dev/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/actor-rdf-join-inner-hash-undef"
+  },
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
+  "keywords": [
+    "comunica",
+    "actor",
+    "rdf-join",
+    "hash"
+  ],
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.js.map"
+  ],
+  "scripts": {
+    "build": "yarn run build:ts && yarn run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
+  },
+  "dependencies": {
+    "@comunica/actor-rdf-join-optional-hash": "^3.2.0",
+    "@comunica/bus-query-operation": "^3.2.0",
+    "@comunica/bus-rdf-join": "^3.2.0",
+    "@comunica/mediatortype-join-coefficients": "^3.2.0",
+    "@comunica/types": "^3.2.0",
+    "asynciterator": "^3.9.0",
+    "asyncjoin": "^1.2.3",
+    "rdf-string": "^1.6.3"
+  }
+}
