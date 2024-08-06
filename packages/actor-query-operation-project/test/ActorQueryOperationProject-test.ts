@@ -1,5 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import { KeysCore } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { BlankNodeBindingsScoped, BlankNodeScoped } from '@comunica/data-factory';
 import { ArrayIterator, SingletonIterator } from 'asynciterator';
@@ -96,13 +97,28 @@ describe('ActorQueryOperationProject', () => {
       ]);
     });
 
-    it('should error run on a stream with variables that should be deleted and are missing', async() => {
+    it('should warn on a stream with variables that should be deleted and are missing', async() => {
+      const logger = { warn: jest.fn() };
       const op: any = {
         operation: { type: 'project', input: 'in', variables: [ DF.variable('a'), DF.variable('missing') ]},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysCore.log.name]: logger }),
       };
-      await expect(actor.run(op)).rejects
-        .toThrow('Variables \'?missing\' are used in the projection result, but are not assigned.');
+
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      await expect(output.metadata()).resolves.toEqual({
+        canContainUndefs: true,
+        variables: [ DF.variable('a'), DF.variable('missing') ],
+      });
+      expect(output.type).toBe('bindings');
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('A') ],
+        ]),
+      ]);
+      expect(logger.warn).toHaveBeenCalledWith(
+        'Variables \'?missing\' are used in the projection result, but are not assigned.',
+        { actor: 'actor' },
+      );
     });
 
     it('should run on a stream with equal blank nodes across bindings', async() => {
