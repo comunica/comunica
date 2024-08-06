@@ -1,6 +1,7 @@
 import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorHttp } from '@comunica/bus-http';
 import { KeysInitQuery } from '@comunica/context-entries';
+import { Actor } from '@comunica/core';
 import type {
   IQuerySource,
   BindingsStream,
@@ -358,7 +359,7 @@ export class QuerySourceSparql implements IQuerySource {
         .map((variable) => {
           const value = rawData[`?${variable.value}`];
           if (!canContainUndefs && !value) {
-            it.emit('error', new Error(`The endpoint ${endpoint} failed to provide a binding for ${variable.value}.`));
+            Actor.getContextLogger(this.context)?.warn(`The endpoint ${endpoint} failed to provide a binding for ${variable.value}.`);
           }
           return <[RDF.Variable, RDF.Term]> [ variable, value ];
         })

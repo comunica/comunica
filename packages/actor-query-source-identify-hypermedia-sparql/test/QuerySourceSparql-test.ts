@@ -1,7 +1,8 @@
 import { PassThrough } from 'node:stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysCore, KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -31,7 +32,8 @@ if (!globalThis.ReadableStream) {
 }
 
 describe('QuerySourceSparql', () => {
-  const ctx = new ActionContext({});
+  let logger: any;
+  let ctx: IActionContext;
   let lastQuery: string;
   const mediatorHttp: any = {
     mediate: jest.fn((action: any) => {
@@ -76,6 +78,10 @@ describe('QuerySourceSparql', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    logger = { warn: jest.fn() };
+    ctx = new ActionContext({
+      [KeysCore.log.name]: logger,
+    });
     source = new QuerySourceSparql('http://example.org/sparql', ctx, mediatorHttp, 'values', BF, false, 64, 10);
   });
 
@@ -460,7 +466,7 @@ describe('QuerySourceSparql', () => {
         .rejects.toThrow(new Error(`Invalid SPARQL endpoint response from http://example.org/sparql (HTTP status 500):\nempty body`));
     });
 
-    it('should emit an error for invalid binding results', async() => {
+    it('should emit a warning error for unexpected undefs', async() => {
       const thisMediator: any = {
         mediate(action: any) {
           const query = action.init.body.toString();
@@ -503,8 +509,13 @@ describe('QuerySourceSparql', () => {
       await expect(source.queryBindings(
         AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph()),
         ctx,
-      ).toArray())
-        .rejects.toThrow(new Error('The endpoint http://example.org/sparql failed to provide a binding for p.'));
+      )).toEqualBindingsStream([
+        BF.fromRecord({}),
+        BF.fromRecord({}),
+        BF.fromRecord({}),
+      ]);
+      expect(logger.warn).toHaveBeenCalledTimes(3);
+      expect(logger.warn).toHaveBeenCalledWith(`The endpoint http://example.org/sparql failed to provide a binding for p.`);
     });
 
     it('should not emit an error for undef binding results for optionals', async() => {
