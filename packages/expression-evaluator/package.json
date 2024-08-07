@@ -40,7 +40,7 @@
     "@types/uuid": "^9.0.0",
     "bignumber.js": "^9.0.1",
     "hash.js": "^1.1.7",
-    "lru-cache": "^10.0.0",
+    "lru-cache": "^11.0.0",
     "rdf-data-factory": "^1.1.2",
     "rdf-string": "^1.6.3",
     "relative-to-absolute-iri": "^1.0.6",

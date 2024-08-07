@@ -45,6 +45,6 @@
     "@comunica/bus-rdf-update-quads": "^3.2.1",
     "@comunica/core": "^3.2.1",
     "@comunica/types": "^3.2.1",
-    "lru-cache": "^10.0.0"
+    "lru-cache": "^11.0.0"
   }
 }
