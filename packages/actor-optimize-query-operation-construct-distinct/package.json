@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-optimize-query-operation-construct-distinct",
-  "version": "1.0.0",
+  "version": "3.2.0",
   "description": "A construct-distinct optimize-query-operation actor",
   "lsd:module": true,
   "license": "MIT",
