@@ -85,6 +85,21 @@ describe('ActorQueryOperationSource', () => {
         await expect(result.quadStream.toArray()).resolves.toBeRdfIsomorphic([]);
       });
 
+      it('should handle sliced from construct operations', async() => {
+        const opIn = ActorQueryOperation.assignOperationSource(
+          AF.createSlice(AF.createFrom(
+            AF.createConstruct(AF.createNop(), []),
+            [],
+            [],
+          ), 1),
+          source1,
+        );
+        const result: IQueryOperationResultQuads = <any> await actor.run({ operation: opIn, context: ctx });
+        expect(result.type).toBe('quads');
+        await expect(result.metadata()).resolves.toEqual({ cardinality: { value: 10 }});
+        await expect(result.quadStream.toArray()).resolves.toBeRdfIsomorphic([]);
+      });
+
       it('should handle construct operations', async() => {
         const opIn = ActorQueryOperation.assignOperationSource(AF.createConstruct(AF.createNop(), []), source1);
         const result: IQueryOperationResultQuads = <any> await actor.run({ operation: opIn, context: ctx });
@@ -194,6 +209,9 @@ describe('ActorQueryOperationSource', () => {
         const logger: IPhysicalQueryPlanLogger = {
           logOperation: jest.fn(),
           toJson: jest.fn(),
+          stashChildren: jest.fn(),
+          unstashChild: jest.fn(),
+          appendMetadata: jest.fn(),
         };
         ctx = new ActionContext({
           [KeysInitQuery.physicalQueryPlanLogger.name]: logger,

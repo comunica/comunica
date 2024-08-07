@@ -1,0 +1,13 @@
+FROM linkeddatafragments/server:v3.3.0
+
+ARG SERVER_CONFIG
+ARG SERVER_WORKERS
+ARG MAX_MEMORY
+
+ADD $SERVER_CONFIG /tmp/config.json
+
+ENV SERVER_WORKERS=$SERVER_WORKERS
+ENV MAX_MEMORY=$MAX_MEMORY
+
+ENTRYPOINT []
+CMD [ "/bin/sh", "-c", "node --max-old-space-size=$MAX_MEMORY ./bin/ldf-server /tmp/config.json 3000 $SERVER_WORKERS" ]

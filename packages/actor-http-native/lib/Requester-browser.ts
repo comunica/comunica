@@ -7,9 +7,7 @@
 import { EventEmitter } from 'node:events';
 import type { IncomingHttpHeaders, IncomingMessage } from 'node:http';
 import { Readable } from 'node:stream';
-
-// Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
-import parseLink = require('parse-link-header');
+import { parse } from 'http-link-header';
 
 // Headers we cannot send (see https://www.w3.org/TR/XMLHttpRequest/#the-setrequestheader()-method)
 const UNSAFE_REQUEST_HEADERS = { 'accept-encoding': true, 'user-agent': true, referer: true };
@@ -80,8 +78,9 @@ export default class Requester {
         const resource = this.removeQuery(resHeaders.get('content-location') ?? settings.url);
         if (!this.negotiatedResources[resource]) {
           // Ensure the resource is not a timegate
-          const links = (resHeaders.get('link') && parseLink(resHeaders.get('link'))) ?? undefined;
-          const timegate = this.removeQuery(links && links.timegate?.url);
+          const header = resHeaders.get('link');
+          const tg = header && parse(header)?.get('rel', 'timegate');
+          const timegate = this.removeQuery(tg && tg.length > 0 ? tg[0].uri : undefined);
           if (resource !== timegate) {
             this.negotiatedResources[resource] = true;
           }

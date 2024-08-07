@@ -116,6 +116,10 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     factory: Factory,
     context: IActionContext,
   ): Algebra.Operation {
+    if (this.isExpressionFalse(expression)) {
+      return factory.createUnion([]);
+    }
+
     switch (operation.type) {
       case Algebra.types.EXTEND:
         // Pass if the variable is not part of the expression
@@ -260,5 +264,13 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
   public variablesSubSetOf(varsNeedles: RDF.Variable[], varsHaystack: RDF.Variable[]): boolean {
     return varsNeedles.length <= varsHaystack.length &&
       varsNeedles.every(varA => varsHaystack.some(varB => varA.equals(varB)));
+  }
+
+  /**
+   * Check if an expression is simply 'false'.
+   * @param expression An expression.
+   */
+  public isExpressionFalse(expression: Algebra.Expression): boolean {
+    return (expression.term && expression.term.termType === 'Literal' && expression.term.value === 'false');
   }
 }

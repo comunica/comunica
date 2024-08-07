@@ -1,4 +1,4 @@
-import { type Readable, PassThrough } from 'node:stream';
+import { PassThrough, Readable } from 'node:stream';
 import { KeysRdfParseHtmlScript } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
@@ -7,7 +7,6 @@ import arrayifyStream from 'arrayify-stream';
 import { ActorRdfParseShaclc } from '../lib/ActorRdfParseShaclc';
 
 const quad = require('rdf-quad');
-const streamifyString = require('streamify-string');
 
 describe('ActorRdfParseShaclc', () => {
   let bus: any;
@@ -87,23 +86,23 @@ describe('ActorRdfParseShaclc', () => {
         'text/shaclc': 1,
         'text/shaclc-ext': 0.5,
       }, mediaTypeFormats: {}, name: 'actor' });
-      input = streamifyString(`BASE <http://example.org/basic-shape-iri>
+      input = Readable.from([ `BASE <http://example.org/basic-shape-iri>
       PREFIX ex: <http://example.org/ex#>
 
       shape <http://example.org/test#TestShape> {
-      }`);
+      }` ]);
     });
 
     describe('for parsing', () => {
       beforeEach(() => {
-        inputLinkHeader = streamifyString(`{
+        inputLinkHeader = Readable.from([ `{
           "@id": "http://www.example.org/",
           "term": "value"
-        }`);
-        inputSkipped = streamifyString(`{
+        }` ]);
+        inputSkipped = Readable.from([ `{
           "@id": "http://www.example.org/",
           "skipped": "value"
-        }`);
+        }` ]);
       });
 
       it('should test on text/shaclc', async() => {
@@ -191,7 +190,7 @@ describe('ActorRdfParseShaclc', () => {
     it('should apply the base IRI correctly', async() => {
       const output: any = await actor.run({
         handle: {
-          data: streamifyString('shape <#TestShape> {}'),
+          data: Readable.from([ 'shape <#TestShape> {}' ]),
           metadata: { baseIRI: 'https://www.jeswr.org/' },
           context,
         },
@@ -250,10 +249,10 @@ describe('ActorRdfParseShaclc', () => {
 
       describe('text/shaclc-ext', () => {
         beforeEach(() => {
-          input = streamifyString('BASE <http://example.org/basic-shape-iri>\n' +
+          input = Readable.from([ 'BASE <http://example.org/basic-shape-iri>\n' +
           'shape <http://example.org/test#TestShape>;\n' +
           '<http://example.org/p> <http://example.org/p> {\n' +
-          '}');
+          '}' ]);
         });
 
         it('should run on extended syntax with text/shaclc-ext', async() => {

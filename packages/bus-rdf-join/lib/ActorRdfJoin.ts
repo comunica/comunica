@@ -18,6 +18,8 @@ import type {
   ComunicaDataFactory,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import { termToString } from 'rdf-string';
+import { instrumentIterator } from './instrumentIterator';
 
 /**
  * A comunica actor for joining 2 binding streams.
@@ -55,6 +57,15 @@ export abstract class ActorRdfJoin
    * If this actor can handle undefs in the bindings.
    */
   protected readonly canHandleUndefs: boolean;
+  /**
+   * If this join operator will not invoke any other join or query operations below,
+   * and can therefore be considered a leaf of the join plan.
+   */
+  protected readonly isLeaf: boolean;
+  /**
+   * If this join operator must only be used for join entries with (at least partially) common variables.
+   */
+  protected readonly requiresVariableOverlap?: boolean;
 
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
@@ -67,10 +78,13 @@ export abstract class ActorRdfJoin
     this.limitEntries = options.limitEntries ?? Number.POSITIVE_INFINITY;
     this.limitEntriesMin = options.limitEntriesMin ?? false;
     this.canHandleUndefs = options.canHandleUndefs ?? false;
+    this.isLeaf = options.isLeaf ?? true;
+    this.requiresVariableOverlap = options.requiresVariableOverlap ?? false;
   }
 
   /**
    * Creates a hash of the given bindings by concatenating the results of the given variables.
+   * This can cause clashes for equal terms.
    * This function will not sort the variables and expects them to be in the same order for every call.
    * @param {Bindings} bindings
    * @param {string[]} variables
@@ -82,6 +96,26 @@ export abstract class ActorRdfJoin
         const term = bindings.get(variable);
         if (term) {
           return term.value;
+        }
+        return '';
+      })
+      .join('');
+  }
+
+  /**
+   * Creates a hash of the given bindings by concatenating the results of the given variables.
+   * This is guaranteed to not produce clashing bindings for unequal terms.
+   * This function will not sort the variables and expects them to be in the same order for every call.
+   * @param {Bindings} bindings
+   * @param {string[]} variables
+   * @returns {string} A hash string.
+   */
+  public static hashNonClashing(bindings: RDF.Bindings, variables: RDF.Variable[]): string {
+    return variables
+      .map((variable) => {
+        const term = bindings.get(variable);
+        if (term) {
+          return termToString(term);
         }
         return '';
       })
@@ -182,18 +216,34 @@ export abstract class ActorRdfJoin
   }
 
   /**
+   * Construct a metadata validation state for the given metadata entries.
+   * @param metadatas An array of checked metadata.
+   */
+  public constructState(metadatas: MetadataBindings[]): MetadataValidationState {
+    // Propagate metadata invalidations
+    const state = new MetadataValidationState();
+    const invalidateListener = (): void => state.invalidate();
+    for (const metadata of metadatas) {
+      metadata.state.addInvalidateListener(invalidateListener);
+    }
+    return state;
+  }
+
+  /**
    * Helper function to create a new metadata object for the join result.
    * For required metadata entries that are not provided, sane defaults are calculated.
    * @param entries Join entries.
    * @param metadatas Metadata of the join entries.
    * @param context The action context.
    * @param partialMetadata Partial metadata entries.
+   * @param optional If metadata for an optional operation must be calculated.
    */
   public async constructResultMetadata(
     entries: IJoinEntry[],
     metadatas: MetadataBindings[],
     context: IActionContext,
     partialMetadata: Partial<MetadataBindings> = {},
+    optional = false,
   ): Promise<MetadataBindings> {
     let cardinalityJoined: RDF.QueryResultCardinality;
     if (partialMetadata.cardinality) {
@@ -204,21 +254,14 @@ export abstract class ActorRdfJoin
           const cardinalityThis = ActorRdfJoin.getCardinality(metadata);
           return {
             type: cardinalityThis.type === 'estimate' ? 'estimate' : acc.type,
-            value: acc.value * cardinalityThis.value,
+            value: acc.value * (optional ? Math.max(1, cardinalityThis.value) : cardinalityThis.value),
           };
         }, { type: 'exact', value: 1 });
       cardinalityJoined.value *= (await this.mediatorJoinSelectivity.mediate({ entries, context })).selectivity;
     }
 
-    // Propagate metadata invalidations
-    const state = new MetadataValidationState();
-    const invalidateListener = (): void => state.invalidate();
-    for (const metadata of metadatas) {
-      metadata.state.addInvalidateListener(invalidateListener);
-    }
-
     return {
-      state,
+      state: this.constructState(metadatas),
       ...partialMetadata,
       cardinality: {
         type: cardinalityJoined.type,
@@ -347,6 +390,11 @@ export abstract class ActorRdfJoin
       }
     }
 
+    // This actor only works with common variables
+    if (this.requiresVariableOverlap && ActorRdfJoin.overlappingVariables(metadatas).length === 0) {
+      throw new Error(`Actor ${this.name} can only join entries with at least one common variable`);
+    }
+
     return await this.getJoinCoefficients(action, metadatas);
   }
 
@@ -370,6 +418,11 @@ export abstract class ActorRdfJoin
     let planMetadata: any;
     if (this.includeInLogs && physicalQueryPlanLogger) {
       planMetadata = {};
+      // Stash non-join children, as they will be unstashed later in sub-joins.
+      physicalQueryPlanLogger.stashChildren(
+        parentPhysicalQueryPlanNode,
+        node => node.logicalOperator.startsWith('join'),
+      );
       physicalQueryPlanLogger.logOperation(
         `join-${this.logicalType}`,
         this.physicalName,
@@ -386,9 +439,32 @@ export abstract class ActorRdfJoin
 
     // Fill in the physical plan metadata after determining action output
     if (planMetadata) {
+      // eslint-disable-next-line ts/no-floating-promises
+      instrumentIterator(result.bindingsStream)
+        .then((counters) => {
+          physicalQueryPlanLogger!.appendMetadata(action, {
+            cardinalityReal: counters.count,
+            timeSelf: counters.timeSelf,
+            timeLife: counters.timeLife,
+          });
+        });
+
       Object.assign(planMetadata, physicalPlanMetadata);
-      planMetadata.cardinalities = metadatas.map(ActorRdfJoin.getCardinality);
+      const cardinalities = metadatas.map(ActorRdfJoin.getCardinality);
+      planMetadata.cardinalities = cardinalities;
       planMetadata.joinCoefficients = await this.getJoinCoefficients(action, metadatas);
+
+      // If this is a leaf operation, include join entries in plan metadata.
+      if (this.isLeaf) {
+        for (let i = 0; i < action.entries.length; i++) {
+          const entry = action.entries[i];
+          physicalQueryPlanLogger!.unstashChild(
+            entry.operation,
+            action,
+          );
+          physicalQueryPlanLogger!.appendMetadata(entry.operation, { cardinality: cardinalities[i] });
+        }
+      }
     }
 
     // Cache metadata
@@ -449,6 +525,16 @@ export interface IActorRdfJoinInternalOptions {
    * Defaults to false.
    */
   canHandleUndefs?: boolean;
+  /**
+   * If this join operator will not invoke any other join or query operations below,
+   * and can therefore be considered a leaf of the join plan.
+   * Defaults to true.
+   */
+  isLeaf?: boolean;
+  /**
+   * If this join operator must only be used for join entries with (at least partially) common variables.
+   */
+  requiresVariableOverlap?: boolean;
 }
 
 /**

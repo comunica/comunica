@@ -2,12 +2,12 @@ import { ActorHttp } from '@comunica/bus-http';
 import { KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import { DataFactory } from 'rdf-data-factory';
+import { Readable } from 'readable-stream';
 import { QuadDestinationPutLdp } from '../lib/QuadDestinationPutLdp';
 
 const DF = new DataFactory();
-const stringifyStream = require('stream-to-string');
-const streamifyString = require('streamify-string');
 
 describe('QuadDestinationPutLdp', () => {
   let context: IActionContext;
@@ -36,7 +36,7 @@ describe('QuadDestinationPutLdp', () => {
     mediatorRdfSerialize = {
       mediate: jest.fn(() => ({
         handle: {
-          data: streamifyString(`TRIPLES`),
+          data: Readable.from([ 'TRIPLES' ]),
         },
       })),
     };

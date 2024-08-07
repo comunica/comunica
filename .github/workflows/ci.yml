@@ -11,21 +11,22 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         node-version:
           - 18.x
           - 20.x
+          - 22.x
     steps:
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Load cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             **/node_modules
@@ -47,7 +48,8 @@ jobs:
       - name: Run tests
         run: yarn run test:ci
       - name: Run browser tests
-        uses: nick-fields/retry@v2
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        uses: nick-fields/retry@v3
         with:
           timeout_minutes: 2
           max_attempts: 3
@@ -77,13 +79,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18.x
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Load cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-lint-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
@@ -99,13 +101,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18.x
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Load cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-browser-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
@@ -126,13 +128,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18.x
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Load cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-docker-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
@@ -150,25 +152,71 @@ jobs:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
   performance:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        benchmark:
+          - watdiv-file
+          - watdiv-tpf
+          - bsbm-file
+          - bsbm-tpf
+          - web
     needs:
       - test
       - lint
-    runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18.x
       - name: Install dependencies
         run: yarn install
       - name: Run benchmarks
-        run: npx lerna run performance:ci --concurrency 1
+        run: cd performance/benchmark-${{ matrix.benchmark }}/ && yarn run performance:ci
+      - uses: actions/upload-artifact@v4
+        with:
+          name: performance-benchmark-${{ matrix.benchmark }}
+          path: performance/benchmark-${{ matrix.benchmark }}/combinations/combination_0/output/
+      - name: Print raw output
+        run: cat performance/benchmark-${{ matrix.benchmark }}/combinations/combination_0/output/query-times.csv
+
+  performance-consolidate:
+    needs:
+      - performance
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+      - uses: actions/download-artifact@v4
+        with:
+          name: performance-benchmark-watdiv-file
+          path: performance/benchmark-watdiv-file/combinations/combination_0/output/
+      - uses: actions/download-artifact@v4
+        with:
+          name: performance-benchmark-watdiv-tpf
+          path: performance/benchmark-watdiv-tpf/combinations/combination_0/output/
+      - uses: actions/download-artifact@v4
+        with:
+          name: performance-benchmark-bsbm-file
+          path: performance/benchmark-bsbm-file/combinations/combination_0/output/
+      - uses: actions/download-artifact@v4
+        with:
+          name: performance-benchmark-bsbm-tpf
+          path: performance/benchmark-bsbm-tpf/combinations/combination_0/output/
+      - uses: actions/download-artifact@v4
+        with:
+          name: performance-benchmark-web
+          path: performance/benchmark-web/combinations/combination_0/output/
       - name: Process benchmark detailed results
-        run: npx psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File --total false --detailed true --name ghbench-detail.json
+        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ performance/benchmark-web/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-TPF,Web --total false --detailed true --name ghbench-detail.json
       - name: Process benchmark total results
-        run: npx psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File --total true --detailed false --name ghbench-total.json
+        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ performance/benchmark-web/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-TPF,Web --total true --detailed false --name ghbench-total.json
       - name: Determine benchmark detailed results target directory name
         run: echo "BENCHMARK_DATA_DIR_PATH_DETAIL=comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-detail" >> $GITHUB_ENV
       - name: Determine benchmarks total results target directory name
@@ -201,7 +249,6 @@ jobs:
           comment-always: true
           comment-on-alert: true
           alert-comment-cc-users: '@rubensworks'
-          fail-on-alert: true
           summary-always: true
           gh-repository: 'github.com/comunica/comunica-performance-results'
           gh-pages-branch: 'master'
@@ -218,13 +265,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18.x
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Load cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-docs-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}

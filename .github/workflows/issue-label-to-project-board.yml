@@ -3,26 +3,21 @@ on:
   issues:
     types: [labeled]
 
-env:
-  MY_GITHUB_TOKEN: ${{ secrets.PAT }}
-
 jobs:
   assign:
     runs-on: ubuntu-latest
     steps:
       - name: Maintenance Issues
-        uses: srggrs/assign-one-project-github-action@1.3.1
-        if: |
-          contains(github.event.issue.labels.*.name, 'bug 🐛') ||
-          contains(github.event.issue.labels.*.name, 'performance 🐌') ||
-          contains(github.event.issue.labels.*.name, 'question ❓')
+        uses: actions/add-to-project@v1.0.1
         with:
-          project: 'https://github.com/orgs/comunica/projects/2'
-          column_name: Triage
+          project-url: https://github.com/orgs/comunica/projects/12
+          github-token: ${{ secrets.PAT }}
+          labeled: bug 🐛, performance 🐌, question ❓
+          label-operator: OR
       - name: Development Issues
-        uses: srggrs/assign-one-project-github-action@1.3.1
-        if: |
-          contains(github.event.issue.labels.*.name, 'feature ➕')
+        uses: actions/add-to-project@v1.0.1
         with:
-          project: 'https://github.com/orgs/comunica/projects/3'
-          column_name: Triage
+          project-url: https://github.com/orgs/comunica/projects/11
+          github-token: ${{ secrets.PAT }}
+          labeled: feature ➕
+          label-operator: OR

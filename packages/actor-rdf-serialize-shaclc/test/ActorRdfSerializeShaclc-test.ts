@@ -1,11 +1,11 @@
 import { Readable } from 'node:stream';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import { union, fromArray } from 'asynciterator';
 import { ActorRdfSerializeShaclc } from '../lib/ActorRdfSerializeShaclc';
 
 const quad = require('rdf-quad');
-const stringifyStream = require('stream-to-string');
 
 describe('ActorRdfSerializeShaclc', () => {
   let bus: any;

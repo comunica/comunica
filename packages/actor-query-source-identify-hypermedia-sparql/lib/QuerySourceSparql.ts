@@ -1,6 +1,7 @@
 import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorHttp } from '@comunica/bus-http';
 import { KeysInitQuery } from '@comunica/context-entries';
+import { Actor } from '@comunica/core';
 import type {
   IQuerySource,
   BindingsStream,
@@ -129,8 +130,9 @@ export class QuerySourceSparql implements IQuerySource {
       const selectQuery: string = !options?.joinBindings && queryString ?
         queryString :
         QuerySourceSparql.operationToSelectQuery(this.algebraFactory, operation, variables);
+      const canContainUndefs = QuerySourceSparql.operationCanContainUndefs(operation);
 
-      return this.queryBindingsRemote(this.url, selectQuery, variables, context);
+      return this.queryBindingsRemote(this.url, selectQuery, variables, context, canContainUndefs);
     }, { autoStart: false });
     this.attachMetadata(bindings, context, operationPromise);
 
@@ -176,6 +178,7 @@ export class QuerySourceSparql implements IQuerySource {
   ): void {
     // Emit metadata containing the estimated count
     let variablesCount: RDF.Variable[] = [];
+    let canContainUndefs = false;
     // eslint-disable-next-line no-async-promise-executor,ts/no-misused-promises
     new Promise<RDF.QueryResultCardinality>(async(resolve, reject) => {
       // Prepare queries
@@ -184,6 +187,7 @@ export class QuerySourceSparql implements IQuerySource {
         const operation = await operationPromise;
         variablesCount = Util.inScopeVariables(operation);
         countQuery = QuerySourceSparql.operationToCountQuery(this.dataFactory, this.algebraFactory, operation);
+        canContainUndefs = QuerySourceSparql.operationCanContainUndefs(operation);
 
         const cachedCardinality = this.cache?.get(countQuery);
         if (cachedCardinality !== undefined) {
@@ -193,7 +197,7 @@ export class QuerySourceSparql implements IQuerySource {
         const timeoutHandler = setTimeout(() => resolve(COUNT_INFINITY), this.countTimeout);
         const varCount = this.dataFactory.variable('count');
         const bindingsStream: BindingsStream = await this
-          .queryBindingsRemote(this.url, countQuery, [ varCount ], context);
+          .queryBindingsRemote(this.url, countQuery, [ varCount ], context, false);
         bindingsStream.on('data', (bindings: Bindings) => {
           clearTimeout(timeoutHandler);
           const count = bindings.get(varCount);
@@ -222,12 +226,12 @@ export class QuerySourceSparql implements IQuerySource {
     })
       .then(cardinality => target.setProperty('metadata', {
         cardinality,
-        canContainUndefs: false,
+        canContainUndefs,
         variables: variablesCount,
       }))
       .catch(() => target.setProperty('metadata', {
         cardinality: COUNT_INFINITY,
-        canContainUndefs: false,
+        canContainUndefs,
         variables: variablesCount,
       }));
   }
@@ -320,11 +324,47 @@ export class QuerySourceSparql implements IQuerySource {
   }
 
   /**
+   * Check if the given operation may produce undefined values.
+   * @param operation
+   */
+  public static operationCanContainUndefs(operation: Algebra.Operation): boolean {
+    let canContainUndefs = false;
+    Util.recurseOperation(operation, {
+      leftjoin(): boolean {
+        canContainUndefs = true;
+        return false;
+      },
+      values(values: Algebra.Values): boolean {
+        canContainUndefs = values.bindings.some(bindings => values.variables.some(variable => !(`?${variable.value}` in bindings)));
+        return false;
+      },
+      union(union: Algebra.Union): boolean {
+        // Determine variables in scope of the union branches
+        const scopedVariables = union.input
+          .map(Util.inScopeVariables)
+          .map(variables => variables.map(v => v.value))
+          .map(variables => variables.sort((a, b) => a.localeCompare(b)))
+          .map(variables => variables.join(','));
+
+        // If not all scoped variables in union branches are equal, then we definitely can have undefs
+        if (!scopedVariables.every(val => val === scopedVariables[0])) {
+          canContainUndefs = true;
+          return false;
+        }
+
+        return true;
+      },
+    });
+    return canContainUndefs;
+  }
+
+  /**
    * Send a SPARQL query to a SPARQL endpoint and retrieve its bindings as a stream.
    * @param {string} endpoint A SPARQL endpoint URL.
    * @param {string} query A SPARQL query string.
    * @param {RDF.Variable[]} variables The expected variables.
    * @param {IActionContext} context The source context.
+   * @param canContainUndefs If the operation may contain undefined variables.
    * @return {BindingsStream} A stream of bindings.
    */
   public async queryBindingsRemote(
@@ -332,6 +372,7 @@ export class QuerySourceSparql implements IQuerySource {
     query: string,
     variables: RDF.Variable[],
     context: IActionContext,
+    canContainUndefs: boolean,
   ): Promise<BindingsStream> {
     this.lastSourceContext = this.context.merge(context);
     const rawStream = await this.endpointFetcher.fetchBindings(endpoint, query);
@@ -341,11 +382,12 @@ export class QuerySourceSparql implements IQuerySource {
       .map<RDF.Bindings>((rawData: Record<string, RDF.Term>) => this.bindingsFactory.bindings(variables
         .map((variable) => {
           const value = rawData[`?${variable.value}`];
-          if (!value) {
-            it.emit('error', new Error(`The endpoint ${endpoint} failed to provide a binding for ${variable.value}.`));
+          if (!canContainUndefs && !value) {
+            Actor.getContextLogger(this.context)?.warn(`The endpoint ${endpoint} failed to provide a binding for ${variable.value}.`);
           }
-          return [ variable, value ];
-        })));
+          return <[RDF.Variable, RDF.Term]> [ variable, value ];
+        })
+        .filter(([ _, v ]) => Boolean(v))));
     return it;
   }
 

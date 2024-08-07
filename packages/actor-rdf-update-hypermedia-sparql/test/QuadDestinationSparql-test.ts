@@ -1,4 +1,5 @@
 /* eslint-disable jest/prefer-spy-on */
+import { Readable } from 'node:stream';
 import { KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
@@ -8,7 +9,6 @@ import { DataFactory } from 'rdf-data-factory';
 import { QuadDestinationSparql } from '../lib/QuadDestinationSparql';
 
 const DF = new DataFactory();
-const streamifyString = require('streamify-string');
 
 describe('QuadDestinationSparql', () => {
   let context: IActionContext;
@@ -19,8 +19,8 @@ describe('QuadDestinationSparql', () => {
   beforeEach(() => {
     mediatorHttp = {
       mediate: jest.fn(() => {
-        const body = streamifyString(`RESPONSE`);
-        body.cancel = jest.fn();
+        const body = Readable.from([ `RESPONSE` ]);
+        (<any>body).cancel = jest.fn();
         return {
           status: 200,
           body,
@@ -86,14 +86,14 @@ describe('QuadDestinationSparql', () => {
     });
 
     it('should throw on a server error', async() => {
-      const body = streamifyString(`ERROR`);
+      const body = Readable.from([ `ERROR` ]);
       mediatorHttp.mediate = () => ({
         status: 400,
         body,
         headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
         ok: false,
       });
-      body.cancel = jest.fn();
+      (<any>body).cancel = jest.fn();
       await expect(destination.update({ insert: new ArrayIterator<RDF.Quad>([]) })).rejects
         .toThrow(`Invalid SPARQL endpoint response from abc (HTTP status 400):\nempty response`);
     });

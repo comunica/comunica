@@ -25,9 +25,7 @@ describe('ActorContextPreprocessQuerySourceSkolemize', () => {
       it('with an empty context', async() => {
         const contextIn = new ActionContext();
         const { context: contextOut } = await actor.run({ context: contextIn });
-        expect(contextOut).toEqual(new ActionContext({
-          [KeysQuerySourceIdentify.sourceIds.name]: new Map(),
-        }));
+        expect(contextOut).toEqual(new ActionContext({}));
       });
 
       it('with sources', async() => {

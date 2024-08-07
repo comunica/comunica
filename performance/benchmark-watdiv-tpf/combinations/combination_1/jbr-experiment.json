@@ -1,0 +1,38 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/jbr/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-experiment/watdiv/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-hook/sparql-endpoint-ldf/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-hook/sparql-endpoint-comunica/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-hook/cli/^5.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:jbr:benchmark-watdiv-tpf:combination_1",
+  "@type": "ExperimentWatDiv",
+  "datasetScale": 10,
+  "queryCount": 5,
+  "queryRecurrence": 1,
+  "generateHdt": true,
+  "endpointUrl": "http://localhost:3001/sparql",
+  "queryRunnerReplication": 1,
+  "queryRunnerWarmupRounds": 1,
+  "queryRunnerRequestDelay": 0,
+  "queryRunnerEndpointAvailabilityCheckTimeout": 1000,
+  "queryRunnerUrlParams": {},
+  "hookSparqlEndpoint": {
+    "@id": "urn:jbr:tmp:hookSparqlEndpoint",
+    "@type": "HookSparqlEndpointLdf",
+    "dockerfile": "input/dockerfiles/Dockerfile-ldf-server",
+    "dockerfileCache": "input/dockerfiles/Dockerfile-ldf-server-cache",
+    "resourceConstraints": {
+      "@type": "StaticDockerResourceConstraints",
+      "cpu_percentage": 100
+    },
+    "config": "input/config-ldf-server.json",
+    "portServer": 2999,
+    "portCache": 3000,
+    "workers": 4,
+    "maxMemory": 2084,
+    "dataset": "generated/dataset.hdt",
+    "hookSparqlEndpointLdfEngine": {"@id": "urn:jbr:benchmark-watdiv-tpf:combination_1:hookSparqlEndpoint_hookSparqlEndpointLdfEngine",  "@type": "HookSparqlEndpointComunica",  "dockerfileClient": "input/dockerfiles/Dockerfile-client",  "resourceConstraints": {"@type": "StaticDockerResourceConstraints","cpu_percentage": 100  },  "configClient": "input/config-client.json",  "contextClient": "input/context-client.json",  "additionalBinds": [],  "clientPort": 3001,  "clientLogLevel": "info",  "queryTimeout": 500,  "maxMemory": 8192}
+  }
+}

@@ -7,9 +7,9 @@ import {
   ActorRdfParseFixedMediaTypes,
 } from '@comunica/bus-rdf-parse';
 import type { IActionContext } from '@comunica/types';
+import { stringify as streamToString } from '@jeswr/stream-to-string';
 import { Readable } from 'readable-stream';
 import { parse } from 'shaclc-parse';
-import streamToString = require('stream-to-string');
 import { PrefixWrappingIterator } from './PrefixWrappingIterator';
 
 /**

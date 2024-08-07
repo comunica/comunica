@@ -721,6 +721,34 @@ describe('ActorQueryOperationGroup', () => {
         variables: [ DF.variable('c') ],
       });
     });
+    it('should be able to count distinct', async() => {
+      const aggregate = aggregateOn('count', 'x', 'c');
+      aggregate.distinct = true;
+      const { op, actor } = constructCase({
+        inputBindings: [
+          BF.bindings([[ DF.variable('x'), int('3') ]]),
+          BF.bindings([[ DF.variable('x'), int('3') ]]),
+          BF.bindings([[ DF.variable('x'), int('3') ]]),
+          BF.bindings([[ DF.variable('x'), int('3') ]]),
+        ],
+        groupVariables: [ ],
+        inputVariables: [ 'x', 'y', 'z' ],
+        inputOp: simpleXYZinput,
+        aggregates: [ aggregate ],
+      });
+
+      const output = <any> await actor.run(op);
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('c'), int('1') ],
+        ]),
+      ]);
+      await expect(output.metadata()).resolves.toEqual({
+        cardinality: 4,
+        canContainUndefs: false,
+        variables: [ DF.variable('c') ],
+      });
+    });
 
     it('should be able to count with respect to empty input with group variables', async() => {
       const { op, actor } = constructCase({

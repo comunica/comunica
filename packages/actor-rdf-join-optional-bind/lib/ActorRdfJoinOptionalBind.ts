@@ -26,6 +26,7 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
       physicalName: 'bind',
       limitEntries: 2,
       canHandleUndefs: true,
+      isLeaf: false,
     });
   }
 
@@ -71,6 +72,7 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
           await ActorRdfJoin.getMetadatas(action.entries),
           action.context,
           { canContainUndefs: true },
+          true,
         ),
       },
     };
@@ -80,6 +82,11 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
     action: IActionRdfJoin,
     metadatas: MetadataBindings[],
   ): Promise<IMediatorTypeJoinCoefficients> {
+    // This actor only works well with common variables
+    if (ActorRdfJoin.overlappingVariables(metadatas).length === 0) {
+      throw new Error(`Actor ${this.name} only join entries with at least one common variable`);
+    }
+
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
 
@@ -100,10 +107,10 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
       persistedItems: 0,
       blockingItems: 0,
       requestTime: requestInitialTimes[0] +
-        metadatas[0].cardinality.value * selectivity * (
+        metadatas[0].cardinality.value * (
           requestItemTimes[0] +
           requestInitialTimes[1] +
-          metadatas[1].cardinality.value * requestItemTimes[1]
+          selectivity * metadatas[1].cardinality.value * requestItemTimes[1]
         ),
     };
   }
@@ -118,7 +125,7 @@ export interface IActorRdfJoinOptionalBindArgs extends IActorRdfJoinArgs {
   /**
    * Multiplier for selectivity values
    * @range {double}
-   * @default {0.0001}
+   * @default {0.000001}
    */
   selectivityModifier: number;
   /**

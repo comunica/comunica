@@ -1,0 +1,42 @@
+{
+  "name": "@comunica/bus-hash-quads",
+  "version": "3.2.1",
+  "description": "A comunica bus for hashing quads.",
+  "lsd:module": true,
+  "typings": "lib/index",
+  "license": "MIT",
+  "homepage": "https://comunica.dev/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/bus-hash-quads"
+  },
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
+  "keywords": [
+    "comunica",
+    "bus",
+    "hash-quads"
+  ],
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.js.map"
+  ],
+  "scripts": {
+    "build": "yarn run build:ts && yarn run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
+  },
+  "dependencies": {
+    "@comunica/core": "^3.2.1",
+    "rdf-data-factory": "^1.1.2"
+  }
+}

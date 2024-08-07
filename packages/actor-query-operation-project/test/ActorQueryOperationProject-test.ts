@@ -103,13 +103,23 @@ describe('ActorQueryOperationProject', () => {
       ]);
     });
 
-    it('should error run on a stream with variables that should be deleted and are missing', async() => {
+    it('should handle on a stream with variables that should be deleted and are missing', async() => {
       const op: any = {
         operation: { type: 'project', input: 'in', variables: [ DF.variable('a'), DF.variable('missing') ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      await expect(actor.run(op)).rejects
-        .toThrow('Variables \'?missing\' are used in the projection result, but are not assigned.');
+
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      await expect(output.metadata()).resolves.toEqual({
+        canContainUndefs: true,
+        variables: [ DF.variable('a'), DF.variable('missing') ],
+      });
+      expect(output.type).toBe('bindings');
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('A') ],
+        ]),
+      ]);
     });
 
     it('should run on a stream with equal blank nodes across bindings', async() => {

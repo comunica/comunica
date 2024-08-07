@@ -1,13 +1,13 @@
 import { Readable } from 'node:stream';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import type { AsyncIterator } from 'asynciterator';
 import { ActorRdfSerializeN3 } from '../lib/ActorRdfSerializeN3';
 
 const quad = require('rdf-quad');
-const stringifyStream = require('stream-to-string');
 const streamifyArray = require('streamify-array');
 
 describe('ActorRdfSerializeN3', () => {

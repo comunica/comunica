@@ -1,8 +1,8 @@
 bug 🐛:
-    - '- :bug: Bug'
+  - '- :bug: Bug'
 feature ➕:
-	- '- :heavy_plus_sign: Feature request'
+  - '- :heavy_plus_sign: Feature request'
 performance 🐌:
-	- '- :snail: Performance issue'
+  - '- :snail: Performance issue'
 question ❓:
-	- '- :question: Question'
+  - '- :question: Question'

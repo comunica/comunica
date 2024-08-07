@@ -61,7 +61,7 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
 
   public async parse(query: QueryFormatType, context: IActionContext): Promise<IQueryProcessSequentialOutput> {
     // Pre-processing the context
-    context = (await this.mediatorContextPreprocess.mediate({ context })).context;
+    context = (await this.mediatorContextPreprocess.mediate({ context, initialize: true })).context;
 
     // Parse query
     let operation: Algebra.Operation;
