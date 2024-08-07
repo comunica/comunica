@@ -1,6 +1,6 @@
 {
   "name": "@comunica/jest",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "description": "Jest utilities for Comunica",
   "license": "MIT",
   "homepage": "https://comunica.dev/",
@@ -38,8 +38,8 @@
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\""
   },
   "dependencies": {
-    "@comunica/bindings-factory": "^3.2.0",
-    "@comunica/types": "^3.2.0",
+    "@comunica/bindings-factory": "^3.2.1",
+    "@comunica/types": "^3.2.1",
     "@rdfjs/types": "*",
     "arrayify-stream": "^2.0.1"
   }

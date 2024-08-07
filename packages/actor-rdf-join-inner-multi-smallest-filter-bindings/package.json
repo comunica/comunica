@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-inner-multi-smallest-filter-bindings",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "description": "A inner-multi-smallest-filter-bindings rdf-join actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,13 +37,13 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bindings-factory": "^3.2.0",
-    "@comunica/bus-query-operation": "^3.2.0",
-    "@comunica/bus-rdf-join": "^3.2.0",
-    "@comunica/bus-rdf-join-entries-sort": "^3.2.0",
-    "@comunica/context-entries": "^3.2.0",
-    "@comunica/mediatortype-join-coefficients": "^3.2.0",
-    "@comunica/types": "^3.2.0",
+    "@comunica/bindings-factory": "^3.2.1",
+    "@comunica/bus-query-operation": "^3.2.1",
+    "@comunica/bus-rdf-join": "^3.2.1",
+    "@comunica/bus-rdf-join-entries-sort": "^3.2.1",
+    "@comunica/context-entries": "^3.2.1",
+    "@comunica/mediatortype-join-coefficients": "^3.2.1",
+    "@comunica/types": "^3.2.1",
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0",
     "sparqlalgebrajs": "^4.3.7"
