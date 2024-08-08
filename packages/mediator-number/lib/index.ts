@@ -1,1 +1,1 @@
-export * from './MediatorNumber';
+export * from './MediatorNumber.js';

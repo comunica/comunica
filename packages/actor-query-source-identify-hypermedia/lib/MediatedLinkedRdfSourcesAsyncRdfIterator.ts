@@ -14,8 +14,8 @@ import type {
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra, Factory } from 'sparqlalgebrajs';
-import type { SourceStateGetter, ISourceState } from './LinkedRdfSourcesAsyncRdfIterator';
-import { LinkedRdfSourcesAsyncRdfIterator } from './LinkedRdfSourcesAsyncRdfIterator';
+import type { SourceStateGetter, ISourceState } from './LinkedRdfSourcesAsyncRdfIterator.js';
+import { LinkedRdfSourcesAsyncRdfIterator } from './LinkedRdfSourcesAsyncRdfIterator.js';
 
 /**
  * An quad iterator that can iterate over consecutive RDF sources

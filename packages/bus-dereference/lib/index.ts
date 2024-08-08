@@ -1,3 +1,3 @@
-export * from './ActorDereference';
-export * from './ActorDereferenceParse';
-export * from './ActorDereferenceBase';
+export * from './ActorDereference.js';
+export * from './ActorDereferenceParse.js';
+export * from './ActorDereferenceBase.js';

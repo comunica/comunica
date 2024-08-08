@@ -1,1 +1,1 @@
-export * from './ActorQueryOperationFromQuad';
+export * from './ActorQueryOperationFromQuad.js';

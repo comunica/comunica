@@ -3,8 +3,8 @@ import type {
   IActionHttpInvalidate,
   IActorHttpInvalidateOutput,
   IActorHttpInvalidateArgs,
-} from './ActorHttpInvalidate';
-import { ActorHttpInvalidate } from './ActorHttpInvalidate';
+} from './ActorHttpInvalidate.js';
+import { ActorHttpInvalidate } from './ActorHttpInvalidate.js';
 
 /**
  * An ActorHttpInvalidate actor that allows listeners to be attached.

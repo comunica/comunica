@@ -8,7 +8,7 @@ import { ActorRdfUpdateHypermedia } from '@comunica/bus-rdf-update-hypermedia';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
-import { QuadDestinationSparql } from './QuadDestinationSparql';
+import { QuadDestinationSparql } from './QuadDestinationSparql.js';
 
 /**
  * A comunica SPARQL RDF Update Hypermedia Actor.

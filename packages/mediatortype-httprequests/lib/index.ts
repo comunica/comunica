@@ -1,1 +1,1 @@
-export * from './MediatorTypeHttpRequests';
+export * from './MediatorTypeHttpRequests.js';

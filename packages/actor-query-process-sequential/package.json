@@ -21,7 +21,7 @@
   ],
   "sideEffects": false,
   "main": "lib/index.js",
-  "typings": "lib/index",
+  "typings": "lib/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
@@ -49,5 +49,7 @@
     "@comunica/types": "^3.2.1",
     "@rdfjs/types": "*",
     "sparqlalgebrajs": "^4.3.7"
-  }
+  },
+  "type": "module",
+  "module": "lib/index.js"
 }

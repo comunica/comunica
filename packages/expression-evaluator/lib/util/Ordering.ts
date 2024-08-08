@@ -1,12 +1,12 @@
 import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
-import type * as E from '../expressions';
-import { regularFunctions } from '../functions';
-import { TermTransformer } from '../transformers/TermTransformer';
-import * as C from './Consts';
-import * as Err from './Errors';
-import type { SuperTypeCallback, TypeCache } from './TypeHandling';
+import type * as E from '../expressions/index.js';
+import { regularFunctions } from '../functions/index.js';
+import { TermTransformer } from '../transformers/TermTransformer.js';
+import * as C from './Consts.js';
+import * as Err from './Errors.js';
+import type { SuperTypeCallback, TypeCache } from './TypeHandling.js';
 
 // Determine the relative numerical order of the two given terms.
 // In accordance with https://www.w3.org/TR/sparql11-query/#modOrderBy

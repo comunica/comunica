@@ -1,10 +1,10 @@
-import type { DateLiteral, DateTimeLiteral, TimeLiteral } from '../expressions';
-import * as E from '../expressions';
-import { DurationLiteral } from '../expressions';
-import type * as C from '../util/Consts';
-import { TypeURL } from '../util/Consts';
-import { trimToDayTimeDuration, trimToYearMonthDuration } from '../util/DateTimeHelpers';
-import * as Err from '../util/Errors';
+import type { DateLiteral, DateTimeLiteral, TimeLiteral } from '../expressions/index.js';
+import * as E from '../expressions/index.js';
+import { DurationLiteral } from '../expressions/index.js';
+import type * as C from '../util/Consts.js';
+import { TypeURL } from '../util/Consts.js';
+import { trimToDayTimeDuration, trimToYearMonthDuration } from '../util/DateTimeHelpers.js';
+import * as Err from '../util/Errors.js';
 import {
   parseDate,
   parseDateTime,
@@ -15,10 +15,10 @@ import {
   parseXSDDecimal,
   parseXSDFloat,
   parseXSDInteger,
-} from '../util/Parsing';
+} from '../util/Parsing.js';
 
-import type { IOverloadedDefinition } from './Core';
-import { bool, dateTime, decimal, declare, double, float, integer, string } from './Helpers';
+import type { IOverloadedDefinition } from './Core.js';
+import { bool, dateTime, decimal, declare, double, float, integer, string } from './Helpers.js';
 
 type Term = E.TermExpression;
 

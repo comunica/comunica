@@ -3,7 +3,7 @@ import type { IAction, IActorArgs, IActorTest } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { Readable } from 'readable-stream';
-import type { IActorDereferenceOutput } from '.';
+import type { IActorDereferenceOutput } from './index.js';
 
 export function emptyReadable<S extends Readable>(): S {
   const data = new Readable();

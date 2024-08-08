@@ -1,1 +1,1 @@
-export * from './ActorHttpWayback';
+export * from './ActorHttpWayback.js';

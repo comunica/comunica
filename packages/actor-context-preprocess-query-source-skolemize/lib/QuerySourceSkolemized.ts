@@ -12,7 +12,7 @@ import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
-import { deskolemizeOperation, skolemizeBindingsStream, skolemizeQuadStream } from './utils';
+import { deskolemizeOperation, skolemizeBindingsStream, skolemizeQuadStream } from './utils.js';
 
 /**
  * A IQuerySource wrapper that skolemizes outgoing quads and bindings.

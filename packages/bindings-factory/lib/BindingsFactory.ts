@@ -2,7 +2,7 @@ import type { IBindingsContextMergeHandler, MediatorMergeBindingsContext } from 
 import type { ComunicaDataFactory, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { Map } from 'immutable';
-import { Bindings } from './Bindings';
+import { Bindings } from './Bindings.js';
 
 /**
  * A Bindings factory that provides Bindings backed by immutable.js.

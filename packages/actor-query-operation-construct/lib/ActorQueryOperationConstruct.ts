@@ -16,7 +16,7 @@ import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { getTermsNested, getVariables, uniqTerms } from 'rdf-terms';
 import { Algebra } from 'sparqlalgebrajs';
-import { BindingsToQuadsIterator } from './BindingsToQuadsIterator';
+import { BindingsToQuadsIterator } from './BindingsToQuadsIterator.js';
 
 /**
  * A comunica Construct Query Operation Actor.

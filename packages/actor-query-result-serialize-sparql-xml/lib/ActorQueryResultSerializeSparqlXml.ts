@@ -12,7 +12,7 @@ import type {
 import type * as RDF from '@rdfjs/types';
 import { wrap } from 'asynciterator';
 import { Readable } from 'readable-stream';
-import { XmlSerializer, type IXmlNode } from './XmlSerializer';
+import { XmlSerializer, type IXmlNode } from './XmlSerializer.js';
 
 /**
  * A comunica sparql-results+xml Serialize Actor.

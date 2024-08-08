@@ -17,7 +17,7 @@ import { KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entrie
 import { ActionContext } from '@comunica/core';
 import type { IActorTest } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
-import { QuerySourceHypermedia } from './QuerySourceHypermedia';
+import { QuerySourceHypermedia } from './QuerySourceHypermedia.js';
 
 /**
  * A comunica Hypermedia Query Source Identify Actor.

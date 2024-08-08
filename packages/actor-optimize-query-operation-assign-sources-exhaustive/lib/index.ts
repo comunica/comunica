@@ -1,1 +1,1 @@
-export * from './ActorOptimizeQueryOperationAssignSourcesExhaustive';
+export * from './ActorOptimizeQueryOperationAssignSourcesExhaustive.js';

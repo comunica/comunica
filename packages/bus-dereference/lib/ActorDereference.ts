@@ -1,5 +1,5 @@
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
-import { ActorDereferenceBase } from './ActorDereferenceBase';
+import { ActorDereferenceBase } from './ActorDereferenceBase.js';
 
 /**
  * A base actor for dereferencing URLs to (generic) streams.

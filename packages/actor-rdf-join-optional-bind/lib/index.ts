@@ -1,1 +1,1 @@
-export * from './ActorRdfJoinOptionalBind';
+export * from './ActorRdfJoinOptionalBind.js';

@@ -4,9 +4,9 @@ import type { IActorTest } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import type { IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput } from './ActorRdfUpdateQuads';
-import { ActorRdfUpdateQuads } from './ActorRdfUpdateQuads';
-import type { IQuadDestination } from './IQuadDestination';
+import type { IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput } from './ActorRdfUpdateQuads.js';
+import { ActorRdfUpdateQuads } from './ActorRdfUpdateQuads.js';
+import type { IQuadDestination } from './IQuadDestination.js';
 
 export function deskolemizeStream(
   dataFactory: ComunicaDataFactory,

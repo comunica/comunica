@@ -1,9 +1,9 @@
 import type * as RDF from '@rdfjs/types';
-import type { IDataDestination } from './IDataDestination';
-import type { IProxyHandler } from './IProxyHandler';
-import type { SourceType } from './IQueryEngine';
-import type { QueryExplainMode } from './IQueryOperationResult';
-import type { Logger } from './Logger';
+import type { IDataDestination } from './IDataDestination.js';
+import type { IProxyHandler } from './IProxyHandler.js';
+import type { SourceType } from './IQueryEngine.js';
+import type { QueryExplainMode } from './IQueryOperationResult.js';
+import type { Logger } from './Logger.js';
 
 /**
  * Query context when a string-based query was passed.

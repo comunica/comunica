@@ -1,1 +1,1 @@
-export * from './ActorRdfJoinNone';
+export * from './ActorRdfJoinNone.js';

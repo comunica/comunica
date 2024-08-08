@@ -25,9 +25,9 @@ import { LRUCache } from 'lru-cache';
 import { Readable } from 'readable-stream';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
-import type { ISourceState } from './LinkedRdfSourcesAsyncRdfIterator';
-import { MediatedLinkedRdfSourcesAsyncRdfIterator } from './MediatedLinkedRdfSourcesAsyncRdfIterator';
-import { StreamingStoreMetadata } from './StreamingStoreMetadata';
+import type { ISourceState } from './LinkedRdfSourcesAsyncRdfIterator.js';
+import { MediatedLinkedRdfSourcesAsyncRdfIterator } from './MediatedLinkedRdfSourcesAsyncRdfIterator.js';
+import { StreamingStoreMetadata } from './StreamingStoreMetadata.js';
 
 export class QuerySourceHypermedia implements IQuerySource {
   public readonly referenceValue: string;

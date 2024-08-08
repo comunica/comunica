@@ -8,7 +8,7 @@ import type {
   IModuleState,
   LogLevel,
 } from 'componentsjs';
-import type { Runner } from './Runner';
+import type { Runner } from './Runner.js';
 
 const process: NodeJS.Process = require('process/');
 

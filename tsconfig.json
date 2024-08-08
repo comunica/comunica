@@ -6,7 +6,8 @@
       "es2021",
       "dom"
     ],
-    "module": "commonjs",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "resolveJsonModule": true,
 
     "strict": true,
@@ -21,8 +22,8 @@
     "sourceMap": true
   },
   "include": [
-    "engines/*/bin/**/*",
-    "engines/*/lib/**/*",
+    // "engines/*/bin/**/*",
+    // "engines/*/lib/**/*",
     "packages/*/bin/**/*",
     "packages/*/lib/**/*",
     "packages/*/benchmarks/**/*",

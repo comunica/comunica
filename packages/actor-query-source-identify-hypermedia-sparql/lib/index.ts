@@ -1,2 +1,2 @@
-export * from './ActorQuerySourceIdentifyHypermediaSparql';
-export * from './QuerySourceSparql';
+export * from './ActorQuerySourceIdentifyHypermediaSparql.js';
+export * from './QuerySourceSparql.js';

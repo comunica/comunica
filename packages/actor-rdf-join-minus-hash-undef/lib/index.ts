@@ -1,1 +1,1 @@
-export * from './ActorRdfJoinMinusHashUndef';
+export * from './ActorRdfJoinMinusHashUndef.js';

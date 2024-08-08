@@ -1,1 +1,1 @@
-export * from './ActorRdfJoinMultiSmallest';
+export * from './ActorRdfJoinMultiSmallest.js';

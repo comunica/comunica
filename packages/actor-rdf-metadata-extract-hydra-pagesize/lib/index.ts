@@ -1,1 +1,1 @@
-export * from './ActorRdfMetadataExtractHydraPagesize';
+export * from './ActorRdfMetadataExtractHydraPagesize.js';

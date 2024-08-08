@@ -11,7 +11,7 @@ import type {
 } from '@comunica/types';
 import { wrap } from 'asynciterator';
 import { Readable } from 'readable-stream';
-import type { ActionObserverHttp } from './ActionObserverHttp';
+import type { ActionObserverHttp } from './ActionObserverHttp.js';
 
 const process: NodeJS.Process = require('process/');
 

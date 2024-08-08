@@ -7,7 +7,7 @@ import type {
 } from '@comunica/bus-rdf-update-hypermedia';
 import { ActorRdfUpdateHypermedia } from '@comunica/bus-rdf-update-hypermedia';
 import type { IActorTest } from '@comunica/core';
-import { QuadDestinationPutLdp } from './QuadDestinationPutLdp';
+import { QuadDestinationPutLdp } from './QuadDestinationPutLdp.js';
 
 /**
  * A comunica Post LDP RDF Update Hypermedia Actor.

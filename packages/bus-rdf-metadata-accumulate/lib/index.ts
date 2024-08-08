@@ -1,1 +1,1 @@
-export * from './ActorRdfMetadataAccumulate';
+export * from './ActorRdfMetadataAccumulate.js';

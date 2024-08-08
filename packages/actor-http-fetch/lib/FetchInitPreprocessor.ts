@@ -2,7 +2,7 @@
 import { Agent as HttpAgent } from 'node:http';
 import { Agent as HttpsAgent } from 'node:https';
 import { ActorHttp } from '@comunica/bus-http';
-import type { IFetchInitPreprocessor } from './IFetchInitPreprocessor';
+import type { IFetchInitPreprocessor } from './IFetchInitPreprocessor.js';
 
 /**
  * Overrides the HTTP agent to perform better in Node.js.

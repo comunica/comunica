@@ -1,1 +1,1 @@
-export * from './ActorRdfMetadataExtract';
+export * from './ActorRdfMetadataExtract.js';

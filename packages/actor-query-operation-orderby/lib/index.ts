@@ -1,1 +1,1 @@
-export * from './ActorQueryOperationOrderBy';
+export * from './ActorQueryOperationOrderBy.js';

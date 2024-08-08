@@ -1,1 +1,1 @@
-export * from './ActorOptimizeQueryOperationPruneEmptySourceOperations';
+export * from './ActorOptimizeQueryOperationPruneEmptySourceOperations.js';

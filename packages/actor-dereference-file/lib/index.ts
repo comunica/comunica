@@ -1,1 +1,1 @@
-export * from './ActorDereferenceFile';
+export * from './ActorDereferenceFile.js';

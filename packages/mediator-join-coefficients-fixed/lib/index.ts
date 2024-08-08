@@ -1,1 +1,1 @@
-export * from './MediatorJoinCoefficientsFixed';
+export * from './MediatorJoinCoefficientsFixed.js';

@@ -1,1 +1,1 @@
-export * from './ActorRdfParseXmlRdfa';
+export * from './ActorRdfParseXmlRdfa.js';

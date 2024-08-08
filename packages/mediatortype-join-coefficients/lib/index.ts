@@ -1,1 +1,1 @@
-export * from './IMediatorTypeJoinCoefficients';
+export * from './IMediatorTypeJoinCoefficients.js';

@@ -1,3 +1,3 @@
-export * from './ActorContextPreprocessQuerySourceSkolemize';
-export * from './QuerySourceSkolemized';
-export * from './utils';
+export * from './ActorContextPreprocessQuerySourceSkolemize.js';
+export * from './QuerySourceSkolemized.js';
+export * from './utils.js';

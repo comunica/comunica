@@ -6,7 +6,7 @@ import type { IActorTest } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext } from '@comunica/types';
 import { JsonLdParser } from 'jsonld-streaming-parser';
 import type { Readable } from 'readable-stream';
-import { DocumentLoaderMediated } from './DocumentLoaderMediated';
+import { DocumentLoaderMediated } from './DocumentLoaderMediated.js';
 
 /**
  * A JSON-LD RDF Parse actor that listens on the 'rdf-parse' bus.

@@ -11,9 +11,9 @@ import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { UnionIterator, ArrayIterator, MultiTransformIterator, BufferedIterator } from 'asynciterator';
 import { termToString } from 'rdf-string';
-import { BindingsIndexDef } from './BindingsIndexDef';
-import { BindingsIndexUndef } from './BindingsIndexUndef';
-import type { IBindingsIndex } from './IBindingsIndex';
+import { BindingsIndexDef } from './BindingsIndexDef.js';
+import { BindingsIndexUndef } from './BindingsIndexUndef.js';
+import type { IBindingsIndex } from './IBindingsIndex.js';
 
 /**
  * A comunica Optional Hash RDF Join Actor.

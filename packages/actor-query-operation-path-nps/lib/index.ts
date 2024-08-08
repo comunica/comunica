@@ -1,1 +1,1 @@
-export * from './ActorQueryOperationPathNps';
+export * from './ActorQueryOperationPathNps.js';

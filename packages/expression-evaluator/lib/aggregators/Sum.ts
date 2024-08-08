@@ -1,10 +1,10 @@
 import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import type * as E from '../expressions';
-import { regularFunctions } from '../functions';
-import { integer } from '../functions/Helpers';
-import * as C from '../util/Consts';
-import { AggregatorComponent } from './Aggregator';
+import type * as E from '../expressions/index.js';
+import { regularFunctions } from '../functions/index.js';
+import { integer } from '../functions/Helpers.js';
+import * as C from '../util/Consts.js';
+import { AggregatorComponent } from './Aggregator.js';
 
 type SumState = E.NumericLiteral;
 

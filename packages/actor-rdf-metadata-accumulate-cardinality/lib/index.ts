@@ -1,1 +1,1 @@
-export * from './ActorRdfMetadataAccumulateCardinality';
+export * from './ActorRdfMetadataAccumulateCardinality.js';

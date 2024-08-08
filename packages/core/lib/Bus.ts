@@ -1,5 +1,5 @@
-import type { ActionObserver } from './ActionObserver';
-import type { Actor, IAction, IActorOutput, IActorTest } from './Actor';
+import type { ActionObserver } from './ActionObserver.js';
+import type { Actor, IAction, IActorOutput, IActorTest } from './Actor.js';
 
 /**
  * A publish-subscribe bus for sending actions to actors

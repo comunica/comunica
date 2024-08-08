@@ -13,9 +13,9 @@ import { Suite } from 'benchmark';
 import Benchmark = require('benchmark');
 import { DataFactory } from 'rdf-data-factory';
 import { translate } from 'sparqlalgebrajs';
-import { SyncEvaluator } from '../lib';
-import { TypeURL } from '../lib/util/Consts';
-import { template } from '../test/util/Aliases';
+import { SyncEvaluator } from '../lib/index.js';
+import { TypeURL } from '../lib/util/Consts.js';
+import { template } from '../test/util/Aliases.js';
 
 const benchSuite = new Suite();
 const DF = new DataFactory();

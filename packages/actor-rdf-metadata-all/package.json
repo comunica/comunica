@@ -21,7 +21,7 @@
   ],
   "sideEffects": false,
   "main": "lib/index.js",
-  "typings": "lib/index",
+  "typings": "lib/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
@@ -40,5 +40,7 @@
     "@comunica/bus-rdf-metadata": "^3.2.1",
     "@comunica/core": "^3.2.1",
     "readable-stream": "^4.4.2"
-  }
+  },
+  "type": "module",
+  "module": "lib/index.js"
 }

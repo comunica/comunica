@@ -11,7 +11,7 @@ import { AsyncEvaluator, isExpressionError, orderTypes } from '@comunica/express
 import type { Bindings, ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
 import type { Term } from '@rdfjs/types';
 import { Algebra } from 'sparqlalgebrajs';
-import { SortIterator } from './SortIterator';
+import { SortIterator } from './SortIterator.js';
 
 /**
  * A comunica OrderBy Sparqlee Query Operation Actor.

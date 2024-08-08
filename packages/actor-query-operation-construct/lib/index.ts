@@ -1,2 +1,2 @@
-export * from './ActorQueryOperationConstruct';
-export * from './BindingsToQuadsIterator';
+export * from './ActorQueryOperationConstruct.js';
+export * from './BindingsToQuadsIterator.js';

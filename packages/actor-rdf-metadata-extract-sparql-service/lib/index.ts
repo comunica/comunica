@@ -1,1 +1,1 @@
-export * from './ActorRdfMetadataExtractSparqlService';
+export * from './ActorRdfMetadataExtractSparqlService.js';

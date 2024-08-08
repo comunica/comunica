@@ -1,3 +1,3 @@
-export * from './ActorQuerySourceIdentifyRdfJs';
-export * from './IRdfJsSourceExtended';
-export * from './QuerySourceRdfJs';
+export * from './ActorQuerySourceIdentifyRdfJs.js';
+export * from './IRdfJsSourceExtended.js';
+export * from './QuerySourceRdfJs.js';

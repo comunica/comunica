@@ -1,1 +1,1 @@
-export * from './ActorRdfJoinOptionalOptPlus';
+export * from './ActorRdfJoinOptionalOptPlus.js';

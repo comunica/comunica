@@ -1,1 +1,1 @@
-export * from './MediatorTypeTime';
+export * from './MediatorTypeTime.js';

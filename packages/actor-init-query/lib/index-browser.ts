@@ -1,5 +1,5 @@
 /* eslint-disable unicorn/filename-case */
 /* eslint-enable unicorn/filename-case */
-export * from './ActorInitQueryBase';
-export * from './ActorInitQuery-browser';
-export { QueryEngineBase } from './QueryEngineBase';
+export * from './ActorInitQueryBase.js';
+export * from './ActorInitQuery-browser.js';
+export { QueryEngineBase } from './QueryEngineBase.js';

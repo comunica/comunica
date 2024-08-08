@@ -19,7 +19,7 @@
   ],
   "sideEffects": false,
   "main": "lib/index.js",
-  "typings": "lib/index",
+  "typings": "lib/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
@@ -43,5 +43,7 @@
     "@jeswr/stream-to-string": "^2.0.0",
     "jsonld-context-parser": "^2.2.2",
     "jsonld-streaming-parser": "^3.0.1"
-  }
+  },
+  "type": "module",
+  "module": "lib/index.js"
 }

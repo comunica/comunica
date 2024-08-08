@@ -1,2 +1,2 @@
-export * from './ActionObserverHttp';
-export * from './ActorQueryResultSerializeSparqlJson';
+export * from './ActionObserverHttp.js';
+export * from './ActorQueryResultSerializeSparqlJson.js';

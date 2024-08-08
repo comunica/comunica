@@ -20,7 +20,7 @@
   ],
   "sideEffects": false,
   "main": "lib/index.js",
-  "typings": "lib/index",
+  "typings": "lib/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
@@ -39,5 +39,7 @@
     "@rdfjs/types": "*",
     "jsonld-context-parser": "^2.2.2",
     "sparqlalgebrajs": "^4.3.7"
-  }
+  },
+  "type": "module",
+  "module": "lib/index.js"
 }

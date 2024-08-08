@@ -1,1 +1,1 @@
-export * from './ActorHttpNative';
+export * from './ActorHttpNative.js';

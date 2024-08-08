@@ -1,2 +1,2 @@
-export * from './ActorQuerySourceIdentify';
-export * from './Utils';
+export * from './ActorQuerySourceIdentify.js';
+export * from './Utils.js';

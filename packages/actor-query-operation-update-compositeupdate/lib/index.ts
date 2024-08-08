@@ -1,1 +1,1 @@
-export * from './ActorQueryOperationUpdateCompositeUpdate';
+export * from './ActorQueryOperationUpdateCompositeUpdate.js';

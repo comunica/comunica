@@ -1,1 +1,1 @@
-export * from './ActorDereferenceFallback';
+export * from './ActorDereferenceFallback.js';

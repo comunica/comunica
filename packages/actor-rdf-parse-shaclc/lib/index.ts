@@ -1,1 +1,1 @@
-export * from './ActorRdfParseShaclc';
+export * from './ActorRdfParseShaclc.js';

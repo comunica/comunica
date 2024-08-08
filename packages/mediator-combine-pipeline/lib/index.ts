@@ -1,1 +1,1 @@
-export * from './MediatorCombinePipeline';
+export * from './MediatorCombinePipeline.js';

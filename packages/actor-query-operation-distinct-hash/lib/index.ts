@@ -1,1 +1,1 @@
-export * from './ActorQueryOperationDistinctHash';
+export * from './ActorQueryOperationDistinctHash.js';

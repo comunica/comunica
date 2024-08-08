@@ -6,7 +6,7 @@ import {
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { MetadataBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { BindingsIndex } from './BindingsIndex';
+import { BindingsIndex } from './BindingsIndex.js';
 
 /**
  * A comunica Minus Hash RDF Join Actor.

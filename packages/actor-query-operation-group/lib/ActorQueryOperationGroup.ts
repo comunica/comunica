@@ -9,7 +9,7 @@ import { AsyncEvaluator } from '@comunica/expression-evaluator';
 import type { BindingsStream, ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
 import { ArrayIterator, TransformIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
-import { GroupsState } from './GroupsState';
+import { GroupsState } from './GroupsState.js';
 
 /**
  * A comunica Group Query Operation Actor.

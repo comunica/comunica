@@ -14,7 +14,7 @@ import { AsyncIterator, wrap as wrapAsyncIterator } from 'asynciterator';
 import { someTermsNested, filterTermsNested, someTerms, uniqTerms } from 'rdf-terms';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
-import type { IRdfJsSourceExtended } from './IRdfJsSourceExtended';
+import type { IRdfJsSourceExtended } from './IRdfJsSourceExtended.js';
 
 export class QuerySourceRdfJs implements IQuerySource {
   protected readonly selectorShape: FragmentSelectorShape;

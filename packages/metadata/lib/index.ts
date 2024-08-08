@@ -1,2 +1,2 @@
-export * from './MetadataValidationState';
-export * from './Utils';
+export * from './MetadataValidationState.js';
+export * from './Utils.js';

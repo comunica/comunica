@@ -1,1 +1,1 @@
-export * from './ActorQueryOperationPathZeroOrMore';
+export * from './ActorQueryOperationPathZeroOrMore.js';

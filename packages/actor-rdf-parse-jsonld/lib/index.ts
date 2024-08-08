@@ -1,2 +1,2 @@
-export * from './ActorRdfParseJsonLd';
-export * from './DocumentLoaderMediated';
+export * from './ActorRdfParseJsonLd.js';
+export * from './DocumentLoaderMediated.js';

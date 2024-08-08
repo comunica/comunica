@@ -1,1 +1,1 @@
-export * from './ActorRdfMetadataPrimaryTopic';
+export * from './ActorRdfMetadataPrimaryTopic.js';

@@ -4,17 +4,17 @@
  */
 import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import type { ICompleteSharedContext } from '../evaluators/evaluatorHelpers/BaseExpressionEvaluator';
-import type { Literal, TermExpression, Quad, ISerializable } from '../expressions';
-import * as E from '../expressions';
-import { NonLexicalLiteral } from '../expressions';
-import * as C from '../util/Consts';
-import { TypeURL } from '../util/Consts';
-import type { IDateTimeRepresentation } from '../util/DateTimeHelpers';
-import * as Err from '../util/Errors';
-import type { ArgumentType } from './Core';
-import type { ImplementationFunction, ImplementationFunctionTuple } from './OverloadTree';
-import { OverloadTree } from './OverloadTree';
+import type { ICompleteSharedContext } from '../evaluators/evaluatorHelpers/BaseExpressionEvaluator.js';
+import type { Literal, TermExpression, Quad, ISerializable } from '../expressions/index.js';
+import * as E from '../expressions/index.js';
+import { NonLexicalLiteral } from '../expressions/index.js';
+import * as C from '../util/Consts.js';
+import { TypeURL } from '../util/Consts.js';
+import type { IDateTimeRepresentation } from '../util/DateTimeHelpers.js';
+import * as Err from '../util/Errors.js';
+import type { ArgumentType } from './Core.js';
+import type { ImplementationFunction, ImplementationFunctionTuple } from './OverloadTree.js';
+import { OverloadTree } from './OverloadTree.js';
 
 type Term = E.TermExpression;
 

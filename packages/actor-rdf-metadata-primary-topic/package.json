@@ -21,7 +21,7 @@
   ],
   "sideEffects": false,
   "main": "lib/index.js",
-  "typings": "lib/index",
+  "typings": "lib/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
@@ -41,5 +41,7 @@
     "@comunica/core": "^3.2.1",
     "@rdfjs/types": "*",
     "readable-stream": "^4.4.2"
-  }
+  },
+  "type": "module",
+  "module": "lib/index.js"
 }

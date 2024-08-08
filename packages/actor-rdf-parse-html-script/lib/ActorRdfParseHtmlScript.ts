@@ -6,7 +6,7 @@ import type {
 } from '@comunica/bus-rdf-parse-html';
 import { ActorRdfParseHtml } from '@comunica/bus-rdf-parse-html';
 import type { IActorTest } from '@comunica/core';
-import { HtmlScriptListener } from './HtmlScriptListener';
+import { HtmlScriptListener } from './HtmlScriptListener.js';
 
 /**
  * A HTML script RDF Parse actor that listens on the 'rdf-parse' bus.

@@ -21,7 +21,7 @@
   ],
   "sideEffects": false,
   "main": "lib/index.js",
-  "typings": "lib/index",
+  "typings": "lib/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
@@ -38,8 +38,10 @@
   },
   "dependencies": {
     "@comunica/bus-rdf-serialize": "^3.2.1",
-    "arrayify-stream": "^2.0.1",
+    "arrayify-stream": "rubensworks/arrayify-stream.js#689373893cc5af2f0b629c9313ac2ecc6ce24579",
     "readable-stream": "^4.4.2",
     "shaclc-write": "^1.4.2"
-  }
+  },
+  "type": "module",
+  "module": "lib/index.js"
 }

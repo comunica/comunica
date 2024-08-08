@@ -21,7 +21,7 @@
   ],
   "sideEffects": false,
   "main": "lib/index.js",
-  "typings": "lib/index",
+  "typings": "lib/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
@@ -44,5 +44,7 @@
     "@rdfjs/types": "*",
     "rdf-store-stream": "^2.0.0",
     "readable-stream": "^4.2.0"
-  }
+  },
+  "type": "module",
+  "module": "lib/index.js"
 }

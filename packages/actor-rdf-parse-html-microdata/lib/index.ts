@@ -1,1 +1,1 @@
-export * from './ActorRdfParseHtmlMicrodata';
+export * from './ActorRdfParseHtmlMicrodata.js';

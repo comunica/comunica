@@ -1,7 +1,7 @@
 import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
-import type { EvalContextAsync, EvalContextSync } from '../functions';
+import type { EvalContextAsync, EvalContextSync } from '../functions/index.js';
 
 export enum ExpressionType {
   Aggregate = 'aggregate',

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { runArgs } from '../lib/ArgsRunner';
+import { runArgs } from '../lib/ArgsRunner.js';
 
 const process: NodeJS.Process = require('process/');
 

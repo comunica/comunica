@@ -1,9 +1,9 @@
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 
-import type { AggregateExpression } from './Expressions';
+import type { AggregateExpression } from './Expressions.js';
 import {
   ExpressionType,
-} from './Expressions';
+} from './Expressions.js';
 
 export class Aggregate implements AggregateExpression {
   public expressionType: ExpressionType.Aggregate = ExpressionType.Aggregate;

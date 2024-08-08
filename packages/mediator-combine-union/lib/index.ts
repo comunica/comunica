@@ -1,1 +1,1 @@
-export * from './MediatorCombineUnion';
+export * from './MediatorCombineUnion.js';

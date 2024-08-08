@@ -1,1 +1,1 @@
-export * from './ActorQueryResultSerializeSparqlXml';
+export * from './ActorQueryResultSerializeSparqlXml.js';

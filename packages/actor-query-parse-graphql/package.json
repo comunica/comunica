@@ -21,7 +21,7 @@
   ],
   "sideEffects": false,
   "main": "lib/index.js",
-  "typings": "lib/index",
+  "typings": "lib/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
@@ -41,5 +41,7 @@
     "@comunica/context-entries": "^3.2.1",
     "@comunica/core": "^3.2.1",
     "graphql-to-sparql": "^3.0.1"
-  }
+  },
+  "type": "module",
+  "module": "lib/index.js"
 }

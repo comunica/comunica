@@ -1,2 +1,2 @@
-export * from './ActorRdfSerialize';
-export * from './ActorRdfSerializeFixedMediaTypes';
+export * from './ActorRdfSerialize.js';
+export * from './ActorRdfSerializeFixedMediaTypes.js';

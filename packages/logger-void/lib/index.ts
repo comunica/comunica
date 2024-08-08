@@ -1,1 +1,1 @@
-export * from './LoggerVoid';
+export * from './LoggerVoid.js';

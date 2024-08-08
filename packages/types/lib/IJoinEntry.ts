@@ -1,6 +1,6 @@
 import type { Algebra } from 'sparqlalgebrajs';
-import type { MetadataBindings } from './IMetadata';
-import type { IQueryOperationResultBindings } from './IQueryOperationResult';
+import type { MetadataBindings } from './IMetadata.js';
+import type { IQueryOperationResultBindings } from './IQueryOperationResult.js';
 
 /**
  * A joinable entry.

@@ -1,2 +1,2 @@
-export * from './Runner';
-export * from './Setup';
+export * from './Runner.js';
+export * from './Setup.js';

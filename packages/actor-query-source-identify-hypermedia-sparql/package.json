@@ -21,7 +21,7 @@
   ],
   "sideEffects": false,
   "main": "lib/index.js",
-  "typings": "lib/index",
+  "typings": "lib/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
@@ -49,5 +49,7 @@
     "fetch-sparql-endpoint": "^5.0.0",
     "lru-cache": "^10.0.0",
     "sparqlalgebrajs": "^4.3.7"
-  }
+  },
+  "type": "module",
+  "module": "lib/index.js"
 }

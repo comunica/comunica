@@ -1,1 +1,1 @@
-export * from './ActorRdfJoinEntriesSort';
+export * from './ActorRdfJoinEntriesSort.js';

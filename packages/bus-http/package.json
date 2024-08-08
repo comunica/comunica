@@ -20,7 +20,7 @@
   ],
   "sideEffects": false,
   "main": "lib/index.js",
-  "typings": "lib/index",
+  "typings": "lib/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
@@ -42,5 +42,7 @@
     "readable-from-web": "^1.0.0",
     "readable-stream-node-to-web": "^1.0.1",
     "web-streams-ponyfill": "^1.4.2"
-  }
+  },
+  "type": "module",
+  "module": "lib/index.js"
 }

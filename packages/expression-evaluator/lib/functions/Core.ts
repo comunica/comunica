@@ -1,10 +1,10 @@
 import type * as RDF from '@rdfjs/types';
-import type { ICompleteSharedContext } from '../evaluators/evaluatorHelpers/BaseExpressionEvaluator';
-import type * as E from '../expressions';
-import type * as C from '../util/Consts';
-import * as Err from '../util/Errors';
-import type { ISuperTypeProvider } from '../util/TypeHandling';
-import type { ImplementationFunction, OverloadTree, FunctionArgumentsCache } from './OverloadTree';
+import type { ICompleteSharedContext } from '../evaluators/evaluatorHelpers/BaseExpressionEvaluator.js';
+import type * as E from '../expressions/index.js';
+import type * as C from '../util/Consts.js';
+import * as Err from '../util/Errors.js';
+import type { ISuperTypeProvider } from '../util/TypeHandling.js';
+import type { ImplementationFunction, OverloadTree, FunctionArgumentsCache } from './OverloadTree.js';
 
 export interface IEvalSharedContext extends ICompleteSharedContext {
   args: E.Expression[];

@@ -1,1 +1,1 @@
-export * from './ActorRdfJoinMultiBind';
+export * from './ActorRdfJoinMultiBind.js';

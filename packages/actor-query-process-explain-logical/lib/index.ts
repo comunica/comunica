@@ -1,1 +1,1 @@
-export * from './ActorQueryProcessExplainLogical';
+export * from './ActorQueryProcessExplainLogical.js';

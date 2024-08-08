@@ -1,11 +1,11 @@
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
-import type { BindingsStream } from './Bindings';
-import type { IActionContext } from './IActionContext';
-import type { QueryAlgebraContext, QueryStringContext } from './IQueryContext';
-import type { IQueryExplained, QueryEnhanced, QueryExplainMode } from './IQueryOperationResult';
-import type { QuerySourceUnidentified } from './IQuerySource';
+import type { BindingsStream } from './Bindings.js';
+import type { IActionContext } from './IActionContext.js';
+import type { QueryAlgebraContext, QueryStringContext } from './IQueryContext.js';
+import type { IQueryExplained, QueryEnhanced, QueryExplainMode } from './IQueryOperationResult.js';
+import type { QuerySourceUnidentified } from './IQuerySource.js';
 
 export type QueryFormatType = string | Algebra.Operation;
 export type SourceType = QuerySourceUnidentified;

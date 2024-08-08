@@ -5,7 +5,7 @@ import type {
 } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import { ActorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import type { IActorTest } from '@comunica/core';
-import { LinkQueueFifo } from './LinkQueueFifo';
+import { LinkQueueFifo } from './LinkQueueFifo.js';
 
 /**
  * A comunica FIFO RDF Resolve Hypermedia Links Queue Actor.

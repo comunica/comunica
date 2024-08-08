@@ -1,1 +1,1 @@
-export * from './ActorQueryOperationSlice';
+export * from './ActorQueryOperationSlice.js';

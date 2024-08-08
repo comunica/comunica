@@ -11,7 +11,7 @@ import type { IActorTest } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { QuerySourceRdfJs } from './QuerySourceRdfJs';
+import { QuerySourceRdfJs } from './QuerySourceRdfJs.js';
 
 /**
  * A comunica RDFJS Query Source Identify Actor.

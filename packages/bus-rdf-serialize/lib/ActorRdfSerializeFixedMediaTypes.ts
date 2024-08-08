@@ -1,7 +1,7 @@
 import type { IActorArgsMediaTypedFixed } from '@comunica/actor-abstract-mediatyped';
 import { ActorAbstractMediaTypedFixed } from '@comunica/actor-abstract-mediatyped';
 import type { IActorTest } from '@comunica/core';
-import type { IActionRdfSerialize, IActorRdfSerializeOutput, ActorRdfSerialize } from './ActorRdfSerialize';
+import type { IActionRdfSerialize, IActorRdfSerializeOutput, ActorRdfSerialize } from './ActorRdfSerialize.js';
 
 /**
  * A base actor for listening to RDF serialize events that has fixed media types.

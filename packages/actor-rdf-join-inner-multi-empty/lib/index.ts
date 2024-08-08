@@ -1,1 +1,1 @@
-export * from './ActorRdfJoinMultiEmpty';
+export * from './ActorRdfJoinMultiEmpty.js';

@@ -1,1 +1,1 @@
-export * from './ActorRdfMetadataExtractAllowHttpMethods';
+export * from './ActorRdfMetadataExtractAllowHttpMethods.js';

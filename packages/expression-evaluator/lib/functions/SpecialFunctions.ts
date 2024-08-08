@@ -1,12 +1,12 @@
 import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import * as uuid from 'uuid';
-import * as E from '../expressions';
-import * as C from '../util/Consts';
-import * as Err from '../util/Errors';
-import { bool, declare, expressionToVar, langString, string } from './Helpers';
-import type { EvalContextAsync, EvalContextSync, OverloadTree } from '.';
-import { regularFunctions, specialFunctions } from '.';
+import * as E from '../expressions/index.js';
+import * as C from '../util/Consts.js';
+import * as Err from '../util/Errors.js';
+import { bool, declare, expressionToVar, langString, string } from './Helpers.js';
+import type { EvalContextAsync, EvalContextSync, OverloadTree } from './index.js';
+import { regularFunctions, specialFunctions } from './index.js';
 
 type Term = E.TermExpression;
 type PTerm = Promise<E.TermExpression>;

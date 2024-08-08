@@ -1,7 +1,7 @@
 import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { integer } from '../functions/Helpers';
-import { AggregatorComponent } from './Aggregator';
+import { integer } from '../functions/Helpers.js';
+import { AggregatorComponent } from './Aggregator.js';
 
 export class Count extends AggregatorComponent {
   private state: number | undefined = undefined;

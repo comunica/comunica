@@ -1,2 +1,2 @@
-export * from './ActorQueryResultSerialize';
-export * from './ActorQueryResultSerializeFixedMediaTypes';
+export * from './ActorQueryResultSerialize.js';
+export * from './ActorQueryResultSerializeFixedMediaTypes.js';

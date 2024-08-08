@@ -1,8 +1,8 @@
-import type { ICompleteSharedContext } from '../evaluators/evaluatorHelpers/BaseExpressionEvaluator';
-import type * as E from '../expressions';
-import { isLiteralTermExpression, TermExpression } from '../expressions';
-import type { KnownLiteralTypes } from '../util/Consts';
-import type { GeneralSuperTypeDict, ISuperTypeProvider, OverrideType } from '../util/TypeHandling';
+import type { ICompleteSharedContext } from '../evaluators/evaluatorHelpers/BaseExpressionEvaluator.js';
+import type * as E from '../expressions/index.js';
+import { isLiteralTermExpression, TermExpression } from '../expressions/index.js';
+import type { KnownLiteralTypes } from '../util/Consts.js';
+import type { GeneralSuperTypeDict, ISuperTypeProvider, OverrideType } from '../util/TypeHandling.js';
 import {
   asGeneralType,
   asKnownLiteralType,
@@ -10,8 +10,8 @@ import {
   getSuperTypes,
   superTypeDictTable,
   typePromotion,
-} from '../util/TypeHandling';
-import type { ArgumentType } from './Core';
+} from '../util/TypeHandling.js';
+import type { ArgumentType } from './Core.js';
 
 export type SearchStack = OverloadTree[];
 export type ImplementationFunction = (sharedContext: ICompleteSharedContext) => E.SimpleApplication;

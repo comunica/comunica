@@ -1,2 +1,2 @@
-export * from './ActorDereferenceHttp';
-export * from './ActorDereferenceHttpBase';
+export * from './ActorDereferenceHttp.js';
+export * from './ActorDereferenceHttpBase.js';

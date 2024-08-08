@@ -1,1 +1,1 @@
-export * from './ActorQueryOperationPathAlt';
+export * from './ActorQueryOperationPathAlt.js';

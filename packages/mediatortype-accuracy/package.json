@@ -20,7 +20,7 @@
   ],
   "sideEffects": false,
   "main": "lib/index.js",
-  "typings": "lib/index",
+  "typings": "lib/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
@@ -35,5 +35,7 @@
   },
   "dependencies": {
     "@comunica/core": "^3.2.1"
-  }
+  },
+  "type": "module",
+  "module": "lib/index.js"
 }

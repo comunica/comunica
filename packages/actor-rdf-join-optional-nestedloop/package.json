@@ -21,7 +21,7 @@
   ],
   "sideEffects": false,
   "main": "lib/index.js",
-  "typings": "lib/index",
+  "typings": "lib/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
@@ -41,5 +41,7 @@
     "@comunica/mediatortype-join-coefficients": "^3.2.1",
     "@comunica/types": "^3.2.1",
     "asyncjoin": "^1.2.3"
-  }
+  },
+  "type": "module",
+  "module": "lib/index.js"
 }

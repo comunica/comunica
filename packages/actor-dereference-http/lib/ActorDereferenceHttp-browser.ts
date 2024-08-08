@@ -2,7 +2,7 @@
 /* eslint-enable unicorn/filename-case */
 import {
   ActorDereferenceHttpBase,
-} from './ActorDereferenceHttpBase';
+} from './ActorDereferenceHttpBase.js';
 
 /**
  * The browser variant of {@link ActorDereferenceHttp}.

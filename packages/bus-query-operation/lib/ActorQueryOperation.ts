@@ -19,7 +19,7 @@ import type {
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
-import { materializeOperation } from './Bindings';
+import { materializeOperation } from './Bindings.js';
 
 /**
  * A counter that keeps track blank node generated through BNODE() SPARQL

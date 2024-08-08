@@ -8,7 +8,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { RdfJsQuadDestination } from './RdfJsQuadDestination';
+import { RdfJsQuadDestination } from './RdfJsQuadDestination.js';
 
 /**
  * A comunica RDFJS Store RDF Update Quads Actor.

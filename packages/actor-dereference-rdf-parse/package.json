@@ -22,7 +22,7 @@
   ],
   "sideEffects": false,
   "main": "lib/index.js",
-  "typings": "lib/index",
+  "typings": "lib/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
@@ -41,5 +41,7 @@
     "@comunica/bus-dereference": "^3.2.1",
     "@comunica/bus-dereference-rdf": "^3.2.1",
     "@comunica/bus-rdf-parse": "^3.2.1"
-  }
+  },
+  "type": "module",
+  "module": "lib/index.js"
 }

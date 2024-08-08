@@ -1,15 +1,15 @@
-import type * as C from '../util/Consts';
+import type * as C from '../util/Consts.js';
 
 import {
   NamedFunction,
   RegularFunction,
   SpecialFunction,
-} from './Core';
-import { namedDefinitions } from './NamedFunctions';
-import { definitions } from './RegularFunctions';
-import { specialDefinitions } from './SpecialFunctions';
+} from './Core.js';
+import { namedDefinitions } from './NamedFunctions.js';
+import { definitions } from './RegularFunctions.js';
+import { specialDefinitions } from './SpecialFunctions.js';
 
-export * from './Core';
+export * from './Core.js';
 
 export type RegularFunctionMap = Record<C.RegularOperator, RegularFunction>;
 export const regularFunctions: RegularFunctionMap = <RegularFunctionMap> Object.fromEntries(
@@ -27,5 +27,5 @@ export const namedFunctions: NamedFunctionMap = <NamedFunctionMap> Object.fromEn
   Object.entries(namedDefinitions).map(([ key, val ]) =>
     [ key, new NamedFunction(<C.NamedOperator>key, val) ]),
 );
-export { SearchStack } from './OverloadTree';
-export { OverloadTree } from './OverloadTree';
+export { SearchStack } from './OverloadTree.js';
+export { OverloadTree } from './OverloadTree.js';

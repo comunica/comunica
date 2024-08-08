@@ -3,7 +3,7 @@ import { ActionContext } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext, IActionContextKey } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { Map } from 'immutable';
-import { bindingsToString } from './bindingsToString';
+import { bindingsToString } from './bindingsToString.js';
 
 /**
  * An immutable.js-based Bindings object.

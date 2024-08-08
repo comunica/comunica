@@ -1,2 +1,2 @@
-export * from './ActorRdfUpdateHypermediaPutLdp';
-export * from './QuadDestinationPutLdp';
+export * from './ActorRdfUpdateHypermediaPutLdp.js';
+export * from './QuadDestinationPutLdp.js';

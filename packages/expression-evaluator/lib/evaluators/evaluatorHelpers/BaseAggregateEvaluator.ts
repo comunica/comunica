@@ -1,12 +1,12 @@
 import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { Algebra } from 'sparqlalgebrajs';
-import { aggregators } from '../../aggregators';
-import { Aggregator } from '../../aggregators/Aggregator';
-import { WildcardCountAggregator } from '../../aggregators/WildcardCountAggregator';
-import type { SetFunction } from '../../util/Consts';
-import * as Err from '../../util/Errors';
-import type { ICompleteSharedContext } from './BaseExpressionEvaluator';
+import { aggregators } from '../../aggregators/index.js';
+import { Aggregator } from '../../aggregators/Aggregator.js';
+import { WildcardCountAggregator } from '../../aggregators/WildcardCountAggregator.js';
+import type { SetFunction } from '../../util/Consts.js';
+import * as Err from '../../util/Errors.js';
+import type { ICompleteSharedContext } from './BaseExpressionEvaluator.js';
 
 export abstract class BaseAggregateEvaluator {
   protected expression: Algebra.AggregateExpression;

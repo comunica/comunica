@@ -1,1 +1,1 @@
-export * from './MediatorTypeAccuracy';
+export * from './MediatorTypeAccuracy.js';

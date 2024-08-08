@@ -21,7 +21,7 @@
   ],
   "sideEffects": false,
   "main": "lib/index.js",
-  "typings": "lib/index",
+  "typings": "lib/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
@@ -42,5 +42,7 @@
     "@comunica/core": "^3.2.1",
     "@comunica/types": "^3.1.0",
     "rdfa-streaming-parser": "^2.0.1"
-  }
+  },
+  "type": "module",
+  "module": "lib/index.js"
 }

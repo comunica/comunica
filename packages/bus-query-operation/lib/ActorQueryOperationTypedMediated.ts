@@ -1,6 +1,6 @@
 import type { Algebra } from 'sparqlalgebrajs';
-import type { IActorQueryOperationArgs, MediatorQueryOperation } from './ActorQueryOperation';
-import { ActorQueryOperationTyped } from './ActorQueryOperationTyped';
+import type { IActorQueryOperationArgs, MediatorQueryOperation } from './ActorQueryOperation.js';
+import { ActorQueryOperationTyped } from './ActorQueryOperationTyped.js';
 
 /**
  * A base implementation for query operation actors for a specific operation type that have a query operation mediator.

@@ -18,8 +18,8 @@ import type { IDynamicQueryEngineOptions } from '..';
 
 import { QueryEngineBase, QueryEngineFactoryBase } from '..';
 
-import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase';
-import { CliArgsHandlerHttp } from './cli/CliArgsHandlerHttp';
+import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase.js';
+import { CliArgsHandlerHttp } from './cli/CliArgsHandlerHttp.js';
 
 // Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
 const clusterUntyped = require('node:cluster');

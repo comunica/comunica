@@ -20,7 +20,7 @@
   ],
   "sideEffects": false,
   "main": "lib/index.js",
-  "typings": "lib/index",
+  "typings": "lib/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
@@ -40,5 +40,7 @@
     "@types/bunyan": "^1.8.8",
     "bunyan": "^1.8.15",
     "process": "^0.11.10"
-  }
+  },
+  "type": "module",
+  "module": "lib/index.js"
 }

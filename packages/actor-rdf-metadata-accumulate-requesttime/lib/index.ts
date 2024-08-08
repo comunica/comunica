@@ -1,1 +1,1 @@
-export * from './ActorRdfMetadataAccumulateRequestTime';
+export * from './ActorRdfMetadataAccumulateRequestTime.js';

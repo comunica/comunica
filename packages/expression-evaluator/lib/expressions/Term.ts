@@ -1,8 +1,8 @@
 import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { TermTransformer } from '../transformers/TermTransformer';
-import * as C from '../util/Consts';
-import { TypeAlias, TypeURL } from '../util/Consts';
+import { TermTransformer } from '../transformers/TermTransformer.js';
+import * as C from '../util/Consts.js';
+import { TypeAlias, TypeURL } from '../util/Consts.js';
 
 import type {
   IDateRepresentation,
@@ -10,13 +10,13 @@ import type {
   IDurationRepresentation,
   ITimeRepresentation,
   IYearMonthDurationRepresentation,
-} from '../util/DateTimeHelpers';
-import * as Err from '../util/Errors';
-import { serializeDateTime, serializeDuration, serializeTime, serializeDate } from '../util/Serialization';
-import type { ISuperTypeProvider } from '../util/TypeHandling';
-import { isSubTypeOf } from '../util/TypeHandling';
-import type { TermExpression, TermType } from './Expressions';
-import { ExpressionType } from './Expressions';
+} from '../util/DateTimeHelpers.js';
+import * as Err from '../util/Errors.js';
+import { serializeDateTime, serializeDuration, serializeTime, serializeDate } from '../util/Serialization.js';
+import type { ISuperTypeProvider } from '../util/TypeHandling.js';
+import { isSubTypeOf } from '../util/TypeHandling.js';
+import type { TermExpression, TermType } from './Expressions.js';
+import { ExpressionType } from './Expressions.js';
 
 export abstract class Term implements TermExpression {
   public expressionType: ExpressionType.Term = ExpressionType.Term;

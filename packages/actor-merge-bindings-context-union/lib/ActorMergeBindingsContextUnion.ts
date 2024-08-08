@@ -6,7 +6,7 @@ import type {
 } from '@comunica/bus-merge-bindings-context';
 import { ActorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorTest } from '@comunica/core';
-import { SetUnionBindingsContextMergeHandler } from './SetUnionBindingsContextMergeHandler';
+import { SetUnionBindingsContextMergeHandler } from './SetUnionBindingsContextMergeHandler.js';
 
 /**
  * A comunica Union Merge Bindings Context Actor.
