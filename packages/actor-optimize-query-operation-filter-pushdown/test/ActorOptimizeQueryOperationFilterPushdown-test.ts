@@ -18,7 +18,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
     let actor: ActorOptimizeQueryOperationFilterPushdown;
 
     beforeEach(() => {
-      actor = new ActorOptimizeQueryOperationFilterPushdown({ name: 'actor', bus });
+      actor = new ActorOptimizeQueryOperationFilterPushdown({ name: 'actor', bus, pushIntoLeftJoins: false });
     });
 
     it('should test', async() => {
@@ -575,17 +575,81 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
         });
       });
 
+      describe('for a left-join operation', () => {
+        describe('with pushIntoLeftJoins false', () => {
+          it('is not pushed down', async() => {
+            expect(filterPushdown(
+              AF.createTermExpression(DF.variable('s')),
+              AF.createLeftJoin(
+                AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+                AF.createPattern(DF.variable('so'), DF.namedNode('p2'), DF.namedNode('o2')),
+              ),
+            )).toEqual(
+              AF.createFilter(
+                AF.createLeftJoin(
+                  AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+                  AF.createPattern(DF.variable('so'), DF.namedNode('p2'), DF.namedNode('o2')),
+                ),
+                AF.createTermExpression(DF.variable('s')),
+              ),
+            );
+          });
+        });
+
+        describe('with pushIntoLeftJoins true', () => {
+          beforeEach(() => {
+            actor = new ActorOptimizeQueryOperationFilterPushdown({ name: 'actor', bus, pushIntoLeftJoins: true });
+          });
+
+          it('is pushed down when right variables do no intersect', async() => {
+            expect(filterPushdown(
+              AF.createTermExpression(DF.variable('s')),
+              AF.createLeftJoin(
+                AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+                AF.createPattern(DF.variable('so'), DF.namedNode('p2'), DF.namedNode('o2')),
+              ),
+            )).toEqual(
+              AF.createLeftJoin(
+                AF.createFilter(
+                  AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+                  AF.createTermExpression(DF.variable('s')),
+                ),
+                AF.createPattern(DF.variable('so'), DF.namedNode('p2'), DF.namedNode('o2')),
+              ),
+            );
+          });
+
+          it('is not pushed down when right variables intersect', async() => {
+            expect(filterPushdown(
+              AF.createTermExpression(DF.variable('s')),
+              AF.createLeftJoin(
+                AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+                AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
+              ),
+            )).toEqual(
+              AF.createFilter(
+                AF.createLeftJoin(
+                  AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+                  AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
+                ),
+                AF.createTermExpression(DF.variable('s')),
+              ),
+            );
+          });
+        });
+      });
+
       describe('for other operations', () => {
         it('is not pushed down', async() => {
           expect(filterPushdown(
             AF.createTermExpression(DF.variable('s')),
-            AF.createLeftJoin(
+            AF.createMinus(
               AF.createNop(),
               AF.createNop(),
             ),
           )).toEqual(
             AF.createFilter(
-              AF.createLeftJoin(
+              AF.createMinus(
                 AF.createNop(),
                 AF.createNop(),
               ),

@@ -34,3 +34,7 @@ After installing, this package can be added to your engine's configuration as fo
   ]
 }
 ```
+
+### Config Parameters
+
+* `pushIntoLeftJoins`: If filters should be pushed into left-joins. _(defaults to `false`)_

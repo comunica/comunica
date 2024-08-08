@@ -15,7 +15,9 @@ import { Algebra, Util } from 'sparqlalgebrajs';
  * A comunica Filter Pushdown Optimize Query Operation Actor.
  */
 export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQueryOperation {
-  public constructor(args: IActorOptimizeQueryOperationArgs) {
+  private readonly pushIntoLeftJoins: boolean;
+
+  public constructor(args: IActorOptimizeQueryOperationFilterPushdownArgs) {
     super(args);
   }
 
@@ -203,7 +205,23 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
           return factory.createFilter(operation, expression);
         }
         return operation;
-      case Algebra.types.LEFT_JOIN:
+      case Algebra.types.LEFT_JOIN: {
+        if (this.pushIntoLeftJoins) {
+          const rightVariables = Util.inScopeVariables(operation.input[1]);
+          if (!this.variablesIntersect(expressionVariables, rightVariables)) {
+            // If filter *only* applies to left entry of optional, push it down into that.
+            this.logDebug(context, `Push down filter into left join`);
+            return factory.createLeftJoin(
+              this.filterPushdown(expression, expressionVariables, operation.input[0], factory, context),
+              operation.input[1],
+              operation.expression,
+            );
+          }
+        }
+
+        // Don't push down in all other cases
+        return factory.createFilter(operation, expression);
+      }
       case Algebra.types.MINUS:
       case Algebra.types.ALT:
       case Algebra.types.ASK:
@@ -270,4 +288,13 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
   public isExpressionFalse(expression: Algebra.Expression): boolean {
     return (expression.term && expression.term.termType === 'Literal' && expression.term.value === 'false');
   }
+}
+
+export interface IActorOptimizeQueryOperationFilterPushdownArgs extends IActorOptimizeQueryOperationArgs {
+  /**
+   * If filters should be pushed into left-joins.
+   * @range {boolean}
+   * @default {false}
+   */
+  pushIntoLeftJoins: boolean;
 }
