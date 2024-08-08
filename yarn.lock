@@ -3986,13 +3986,8 @@ arrayify-stream@^1.0.0:
   resolved "https://registry.npmjs.org/arrayify-stream/-/arrayify-stream-1.0.0.tgz"
   integrity sha512-RP80ep76Lbew2wWN5ogrl2NluTnBVYYh2K3NNCcWfcmmUB7nBcNBctiJeEZAixp3I1vQ9H88iHZ9MbHSdkuupQ==
 
-arrayify-stream@^2.0.0, arrayify-stream@rubensworks/arrayify-stream.js#ac571dd01e754e4191266efbd2fa3c8ec409d3c2:
+arrayify-stream@^2.0.0, "arrayify-stream@file:../../rubensworks/arrayify-stream.js":
   version "2.0.1"
-  resolved "https://codeload.github.com/rubensworks/arrayify-stream.js/tar.gz/ac571dd01e754e4191266efbd2fa3c8ec409d3c2"
-
-arrayify-stream@rubensworks/arrayify-stream.js#689373893cc5af2f0b629c9313ac2ecc6ce24579:
-  version "2.0.1"
-  resolved "https://codeload.github.com/rubensworks/arrayify-stream.js/tar.gz/689373893cc5af2f0b629c9313ac2ecc6ce24579"
 
 arrify@^1.0.1:
   version "1.0.1"
@@ -4050,13 +4045,6 @@ asynciterator@^3.8.0, asynciterator@^3.8.1, asynciterator@^3.9.0:
   version "3.9.0"
   resolved "https://registry.npmjs.org/asynciterator/-/asynciterator-3.9.0.tgz"
   integrity sha512-bwLLTAnoE6Ap6XdjK/j8vDk2Vi9p3ojk0PFwM0SwktAG1k8pfRJF9ng+mmkaRFKdZCQQlOxcWnvOmX2NQ1HV0g==
-
-asyncjoin@^1.2.3:
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/asyncjoin/-/asyncjoin-1.2.3.tgz#f38f725f6a9ce222c01d0126d37cc025df3e0f0d"
-  integrity sha512-4OJH73zYDfIfbgr7wKfAKTgu/P2e/9r0o0NZ4KZu2tFtSf5uUVs/DjzpfY5BueOkkZcBhnq788MbZ57tjwyPIQ==
-  dependencies:
-    asynciterator "^3.9.0"
 
 asynckit@^0.4.0:
   version "0.4.0"

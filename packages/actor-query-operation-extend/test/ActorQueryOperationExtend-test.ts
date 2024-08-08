@@ -4,7 +4,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Actor, Bus } from '@comunica/core';
 import * as sparqlee from '@comunica/expression-evaluator';
 import type { IQueryOperationResultBindings } from '@comunica/types';
-import arrayifyStream from 'arrayify-stream';
+import { arrayifyStream } from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import '@comunica/jest';

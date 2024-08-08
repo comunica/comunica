@@ -3,7 +3,7 @@ import { KeysRdfParseHtmlScript } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
 import type { IActionContext } from '@comunica/types';
-import arrayifyStream from 'arrayify-stream';
+import { arrayifyStream } from 'arrayify-stream';
 import { ActorRdfParseShaclc } from '../lib/ActorRdfParseShaclc';
 
 const quad = require('rdf-quad');

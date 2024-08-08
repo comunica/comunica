@@ -14,7 +14,7 @@ import {
   someTerms,
   uniqTerms,
 } from 'rdf-terms';
-import { matchPatternMappings } from 'rdf-terms/lib/QuadTermUtil';
+import { matchPatternMappings } from 'rdf-terms';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**

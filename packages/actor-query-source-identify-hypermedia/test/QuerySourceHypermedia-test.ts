@@ -10,7 +10,7 @@ import { ActionContext } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext, MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import arrayifyStream from 'arrayify-stream';
+import { arrayifyStream } from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import 'jest-rdf';
 import { LRUCache } from 'lru-cache';

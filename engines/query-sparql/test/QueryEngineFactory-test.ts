@@ -1,7 +1,7 @@
 import type { QueryStringContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import 'jest-rdf';
-import arrayifyStream from 'arrayify-stream';
+import { arrayifyStream } from 'arrayify-stream';
 import { DataFactory } from 'rdf-data-factory';
 import { QueryEngineFactory } from '../lib/QueryEngineFactory';
 

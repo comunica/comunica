@@ -1,8 +1,8 @@
 import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { Bindings, MetadataBindings } from '@comunica/types';
-import { NestedLoopJoin } from 'asyncjoin';
+import type { MetadataBindings } from '@comunica/types';
+import { UnionIterator } from 'asynciterator';
 
 /**
  * A comunica NestedLoop RDF Join Actor.
@@ -18,12 +18,11 @@ export class ActorRdfJoinNestedLoop extends ActorRdfJoin {
   }
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
-    const join = new NestedLoopJoin<Bindings, Bindings, Bindings>(
-      action.entries[0].output.bindingsStream,
-      action.entries[1].output.bindingsStream,
-      <any> ActorRdfJoin.joinBindings,
-      { autoStart: false },
-    );
+    const join = new UnionIterator(action.entries[0].output.bindingsStream
+      .map(left => action.entries[1].output.bindingsStream.clone()
+        .map(right => ActorRdfJoin.joinBindings(left, right))
+      ), { autoStart: false });
+
     return {
       result: {
         type: 'bindings',

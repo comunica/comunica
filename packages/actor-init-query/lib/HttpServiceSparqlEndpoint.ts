@@ -14,9 +14,10 @@ import { ArrayIterator } from 'asynciterator';
 
 import yargs from 'yargs';
 
-import type { IDynamicQueryEngineOptions } from '..';
+import type { IDynamicQueryEngineOptions } from './QueryEngineFactoryBase.js';
 
-import { QueryEngineBase, QueryEngineFactoryBase } from '..';
+import { QueryEngineBase } from './QueryEngineBase.js';
+import { QueryEngineFactoryBase } from './QueryEngineFactoryBase.js';
 
 import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase.js';
 import { CliArgsHandlerHttp } from './cli/CliArgsHandlerHttp.js';

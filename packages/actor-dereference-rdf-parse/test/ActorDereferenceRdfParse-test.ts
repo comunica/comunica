@@ -11,7 +11,7 @@ import { emptyReadable } from '@comunica/bus-dereference';
 import { KeysCore, KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { LoggerVoid } from '@comunica/logger-void';
-import arrayifyStream from 'arrayify-stream';
+import { arrayifyStream } from 'arrayify-stream';
 import { ActorDereferenceRdfParse } from '../lib/ActorDereferenceRdfParse';
 
 describe('ActorAbstractDereferenceParse', () => {

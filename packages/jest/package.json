@@ -41,7 +41,7 @@
     "@comunica/bindings-factory": "^3.2.1",
     "@comunica/types": "^3.2.1",
     "@rdfjs/types": "*",
-    "arrayify-stream": "rubensworks/arrayify-stream.js#689373893cc5af2f0b629c9313ac2ecc6ce24579"
+    "arrayify-stream": "/home/jeswr/Documents/Github/rubensworks/arrayify-stream.js/"
   },
   "type": "module",
   "module": "lib/index.js"
