@@ -160,5 +160,6 @@
   },
   "browser": {
     "./lib/index.js": "./lib/index-browser.js"
-  }
+  },
+  "type": "module"
 }

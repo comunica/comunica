@@ -38,5 +38,6 @@
     "build": "yarn run build:ts && yarn run build:components",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
     "build:components": "componentsjs-generator"
-  }
+  },
+  "type": "module"
 }

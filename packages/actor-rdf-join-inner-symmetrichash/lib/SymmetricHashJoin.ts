@@ -48,14 +48,14 @@ export class SymmetricHashJoin<S, H, T> extends AsyncIterator<T> {
         this.matches = null;
     }
 
-    _end ()
+    override _end ()
     {
         super._end();
         this.left.destroy();
         this.right.destroy();
     }
 
-    read ()
+    override read ()
     {
         while(true){
             if (this.ended)

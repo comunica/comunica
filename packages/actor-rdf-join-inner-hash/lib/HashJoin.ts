@@ -48,14 +48,14 @@ export class HashJoin<S, H, T> extends AsyncIterator<T> {
         return !this.right.ended || this.matchIdx < this.matches.length;
     }
 
-    _end ()
+    override _end ()
     {
         super._end();
         this.left.destroy();
         this.right.destroy();
     }
 
-    read ()
+    override read ()
     {
         this._addDataListenerIfNeeded();
 

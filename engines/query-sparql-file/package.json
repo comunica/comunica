@@ -206,5 +206,6 @@
   "browser": {
     "./lib/index.js": "./lib/index-browser.js",
     "./engine-default.js": "./engine-browser.js"
-  }
+  },
+  "type": "module"
 }
