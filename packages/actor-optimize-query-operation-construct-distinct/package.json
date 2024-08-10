@@ -20,7 +20,7 @@
     "construct-distinct"
   ],
   "sideEffects": false,
-  "main": "lib/index.js",
+  "main": "lib/index.cjs",
   "typings": "lib/index.d.ts",
   "publishConfig": {
     "access": "public"
@@ -29,7 +29,9 @@
     "components",
     "lib/**/*.d.ts",
     "lib/**/*.js",
-    "lib/**/*.js.map"
+    "lib/**/*.js.map",
+    "lib/**/*.cjs",
+    "lib/**/*.cjs.map"
   ],
   "scripts": {
     "build": "yarn run build:ts && yarn run build:components",

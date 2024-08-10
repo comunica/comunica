@@ -21,12 +21,14 @@
     "messages"
   ],
   "sideEffects": false,
-  "main": "lib/index.js",
+  "main": "lib/index.cjs",
   "files": [
     "components",
     "lib/**/*.d.ts",
     "lib/**/*.js",
-    "lib/**/*.js.map"
+    "lib/**/*.js.map",
+    "lib/**/*.cjs",
+    "lib/**/*.cjs.map"
   ],
   "engines": {
     "node": ">=14.0"

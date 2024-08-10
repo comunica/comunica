@@ -20,7 +20,7 @@
     "messages"
   ],
   "sideEffects": false,
-  "main": "lib/index.js",
+  "main": "lib/index.cjs",
   "typings": "lib/index.d.ts",
   "publishConfig": {
     "access": "public"
@@ -28,7 +28,9 @@
   "files": [
     "lib/**/*.d.ts",
     "lib/**/*.js",
-    "lib/**/*.js.map"
+    "lib/**/*.js.map",
+    "lib/**/*.cjs",
+    "lib/**/*.cjs.map"
   ],
   "scripts": {
     "build": "node \"../../node_modules/typescript/bin/tsc\""

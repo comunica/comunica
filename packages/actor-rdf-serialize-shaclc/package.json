@@ -20,7 +20,7 @@
     "shaclc"
   ],
   "sideEffects": false,
-  "main": "lib/index.js",
+  "main": "lib/index.cjs",
   "typings": "lib/index.d.ts",
   "publishConfig": {
     "access": "public"
@@ -29,7 +29,9 @@
     "components",
     "lib/**/*.d.ts",
     "lib/**/*.js",
-    "lib/**/*.js.map"
+    "lib/**/*.js.map",
+    "lib/**/*.cjs",
+    "lib/**/*.cjs.map"
   ],
   "scripts": {
     "build": "yarn run build:ts && yarn run build:components",
@@ -38,7 +40,7 @@
   },
   "dependencies": {
     "@comunica/bus-rdf-serialize": "^3.2.1",
-    "arrayify-stream": "/home/jeswr/Documents/Github/rubensworks/arrayify-stream.js/",
+    "arrayify-stream": "^3.0.0",
     "readable-stream": "^4.4.2",
     "shaclc-write": "^1.4.2"
   },

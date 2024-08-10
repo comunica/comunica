@@ -12,9 +12,14 @@ for (const pkg of fs.readdirSync(path.join('packages'))) {
   // }
   const pkgJson = JSON.parse(fs.readFileSync(path.join('packages', pkg, 'package.json')));
   pkgJson.type = 'module';
-  pkgJson.main = 'lib/index.js';
+  pkgJson.main = 'lib/index.cjs';
   pkgJson.module = 'lib/index.js';
   pkgJson.typings = 'lib/index.d.ts';
+  pkgJson.files = [
+    ...pkgJson.files,
+    "lib/**/*.cjs",
+    "lib/**/*.cjs.map"
+  ],
   // pkgJson.scripts.rollup = "rollup --config rollup.config.mjs";
   fs.writeFileSync(path.join('packages', pkg, 'package.json'), JSON.stringify(pkgJson, null, 2) + '\n');
 }
