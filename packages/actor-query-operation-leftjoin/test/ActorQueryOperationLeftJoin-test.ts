@@ -13,6 +13,15 @@ import '@comunica/jest';
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
 
+jest.mock('@comunica/expression-evaluator', () => {
+  return {
+    // Allows the use of jest.spyOn later.
+    // @see https://stackoverflow.com/questions/67872622/jest-spyon-not-working-on-index-file-cannot-redefine-property
+    __esModule: true,
+    ...jest.requireActual('@comunica/expression-evaluator')
+  };
+});
+
 describe('ActorQueryOperationLeftJoin', () => {
   let bus: any;
   let mediatorQueryOperation: any;
@@ -242,9 +251,7 @@ describe('ActorQueryOperationLeftJoin', () => {
     it('should correctly handle hard erroring expressions', async() => {
       // Mock the expression error test so we can force 'a programming error' and test the branch
 
-      Object.defineProperty(sparqlee, 'isExpressionError', { writable: true });
-      // eslint-disable-next-line jest/prefer-spy-on
-      (<any> sparqlee).isExpressionError = jest.fn(() => false);
+      const isExpressionErrorSpy = jest.spyOn(sparqlee, 'isExpressionError').mockImplementation(() => false);
 
       const expression = {
         type: 'expression',
@@ -275,6 +282,8 @@ describe('ActorQueryOperationLeftJoin', () => {
         });
       });
       output.bindingsStream.destroy();
+
+      isExpressionErrorSpy.mockRestore();
     });
   });
 });

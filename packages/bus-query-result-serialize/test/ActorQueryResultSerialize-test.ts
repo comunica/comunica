@@ -1,5 +1,5 @@
 import { Bus } from '@comunica/core';
-import { ActorQueryResultSerialize } from '..';
+import { ActorQueryResultSerialize } from '../lib';
 
 describe('ActorQueryResultSerialize', () => {
   const bus = new Bus({ name: 'bus' });

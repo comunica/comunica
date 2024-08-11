@@ -1,5 +1,5 @@
-import type { IBus } from '..';
-import { Actor, Bus, Mediator } from '..';
+import type { IBus } from '../lib';
+import { Actor, Bus, Mediator } from '../lib';
 
 describe('Mediator', () => {
   let bus: IBus;

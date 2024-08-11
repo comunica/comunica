@@ -1,5 +1,5 @@
 import { Bus } from '@comunica/core';
-import { ActorQueryResultSerializeFixedMediaTypes } from '..';
+import { ActorQueryResultSerializeFixedMediaTypes } from '../lib';
 
 describe('ActorQueryResultSerializeFixedMediaTypes', () => {
   const bus = new Bus({ name: 'bus' });

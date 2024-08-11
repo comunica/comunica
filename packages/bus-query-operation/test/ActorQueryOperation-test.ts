@@ -6,7 +6,7 @@ import type { FunctionArgumentsCache } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra, Factory } from 'sparqlalgebrajs';
-import { ActorQueryOperation } from '..';
+import { ActorQueryOperation } from '../lib';
 
 const DF = new DataFactory();
 const AF = new Factory();

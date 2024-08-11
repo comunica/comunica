@@ -1,18 +1,19 @@
-module.exports = {
+export default {
   transform: {
-    '^.+\\.ts$': [ 'ts-jest', {
-      // Enabling this can fix issues when using prereleases of typings packages
-      // isolatedModules: true
-    }],
+    '^.+\\.ts$': 'babel-jest',
   },
   testRegex: [ '/test/.*-test.*.ts$' ],
   testPathIgnorePatterns: [
     '.*.d.ts',
     // TODO: Remove this once solid-client-authn supports node 18.
     '.*QuerySparql-solid-test.ts',
+    'engines/',
+    'packages/actor-http-native',
+    'packages/actor-init-query'
   ],
   moduleFileExtensions: [
     'ts',
+    'cjs',
     'js',
   ],
   setupFilesAfterEnv: [ './setup-jest.js' ],

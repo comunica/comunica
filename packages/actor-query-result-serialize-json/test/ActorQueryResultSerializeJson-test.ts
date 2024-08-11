@@ -7,7 +7,7 @@ import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { ActorQueryResultSerializeJson } from '..';
+import { ActorQueryResultSerializeJson } from '../lib';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);

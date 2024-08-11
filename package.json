@@ -10,7 +10,7 @@
   "scripts": {
     "test-changed": "lerna run test --since HEAD",
     "build-changed": "lerna run build --since HEAD",
-    "test": "jest",
+    "test": "yarn node --experimental-vm-modules $(yarn bin jest)",
     "test:ci": "jest --ci --maxWorkers=4 --coverage",
     "test:browser": "karma start karma.config.js --single-run",
     "lint": "eslint . --cache",

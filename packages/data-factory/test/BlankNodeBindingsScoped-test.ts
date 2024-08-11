@@ -1,5 +1,5 @@
 import { DataFactory } from 'rdf-data-factory';
-import { BlankNodeBindingsScoped } from '..';
+import { BlankNodeBindingsScoped } from '../lib';
 
 const DF = new DataFactory();
 

@@ -6,7 +6,7 @@ import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { ActorQueryResultSerializeSparqlTsv } from '..';
+import { ActorQueryResultSerializeSparqlTsv } from '../lib';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);

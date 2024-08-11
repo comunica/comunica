@@ -1,5 +1,5 @@
 import { Bus } from '@comunica/core';
-import { ActorRdfSerializeFixedMediaTypes } from '..';
+import { ActorRdfSerializeFixedMediaTypes } from '../lib';
 
 describe('ActorRdfSerializeFixedMediaTypes', () => {
   const bus = new Bus({ name: 'bus' });

@@ -1,7 +1,7 @@
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IPhysicalQueryPlanLogger } from '@comunica/types';
-import { ActorQueryOperationTyped } from '..';
+import { ActorQueryOperationTyped } from '../lib';
 
 describe('ActorQueryOperationTyped', () => {
   const bus = new Bus({ name: 'bus' });

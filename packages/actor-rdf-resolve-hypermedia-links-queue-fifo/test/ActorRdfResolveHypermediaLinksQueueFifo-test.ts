@@ -1,5 +1,5 @@
 import { ActionContext, Bus } from '@comunica/core';
-import { LinkQueueFifo } from '..';
+import { LinkQueueFifo } from '../lib';
 import { ActorRdfResolveHypermediaLinksQueueFifo } from '../lib/ActorRdfResolveHypermediaLinksQueueFifo';
 
 describe('ActorRdfResolveHypermediaLinksQueueFifo', () => {
