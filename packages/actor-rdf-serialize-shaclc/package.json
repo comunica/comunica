@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "@comunica/bus-rdf-serialize": "^3.2.1",
-    "arrayify-stream": "^2.0.1",
+    "arrayify-stream": "^3.0.0",
     "readable-stream": "^4.4.2",
     "shaclc-write": "^1.4.2"
   }

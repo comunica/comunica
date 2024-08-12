@@ -41,6 +41,6 @@
     "@comunica/bindings-factory": "^3.2.1",
     "@comunica/types": "^3.2.1",
     "@rdfjs/types": "*",
-    "arrayify-stream": "^2.0.1"
+    "arrayify-stream": "^3.0.0"
   }
 }
