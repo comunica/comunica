@@ -17,6 +17,7 @@ import { Algebra, Util } from 'sparqlalgebrajs';
 export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQueryOperation {
   private readonly maxIterations: number;
   private readonly splitConjunctive: boolean;
+  private readonly mergeConjunctive: boolean;
   private readonly pushIntoLeftJoins: boolean;
 
   public constructor(args: IActorOptimizeQueryOperationFilterPushdownArgs) {
@@ -80,6 +81,30 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
 
     if (iterations > 1) {
       self.logDebug(action.context, `Pushed down filters in ${iterations} iterations`);
+    }
+
+    // Merge nested filters into conjunctive filters
+    if (this.mergeConjunctive) {
+      operation = Util.mapOperation(operation, {
+        filter(op: Algebra.Filter, factory: Factory) {
+          if (op.input.type === Algebra.types.FILTER) {
+            const { nestedExpressions, input } = self.getNestedFilterExpressions(op);
+            self.logDebug(action.context, `Merge ${nestedExpressions.length} nested filters into conjunctive filter`);
+            return {
+              recurse: true,
+              result: factory.createFilter(
+                input,
+                nestedExpressions.slice(1).reduce((previous, current) =>
+                  factory.createOperatorExpression('&&', [ previous, current ]), nestedExpressions[0]),
+              ),
+            };
+          }
+          return {
+            recurse: true,
+            result: op,
+          };
+        },
+      });
     }
 
     return { operation, context: action.context };
@@ -356,6 +381,21 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
   public isExpressionFalse(expression: Algebra.Expression): boolean {
     return (expression.term && expression.term.termType === 'Literal' && expression.term.value === 'false');
   }
+
+  /**
+   * Get all directly nested filter expressions.
+   * As soon as a non-filter is found, it is returned as the input field.
+   * @param op A filter expression.
+   */
+  public getNestedFilterExpressions(
+    op: Algebra.Filter,
+  ): { nestedExpressions: Algebra.Expression[]; input: Algebra.Operation } {
+    if (op.input.type === Algebra.types.FILTER) {
+      const childData = this.getNestedFilterExpressions(op.input);
+      return { nestedExpressions: [ op.expression, ...childData.nestedExpressions ], input: childData.input };
+    }
+    return { nestedExpressions: [ op.expression ], input: op.input };
+  }
 }
 
 export interface IActorOptimizeQueryOperationFilterPushdownArgs extends IActorOptimizeQueryOperationArgs {
@@ -365,12 +405,18 @@ export interface IActorOptimizeQueryOperationFilterPushdownArgs extends IActorOp
    */
   maxIterations: number;
   /**
-   * If conjunctive filters should be split into nested filters.
+   * If conjunctive filters should be split into nested filters before applying filter pushdown.
    * This can enable pushing down deeper.
    * @range {boolean}
    * @default {true}
    */
   splitConjunctive: boolean;
+  /**
+   * If nested filters should be merged into conjunctive filters after applying filter pushdown.
+   * @range {boolean}
+   * @default {true}
+   */
+  mergeConjunctive: boolean;
   /**
    * If filters should be pushed into left-joins.
    * @range {boolean}

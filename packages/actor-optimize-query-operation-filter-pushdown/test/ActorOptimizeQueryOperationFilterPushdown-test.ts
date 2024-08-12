@@ -23,6 +23,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
         bus,
         maxIterations: 10,
         splitConjunctive: true,
+        mergeConjunctive: true,
         pushIntoLeftJoins: false,
       });
     });
@@ -89,6 +90,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           bus,
           maxIterations: 10,
           splitConjunctive: false,
+          mergeConjunctive: true,
           pushIntoLeftJoins: false,
         });
 
@@ -107,6 +109,63 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
         );
         const { operation: operationOut } = await actor.run({ context: new ActionContext(), operation: operationIn });
         expect(operationOut).toEqual(operationIn);
+      });
+
+      it('for an operation with nested filters', async() => {
+        const operationIn = AF.createFilter(
+          AF.createFilter(
+            AF.createFilter(
+              AF.createPattern(DF.variable('s1'), DF.variable('s2'), DF.variable('s3')),
+              AF.createTermExpression(DF.variable('s3')),
+            ),
+            AF.createTermExpression(DF.variable('s2')),
+          ),
+          AF.createTermExpression(DF.variable('s1')),
+        );
+        const { operation: operationOut } = await actor.run({ context: new ActionContext(), operation: operationIn });
+        expect(operationOut).toEqual(AF.createFilter(
+          AF.createPattern(DF.variable('s1'), DF.variable('s2'), DF.variable('s3')),
+          AF.createOperatorExpression('&&', [
+            AF.createOperatorExpression('&&', [
+              AF.createTermExpression(DF.variable('s2')),
+              AF.createTermExpression(DF.variable('s1')),
+            ]),
+            AF.createTermExpression(DF.variable('s3')),
+          ]),
+        ));
+      });
+
+      it('for an operation with nested filters with mergeConjunctive false', async() => {
+        actor = new ActorOptimizeQueryOperationFilterPushdown({
+          name: 'actor',
+          bus,
+          maxIterations: 10,
+          splitConjunctive: true,
+          mergeConjunctive: false,
+          pushIntoLeftJoins: false,
+        });
+
+        const operationIn = AF.createFilter(
+          AF.createFilter(
+            AF.createFilter(
+              AF.createPattern(DF.variable('s1'), DF.variable('s2'), DF.variable('s3')),
+              AF.createTermExpression(DF.variable('s3')),
+            ),
+            AF.createTermExpression(DF.variable('s2')),
+          ),
+          AF.createTermExpression(DF.variable('s1')),
+        );
+        const { operation: operationOut } = await actor.run({ context: new ActionContext(), operation: operationIn });
+        expect(operationOut).toEqual(AF.createFilter(
+          AF.createFilter(
+            AF.createFilter(
+              AF.createPattern(DF.variable('s1'), DF.variable('s2'), DF.variable('s3')),
+              AF.createTermExpression(DF.variable('s3')),
+            ),
+            AF.createTermExpression(DF.variable('s1')),
+          ),
+          AF.createTermExpression(DF.variable('s2')),
+        ));
       });
     });
 
@@ -652,6 +711,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               bus,
               maxIterations: 10,
               splitConjunctive: true,
+              mergeConjunctive: true,
               pushIntoLeftJoins: true,
             });
           });
