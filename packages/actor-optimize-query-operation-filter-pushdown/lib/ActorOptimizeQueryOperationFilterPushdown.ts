@@ -1,7 +1,7 @@
 import type {
   IActionOptimizeQueryOperation,
-  IActorOptimizeQueryOperationOutput,
   IActorOptimizeQueryOperationArgs,
+  IActorOptimizeQueryOperationOutput,
 } from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import type { IActorTest } from '@comunica/core';
@@ -15,6 +15,8 @@ import { Algebra, Util } from 'sparqlalgebrajs';
  * A comunica Filter Pushdown Optimize Query Operation Actor.
  */
 export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQueryOperation {
+  private readonly maxIterations: number;
+  private readonly splitConjunctive: boolean;
   private readonly pushIntoLeftJoins: boolean;
 
   public constructor(args: IActorOptimizeQueryOperationFilterPushdownArgs) {
@@ -26,19 +28,60 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
+    let operation: Algebra.Operation = action.operation;
     // eslint-disable-next-line ts/no-this-alias
     const self = this;
-    const operation = Util.mapOperation(action.operation, {
-      filter(op: Algebra.Filter, factory: Factory) {
-        // For all filter expressions in the operation,
-        // we attempt to push them down as deep as possible into the algebra.
-        const variables = self.getExpressionVariables(op.expression);
-        return {
-          recurse: true,
-          result: self.filterPushdown(op.expression, variables, op.input, factory, action.context),
-        };
-      },
-    });
+
+    // Split conjunctive filters into nested filters
+    if (this.splitConjunctive) {
+      operation = Util.mapOperation(operation, {
+        filter(op: Algebra.Filter, factory: Factory) {
+          // Split conjunctive filters into separate filters
+          if (op.expression.expressionType === Algebra.expressionTypes.OPERATOR && op.expression.operator === '&&') {
+            self.logDebug(action.context, `Split conjunctive filter into ${op.expression.args.length} nested filters`);
+            return {
+              recurse: true,
+              result: op.expression.args
+                .reduce((operation, expression) => factory.createFilter(operation, expression), op.input),
+            };
+          }
+          return {
+            recurse: true,
+            result: op,
+          };
+        },
+      });
+    }
+
+    // Push down all filters
+    // We loop until no more filters can be pushed down.
+    let repeat = true;
+    let iterations = 0;
+    while (repeat && iterations < this.maxIterations) {
+      repeat = false;
+      operation = Util.mapOperation(operation, {
+        filter(op: Algebra.Filter, factory: Factory) {
+          // For all filter expressions in the operation,
+          // we attempt to push them down as deep as possible into the algebra.
+          const variables = self.getExpressionVariables(op.expression);
+          const [ isModified, result ] = self
+            .filterPushdown(op.expression, variables, op.input, factory, action.context);
+          if (isModified) {
+            repeat = true;
+          }
+          return {
+            recurse: true,
+            result,
+          };
+        },
+      });
+      iterations++;
+    }
+
+    if (iterations > 1) {
+      self.logDebug(action.context, `Pushed down filters in ${iterations} iterations`);
+    }
+
     return { operation, context: action.context };
   }
 
@@ -106,7 +149,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
    * @param operation The operation to push down into.
    * @param factory An algebra factory.
    * @param context The action context.
-   * @return The modified operation.
+   * @return A tuple indicating if the operation was modified and the modified operation.
    */
   public filterPushdown(
     expression: Algebra.Expression,
@@ -114,32 +157,32 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     operation: Algebra.Operation,
     factory: Factory,
     context: IActionContext,
-  ): Algebra.Operation {
+  ): [ boolean, Algebra.Operation ] {
     if (this.isExpressionFalse(expression)) {
-      return factory.createUnion([]);
+      return [ true, factory.createUnion([]) ];
     }
 
     switch (operation.type) {
       case Algebra.types.EXTEND:
         // Pass if the variable is not part of the expression
         if (!this.variablesIntersect([ operation.variable ], expressionVariables)) {
-          return factory.createExtend(
-            this.filterPushdown(expression, expressionVariables, operation.input, factory, context),
+          return [ true, factory.createExtend(
+            this.filterPushdown(expression, expressionVariables, operation.input, factory, context)[1],
             operation.variable,
             operation.expression,
-          );
+          ) ];
         }
-        return factory.createFilter(operation, expression);
-      case Algebra.types.FILTER:
+        return [ false, factory.createFilter(operation, expression) ];
+      case Algebra.types.FILTER: {
         // Always pass
-        return factory.createFilter(
-          this.filterPushdown(expression, expressionVariables, operation.input, factory, context),
-          operation.expression,
-        );
+        const [ isModified, result ] = this
+          .filterPushdown(expression, expressionVariables, operation.input, factory, context);
+        return [ isModified, factory.createFilter(result, operation.expression) ];
+      }
       case Algebra.types.JOIN: {
         // Don't push down for empty join
         if (operation.input.length === 0) {
-          return factory.createFilter(operation, expression);
+          return [ false, factory.createFilter(operation, expression) ];
         }
 
         // Determine overlapping operations
@@ -150,10 +193,11 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
         } = this.getOverlappingOperations(operation, expressionVariables);
 
         const joins: Algebra.Operation[] = [];
-        this.logDebug(context, `Push down filter across join entries with ${fullyOverlapping.length} fully overlapping, ${partiallyOverlapping.length} partially overlapping, and ${notOverlapping.length} not overlapping`);
+        let isModified = false;
         if (fullyOverlapping.length > 0) {
+          isModified = true;
           joins.push(factory.createJoin(fullyOverlapping
-            .map(input => this.filterPushdown(expression, expressionVariables, input, factory, context))));
+            .map(input => this.filterPushdown(expression, expressionVariables, input, factory, context)[1])));
         }
         if (partiallyOverlapping.length > 0) {
           joins.push(factory.createFilter(factory.createJoin(partiallyOverlapping, false), expression));
@@ -162,20 +206,28 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
           joins.push(...notOverlapping);
         }
 
-        return joins.length === 1 ? joins[0] : factory.createJoin(joins);
+        if (joins.length > 1) {
+          isModified = true;
+        }
+
+        if (isModified) {
+          this.logDebug(context, `Push down filter across join entries with ${fullyOverlapping.length} fully overlapping, ${partiallyOverlapping.length} partially overlapping, and ${notOverlapping.length} not overlapping`);
+        }
+
+        return [ isModified, joins.length === 1 ? joins[0] : factory.createJoin(joins) ];
       }
       case Algebra.types.NOP:
-        return operation;
+        return [ true, operation ];
       case Algebra.types.PROJECT:
         // Push down if variables overlap
         if (this.variablesIntersect(operation.variables, expressionVariables)) {
-          return factory.createProject(
-            this.filterPushdown(expression, expressionVariables, operation.input, factory, context),
+          return [ true, factory.createProject(
+            this.filterPushdown(expression, expressionVariables, operation.input, factory, context)[1],
             operation.variables,
-          );
+          ) ];
         }
         // Void expression otherwise
-        return operation;
+        return [ true, operation ];
       case Algebra.types.UNION: {
         // Determine overlapping operations
         const {
@@ -185,10 +237,11 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
         } = this.getOverlappingOperations(operation, expressionVariables);
 
         const unions: Algebra.Operation[] = [];
-        this.logDebug(context, `Push down filter across union entries with ${fullyOverlapping.length} fully overlapping, ${partiallyOverlapping.length} partially overlapping, and ${notOverlapping.length} not overlapping`);
+        let isModified = false;
         if (fullyOverlapping.length > 0) {
+          isModified = true;
           unions.push(factory.createUnion(fullyOverlapping
-            .map(input => this.filterPushdown(expression, expressionVariables, input, factory, context))));
+            .map(input => this.filterPushdown(expression, expressionVariables, input, factory, context)[1])));
         }
         if (partiallyOverlapping.length > 0) {
           unions.push(factory.createFilter(factory.createUnion(partiallyOverlapping, false), expression));
@@ -197,30 +250,38 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
           unions.push(...notOverlapping);
         }
 
-        return unions.length === 1 ? unions[0] : factory.createUnion(unions);
+        if (unions.length > 1) {
+          isModified = true;
+        }
+
+        if (isModified) {
+          this.logDebug(context, `Push down filter across union entries with ${fullyOverlapping.length} fully overlapping, ${partiallyOverlapping.length} partially overlapping, and ${notOverlapping.length} not overlapping`);
+        }
+
+        return [ isModified, unions.length === 1 ? unions[0] : factory.createUnion(unions) ];
       }
       case Algebra.types.VALUES:
         // Only keep filter if it overlaps with the variables
         if (this.variablesIntersect(operation.variables, expressionVariables)) {
-          return factory.createFilter(operation, expression);
+          return [ false, factory.createFilter(operation, expression) ];
         }
-        return operation;
+        return [ true, operation ];
       case Algebra.types.LEFT_JOIN: {
         if (this.pushIntoLeftJoins) {
           const rightVariables = Util.inScopeVariables(operation.input[1]);
           if (!this.variablesIntersect(expressionVariables, rightVariables)) {
             // If filter *only* applies to left entry of optional, push it down into that.
             this.logDebug(context, `Push down filter into left join`);
-            return factory.createLeftJoin(
-              this.filterPushdown(expression, expressionVariables, operation.input[0], factory, context),
+            return [ true, factory.createLeftJoin(
+              this.filterPushdown(expression, expressionVariables, operation.input[0], factory, context)[1],
               operation.input[1],
               operation.expression,
-            );
+            ) ];
           }
         }
 
         // Don't push down in all other cases
-        return factory.createFilter(operation, expression);
+        return [ false, factory.createFilter(operation, expression) ];
       }
       case Algebra.types.MINUS:
       case Algebra.types.ALT:
@@ -257,7 +318,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
       case Algebra.types.COPY:
         // Operations that do not support pushing down
         // Left-join and minus might be possible to support in the future.
-        return factory.createFilter(operation, expression);
+        return [ false, factory.createFilter(operation, expression) ];
     }
   }
 
@@ -291,6 +352,18 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
 }
 
 export interface IActorOptimizeQueryOperationFilterPushdownArgs extends IActorOptimizeQueryOperationArgs {
+  /**
+   * The maximum number of full iterations across the query can be done for attempting to push down filters.
+   * @default {10}
+   */
+  maxIterations: number;
+  /**
+   * If conjunctive filters should be split into nested filters.
+   * This can enable pushing down deeper.
+   * @range {boolean}
+   * @default {true}
+   */
+  splitConjunctive: boolean;
   /**
    * If filters should be pushed into left-joins.
    * @range {boolean}
