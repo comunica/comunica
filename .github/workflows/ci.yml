@@ -55,7 +55,7 @@ jobs:
           max_attempts: 3
           command: yarn run test:browser
       - name: Submit coverage results
-        uses: coverallsapp/github-action@master
+        uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.github_token }}
           flag-name: run-${{ matrix.node-version }}
@@ -70,7 +70,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Consolidate test coverage from different jobs
-        uses: coverallsapp/github-action@master
+        uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.github_token }}
           parallel-finished: true
