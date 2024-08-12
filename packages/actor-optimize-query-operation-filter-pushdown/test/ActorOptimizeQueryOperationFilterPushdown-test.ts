@@ -1,7 +1,7 @@
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
 import { DataFactory } from 'rdf-data-factory';
-import type { Algebra } from 'sparqlalgebrajs';
-import { Factory } from 'sparqlalgebrajs';
+import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorOptimizeQueryOperationFilterPushdown } from '../lib/ActorOptimizeQueryOperationFilterPushdown';
 
 const AF = new Factory();
@@ -21,6 +21,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
       actor = new ActorOptimizeQueryOperationFilterPushdown({
         name: 'actor',
         bus,
+        aggressivePushdown: true,
         maxIterations: 10,
         splitConjunctive: true,
         mergeConjunctive: true,
@@ -57,6 +58,28 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
         ));
       });
 
+      it('for an operation with filter with aggressivePushdown false', async() => {
+        actor = new ActorOptimizeQueryOperationFilterPushdown({
+          name: 'actor',
+          bus,
+          aggressivePushdown: false,
+          maxIterations: 10,
+          splitConjunctive: true,
+          mergeConjunctive: true,
+          pushIntoLeftJoins: false,
+        });
+
+        const operationIn = AF.createFilter(
+          AF.createProject(
+            AF.createBgp([]),
+            [ DF.variable('s'), DF.variable('p') ],
+          ),
+          AF.createTermExpression(DF.variable('s')),
+        );
+        const { operation: operationOut } = await actor.run({ context: new ActionContext(), operation: operationIn });
+        expect(operationOut).toEqual(operationIn);
+      });
+
       it('for an operation with conjunctive filter', async() => {
         const operationIn = AF.createFilter(
           AF.createJoin([
@@ -88,6 +111,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
         actor = new ActorOptimizeQueryOperationFilterPushdown({
           name: 'actor',
           bus,
+          aggressivePushdown: true,
           maxIterations: 10,
           splitConjunctive: false,
           mergeConjunctive: true,
@@ -139,6 +163,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
         actor = new ActorOptimizeQueryOperationFilterPushdown({
           name: 'actor',
           bus,
+          aggressivePushdown: true,
           maxIterations: 10,
           splitConjunctive: true,
           mergeConjunctive: false,
@@ -166,6 +191,121 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           ),
           AF.createTermExpression(DF.variable('s2')),
         ));
+      });
+    });
+
+    describe('shouldAttemptPushDown', () => {
+      beforeEach(() => {
+        actor = new ActorOptimizeQueryOperationFilterPushdown({
+          name: 'actor',
+          bus,
+          aggressivePushdown: false,
+          maxIterations: 10,
+          splitConjunctive: true,
+          mergeConjunctive: true,
+          pushIntoLeftJoins: true,
+        });
+      });
+
+      it('returns true if aggressivePushdown is true', () => {
+        actor = new ActorOptimizeQueryOperationFilterPushdown({
+          name: 'actor',
+          bus,
+          aggressivePushdown: true,
+          maxIterations: 10,
+          splitConjunctive: true,
+          mergeConjunctive: true,
+          pushIntoLeftJoins: true,
+        });
+        const op = AF.createFilter(null!, null!);
+        expect(actor.shouldAttemptPushDown(op, new Map())).toBeTruthy();
+      });
+
+      it('returns true if the filter is extremely selective (1)', () => {
+        const op = AF.createFilter(AF.createNop(), AF.createOperatorExpression(
+          '=',
+          [
+            AF.createTermExpression(DF.variable('s')),
+            AF.createTermExpression(DF.namedNode('iri')),
+          ],
+        ));
+        expect(actor.shouldAttemptPushDown(op, new Map())).toBeTruthy();
+      });
+
+      it('returns true if the filter is extremely selective (2)', () => {
+        const op = AF.createFilter(AF.createNop(), AF.createOperatorExpression(
+          '=',
+          [
+            AF.createTermExpression(DF.namedNode('iri')),
+            AF.createTermExpression(DF.variable('s')),
+          ],
+        ));
+        expect(actor.shouldAttemptPushDown(op, new Map())).toBeTruthy();
+      });
+
+      it('returns true if federated', () => {
+        const src1 = <any> {};
+        const src2 = <any> {};
+        const op = AF.createFilter(
+          AF.createJoin([
+            ActorQueryOperation.assignOperationSource(
+              AF.createPattern(DF.variable('s1'), DF.namedNode('p'), DF.namedNode('o')),
+              src1,
+            ),
+            ActorQueryOperation.assignOperationSource(
+              AF.createPattern(DF.variable('s1'), DF.namedNode('p'), DF.namedNode('o')),
+              src2,
+            ),
+          ]),
+          AF.createTermExpression(DF.variable('v')),
+        );
+        expect(actor.shouldAttemptPushDown(op, new Map())).toBeTruthy();
+      });
+
+      it('returns true if single source with filter support', () => {
+        const src1 = <any> {};
+        const op = AF.createFilter(
+          ActorQueryOperation.assignOperationSource(
+            AF.createPattern(DF.variable('s1'), DF.namedNode('p'), DF.namedNode('o')),
+            src1,
+          ),
+          AF.createTermExpression(DF.variable('v')),
+        );
+        const shapes = new Map();
+        shapes.set(src1, {
+          type: 'operation',
+          operation: {
+            operationType: 'type',
+            type: Algebra.types.FILTER,
+          },
+        });
+        expect(actor.shouldAttemptPushDown(op, shapes)).toBeTruthy();
+      });
+
+      it('returns false otherwise', () => {
+        const src1 = <any> {};
+        const op = AF.createFilter(
+          AF.createJoin([
+            ActorQueryOperation.assignOperationSource(
+              AF.createPattern(DF.variable('s1'), DF.namedNode('p'), DF.namedNode('o')),
+              src1,
+            ),
+            ActorQueryOperation.assignOperationSource(
+              AF.createPattern(DF.variable('s2'), DF.namedNode('p'), DF.namedNode('o')),
+              src1,
+            ),
+          ]),
+          AF.createTermExpression(DF.variable('v')),
+        );
+        const shapes = new Map();
+        shapes.set(src1, {
+          type: 'operation',
+          operation: {
+            operationType: 'type',
+            type: Algebra.types.PATTERN,
+          },
+        });
+        expect(actor.shouldAttemptPushDown(op, shapes)).toBeFalsy();
       });
     });
 
@@ -709,6 +849,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             actor = new ActorOptimizeQueryOperationFilterPushdown({
               name: 'actor',
               bus,
+              aggressivePushdown: true,
               maxIterations: 10,
               splitConjunctive: true,
               mergeConjunctive: true,

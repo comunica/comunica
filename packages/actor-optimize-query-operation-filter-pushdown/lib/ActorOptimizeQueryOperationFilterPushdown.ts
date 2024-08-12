@@ -4,8 +4,9 @@ import type {
   IActorOptimizeQueryOperationOutput,
 } from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
-import type { IActionContext } from '@comunica/types';
+import type { FragmentSelectorShape, IActionContext, IQuerySourceWrapper } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { uniqTerms } from 'rdf-terms';
 import type { Factory } from 'sparqlalgebrajs';
@@ -15,6 +16,7 @@ import { Algebra, Util } from 'sparqlalgebrajs';
  * A comunica Filter Pushdown Optimize Query Operation Actor.
  */
 export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQueryOperation {
+  private readonly aggressivePushdown: boolean;
   private readonly maxIterations: number;
   private readonly splitConjunctive: boolean;
   private readonly mergeConjunctive: boolean;
@@ -54,6 +56,12 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
       });
     }
 
+    // Collect selector shapes of all operations
+    const sources = this.getSources(operation);
+    // eslint-disable-next-line ts/no-unnecessary-type-assertion
+    const sourceShapes = new Map(<[IQuerySourceWrapper, FragmentSelectorShape][]> await Promise.all([ ...sources ]
+      .map(async source => [ source, await source.source.getSelectorShape(action.context) ])));
+
     // Push down all filters
     // We loop until no more filters can be pushed down.
     let repeat = true;
@@ -62,6 +70,14 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
       repeat = false;
       operation = Util.mapOperation(operation, {
         filter(op: Algebra.Filter, factory: Factory) {
+          // Check if the filter must be pushed down
+          if (!self.shouldAttemptPushDown(op, sourceShapes)) {
+            return {
+              recurse: true,
+              result: op,
+            };
+          }
+
           // For all filter expressions in the operation,
           // we attempt to push them down as deep as possible into the algebra.
           const variables = self.getExpressionVariables(op.expression);
@@ -108,6 +124,73 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     }
 
     return { operation, context: action.context };
+  }
+
+  /**
+   * Check if the given filter operation must be attempted to push down, based on the following criteria:
+   * - Always push down if aggressive mode is enabled
+   * - Push down if the filter is extremely selective
+   * - Push down if federated
+   * - Push down if single source accepts the query
+   * @param operation The filter operation
+   * @param sourceShapes A mapping of sources to selector shapes.
+   */
+  public shouldAttemptPushDown(
+    operation: Algebra.Filter,
+    sourceShapes: Map<IQuerySourceWrapper, FragmentSelectorShape>,
+  ): boolean {
+    // Always push down if aggressive mode is enabled
+    if (this.aggressivePushdown) {
+      return true;
+    }
+
+    // Push down if the filter is extremely selective
+    const expression = operation.expression;
+    if (expression.expressionType === Algebra.expressionTypes.OPERATOR &&
+      expression.operator === '=' &&
+      ((expression.args[0].expressionType === 'term' && expression.args[0].term.termType !== 'Variable' &&
+          expression.args[1].expressionType === 'term' && expression.args[1].term.termType === 'Variable') ||
+        (expression.args[0].expressionType === 'term' && expression.args[0].term.termType === 'Variable' &&
+          expression.args[1].expressionType === 'term' && expression.args[1].term.termType !== 'Variable'))) {
+      return true;
+    }
+
+    // Push down if federated
+    const sources = this.getSources(operation);
+    if (sources.size > 1) {
+      return true;
+    }
+
+    // Push down if single source accepts the query
+    if (sources.size === 1 &&
+      ActorQueryOperation.doesShapeAcceptOperation(sourceShapes.get([ ...sources ][0])!, operation)) {
+      return true;
+    }
+
+    // Don't push down in all other cases
+    return false;
+  }
+
+  /**
+   * Collected all sources that are defined within the given operation of children recursively.
+   * @param operation An operation.
+   */
+  public getSources(operation: Algebra.Operation): Set<IQuerySourceWrapper> {
+    const sources = new Set<IQuerySourceWrapper>();
+    const sourceAdder = (subOperation: Algebra.Operation): boolean => {
+      const src = ActorQueryOperation.getOperationSource(subOperation);
+      if (src) {
+        sources.add(src);
+      }
+      return false;
+    };
+    Util.recurseOperation(operation, {
+      [Algebra.types.PATTERN]: sourceAdder,
+      [Algebra.types.LINK]: sourceAdder,
+      [Algebra.types.NPS]: sourceAdder,
+      [Algebra.types.SERVICE]: sourceAdder,
+    });
+    return sources;
   }
 
   /**
@@ -399,6 +482,14 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
 }
 
 export interface IActorOptimizeQueryOperationFilterPushdownArgs extends IActorOptimizeQueryOperationArgs {
+  /**
+   * If filters should be pushed down as deep as possible.
+   * If false, filters will only be pushed down if the source(s) accept them,
+   * or if the filter is very selective.
+   * @range {boolean}
+   * @default {false}
+   */
+  aggressivePushdown: boolean;
   /**
    * The maximum number of full iterations across the query can be done for attempting to push down filters.
    * @default {10}
