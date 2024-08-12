@@ -158,8 +158,15 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     factory: Factory,
     context: IActionContext,
   ): [ boolean, Algebra.Operation ] {
+    // Void false expressions
     if (this.isExpressionFalse(expression)) {
       return [ true, factory.createUnion([]) ];
+    }
+
+    // Don't push down (NOT) EXISTS
+    if (expression.type === Algebra.types.EXPRESSION &&
+      expression.expressionType === Algebra.expressionTypes.EXISTENCE) {
+      return [ false, factory.createFilter(operation, expression) ];
     }
 
     switch (operation.type) {

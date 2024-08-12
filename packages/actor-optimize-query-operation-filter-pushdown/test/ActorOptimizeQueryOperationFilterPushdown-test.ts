@@ -293,6 +293,22 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             AF.createFilter(AF.createBgp([]), AF.createTermExpression(DF.variable('b'))),
           )).toEqual([ true, AF.createUnion([]) ]);
         });
+
+        it('is not pushed down for existence expressions', async() => {
+          expect(filterPushdown(
+            AF.createExistenceExpression(false, AF.createNop()),
+            AF.createJoin([
+              AF.createPattern(DF.variable('a'), DF.variable('a'), DF.variable('a')),
+              AF.createPattern(DF.variable('b'), DF.variable('b'), DF.variable('b')),
+            ]),
+          )).toEqual([ false, AF.createFilter(
+            AF.createJoin([
+              AF.createPattern(DF.variable('a'), DF.variable('a'), DF.variable('a')),
+              AF.createPattern(DF.variable('b'), DF.variable('b'), DF.variable('b')),
+            ]),
+            AF.createExistenceExpression(false, AF.createNop()),
+          ) ]);
+        });
       });
 
       describe('for a join operation', () => {
