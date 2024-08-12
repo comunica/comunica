@@ -511,7 +511,7 @@ export interface IActorOptimizeQueryOperationFilterPushdownArgs extends IActorOp
   /**
    * If filters should be pushed into left-joins.
    * @range {boolean}
-   * @default {false}
+   * @default {true}
    */
   pushIntoLeftJoins: boolean;
 }
