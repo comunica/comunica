@@ -26,6 +26,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
         splitConjunctive: true,
         mergeConjunctive: true,
         pushIntoLeftJoins: false,
+        pushEqualityIntoPatterns: true,
       });
     });
 
@@ -67,6 +68,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           splitConjunctive: true,
           mergeConjunctive: true,
           pushIntoLeftJoins: false,
+          pushEqualityIntoPatterns: true,
         });
 
         const operationIn = AF.createFilter(
@@ -116,6 +118,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           splitConjunctive: false,
           mergeConjunctive: true,
           pushIntoLeftJoins: false,
+          pushEqualityIntoPatterns: true,
         });
 
         const operationIn = AF.createFilter(
@@ -168,6 +171,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           splitConjunctive: true,
           mergeConjunctive: false,
           pushIntoLeftJoins: false,
+          pushEqualityIntoPatterns: true,
         });
 
         const operationIn = AF.createFilter(
@@ -204,6 +208,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           splitConjunctive: true,
           mergeConjunctive: true,
           pushIntoLeftJoins: true,
+          pushEqualityIntoPatterns: true,
         });
       });
 
@@ -216,6 +221,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           splitConjunctive: true,
           mergeConjunctive: true,
           pushIntoLeftJoins: true,
+          pushEqualityIntoPatterns: true,
         });
         const op = AF.createFilter(null!, null!);
         expect(actor.shouldAttemptPushDown(op, [], new Map())).toBeTruthy();
@@ -883,6 +889,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               splitConjunctive: true,
               mergeConjunctive: true,
               pushIntoLeftJoins: true,
+              pushEqualityIntoPatterns: true,
             });
           });
 
@@ -915,6 +922,290 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
                 AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
               ),
               AF.createTermExpression(DF.variable('s')),
+            ) ]);
+          });
+        });
+      });
+
+      describe('for a pattern operation', () => {
+        describe('with pushEqualityIntoPatterns true', () => {
+          it('is pushed down for ?s=<s>', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('s')),
+                AF.createTermExpression(DF.namedNode('s')),
+              ]),
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+            )).toEqual([ true, AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o1')) ]);
+          });
+
+          it('is pushed down for ?s=<s>, and keeps source annotations', async() => {
+            const src1 = <any> {};
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('s')),
+                AF.createTermExpression(DF.namedNode('s')),
+              ]),
+              ActorQueryOperation
+                .assignOperationSource(AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')), src1),
+            )).toEqual([ true, ActorQueryOperation
+              .assignOperationSource(AF
+                .createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o1')), src1) ]);
+          });
+
+          it('is pushed down for ?s=<s> into quoted triple', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('s')),
+                AF.createTermExpression(DF.namedNode('s')),
+              ]),
+              AF.createPattern(
+                DF.quad(DF.variable('s'), DF.variable('s'), DF.variable('s')),
+                DF.variable('p'),
+                DF.namedNode('o1'),
+              ),
+            )).toEqual([ true, AF.createPattern(
+              DF.quad(DF.namedNode('s'), DF.namedNode('s'), DF.namedNode('s')),
+              DF.variable('p'),
+              DF.namedNode('o1'),
+            ) ]);
+          });
+
+          it('is pushed down for <s>=?s', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.namedNode('s')),
+                AF.createTermExpression(DF.variable('s')),
+              ]),
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+            )).toEqual([ true, AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o1')) ]);
+          });
+
+          it('is pushed down for ?s=_:s', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('s')),
+                AF.createTermExpression(DF.blankNode('s')),
+              ]),
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+            )).toEqual([ true, AF.createPattern(DF.blankNode('s'), DF.variable('p'), DF.namedNode('o1')) ]);
+          });
+
+          it('is pushed down for ?o="o"', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('o')),
+                AF.createTermExpression(DF.literal('o')),
+              ]),
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+            )).toEqual([ true, AF.createPattern(DF.variable('s'), DF.variable('p'), DF.literal('o')) ]);
+          });
+
+          it('is pushed down for "o"=?o', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.literal('o')),
+                AF.createTermExpression(DF.variable('o')),
+              ]),
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+            )).toEqual([ true, AF.createPattern(DF.variable('s'), DF.variable('p'), DF.literal('o')) ]);
+          });
+
+          it('is not pushed down for ?o="01"^xsd:number', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('o')),
+                AF.createTermExpression(DF.literal('o', DF.namedNode('http://www.w3.org/2001/XMLSchema#number'))),
+              ]),
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+            )).toEqual([ false, AF.createFilter(
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('o')),
+                AF.createTermExpression(DF.literal('o', DF.namedNode('http://www.w3.org/2001/XMLSchema#number'))),
+              ]),
+            ) ]);
+          });
+
+          it('is not pushed down for "01"^xsd:number=?o', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.literal('o', DF.namedNode('http://www.w3.org/2001/XMLSchema#number'))),
+                AF.createTermExpression(DF.variable('o')),
+              ]),
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+            )).toEqual([ false, AF.createFilter(
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.literal('o', DF.namedNode('http://www.w3.org/2001/XMLSchema#number'))),
+                AF.createTermExpression(DF.variable('o')),
+              ]),
+            ) ]);
+          });
+
+          it('is not pushed down for ?o=("a" + "b")', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('o')),
+                AF.createOperatorExpression('+', [
+                  AF.createTermExpression(DF.literal('a')),
+                  AF.createTermExpression(DF.literal('b')),
+                ]),
+              ]),
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+            )).toEqual([ false, AF.createFilter(
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('o')),
+                AF.createOperatorExpression('+', [
+                  AF.createTermExpression(DF.literal('a')),
+                  AF.createTermExpression(DF.literal('b')),
+                ]),
+              ]),
+            ) ]);
+          });
+
+          it('is not pushed down for ("a" + "b")=?o', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createOperatorExpression('+', [
+                  AF.createTermExpression(DF.literal('a')),
+                  AF.createTermExpression(DF.literal('b')),
+                ]),
+                AF.createTermExpression(DF.variable('o')),
+              ]),
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+            )).toEqual([ false, AF.createFilter(
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+              AF.createOperatorExpression('=', [
+                AF.createOperatorExpression('+', [
+                  AF.createTermExpression(DF.literal('a')),
+                  AF.createTermExpression(DF.literal('b')),
+                ]),
+                AF.createTermExpression(DF.variable('o')),
+              ]),
+            ) ]);
+          });
+        });
+
+        describe('with pushEqualityIntoPatterns false', () => {
+          beforeEach(() => {
+            actor = new ActorOptimizeQueryOperationFilterPushdown({
+              name: 'actor',
+              bus,
+              aggressivePushdown: true,
+              maxIterations: 10,
+              splitConjunctive: true,
+              mergeConjunctive: true,
+              pushIntoLeftJoins: true,
+              pushEqualityIntoPatterns: false,
+            });
+          });
+
+          it('is pushed down for ?s=<s>', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('s')),
+                AF.createTermExpression(DF.namedNode('s')),
+              ]),
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+            )).toEqual([ false, AF.createFilter(
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('s')),
+                AF.createTermExpression(DF.namedNode('s')),
+              ]),
+            ) ]);
+          });
+        });
+      });
+
+      describe('for a path operation', () => {
+        describe('with pushEqualityIntoPatterns true', () => {
+          it('is pushed down for ?s=<s>', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('s')),
+                AF.createTermExpression(DF.namedNode('s')),
+              ]),
+              AF.createPath(DF.variable('s'), AF.createNps([]), DF.namedNode('o1')),
+            )).toEqual([ true, AF.createPath(DF.namedNode('s'), AF.createNps([]), DF.namedNode('o1')) ]);
+          });
+
+          it('is pushed down for <s>=?s', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.namedNode('s')),
+                AF.createTermExpression(DF.variable('s')),
+              ]),
+              AF.createPath(DF.variable('s'), AF.createNps([]), DF.namedNode('o1')),
+            )).toEqual([ true, AF.createPath(DF.namedNode('s'), AF.createNps([]), DF.namedNode('o1')) ]);
+          });
+
+          it('is pushed down for ?o="o"', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('o')),
+                AF.createTermExpression(DF.literal('o')),
+              ]),
+              AF.createPath(DF.variable('s'), AF.createNps([]), DF.variable('o')),
+            )).toEqual([ true, AF.createPath(DF.variable('s'), AF.createNps([]), DF.literal('o')) ]);
+          });
+
+          it('is pushed down for "o"=?o', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.literal('o')),
+                AF.createTermExpression(DF.variable('o')),
+              ]),
+              AF.createPath(DF.variable('s'), AF.createNps([]), DF.variable('o')),
+            )).toEqual([ true, AF.createPath(DF.variable('s'), AF.createNps([]), DF.literal('o')) ]);
+          });
+
+          it('is not pushed down for ?o="01"^xsd:number', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('o')),
+                AF.createTermExpression(DF.literal('o', DF.namedNode('http://www.w3.org/2001/XMLSchema#number'))),
+              ]),
+              AF.createPath(DF.variable('s'), AF.createNps([]), DF.variable('o')),
+            )).toEqual([ false, AF.createFilter(
+              AF.createPath(DF.variable('s'), AF.createNps([]), DF.variable('o')),
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('o')),
+                AF.createTermExpression(DF.literal('o', DF.namedNode('http://www.w3.org/2001/XMLSchema#number'))),
+              ]),
+            ) ]);
+          });
+        });
+
+        describe('with pushEqualityIntoPatterns false', () => {
+          beforeEach(() => {
+            actor = new ActorOptimizeQueryOperationFilterPushdown({
+              name: 'actor',
+              bus,
+              aggressivePushdown: true,
+              maxIterations: 10,
+              splitConjunctive: true,
+              mergeConjunctive: true,
+              pushIntoLeftJoins: true,
+              pushEqualityIntoPatterns: false,
+            });
+          });
+
+          it('is pushed down for ?s=<s>', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('s')),
+                AF.createTermExpression(DF.namedNode('s')),
+              ]),
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+            )).toEqual([ false, AF.createFilter(
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('s')),
+                AF.createTermExpression(DF.namedNode('s')),
+              ]),
             ) ]);
           });
         });

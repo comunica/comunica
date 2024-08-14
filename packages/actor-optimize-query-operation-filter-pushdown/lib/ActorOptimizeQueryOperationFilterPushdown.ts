@@ -8,7 +8,7 @@ import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
 import type { FragmentSelectorShape, IActionContext, IQuerySourceWrapper } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { uniqTerms } from 'rdf-terms';
+import { mapTermsNested, uniqTerms } from 'rdf-terms';
 import type { Factory } from 'sparqlalgebrajs';
 import { Algebra, Util } from 'sparqlalgebrajs';
 
@@ -21,6 +21,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
   private readonly splitConjunctive: boolean;
   private readonly mergeConjunctive: boolean;
   private readonly pushIntoLeftJoins: boolean;
+  private readonly pushEqualityIntoPatterns: boolean;
 
   public constructor(args: IActorOptimizeQueryOperationFilterPushdownArgs) {
     super(args);
@@ -392,6 +393,53 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
         // Don't push down in all other cases
         return [ false, factory.createFilter(operation, expression) ];
       }
+      case Algebra.types.PATTERN: {
+        if (this.pushEqualityIntoPatterns) {
+          // Try to push simple FILTER(?s = <iri>) expressions into the pattern
+          const pushableResult = this.getEqualityExpressionPushableIntoPattern(expression);
+          if (pushableResult) {
+            let isModified = false;
+            const originalMetadata = operation.metadata;
+            operation = mapTermsNested(operation, (value) => {
+              if (value.equals(pushableResult.variable)) {
+                isModified = true;
+                return pushableResult.term;
+              }
+              return value;
+            });
+            operation.type = Algebra.types.PATTERN;
+            operation.metadata = originalMetadata;
+            if (isModified) {
+              this.logDebug(context, `Push down filter into pattern for ?${pushableResult.variable.value}`);
+              return [ true, operation ];
+            }
+          }
+        }
+
+        // Don't push down in all other cases
+        return [ false, factory.createFilter(operation, expression) ];
+      }
+      case Algebra.types.PATH: {
+        if (this.pushEqualityIntoPatterns) {
+          // Try to push simple FILTER(?s = <iri>) expressions into the path
+          const pushableResult = this.getEqualityExpressionPushableIntoPattern(expression);
+          if (pushableResult &&
+            (operation.subject.equals(pushableResult.variable) || operation.object.equals(pushableResult.variable))) {
+            this.logDebug(context, `Push down filter into path for ?${pushableResult.variable.value}`);
+            const originalMetadata = operation.metadata;
+            operation = factory.createPath(
+              operation.subject.equals(pushableResult.variable) ? pushableResult.term : operation.subject,
+              operation.predicate,
+              operation.object.equals(pushableResult.variable) ? pushableResult.term : operation.object,
+            );
+            operation.metadata = originalMetadata;
+            return [ true, operation ];
+          }
+        }
+
+        // Don't push down in all other cases
+        return [ false, factory.createFilter(operation, expression) ];
+      }
       case Algebra.types.MINUS:
       case Algebra.types.ALT:
       case Algebra.types.ASK:
@@ -408,12 +456,10 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
       case Algebra.types.NPS:
       case Algebra.types.ONE_OR_MORE_PATH:
       case Algebra.types.ORDER_BY:
-      case Algebra.types.PATTERN:
       case Algebra.types.REDUCED:
       case Algebra.types.SEQ:
       case Algebra.types.SERVICE:
       case Algebra.types.SLICE:
-      case Algebra.types.PATH:
       case Algebra.types.ZERO_OR_MORE_PATH:
       case Algebra.types.ZERO_OR_ONE_PATH:
       case Algebra.types.COMPOSITE_UPDATE:
@@ -429,6 +475,65 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
         // Left-join and minus might be possible to support in the future.
         return [ false, factory.createFilter(operation, expression) ];
     }
+  }
+
+  /**
+   * Check if the given expression is a simple equals operation with one variable and one non-literal
+   * (or literal with canonical lexical form) term that can be pushed into a pattern.
+   * @param expression The current expression.
+   * @return The variable and term to fill into the pattern, or undefined.
+   */
+  public getEqualityExpressionPushableIntoPattern(
+    expression: Algebra.Expression,
+  ): { variable: RDF.Variable; term: RDF.Term } | undefined {
+    if (expression.expressionType === Algebra.expressionTypes.OPERATOR && expression.operator === '=') {
+      if (expression.args[0].expressionType === 'term' && expression.args[0].term.termType !== 'Variable' &&
+        (expression.args[0].term.termType !== 'Literal' ||
+          this.isLiteralWithCanonicalLexicalForm(expression.args[0].term)) &&
+        expression.args[1].expressionType === 'term' && expression.args[1].term.termType === 'Variable') {
+        return {
+          variable: expression.args[1].term,
+          term: expression.args[0].term,
+        };
+      }
+      if (expression.args[0].expressionType === 'term' && expression.args[0].term.termType === 'Variable' &&
+        expression.args[1].expressionType === 'term' && expression.args[1].term.termType !== 'Variable' &&
+        (expression.args[1].term.termType !== 'Literal' ||
+          this.isLiteralWithCanonicalLexicalForm(expression.args[1].term))) {
+        return {
+          variable: expression.args[0].term,
+          term: expression.args[1].term,
+        };
+      }
+    }
+  }
+
+  /**
+   * Check if the given term is a literal with datatype that where all values
+   * can only have one possible lexical representation.
+   * In other words, no variants of values exist that should be considered equal.
+   * For example: "01"^xsd:number and "1"^xsd:number will return false.
+   * @param term An RDF term.
+   * @protected
+   */
+  protected isLiteralWithCanonicalLexicalForm(term: RDF.Term): boolean {
+    if (term.termType === 'Literal') {
+      switch (term.datatype.value) {
+        case 'http://www.w3.org/2001/XMLSchema#string':
+        case 'http://www.w3.org/1999/02/22-rdf-syntax-ns#langString':
+        case 'http://www.w3.org/2001/XMLSchema#normalizedString':
+        case 'http://www.w3.org/2001/XMLSchema#anyURI':
+        case 'http://www.w3.org/2001/XMLSchema#base64Binary':
+        case 'http://www.w3.org/2001/XMLSchema#language':
+        case 'http://www.w3.org/2001/XMLSchema#Name':
+        case 'http://www.w3.org/2001/XMLSchema#NCName':
+        case 'http://www.w3.org/2001/XMLSchema#NMTOKEN':
+        case 'http://www.w3.org/2001/XMLSchema#token':
+        case 'http://www.w3.org/2001/XMLSchema#hexBinary':
+          return true;
+      }
+    }
+    return false;
   }
 
   /**
@@ -508,4 +613,11 @@ export interface IActorOptimizeQueryOperationFilterPushdownArgs extends IActorOp
    * @default {true}
    */
   pushIntoLeftJoins: boolean;
+  /**
+   * If simple equality filters should be pushed into patterns and paths.
+   * This only applies to equality filters with terms that are not literals that have no canonical lexical form.
+   * @range {boolean}
+   * @default {true}
+   */
+  pushEqualityIntoPatterns: boolean;
 }

@@ -42,3 +42,4 @@ After installing, this package can be added to your engine's configuration as fo
 * `splitConjunctive`: If conjunctive filters should be split into nested filters before applying filter pushdown. This can enable pushing down deeper. _(defaults to `true`)_
 * `mergeConjunctive`: If nested filters should be merged into conjunctive filters after applying filter pushdown. _(defaults to `true`)_
 * `pushIntoLeftJoins`: If filters should be pushed into left-joins. _(defaults to `false`)_
+* `pushEqualityIntoPatterns`: If simple equality filters should be pushed into patterns and paths. This only applies to equality filters with terms that are not literals that have no canonical lexical form. _(defaults to `true`)_
