@@ -130,8 +130,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
    * Check if the given filter operation must be attempted to push down, based on the following criteria:
    * - Always push down if aggressive mode is enabled
    * - Push down if the filter is extremely selective
-   * - Push down if federated
-   * - Push down if single source accepts the query
+   * - Push down if federated and at least one accepts the filter
    * @param operation The filter operation
    * @param sourceShapes A mapping of sources to selector shapes.
    */
@@ -155,15 +154,10 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
       return true;
     }
 
-    // Push down if federated
+    // Push down if federated and at least one accepts the filter
     const sources = this.getSources(operation);
-    if (sources.size > 1) {
-      return true;
-    }
-
-    // Push down if single source accepts the query
-    if (sources.size === 1 &&
-      ActorQueryOperation.doesShapeAcceptOperation(sourceShapes.get([ ...sources ][0])!, operation)) {
+    if (sources.size > 0 && [ ...sources ]
+      .some(source => ActorQueryOperation.doesShapeAcceptOperation(sourceShapes.get(source)!, operation))) {
       return true;
     }
 

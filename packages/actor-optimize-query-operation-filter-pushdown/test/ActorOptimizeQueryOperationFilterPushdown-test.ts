@@ -243,7 +243,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
         expect(actor.shouldAttemptPushDown(op, new Map())).toBeTruthy();
       });
 
-      it('returns true if federated', () => {
+      it('returns true if federated with filter support for one', () => {
         const src1 = <any> {};
         const src2 = <any> {};
         const op = AF.createFilter(
@@ -259,20 +259,15 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           ]),
           AF.createTermExpression(DF.variable('v')),
         );
-        expect(actor.shouldAttemptPushDown(op, new Map())).toBeTruthy();
-      });
-
-      it('returns true if single source with filter support', () => {
-        const src1 = <any> {};
-        const op = AF.createFilter(
-          ActorQueryOperation.assignOperationSource(
-            AF.createPattern(DF.variable('s1'), DF.namedNode('p'), DF.namedNode('o')),
-            src1,
-          ),
-          AF.createTermExpression(DF.variable('v')),
-        );
         const shapes = new Map();
         shapes.set(src1, {
+          type: 'operation',
+          operation: {
+            operationType: 'type',
+            type: Algebra.types.NOP,
+          },
+        });
+        shapes.set(src2, {
           type: 'operation',
           operation: {
             operationType: 'type',
@@ -280,6 +275,40 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           },
         });
         expect(actor.shouldAttemptPushDown(op, shapes)).toBeTruthy();
+      });
+
+      it('returns false if federated with filter support for none', () => {
+        const src1 = <any> {};
+        const src2 = <any> {};
+        const op = AF.createFilter(
+          AF.createJoin([
+            ActorQueryOperation.assignOperationSource(
+              AF.createPattern(DF.variable('s1'), DF.namedNode('p'), DF.namedNode('o')),
+              src1,
+            ),
+            ActorQueryOperation.assignOperationSource(
+              AF.createPattern(DF.variable('s1'), DF.namedNode('p'), DF.namedNode('o')),
+              src2,
+            ),
+          ]),
+          AF.createTermExpression(DF.variable('v')),
+        );
+        const shapes = new Map();
+        shapes.set(src1, {
+          type: 'operation',
+          operation: {
+            operationType: 'type',
+            type: Algebra.types.NOP,
+          },
+        });
+        shapes.set(src2, {
+          type: 'operation',
+          operation: {
+            operationType: 'type',
+            type: Algebra.types.NOP,
+          },
+        });
+        expect(actor.shouldAttemptPushDown(op, shapes)).toBeFalsy();
       });
 
       it('returns false otherwise', () => {
