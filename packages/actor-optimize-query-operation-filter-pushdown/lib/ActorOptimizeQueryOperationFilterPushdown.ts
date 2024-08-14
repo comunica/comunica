@@ -59,7 +59,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     // Collect selector shapes of all operations
     const sources = this.getSources(operation);
     // eslint-disable-next-line ts/no-unnecessary-type-assertion
-    const sourceShapes = new Map(<[IQuerySourceWrapper, FragmentSelectorShape][]> await Promise.all([ ...sources ]
+    const sourceShapes = new Map(<[IQuerySourceWrapper, FragmentSelectorShape][]> await Promise.all(sources
       .map(async source => [ source, await source.source.getSelectorShape(action.context) ])));
 
     // Push down all filters
@@ -71,7 +71,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
       operation = Util.mapOperation(operation, {
         filter(op: Algebra.Filter, factory: Factory) {
           // Check if the filter must be pushed down
-          if (!self.shouldAttemptPushDown(op, sourceShapes)) {
+          if (!self.shouldAttemptPushDown(op, sources, sourceShapes)) {
             return {
               recurse: true,
               result: op,
@@ -132,10 +132,12 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
    * - Push down if the filter is extremely selective
    * - Push down if federated and at least one accepts the filter
    * @param operation The filter operation
+   * @param sources The query sources in the operation
    * @param sourceShapes A mapping of sources to selector shapes.
    */
   public shouldAttemptPushDown(
     operation: Algebra.Filter,
+    sources: IQuerySourceWrapper[],
     sourceShapes: Map<IQuerySourceWrapper, FragmentSelectorShape>,
   ): boolean {
     // Always push down if aggressive mode is enabled
@@ -155,9 +157,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     }
 
     // Push down if federated and at least one accepts the filter
-    const sources = this.getSources(operation);
-    if (sources.size > 0 && [ ...sources ]
-      .some(source => ActorQueryOperation.doesShapeAcceptOperation(sourceShapes.get(source)!, operation))) {
+    if (sources.some(source => ActorQueryOperation.doesShapeAcceptOperation(sourceShapes.get(source)!, operation))) {
       return true;
     }
 
@@ -169,7 +169,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
    * Collected all sources that are defined within the given operation of children recursively.
    * @param operation An operation.
    */
-  public getSources(operation: Algebra.Operation): Set<IQuerySourceWrapper> {
+  public getSources(operation: Algebra.Operation): IQuerySourceWrapper[] {
     const sources = new Set<IQuerySourceWrapper>();
     const sourceAdder = (subOperation: Algebra.Operation): boolean => {
       const src = ActorQueryOperation.getOperationSource(subOperation);
@@ -184,7 +184,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
       [Algebra.types.NPS]: sourceAdder,
       [Algebra.types.SERVICE]: sourceAdder,
     });
-    return sources;
+    return [ ...sources ];
   }
 
   /**

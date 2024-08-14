@@ -218,7 +218,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           pushIntoLeftJoins: true,
         });
         const op = AF.createFilter(null!, null!);
-        expect(actor.shouldAttemptPushDown(op, new Map())).toBeTruthy();
+        expect(actor.shouldAttemptPushDown(op, [], new Map())).toBeTruthy();
       });
 
       it('returns true if the filter is extremely selective (1)', () => {
@@ -229,7 +229,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             AF.createTermExpression(DF.namedNode('iri')),
           ],
         ));
-        expect(actor.shouldAttemptPushDown(op, new Map())).toBeTruthy();
+        expect(actor.shouldAttemptPushDown(op, [], new Map())).toBeTruthy();
       });
 
       it('returns true if the filter is extremely selective (2)', () => {
@@ -240,7 +240,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             AF.createTermExpression(DF.variable('s')),
           ],
         ));
-        expect(actor.shouldAttemptPushDown(op, new Map())).toBeTruthy();
+        expect(actor.shouldAttemptPushDown(op, [], new Map())).toBeTruthy();
       });
 
       it('returns true if federated with filter support for one', () => {
@@ -274,7 +274,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             type: Algebra.types.FILTER,
           },
         });
-        expect(actor.shouldAttemptPushDown(op, shapes)).toBeTruthy();
+        expect(actor.shouldAttemptPushDown(op, [ src1, src2 ], shapes)).toBeTruthy();
       });
 
       it('returns false if federated with filter support for none', () => {
@@ -308,7 +308,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             type: Algebra.types.NOP,
           },
         });
-        expect(actor.shouldAttemptPushDown(op, shapes)).toBeFalsy();
+        expect(actor.shouldAttemptPushDown(op, [ src1, src2 ], shapes)).toBeFalsy();
       });
 
       it('returns false otherwise', () => {
@@ -334,7 +334,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             type: Algebra.types.PATTERN,
           },
         });
-        expect(actor.shouldAttemptPushDown(op, shapes)).toBeFalsy();
+        expect(actor.shouldAttemptPushDown(op, [], shapes)).toBeFalsy();
       });
     });
 
