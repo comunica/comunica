@@ -28,7 +28,6 @@ const pAllQuad = AF.createPattern(v1, v2, v3, v4);
 const pAllTriple = AF.createPattern(v1, v2, v3);
 
 describe('QuerySourceQpf', () => {
-  let source: QuerySourceQpf;
   let bus: any;
   let metadata: any;
   let mediatorMetadata: any;
@@ -102,6 +101,7 @@ describe('QuerySourceQpf', () => {
   });
 
   describe('without a default graph', () => {
+    let source: QuerySourceQpf;
     beforeEach(() => {
       source = new QuerySourceQpf(
         mediatorMetadata,
@@ -737,7 +737,232 @@ describe('QuerySourceQpf', () => {
     });
   });
 
+  describe('with filterBindings', () => {
+    let source: QuerySourceQpf;
+    beforeEach(() => {
+      source = new QuerySourceQpf(
+        mediatorMetadata,
+        mediatorMetadataExtract,
+        mediatorDereferenceRdf,
+        BF,
+        's',
+        'p',
+        'o',
+        'g',
+        'url',
+        metadata,
+        true,
+        streamifyArray([
+          quad('s1', 'p1', 'o1'),
+          quad('s2', 'p2', 'o2'),
+        ]),
+      );
+    });
+
+    describe('getSelectorShape', () => {
+      it('should return a br filter', async() => {
+        await expect(source.getSelectorShape()).resolves.toEqual({
+          type: 'operation',
+          operation: {
+            operationType: 'pattern',
+            pattern: AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'), DF.variable('g')),
+          },
+          variablesOptional: [
+            DF.variable('s'),
+            DF.variable('p'),
+            DF.variable('o'),
+            DF.variable('g'),
+          ],
+          filterBindings: true,
+        });
+      });
+    });
+
+    describe('getBindingsRestrictedLink', () => {
+      it('handles an empty filter', async() => {
+        await expect(source.getBindingsRestrictedLink(
+          DF.namedNode('s'),
+          DF.namedNode('p'),
+          DF.namedNode('o'),
+          DF.namedNode('g'),
+          'url',
+          {
+            bindings: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
+            metadata: <any> { variables: [ DF.variable('f1'), DF.variable('f2') ]},
+          },
+        )).resolves.toBe(`url&values=(%3Ff1%20%3Ff2)%20%7B%20(%3Cex%3Acomunica%3Aunknown%3E)%20%7D`);
+      });
+
+      it('handles a non-empty filter', async() => {
+        await expect(source.getBindingsRestrictedLink(
+          DF.namedNode('s'),
+          DF.namedNode('p'),
+          DF.namedNode('o'),
+          DF.namedNode('g'),
+          'url',
+          {
+            bindings: new ArrayIterator<RDF.Bindings>([
+              BF.fromRecord({
+                f1: DF.namedNode('a1'),
+              }),
+              BF.fromRecord({
+                f2: DF.namedNode('a2'),
+              }),
+            ], { autoStart: false }),
+            metadata: <any> { variables: [ DF.variable('f1'), DF.variable('f2') ]},
+          },
+        )).resolves.toBe(`url&values=(%3Ff1%20%3Ff2)%20%7B%20(%3Ca1%3E%20UNDEF%20)%20(UNDEF%20%3Ca2%3E%20)%20%7D`);
+      });
+    });
+
+    describe('createFragmentUri', () => {
+      it('should create a valid fragment URI with materialized terms', () => {
+        expect(source.createFragmentUri(
+          metadata.searchForms.values[0],
+          DF.namedNode('S'),
+          DF.namedNode('P'),
+          DF.namedNode('O'),
+          DF.namedNode('G'),
+        ))
+          .toBe('S,P,O,G');
+      });
+
+      it('should create a valid fragment URI with materialized quoted triple terms', () => {
+        expect(source.createFragmentUri(metadata.searchForms.values[0], DF.quad(
+          DF.namedNode('S'),
+          DF.namedNode('P'),
+          DF.namedNode('O'),
+        ), DF.namedNode('P'), DF.namedNode('O'), DF.namedNode('G')))
+          .toBe('<<S P O>>,P,O,G');
+      });
+
+      it('should create a valid fragment URI with only a few materialized terms', () => {
+        expect(source.createFragmentUri(metadata.searchForms.values[0], v1, DF.namedNode('P'), v1, DF.namedNode('G')))
+          .toBe('?v1,P,?v1,G');
+      });
+
+      it('should create a valid fragment URI with quoted triple terms with variables', () => {
+        expect(source.createFragmentUri(metadata.searchForms.values[0], DF.quad(
+          DF.namedNode('S'),
+          v1,
+          DF.namedNode('O'),
+        ), DF.namedNode('P'), DF.namedNode('O'), DF.namedNode('G')))
+          .toBe('<<S ?v1 O>>,P,O,G');
+      });
+    });
+
+    describe('queryBindings', () => {
+      it('should handle no filtering', async() => {
+        ctx = ctx.set(KeysQueryOperation.unionDefaultGraph, true);
+        await expect(source.queryBindings(pAllQuad, ctx)).toEqualBindingsStream([
+          BF.fromRecord({
+            v1: DF.namedNode('s1'),
+            v2: DF.namedNode('p1'),
+            v3: DF.namedNode('o1'),
+            v4: DF.defaultGraph(),
+          }),
+          BF.fromRecord({
+            v1: DF.namedNode('s2'),
+            v2: DF.namedNode('p2'),
+            v3: DF.namedNode('o2'),
+            v4: DF.defaultGraph(),
+          }),
+        ]);
+      });
+
+      it('should delegate errors from the RDF dereference stream', async() => {
+        const quads = new Readable();
+        quads._read = () => {
+          quads.emit('error', error);
+        };
+        mediatorDereferenceRdf.mediate = (args: any) => Promise.resolve({
+          url: args.url,
+          data: quads,
+          metadata: { triples: false },
+        });
+
+        const error = new Error('a');
+        await new Promise<void>((resolve, reject) => {
+          const output = source.queryBindings(AF.createPattern(S, P, O, G), ctx);
+          output.on('error', (e) => {
+            expect(e).toEqual(error);
+            resolve();
+          });
+          output.on('data', reject);
+          output.on('end', reject);
+        });
+      });
+
+      it('should delegate errors from the metadata split stream', async() => {
+        const quads = new Readable();
+        quads._read = () => {
+          quads.emit('error', error);
+        };
+        mediatorMetadata.mediate = () => Promise.resolve({
+          data: quads,
+          metadata: quads,
+        });
+
+        const error = new Error('a');
+        await new Promise<void>((resolve, reject) => {
+          const output = source.queryBindings(AF.createPattern(S, P, O, G), ctx);
+          output.on('error', (e) => {
+            expect(e).toEqual(error);
+            resolve();
+          });
+          output.on('data', reject);
+          output.on('end', reject);
+        });
+      });
+
+      it('should ignore errors from the metadata extract mediator', async() => {
+        mediatorMetadataExtract.mediate = () => Promise.reject(new Error('abc'));
+        ctx = ctx.set(KeysQueryOperation.unionDefaultGraph, true);
+        await expect(source.queryBindings(pAllTriple, ctx)).toEqualBindingsStream([
+          BF.fromRecord({
+            v1: DF.namedNode('s1'),
+            v2: DF.namedNode('p1'),
+            v3: DF.namedNode('o1'),
+          }),
+          BF.fromRecord({
+            v1: DF.namedNode('s2'),
+            v2: DF.namedNode('p2'),
+            v3: DF.namedNode('o2'),
+          }),
+        ]);
+      });
+
+      it('should handle an empty filter', async() => {
+        ctx = ctx.set(KeysQueryOperation.unionDefaultGraph, true);
+        const filterBindings: any = {
+          bindings: new ArrayIterator([], { autoStart: false }),
+          metadata: { variables: [ DF.variable('f1'), DF.variable('f2') ]},
+        };
+        await expect(source.queryBindings(pAllQuad, ctx, { filterBindings })).toEqualBindingsStream([
+          BF.fromRecord({
+            v1: DF.namedNode('s1'),
+            v2: DF.namedNode('p1'),
+            v3: DF.namedNode('o1'),
+            v4: DF.defaultGraph(),
+          }),
+          BF.fromRecord({
+            v1: DF.namedNode('s2'),
+            v2: DF.namedNode('p2'),
+            v3: DF.namedNode('o2'),
+            v4: DF.defaultGraph(),
+          }),
+        ]);
+
+        expect(mediatorDereferenceRdf.mediate).toHaveBeenCalledWith({
+          context: ctx,
+          url: '?v1,?v2,?v3,?v4&values=(%3Ff1%20%3Ff2)%20%7B%20(%3Cex%3Acomunica%3Aunknown%3E)%20%7D',
+        });
+      });
+    });
+  });
+
   describe('with a custom default graph', () => {
+    let source: QuerySourceQpf;
     beforeEach(() => {
       mediatorDereferenceRdf = {
         mediate: (args: any): Promise<IActorDereferenceRdfOutput> => Promise.resolve({
@@ -1058,229 +1283,6 @@ describe('QuerySourceQpf', () => {
               v3: DF.namedNode('CUSTOM_GRAPH'),
             }),
           ]);
-      });
-    });
-  });
-
-  describe('with filterBindings', () => {
-    beforeEach(() => {
-      source = new QuerySourceQpf(
-        mediatorMetadata,
-        mediatorMetadataExtract,
-        mediatorDereferenceRdf,
-        BF,
-        's',
-        'p',
-        'o',
-        'g',
-        'url',
-        metadata,
-        true,
-        streamifyArray([
-          quad('s1', 'p1', 'o1'),
-          quad('s2', 'p2', 'o2'),
-        ]),
-      );
-    });
-
-    describe('getSelectorShape', () => {
-      it('should return a br filter', async() => {
-        await expect(source.getSelectorShape()).resolves.toEqual({
-          type: 'operation',
-          operation: {
-            operationType: 'pattern',
-            pattern: AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'), DF.variable('g')),
-          },
-          variablesOptional: [
-            DF.variable('s'),
-            DF.variable('p'),
-            DF.variable('o'),
-            DF.variable('g'),
-          ],
-          filterBindings: true,
-        });
-      });
-    });
-
-    describe('getBindingsRestrictedLink', () => {
-      it('handles an empty filter', async() => {
-        await expect(source.getBindingsRestrictedLink(
-          DF.namedNode('s'),
-          DF.namedNode('p'),
-          DF.namedNode('o'),
-          DF.namedNode('g'),
-          'url',
-          {
-            bindings: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
-            metadata: <any> { variables: [ DF.variable('f1'), DF.variable('f2') ]},
-          },
-        )).resolves.toBe(`url&values=(%3Ff1%20%3Ff2)%20%7B%20(%3Cex%3Acomunica%3Aunknown%3E)%20%7D`);
-      });
-
-      it('handles a non-empty filter', async() => {
-        await expect(source.getBindingsRestrictedLink(
-          DF.namedNode('s'),
-          DF.namedNode('p'),
-          DF.namedNode('o'),
-          DF.namedNode('g'),
-          'url',
-          {
-            bindings: new ArrayIterator<RDF.Bindings>([
-              BF.fromRecord({
-                f1: DF.namedNode('a1'),
-              }),
-              BF.fromRecord({
-                f2: DF.namedNode('a2'),
-              }),
-            ], { autoStart: false }),
-            metadata: <any> { variables: [ DF.variable('f1'), DF.variable('f2') ]},
-          },
-        )).resolves.toBe(`url&values=(%3Ff1%20%3Ff2)%20%7B%20(%3Ca1%3E%20UNDEF%20)%20(UNDEF%20%3Ca2%3E%20)%20%7D`);
-      });
-    });
-
-    describe('createFragmentUri', () => {
-      it('should create a valid fragment URI with materialized terms', () => {
-        expect(source.createFragmentUri(
-          metadata.searchForms.values[0],
-          DF.namedNode('S'),
-          DF.namedNode('P'),
-          DF.namedNode('O'),
-          DF.namedNode('G'),
-        ))
-          .toBe('S,P,O,G');
-      });
-
-      it('should create a valid fragment URI with materialized quoted triple terms', () => {
-        expect(source.createFragmentUri(metadata.searchForms.values[0], DF.quad(
-          DF.namedNode('S'),
-          DF.namedNode('P'),
-          DF.namedNode('O'),
-        ), DF.namedNode('P'), DF.namedNode('O'), DF.namedNode('G')))
-          .toBe('<<S P O>>,P,O,G');
-      });
-
-      it('should create a valid fragment URI with only a few materialized terms', () => {
-        expect(source.createFragmentUri(metadata.searchForms.values[0], v1, DF.namedNode('P'), v1, DF.namedNode('G')))
-          .toBe('?v1,P,?v1,G');
-      });
-
-      it('should create a valid fragment URI with quoted triple terms with variables', () => {
-        expect(source.createFragmentUri(metadata.searchForms.values[0], DF.quad(
-          DF.namedNode('S'),
-          v1,
-          DF.namedNode('O'),
-        ), DF.namedNode('P'), DF.namedNode('O'), DF.namedNode('G')))
-          .toBe('<<S ?v1 O>>,P,O,G');
-      });
-    });
-
-    describe('queryBindings', () => {
-      it('should handle no filtering', async() => {
-        ctx = ctx.set(KeysQueryOperation.unionDefaultGraph, true);
-        await expect(source.queryBindings(pAllQuad, ctx)).toEqualBindingsStream([
-          BF.fromRecord({
-            v1: DF.namedNode('s1'),
-            v2: DF.namedNode('p1'),
-            v3: DF.namedNode('o1'),
-            v4: DF.defaultGraph(),
-          }),
-          BF.fromRecord({
-            v1: DF.namedNode('s2'),
-            v2: DF.namedNode('p2'),
-            v3: DF.namedNode('o2'),
-            v4: DF.defaultGraph(),
-          }),
-        ]);
-      });
-
-      it('should delegate errors from the RDF dereference stream', async() => {
-        const quads = new Readable();
-        quads._read = () => {
-          quads.emit('error', error);
-        };
-        mediatorDereferenceRdf.mediate = (args: any) => Promise.resolve({
-          url: args.url,
-          data: quads,
-          metadata: { triples: false },
-        });
-
-        const error = new Error('a');
-        await new Promise<void>((resolve, reject) => {
-          const output = source.queryBindings(AF.createPattern(S, P, O, G), ctx);
-          output.on('error', (e) => {
-            expect(e).toEqual(error);
-            resolve();
-          });
-          output.on('data', reject);
-          output.on('end', reject);
-        });
-      });
-
-      it('should delegate errors from the metadata split stream', async() => {
-        const quads = new Readable();
-        quads._read = () => {
-          quads.emit('error', error);
-        };
-        mediatorMetadata.mediate = () => Promise.resolve({
-          data: quads,
-          metadata: quads,
-        });
-
-        const error = new Error('a');
-        await new Promise<void>((resolve, reject) => {
-          const output = source.queryBindings(AF.createPattern(S, P, O, G), ctx);
-          output.on('error', (e) => {
-            expect(e).toEqual(error);
-            resolve();
-          });
-          output.on('data', reject);
-          output.on('end', reject);
-        });
-      });
-
-      it('should ignore errors from the metadata extract mediator', async() => {
-        mediatorMetadataExtract.mediate = () => Promise.reject(new Error('abc'));
-        ctx = ctx.set(KeysQueryOperation.unionDefaultGraph, true);
-        await expect(source.queryBindings(pAllTriple, ctx)).toEqualBindingsStream([
-          BF.fromRecord({
-            v1: DF.namedNode('s1'),
-            v2: DF.namedNode('p1'),
-            v3: DF.namedNode('o1'),
-          }),
-          BF.fromRecord({
-            v1: DF.namedNode('s2'),
-            v2: DF.namedNode('p2'),
-            v3: DF.namedNode('o2'),
-          }),
-        ]);
-      });
-
-      it('should handle an empty filter', async() => {
-        ctx = ctx.set(KeysQueryOperation.unionDefaultGraph, true);
-        const filterBindings: any = {
-          bindings: new ArrayIterator([], { autoStart: false }),
-          metadata: { variables: [ DF.variable('f1'), DF.variable('f2') ]},
-        };
-        await expect(source.queryBindings(pAllQuad, ctx, { filterBindings })).toEqualBindingsStream([
-          BF.fromRecord({
-            v1: DF.namedNode('s1'),
-            v2: DF.namedNode('p1'),
-            v3: DF.namedNode('o1'),
-            v4: DF.defaultGraph(),
-          }),
-          BF.fromRecord({
-            v1: DF.namedNode('s2'),
-            v2: DF.namedNode('p2'),
-            v3: DF.namedNode('o2'),
-            v4: DF.defaultGraph(),
-          }),
-        ]);
-
-        expect(mediatorDereferenceRdf.mediate).toHaveBeenCalledWith({
-          context: ctx,
-          url: '?v1,?v2,?v3,?v4&values=(%3Ff1%20%3Ff2)%20%7B%20(%3Cex%3Acomunica%3Aunknown%3E)%20%7D',
-        });
       });
     });
   });

@@ -1,5 +1,5 @@
 import type { BindingsFactory } from '@comunica/bindings-factory';
-import { ClosableTransformIterator } from '@comunica/bus-query-operation';
+import { ClosableIterator } from '@comunica/bus-query-operation';
 import { validateMetadataQuads } from '@comunica/metadata';
 import type { BindingsStream, MetadataBindings, MetadataQuads, TermsOrder } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -57,42 +57,40 @@ export function quadsToBindings(
   );
 
   // Optionally filter, and construct bindings
-  const it = new ClosableTransformIterator(async() => {
-    let filteredOutput = quads;
+  let filteredOutput = quads;
 
-    // SPARQL query semantics allow graph variables to only match with named graphs, excluding the default graph
-    // But this is not the case when using union default graph semantics
-    if (filterNonDefaultQuads) {
-      filteredOutput = filteredOutput.filter(quad => quad.graph.termType !== 'DefaultGraph');
-    }
+  // SPARQL query semantics allow graph variables to only match with named graphs, excluding the default graph
+  // But this is not the case when using union default graph semantics
+  if (filterNonDefaultQuads) {
+    filteredOutput = filteredOutput.filter(quad => quad.graph.termType !== 'DefaultGraph');
+  }
 
-    // If there are duplicate variables in the search pattern,
-    // make sure that we filter out the triples that don't have equal values for those triple elements,
-    // as the rdf-resolve-quad-pattern bus ignores variable names.
-    if (duplicateElementLinks) {
-      filteredOutput = filteredOutput.filter((quad) => {
-        for (const keyLeft in duplicateElementLinks) {
-          const keysLeft: QuadTermName[] = <QuadTermName[]> keyLeft.split('_');
-          const valueLeft = getValueNestedPath(quad, keysLeft);
-          for (const keysRight of duplicateElementLinks[keyLeft]) {
-            if (!valueLeft.equals(getValueNestedPath(quad, keysRight))) {
-              return false;
-            }
+  // If there are duplicate variables in the search pattern,
+  // make sure that we filter out the triples that don't have equal values for those triple elements,
+  // as the rdf-resolve-quad-pattern bus ignores variable names.
+  if (duplicateElementLinks) {
+    filteredOutput = filteredOutput.filter((quad) => {
+      for (const keyLeft in duplicateElementLinks) {
+        const keysLeft: QuadTermName[] = <QuadTermName[]> keyLeft.split('_');
+        const valueLeft = getValueNestedPath(quad, keysLeft);
+        for (const keysRight of duplicateElementLinks[keyLeft]) {
+          if (!valueLeft.equals(getValueNestedPath(quad, keysRight))) {
+            return false;
           }
         }
-        return true;
-      });
-    }
+      }
+      return true;
+    });
+  }
 
-    return filteredOutput.map<RDF.Bindings>(quad => bindingsFactory
-      .bindings(Object.keys(elementVariables).map((key) => {
-        const keys: QuadTermName[] = <any>key.split('_');
-        const variable = elementVariables[key];
-        const term = getValueNestedPath(quad, keys);
-        return [ DF.variable(variable), term ];
-      })));
-  }, {
-    autoStart: false,
+  // Wrap it in a ClosableIterator, so we can propagate destroy calls
+  const it = new ClosableIterator(filteredOutput.map<RDF.Bindings>(quad => bindingsFactory
+    .bindings(Object.keys(elementVariables).map((key) => {
+      const keys: QuadTermName[] = <any>key.split('_');
+      const variable = elementVariables[key];
+      const term = getValueNestedPath(quad, keys);
+      return [ DF.variable(variable), term ];
+    }))), {
     onClose: () => quads.destroy(),
   });
 

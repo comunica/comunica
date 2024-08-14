@@ -52,6 +52,7 @@
     "IQueryableResultBoolean",
     "IQueryableResultVoid",
     "PathVariableObjectIterator",
+    "ClosableIterator",
     "ClosableTransformIterator",
     "MetadataValidationState",
     "FragmentSelectorShape",
