@@ -225,7 +225,7 @@ describe('ActorRdfMetadataPrimaryTopic', () => {
             quad('o2', 'http://rdfs.org/ns/void#subset', 'o2?param', 'g1'),
             quad('s2', 'p2', 'o2', 'g1'),
           ]);
-          expect((<any> output.data)._read()).toBeFalsy();
+          expect((output.data).read()).toBeFalsy();
         });
     });
   });

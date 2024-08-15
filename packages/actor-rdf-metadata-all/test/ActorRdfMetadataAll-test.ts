@@ -132,7 +132,7 @@ describe('ActorRdfMetadataAll', () => {
             quad('s2', 'p2', 'o2', 'g1'),
             quad('s3', 'p3', 'o3', ''),
           ]);
-          expect((<any> output.data)._read()).toBeFalsy();
+          expect((output.data).read()).toBeFalsy();
         });
     });
   });

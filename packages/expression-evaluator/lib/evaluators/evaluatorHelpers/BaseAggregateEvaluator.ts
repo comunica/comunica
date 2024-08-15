@@ -1,8 +1,8 @@
 import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { Algebra } from 'sparqlalgebrajs';
-import { aggregators } from '../../aggregators/index.js';
 import { Aggregator } from '../../aggregators/Aggregator.js';
+import { aggregators } from '../../aggregators/index.js';
 import { WildcardCountAggregator } from '../../aggregators/WildcardCountAggregator.js';
 import type { SetFunction } from '../../util/Consts.js';
 import * as Err from '../../util/Errors.js';

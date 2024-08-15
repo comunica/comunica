@@ -1,5 +1,6 @@
 {
   "name": "@comunica/config-query-sparql",
+  "type": "module",
   "version": "3.2.1",
   "description": "default configuration files for Comunica SPARQL",
   "lsd:module": true,
@@ -38,6 +39,5 @@
     "build": "yarn run build:ts && yarn run build:components",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
     "build:components": "componentsjs-generator"
-  },
-  "type": "module"
+  }
 }

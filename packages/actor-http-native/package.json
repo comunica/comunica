@@ -1,5 +1,6 @@
 {
   "name": "@comunica/actor-http-native",
+  "type": "module",
   "version": "3.2.1",
   "description": "A native http actor",
   "lsd:module": true,
@@ -25,13 +26,14 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.js",
   "files": [
     "components",
+    "lib/**/*.cjs",
+    "lib/**/*.cjs.map",
     "lib/**/*.d.ts",
     "lib/**/*.js",
-    "lib/**/*.js.map",
-    "lib/**/*.cjs",
-    "lib/**/*.cjs.map"
+    "lib/**/*.js.map"
   ],
   "scripts": {
     "build": "yarn run build:ts && yarn run build:components",
@@ -49,7 +51,5 @@
   },
   "browser": {
     "./lib/Requester.js": "./lib/Requester-browser.js"
-  },
-  "type": "module",
-  "module": "lib/index.js"
+  }
 }

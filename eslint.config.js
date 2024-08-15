@@ -1,17 +1,20 @@
-const config = require('@rubensworks/eslint-config');
+import config from '@rubensworks/eslint-config';
 
-module.exports = config([
+export default config([
   {
     files: [ '**/*.ts' ],
     languageOptions: {
       parserOptions: {
-        tsconfigRootDir: __dirname,
+        tsconfigRootDir: import.meta.dirname,
         project: [ './tsconfig.eslint.json' ],
       },
     },
   },
   {
     rules: {
+      // ESM
+      'import/extensions': 'off',
+
       // Default
       'unicorn/consistent-destructuring': 'off',
       'unicorn/no-array-callback-reference': 'off',
@@ -115,7 +118,6 @@ module.exports = config([
       'ts/no-var-requires': 'off',
       'import/no-nodejs-modules': 'off',
       'import/no-extraneous-dependencies': 'off',
-      'import/extensions': 'off',
     },
   },
 ]);

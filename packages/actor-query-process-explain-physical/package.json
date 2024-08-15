@@ -1,5 +1,6 @@
 {
   "name": "@comunica/actor-query-process-explain-physical",
+  "type": "module",
   "version": "3.2.1",
   "description": "A explain-physical query-process actor",
   "lsd:module": true,
@@ -25,13 +26,14 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.js",
   "files": [
     "components",
+    "lib/**/*.cjs",
+    "lib/**/*.cjs.map",
     "lib/**/*.d.ts",
     "lib/**/*.js",
-    "lib/**/*.js.map",
-    "lib/**/*.cjs",
-    "lib/**/*.cjs.map"
+    "lib/**/*.js.map"
   ],
   "scripts": {
     "build": "yarn run build:ts && yarn run build:components",
@@ -45,7 +47,5 @@
     "@comunica/types": "^3.2.1",
     "@rdfjs/types": "*",
     "rdf-string": "^1.6.3"
-  },
-  "type": "module",
-  "module": "lib/index.js"
+  }
 }

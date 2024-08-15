@@ -15,5 +15,8 @@
     [
       "babel-plugin-add-import-extension", { "extension": "cjs" }
     ]
+  ],
+  "ignore": [
+    "packages/*/test/**/*"
   ]
 }

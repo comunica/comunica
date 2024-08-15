@@ -17,7 +17,7 @@ describe('evaluation of \'OBJECT\'', () => {
     notation: Notation.Function,
     operation: 'OBJECT',
     errorArray: [
-      [ '<ex:a>', `Argument types not valid for operator: '"object"' with '[{"expressionType":"term","termType":"namedNode","value":"ex:a"}]` ],
+      [ '<ex:a>', `Argument types not valid for operator: '"object"' with '[{"expressionType":"term","value":"ex:a","termType":"namedNode"}]` ],
     ],
   });
 });

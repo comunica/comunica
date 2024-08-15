@@ -1,5 +1,6 @@
 {
   "name": "@comunica/query-sparql-file",
+  "type": "module",
   "version": "3.2.1",
   "description": "A SPARQL query engine for querying over local and remote RDF files",
   "license": "MIT",
@@ -206,6 +207,5 @@
   "browser": {
     "./lib/index.js": "./lib/index-browser.js",
     "./engine-default.js": "./engine-browser.js"
-  },
-  "type": "module"
+  }
 }

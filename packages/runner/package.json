@@ -1,5 +1,6 @@
 {
   "name": "@comunica/runner",
+  "type": "module",
   "version": "3.2.1",
   "description": "Utility module for Comunica runner modules",
   "lsd:module": true,
@@ -23,6 +24,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.js",
   "bin": {
     "comunica-compile-config": "./bin/compile-config"
   },
@@ -31,11 +33,11 @@
     "bin/**/*.js",
     "bin/**/*.js.map",
     "components",
+    "lib/**/*.cjs",
+    "lib/**/*.cjs.map",
     "lib/**/*.d.ts",
     "lib/**/*.js",
-    "lib/**/*.js.map",
-    "lib/**/*.cjs",
-    "lib/**/*.cjs.map"
+    "lib/**/*.js.map"
   ],
   "scripts": {
     "build": "yarn run build:ts && yarn run build:components",
@@ -47,7 +49,5 @@
     "@comunica/core": "^3.2.1",
     "componentsjs": "^6.0.1",
     "process": "^0.11.10"
-  },
-  "type": "module",
-  "module": "lib/index.js"
+  }
 }

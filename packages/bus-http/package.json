@@ -1,5 +1,6 @@
 {
   "name": "@comunica/bus-http",
+  "type": "module",
   "version": "3.2.1",
   "description": "A comunica bus for 'http' events.",
   "lsd:module": true,
@@ -24,13 +25,14 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.js",
   "files": [
     "components",
+    "lib/**/*.cjs",
+    "lib/**/*.cjs.map",
     "lib/**/*.d.ts",
     "lib/**/*.js",
-    "lib/**/*.js.map",
-    "lib/**/*.cjs",
-    "lib/**/*.cjs.map"
+    "lib/**/*.js.map"
   ],
   "scripts": {
     "build": "yarn run build:ts && yarn run build:components",
@@ -44,7 +46,5 @@
     "readable-from-web": "^1.0.0",
     "readable-stream-node-to-web": "^1.0.1",
     "web-streams-ponyfill": "^1.4.2"
-  },
-  "type": "module",
-  "module": "lib/index.js"
+  }
 }

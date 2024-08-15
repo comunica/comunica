@@ -13,8 +13,8 @@ import {
   reduceTermsNested,
   someTerms,
   uniqTerms,
+  matchPatternMappings,
 } from 'rdf-terms';
-import { matchPatternMappings } from 'rdf-terms';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**

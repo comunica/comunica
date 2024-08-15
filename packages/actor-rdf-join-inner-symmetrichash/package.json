@@ -1,5 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-inner-symmetrichash",
+  "type": "module",
   "version": "3.2.1",
   "description": "A symmetrichash rdf-join actor",
   "lsd:module": true,
@@ -25,13 +26,14 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.js",
   "files": [
     "components",
+    "lib/**/*.cjs",
+    "lib/**/*.cjs.map",
     "lib/**/*.d.ts",
     "lib/**/*.js",
-    "lib/**/*.js.map",
-    "lib/**/*.cjs",
-    "lib/**/*.cjs.map"
+    "lib/**/*.js.map"
   ],
   "scripts": {
     "build": "yarn run build:ts && yarn run build:components",
@@ -41,8 +43,7 @@
   "dependencies": {
     "@comunica/bus-rdf-join": "^3.2.1",
     "@comunica/mediatortype-join-coefficients": "^3.2.1",
-    "@comunica/types": "^3.2.1"
-  },
-  "type": "module",
-  "module": "lib/index.js"
+    "@comunica/types": "^3.2.1",
+    "asynciterator": "^3.9.0"
+  }
 }

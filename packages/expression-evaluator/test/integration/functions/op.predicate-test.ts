@@ -17,7 +17,7 @@ describe('evaluation of \'PREDICATE\'', () => {
     notation: Notation.Function,
     operation: 'PREDICATE',
     errorArray: [
-      [ '<ex:a>', `Argument types not valid for operator: '"predicate"' with '[{"expressionType":"term","termType":"namedNode","value":"ex:a"}]` ],
+      [ '<ex:a>', `Argument types not valid for operator: '"predicate"' with '[{"expressionType":"term","value":"ex:a","termType":"namedNode"}]` ],
     ],
   });
 });

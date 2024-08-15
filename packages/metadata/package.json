@@ -1,5 +1,6 @@
 {
   "name": "@comunica/metadata",
+  "type": "module",
   "version": "3.2.1",
   "description": "Metadata helpers for Comunica",
   "lsd:module": true,
@@ -23,16 +24,17 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.js",
   "files": [
     "bin/**/*.d.ts",
     "bin/**/*.js",
     "bin/**/*.js.map",
     "components",
+    "lib/**/*.cjs",
+    "lib/**/*.cjs.map",
     "lib/**/*.d.ts",
     "lib/**/*.js",
-    "lib/**/*.js.map",
-    "lib/**/*.cjs",
-    "lib/**/*.cjs.map"
+    "lib/**/*.js.map"
   ],
   "scripts": {
     "build": "yarn run build:ts && yarn run build:components",
@@ -43,7 +45,5 @@
     "@comunica/types": "^3.2.1",
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0"
-  },
-  "type": "module",
-  "module": "lib/index.js"
+  }
 }

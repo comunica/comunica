@@ -1,7 +1,11 @@
 export default {
   transform: {
-    '^.+\\.ts$': 'babel-jest',
+    '^.+\\.ts$': [ 'ts-jest', {
+      // Enabling this can fix issues when using prereleases of typings packages
+      // isolatedModules: true
+    }],
   },
+  resolver: 'ts-jest-resolver',
   testRegex: [ '/test/.*-test.*.ts$' ],
   testPathIgnorePatterns: [
     '.*.d.ts',
@@ -9,7 +13,7 @@ export default {
     '.*QuerySparql-solid-test.ts',
     'engines/',
     'packages/actor-http-native',
-    'packages/actor-init-query'
+    'packages/actor-init-query',
   ],
   moduleFileExtensions: [
     'ts',
@@ -25,6 +29,7 @@ export default {
     '/engines/query-sparql/test/util.ts',
     '/test/util/',
     'engine-default.js',
+    '.cjs',
   ],
   testEnvironment: 'node',
   coverageThreshold: {

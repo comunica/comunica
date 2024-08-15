@@ -1,5 +1,6 @@
 {
   "name": "@comunica/query-sparql-rdfjs",
+  "type": "module",
   "version": "3.2.1",
   "description": "A SPARQL query engine for querying over RDF/JS sources",
   "license": "MIT",
@@ -160,6 +161,5 @@
   },
   "browser": {
     "./lib/index.js": "./lib/index-browser.js"
-  },
-  "type": "module"
+  }
 }

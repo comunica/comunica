@@ -21,7 +21,6 @@ import { parse } from '../__mocks__/url';
 import { CliArgsHandlerBase } from '../lib/cli/CliArgsHandlerBase';
 import type { IQueryBody } from '../lib/HttpServiceSparqlEndpoint';
 import { HttpServiceSparqlEndpoint } from '../lib/HttpServiceSparqlEndpoint';
-import { __esModule } from '@comunica/expression-evaluator';
 
 // Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
 const clusterUntyped = require('node:cluster');
@@ -31,8 +30,6 @@ const querystring = require('node:querystring');
 const cluster: Cluster = clusterUntyped;
 
 const quad = require('rdf-quad');
-
-
 
 jest.mock<typeof import('..')>('..', () => {
   return <any> {

@@ -1,5 +1,6 @@
 {
   "name": "@comunica/actor-hash-quads-sha1",
+  "type": "module",
   "version": "3.2.1",
   "description": "A hash quads actor that provides the SHA1 function",
   "lsd:module": true,
@@ -26,13 +27,14 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.js",
   "files": [
     "components",
+    "lib/**/*.cjs",
+    "lib/**/*.cjs.map",
     "lib/**/*.d.ts",
     "lib/**/*.js",
-    "lib/**/*.js.map",
-    "lib/**/*.cjs",
-    "lib/**/*.cjs.map"
+    "lib/**/*.js.map"
   ],
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
@@ -44,7 +46,5 @@
     "@comunica/core": "^3.2.1",
     "hash.js": "^1.1.7",
     "rdf-string": "^1.6.1"
-  },
-  "type": "module",
-  "module": "lib/index.js"
+  }
 }

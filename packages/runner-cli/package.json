@@ -1,5 +1,6 @@
 {
   "name": "@comunica/runner-cli",
+  "type": "module",
   "version": "3.2.1",
   "description": "A comunica runner that sends an 'init' event from a commandline process.",
   "license": "MIT",
@@ -23,16 +24,17 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.js",
   "bin": {
     "comunica-run": "./bin/run.cjs"
   },
   "files": [
     "bin/**/*.d.ts",
     "bin/**/*.js",
-    "lib/**/*.d.ts",
-    "lib/**/*.js",
     "lib/**/*.cjs",
-    "lib/**/*.cjs.map"
+    "lib/**/*.cjs.map",
+    "lib/**/*.d.ts",
+    "lib/**/*.js"
   ],
   "scripts": {
     "build": "node \"../../node_modules/typescript/bin/tsc\""
@@ -42,7 +44,5 @@
     "@comunica/runner": "^3.2.1",
     "@comunica/types": "^3.2.1",
     "process": "^0.11.10"
-  },
-  "type": "module",
-  "module": "lib/index.js"
+  }
 }

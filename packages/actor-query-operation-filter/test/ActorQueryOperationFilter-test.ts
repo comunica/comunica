@@ -15,12 +15,12 @@ import '@comunica/jest';
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF, {});
 
-jest.mock('@comunica/expression-evaluator', () => {
+jest.mock<typeof import('@comunica/expression-evaluator')>('@comunica/expression-evaluator', () => {
   return {
     // Allows the use of jest.spyOn and Object.defineProperty later.
     // @see https://stackoverflow.com/questions/67872622/jest-spyon-not-working-on-index-file-cannot-redefine-property
     __esModule: true,
-    ...jest.requireActual('@comunica/expression-evaluator')
+    ...jest.requireActual('@comunica/expression-evaluator'),
   };
 });
 

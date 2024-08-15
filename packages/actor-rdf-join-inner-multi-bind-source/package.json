@@ -1,5 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-inner-multi-bind-source",
+  "type": "module",
   "version": "3.2.1",
   "description": "A inner-multi-bind-source rdf-join actor",
   "lsd:module": true,
@@ -25,13 +26,14 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.js",
   "files": [
     "components",
+    "lib/**/*.cjs",
+    "lib/**/*.cjs.map",
     "lib/**/*.d.ts",
     "lib/**/*.js",
-    "lib/**/*.js.map",
-    "lib/**/*.cjs",
-    "lib/**/*.cjs.map"
+    "lib/**/*.js.map"
   ],
   "scripts": {
     "build": "yarn run build:ts && yarn run build:components",
@@ -48,7 +50,5 @@
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0",
     "sparqlalgebrajs": "^4.3.7"
-  },
-  "type": "module",
-  "module": "lib/index.js"
+  }
 }

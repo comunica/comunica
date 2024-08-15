@@ -4,7 +4,6 @@ import {
 } from '@comunica/bus-rdf-join';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { MetadataBindings } from '@comunica/types';
-import { UnionIterator } from 'asynciterator';
 import { NestedLoopJoin } from './NestedLoopJoin.js';
 
 /**
@@ -25,7 +24,7 @@ export class ActorRdfJoinOptionalNestedLoop extends ActorRdfJoin {
       action.entries[0].output.bindingsStream,
       action.entries[1].output.bindingsStream,
       ActorRdfJoin.joinBindings,
-      { optional: true, autoStart: false }
+      { optional: true, autoStart: false },
     );
 
     return {

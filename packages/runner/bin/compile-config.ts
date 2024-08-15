@@ -1,6 +1,6 @@
 import { compileConfig } from 'componentsjs';
 
-// const process: NodeJS.Process = require('process/');
+// Const process: NodeJS.Process = require('process/');
 
 // Compiles a configuration to a module (single file) that exports the instantiated instance,
 // where all dependencies are injected.

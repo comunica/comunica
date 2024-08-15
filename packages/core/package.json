@@ -1,5 +1,6 @@
 {
   "name": "@comunica/core",
+  "type": "module",
   "version": "3.2.1",
   "description": "Lightweight, semantic and modular actor framework",
   "lsd:module": true,
@@ -22,13 +23,14 @@
   ],
   "sideEffects": false,
   "main": "lib/index.cjs",
+  "module": "lib/index.js",
   "files": [
     "components",
+    "lib/**/*.cjs",
+    "lib/**/*.cjs.map",
     "lib/**/*.d.ts",
     "lib/**/*.js",
-    "lib/**/*.js.map",
-    "lib/**/*.cjs",
-    "lib/**/*.cjs.map"
+    "lib/**/*.js.map"
   ],
   "engines": {
     "node": ">=14.0"
@@ -45,7 +47,5 @@
   "dependencies": {
     "@comunica/types": "^3.2.1",
     "immutable": "^4.1.0"
-  },
-  "type": "module",
-  "module": "lib/index.js"
+  }
 }

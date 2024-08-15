@@ -1,5 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-path-nps",
+  "type": "module",
   "version": "3.2.1",
   "description": "A path-nps query-operation actor",
   "lsd:module": true,
@@ -25,13 +26,14 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.js",
   "files": [
     "components",
+    "lib/**/*.cjs",
+    "lib/**/*.cjs.map",
     "lib/**/*.d.ts",
     "lib/**/*.js",
-    "lib/**/*.js.map",
-    "lib/**/*.cjs",
-    "lib/**/*.cjs.map"
+    "lib/**/*.js.map"
   ],
   "scripts": {
     "build": "yarn run build:ts && yarn run build:components",
@@ -44,7 +46,5 @@
     "@comunica/context-entries": "^3.1.0",
     "@comunica/types": "^3.2.1",
     "sparqlalgebrajs": "^4.3.7"
-  },
-  "type": "module",
-  "module": "lib/index.js"
+  }
 }

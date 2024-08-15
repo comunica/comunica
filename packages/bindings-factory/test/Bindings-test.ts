@@ -282,7 +282,7 @@ describe('Bindings', () => {
           [ 'f', DF.namedNode('ex:f') ],
         ]), { contextMergeHandlers });
 
-        const bindingsNew: Bindings = bindings.merge(bindingsOther)!;
+        const bindingsNew: Bindings = <Bindings> bindings.merge(bindingsOther);
         expect(bindingsNew).toBeDefined();
         expect(bindingsNew).not.toBe(bindings);
         expect(bindingsNew.size).toBe(6);
@@ -302,7 +302,7 @@ describe('Bindings', () => {
           [ 'b', DF.namedNode('ex:b') ],
         ]), { contextMergeHandlers });
 
-        const bindingsNew: Bindings = bindings.merge(bindingsOther)!;
+        const bindingsNew: Bindings = <Bindings> bindings.merge(bindingsOther);
         expect(bindingsNew).toBeDefined();
         expect(bindingsNew).not.toBe(bindings);
         expect(bindingsNew.size).toBe(4);
@@ -318,7 +318,7 @@ describe('Bindings', () => {
           [ 'a', DF.namedNode('ex:b') ],
         ]), { contextMergeHandlers });
 
-        const bindingsNew: Bindings = bindings.merge(bindingsOther)!;
+        const bindingsNew: Bindings = <Bindings> bindings.merge(bindingsOther);
         expect(bindingsNew).toBeUndefined();
       });
     });
@@ -332,7 +332,7 @@ describe('Bindings', () => {
         ]), { contextMergeHandlers });
 
         const cb = jest.fn();
-        const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
+        const bindingsNew: Bindings = <Bindings> bindings.mergeWith(cb, bindingsOther);
         expect(bindingsNew).toBeDefined();
         expect(bindingsNew).not.toBe(bindings);
         expect(bindingsNew.size).toBe(6);
@@ -355,7 +355,7 @@ describe('Bindings', () => {
         ]), { contextMergeHandlers });
 
         const cb = jest.fn();
-        const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
+        const bindingsNew: Bindings = <Bindings> bindings.mergeWith(cb, bindingsOther);
         expect(bindingsNew).toBeDefined();
         expect(bindingsNew).not.toBe(bindings);
         expect(bindingsNew.size).toBe(4);
@@ -374,7 +374,7 @@ describe('Bindings', () => {
         ]), { contextMergeHandlers });
 
         const cb = jest.fn((left: RDF.Term, right: RDF.Term) => DF.namedNode(`${left.value}+${right.value}`));
-        const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
+        const bindingsNew: Bindings = <Bindings> bindings.mergeWith(cb, bindingsOther);
         expect(bindingsNew).toBeDefined();
         expect(bindingsNew).not.toBe(bindings);
         expect(bindingsNew.size).toBe(3);
@@ -516,7 +516,7 @@ describe('Bindings', () => {
           context: new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S5' ]}),
         },
       );
-      const bindingsNew: Bindings = bindings.merge(bindingsOther)!;
+      const bindingsNew: Bindings = <Bindings> bindings.merge(bindingsOther);
       expect(bindingsNew).toBeDefined();
       expect(bindingsNew.getContext()).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3', 'ex:S5' ]}));
     });
@@ -537,7 +537,7 @@ describe('Bindings', () => {
           }),
         },
       );
-      const bindingsNew: Bindings = bindingsExtraKey.merge(bindings)!;
+      const bindingsNew: Bindings = <Bindings> bindingsExtraKey.merge(bindings);
       expect(bindingsNew).toBeDefined();
       expect(bindingsNew.getContext())
         .toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S5', 'ex:S3' ], extraKey: [ 'ex:T1', 'ex:T2' ]}));
@@ -559,7 +559,7 @@ describe('Bindings', () => {
           }),
         },
       );
-      const bindingsNew: Bindings = bindings.merge(bindingsExtraKey)!;
+      const bindingsNew: Bindings = <Bindings> bindings.merge(bindingsExtraKey);
       expect(bindingsNew).toBeDefined();
       expect(bindingsNew.getContext())
         .toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3', 'ex:S5' ], extraKey: [ 'ex:T1', 'ex:T2' ]}));
@@ -580,7 +580,7 @@ describe('Bindings', () => {
           }),
         },
       );
-      const bindingsNew: Bindings = bindingsNoMergeHandler.merge(bindings)!;
+      const bindingsNew: Bindings = <Bindings> bindingsNoMergeHandler.merge(bindings);
       expect(bindingsNew).toBeDefined();
       expect(bindingsNew.getContext()).toEqual(new ActionContext({}));
     });
@@ -607,7 +607,7 @@ describe('Bindings', () => {
       );
 
       const cb = jest.fn();
-      const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
+      const bindingsNew: Bindings = <Bindings> bindings.mergeWith(cb, bindingsOther);
       expect(bindingsNew).toBeDefined();
       expect(bindingsNew.getContext()).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3', 'ex:S5' ]}));
     });
@@ -681,10 +681,10 @@ describe('Bindings', () => {
       });
 
       it('calling merge twice with different bindings should give correct results', () => {
-        const bindingsNew1: Bindings = bindings.merge(bindingsOther1)!;
+        const bindingsNew1: Bindings = <Bindings> bindings.merge(bindingsOther1);
         expect(bindingsNew1).toBeDefined();
         expect(bindingsNew1.getContext()).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3', 'ex:S5' ]}));
-        const bindingsNew2: Bindings = bindings.merge(bindingsOther2)!;
+        const bindingsNew2: Bindings = <Bindings> bindings.merge(bindingsOther2);
         expect(bindingsNew2).toBeDefined();
         expect(bindingsNew2.getContext()).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3', 'ex:S9' ]}));
       });

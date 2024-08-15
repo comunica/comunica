@@ -1,5 +1,6 @@
 {
   "name": "@comunica/actor-rdf-parse-shaclc",
+  "type": "module",
   "version": "3.2.1",
   "description": "A shaclc rdf-parse actor",
   "lsd:module": true,
@@ -25,13 +26,14 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.js",
   "files": [
     "components",
+    "lib/**/*.cjs",
+    "lib/**/*.cjs.map",
     "lib/**/*.d.ts",
     "lib/**/*.js",
-    "lib/**/*.js.map",
-    "lib/**/*.cjs",
-    "lib/**/*.cjs.map"
+    "lib/**/*.js.map"
   ],
   "scripts": {
     "build": "yarn run build:ts && yarn run build:components",
@@ -46,7 +48,5 @@
     "asynciterator": "^3.9.0",
     "readable-stream": "^4.4.2",
     "shaclc-parse": "^1.4.0"
-  },
-  "type": "module",
-  "module": "lib/index.js"
+  }
 }

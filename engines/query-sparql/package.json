@@ -1,5 +1,6 @@
 {
   "name": "@comunica/query-sparql",
+  "type": "module",
   "version": "3.2.1",
   "description": "A SPARQL query engine for querying over decentralized RDF knowledge graphs on the Web",
   "license": "MIT",
@@ -218,6 +219,5 @@
   },
   "browser": {
     "./lib/index.js": "./lib/index-browser.js"
-  },
-  "type": "module"
+  }
 }

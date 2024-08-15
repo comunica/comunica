@@ -1,5 +1,6 @@
 {
   "name": "@comunica/actor-rdf-parse-jsonld",
+  "type": "module",
   "version": "3.2.1",
   "description": "A JSON-LD RDF Parse actor",
   "lsd:module": true,
@@ -23,13 +24,14 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.js",
   "files": [
     "components",
+    "lib/**/*.cjs",
+    "lib/**/*.cjs.map",
     "lib/**/*.d.ts",
     "lib/**/*.js",
-    "lib/**/*.js.map",
-    "lib/**/*.cjs",
-    "lib/**/*.cjs.map"
+    "lib/**/*.js.map"
   ],
   "scripts": {
     "build": "yarn run build:ts && yarn run build:components",
@@ -45,7 +47,5 @@
     "@jeswr/stream-to-string": "^2.0.0",
     "jsonld-context-parser": "^2.2.2",
     "jsonld-streaming-parser": "^3.0.1"
-  },
-  "type": "module",
-  "module": "lib/index.js"
+  }
 }

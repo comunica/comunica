@@ -1,5 +1,6 @@
 {
   "name": "@comunica/expression-evaluator",
+  "type": "module",
   "version": "3.2.1",
   "description": "A simple SPARQL expression evaluator",
   "lsd:module": false,
@@ -25,12 +26,13 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.js",
   "files": [
+    "lib/**/*.cjs",
+    "lib/**/*.cjs.map",
     "lib/**/*.d.ts",
     "lib/**/*.js",
-    "lib/**/*.js.map",
-    "lib/**/*.cjs",
-    "lib/**/*.cjs.map"
+    "lib/**/*.js.map"
   ],
   "scripts": {
     "build": "node \"../../node_modules/typescript/bin/tsc\"",
@@ -50,7 +52,5 @@
     "spark-md5": "^3.0.1",
     "sparqlalgebrajs": "^4.3.7",
     "uuid": "^9.0.0"
-  },
-  "type": "module",
-  "module": "lib/index.js"
+  }
 }

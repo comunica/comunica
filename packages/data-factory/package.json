@@ -1,5 +1,6 @@
 {
   "name": "@comunica/data-factory",
+  "type": "module",
   "version": "3.1.0",
   "description": "RDFJS DataFactory utilities",
   "license": "MIT",
@@ -25,19 +26,18 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.js",
   "files": [
+    "lib/**/*.cjs",
+    "lib/**/*.cjs.map",
     "lib/**/*.d.ts",
     "lib/**/*.js",
-    "lib/**/*.js.map",
-    "lib/**/*.cjs",
-    "lib/**/*.cjs.map"
+    "lib/**/*.js.map"
   ],
   "scripts": {
     "build": "node \"../../node_modules/typescript/bin/tsc\""
   },
   "dependencies": {
     "@rdfjs/types": "*"
-  },
-  "type": "module",
-  "module": "lib/index.js"
+  }
 }

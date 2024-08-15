@@ -20,8 +20,7 @@ export class ActorRdfJoinNestedLoop extends ActorRdfJoin {
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
     const join = new UnionIterator(action.entries[0].output.bindingsStream
       .map(left => action.entries[1].output.bindingsStream.clone()
-        .map(right => ActorRdfJoin.joinBindings(left, right))
-      ), { autoStart: false });
+        .map(right => ActorRdfJoin.joinBindings(left, right))), { autoStart: false });
 
     return {
       result: {

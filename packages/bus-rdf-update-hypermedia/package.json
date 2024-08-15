@@ -1,5 +1,6 @@
 {
   "name": "@comunica/bus-rdf-update-hypermedia",
+  "type": "module",
   "version": "3.2.1",
   "description": "A comunica bus for rdf-update-hypermedia events.",
   "lsd:module": true,
@@ -24,13 +25,14 @@
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.js",
   "files": [
     "components",
+    "lib/**/*.cjs",
+    "lib/**/*.cjs.map",
     "lib/**/*.d.ts",
     "lib/**/*.js",
-    "lib/**/*.js.map",
-    "lib/**/*.cjs",
-    "lib/**/*.cjs.map"
+    "lib/**/*.js.map"
   ],
   "scripts": {
     "build": "yarn run build:ts && yarn run build:components",
@@ -40,7 +42,5 @@
   "dependencies": {
     "@comunica/bus-rdf-update-quads": "^3.2.1",
     "@comunica/core": "^3.2.1"
-  },
-  "type": "module",
-  "module": "lib/index.js"
+  }
 }

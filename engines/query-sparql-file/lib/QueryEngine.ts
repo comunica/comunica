@@ -2,7 +2,7 @@ import { QueryEngineBase } from '@comunica/actor-init-query';
 import type { ActorInitQueryBase } from '@comunica/actor-init-query';
 import type { IQueryContextCommon } from '@comunica/types';
 
-// eslint-disable-next-line ts/no-require-imports,ts/no-var-requires,import/extensions
+// eslint-disable-next-line ts/no-require-imports,ts/no-var-requires
 const engineDefault = require('../engine-default.js');
 
 /**

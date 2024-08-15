@@ -202,22 +202,22 @@ export class ArrayTable extends Table<string[]> {
 
   public test(): void {
     for (const row of this.def.testArray ?? []) {
-      const result = row.at(-1);
+      const result = <string> row.at(-1);
       const { operation } = this.def;
       const aliases = this.def.aliases ?? {};
       test(`${this.format(operation, row)} should return ${result}`, async() => {
         const expr = this.format(operation, row.map(el => aliases[el] || el));
-        await this.testExpression(expr, result!);
+        await this.testExpression(expr, result);
       });
     }
 
     for (const row of this.def.errorArray ?? []) {
-      const error = row.at(-1);
+      const error = <string> row.at(-1);
       const { operation } = this.def;
       const aliases = this.def.aliases ?? {};
       test(`${this.format(operation, row)} should error`, async() => {
         const expr = this.format(operation, <[string, string, string]> row.map(el => aliases[el] || el));
-        await this.testErrorExpression(expr, error!);
+        await this.testErrorExpression(expr, error);
       });
     }
   }
