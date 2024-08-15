@@ -1,4 +1,4 @@
-import expect from 'expect';
+import { expect } from 'expect';
 import jest from 'jest-mock';
 
 // Add missing Jest functions

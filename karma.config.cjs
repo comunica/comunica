@@ -3,7 +3,7 @@ const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 const webpack = require('webpack');
 
 const testFiles = [
-  'engines/query-sparql/test/QuerySparql-test.cjs',
+  'engines/query-sparql/test/QuerySparql-test.ts',
 ];
 
 // Based on https://github.com/tom-sherman/blog/blob/main/posts/02-running-jest-tests-in-a-browser.md
@@ -39,7 +39,7 @@ module.exports = function(config) {
           [Path.resolve(__dirname, 'engines/query-sparql/test/util.cjs')]: Path.resolve(__dirname, 'engines/query-sparql/test/util-browser.js'),
           'jest.unmock': false,
         },
-        extensions: [ '.cjs', '.js', '.jsx', '.ts', '.tsx' ],
+        extensions: [ '.cjs', '.ts', '.tsx', '.js', '.jsx' ],
       },
       module: {
         rules: [
