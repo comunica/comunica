@@ -1,4 +1,4 @@
 comunica-browser.js*
-engine-default.js
+engine-default.cjs
 *.sparql
 dist

@@ -28,7 +28,7 @@ export default {
     'index.js',
     '/engines/query-sparql/test/util.ts',
     '/test/util/',
-    'engine-default.js',
+    'engine-default.cjs',
     '.cjs',
   ],
   testEnvironment: 'node',

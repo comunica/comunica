@@ -26,7 +26,7 @@
     "file"
   ],
   "sideEffects": false,
-  "main": "lib/index.js",
+  "main": "lib/index.cjs",
   "typings": "lib/index",
   "publishConfig": {
     "access": "public"
@@ -41,8 +41,8 @@
     "bin/**/*.js",
     "bin/**/*.js.map",
     "config",
-    "engine-browser.js",
-    "engine-default.js",
+    "engine-browser.cjs",
+    "engine-default.cjs",
     "lib/**/*.d.ts",
     "lib/**/*.js",
     "lib/**/*.js.map"
@@ -50,9 +50,9 @@
   "scripts": {
     "build": "yarn run build:ts",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
-    "prepare": "comunica-compile-config config/config-default.json > engine-default.js && comunica-compile-config config/config-browser.json > engine-browser.js",
+    "prepare": "comunica-compile-config config/config-default.json > engine-default.cjs && comunica-compile-config config/config-browser.json > engine-browser.cjs",
     "browser": "yarn run prepare && \"../../node_modules/webpack/bin/webpack.js\" --config webpack.config.js --mode production",
-    "integration": "rdf-test-suite-ldf spec/sparql-engine.js https://comunica.github.io/manifest-ldf-tests/sparql-file/file-manifest.ttl -d 200000 -c ../../.rdf-test-suite-ldf-cache/"
+    "integration": "rdf-test-suite-ldf spec/sparql-engine.cjs https://comunica.github.io/manifest-ldf-tests/sparql-file/file-manifest.ttl -d 200000 -c ../../.rdf-test-suite-ldf-cache/"
   },
   "dependencies": {
     "@comunica/actor-context-preprocess-convert-shortcuts": "^3.2.1",
@@ -206,6 +206,6 @@
   },
   "browser": {
     "./lib/index.js": "./lib/index-browser.js",
-    "./engine-default.js": "./engine-browser.js"
+    "./engine-default.cjs": "./engine-browser.cjs"
   }
 }

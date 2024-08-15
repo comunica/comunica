@@ -100,8 +100,8 @@ export default config([
     // Files that do not require linting
     ignores: [
       'setup-jest.js',
-      '**/engine-default.js',
-      '**/engine-browser.js',
+      '**/engine-default.cjs',
+      '**/engine-browser.cjs',
       '**/comunica-browser.js',
       '.github/**',
       '**/performance/*/combinations/**',

@@ -31,12 +31,12 @@ module.exports = function(engine) {
         return new RdfTestSuite.QueryResultBoolean(await result.execute());
       }
       if (result.resultType === 'quads') {
-        return new RdfTestSuite.QueryResultQuads(await require('arrayify-stream').default(await result.execute()));
+        return new RdfTestSuite.QueryResultQuads(await (await result.execute()).toArray());
       }
       if (result.resultType === 'bindings') {
         return new RdfTestSuite.QueryResultBindings(
           (await result.metadata()).variables.map(variable => `?${variable.value}`),
-          (await require('arrayify-stream').default(await result.execute()))
+          (await (await result.execute()).toArray())
             .map(binding => Object.fromEntries([ ...binding ]
               .map(([ key, value ]) => [ `?${key.value}`, value ]))),
         );

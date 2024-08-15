@@ -1,5 +1,5 @@
 comunica-browser.js*
-engine-default.js
+engine-default.cjs
 index-browser.d.ts
 index-browser.js
 index-browser.js.map

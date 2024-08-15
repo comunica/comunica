@@ -31,7 +31,7 @@ Static:
 ```typescript
 #!/usr/bin/env node
 import { runArgsInProcessStatic } from '@comunica/runner-cli';
-runArgsInProcessStatic(require('../engine-default.js'));
+runArgsInProcessStatic(require('../engine-default.cjs'));
 ```
 
 Dynamic:
