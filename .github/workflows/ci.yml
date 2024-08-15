@@ -39,8 +39,6 @@ jobs:
           firefox-version: latest
       - name: Install dependencies
         run: yarn install --frozen-lockfile
-      - name: Build project
-        run: yarn run build
       - name: Run depcheck
         run: yarn run depcheck
       - name: Run tests
