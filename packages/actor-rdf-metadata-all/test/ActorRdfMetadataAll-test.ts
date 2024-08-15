@@ -3,7 +3,7 @@ import { ActorRdfMetadata } from '@comunica/bus-rdf-metadata';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import arrayifyStream from 'arrayify-stream';
+import { arrayifyStream } from 'arrayify-stream';
 import { ActorRdfMetadataAll } from '../lib/ActorRdfMetadataAll';
 
 const quad = require('rdf-quad');
@@ -132,7 +132,7 @@ describe('ActorRdfMetadataAll', () => {
             quad('s2', 'p2', 'o2', 'g1'),
             quad('s3', 'p3', 'o3', ''),
           ]);
-          expect((<any> output.data)._read()).toBeFalsy();
+          expect((output.data).read()).toBeFalsy();
         });
     });
   });

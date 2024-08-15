@@ -13,7 +13,7 @@ import {
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { ComunicaDataFactory } from '@comunica/types';
 import { Factory } from 'sparqlalgebrajs';
-import { QuerySourceSparql } from './QuerySourceSparql';
+import { QuerySourceSparql } from './QuerySourceSparql.js';
 
 /**
  * A comunica SPARQL Query Source Identify Hypermedia Actor.

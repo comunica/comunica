@@ -1,1 +1,1 @@
-export * from './ActorRdfMetadataAccumulatePageSize';
+export * from './ActorRdfMetadataAccumulatePageSize.js';

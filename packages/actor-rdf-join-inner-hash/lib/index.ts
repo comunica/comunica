@@ -1,1 +1,1 @@
-export * from './ActorRdfJoinHash';
+export * from './ActorRdfJoinHash.js';

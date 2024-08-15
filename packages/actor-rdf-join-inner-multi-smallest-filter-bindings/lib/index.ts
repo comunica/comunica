@@ -1,1 +1,1 @@
-export * from './ActorRdfJoinMultiSmallestFilterBindings';
+export * from './ActorRdfJoinMultiSmallestFilterBindings.js';

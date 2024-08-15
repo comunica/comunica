@@ -2,10 +2,10 @@ import type * as RDF from '@rdfjs/types';
 import * as RDFString from 'rdf-string';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 import { Algebra } from 'sparqlalgebrajs';
-import * as E from '../expressions';
-import { TypeURL } from '../util/Consts';
-import * as Err from '../util/Errors';
-import { isExpressionError } from '../util/Errors';
+import * as E from '../expressions/index.js';
+import { TypeURL } from '../util/Consts.js';
+import * as Err from '../util/Errors.js';
+import { isExpressionError } from '../util/Errors.js';
 import {
   parseDate,
   parseDateTime,
@@ -13,10 +13,10 @@ import {
   parseDuration,
   parseTime,
   parseYearMonthDuration,
-} from '../util/Parsing';
-import * as P from '../util/Parsing';
-import { getSuperTypeDict } from '../util/TypeHandling';
-import type { ISuperTypeProvider, GeneralSuperTypeDict } from '../util/TypeHandling';
+} from '../util/Parsing.js';
+import * as P from '../util/Parsing.js';
+import { getSuperTypeDict } from '../util/TypeHandling.js';
+import type { ISuperTypeProvider, GeneralSuperTypeDict } from '../util/TypeHandling.js';
 
 export interface ITermTransformer {
   transformRDFTermUnsafe: (term: RDF.Term) => E.Term;

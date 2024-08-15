@@ -1,5 +1,5 @@
-import type { Actor, IAction, IActorOutput, IActorTest } from './Actor';
-import type { Bus, IActorReply } from './Bus';
+import type { Actor, IAction, IActorOutput, IActorTest } from './Actor.js';
+import type { Bus, IActorReply } from './Bus.js';
 
 /**
  * A mediator can mediate an action over a bus of actors.

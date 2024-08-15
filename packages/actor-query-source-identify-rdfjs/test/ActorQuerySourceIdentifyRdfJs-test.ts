@@ -4,7 +4,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
-import { ActorQuerySourceIdentifyRdfJs, QuerySourceRdfJs } from '..';
+import { ActorQuerySourceIdentifyRdfJs, QuerySourceRdfJs } from '../lib';
 import 'jest-rdf';
 
 const mediatorMergeBindingsContext: any = {

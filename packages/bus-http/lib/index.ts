@@ -1,2 +1,2 @@
-export * from './ActorHttp';
-export * from './utils';
+export * from './ActorHttp.js';
+export * from './utils.js';

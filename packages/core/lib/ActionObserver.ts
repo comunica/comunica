@@ -1,5 +1,5 @@
-import type { Actor, IAction, IActorOutput, IActorTest } from './Actor';
-import type { Bus } from './Bus';
+import type { Actor, IAction, IActorOutput, IActorTest } from './Actor.js';
+import type { Bus } from './Bus.js';
 
 /**
  * An ActionObserver can passively listen to {@link Actor#run} inputs and outputs for all actors on a certain bus.

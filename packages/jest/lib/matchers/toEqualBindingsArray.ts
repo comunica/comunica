@@ -1,6 +1,6 @@
 import { bindingsToString } from '@comunica/bindings-factory';
 import type * as RDF from '@rdfjs/types';
-import toEqualBindings from './toEqualBindings';
+import toEqualBindings from './toEqualBindings.js';
 
 function bindingsArrayToString(bindings: RDF.Bindings[]): string {
   return `[ ${bindings.map(term => bindingsToString(term)).join(', ')} ]`;

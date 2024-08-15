@@ -3,7 +3,7 @@ import { ActorRdfMetadata } from '@comunica/bus-rdf-metadata';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import arrayifyStream from 'arrayify-stream';
+import { arrayifyStream } from 'arrayify-stream';
 import { ActorRdfMetadataPrimaryTopic } from '../lib/ActorRdfMetadataPrimaryTopic';
 
 const quad = require('rdf-quad');
@@ -225,7 +225,7 @@ describe('ActorRdfMetadataPrimaryTopic', () => {
             quad('o2', 'http://rdfs.org/ns/void#subset', 'o2?param', 'g1'),
             quad('s2', 'p2', 'o2', 'g1'),
           ]);
-          expect((<any> output.data)._read()).toBeFalsy();
+          expect((output.data).read()).toBeFalsy();
         });
     });
   });

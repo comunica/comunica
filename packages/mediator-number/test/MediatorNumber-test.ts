@@ -1,7 +1,7 @@
 import type { IAction, IActorOutput, IActorTest } from '@comunica/core';
 import { ActionContext, Actor, Bus, Mediator } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
-import { MediatorNumber } from '..';
+import { MediatorNumber } from '../lib';
 
 describe('MediatorNumber', () => {
   let bus: Bus<DummyActor, IAction, IDummyTest, IDummyTest>;

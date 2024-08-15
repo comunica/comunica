@@ -1,1 +1,1 @@
-export * from './ActorRdfSerializeJsonLd';
+export * from './ActorRdfSerializeJsonLd.js';

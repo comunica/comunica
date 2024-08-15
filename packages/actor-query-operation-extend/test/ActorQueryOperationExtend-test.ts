@@ -4,7 +4,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Actor, Bus } from '@comunica/core';
 import * as sparqlee from '@comunica/expression-evaluator';
 import type { IQueryOperationResultBindings } from '@comunica/types';
-import arrayifyStream from 'arrayify-stream';
+import { arrayifyStream } from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import '@comunica/jest';
@@ -13,6 +13,15 @@ import { ActorQueryOperationExtend } from '../lib/ActorQueryOperationExtend';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF, {});
+
+jest.mock<typeof import('@comunica/expression-evaluator')>('@comunica/expression-evaluator', () => {
+  return {
+    // Allows the use of jest.spyOn later.
+    // @see https://stackoverflow.com/questions/67872622/jest-spyon-not-working-on-index-file-cannot-redefine-property
+    __esModule: true,
+    ...jest.requireActual('@comunica/expression-evaluator'),
+  };
+});
 
 describe('ActorQueryOperationExtend', () => {
   let bus: any;

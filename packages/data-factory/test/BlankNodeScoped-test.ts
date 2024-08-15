@@ -1,5 +1,5 @@
 import { DataFactory } from 'rdf-data-factory';
-import { BlankNodeScoped } from '..';
+import { BlankNodeScoped } from '../lib';
 
 const DF = new DataFactory();
 

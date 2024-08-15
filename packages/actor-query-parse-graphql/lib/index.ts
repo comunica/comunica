@@ -1,1 +1,1 @@
-export * from './ActorQueryParseGraphql';
+export * from './ActorQueryParseGraphql.js';

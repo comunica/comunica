@@ -1,2 +1,2 @@
-export * from './ActorRdfUpdateHypermediaSparql';
-export * from './QuadDestinationSparql';
+export * from './ActorRdfUpdateHypermediaSparql.js';
+export * from './QuadDestinationSparql.js';

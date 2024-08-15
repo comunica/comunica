@@ -2,13 +2,13 @@ import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import * as RdfString from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
-import type { ICompleteSharedContext } from '../evaluators/evaluatorHelpers/BaseExpressionEvaluator';
-import type * as E from '../expressions';
-import { TermTransformer } from '../transformers/TermTransformer';
-import type { ITermTransformer } from '../transformers/TermTransformer';
-import { TypeAlias } from '../util/Consts';
-import { isSubTypeOf } from '../util/TypeHandling';
-import type { IAggregatorComponentClass } from '.';
+import type { ICompleteSharedContext } from '../evaluators/evaluatorHelpers/BaseExpressionEvaluator.js';
+import type * as E from '../expressions/index.js';
+import { TermTransformer } from '../transformers/TermTransformer.js';
+import type { ITermTransformer } from '../transformers/TermTransformer.js';
+import { TypeAlias } from '../util/Consts.js';
+import { isSubTypeOf } from '../util/TypeHandling.js';
+import type { IAggregatorComponentClass } from './index.js';
 
 export abstract class AggregatorComponent {
   public abstract put(bindings: RDF.Term | undefined): void;

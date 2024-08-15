@@ -1,1 +1,1 @@
-export * from './ActorHttpMemento';
+export * from './ActorHttpMemento.js';

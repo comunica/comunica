@@ -1,1 +1,1 @@
-export * from './ActorOptimizeQueryOperationJoinConnected';
+export * from './ActorOptimizeQueryOperationJoinConnected.js';

@@ -1,6 +1,6 @@
 import type * as RDF from '@rdfjs/types';
-import { orderTypes } from '../util/Ordering';
-import { AggregatorComponent } from './Aggregator';
+import { orderTypes } from '../util/Ordering.js';
+import { AggregatorComponent } from './Aggregator.js';
 
 export class Max extends AggregatorComponent {
   private state: RDF.Term | undefined = undefined;

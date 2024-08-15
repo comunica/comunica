@@ -1,3 +1,3 @@
-export * from './Bindings';
-export * from './BindingsFactory';
-export * from './bindingsToString';
+export * from './Bindings.js';
+export * from './BindingsFactory.js';
+export * from './bindingsToString.js';

@@ -1,1 +1,1 @@
-export * from './ActorQueryResultSerializeRdf';
+export * from './ActorQueryResultSerializeRdf.js';

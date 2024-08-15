@@ -3,7 +3,7 @@
 import * as path from 'node:path';
 import type { QueryStringContext } from '@comunica/types';
 import 'jest-rdf';
-import arrayifyStream from 'arrayify-stream';
+import { arrayifyStream } from 'arrayify-stream';
 import { QueryEngine } from '../lib/QueryEngine';
 
 describe('System test: QuerySparqlFile', () => {

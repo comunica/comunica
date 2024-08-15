@@ -1,6 +1,6 @@
-import toEqualBindings from './toEqualBindings';
-import toEqualBindingsArray from './toEqualBindingsArray';
-import toEqualBindingsStream from './toEqualBindingsStream';
+import toEqualBindings from './toEqualBindings.js';
+import toEqualBindingsArray from './toEqualBindingsArray.js';
+import toEqualBindingsStream from './toEqualBindingsStream.js';
 
 export default [
   toEqualBindings,

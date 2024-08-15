@@ -1,1 +1,1 @@
-export * from './ActorAbstractParse';
+export * from './ActorAbstractParse.js';

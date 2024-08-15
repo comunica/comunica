@@ -4,7 +4,7 @@ import type {
   IDurationRepresentation,
   ITimeRepresentation,
   ITimeZoneRepresentation,
-} from './DateTimeHelpers';
+} from './DateTimeHelpers.js';
 
 function numSerializer(num: number, min = 2): string {
   return num.toLocaleString(undefined, { minimumIntegerDigits: min, useGrouping: false });

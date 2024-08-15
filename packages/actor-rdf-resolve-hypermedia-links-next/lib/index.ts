@@ -1,1 +1,1 @@
-export * from './ActorRdfResolveHypermediaLinksNext';
+export * from './ActorRdfResolveHypermediaLinksNext.js';

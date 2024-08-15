@@ -1,5 +1,5 @@
 import type { ILink } from '@comunica/bus-rdf-resolve-hypermedia-links';
-import type { ILinkQueue } from './ILinkQueue';
+import type { ILinkQueue } from './ILinkQueue.js';
 
 /**
  * A link queue that wraps a given link queue.

@@ -9,8 +9,8 @@ import type {
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
-import type { IActionQueryOperation, IActorQueryOperationArgs } from './ActorQueryOperation';
-import { ActorQueryOperation } from './ActorQueryOperation';
+import type { IActionQueryOperation, IActorQueryOperationArgs } from './ActorQueryOperation.js';
+import { ActorQueryOperation } from './ActorQueryOperation.js';
 
 /**
  * A base implementation for query operation actors for a specific operation type.

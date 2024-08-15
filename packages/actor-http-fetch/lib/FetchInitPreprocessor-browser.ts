@@ -2,7 +2,7 @@
 /* eslint-enable unicorn/filename-case */
 
 import { ActorHttp } from '@comunica/bus-http';
-import type { IFetchInitPreprocessor } from './IFetchInitPreprocessor';
+import type { IFetchInitPreprocessor } from './IFetchInitPreprocessor.js';
 
 /**
  * Overrides things for fetch requests in browsers

@@ -1,9 +1,9 @@
 import type * as RDF from '@rdfjs/types';
 
-import type { Expression, NamedExpression, SimpleApplication } from './Expressions';
+import type { Expression, NamedExpression, SimpleApplication } from './Expressions.js';
 import {
   ExpressionType,
-} from './Expressions';
+} from './Expressions.js';
 
 export class Named implements NamedExpression {
   public expressionType: ExpressionType.Named = ExpressionType.Named;

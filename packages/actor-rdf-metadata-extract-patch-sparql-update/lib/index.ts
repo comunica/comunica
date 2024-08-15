@@ -1,1 +1,1 @@
-export * from './ActorRdfMetadataExtractPatchSparqlUpdate';
+export * from './ActorRdfMetadataExtractPatchSparqlUpdate.js';

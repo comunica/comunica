@@ -5,7 +5,7 @@ import {
   getDataDestinationValue,
   getDataDestinationContext,
   isDataDestinationRawType,
-} from '..';
+} from '../lib';
 
 describe('utils', () => {
   const rdfjsStore: RDF.Store = <any> { remove: true };

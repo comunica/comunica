@@ -1,2 +1,2 @@
-export * from './ActorRdfParse';
-export * from './ActorRdfParseFixedMediaTypes';
+export * from './ActorRdfParse.js';
+export * from './ActorRdfParseFixedMediaTypes.js';

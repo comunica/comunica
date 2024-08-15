@@ -1,2 +1,2 @@
-export * from './ActorHttpInvalidate';
-export * from './ActorHttpInvalidateListenable';
+export * from './ActorHttpInvalidate.js';
+export * from './ActorHttpInvalidateListenable.js';

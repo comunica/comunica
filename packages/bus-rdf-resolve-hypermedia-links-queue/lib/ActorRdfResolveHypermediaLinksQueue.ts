@@ -1,6 +1,6 @@
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
-import type { ILinkQueue } from './ILinkQueue';
+import type { ILinkQueue } from './ILinkQueue.js';
 
 /**
  * A comunica actor for rdf-resolve-hypermedia-links-queue events.

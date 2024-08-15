@@ -1,5 +1,6 @@
 {
   "name": "@comunica/types",
+  "type": "module",
   "version": "3.2.1",
   "description": "Typings module for Comunica",
   "lsd:module": true,
@@ -18,16 +19,19 @@
     "types"
   ],
   "sideEffects": false,
-  "main": "lib/index.js",
-  "typings": "lib/index",
+  "main": "lib/index.cjs",
+  "typings": "lib/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.js",
   "files": [
     "bin/**/*.d.ts",
     "bin/**/*.js",
     "bin/**/*.js.map",
     "components",
+    "lib/**/*.cjs",
+    "lib/**/*.cjs.map",
     "lib/**/*.d.ts",
     "lib/**/*.js",
     "lib/**/*.js.map"

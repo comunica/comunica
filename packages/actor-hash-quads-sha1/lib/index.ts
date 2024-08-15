@@ -1,1 +1,1 @@
-export * from './ActorHashQuadsSha1';
+export * from './ActorHashQuadsSha1.js';

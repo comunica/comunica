@@ -3,7 +3,7 @@ import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { ActorQueryOperationReducedHash } from '..';
+import { ActorQueryOperationReducedHash } from '../lib';
 import '@comunica/jest';
 
 const DF = new DataFactory();

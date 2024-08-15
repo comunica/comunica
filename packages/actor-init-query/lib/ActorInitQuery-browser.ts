@@ -1,6 +1,6 @@
 /* eslint-disable unicorn/filename-case */
 /* eslint-enable unicorn/filename-case */
-import { ActorInitQueryBase } from './ActorInitQueryBase';
+import { ActorInitQueryBase } from './ActorInitQueryBase.js';
 
 /* istanbul ignore next */
 if (typeof process === 'undefined') {

@@ -1,1 +1,1 @@
-export * from './ActorRdfJoinMultiSequential';
+export * from './ActorRdfJoinMultiSequential.js';

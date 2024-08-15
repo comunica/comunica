@@ -1,1 +1,1 @@
-export * from './ActorOptimizeQueryOperationRewriteCopy';
+export * from './ActorOptimizeQueryOperationRewriteCopy.js';

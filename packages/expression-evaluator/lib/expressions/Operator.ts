@@ -1,7 +1,7 @@
-import type { Expression, OperatorExpression, SimpleApplication } from './Expressions';
+import type { Expression, OperatorExpression, SimpleApplication } from './Expressions.js';
 import {
   ExpressionType,
-} from './Expressions';
+} from './Expressions.js';
 
 export class Operator implements OperatorExpression {
   public expressionType: ExpressionType.Operator = ExpressionType.Operator;

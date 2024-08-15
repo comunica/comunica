@@ -1,7 +1,7 @@
 import type { ISetupProperties, Runner } from '@comunica/runner';
 import { instantiateComponent } from '@comunica/runner';
-import type { ActorInitQueryBase } from './ActorInitQueryBase';
-import type { QueryEngineBase } from './QueryEngineBase';
+import type { ActorInitQueryBase } from './ActorInitQueryBase.js';
+import type { QueryEngineBase } from './QueryEngineBase.js';
 
 /**
  * A factory that can create query engines dynamically based on a given config.

@@ -16,7 +16,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { ComunicaDataFactory, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { Factory } from 'sparqlalgebrajs';
-import { QuerySourceQpf } from './QuerySourceQpf';
+import { QuerySourceQpf } from './QuerySourceQpf.js';
 
 /**
  * A comunica QPF Query Source Identify Hypermedia Actor.

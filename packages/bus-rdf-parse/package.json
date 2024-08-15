@@ -1,5 +1,6 @@
 {
   "name": "@comunica/bus-rdf-parse",
+  "type": "module",
   "version": "3.2.1",
   "description": "A comunica bus for 'init' events.",
   "lsd:module": true,
@@ -19,13 +20,16 @@
     "init"
   ],
   "sideEffects": false,
-  "main": "lib/index.js",
-  "typings": "lib/index",
+  "main": "lib/index.cjs",
+  "typings": "lib/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.js",
   "files": [
     "components",
+    "lib/**/*.cjs",
+    "lib/**/*.cjs.map",
     "lib/**/*.d.ts",
     "lib/**/*.js",
     "lib/**/*.js.map"

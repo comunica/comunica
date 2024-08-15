@@ -1,1 +1,1 @@
-export * from './ActorMergeBindingsContext';
+export * from './ActorMergeBindingsContext.js';

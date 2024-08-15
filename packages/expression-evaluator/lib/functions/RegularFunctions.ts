@@ -7,13 +7,13 @@ import { resolve as resolveRelativeIri } from 'relative-to-absolute-iri';
 import { hash as md5 } from 'spark-md5';
 import * as uuid from 'uuid';
 
-import type { ICompleteSharedContext } from '../evaluators/evaluatorHelpers/BaseExpressionEvaluator';
-import * as E from '../expressions';
-import type { Quad } from '../expressions';
-import { TermTransformer } from '../transformers/TermTransformer';
-import * as C from '../util/Consts';
-import { RegularOperator, TypeAlias, TypeURL } from '../util/Consts';
-import type { IDayTimeDurationRepresentation } from '../util/DateTimeHelpers';
+import type { ICompleteSharedContext } from '../evaluators/evaluatorHelpers/BaseExpressionEvaluator.js';
+import * as E from '../expressions/index.js';
+import type { Quad } from '../expressions/index.js';
+import { TermTransformer } from '../transformers/TermTransformer.js';
+import * as C from '../util/Consts.js';
+import { RegularOperator, TypeAlias, TypeURL } from '../util/Consts.js';
+import type { IDayTimeDurationRepresentation } from '../util/DateTimeHelpers.js';
 import {
   dayTimeDurationsToSeconds,
   defaultedDateTimeRepresentation,
@@ -25,15 +25,15 @@ import {
   toDateTimeRepresentation,
   toUTCDate,
   yearMonthDurationsToMonths,
-} from '../util/DateTimeHelpers';
-import * as Err from '../util/Errors';
-import { orderTypes } from '../util/Ordering';
-import { addDurationToDateTime, elapsedDuration } from '../util/SpecAlgos';
-import type { IOverloadedDefinition } from './Core';
-import { RegularFunction } from './Core';
-import { bool, decimal, declare, double, integer, langString, string } from './Helpers';
-import * as X from './XPathFunctions';
-import { regularFunctions } from '.';
+} from '../util/DateTimeHelpers.js';
+import * as Err from '../util/Errors.js';
+import { orderTypes } from '../util/Ordering.js';
+import { addDurationToDateTime, elapsedDuration } from '../util/SpecAlgos.js';
+import type { IOverloadedDefinition } from './Core.js';
+import { RegularFunction } from './Core.js';
+import { bool, decimal, declare, double, integer, langString, string } from './Helpers.js';
+import * as X from './XPathFunctions.js';
+import { regularFunctions } from './index.js';
 
 const DF = new DataFactory<RDF.BaseQuad>();
 

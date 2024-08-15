@@ -1,1 +1,1 @@
-export * from './ActorContextPreprocessSetDefaults';
+export * from './ActorContextPreprocessSetDefaults.js';

@@ -1,3 +1,3 @@
-export * from './ActorRdfResolveHypermediaLinksQueue';
-export * from './ILinkQueue';
-export * from './LinkQueueWrapper';
+export * from './ActorRdfResolveHypermediaLinksQueue.js';
+export * from './ILinkQueue.js';
+export * from './LinkQueueWrapper.js';

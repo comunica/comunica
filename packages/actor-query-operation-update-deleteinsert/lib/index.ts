@@ -1,1 +1,1 @@
-export * from './ActorQueryOperationUpdateDeleteInsert';
+export * from './ActorQueryOperationUpdateDeleteInsert.js';

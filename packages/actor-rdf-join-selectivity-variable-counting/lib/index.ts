@@ -1,1 +1,1 @@
-export * from './ActorRdfJoinSelectivityVariableCounting';
+export * from './ActorRdfJoinSelectivityVariableCounting.js';

@@ -1,1 +1,1 @@
-export * from './ActorInit';
+export * from './ActorInit.js';

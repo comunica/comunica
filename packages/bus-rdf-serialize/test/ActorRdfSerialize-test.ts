@@ -1,5 +1,5 @@
 import { Bus } from '@comunica/core';
-import { ActorRdfSerialize } from '..';
+import { ActorRdfSerialize } from '../lib';
 
 describe('ActorRdfSerialize', () => {
   const bus = new Bus({ name: 'bus' });

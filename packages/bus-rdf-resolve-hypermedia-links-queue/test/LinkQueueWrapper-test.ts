@@ -1,5 +1,5 @@
-import type { ILinkQueue } from '..';
-import { LinkQueueWrapper } from '..';
+import type { ILinkQueue } from '../lib';
+import { LinkQueueWrapper } from '../lib';
 
 describe('LinkQueueWrapper', () => {
   let wrapped: ILinkQueue;

@@ -1,2 +1,2 @@
-export * from './ActorRdfResolveHypermediaLinksQueueFifo';
-export * from './LinkQueueFifo';
+export * from './ActorRdfResolveHypermediaLinksQueueFifo.js';
+export * from './LinkQueueFifo.js';

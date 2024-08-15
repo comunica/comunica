@@ -1,2 +1,2 @@
-export * from './ActorQuerySourceIdentifyHypermediaQpf';
-export * from './QuerySourceQpf';
+export * from './ActorQuerySourceIdentifyHypermediaQpf.js';
+export * from './QuerySourceQpf.js';

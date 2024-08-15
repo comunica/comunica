@@ -1,8 +1,8 @@
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import type { BindingsStream } from './Bindings';
-import type { IActionContext } from './IActionContext';
-import type { IMetadata, MetadataQuads, MetadataBindings } from './IMetadata';
+import type { BindingsStream } from './Bindings.js';
+import type { IActionContext } from './IActionContext.js';
+import type { IMetadata, MetadataQuads, MetadataBindings } from './IMetadata.js';
 
 export interface IQueryOperationResultBase {
   /**

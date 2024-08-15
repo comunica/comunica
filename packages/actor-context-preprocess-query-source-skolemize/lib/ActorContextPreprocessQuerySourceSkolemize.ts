@@ -3,8 +3,8 @@ import { ActorContextPreprocess } from '@comunica/bus-context-preprocess';
 import { KeysQueryOperation, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import type { IActorTest, IAction } from '@comunica/core';
 import type { IQuerySourceWrapper, QuerySourceReference } from '@comunica/types';
-import { QuerySourceSkolemized } from './QuerySourceSkolemized';
-import { getSourceId } from './utils';
+import { QuerySourceSkolemized } from './QuerySourceSkolemized.js';
+import { getSourceId } from './utils.js';
 
 /**
  * A comunica Query Source Skolemize Context Preprocess Actor.

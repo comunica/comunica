@@ -159,7 +159,7 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
   public async handleArgs(args: Record<string, any>, context: Record<string, any>): Promise<void> {
     // Print version information
     if (args.version) {
-      // eslint-disable-next-line ts/no-require-imports,ts/no-var-requires,import/extensions
+      // eslint-disable-next-line ts/no-require-imports,ts/no-var-requires
       const comunicaVersion: string = require('../../package.json').version;
       const dev: string = CliArgsHandlerBase.isDevelopmentEnvironment() ? '(dev)' : '';
       const nodeVersion: string = process.version;

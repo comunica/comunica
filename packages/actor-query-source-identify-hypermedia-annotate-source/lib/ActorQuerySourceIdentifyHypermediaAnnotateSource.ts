@@ -8,7 +8,7 @@ import type {
 } from '@comunica/bus-query-source-identify-hypermedia';
 import { ActorQuerySourceIdentifyHypermedia } from '@comunica/bus-query-source-identify-hypermedia';
 import { ActionContextKey } from '@comunica/core';
-import { QuerySourceAddSourceAttribution } from './QuerySourceAddSourceAttribution';
+import { QuerySourceAddSourceAttribution } from './QuerySourceAddSourceAttribution.js';
 
 /**
  * A comunica None Query Source Identify Hypermedia Actor.

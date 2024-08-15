@@ -1,1 +1,1 @@
-export * from './ActorQueryProcessSequential';
+export * from './ActorQueryProcessSequential.js';

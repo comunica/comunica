@@ -1,7 +1,7 @@
 import { URL } from 'node:url';
 import type { Stream } from 'bunyan';
-import type { IBunyanStreamProviderArgs } from './BunyanStreamProvider';
-import { BunyanStreamProvider } from './BunyanStreamProvider';
+import type { IBunyanStreamProviderArgs } from './BunyanStreamProvider.js';
+import { BunyanStreamProvider } from './BunyanStreamProvider.js';
 
 /**
  * A file bunyan stream provider.

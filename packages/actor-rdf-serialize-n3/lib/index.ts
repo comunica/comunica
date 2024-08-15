@@ -1,1 +1,1 @@
-export * from './ActorRdfSerializeN3';
+export * from './ActorRdfSerializeN3.js';

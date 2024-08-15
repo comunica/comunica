@@ -25,7 +25,7 @@ import {
 import { termToString } from 'rdf-string';
 import type { Factory } from 'sparqlalgebrajs';
 import { Algebra } from 'sparqlalgebrajs';
-import { PathVariableObjectIterator } from './PathVariableObjectIterator';
+import { PathVariableObjectIterator } from './PathVariableObjectIterator.js';
 
 /**
  * An abstract actor that handles Path operations.

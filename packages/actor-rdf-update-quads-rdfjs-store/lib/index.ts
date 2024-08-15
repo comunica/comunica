@@ -1,1 +1,1 @@
-export * from './ActorRdfUpdateQuadsRdfJsStore';
+export * from './ActorRdfUpdateQuadsRdfJsStore.js';

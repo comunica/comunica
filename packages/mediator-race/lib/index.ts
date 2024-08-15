@@ -1,1 +1,1 @@
-export * from './MediatorRace';
+export * from './MediatorRace.js';

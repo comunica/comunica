@@ -1,1 +1,1 @@
-export * from './ActorRdfJoinSelectivity';
+export * from './ActorRdfJoinSelectivity.js';

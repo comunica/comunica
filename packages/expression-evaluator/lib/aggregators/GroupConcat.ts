@@ -1,7 +1,7 @@
 import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { langString, string } from '../functions/Helpers';
-import { AggregatorComponent } from './Aggregator';
+import { langString, string } from '../functions/Helpers.js';
+import { AggregatorComponent } from './Aggregator.js';
 
 export class GroupConcat extends AggregatorComponent {
   private state: string | undefined = undefined;

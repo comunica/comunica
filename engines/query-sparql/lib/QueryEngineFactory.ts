@@ -1,6 +1,6 @@
 /* eslint-disable node/no-path-concat */
 import { QueryEngineFactoryBase } from '@comunica/actor-init-query';
-import { QueryEngine } from './QueryEngine';
+import { QueryEngine } from './QueryEngine.js';
 
 /**
  * A factory that can create query engines dynamically based on a given config.

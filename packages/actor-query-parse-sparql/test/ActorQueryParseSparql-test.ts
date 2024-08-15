@@ -3,7 +3,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
-import { ActorQueryParseSparql } from '..';
+import { ActorQueryParseSparql } from '../lib';
 
 const DF = new DataFactory();
 

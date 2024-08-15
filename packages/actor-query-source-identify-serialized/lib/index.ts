@@ -1,1 +1,1 @@
-export * from './ActorQuerySourceIdentifySerialized';
+export * from './ActorQuerySourceIdentifySerialized.js';

@@ -1,1 +1,1 @@
-export * from './ActorQueryParseSparql';
+export * from './ActorQueryParseSparql.js';

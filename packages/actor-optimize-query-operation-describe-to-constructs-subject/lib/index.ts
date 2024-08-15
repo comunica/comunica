@@ -1,1 +1,1 @@
-export * from './ActorOptimizeQueryOperationDescribeToConstructsSubject';
+export * from './ActorOptimizeQueryOperationDescribeToConstructsSubject.js';

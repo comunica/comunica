@@ -1,2 +1,2 @@
-export * from './ActorAbstractPath';
-export * from './PathVariableObjectIterator';
+export * from './ActorAbstractPath.js';
+export * from './PathVariableObjectIterator.js';

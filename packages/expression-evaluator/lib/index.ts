@@ -1,7 +1,7 @@
-export { AsyncEvaluator, IAsyncEvaluatorContext } from './evaluators/AsyncEvaluator';
-export { SyncEvaluator, ISyncEvaluatorContext } from './evaluators/SyncEvaluator';
-export { AggregateEvaluator } from './evaluators/AggregateEvaluator';
+export { AsyncEvaluator, IAsyncEvaluatorContext } from './evaluators/AsyncEvaluator.js';
+export { SyncEvaluator, ISyncEvaluatorContext } from './evaluators/SyncEvaluator.js';
+export { AggregateEvaluator } from './evaluators/AggregateEvaluator.js';
 
-export { ExpressionError, isExpressionError } from './util/Errors';
-export { orderTypes } from './util/Ordering';
-export { AsyncAggregateEvaluator } from './evaluators/AsyncAggregateEvaluator';
+export { ExpressionError, isExpressionError } from './util/Errors.js';
+export { orderTypes } from './util/Ordering.js';
+export { AsyncAggregateEvaluator } from './evaluators/AsyncAggregateEvaluator.js';

@@ -2,7 +2,7 @@ import type { IActionHttp, IActorHttpOutput, IActorHttpArgs } from '@comunica/bu
 import { ActorHttp } from '@comunica/bus-http';
 import { KeysHttp } from '@comunica/context-entries';
 import type { IMediatorTypeTime } from '@comunica/mediatortype-time';
-import Requester from './Requester';
+import Requester from './Requester.js';
 
 const process: NodeJS.Process = require('process/');
 

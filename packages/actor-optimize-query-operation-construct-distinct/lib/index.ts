@@ -1,1 +1,1 @@
-export * from './ActorOptimizeQueryOperationConstructDistinct';
+export * from './ActorOptimizeQueryOperationConstructDistinct.js';

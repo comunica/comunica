@@ -1,1 +1,1 @@
-export * from './ActorQueryProcessAnnotateSourceBinding';
+export * from './ActorQueryProcessAnnotateSourceBinding.js';

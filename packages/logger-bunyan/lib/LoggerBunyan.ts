@@ -1,7 +1,7 @@
 import { Logger } from '@comunica/types';
 import BunyanLogger = require('bunyan');
 import type { LogLevelString } from 'bunyan';
-import type { BunyanStreamProvider } from './stream/BunyanStreamProvider';
+import type { BunyanStreamProvider } from './stream/BunyanStreamProvider.js';
 
 /**
  * A bunyan-based logger implementation.

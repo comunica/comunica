@@ -1,1 +1,1 @@
-export * from './LoggerPretty';
+export * from './LoggerPretty.js';

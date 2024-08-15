@@ -1,2 +1,2 @@
-export * from './ActorAbstractMediaTyped';
-export * from './ActorAbstractMediaTypedFixed';
+export * from './ActorAbstractMediaTyped.js';
+export * from './ActorAbstractMediaTypedFixed.js';

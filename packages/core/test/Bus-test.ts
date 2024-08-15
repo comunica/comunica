@@ -1,5 +1,5 @@
-import type { IAction, IActorOutput, IActorTest } from '..';
-import { ActionObserver, Actor, Bus } from '..';
+import type { IAction, IActorOutput, IActorTest } from '../lib';
+import { ActionObserver, Actor, Bus } from '../lib';
 
 describe('Bus', () => {
   describe('The Bus module', () => {

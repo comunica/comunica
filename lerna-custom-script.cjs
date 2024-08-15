@@ -33,7 +33,7 @@ async function depInfo({ location }, log) {
   let checkedDeps;
   if (location.startsWith(path.join(__dirname, '/engines'))) {
     // First check whether we have a default engine file
-    if (!folders.some(elem => elem.name === 'engine-default.js')) {
+    if (!folders.some(elem => elem.name === 'engine-default.cjs')) {
       return {
         unusedDeps: [],
         missingDeps: [],
@@ -48,12 +48,12 @@ async function depInfo({ location }, log) {
     ensureDependency({
       checkedDeps,
       dependency: '@comunica/runner',
-      dependant: path.join(location, 'engine-default.js'),
+      dependant: path.join(location, 'engine-default.cjs'),
     }, log);
     ensureDependency({
       checkedDeps,
       dependency: '@comunica/config-query-sparql',
-      dependant: path.join(location, 'engine-default.js'),
+      dependant: path.join(location, 'engine-default.cjs'),
     }, log);
   } else {
     ignore = files ? folders.filter(elem => files.every(file => !file.startsWith(elem.name))) : folders;

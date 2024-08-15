@@ -1,5 +1,5 @@
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
-import { ActorHttp } from './ActorHttp';
+import { ActorHttp } from './ActorHttp.js';
 
 /**
  * Check if the http response is valid, and throw an error if not.

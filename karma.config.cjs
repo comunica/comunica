@@ -36,10 +36,10 @@ module.exports = function(config) {
         alias: {
           fs: false,
           module: false,
-          [Path.resolve(__dirname, 'engines/query-sparql/test/util.js')]: Path.resolve(__dirname, 'engines/query-sparql/test/util-browser.js'),
+          [Path.resolve(__dirname, 'engines/query-sparql/test/util.cjs')]: Path.resolve(__dirname, 'engines/query-sparql/test/util-browser.js'),
           'jest.unmock': false,
         },
-        extensions: [ '.js', '.jsx', '.ts', '.tsx' ],
+        extensions: [ '.cjs', '.ts', '.tsx', '.js', '.jsx' ],
       },
       module: {
         rules: [

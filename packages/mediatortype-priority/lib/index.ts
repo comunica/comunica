@@ -1,1 +1,1 @@
-export * from './MediatorTypePriority';
+export * from './MediatorTypePriority.js';

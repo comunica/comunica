@@ -1,9 +1,9 @@
 import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
-import { BaseAggregateEvaluator } from './evaluatorHelpers/BaseAggregateEvaluator';
-import type { ISyncEvaluatorContext } from './SyncEvaluator';
-import { SyncEvaluator } from './SyncEvaluator';
+import { BaseAggregateEvaluator } from './evaluatorHelpers/BaseAggregateEvaluator.js';
+import type { ISyncEvaluatorContext } from './SyncEvaluator.js';
+import { SyncEvaluator } from './SyncEvaluator.js';
 
 // TODO: Support hooks & change name to SyncAggregateEvaluator
 export class AggregateEvaluator extends BaseAggregateEvaluator {

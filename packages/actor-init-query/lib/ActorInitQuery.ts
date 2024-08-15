@@ -5,11 +5,11 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { ICliArgsHandler, IQueryContextCommon } from '@comunica/types';
 import { Readable } from 'readable-stream';
 import yargs from 'yargs';
-import type { IActorInitQueryBaseArgs } from './ActorInitQueryBase';
-import { ActorInitQueryBase } from './ActorInitQueryBase';
-import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase';
-import { CliArgsHandlerQuery } from './cli/CliArgsHandlerQuery';
-import { QueryEngineBase } from './QueryEngineBase';
+import type { IActorInitQueryBaseArgs } from './ActorInitQueryBase.js';
+import { ActorInitQueryBase } from './ActorInitQueryBase.js';
+import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase.js';
+import { CliArgsHandlerQuery } from './cli/CliArgsHandlerQuery.js';
+import { QueryEngineBase } from './QueryEngineBase.js';
 
 /**
  * A comunica Query Init Actor.

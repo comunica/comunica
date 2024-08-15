@@ -1,2 +1,2 @@
-export * from './ActorRdfUpdateHypermediaPatchSparqlUpdate';
-export * from './QuadDestinationPatchSparqlUpdate';
+export * from './ActorRdfUpdateHypermediaPatchSparqlUpdate.js';
+export * from './QuadDestinationPatchSparqlUpdate.js';

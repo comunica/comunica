@@ -19,7 +19,7 @@ import type {
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { termToString } from 'rdf-string';
-import { instrumentIterator } from './instrumentIterator';
+import { instrumentIterator } from './instrumentIterator.js';
 
 /**
  * A comunica actor for joining 2 binding streams.

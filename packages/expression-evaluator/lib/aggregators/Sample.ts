@@ -1,5 +1,5 @@
 import type * as RDF from '@rdfjs/types';
-import { AggregatorComponent } from './Aggregator';
+import { AggregatorComponent } from './Aggregator.js';
 
 export class Sample extends AggregatorComponent {
   private state: RDF.Term | undefined = undefined;

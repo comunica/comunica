@@ -1,5 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-inner-nestedloop",
+  "type": "module",
   "version": "3.2.1",
   "description": "A nestedloop rdf-join actor",
   "lsd:module": true,
@@ -20,13 +21,16 @@
     "nestedloop"
   ],
   "sideEffects": false,
-  "main": "lib/index.js",
-  "typings": "lib/index",
+  "main": "lib/index.cjs",
+  "typings": "lib/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.js",
   "files": [
     "components",
+    "lib/**/*.cjs",
+    "lib/**/*.cjs.map",
     "lib/**/*.d.ts",
     "lib/**/*.js",
     "lib/**/*.js.map"
@@ -40,6 +44,6 @@
     "@comunica/bus-rdf-join": "^3.2.1",
     "@comunica/mediatortype-join-coefficients": "^3.2.1",
     "@comunica/types": "^3.2.1",
-    "asyncjoin": "^1.2.3"
+    "asynciterator": "^3.9.0"
   }
 }

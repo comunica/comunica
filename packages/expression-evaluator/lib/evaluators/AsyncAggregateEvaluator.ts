@@ -1,9 +1,9 @@
 import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
-import type { IAsyncEvaluatorContext } from './AsyncEvaluator';
-import { AsyncEvaluator } from './AsyncEvaluator';
-import { BaseAggregateEvaluator } from './evaluatorHelpers/BaseAggregateEvaluator';
+import type { IAsyncEvaluatorContext } from './AsyncEvaluator.js';
+import { AsyncEvaluator } from './AsyncEvaluator.js';
+import { BaseAggregateEvaluator } from './evaluatorHelpers/BaseAggregateEvaluator.js';
 
 export class AsyncAggregateEvaluator extends BaseAggregateEvaluator {
   private readonly evaluator: AsyncEvaluator;

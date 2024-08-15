@@ -1,1 +1,1 @@
-export * from './MediatorAll';
+export * from './MediatorAll.js';

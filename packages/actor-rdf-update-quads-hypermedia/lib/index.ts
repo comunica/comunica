@@ -1,1 +1,1 @@
-export * from './ActorRdfUpdateQuadsHypermedia';
+export * from './ActorRdfUpdateQuadsHypermedia.js';

@@ -1,1 +1,1 @@
-export * from './ActorRdfMetadataExtractHydraCount';
+export * from './ActorRdfMetadataExtractHydraCount.js';

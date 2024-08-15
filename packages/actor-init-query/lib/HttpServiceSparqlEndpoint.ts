@@ -14,12 +14,12 @@ import { ArrayIterator } from 'asynciterator';
 
 import yargs from 'yargs';
 
-import type { IDynamicQueryEngineOptions } from '..';
+import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase.js';
+import { CliArgsHandlerHttp } from './cli/CliArgsHandlerHttp.js';
+import { QueryEngineBase } from './QueryEngineBase.js';
+import type { IDynamicQueryEngineOptions } from './QueryEngineFactoryBase.js';
 
-import { QueryEngineBase, QueryEngineFactoryBase } from '..';
-
-import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase';
-import { CliArgsHandlerHttp } from './cli/CliArgsHandlerHttp';
+import { QueryEngineFactoryBase } from './QueryEngineFactoryBase.js';
 
 // Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
 const clusterUntyped = require('node:cluster');

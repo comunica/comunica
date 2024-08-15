@@ -1,16 +1,16 @@
 import type * as RDF from '@rdfjs/types';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
-import * as E from '../../expressions';
-import type { SyncExtension } from '../../expressions';
-import type { EvalContextSync } from '../../functions';
-import type { ITermTransformer } from '../../transformers/TermTransformer';
-import { TermTransformer } from '../../transformers/TermTransformer';
-import type { IExpressionEvaluator } from '../../Types';
-import * as Err from '../../util/Errors';
-import type { ISuperTypeProvider } from '../../util/TypeHandling';
-import type { SyncExtensionFunctionCreator } from '../SyncEvaluator';
-import type { ICompleteSharedContext } from './BaseExpressionEvaluator';
-import { BaseExpressionEvaluator } from './BaseExpressionEvaluator';
+import * as E from '../../expressions/index.js';
+import type { SyncExtension } from '../../expressions/index.js';
+import type { EvalContextSync } from '../../functions/index.js';
+import type { ITermTransformer } from '../../transformers/TermTransformer.js';
+import { TermTransformer } from '../../transformers/TermTransformer.js';
+import type { IExpressionEvaluator } from '../../Types.js';
+import * as Err from '../../util/Errors.js';
+import type { ISuperTypeProvider } from '../../util/TypeHandling.js';
+import type { SyncExtensionFunctionCreator } from '../SyncEvaluator.js';
+import type { ICompleteSharedContext } from './BaseExpressionEvaluator.js';
+import { BaseExpressionEvaluator } from './BaseExpressionEvaluator.js';
 
 export interface ICompleteSyncEvaluatorContext extends ICompleteSharedContext {
   exists?: (expression: Alg.ExistenceExpression, mapping: RDF.Bindings) => boolean;

@@ -1,17 +1,20 @@
-const config = require('@rubensworks/eslint-config');
+import config from '@rubensworks/eslint-config';
 
-module.exports = config([
+export default config([
   {
     files: [ '**/*.ts' ],
     languageOptions: {
       parserOptions: {
-        tsconfigRootDir: __dirname,
+        tsconfigRootDir: import.meta.dirname,
         project: [ './tsconfig.eslint.json' ],
       },
     },
   },
   {
     rules: {
+      // ESM
+      'import/extensions': 'off',
+
       // Default
       'unicorn/consistent-destructuring': 'off',
       'unicorn/no-array-callback-reference': 'off',
@@ -97,14 +100,15 @@ module.exports = config([
     // Files that do not require linting
     ignores: [
       'setup-jest.js',
-      '**/engine-default.js',
-      '**/engine-browser.js',
+      '**/engine-default.cjs',
+      '**/engine-browser.cjs',
       '**/comunica-browser.js',
       '.github/**',
       '**/performance/*/combinations/**',
       '**/bintest/**',
       // TODO: Remove this once solid-client-authn supports node 18.
       '**/QuerySparql-solid-test.ts',
+      '**/*.cjs',
     ],
   },
   {
@@ -114,7 +118,6 @@ module.exports = config([
       'ts/no-var-requires': 'off',
       'import/no-nodejs-modules': 'off',
       'import/no-extraneous-dependencies': 'off',
-      'import/extensions': 'off',
     },
   },
 ]);

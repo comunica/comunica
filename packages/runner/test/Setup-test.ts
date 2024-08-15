@@ -1,7 +1,7 @@
 import { ActionContext } from '@comunica/core';
 import { ComponentsManagerBuilder } from 'componentsjs';
 import { Readable } from 'readable-stream';
-import * as Setup from '..';
+import * as Setup from '../lib';
 
 describe('Setup', () => {
   describe('The Setup module', () => {

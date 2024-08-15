@@ -1,1 +1,1 @@
-export * from './ActorRdfJoinNestedLoop';
+export * from './ActorRdfJoinNestedLoop.js';

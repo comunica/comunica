@@ -1,1 +1,1 @@
-export * from './ActorRdfMetadataAccumulateCanContainUndefs';
+export * from './ActorRdfMetadataAccumulateCanContainUndefs.js';

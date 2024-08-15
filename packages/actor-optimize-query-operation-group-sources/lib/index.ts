@@ -1,1 +1,1 @@
-export * from './ActorOptimizeQueryOperationGroupSources';
+export * from './ActorOptimizeQueryOperationGroupSources.js';

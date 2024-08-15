@@ -6,7 +6,7 @@ import type {
   IActionSparqlSerialize,
   IActorQueryResultSerializeOutput,
   ActorQueryResultSerialize,
-} from './ActorQueryResultSerialize';
+} from './ActorQueryResultSerialize.js';
 
 /**
  * A base actor for listening to SPARQL serialize events that has fixed media types.

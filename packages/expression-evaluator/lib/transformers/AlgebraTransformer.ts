@@ -1,16 +1,16 @@
 import type { ComunicaDataFactory } from '@comunica/types';
 import { Algebra as Alg } from 'sparqlalgebrajs';
-import type { AsyncExtensionFunction, AsyncExtensionFunctionCreator } from '../evaluators/AsyncEvaluator';
-import type { ICompleteSharedContext } from '../evaluators/evaluatorHelpers/BaseExpressionEvaluator';
-import type { SyncExtensionFunction, SyncExtensionFunctionCreator } from '../evaluators/SyncEvaluator';
-import * as E from '../expressions';
-import type { AsyncExtensionApplication, SimpleApplication } from '../expressions';
-import { namedFunctions, regularFunctions, specialFunctions } from '../functions';
-import * as C from '../util/Consts';
-import * as Err from '../util/Errors';
-import { ExtensionFunctionError } from '../util/Errors';
-import type { ITermTransformer } from './TermTransformer';
-import { TermTransformer } from './TermTransformer';
+import type { AsyncExtensionFunction, AsyncExtensionFunctionCreator } from '../evaluators/AsyncEvaluator.js';
+import type { ICompleteSharedContext } from '../evaluators/evaluatorHelpers/BaseExpressionEvaluator.js';
+import type { SyncExtensionFunction, SyncExtensionFunctionCreator } from '../evaluators/SyncEvaluator.js';
+import * as E from '../expressions/index.js';
+import type { AsyncExtensionApplication, SimpleApplication } from '../expressions/index.js';
+import { namedFunctions, regularFunctions, specialFunctions } from '../functions/index.js';
+import * as C from '../util/Consts.js';
+import * as Err from '../util/Errors.js';
+import { ExtensionFunctionError } from '../util/Errors.js';
+import type { ITermTransformer } from './TermTransformer.js';
+import { TermTransformer } from './TermTransformer.js';
 
 type FunctionCreatorConfig = { type: 'sync'; creator: SyncExtensionFunctionCreator } |
 { type: 'async'; creator: AsyncExtensionFunctionCreator };

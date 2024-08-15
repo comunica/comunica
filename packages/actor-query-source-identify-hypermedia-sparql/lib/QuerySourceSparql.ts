@@ -19,7 +19,7 @@ import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import { LRUCache } from 'lru-cache';
 import type { Factory } from 'sparqlalgebrajs';
 import { Algebra, toSparql, Util } from 'sparqlalgebrajs';
-import type { BindMethod } from './ActorQuerySourceIdentifyHypermediaSparql';
+import type { BindMethod } from './ActorQuerySourceIdentifyHypermediaSparql.js';
 
 const COUNT_INFINITY: RDF.QueryResultCardinality = { type: 'estimate', value: Number.POSITIVE_INFINITY };
 

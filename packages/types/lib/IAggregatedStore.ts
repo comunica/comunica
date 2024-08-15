@@ -2,7 +2,7 @@
 import type { EventEmitter } from 'node:events';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import type { MetadataBindings } from './IMetadata';
+import type { MetadataBindings } from './IMetadata.js';
 
 /**
  * A StreamingStore allows data lookup and insertion to happen in parallel.

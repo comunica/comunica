@@ -3,7 +3,7 @@ import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import * as sparqlee from '@comunica/expression-evaluator';
-import arrayifyStream from 'arrayify-stream';
+import { arrayifyStream } from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra } from 'sparqlalgebrajs';
@@ -11,6 +11,15 @@ import { ActorQueryOperationOrderBy } from '../lib/ActorQueryOperationOrderBy';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
+
+jest.mock<typeof import('@comunica/expression-evaluator')>('@comunica/expression-evaluator', () => {
+  return {
+    // Allows the use of jest.spyOn later.
+    // @see https://stackoverflow.com/questions/67872622/jest-spyon-not-working-on-index-file-cannot-redefine-property
+    __esModule: true,
+    ...jest.requireActual('@comunica/expression-evaluator'),
+  };
+});
 
 describe('ActorQueryOperationOrderBy with mixed term types', () => {
   let bus: any;
@@ -337,15 +346,16 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     it('should emit an error on a hard erroring expression', async() => {
       // Mock the expression error test so we can force 'a programming error' and test the branch
 
-      Object.defineProperty(sparqlee, 'isExpressionError', { writable: true });
-      // eslint-disable-next-line jest/prefer-spy-on
-      (<any> sparqlee).isExpressionError = jest.fn(() => false);
+      const isExpressionErrorSpy = jest.spyOn(sparqlee, 'isExpressionError').mockImplementation(() => false);
+
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderB ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <any> await actor.run(op);
       await new Promise<void>(resolve => output.bindingsStream.on('error', () => resolve()));
+
+      isExpressionErrorSpy.mockRestore();
     });
   });
 });

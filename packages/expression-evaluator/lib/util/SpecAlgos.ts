@@ -2,8 +2,8 @@ import type {
   IDurationRepresentation,
   IDateTimeRepresentation,
   ITimeZoneRepresentation,
-} from './DateTimeHelpers';
-import { toUTCDate } from './DateTimeHelpers';
+} from './DateTimeHelpers.js';
+import { toUTCDate } from './DateTimeHelpers.js';
 
 function fDiv(arg: number, high: number, low = 0): { intDiv: number; remainder: number } {
   // Adds the 4 spec functions into one since they are highly related,

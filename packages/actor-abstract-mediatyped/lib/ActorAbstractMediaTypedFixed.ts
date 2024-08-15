@@ -1,6 +1,6 @@
 import type { IActionContext } from '@comunica/types';
-import type { IActorArgsMediaTyped } from './ActorAbstractMediaTyped';
-import { ActorAbstractMediaTyped } from './ActorAbstractMediaTyped';
+import type { IActorArgsMediaTyped } from './ActorAbstractMediaTyped.js';
+import { ActorAbstractMediaTyped } from './ActorAbstractMediaTyped.js';
 
 export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbstractMediaTyped<HI, HT, HO> {
   public readonly mediaTypePriorities: Record<string, number>;

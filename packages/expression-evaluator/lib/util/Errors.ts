@@ -1,7 +1,7 @@
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
-import type * as E from '../expressions';
-import type * as C from './Consts';
+import type * as E from '../expressions/index.js';
+import type * as C from './Consts.js';
 
 /**
  * This class of error will be thrown when an expression errors.

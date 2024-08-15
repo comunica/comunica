@@ -39,10 +39,6 @@ jobs:
           firefox-version: latest
       - name: Install dependencies
         run: yarn install --frozen-lockfile
-      - name: Build project
-        run: yarn run build
-      - name: Build project -- esModuleInterop true
-        run: yarn run build:ts --esModuleInterop true
       - name: Run depcheck
         run: yarn run depcheck
       - name: Run tests

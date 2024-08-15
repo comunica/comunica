@@ -1,5 +1,5 @@
 import type * as RDF from '@rdfjs/types';
-import type { IBindingsIndex } from './IBindingsIndex';
+import type { IBindingsIndex } from './IBindingsIndex.js';
 
 /**
  * A simple efficient hash-based index for maintaining bindings,

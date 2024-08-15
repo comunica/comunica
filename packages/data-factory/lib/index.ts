@@ -1,2 +1,2 @@
-export * from './BlankNodeScoped';
-export * from './BlankNodeBindingsScoped';
+export * from './BlankNodeScoped.js';
+export * from './BlankNodeBindingsScoped.js';

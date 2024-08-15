@@ -6,7 +6,7 @@ import type {
 import {
   ActorRdfSerializeFixedMediaTypes,
 } from '@comunica/bus-rdf-serialize';
-import arrayifyStream from 'arrayify-stream';
+import { arrayifyStream } from 'arrayify-stream';
 import { Readable } from 'readable-stream';
 import { write } from 'shaclc-write';
 

@@ -3,8 +3,8 @@ import type { IActionParse, IActorParseOutput, IParseMetadata } from '@comunica/
 import type { IActorArgs, IActorTest } from '@comunica/core';
 import type { Readable } from 'readable-stream';
 import { PassThrough } from 'readable-stream';
-import type { IActionDereference, IActorDereferenceOutput, MediatorDereference } from './ActorDereference';
-import { ActorDereferenceBase, isHardError } from './ActorDereferenceBase';
+import type { IActionDereference, IActorDereferenceOutput, MediatorDereference } from './ActorDereference.js';
+import { ActorDereferenceBase, isHardError } from './ActorDereferenceBase.js';
 
 /**
  * Get the media type based on the extension of the given path,

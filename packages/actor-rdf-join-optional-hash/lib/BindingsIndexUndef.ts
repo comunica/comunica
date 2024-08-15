@@ -1,6 +1,6 @@
 import type { Bindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import type { IBindingsIndex } from './IBindingsIndex';
+import type { IBindingsIndex } from './IBindingsIndex.js';
 
 /**
  * A simple efficient tree-based index for maintaining bindings,

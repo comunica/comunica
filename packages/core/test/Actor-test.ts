@@ -1,7 +1,7 @@
 import { KeysCore } from '@comunica/context-entries';
 import { LoggerVoid } from '@comunica/logger-void';
 import type { IActionContext } from '@comunica/types';
-import { ActionContext, Actor, Bus } from '..';
+import { ActionContext, Actor, Bus } from '../lib';
 
 describe('Actor', () => {
   const bus = new Bus({ name: 'bus' });

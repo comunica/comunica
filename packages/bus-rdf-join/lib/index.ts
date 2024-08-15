@@ -1,2 +1,2 @@
-export * from './ActorRdfJoin';
-export * from './ChunkedIterator';
+export * from './ActorRdfJoin.js';
+export * from './ChunkedIterator.js';

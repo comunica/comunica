@@ -1,6 +1,6 @@
-import { ActorQueryResultSerializeTree } from './ActorQueryResultSerializeTree';
+import { ActorQueryResultSerializeTree } from './ActorQueryResultSerializeTree.js';
 
 const { bindingsStreamToGraphQl } = ActorQueryResultSerializeTree;
 export { bindingsStreamToGraphQl };
 
-export * from './ActorQueryResultSerializeTree';
+export * from './ActorQueryResultSerializeTree.js';

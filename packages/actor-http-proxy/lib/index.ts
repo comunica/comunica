@@ -1,2 +1,2 @@
-export * from './ActorHttpProxy';
-export * from './ProxyHandlerStatic';
+export * from './ActorHttpProxy.js';
+export * from './ProxyHandlerStatic.js';

@@ -19,7 +19,7 @@ import type {
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import type { ActorInitQueryBase } from './ActorInitQueryBase';
+import type { ActorInitQueryBase } from './ActorInitQueryBase.js';
 
 /**
  * Base implementation of a Comunica query engine.

@@ -1,2 +1,2 @@
-export * from './ActionObserverHttp';
-export * from './ActorQueryResultSerializeStats';
+export * from './ActionObserverHttp.js';
+export * from './ActorQueryResultSerializeStats.js';

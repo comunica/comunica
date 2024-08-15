@@ -2,7 +2,7 @@ import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { Bindings, MetadataBindings } from '@comunica/types';
-import { HashJoin } from 'asyncjoin';
+import { HashJoin } from './HashJoin.js';
 
 /**
  * A comunica Hash RDF Join Actor.

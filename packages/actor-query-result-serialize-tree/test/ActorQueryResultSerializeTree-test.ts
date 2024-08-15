@@ -8,7 +8,7 @@ import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { ActorQueryResultSerializeTree, bindingsStreamToGraphQl } from '..';
+import { ActorQueryResultSerializeTree, bindingsStreamToGraphQl } from '../lib';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);

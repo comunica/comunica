@@ -1,1 +1,1 @@
-export * from './ActorQueryOperationReducedHash';
+export * from './ActorQueryOperationReducedHash.js';

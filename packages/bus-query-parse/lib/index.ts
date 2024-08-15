@@ -1,1 +1,1 @@
-export * from './ActorQueryParse';
+export * from './ActorQueryParse.js';

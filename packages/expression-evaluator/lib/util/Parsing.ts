@@ -8,11 +8,11 @@ import type {
   ITimeRepresentation,
   ITimeZoneRepresentation,
   IYearMonthDurationRepresentation,
-} from './DateTimeHelpers';
+} from './DateTimeHelpers.js';
 
-import { simplifyDurationRepresentation } from './DateTimeHelpers';
-import { ParseError } from './Errors';
-import { maximumDayInMonthFor } from './SpecAlgos';
+import { simplifyDurationRepresentation } from './DateTimeHelpers.js';
+import { ParseError } from './Errors.js';
+import { maximumDayInMonthFor } from './SpecAlgos.js';
 
 /**
  * TODO: Fix decently

@@ -33,6 +33,7 @@ const quad = require('rdf-quad');
 
 jest.mock<typeof import('..')>('..', () => {
   return <any> {
+    __esModule: true,
     QueryEngineBase,
     QueryEngineFactoryBase,
   };
@@ -40,6 +41,7 @@ jest.mock<typeof import('..')>('..', () => {
 
 jest.mock<typeof import('node:url')>('node:url', () => {
   return <any> {
+    __esModule: true,
     parse,
   };
 });

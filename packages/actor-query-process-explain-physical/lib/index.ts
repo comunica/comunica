@@ -1,2 +1,2 @@
-export * from './ActorQueryProcessExplainPhysical';
-export * from './MemoryPhysicalQueryPlanLogger';
+export * from './ActorQueryProcessExplainPhysical.js';
+export * from './MemoryPhysicalQueryPlanLogger.js';

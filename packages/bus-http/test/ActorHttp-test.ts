@@ -1,4 +1,4 @@
-import { ActorHttp } from '..';
+import { ActorHttp } from '../lib';
 
 describe('ActorHttp', () => {
   describe('#headersToHash', () => {

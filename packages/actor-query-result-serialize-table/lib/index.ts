@@ -1,1 +1,1 @@
-export * from './ActorQueryResultSerializeTable';
+export * from './ActorQueryResultSerializeTable.js';

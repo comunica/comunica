@@ -10,7 +10,7 @@ import {
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import { ActionContextKey } from '@comunica/core';
-import { MemoryPhysicalQueryPlanLogger } from './MemoryPhysicalQueryPlanLogger';
+import { MemoryPhysicalQueryPlanLogger } from './MemoryPhysicalQueryPlanLogger.js';
 
 /**
  * A comunica Explain Physical Query Process Actor.

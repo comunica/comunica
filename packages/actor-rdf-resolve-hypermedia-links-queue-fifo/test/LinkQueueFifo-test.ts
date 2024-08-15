@@ -1,4 +1,4 @@
-import { LinkQueueFifo } from '..';
+import { LinkQueueFifo } from '../lib';
 
 describe('LinkQueueFifo', () => {
   let queue: LinkQueueFifo;

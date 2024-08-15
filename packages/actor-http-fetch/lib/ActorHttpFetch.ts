@@ -3,8 +3,8 @@ import { ActorHttp } from '@comunica/bus-http';
 import { KeysHttp } from '@comunica/context-entries';
 import type { IMediatorTypeTime } from '@comunica/mediatortype-time';
 import type { Readable } from 'readable-stream';
-import { FetchInitPreprocessor } from './FetchInitPreprocessor';
-import type { IFetchInitPreprocessor } from './IFetchInitPreprocessor';
+import { FetchInitPreprocessor } from './FetchInitPreprocessor.js';
+import type { IFetchInitPreprocessor } from './IFetchInitPreprocessor.js';
 
 /**
  * A node-fetch actor that listens on the 'init' bus.

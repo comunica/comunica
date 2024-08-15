@@ -1,1 +1,1 @@
-export * from './ActorQueryOperationBgpJoin';
+export * from './ActorQueryOperationBgpJoin.js';

@@ -1,1 +1,1 @@
-export * from './ActorHashBindings';
+export * from './ActorHashBindings.js';

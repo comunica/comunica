@@ -2,13 +2,13 @@ import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
-import type * as E from '../expressions/Expressions';
-import { AlgebraTransformer } from '../transformers/AlgebraTransformer';
-import type { IExpressionEvaluator } from '../Types';
-import { extractTimeZone } from '../util/DateTimeHelpers';
-import type { ISharedContext } from './evaluatorHelpers/BaseExpressionEvaluator';
-import type { ICompleteSyncEvaluatorContext } from './evaluatorHelpers/SyncRecursiveEvaluator';
-import { SyncRecursiveEvaluator } from './evaluatorHelpers/SyncRecursiveEvaluator';
+import type * as E from '../expressions/Expressions.js';
+import { AlgebraTransformer } from '../transformers/AlgebraTransformer.js';
+import type { IExpressionEvaluator } from '../Types.js';
+import { extractTimeZone } from '../util/DateTimeHelpers.js';
+import type { ISharedContext } from './evaluatorHelpers/BaseExpressionEvaluator.js';
+import type { ICompleteSyncEvaluatorContext } from './evaluatorHelpers/SyncRecursiveEvaluator.js';
+import { SyncRecursiveEvaluator } from './evaluatorHelpers/SyncRecursiveEvaluator.js';
 
 export interface ISyncEvaluatorContext extends ISharedContext {
   exists?: (expression: Alg.ExistenceExpression, mapping: RDF.Bindings) => boolean;

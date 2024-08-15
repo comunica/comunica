@@ -1,1 +1,1 @@
-export * from './ActorQueryOperationNop';
+export * from './ActorQueryOperationNop.js';

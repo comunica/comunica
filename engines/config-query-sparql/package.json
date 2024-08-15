@@ -1,5 +1,6 @@
 {
   "name": "@comunica/config-query-sparql",
+  "type": "module",
   "version": "3.2.1",
   "description": "default configuration files for Comunica SPARQL",
   "lsd:module": true,

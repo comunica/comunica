@@ -1,6 +1,6 @@
 import type { IActionContext, Logger } from '@comunica/types';
-import type { Bus } from './Bus';
-import { CONTEXT_KEY_LOGGER } from './ContextEntries';
+import type { Bus } from './Bus.js';
+import { CONTEXT_KEY_LOGGER } from './ContextEntries.js';
 
 /**
  * An actor can act on messages of certain types and provide output of a certain type.

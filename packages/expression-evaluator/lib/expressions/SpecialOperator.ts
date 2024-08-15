@@ -3,10 +3,10 @@ import type {
   SpecialApplicationAsync,
   SpecialApplicationSync,
   SpecialOperatorExpression,
-} from './Expressions';
+} from './Expressions.js';
 import {
   ExpressionType,
-} from './Expressions';
+} from './Expressions.js';
 
 export class SpecialOperator implements SpecialOperatorExpression {
   public expressionType: ExpressionType.SpecialOperator = ExpressionType.SpecialOperator;

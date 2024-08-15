@@ -1,12 +1,12 @@
 import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import type * as E from '../../expressions';
-import { expressionToVar } from '../../functions/Helpers';
-import type { FunctionArgumentsCache } from '../../functions/OverloadTree';
-import type { ITermTransformer } from '../../transformers/TermTransformer';
-import type { ITimeZoneRepresentation } from '../../util/DateTimeHelpers';
-import * as Err from '../../util/Errors';
-import type { ISuperTypeProvider, SuperTypeCallback, TypeCache } from '../../util/TypeHandling';
+import type * as E from '../../expressions/index.js';
+import { expressionToVar } from '../../functions/Helpers.js';
+import type { FunctionArgumentsCache } from '../../functions/OverloadTree.js';
+import type { ITermTransformer } from '../../transformers/TermTransformer.js';
+import type { ITimeZoneRepresentation } from '../../util/DateTimeHelpers.js';
+import * as Err from '../../util/Errors.js';
+import type { ISuperTypeProvider, SuperTypeCallback, TypeCache } from '../../util/TypeHandling.js';
 
 export interface ISharedContext {
   now?: Date;

@@ -5,9 +5,9 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
 import type { IActionContext } from '@comunica/types';
-import arrayifyStream from 'arrayify-stream';
+import { arrayifyStream } from 'arrayify-stream';
 import { DataFactory } from 'rdf-data-factory';
-import { ActorRdfParseXmlRdfa } from '..';
+import { ActorRdfParseXmlRdfa } from '../lib';
 
 const quad = require('rdf-quad');
 

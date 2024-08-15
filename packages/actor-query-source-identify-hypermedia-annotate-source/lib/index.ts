@@ -1,1 +1,1 @@
-export * from './ActorQuerySourceIdentifyHypermediaAnnotateSource';
+export * from './ActorQuerySourceIdentifyHypermediaAnnotateSource.js';

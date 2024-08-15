@@ -1,2 +1,2 @@
-export * from './QueryEngine';
-export * from './QueryEngineFactory';
+export * from './QueryEngine.js';
+export * from './QueryEngineFactory.js';

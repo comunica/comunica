@@ -1,1 +1,1 @@
-export * from './ActorHttpFetch';
+export * from './ActorHttpFetch.js';

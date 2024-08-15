@@ -1,5 +1,5 @@
 import type * as RDF from '@rdfjs/types';
-import matchers from './matchers';
+import matchers from './matchers/index.js';
 
 declare global {
   // eslint-disable-next-line ts/no-namespace

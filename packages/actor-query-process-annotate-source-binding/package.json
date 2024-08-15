@@ -1,5 +1,6 @@
 {
   "name": "@comunica/actor-query-process-annotate-source-binding",
+  "type": "module",
   "version": "3.2.1",
   "description": "A annotate-source-binding query-process actor",
   "lsd:module": true,
@@ -20,13 +21,16 @@
     "annotate-source-binding"
   ],
   "sideEffects": false,
-  "main": "lib/index.js",
-  "typings": "lib/index",
+  "main": "lib/index.cjs",
+  "typings": "lib/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
+  "module": "lib/index.js",
   "files": [
     "components",
+    "lib/**/*.cjs",
+    "lib/**/*.cjs.map",
     "lib/**/*.d.ts",
     "lib/**/*.js",
     "lib/**/*.js.map"
