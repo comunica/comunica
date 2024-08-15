@@ -13,7 +13,7 @@
     "build-changed": "lerna run build --since HEAD",
     "test": "yarn node --experimental-vm-modules $(yarn bin jest)",
     "test:ci": "yarn run test --ci --maxWorkers=4 --coverage",
-    "test:browser": "karma start karma.config.js --single-run",
+    "test:browser": "karma start karma.config.cjs --single-run",
     "lint": "eslint . --cache",
     "lint-fix": "eslint . --fix",
     "build": "yarn run build:clean && yarn run build:cjs && yarn run build:ts && yarn run build:components",

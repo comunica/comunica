@@ -20,12 +20,12 @@ module.exports = function(config) {
     ],
     frameworks: [ 'jasmine', 'webpack' ],
 
-    files: [ './karma-setup.js', ...testFiles ],
+    files: [ './karma-setup.cjs', ...testFiles ],
     client: {
       args: [ '--grep', '/^(?!.*no browser).*$/' ],
     },
     preprocessors: {
-      './karma-setup.js': [ 'webpack' ],
+      './karma-setup.cjs': [ 'webpack' ],
       ...Object.fromEntries(testFiles.map(key => [ key, [ 'webpack', 'sourcemap' ]])),
     },
 
@@ -36,10 +36,10 @@ module.exports = function(config) {
         alias: {
           fs: false,
           module: false,
-          [Path.resolve(__dirname, 'engines/query-sparql/test/util.js')]: Path.resolve(__dirname, 'engines/query-sparql/test/util-browser.js'),
+          [Path.resolve(__dirname, 'engines/query-sparql/test/util.cjs')]: Path.resolve(__dirname, 'engines/query-sparql/test/util-browser.js'),
           'jest.unmock': false,
         },
-        extensions: [ '.js', '.jsx', '.ts', '.tsx' ],
+        extensions: [ '.cjs', '.js', '.jsx', '.ts', '.tsx' ],
       },
       module: {
         rules: [
