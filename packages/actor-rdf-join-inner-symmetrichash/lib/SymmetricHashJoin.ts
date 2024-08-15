@@ -14,11 +14,7 @@ export class SymmetricHashJoin<S, H, T> extends AsyncIterator<T> {
         super();
 
         this.on('end', () => this._cleanup() );
-
-        if (this.left.readable || this.right.readable)
-        {
-            this.readable = true;
-        }
+        this.readable ||= this.left.readable || this.right.readable;
 
         this.left.on('error', (error) => this.destroy(error));
         this.right.on('error', (error) => this.destroy(error));
@@ -61,8 +57,7 @@ export class SymmetricHashJoin<S, H, T> extends AsyncIterator<T> {
             if (this.ended)
                 return null;
 
-            while (this.matchIdx < this.matches!.length)
-            {
+            while (this.matchIdx < this.matches!.length) {
                 let item = this.matches![this.matchIdx++];
                 let result = this.usedLeft ? this.funJoin(this.match!, item) : this.funJoin(item, this.match!);
                 if (result !== null)
@@ -76,7 +71,7 @@ export class SymmetricHashJoin<S, H, T> extends AsyncIterator<T> {
             // try both streams if the first one has no value
             for (let i = 0; i < 2; ++i)
             {
-                item = this.usedLeft ? this.right.read() : this.left.read();
+                item = (this.usedLeft ? this.right : this.left).read();
                 this.usedLeft = !this.usedLeft; // try other stream next time
 
                 // found a result, no need to check the other stream this run

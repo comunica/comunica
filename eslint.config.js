@@ -105,6 +105,7 @@ module.exports = config([
       '**/bintest/**',
       // TODO: Remove this once solid-client-authn supports node 18.
       '**/QuerySparql-solid-test.ts',
+      '**/*.cjs',
     ],
   },
   {
