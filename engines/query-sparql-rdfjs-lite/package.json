@@ -35,11 +35,11 @@
   "files": [
     "config",
     "engine-default.cjs",
+    "lib/**/*.cjs",
+    "lib/**/*.cjs.map",
     "lib/**/*.d.ts",
     "lib/**/*.js",
-    "lib/**/*.js.map",
-    "lib/**/*.cjs",
-    "lib/**/*.cjs.map"
+    "lib/**/*.js.map"
   ],
   "scripts": {
     "build": "npm run build:ts",
