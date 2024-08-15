@@ -3,7 +3,7 @@ const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 const webpack = require('webpack');
 
 const testFiles = [
-  'engines/query-sparql/test/QuerySparql-test.ts',
+  'engines/query-sparql/test/QuerySparql-test.cjs',
 ];
 
 // Based on https://github.com/tom-sherman/blog/blob/main/posts/02-running-jest-tests-in-a-browser.md
@@ -20,12 +20,12 @@ module.exports = function(config) {
     ],
     frameworks: [ 'jasmine', 'webpack' ],
 
-    files: [ './karma-setup.cjs', ...testFiles ],
+    files: [ './karma-setup.js', ...testFiles ],
     client: {
       args: [ '--grep', '/^(?!.*no browser).*$/' ],
     },
     preprocessors: {
-      './karma-setup.cjs': [ 'webpack' ],
+      './karma-setup.js': [ 'webpack' ],
       ...Object.fromEntries(testFiles.map(key => [ key, [ 'webpack', 'sourcemap' ]])),
     },
 
