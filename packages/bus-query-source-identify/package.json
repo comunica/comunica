@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-query-source-identify",
-  "version": "3.2.1",
+  "version": "3.2.2",
   "description": "A comunica bus for query-source-identify events.",
   "lsd:module": true,
   "license": "MIT",
@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@comunica/bindings-factory": "^3.2.1",
-    "@comunica/bus-query-operation": "^3.2.1",
+    "@comunica/bus-query-operation": "^3.2.2",
     "@comunica/core": "^3.2.1",
     "@comunica/metadata": "^3.2.1",
     "@comunica/types": "^3.2.1",

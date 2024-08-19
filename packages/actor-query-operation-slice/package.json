@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-slice",
-  "version": "3.2.1",
+  "version": "3.2.2",
   "description": "A slice query-operation actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,7 +37,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-query-operation": "^3.2.1",
+    "@comunica/bus-query-operation": "^3.2.2",
     "@comunica/context-entries": "^3.2.1",
     "@comunica/core": "^3.2.1",
     "@comunica/types": "^3.2.1",

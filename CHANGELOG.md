@@ -1,6 +1,23 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v3.2.2"></a>
+## [v3.2.2](https://github.com/comunica/comunica/compare/v3.2.1...v3.2.2) - 2024-08-19
+
+# Changed
+* Optimizations:
+  * [Splice federated left join with empty right-hand input](https://github.com/comunica/comunica/commit/6f05e98a054b28ee43e6ae2fcc93d526db42b7b4)
+  * [Add ClosableIterator that bypasses TransformIterator](https://github.com/comunica/comunica/commit/5b56edd0e36747c32a1369a84681841dc5b7e13c)
+  * [Only enable filter pushdown if criteria are met](https://github.com/comunica/comunica/commit/d4da37992850bf3eba3ea4f2b4259e94953a51f3)
+  * [Push down simple equality filters into triple patterns](https://github.com/comunica/comunica/commit/d487c093054f72556b50ca167c3b4fb2bda9cb7a)
+  * [Support pushing filters into left joins](https://github.com/comunica/comunica/commit/61fb3fb4862679551f3611e58bb4e7e948ea1a18)
+  * [Split conjunctive filters before pushdown](https://github.com/comunica/comunica/commit/05e92503c710f6ca87f235b6a69f55161791616d)
+  * [Merge nested filters into conjunctive after pushdown](https://github.com/comunica/comunica/commit/7b52eaf4c2eef9a9f79f572fbcf17fdd079e9c21)
+
+# Fixed
+* [Fix empty optionals in federation producing empty results for full query](https://github.com/comunica/comunica/commit/54b315cd0905e3a5a8d9b40e01c20bb5f99025a3)
+* [Don't push down FILTER (NOT) EXISTS](https://github.com/comunica/comunica/commit/328d3f6fe3e17033389f1b716d2c98352d5f1b28)
+
 <a name="v3.2.1"></a>
 ## [v3.2.1](https://github.com/comunica/comunica/compare/v3.2.0...v3.2.1) - 2024-08-07
 

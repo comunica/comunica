@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-source-identify-hypermedia-qpf",
-  "version": "3.2.1",
+  "version": "3.2.2",
   "description": "A qpf query-source-identify-hypermedia actor",
   "lsd:module": true,
   "license": "MIT",
@@ -41,7 +41,7 @@
     "@comunica/bindings-factory": "^3.2.1",
     "@comunica/bus-dereference-rdf": "^3.2.1",
     "@comunica/bus-merge-bindings-context": "^3.2.1",
-    "@comunica/bus-query-source-identify": "^3.2.1",
+    "@comunica/bus-query-source-identify": "^3.2.2",
     "@comunica/bus-query-source-identify-hypermedia": "^3.2.1",
     "@comunica/bus-rdf-metadata": "^3.2.1",
     "@comunica/bus-rdf-metadata-extract": "^3.2.1",

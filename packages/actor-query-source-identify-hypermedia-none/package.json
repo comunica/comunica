@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-source-identify-hypermedia-none",
-  "version": "3.2.1",
+  "version": "3.2.2",
   "description": "A none query-source-identify-hypermedia actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,7 +37,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/actor-query-source-identify-rdfjs": "^3.2.1",
+    "@comunica/actor-query-source-identify-rdfjs": "^3.2.2",
     "@comunica/bindings-factory": "^3.2.1",
     "@comunica/bus-merge-bindings-context": "^3.2.1",
     "@comunica/bus-query-source-identify-hypermedia": "^3.2.1",
