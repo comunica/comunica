@@ -6,7 +6,7 @@ import type {
 } from '@comunica/bus-term-comparator-factory';
 import { ActorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import type { IActorTest } from '@comunica/core';
-import { RegularOperator } from '@comunica/expression-evaluator';
+import { SparqlOperator } from '@comunica/expression-evaluator';
 import { prepareEvaluatorActionContext } from '@comunica/expression-evaluator/lib/util/Context';
 import { TermComparatorExpressionEvaluator } from './TermComparatorExpressionEvaluator';
 
@@ -33,9 +33,9 @@ export class ActorTermComparatorFactoryExpressionEvaluator extends ActorTermComp
         await BindingsFactory.create(this.mediatorMergeBindingsContext, context),
       ),
       await this.mediatorFunctionFactory
-        .mediate({ functionName: RegularOperator.EQUAL, context, requireTermExpression: true }),
+        .mediate({ functionName: SparqlOperator.EQUAL, context, requireTermExpression: true }),
       await this.mediatorFunctionFactory
-        .mediate({ functionName: RegularOperator.LT, context, requireTermExpression: true }),
+        .mediate({ functionName: SparqlOperator.LT, context, requireTermExpression: true }),
     );
   }
 }

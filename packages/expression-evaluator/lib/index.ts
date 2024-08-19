@@ -1,5 +1,6 @@
 export { TermTransformer } from './transformers/TermTransformer';
 export { IInternalEvaluator, FunctionApplication, IEvalContext, OverloadTree } from './functions/OverloadTree';
+export { prepareEvaluatorActionContext } from './util/Context';
 export {
   declare,
   bool,
@@ -22,9 +23,20 @@ export {
   InvalidArgumentTypes,
   CoalesceError,
   InError,
+  NoAggregator,
+  UnboundVariableError,
   CastError,
 } from './util/Errors';
-export { typedLiteral, TypeURL, TypeAlias, RegularOperator, SpecialOperator, NamedOperator } from './util/Consts';
+export {
+  typedLiteral,
+  TypeURL,
+  TypeAlias,
+  SparqlOperator,
+  SparqlOperators,
+  NamedOperator,
+  GeneralOperator,
+  KnownOperator,
+} from './util/Consts';
 export { isSubTypeOf } from './util/TypeHandling';
 export {
   dayTimeDurationsToSeconds,

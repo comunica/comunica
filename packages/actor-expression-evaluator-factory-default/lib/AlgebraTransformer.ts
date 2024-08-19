@@ -42,7 +42,8 @@ export class AlgebraTransformer extends TermTransformer {
   private async transformOperator(expr: Alg.OperatorExpression):
   Promise<E.OperatorExpression | E.SpecialOperatorExpression> {
     const operator = expr.operator.toLowerCase();
-    if (!C.Operators.has(operator)) {
+    // TODO: currently this disregarding strings
+    if (!C.SparqlOperators.has(operator)) {
       throw new Err.UnknownOperator(expr.operator);
     }
     const operatorFunc = await this.mediatorFunctionFactory.mediate({
@@ -52,10 +53,7 @@ export class AlgebraTransformer extends TermTransformer {
     });
     const operatorArgs = await Promise.all(expr.args.map(arg => this.transformAlgebra(arg)));
     if (!operatorFunc.checkArity(operatorArgs)) {
-      throw new Err.InvalidArity(operatorArgs, <C.Operator>operator);
-    }
-    if (C.SpecialOperators.has(operator)) {
-      return new E.SpecialOperator(operatorArgs, operatorFunc.apply);
+      throw new Err.InvalidArity(operatorArgs, operator);
     }
     return new E.Operator(operatorArgs, operatorFunc.apply);
   }

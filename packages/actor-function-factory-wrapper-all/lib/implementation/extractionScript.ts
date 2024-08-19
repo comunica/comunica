@@ -10,6 +10,7 @@ function getRegularFunctionBody(functionBody: string): string {
   // The excessive importing gets fixed by using yarn lint-fix
   return `
 import { RegularFunction } from '@comunica/bus-function-factory';
+import { BaseFunctionDefinition } from '@comunica/bus-function-factory';
 import type {
   IInternalEvaluator,
   DurationLiteral,
@@ -18,8 +19,25 @@ import type {
   NumericLiteral,
   BooleanLiteral,
   StringLiteral,
+  IEvalContext,
+  OverloadTree,
+
+  TermExpression,
+
+  VariableExpression,
+
+  Expression,
+  Literal,
 } from '@comunica/expression-evaluator';
 import {
+  expressionToVar,
+  ExpressionType,
+  InvalidArgumentTypes,
+  CoalesceError,
+  InError,
+  BlankNode,
+  SpecialOperator,
+  
   RegularOperator,
   TypeAlias,
   TypeURL,
@@ -61,10 +79,12 @@ import type * as RDF from '@rdfjs/types';
 import { BigNumber } from 'bignumber.js';
 import { sha1, sha256, sha384, sha512 } from 'hash.js';
 import { DataFactory } from 'rdf-data-factory';
+import { BlankNodeBindingsScoped } from '@comunica/data-factory'
 import { resolve as resolveRelativeIri } from 'relative-to-absolute-iri';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import { hash as md5 } from 'spark-md5';
 import * as uuid from 'uuid';
+
 ${/[ <(\[]DF\./u.test(functionBody) ? dataFactoryCreation : ''}
 ${updatedFunctionBody}
 `.trimStart();
@@ -157,7 +177,7 @@ async function updateEngineConfig(camelCaseName: string): Promise<void> {
 
 async function createActorPackage(camelCaseName: string, functionBody: string): Promise<void> {
   const snakeCaseName = toSnakeCaseName(camelCaseName);
-  const operatorName = /public operator = RegularOperator.([^; ]+);/u.exec(functionBody)![1];
+  const operatorName = /public operator = .*.([^; ]+);/u.exec(functionBody)![1];
 
   // Execute command.
   execSync(`yes "" | yo comunica:actor "${snakeCaseName}" "function-factory"`);
@@ -188,19 +208,22 @@ function parseFunctionClasses(body: string): { camelCaseName: string; functionBo
   ].map(x => ({ camelCaseName: x[3], functionBody: x[0] }));
 }
 
-async function main(): Promise<void> {
-  // Read the RegularFunctions.
-  const regFunctions =
-    (await readFile('packages/actor-function-factory-wrapper-all/lib/implementation/RegularFunctions.ts'))
-      .toString();
-  const matches = parseFunctionClasses(regFunctions);
-  for await (const match of matches) {
+async function extractFunctions(functionsFileLocation: string): Promise<void> {
+  const regularFunctions = (await readFile(functionsFileLocation)).toString();
+  const matches = parseFunctionClasses(regularFunctions);
+
+  await Promise.all(matches.slice(0, 1).map((match) => {
     const { camelCaseName, functionBody } = match;
-    await Promise.all([
+    return Promise.all([
       createActorPackage(camelCaseName, functionBody),
       updateEngineConfig(camelCaseName),
     ]);
-  }
+  }));
+}
+
+async function main(): Promise<void> {
+  // Await extractFunctions('packages/actor-function-factory-wrapper-all/lib/implementation/RegularFunctions.ts');
+  await extractFunctions('packages/actor-function-factory-wrapper-all/lib/implementation/SpecialFunctions.ts');
 }
 
 main().catch(console.error);

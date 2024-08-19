@@ -15,7 +15,12 @@ export class NamedExtension extends BaseFunctionDefinition {
   //  It means that named function definitions could be queried over the web!
   // TODO: when all is done, this should be injected in some way!
   protected arity = Number.POSITIVE_INFINITY;
-  public constructor(private readonly name: string, private readonly functionDefinition: AsyncExtensionFunction) {
+  public constructor(
+    private readonly name: string,
+    private readonly functionDefinition: AsyncExtensionFunction,
+    // TODO: equal to name?
+    public operator: string,
+  ) {
     super();
   }
 

@@ -8,7 +8,7 @@ import {
 } from '@comunica/bus-bindings-aggeregator-factory';
 import type { MediatorFunctionFactory, MediatorFunctionFactoryUnsafe } from '@comunica/bus-function-factory';
 import type { IActorTest } from '@comunica/core';
-import { RegularOperator } from '@comunica/expression-evaluator';
+import { SparqlOperator } from '@comunica/expression-evaluator';
 import { SumAggregator } from './SumAggregator';
 
 export interface IActorBindingsAggregatorFactorySumArgs extends IActorBindingsAggregatorFactoryArgs {
@@ -39,7 +39,7 @@ export class ActorBindingsAggregatorFactorySum extends ActorBindingsAggregatorFa
       await this.mediatorExpressionEvaluatorFactory.mediate({ algExpr: expr.expression, context }),
       expr.distinct,
       await this.mediatorFunctionFactory.mediate({
-        functionName: RegularOperator.ADDITION,
+        functionName: SparqlOperator.ADDITION,
         context,
         requireTermExpression: true,
       }),

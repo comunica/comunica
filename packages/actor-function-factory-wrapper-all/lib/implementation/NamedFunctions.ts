@@ -1,4 +1,4 @@
-import { NamedFunction } from '@comunica/bus-function-factory';
+import { TermSparqlFunction } from '@comunica/bus-function-factory';
 import type {
   NamedOperator,
   NumericLiteral,
@@ -51,7 +51,7 @@ import {
 /**
  * https://www.w3.org/TR/xpath-functions/#casting-to-string
  */
-class XsdToString extends NamedFunction {
+class XsdToString extends TermSparqlFunction {
   protected arity = 1;
 
   public operator: NamedOperator = TypeURL.XSD_STRING;
@@ -63,7 +63,7 @@ class XsdToString extends NamedFunction {
     .collect();
 }
 
-class XsdToFloat extends NamedFunction {
+class XsdToFloat extends TermSparqlFunction {
   protected arity = 1;
 
   public operator: NamedOperator = TypeURL.XSD_FLOAT;
@@ -81,7 +81,7 @@ class XsdToFloat extends NamedFunction {
     .collect();
 }
 
-class XsdToDouble extends NamedFunction {
+class XsdToDouble extends TermSparqlFunction {
   protected arity = 1;
 
   public operator: NamedOperator = TypeURL.XSD_DOUBLE;
@@ -99,7 +99,7 @@ class XsdToDouble extends NamedFunction {
     .collect();
 }
 
-class XsdToDecimal extends NamedFunction {
+class XsdToDecimal extends TermSparqlFunction {
   protected arity = 1;
 
   public operator: NamedOperator = TypeURL.XSD_DECIMAL;
@@ -124,7 +124,7 @@ class XsdToDecimal extends NamedFunction {
     .collect();
 }
 
-class XsdToInteger extends NamedFunction {
+class XsdToInteger extends TermSparqlFunction {
   protected arity = 1;
 
   public operator: NamedOperator = TypeURL.XSD_INTEGER;
@@ -149,7 +149,7 @@ class XsdToInteger extends NamedFunction {
     .collect();
 }
 
-class XsdToDatetime extends NamedFunction {
+class XsdToDatetime extends TermSparqlFunction {
   protected arity = 1;
 
   public operator: NamedOperator = TypeURL.XSD_DATE_TIME;
@@ -163,7 +163,7 @@ class XsdToDatetime extends NamedFunction {
     .collect();
 }
 
-class XsdToBoolean extends NamedFunction {
+class XsdToBoolean extends TermSparqlFunction {
   protected arity = 1;
 
   public operator: NamedOperator = TypeURL.XSD_BOOLEAN;
@@ -195,7 +195,7 @@ class XsdToBoolean extends NamedFunction {
 
 // Additional definitions to implement https://github.com/w3c/sparql-12/blob/main/SEP/SEP-0002/sep-0002.md
 // The additional casts are listed in https://www.w3.org/TR/xpath-functions/#casting-from-primitive-to-primitive
-class XsdToTime extends NamedFunction {
+class XsdToTime extends TermSparqlFunction {
   protected arity = 1;
 
   public operator: NamedOperator = TypeURL.XSD_TIME;
@@ -208,7 +208,7 @@ class XsdToTime extends NamedFunction {
     .collect();
 }
 
-class XsdToDate extends NamedFunction {
+class XsdToDate extends TermSparqlFunction {
   protected arity = 1;
 
   public operator: NamedOperator = TypeURL.XSD_DATE;
@@ -221,7 +221,7 @@ class XsdToDate extends NamedFunction {
     .collect();
 }
 
-class XsdToDuration extends NamedFunction {
+class XsdToDuration extends TermSparqlFunction {
   protected arity = 1;
 
   public operator: NamedOperator = TypeURL.XSD_DAY_TIME_DURATION;
@@ -236,7 +236,7 @@ class XsdToDuration extends NamedFunction {
     .collect();
 }
 
-class XsdToDayTimeDuration extends NamedFunction {
+class XsdToDayTimeDuration extends TermSparqlFunction {
   protected arity = 1;
 
   public operator: NamedOperator = TypeURL.XSD_DAY_TIME_DURATION;
@@ -251,7 +251,7 @@ class XsdToDayTimeDuration extends NamedFunction {
     .collect();
 }
 
-class XsdToYearMonthDuration extends NamedFunction {
+class XsdToYearMonthDuration extends TermSparqlFunction {
   protected arity = 1;
 
   public operator: NamedOperator = TypeURL.XSD_YEAR_MONTH_DURATION;
@@ -266,7 +266,7 @@ class XsdToYearMonthDuration extends NamedFunction {
     .collect();
 }
 
-export const namedFunctions: Record<NamedOperator, NamedFunction> = {
+export const namedFunctions: Record<NamedOperator, TermSparqlFunction> = {
   // --------------------------------------------------------------------------
   // XPath Constructor functions
   // https://www.w3.org/TR/sparql11-query/#FunctionMapping
