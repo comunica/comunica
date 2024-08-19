@@ -81,13 +81,27 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
         },
       });
 
-      // Identify and remove projections that have become empty now due to missing variables
+      // Identify and remove operations that have become empty now due to missing variables
       operation = Util.mapOperation(operation, {
         [Algebra.types.PROJECT](subOperation, factory) {
+          // Remove projections that have become empty now due to missing variables
           if (ActorOptimizeQueryOperationPruneEmptySourceOperations.hasEmptyOperation(subOperation)) {
             return {
               recurse: false,
               result: factory.createUnion([]),
+            };
+          }
+          return {
+            recurse: true,
+            result: subOperation,
+          };
+        },
+        [Algebra.types.LEFT_JOIN](subOperation) {
+          // Remove left joins with empty right operation
+          if (ActorOptimizeQueryOperationPruneEmptySourceOperations.hasEmptyOperation(subOperation.input[1])) {
+            return {
+              recurse: true,
+              result: subOperation.input[0],
             };
           }
           return {
