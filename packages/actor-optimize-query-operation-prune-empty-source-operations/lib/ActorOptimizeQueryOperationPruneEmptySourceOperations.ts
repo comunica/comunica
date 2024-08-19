@@ -120,6 +120,13 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
         }
         return false;
       },
+      [Algebra.types.LEFT_JOIN](subOperation) {
+        // Only recurse into left part of left-join
+        if (ActorOptimizeQueryOperationPruneEmptySourceOperations.hasEmptyOperation(subOperation.input[0])) {
+          emptyOperation = true;
+        }
+        return false;
+      },
     });
     return emptyOperation;
   }
