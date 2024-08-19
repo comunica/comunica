@@ -7,5 +7,5 @@ import {
 export class Operator implements OperatorExpression {
   public expressionType: ExpressionType.Operator = ExpressionType.Operator;
 
-  public constructor(public args: Expression[], public apply: FunctionApplication) {}
+  public constructor(public name: string, public args: Expression[], public apply: FunctionApplication) {}
 }

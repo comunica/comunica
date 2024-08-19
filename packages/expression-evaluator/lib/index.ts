@@ -73,7 +73,6 @@ export {
   Existence,
   ExpressionType,
   Literal,
-  Named,
   IntegerLiteral,
   FloatLiteral,
   NonLexicalLiteral,

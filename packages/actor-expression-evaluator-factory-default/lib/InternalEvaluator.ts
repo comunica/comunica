@@ -20,8 +20,6 @@ export class InternalEvaluator {
         [Eval.ExpressionType.Term]: (expr, _mapping) => this.term(<Eval.Term> expr),
         [Eval.ExpressionType.Variable]: (expr, mapping) => this.variable(<Eval.Variable> expr, mapping),
         [Eval.ExpressionType.Operator]: (expr, mapping) => this.evalFunction(<Eval.Operator> expr, mapping),
-        [Eval.ExpressionType.SpecialOperator]: (expr, mapping) => this.evalFunction(<Eval.Operator> expr, mapping),
-        [Eval.ExpressionType.Named]: (expr, mapping) => this.evalFunction(<Eval.Operator> expr, mapping),
         [Eval.ExpressionType.Existence]: (expr, mapping) => this.evalExistence(<Eval.Existence> expr, mapping),
         [Eval.ExpressionType.Aggregate]: (_expr, _mapping) => this.evalAggregate(),
       };
@@ -55,7 +53,7 @@ export class InternalEvaluator {
     return this.transformer.transformRDFTermUnsafe(term);
   }
 
-  private async evalFunction(expr: Eval.Operator | Eval.Named, mapping: RDF.Bindings):
+  private async evalFunction(expr: Eval.Operator, mapping: RDF.Bindings):
   Promise<Eval.Term> {
     return expr.apply({
       args: expr.args,
