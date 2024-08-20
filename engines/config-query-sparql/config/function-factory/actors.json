@@ -3,6 +3,13 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/config-query-sparql/^3.0.0/components/context.jsonld"
   ],
   "import": [
+    "ccqs:config/function-factory/actors/subtraction.json",
+    "ccqs:config/function-factory/actors/addition.json",
+    "ccqs:config/function-factory/actors/division.json",
+    "ccqs:config/function-factory/actors/multiplication.json",
+    "ccqs:config/function-factory/actors/unary-minus.json",
+    "ccqs:config/function-factory/actors/unary-plus.json",
+    "ccqs:config/function-factory/actors/not.json",
     "ccqs:config/function-factory/actors/wrapper-all.json"
   ]
 }

@@ -1,6 +1,6 @@
 import { AlgebraTransformer } from '@comunica/actor-expression-evaluator-factory-default/lib/AlgebraTransformer';
 import { NamedExtension } from '@comunica/actor-function-factory-wrapper-all/lib/implementation/NamedExtension';
-import { namedFunctions } from '@comunica/actor-function-factory-wrapper-all/lib/implementation/NamedFunctions';
+import { namedFunctions } from '@comunica/actor-function-factory-wrapper-all/lib/implementation/SparqlFunctions';
 import { specialFunctions } from '@comunica/actor-function-factory-wrapper-all/lib/implementation/SpecialFunctions';
 import { createFuncMediator } from '@comunica/actor-function-factory-wrapper-all/test/util';
 import type { IExpressionFunction, MediatorFunctionFactory } from '@comunica/bus-function-factory';

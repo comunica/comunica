@@ -1,9 +1,10 @@
 /* eslint-disable no-console,import/no-nodejs-modules */
 
 import { execSync } from 'node:child_process';
-import { readFile, writeFile } from 'node:fs/promises';
+import { writeFileSync } from 'node:fs';
+import { readFile } from 'node:fs/promises';
 
-function getRegularFunctionBody(functionBody: string): string {
+function getSparqlFunctionBody(functionBody: string): string {
   const updatedFunctionBody = functionBody.trim().replace('class', 'export class');
   const dataFactoryCreation = '\nconst DF = new DataFactory<RDF.BaseQuad>();\n';
 
@@ -110,7 +111,7 @@ function getFunctionConfig(camelCaseName: string): string {
     `.trim();
 }
 
-function getRegularActorBody(camelCaseName: string, operatorName: string): string {
+function getSparqlActorBody(camelCaseName: string, operatorName: string): string {
   return `
 import type {
   IActionFunctionFactory,
@@ -122,7 +123,7 @@ import {
   ActorFunctionFactory,
 } from '@comunica/bus-function-factory';
 import type { IActorTest } from '@comunica/core';
-import { RegularOperator } from '@comunica/expression-evaluator';
+import { SparqlOperator } from '@comunica/expression-evaluator';
 import { ${camelCaseName} } from './${camelCaseName}';
 
 /**
@@ -135,10 +136,10 @@ export class ActorFunctionFactory${camelCaseName} extends ActorFunctionFactory {
 
   public async test(action: IActionFunctionFactory): Promise<IActorTest> {
     // Does support action.requireTermExpression, so no need to check for that.
-    if (action.functionName === RegularOperator.${operatorName}) {
+    if (action.functionName === SparqlOperator.${operatorName}) {
       return true;
     }
-    throw new Error(\`Actor \${this.name} can only test for \${RegularOperator.${operatorName}}\`);
+    throw new Error(\`Actor \${this.name} can only test for \${SparqlOperator.${operatorName}}\`);
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):
@@ -163,24 +164,26 @@ async function updateEngineConfig(camelCaseName: string): Promise<void> {
     `$1    "ccqs:config/function-factory/actors/${snakeCaseName}.json",\n`,
   );
 
-  await Promise.all([
-    writeFile(actorConfigFile, configBody),
-    writeFile(configListFile, updatedConfigList),
-  ]);
+  writeFileSync(actorConfigFile, configBody);
+  writeFileSync(configListFile, updatedConfigList);
+  // Await Promise.all([
+  //   writeFile(actorConfigFile, configBody),
+  //   writeFile(configListFile, updatedConfigList),
+  // ]);
 }
 
 async function createActorPackage(camelCaseName: string, functionBody: string): Promise<void> {
   const snakeCaseName = toSnakeCaseName(camelCaseName);
-  const operatorName = /public operator = .*.([^; ]+);/u.exec(functionBody)![1];
+  const operatorName = /public operator = .*\.([^; ]+);/u.exec(functionBody)![1];
 
   // Execute command.
   execSync(`yes "" | yo comunica:actor "${snakeCaseName}" "function-factory"`);
 
   const actorFilePath = `packages/actor-function-factory-${snakeCaseName}/lib/ActorFunctionFactory${camelCaseName}.ts`;
-  const actorBody = getRegularActorBody(camelCaseName, operatorName);
+  const actorBody = getSparqlActorBody(camelCaseName, operatorName);
 
   const bodyFile = `packages/actor-function-factory-${snakeCaseName}/lib/${camelCaseName}.ts`;
-  const updatedFunctionBody = getRegularFunctionBody(functionBody);
+  const updatedFunctionBody = getSparqlFunctionBody(functionBody);
 
   const packageJsonFile = `packages/actor-function-factory-${snakeCaseName}/package.json`;
   const packageJsonContent = (await readFile(packageJsonFile)).toString();
@@ -189,11 +192,14 @@ async function createActorPackage(camelCaseName: string, functionBody: string): 
     `$1    "@comunica/expression-evaluator": "^3.0.1",\n`,
   );
 
-  await Promise.all([
-    writeFile(actorFilePath, actorBody),
-    writeFile(bodyFile, updatedFunctionBody),
-    writeFile(packageJsonFile, updatedPackageJsonContent),
-  ]);
+  writeFileSync(actorFilePath, actorBody);
+  writeFileSync(bodyFile, updatedFunctionBody);
+  writeFileSync(packageJsonFile, updatedPackageJsonContent);
+  // Await Promise.all([
+  //   writeFile(actorFilePath, actorBody),
+  //   writeFile(bodyFile, updatedFunctionBody),
+  //   writeFile(packageJsonFile, updatedPackageJsonContent),
+  // ]);
 }
 
 function parseFunctionClasses(body: string): { camelCaseName: string; functionBody: string }[] {
@@ -206,18 +212,22 @@ async function extractFunctions(functionsFileLocation: string): Promise<void> {
   const regularFunctions = (await readFile(functionsFileLocation)).toString();
   const matches = parseFunctionClasses(regularFunctions);
 
-  await Promise.all(matches.slice(0, 1).map((match) => {
+  for (const match of matches) {
     const { camelCaseName, functionBody } = match;
-    return Promise.all([
-      createActorPackage(camelCaseName, functionBody),
-      updateEngineConfig(camelCaseName),
-    ]);
-  }));
+    await createActorPackage(camelCaseName, functionBody);
+    await updateEngineConfig(camelCaseName);
+  }
+  // Await Promise.all(matches.map((match) => {
+  //   const { camelCaseName, functionBody } = match;
+  //   return Promise.all([
+  //     createActorPackage(camelCaseName, functionBody),
+  //     updateEngineConfig(camelCaseName),
+  //   ]);
+  // }));
 }
 
 async function main(): Promise<void> {
-  // Await extractFunctions('packages/actor-function-factory-wrapper-all/lib/implementation/RegularFunctions.ts');
-  await extractFunctions('packages/actor-function-factory-wrapper-all/lib/implementation/SpecialFunctions.ts');
+  await extractFunctions('packages/actor-function-factory-wrapper-all/lib/implementation/SparqlFunctions.ts');
 }
 
 main().catch(console.error);

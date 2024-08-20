@@ -15,8 +15,7 @@ import type { AsyncExtensionFunctionCreator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { NamedExtension } from './implementation/NamedExtension';
-import { namedFunctions } from './implementation/NamedFunctions';
-import { sparqlFunctions } from './implementation/SparqlFunctions';
+import { namedFunctions, sparqlFunctions } from './implementation/SparqlFunctions';
 
 /**
  * A comunica Wrapper All Functions Actor.
