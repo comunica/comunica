@@ -16,10 +16,8 @@ export class NamedExtension extends BaseFunctionDefinition {
   // TODO: when all is done, this should be injected in some way!
   protected arity = Number.POSITIVE_INFINITY;
   public constructor(
-    private readonly name: string,
+    public readonly operator: string,
     private readonly functionDefinition: AsyncExtensionFunction,
-    // TODO: equal to name?
-    public operator: string,
   ) {
     super();
   }
@@ -33,7 +31,7 @@ export class NamedExtension extends BaseFunctionDefinition {
           await this.functionDefinition(evaluatedArgs.map(term => term.toRDF())),
         );
     } catch (error: unknown) {
-      throw new ExtensionFunctionError(this.name, error);
+      throw new ExtensionFunctionError(this.operator, error);
     }
   };
 }

@@ -53,7 +53,7 @@ export class ActorFunctionFactoryWrapperAll extends ActorFunctionFactory {
     const definition = await extensionFinder(new DataFactory<RDF.Quad>().namedNode(functionName));
     if (definition) {
       return <T extends { requireTermExpression: true } ? IActorFunctionFactoryOutputTerm :
-        IActorFunctionFactoryOutput><unknown> new NamedExtension(functionName, definition, functionName);
+        IActorFunctionFactoryOutput><unknown> new NamedExtension(functionName, definition);
     }
     throw new Error('Unknown function');
   }
