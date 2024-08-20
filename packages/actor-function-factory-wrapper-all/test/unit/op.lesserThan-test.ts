@@ -2,13 +2,13 @@ import { RegularOperator } from '@comunica/expression-evaluator';
 import * as E from '@comunica/expression-evaluator/lib/expressions';
 import { getMockExpression } from '@comunica/expression-evaluator/test/util/utils';
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
-import { regularFunctions } from '../../lib/implementation/RegularFunctions';
+import { sparqlFunctions } from '../../lib/implementation/SparqlFunctions';
 import { createFuncMediator } from '../util';
 
 describe('lesser than', () => {
   describe('on sparql star tripples', () => {
     it('allows Generalized RDF Triples', async() => {
-      const op = regularFunctions[RegularOperator.LT];
+      const op = sparqlFunctions[RegularOperator.LT];
       const dg = new E.DefaultGraph();
       expect(op.applyOnTerms(
         [

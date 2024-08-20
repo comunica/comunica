@@ -9,45 +9,41 @@ function getRegularFunctionBody(functionBody: string): string {
 
   // The excessive importing gets fixed by using yarn lint-fix
   return `
-import { RegularFunction } from '@comunica/bus-function-factory';
-import { BaseFunctionDefinition } from '@comunica/bus-function-factory';
+import { TermSparqlFunction, BaseFunctionDefinition } from '@comunica/bus-function-factory';
+import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
+import { BlankNodeBindingsScoped } from '@comunica/data-factory';
 import type {
+  IEvalContext,
+  OverloadTree,
+  TermExpression,
+  VariableExpression,
+  BooleanLiteral,
+  Expression,
+  Literal,
   IInternalEvaluator,
   DurationLiteral,
   Term,
   YearMonthDurationLiteral,
   NumericLiteral,
-  BooleanLiteral,
   StringLiteral,
-  IEvalContext,
-  OverloadTree,
-
-  TermExpression,
-
-  VariableExpression,
-
-  Expression,
-  Literal,
 } from '@comunica/expression-evaluator';
 import {
+  SparqlOperator,
+  bool,
+  declare,
   expressionToVar,
+  langString,
+  string,
   ExpressionType,
   InvalidArgumentTypes,
   CoalesceError,
   InError,
   BlankNode,
-  SpecialOperator,
-  
-  RegularOperator,
   TypeAlias,
   TypeURL,
-  bool,
   decimal,
-  declare,
   double,
   integer,
-  langString,
-  string,
   dayTimeDurationsToSeconds,
   defaultedDateTimeRepresentation,
   defaultedDayTimeDurationRepresentation,
@@ -79,13 +75,11 @@ import type * as RDF from '@rdfjs/types';
 import { BigNumber } from 'bignumber.js';
 import { sha1, sha256, sha384, sha512 } from 'hash.js';
 import { DataFactory } from 'rdf-data-factory';
-import { BlankNodeBindingsScoped } from '@comunica/data-factory'
 import { resolve as resolveRelativeIri } from 'relative-to-absolute-iri';
-import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import { hash as md5 } from 'spark-md5';
 import * as uuid from 'uuid';
 
-${/[ <(\[]DF\./u.test(functionBody) ? dataFactoryCreation : ''}
+${/[ <([]DF\./u.test(functionBody) ? dataFactoryCreation : ''}
 ${updatedFunctionBody}
 `.trimStart();
 }

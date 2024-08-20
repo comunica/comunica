@@ -16,7 +16,7 @@ import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { NamedExtension } from './implementation/NamedExtension';
 import { namedFunctions } from './implementation/NamedFunctions';
-import { regularFunctions } from './implementation/RegularFunctions';
+import { sparqlFunctions } from './implementation/SparqlFunctions';
 
 /**
  * A comunica Wrapper All Functions Actor.
@@ -40,7 +40,7 @@ export class ActorFunctionFactoryWrapperAll extends ActorFunctionFactory {
     }
     context = Eval.prepareEvaluatorActionContext(context);
     const res: IExpressionFunction | undefined = {
-      ...regularFunctions,
+      ...sparqlFunctions,
       ...namedFunctions,
     }[functionName];
     if (res) {

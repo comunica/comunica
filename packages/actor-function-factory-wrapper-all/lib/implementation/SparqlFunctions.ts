@@ -4,15 +4,11 @@ import { BlankNodeBindingsScoped } from '@comunica/data-factory';
 import type {
   IEvalContext,
   OverloadTree,
-
   TermExpression,
-
   VariableExpression,
   BooleanLiteral,
-
   Expression,
   Literal,
-
   IInternalEvaluator,
   DurationLiteral,
   Term,
@@ -22,7 +18,6 @@ import type {
 } from '@comunica/expression-evaluator';
 import {
   SparqlOperator,
-
   bool,
   declare,
   expressionToVar,
@@ -33,7 +28,6 @@ import {
   CoalesceError,
   InError,
   BlankNode,
-
   TypeAlias,
   TypeURL,
   decimal,
@@ -1707,7 +1701,7 @@ const sparqlIn = new InSPARQL(equality);
 /**
  * Collect all the definitions from above into an object
  */
-export const regularFunctions: Record<SparqlOperator, BaseFunctionDefinition> = {
+export const sparqlFunctions: Record<SparqlOperator, BaseFunctionDefinition> = {
   // --------------------------------------------------------------------------
   // Operator Mapping
   // https://www.w3.org/TR/sparql11-query/#OperatorMapping
