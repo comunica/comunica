@@ -190,7 +190,7 @@ export enum SparqlOperator {
   SUBJECT = 'subject',
   PREDICATE = 'predicate',
   OBJECT = 'object',
-  IS_TRIPLE = 'isTriple',
+  IS_TRIPLE = 'istriple',
 
   // Functional Forms
   // https://www.w3.org/TR/sparql11-query/#func-forms

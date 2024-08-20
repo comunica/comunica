@@ -1,8 +1,9 @@
 import type { ExpressionEvaluator } from '@comunica/actor-expression-evaluator-factory-default/lib/ExpressionEvaluator';
+import { sparqlFunctions } from '@comunica/actor-function-factory-wrapper-all/lib/implementation/SparqlFunctions';
+import type { TermSparqlFunction } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
 import type { ISuperTypeProvider } from '@comunica/types';
-import { sparqlFunctions } from 'packages/actor-function-factory-wrapper-all/lib/implementation/SparqlFunctions';
 import { TypeURL } from '../../../lib';
 import {
   IntegerLiteral,
@@ -124,17 +125,18 @@ describe('OverloadTree', () => {
   it('will cache addition function', () => {
     const one = new IntegerLiteral(1);
     const two = new IntegerLiteral(2);
+    const additionFunction = <TermSparqlFunction> sparqlFunctions['+'];
     expect(functionArgumentsCache['+']).toBeUndefined();
-    const res = sparqlFunctions['+'].applyOnTerms([ one, two ], expressionEvaluator);
+    const res = additionFunction.applyOnTerms([ one, two ], expressionEvaluator);
     expect(res.str()).toBe('3');
     // One time lookup + one time add
     expect(functionArgumentsCache['+']).toBeDefined();
-    sparqlFunctions['+'].applyOnTerms([ two, one ], expressionEvaluator);
+    additionFunction.applyOnTerms([ two, one ], expressionEvaluator);
 
     const innerSpy = jest.fn();
     const spy = jest.fn(() => innerSpy);
     functionArgumentsCache['+'].cache![TypeURL.XSD_INTEGER].cache![TypeURL.XSD_INTEGER].func = spy;
-    sparqlFunctions['+'].applyOnTerms([ one, two ], expressionEvaluator);
+    additionFunction.applyOnTerms([ one, two ], expressionEvaluator);
     expect(spy).toHaveBeenCalledTimes(1);
     expect(innerSpy).toHaveBeenCalledTimes(1);
   });
@@ -143,8 +145,9 @@ describe('OverloadTree', () => {
     const apple = new StringLiteral('apple');
     const one = new IntegerLiteral(1);
     const two = new IntegerLiteral(2);
+    const subtractFunction = <TermSparqlFunction> sparqlFunctions.substr;
     expect(functionArgumentsCache.substr).toBeUndefined();
-    expect(sparqlFunctions.substr.applyOnTerms([ apple, one, two ], expressionEvaluator).str()).toBe('ap');
+    expect(subtractFunction.applyOnTerms([ apple, one, two ], expressionEvaluator).str()).toBe('ap');
 
     expect(functionArgumentsCache.substr).toBeDefined();
     const interestCache = functionArgumentsCache.substr
@@ -152,7 +155,7 @@ describe('OverloadTree', () => {
     expect(interestCache.func).toBeUndefined();
     expect(interestCache.cache![TypeURL.XSD_INTEGER]).toBeDefined();
 
-    expect(sparqlFunctions.substr.applyOnTerms([ apple, one ], expressionEvaluator).str()).toBe(String('apple'));
+    expect(subtractFunction.applyOnTerms([ apple, one ], expressionEvaluator).str()).toBe(String('apple'));
     const interestCacheNew = functionArgumentsCache.substr
       .cache![TypeURL.XSD_STRING].cache![TypeURL.XSD_INTEGER];
     expect(interestCacheNew).toBeDefined();
