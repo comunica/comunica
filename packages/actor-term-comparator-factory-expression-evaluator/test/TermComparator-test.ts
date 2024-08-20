@@ -1,3 +1,5 @@
+import { sparqlFunctions } from '@comunica/actor-function-factory-wrapper-all/lib/implementation/SparqlFunctions';
+import type { TermSparqlFunction } from '@comunica/bus-function-factory';
 import type { ITermComparator } from '@comunica/bus-term-comparator-factory';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import { TypeURL, TypeURL as DT } from '@comunica/expression-evaluator/lib/util/Consts';
@@ -5,7 +7,6 @@ import { getMockEEActionContext, getMockInternalEvaluator } from '@comunica/jest
 import type { SuperTypeCallback } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
-import { sparqlFunctions } from 'packages/actor-function-factory-wrapper-all/lib/implementation/SparqlFunctions';
 import { DataFactory } from 'rdf-data-factory';
 import { TermComparatorExpressionEvaluator } from '../lib/TermComparatorExpressionEvaluator';
 
@@ -44,8 +45,8 @@ function orderByFactory(typeDiscoveryCallback?: SuperTypeCallback): ITermCompara
     getMockEEActionContext();
   return new TermComparatorExpressionEvaluator(
     getMockInternalEvaluator(undefined, context),
-    sparqlFunctions['='],
-    sparqlFunctions['<'],
+    <TermSparqlFunction> sparqlFunctions['='],
+    <TermSparqlFunction> sparqlFunctions['<'],
   );
 }
 

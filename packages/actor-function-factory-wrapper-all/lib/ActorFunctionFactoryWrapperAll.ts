@@ -11,6 +11,7 @@ import {
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import * as Eval from '@comunica/expression-evaluator';
+import { UnknownOperator } from '@comunica/expression-evaluator/lib/util/Errors';
 import type { AsyncExtensionFunctionCreator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -55,6 +56,6 @@ export class ActorFunctionFactoryWrapperAll extends ActorFunctionFactory {
       return <T extends { requireTermExpression: true } ? IActorFunctionFactoryOutputTerm :
         IActorFunctionFactoryOutput><unknown> new NamedExtension(functionName, definition);
     }
-    throw new Error('Unknown function');
+    throw new UnknownOperator(functionName);
   }
 }
