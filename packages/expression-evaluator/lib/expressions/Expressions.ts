@@ -5,9 +5,7 @@ import type { FunctionApplication } from '../functions/OverloadTree';
 export enum ExpressionType {
   Aggregate = 'aggregate',
   Existence = 'existence',
-  Named = 'named',
   Operator = 'operator',
-  SpecialOperator = 'specialOperator',
   Term = 'term',
   Variable = 'variable',
 }
@@ -15,9 +13,7 @@ export enum ExpressionType {
 export type Expression =
   AggregateExpression |
   ExistenceExpression |
-  NamedExpression |
   OperatorExpression |
-  SpecialOperatorExpression |
   TermExpression |
   VariableExpression;
 
@@ -36,21 +32,9 @@ export type ExistenceExpression = IExpressionProps & {
   expression: Algebra.ExistenceExpression;
 };
 
-export type NamedExpression = IExpressionProps & {
-  expressionType: ExpressionType.Named;
-  name: RDF.NamedNode;
-  apply: FunctionApplication;
-  args: Expression[];
-};
-
 export type OperatorExpression = IExpressionProps & {
   expressionType: ExpressionType.Operator;
-  args: Expression[];
-  apply: FunctionApplication;
-};
-
-export type SpecialOperatorExpression = IExpressionProps & {
-  expressionType: ExpressionType.SpecialOperator;
+  name: string;
   args: Expression[];
   apply: FunctionApplication;
 };

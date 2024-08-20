@@ -85,17 +85,19 @@ export enum TypeURL {
 // Operators
 // ----------------------------------------------------------------------------
 
-export type Operator = RegularOperator | SpecialOperator;
+export type GeneralOperator = KnownOperator | string;
+
+export type KnownOperator = SparqlOperator | NamedOperator;
 
 // TODO: Remove unneeded double typing
-export enum RegularOperator {
+export enum SparqlOperator {
   // Operator mapping
   // https://www.w3.org/TR/sparql11-query/#OperatorMapping
   NOT = '!',
   UMINUS = 'uminus',
   UPLUS = 'uplus',
-  // LOGICAL_AND // See SpecialOperators
-  // LOGICAL_OR  // See SpecialOperators
+  LOGICAL_OR = '||',
+  LOGICAL_AND = '&&',
 
   EQUAL = '=',
   NOT_EQUAL = '!=',
@@ -103,6 +105,9 @@ export enum RegularOperator {
   GT = '>',
   LTE = '<=',
   GTE = '>=',
+  SAME_TERM = 'sameterm',
+  IN = 'in',
+  NOT_IN = 'notin',
 
   MULTIPLICATION = '*',
   DIVISION = '/',
@@ -125,7 +130,7 @@ export enum RegularOperator {
   DATATYPE = 'datatype',
   IRI = 'iri',
   URI = 'uri',
-  // BNODE = 'BNODE', (see special operators)
+  BNODE = 'bnode',
   STRDT = 'strdt',
   STRLANG = 'strlang',
   UUID = 'uuid',
@@ -143,7 +148,7 @@ export enum RegularOperator {
   STRBEFORE = 'strbefore',
   STRAFTER = 'strafter',
   ENCODE_FOR_URI = 'encode_for_uri',
-  // CONCAT = 'concat' (see special operators)
+  CONCAT = 'concat',
   LANG_MATCHES = 'langmatches',
   REGEX = 'regex',
   REPLACE = 'replace',
@@ -185,33 +190,16 @@ export enum RegularOperator {
   SUBJECT = 'subject',
   PREDICATE = 'predicate',
   OBJECT = 'object',
-  IS_TRIPLE = 'istriple',
-}
+  IS_TRIPLE = 'isTriple',
 
-export enum SpecialOperator {
   // Functional Forms
   // https://www.w3.org/TR/sparql11-query/#func-forms
   BOUND = 'bound',
   IF = 'if',
   COALESCE = 'coalesce',
-  // EXISTENCE = 'existence',
-  LOGICAL_OR = '||',
-  LOGICAL_AND = '&&',
-  // EQUAL = '=', // See RegularOperators
-  SAME_TERM = 'sameterm',
-  IN = 'in',
-  NOT_IN = 'notin',
-
-  // Annoying functions - Has variable arity
-  CONCAT = 'concat',
-
-  // Context dependant functions
-  BNODE = 'bnode',
 }
 
-export const RegularOperators: Set<string> = new Set(Object.values(RegularOperator));
-export const SpecialOperators: Set<string> = new Set(Object.values(SpecialOperator));
-export const Operators = new Set([ ...RegularOperators, ...SpecialOperators ]);
+export const SparqlOperators: Set<string> = new Set(Object.values(SparqlOperator));
 
 export enum SetFunction {
   COUNT = 'count',
@@ -222,7 +210,6 @@ export enum SetFunction {
   GROUP_CONCAT = 'group_concat',
   SAMPLE = 'sample',
 }
-export const SetFunctions = new Set(Object.values(SetFunction));
 
 export type NamedOperator =
   // XPath Constructor functions
@@ -239,18 +226,3 @@ export type NamedOperator =
   | TypeURL.XSD_DURATION
   | TypeURL.XSD_DAY_TIME_DURATION
   | TypeURL.XSD_YEAR_MONTH_DURATION;
-
-export const NamedOperators = new Set([
-  TypeURL.XSD_STRING,
-  TypeURL.XSD_FLOAT,
-  TypeURL.XSD_DOUBLE,
-  TypeURL.XSD_DECIMAL,
-  TypeURL.XSD_INTEGER,
-  TypeURL.XSD_DATE_TIME,
-  TypeURL.XSD_DATE,
-  TypeURL.XSD_BOOLEAN,
-  TypeURL.XSD_TIME,
-  TypeURL.XSD_DURATION,
-  TypeURL.XSD_DAY_TIME_DURATION,
-  TypeURL.XSD_YEAR_MONTH_DURATION,
-]);

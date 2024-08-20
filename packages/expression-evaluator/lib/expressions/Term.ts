@@ -26,7 +26,7 @@ export abstract class Term implements TermExpression {
   public abstract toRDF(): RDF.Term;
 
   public str(): string {
-    throw new Err.InvalidArgumentTypes([ this ], C.RegularOperator.STR);
+    throw new Err.InvalidArgumentTypes([ this ], C.SparqlOperator.STR);
   }
 
   public coerceEBV(): boolean {

@@ -3,7 +3,6 @@ import { KeysExpressionEvaluator } from '@comunica/context-entries';
 
 import * as E from '@comunica/expression-evaluator/lib/expressions';
 import { TermTransformer } from '@comunica/expression-evaluator/lib/transformers/TermTransformer';
-import * as C from '@comunica/expression-evaluator/lib/util/Consts';
 import * as Err from '@comunica/expression-evaluator/lib/util/Errors';
 import type { IActionContext } from '@comunica/types';
 import { Algebra as Alg } from 'sparqlalgebrajs';
@@ -39,12 +38,8 @@ export class AlgebraTransformer extends TermTransformer {
     return new E.NamedNode(term.wildcard.value);
   }
 
-  private async transformOperator(expr: Alg.OperatorExpression):
-  Promise<E.OperatorExpression | E.SpecialOperatorExpression> {
-    const operator = expr.operator.toLowerCase();
-    if (!C.Operators.has(operator)) {
-      throw new Err.UnknownOperator(expr.operator);
-    }
+  private async getOperator(operator: string, expr: Alg.OperatorExpression | Alg.NamedExpression):
+  Promise<E.OperatorExpression> {
     const operatorFunc = await this.mediatorFunctionFactory.mediate({
       functionName: operator,
       arguments: expr.args,
@@ -52,27 +47,17 @@ export class AlgebraTransformer extends TermTransformer {
     });
     const operatorArgs = await Promise.all(expr.args.map(arg => this.transformAlgebra(arg)));
     if (!operatorFunc.checkArity(operatorArgs)) {
-      throw new Err.InvalidArity(operatorArgs, <C.Operator>operator);
+      throw new Err.InvalidArity(operatorArgs, operator);
     }
-    if (C.SpecialOperators.has(operator)) {
-      return new E.SpecialOperator(operatorArgs, operatorFunc.apply);
-    }
-    return new E.Operator(operatorArgs, operatorFunc.apply);
+    return new E.Operator(operator, operatorArgs, operatorFunc.apply);
   }
 
-  private async transformNamed(expr: Alg.NamedExpression): Promise<E.NamedExpression> {
-    const namedArgs = await Promise.all(expr.args.map(arg => this.transformAlgebra(arg)));
-    // Return a basic named expression
-    const op = <C.NamedOperator>expr.name.value;
-    const namedFunc = await this.mediatorFunctionFactory.mediate({
-      functionName: op,
-      arguments: expr.args,
-      context: this.context,
-    });
-    if (!namedFunc) {
-      throw new Err.UnknownNamedOperator(expr.name.value);
-    }
-    return new E.Named(expr.name, namedArgs, args => namedFunc.apply(args));
+  private async transformOperator(expr: Alg.OperatorExpression): Promise<E.OperatorExpression> {
+    return this.getOperator(expr.operator.toLowerCase(), expr);
+  }
+
+  private async transformNamed(expr: Alg.NamedExpression): Promise<E.OperatorExpression> {
+    return this.getOperator(expr.name.value, expr);
   }
 
   public static transformAggregate(expr: Alg.AggregateExpression): E.Aggregate {

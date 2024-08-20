@@ -97,7 +97,7 @@ export class InError extends ExpressionError {
  * Literals were passed to an operator that doesn't support their datatypes.
  */
 export class InvalidArgumentTypes extends ExpressionError {
-  public constructor(public args: E.Expression[], public op: C.Operator | C.NamedOperator) {
+  public constructor(public args: E.Expression[], public op: C.GeneralOperator) {
     super(`Argument types not valid for operator: '${pp(op)}' with '${pp(args)}`);
   }
 }
@@ -149,7 +149,7 @@ export class UnexpectedError<T> extends Error {
 }
 
 export class InvalidArity extends Error {
-  public constructor(public args: E.Expression[], public op: C.Operator) {
+  public constructor(public args: E.Expression[], public op: C.GeneralOperator) {
     super(`The number of args does not match the arity of the operator '${pp(op)}'.`);
   }
 }

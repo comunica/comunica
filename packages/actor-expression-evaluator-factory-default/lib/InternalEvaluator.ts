@@ -2,9 +2,8 @@ import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, materializeOperation } from '@comunica/bus-query-operation';
-import * as E from '@comunica/expression-evaluator/lib/expressions';
+import * as Eval from '@comunica/expression-evaluator';
 import { expressionToVar } from '@comunica/expression-evaluator/lib/functions/Helpers';
-import * as Err from '@comunica/expression-evaluator/lib/util/Errors';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { AlgebraTransformer } from './AlgebraTransformer';
@@ -16,15 +15,13 @@ export class InternalEvaluator {
   public readonly transformer: AlgebraTransformer;
 
   private readonly subEvaluators:
-  Record<E.ExpressionType, (expr: E.Expression, mapping: RDF.Bindings) => Promise<E.Term> | E.Term> =
+  Record<Eval.ExpressionType, (expr: Eval.Expression, mapping: RDF.Bindings) => Promise<Eval.Term> | Eval.Term> =
       {
-        [E.ExpressionType.Term]: (expr, _mapping) => this.term(<E.Term> expr),
-        [E.ExpressionType.Variable]: (expr, mapping) => this.variable(<E.Variable> expr, mapping),
-        [E.ExpressionType.Operator]: (expr, mapping) => this.evalFunction(<E.Operator> expr, mapping),
-        [E.ExpressionType.SpecialOperator]: (expr, mapping) => this.evalFunction(<E.Operator> expr, mapping),
-        [E.ExpressionType.Named]: (expr, mapping) => this.evalFunction(<E.Operator> expr, mapping),
-        [E.ExpressionType.Existence]: (expr, mapping) => this.evalExistence(<E.Existence> expr, mapping),
-        [E.ExpressionType.Aggregate]: (_expr, _mapping) => this.evalAggregate(),
+        [Eval.ExpressionType.Term]: (expr, _mapping) => this.term(<Eval.Term> expr),
+        [Eval.ExpressionType.Variable]: (expr, mapping) => this.variable(<Eval.Variable> expr, mapping),
+        [Eval.ExpressionType.Operator]: (expr, mapping) => this.evalFunction(<Eval.Operator> expr, mapping),
+        [Eval.ExpressionType.Existence]: (expr, mapping) => this.evalExistence(<Eval.Existence> expr, mapping),
+        [Eval.ExpressionType.Aggregate]: (_expr, _mapping) => this.evalAggregate(),
       };
 
   public constructor(
@@ -39,25 +36,25 @@ export class InternalEvaluator {
     );
   }
 
-  public async evaluatorExpressionEvaluation(expr: E.Expression, mapping: RDF.Bindings): Promise<E.Term> {
+  public async evaluatorExpressionEvaluation(expr: Eval.Expression, mapping: RDF.Bindings): Promise<Eval.Term> {
     const evaluator = this.subEvaluators[expr.expressionType];
     return evaluator.bind(this)(expr, mapping);
   }
 
-  private term(expr: E.Term): E.Term {
+  private term(expr: Eval.Term): Eval.Term {
     return expr;
   }
 
-  private variable(expr: E.Variable, mapping: RDF.Bindings): E.Term {
+  private variable(expr: Eval.Variable, mapping: RDF.Bindings): Eval.Term {
     const term = mapping.get(expressionToVar(expr));
     if (!term) {
-      throw new Err.UnboundVariableError(expr.name, mapping);
+      throw new Eval.UnboundVariableError(expr.name, mapping);
     }
     return this.transformer.transformRDFTermUnsafe(term);
   }
 
-  private async evalFunction(expr: E.Operator | E.SpecialOperator | E.Named, mapping: RDF.Bindings):
-  Promise<E.Term> {
+  private async evalFunction(expr: Eval.Operator, mapping: RDF.Bindings):
+  Promise<Eval.Term> {
     return expr.apply({
       args: expr.args,
       mapping,
@@ -65,7 +62,7 @@ export class InternalEvaluator {
     });
   }
 
-  private async evalExistence(expr: E.Existence, mapping: RDF.Bindings): Promise<E.Term> {
+  private async evalExistence(expr: Eval.Existence, mapping: RDF.Bindings): Promise<Eval.Term> {
     const operation = materializeOperation(expr.expression.input, mapping, this.bindingsFactory);
 
     const outputRaw = await this.mediatorQueryOperation.mediate({ operation, context: this.context });
@@ -86,10 +83,10 @@ export class InternalEvaluator {
       },
     )
       .then((exists: boolean) => expr.expression.not ? !exists : exists)
-      .then((exists: boolean) => new E.BooleanLiteral(exists));
+      .then((exists: boolean) => new Eval.BooleanLiteral(exists));
   }
 
   private evalAggregate(): never {
-    throw new Err.NoAggregator();
+    throw new Eval.NoAggregator();
   }
 }

@@ -1,12 +1,10 @@
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
-import type * as E from '@comunica/expression-evaluator/lib/expressions';
+import * as Eval from '@comunica/expression-evaluator';
 import type {
   IEvalContext,
   IInternalEvaluator,
   OverloadTree,
-} from '@comunica/expression-evaluator/lib/functions/OverloadTree';
-import type * as C from '@comunica/expression-evaluator/lib/util/Consts';
-import * as Err from '@comunica/expression-evaluator/lib/util/Errors';
+} from '@comunica/expression-evaluator';
 import type { IExpressionFunction, ITermFunction } from '../ActorFunctionFactory';
 
 // ----------------------------------------------------------------------------
@@ -15,9 +13,10 @@ import type { IExpressionFunction, ITermFunction } from '../ActorFunctionFactory
 
 export abstract class BaseFunctionDefinition implements IExpressionFunction {
   protected abstract readonly arity: number | number[];
-  public abstract apply: (evalContext: IEvalContext) => Promise<E.TermExpression>;
+  public abstract apply: (evalContext: IEvalContext) => Promise<Eval.TermExpression>;
+  public abstract operator: Eval.GeneralOperator;
 
-  public checkArity(args: E.Expression[]): boolean {
+  public checkArity(args: Eval.Expression[]): boolean {
     if (Array.isArray(this.arity)) {
       return this.arity.includes(args.length);
     }
@@ -48,13 +47,12 @@ export abstract class BaseFunctionDefinition implements IExpressionFunction {
  * See also: https://www.w3.org/TR/definitionTypesparql11-query/#func-rdfTerms
  * and https://www.w3.org/TR/sparql11-query/#OperatorMapping
  */
-export abstract class TermSparqlFunction<O extends C.RegularOperator | C.NamedOperator>
+export abstract class TermSparqlFunction
   extends BaseFunctionDefinition implements ITermFunction {
   public readonly supportsTermExpressions = true;
   protected abstract readonly overloads: OverloadTree;
-  public abstract operator: O;
 
-  public applyOnTerms(args: E.TermExpression[], exprEval: IInternalEvaluator): E.TermExpression {
+  public applyOnTerms(args: Eval.TermExpression[], exprEval: IInternalEvaluator): Eval.TermExpression {
     const concreteFunction =
       this.overloads.search(
         args,
@@ -64,16 +62,12 @@ export abstract class TermSparqlFunction<O extends C.RegularOperator | C.NamedOp
     return concreteFunction(exprEval)(args);
   }
 
-  public apply = async({ args, exprEval, mapping }: IEvalContext): Promise<E.TermExpression> => this.applyOnTerms(
+  public apply = async({ args, exprEval, mapping }: IEvalContext): Promise<Eval.TermExpression> => this.applyOnTerms(
     await Promise.all(args.map(arg => exprEval.evaluatorExpressionEvaluation(arg, mapping))),
     exprEval,
   );
 
-  protected handleInvalidTypes(args: E.TermExpression[]): never {
-    throw new Err.InvalidArgumentTypes(args, this.operator);
+  protected handleInvalidTypes(args: Eval.TermExpression[]): never {
+    throw new Eval.InvalidArgumentTypes(args, this.operator);
   }
 }
-
-export abstract class RegularFunction extends TermSparqlFunction<C.RegularOperator> {}
-
-export abstract class NamedFunction extends TermSparqlFunction<C.NamedOperator> {}

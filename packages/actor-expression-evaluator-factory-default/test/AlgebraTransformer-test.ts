@@ -1,7 +1,6 @@
 import { AlgebraTransformer } from '@comunica/actor-expression-evaluator-factory-default/lib/AlgebraTransformer';
 import { NamedExtension } from '@comunica/actor-function-factory-wrapper-all/lib/implementation/NamedExtension';
-import { namedFunctions } from '@comunica/actor-function-factory-wrapper-all/lib/implementation/NamedFunctions';
-import { regularFunctions } from '@comunica/actor-function-factory-wrapper-all/lib/implementation/RegularFunctions';
+import { namedFunctions } from '@comunica/actor-function-factory-wrapper-all/lib/implementation/SparqlFunctions';
 import { specialFunctions } from '@comunica/actor-function-factory-wrapper-all/lib/implementation/SpecialFunctions';
 import { createFuncMediator } from '@comunica/actor-function-factory-wrapper-all/test/util';
 import type { IExpressionFunction, MediatorFunctionFactory } from '@comunica/bus-function-factory';
@@ -10,6 +9,7 @@ import type * as C from '@comunica/expression-evaluator/lib/util/Consts';
 import { prepareEvaluatorActionContext } from '@comunica/expression-evaluator/lib/util/Context';
 import * as Err from '@comunica/expression-evaluator/lib/util/Errors';
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
+import { sparqlFunctions } from 'packages/actor-function-factory-wrapper-all/lib/implementation/SparqlFunctions';
 import { DataFactory } from 'rdf-data-factory';
 import { expressionTypes, types } from 'sparqlalgebrajs/lib/algebra';
 import { Wildcard } from 'sparqljs';
@@ -22,7 +22,7 @@ describe('AlgebraTransformer', () => {
     const factory = getMockEEFactory({ mediatorFunctionFactory: <MediatorFunctionFactory> {
       async mediate({ functionName }) {
         const res: IExpressionFunction | undefined = {
-          ...regularFunctions,
+          ...sparqlFunctions,
           ...specialFunctions,
           ...namedFunctions,
         }[<C.NamedOperator | C.Operator> functionName];
