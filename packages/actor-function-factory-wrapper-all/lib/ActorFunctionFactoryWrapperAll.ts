@@ -25,18 +25,18 @@ export class ActorFunctionFactoryWrapperAll extends ActorFunctionFactory {
     super(args);
   }
 
-  public async test(action: IActionFunctionFactory): Promise<IActorTest> {
-    if (action.functionName === Eval.SparqlOperator.NOT) {
-      throw new Error(`Actor does not execute the NOT function (so we can test the test the dedicated actor)`);
-    }
+  public async test(_: IActionFunctionFactory): Promise<IActorTest> {
+    // If (action.functionName === Eval.SparqlOperator.NOT) {
+    //   throw new Error(`Actor does not execute the NOT function (so we can test the test the dedicated actor)`);
+    // }
     return true;
   }
 
   public async run<T extends IActionFunctionFactory>({ functionName, context }: T):
   Promise<T extends { requireTermExpression: true } ? IActorFunctionFactoryOutputTerm : IActorFunctionFactoryOutput> {
-    if (functionName === Eval.SparqlOperator.NOT) {
-      throw new Error(`Actor does not execute the NOT function (so we can test the test the dedicated actor)`);
-    }
+    // If (functionName === Eval.SparqlOperator.NOT) {
+    //   throw new Error(`Actor does not execute the NOT function (so we can test the test the dedicated actor)`);
+    // }
     context = Eval.prepareEvaluatorActionContext(context);
     const res: IExpressionFunction | undefined = {
       ...sparqlFunctions,
