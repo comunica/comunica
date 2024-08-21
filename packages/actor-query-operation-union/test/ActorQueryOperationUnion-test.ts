@@ -18,7 +18,7 @@ import '@comunica/jest';
 import 'jest-rdf';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 
 describe('ActorQueryOperationUnion', () => {
   let context: IActionContext;

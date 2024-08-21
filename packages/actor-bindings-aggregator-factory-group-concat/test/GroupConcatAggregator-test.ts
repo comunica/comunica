@@ -1,5 +1,6 @@
 import type { IBindingsAggregator } from '@comunica/bus-bindings-aggeregator-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { BF, DF, getMockEEActionContext, getMockEEFactory, int, makeAggregate } from '@comunica/jest';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -24,6 +25,7 @@ async function createAggregator({ expressionEvaluatorFactory, context, distinct,
       context,
     }),
     distinct,
+    context.getSafe(KeysInitQuery.dataFactory),
     separator,
   );
 }

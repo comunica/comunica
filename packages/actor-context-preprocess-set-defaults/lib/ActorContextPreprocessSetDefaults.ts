@@ -1,9 +1,14 @@
-import type { IActorContextPreprocessOutput, IActorContextPreprocessArgs } from '@comunica/bus-context-preprocess';
+import type {
+  IActorContextPreprocessOutput,
+  IActorContextPreprocessArgs,
+  IActionContextPreprocess,
+} from '@comunica/bus-context-preprocess';
 import { ActorContextPreprocess } from '@comunica/bus-context-preprocess';
 import { KeysCore, KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import type { IAction, IActorTest } from '@comunica/core';
 import type { FunctionArgumentsCache, Logger } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import { DataFactory } from 'rdf-data-factory';
 
 /**
  * A comunica Set Defaults Context Preprocess Actor.
@@ -21,26 +26,29 @@ export class ActorContextPreprocessSetDefaults extends ActorContextPreprocess {
     return true;
   }
 
-  public async run(action: IAction): Promise<IActorContextPreprocessOutput> {
+  public async run(action: IActionContextPreprocess): Promise<IActorContextPreprocessOutput> {
     let context = action.context;
 
-    // Set default values
-    context = context
-      .setDefault(KeysInitQuery.queryTimestamp, new Date())
-      .setDefault(KeysQuerySourceIdentify.sourceIds, new Map())
-      .setDefault(KeysCore.log, this.logger)
-      .setDefault(KeysInitQuery.functionArgumentsCache, this.defaultFunctionArgumentsCache)
-      .setDefault(KeysQuerySourceIdentify.hypermediaSourcesAggregatedStores, new Map());
+    if (action.initialize) {
+      // Set default values
+      context = context
+        .setDefault(KeysInitQuery.queryTimestamp, new Date())
+        .setDefault(KeysQuerySourceIdentify.sourceIds, new Map())
+        .setDefault(KeysCore.log, this.logger)
+        .setDefault(KeysInitQuery.functionArgumentsCache, this.defaultFunctionArgumentsCache)
+        .setDefault(KeysQuerySourceIdentify.hypermediaSourcesAggregatedStores, new Map())
+        .setDefault(KeysInitQuery.dataFactory, new DataFactory());
 
-    // Handle default query format
-    let queryFormat: RDF.QueryFormat = { language: 'sparql', version: '1.1' };
-    if (context.has(KeysInitQuery.queryFormat)) {
-      queryFormat = context.get(KeysInitQuery.queryFormat)!;
-      if (queryFormat.language === 'graphql') {
-        context = context.setDefault(KeysInitQuery.graphqlSingularizeVariables, {});
+      // Handle default query format
+      let queryFormat: RDF.QueryFormat = { language: 'sparql', version: '1.1' };
+      if (context.has(KeysInitQuery.queryFormat)) {
+        queryFormat = context.get(KeysInitQuery.queryFormat)!;
+        if (queryFormat.language === 'graphql') {
+          context = context.setDefault(KeysInitQuery.graphqlSingularizeVariables, {});
+        }
+      } else {
+        context = context.set(KeysInitQuery.queryFormat, queryFormat);
       }
-    } else {
-      context = context.set(KeysInitQuery.queryFormat, queryFormat);
     }
 
     return { context };

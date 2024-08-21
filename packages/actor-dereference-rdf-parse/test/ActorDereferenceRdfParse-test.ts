@@ -33,6 +33,7 @@ describe('ActorAbstractDereferenceParse', () => {
             url: `${action.url}${ext}`,
             requestTime: 0,
             exists: true,
+            mediaType: (<any> action).mediaType,
           };
         }),
       },
@@ -99,6 +100,17 @@ describe('ActorAbstractDereferenceParse', () => {
   it('Should resolve media mappings correctly (known extension)', async() => {
     context = new ActionContext({ extension: 'other.x' });
     const output = await actor.run({ url: 'https://www.google.com/', context });
+    expect(output.url).toBe('https://www.google.com/other.x');
+    expect(actor.mediatorParse.mediate).toHaveBeenCalledWith({
+      context,
+      handle: expect.anything(),
+      handleMediaType: 'y',
+    });
+  });
+
+  it('Should resolve media mappings correctly (known extension - given empty mediaType)', async() => {
+    context = new ActionContext({ extension: 'other.x' });
+    const output = await actor.run({ url: 'https://www.google.com/', context, mediaType: '' });
     expect(output.url).toBe('https://www.google.com/other.x');
     expect(actor.mediatorParse.mediate).toHaveBeenCalledWith({
       context,

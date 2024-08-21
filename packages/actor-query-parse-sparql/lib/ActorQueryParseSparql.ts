@@ -1,6 +1,8 @@
 import type { IActionQueryParse, IActorQueryParseArgs, IActorQueryParseOutput } from '@comunica/bus-query-parse';
 import { ActorQueryParse } from '@comunica/bus-query-parse';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
+import type { ComunicaDataFactory } from '@comunica/types';
 import { translate } from 'sparqlalgebrajs';
 import { Parser as SparqlParser } from 'sparqljs';
 
@@ -23,7 +25,13 @@ export class ActorQueryParseSparql extends ActorQueryParse {
   }
 
   public async run(action: IActionQueryParse): Promise<IActorQueryParseOutput> {
-    const parser = new SparqlParser({ prefixes: this.prefixes, baseIRI: action.baseIRI, sparqlStar: true });
+    const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
+    const parser = new SparqlParser({
+      prefixes: this.prefixes,
+      baseIRI: action.baseIRI,
+      sparqlStar: true,
+      factory: dataFactory,
+    });
     const parsedSyntax = parser.parse(action.query);
     const baseIRI = parsedSyntax.type === 'query' ? parsedSyntax.base : undefined;
     return {
@@ -33,6 +41,7 @@ export class ActorQueryParseSparql extends ActorQueryParse {
         prefixes: this.prefixes,
         blankToVariable: true,
         baseIRI: action.baseIRI,
+        dataFactory,
       }),
     };
   }

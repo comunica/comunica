@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-update-load",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A load query-operation actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,13 +37,12 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-query-operation": "^3.0.3",
-    "@comunica/bus-query-source-identify": "^3.0.3",
-    "@comunica/bus-rdf-update-quads": "^3.0.3",
-    "@comunica/context-entries": "^3.0.3",
-    "@comunica/core": "^3.0.3",
-    "@comunica/types": "^3.0.3",
-    "rdf-data-factory": "^1.1.1",
-    "sparqlalgebrajs": "^4.3.3"
+    "@comunica/bus-query-operation": "^3.2.1",
+    "@comunica/bus-query-source-identify": "^3.2.1",
+    "@comunica/bus-rdf-update-quads": "^3.2.1",
+    "@comunica/context-entries": "^3.2.1",
+    "@comunica/core": "^3.2.1",
+    "@comunica/types": "^3.2.1",
+    "sparqlalgebrajs": "^4.3.7"
   }
 }

@@ -1,10 +1,9 @@
 import type { BindingsFactory } from '@comunica/bindings-factory';
 import { ClosableTransformIterator } from '@comunica/bus-query-operation';
 import { validateMetadataQuads } from '@comunica/metadata';
-import type { BindingsStream, MetadataBindings, MetadataQuads, TermsOrder } from '@comunica/types';
+import type { BindingsStream, ComunicaDataFactory, MetadataBindings, MetadataQuads, TermsOrder } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import type { QuadTermName } from 'rdf-terms';
 import {
@@ -18,13 +17,12 @@ import {
 import { matchPatternMappings } from 'rdf-terms/lib/QuadTermUtil';
 import type { Algebra } from 'sparqlalgebrajs';
 
-const DF = new DataFactory();
-
 /**
  * Convert an iterator of quads to an iterator of bindings.
  * @param quads The quads to convert.
  * @param pattern The pattern to get variables from to determine bindings.
  *                All quads are also assumed to match the pattern.
+ * @param dataFactory The data factory.
  * @param bindingsFactory The factory for creating bindings.
  * @param unionDefaultGraph If union default graph mode is enabled.
  *                          If true, variable graphs will match all graphs, including the default graph.
@@ -33,6 +31,7 @@ const DF = new DataFactory();
 export function quadsToBindings(
   quads: AsyncIterator<RDF.Quad>,
   pattern: Algebra.Pattern,
+  dataFactory: ComunicaDataFactory,
   bindingsFactory: BindingsFactory,
   unionDefaultGraph: boolean,
 ): BindingsStream {
@@ -89,7 +88,7 @@ export function quadsToBindings(
         const keys: QuadTermName[] = <any>key.split('_');
         const variable = elementVariables[key];
         const term = getValueNestedPath(quad, keys);
-        return [ DF.variable(variable), term ];
+        return [ dataFactory.variable(variable), term ];
       })));
   }, {
     autoStart: false,
@@ -97,7 +96,14 @@ export function quadsToBindings(
   });
 
   // Set the metadata property
-  setMetadata(it, quads, elementVariables, variables, filterNonDefaultQuads || Boolean(duplicateElementLinks));
+  setMetadata(
+    dataFactory,
+    it,
+    quads,
+    elementVariables,
+    variables,
+    filterNonDefaultQuads || Boolean(duplicateElementLinks),
+  );
 
   return it;
 }
@@ -174,7 +180,7 @@ export function getDuplicateElementLinks(pattern: RDF.BaseQuad): Record<string, 
 
 /**
  * Set the metadata of the bindings stream derived from the metadata of the quads stream.
- *
+ * @param dataFactory The data factory.
  * @param {BindingsStream} bindings The bindings stream that will receive the metadata property.
  * @param {AsyncIterator<Quad>} quads The quads stream that is guaranteed to emit the metadata property.
  * @param elementVariables Mapping of quad term name to variable name.
@@ -183,6 +189,7 @@ export function getDuplicateElementLinks(pattern: RDF.BaseQuad): Record<string, 
  * @return {() => Promise<{[p: string]: any}>} A lazy promise behind a callback resolving to a metadata object.
  */
 export function setMetadata(
+  dataFactory: ComunicaDataFactory,
   bindings: BindingsStream,
   quads: AsyncIterator<RDF.Quad>,
   elementVariables: Record<string, string>,
@@ -198,13 +205,13 @@ export function setMetadata(
     }
     bindings.setProperty(
       'metadata',
-      quadsMetadataToBindingsMetadata(validateMetadataQuads(metadataRaw), elementVariables, variables),
+      quadsMetadataToBindingsMetadata(dataFactory, validateMetadataQuads(metadataRaw), elementVariables, variables),
     );
 
     // Propagate metadata invalidations
     if (metadataRaw.state) {
       metadataRaw.state.addInvalidateListener(() => {
-        setMetadata(bindings, quads, elementVariables, variables, forceEstimateCardinality);
+        setMetadata(dataFactory, bindings, quads, elementVariables, variables, forceEstimateCardinality);
       });
     }
   };
@@ -221,11 +228,13 @@ export function setMetadata(
 
 /**
  * Convert the metadata of quads to the metadata of bindings.
+ * @param dataFactory The data factory.
  * @param metadataQuads Quads metadata.
  * @param elementVariables A mapping from quad elements to variables.
  * @param variables The variables in the bindings.
  */
 export function quadsMetadataToBindingsMetadata(
+  dataFactory: ComunicaDataFactory,
   metadataQuads: MetadataQuads,
   elementVariables: Record<string, string>,
   variables: RDF.Variable[],
@@ -234,12 +243,12 @@ export function quadsMetadataToBindingsMetadata(
     ...metadataQuads,
     canContainUndefs: false,
     order: metadataQuads.order ?
-      quadsOrderToBindingsOrder(metadataQuads.order, elementVariables) :
+      quadsOrderToBindingsOrder(dataFactory, metadataQuads.order, elementVariables) :
       undefined,
     availableOrders: metadataQuads.availableOrders ?
       metadataQuads.availableOrders.map(orderDef => ({
         cost: orderDef.cost,
-        terms: quadsOrderToBindingsOrder(orderDef.terms, elementVariables),
+        terms: quadsOrderToBindingsOrder(dataFactory, orderDef.terms, elementVariables),
       })) :
       undefined,
     variables,
@@ -248,10 +257,12 @@ export function quadsMetadataToBindingsMetadata(
 
 /**
  * Convert the quads order metadata element to a bindings order metadata element.
+ * @param dataFactory The data factory.
  * @param quadsOrder Quads order.
  * @param elementVariables A mapping from quad elements to variables.
  */
 export function quadsOrderToBindingsOrder(
+  dataFactory: ComunicaDataFactory,
   quadsOrder: TermsOrder<RDF.QuadTermName>,
   elementVariables: Record<string, string>,
 ): TermsOrder<RDF.Variable> {
@@ -272,7 +283,7 @@ export function quadsOrderToBindingsOrder(
 
     mappedVariables[variableName] = true;
     return {
-      term: DF.variable(variableName),
+      term: dataFactory.variable(variableName),
       direction: entry.direction,
     };
   }).filter(Boolean);
@@ -286,10 +297,7 @@ export function quadsOrderToBindingsOrder(
  */
 export function filterMatchingQuotedQuads(pattern: RDF.BaseQuad, it: AsyncIterator<RDF.Quad>): AsyncIterator<RDF.Quad> {
   if (someTerms(pattern, term => term.termType === 'Quad')) {
-    it = it.transform({
-      filter: quad => matchPatternMappings(quad, pattern),
-      autoStart: false,
-    });
+    it = it.filter(quad => matchPatternMappings(quad, pattern));
   }
   return it;
 }

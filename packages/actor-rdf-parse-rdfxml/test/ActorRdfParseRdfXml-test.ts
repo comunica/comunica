@@ -1,14 +1,17 @@
 import { Readable } from 'node:stream';
 import { ActorRdfParseN3 } from '@comunica/actor-rdf-parse-n3';
 import { ActorRdfParseFixedMediaTypes } from '@comunica/bus-rdf-parse';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
 import type { IActionContext } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
+import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfParseRdfXml } from '..';
 
 const quad = require('rdf-quad');
-const stringToStream = require('streamify-string');
+
+const DF = new DataFactory();
 
 describe('ActorRdfParseRdfXml', () => {
   let bus: any;
@@ -16,7 +19,7 @@ describe('ActorRdfParseRdfXml', () => {
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    context = new ActionContext();
+    context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
   });
 
   describe('The ActorRdfParseRdfXml module', () => {
@@ -100,7 +103,7 @@ describe('ActorRdfParseRdfXml', () => {
 
     describe('for parsing', () => {
       beforeEach(() => {
-        input = stringToStream(`
+        input = Readable.from([ `
           <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/"
           xmlns:ex="http://example.org/stuff/1.0/">
             <rdf:Description rdf:about="http://www.w3.org/TR/rdf-syntax-grammar" dc:title="RDF1.1 XML Syntax">
@@ -111,7 +114,7 @@ describe('ActorRdfParseRdfXml', () => {
                 </ex:editor>
             </rdf:Description>
           </rdf:RDF>
-      `);
+      ` ]);
         inputError = new Readable();
         inputError._read = () => inputError.emit('error', new Error('ParseRdfXml'));
       });

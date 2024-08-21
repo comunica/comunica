@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-query-process",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A comunica bus for query-process events.",
   "lsd:module": true,
   "license": "MIT",
@@ -36,8 +36,8 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/core": "^3.0.3",
-    "@comunica/types": "^3.0.3",
-    "sparqlalgebrajs": "^4.3.0"
+    "@comunica/core": "^3.2.1",
+    "@comunica/types": "^3.2.1",
+    "sparqlalgebrajs": "^4.3.7"
   }
 }

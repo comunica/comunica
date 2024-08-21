@@ -9,7 +9,7 @@ import { ActorQueryOperationSlice } from '../lib/ActorQueryOperationSlice';
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 
 describe('ActorQueryOperationSlice', () => {
   let bus: any;
@@ -83,7 +83,7 @@ describe('ActorQueryOperationSlice', () => {
     };
     mediatorQueryOperationBoolean = {
       mediate: (arg: any) => Promise.resolve({
-        booleanResult: true,
+        execute: async() => true,
         type: 'boolean',
       }),
     };
@@ -386,14 +386,16 @@ describe('ActorQueryOperationSlice', () => {
       ]);
     });
 
-    it('should error if the output is neither quads nor bindings', async() => {
+    it('should return the output as-is if the output is neither quads nor bindings', async() => {
       actor = new ActorQueryOperationSlice({
         bus,
         mediatorQueryOperation: mediatorQueryOperationBoolean,
         name: 'actor',
       });
       const op: any = { operation: { type: 'project', start: 0 }, context: new ActionContext() };
-      await expect(actor.run(op)).rejects.toBeTruthy();
+      const output = ActorQueryOperation.getSafeBoolean(await actor.run(op));
+      expect(output.type).toBe('boolean');
+      await expect(output.execute()).resolves.toBe(true);
     });
   });
 });

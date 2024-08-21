@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-http-fetch",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A node-fetch http actor",
   "lsd:module": true,
   "license": "MIT",
@@ -35,11 +35,9 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-http": "^3.0.3",
-    "@comunica/context-entries": "^3.0.3",
-    "@comunica/mediatortype-time": "^3.0.3",
-    "abort-controller": "^3.0.0",
-    "cross-fetch": "^4.0.0"
+    "@comunica/bus-http": "^3.2.1",
+    "@comunica/context-entries": "^3.2.1",
+    "@comunica/mediatortype-time": "^3.2.1"
   },
   "browser": {
     "./lib/FetchInitPreprocessor.js": "./lib/FetchInitPreprocessor-browser.js"

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-rdf-update-quads",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A comunica bus for rdf-update-quads events.",
   "lsd:module": true,
   "license": "MIT",
@@ -36,10 +36,10 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/actor-context-preprocess-query-source-skolemize": "^3.0.3",
-    "@comunica/context-entries": "^3.0.3",
-    "@comunica/core": "^3.0.3",
-    "@comunica/types": "^3.0.3",
+    "@comunica/actor-context-preprocess-query-source-skolemize": "^3.2.1",
+    "@comunica/context-entries": "^3.2.1",
+    "@comunica/core": "^3.2.1",
+    "@comunica/types": "^3.2.1",
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0"
   }

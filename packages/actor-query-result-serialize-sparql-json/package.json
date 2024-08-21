@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-result-serialize-sparql-json",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A sparql-json query-result-serialize actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,12 +37,13 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-http": "^3.0.3",
-    "@comunica/bus-http-invalidate": "^3.0.3",
-    "@comunica/bus-query-result-serialize": "^3.0.3",
-    "@comunica/core": "^3.0.3",
-    "@comunica/types": "^3.0.3",
+    "@comunica/bus-http": "^3.2.1",
+    "@comunica/bus-http-invalidate": "^3.2.1",
+    "@comunica/bus-query-result-serialize": "^3.2.1",
+    "@comunica/core": "^3.2.1",
+    "@comunica/types": "^3.2.1",
     "@rdfjs/types": "*",
+    "asynciterator": "^3.9.0",
     "readable-stream": "^4.4.2"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/mediatortype-accuracy",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A comunica mediator type for the 'accuracy' parameter.",
   "lsd:module": true,
   "license": "MIT",
@@ -34,6 +34,6 @@
     "build": "node \"../../node_modules/typescript/bin/tsc\""
   },
   "dependencies": {
-    "@comunica/core": "^3.0.3"
+    "@comunica/core": "^3.2.1"
   }
 }

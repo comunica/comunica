@@ -3,9 +3,11 @@ import type {
   IActorOptimizeQueryOperationOutput,
 } from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
-import type { Algebra, Factory } from 'sparqlalgebrajs';
-import { Util } from 'sparqlalgebrajs';
+import type { ComunicaDataFactory } from '@comunica/types';
+import type { Algebra } from 'sparqlalgebrajs';
+import { Util, Factory } from 'sparqlalgebrajs';
 
 /**
  * A comunica Join Connected Optimize Query Operation Actor.
@@ -16,6 +18,9 @@ export class ActorOptimizeQueryOperationJoinConnected extends ActorOptimizeQuery
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
+    const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
+    const algebraFactory = new Factory(dataFactory);
+
     const operation = Util.mapOperation(action.operation, {
       join(op: Algebra.Join, factory: Factory) {
         return {
@@ -23,7 +28,7 @@ export class ActorOptimizeQueryOperationJoinConnected extends ActorOptimizeQuery
           result: ActorOptimizeQueryOperationJoinConnected.cluster(op, factory),
         };
       },
-    });
+    }, algebraFactory);
     return { operation, context: action.context };
   }
 
@@ -32,7 +37,7 @@ export class ActorOptimizeQueryOperationJoinConnected extends ActorOptimizeQuery
    * @param op A join operation.
    * @param factory An algebra factory.
    */
-  public static cluster(op: Algebra.Join, factory: Factory): Algebra.Join {
+  public static cluster(op: Algebra.Join, factory: Factory): Algebra.Operation {
     // Initialize each entry to be in a separate cluster
     const initialClusters: IJoinCluster[] = op.input.map(subOp => ({
       inScopeVariables: Object.fromEntries(Util.inScopeVariables(subOp).map(variable => [ variable.value, true ])),
@@ -48,7 +53,8 @@ export class ActorOptimizeQueryOperationJoinConnected extends ActorOptimizeQuery
     } while (oldClusters.length !== newClusters.length);
 
     // Create new join operation of latest clusters
-    const subJoins = newClusters.map(cluster => factory.createJoin(cluster.entries));
+    const subJoins = newClusters
+      .map(cluster => cluster.entries.length === 1 ? cluster.entries[0] : factory.createJoin(cluster.entries));
     return subJoins.length === 1 ? subJoins[0] : factory.createJoin(subJoins, false);
   }
 

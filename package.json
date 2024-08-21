@@ -4,7 +4,8 @@
   "repository": "https://github.com/comunica/comunica/",
   "workspaces": [
     "engines/*",
-    "packages/*"
+    "packages/*",
+    "performance/*"
   ],
   "scripts": {
     "test-changed": "lerna run test --since HEAD",
@@ -33,7 +34,9 @@
     "depcheck:fix": "lerna-script depfixTask",
     "ncu:all": "lerna-script updateTask",
     "ncu:major:all": "lerna-script updateTaskMajor",
-    "clean": "git status --untracked-files=all --ignored=traditional | grep \"^[^a-z]*packages/[^/]*/lib/\" | grep \"\\.\\(\\(js\\)\\|\\(d\\.ts\\)\\|\\(js\\.map\\)\\)$\" ; xargs rm && git status --untracked-files=all --ignored=traditional | grep \"^[^a-z]*packages/[^/]*/components/\" | xargs rm"
+    "clean": "git status --untracked-files=all --ignored=traditional | grep \"^[^a-z]*packages/[^/]*/lib/\" | grep \"\\.\\(\\(js\\)\\|\\(d\\.ts\\)\\|\\(js\\.map\\)\\)$\" ; xargs rm && git status --untracked-files=all --ignored=traditional | grep \"^[^a-z]*packages/[^/]*/components/\" | xargs rm",
+    "spec": "npx lerna run spec --concurrency 1",
+    "integration": "npx lerna run integration --concurrency 1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.2",
@@ -42,13 +45,14 @@
     "@pollyjs/core": "^6.0.5",
     "@pollyjs/persister-fs": "^6.0.5",
     "@rubensworks/eslint-config": "^3.0.0",
+    "@rubensworks/process-sparql-benchmark-results": "^1.2.2",
     "@types/benchmark": "^2.0.0",
     "@types/jest": "^29.4.0",
+    "@types/md5": "^2.3.5",
     "@types/node": "^20.0.0",
     "@types/object-inspect": "^1.8.1",
     "@types/readable-stream": "^4.0.0",
     "@types/setup-polly-jest": "^0.5.2",
-    "abort-controller": "^3.0.0",
     "arrayify-stream": "^2.0.1",
     "asynciterator": "^3.9.0",
     "babel-loader": "^9.1.0",
@@ -70,22 +74,21 @@
     "lerna": "^8.1.2",
     "lerna-script": "^1.4.0",
     "manual-git-changelog": "^1.0.2",
+    "md5": "^2.3.0",
     "node-polyfill-webpack-plugin": "^3.0.0",
     "nodemon": "^3.0.0",
-    "npm-check-updates": "^16.4.1",
+    "npm-check-updates": "^17.0.0",
     "rdf-data-factory": "^1.1.1",
     "rdf-quad": "^1.5.0",
     "rdf-stores": "^1.0.0",
     "rdf-test-suite": "^1.25.0",
     "rdf-test-suite-ldf": "^1.5.0",
     "setup-polly-jest": "^0.11.0",
-    "sparqlalgebrajs": "^4.3.0",
-    "stream-to-string": "^1.2.0",
+    "sparqlalgebrajs": "^4.3.7",
     "streamify-array": "^1.0.1",
-    "streamify-string": "^1.0.1",
     "ts-jest": "^29.0.5",
     "ts-loader": "^9.4.1",
-    "typedoc": "^0.25.7",
+    "typedoc": "^0.26.0",
     "typescript": "^5.3.3",
     "webpack": "^5.75.0",
     "webpack-cli": "^5.0.0"

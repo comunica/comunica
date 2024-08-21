@@ -2,10 +2,12 @@ import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, materializeOperation } from '@comunica/bus-query-operation';
+import { KeysInitQuery } from '@comunica/context-entries';
 import * as Eval from '@comunica/expression-evaluator';
 import { expressionToVar } from '@comunica/expression-evaluator/lib/functions/Helpers';
-import type { IActionContext } from '@comunica/types';
+import type { ComunicaDataFactory, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import { Factory } from 'sparqlalgebrajs';
 import { AlgebraTransformer } from './AlgebraTransformer';
 
 /**
@@ -46,7 +48,7 @@ export class InternalEvaluator {
   }
 
   private variable(expr: Eval.Variable, mapping: RDF.Bindings): Eval.Term {
-    const term = mapping.get(expressionToVar(expr));
+    const term = mapping.get(expressionToVar(this.context.getSafe(KeysInitQuery.dataFactory), expr));
     if (!term) {
       throw new Eval.UnboundVariableError(expr.name, mapping);
     }
@@ -63,7 +65,9 @@ export class InternalEvaluator {
   }
 
   private async evalExistence(expr: Eval.Existence, mapping: RDF.Bindings): Promise<Eval.Term> {
-    const operation = materializeOperation(expr.expression.input, mapping, this.bindingsFactory);
+    const dataFactory: ComunicaDataFactory = this.context.getSafe(KeysInitQuery.dataFactory);
+    const algebraFactory = new Factory(dataFactory);
+    const operation = materializeOperation(expr.expression.input, mapping, algebraFactory, this.bindingsFactory);
 
     const outputRaw = await this.mediatorQueryOperation.mediate({ operation, context: this.context });
     const output = ActorQueryOperation.getSafeBindings(outputRaw);

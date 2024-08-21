@@ -2,7 +2,7 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
-import { KeysQueryOperation } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
@@ -14,7 +14,7 @@ import { ActorRdfJoinOptionalBind } from '../lib/ActorRdfJoinOptionalBind';
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 const FACTORY = new Factory();
 const mediatorMergeBindingsContext: any = {
   mediate(arg: any) {
@@ -95,6 +95,43 @@ IQueryOperationResultBindings
     });
 
     describe('getJoinCoefficients', () => {
+      it('should throw on non-overlapping variables', async() => {
+        await expect(actor.getJoinCoefficients(
+          {
+            type: 'optional',
+            entries: [
+              {
+                output: <any>{},
+                operation: <any>{},
+              },
+              {
+                output: <any>{},
+                operation: <any>{},
+              },
+            ],
+            context,
+          },
+          [
+            {
+              state: new MetadataValidationState(),
+              cardinality: { type: 'estimate', value: 3 },
+              pageSize: 100,
+              requestTime: 10,
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+            {
+              state: new MetadataValidationState(),
+              cardinality: { type: 'estimate', value: 2 },
+              pageSize: 100,
+              requestTime: 20,
+              canContainUndefs: false,
+              variables: [ DF.variable('b') ],
+            },
+          ],
+        )).rejects.toThrow('Actor actor only join entries with at least one common variable');
+      });
+
       it('should handle two entries', async() => {
         await expect(actor.getJoinCoefficients(
           {
@@ -133,7 +170,7 @@ IQueryOperationResultBindings
           iterations: 0.480_000_000_000_000_1,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 0.120_000_000_000_000_02,
+          requestTime: 0.396,
         });
       });
 
@@ -175,7 +212,7 @@ IQueryOperationResultBindings
           iterations: 0.480_000_000_000_000_1,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 0.120_000_000_000_000_02,
+          requestTime: 0.396,
         });
       });
 
@@ -291,14 +328,14 @@ IQueryOperationResultBindings
           iterations: 0.480_000_000_000_000_1,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 0.120_000_000_000_000_02,
+          requestTime: 0.396,
         });
       });
     });
 
     describe('run', () => {
       it('should handle two entries with a context', async() => {
-        context = new ActionContext({ a: 'b' });
+        context = new ActionContext({ a: 'b', [KeysInitQuery.dataFactory.name]: DF });
         const action: IActionRdfJoin = {
           context,
           type: 'optional',
@@ -383,6 +420,7 @@ IQueryOperationResultBindings
           operation: FACTORY.createPattern(DF.literal('1'), DF.namedNode('ex:p2'), DF.namedNode('ex:o')),
           context: new ActionContext({
             a: 'b',
+            [KeysInitQuery.dataFactory.name]: DF,
             [KeysQueryOperation.joinLeftMetadata.name]: {
               state: expect.any(MetadataValidationState),
               cardinality: { type: 'estimate', value: 3 },
@@ -402,6 +440,7 @@ IQueryOperationResultBindings
           operation: FACTORY.createPattern(DF.literal('2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o')),
           context: new ActionContext({
             a: 'b',
+            [KeysInitQuery.dataFactory.name]: DF,
             [KeysQueryOperation.joinLeftMetadata.name]: {
               state: expect.any(MetadataValidationState),
               cardinality: { type: 'estimate', value: 3 },
@@ -421,6 +460,7 @@ IQueryOperationResultBindings
           operation: FACTORY.createPattern(DF.literal('3'), DF.namedNode('ex:p2'), DF.namedNode('ex:o')),
           context: new ActionContext({
             a: 'b',
+            [KeysInitQuery.dataFactory.name]: DF,
             [KeysQueryOperation.joinLeftMetadata.name]: {
               state: expect.any(MetadataValidationState),
               cardinality: { type: 'estimate', value: 3 },

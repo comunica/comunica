@@ -1,3 +1,4 @@
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -14,7 +15,7 @@ describe('ActorOptimizeQueryOperationRewriteAdd', () => {
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    context = new ActionContext();
+    context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
   });
 
   describe('An ActorOptimizeQueryOperationRewriteAdd instance', () => {
@@ -36,7 +37,7 @@ describe('ActorOptimizeQueryOperationRewriteAdd', () => {
           destination: DF.namedNode('DEST'),
           silent: false,
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const { operation } = await actor.run(op);
       expect(operation).toEqual(AF.createDeleteInsert(undefined, [
@@ -52,7 +53,7 @@ describe('ActorOptimizeQueryOperationRewriteAdd', () => {
           destination: DF.namedNode('DEST'),
           silent: false,
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const { operation } = await actor.run(op);
       expect(operation).toEqual(AF.createDeleteInsert(undefined, [
@@ -68,7 +69,7 @@ describe('ActorOptimizeQueryOperationRewriteAdd', () => {
           destination: 'DEFAULT',
           silent: false,
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const { operation } = await actor.run(op);
       expect(operation).toEqual(AF.createDeleteInsert(undefined, [
@@ -84,7 +85,7 @@ describe('ActorOptimizeQueryOperationRewriteAdd', () => {
           destination: 'DEFAULT',
           silent: false,
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const { operation } = await actor.run(op);
       expect(operation).toEqual(AF.createDeleteInsert(undefined, [

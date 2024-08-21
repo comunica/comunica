@@ -8,15 +8,11 @@ import type { IActionContext } from '@comunica/types';
 import { Readable } from 'readable-stream';
 import { ActorHttpFetch } from '../lib/ActorHttpFetch';
 
-const streamifyString = require('streamify-string');
-
 // Mock fetch
-jest.spyOn((<any> globalThis), 'fetch').mockImplementation((input: any, init: any) => {
-  return Promise.resolve({
-    status: input.url === 'https://www.google.com/' ? 200 : 404,
-    ...input.url === 'NOBODY' ? {} : { body: { destroy: jest.fn(), on: jest.fn() }},
-  });
-});
+jest.spyOn(globalThis, 'fetch').mockImplementation((input: any, init?: any) => Promise.resolve(<Response> <unknown>{
+  status: input.url === 'https://www.google.com/' ? 200 : 404,
+  ...input.url === 'NOBODY' ? {} : { body: { destroy: jest.fn(), on: jest.fn() }},
+}));
 
 describe('ActorHttpFetch', () => {
   let bus: any;
@@ -307,7 +303,7 @@ describe('ActorHttpFetch', () => {
 
     it('should run with a Web stream body', async() => {
       const spy = jest.spyOn(globalThis, 'fetch');
-      const body = ActorHttp.toWebReadableStream(streamifyString('a'));
+      const body = ActorHttp.toWebReadableStream(Readable.from([ 'a' ]));
       await actor.run({ input: <Request> { url: 'https://www.google.com/' }, init: { body }, context });
 
       expect(spy).toHaveBeenCalledWith(
@@ -393,7 +389,7 @@ describe('ActorHttpFetch', () => {
     it('should work with a large timeout including body if the body is consumed', async() => {
       jest.spyOn(globalThis, 'clearTimeout');
       const customFetch = jest.fn(async(_, _init) => {
-        const body = streamifyString('foo');
+        const body = Readable.from([ 'foo' ]);
         return {
           body,
         };
@@ -416,7 +412,7 @@ describe('ActorHttpFetch', () => {
     it('should work with a large timeout including body if the body is cancelled', async() => {
       jest.spyOn(globalThis, 'clearTimeout');
       const customFetch = jest.fn(async(_, _init) => {
-        const body = streamifyString('foo');
+        const body = Readable.from([ 'foo' ]);
         return {
           body,
         };

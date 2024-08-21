@@ -6,17 +6,10 @@ import type { AsyncIterator } from 'asynciterator';
  */
 export interface IQuadDestination {
   /**
-   * Insert the given quad stream into the destination.
-   * @param quads The quads to insert.
-   * @return {AsyncIterator<RDF.Quad>} The inserted quad stream.
+   * Updates destination with quad stream to insert and quad stream to delete.
+   * @param quadStreams The quads to insert and delete.
    */
-  insert: (quads: AsyncIterator<RDF.Quad>) => Promise<void>;
-  /**
-   * Delete the given quad stream from the destination.
-   * @param quads The quads to delete.
-   * @return {AsyncIterator<RDF.Quad>} The deleted quad stream.
-   */
-  delete: (quads: AsyncIterator<RDF.Quad>) => Promise<void>;
+  update: (quadStreams: { insert?: AsyncIterator<RDF.Quad>; delete?: AsyncIterator<RDF.Quad> }) => Promise<void>;
   /**
    * Graphs that should be deleted.
    * @param graphs The graph(s) in which all triples must be removed.

@@ -8,6 +8,6 @@
   "cpuWeight": 10,
   "memoryWeight": 1,
   "timeWeight": 2,
-  "ioWeight": 100,
+  "ioWeight": 10,
   "bus": { "@id": "ActorRdfJoin:_default_bus" }
 }

@@ -7,8 +7,9 @@ import {
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { MediatorRdfUpdateQuads } from '@comunica/bus-rdf-update-quads';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
-import type { IQueryOperationResult, BindingsStream, IActionContext } from '@comunica/types';
+import type { IQueryOperationResult, BindingsStream, IActionContext, ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
@@ -37,7 +38,8 @@ export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTy
 
   public async runOperation(operation: Algebra.DeleteInsert, context: IActionContext):
   Promise<IQueryOperationResult> {
-    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context);
+    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context, dataFactory);
     // Evaluate the where clause
     const whereBindings: BindingsStream = operation.where ?
       ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation
@@ -50,7 +52,8 @@ export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTy
     if (operation.insert) {
       // Localize blank nodes in pattern, to avoid clashes across different INSERT/DELETE calls
       quadStreamInsert = new BindingsToQuadsIterator(
-        operation.insert.map(BindingsToQuadsIterator.localizeQuad.bind(null, this.blankNodeCounter)),
+        dataFactory,
+        operation.insert.map(BindingsToQuadsIterator.localizeQuad.bind(null, dataFactory, this.blankNodeCounter)),
         whereBindings.clone(),
       );
       this.blankNodeCounter++;
@@ -58,7 +61,8 @@ export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTy
     if (operation.delete) {
       // Localize blank nodes in pattern, to avoid clashes across different INSERT/DELETE calls
       quadStreamDelete = new BindingsToQuadsIterator(
-        operation.delete.map(BindingsToQuadsIterator.localizeQuad.bind(null, this.blankNodeCounter)),
+        dataFactory,
+        operation.delete.map(BindingsToQuadsIterator.localizeQuad.bind(null, dataFactory, this.blankNodeCounter)),
         whereBindings.clone(),
       );
       this.blankNodeCounter++;

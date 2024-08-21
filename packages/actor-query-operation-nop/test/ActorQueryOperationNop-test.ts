@@ -1,5 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -7,7 +8,7 @@ import { ActorQueryOperationNop } from '../lib/ActorQueryOperationNop';
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 const mediatorMergeBindingsContext: any = {
   mediate(arg: any) {
     return {};
@@ -54,7 +55,10 @@ describe('ActorQueryOperationNop', () => {
     });
 
     it('should run', async() => {
-      const op: any = { operation: { type: 'nop' }, context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'nop' },
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.bindingsStream).toEqualBindingsStream([ BF.bindings() ]);
       await expect(output.metadata()).resolves

@@ -8,7 +8,7 @@ import { expressionTypes, types } from 'sparqlalgebrajs/lib/algebra';
 import { createFuncMediator } from '../util';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 
 describe('evaluation of \'bound\'', () => {
   it('\'bound\' on bounded variable returns true', async() => {

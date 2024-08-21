@@ -4,13 +4,11 @@ import type {
   IActorOptimizeQueryOperationArgs,
 } from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
+import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { DataFactory } from 'rdf-data-factory';
 import { Algebra, Factory } from 'sparqlalgebrajs';
-
-const DF = new DataFactory<RDF.BaseQuad>();
-const AF = new Factory();
 
 /**
  * A comunica Describe To Constructs Subject Optimize Query Operation Actor.
@@ -28,6 +26,9 @@ export class ActorOptimizeQueryOperationDescribeToConstructsSubject extends Acto
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
+    const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
+    const algebraFactory = new Factory(dataFactory);
+
     const operationOriginal: Algebra.Describe = <Algebra.Describe> action.operation;
 
     // Create separate construct queries for all non-variable terms
@@ -36,7 +37,11 @@ export class ActorOptimizeQueryOperationDescribeToConstructsSubject extends Acto
       .map((term: RDF.Term) => {
         // Transform each term to a separate construct operation with S ?p ?o patterns (BGP) for all terms
         const patterns: RDF.BaseQuad[] = [
-          DF.quad(term, DF.variable('__predicate'), DF.variable('__object')),
+          dataFactory.quad(
+            <RDF.Quad_Subject> term,
+            dataFactory.variable('__predicate'),
+            dataFactory.variable('__object'),
+          ),
         ];
 
         // eslint-disable-next-line unicorn/no-array-for-each
@@ -64,7 +69,11 @@ export class ActorOptimizeQueryOperationDescribeToConstructsSubject extends Acto
         .forEach((term: RDF.Term, i: number) => {
           // Transform each term to an S ?p ?o pattern in a non-conflicting way
           const patterns: RDF.BaseQuad[] = [
-            DF.quad(term, DF.variable(`__predicate${i}`), DF.variable(`__object${i}`)),
+            dataFactory.quad(
+              <RDF.Quad_Subject> term,
+              dataFactory.variable(`__predicate${i}`),
+              dataFactory.variable(`__object${i}`),
+            ),
           ];
 
           // eslint-disable-next-line unicorn/no-array-for-each
@@ -88,7 +97,7 @@ export class ActorOptimizeQueryOperationDescribeToConstructsSubject extends Acto
     }
 
     // Union the construct operations
-    const operation = AF.createUnion(operations, false);
+    const operation = algebraFactory.createUnion(operations, false);
 
     return { operation, context: action.context };
   }

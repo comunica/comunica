@@ -1,19 +1,18 @@
 import type { IBindingsContextMergeHandler, MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
-import type { IActionContext } from '@comunica/types';
+import type { ComunicaDataFactory, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { Map } from 'immutable';
-import { DataFactory } from 'rdf-data-factory';
 import { Bindings } from './Bindings';
 
 /**
  * A Bindings factory that provides Bindings backed by immutable.js.
  */
 export class BindingsFactory implements RDF.BindingsFactory {
-  private readonly dataFactory: RDF.DataFactory;
+  private readonly dataFactory: ComunicaDataFactory;
   private readonly contextMergeHandlers: Record<string, IBindingsContextMergeHandler<any>> | undefined;
 
   public constructor(
-    dataFactory: DataFactory = new DataFactory(),
+    dataFactory: ComunicaDataFactory,
     contextMergeHandlers?: Record<string, IBindingsContextMergeHandler<any>>,
   ) {
     this.dataFactory = dataFactory;
@@ -23,9 +22,10 @@ export class BindingsFactory implements RDF.BindingsFactory {
   public static async create(
     mediatorMergeBindingsContext: MediatorMergeBindingsContext,
     context: IActionContext,
+    dataFactory: ComunicaDataFactory,
   ): Promise<BindingsFactory> {
     return new BindingsFactory(
-      new DataFactory(),
+      dataFactory,
       (await mediatorMergeBindingsContext.mediate({ context })).mergeHandlers,
     );
   }
@@ -43,6 +43,6 @@ export class BindingsFactory implements RDF.BindingsFactory {
   }
 
   public fromRecord(record: Record<string, RDF.Term>): Bindings {
-    return this.bindings(Object.entries(record).map(([ key, value ]) => [ this.dataFactory.variable!(key), value ]));
+    return this.bindings(Object.entries(record).map(([ key, value ]) => [ this.dataFactory.variable(key), value ]));
   }
 }

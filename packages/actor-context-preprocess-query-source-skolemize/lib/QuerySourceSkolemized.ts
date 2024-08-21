@@ -1,6 +1,8 @@
+import { KeysInitQuery } from '@comunica/context-entries';
 import { MetadataValidationState } from '@comunica/metadata';
 import type {
   BindingsStream,
+  ComunicaDataFactory,
   FragmentSelectorShape,
   IActionContext,
   IQueryBindingsOptions,
@@ -39,7 +41,8 @@ export class QuerySourceSkolemized implements IQuerySource {
     context: IActionContext,
     options: IQueryBindingsOptions | undefined,
   ): BindingsStream {
-    const operationMapped = deskolemizeOperation(operation, this.sourceId);
+    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+    const operationMapped = deskolemizeOperation(dataFactory, operation, this.sourceId);
     if (!operationMapped) {
       const it: BindingsStream = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
       it.setProperty('metadata', {
@@ -50,7 +53,11 @@ export class QuerySourceSkolemized implements IQuerySource {
       });
       return it;
     }
-    return skolemizeBindingsStream(this.innerSource.queryBindings(operationMapped, context, options), this.sourceId);
+    return skolemizeBindingsStream(
+      dataFactory,
+      this.innerSource.queryBindings(operationMapped, context, options),
+      this.sourceId,
+    );
   }
 
   public queryBoolean(operation: Algebra.Ask, context: IActionContext): Promise<boolean> {
@@ -58,7 +65,8 @@ export class QuerySourceSkolemized implements IQuerySource {
   }
 
   public queryQuads(operation: Algebra.Operation, context: IActionContext): AsyncIterator<RDF.Quad> {
-    const operationMapped = deskolemizeOperation(operation, this.sourceId);
+    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+    const operationMapped = deskolemizeOperation(dataFactory, operation, this.sourceId);
     if (!operationMapped) {
       const it: AsyncIterator<RDF.Quad> = new ArrayIterator<RDF.Quad>([], { autoStart: false });
       it.setProperty('metadata', {
@@ -67,7 +75,7 @@ export class QuerySourceSkolemized implements IQuerySource {
       });
       return it;
     }
-    return skolemizeQuadStream(this.innerSource.queryQuads(operationMapped, context), this.sourceId);
+    return skolemizeQuadStream(dataFactory, this.innerSource.queryQuads(operationMapped, context), this.sourceId);
   }
 
   public queryVoid(operation: Algebra.Update, context: IActionContext): Promise<void> {

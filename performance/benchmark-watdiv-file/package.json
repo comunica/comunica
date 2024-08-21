@@ -1,0 +1,19 @@
+{
+  "name": "benchmark-watdiv-file",
+  "version": "3.2.0",
+  "private": true,
+  "scripts": {
+    "jbr": "cross-env NODE_OPTIONS=--max-old-space-size=8192 jbr",
+    "validate": "jbr validate",
+    "fetch-assets": "curl -L https://github.com/comunica/comunica-performance-assets/raw/master/watdiv-10.zip?download= > watdiv-10.zip && unzip watdiv-10.zip -d generated/ && rm watdiv-10.zip",
+    "performance": "docker pull comunica/query-sparql-file:latest && jbr prepare && jbr run && psbr tex query combinations/combination_*/output --svg --logY --overrideCombinationLabels Current,Previous",
+    "performance:ci": "npm run fetch-assets && jbr prepare -c 0 && jbr run -c 0"
+  },
+  "dependencies": {
+    "@jbr-experiment/watdiv": "^5.3.0",
+    "@jbr-hook/cli": "^5.2.0",
+    "@jbr-hook/sparql-endpoint-comunica": "^5.2.0",
+    "cross-env": "^7.0.3",
+    "jbr": "^5.2.0"
+  }
+}

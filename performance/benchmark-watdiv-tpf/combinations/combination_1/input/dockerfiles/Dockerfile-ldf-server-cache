@@ -1,0 +1,5 @@
+FROM nginx:1.23.2
+
+# Disabled due to https://github.com/apocas/dockerode/issues/553
+# ADD ./input/nginx-default /etc/nginx/sites-enabled/default
+# ADD ./input/nginx.conf /etc/nginx/nginx.conf

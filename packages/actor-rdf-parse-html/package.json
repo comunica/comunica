@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-parse-html",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A html rdf-parse actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,10 +37,10 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-rdf-parse": "^3.0.3",
-    "@comunica/bus-rdf-parse-html": "^3.0.3",
-    "@comunica/core": "^3.0.3",
-    "@comunica/types": "^3.0.3",
+    "@comunica/bus-rdf-parse": "^3.2.1",
+    "@comunica/bus-rdf-parse-html": "^3.2.1",
+    "@comunica/core": "^3.2.1",
+    "@comunica/types": "^3.2.1",
     "@rdfjs/types": "*",
     "htmlparser2": "^9.0.0",
     "readable-stream": "^4.4.2"

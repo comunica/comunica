@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-update-hypermedia-sparql",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A sparql rdf-update-hypermedia actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,15 +37,16 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-http": "^3.0.3",
-    "@comunica/bus-rdf-update-hypermedia": "^3.0.3",
-    "@comunica/bus-rdf-update-quads": "^3.0.3",
-    "@comunica/core": "^3.0.3",
-    "@comunica/types": "^3.0.3",
+    "@comunica/bus-http": "^3.2.1",
+    "@comunica/bus-rdf-update-hypermedia": "^3.2.1",
+    "@comunica/bus-rdf-update-quads": "^3.2.1",
+    "@comunica/context-entries": "^3.1.0",
+    "@comunica/core": "^3.2.1",
+    "@comunica/types": "^3.2.1",
+    "@jeswr/stream-to-string": "^2.0.0",
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0",
     "fetch-sparql-endpoint": "^4.0.0",
-    "rdf-string-ttl": "^1.3.2",
-    "stream-to-string": "^1.2.0"
+    "rdf-string-ttl": "^1.3.2"
   }
 }

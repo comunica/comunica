@@ -13,7 +13,7 @@ const streamifyArray = require('streamify-array');
 
 const DF = new DataFactory();
 const AF = new Factory(DF);
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 
 describe('ActorQuerySourceIdentifySerialized', () => {
   let bus: any;
@@ -44,7 +44,7 @@ describe('ActorQuerySourceIdentifySerialized', () => {
         }
         return {
           querySource: {
-            source: new QuerySourceRdfJs(<RDF.Store> action.querySourceUnidentified.value, BF),
+            source: new QuerySourceRdfJs(<RDF.Store> action.querySourceUnidentified.value, DF, BF),
           },
         };
       },

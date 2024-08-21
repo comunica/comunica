@@ -7,9 +7,9 @@ import {
   ActorRdfParseFixedMediaTypes,
 } from '@comunica/bus-rdf-parse';
 import type { IActionContext } from '@comunica/types';
+import { stringify as streamToString } from '@jeswr/stream-to-string';
 import { Readable } from 'readable-stream';
 import { parse } from 'shaclc-parse';
-import streamToString = require('stream-to-string');
 import { PrefixWrappingIterator } from './PrefixWrappingIterator';
 
 /**
@@ -34,6 +34,7 @@ export class ActorRdfParseShaclc extends ActorRdfParseFixedMediaTypes {
   public async runHandle(action: IActionRdfParse, mediaType: string, _context: IActionContext):
   Promise<IActorRdfParseOutput> {
     const prefixIterator = new PrefixWrappingIterator(
+      // TODO: pass data factory
       streamToString(action.data).then(str => parse(str, {
         extendedSyntax: mediaType === 'text/shaclc-ext',
         baseIRI: action.metadata?.baseIRI,

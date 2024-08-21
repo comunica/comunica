@@ -2,9 +2,11 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IExpressionEvaluator } from '@comunica/expression-evaluator';
 import { getMockEEActionContext, getMockEEFactory, int, makeAggregate } from '@comunica/jest';
 import type * as RDF from '@rdfjs/types';
+import { DataFactory } from 'rdf-data-factory';
 import { AggregateEvaluator } from '../lib';
 
-const BF = new BindingsFactory();
+const DF = new DataFactory();
+const BF = new BindingsFactory(DF);
 
 class EmptyEvaluator extends AggregateEvaluator {
   public constructor(evaluator: IExpressionEvaluator, distinct: boolean, throwError = false) {

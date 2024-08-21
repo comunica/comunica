@@ -1,0 +1,17 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/jbr/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-experiment/bsbm/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-hook/sparql-endpoint-comunica/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-hook/cli/^5.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:jbr:benchmark-bsbm-file",
+  "@type": "ExperimentBsbm",
+  "productCount": 1000,
+  "generateHdt": false,
+  "endpointUrl": "http://host.docker.internal:3001/sparql",
+  "endpointUrlExternal": "http://localhost:3001/sparql",
+  "warmupRuns": 5,
+  "runs": 10,
+  "hookSparqlEndpoint": %FACTOR-hookSparqlEndpoint%
+}

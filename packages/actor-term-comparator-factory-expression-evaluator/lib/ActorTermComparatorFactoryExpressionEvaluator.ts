@@ -5,6 +5,7 @@ import type {
   IActorTermComparatorFactoryOutput,
 } from '@comunica/bus-term-comparator-factory';
 import { ActorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import { SparqlOperator } from '@comunica/expression-evaluator';
 import { prepareEvaluatorActionContext } from '@comunica/expression-evaluator/lib/util/Context';
@@ -30,7 +31,11 @@ export class ActorTermComparatorFactoryExpressionEvaluator extends ActorTermComp
         context,
         this.mediatorFunctionFactory,
         this.mediatorQueryOperation,
-        await BindingsFactory.create(this.mediatorMergeBindingsContext, context),
+        await BindingsFactory.create(
+          this.mediatorMergeBindingsContext,
+          context,
+          context.getSafe(KeysInitQuery.dataFactory),
+        ),
       ),
       await this.mediatorFunctionFactory
         .mediate({ functionName: SparqlOperator.EQUAL, context, requireTermExpression: true }),

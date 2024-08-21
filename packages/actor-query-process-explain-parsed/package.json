@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-process-explain-parsed",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A explain-parsed query-process actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,8 +37,8 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-query-process": "^3.0.3",
-    "@comunica/context-entries": "^3.0.3",
-    "@comunica/core": "^3.0.3"
+    "@comunica/bus-query-process": "^3.2.1",
+    "@comunica/context-entries": "^3.2.1",
+    "@comunica/core": "^3.2.1"
   }
 }

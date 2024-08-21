@@ -19,7 +19,7 @@ const streamifyArray = require('streamify-array');
 
 const DF = new DataFactory();
 const AF = new Factory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 const v1 = DF.variable('v1');
 const v2 = DF.variable('v2');
 const v3 = DF.variable('v3');
@@ -107,6 +107,8 @@ describe('QuerySourceQpf', () => {
         mediatorMetadata,
         mediatorMetadataExtract,
         mediatorDereferenceRdf,
+        DF,
+        AF,
         BF,
         's',
         'p',
@@ -132,6 +134,8 @@ describe('QuerySourceQpf', () => {
           mediatorMetadata,
           mediatorMetadataExtract,
           mediatorDereferenceRdf,
+          DF,
+          AF,
           BF,
           'o',
           'p',
@@ -151,6 +155,8 @@ describe('QuerySourceQpf', () => {
           mediatorMetadata,
           mediatorMetadataExtract,
           mediatorDereferenceRdf,
+          DF,
+          AF,
           BF,
           'o',
           'p',
@@ -458,6 +464,8 @@ describe('QuerySourceQpf', () => {
           mediatorMetadata,
           mediatorMetadataExtract,
           mediatorDereferenceRdf,
+          DF,
+          AF,
           BF,
           's',
           'p',
@@ -780,6 +788,8 @@ describe('QuerySourceQpf', () => {
         mediatorMetadata,
         mediatorMetadataExtract,
         mediatorDereferenceRdf,
+        DF,
+        AF,
         BF,
         's',
         'p',
@@ -1068,6 +1078,8 @@ describe('QuerySourceQpf', () => {
         mediatorMetadata,
         mediatorMetadataExtract,
         mediatorDereferenceRdf,
+        DF,
+        AF,
         BF,
         's',
         'p',

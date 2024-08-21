@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-merge-bindings-context-union",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A union merge-bindings-context actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,7 +37,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-merge-bindings-context": "^3.0.3",
-    "@comunica/core": "^3.0.3"
+    "@comunica/bus-merge-bindings-context": "^3.2.1",
+    "@comunica/core": "^3.2.1"
   }
 }

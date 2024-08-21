@@ -1,4 +1,3 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { bool, compactTermString, merge, numeric } from '@comunica/expression-evaluator/test/util/Aliases';
@@ -8,7 +7,6 @@ import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { runFuncTestTable } from '../util';
 
-const BF = new BindingsFactory();
 const DF = new DataFactory();
 
 describe('extension functions:', () => {

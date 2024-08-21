@@ -3,6 +3,7 @@ import { AggregateEvaluator } from '@comunica/bus-bindings-aggeregator-factory';
 import type { IExpressionEvaluator } from '@comunica/expression-evaluator';
 import { typedLiteral, TypeURL } from '@comunica/expression-evaluator';
 import { langString } from '@comunica/expression-evaluator/lib/functions/Helpers';
+import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 
 export class GroupConcatAggregator extends AggregateEvaluator implements IBindingsAggregator {
@@ -11,7 +12,13 @@ export class GroupConcatAggregator extends AggregateEvaluator implements IBindin
   private lastLanguage: string | undefined = undefined;
   private readonly separator: string;
 
-  public constructor(evaluator: IExpressionEvaluator, distinct: boolean, separator?: string, throwError?: boolean) {
+  public constructor(
+    evaluator: IExpressionEvaluator,
+    distinct: boolean,
+    private readonly dataFactory: ComunicaDataFactory,
+    separator?: string,
+    throwError?: boolean,
+  ) {
     super(evaluator, distinct, throwError);
     this.separator = separator ?? ' ';
   }
@@ -40,7 +47,7 @@ export class GroupConcatAggregator extends AggregateEvaluator implements IBindin
       return this.emptyValue();
     }
     if (this.lastLanguageValid && this.lastLanguage) {
-      return langString(this.state, this.lastLanguage).toRDF();
+      return langString(this.state, this.lastLanguage).toRDF(this.dataFactory);
     }
     return typedLiteral(this.state, TypeURL.XSD_STRING);
   }

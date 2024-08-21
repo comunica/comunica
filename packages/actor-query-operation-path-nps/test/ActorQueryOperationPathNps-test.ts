@@ -1,5 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
@@ -10,7 +11,7 @@ import { ActorQueryOperationPathNps } from '../lib/ActorQueryOperationPathNps';
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 const AF = new Factory();
 
 describe('ActorQueryOperationPathNps', () => {
@@ -82,7 +83,7 @@ describe('ActorQueryOperationPathNps', () => {
     it('should test on Nps paths', async() => {
       const op: any = {
         operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.NPS }},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       await expect(actor.test(op)).resolves.toBeTruthy();
     });
@@ -90,7 +91,7 @@ describe('ActorQueryOperationPathNps', () => {
     it('should test on different paths', async() => {
       const op: any = {
         operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       await expect(actor.test(op)).rejects.toBeTruthy();
     });
@@ -100,7 +101,7 @@ describe('ActorQueryOperationPathNps', () => {
         DF.namedNode('s'),
         factory.createNps([ DF.namedNode('2') ]),
         DF.variable('x'),
-      ), context: new ActionContext() };
+      ), context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({ cardinality: 3, canContainUndefs: false });
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -114,7 +115,7 @@ describe('ActorQueryOperationPathNps', () => {
         DF.namedNode('s'),
         factory.createNps([ DF.namedNode('2') ]),
         DF.variable('x'),
-      ), context: new ActionContext() };
+      ), context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }) };
       op.operation.predicate.metadata = { a: 'b' };
 
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));

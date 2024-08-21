@@ -37,9 +37,9 @@
   },
   "dependencies": {
     "@comunica/bus-function-factory": "^1.0.0",
-    "@comunica/bus-merge-bindings-context": "^3.0.3",
-    "@comunica/bus-query-operation": "^3.0.3",
-    "@comunica/core": "^3.0.3",
+    "@comunica/bus-merge-bindings-context": "^3.2.1",
+    "@comunica/bus-query-operation": "^3.2.1",
+    "@comunica/core": "^3.2.1",
     "@rdfjs/types": "*"
   }
 }

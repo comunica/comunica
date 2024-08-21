@@ -6,6 +6,7 @@ import type {
 } from '@comunica/bus-expression-evaluator-factory';
 import { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 
 import { prepareEvaluatorActionContext } from '@comunica/expression-evaluator/lib/util/Context';
@@ -34,7 +35,11 @@ export class ActorExpressionEvaluatorFactoryDefault extends ActorExpressionEvalu
       ).transformAlgebra(action.algExpr),
       this.mediatorFunctionFactory,
       this.mediatorQueryOperation,
-      await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context),
+      await BindingsFactory.create(
+        this.mediatorMergeBindingsContext,
+        action.context,
+        action.context.getSafe(KeysInitQuery.dataFactory),
+      ),
     );
   }
 }

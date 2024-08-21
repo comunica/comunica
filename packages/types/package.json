@@ -1,6 +1,6 @@
 {
   "name": "@comunica/types",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "Typings module for Comunica",
   "lsd:module": true,
   "license": "MIT",
@@ -42,6 +42,6 @@
     "@types/yargs": "^17.0.24",
     "asynciterator": "^3.9.0",
     "lru-cache": "^10.0.1",
-    "sparqlalgebrajs": "^4.3.3"
+    "sparqlalgebrajs": "^4.3.7"
   }
 }

@@ -43,7 +43,7 @@ describe('ActorAbstractPath', () => {
         factory.createLink(DF.namedNode('p')),
         DF.variable('b'),
       );
-      expect(termToString(actor.generateVariable(path))).not.toEqual(path.object.value);
+      expect(termToString(actor.generateVariable(DF, path))).not.toEqual(path.object.value);
     });
 
     describe('getPathSources', () => {
@@ -104,12 +104,13 @@ describe('ActorAbstractPath', () => {
 
     describe('assignPatternSources', () => {
       it('throws for no sources', () => {
-        expect(() => actor.assignPatternSources(<any> AF.createNop(), []))
+        expect(() => actor.assignPatternSources(AF, <any> AF.createNop(), []))
           .toThrow(new Error(`Attempted to assign zero sources to a pattern during property path handling`));
       });
 
       it('handles a single source', () => {
         expect(actor.assignPatternSources(
+          AF,
           AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
           [ source1 ],
         )).toEqual(ActorQueryOperation.assignOperationSource(
@@ -120,6 +121,7 @@ describe('ActorAbstractPath', () => {
 
       it('handles multiple sources', () => {
         expect(actor.assignPatternSources(
+          AF,
           AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
           [ source1, source2 ],
         )).toEqual(AF.createUnion([

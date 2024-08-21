@@ -1,5 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -8,7 +9,7 @@ import { ActorQueryOperationPathLink } from '../lib/ActorQueryOperationPathLink'
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 
 describe('ActorQueryOperationPathLink', () => {
   let bus: any;
@@ -77,7 +78,7 @@ describe('ActorQueryOperationPathLink', () => {
           DF.namedNode('s'),
           factory.createLink(DF.namedNode('p')),
           DF.variable('x'),
-        ), context: new ActionContext() };
+        ), context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({ cardinality: 3, canContainUndefs: false });
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -91,7 +92,7 @@ describe('ActorQueryOperationPathLink', () => {
       const op: any = {
         operation: factory
           .createPath(DF.namedNode('s'), factory.createLink(DF.namedNode('p')), DF.variable('x')),
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       op.operation.predicate.metadata = { a: 'b' };
 

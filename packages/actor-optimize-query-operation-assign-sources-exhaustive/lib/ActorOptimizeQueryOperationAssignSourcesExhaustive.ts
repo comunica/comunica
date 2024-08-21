@@ -8,8 +8,8 @@ import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { getDataDestinationValue } from '@comunica/bus-rdf-update-quads';
 import { KeysInitQuery, KeysQueryOperation, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
-import type { IDataDestination, IQuerySourceWrapper } from '@comunica/types';
-import { Algebra, Util } from 'sparqlalgebrajs';
+import type { ComunicaDataFactory, IDataDestination, IQuerySourceWrapper } from '@comunica/types';
+import { Algebra, Factory, Util } from 'sparqlalgebrajs';
 
 /**
  * A comunica Assign Sources Exhaustive Optimize Query Operation Actor.
@@ -24,6 +24,9 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
+    const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
+    const algebraFactory = new Factory(dataFactory);
+
     const sources: IQuerySourceWrapper[] = action.context.get(KeysQueryOperation.querySources) ?? [];
     if (sources.length === 0) {
       return { operation: action.operation, context: action.context };
@@ -47,7 +50,7 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
       }
     }
     return {
-      operation: this.assignExhaustive(action.operation, sources),
+      operation: this.assignExhaustive(algebraFactory, action.operation, sources),
       // We only keep queryString in the context if we only have a single source that accepts the full operation.
       // In that case, the queryString can be sent to the source as-is.
       context: action.context
@@ -59,10 +62,15 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
    * Assign the given sources to the leaves in the given query operation.
    * Leaves will be wrapped in a union operation and duplicated for every source.
    * The input operation will not be modified.
+   * @param algebraFactory The algebra factory.
    * @param operation The input operation.
    * @param sources The sources to assign.
    */
-  public assignExhaustive(operation: Algebra.Operation, sources: IQuerySourceWrapper[]): Algebra.Operation {
+  public assignExhaustive(
+    algebraFactory: Factory,
+    operation: Algebra.Operation,
+    sources: IQuerySourceWrapper[],
+  ): Algebra.Operation {
     // eslint-disable-next-line ts/no-this-alias
     const self = this;
     return Util.mapOperation(operation, {
@@ -114,7 +122,7 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
       [Algebra.types.CONSTRUCT](subOperation, factory) {
         return {
           result: factory.createConstruct(
-            self.assignExhaustive(subOperation.input, sources),
+            self.assignExhaustive(algebraFactory, subOperation.input, sources),
             subOperation.template,
           ),
           recurse: false,
@@ -125,11 +133,11 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
           result: factory.createDeleteInsert(
             subOperation.delete,
             subOperation.insert,
-            subOperation.where ? self.assignExhaustive(subOperation.where, sources) : undefined,
+            subOperation.where ? self.assignExhaustive(algebraFactory, subOperation.where, sources) : undefined,
           ),
           recurse: false,
         };
       },
-    });
+    }, algebraFactory);
   }
 }

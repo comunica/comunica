@@ -1,15 +1,18 @@
 import type { EventEmitter } from 'node:stream';
 import { skolemizeQuad } from '@comunica/actor-context-preprocess-query-source-skolemize';
-import { KeysQuerySourceIdentify, KeysRdfUpdateQuads } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQuerySourceIdentify, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory, Store } from 'n3';
+import { DataFactory as RdfDataFactory } from 'rdf-data-factory';
 import type { IActorRdfUpdateQuadsOutput } from '../lib';
 import { ActorRdfUpdateQuadsDestination, getContextDestinationUrl } from '../lib';
 
 const { quad, namedNode, blankNode } = DataFactory;
+
+const DF = new RdfDataFactory();
 
 describe('ActorRdfUpdateQuadsDestination', () => {
   const bus = new Bus({ name: 'bus' });
@@ -34,8 +37,7 @@ describe('ActorRdfUpdateQuadsDestination', () => {
   describe('An ActorRdfUpdateQuadsDestination instance', () => {
     const actor = new (<any> ActorRdfUpdateQuadsDestination)({ name: 'actor', bus });
     actor.getDestination = () => ({
-      insert: () => Promise.resolve(),
-      delete: () => Promise.resolve(),
+      update: () => Promise.resolve(),
     });
 
     describe('getContextDestinationUrl', () => {
@@ -61,7 +63,9 @@ describe('ActorRdfUpdateQuadsDestination', () => {
     });
 
     it('should run without streams', async() => {
-      await actor.run({ context: new ActionContext() }).then(async(output: any) => {
+      await actor.run({
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      }).then(async(output: any) => {
         await expect(output.execute()).resolves.toBeUndefined();
       });
     });
@@ -70,7 +74,7 @@ describe('ActorRdfUpdateQuadsDestination', () => {
       await actor.run({
         quadStreamInsert: new ArrayIterator([]),
         quadStreamDelete: new ArrayIterator([]),
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       }).then(async(output: any) => {
         await expect(output.execute()).resolves.toBeUndefined();
       });
@@ -88,13 +92,14 @@ describe('ActorRdfUpdateQuadsDestination', () => {
 
       const store = new Store();
       const context: IActionContext = new ActionContext({
+        [KeysInitQuery.dataFactory.name]: DF,
         [KeysRdfUpdateQuads.destination.name]: store,
         [KeysQuerySourceIdentify.sourceIds.name]: new Map([[ store, '1' ]]),
       });
 
       const output: IActorRdfUpdateQuadsOutput = await actor.run({
         quadStreamInsert: new ArrayIterator([
-          skolemizeQuad(q, '1'),
+          skolemizeQuad(DF, q, '1'),
         ], { autoStart: false }),
         quadStreamDelete: new ArrayIterator([], { autoStart: false }),
         context,
@@ -115,13 +120,14 @@ describe('ActorRdfUpdateQuadsDestination', () => {
 
       const store = new Store();
       const context: IActionContext = new ActionContext({
+        [KeysInitQuery.dataFactory.name]: DF,
         [KeysRdfUpdateQuads.destination.name]: store,
         [KeysQuerySourceIdentify.sourceIds.name]: new Map([[ store, '2' ]]),
       });
 
       const output: IActorRdfUpdateQuadsOutput = await actor.run({
         quadStreamInsert: new ArrayIterator([
-          skolemizeQuad(q, '1'),
+          skolemizeQuad(DF, q, '1'),
         ], { autoStart: false }),
         quadStreamDelete: new ArrayIterator([], { autoStart: false }),
         context,
@@ -139,6 +145,7 @@ describe('ActorRdfUpdateQuadsDestination', () => {
       const store = new Store();
       store.addQuads([ q1, q2 ]);
       const context: IActionContext = new ActionContext({
+        [KeysInitQuery.dataFactory.name]: DF,
         [KeysRdfUpdateQuads.destination.name]: store,
         [KeysQuerySourceIdentify.sourceIds.name]: new Map([[ store, '3' ]]),
       });
@@ -173,11 +180,14 @@ class RdfJsQuadDestination {
     });
   }
 
-  public delete(quads: AsyncIterator<RDF.Quad>): Promise<void> {
-    return this.promisifyEventEmitter(this.store.remove(<any> quads));
-  }
-
-  public insert(quads: AsyncIterator<RDF.Quad>): Promise<void> {
-    return this.promisifyEventEmitter(this.store.import(<any> quads));
+  public async update(
+    quadStreams: { insert?: AsyncIterator<RDF.Quad>; delete?: AsyncIterator<RDF.Quad> },
+  ): Promise<void> {
+    if (quadStreams.delete) {
+      await this.promisifyEventEmitter(this.store.remove(<any> quadStreams.delete));
+    }
+    if (quadStreams.insert) {
+      await this.promisifyEventEmitter(this.store.import(<any> quadStreams.insert));
+    }
   }
 }

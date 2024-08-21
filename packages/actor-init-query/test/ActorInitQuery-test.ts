@@ -13,14 +13,12 @@ import {
 import { ActionContext, Bus } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
 import type { IActionContext, ICliArgsHandler } from '@comunica/types';
+import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import { PassThrough, Readable, Transform } from 'readable-stream';
 
 import { CliArgsHandlerBase } from '../lib';
 import { ActorInitQuery } from '../lib/ActorInitQuery';
 import { QueryEngineBase } from '../lib/QueryEngineBase';
-
-// Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
-const stringifyStream = require('stream-to-string');
 
 describe('ActorInitQuery', () => {
   let bus: any;
@@ -734,6 +732,22 @@ LIMIT 100
         });
       });
 
+      it('handles the --distinctConstruct flag', async() => {
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-q', queryString, '--distinctConstruct' ],
+          env: {},
+          stdin: <Readable><any> new PassThrough(),
+          context,
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
+          sources: [{ value: sourceHypermedia }],
+          log: expect.any(LoggerPretty),
+          [KeysInitQuery.distinctConstruct.name]: true,
+        });
+      });
+
       it('handles the destination --to option', async() => {
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermedia, '-q', queryString, '--to', 'http://target.com/' ],
@@ -966,7 +980,7 @@ LIMIT 100
             stdin: <Readable><any> new PassThrough(),
             context,
           })).stdout);
-          expect(stdout).toContain(`"EXPLAINED"`);
+          expect(stdout).toContain(`EXPLAINED`);
           expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
             [KeysInitQuery.explain.name]: 'parsed',
             [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
@@ -982,7 +996,7 @@ LIMIT 100
             stdin: <Readable><any> new PassThrough(),
             context,
           })).stdout);
-          expect(stdout).toContain(`"EXPLAINED"`);
+          expect(stdout).toContain(`EXPLAINED`);
           expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
             [KeysInitQuery.explain.name]: 'logical',
             [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
@@ -998,9 +1012,25 @@ LIMIT 100
             stdin: <Readable><any> new PassThrough(),
             context,
           })).stdout);
-          expect(stdout).toContain(`"EXPLAINED"`);
+          expect(stdout).toContain(`EXPLAINED`);
           expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
             [KeysInitQuery.explain.name]: 'physical',
+            [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
+            sources: [{ value: 'SOURCE' }],
+            log: expect.any(LoggerPretty),
+          });
+        });
+
+        it('in physical-json mode', async() => {
+          const stdout = await stringifyStream(<any> (await actor.run({
+            argv: [ 'SOURCE', '-q', queryString, '--explain', 'physical-json' ],
+            env: {},
+            stdin: <Readable><any> new PassThrough(),
+            context,
+          })).stdout);
+          expect(stdout).toContain(`EXPLAINED`);
+          expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
+            [KeysInitQuery.explain.name]: 'physical-json',
             [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
             sources: [{ value: 'SOURCE' }],
             log: expect.any(LoggerPretty),

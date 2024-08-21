@@ -4,7 +4,7 @@ import type { IQuadDestination } from '@comunica/bus-rdf-update-quads';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import { Headers } from 'cross-fetch';
+import { ArrayIterator } from 'asynciterator';
 import { termToString } from 'rdf-string-ttl';
 import { Readable } from 'readable-stream';
 
@@ -27,17 +27,30 @@ export class QuadDestinationPatchSparqlUpdate implements IQuadDestination {
     this.mediatorHttp = mediatorHttp;
   }
 
-  public insert(quads: AsyncIterator<RDF.Quad>): Promise<void> {
-    return this.wrapSparqlUpdateRequest('INSERT', quads);
+  public async update(
+    quadStreams: { insert?: AsyncIterator<RDF.Quad>; delete?: AsyncIterator<RDF.Quad> },
+  ): Promise<void> {
+    // Create combined query stream with quads to insert and delete
+    const queryStream = this.createCombinedQuadsQuery(quadStreams.insert, quadStreams.delete);
+    await this.wrapSparqlUpdateRequest(queryStream);
   }
 
-  public async delete(quads: AsyncIterator<RDF.Quad>): Promise<void> {
-    return this.wrapSparqlUpdateRequest('DELETE', quads);
+  private createCombinedQuadsQuery(
+    quadsToInsert?: AsyncIterator<RDF.Quad>,
+    quadsToDelete?: AsyncIterator<RDF.Quad>,
+  ): AsyncIterator<string> {
+    return new ArrayIterator<string>([], { autoStart: false })
+      .append(this.createQuadsQuery('DELETE', quadsToDelete))
+      .append(quadsToDelete && quadsToInsert ? [ ' ;\n' ] : [])
+      .append(this.createQuadsQuery('INSERT', quadsToInsert));
   }
 
-  public async wrapSparqlUpdateRequest(type: 'INSERT' | 'DELETE', quads: AsyncIterator<RDF.Quad>): Promise<void> {
+  private createQuadsQuery(type: 'INSERT' | 'DELETE', quads?: AsyncIterator<RDF.Quad>): AsyncIterator<string> {
+    if (!quads) {
+      return new ArrayIterator<string>([], { autoStart: false });
+    }
     // Wrap triples in DATA block
-    const dataWrapped = quads
+    return quads
       .map((quad: RDF.Quad) => {
         let stringQuad = `${termToString(quad.subject)} ${termToString(quad.predicate)} ${termToString(quad.object)} .`;
         if (quad.graph.termType === 'DefaultGraph') {
@@ -49,10 +62,11 @@ export class QuadDestinationPatchSparqlUpdate implements IQuadDestination {
       })
       .prepend([ `${type} DATA {\n` ])
       .append([ '}' ]);
+  }
+
+  private async wrapSparqlUpdateRequest(queryStream: AsyncIterator<string>): Promise<void> {
     const readable = new Readable();
-    readable._read = () => true;
-    dataWrapped.on('data', (quad: RDF.Quad) => readable.push(quad));
-    dataWrapped.on('end', () => readable.push(null));
+    readable.wrap(<any> queryStream);
 
     // Send data in PUT request
     const headers: Headers = new Headers({ 'content-type': 'application/sparql-update' });

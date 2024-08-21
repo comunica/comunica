@@ -6,8 +6,8 @@ import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
 
-const BF = new BindingsFactory();
 const DF = new DataFactory();
+const BF = new BindingsFactory(DF);
 
 describe('MaterializedEvaluatorContext', () => {
   let mediatorQueryOperation: any;

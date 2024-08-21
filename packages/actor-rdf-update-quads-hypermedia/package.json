@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-update-quads-hypermedia",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A hypermedia rdf-update-quads actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,14 +37,14 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-dereference-rdf": "^3.0.3",
-    "@comunica/bus-http-invalidate": "^3.0.3",
-    "@comunica/bus-rdf-metadata": "^3.0.3",
-    "@comunica/bus-rdf-metadata-extract": "^3.0.3",
-    "@comunica/bus-rdf-update-hypermedia": "^3.0.3",
-    "@comunica/bus-rdf-update-quads": "^3.0.3",
-    "@comunica/core": "^3.0.3",
-    "@comunica/types": "^3.0.3",
+    "@comunica/bus-dereference-rdf": "^3.2.1",
+    "@comunica/bus-http-invalidate": "^3.2.1",
+    "@comunica/bus-rdf-metadata": "^3.2.1",
+    "@comunica/bus-rdf-metadata-extract": "^3.2.1",
+    "@comunica/bus-rdf-update-hypermedia": "^3.2.1",
+    "@comunica/bus-rdf-update-quads": "^3.2.1",
+    "@comunica/core": "^3.2.1",
+    "@comunica/types": "^3.2.1",
     "lru-cache": "^10.0.0"
   }
 }

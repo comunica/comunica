@@ -1,6 +1,6 @@
 {
   "name": "@comunica/expression-evaluator",
-  "version": "3.0.1",
+  "version": "3.2.1",
   "description": "A simple SPARQL expression evaluator",
   "lsd:module": true,
   "license": "MIT",
@@ -37,12 +37,12 @@
     "bench": "node \"../../node_modules/typescript/bin/tsc\" && node benchmarks/*.js"
   },
   "dependencies": {
-    "@comunica/context-entries": "^3.0.3",
-    "@comunica/types": "^3.0.3",
+    "@comunica/context-entries": "^3.2.1",
+    "@comunica/types": "^3.2.1",
     "@rdfjs/types": "*",
     "lru-cache": "^10.0.0",
     "rdf-data-factory": "^1.1.2",
     "rdf-string": "^1.6.3",
-    "sparqlalgebrajs": "^4.2.0"
+    "sparqlalgebrajs": "^4.3.7"
   }
 }

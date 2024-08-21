@@ -5,16 +5,17 @@ import type {
   MediatorRdfResolveHypermediaLinksQueue,
 } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import { KeysQueryOperation } from '@comunica/context-entries';
-import type { IActionContext, IAggregatedStore, IQueryBindingsOptions, MetadataBindings } from '@comunica/types';
+import type {
+  ComunicaDataFactory,
+  IActionContext,
+  IAggregatedStore,
+  IQueryBindingsOptions,
+  MetadataBindings,
+} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { DataFactory } from 'rdf-data-factory';
-import type { Algebra } from 'sparqlalgebrajs';
-import { Factory } from 'sparqlalgebrajs';
+import type { Algebra, Factory } from 'sparqlalgebrajs';
 import type { SourceStateGetter, ISourceState } from './LinkedRdfSourcesAsyncRdfIterator';
 import { LinkedRdfSourcesAsyncRdfIterator } from './LinkedRdfSourcesAsyncRdfIterator';
-
-const DF = new DataFactory<RDF.BaseQuad>();
-const AF = new Factory();
 
 /**
  * An quad iterator that can iterate over consecutive RDF sources
@@ -29,6 +30,8 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   private readonly forceSourceType?: string;
   private readonly handledUrls: Record<string, boolean>;
   private readonly aggregatedStore: IAggregatedStore | undefined;
+  private readonly dataFactory: ComunicaDataFactory;
+  private readonly algebraFactory: Factory;
   private linkQueue: Promise<ILinkQueue> | undefined;
   private wasForcefullyClosed = false;
 
@@ -45,6 +48,8 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     mediatorMetadataAccumulate: MediatorRdfMetadataAccumulate,
     mediatorRdfResolveHypermediaLinks: MediatorRdfResolveHypermediaLinks,
     mediatorRdfResolveHypermediaLinksQueue: MediatorRdfResolveHypermediaLinksQueue,
+    dataFactory: ComunicaDataFactory,
+    algebraFactory: Factory,
   ) {
     super(
       cacheSize,
@@ -64,6 +69,8 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     this.mediatorRdfResolveHypermediaLinksQueue = mediatorRdfResolveHypermediaLinksQueue;
     this.handledUrls = { [firstUrl]: true };
     this.aggregatedStore = aggregatedStore;
+    this.dataFactory = dataFactory;
+    this.algebraFactory = algebraFactory;
   }
 
   // Mark the aggregated store as ended once we trigger the closing or destroying of this iterator.
@@ -168,22 +175,19 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
       // In that case, we add all quads from that source to the aggregated store.
       this.aggregatedStore?.containedSources.add(startSource.link.url);
       const stream = startSource.source.queryBindings(
-        AF.createPattern(
-          DF.variable('s'),
-          DF.variable('p'),
-          DF.variable('o'),
-          DF.variable('g'),
+        this.algebraFactory.createPattern(
+          this.dataFactory.variable('s'),
+          this.dataFactory.variable('p'),
+          this.dataFactory.variable('o'),
+          this.dataFactory.variable('g'),
         ),
         this.context.set(KeysQueryOperation.unionDefaultGraph, true),
-      ).transform({
-        map: bindings => DF.quad(
-          bindings.get('s')!,
-          bindings.get('p')!,
-          bindings.get('o')!,
-          bindings.get('g'),
-        ),
-        autoStart: false,
-      });
+      ).map(bindings => (<RDF.DataFactory<RDF.BaseQuad>> this.dataFactory).quad(
+        bindings.get('s')!,
+        bindings.get('p')!,
+        bindings.get('o')!,
+        bindings.get('g'),
+      ));
       this.aggregatedStore.import(<RDF.Stream> stream)
         .on('end', () => {
           super.startIterator(startSource);

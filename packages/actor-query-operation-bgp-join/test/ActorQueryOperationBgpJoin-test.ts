@@ -1,5 +1,5 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
-import { KeysQueryOperation } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
@@ -9,7 +9,7 @@ import { ActorQueryOperationBgpJoin } from '../lib/ActorQueryOperationBgpJoin';
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 const FACTORY = new Factory();
 
 describe('ActorQueryOperationBgpJoin', () => {
@@ -51,7 +51,7 @@ describe('ActorQueryOperationBgpJoin', () => {
 
     it('should run', async() => {
       const patterns: any[] = [ 'a', 'b' ];
-      const context = new ActionContext({ a: 'b' });
+      const context = new ActionContext({ a: 'b', [KeysInitQuery.dataFactory.name]: DF });
       const op = <any> { operation: { type: 'bgp', patterns }, context };
 
       const output: IQueryOperationResultBindings = <any> await actor.run(op);

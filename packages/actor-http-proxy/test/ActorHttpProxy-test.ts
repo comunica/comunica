@@ -1,7 +1,6 @@
 import { ActorHttp } from '@comunica/bus-http';
 import { KeysHttpProxy } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
-import 'cross-fetch/polyfill';
 import type { IActionContext } from '@comunica/types';
 import { ActorHttpProxy } from '../lib/ActorHttpProxy';
 import { ProxyHandlerStatic } from '../lib/ProxyHandlerStatic';

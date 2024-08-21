@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-http",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A comunica bus for 'http' events.",
   "lsd:module": true,
   "license": "MIT",
@@ -36,11 +36,11 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/core": "^3.0.3",
+    "@comunica/core": "^3.2.1",
+    "@jeswr/stream-to-string": "^2.0.0",
     "is-stream": "^2.0.1",
     "readable-from-web": "^1.0.0",
     "readable-stream-node-to-web": "^1.0.1",
-    "stream-to-string": "^1.2.0",
     "web-streams-ponyfill": "^1.4.2"
   }
 }

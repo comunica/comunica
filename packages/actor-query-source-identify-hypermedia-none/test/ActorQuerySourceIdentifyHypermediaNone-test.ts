@@ -1,5 +1,6 @@
 import { Readable } from 'node:stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
 import type { BindingsStream, IActionContext } from '@comunica/types';
@@ -15,7 +16,7 @@ const streamifyArray = require('streamify-array');
 
 const DF = new DataFactory();
 const AF = new Factory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 const v1 = DF.variable('v1');
 const v2 = DF.variable('v2');
 const v3 = DF.variable('v3');
@@ -39,7 +40,7 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
 
     beforeEach(() => {
       actor = new ActorQuerySourceIdentifyHypermediaNone({ name: 'actor', bus, mediatorMergeBindingsContext });
-      context = new ActionContext();
+      context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
     });
 
     it('should test', async() => {

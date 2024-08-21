@@ -1,4 +1,4 @@
-import { KeysQueryOperation } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultVoid } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -51,7 +51,7 @@ describe('ActorQueryOperationDrop', () => {
           type: 'drop',
           source: 'DEFAULT',
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toBe('void');
@@ -70,7 +70,7 @@ describe('ActorQueryOperationDrop', () => {
           source: 'DEFAULT',
           silent: true,
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toBe('void');
@@ -88,7 +88,7 @@ describe('ActorQueryOperationDrop', () => {
           type: 'drop',
           source: 'ALL',
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toBe('void');
@@ -106,7 +106,7 @@ describe('ActorQueryOperationDrop', () => {
           type: 'drop',
           source: 'NAMED',
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toBe('void');
@@ -124,7 +124,7 @@ describe('ActorQueryOperationDrop', () => {
           type: 'drop',
           source: DF.namedNode('g1'),
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toBe('void');

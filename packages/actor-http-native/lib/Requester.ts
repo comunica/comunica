@@ -6,7 +6,6 @@ import { EventEmitter } from 'node:events';
 import type { AgentOptions, ClientRequest, IncomingMessage, IncomingHttpHeaders } from 'node:http';
 import * as url from 'node:url';
 import * as zlib from 'node:zlib';
-import 'cross-fetch/polyfill';
 import { ActorHttp } from '@comunica/bus-http';
 
 const { http } = require('follow-redirects');

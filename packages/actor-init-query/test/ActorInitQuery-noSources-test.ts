@@ -3,12 +3,10 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
 import type { IActionContext } from '@comunica/types';
+import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import { PassThrough, Readable, Transform } from 'readable-stream';
 import { ActorInitQuery } from '../lib/ActorInitQuery';
 import { QueryEngineBase } from '../lib/QueryEngineBase';
-
-// Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
-const stringifyStream = require('stream-to-string');
 
 describe('ActorInitQuery', () => {
   let bus: any;

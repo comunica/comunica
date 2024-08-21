@@ -1,6 +1,6 @@
 import type { IBindingsContextMergeHandler } from '@comunica/bus-merge-bindings-context';
 import { ActionContext } from '@comunica/core';
-import type { IActionContext, IActionContextKey } from '@comunica/types';
+import type { ComunicaDataFactory, IActionContext, IActionContextKey } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { Map } from 'immutable';
 import { bindingsToString } from './bindingsToString';
@@ -11,11 +11,11 @@ import { bindingsToString } from './bindingsToString';
 export class Bindings implements RDF.Bindings {
   public readonly type = 'bindings';
 
-  private readonly dataFactory: RDF.DataFactory;
+  private readonly dataFactory: ComunicaDataFactory;
   private readonly entries: Map<string, RDF.Term>;
   private readonly contextHolder: IContextHolder | undefined;
 
-  public constructor(dataFactory: RDF.DataFactory, entries: Map<string, RDF.Term>, contextHolder?: IContextHolder) {
+  public constructor(dataFactory: ComunicaDataFactory, entries: Map<string, RDF.Term>, contextHolder?: IContextHolder) {
     this.dataFactory = dataFactory;
     this.entries = entries;
     this.contextHolder = contextHolder;
@@ -48,7 +48,7 @@ export class Bindings implements RDF.Bindings {
   public keys(): Iterable<RDF.Variable> {
     return this.mapIterable<string, RDF.Variable>(
       this.iteratorToIterable(this.entries.keys()),
-      key => this.dataFactory.variable!(key),
+      key => this.dataFactory.variable(key),
     );
   }
 
@@ -58,7 +58,7 @@ export class Bindings implements RDF.Bindings {
 
   public forEach(fn: (value: RDF.Term, key: RDF.Variable) => any): void {
     for (const [ key, value ] of this.entries.entries()) {
-      fn(value, this.dataFactory.variable!(key));
+      fn(value, this.dataFactory.variable(key));
     }
   }
 
@@ -69,7 +69,7 @@ export class Bindings implements RDF.Bindings {
   public [Symbol.iterator](): Iterator<[RDF.Variable, RDF.Term]> {
     return this.mapIterable<[string, RDF.Term], [RDF.Variable, RDF.Term]>(
       this.iteratorToIterable(<Iterator<[string, RDF.Term]>> this.entries.entries()),
-      ([ key, value ]) => [ this.dataFactory.variable!(key), value ],
+      ([ key, value ]) => [ this.dataFactory.variable(key), value ],
     )[Symbol.iterator]();
   }
 
@@ -98,12 +98,12 @@ export class Bindings implements RDF.Bindings {
 
   public filter(fn: (value: RDF.Term, key: RDF.Variable) => boolean): Bindings {
     return new Bindings(this.dataFactory, Map(<any> this.entries
-      .filter((value, key) => fn(value, this.dataFactory.variable!(key)))), this.contextHolder);
+      .filter((value, key) => fn(value, this.dataFactory.variable(key)))), this.contextHolder);
   }
 
   public map(fn: (value: RDF.Term, key: RDF.Variable) => RDF.Term): Bindings {
     return new Bindings(this.dataFactory, Map(<any> this.entries
-      .map((value, key) => fn(value, this.dataFactory.variable!(key)))), this.contextHolder);
+      .map((value, key) => fn(value, this.dataFactory.variable(key)))), this.contextHolder);
   }
 
   public merge(other: RDF.Bindings | Bindings): Bindings | undefined {
@@ -117,7 +117,7 @@ export class Bindings implements RDF.Bindings {
     const entries: [string, RDF.Term][] = [];
     for (const key of keys) {
       const left = this.entries.get(key)!;
-      const right = other.get(this.dataFactory.variable!(key));
+      const right = other.get(this.dataFactory.variable(key));
       if (left && right && !left.equals(right)) {
         return;
       }
@@ -141,7 +141,7 @@ export class Bindings implements RDF.Bindings {
     // Collect entries
     const entries: [string, RDF.Term][] = [];
     for (const key of keys) {
-      const variable = this.dataFactory.variable!(key);
+      const variable = this.dataFactory.variable(key);
       const left = this.entries.get(key)!;
       const right = other.get(variable);
       let value: RDF.Term;

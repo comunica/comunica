@@ -3,7 +3,6 @@ import { ActorHttp } from '@comunica/bus-http';
 import { KeysHttp } from '@comunica/context-entries';
 import type { IMediatorTypeTime } from '@comunica/mediatortype-time';
 import type { Readable } from 'readable-stream';
-import 'cross-fetch/polyfill';
 import { FetchInitPreprocessor } from './FetchInitPreprocessor';
 import type { IFetchInitPreprocessor } from './IFetchInitPreprocessor';
 
@@ -92,31 +91,30 @@ export class ActorHttpFetch extends ActorHttp {
 
   public async run(action: IActionHttp): Promise<IActorHttpOutput> {
     // Prepare headers
-    const initHeaders = action.init?.headers ?? {};
-    action.init = action.init ?? {};
-    action.init.headers = new Headers(initHeaders);
-    if (!action.init.headers.has('user-agent')) {
-      action.init.headers.append('user-agent', this.userAgent);
+    const headers = new Headers(action.init?.headers);
+    if (!headers.has('User-Agent')) {
+      headers.set('User-Agent', this.userAgent);
     }
-    const authString: string | undefined = action.context.get(KeysHttp.auth);
+    const authString = action.context.get<string>(KeysHttp.auth);
     if (authString) {
-      action.init.headers.append('Authorization', `Basic ${Buffer.from(authString).toString('base64')}`);
+      headers.set('Authorization', `Basic ${Buffer.from(authString).toString('base64')}`);
     }
+    action.init = { ...action.init, headers };
 
     // Log request
     this.logInfo(action.context, `Requesting ${typeof action.input === 'string' ?
       action.input :
       action.input.url}`, () => ({
-      headers: ActorHttp.headersToHash(new Headers(action.init!.headers)),
+      headers: ActorHttp.headersToHash(headers),
       method: action.init!.method ?? 'GET',
     }));
 
     // TODO: remove this workaround once this has a fix: https://github.com/inrupt/solid-client-authn-js/issues/1708
     if (action.init?.headers && 'append' in action.init.headers && action.context.has(KeysHttp.fetch)) {
-      action.init.headers = ActorHttp.headersToHash(action.init.headers);
+      action.init.headers = ActorHttp.headersToHash(headers);
     }
 
-    let requestInit = { ...action.init };
+    let requestInit: RequestInit = { ...action.init };
 
     if (action.context.get(KeysHttp.includeCredentials)) {
       requestInit.credentials = 'include';
@@ -126,7 +124,7 @@ export class ActorHttpFetch extends ActorHttp {
     let requestTimeout: NodeJS.Timeout | undefined;
     let onTimeout: (() => void) | undefined;
     if (httpTimeout !== undefined) {
-      const controller = await this.fetchInitPreprocessor.createAbortController();
+      const controller = new AbortController();
       requestInit.signal = controller.signal;
       onTimeout = () => controller.abort();
       requestTimeout = setTimeout(() => onTimeout!(), httpTimeout);

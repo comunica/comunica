@@ -1,5 +1,7 @@
 import type { IActionRdfParse, IActorRdfParseFixedMediaTypesArgs, IActorRdfParseOutput } from '@comunica/bus-rdf-parse';
 import { ActorRdfParseFixedMediaTypes } from '@comunica/bus-rdf-parse';
+import { KeysInitQuery } from '@comunica/context-entries';
+import type { ComunicaDataFactory } from '@comunica/types';
 import { RdfXmlParser } from 'rdfxml-streaming-parser';
 import type { Readable } from 'readable-stream';
 
@@ -21,8 +23,12 @@ export class ActorRdfParseRdfXml extends ActorRdfParseFixedMediaTypes {
   }
 
   public async runHandle(action: IActionRdfParse): Promise<IActorRdfParseOutput> {
+    const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     action.data.on('error', error => data.emit('error', error));
-    const data = <Readable> <any> action.data.pipe(new RdfXmlParser({ baseIRI: action.metadata?.baseIRI }));
+    const data = <Readable> <any> action.data.pipe(new RdfXmlParser({
+      dataFactory,
+      baseIRI: action.metadata?.baseIRI,
+    }));
     return {
       data,
       metadata: { triples: true },

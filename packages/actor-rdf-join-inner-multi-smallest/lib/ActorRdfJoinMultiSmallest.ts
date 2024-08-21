@@ -9,8 +9,15 @@ import type {
 } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { MetadataBindings, IJoinEntry, IActionContext, IJoinEntryWithMetadata } from '@comunica/types';
+import type {
+  MetadataBindings,
+  IJoinEntry,
+  IActionContext,
+  IJoinEntryWithMetadata,
+  ComunicaDataFactory,
+} from '@comunica/types';
 import { Factory } from 'sparqlalgebrajs';
 
 /**
@@ -21,8 +28,6 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin {
   public readonly mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort;
   public readonly mediatorJoin: MediatorRdfJoin;
 
-  public static readonly FACTORY = new Factory();
-
   public constructor(args: IActorRdfJoinMultiSmallestArgs) {
     super(args, {
       logicalType: 'inner',
@@ -30,6 +35,7 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin {
       limitEntries: 3,
       limitEntriesMin: true,
       canHandleUndefs: true,
+      isLeaf: false,
     });
   }
 
@@ -47,6 +53,9 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin {
   }
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
+    const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
+    const algebraFactory = new Factory(dataFactory);
+
     // Determine the two smallest streams by sorting (e.g. via cardinality)
     const entries: IJoinEntry[] = await this.sortJoinEntries(
       await ActorRdfJoin.getEntriesWithMetadatas([ ...action.entries ]),
@@ -60,7 +69,7 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin {
     const firstEntry: IJoinEntry = {
       output: ActorQueryOperation.getSafeBindings(await this.mediatorJoin
         .mediate({ type: action.type, entries: [ smallestEntry1, smallestEntry2 ], context: action.context })),
-      operation: ActorRdfJoinMultiSmallest.FACTORY
+      operation: algebraFactory
         .createJoin([ smallestEntry1.operation, smallestEntry2.operation ], false),
     };
     entries.push(firstEntry);

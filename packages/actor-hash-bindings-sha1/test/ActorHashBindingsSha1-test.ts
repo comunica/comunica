@@ -7,7 +7,7 @@ import { DataFactory } from 'rdf-data-factory';
 import { ActorHashBindingsSha1 } from '../lib/ActorHashBindingsSha1';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 
 describe('ActorHashBindingsSha1', () => {
   let bus: any;

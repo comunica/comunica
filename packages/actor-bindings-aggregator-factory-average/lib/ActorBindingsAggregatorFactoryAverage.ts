@@ -6,6 +6,7 @@ import type {
 import { ActorBindingsAggregatorFactory } from '@comunica/bus-bindings-aggeregator-factory';
 
 import type { MediatorFunctionFactory, MediatorFunctionFactoryUnsafe } from '@comunica/bus-function-factory';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import { SparqlOperator } from '@comunica/expression-evaluator';
 import { AverageAggregator } from './AverageAggregator';
@@ -37,6 +38,7 @@ export class ActorBindingsAggregatorFactoryAverage extends ActorBindingsAggregat
     return new AverageAggregator(
       await this.mediatorExpressionEvaluatorFactory.mediate({ algExpr: expr.expression, context }),
       expr.distinct,
+      context.getSafe(KeysInitQuery.dataFactory),
       await this.mediatorFunctionFactory.mediate({
         functionName: SparqlOperator.ADDITION,
         context,

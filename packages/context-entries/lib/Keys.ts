@@ -167,7 +167,7 @@ export const KeysInitQuery = {
    */
   cliArgsHandlers: new ActionContextKey<ICliArgsHandler[]>('@comunica/actor-init-query:cliArgsHandlers'),
   /**
-   * Explain mode of the query. Can be 'parsed', 'logical', or 'physical'.
+   * Explain mode of the query. Can be 'parsed', 'logical', 'physical', or 'physical-json'.
    */
   explain: new ActionContextKey<QueryExplainMode>('@comunica/actor-init-query:explain'),
   /**
@@ -189,6 +189,14 @@ export const KeysInitQuery = {
    * A boolean value denoting whether caching is disabled or not.
    */
   noCache: new ActionContextKey<boolean>('@comunica/actor-init-query:noCache'),
+  /**
+   * The data factory for creating terms and quads.
+   */
+  dataFactory: new ActionContextKey<RDF.DataFactory>('@comunica/actor-init-query:dataFactory'),
+  /**
+   * A boolean value denoting whether results should be deduplicated or not.
+   */
+  distinctConstruct: new ActionContextKey<boolean>('@comunica/actor-init-query:distinctConstruct'),
 };
 
 export const KeysExpressionEvaluator = {
@@ -292,6 +300,13 @@ export const KeysRdfUpdateQuads = {
    * A data destination.
    */
   destination: new ActionContextKey<IDataDestination>('@comunica/bus-rdf-update-quads:destination'),
+};
+
+export const KeysMergeBindingsContext = {
+  /**
+   * The data sources required to produce the binding
+   */
+  sourcesBinding: new ActionContextKey<string[]>('@comunica/bus-merge-bindings-context:sourcesBinding'),
 };
 
 export const KeysRdfJoin = {

@@ -20,7 +20,7 @@ const EventEmitter = require('node:events');
 
 const DF = new DataFactory();
 const AF = new Factory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 const v = DF.variable('v');
 
 // Dummy class for testing
@@ -182,15 +182,17 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       jest.spyOn(<any> it, 'startIteratorsForNextUrls');
 
       await expect(new Promise(resolve => it.getProperty('metadata', resolve))).resolves.toEqual({
+        firstPageToken: true,
         state: expect.any(MetadataValidationState),
         next: 'P1',
+        requestedPage: 0,
         subseq: true,
       });
 
       await expect(it).toEqualBindingsStream(data.flat());
     });
 
-    it('handles metadata for a single page before consuming data and handle errors', async() => {
+    it('handles metadata for a single page before consuming data and handle source getter errors', async() => {
       const sourceStateGetterOld = sourceStateGetter;
       let called = false;
       sourceStateGetter = async(link: ILink): Promise<ISourceState> => {
@@ -215,6 +217,24 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       expect(spy).not.toHaveBeenCalled();
 
       await expect(it).toEqualBindingsStream(data.flat());
+    });
+
+    it('handles metadata for a single page before consuming data and handle accumulateMetadata errors', async() => {
+      data = toBindings([[
+        [ 'a', 'b', 'c' ],
+        [ 'd', 'e', 'f' ],
+        [ 'g', 'h', 'i' ],
+      ]]);
+      const it =
+        new DummyIteratorErrorAccumulate(operation, queryBindingsOptions, context, 'first', sourceStateGetter);
+      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
+
+      await expect(new Promise(resolve => it.getProperty('metadata', resolve))).resolves.toEqual({
+        firstPageToken: true,
+        state: expect.any(MetadataValidationState),
+        next: 'P1',
+        requestedPage: 0,
+      });
     });
 
     it('handles metadata for a single page after consuming data', async() => {
@@ -250,8 +270,10 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       jest.spyOn(<any> it, 'startIteratorsForNextUrls');
 
       await expect(new Promise(resolve => it.getProperty('metadata', resolve))).resolves.toEqual({
+        firstPageToken: true,
         state: expect.any(MetadataValidationState),
         next: 'P1',
+        requestedPage: 0,
         subseq: true,
       });
 

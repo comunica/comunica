@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-source-identify-hypermedia-sparql",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A sparql query-source-identify-hypermedia actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,17 +37,17 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bindings-factory": "^3.0.3",
-    "@comunica/bus-http": "^3.0.3",
-    "@comunica/bus-merge-bindings-context": "^3.0.3",
-    "@comunica/bus-query-source-identify-hypermedia": "^3.0.3",
-    "@comunica/context-entries": "^3.0.3",
-    "@comunica/types": "^3.0.3",
+    "@comunica/bindings-factory": "^3.2.1",
+    "@comunica/bus-http": "^3.2.1",
+    "@comunica/bus-merge-bindings-context": "^3.2.1",
+    "@comunica/bus-query-source-identify-hypermedia": "^3.2.1",
+    "@comunica/context-entries": "^3.2.1",
+    "@comunica/core": "^3.2.1",
+    "@comunica/types": "^3.2.1",
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0",
-    "fetch-sparql-endpoint": "^4.1.0",
+    "fetch-sparql-endpoint": "^5.0.0",
     "lru-cache": "^10.0.0",
-    "rdf-data-factory": "^1.1.1",
-    "sparqlalgebrajs": "^4.3.3"
+    "sparqlalgebrajs": "^4.3.7"
   }
 }

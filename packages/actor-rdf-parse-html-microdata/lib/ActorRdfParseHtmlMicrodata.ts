@@ -4,7 +4,9 @@ import type {
   IActorRdfParseHtmlOutput,
 } from '@comunica/bus-rdf-parse-html';
 import { ActorRdfParseHtml } from '@comunica/bus-rdf-parse-html';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
+import type { ComunicaDataFactory } from '@comunica/types';
 import { MicrodataRdfParser } from 'microdata-rdf-streaming-parser';
 
 /**
@@ -20,10 +22,11 @@ export class ActorRdfParseHtmlMicrodata extends ActorRdfParseHtml {
   }
 
   public async run(action: IActionRdfParseHtml): Promise<IActorRdfParseHtmlOutput> {
+    const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const mediaType = action.headers ? action.headers.get('content-type') : null;
     const xmlMode = mediaType?.includes('xml');
 
-    const htmlParseListener = new MicrodataRdfParser({ baseIRI: action.baseIRI, xmlMode });
+    const htmlParseListener = new MicrodataRdfParser({ dataFactory, baseIRI: action.baseIRI, xmlMode });
     htmlParseListener.on('error', action.error);
     htmlParseListener.on('data', action.emit);
     // eslint-disable-next-line ts/unbound-method

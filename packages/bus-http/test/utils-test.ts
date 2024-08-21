@@ -1,6 +1,5 @@
+import { Readable } from 'node:stream';
 import { validateAndCloseHttpResponse } from '../lib/utils';
-
-const streamifyString = require('streamify-string');
 
 describe('validateAndCloseHttpResponse', () => {
   it('should do nothing with a valid response', async() => {
@@ -19,7 +18,7 @@ describe('validateAndCloseHttpResponse', () => {
   });
 
   it('should throw with an invalid response with body', async() => {
-    const body = streamifyString('BODY');
+    const body = <any> Readable.from([ 'BODY' ]);
     await expect(validateAndCloseHttpResponse('URL', <Response> { status: 400, body })).rejects
       .toThrow('Could not update URL (HTTP status 400):\nBODY');
   });

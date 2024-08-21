@@ -1,6 +1,8 @@
 import { ActorQuerySourceIdentifyHypermedia } from '@comunica/bus-query-source-identify-hypermedia';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import { DataFactory } from 'rdf-data-factory';
 import { ActorQuerySourceIdentifyHypermediaSparql } from '../lib/ActorQuerySourceIdentifyHypermediaSparql';
 import { QuerySourceSparql } from '../lib/QuerySourceSparql';
 
@@ -10,13 +12,15 @@ const mediatorMergeBindingsContext: any = {
   },
 };
 
+const DF = new DataFactory();
+
 describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
   let bus: any;
   let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    context = new ActionContext();
+    context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
   });
 
   describe('The ActorQuerySourceIdentifyHypermediaSparql module', () => {

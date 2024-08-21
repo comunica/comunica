@@ -1,0 +1,34 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/jbr/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-experiment/bsbm/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-hook/sparql-endpoint-ldf/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-hook/sparql-endpoint-comunica/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-hook/cli/^5.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:jbr:benchmark-bsbm-tpf:combination_0",
+  "@type": "ExperimentBsbm",
+  "productCount": 1000,
+  "generateHdt": true,
+  "endpointUrl": "http://host.docker.internal:3001/sparql",
+  "endpointUrlExternal": "http://localhost:3001/sparql",
+  "warmupRuns": 5,
+  "runs": 10,
+  "hookSparqlEndpoint": {
+    "@id": "urn:jbr:tmp:hookSparqlEndpoint",
+    "@type": "HookSparqlEndpointLdf",
+    "dockerfile": "input/dockerfiles/Dockerfile-ldf-server",
+    "dockerfileCache": "input/dockerfiles/Dockerfile-ldf-server-cache",
+    "resourceConstraints": {
+      "@type": "StaticDockerResourceConstraints",
+      "cpu_percentage": 100
+    },
+    "config": "input/config-ldf-server.json",
+    "portServer": 2999,
+    "portCache": 3000,
+    "workers": 4,
+    "maxMemory": 2084,
+    "dataset": "generated/dataset.hdt",
+    "hookSparqlEndpointLdfEngine": {"@id": "urn:jbr:benchmark-bsbm-tpf:combination_0:hookSparqlEndpoint_hookSparqlEndpointLdfEngine","@type": "HookCli","entrypoint": [  "node",  "../../engines/query-sparql/bin/http.js",  "http://localhost:3000/dataset",  "-p",  "3001",  "-i"],"statsFilePath": "output/stats.csv"  }
+  }
+}

@@ -1,6 +1,7 @@
 import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorHttp } from '@comunica/bus-http';
 import { KeysInitQuery } from '@comunica/context-entries';
+import { Actor } from '@comunica/core';
 import type {
   IQuerySource,
   BindingsStream,
@@ -9,19 +10,17 @@ import type {
   Bindings,
   MetadataBindings,
   IQueryBindingsOptions,
+  ComunicaDataFactory,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { wrap, TransformIterator } from 'asynciterator';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import { LRUCache } from 'lru-cache';
-import { DataFactory } from 'rdf-data-factory';
-import { Algebra, Factory, toSparql, Util } from 'sparqlalgebrajs';
+import type { Factory } from 'sparqlalgebrajs';
+import { Algebra, toSparql, Util } from 'sparqlalgebrajs';
 import type { BindMethod } from './ActorQuerySourceIdentifyHypermediaSparql';
 
-const AF = new Factory();
-const DF = new DataFactory<RDF.BaseQuad>();
-const VAR_COUNT = DF.variable('count');
 const COUNT_INFINITY: RDF.QueryResultCardinality = { type: 'estimate', value: Number.POSITIVE_INFINITY };
 
 export class QuerySourceSparql implements IQuerySource {
@@ -58,6 +57,8 @@ export class QuerySourceSparql implements IQuerySource {
   private readonly mediatorHttp: MediatorHttp;
   private readonly bindMethod: BindMethod;
   private readonly countTimeout: number;
+  private readonly dataFactory: ComunicaDataFactory;
+  private readonly algebraFactory: Factory;
   private readonly bindingsFactory: BindingsFactory;
 
   private readonly endpointFetcher: SparqlEndpointFetcher;
@@ -70,6 +71,8 @@ export class QuerySourceSparql implements IQuerySource {
     context: IActionContext,
     mediatorHttp: MediatorHttp,
     bindMethod: BindMethod,
+    dataFactory: ComunicaDataFactory,
+    algebraFactory: Factory,
     bindingsFactory: BindingsFactory,
     forceHttpGet: boolean,
     cacheSize: number,
@@ -80,6 +83,8 @@ export class QuerySourceSparql implements IQuerySource {
     this.context = context;
     this.mediatorHttp = mediatorHttp;
     this.bindMethod = bindMethod;
+    this.dataFactory = dataFactory;
+    this.algebraFactory = algebraFactory;
     this.bindingsFactory = bindingsFactory;
     this.endpointFetcher = new SparqlEndpointFetcher({
       method: forceHttpGet ? 'GET' : 'POST',
@@ -87,6 +92,7 @@ export class QuerySourceSparql implements IQuerySource {
         { input, init, context: this.lastSourceContext! },
       ),
       prefixVariableQuestionMark: true,
+      dataFactory,
     });
     this.cache = cacheSize > 0 ?
       new LRUCache<string, RDF.QueryResultCardinality>({ max: cacheSize }) :
@@ -106,7 +112,12 @@ export class QuerySourceSparql implements IQuerySource {
     // If bindings are passed, modify the operations
     let operationPromise: Promise<Algebra.Operation>;
     if (options?.joinBindings) {
-      operationPromise = QuerySourceSparql.addBindingsToOperation(this.bindMethod, operationIn, options.joinBindings);
+      operationPromise = QuerySourceSparql.addBindingsToOperation(
+        this.algebraFactory,
+        this.bindMethod,
+        operationIn,
+        options.joinBindings,
+      );
     } else {
       operationPromise = Promise.resolve(operationIn);
     }
@@ -118,9 +129,10 @@ export class QuerySourceSparql implements IQuerySource {
       const queryString = context.get<string>(KeysInitQuery.queryString);
       const selectQuery: string = !options?.joinBindings && queryString ?
         queryString :
-        QuerySourceSparql.operationToSelectQuery(operation, variables);
+        QuerySourceSparql.operationToSelectQuery(this.algebraFactory, operation, variables);
+      const canContainUndefs = QuerySourceSparql.operationCanContainUndefs(operation);
 
-      return this.queryBindingsRemote(this.url, selectQuery, variables, context);
+      return this.queryBindingsRemote(this.url, selectQuery, variables, context, canContainUndefs);
     }, { autoStart: false });
     this.attachMetadata(bindings, context, operationPromise);
 
@@ -166,6 +178,7 @@ export class QuerySourceSparql implements IQuerySource {
   ): void {
     // Emit metadata containing the estimated count
     let variablesCount: RDF.Variable[] = [];
+    let canContainUndefs = false;
     // eslint-disable-next-line no-async-promise-executor,ts/no-misused-promises
     new Promise<RDF.QueryResultCardinality>(async(resolve, reject) => {
       // Prepare queries
@@ -173,7 +186,8 @@ export class QuerySourceSparql implements IQuerySource {
       try {
         const operation = await operationPromise;
         variablesCount = Util.inScopeVariables(operation);
-        countQuery = QuerySourceSparql.operationToCountQuery(operation);
+        countQuery = QuerySourceSparql.operationToCountQuery(this.dataFactory, this.algebraFactory, operation);
+        canContainUndefs = QuerySourceSparql.operationCanContainUndefs(operation);
 
         const cachedCardinality = this.cache?.get(countQuery);
         if (cachedCardinality !== undefined) {
@@ -181,11 +195,12 @@ export class QuerySourceSparql implements IQuerySource {
         }
 
         const timeoutHandler = setTimeout(() => resolve(COUNT_INFINITY), this.countTimeout);
+        const varCount = this.dataFactory.variable('count');
         const bindingsStream: BindingsStream = await this
-          .queryBindingsRemote(this.url, countQuery, [ VAR_COUNT ], context);
+          .queryBindingsRemote(this.url, countQuery, [ varCount ], context, false);
         bindingsStream.on('data', (bindings: Bindings) => {
           clearTimeout(timeoutHandler);
-          const count = bindings.get(VAR_COUNT);
+          const count = bindings.get(varCount);
           const cardinality: RDF.QueryResultCardinality = { type: 'estimate', value: Number.POSITIVE_INFINITY };
           if (count) {
             const cardinalityValue: number = Number.parseInt(count.value, 10);
@@ -211,18 +226,19 @@ export class QuerySourceSparql implements IQuerySource {
     })
       .then(cardinality => target.setProperty('metadata', {
         cardinality,
-        canContainUndefs: false,
+        canContainUndefs,
         variables: variablesCount,
       }))
       .catch(() => target.setProperty('metadata', {
         cardinality: COUNT_INFINITY,
-        canContainUndefs: false,
+        canContainUndefs,
         variables: variablesCount,
       }));
   }
 
   /**
    * Create an operation that includes the bindings from the given bindings stream.
+   * @param algebraFactory The algebra factory.
    * @param bindMethod A method for adding bindings to an operation.
    * @param operation The operation to bind to.
    * @param addBindings The bindings to add.
@@ -230,6 +246,7 @@ export class QuerySourceSparql implements IQuerySource {
    * @param addBindings.metadata The bindings metadata.
    */
   public static async addBindingsToOperation(
+    algebraFactory: Factory,
     bindMethod: BindMethod,
     operation: Algebra.Operation,
     addBindings: { bindings: BindingsStream; metadata: MetadataBindings },
@@ -238,8 +255,8 @@ export class QuerySourceSparql implements IQuerySource {
 
     switch (bindMethod) {
       case 'values':
-        return AF.createJoin([
-          AF.createValues(
+        return algebraFactory.createJoin([
+          algebraFactory.createValues(
             addBindings.metadata.variables,
             bindings.map(binding => Object.fromEntries([ ...binding ]
               .map(([ key, value ]) => [ `?${key.value}`, <RDF.Literal | RDF.NamedNode> value ]))),
@@ -253,36 +270,47 @@ export class QuerySourceSparql implements IQuerySource {
 
   /**
    * Convert an operation to a select query for this pattern.
+   * @param algebraFactory The algebra factory.
    * @param {Algebra.Operation} operation A query operation.
    * @param {RDF.Variable[]} variables The variables in scope for the operation.
    * @return {string} A select query string.
    */
-  public static operationToSelectQuery(operation: Algebra.Operation, variables: RDF.Variable[]): string {
-    return QuerySourceSparql.operationToQuery(AF.createProject(operation, variables));
+  public static operationToSelectQuery(
+    algebraFactory: Factory,
+    operation: Algebra.Operation,
+    variables: RDF.Variable[],
+  ): string {
+    return QuerySourceSparql.operationToQuery(algebraFactory.createProject(operation, variables));
   }
 
   /**
    * Convert an operation to a count query for the number of matching triples for this pattern.
+   * @param dataFactory The data factory.
+   * @param algebraFactory The algebra factory.
    * @param {Algebra.Operation} operation A query operation.
    * @return {string} A count query string.
    */
-  public static operationToCountQuery(operation: Algebra.Operation): string {
-    return QuerySourceSparql.operationToQuery(AF.createProject(
-      AF.createExtend(
-        AF.createGroup(
+  public static operationToCountQuery(
+    dataFactory: ComunicaDataFactory,
+    algebraFactory: Factory,
+    operation: Algebra.Operation,
+  ): string {
+    return QuerySourceSparql.operationToQuery(algebraFactory.createProject(
+      algebraFactory.createExtend(
+        algebraFactory.createGroup(
           operation,
           [],
-          [ AF.createBoundAggregate(
-            DF.variable('var0'),
+          [ algebraFactory.createBoundAggregate(
+            dataFactory.variable('var0'),
             'count',
-            AF.createWildcardExpression(),
+            algebraFactory.createWildcardExpression(),
             false,
           ) ],
         ),
-        DF.variable('count'),
-        AF.createTermExpression(DF.variable('var0')),
+        dataFactory.variable('count'),
+        algebraFactory.createTermExpression(dataFactory.variable('var0')),
       ),
-      [ DF.variable('count') ],
+      [ dataFactory.variable('count') ],
     ));
   }
 
@@ -296,11 +324,47 @@ export class QuerySourceSparql implements IQuerySource {
   }
 
   /**
+   * Check if the given operation may produce undefined values.
+   * @param operation
+   */
+  public static operationCanContainUndefs(operation: Algebra.Operation): boolean {
+    let canContainUndefs = false;
+    Util.recurseOperation(operation, {
+      leftjoin(): boolean {
+        canContainUndefs = true;
+        return false;
+      },
+      values(values: Algebra.Values): boolean {
+        canContainUndefs = values.bindings.some(bindings => values.variables.some(variable => !(`?${variable.value}` in bindings)));
+        return false;
+      },
+      union(union: Algebra.Union): boolean {
+        // Determine variables in scope of the union branches
+        const scopedVariables = union.input
+          .map(Util.inScopeVariables)
+          .map(variables => variables.map(v => v.value))
+          .map(variables => variables.sort((a, b) => a.localeCompare(b)))
+          .map(variables => variables.join(','));
+
+        // If not all scoped variables in union branches are equal, then we definitely can have undefs
+        if (!scopedVariables.every(val => val === scopedVariables[0])) {
+          canContainUndefs = true;
+          return false;
+        }
+
+        return true;
+      },
+    });
+    return canContainUndefs;
+  }
+
+  /**
    * Send a SPARQL query to a SPARQL endpoint and retrieve its bindings as a stream.
    * @param {string} endpoint A SPARQL endpoint URL.
    * @param {string} query A SPARQL query string.
    * @param {RDF.Variable[]} variables The expected variables.
    * @param {IActionContext} context The source context.
+   * @param canContainUndefs If the operation may contain undefined variables.
    * @return {BindingsStream} A stream of bindings.
    */
   public async queryBindingsRemote(
@@ -308,6 +372,7 @@ export class QuerySourceSparql implements IQuerySource {
     query: string,
     variables: RDF.Variable[],
     context: IActionContext,
+    canContainUndefs: boolean,
   ): Promise<BindingsStream> {
     this.lastSourceContext = this.context.merge(context);
     const rawStream = await this.endpointFetcher.fetchBindings(endpoint, query);
@@ -317,11 +382,12 @@ export class QuerySourceSparql implements IQuerySource {
       .map<RDF.Bindings>((rawData: Record<string, RDF.Term>) => this.bindingsFactory.bindings(variables
         .map((variable) => {
           const value = rawData[`?${variable.value}`];
-          if (!value) {
-            it.emit('error', new Error(`The endpoint ${endpoint} failed to provide a binding for ${variable.value}.`));
+          if (!canContainUndefs && !value) {
+            Actor.getContextLogger(this.context)?.warn(`The endpoint ${endpoint} failed to provide a binding for ${variable.value}.`);
           }
-          return [ variable, value ];
-        })));
+          return <[RDF.Variable, RDF.Term]> [ variable, value ];
+        })
+        .filter(([ _, v ]) => Boolean(v))));
     return it;
   }
 

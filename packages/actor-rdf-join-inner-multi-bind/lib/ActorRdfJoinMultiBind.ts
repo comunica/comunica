@@ -9,9 +9,15 @@ import type {
 } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
-import { KeysQueryOperation } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { Bindings, BindingsStream, IQueryOperationResultBindings, MetadataBindings } from '@comunica/types';
+import type {
+  Bindings,
+  BindingsStream,
+  ComunicaDataFactory,
+  IQueryOperationResultBindings,
+  MetadataBindings,
+} from '@comunica/types';
 import { MultiTransformIterator, TransformIterator, UnionIterator } from 'asynciterator';
 import { Factory, Algebra, Util } from 'sparqlalgebrajs';
 
@@ -21,17 +27,21 @@ import { Factory, Algebra, Util } from 'sparqlalgebrajs';
 export class ActorRdfJoinMultiBind extends ActorRdfJoin {
   public readonly bindOrder: BindOrder;
   public readonly selectivityModifier: number;
+  public readonly minMaxCardinalityRatio: number;
   public readonly mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort;
   public readonly mediatorQueryOperation: MediatorQueryOperation;
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
-  public static readonly FACTORY = new Factory();
-
   public constructor(args: IActorRdfJoinMultiBindArgs) {
+    // TODO: remove this fallback in the next major update
+    if (args.minMaxCardinalityRatio === undefined) {
+      args.minMaxCardinalityRatio = 60;
+    }
     super(args, {
       logicalType: 'inner',
       physicalName: 'bind',
       canHandleUndefs: true,
+      isLeaf: false,
     });
   }
 
@@ -53,17 +63,26 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
     operationBinder: (boundOperations: Algebra.Operation[], operationBindings: Bindings)
     => Promise<BindingsStream>,
     optional: boolean,
+    algebraFactory: Factory,
     bindingsFactory: BindingsFactory,
   ): BindingsStream {
+    // Enable auto-start on sub-bindings during depth-first binding for best performance.
+    const autoStartSubBindings = bindOrder === 'depth-first';
+
     // Create bindings function
     const binder = (bindings: Bindings): BindingsStream => {
       // We don't bind the filter because filters are always handled last,
       // and we need to avoid binding filters of sub-queries, which are to be handled first. (see spec test bind10)
-      const subOperations = operations
-        .map(operation => materializeOperation(operation, bindings, bindingsFactory, { bindFilter: true }));
+      const subOperations = operations.map(operation => materializeOperation(
+        operation,
+        bindings,
+        algebraFactory,
+        bindingsFactory,
+        { bindFilter: true },
+      ));
       const bindingsMerger = (subBindings: Bindings): Bindings | undefined => subBindings.merge(bindings);
       return new TransformIterator(async() => (await operationBinder(subOperations, bindings))
-        .transform({ map: bindingsMerger }), { maxBufferSize: 128, autoStart: false });
+        .transform({ map: bindingsMerger }), { maxBufferSize: 128, autoStart: autoStartSubBindings });
     };
 
     // Create an iterator that binds elements from the base stream in different orders
@@ -82,7 +101,13 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
   }
 
   public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
-    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context);
+    const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
+    const algebraFactory = new Factory(dataFactory);
+    const bindingsFactory = await BindingsFactory.create(
+      this.mediatorMergeBindingsContext,
+      action.context,
+      dataFactory,
+    );
 
     // Order the entries so we can pick the first one (usually the one with the lowest cardinality)
     const entriesUnsorted = await ActorRdfJoin.getEntriesWithMetadatas(action.entries);
@@ -118,13 +143,14 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
         // Send the materialized patterns to the mediator for recursive join evaluation.
         const operation = operations.length === 1 ?
           operations[0] :
-          ActorRdfJoinMultiBind.FACTORY.createJoin(operations);
+          algebraFactory.createJoin(operations);
         const output = ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate(
           { operation, context: subContext?.set(KeysQueryOperation.joinBindings, operationBindings) },
         ));
         return output.bindingsStream;
       },
       false,
+      algebraFactory,
       bindingsFactory,
     );
 
@@ -136,6 +162,8 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
       },
       physicalPlanMetadata: {
         bindIndex: entriesUnsorted.indexOf(entries[0]),
+        bindOperation: entries[0].operation,
+        bindOperationCardinality: entries[0].metadata.cardinality,
         bindOrder: this.bindOrder,
       },
     };
@@ -152,7 +180,6 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
         valid = false;
         return false;
       },
-      // [Algebr
     });
 
     return valid;
@@ -187,6 +214,13 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
     // Reject binding on modified operations, since using the output directly would be significantly more efficient.
     if (remainingEntries.some(entry => entry.operationModified)) {
       throw new Error(`Actor ${this.name} can not be used over remaining entries with modified operations`);
+    }
+
+    // Only run this actor if the smallest stream is significantly smaller than the largest stream.
+    // We must use Math.max, because the last metadata is not necessarily the biggest, but it's the least preferred.
+    if (metadatas[0].cardinality.value * this.minMaxCardinalityRatio >
+      Math.max(...metadatas.map(metadata => metadata.cardinality.value))) {
+      throw new Error(`Actor ${this.name} can only run if the smallest stream is much smaller than largest stream`);
     }
 
     // Determine selectivities of smallest entry with all other entries
@@ -231,6 +265,12 @@ export interface IActorRdfJoinMultiBindArgs extends IActorRdfJoinArgs {
    * @default {0.0001}
    */
   selectivityModifier: number;
+  /**
+   * The number of times the smallest cardinality should fit in the maximum cardinality.
+   * @range {double}
+   * @default {60}
+   */
+  minMaxCardinalityRatio?: number;
   /**
    * The join entries sort mediator
    */

@@ -2,38 +2,32 @@
  * A very simple XML serializer
  */
 export class XmlSerializer {
-  private readonly push: (data: string) => void;
-
   private readonly stack: string[] = [];
 
-  public constructor(push: (data: string) => void) {
-    this.push = push;
-    this.push(`<?xml version="1.0" encoding="UTF-8"?>\n`);
-  }
+  public static header = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+
+  public constructor() {}
 
   /**
    *
    * @param name should be a valid XML tag name
    * @param attributes keys should be valid attribute names
    */
-  public open(name: string, attributes?: Record<string, string>): void {
-    this.push(`${this.identation() + this.formatTag(name, attributes, 'open')}\n`);
+  public open(name: string, attributes?: Record<string, string>): string {
+    const res = `${this.identation() + this.formatTag(name, attributes, 'open')}\n`;
     this.stack.push(name);
+    return res;
   }
 
-  public close(): void {
+  public close(): string {
     const name = this.stack.pop();
     if (name === undefined) {
       throw new Error('There is no tag left to close');
     }
-    this.push(`${this.identation() + this.formatTag(name, {}, 'close')}\n`);
+    return `${this.identation() + this.formatTag(name, {}, 'close')}\n`;
   }
 
-  public add(node: IXmlNode): void {
-    this.push(this.serializeNode(node));
-  }
-
-  private serializeNode(node: IXmlNode): string {
+  public serializeNode(node: IXmlNode): string {
     if (node.children === undefined) {
       return `${this.identation() + this.formatTag(node.name, node.attributes, 'self-closing')}\n`;
     }

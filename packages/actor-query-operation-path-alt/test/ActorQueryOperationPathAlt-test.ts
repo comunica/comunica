@@ -4,6 +4,7 @@ import type {
   IActionRdfMetadataAccumulate,
   MediatorRdfMetadataAccumulate,
 } from '@comunica/bus-rdf-metadata-accumulate';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
 import { ArrayIterator } from 'asynciterator';
@@ -13,7 +14,7 @@ import { ActorQueryOperationPathAlt } from '../lib/ActorQueryOperationPathAlt';
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 
 describe('ActorQueryOperationPathAlt', () => {
   let bus: any;
@@ -134,7 +135,7 @@ describe('ActorQueryOperationPathAlt', () => {
           factory.createLink(DF.namedNode('p2')),
         ]),
         DF.variable('x'),
-      ), context: new ActionContext() };
+      ), context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),

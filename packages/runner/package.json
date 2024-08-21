@@ -1,6 +1,6 @@
 {
   "name": "@comunica/runner",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "Utility module for Comunica runner modules",
   "lsd:module": true,
   "license": "MIT",
@@ -41,8 +41,8 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-init": "^3.0.3",
-    "@comunica/core": "^3.0.3",
+    "@comunica/bus-init": "^3.2.1",
+    "@comunica/core": "^3.2.1",
     "componentsjs": "^6.0.1",
     "process": "^0.11.10"
   }

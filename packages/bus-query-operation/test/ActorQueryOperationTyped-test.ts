@@ -55,6 +55,9 @@ describe('ActorQueryOperationTyped', () => {
       const logger: IPhysicalQueryPlanLogger = {
         logOperation: jest.fn(),
         toJson: jest.fn(),
+        stashChildren: jest.fn(),
+        unstashChild: jest.fn(),
+        appendMetadata: jest.fn(),
       };
       const context = new ActionContext({
         [KeysInitQuery.physicalQueryPlanLogger.name]: logger,

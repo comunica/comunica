@@ -1,6 +1,6 @@
 {
   "name": "@comunica/metadata",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "Metadata helpers for Comunica",
   "lsd:module": true,
   "license": "MIT",
@@ -38,7 +38,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/types": "^3.0.3",
+    "@comunica/types": "^3.2.1",
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0"
   }

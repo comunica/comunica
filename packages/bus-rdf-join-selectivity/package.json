@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-rdf-join-selectivity",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A comunica bus for rdf-join-selectivity events.",
   "lsd:module": true,
   "license": "MIT",
@@ -36,8 +36,8 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/core": "^3.0.3",
-    "@comunica/mediatortype-accuracy": "^3.0.3",
-    "@comunica/types": "^3.0.3"
+    "@comunica/core": "^3.2.1",
+    "@comunica/mediatortype-accuracy": "^3.2.1",
+    "@comunica/types": "^3.2.1"
   }
 }

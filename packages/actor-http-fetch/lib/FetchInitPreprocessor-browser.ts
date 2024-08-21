@@ -45,8 +45,4 @@ export class FetchInitPreprocessor implements IFetchInitPreprocessor {
     // Only enable keepalive functionality if we are not sending a body (some browsers seem to trip over this)
     return { keepalive: !init.body, ...init };
   }
-
-  public async createAbortController(): Promise<AbortController> {
-    return new AbortController();
-  }
 }

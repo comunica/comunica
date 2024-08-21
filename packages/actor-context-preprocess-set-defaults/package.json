@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-context-preprocess-set-defaults",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A set-defaults context-preprocess actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,10 +37,11 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-context-preprocess": "^3.0.3",
-    "@comunica/context-entries": "^3.0.3",
-    "@comunica/core": "^3.0.3",
-    "@comunica/types": "^3.0.3",
-    "@rdfjs/types": "*"
+    "@comunica/bus-context-preprocess": "^3.2.1",
+    "@comunica/context-entries": "^3.2.1",
+    "@comunica/core": "^3.2.1",
+    "@comunica/types": "^3.2.1",
+    "@rdfjs/types": "*",
+    "rdf-data-factory": "^1.1.2"
   }
 }

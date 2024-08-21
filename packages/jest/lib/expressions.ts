@@ -18,14 +18,13 @@ import { prepareEvaluatorActionContext } from '@comunica/expression-evaluator/li
 import type { GeneralSuperTypeDict, IActionContext, ISuperTypeProvider } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
-import type { Quad } from 'rdf-data-factory';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra } from 'sparqlalgebrajs';
 import { Wildcard } from 'sparqljs';
 
-export const DF = new DataFactory<Quad>();
+export const DF = new DataFactory();
 
-export const BF = new BindingsFactory();
+export const BF = new BindingsFactory(DF);
 
 export function makeAggregate(aggregator: string, distinct = false, separator?: string, wildcard = false):
 Algebra.AggregateExpression {
@@ -78,11 +77,13 @@ export function nonLiteral(): RDF.Term {
   return DF.namedNode('http://example.org/');
 }
 
+// Sets default values for some context entries
 export function getMockEEActionContext(actionContext?: IActionContext): IActionContext {
   return new ActionContext({
     [KeysInitQuery.queryTimestamp.name]: new Date(Date.now()),
     [KeysInitQuery.functionArgumentsCache.name]: {},
     [KeysExpressionEvaluator.superTypeProvider.name]: getMockSuperTypeProvider(),
+    [KeysInitQuery.dataFactory.name]: DF,
   }).merge(actionContext ?? new ActionContext());
 }
 

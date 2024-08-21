@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-process-sequential",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A sequential query-process actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,17 +37,17 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bindings-factory": "^3.0.3",
-    "@comunica/bus-context-preprocess": "^3.0.3",
-    "@comunica/bus-merge-bindings-context": "^3.0.3",
-    "@comunica/bus-optimize-query-operation": "^3.0.3",
-    "@comunica/bus-query-operation": "^3.0.3",
-    "@comunica/bus-query-parse": "^3.0.3",
-    "@comunica/bus-query-process": "^3.0.3",
-    "@comunica/context-entries": "^3.0.3",
-    "@comunica/core": "^3.0.3",
-    "@comunica/types": "^3.0.3",
+    "@comunica/bindings-factory": "^3.2.1",
+    "@comunica/bus-context-preprocess": "^3.2.1",
+    "@comunica/bus-merge-bindings-context": "^3.2.1",
+    "@comunica/bus-optimize-query-operation": "^3.2.1",
+    "@comunica/bus-query-operation": "^3.2.1",
+    "@comunica/bus-query-parse": "^3.2.1",
+    "@comunica/bus-query-process": "^3.2.1",
+    "@comunica/context-entries": "^3.2.1",
+    "@comunica/core": "^3.2.1",
+    "@comunica/types": "^3.2.1",
     "@rdfjs/types": "*",
-    "sparqlalgebrajs": "^4.3.0"
+    "sparqlalgebrajs": "^4.3.7"
   }
 }

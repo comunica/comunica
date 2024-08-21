@@ -1,12 +1,15 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinNone } from '../lib/ActorRdfJoinNone';
 import '@comunica/jest';
 
-const BF = new BindingsFactory();
+const DF = new DataFactory();
+const BF = new BindingsFactory(DF);
 const mediatorMergeBindingsContext: any = {
   mediate(arg: any) {
     return {};
@@ -35,7 +38,7 @@ IActorRdfJoinSelectivityOutput
         mediate: async() => ({ selectivity: 1 }),
       };
       actor = new ActorRdfJoinNone({ name: 'actor', bus, mediatorJoinSelectivity, mediatorMergeBindingsContext });
-      context = new ActionContext();
+      context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
     });
 
     describe('test', () => {

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-rdf-serialize",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A comunica bus for rdf-serialize events.",
   "lsd:module": true,
   "license": "MIT",
@@ -36,8 +36,8 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/actor-abstract-mediatyped": "^3.0.3",
-    "@comunica/core": "^3.0.3",
+    "@comunica/actor-abstract-mediatyped": "^3.2.1",
+    "@comunica/core": "^3.2.1",
     "@rdfjs/types": "*"
   }
 }

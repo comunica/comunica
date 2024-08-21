@@ -1,3 +1,4 @@
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -28,7 +29,10 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
     describe('run', () => {
       it('for an operation without filter', async() => {
         const operationIn = AF.createNop();
-        const { operation: operationOut } = await actor.run({ context: new ActionContext(), operation: operationIn });
+        const { operation: operationOut } = await actor.run({
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+          operation: operationIn,
+        });
         expect(operationOut).toEqual(operationIn);
       });
 
@@ -40,7 +44,10 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           ),
           AF.createTermExpression(DF.variable('s')),
         );
-        const { operation: operationOut } = await actor.run({ context: new ActionContext(), operation: operationIn });
+        const { operation: operationOut } = await actor.run({
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+          operation: operationIn,
+        });
         expect(operationOut).toEqual(AF.createProject(
           AF.createFilter(
             AF.createBgp([]),
@@ -177,6 +184,15 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             ),
           );
         });
+
+        it('is replaced with a no-op for FILTER(false)', async() => {
+          expect(filterPushdown(
+            AF.createTermExpression(DF.literal('false')),
+            AF.createExtend(AF.createBgp([]), DF.variable('v'), AF.createTermExpression(DF.namedNode('o'))),
+          )).toEqual(
+            AF.createUnion([]),
+          );
+        });
       });
 
       describe('for a filter operation', () => {
@@ -203,6 +219,14 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               AF.createFilter(AF.createBgp([]), AF.createTermExpression(DF.variable('a'))),
               AF.createOperatorExpression('id', [ AF.createTermExpression(DF.variable('a')) ]),
             ),
+          );
+        });
+        it('is replaced with a no-op  for FILTER(false)', async() => {
+          expect(filterPushdown(
+            AF.createTermExpression(DF.literal('false')),
+            AF.createFilter(AF.createBgp([]), AF.createTermExpression(DF.variable('b'))),
+          )).toEqual(
+            AF.createUnion([]),
           );
         });
       });
@@ -250,6 +274,18 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
                 AF.createTermExpression(DF.variable('x')),
               ]),
             ),
+          );
+        });
+
+        it('is replaced with a no-op for FILTER(false)', async() => {
+          expect(filterPushdown(
+            AF.createTermExpression(DF.literal('false')),
+            AF.createJoin([
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+              AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
+            ]),
+          )).toEqual(
+            AF.createUnion([]),
           );
         });
 
@@ -354,6 +390,18 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           );
         });
 
+        it('is replaced with a no-op for FILTER(false)', async() => {
+          expect(filterPushdown(
+            AF.createTermExpression(DF.literal('false')),
+            AF.createProject(
+              AF.createBgp([]),
+              [ DF.variable('s'), DF.variable('p') ],
+            ),
+          )).toEqual(
+            AF.createUnion([]),
+          );
+        });
+
         it('is voided when variables do not overlap', async() => {
           expect(filterPushdown(
             AF.createTermExpression(DF.variable('s')),
@@ -413,6 +461,18 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
                 AF.createTermExpression(DF.variable('x')),
               ]),
             ),
+          );
+        });
+
+        it('is replaced with a no-op for FILTER(false)', async() => {
+          expect(filterPushdown(
+            AF.createTermExpression(DF.literal('false')),
+            AF.createUnion([
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+              AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
+            ]),
+          )).toEqual(
+            AF.createUnion([]),
           );
         });
 
@@ -491,6 +551,18 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               ),
               AF.createTermExpression(DF.variable('s')),
             ),
+          );
+        });
+
+        it('is replaced with a no-op for FILTER(false)', async() => {
+          expect(filterPushdown(
+            AF.createTermExpression(DF.literal('false')),
+            AF.createValues(
+              [ DF.variable('s'), DF.variable('p') ],
+              [],
+            ),
+          )).toEqual(
+            AF.createUnion([]),
           );
         });
 

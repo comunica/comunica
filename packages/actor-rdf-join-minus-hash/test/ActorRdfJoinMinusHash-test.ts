@@ -1,16 +1,18 @@
+import { Readable } from 'node:stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinMinusHash } from '../lib/ActorRdfJoinMinusHash';
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 
 describe('ActorRdfJoinMinusHash', () => {
   let bus: any;
@@ -133,6 +135,100 @@ IActorRdfJoinSelectivityOutput
     });
 
     describe('getOutput', () => {
+      it('should error if left stream errors', async() => {
+        const readable = new Readable();
+        readable._read = () => {
+          readable.emit('error', new Error('Error'));
+        };
+        const action: IActionRdfJoin = {
+          type: 'minus',
+          entries: [
+            {
+              output: <any> {
+                bindingsStream: readable,
+                metadata: () => Promise.resolve({
+                  cardinality: 3,
+                  canContainUndefs: false,
+                  variables: [ DF.variable('a') ],
+                }),
+                type: 'bindings',
+              },
+              operation: <any> {},
+            },
+            {
+              output: <any> {
+                bindingsStream: new ArrayIterator([
+                  BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+                  BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+                ], { autoStart: false }),
+                metadata: () => Promise.resolve({
+                  cardinality: 2,
+                  canContainUndefs: false,
+                  variables: [ DF.variable('a') ],
+                }),
+                type: 'bindings',
+              },
+              operation: <any> {},
+            },
+          ],
+          context,
+        };
+        const { result } = await actor.getOutput(action);
+
+        // Validate output
+        expect(result.type).toBe('bindings');
+        await expect(result.metadata()).resolves
+          .toEqual({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]});
+        await expect(arrayifyStream(result.bindingsStream)).rejects.toThrow(new Error('Error'));
+      });
+
+      it('should error if right stream errors', async() => {
+        const readable = new Readable();
+        readable._read = () => {
+          readable.emit('error', new Error('Error'));
+        };
+        const action: IActionRdfJoin = {
+          type: 'minus',
+          entries: [
+            {
+              output: <any> {
+                bindingsStream: new ArrayIterator([
+                  BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+                  BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+                ], { autoStart: false }),
+                metadata: () => Promise.resolve({
+                  cardinality: 3,
+                  canContainUndefs: false,
+                  variables: [ DF.variable('a') ],
+                }),
+                type: 'bindings',
+              },
+              operation: <any> {},
+            },
+            {
+              output: <any> {
+                bindingsStream: readable,
+                metadata: () => Promise.resolve({
+                  cardinality: 2,
+                  canContainUndefs: false,
+                  variables: [ DF.variable('a') ],
+                }),
+                type: 'bindings',
+              },
+              operation: <any> {},
+            },
+          ],
+          context,
+        };
+        const { result } = await actor.getOutput(action);
+
+        // Validate output
+        expect(result.type).toBe('bindings');
+        await expect(result.metadata()).resolves
+          .toEqual({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]});
+        await expect(arrayifyStream(result.bindingsStream)).rejects.toThrow(new Error('Error'));
+      });
+
       it('should handle entries with common variables', async() => {
         const action: IActionRdfJoin = {
           type: 'minus',

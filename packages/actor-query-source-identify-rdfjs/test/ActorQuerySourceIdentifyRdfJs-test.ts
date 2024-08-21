@@ -1,7 +1,9 @@
 import { ActorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import { DataFactory } from 'rdf-data-factory';
 import { ActorQuerySourceIdentifyRdfJs, QuerySourceRdfJs } from '..';
 import 'jest-rdf';
 
@@ -10,6 +12,7 @@ const mediatorMergeBindingsContext: any = {
     return {};
   },
 };
+const DF = new DataFactory();
 
 describe('ActorQuerySourceIdentifyRdfJs', () => {
   let bus: any;
@@ -80,7 +83,7 @@ describe('ActorQuerySourceIdentifyRdfJs', () => {
 
     describe('run', () => {
       it('should get the source', async() => {
-        const contextIn = new ActionContext();
+        const contextIn = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
         const ret = await actor.run({
           querySourceUnidentified: { type: 'rdfjs', value: source },
           context: contextIn,
@@ -90,7 +93,7 @@ describe('ActorQuerySourceIdentifyRdfJs', () => {
       });
 
       it('should get the source with context', async() => {
-        const contextIn = new ActionContext();
+        const contextIn = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
         const contextSource = new ActionContext();
         const ret = await actor.run({
           querySourceUnidentified: { type: 'rdfjs', value: source, context: contextSource },

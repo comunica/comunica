@@ -38,21 +38,18 @@
   },
   "dependencies": {
     "@comunica/bus-function-factory": "^1.0.0",
-    "@comunica/context-entries": "^3.0.3",
-    "@comunica/core": "^3.0.3",
-    "@comunica/data-factory": "^3.0.3",
-    "@comunica/expression-evaluator": "3.0.1",
-    "@comunica/types": "^3.0.3",
+    "@comunica/context-entries": "^3.2.1",
+    "@comunica/core": "^3.2.1",
+    "@comunica/data-factory": "^3.1.0",
+    "@comunica/expression-evaluator": "3.2.1",
+    "@comunica/types": "^3.2.1",
     "@types/spark-md5": "^3.0.2",
     "@types/uuid": "^9.0.0",
     "bignumber.js": "^9.0.1",
     "hash.js": "^1.1.7",
-    "lru-cache": "^10.0.0",
     "rdf-data-factory": "^1.1.2",
-    "rdf-string": "^1.6.3",
     "relative-to-absolute-iri": "^1.0.6",
     "spark-md5": "^3.0.1",
-    "sparqlalgebrajs": "^4.2.0",
     "uuid": "^9.0.0"
   }
 }

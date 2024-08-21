@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-parse-xml-rdfa",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A xml-rdfa rdf-parse actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,8 +37,9 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-rdf-parse": "^3.0.3",
-    "@comunica/types": "^3.0.3",
+    "@comunica/bus-rdf-parse": "^3.2.1",
+    "@comunica/context-entries": "^3.1.0",
+    "@comunica/types": "^3.2.1",
     "rdfa-streaming-parser": "^2.0.1"
   }
 }

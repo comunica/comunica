@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-reduced-hash",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A reduced-hash query-operation actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,11 +37,11 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-hash-bindings": "^3.0.3",
-    "@comunica/bus-query-operation": "^3.0.3",
-    "@comunica/core": "^3.0.3",
-    "@comunica/types": "^3.0.3",
+    "@comunica/bus-hash-bindings": "^3.2.1",
+    "@comunica/bus-query-operation": "^3.2.1",
+    "@comunica/core": "^3.2.1",
+    "@comunica/types": "^3.2.1",
     "lru-cache": "^10.0.0",
-    "sparqlalgebrajs": "^4.3.3"
+    "sparqlalgebrajs": "^4.3.7"
   }
 }

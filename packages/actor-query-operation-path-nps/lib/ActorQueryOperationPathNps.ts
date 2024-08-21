@@ -3,8 +3,9 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import {
   ActorQueryOperation,
 } from '@comunica/bus-query-operation';
-import type { Bindings, IActionContext, IQueryOperationResult } from '@comunica/types';
-import { Algebra } from 'sparqlalgebrajs';
+import { KeysInitQuery } from '@comunica/context-entries';
+import type { ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
+import { Algebra, Factory } from 'sparqlalgebrajs';
 
 /**
  * A comunica Path Nps Query Operation Actor.
@@ -15,25 +16,21 @@ export class ActorQueryOperationPathNps extends ActorAbstractPath {
   }
 
   public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryOperationResult> {
-    const predicate = <Algebra.Nps> operation.predicate;
-    const blank = this.generateVariable(operation);
+    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+    const algebraFactory = new Factory(dataFactory);
 
-    const pattern = Object.assign(ActorAbstractPath.FACTORY
+    const predicate = <Algebra.Nps> operation.predicate;
+    const blank = this.generateVariable(dataFactory, operation);
+
+    const pattern = Object.assign(algebraFactory
       .createPattern(operation.subject, blank, operation.object, operation.graph), { metadata: predicate.metadata });
     const output = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: pattern, context }),
     );
 
     // Remove the generated blank nodes from the bindings
-    const bindingsStream = output.bindingsStream.transform<Bindings>({
-      filter(bindings) {
-        return !predicate.iris.some(iri => iri.equals(bindings.get(blank)));
-      },
-      transform(item, next, push) {
-        push(item.delete(blank));
-        next();
-      },
-    });
+    const bindingsStream = output.bindingsStream
+      .map(bindings => predicate.iris.some(iri => iri.equals(bindings.get(blank))) ? null : bindings.delete(blank));
 
     return {
       type: 'bindings',
