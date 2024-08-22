@@ -146,6 +146,10 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
           type: 'boolean',
           describe: 'If the cache should be disabled',
         },
+        distinctConstruct: {
+          type: 'boolean',
+          describe: 'If the query engine should deduplicate resulting triples',
+        },
       })
       .exitProcess(false)
       .fail(false)
@@ -261,6 +265,11 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
     // Define if cache should be disabled
     if (args.noCache) {
       context[KeysInitQuery.noCache.name] = true;
+    }
+
+    // Define if results should be deduplicated
+    if (args.distinctConstruct) {
+      context[KeysInitQuery.distinctConstruct.name] = true;
     }
   }
 }

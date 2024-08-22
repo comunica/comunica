@@ -1,4 +1,4 @@
-import { KeysQueryOperation } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultVoid } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -28,7 +28,10 @@ describe('ActorQueryOperationClear', () => {
     });
 
     it('should test on clear', async() => {
-      const op: any = { operation: { type: 'clear' }, context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'clear' },
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
       await expect(actor.test(op)).resolves.toBeTruthy();
     });
 
@@ -41,7 +44,10 @@ describe('ActorQueryOperationClear', () => {
     });
 
     it('should not test on non-clear', async() => {
-      const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'some-other-type' },
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
       await expect(actor.test(op)).rejects.toBeTruthy();
     });
 
@@ -51,7 +57,7 @@ describe('ActorQueryOperationClear', () => {
           type: 'clear',
           source: 'DEFAULT',
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toBe('void');
@@ -70,7 +76,7 @@ describe('ActorQueryOperationClear', () => {
           source: 'DEFAULT',
           silent: true,
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toBe('void');
@@ -88,7 +94,7 @@ describe('ActorQueryOperationClear', () => {
           type: 'clear',
           source: 'ALL',
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toBe('void');
@@ -106,7 +112,7 @@ describe('ActorQueryOperationClear', () => {
           type: 'clear',
           source: 'NAMED',
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toBe('void');
@@ -124,7 +130,7 @@ describe('ActorQueryOperationClear', () => {
           type: 'clear',
           source: DF.namedNode('g1'),
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toBe('void');

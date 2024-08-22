@@ -27,14 +27,12 @@ module.exports = config([
         'web-streams-ponyfill',
         'is-stream',
         'readable-stream-node-to-web',
-        'stream-to-string',
       ]}],
       'ts/no-var-requires': [ 'error', { allow: [
         'process/',
         'web-streams-ponyfill',
         'is-stream',
         'readable-stream-node-to-web',
-        'stream-to-string',
       ]}],
     },
   },
@@ -85,13 +83,11 @@ module.exports = config([
   },
   {
     // Some test files import 'jest-rdf' which triggers this
-    // The http actors import 'cross-fetch/polyfill' which also triggers this
     // Some jest tests import '../../lib' which triggers this
     files: [
       '**/test/*-test.ts',
       '**/test/*-util.ts',
       'packages/jest/test/matchers/*-test.ts',
-      'packages/actor-http-*/lib/*.ts',
     ],
     rules: {
       'import/no-unassigned-import': 'off',
@@ -105,6 +101,8 @@ module.exports = config([
       '**/engine-browser.js',
       '**/comunica-browser.js',
       '.github/**',
+      '**/performance/*/combinations/**',
+      '**/bintest/**',
       // TODO: Remove this once solid-client-authn supports node 18.
       '**/QuerySparql-solid-test.ts',
     ],

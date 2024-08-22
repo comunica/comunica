@@ -1,6 +1,6 @@
 {
   "name": "@comunica/context-entries",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A collection of reusable Comunica context key definitions.",
   "license": "MIT",
   "homepage": "https://comunica.dev/",
@@ -34,10 +34,10 @@
     "build": "node \"../../node_modules/typescript/bin/tsc\""
   },
   "dependencies": {
-    "@comunica/core": "^3.0.3",
-    "@comunica/types": "^3.0.3",
+    "@comunica/core": "^3.2.1",
+    "@comunica/types": "^3.2.1",
     "@rdfjs/types": "*",
     "jsonld-context-parser": "^2.2.2",
-    "sparqlalgebrajs": "^4.3.3"
+    "sparqlalgebrajs": "^4.3.7"
   }
 }

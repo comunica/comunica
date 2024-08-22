@@ -3,6 +3,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^3.0.0/components/context.jsonld",
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-optional-bind/^3.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-optional-hash/^3.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-optional-nestedloop/^3.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:default:Runner",
@@ -14,6 +15,34 @@
       "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
       "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
       "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" }
+    },
+    {
+      "@id": "urn:comunica:default:rdf-join/actors#optional-hash-def-nonblocking",
+      "@type": "ActorRdfJoinOptionalHash",
+      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
+      "canHandleUndefs": false,
+      "blocking": false
+    },
+    {
+      "@id": "urn:comunica:default:rdf-join/actors#optional-hash-def-blocking",
+      "@type": "ActorRdfJoinOptionalHash",
+      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
+      "canHandleUndefs": false,
+      "blocking": true
+    },
+    {
+      "@id": "urn:comunica:default:rdf-join/actors#optional-hash-undef-nonblocking",
+      "@type": "ActorRdfJoinOptionalHash",
+      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
+      "canHandleUndefs": true,
+      "blocking": false
+    },
+    {
+      "@id": "urn:comunica:default:rdf-join/actors#optional-hash-undef-blocking",
+      "@type": "ActorRdfJoinOptionalHash",
+      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
+      "canHandleUndefs": true,
+      "blocking": true
     },
     {
       "@id": "urn:comunica:default:rdf-join/actors#optional-nested-loop",

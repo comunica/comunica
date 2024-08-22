@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-parse-graphql",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A graphql sparql-parse actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,9 +37,9 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-query-parse": "^3.0.3",
-    "@comunica/context-entries": "^3.0.3",
-    "@comunica/core": "^3.0.3",
+    "@comunica/bus-query-parse": "^3.2.1",
+    "@comunica/context-entries": "^3.2.1",
+    "@comunica/core": "^3.2.1",
     "graphql-to-sparql": "^3.0.1"
   }
 }

@@ -4,7 +4,7 @@ import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { MediatorRdfJoin, IActionRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinEntriesSort, MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
 import type { MediatorRdfJoinSelectivity } from '@comunica/bus-rdf-join-selectivity';
-import { KeysRdfJoin } from '@comunica/context-entries';
+import { KeysInitQuery, KeysRdfJoin } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext, IQuerySourceWrapper, IJoinEntryWithMetadata } from '@comunica/types';
@@ -17,7 +17,7 @@ import '@comunica/jest';
 
 const AF = new Factory();
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 
 describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
   let bus: any;
@@ -41,7 +41,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
     let source5Context: IQuerySourceWrapper;
 
     beforeEach(() => {
-      context = new ActionContext({ a: 'b' });
+      context = new ActionContext({ a: 'b', [KeysInitQuery.dataFactory.name]: DF });
       mediatorJoinSelectivity = <any> {
         mediate: async() => ({ selectivity: 0.8 }),
       };

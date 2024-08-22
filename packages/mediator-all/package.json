@@ -1,6 +1,6 @@
 {
   "name": "@comunica/mediator-all",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A all mediator",
   "lsd:module": true,
   "license": "MIT",
@@ -35,6 +35,6 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/core": "^3.0.3"
+    "@comunica/core": "^3.2.1"
   }
 }

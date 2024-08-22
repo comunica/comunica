@@ -1,5 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -7,7 +8,7 @@ import { ActorQueryOperationService } from '../lib/ActorQueryOperationService';
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 const mediatorMergeBindingsContext: any = {
   mediate(arg: any) {
     return {};
@@ -128,7 +129,7 @@ describe('ActorQueryOperationService', () => {
     it('should run on a silent operation when the endpoint errors', async() => {
       const op: any = {
         operation: { type: 'service', silent: true, name: DF.literal('dummy'), input: { type: 'error' }},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves
@@ -141,7 +142,7 @@ describe('ActorQueryOperationService', () => {
     it('should not run on a non-silent operation when the endpoint errors', async() => {
       const op: any = {
         operation: { type: 'service', silent: false, name: DF.literal('dummy'), input: { type: 'error' }},
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       await expect(actor.run(op)).rejects.toBeTruthy();
     });
@@ -149,7 +150,7 @@ describe('ActorQueryOperationService', () => {
     it('should run and use undefined source type when forceSparqlEndpoint is disabled', async() => {
       const op: any = {
         operation: { type: 'service', silent: false, name: DF.literal('dummy') },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const actorThis = new ActorQueryOperationService({
         bus,
@@ -176,7 +177,7 @@ describe('ActorQueryOperationService', () => {
     it('should run and use sparql source type when forceSparqlEndpoint is enabled', async() => {
       const op: any = {
         operation: { type: 'service', silent: false, name: DF.literal('dummy') },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const actorThis = new ActorQueryOperationService({
         bus,

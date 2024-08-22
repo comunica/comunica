@@ -1,0 +1,46 @@
+{
+  "name": "@comunica/actor-hash-quads-sha1",
+  "version": "3.2.1",
+  "description": "A hash quads actor that provides the SHA1 function",
+  "lsd:module": true,
+  "license": "MIT",
+  "homepage": "https://comunica.dev/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/actor-hash-quads-sha1"
+  },
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
+  "keywords": [
+    "comunica",
+    "actor",
+    "hash",
+    "quads",
+    "sha1"
+  ],
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.js.map"
+  ],
+  "scripts": {
+    "build": "npm run build:ts && npm run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
+  },
+  "dependencies": {
+    "@comunica/bus-hash-quads": "^3.2.1",
+    "@comunica/core": "^3.2.1",
+    "hash.js": "^1.1.7",
+    "rdf-string": "^1.6.1"
+  }
+}

@@ -2,6 +2,7 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTyped } from '@comunica/bus-query-operation';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorArgs, IActorTest } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
 import type {
@@ -10,12 +11,10 @@ import type {
   Bindings,
   IActionContext,
   MetadataBindings,
+  ComunicaDataFactory,
 } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
-import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
-
-const DF = new DataFactory();
 
 /**
  * A comunica Values Query Operation Actor.
@@ -33,10 +32,12 @@ export class ActorQueryOperationValues extends ActorQueryOperationTyped<Algebra.
 
   public async runOperation(operation: Algebra.Values, context: IActionContext):
   Promise<IQueryOperationResult> {
-    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context);
+    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context, dataFactory);
+
     const bindingsStream: BindingsStream = new ArrayIterator<Bindings>(operation.bindings
       .map(x => bindingsFactory.bindings(Object.entries(x)
-        .map(([ key, value ]) => [ DF.variable(key.slice(1)), value ]))));
+        .map(([ key, value ]) => [ dataFactory.variable(key.slice(1)), value ]))));
     const variables = operation.variables;
     const metadata = (): Promise<MetadataBindings> => Promise.resolve({
       state: new MetadataValidationState(),

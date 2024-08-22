@@ -1,15 +1,22 @@
 import { ActorRdfParseHtml } from '@comunica/bus-rdf-parse-html';
-import { Bus } from '@comunica/core';
+import { KeysInitQuery } from '@comunica/context-entries';
+import { ActionContext, Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
+import { DataFactory } from 'rdf-data-factory';
 import { RDFA_FEATURES, RdfaParser } from 'rdfa-streaming-parser';
 import { ActorRdfParseHtmlRdfa } from '../lib/ActorRdfParseHtmlRdfa';
 
 const quad = require('rdf-quad');
 
+const DF = new DataFactory();
+
 describe('ActorRdfParseHtmlRdfa', () => {
   let bus: any;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
   });
 
   describe('The ActorRdfParseHtmlRdfa module', () => {
@@ -66,7 +73,7 @@ describe('ActorRdfParseHtmlRdfa', () => {
         emit = jest.fn();
         error = jest.fn();
         end = jest.fn();
-        action = { baseIRI, headers, emit, error, end };
+        action = { baseIRI, headers, emit, error, end, context };
       });
 
       it('should return an RdfaParser', async() => {
@@ -83,7 +90,7 @@ describe('ActorRdfParseHtmlRdfa', () => {
 
       it('should set the profile, baseIRI and language for empty headers', async() => {
         headers = { get: () => null };
-        action = { baseIRI, headers, emit, error, end };
+        action = { baseIRI, headers, emit, error, end, context };
 
         const listener = (await actor.run(action)).htmlParseListener;
         expect((<any> listener).features).toBe(RDFA_FEATURES.html);
@@ -93,7 +100,7 @@ describe('ActorRdfParseHtmlRdfa', () => {
 
       it('should set the profile, baseIRI and language for null headers', async() => {
         headers = null;
-        action = { baseIRI, headers, emit, error, end };
+        action = { baseIRI, headers, emit, error, end, context };
 
         const listener = (await actor.run(action)).htmlParseListener;
         expect((<any> listener).features).toBe(RDFA_FEATURES.html);

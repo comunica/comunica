@@ -2,6 +2,7 @@ import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { IActionRdfJoin, IActorRdfJoinArgs, IActorRdfJoinOutputInner } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin, ChunkedIterator } from '@comunica/bus-rdf-join';
 import type { MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type {
   IJoinEntryWithMetadata,
@@ -9,14 +10,13 @@ import type {
   IQuerySourceWrapper,
   MetadataBindings,
   IActionContext,
+  ComunicaDataFactory,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { UnionIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
-
-const AF = new Factory();
 
 /**
  * A comunica Inner Multi Bind Source RDF Join Actor.
@@ -35,6 +35,9 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin {
   }
 
   public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
+    const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
+    const algebraFactory = new Factory(dataFactory);
+
     // Order the entries so we can pick the first one (usually the one with the lowest cardinality)
     const entriesUnsorted = await ActorRdfJoin.getEntriesWithMetadatas(action.entries);
     const entries = await this.sortJoinEntries(entriesUnsorted, action.context);
@@ -62,7 +65,7 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin {
     const sourceWrapper: IQuerySourceWrapper = ActorQueryOperation.getOperationSource(remainingEntries[0].operation)!;
 
     // Determine the operation to pass
-    const operation = this.createOperationFromEntries(remainingEntries);
+    const operation = this.createOperationFromEntries(algebraFactory, remainingEntries);
 
     // Slice the smallest stream into chunks according to the block size, so we avoid blocking too long.
     const chunkedStreams: AsyncIterator<AsyncIterator<RDF.Bindings>> = new ChunkedIterator(
@@ -72,14 +75,11 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin {
     );
 
     // For each chunk, pass the query and the bindings to the source for execution
-    const bindingsStream = new UnionIterator(chunkedStreams.transform({
-      map: chunk => sourceWrapper.source.queryBindings(
-        operation,
-        sourceWrapper.context ? action.context.merge(sourceWrapper.context) : action.context,
-        { joinBindings: { bindings: chunk, metadata: smallestMetadata }},
-      ),
-      autoStart: false,
-    }));
+    const bindingsStream = new UnionIterator(chunkedStreams.map(chunk => sourceWrapper.source.queryBindings(
+      operation,
+      sourceWrapper.context ? action.context.merge(sourceWrapper.context) : action.context,
+      { joinBindings: { bindings: chunk, metadata: smallestMetadata }},
+    )));
 
     return {
       result: {
@@ -114,6 +114,9 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin {
     action: IActionRdfJoin,
     metadatas: MetadataBindings[],
   ): Promise<IMediatorTypeJoinCoefficients> {
+    const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
+    const algebraFactory = new Factory(dataFactory);
+
     // Order the entries so we can pick the first one (usually the one with the lowest cardinality)
     const entries = await this.sortJoinEntries(action.entries
       .map((entry, i) => ({ ...entry, metadata: metadatas[i] })), action.context);
@@ -143,7 +146,7 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin {
 
     // Reject if the source can not handle bindings
     const sourceWrapper: IQuerySourceWrapper = sources[0]!;
-    const testingOperation = this.createOperationFromEntries(remainingEntries);
+    const testingOperation = this.createOperationFromEntries(algebraFactory, remainingEntries);
     const selectorShape = await sourceWrapper.source.getSelectorShape(action.context);
     if (!ActorQueryOperation
       .doesShapeAcceptOperation(selectorShape, testingOperation, { joinBindings: true })) {
@@ -171,11 +174,14 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin {
     };
   }
 
-  public createOperationFromEntries(remainingEntries: IJoinEntryWithMetadata[]): Algebra.Operation {
+  public createOperationFromEntries(
+    algebraFactory: Factory,
+    remainingEntries: IJoinEntryWithMetadata[],
+  ): Algebra.Operation {
     if (remainingEntries.length === 1) {
       return remainingEntries[0].operation;
     }
-    return AF.createJoin(remainingEntries.map(entry => entry.operation), true);
+    return algebraFactory.createJoin(remainingEntries.map(entry => entry.operation), true);
   }
 }
 

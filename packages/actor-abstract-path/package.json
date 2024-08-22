@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-abstract-path",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "An abstract actor for handling mediatypes",
   "lsd:module": true,
   "license": "MIT",
@@ -37,15 +37,14 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bindings-factory": "^3.0.3",
-    "@comunica/bus-query-operation": "^3.0.3",
-    "@comunica/context-entries": "^3.0.3",
-    "@comunica/core": "^3.0.3",
-    "@comunica/types": "^3.0.3",
+    "@comunica/bindings-factory": "^3.2.1",
+    "@comunica/bus-query-operation": "^3.2.1",
+    "@comunica/context-entries": "^3.2.1",
+    "@comunica/core": "^3.2.1",
+    "@comunica/types": "^3.2.1",
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0",
-    "rdf-data-factory": "^1.1.1",
     "rdf-string": "^1.6.1",
-    "sparqlalgebrajs": "^4.3.3"
+    "sparqlalgebrajs": "^4.3.7"
   }
 }

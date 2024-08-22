@@ -1,6 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import { KeysQueryOperation } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultVoid } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
@@ -12,7 +12,7 @@ import 'jest-rdf';
 
 const factory = new Factory();
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 
 const mediatorMergeBindingsContext: any = {
   mediate(arg: any) {
@@ -80,7 +80,10 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
     });
 
     it('should test on deleteinsert', async() => {
-      const op: any = { operation: { type: 'deleteinsert' }, context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'deleteinsert' },
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
       await expect(actor.test(op)).resolves.toBeTruthy();
     });
 
@@ -93,12 +96,18 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
     });
 
     it('should not test on non-deleteinsert', async() => {
-      const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'some-other-type' },
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
       await expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run without operation input', async() => {
-      const op: any = { operation: { type: 'deleteinsert' }, context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'deleteinsert' },
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toBe('void');
       await expect(output.execute()).resolves.toBeUndefined();
@@ -114,7 +123,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
             factory.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
           ],
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toBe('void');
@@ -133,7 +142,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
             factory.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
           ],
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toBe('void');
@@ -155,7 +164,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
             factory.createPattern(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
           ],
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toBe('void');
@@ -177,7 +186,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
           ],
           where: factory.createBgp([]), // Dummy operation
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toBe('void');
@@ -200,7 +209,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
           ],
           where: factory.createBgp([]), // Dummy operation
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toBe('void');
@@ -226,7 +235,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
           ],
           where: factory.createBgp([]), // Dummy operation
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toBe('void');
@@ -255,7 +264,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
         operation: {
           type: 'deleteinsert',
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toBe('void');
@@ -279,7 +288,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
           ],
           where: factory.createBgp([]), // Dummy operation
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toBe('void');
@@ -305,7 +314,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
           ],
           where: factory.createBgp([]), // Dummy operation
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toBe('void');
@@ -334,7 +343,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
           ],
           where: factory.createBgp([]), // Dummy operation
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toBe('void');

@@ -4,20 +4,18 @@ import type {
   IActorQueryResultSerializeOutput,
 } from '@comunica/bus-query-result-serialize';
 import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-result-serialize';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type {
   Bindings,
+  ComunicaDataFactory,
   IActionContext,
   IQueryOperationResultBindings,
   IQueryOperationResultQuads,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import { getTerms, QUAD_TERM_NAMES } from 'rdf-terms';
 import { Readable } from 'readable-stream';
-
-const DF = new DataFactory();
-const QUAD_TERM_NAMES_VARS = QUAD_TERM_NAMES.map(name => DF.variable(name));
 
 /**
  * A comunica Table Sparql Serialize Actor.
@@ -64,36 +62,30 @@ export class ActorQueryResultSerializeTable extends ActorQueryResultSerializeFix
     data.push(`${header}\n${ActorQueryResultSerializeTable.repeat('-', header.length)}\n`);
   }
 
-  public pushRow(data: Readable, labels: RDF.Variable[], bindings: Bindings): void {
-    data.push(`${labels
+  public createRow(labels: RDF.Variable[], bindings: Bindings): string {
+    return `${labels
       .map(label => bindings.has(label) ? this.termToString(bindings.get(label)!) : '')
       .map(label => this.pad(label))
-      .join(' ')}\n`);
+      .join(' ')}\n`;
   }
 
   public async runHandle(action: IActionSparqlSerialize, _mediaType: string, _context: IActionContext):
   Promise<IActorQueryResultSerializeOutput> {
     const data = new Readable();
-    data._read = () => {
-      // Do nothing
-    };
 
     let resultStream: NodeJS.EventEmitter;
     if (action.type === 'bindings') {
-      resultStream = (<IQueryOperationResultBindings> action).bindingsStream;
-      const labels = (await (<IQueryOperationResultBindings> action).metadata()).variables;
+      resultStream = (<IQueryOperationResultBindings>action).bindingsStream.map(
+        bindings => this.createRow(labels, bindings),
+      );
+      const labels = (await (<IQueryOperationResultBindings>action).metadata()).variables;
       this.pushHeader(data, labels);
-      resultStream.on('error', error => data.emit('error', error));
-      resultStream.on('data', bindings => this.pushRow(data, labels, bindings));
     } else {
-      resultStream = (<IQueryOperationResultQuads> action).quadStream;
-      this.pushHeader(data, QUAD_TERM_NAMES_VARS);
-      resultStream.on('error', error => data.emit('error', error));
-      resultStream.on('data', quad => data.push(
-        `${getTerms(quad).map(term => this.pad(this.termToString(term))).join(' ')}\n`,
-      ));
+      resultStream = (<IQueryOperationResultQuads>action).quadStream.map(quad => `${getTerms(quad).map(term => this.pad(this.termToString(term))).join(' ')}\n`);
+      const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
+      this.pushHeader(data, QUAD_TERM_NAMES.map(name => dataFactory.variable(name)));
     }
-    resultStream.on('end', () => data.push(null));
+    data.wrap(<any> resultStream);
 
     return { data };
   }

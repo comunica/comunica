@@ -51,13 +51,19 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
     });
 
     it('should test', async() => {
-      await expect(actor.test({ operation: AF.createNop(), context: new ActionContext() })).resolves.toBeTruthy();
+      await expect(actor.test({
+        operation: AF.createNop(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      })).resolves.toBeTruthy();
     });
 
     describe('run', () => {
       it('should pass operation for no sources', async() => {
         const operationIn = AF.createNop();
-        const { operation: operationOut } = await actor.run({ operation: operationIn, context: new ActionContext() });
+        const { operation: operationOut } = await actor.run({
+          operation: operationIn,
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+        });
         expect(operationOut).toBe(operationIn);
       });
 
@@ -65,7 +71,9 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
         const operationIn = AF.createNop();
         const { operation: operationOut } = await actor.run({
           operation: operationIn,
-          context: new ActionContext().set(KeysQueryOperation.querySources, []),
+          context: new ActionContext({
+            [KeysInitQuery.dataFactory.name]: DF,
+          }).set(KeysQueryOperation.querySources, []),
         });
         expect(operationOut).toBe(operationIn);
       });
@@ -74,7 +82,8 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
         const operationIn = AF.createNop();
         const { operation: operationOut } = await actor.run({
           operation: operationIn,
-          context: new ActionContext().set(KeysQueryOperation.querySources, [ source1 ]),
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF })
+            .set(KeysQueryOperation.querySources, [ source1 ]),
         });
         expect(operationOut).not.toBe(operationIn);
         expect(ActorQueryOperation.getOperationSource(operationOut)).toBe(source1);
@@ -84,7 +93,7 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
         const operationIn = AF.createNop();
         const { operation: operationOut } = await actor.run({
           operation: operationIn,
-          context: new ActionContext()
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF })
             .set(KeysQueryOperation.querySources, [ source1 ])
             .set(KeysRdfUpdateQuads.destination, 'source1'),
         });
@@ -99,7 +108,7 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
         ]);
         const { operation: operationOut } = await actor.run({
           operation: operationIn,
-          context: new ActionContext()
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF })
             .set(KeysQueryOperation.querySources, [ source1 ])
             .set(KeysRdfUpdateQuads.destination, 'sourceOther'),
         });
@@ -116,7 +125,9 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
         ]);
         const { operation: operationOut } = await actor.run({
           operation: operationIn,
-          context: new ActionContext().set(KeysQueryOperation.querySources, [ sourcePattern ]),
+          context: new ActionContext({
+            [KeysInitQuery.dataFactory.name]: DF,
+          }).set(KeysQueryOperation.querySources, [ sourcePattern ]),
         });
         expect(operationOut).not.toBe(operationIn);
         expect(ActorQueryOperation.getOperationSource(operationOut)).toBeUndefined();
@@ -131,7 +142,9 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
         ]);
         const { operation: operationOut } = await actor.run({
           operation: operationIn,
-          context: new ActionContext().set(KeysQueryOperation.querySources, [ source1, sourcePattern ]),
+          context: new ActionContext({
+            [KeysInitQuery.dataFactory.name]: DF,
+          }).set(KeysQueryOperation.querySources, [ source1, sourcePattern ]),
         });
         expect(operationOut).not.toBe(operationIn);
         expect(ActorQueryOperation.getOperationSource(operationOut)).toBeUndefined();
@@ -147,7 +160,7 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
         const operationIn = AF.createNop();
         const { operation: operationOut, context: contextOut } = await actor.run({
           operation: operationIn,
-          context: new ActionContext()
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF })
             .set(KeysQueryOperation.querySources, [ source1 ])
             .set(KeysInitQuery.queryString, 'abc'),
         });
@@ -160,7 +173,7 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
         const operationIn = AF.createNop();
         const { operation: operationOut, context: contextOut } = await actor.run({
           operation: operationIn,
-          context: new ActionContext()
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF })
             .set(KeysQueryOperation.querySources, [ source1, source1 ])
             .set(KeysInitQuery.queryString, 'abc'),
         });
@@ -172,14 +185,14 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
     describe('assignExhaustive', () => {
       it('for pattern with one source', async() => {
         const operationIn = AF.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'));
-        const operationOut = actor.assignExhaustive(operationIn, [ source1 ]);
+        const operationOut = actor.assignExhaustive(AF, operationIn, [ source1 ]);
         expect(operationOut.type).toEqual(Algebra.types.PATTERN);
         expect(ActorQueryOperation.getOperationSource(operationOut)).toBe(source1);
       });
 
       it('for pattern with two sources', async() => {
         const operationIn = AF.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'));
-        const operationOut = actor.assignExhaustive(operationIn, [ source1, sourcePattern ]);
+        const operationOut = actor.assignExhaustive(AF, operationIn, [ source1, sourcePattern ]);
         expect(operationOut.type).toEqual(Algebra.types.UNION);
         expect(operationOut.input).toHaveLength(2);
         expect(operationOut.input[0].type).toEqual(Algebra.types.PATTERN);
@@ -190,14 +203,14 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
 
       it('for link with one source', async() => {
         const operationIn = AF.createLink(DF.namedNode('p1'));
-        const operationOut = actor.assignExhaustive(operationIn, [ source1 ]);
+        const operationOut = actor.assignExhaustive(AF, operationIn, [ source1 ]);
         expect(operationOut.type).toEqual(Algebra.types.LINK);
         expect(ActorQueryOperation.getOperationSource(operationOut)).toBe(source1);
       });
 
       it('for link with two sources', async() => {
         const operationIn = AF.createLink(DF.namedNode('p1'));
-        const operationOut = actor.assignExhaustive(operationIn, [ source1, sourcePattern ]);
+        const operationOut = actor.assignExhaustive(AF, operationIn, [ source1, sourcePattern ]);
         expect(operationOut.type).toEqual(Algebra.types.ALT);
         expect(operationOut.input).toHaveLength(2);
         expect(operationOut.input[0].type).toEqual(Algebra.types.LINK);
@@ -208,14 +221,14 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
 
       it('for nps with one source', async() => {
         const operationIn = AF.createNps([ DF.namedNode('p1'), DF.namedNode('p2') ]);
-        const operationOut = actor.assignExhaustive(operationIn, [ source1 ]);
+        const operationOut = actor.assignExhaustive(AF, operationIn, [ source1 ]);
         expect(operationOut.type).toEqual(Algebra.types.NPS);
         expect(ActorQueryOperation.getOperationSource(operationOut)).toBe(source1);
       });
 
       it('for nps with two sources', async() => {
         const operationIn = AF.createNps([ DF.namedNode('p1'), DF.namedNode('p2') ]);
-        const operationOut = actor.assignExhaustive(operationIn, [ source1, sourcePattern ]);
+        const operationOut = actor.assignExhaustive(AF, operationIn, [ source1, sourcePattern ]);
         expect(operationOut.type).toEqual(Algebra.types.ALT);
         expect(operationOut.input).toHaveLength(2);
         expect(operationOut.input[0].type).toEqual(Algebra.types.NPS);
@@ -226,7 +239,7 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
 
       it('for service with one source should not assign', async() => {
         const operationIn = AF.createService(AF.createNop(), DF.namedNode('source'));
-        const operationOut = actor.assignExhaustive(operationIn, [ source1 ]);
+        const operationOut = actor.assignExhaustive(AF, operationIn, [ source1 ]);
         expect(operationOut.type).toEqual(Algebra.types.SERVICE);
         expect(ActorQueryOperation.getOperationSource(operationOut)).toBeUndefined();
       });
@@ -238,7 +251,7 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
             AF.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
           ],
         );
-        const operationOut = actor.assignExhaustive(operationIn, [ source1 ]);
+        const operationOut = actor.assignExhaustive(AF, operationIn, [ source1 ]);
         expect(operationOut.type).toEqual(Algebra.types.CONSTRUCT);
         expect(operationOut.input.type).toEqual(Algebra.types.PATTERN);
         expect(ActorQueryOperation.getOperationSource(operationOut.input)).toBe(source1);
@@ -254,7 +267,7 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
           ],
           AF.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
         );
-        const operationOut = actor.assignExhaustive(operationIn, [ source1 ]);
+        const operationOut = actor.assignExhaustive(AF, operationIn, [ source1 ]);
         expect(operationOut.type).toEqual(Algebra.types.DELETE_INSERT);
         expect(operationOut.where.type).toEqual(Algebra.types.PATTERN);
         expect(ActorQueryOperation.getOperationSource(operationOut.delete[0])).not.toBe(source1);

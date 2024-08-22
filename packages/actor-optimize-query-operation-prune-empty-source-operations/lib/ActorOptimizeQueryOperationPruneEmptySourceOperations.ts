@@ -5,14 +5,10 @@ import type {
 } from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import { KeysQuerySourceIdentify } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
-import type { IActionContext, IQuerySourceWrapper, MetadataBindings } from '@comunica/types';
-import { DataFactory } from 'rdf-data-factory';
+import type { ComunicaDataFactory, IActionContext, IQuerySourceWrapper, MetadataBindings } from '@comunica/types';
 import { Algebra, Factory, Util } from 'sparqlalgebrajs';
-
-const AF = new Factory();
-const DF = new DataFactory();
 
 /**
  * A comunica Prune Empty Source Operations Optimize Query Operation Actor.
@@ -32,6 +28,9 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
+    const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
+    const algebraFactory = new Factory(dataFactory);
+
     let operation = action.operation;
 
     // Collect all operations with source types
@@ -57,9 +56,10 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     const emptyOperations: Set<Algebra.Operation> = new Set();
     await Promise.all(collectedOperations.map(async(collectedOperation) => {
       const checkOperation = collectedOperation.type === 'link' ?
-        AF.createPattern(DF.variable('?s'), collectedOperation.iri, DF.variable('?o')) :
+        algebraFactory.createPattern(dataFactory.variable('?s'), collectedOperation.iri, dataFactory.variable('?o')) :
         collectedOperation;
       if (!await this.hasSourceResults(
+        algebraFactory,
         ActorQueryOperation.getOperationSource(collectedOperation)!,
         checkOperation,
         action.context,
@@ -69,8 +69,8 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     }));
 
     // Only perform next mapping if we have at least one empty operation
-    this.logDebug(action.context, `Pruning ${emptyOperations.size} source-specific operations`);
     if (emptyOperations.size > 0) {
+      this.logDebug(action.context, `Pruning ${emptyOperations.size} source-specific operations`);
       // Rewrite operations by removing the empty children
       operation = Util.mapOperation(operation, {
         [Algebra.types.UNION](subOperation, factory) {
@@ -79,28 +79,12 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
         [Algebra.types.ALT](subOperation, factory) {
           return self.mapMultiOperation(subOperation, emptyOperations, children => factory.createAlt(children));
         },
-      });
+      }, algebraFactory);
 
       // Identify and remove projections that have become empty now due to missing variables
       operation = Util.mapOperation(operation, {
         [Algebra.types.PROJECT](subOperation, factory) {
-          let emptyProject = false;
-          Util.recurseOperation(subOperation, {
-            [Algebra.types.UNION](subSubOperation) {
-              if (subSubOperation.input.length === 0) {
-                emptyProject = true;
-              }
-              return true;
-            },
-            [Algebra.types.ALT](subSubOperation) {
-              if (subSubOperation.input.length === 0) {
-                emptyProject = true;
-              }
-              return true;
-            },
-          });
-
-          if (emptyProject) {
+          if (ActorOptimizeQueryOperationPruneEmptySourceOperations.hasEmptyOperation(subOperation)) {
             return {
               recurse: false,
               result: factory.createUnion([]),
@@ -111,10 +95,33 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
             result: subOperation,
           };
         },
-      });
+      }, algebraFactory);
     }
 
     return { operation, context: action.context };
+  }
+
+  protected static hasEmptyOperation(operation: Algebra.Operation): boolean {
+    // If union (or alt) is empty, consider it empty (`Array.every` on an empty array always returns true)
+    // But if we find a union with multiple children,
+    // *all* of the children must be empty before the full operation is considered empty.
+    let emptyOperation = false;
+    Util.recurseOperation(operation, {
+      [Algebra.types.UNION](subOperation) {
+        if (subOperation.input.every(subSubOperation => ActorOptimizeQueryOperationPruneEmptySourceOperations
+          .hasEmptyOperation(subSubOperation))) {
+          emptyOperation = true;
+        }
+        return false;
+      },
+      [Algebra.types.ALT](subOperation) {
+        if (subOperation.input.length === 0) {
+          emptyOperation = true;
+        }
+        return false;
+      },
+    });
+    return emptyOperation;
   }
 
   protected collectMultiOperationInputs(
@@ -155,11 +162,13 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
 
   /**
    * Check if the given query operation will produce at least one result in the given source.
+   * @param algebraFactory The algebra factory.
    * @param source A query source.
    * @param input A query operation.
    * @param context The query context.
    */
   public async hasSourceResults(
+    algebraFactory: Factory,
     source: IQuerySourceWrapper,
     input: Algebra.Operation,
     context: IActionContext,
@@ -171,7 +180,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
 
     // Send an ASK query
     if (this.useAskIfSupported) {
-      const askOperation = AF.createAsk(input);
+      const askOperation = algebraFactory.createAsk(input);
       if (ActorQueryOperation
         .doesShapeAcceptOperation(await source.source.getSelectorShape(context), askOperation)) {
         return source.source.queryBoolean(askOperation, context);

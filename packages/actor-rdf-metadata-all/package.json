@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-metadata-all",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A all rdf-metadata actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,8 +37,8 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-rdf-metadata": "^3.0.3",
-    "@comunica/core": "^3.0.3",
+    "@comunica/bus-rdf-metadata": "^3.2.1",
+    "@comunica/core": "^3.2.1",
     "readable-stream": "^4.4.2"
   }
 }

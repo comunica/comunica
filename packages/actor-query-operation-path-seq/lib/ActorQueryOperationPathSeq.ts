@@ -4,9 +4,10 @@ import {
   ActorQueryOperation,
 } from '@comunica/bus-query-operation';
 import type { MediatorRdfJoin } from '@comunica/bus-rdf-join';
-import type { Bindings, IActionContext, IQueryOperationResult, IJoinEntry } from '@comunica/types';
+import { KeysInitQuery } from '@comunica/context-entries';
+import type { Bindings, IActionContext, IQueryOperationResult, IJoinEntry, ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { Algebra } from 'sparqlalgebrajs';
+import { Algebra, Factory } from 'sparqlalgebrajs';
 
 /**
  * A comunica Path Seq Query Operation Actor.
@@ -22,14 +23,16 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
     operationOriginal: Algebra.Path,
     context: IActionContext,
   ): Promise<IQueryOperationResult> {
+    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+    const algebraFactory = new Factory(dataFactory);
     const predicate = <Algebra.Seq> operationOriginal.predicate;
 
     let joiner: RDF.Term = operationOriginal.subject;
     const generatedVariableNames: RDF.Variable[] = [];
     const entries: IJoinEntry[] = await Promise.all(predicate.input
       .map((subPredicate, i) => {
-        const nextJoiner = i === predicate.input.length - 1 ? <RDF.Variable> operationOriginal.object : this.generateVariable(operationOriginal, `b${i}`);
-        const operation = ActorAbstractPath.FACTORY
+        const nextJoiner = i === predicate.input.length - 1 ? <RDF.Variable> operationOriginal.object : this.generateVariable(dataFactory, operationOriginal, `b${i}`);
+        const operation = algebraFactory
           .createPath(joiner, subPredicate, nextJoiner, operationOriginal.graph);
         const output = this.mediatorQueryOperation.mediate({
           context,

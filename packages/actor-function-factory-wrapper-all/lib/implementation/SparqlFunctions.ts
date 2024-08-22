@@ -74,7 +74,7 @@ import {
   YearMonthDurationLiteral,
   yearMonthDurationsToMonths,
 } from '@comunica/expression-evaluator';
-import type { IDayTimeDurationRepresentation } from '@comunica/types';
+import type { ComunicaDataFactory, IDayTimeDurationRepresentation } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { BigNumber } from 'bignumber.js';
 import { sha1, sha256, sha384, sha512 } from 'hash.js';
@@ -294,9 +294,9 @@ class Equality extends TermSparqlFunction {
     )
     .set(
       [ 'term', 'term' ],
-      () => ([ _left, _right ]) => {
-        const left = _left.toRDF();
-        const right = _right.toRDF();
+      exprEval => ([ _left, _right ]) => {
+        const left = _left.toRDF(exprEval.context.getSafe(KeysInitQuery.dataFactory));
+        const right = _right.toRDF(exprEval.context.getSafe(KeysInitQuery.dataFactory));
         const val = left.equals(right);
         if (!val && (left.termType === 'Literal') && (right.termType === 'Literal')) {
           throw new RDFEqualTypeError([ _left, _right ]);
@@ -1391,12 +1391,12 @@ class Bound extends BaseFunctionDefinition {
 
   public operator = SparqlOperator.BOUND;
 
-  public apply = async({ args, mapping }: IEvalContext): Promise<TermExpression> => {
+  public apply = async({ args, mapping, exprEval }: IEvalContext): Promise<TermExpression> => {
     const variable = <VariableExpression> args[0];
     if (variable.expressionType !== ExpressionType.Variable) {
       throw new InvalidArgumentTypes(args, SparqlOperator.BOUND);
     }
-    const val = mapping.has(expressionToVar(variable));
+    const val = mapping.has(expressionToVar(exprEval.context.getSafe(KeysInitQuery.dataFactory), variable));
     return bool(val);
   };
 }
@@ -1524,9 +1524,10 @@ class SameTerm extends BaseFunctionDefinition {
   public operator = SparqlOperator.SAME_TERM;
 
   public apply = async({ args, mapping, exprEval }: IEvalContext): Promise<TermExpression> => {
+    const dataFactory: ComunicaDataFactory = exprEval.context.getSafe(KeysInitQuery.dataFactory);
     const [ leftExpr, rightExpr ] = args.map(arg => exprEval.evaluatorExpressionEvaluation(arg, mapping));
     const [ left, right ] = await Promise.all([ leftExpr, rightExpr ]);
-    return bool(left.toRDF().equals(right.toRDF()));
+    return bool(left.toRDF(dataFactory).equals(right.toRDF(dataFactory)));
   };
 }
 

@@ -1,12 +1,16 @@
 import { ActorRdfParseJsonLd } from '@comunica/actor-rdf-parse-jsonld';
 import type { IActionRdfParseHtml, IHtmlParseListener } from '@comunica/bus-rdf-parse-html';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
 import type { IActionContext } from '@comunica/types';
+import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfParseHtmlScript } from '../lib/ActorRdfParseHtmlScript';
 import { HtmlScriptListener } from '../lib/HtmlScriptListener';
 
 const quad = require('rdf-quad');
+
+const DF = new DataFactory();
 
 describe('ActorRdfParseHtml', () => {
   let bus: any;
@@ -108,7 +112,9 @@ describe('ActorRdfParseHtml', () => {
           end = jest.fn(resolve);
           error = jest.fn(reject);
         });
-        action = { baseIRI, headers, emit, error, end, context: new ActionContext({}) };
+        action = { baseIRI, headers, emit, error, end, context: new ActionContext({
+          [KeysInitQuery.dataFactory.name]: DF,
+        }) };
       });
 
       it('should return an HtmlScriptListener', async() => {
@@ -422,7 +428,9 @@ describe('ActorRdfParseHtml', () => {
           end = jest.fn(resolve);
           error = jest.fn(reject);
         });
-        action = { baseIRI, headers, emit, error, end, context: new ActionContext({}) };
+        action = { baseIRI, headers, emit, error, end, context: new ActionContext({
+          [KeysInitQuery.dataFactory.name]: DF,
+        }) };
       });
 
       it('should return an HtmlScriptListener', async() => {
@@ -574,7 +582,10 @@ describe('ActorRdfParseHtml', () => {
           end = jest.fn(resolve);
           error = jest.fn(reject);
         });
-        action = { baseIRI, headers, emit, error, end, context: new ActionContext({ extractAllScripts: false }) };
+        action = { baseIRI, headers, emit, error, end, context: new ActionContext({
+          [KeysInitQuery.dataFactory.name]: DF,
+          extractAllScripts: false,
+        }) };
       });
 
       it('should return an HtmlScriptListener', async() => {
@@ -641,7 +652,10 @@ describe('ActorRdfParseHtml', () => {
           end = jest.fn(resolve);
           error = jest.fn(reject);
         });
-        action = { baseIRI, headers, emit, error, end, context: new ActionContext({ extractAllScripts: false }) };
+        action = { baseIRI, headers, emit, error, end, context: new ActionContext({
+          [KeysInitQuery.dataFactory.name]: DF,
+          extractAllScripts: false,
+        }) };
       });
 
       it('should return an HtmlScriptListener', async() => {

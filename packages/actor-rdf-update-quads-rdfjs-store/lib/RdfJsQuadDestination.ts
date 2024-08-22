@@ -1,35 +1,34 @@
 import type { IQuadDestination } from '@comunica/bus-rdf-update-quads';
+import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import { DataFactory } from 'rdf-data-factory';
+import { promisifyEventEmitter } from 'event-emitter-promisify';
 import { stringToTerm, termToString } from 'rdf-string';
-import EventEmitter = NodeJS.EventEmitter;
-
-const DF = new DataFactory();
 
 /**
  * A quad destination that wraps around an {@link RDF.Store}.
  */
 export class RdfJsQuadDestination implements IQuadDestination {
+  private readonly dataFactory: ComunicaDataFactory;
   private readonly store: RDF.Store;
 
-  public constructor(store: RDF.Store) {
+  public constructor(
+    dataFactory: ComunicaDataFactory,
+    store: RDF.Store,
+  ) {
+    this.dataFactory = dataFactory;
     this.store = store;
   }
 
-  protected promisifyEventEmitter(eventEmitter: EventEmitter): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      eventEmitter.on('end', resolve);
-      eventEmitter.on('error', reject);
-    });
-  }
-
-  public delete(quads: AsyncIterator<RDF.Quad>): Promise<void> {
-    return this.promisifyEventEmitter(this.store.remove(quads));
-  }
-
-  public insert(quads: AsyncIterator<RDF.Quad>): Promise<void> {
-    return this.promisifyEventEmitter(this.store.import(quads));
+  public async update(
+    quadStreams: { insert?: AsyncIterator<RDF.Quad>; delete?: AsyncIterator<RDF.Quad> },
+  ): Promise<void> {
+    if (quadStreams.delete) {
+      await promisifyEventEmitter(this.store.remove(quadStreams.delete));
+    }
+    if (quadStreams.insert) {
+      await promisifyEventEmitter(this.store.import(quadStreams.insert));
+    }
   }
 
   public async deleteGraphs(
@@ -41,7 +40,7 @@ export class RdfJsQuadDestination implements IQuadDestination {
       case 'ALL':
         /* eslint-disable no-fallthrough */
         // Remove the default graph
-        await this.promisifyEventEmitter(this.store.deleteGraph(DF.defaultGraph()));
+        await promisifyEventEmitter(this.store.deleteGraph(this.dataFactory.defaultGraph()));
         // Drop through to remove all named graphs
       case 'NAMED':
         /* eslint-enable no-fallthrough */
@@ -56,17 +55,17 @@ export class RdfJsQuadDestination implements IQuadDestination {
             namedGraphs[termToString(quad.graph)] = true;
           }
         });
-        await this.promisifyEventEmitter(allQuads);
+        await promisifyEventEmitter(allQuads);
 
         // Delete all named graphs
         await Promise.all(Object.keys(namedGraphs)
-          .map(namedGraph => this.promisifyEventEmitter(this.store
-            .deleteGraph(<RDF.NamedNode> stringToTerm(namedGraph)))));
+          .map(namedGraph => promisifyEventEmitter(this.store
+            .deleteGraph(<RDF.NamedNode> stringToTerm(namedGraph, this.dataFactory)))));
         break;
       default:
         // Delete the default graph or a named graph
         for (const graph of Array.isArray(graphs) ? graphs : [ graphs ]) {
-          await this.promisifyEventEmitter(this.store.deleteGraph(graph));
+          await promisifyEventEmitter(this.store.deleteGraph(graph));
         }
     }
   }

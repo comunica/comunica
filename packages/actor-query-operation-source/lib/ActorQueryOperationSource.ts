@@ -8,7 +8,7 @@ import type {
   IQueryOperationResult,
   IQuerySourceWrapper,
 } from '@comunica/types';
-import { Algebra } from 'sparqlalgebrajs';
+import { Algebra, Util } from 'sparqlalgebrajs';
 
 /**
  * A comunica Source Query Operation Actor.
@@ -44,22 +44,28 @@ export class ActorQueryOperationSource extends ActorQueryOperation {
     const sourceWrapper: IQuerySourceWrapper = ActorQueryOperation.getOperationSource(action.operation)!;
     const mergedContext = sourceWrapper.context ? action.context.merge(sourceWrapper.context) : action.context;
 
+    // Check if the operation is a CONSTRUCT query
+    // We recurse because it may be wrapped in other operations such as SLICE and FROM
+    let construct = false;
+    Util.recurseOperation(action.operation, {
+      construct(): boolean {
+        construct = true;
+        return false;
+      },
+    });
+    // If so, delegate to queryQuads
+    if (construct) {
+      const quadStream = sourceWrapper.source.queryQuads(action.operation, mergedContext);
+      const metadata = getMetadataQuads(quadStream);
+      return {
+        type: 'quads',
+        quadStream,
+        metadata,
+      };
+    }
+
     // eslint-disable-next-line ts/switch-exhaustiveness-check
     switch (action.operation.type) {
-      // Special case: allow CONSTRUCT queries that are SLICED to be pushed into sources as well.
-      case Algebra.types.SLICE:
-      case Algebra.types.CONSTRUCT: {
-        if (action.operation.type === Algebra.types.SLICE && action.operation.input.type !== Algebra.types.CONSTRUCT) {
-          break;
-        }
-        const quadStream = sourceWrapper.source.queryQuads(action.operation, mergedContext);
-        const metadata = getMetadataQuads(quadStream);
-        return {
-          type: 'quads',
-          quadStream,
-          metadata,
-        };
-      }
       case Algebra.types.ASK:
         return {
           type: 'boolean',

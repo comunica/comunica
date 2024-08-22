@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-inner-symmetrichash",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A symmetrichash rdf-join actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,9 +37,9 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-rdf-join": "^3.0.3",
-    "@comunica/mediatortype-join-coefficients": "^3.0.3",
-    "@comunica/types": "^3.0.3",
-    "asyncjoin": "^1.2.0"
+    "@comunica/bus-rdf-join": "^3.2.1",
+    "@comunica/mediatortype-join-coefficients": "^3.2.1",
+    "@comunica/types": "^3.2.1",
+    "asyncjoin": "^1.2.3"
   }
 }

@@ -1,10 +1,14 @@
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinMultiEmpty } from '../lib/ActorRdfJoinMultiEmpty';
 import '@comunica/jest';
+
+const DF = new DataFactory();
 
 describe('ActorRdfJoinMultiEmpty', () => {
   let bus: any;
@@ -28,7 +32,7 @@ IActorRdfJoinSelectivityOutput
         mediate: async() => ({ selectivity: 1 }),
       };
       actor = new ActorRdfJoinMultiEmpty({ name: 'actor', bus, mediatorJoinSelectivity });
-      context = new ActionContext();
+      context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
     });
 
     describe('test', () => {

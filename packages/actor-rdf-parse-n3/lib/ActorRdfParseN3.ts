@@ -1,6 +1,7 @@
 import type { IActionRdfParse, IActorRdfParseFixedMediaTypesArgs, IActorRdfParseOutput } from '@comunica/bus-rdf-parse';
 import { ActorRdfParseFixedMediaTypes } from '@comunica/bus-rdf-parse';
-import type { IActionContext } from '@comunica/types';
+import { KeysInitQuery } from '@comunica/context-entries';
+import type { ComunicaDataFactory, IActionContext } from '@comunica/types';
 import { StreamParser } from 'n3';
 import type { Readable } from 'readable-stream';
 
@@ -33,8 +34,10 @@ export class ActorRdfParseN3 extends ActorRdfParseFixedMediaTypes {
 
   public async runHandle(action: IActionRdfParse, mediaType: string, _context: IActionContext):
   Promise<IActorRdfParseOutput> {
+    const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     action.data.on('error', error => data.emit('error', error));
     const data = <Readable><any>action.data.pipe(new StreamParser({
+      factory: dataFactory,
       baseIRI: action.metadata?.baseIRI,
       // Enable RDF-star-mode on all formats, except N3, where this is not supported.
       format: mediaType.endsWith('n3') ? mediaType : `${mediaType}*`,

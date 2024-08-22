@@ -2,7 +2,7 @@ import { createFuncMediator } from '@comunica/actor-function-factory-wrapper-all
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import { ActionContext, Bus } from '@comunica/core';
+import { Bus } from '@comunica/core';
 import * as sparqlee from '@comunica/expression-evaluator';
 import { isExpressionError } from '@comunica/expression-evaluator';
 import { getMockEEActionContext, getMockMediatorExpressionEvaluatorFactory } from '@comunica/jest';
@@ -12,7 +12,7 @@ import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationLeftJoin } from '../lib';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 
 describe('ActorQueryOperationLeftJoin', () => {
   let bus: any;
@@ -98,7 +98,7 @@ describe('ActorQueryOperationLeftJoin', () => {
     });
 
     it('should run', async() => {
-      const op: any = { operation: { type: 'leftjoin', input: [{}, {}]}, context: new ActionContext() };
+      const op: any = { operation: { type: 'leftjoin', input: [{}, {}]}, context };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.type).toBe('bindings');
       await expect(output.metadata()).resolves.toEqual({
@@ -164,7 +164,7 @@ describe('ActorQueryOperationLeftJoin', () => {
 
       const op: any = {
         operation: { type: 'leftjoin', input: [{ side: 'left' }, { side: 'right' }]},
-        context: new ActionContext(),
+        context,
       };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.bindingsStream).toEqualBindingsStream([

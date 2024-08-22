@@ -3,14 +3,16 @@ import { ActorQueryOperationUnion } from '@comunica/actor-query-operation-union'
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type {
   IQueryOperationResultBindings,
   IQueryOperationResult,
   IActionContext,
   MetadataBindings,
+  ComunicaDataFactory,
 } from '@comunica/types';
 import { UnionIterator } from 'asynciterator';
-import { Algebra } from 'sparqlalgebrajs';
+import { Algebra, Factory } from 'sparqlalgebrajs';
 
 /**
  * A comunica Path Alt Query Operation Actor.
@@ -23,13 +25,15 @@ export class ActorQueryOperationPathAlt extends ActorAbstractPath {
   }
 
   public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryOperationResult> {
+    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+    const algebraFactory = new Factory(dataFactory);
+
     const predicate = <Algebra.Alt> operation.predicate;
 
     const subOperations: IQueryOperationResultBindings[] = (await Promise.all(predicate.input
       .map(subPredicate => this.mediatorQueryOperation.mediate({
         context,
-        operation: ActorAbstractPath.FACTORY
-          .createPath(operation.subject, subPredicate, operation.object, operation.graph),
+        operation: algebraFactory.createPath(operation.subject, subPredicate, operation.object, operation.graph),
       }))))
       .map(ActorQueryOperation.getSafeBindings);
 

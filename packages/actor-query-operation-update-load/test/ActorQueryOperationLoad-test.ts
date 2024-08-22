@@ -50,7 +50,10 @@ describe('ActorQueryOperationLoad', () => {
     });
 
     it('should test on load', async() => {
-      const op: any = { operation: { type: 'load' }, context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'load' },
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
       await expect(actor.test(op)).resolves.toBeTruthy();
     });
 
@@ -63,7 +66,10 @@ describe('ActorQueryOperationLoad', () => {
     });
 
     it('should not test on non-load', async() => {
-      const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
+      const op: any = {
+        operation: { type: 'some-other-type' },
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
       await expect(actor.test(op)).rejects.toBeTruthy();
     });
 
@@ -73,7 +79,7 @@ describe('ActorQueryOperationLoad', () => {
           type: 'load',
           source: DF.namedNode('URL'),
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toBe('void');
@@ -91,6 +97,7 @@ describe('ActorQueryOperationLoad', () => {
           [ AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')) ],
         ),
         context: new ActionContext({
+          [KeysInitQuery.dataFactory.name]: DF,
           [KeysQueryOperation.operation.name]: expect.anything(),
         }),
       });
@@ -102,7 +109,7 @@ describe('ActorQueryOperationLoad', () => {
           type: 'load',
           source: DF.namedNode('URL'),
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toBe('void');
@@ -114,6 +121,7 @@ describe('ActorQueryOperationLoad', () => {
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
         operation: expect.anything(),
         context: new ActionContext({
+          [KeysInitQuery.dataFactory.name]: DF,
           '@comunica/bus-query-operation:operation': expect.anything(),
         }),
       });
@@ -125,7 +133,7 @@ describe('ActorQueryOperationLoad', () => {
           type: 'load',
           source: DF.namedNode('URL'),
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toBe('void');
@@ -143,7 +151,7 @@ describe('ActorQueryOperationLoad', () => {
           source: DF.namedNode('URL'),
           destination: DF.namedNode('GRAPH'),
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toBe('void');
@@ -160,7 +168,7 @@ describe('ActorQueryOperationLoad', () => {
           type: 'load',
           source: DF.namedNode('URL'),
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
         quadStream: new ArrayIterator([], { autoStart: false }),
@@ -181,7 +189,7 @@ describe('ActorQueryOperationLoad', () => {
           source: DF.namedNode('URL'),
           silent: true,
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op);
       expect(output.type).toBe('void');
@@ -193,6 +201,7 @@ describe('ActorQueryOperationLoad', () => {
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
         operation: expect.anything(),
         context: new ActionContext({
+          [KeysInitQuery.dataFactory.name]: DF,
           [KeysInitQuery.lenient.name]: true,
           [KeysQueryOperation.operation.name]: expect.anything(),
         }),

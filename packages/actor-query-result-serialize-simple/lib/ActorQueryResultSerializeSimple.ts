@@ -12,6 +12,7 @@ import type {
   IQueryOperationResultVoid,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import { wrap } from 'asynciterator';
 import { termToString } from 'rdf-string';
 import { Readable } from 'readable-stream';
 
@@ -42,42 +43,22 @@ export class ActorQueryResultSerializeSimple extends ActorQueryResultSerializeFi
   public async runHandle(action: IActionSparqlSerialize, _mediaType: string, _context: IActionContext):
   Promise<IActorQueryResultSerializeOutput> {
     const data = new Readable();
-    data._read = () => {
-      // Do nothing
-    };
-
-    let resultStream: NodeJS.EventEmitter;
     if (action.type === 'bindings') {
-      resultStream = (<IQueryOperationResultBindings> action).bindingsStream;
-      resultStream.on('error', error => data.emit('error', error));
-      resultStream.on('data', (bindings: RDF.Bindings) => data.push(`${[ ...bindings ].map(
+      data.wrap(<any> (<IQueryOperationResultBindings>action).bindingsStream.map((bindings: RDF.Bindings) => `${[ ...bindings ].map(
         ([ key, value ]) => `?${key.value}: ${ActorQueryResultSerializeSimple.termToString(value)}`,
       ).join('\n')}\n\n`));
-      resultStream.on('end', () => data.push(null));
     } else if (action.type === 'quads') {
-      resultStream = (<IQueryOperationResultQuads> action).quadStream;
-      resultStream.on('error', error => data.emit('error', error));
-      resultStream.on('data', quad => data.push(
+      data.wrap(<any> (<IQueryOperationResultQuads>action).quadStream.map(quad =>
         `subject: ${ActorQueryResultSerializeSimple.termToString(quad.subject)}\n` +
         `predicate: ${ActorQueryResultSerializeSimple.termToString(quad.predicate)}\n` +
         `object: ${ActorQueryResultSerializeSimple.termToString(quad.object)}\n` +
-        `graph: ${ActorQueryResultSerializeSimple.termToString(quad.graph)}\n\n`,
-      ));
-      resultStream.on('end', () => data.push(null));
-    } else if (action.type === 'boolean') {
-      try {
-        data.push(`${JSON.stringify(await (<IQueryOperationResultBoolean> action).execute())}\n`);
-        data.push(null);
-      } catch (error: unknown) {
-        setTimeout(() => data.emit('error', error));
-      }
+        `graph: ${ActorQueryResultSerializeSimple.termToString(quad.graph)}\n\n`));
     } else {
-      (<IQueryOperationResultVoid> action).execute()
-        .then(() => {
-          data.push('ok\n');
-          data.push(null);
-        })
-        .catch(error => setTimeout(() => data.emit('error', error)));
+      data.wrap(<any> wrap(
+        action.type === 'boolean' ?
+            (<IQueryOperationResultBoolean> action).execute().then(value => [ `${value}\n` ]) :
+            (<IQueryOperationResultVoid>action).execute().then(() => [ 'ok\n' ]),
+      ));
     }
 
     return { data };

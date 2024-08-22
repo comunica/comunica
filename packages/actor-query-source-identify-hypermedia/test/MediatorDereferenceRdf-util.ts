@@ -28,7 +28,7 @@ const quad = require('rdf-quad');
 const streamifyArray = require('streamify-array');
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 const AF = new Factory();
 
 // @ts-expect-error

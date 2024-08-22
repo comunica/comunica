@@ -1,3 +1,4 @@
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -36,7 +37,7 @@ describe('ActorOptimizeQueryOperationRewriteMove', () => {
           destination: DF.namedNode('DEST'),
           silent: false,
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const { operation } = await actor.run(op);
       expect(operation).toEqual(AF.createCompositeUpdate([
@@ -54,7 +55,7 @@ describe('ActorOptimizeQueryOperationRewriteMove', () => {
           destination: DF.namedNode('DEST'),
           silent: true,
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const { operation } = await actor.run(op);
       expect(operation).toEqual(AF.createCompositeUpdate([
@@ -72,7 +73,7 @@ describe('ActorOptimizeQueryOperationRewriteMove', () => {
           destination: DF.namedNode('SOURCE'),
           silent: false,
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const { operation } = await actor.run(op);
       expect(operation).toEqual(AF.createCompositeUpdate([]));
@@ -86,7 +87,7 @@ describe('ActorOptimizeQueryOperationRewriteMove', () => {
           destination: 'DEFAULT',
           silent: false,
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const { operation } = await actor.run(op);
       expect(operation).toEqual(AF.createCompositeUpdate([]));
@@ -100,7 +101,7 @@ describe('ActorOptimizeQueryOperationRewriteMove', () => {
           destination: DF.namedNode('DEST'),
           silent: false,
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const { operation } = await actor.run(op);
       expect(operation).toEqual(AF.createCompositeUpdate([
@@ -118,7 +119,7 @@ describe('ActorOptimizeQueryOperationRewriteMove', () => {
           destination: 'DEFAULT',
           silent: false,
         },
-        context: new ActionContext(),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const { operation } = await actor.run(op);
       expect(operation).toEqual(AF.createCompositeUpdate([

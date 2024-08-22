@@ -57,7 +57,8 @@ export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<A
       };
     }
 
-    throw new Error(`Invalid query output type: Expected 'bindings' or 'quads' but got '${output.type}'`);
+    // In all other cases, return the result as-is.
+    return output;
   }
 
   // Slice the stream based on the pattern values

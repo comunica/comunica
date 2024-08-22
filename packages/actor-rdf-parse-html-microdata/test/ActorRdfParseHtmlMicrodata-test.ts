@@ -1,15 +1,22 @@
 import { ActorRdfParseHtml } from '@comunica/bus-rdf-parse-html';
-import { Bus } from '@comunica/core';
+import { KeysInitQuery } from '@comunica/context-entries';
+import { ActionContext, Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import { MicrodataRdfParser } from 'microdata-rdf-streaming-parser';
+import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfParseHtmlMicrodata } from '../lib/ActorRdfParseHtmlMicrodata';
 
 const quad = require('rdf-quad');
 
+const DF = new DataFactory();
+
 describe('ActorRdfParseHtmlMicrodata', () => {
   let bus: any;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
   });
 
   describe('The ActorRdfParseHtmlMicrodata module', () => {
@@ -63,7 +70,7 @@ describe('ActorRdfParseHtmlMicrodata', () => {
         emit = jest.fn();
         error = jest.fn();
         end = jest.fn();
-        action = { baseIRI, headers, emit, error, end };
+        action = { baseIRI, headers, emit, error, end, context };
       });
 
       it('should return an MicrodataParser', async() => {
@@ -78,7 +85,7 @@ describe('ActorRdfParseHtmlMicrodata', () => {
 
       it('should set the profile, baseIRI and language for empty headers', async() => {
         headers = { get: () => null };
-        action = { baseIRI, headers, emit, error, end };
+        action = { baseIRI, headers, emit, error, end, context };
 
         const listener = (await actor.run(action)).htmlParseListener;
         expect((<any> listener).util.baseIRI).toBe('http://example.org/');
@@ -86,7 +93,7 @@ describe('ActorRdfParseHtmlMicrodata', () => {
 
       it('should set the profile, baseIRI and language for null headers', async() => {
         headers = null;
-        action = { baseIRI, headers, emit, error, end };
+        action = { baseIRI, headers, emit, error, end, context };
 
         const listener = (await actor.run(action)).htmlParseListener;
         expect((<any> listener).util.baseIRI).toBe('http://example.org/');

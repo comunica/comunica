@@ -1,11 +1,13 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { Bus } from '@comunica/core';
 import { cachifyMetadata, MetadataValidationState } from '@comunica/metadata';
+import { DataFactory } from 'rdf-data-factory';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperation } from '..';
 
-const BF = new BindingsFactory();
+const DF = new DataFactory();
 const AF = new Factory();
+const BF = new BindingsFactory(DF);
 
 describe('ActorQueryOperation', () => {
   const bus = new Bus({ name: 'bus' });

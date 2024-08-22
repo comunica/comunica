@@ -13,7 +13,7 @@ import { ActorQueryProcessSequential } from '../lib/ActorQueryProcessSequential'
 
 const DF = new DataFactory();
 const AF = new Factory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 
 describe('ActorQueryProcessSequential', () => {
   let bus: any;
@@ -60,7 +60,7 @@ describe('ActorQueryProcessSequential', () => {
     let ctx: IActionContext;
 
     beforeEach(() => {
-      ctx = new ActionContext();
+      ctx = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
       actor = new ActorQueryProcessSequential({
         name: 'actor',
         bus,
@@ -74,17 +74,26 @@ describe('ActorQueryProcessSequential', () => {
 
     describe('test', () => {
       it('rejects on explain in context', async() => {
-        await expect(actor.test({ query: 'q', context: new ActionContext().set(KeysInitQuery.explain, 'parsed') }))
+        await expect(actor.test({
+          query: 'q',
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }).set(KeysInitQuery.explain, 'parsed'),
+        }))
           .rejects.toThrow(`actor is not able to explain queries.`);
       });
 
       it('rejects on raw explain in context', async() => {
-        await expect(actor.test({ query: 'q', context: new ActionContext().setRaw('explain', 'parsed') }))
+        await expect(actor.test({
+          query: 'q',
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }).setRaw('explain', 'parsed'),
+        }))
           .rejects.toThrow(`actor is not able to explain queries.`);
       });
 
       it('handles no explain in context', async() => {
-        await expect(actor.test({ query: 'q', context: new ActionContext() })).resolves
+        await expect(actor.test({
+          query: 'q',
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+        })).resolves
           .toBeTruthy();
       });
     });
@@ -100,7 +109,7 @@ describe('ActorQueryProcessSequential', () => {
           query: op,
           context: ctx,
         });
-        expect((<any> result).context).toEqual(new ActionContext()
+        expect((<any> result).context).toEqual(new ActionContext({ [KeysInitQuery.dataFactory.name]: DF })
           .set(KeysInitQuery.query, AF.createJoin([
             op,
           ], false)));
@@ -109,19 +118,20 @@ describe('ActorQueryProcessSequential', () => {
         ], false));
 
         expect(mediatorContextPreprocess.mediate).toHaveBeenCalledWith({
-          context: new ActionContext(),
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+          initialize: true,
         });
         expect(mediatorQueryParse.mediate).not.toHaveBeenCalled();
         expect(mediatorOptimizeQueryOperation.mediate).toHaveBeenCalledWith({
           operation: op,
-          context: new ActionContext()
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF })
             .set(KeysInitQuery.query, op),
         });
         expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
           operation: AF.createJoin([
             op,
           ], false),
-          context: new ActionContext()
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF })
             .set(KeysInitQuery.query, AF.createJoin([
               op,
             ], false)),
@@ -132,15 +142,16 @@ describe('ActorQueryProcessSequential', () => {
     describe('parse', () => {
       it('parses a query', async() => {
         const output = await actor.parse('query', ctx);
-        expect(output.context).toEqual(new ActionContext()
+        expect(output.context).toEqual(new ActionContext({ [KeysInitQuery.dataFactory.name]: DF })
           .set(KeysInitQuery.queryString, 'query'));
         expect(output.operation).toBe('PARSED');
 
         expect(mediatorContextPreprocess.mediate).toHaveBeenCalledWith({
-          context: new ActionContext(),
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+          initialize: true,
         });
         expect(mediatorQueryParse.mediate).toHaveBeenCalledWith({
-          context: new ActionContext()
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF })
             .set(KeysInitQuery.queryString, 'query'),
           query: 'query',
           baseIRI: undefined,
@@ -149,15 +160,16 @@ describe('ActorQueryProcessSequential', () => {
 
       it('parses a query with query format', async() => {
         const output = await actor.parse('query', ctx);
-        expect(output.context).toEqual(new ActionContext()
+        expect(output.context).toEqual(new ActionContext({ [KeysInitQuery.dataFactory.name]: DF })
           .set(KeysInitQuery.queryString, 'query'));
         expect(output.operation).toBe('PARSED');
 
         expect(mediatorContextPreprocess.mediate).toHaveBeenCalledWith({
-          context: new ActionContext(),
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+          initialize: true,
         });
         expect(mediatorQueryParse.mediate).toHaveBeenCalledWith({
-          context: new ActionContext()
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF })
             .set(KeysInitQuery.queryString, 'query'),
           query: 'query',
           baseIRI: undefined,
@@ -172,16 +184,17 @@ describe('ActorQueryProcessSequential', () => {
         }));
 
         const output = await actor.parse('query', ctx);
-        expect(output.context).toEqual(new ActionContext()
+        expect(output.context).toEqual(new ActionContext({ [KeysInitQuery.dataFactory.name]: DF })
           .set(KeysInitQuery.queryString, 'query')
           .set(KeysInitQuery.baseIRI, 'BASE'));
         expect(output.operation).toBe('PARSED');
 
         expect(mediatorContextPreprocess.mediate).toHaveBeenCalledWith({
-          context: new ActionContext(),
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+          initialize: true,
         });
         expect(mediatorQueryParse.mediate).toHaveBeenCalledWith({
-          context: new ActionContext()
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF })
             .set(KeysInitQuery.queryString, 'query'),
           query: 'query',
           baseIRI: undefined,
@@ -195,11 +208,12 @@ describe('ActorQueryProcessSequential', () => {
           DF.namedNode('o'),
         );
         const output = await actor.parse(op, ctx);
-        expect(output.context).toEqual(new ActionContext());
+        expect(output.context).toEqual(new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }));
         expect(output.operation).toEqual(op);
 
         expect(mediatorContextPreprocess.mediate).toHaveBeenCalledWith({
-          context: new ActionContext(),
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+          initialize: true,
         });
         expect(mediatorQueryParse.mediate).not.toHaveBeenCalled();
       });
@@ -212,7 +226,7 @@ describe('ActorQueryProcessSequential', () => {
         );
         const output = await actor.parse(op, ctx
           .set(KeysInitQuery.initialBindings, BF.fromRecord({ vo: DF.namedNode('o') })));
-        expect(output.context).toEqual(new ActionContext()
+        expect(output.context).toEqual(new ActionContext({ [KeysInitQuery.dataFactory.name]: DF })
           .set(KeysInitQuery.initialBindings, BF.fromRecord({ vo: DF.namedNode('o') })));
         expect(output.operation).toEqual(AF.createPattern(
           DF.namedNode('s'),
@@ -221,8 +235,9 @@ describe('ActorQueryProcessSequential', () => {
         ));
 
         expect(mediatorContextPreprocess.mediate).toHaveBeenCalledWith({
-          context: new ActionContext()
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF })
             .set(KeysInitQuery.initialBindings, BF.fromRecord({ vo: DF.namedNode('o') })),
+          initialize: true,
         });
         expect(mediatorQueryParse.mediate).not.toHaveBeenCalled();
       });
@@ -237,7 +252,7 @@ describe('ActorQueryProcessSequential', () => {
         );
 
         const output = await actor.optimize(op, ctx);
-        expect(output.context).toEqual(new ActionContext()
+        expect(output.context).toEqual(new ActionContext({ [KeysInitQuery.dataFactory.name]: DF })
           .set(KeysInitQuery.query, AF.createJoin([
             op,
           ], false)));
@@ -247,7 +262,7 @@ describe('ActorQueryProcessSequential', () => {
 
         expect(mediatorOptimizeQueryOperation.mediate).toHaveBeenCalledWith({
           operation: op,
-          context: new ActionContext()
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF })
             .set(KeysInitQuery.query, op),
         });
       });
@@ -270,7 +285,7 @@ describe('ActorQueryProcessSequential', () => {
 
         expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
           operation: op,
-          context: new ActionContext(),
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
         });
       });
     });

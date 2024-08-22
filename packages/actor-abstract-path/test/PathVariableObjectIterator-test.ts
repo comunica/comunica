@@ -10,8 +10,8 @@ import { Factory } from 'sparqlalgebrajs';
 import { PathVariableObjectIterator } from '../lib';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
-const FACTORY = new Factory();
+const AF = new Factory();
+const BF = new BindingsFactory(DF);
 
 describe('PathVariableObjectIterator', () => {
   let createdBindingsStreams: BindingsStream[];
@@ -35,8 +35,9 @@ describe('PathVariableObjectIterator', () => {
       .reject(new Error('mediatorQueryOperation rejection in PathVariableObjectIterator'));
 
     iterator = new PathVariableObjectIterator(
+      AF,
       DF.namedNode('ex:s'),
-      FACTORY.createLink(DF.namedNode('ex:p')),
+      AF.createLink(DF.namedNode('ex:p')),
       DF.namedNode('ex:g'),
       new ActionContext(),
       mediatorQueryOperation,
@@ -63,8 +64,9 @@ describe('PathVariableObjectIterator', () => {
     });
 
     iterator = new PathVariableObjectIterator(
+      AF,
       DF.namedNode('ex:s'),
-      FACTORY.createLink(DF.namedNode('ex:p')),
+      AF.createLink(DF.namedNode('ex:p')),
       DF.namedNode('ex:g'),
       new ActionContext(),
       mediatorQueryOperation,
@@ -79,8 +81,9 @@ describe('PathVariableObjectIterator', () => {
 
   it('destroys runningOperations when closed', async() => {
     iterator = new PathVariableObjectIterator(
+      AF,
       DF.namedNode('ex:s'),
-      FACTORY.createLink(DF.namedNode('ex:p')),
+      AF.createLink(DF.namedNode('ex:p')),
       DF.namedNode('ex:g'),
       new ActionContext(),
       mediatorQueryOperation,
@@ -108,8 +111,9 @@ describe('PathVariableObjectIterator', () => {
     });
 
     iterator = new PathVariableObjectIterator(
+      AF,
       DF.namedNode('ex:s'),
-      FACTORY.createLink(DF.namedNode('ex:p')),
+      AF.createLink(DF.namedNode('ex:p')),
       DF.namedNode('ex:g'),
       new ActionContext(),
       mediatorQueryOperation,

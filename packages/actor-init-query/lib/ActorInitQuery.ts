@@ -3,16 +3,13 @@ import { readFileSync } from 'node:fs';
 import type { IActionInit, IActorOutputInit } from '@comunica/bus-init';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { ICliArgsHandler, IQueryContextCommon } from '@comunica/types';
-import type { Readable } from 'readable-stream';
+import { Readable } from 'readable-stream';
 import yargs from 'yargs';
 import type { IActorInitQueryBaseArgs } from './ActorInitQueryBase';
 import { ActorInitQueryBase } from './ActorInitQueryBase';
 import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase';
 import { CliArgsHandlerQuery } from './cli/CliArgsHandlerQuery';
 import { QueryEngineBase } from './QueryEngineBase';
-
-// eslint-disable-next-line ts/no-require-imports,ts/no-var-requires
-const streamifyString = require('streamify-string');
 
 /**
  * A comunica Query Init Actor.
@@ -49,14 +46,14 @@ export class ActorInitQuery<QueryContext extends IQueryContextCommon = IQueryCon
       args = await argumentsBuilder.parse(action.argv);
     } catch (error: unknown) {
       return {
-        stderr: streamifyString(`${await argumentsBuilder.getHelp()}\n\n${(<Error> error).message}\n`),
+        stderr: Readable.from([ `${await argumentsBuilder.getHelp()}\n\n${(<Error> error).message}\n` ]),
       };
     }
 
     // Print supported MIME types
     if (args.listformats) {
       const mediaTypes: Record<string, number> = await queryEngine.getResultMediaTypes();
-      return { stdout: streamifyString(`${Object.keys(mediaTypes).join('\n')}\n`) };
+      return { stdout: Readable.from([ `${Object.keys(mediaTypes).join('\n')}\n` ]) };
     }
 
     // Define query
@@ -78,8 +75,7 @@ export class ActorInitQuery<QueryContext extends IQueryContextCommon = IQueryCon
         await cliArgsHandler.handleArgs(args, context);
       }
     } catch (error: unknown) {
-      // eslint-disable-next-line ts/no-require-imports,ts/no-var-requires
-      return { stderr: require('streamify-string')((<Error> error).message) };
+      return { stderr: Readable.from([ (<Error> error).message ]) };
     }
 
     // Evaluate query
@@ -88,12 +84,16 @@ export class ActorInitQuery<QueryContext extends IQueryContextCommon = IQueryCon
     // Output query explanations in a different way
     if ('explain' in queryResult) {
       return {
-        stdout: streamifyString(JSON.stringify(queryResult.data, (key: string, value: any) => {
-          if (key === 'scopedSource') {
-            return value.source.toString();
-          }
-          return value;
-        }, '  ')),
+        stdout: Readable.from([ typeof queryResult.data === 'string' ?
+          // eslint-disable-next-line prefer-template
+          queryResult.data + '\n' :
+          // eslint-disable-next-line prefer-template
+          JSON.stringify(queryResult.data, (key: string, value: any) => {
+            if (key === 'scopedSource') {
+              return value.source.toString();
+            }
+            return value;
+          }, '  ') + '\n' ]),
       };
     }
 

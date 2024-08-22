@@ -1,14 +1,17 @@
 import { Readable } from 'node:stream';
 import { ActorRdfParseN3 } from '@comunica/actor-rdf-parse-n3';
 import { ActorRdfParseFixedMediaTypes } from '@comunica/bus-rdf-parse';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
 import type { IActionContext } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
+import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfParseXmlRdfa } from '..';
 
 const quad = require('rdf-quad');
-const stringToStream = require('streamify-string');
+
+const DF = new DataFactory();
 
 describe('ActorRdfParseXmlRdfa', () => {
   let bus: any;
@@ -16,7 +19,7 @@ describe('ActorRdfParseXmlRdfa', () => {
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    context = new ActionContext();
+    context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
   });
 
   describe('The ActorRdfParseXmlRdfa module', () => {
@@ -100,7 +103,7 @@ describe('ActorRdfParseXmlRdfa', () => {
 
     describe('for parsing', () => {
       beforeEach(() => {
-        input = stringToStream(`
+        input = Readable.from([ `
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="12cm" height="4cm" viewBox="0 0 1200 400"
 xmlns:dc="http://purl.org/dc/terms/"
@@ -113,7 +116,7 @@ xmlns="http://www.w3.org/2000/svg" version="1.2" baseProfile="tiny">
         fill="yellow" stroke="navy" stroke-width="10"  />
 
 </svg>
-      `);
+      ` ]);
         inputError = new Readable();
         inputError._read = () => inputError.emit('error', new Error('ParseXmlRdfa'));
       });

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/logger-bunyan",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A comunica bunyan-based logger.",
   "lsd:module": true,
   "license": "MIT",
@@ -36,7 +36,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/types": "^3.0.3",
+    "@comunica/types": "^3.2.1",
     "@types/bunyan": "^1.8.8",
     "bunyan": "^1.8.15",
     "process": "^0.11.10"

@@ -33,29 +33,20 @@ export class ActorQueryResultSerializeTree extends ActorQueryResultSerializeFixe
    * @param {IConverterSettings} converterSettings
    * @return {Promise<string>}
    */
-  public static bindingsStreamToGraphQl(
+  public static async bindingsStreamToGraphQl(
     bindingsStream: BindingsStream,
     context: IActionContext | Record<string, any> | undefined,
     converterSettings?: IConverterSettings,
   ): Promise<any> {
     const actionContext: IActionContext = ActionContext.ensureActionContext(context);
-    return new Promise((resolve, reject) => {
-      const bindingsArray: Record<string, RDF.Term>[] = [];
-      const converter: Converter = new Converter(converterSettings);
+    const converter: Converter = new Converter(converterSettings);
+    const schema: ISchema = {
+      singularizeVariables: actionContext.get(KeysInitQuery.graphqlSingularizeVariables) ?? {},
+    };
 
-      const schema: ISchema = {
-        singularizeVariables: actionContext.get(KeysInitQuery.graphqlSingularizeVariables) ?? {},
-      };
-
-      bindingsStream.on('error', reject);
-      bindingsStream.on('data', (bindings: RDF.Bindings) => {
-        bindingsArray.push(Object.fromEntries([ ...bindings ]
-          .map(([ key, value ]) => [ key.value, value ])));
-      });
-      bindingsStream.on('end', () => {
-        resolve(converter.bindingsToTree(bindingsArray, schema));
-      });
-    });
+    return converter.bindingsToTree(await bindingsStream.map((bindings: RDF.Bindings) =>
+      Object.fromEntries([ ...bindings ]
+        .map(([ key, value ]) => [ key.value, value ]))).toArray(), schema);
   }
 
   public override async testHandleChecked(action: IActionSparqlSerialize): Promise<boolean> {
@@ -71,17 +62,18 @@ export class ActorQueryResultSerializeTree extends ActorQueryResultSerializeFixe
   ): Promise<IActorQueryResultSerializeOutput> {
     const data = new Readable();
     data._read = () => {
-      // Do nothing
+      data._read = () => { /* Do nothing */ };
+      ActorQueryResultSerializeTree.bindingsStreamToGraphQl(
+        (<IQueryOperationResultBindings> action).bindingsStream,
+        action.context,
+        { materializeRdfJsTerms: true },
+      )
+        .then((result: any) => {
+          data.push(JSON.stringify(result, null, '  '));
+          data.push(null);
+        })
+        .catch(error => data.emit('error', error));
     };
-
-    const resultStream: BindingsStream = (<IQueryOperationResultBindings> action).bindingsStream;
-    resultStream.on('error', error => data.emit('error', error));
-    ActorQueryResultSerializeTree.bindingsStreamToGraphQl(resultStream, action.context, { materializeRdfJsTerms: true })
-      .then((result: any) => {
-        data.push(JSON.stringify(result, null, '  '));
-        data.push(null);
-      })
-      .catch(error => data.emit('error', error));
 
     return { data };
   }

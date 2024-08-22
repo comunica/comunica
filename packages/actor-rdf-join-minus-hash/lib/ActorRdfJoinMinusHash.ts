@@ -34,11 +34,14 @@ export class ActorRdfJoinMinusHash extends ActorRdfJoin {
       const bindingsStream = new ClosableTransformIterator(async() => {
         await new Promise((resolve) => {
           buffer.bindingsStream.on('data', (data) => {
-            index[ActorRdfJoin.hash(data, commonVariables)] = true;
+            index[ActorRdfJoin.hashNonClashing(data, commonVariables)] = true;
           });
           buffer.bindingsStream.on('end', resolve);
+          buffer.bindingsStream.on('error', (error) => {
+            bindingsStream.emit('error', error);
+          });
         });
-        return output.bindingsStream.filter(data => !index[ActorRdfJoin.hash(data, commonVariables)]);
+        return output.bindingsStream.filter(data => !index[ActorRdfJoin.hashNonClashing(data, commonVariables)]);
       }, {
         autoStart: false,
         onClose() {

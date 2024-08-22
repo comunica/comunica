@@ -1,5 +1,6 @@
 import { KeysCore, KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import { DataFactory } from 'rdf-data-factory';
 import { ActorContextPreprocessSetDefaults } from '../lib/ActorContextPreprocessSetDefaults';
 
 describe('ActorContextPreprocessSetDefaults', () => {
@@ -21,10 +22,17 @@ describe('ActorContextPreprocessSetDefaults', () => {
     });
 
     describe('run', () => {
-      it('with an empty context', async() => {
+      it('with an empty context without initialize', async() => {
         const contextIn = new ActionContext();
         const { context: contextOut } = await actor.run({ context: contextIn });
+        expect(contextOut).toEqual(new ActionContext({}));
+      });
+
+      it('with an empty context', async() => {
+        const contextIn = new ActionContext();
+        const { context: contextOut } = await actor.run({ context: contextIn, initialize: true });
         expect(contextOut).toEqual(new ActionContext({
+          [KeysInitQuery.dataFactory.name]: expect.any(DataFactory),
           [KeysInitQuery.queryTimestamp.name]: expect.any(Date),
           [KeysQuerySourceIdentify.sourceIds.name]: new Map(),
           [KeysCore.log.name]: 'L',
@@ -38,8 +46,9 @@ describe('ActorContextPreprocessSetDefaults', () => {
         const contextIn = new ActionContext({
           [KeysInitQuery.queryFormat.name]: { language: 'graphql', version: '1.1' },
         });
-        const { context: contextOut } = await actor.run({ context: contextIn });
+        const { context: contextOut } = await actor.run({ context: contextIn, initialize: true });
         expect(contextOut).toEqual(new ActionContext({
+          [KeysInitQuery.dataFactory.name]: expect.any(DataFactory),
           [KeysInitQuery.queryTimestamp.name]: expect.any(Date),
           [KeysQuerySourceIdentify.sourceIds.name]: new Map(),
           [KeysCore.log.name]: 'L',

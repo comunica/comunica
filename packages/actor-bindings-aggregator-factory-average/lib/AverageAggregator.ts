@@ -4,6 +4,7 @@ import type { ITermFunction } from '@comunica/bus-function-factory';
 import type { IExpressionEvaluator } from '@comunica/expression-evaluator';
 import { typedLiteral, TypeURL } from '@comunica/expression-evaluator';
 import * as E from '@comunica/expression-evaluator/lib/expressions';
+import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 
 interface IAverageState {
@@ -17,6 +18,7 @@ export class AverageAggregator extends AggregateEvaluator implements IBindingsAg
   public constructor(
     evaluator: IExpressionEvaluator,
     distinct: boolean,
+    private readonly dataFactory: ComunicaDataFactory,
     private readonly additionFunction: ITermFunction,
     private readonly divisionFunction: ITermFunction,
     throwError?: boolean,
@@ -46,6 +48,6 @@ export class AverageAggregator extends AggregateEvaluator implements IBindingsAg
     }
     const count = new E.IntegerLiteral(this.state.count);
     const result = this.divisionFunction.applyOnTerms([ this.state.sum, count ], this.evaluator);
-    return result.toRDF();
+    return result.toRDF(this.dataFactory);
   }
 }

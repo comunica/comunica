@@ -4,6 +4,7 @@ import type {
   IQuadDestination,
 } from '@comunica/bus-rdf-update-quads';
 import { ActorRdfUpdateQuadsDestination, getContextDestination } from '@comunica/bus-rdf-update-quads';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -28,6 +29,9 @@ export class ActorRdfUpdateQuadsRdfJsStore extends ActorRdfUpdateQuadsDestinatio
 
   protected async getDestination(context: IActionContext): Promise<IQuadDestination> {
     const destination: any = <any> getContextDestination(context);
-    return new RdfJsQuadDestination('remove' in destination ? destination : destination.value);
+    return new RdfJsQuadDestination(
+      context.getSafe(KeysInitQuery.dataFactory),
+      'remove' in destination ? destination : destination.value,
+    );
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-http-memento",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A memento http actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,11 +37,10 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-http": "^3.0.3",
-    "@comunica/context-entries": "^3.0.3",
-    "@comunica/core": "^3.0.3",
-    "@types/parse-link-header": "^2.0.0",
-    "cross-fetch": "^4.0.0",
-    "parse-link-header": "^2.0.0"
+    "@comunica/bus-http": "^3.2.1",
+    "@comunica/context-entries": "^3.2.1",
+    "@comunica/core": "^3.2.1",
+    "@types/http-link-header": "^1.0.7",
+    "http-link-header": "^1.1.3"
   }
 }

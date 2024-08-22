@@ -5,11 +5,10 @@ import type {
 } from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
-import type { IActionContext, IQuerySourceWrapper } from '@comunica/types';
+import type { ComunicaDataFactory, IActionContext, IQuerySourceWrapper } from '@comunica/types';
 import { Algebra, Factory } from 'sparqlalgebrajs';
-
-const AF = new Factory();
 
 /**
  * A comunica Group Sources Optimize Query Operation Actor.
@@ -38,6 +37,9 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
    * @param context The action context.
    */
   public async groupOperation(operation: Algebra.Operation, context: IActionContext): Promise<Algebra.Operation> {
+    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+    const algebraFactory = new Factory(dataFactory);
+
     // Return operation as-is if the operation already has a single source, or if the operation has no children.
     if (ActorQueryOperation.getOperationSource(operation) ?? !('input' in operation)) {
       return operation;
@@ -82,16 +84,16 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
     let multiFactoryMethod: (children: Algebra.Operation[], flatten: boolean) => Algebra.Operation;
     switch (operation.type) {
       case Algebra.types.JOIN:
-        multiFactoryMethod = AF.createJoin.bind(AF);
+        multiFactoryMethod = algebraFactory.createJoin.bind(algebraFactory);
         break;
       case Algebra.types.UNION:
-        multiFactoryMethod = AF.createUnion.bind(AF);
+        multiFactoryMethod = algebraFactory.createUnion.bind(algebraFactory);
         break;
       case Algebra.types.ALT:
-        multiFactoryMethod = <any> AF.createAlt.bind(AF);
+        multiFactoryMethod = <any> algebraFactory.createAlt.bind(algebraFactory);
         break;
       case Algebra.types.SEQ:
-        multiFactoryMethod = <any> AF.createSeq.bind(AF);
+        multiFactoryMethod = <any> algebraFactory.createSeq.bind(algebraFactory);
         break;
       default:
         // While LeftJoin and Minus are also multi-operations,

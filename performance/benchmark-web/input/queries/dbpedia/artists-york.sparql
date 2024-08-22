@@ -1,0 +1,9 @@
+# Artists born in York
+# Datasource: https://fragments.dbpedia.org/2016-04/en
+SELECT ?name ?deathDate WHERE {
+  ?person a dbpedia-owl:Artist;
+          rdfs:label ?name;
+          dbpedia-owl:birthPlace [ rdfs:label "York"@en ].
+  FILTER LANGMATCHES(LANG(?name),  "EN")
+  OPTIONAL { ?person dbpprop:dateOfDeath ?deathDate. }
+}

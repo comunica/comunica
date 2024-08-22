@@ -1,7 +1,9 @@
 import { Readable } from 'node:stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { BindingsStream, IActionContext, MetadataBindings } from '@comunica/types';
+import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
@@ -9,9 +11,8 @@ import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryResultSerializeTable } from '../lib/ActorQueryResultSerializeTable';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 const quad = require('rdf-quad');
-const stringifyStream = require('stream-to-string');
 
 describe('ActorQueryResultSerializeTable', () => {
   let bus: any;
@@ -19,7 +20,7 @@ describe('ActorQueryResultSerializeTable', () => {
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    context = new ActionContext();
+    context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
   });
 
   describe('The ActorQueryResultSerializeTable module', () => {
@@ -158,7 +159,7 @@ v1
 
       it('should run on a quad stream', async() => {
         await expect(stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'quads', quadStream: quadStream() }, handleMediaType: 'table', context },
+          { handle: <any> { type: 'quads', quadStream: quadStream(), context }, handleMediaType: 'table', context },
         ))).handle.data)).resolves.toBe(
           `subject    predicate  object     graph     
 -------------------------------------------
@@ -170,7 +171,11 @@ http://ex… http://ex… http://ex…
 
       it('should run on a quad stream with quoted triples', async() => {
         await expect(stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'quads', quadStream: quadStreamQuoted() }, handleMediaType: 'table', context },
+          {
+            handle: <any> { type: 'quads', quadStream: quadStreamQuoted(), context },
+            handleMediaType: 'table',
+            context,
+          },
         ))).handle.data)).resolves.toBe(
           `subject    predicate  object     graph     
 -------------------------------------------
@@ -193,7 +198,7 @@ http://ex… http://ex… http://ex…
       it('should emit an error when a quad stream emits an error', async() => {
         await expect(stringifyStream((<any> (await actor.run(
           {
-            handle: <any> { type: 'quads', quadStream: streamError, metadata: async() => metadata },
+            handle: <any> { type: 'quads', quadStream: streamError, metadata: async() => metadata, context },
             handleMediaType: 'application/json',
             context,
           },

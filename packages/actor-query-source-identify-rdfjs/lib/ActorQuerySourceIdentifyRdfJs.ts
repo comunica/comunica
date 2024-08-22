@@ -6,8 +6,10 @@ import type {
   IActorQuerySourceIdentifyArgs,
 } from '@comunica/bus-query-source-identify';
 import { ActorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
+import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { QuerySourceRdfJs } from './QuerySourceRdfJs';
 
@@ -33,11 +35,13 @@ export class ActorQuerySourceIdentifyRdfJs extends ActorQuerySourceIdentify {
   }
 
   public async run(action: IActionQuerySourceIdentify): Promise<IActorQuerySourceIdentifyOutput> {
+    const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     return {
       querySource: {
         source: new QuerySourceRdfJs(
           <RDF.Source> action.querySourceUnidentified.value,
-          await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context),
+          dataFactory,
+          await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context, dataFactory),
         ),
         context: action.querySourceUnidentified.context ?? new ActionContext(),
       },

@@ -6,6 +6,7 @@ import type {
 import {
   ActorBindingsAggregatorFactory,
 } from '@comunica/bus-bindings-aggeregator-factory';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import { GroupConcatAggregator } from './GroupConcatAggregator';
 
@@ -29,6 +30,7 @@ export class ActorBindingsAggregatorFactoryGroupConcat extends ActorBindingsAggr
     return new GroupConcatAggregator(
       await this.mediatorExpressionEvaluatorFactory.mediate({ algExpr: expr.expression, context }),
       expr.distinct,
+      context.getSafe(KeysInitQuery.dataFactory),
       expr.separator,
     );
   }

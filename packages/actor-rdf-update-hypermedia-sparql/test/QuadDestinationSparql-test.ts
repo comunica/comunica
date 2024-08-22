@@ -1,15 +1,14 @@
 /* eslint-disable jest/prefer-spy-on */
+import { Readable } from 'node:stream';
 import { KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
-import { Headers } from 'cross-fetch';
 import { DataFactory } from 'rdf-data-factory';
 import { QuadDestinationSparql } from '../lib/QuadDestinationSparql';
 
 const DF = new DataFactory();
-const streamifyString = require('streamify-string');
 
 describe('QuadDestinationSparql', () => {
   let context: IActionContext;
@@ -20,8 +19,8 @@ describe('QuadDestinationSparql', () => {
   beforeEach(() => {
     mediatorHttp = {
       mediate: jest.fn(() => {
-        const body = streamifyString(`RESPONSE`);
-        body.cancel = jest.fn();
+        const body = Readable.from([ `RESPONSE` ]);
+        (<any>body).cancel = jest.fn();
         return {
           status: 200,
           body,
@@ -32,15 +31,17 @@ describe('QuadDestinationSparql', () => {
     };
     context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
     url = 'abc';
-    destination = new QuadDestinationSparql(url, context, mediatorHttp);
+    destination = new QuadDestinationSparql(url, context, mediatorHttp, DF);
   });
 
   describe('insert', () => {
     it('should handle a valid insert', async() => {
-      await destination.insert(new ArrayIterator([
-        DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
-        DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g2')),
-      ]));
+      await destination.update({
+        insert: new ArrayIterator([
+          DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
+          DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g2')),
+        ]),
+      });
 
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
         context,
@@ -58,14 +59,16 @@ describe('QuadDestinationSparql', () => {
     });
 
     it('should handle a valid insert with quoted triples', async() => {
-      await destination.insert(new ArrayIterator([
-        DF.quad(
-          DF.namedNode('ex:s1'),
-          DF.namedNode('ex:p1'),
-          DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
-        ),
-        DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g2')),
-      ]));
+      await destination.update({
+        insert: new ArrayIterator([
+          DF.quad(
+            DF.namedNode('ex:s1'),
+            DF.namedNode('ex:p1'),
+            DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
+          ),
+          DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g2')),
+        ]),
+      });
 
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
         context,
@@ -83,25 +86,27 @@ describe('QuadDestinationSparql', () => {
     });
 
     it('should throw on a server error', async() => {
-      const body = streamifyString(`ERROR`);
+      const body = Readable.from([ `ERROR` ]);
       mediatorHttp.mediate = () => ({
         status: 400,
         body,
         headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
         ok: false,
       });
-      body.cancel = jest.fn();
-      await expect(destination.insert(new ArrayIterator<RDF.Quad>([]))).rejects
+      (<any>body).cancel = jest.fn();
+      await expect(destination.update({ insert: new ArrayIterator<RDF.Quad>([]) })).rejects
         .toThrow(`Invalid SPARQL endpoint response from abc (HTTP status 400):\nempty response`);
     });
   });
 
   describe('delete', () => {
     it('should handle a valid delete', async() => {
-      await destination.delete(new ArrayIterator([
-        DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
-        DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g2')),
-      ]));
+      await destination.update({
+        delete: new ArrayIterator([
+          DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
+          DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g2')),
+        ]),
+      });
 
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
         context,
@@ -109,6 +114,39 @@ describe('QuadDestinationSparql', () => {
           headers: { 'content-type': 'application/sparql-update' },
           method: 'POST',
           body: `DELETE DATA {
+  <ex:s1> <ex:p1> <ex:o1> .
+  GRAPH <ex:g2> { <ex:s2> <ex:p2> <ex:o2> . }
+}`,
+          signal: expect.anything(),
+        },
+        input: 'abc',
+      });
+    });
+  });
+
+  describe('update', () => {
+    it('should handle a valid update', async() => {
+      await destination.update({
+        insert: new ArrayIterator([
+          DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
+          DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g2')),
+        ]),
+        delete: new ArrayIterator([
+          DF.quad(DF.namedNode('ex:sd1'), DF.namedNode('ex:pd1'), DF.namedNode('ex:od1')),
+          DF.quad(DF.namedNode('ex:sd2'), DF.namedNode('ex:pd2'), DF.namedNode('ex:od2'), DF.namedNode('ex:gd2')),
+        ]),
+      });
+
+      expect(mediatorHttp.mediate).toHaveBeenCalledWith({
+        context,
+        init: {
+          headers: { 'content-type': 'application/sparql-update' },
+          method: 'POST',
+          body: `DELETE DATA {
+  <ex:sd1> <ex:pd1> <ex:od1> .
+  GRAPH <ex:gd2> { <ex:sd2> <ex:pd2> <ex:od2> . }
+} ;
+INSERT DATA {
   <ex:s1> <ex:p1> <ex:o1> .
   GRAPH <ex:g2> { <ex:s2> <ex:p2> <ex:o2> . }
 }`,

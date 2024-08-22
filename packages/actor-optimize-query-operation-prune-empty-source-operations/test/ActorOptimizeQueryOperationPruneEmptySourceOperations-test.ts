@@ -1,5 +1,5 @@
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import { KeysQuerySourceIdentify } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -16,7 +16,7 @@ const DF = new DataFactory();
 describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
   let bus: any;
 
-  const ctx = new ActionContext();
+  const ctx = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
   let source1: IQuerySourceWrapper;
   let sourceAsk: IQuerySourceWrapper;
 
@@ -555,13 +555,106 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
             ],
           ));
         });
+
+        it('should not prune if the projection had other valid operations', async() => {
+          const opIn = AF.createProject(
+            AF.createUnion([
+              AF.createJoin([
+                AF.createUnion([
+                  ActorQueryOperation.assignOperationSource(AF
+                    .createPattern(DF.namedNode('s'), DF.namedNode('nonEmpty'), DF.variable('o')), source1),
+                  ActorQueryOperation.assignOperationSource(AF
+                    .createPattern(DF.namedNode('s'), DF.namedNode('nonEmpty'), DF.variable('o')), source1),
+                ]),
+              ]),
+              AF.createJoin([
+                AF.createUnion([
+                  ActorQueryOperation.assignOperationSource(AF
+                    .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.variable('o')), source1),
+                  ActorQueryOperation.assignOperationSource(AF
+                    .createPattern(DF.namedNode('s'), DF.namedNode('nonEmpty'), DF.variable('o')), source1),
+                ]),
+              ]),
+              AF.createJoin([
+                AF.createUnion([
+                  ActorQueryOperation.assignOperationSource(AF
+                    .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.variable('o')), source1),
+                  ActorQueryOperation.assignOperationSource(AF
+                    .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.variable('o')), source1),
+                ]),
+              ]),
+            ]),
+            [
+              DF.variable('o'),
+            ],
+          );
+          const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
+          expect(opOut).toEqual(AF.createProject(
+            AF.createUnion([
+              AF.createJoin([
+                AF.createUnion([
+                  ActorQueryOperation.assignOperationSource(AF
+                    .createPattern(DF.namedNode('s'), DF.namedNode('nonEmpty'), DF.variable('o')), source1),
+                  ActorQueryOperation.assignOperationSource(AF
+                    .createPattern(DF.namedNode('s'), DF.namedNode('nonEmpty'), DF.variable('o')), source1),
+                ]),
+              ]),
+              AF.createJoin([
+                ActorQueryOperation.assignOperationSource(AF
+                  .createPattern(DF.namedNode('s'), DF.namedNode('nonEmpty'), DF.variable('o')), source1),
+              ]),
+              AF.createJoin([
+                AF.createUnion([]),
+              ]),
+            ]),
+            [
+              DF.variable('o'),
+            ],
+          ));
+        });
+
+        it('should prune if the projection contains mixed unions and joins', async() => {
+          const opIn = AF.createProject(
+            AF.createUnion([
+              AF.createJoin([
+                AF.createUnion([
+                  ActorQueryOperation.assignOperationSource(AF
+                    .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.variable('o')), source1),
+                  ActorQueryOperation.assignOperationSource(AF
+                    .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.variable('o')), source1),
+                ]),
+              ]),
+              AF.createJoin([
+                AF.createUnion([
+                  ActorQueryOperation.assignOperationSource(AF
+                    .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.variable('o')), source1),
+                  ActorQueryOperation.assignOperationSource(AF
+                    .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.variable('o')), source1),
+                ]),
+              ]),
+              AF.createJoin([
+                AF.createUnion([
+                  ActorQueryOperation.assignOperationSource(AF
+                    .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.variable('o')), source1),
+                  ActorQueryOperation.assignOperationSource(AF
+                    .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.variable('o')), source1),
+                ]),
+              ]),
+            ]),
+            [
+              DF.variable('o'),
+            ],
+          );
+          const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
+          expect(opOut).toEqual(AF.createUnion([]));
+        });
       });
     });
 
     describe('hasSourceResults', () => {
       describe('for ask false', () => {
         it('should be true for cardinality > 0', async() => {
-          await expect(actor.hasSourceResults(source1, AF.createNop(), ctx)).resolves.toBeTruthy();
+          await expect(actor.hasSourceResults(AF, source1, AF.createNop(), ctx)).resolves.toBeTruthy();
         });
 
         it('should be false for cardinality === 0', async() => {
@@ -570,7 +663,7 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
             bindingsStream.setProperty('metadata', { cardinality: { value: 0 }});
             return bindingsStream;
           };
-          await expect(actor.hasSourceResults(source1, AF.createNop(), ctx)).resolves.toBeFalsy();
+          await expect(actor.hasSourceResults(AF, source1, AF.createNop(), ctx)).resolves.toBeFalsy();
         });
 
         it('should reject for an erroring query', async() => {
@@ -579,12 +672,12 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
             bindingsStream.emit('error', new Error(`queryBindings error in ActorOptimizeQueryOperationPruneEmptySourceOperations`));
             return bindingsStream;
           };
-          await expect(actor.hasSourceResults(source1, AF.createNop(), ctx)).rejects
+          await expect(actor.hasSourceResults(AF, source1, AF.createNop(), ctx)).rejects
             .toThrow(`queryBindings error in ActorOptimizeQueryOperationPruneEmptySourceOperations`);
         });
 
         it('should not wrap the operation', async() => {
-          await actor.hasSourceResults(source1, AF.createNop(), ctx);
+          await actor.hasSourceResults(AF, source1, AF.createNop(), ctx);
           expect(source1.source.queryBindings).toHaveBeenCalledWith(AF.createNop(), ctx);
         });
 
@@ -595,7 +688,7 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
             bindingsStream.setProperty('metadata', { cardinality: { value: 0 }});
             return bindingsStream;
           };
-          await expect(actor.hasSourceResults(source1, AF.createNop(), ctx)).resolves.toBeTruthy();
+          await expect(actor.hasSourceResults(AF, source1, AF.createNop(), ctx)).resolves.toBeTruthy();
         });
       });
 
@@ -609,22 +702,22 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
         });
 
         it('should be true for a source supporting ask and returning true', async() => {
-          await expect(actor.hasSourceResults(sourceAsk, AF.createNop(), ctx)).resolves.toBeTruthy();
+          await expect(actor.hasSourceResults(AF, sourceAsk, AF.createNop(), ctx)).resolves.toBeTruthy();
         });
 
         it('should be false for a source supporting ask and returning false', async() => {
           sourceAsk.source.queryBoolean = async() => false;
-          await expect(actor.hasSourceResults(sourceAsk, AF.createNop(), ctx)).resolves.toBeFalsy();
+          await expect(actor.hasSourceResults(AF, sourceAsk, AF.createNop(), ctx)).resolves.toBeFalsy();
         });
 
         it('should wrap the operation in an ask operation', async() => {
           jest.spyOn(sourceAsk.source, 'queryBoolean').mockImplementation(async() => true);
-          await actor.hasSourceResults(sourceAsk, AF.createNop(), ctx);
+          await actor.hasSourceResults(AF, sourceAsk, AF.createNop(), ctx);
           expect(sourceAsk.source.queryBoolean).toHaveBeenCalledWith(AF.createAsk(AF.createNop()), ctx);
         });
 
         it('should fallback to queryBindings if the source does not accept ask', async() => {
-          await expect(actor.hasSourceResults(source1, AF.createNop(), ctx)).resolves.toBeTruthy();
+          await expect(actor.hasSourceResults(AF, source1, AF.createNop(), ctx)).resolves.toBeTruthy();
           expect(source1.source.queryBindings).toHaveBeenCalledTimes(1);
         });
       });

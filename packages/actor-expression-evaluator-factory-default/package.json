@@ -37,15 +37,15 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bindings-factory": "^3.0.3",
+    "@comunica/bindings-factory": "^3.2.1",
     "@comunica/bus-expression-evaluator-factory": "^1.0.0",
     "@comunica/bus-function-factory": "^1.0.0",
-    "@comunica/bus-query-operation": "^3.0.3",
-    "@comunica/context-entries": "^3.0.3",
-    "@comunica/core": "^3.0.3",
-    "@comunica/expression-evaluator": "3.0.1",
-    "@comunica/types": "^3.0.3",
+    "@comunica/bus-query-operation": "^3.2.1",
+    "@comunica/context-entries": "^3.2.1",
+    "@comunica/core": "^3.2.1",
+    "@comunica/expression-evaluator": "3.2.1",
+    "@comunica/types": "^3.2.1",
     "@rdfjs/types": "*",
-    "sparqlalgebrajs": "^4.2.0"
+    "sparqlalgebrajs": "^4.3.7"
   }
 }

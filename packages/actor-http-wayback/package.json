@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-http-wayback",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A wayback http actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,10 +37,9 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-http": "^3.0.3",
-    "@comunica/context-entries": "^3.0.3",
-    "@comunica/core": "^3.0.3",
-    "cross-fetch": "^4.0.0",
-    "stream-to-string": "^1.2.0"
+    "@comunica/bus-http": "^3.2.1",
+    "@comunica/context-entries": "^3.2.1",
+    "@comunica/core": "^3.2.1",
+    "@jeswr/stream-to-string": "^2.0.0"
   }
 }

@@ -20,7 +20,7 @@ import 'jest-rdf';
 const quad = require('rdf-quad');
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 const AF = new Factory();
 
 describe('Utils', () => {
@@ -46,7 +46,7 @@ describe('Utils', () => {
         DF.variable('p'),
         DF.namedNode('o'),
       );
-      const bindingsStream = quadsToBindings(quadStream, pattern, BF, false);
+      const bindingsStream = quadsToBindings(quadStream, pattern, DF, BF, false);
 
       // Check results
       await expect(bindingsStream).toEqualBindingsStream([
@@ -88,7 +88,7 @@ describe('Utils', () => {
         DF.variable('p'),
         DF.namedNode('o'),
       );
-      const bindingsStream = quadsToBindings(quadStream, pattern, BF, false);
+      const bindingsStream = quadsToBindings(quadStream, pattern, DF, BF, false);
 
       // Check results
       await expect(bindingsStream).toEqualBindingsStream([
@@ -155,7 +155,7 @@ describe('Utils', () => {
         DF.variable('p'),
         DF.namedNode('o'),
       );
-      const bindingsStream = quadsToBindings(quadStream, pattern, BF, false);
+      const bindingsStream = quadsToBindings(quadStream, pattern, DF, BF, false);
 
       // Check results
       await expect(bindingsStream).toEqualBindingsStream([
@@ -237,7 +237,7 @@ describe('Utils', () => {
         DF.namedNode('o'),
         DF.variable('g'),
       );
-      const bindingsStream = quadsToBindings(quadStream, pattern, BF, false);
+      const bindingsStream = quadsToBindings(quadStream, pattern, DF, BF, false);
 
       // Check results
       await expect(bindingsStream).toEqualBindingsStream([
@@ -286,7 +286,7 @@ describe('Utils', () => {
         DF.namedNode('o'),
         DF.variable('g'),
       );
-      const bindingsStream = quadsToBindings(quadStream, pattern, BF, true);
+      const bindingsStream = quadsToBindings(quadStream, pattern, DF, BF, true);
 
       // Check results
       await expect(bindingsStream).toEqualBindingsStream([
@@ -338,7 +338,7 @@ describe('Utils', () => {
         DF.variable('x'),
         DF.namedNode('o'),
       );
-      const bindingsStream = quadsToBindings(quadStream, pattern, BF, false);
+      const bindingsStream = quadsToBindings(quadStream, pattern, DF, BF, false);
 
       // Check results
       await expect(bindingsStream).toEqualBindingsStream([
@@ -374,7 +374,7 @@ describe('Utils', () => {
         DF.variable('p'),
         DF.quad(DF.variable('os'), DF.variable('op'), DF.variable('x')),
       );
-      const bindingsStream = quadsToBindings(quadStream, pattern, BF, false);
+      const bindingsStream = quadsToBindings(quadStream, pattern, DF, BF, false);
 
       // Check results
       await expect(bindingsStream).toEqualBindingsStream([
@@ -545,6 +545,7 @@ describe('Utils', () => {
   describe('quadsMetadataToBindingsMetadata', () => {
     it('translates quad metadata', () => {
       expect(quadsMetadataToBindingsMetadata(
+        DF,
         {
           state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 10 },
@@ -567,6 +568,7 @@ describe('Utils', () => {
 
     it('translates quad metadata with optional fields', () => {
       expect(quadsMetadataToBindingsMetadata(
+        DF,
         {
           state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 10 },
@@ -618,6 +620,7 @@ describe('Utils', () => {
   describe('quadsOrderToBindingsOrder', () => {
     it('handles a single order', () => {
       expect(quadsOrderToBindingsOrder(
+        DF,
         [{ term: 'subject', direction: 'asc' }],
         { subject: 'a' },
       )).toEqual([{ term: DF.variable('a'), direction: 'asc' }]);
@@ -625,6 +628,7 @@ describe('Utils', () => {
 
     it('handles multiple orders', () => {
       expect(quadsOrderToBindingsOrder(
+        DF,
         [
           { term: 'subject', direction: 'asc' },
           { term: 'object', direction: 'desc' },
@@ -641,6 +645,7 @@ describe('Utils', () => {
 
     it('omits non-applicable quad orders', () => {
       expect(quadsOrderToBindingsOrder(
+        DF,
         [
           { term: 'subject', direction: 'asc' },
           { term: 'predicate', direction: 'asc' },

@@ -10,7 +10,7 @@ import type {
   IQueryOperationResultBoolean,
   IQueryOperationResultQuads,
 } from '@comunica/types';
-import type * as RDF from '@rdfjs/types';
+import { wrap } from 'asynciterator';
 import * as RdfString from 'rdf-string';
 import { Readable } from 'readable-stream';
 
@@ -45,34 +45,22 @@ export class ActorQueryResultSerializeJson extends ActorQueryResultSerializeFixe
       // Do nothing
     };
 
-    let empty = true;
-    if (action.type === 'bindings') {
-      const resultStream = (<IQueryOperationResultBindings> action).bindingsStream;
-      data.push('[');
-      resultStream.on('error', error => data.emit('error', error));
-      resultStream.on('data', (element: RDF.Bindings) => {
-        data.push(empty ? '\n' : ',\n');
-        data.push(JSON.stringify(Object.fromEntries([ ...element ]
-          .map(([ key, value ]) => [ key.value, RdfString.termToString(value) ]))));
+    if (action.type === 'bindings' || action.type === 'quads') {
+      let stream = action.type === 'bindings' ?
+        wrap((<IQueryOperationResultBindings> action).bindingsStream)
+          .map(element => JSON.stringify(Object.fromEntries([ ...element ]
+            .map(([ key, value ]) => [ key.value, RdfString.termToString(value) ])))) :
+        wrap((<IQueryOperationResultQuads> action).quadStream)
+          .map(element => JSON.stringify(RdfString.quadToStringQuad(element)));
+
+      let empty = true;
+      stream = stream.map((element) => {
+        const ret = `${empty ? '' : ','}\n${element}`;
         empty = false;
-      });
-      resultStream.on('end', () => {
-        data.push(empty ? ']\n' : '\n]\n');
-        data.push(null);
-      });
-    } else if (action.type === 'quads') {
-      const resultStream = (<IQueryOperationResultQuads> action).quadStream;
-      data.push('[');
-      resultStream.on('error', error => data.emit('error', error));
-      resultStream.on('data', (element) => {
-        data.push(empty ? '\n' : ',\n');
-        data.push(JSON.stringify(RdfString.quadToStringQuad(element)));
-        empty = false;
-      });
-      resultStream.on('end', () => {
-        data.push(empty ? ']\n' : '\n]\n');
-        data.push(null);
-      });
+        return ret;
+      }).prepend([ '[' ]).append([ '\n]\n' ]);
+
+      data.wrap(<any> stream);
     } else {
       try {
         data.push(`${JSON.stringify(await (<IQueryOperationResultBoolean> action).execute())}\n`);

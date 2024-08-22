@@ -18,13 +18,15 @@
   },
   "packages": [
     "engines/*",
-    "packages/*"
+    "packages/*",
+    "performance/*"
   ],
-  "version": "3.0.3",
+  "version": "3.2.1",
   "loglevel": "success",
   "registry": "https://registry.npmjs.org/",
   "npmClient": "yarn",
   "npmClientArgs": [
     "--pure-lockfile"
-  ]
+  ],
+  "lerna-script-tasks": "./lerna-custom-script.js"
 }

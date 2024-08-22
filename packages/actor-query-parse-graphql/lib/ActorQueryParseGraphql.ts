@@ -28,6 +28,7 @@ export class ActorQueryParseGraphql extends ActorQueryParse {
       // eslint-disable-next-line ts/no-unnecessary-type-assertion
       singularizeVariables: <any> action.context.get(KeysInitQuery.graphqlSingularizeVariables),
     };
+    // TODO: pass data factory
     return { operation: await this.graphqlToSparql.graphqlToSparqlAlgebra(action.query, context, options) };
   }
 }

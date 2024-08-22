@@ -5,14 +5,15 @@ import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import { MetadataValidationState } from '@comunica/metadata';
-import type { IPhysicalQueryPlanLogger, MetadataBindings } from '@comunica/types';
+import type { IPhysicalQueryPlanLogger, IPlanNode, MetadataBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import { BufferedIterator, MultiTransformIterator, SingletonIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type { IActionRdfJoin } from '../lib/ActorRdfJoin';
 import { ActorRdfJoin } from '../lib/ActorRdfJoin';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 
 // Dummy class to test instance of abstract class
 class Dummy extends ActorRdfJoin {
@@ -41,7 +42,21 @@ IActorRdfJoinSelectivityOutput
   }
 
   public async getOutput(action: IActionRdfJoin) {
-    const result = <any> { dummy: 'dummy' };
+    const bufferedIterator = new BufferedIterator({ autoStart: false });
+    (<any> bufferedIterator)._read = (count: number, done: any) => {
+      (<any> bufferedIterator)._push(BF.fromRecord({ a: DF.namedNode('a') }));
+      bufferedIterator.close();
+      done();
+    };
+    const result = <any> {
+      dummy: 'dummy',
+      bindingsStream: new MultiTransformIterator(
+        bufferedIterator,
+        {
+          multiTransform: bindings => new SingletonIterator(bindings),
+        },
+      ),
+    };
 
     result.metadata = async() => this.constructResultMetadata(
       action.entries,
@@ -112,7 +127,7 @@ IActorRdfJoinSelectivityOutput
           operation: <any>{},
         },
       ],
-      context: new ActionContext(),
+      context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
     };
   });
 
@@ -124,11 +139,33 @@ IActorRdfJoinSelectivityOutput
           [ DF.variable('y'), DF.literal('XYZ', DF.namedNode('ex:abc')) ],
         ]),
         [ DF.variable('x'), DF.variable('y') ],
-      )).toBe('http://www.example.org/instance#a"XYZ"^^ex:abc');
+      )).toBe('http://www.example.org/instance#aXYZ');
     });
 
     it('should not let hash being influenced by a variable that is not present in bindings', () => {
       expect(ActorRdfJoin.hash(
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('http://www.example.org/instance#a') ],
+          [ DF.variable('y'), DF.literal('XYZ', DF.namedNode('ex:abc')) ],
+        ]),
+        [ DF.variable('x'), DF.variable('y'), DF.variable('z') ],
+      )).toBe('http://www.example.org/instance#aXYZ');
+    });
+  });
+
+  describe('hashNonClashing', () => {
+    it('should hash to concatenation of values of variables', () => {
+      expect(ActorRdfJoin.hashNonClashing(
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('http://www.example.org/instance#a') ],
+          [ DF.variable('y'), DF.literal('XYZ', DF.namedNode('ex:abc')) ],
+        ]),
+        [ DF.variable('x'), DF.variable('y') ],
+      )).toBe('http://www.example.org/instance#a"XYZ"^^ex:abc');
+    });
+
+    it('should not let hash being influenced by a variable that is not present in bindings', () => {
+      expect(ActorRdfJoin.hashNonClashing(
         BF.bindings([
           [ DF.variable('x'), DF.namedNode('http://www.example.org/instance#a') ],
           [ DF.variable('y'), DF.literal('XYZ', DF.namedNode('ex:abc')) ],
@@ -220,7 +257,7 @@ IActorRdfJoinSelectivityOutput
 
   describe('joinVariables', () => {
     it('should join variables', () => {
-      expect(ActorRdfJoin.joinVariables([
+      expect(ActorRdfJoin.joinVariables(DF, [
         {
           state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 10 },
@@ -235,7 +272,7 @@ IActorRdfJoinSelectivityOutput
         },
       ])).toEqual([]);
 
-      expect(ActorRdfJoin.joinVariables([
+      expect(ActorRdfJoin.joinVariables(DF, [
         {
           state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 10 },
@@ -257,7 +294,7 @@ IActorRdfJoinSelectivityOutput
     });
 
     it('should deduplicate the result', () => {
-      expect(ActorRdfJoin.joinVariables([
+      expect(ActorRdfJoin.joinVariables(DF, [
         {
           state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 10 },
@@ -272,7 +309,7 @@ IActorRdfJoinSelectivityOutput
         },
       ])).toEqual([ DF.variable('a'), DF.variable('b'), DF.variable('d') ]);
 
-      expect(ActorRdfJoin.joinVariables([
+      expect(ActorRdfJoin.joinVariables(DF, [
         {
           state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 10 },
@@ -851,6 +888,9 @@ IActorRdfJoinSelectivityOutput
       const logger: IPhysicalQueryPlanLogger = {
         logOperation: jest.fn(),
         toJson: jest.fn(),
+        stashChildren: jest.fn((node, filter) => filter ? filter(<IPlanNode> { logicalOperator: 'abc' }) : undefined),
+        unstashChild: jest.fn(),
+        appendMetadata: jest.fn(),
       };
       action.context = new ActionContext({
         [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
@@ -858,7 +898,9 @@ IActorRdfJoinSelectivityOutput
       });
       jest.spyOn(instance, 'getOutput');
 
-      await instance.run(action);
+      const result = await instance.run(action);
+      await result.bindingsStream.toArray();
+      await new Promise(setImmediate);
 
       expect(logger.logOperation).toHaveBeenCalledWith(
         'join-inner',
@@ -880,6 +922,17 @@ IActorRdfJoinSelectivityOutput
           },
         },
       );
+      expect(logger.appendMetadata).toHaveBeenCalledWith({}, {
+        cardinality: { type: 'estimate', value: 10 },
+      });
+      expect(logger.appendMetadata).toHaveBeenCalledWith({}, {
+        cardinality: { type: 'estimate', value: 5 },
+      });
+      expect(logger.appendMetadata).toHaveBeenCalledWith(expect.anything(), {
+        cardinalityReal: 1,
+        timeLife: expect.anything(),
+        timeSelf: expect.anything(),
+      });
       expect(instance.getOutput).toHaveBeenCalledWith({
         ...action,
         context: new ActionContext({

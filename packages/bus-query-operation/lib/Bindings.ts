@@ -1,15 +1,11 @@
 import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { Bindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { DataFactory } from 'rdf-data-factory';
+import type { Variable } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import { mapTermsNested, someTermsNested } from 'rdf-terms';
 import type { Algebra, Factory } from 'sparqlalgebrajs';
 import { Util } from 'sparqlalgebrajs';
-
-const DF = new DataFactory();
-
-const TRUE = DF.literal('true', DF.namedNode('http://www.w3.org/2001/XMLSchema#boolean'));
 
 /**
  * Materialize a term with the given binding.
@@ -38,28 +34,36 @@ export function materializeTerm(term: RDF.Term, bindings: Bindings): RDF.Term {
 
 /**
  * Materialize the given operation (recursively) with the given bindings.
- * Essentially, all variables in the given operation will be replaced
+ * Essentially, the variables in the given operation
+ * which don't appear in the projection operation will be replaced
  * by the terms bound to the variables in the given bindings.
  * @param {Algebra.Operation} operation SPARQL algebra operation.
+ * And the variables that appear in the projection operation
+ * will be added to a new values operation.
  * @param {Bindings} bindings A bindings object.
+ * @param algebraFactory The algebra factory.
  * @param bindingsFactory The bindings factory.
  * @param options Options for materializations.
  * @param options.strictTargetVariables If target variable bindings (such as on SELECT or BIND) should not be allowed.
- * @param options.bindFilter If filter expressions should be materialized
+ * @param options.bindFilter If filter expressions should be materialized.
+ * @param options.originalBindings The bindings object as it was at the top level call of materializeOperation.
  * @return Algebra.Operation A new operation materialized with the given bindings.
  */
 export function materializeOperation(
   operation: Algebra.Operation,
   bindings: Bindings,
+  algebraFactory: Factory,
   bindingsFactory: BindingsFactory,
   options: {
     strictTargetVariables?: boolean;
     bindFilter?: boolean;
+    originalBindings?: Bindings;
   } = {},
 ): Algebra.Operation {
   options = {
     strictTargetVariables: 'strictTargetVariables' in options ? options.strictTargetVariables : false,
     bindFilter: 'bindFilter' in options ? options.bindFilter : true,
+    originalBindings: 'originalBindings' in options ? options.originalBindings : bindings,
   };
 
   return Util.mapOperation(operation, {
@@ -98,7 +102,7 @@ export function materializeOperation(
         } else {
           return {
             recurse: true,
-            result: materializeOperation(op.input, bindings, bindingsFactory, options),
+            result: materializeOperation(op.input, bindings, algebraFactory, bindingsFactory, options),
           };
         }
       }
@@ -132,10 +136,50 @@ export function materializeOperation(
         ),
       };
     },
+    filter(op: Algebra.Filter, factory: Factory) {
+      const originalBindings: Bindings = <Bindings> options.originalBindings;
+      if (op.expression.expressionType !== 'operator' || originalBindings.size === 0) {
+        return {
+          recurse: false,
+          result: op,
+        };
+      }
+
+      // Make a values clause using all the variables from originalBindings.
+      const values: Algebra.Operation[] = createValuesFromBindings(factory, originalBindings);
+
+      // Recursively materialize the filter expression
+      const recursionResultExpression: Algebra.Expression = <Algebra.Expression> materializeOperation(
+        op.expression,
+        bindings,
+        algebraFactory,
+        bindingsFactory,
+        options,
+      );
+
+      // Recursively materialize the filter input
+      let recursionResultInput: Algebra.Operation = materializeOperation(
+        op.input,
+        bindings,
+        algebraFactory,
+        bindingsFactory,
+        options,
+      );
+
+      if (values.length > 0) {
+        recursionResultInput = factory.createJoin([ ...values, recursionResultInput ]);
+      }
+
+      return {
+        // Recursion already taken care of above.
+        recurse: false,
+        result: factory.createFilter(recursionResultInput, recursionResultExpression),
+      };
+    },
     project(op: Algebra.Project, factory: Factory) {
       // Materialize a project operation.
       // If strictTargetVariables is true, we throw if the project target variable is attempted to be bound.
-      // Otherwise, we just filter out the bound variables.
+      // Otherwise, we make a values clause out of the target variable and its value in InitialBindings.
       if (options.strictTargetVariables) {
         for (const variable of op.variables) {
           if (bindings.has(variable)) {
@@ -148,30 +192,37 @@ export function materializeOperation(
         };
       }
 
-      const variables = op.variables.filter(variable => !bindings.has(variable));
-
-      // Only include projected variables in the sub-bindings that will be passed down recursively.
-      // If we don't do this, we may be binding variables that may have the same label, but are not considered equal.
-      const subBindings = bindingsFactory.bindings(<[RDF.Variable, RDF.Term][]> op.variables.map((variable) => {
-        const binding = bindings.get(variable);
-        if (binding) {
-          return [ variable, binding ];
+      // Only include non-projected variables in the bindings that will be passed down recursively.
+      // This will result in non-projected variables being replaced with their InitialBindings values.
+      for (const bindingKey of bindings.keys()) {
+        for (const curVariable of op.variables) {
+          if (curVariable.equals(bindingKey)) {
+            bindings = bindings.delete(bindingKey);
+            break;
+          }
         }
-        // eslint-disable-next-line no-useless-return,array-callback-return
-        return;
-      }).filter(Boolean));
+      }
+
+      // Find projected variables which are present in the originalBindings.
+      // This will result in projected variables being handled via a values clause.
+      const values: Algebra.Operation[] =
+      createValuesFromBindings(factory, <Bindings> options.originalBindings, op.variables);
+
+      let recursionResult: Algebra.Operation = materializeOperation(
+        op.input,
+        bindings,
+        algebraFactory,
+        bindingsFactory,
+        options,
+      );
+
+      if (values.length > 0) {
+        recursionResult = factory.createJoin([ ...values, recursionResult ]);
+      }
 
       return {
         recurse: false,
-        result: factory.createProject(
-          materializeOperation(
-            op.input,
-            subBindings,
-            bindingsFactory,
-            options,
-          ),
-          variables,
-        ),
+        result: factory.createProject(recursionResult, op.variables),
       };
     },
     values(op: Algebra.Values, factory: Factory) {
@@ -235,7 +286,10 @@ export function materializeOperation(
           [ ...bindings.keys() ].some(variable => op.args[0].term.equals(variable))) {
           return {
             recurse: false,
-            result: factory.createTermExpression(TRUE),
+            result: factory.createTermExpression(factory.dataFactory.literal(
+              'true',
+              factory.dataFactory.namedNode('http://www.w3.org/2001/XMLSchema#boolean'),
+            )),
           };
         }
         return {
@@ -263,5 +317,28 @@ export function materializeOperation(
         result: op,
       };
     },
-  });
+  }, algebraFactory);
+}
+
+/**
+ * Make a values operation containing the values that are present in `bindings` for variables present in `variables`.
+ * If no `variables` argument is given, this method returns a values operation
+ * containing every binding from `bindings`.
+ * @param {Factory} factory The Factory used to create the values operation.
+ * @param {Bindings} bindings A bindings object.
+ * @param {Variable[]} variables A list of variables.
+ * @returns Algebra.Values A new values operation the given bindings.
+ */
+function createValuesFromBindings(factory: Factory, bindings: Bindings, variables?: Variable[]): Algebra.Values[] {
+  const values: Algebra.Values[] = [];
+
+  for (const [ variable, binding ] of bindings) {
+    if (!variables || variables.some(v => v.equals(variable))) {
+      const newBinding = { [termToString(variable)]: <RDF.NamedNode | RDF.Literal> binding };
+
+      values.push(factory.createValues([ variable ], [ newBinding ]));
+    }
+  }
+
+  return values;
 }

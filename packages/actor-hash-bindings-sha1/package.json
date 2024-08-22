@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-hash-bindings-sha1",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A hash bindings actor that provides the SHA1 function",
   "lsd:module": true,
   "license": "MIT",
@@ -38,8 +38,8 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-hash-bindings": "^3.0.3",
-    "@comunica/core": "^3.0.3",
+    "@comunica/bus-hash-bindings": "^3.2.1",
+    "@comunica/core": "^3.2.1",
     "canonicalize": "^2.0.0",
     "hash.js": "^1.1.7",
     "rdf-string": "^1.6.1"

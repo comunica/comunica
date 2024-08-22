@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-metadata-extract-patch-sparql-update",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A patch-sparql-update rdf-metadata-extract actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,7 +37,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-rdf-metadata-extract": "^3.0.3",
-    "@comunica/core": "^3.0.3"
+    "@comunica/bus-rdf-metadata-extract": "^3.2.1",
+    "@comunica/core": "^3.2.1"
   }
 }

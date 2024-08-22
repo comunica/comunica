@@ -1,6 +1,101 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v3.2.1"></a>
+## [v3.2.1](https://github.com/comunica/comunica/compare/v3.2.0...v3.2.1) - 2024-08-07
+
+### Added
+* [Add support for deduplication of results in construct queries](https://github.com/comunica/comunica/commit/0516bb0a82995e0af7043e4efdb0408a1ff650b0)
+
+### Changed
+* [Remove projection variables missing warning](https://github.com/comunica/comunica/commit/1b52ef2a22b87c0d9ce4f96bb14397fe09ae2482)
+* [Migrate parse-link-header to http-link-header](https://github.com/comunica/comunica/commit/67ff93f0d4f615624b96088c2bfa5250544c0f45)
+* [Migrate stream-to-string and streamify-string](https://github.com/comunica/comunica/commit/f5a90bb26c07c6bc86f1fa8df469766e3313e281)
+* Performance improvements:
+  * [Tweak default BindJoin.minMaxCardinalityRatio value for WatDiv-C1](https://github.com/comunica/comunica/commit/2543e868991fe5ff0de7abc7723e1a6976baae57)
+  * [Use Bind Join only if smallest much smaller than largest](https://github.com/comunica/comunica/commit/cb8d276a779194b3f422f2b3b979342f9e7d7a55)
+  * [Assign smallest stream as build side in Hash Join, #884](https://github.com/comunica/comunica/commit/4c59ca39ff3527ad62e58f62e116712ea27ca24d)
+  * [Force NLJ when join entries have no overlapping variables](https://github.com/comunica/comunica/commit/a93bddf45934cd2d7cfd4a29623023605f4ea8dc)
+
+### Fixed
+* [Fix optimizer incorrectly considering some optionals empty](https://github.com/comunica/comunica/commit/c7ca5ae597dbd5948e9b32ff5eb35ee820c48f81)
+* [Fix SLICE actor not working with ASK queries, Closes #1374](https://github.com/comunica/comunica/commit/0d35a440e6ecbddde5e5c2f96d2bbed125a72a9f)
+* [Make projection variables missing error a warning instead](https://github.com/comunica/comunica/commit/68df97ac442a36961c9db555d7bd4d57408af564)
+* [Fix some unions in federated queries being pruned incorrectly, Closes #1397](https://github.com/comunica/comunica/commit/7bdfa6c7ed8088b13c2142c32197b4dd31eae1ff)
+* [Avoid single-entry joins in join-connected optimizer, #1397](https://github.com/comunica/comunica/commit/675eb495e9288911d650f7c1e4fbadeb5dd4b6df)
+* [Consider unions when determining if operation can produce undefs, #1406](https://github.com/comunica/comunica/commit/c69f748b2107b06b0d5c5aee1d113e7a2b9ae9af)
+* [Fix undefined values from SPARQL endpoints being produced](https://github.com/comunica/comunica/commit/cc90f8f3849b5a0d80c9856700f892f6bdde01ad)
+* [Fix unnecessary join being created when binding over filter](https://github.com/comunica/comunica/commit/a531e81378ad95414f0320066341c9d1c913cdd5)
+* [Fix initialBindings failing when done over projected variables](https://github.com/comunica/comunica/commit/20e8f42316b117ef54ceb451ccb99d6e278df15f)
+
+<a name="v3.2.0"></a>
+## [v3.2.0](https://github.com/comunica/comunica/compare/v3.1.2...v3.2.0) - 2024-07-05
+
+### Added
+* Performance improvements:
+  * [Add optional hash join actor](https://github.com/comunica/comunica/commit/de90db0140cd10e2bfdf23c26f9eeff5e94f3ef2)
+* [Add actors for bindings source attribution](https://github.com/comunica/comunica/commit/c3dd70a424e175877fd883277e9d0191bc15bf62)
+* [Add OPT+ operator](https://github.com/comunica/comunica/commit/8ffeff5e286c6ef7db7d163bd8ceee8c49f9f513)
+
+### Changed
+* Performance improvements:
+  * [Lower default ioWeight to tweak overall performance](https://github.com/comunica/comunica/commit/50333c92ed1cf5410f172f608a213424e510986e)
+  * [Make optional hash and bind join only work with common variables](https://github.com/comunica/comunica/commit/df40c20e001121cd0ae9a9adf67ed221dc2966ba)
+* Debugging and performance tracking:
+  * [Omit undefined join coefficients in debug logger](https://github.com/comunica/comunica/commit/f81af2fe0f4f3739580436545f628c3c6312be4e)
+  * [Emit timings and actual cardinalities in physical explain output](https://github.com/comunica/comunica/commit/0c84f9e33aaecc81e5b78c4c83f629b8cc1ff00d)
+  * [Make physical query plan explain output compact and human-readable](https://github.com/comunica/comunica/commit/d85c5bcae0045a4ff848a7d767a0b716af463913)
+  * [Compact Bind-Join operations in physical query explain output](https://github.com/comunica/comunica/commit/addc8de2737dc595cb443d27129ea499d48deb73)
+  * [Add BJ bindOperation to physical query explain output](https://github.com/comunica/comunica/commit/7781e16cb63a67266e8303ab3304dbc5ba40929d)
+  * [Emit pattern source in physical query explain output](https://github.com/comunica/comunica/commit/c334b6c248bc417a9664e561674a1f18ccc291ea)
+
+### Fixed
+* [Fix undef sanity check for SPARQL endpoints sometimes going rogue](https://github.com/comunica/comunica/commit/100aab2c2d011257887609a995a101e38c8355d9)
+* [Fix CONSTRUCT FROM not being sent to endpoints, Closes #1389](https://github.com/comunica/comunica/commit/0e0cb446d855cd29dee9685ec5e3edb8ce90fbca)
+* [Fix empty media type not falling back to extension handling](https://github.com/comunica/comunica/commit/5fa2663e240d1ca041d9898f0464111d6d46867c)
+* [Fixed the order of count operations influencing the result](https://github.com/comunica/comunica/commit/cb1bebd7eb194edc73ded2fb4460a20edb8db6ea)
+* [Fix minus-hash using incorrect hash function](https://github.com/comunica/comunica/commit/23302320498293d658a08c637b715a6c5744579b)
+
+<a name="v3.1.2"></a>
+## [v3.1.2](https://github.com/comunica/comunica/compare/v3.1.1...v3.1.2) - 2024-05-30
+
+### Fixed
+* [Fix next page requests not being logged anymore](https://github.com/comunica/comunica/commit/2077d5f56060eabf90b4cdd1255b05d99d921707)
+* [Fix performance regression of TPF queries](https://github.com/comunica/comunica/commit/ae893cb62dc47c5fab4ea334526fa0a28af10581)
+
+### Changed
+* Improve performance:
+  * [Use AsyncIterator.map and .filter instead of expensive .transform](https://github.com/comunica/comunica/commit/50f5fe5f37ce037d66ab67f851ad652d37bbdfbf)
+  * [Improve performance of hashing during hash joins](https://github.com/comunica/comunica/commit/cbfdc3135607c257f37d91a13a8bfb55b9c147d8)
+  * [Optimize usage of bindingsStream transform in PathNps actor](https://github.com/comunica/comunica/commit/c134d3223fd8645820bb4b12cac73b3e5518dbe8)
+* [Use event-emitter-promisify package](https://github.com/comunica/comunica/commit/511d5cf29255b0d7d889378611e8183060c15ea5)
+* [Cleanup stream operations (#1349)](https://github.com/comunica/comunica/commit/15f0aca1759cff91cec1b8680a1e9369cab6f6ba)
+* [Maintain backpressure in result serializers](https://github.com/comunica/comunica/commit/0d7538cb154284af91a5027f89772bb3cc09f6fa)
+* [Maintain backpressure on internal actors](https://github.com/comunica/comunica/commit/18b3ff35f94f720fcc5a50313322d0740f65b848)
+* [Don't log if no sources are pruned](https://github.com/comunica/comunica/commit/718d67ef3ccf19a0d5b839e90e47f88e1fd71e4f)
+* [Use cancel in wayback actor when available, Closes #1351](https://github.com/comunica/comunica/commit/d7ba1239d075da65f272045f0a8850bbc7b2a473)
+
+<a name="v3.1.1"></a>
+## [v3.1.1](https://github.com/comunica/comunica/compare/v3.1.0...v3.1.1) - 2024-05-11
+
+### Fixed
+* [Fix queries over paged collections always being empty](https://github.com/comunica/comunica/commit/a2e47004bcefd82784d9324600aa6c0af13ab751)
+
+<a name="v3.1.0"></a>
+## [v3.1.0](https://github.com/comunica/comunica/compare/v3.0.3...v3.1.0) - 2024-05-11
+
+### Added
+* [Add @comunica/query-sparql-rdfjs-lite that is optimized for bundle size](https://github.com/comunica/comunica/commit/2c982b89ce059113ad6188fa38a322094fd5af15)
+
+### Changed
+* [Migrate from readable-web-to-node-stream to readable-from-web](https://github.com/comunica/comunica/commit/1cf3123f78aa16f901f475aa8bc206145e964256)
+* [Move validateHttpResponse helper to avoid interdependencies](https://github.com/comunica/comunica/commit/07323db89f9d404a744664797e8e9810ba591223)
+
+### Fixed
+* [Avoid race conditions during DELETE/INSERT operations](https://github.com/comunica/comunica/commit/6a3ebf5b7ae9699cac6176f25a1535e064568c7f)
+* [Catch 404 of non-existing resource when fetching the selector shape (#1324)](https://github.com/comunica/comunica/commit/246d83264e44b11eaee0e8ae5ae0b11375d04280)
+* [Always add preprocessed context to unidentified query sources (#1337)](https://github.com/comunica/comunica/commit/cc464d3626dc983a31e42efb5b6b52ae738180cc)
+
 <a name="v3.0.3"></a>
 ## [v3.0.3](https://github.com/comunica/comunica/compare/v3.0.2...v3.0.3) - 2024-04-12
 

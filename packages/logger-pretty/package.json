@@ -1,6 +1,6 @@
 {
   "name": "@comunica/logger-pretty",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A comunica logger that pretty-prints.",
   "lsd:module": true,
   "license": "MIT",
@@ -36,7 +36,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/types": "^3.0.3",
+    "@comunica/types": "^3.2.1",
     "object-inspect": "^1.12.2",
     "process": "^0.11.10"
   }

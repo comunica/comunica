@@ -10,7 +10,7 @@ import * as Err from '../../../lib/util/Errors';
 import { getMockExpression } from '../../util/utils';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 const two = DF.literal('2', DF.namedNode(DT.XSD_INTEGER));
 
 describe('evaluators', () => {

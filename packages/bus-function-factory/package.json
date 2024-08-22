@@ -36,9 +36,9 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/context-entries": "^3.0.3",
-    "@comunica/core": "^3.0.3",
-    "@comunica/expression-evaluator": "3.0.1",
+    "@comunica/context-entries": "^3.2.1",
+    "@comunica/core": "^3.2.1",
+    "@comunica/expression-evaluator": "3.2.1",
     "sparqlalgebrajs": "^4.2.0"
   }
 }

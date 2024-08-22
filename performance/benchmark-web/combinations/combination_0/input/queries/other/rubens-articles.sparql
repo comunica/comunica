@@ -1,0 +1,7 @@
+# Datasource: https://data.verborgh.org/ruben
+# About which topics did Ruben write articles?
+SELECT DISTINCT ?topic WHERE {
+  ?article a schema:Article;
+           foaf:maker [ foaf:name "Ruben Verborgh"@en ];
+           foaf:topic [ foaf:name ?topic ].
+}

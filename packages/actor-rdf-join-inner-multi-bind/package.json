@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-inner-multi-bind",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A multi-bind rdf-join actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,15 +37,15 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bindings-factory": "^3.0.3",
-    "@comunica/bus-merge-bindings-context": "^3.0.3",
-    "@comunica/bus-query-operation": "^3.0.3",
-    "@comunica/bus-rdf-join": "^3.0.3",
-    "@comunica/bus-rdf-join-entries-sort": "^3.0.3",
-    "@comunica/context-entries": "^3.0.3",
-    "@comunica/mediatortype-join-coefficients": "^3.0.3",
-    "@comunica/types": "^3.0.3",
+    "@comunica/bindings-factory": "^3.2.1",
+    "@comunica/bus-merge-bindings-context": "^3.2.1",
+    "@comunica/bus-query-operation": "^3.2.1",
+    "@comunica/bus-rdf-join": "^3.2.1",
+    "@comunica/bus-rdf-join-entries-sort": "^3.2.1",
+    "@comunica/context-entries": "^3.2.1",
+    "@comunica/mediatortype-join-coefficients": "^3.2.1",
+    "@comunica/types": "^3.2.1",
     "asynciterator": "^3.9.0",
-    "sparqlalgebrajs": "^4.3.3"
+    "sparqlalgebrajs": "^4.3.7"
   }
 }

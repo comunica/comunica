@@ -4,7 +4,7 @@ import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinEntriesSort, MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
-import { KeysQueryOperation } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
@@ -17,7 +17,7 @@ import { ActorRdfJoinMultiBind } from '../lib/ActorRdfJoinMultiBind';
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 const FACTORY = new Factory();
 const mediatorMergeBindingsContext: any = {
   mediate(arg: any) {
@@ -61,7 +61,7 @@ IQueryOperationResultBindings
           return { entries };
         },
       };
-      context = new ActionContext({ a: 'b' });
+      context = new ActionContext({ a: 'b', [KeysInitQuery.dataFactory.name]: DF });
       mediatorQueryOperation = <any> {
         mediate: jest.fn(async(arg: IActionQueryOperation): Promise<IQueryOperationResultBindings> => {
           return {
@@ -139,7 +139,7 @@ IQueryOperationResultBindings
             },
             {
               state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 5 },
+              cardinality: { type: 'estimate', value: 500 },
               pageSize: 100,
               requestTime: 30,
               canContainUndefs: false,
@@ -147,10 +147,10 @@ IQueryOperationResultBindings
             },
           ],
         )).resolves.toEqual({
-          iterations: 1.280_000_000_000_000_2,
+          iterations: 80.48000000000002,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 0.912_000_000_000_000_1,
+          requestTime: 32.592000000000006,
         });
       });
 
@@ -193,7 +193,7 @@ IQueryOperationResultBindings
             },
             {
               state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 5 },
+              cardinality: { type: 'estimate', value: 500 },
               pageSize: 100,
               requestTime: 30,
               canContainUndefs: false,
@@ -201,10 +201,10 @@ IQueryOperationResultBindings
             },
           ],
         )).resolves.toEqual({
-          iterations: 1.280_000_000_000_000_2,
+          iterations: 80.48000000000002,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 0.912_000_000_000_000_1,
+          requestTime: 32.592000000000006,
         });
       });
 
@@ -349,7 +349,7 @@ IQueryOperationResultBindings
           [
             {
               state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 3 },
+              cardinality: { type: 'estimate', value: 300 },
               pageSize: 100,
               requestTime: 10,
               canContainUndefs: false,
@@ -365,10 +365,10 @@ IQueryOperationResultBindings
             },
           ],
         )).resolves.toEqual({
-          iterations: 0.480_000_000_000_000_1,
+          iterations: 48.00000000000001,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 0.448_000_000_000_000_06,
+          requestTime: 5.200000000000001,
         });
       });
 
@@ -408,6 +408,55 @@ IQueryOperationResultBindings
             },
           ],
         )).rejects.toThrow('Actor actor can not be used over remaining entries with modified operations');
+      });
+
+      it('should reject if smallest is not significantly smaller than the largest', async() => {
+        await expect(actor.getJoinCoefficients(
+          {
+            type: 'inner',
+            entries: [
+              {
+                output: <any>{},
+                operation: FACTORY.createNop(),
+              },
+              {
+                output: <any>{},
+                operation: FACTORY.createNop(),
+              },
+              {
+                output: <any>{},
+                operation: FACTORY.createNop(),
+              },
+            ],
+            context: new ActionContext(),
+          },
+          [
+            {
+              state: new MetadataValidationState(),
+              cardinality: { type: 'estimate', value: 3 },
+              pageSize: 100,
+              requestTime: 10,
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+            {
+              state: new MetadataValidationState(),
+              cardinality: { type: 'estimate', value: 2 },
+              pageSize: 100,
+              requestTime: 20,
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+            {
+              state: new MetadataValidationState(),
+              cardinality: { type: 'estimate', value: 5 },
+              pageSize: 100,
+              requestTime: 30,
+              canContainUndefs: false,
+              variables: [ DF.variable('a') ],
+            },
+          ],
+        )).rejects.toThrow(`Actor actor can only run if the smallest stream is much smaller than largest stream`);
       });
     });
 
@@ -1021,6 +1070,9 @@ IQueryOperationResultBindings
         // Validate physicalPlanMetadata
         expect(physicalPlanMetadata).toEqual({
           bindIndex: 1,
+          bindOperation: FACTORY
+            .createPattern(DF.variable('a'), DF.namedNode('ex:p2'), DF.namedNode('ex:o')),
+          bindOperationCardinality: { type: 'estimate', value: 1 },
           bindOrder: 'depth-first',
         });
 
@@ -1040,6 +1092,7 @@ IQueryOperationResultBindings
           operation: FACTORY.createPattern(DF.namedNode('ex:a1'), DF.namedNode('ex:p1'), DF.variable('b')),
           context: new ActionContext({
             a: 'b',
+            [KeysInitQuery.dataFactory.name]: DF,
             [KeysQueryOperation.joinLeftMetadata.name]: {
               state: expect.any(MetadataValidationState),
               cardinality: { type: 'estimate', value: 1 },
@@ -1061,6 +1114,7 @@ IQueryOperationResultBindings
           operation: FACTORY.createPattern(DF.namedNode('ex:a2'), DF.namedNode('ex:p1'), DF.variable('b')),
           context: new ActionContext({
             a: 'b',
+            [KeysInitQuery.dataFactory.name]: DF,
             [KeysQueryOperation.joinLeftMetadata.name]: {
               state: expect.any(MetadataValidationState),
               cardinality: { type: 'estimate', value: 1 },
@@ -1086,6 +1140,7 @@ IQueryOperationResultBindings
           bus,
           bindOrder: 'breadth-first',
           selectivityModifier: 0.1,
+          minMaxCardinalityRatio: 100,
           mediatorQueryOperation,
           mediatorJoinSelectivity,
           mediatorJoinEntriesSort,
@@ -1396,6 +1451,7 @@ IQueryOperationResultBindings
           ]),
           context: new ActionContext({
             a: 'b',
+            [KeysInitQuery.dataFactory.name]: DF,
             [KeysQueryOperation.joinLeftMetadata.name]: {
               state: expect.any(MetadataValidationState),
               cardinality: { type: 'estimate', value: 1 },
@@ -1428,6 +1484,7 @@ IQueryOperationResultBindings
           ]),
           context: new ActionContext({
             a: 'b',
+            [KeysInitQuery.dataFactory.name]: DF,
             [KeysQueryOperation.joinLeftMetadata.name]: {
               state: expect.any(MetadataValidationState),
               cardinality: { type: 'estimate', value: 1 },

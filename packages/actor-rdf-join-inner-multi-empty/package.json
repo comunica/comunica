@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-inner-multi-empty",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A multi-empty rdf-join actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,10 +37,11 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-rdf-join": "^3.0.3",
-    "@comunica/mediatortype-join-coefficients": "^3.0.3",
-    "@comunica/metadata": "^3.0.3",
-    "@comunica/types": "^3.0.3",
+    "@comunica/bus-rdf-join": "^3.2.1",
+    "@comunica/context-entries": "^3.1.0",
+    "@comunica/mediatortype-join-coefficients": "^3.2.1",
+    "@comunica/metadata": "^3.2.1",
+    "@comunica/types": "^3.2.1",
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0"
   }

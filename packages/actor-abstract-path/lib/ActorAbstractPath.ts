@@ -12,6 +12,7 @@ import type {
   IActionContext,
   MetadataBindings,
   IQuerySourceWrapper,
+  ComunicaDataFactory,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -21,12 +22,10 @@ import {
   TransformIterator,
   EmptyIterator,
 } from 'asynciterator';
-import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
-import { Algebra, Factory } from 'sparqlalgebrajs';
+import type { Factory } from 'sparqlalgebrajs';
+import { Algebra } from 'sparqlalgebrajs';
 import { PathVariableObjectIterator } from './PathVariableObjectIterator';
-
-const DF = new DataFactory();
 
 /**
  * An abstract actor that handles Path operations.
@@ -34,8 +33,6 @@ const DF = new DataFactory();
  * Provides multiple helper functions used by the Path operation actors.
  */
 export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated<Algebra.Path> {
-  protected static readonly FACTORY: Factory = new Factory();
-
   protected readonly predicateType: string;
 
   protected constructor(args: IActorQueryOperationTypedMediatedArgs, predicateType: string) {
@@ -52,28 +49,28 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
   }
 
   // Generates a variable that does not yet occur in the path
-  public generateVariable(path?: Algebra.Path, name?: string): RDF.Variable {
+  public generateVariable(dataFactory: ComunicaDataFactory, path?: Algebra.Path, name?: string): RDF.Variable {
     if (!name) {
-      return this.generateVariable(path, 'b');
+      return this.generateVariable(dataFactory, path, 'b');
     }
 
     // Path predicates can't contain variables
     if (path && (path.subject.value === name || path.object.value === name)) {
-      return this.generateVariable(path, `${name}b`);
+      return this.generateVariable(dataFactory, path, `${name}b`);
     }
 
-    return DF.variable(name);
+    return dataFactory.variable(name);
   }
 
   // Such connectivity matching does not introduce duplicates (it does not incorporate any count of the number
   // of ways the connection can be made) even if the repeated path itself would otherwise result in duplicates.
   // https://www.w3.org/TR/sparql11-query/#propertypaths
-  public async isPathArbitraryLengthDistinct(context: IActionContext, path: Algebra.Path):
+  public async isPathArbitraryLengthDistinct(algebraFactory: Factory, context: IActionContext, path: Algebra.Path):
   Promise<{ context: IActionContext; operation: IQueryOperationResultBindings | undefined }> {
     if (!context.get(KeysQueryOperation.isPathArbitraryLengthDistinctKey)) {
       context = context.set(KeysQueryOperation.isPathArbitraryLengthDistinctKey, true);
       return { context, operation: ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
-        operation: ActorAbstractPath.FACTORY.createDistinct(path),
+        operation: algebraFactory.createDistinct(path),
         context,
       })) };
     }
@@ -88,16 +85,17 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     predicate: Algebra.PropertyPathSymbol,
     graph: RDF.Variable,
     context: IActionContext,
+    algebraFactory: Factory,
     bindingsFactory: BindingsFactory,
   ): Promise<IPathResultStream> {
     const sources = this.getPathSources(predicate);
     // TODO: refactor this with an iterator just like PathVariableObjectIterator so we handle backpressure correctly
     // Construct path to obtain all graphs where subject exists
-    const predVar = this.generateVariable(ActorAbstractPath.FACTORY
+    const predVar = this.generateVariable(<ComunicaDataFactory> algebraFactory.dataFactory, algebraFactory
       .createPath(subject, predicate, object, graph));
-    const findGraphs = ActorAbstractPath.FACTORY.createUnion([
-      this.assignPatternSources(ActorAbstractPath.FACTORY.createPattern(subject, predVar, object, graph), sources),
-      this.assignPatternSources(ActorAbstractPath.FACTORY.createPattern(object, predVar, subject, graph), sources),
+    const findGraphs = algebraFactory.createUnion([
+      this.assignPatternSources(algebraFactory, algebraFactory.createPattern(subject, predVar, object, graph), sources),
+      this.assignPatternSources(algebraFactory, algebraFactory.createPattern(object, predVar, subject, graph), sources),
     ]);
     const results = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ context, operation: findGraphs }),
@@ -118,7 +116,8 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
           return new TransformIterator<Bindings>(
             async() => {
               const it = new BufferedIterator<RDF.Term>();
-              await this.getObjectsPredicateStar(subject, predicate, graphValue, context, {}, it, { count: 0 });
+              await this
+                .getObjectsPredicateStar(algebraFactory, subject, predicate, graphValue, context, {}, it, { count: 0 });
               return it.transform<Bindings>({
                 transform(item, next, push) {
                   push(bindingsFactory.bindings([
@@ -151,6 +150,8 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
    * @param {Term} graph The graph in which we search for the pattern. (Possibly a variable)
    * @param {ActionContext} context The context to pass to sub-opertations
    * @param emitFirstSubject If the path operation is predicate*, otherwise it is predicate+.
+   * @param algebraFactory The algebra factory.
+   * @param bindingsFactory The data factory.
    * @return {Promise<AsyncIterator<Bindings>} Iterator to where all bindings of query should have been pushed.
    */
   public async getObjectsPredicateStarEval(
@@ -160,13 +161,16 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     graph: RDF.Term,
     context: IActionContext,
     emitFirstSubject: boolean,
+    algebraFactory: Factory,
     bindingsFactory: BindingsFactory,
   ): Promise<IPathResultStream> {
     if (graph.termType === 'Variable') {
-      return this.predicateStarGraphVariable(subject, object, predicate, graph, context, bindingsFactory);
+      return this
+        .predicateStarGraphVariable(subject, object, predicate, graph, context, algebraFactory, bindingsFactory);
     }
 
     const it = new PathVariableObjectIterator(
+      algebraFactory,
       subject,
       predicate,
       graph,
@@ -199,6 +203,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
 
   /**
    * Pushes all terms to iterator `it` that are a solution of object predicate* ?o.
+   * @param algebraFactory The algebra factory.
    * @param {Term} object Term of where we start the predicate* search.
    * @param {Algebra.PropertyPathSymbol} predicate Predicate of the *-path.
    * @param {Term} graph The graph in which we search for the pattern.
@@ -209,6 +214,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
    * @return {Promise<IPathResultStream['metadata']>} The results metadata.
    */
   public async getObjectsPredicateStar(
+    algebraFactory: Factory,
     object: RDF.Term,
     predicate: Algebra.PropertyPathSymbol,
     graph: RDF.Term,
@@ -226,8 +232,8 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     termHashes[termString] = object;
     counter.count++;
 
-    const thisVariable = this.generateVariable();
-    const path = ActorAbstractPath.FACTORY.createPath(object, predicate, thisVariable, graph);
+    const thisVariable = this.generateVariable(<ComunicaDataFactory> algebraFactory.dataFactory);
+    const path = algebraFactory.createPath(object, predicate, thisVariable, graph);
     const results = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: path, context }),
     );
@@ -235,7 +241,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     // eslint-disable-next-line ts/no-misused-promises
     results.bindingsStream.on('data', async(bindings: Bindings) => {
       const result = bindings.get(thisVariable);
-      await this.getObjectsPredicateStar(result!, predicate, graph, context, termHashes, it, counter);
+      await this.getObjectsPredicateStar(algebraFactory, result!, predicate, graph, context, termHashes, it, counter);
     });
     results.bindingsStream.on('end', () => {
       if (--counter.count === 0) {
@@ -261,6 +267,8 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
    * Remembers the pairs we've already searched for, can stop searching if so.
    * @param {BufferedIterator<Bindings>} it Iterator to push terms to.
    * @param {any} counter Counts how many searches are in progress to close it when needed (when counter == 0).
+   * @param algebraFactory The algebra factory.
+   * @param bindingsFactory The bindings factory.
    * @return {Promise<void>} All solutions of query should have been pushed to it by then.
    */
   // Let the iterator `it` emit all bindings of size 2, with subjectStringVariable as value subjectVal
@@ -277,6 +285,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     termHashesCurrentSubject: Record<string, boolean>,
     it: BufferedIterator<Bindings>,
     counter: any,
+    algebraFactory: Factory,
     bindingsFactory: BindingsFactory,
   ): Promise<void> {
     const termString = termToString(objectVal) + termToString(graph);
@@ -309,6 +318,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
           termHashesCurrentSubject,
           it,
           counter,
+          algebraFactory,
           bindingsFactory,
         );
       }
@@ -326,8 +336,8 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
       const objectsArray: RDF.Term[] = [];
 
       // Construct path that leads us one step through predicate
-      const thisVariable = this.generateVariable();
-      const path = ActorAbstractPath.FACTORY.createPath(objectVal, predicate, thisVariable, graph);
+      const thisVariable = this.generateVariable(<ComunicaDataFactory> algebraFactory.dataFactory);
+      const path = algebraFactory.createPath(objectVal, predicate, thisVariable, graph);
       const results = ActorQueryOperation.getSafeBindings(
         await this.mediatorQueryOperation.mediate({ operation: path, context }),
       );
@@ -350,6 +360,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
           termHashesCurrentSubject,
           it,
           counter,
+          algebraFactory,
           bindingsFactory,
         );
       });
@@ -392,14 +403,18 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     }
   }
 
-  public assignPatternSources(pattern: Algebra.Pattern, sources: IQuerySourceWrapper[]): Algebra.Operation {
+  public assignPatternSources(
+    algebraFactory: Factory,
+    pattern: Algebra.Pattern,
+    sources: IQuerySourceWrapper[],
+  ): Algebra.Operation {
     if (sources.length === 0) {
       throw new Error(`Attempted to assign zero sources to a pattern during property path handling`);
     }
     if (sources.length === 1) {
       return ActorQueryOperation.assignOperationSource(pattern, sources[0]);
     }
-    return ActorAbstractPath.FACTORY.createUnion(sources
+    return algebraFactory.createUnion(sources
       .map(source => ActorQueryOperation.assignOperationSource(pattern, source)), true);
   }
 }

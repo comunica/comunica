@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-http-proxy",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A proxy http actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,9 +37,9 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-http": "^3.0.3",
-    "@comunica/context-entries": "^3.0.3",
-    "@comunica/mediatortype-time": "^3.0.3",
-    "@comunica/types": "^3.0.3"
+    "@comunica/bus-http": "^3.2.1",
+    "@comunica/context-entries": "^3.2.1",
+    "@comunica/mediatortype-time": "^3.2.1",
+    "@comunica/types": "^3.2.1"
   }
 }

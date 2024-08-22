@@ -4,12 +4,12 @@ import type {
   IActorOptimizeQueryOperationArgs,
 } from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
-import type { IActionContext } from '@comunica/types';
+import type { ComunicaDataFactory, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { uniqTerms } from 'rdf-terms';
-import type { Factory } from 'sparqlalgebrajs';
-import { Algebra, Util } from 'sparqlalgebrajs';
+import { Factory, Algebra, Util } from 'sparqlalgebrajs';
 
 /**
  * A comunica Filter Pushdown Optimize Query Operation Actor.
@@ -24,6 +24,9 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
+    const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
+    const algebraFactory = new Factory(dataFactory);
+
     // eslint-disable-next-line ts/no-this-alias
     const self = this;
     const operation = Util.mapOperation(action.operation, {
@@ -36,7 +39,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
           result: self.filterPushdown(op.expression, variables, op.input, factory, action.context),
         };
       },
-    });
+    }, algebraFactory);
     return { operation, context: action.context };
   }
 
@@ -113,6 +116,10 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     factory: Factory,
     context: IActionContext,
   ): Algebra.Operation {
+    if (this.isExpressionFalse(expression)) {
+      return factory.createUnion([]);
+    }
+
     switch (operation.type) {
       case Algebra.types.EXTEND:
         // Pass if the variable is not part of the expression
@@ -257,5 +264,13 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
   public variablesSubSetOf(varsNeedles: RDF.Variable[], varsHaystack: RDF.Variable[]): boolean {
     return varsNeedles.length <= varsHaystack.length &&
       varsNeedles.every(varA => varsHaystack.some(varB => varA.equals(varB)));
+  }
+
+  /**
+   * Check if an expression is simply 'false'.
+   * @param expression An expression.
+   */
+  public isExpressionFalse(expression: Algebra.Expression): boolean {
+    return (expression.term && expression.term.termType === 'Literal' && expression.term.value === 'false');
   }
 }

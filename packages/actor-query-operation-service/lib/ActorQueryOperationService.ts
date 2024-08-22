@@ -3,9 +3,15 @@ import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { MediatorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
-import type { IActionContext, IQueryOperationResult, IQueryOperationResultBindings } from '@comunica/types';
+import type {
+  ComunicaDataFactory,
+  IActionContext,
+  IQueryOperationResult,
+  IQueryOperationResultBindings,
+} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { SingletonIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -51,7 +57,12 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
     } catch (error: unknown) {
       if (operation.silent) {
         // Emit a single empty binding
-        const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context);
+        const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+        const bindingsFactory = await BindingsFactory.create(
+          this.mediatorMergeBindingsContext,
+          context,
+          dataFactory,
+        );
         output = {
           bindingsStream: new SingletonIterator<RDF.Bindings>(bindingsFactory.bindings()),
           type: 'bindings',

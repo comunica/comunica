@@ -1,7 +1,7 @@
 import type { Bindings } from '@comunica/bindings-factory';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import { KeysQueryOperation } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
@@ -131,7 +131,7 @@ describe('ActorQueryOperationPathOneOrMore', () => {
         DF.namedNode('s'),
         factory.createOneOrMorePath(factory.createLink(DF.namedNode('p'))),
         DF.variable('x'),
-      ), context: new ActionContext() };
+      ), context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { value: 1 },
@@ -148,7 +148,10 @@ describe('ActorQueryOperationPathOneOrMore', () => {
         DF.namedNode('s'),
         factory.createOneOrMorePath(factory.createLink(DF.namedNode('p'))),
         DF.variable('x'),
-      ), context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: false }) };
+      ), context: new ActionContext({
+        [KeysInitQuery.dataFactory.name]: DF,
+        [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: false,
+      }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { value: 1 },
@@ -165,7 +168,10 @@ describe('ActorQueryOperationPathOneOrMore', () => {
         DF.namedNode('s'),
         factory.createOneOrMorePath(factory.createLink(DF.namedNode('p'))),
         DF.variable('x'),
-      ), context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
+      ), context: new ActionContext({
+        [KeysInitQuery.dataFactory.name]: DF,
+        [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
+      }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { value: 4 },
@@ -184,7 +190,10 @@ describe('ActorQueryOperationPathOneOrMore', () => {
         DF.variable('x'),
         factory.createOneOrMorePath(factory.createLink(DF.namedNode('p'))),
         DF.namedNode('o'),
-      ), context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
+      ), context: new ActionContext({
+        [KeysInitQuery.dataFactory.name]: DF,
+        [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
+      }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { value: 3 },
@@ -203,7 +212,10 @@ describe('ActorQueryOperationPathOneOrMore', () => {
         DF.namedNode('s'),
         factory.createOneOrMorePath(factory.createLink(DF.namedNode('p'))),
         DF.namedNode('1'),
-      ), context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
+      ), context: new ActionContext({
+        [KeysInitQuery.dataFactory.name]: DF,
+        [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
+      }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { value: 3 },
@@ -221,7 +233,10 @@ describe('ActorQueryOperationPathOneOrMore', () => {
         factory.createZeroOrMorePath(factory.createLink(DF.namedNode('p'))),
         DF.namedNode('1'),
         DF.variable('g'),
-      ), context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
+      ), context: new ActionContext({
+        [KeysInitQuery.dataFactory.name]: DF,
+        [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
+      }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { value: 3 },
@@ -241,7 +256,10 @@ describe('ActorQueryOperationPathOneOrMore', () => {
         ),
         DF.variable('o'),
         DF.variable('g'),
-      ), context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
+      ), context: new ActionContext({
+        [KeysInitQuery.dataFactory.name]: DF,
+        [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
+      }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { value: 3 },
@@ -310,7 +328,10 @@ describe('ActorQueryOperationPathOneOrMore', () => {
           factory.createLink(DF.namedNode('p')),
         ])),
         DF.variable('y'),
-      ), context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
+      ), context: new ActionContext({
+        [KeysInitQuery.dataFactory.name]: DF,
+        [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
+      }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { value: 1 },
@@ -342,7 +363,10 @@ describe('ActorQueryOperationPathOneOrMore', () => {
         ])),
         DF.variable('y'),
         DF.variable('g'),
-      ), context: new ActionContext({ [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true }) };
+      ), context: new ActionContext({
+        [KeysInitQuery.dataFactory.name]: DF,
+        [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
+      }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { value: 1 },

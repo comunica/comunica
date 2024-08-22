@@ -19,6 +19,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import { ActionContextKey } from '@comunica/core';
 import type {
+  ComunicaDataFactory,
   IActionContext,
   IQueryOperationResult,
   QueryFormatType,
@@ -26,6 +27,7 @@ import type {
 
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
+import { Factory } from 'sparqlalgebrajs';
 
 /**
  * A comunica Sequential Query Process Actor.
@@ -59,7 +61,7 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
 
   public async parse(query: QueryFormatType, context: IActionContext): Promise<IQueryProcessSequentialOutput> {
     // Pre-processing the context
-    context = (await this.mediatorContextPreprocess.mediate({ context })).context;
+    context = (await this.mediatorContextPreprocess.mediate({ context, initialize: true })).context;
 
     // Parse query
     let operation: Algebra.Operation;
@@ -81,9 +83,16 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
 
     // Apply initial bindings in context
     if (context.has(KeysInitQuery.initialBindings)) {
+      const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+      const algebraFactory = new Factory(dataFactory);
       const bindingsFactory = await BindingsFactory
-        .create(this.mediatorMergeBindingsContext, context);
-      operation = materializeOperation(operation, context.get(KeysInitQuery.initialBindings)!, bindingsFactory);
+        .create(this.mediatorMergeBindingsContext, context, dataFactory);
+      operation = materializeOperation(
+        operation,
+        context.get(KeysInitQuery.initialBindings)!,
+        algebraFactory,
+        bindingsFactory,
+      );
 
       // Delete the query string from the context, since our initial query might have changed
       context = context.delete(KeysInitQuery.queryString);

@@ -2,14 +2,14 @@ import { PassThrough } from 'node:stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActionContext, Bus } from '@comunica/core';
 import type { BindingsStream, IActionContext, MetadataBindings } from '@comunica/types';
+import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryResultSerializeSparqlCsv } from '..';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
-const stringifyStream = require('stream-to-string');
+const BF = new BindingsFactory(DF);
 
 describe('ActorQueryResultSerializeSparqlCsv', () => {
   let bus: any;

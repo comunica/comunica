@@ -19,10 +19,11 @@ import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
-import { ActionContext, Bus } from '@comunica/core';
+import { KeysInitQuery } from '@comunica/context-entries';
+import { Bus } from '@comunica/core';
 import { SparqlOperator } from '@comunica/expression-evaluator';
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
-import type { Bindings } from '@comunica/types';
+import type { Bindings, IActionContext } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -138,6 +139,7 @@ IActionBindingsAggregatorFactory):
     return new SumAggregator(
       evaluator,
       expr.distinct,
+      context.getSafe(KeysInitQuery.dataFactory),
       await mediatorFunctionFactory.mediate({
         functionName: SparqlOperator.ADDITION,
         context,
@@ -149,6 +151,7 @@ IActionBindingsAggregatorFactory):
     return new AverageAggregator(
       evaluator,
       expr.distinct,
+      context.getSafe(KeysInitQuery.dataFactory),
       await mediatorFunctionFactory.mediate({
         functionName: SparqlOperator.ADDITION,
         context,
@@ -182,6 +185,7 @@ IActionBindingsAggregatorFactory):
     return new GroupConcatAggregator(
       evaluator,
       expr.distinct,
+      context.getSafe(KeysInitQuery.dataFactory),
       expr.separator,
     );
   }
@@ -228,7 +232,7 @@ function constructCase(
     variables: groupVariables.map(name => DF.variable(name)) || [],
     aggregates: aggregates || [],
   };
-  const op: any = { operation, context: new ActionContext() };
+  const op: any = { operation, context: getMockEEActionContext() };
 
   const actor = new ActorQueryOperationGroup({
     name: 'actor',
@@ -258,6 +262,7 @@ describe('ActorQueryOperationGroup', () => {
   let mediatorQueryOperation: any;
   let mediatorHashBindings: any;
   let mediatorBindingsAggregatorFactory: MediatorBindingsAggregatorFactory;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -275,6 +280,7 @@ describe('ActorQueryOperationGroup', () => {
         return await aggregatorFactory(expressionEvaluatorFactory, args);
       },
     };
+    context = getMockEEActionContext();
   });
 
   describe('The ActorQueryOperationGroup module', () => {
@@ -303,7 +309,7 @@ describe('ActorQueryOperationGroup', () => {
         hashFunction,
           <Algebra.Group> op.operation,
           mediatorBindingsAggregatorFactory,
-          new ActionContext(),
+          context,
           BF,
       );
       await expect(temp.collectResults()).resolves.toBeTruthy();
@@ -316,7 +322,7 @@ describe('ActorQueryOperationGroup', () => {
         hashFunction,
           <Algebra.Group> op.operation,
           mediatorBindingsAggregatorFactory,
-          new ActionContext(),
+          context,
           BF,
       );
       await expect(temp.collectResults()).resolves.toBeTruthy();
@@ -836,6 +842,34 @@ describe('ActorQueryOperationGroup', () => {
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('c'), int('4') ],
+        ]),
+      ]);
+      await expect(output.metadata()).resolves.toEqual({
+        cardinality: 4,
+        canContainUndefs: false,
+        variables: [ DF.variable('c') ],
+      });
+    });
+    it('should be able to count distinct', async() => {
+      const aggregate = aggregateOn('count', 'x', 'c');
+      aggregate.distinct = true;
+      const { op, actor } = constructCase({
+        inputBindings: [
+          BF.bindings([[ DF.variable('x'), int('3') ]]),
+          BF.bindings([[ DF.variable('x'), int('3') ]]),
+          BF.bindings([[ DF.variable('x'), int('3') ]]),
+          BF.bindings([[ DF.variable('x'), int('3') ]]),
+        ],
+        groupVariables: [ ],
+        inputVariables: [ 'x', 'y', 'z' ],
+        inputOp: simpleXYZinput,
+        aggregates: [ aggregate ],
+      });
+
+      const output = <any> await actor.run(op);
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('c'), int('1') ],
         ]),
       ]);
       await expect(output.metadata()).resolves.toEqual({

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-distinct-hash",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A distinct-hash query-operation actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,10 +37,13 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-hash-bindings": "^3.0.3",
-    "@comunica/bus-query-operation": "^3.0.3",
-    "@comunica/core": "^3.0.3",
-    "@comunica/types": "^3.0.3",
-    "sparqlalgebrajs": "^4.3.3"
+    "@comunica/bus-hash-bindings": "^3.2.1",
+    "@comunica/bus-hash-quads": "^3.2.1",
+    "@comunica/bus-query-operation": "^3.2.1",
+    "@comunica/core": "^3.2.1",
+    "@comunica/types": "^3.2.1",
+    "@rdfjs/types": "*",
+    "asynciterator": "^3.9.0",
+    "sparqlalgebrajs": "^4.3.7"
   }
 }

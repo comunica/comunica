@@ -6,7 +6,7 @@ import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-a
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
-import { KeysQuerySourceIdentify } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext, QuerySourceUnidentifiedExpanded } from '@comunica/types';
@@ -18,9 +18,9 @@ import { mediators as utilMediators } from './MediatorDereferenceRdf-util';
 import 'jest-rdf';
 import '@comunica/jest';
 
-const BF = new BindingsFactory();
 const DF = new DataFactory();
 const AF = new Factory();
+const BF = new BindingsFactory(DF);
 
 const mediatorMergeBindingsContext: any = {
   mediate(arg: any) {
@@ -89,7 +89,7 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
           mediatorMergeBindingsContext,
           name: 'actor',
         });
-        context = new ActionContext();
+        context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
         operation = <any> {};
         querySourceUnidentified = { value: 'firstUrl' };
       });
@@ -161,6 +161,11 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
           const bindings = querySource.source.queryBindings(operation, context);
           await expect(new Promise(resolve => bindings.getProperty('metadata', resolve))).resolves
             .toEqual({
+              a: 1,
+              cardinality: {
+                type: 'estimate',
+                value: Number.POSITIVE_INFINITY,
+              },
               state: expect.any(MetadataValidationState),
               firstMeta: true,
             });
@@ -217,7 +222,14 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
           const { querySource } = await actor.run({ context, querySourceUnidentified });
           const bindings = querySource.source.queryBindings(operation, context);
           await expect(new Promise(resolve => bindings.getProperty('metadata', resolve))).resolves
-            .toEqual({ state: expect.any(MetadataValidationState), firstMeta: true });
+            .toEqual({
+              cardinality: {
+                type: 'estimate',
+                value: Number.POSITIVE_INFINITY,
+              },
+              state: expect.any(MetadataValidationState),
+              firstMeta: true,
+            });
 
           expect(spy).toHaveBeenCalledWith({
             map: expect.anything(),
@@ -297,7 +309,7 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
 
       describe('run without hypermediaSourcesAggregatedStores', () => {
         beforeEach(() => {
-          context = new ActionContext();
+          context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
         });
 
         it('should return a source that can produce a bindings stream and metadata', async() => {
@@ -343,6 +355,11 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
           const bindings = querySource.source.queryBindings(operation, context);
           await expect(new Promise(resolve => bindings.getProperty('metadata', resolve))).resolves
             .toEqual({
+              a: 1,
+              cardinality: {
+                type: 'estimate',
+                value: Number.POSITIVE_INFINITY,
+              },
               state: expect.any(MetadataValidationState),
               firstMeta: true,
             });
@@ -378,6 +395,7 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
       describe('run with hypermediaSourcesAggregatedStores', () => {
         beforeEach(() => {
           context = new ActionContext({
+            [KeysInitQuery.dataFactory.name]: DF,
             [KeysQuerySourceIdentify.hypermediaSourcesAggregatedStores.name]: new Map(),
           });
         });
@@ -425,6 +443,11 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
           const bindings = querySource.source.queryBindings(operation, context);
           await expect(new Promise(resolve => bindings.getProperty('metadata', resolve))).resolves
             .toEqual({
+              a: 1,
+              cardinality: {
+                type: 'estimate',
+                value: Number.POSITIVE_INFINITY,
+              },
               state: expect.any(MetadataValidationState),
               firstMeta: true,
             });

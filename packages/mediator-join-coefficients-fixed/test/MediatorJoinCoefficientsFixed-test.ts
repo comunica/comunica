@@ -281,7 +281,7 @@ Actor 3 rejects`);
       );
     });
 
-    it('should prefer actors without persisted items with a limitIndicator', async() => {
+    it('should prefer actors without blocking items with a limitIndicator', async() => {
       new DummyActor(1, {
         iterations: 100,
         persistedItems: 20,
@@ -296,8 +296,8 @@ Actor 3 rejects`);
       }, bus);
       new DummyActor(3, {
         iterations: 1_000,
-        persistedItems: 0,
-        blockingItems: 30,
+        persistedItems: 20,
+        blockingItems: 0,
         requestTime: 10,
       }, bus);
 
@@ -324,25 +324,25 @@ Actor 3 rejects`);
             },
             'LOGICAL-PHYSICAL3': {
               iterations: 1_000,
-              persistedItems: 0,
-              blockingItems: 30,
+              persistedItems: 20,
+              blockingItems: 0,
               requestTime: 10,
             },
           },
           costs: {
-            'LOGICAL-PHYSICAL1': 1_240,
-            'LOGICAL-PHYSICAL2': 1_210,
-            'LOGICAL-PHYSICAL3': 1_040,
+            'LOGICAL-PHYSICAL1': 1230,
+            'LOGICAL-PHYSICAL2': 1200,
+            'LOGICAL-PHYSICAL3': 1030,
           },
         },
       );
     });
 
-    it('should prefer actors without persisted items with a limitIndicator in reverse order', async() => {
+    it('should prefer actors without blocking items with a limitIndicator in reverse order', async() => {
       new DummyActor(1, {
         iterations: 1_000,
-        persistedItems: 0,
-        blockingItems: 30,
+        persistedItems: 20,
+        blockingItems: 0,
         requestTime: 10,
       }, bus);
       new DummyActor(2, {
@@ -369,8 +369,8 @@ Actor 3 rejects`);
           coefficients: {
             'LOGICAL-PHYSICAL1': {
               iterations: 1_000,
-              persistedItems: 0,
-              blockingItems: 30,
+              persistedItems: 20,
+              blockingItems: 0,
               requestTime: 10,
             },
             'LOGICAL-PHYSICAL2': {
@@ -387,15 +387,15 @@ Actor 3 rejects`);
             },
           },
           costs: {
-            'LOGICAL-PHYSICAL1': 1_040,
-            'LOGICAL-PHYSICAL2': 1_210,
-            'LOGICAL-PHYSICAL3': 1_240,
+            'LOGICAL-PHYSICAL1': 1030,
+            'LOGICAL-PHYSICAL2': 1200,
+            'LOGICAL-PHYSICAL3': 1230,
           },
         },
       );
     });
 
-    it('should prefer actors without persisted items with a limitIndicator unless limit is high', async() => {
+    it('should prefer actors without blocking items with a limitIndicator unless limit is high', async() => {
       new DummyActor(1, {
         iterations: 100,
         persistedItems: 20,
@@ -410,8 +410,8 @@ Actor 3 rejects`);
       }, bus);
       new DummyActor(3, {
         iterations: 1_000,
-        persistedItems: 0,
-        blockingItems: 30,
+        persistedItems: 20,
+        blockingItems: 0,
         requestTime: 10,
       }, bus);
 
@@ -438,15 +438,15 @@ Actor 3 rejects`);
             },
             'LOGICAL-PHYSICAL3': {
               iterations: 1_000,
-              persistedItems: 0,
-              blockingItems: 30,
+              persistedItems: 20,
+              blockingItems: 0,
               requestTime: 10,
             },
           },
           costs: {
             'LOGICAL-PHYSICAL1': 200,
             'LOGICAL-PHYSICAL2': 170,
-            'LOGICAL-PHYSICAL3': 1_040,
+            'LOGICAL-PHYSICAL3': 1030,
           },
         },
       );

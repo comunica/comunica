@@ -5,7 +5,6 @@ import { KeysCore, KeysHttp } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { LoggerVoid } from '@comunica/logger-void';
 import type { IActionContext } from '@comunica/types';
-import { AbortController } from 'abort-controller';
 import arrayifyStream from 'arrayify-stream';
 import { ActorHttpNative } from '../lib/ActorHttpNative';
 

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-result-serialize-simple",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A simple query-result-serialize actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,9 +37,10 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-query-result-serialize": "^3.0.3",
-    "@comunica/types": "^3.0.3",
+    "@comunica/bus-query-result-serialize": "^3.2.1",
+    "@comunica/types": "^3.2.1",
     "@rdfjs/types": "*",
+    "asynciterator": "^3.9.0",
     "rdf-string": "^1.6.3",
     "readable-stream": "^4.4.2"
   }

@@ -13,6 +13,8 @@
     "ccqs:config/function-factory/mediators.json",
     "ccqs:config/hash-bindings/actors.json",
     "ccqs:config/hash-bindings/mediators.json",
+    "ccqs:config/hash-quads/actors.json",
+    "ccqs:config/hash-quads/mediators.json",
 
     "ccqs:config/http-invalidate/mediators.json",
     "ccqs:config/init/actors.json",

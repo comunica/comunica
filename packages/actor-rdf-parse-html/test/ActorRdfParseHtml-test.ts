@@ -1,18 +1,21 @@
-import type { Readable } from 'node:stream';
+import { Readable } from 'node:stream';
 import { ActorRdfParseHtmlRdfa } from '@comunica/actor-rdf-parse-html-rdfa';
 import { ActorRdfParseHtmlScript } from '@comunica/actor-rdf-parse-html-script';
 import { ActorRdfParseJsonLd } from '@comunica/actor-rdf-parse-jsonld';
 import type { IActionRdfParse, IActorRdfParseOutput } from '@comunica/bus-rdf-parse';
 import type { IActionRdfParseHtml, IActorRdfParseHtmlOutput } from '@comunica/bus-rdf-parse-html';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IBus } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
 import type { IActionContext } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
+import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfParseHtml } from '../lib/ActorRdfParseHtml';
 
 const quad = require('rdf-quad');
-const stringToStream = require('streamify-string');
+
+const DF = new DataFactory();
 
 describe('ActorRdfParseHtml', () => {
   let bus: any;
@@ -21,7 +24,7 @@ describe('ActorRdfParseHtml', () => {
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    context = new ActionContext();
+    context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
     const mediatorHttp: any = null;
     jsonldParser = new ActorRdfParseJsonLd(
       {
@@ -66,24 +69,24 @@ describe('ActorRdfParseHtml', () => {
       actor = new ActorRdfParseHtml(
         { name: 'actor', bus, busRdfParseHtml, mediaTypePriorities, mediaTypeFormats: {}},
       );
-      input = stringToStream(
+      input = Readable.from([
         ``,
-      );
-      inputScript = stringToStream(
+      ]);
+      inputScript = Readable.from([
         `<script type="application/ld+json">{
             "@id": "http://example.org/a",
             "http://example.org/b": "http://example.org/c",
             "http://example.org/d": "http://example.org/e"
         }</script>`,
-      );
-      inputScriptError = stringToStream(
+      ]);
+      inputScriptError = Readable.from([
         `<script type="application/ld+json">{
             "@id": "http://example.org/a",
             "http://example.org/b": "http://example.org/c",
             "http://example.org/d": "http://example.org/e",,,
         }</script>`,
-      );
-      inputScriptRdfa = stringToStream(
+      ]);
+      inputScriptRdfa = Readable.from([
         `<body>
         <p property="dc:title">Title</p>
         <script type="application/ld+json">{
@@ -92,11 +95,11 @@ describe('ActorRdfParseHtml', () => {
             "http://example.org/d": "http://example.org/e"
         }</script>
         </body>`,
-      );
-      inputSimple = stringToStream(
+      ]);
+      inputSimple = Readable.from([
         `<strong>Hi!</strong>`,
-      );
-      context = new ActionContext({});
+      ]);
+      context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
     });
 
     describe('test', () => {
@@ -113,7 +116,7 @@ describe('ActorRdfParseHtml', () => {
           handle: { data: input, metadata: { baseIRI: '' }, context },
           handleMediaType: 'application/json',
           context,
-        })).rejects.toBeTruthy();
+        })).rejects.toEqual(new Error('Unrecognized media type: application/json'));
       });
 
       it('should reject on application/ld+json', async() => {
@@ -121,7 +124,7 @@ describe('ActorRdfParseHtml', () => {
           handle: { data: input, metadata: { baseIRI: '' }, context },
           handleMediaType: 'application/ld+json',
           context,
-        })).rejects.toBeTruthy();
+        })).rejects.toEqual(new Error('Unrecognized media type: application/ld+json'));
       });
     });
 
@@ -219,6 +222,22 @@ describe('ActorRdfParseHtml', () => {
           })))
           .handle.data))
           .rejects.toThrow(new Error('Unexpected COMMA(",") in state KEY'));
+      });
+
+      it('should produce an error in the stream if there is an error getting html parsers', async() => {
+        (<any>actor).busRdfParseHtml.publish = () => [ Promise.reject(new Error('boo')), Promise.resolve() ];
+        const readable = new Readable();
+        readable._read = () => {
+          // Do nothing
+        };
+        await expect(arrayifyStream((<any> (await actor
+          .run({
+            context,
+            handle: { data: readable, context },
+            handleMediaType: 'text/html',
+          })))
+          .handle.data))
+          .rejects.toThrow(new Error('boo'));
       });
 
       it('should allow multiple reads', async() => {

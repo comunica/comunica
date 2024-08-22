@@ -14,7 +14,7 @@ import '@comunica/jest';
 
 const DF = new DataFactory();
 const AF = new Factory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 
 describe('QuerySourceRdfJs', () => {
   let ctx: IActionContext;
@@ -24,7 +24,7 @@ describe('QuerySourceRdfJs', () => {
   beforeEach(() => {
     ctx = new ActionContext({});
     store = RdfStore.createDefault();
-    source = new QuerySourceRdfJs(store, BF);
+    source = new QuerySourceRdfJs(store, DF, BF);
   });
 
   describe('getSelectorShape', () => {
@@ -200,7 +200,7 @@ describe('QuerySourceRdfJs', () => {
     it('should fallback to match if countQuads is not available', async() => {
       store = new Store();
       (<any> store).countQuads = undefined;
-      source = new QuerySourceRdfJs(store, BF);
+      source = new QuerySourceRdfJs(store, DF, BF);
 
       store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1')));
       store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')));
@@ -235,7 +235,7 @@ describe('QuerySourceRdfJs', () => {
         it.emit('error', new Error('RdfJsSource error'));
       };
       store = <any> { match: () => it };
-      source = new QuerySourceRdfJs(store, BF);
+      source = new QuerySourceRdfJs(store, DF, BF);
 
       const data = source.queryBindings(
         AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o')),
@@ -248,7 +248,7 @@ describe('QuerySourceRdfJs', () => {
       describe('with a store supporting quoted triple filtering', () => {
         beforeEach(() => {
           store = RdfStore.createDefault();
-          source = new QuerySourceRdfJs(store, BF);
+          source = new QuerySourceRdfJs(store, DF, BF);
         });
 
         it('should run when containing quoted triples', async() => {
@@ -443,7 +443,7 @@ describe('QuerySourceRdfJs', () => {
       describe('with a store not supporting quoted triple filtering', () => {
         beforeEach(() => {
           store = new Store();
-          source = new QuerySourceRdfJs(store, BF);
+          source = new QuerySourceRdfJs(store, DF, BF);
         });
 
         it('should run when containing quoted triples', async() => {

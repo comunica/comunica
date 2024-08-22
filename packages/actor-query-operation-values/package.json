@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-values",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A values query-operation actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,14 +37,14 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bindings-factory": "^3.0.3",
-    "@comunica/bus-merge-bindings-context": "^3.0.3",
-    "@comunica/bus-query-operation": "^3.0.3",
-    "@comunica/core": "^3.0.3",
-    "@comunica/metadata": "^3.0.3",
-    "@comunica/types": "^3.0.3",
+    "@comunica/bindings-factory": "^3.2.1",
+    "@comunica/bus-merge-bindings-context": "^3.2.1",
+    "@comunica/bus-query-operation": "^3.2.1",
+    "@comunica/context-entries": "^3.1.0",
+    "@comunica/core": "^3.2.1",
+    "@comunica/metadata": "^3.2.1",
+    "@comunica/types": "^3.2.1",
     "asynciterator": "^3.9.0",
-    "rdf-data-factory": "^1.1.1",
-    "sparqlalgebrajs": "^4.3.3"
+    "sparqlalgebrajs": "^4.3.7"
   }
 }

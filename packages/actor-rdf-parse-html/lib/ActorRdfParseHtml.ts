@@ -20,9 +20,9 @@ import { Readable } from 'readable-stream';
 export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
   private readonly busRdfParseHtml: Bus<Actor<
     IActionRdfParseHtml,
-IActorTest,
-IActorRdfParseHtmlOutput
->, IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput>;
+    IActorTest,
+    IActorRdfParseHtmlOutput
+  >, IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput>;
 
   /**
    * @param args -
@@ -43,96 +43,109 @@ IActorRdfParseHtmlOutput
   Promise<IActorRdfParseOutput> {
     const data = new Readable({ objectMode: true });
     data._read = () => {
-      // Only initialize once
-      data._read = () => {
-        // Do nothing
-      };
-
-      // Create callbacks action
-      let endBarrier = 1;
-      function emit(quad: RDF.Quad): void {
-        data.emit('data', quad);
-      }
-      function error(subError: unknown): void {
-        data.emit('error', subError);
-      }
-      function end(): void {
-        if (--endBarrier === 0) {
-          data.push(null);
-        }
-      }
-      const htmlAction: IActionRdfParseHtml = {
-        baseIRI: action.metadata?.baseIRI ?? '',
-        context,
-        emit,
-        end,
-        error,
-        headers: action.headers,
-      };
-
-      // Register html parse listeners
-      Promise.all(this.busRdfParseHtml.publish(htmlAction))
-        .then(async(outputs) => {
-          endBarrier += outputs.length;
-
-          const htmlParseListeners: IHtmlParseListener[] = [];
-          for (const output of outputs) {
-            const { htmlParseListener } = await output.actor.run(htmlAction);
-            htmlParseListeners.push(htmlParseListener);
-          }
-
-          // Create parser
-          const parser = new Parser({
-            onclosetag() {
-              try {
-                for (const htmlParseListener of htmlParseListeners) {
-                  htmlParseListener.onTagClose();
-                }
-              } catch (error_: unknown) {
-                error(error_);
-              }
-            },
-            onend() {
-              try {
-                for (const htmlParseListener of htmlParseListeners) {
-                  htmlParseListener.onEnd();
-                }
-              } catch (error_: unknown) {
-                error(error_);
-              }
-              end();
-            },
-            onopentag(name: string, attributes: Record<string, string>) {
-              try {
-                for (const htmlParseListener of htmlParseListeners) {
-                  htmlParseListener.onTagOpen(name, attributes);
-                }
-              } catch (error_: unknown) {
-                error(error_);
-              }
-            },
-            ontext(text: string) {
-              try {
-                for (const htmlParseListener of htmlParseListeners) {
-                  htmlParseListener.onText(text);
-                }
-              } catch (error_: unknown) {
-                error(error_);
-              }
-            },
-          }, {
-            decodeEntities: true,
-            recognizeSelfClosing: true,
-            xmlMode: false,
-          });
-
-          // Push stream to parser
-          action.data
-            .on('error', error)
-            .on('data', chunk => parser.write(chunk.toString()))
-            .on('end', () => parser.end());
-        }).catch(error);
+      // Do nothing
     };
+
+    let maxSize = 0;
+
+    // Create callbacks action
+    let endBarrier = 1;
+    function error(subError: unknown): void {
+      data.emit('error', subError);
+    }
+    function end(): void {
+      if (--endBarrier === 0) {
+        data.push(null);
+      }
+    }
+    const htmlAction: IActionRdfParseHtml = {
+      baseIRI: action.metadata?.baseIRI ?? '',
+      context,
+      emit: (quad: RDF.Quad) => {
+        maxSize--;
+        data.push(quad);
+      },
+      end,
+      error,
+      headers: action.headers,
+    };
+
+    try {
+      const outputs = await Promise.all(this.busRdfParseHtml.publish(htmlAction));
+      endBarrier += outputs.length;
+
+      const htmlParseListeners: IHtmlParseListener[] = [];
+      for (const output of outputs) {
+        const { htmlParseListener } = await output.actor.run(htmlAction);
+        htmlParseListeners.push(htmlParseListener);
+      }
+
+      // Create parser
+      const parser = new Parser({
+        onclosetag() {
+          try {
+            for (const htmlParseListener of htmlParseListeners) {
+              htmlParseListener.onTagClose();
+            }
+          } catch (error_: unknown) {
+            error(error_);
+          }
+        },
+        onend() {
+          try {
+            for (const htmlParseListener of htmlParseListeners) {
+              htmlParseListener.onEnd();
+            }
+          } catch (error_: unknown) {
+            error(error_);
+          }
+          end();
+        },
+        onopentag(name: string, attributes: Record<string, string>) {
+          try {
+            for (const htmlParseListener of htmlParseListeners) {
+              htmlParseListener.onTagOpen(name, attributes);
+            }
+          } catch (error_: unknown) {
+            error(error_);
+          }
+        },
+        ontext(text: string) {
+          try {
+            for (const htmlParseListener of htmlParseListeners) {
+              htmlParseListener.onText(text);
+            }
+          } catch (error_: unknown) {
+            error(error_);
+          }
+        },
+      }, {
+        decodeEntities: true,
+        recognizeSelfClosing: true,
+        xmlMode: false,
+      });
+
+      const read = data._read = (size: number) => {
+        maxSize = Math.max(size, maxSize);
+        // eslint-disable-next-line no-unmodified-loop-condition
+        while (maxSize > 0) {
+          const item = action.data.read();
+          if (item === null) {
+            action.data.once('readable', () => read(0));
+            return;
+          }
+          parser.write(item.toString());
+        }
+      };
+
+      action.data
+        .on('error', error)
+        .on('end', () => parser.end());
+    } catch (e) {
+      setTimeout(() => {
+        data.emit('error', e);
+      });
+    }
 
     return { data };
   }

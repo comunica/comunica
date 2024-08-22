@@ -2,6 +2,7 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
@@ -14,7 +15,7 @@ import { ActorRdfJoinHash } from '../lib/ActorRdfJoinHash';
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 
 function bindingsToString(b: Bindings): string {
   // eslint-disable-next-line ts/require-array-sort-compare
@@ -28,7 +29,7 @@ describe('ActorRdfJoinHash', () => {
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    context = new ActionContext();
+    context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
   });
 
   describe('The ActorRdfJoinHash module', () => {
@@ -66,8 +67,8 @@ IActorRdfJoinSelectivityOutput
         mediate: async() => ({ selectivity: 1 }),
       };
       actor = new ActorRdfJoinHash({ name: 'actor', bus, mediatorJoinSelectivity });
-      variables0 = [];
-      variables1 = [];
+      variables0 = [ DF.variable('a') ];
+      variables1 = [ DF.variable('a'), DF.variable('b') ];
       iterators = [
         new ArrayIterator<Bindings>([], { autoStart: false }),
         new ArrayIterator<Bindings>([], { autoStart: false }),
@@ -263,6 +264,53 @@ IActorRdfJoinSelectivityOutput
       }
     });
 
+    it('should fail on non-overlapping variables', async() => {
+      action = {
+        type: 'inner',
+        entries: [
+          {
+            output: {
+              bindingsStream: iterators[0],
+              metadata: () => Promise.resolve(
+                {
+                  state: new MetadataValidationState(),
+                  cardinality: { type: 'estimate', value: 4 },
+                  pageSize: 100,
+                  requestTime: 10,
+                  canContainUndefs: false,
+                  variables: [ DF.variable('a') ],
+                },
+              ),
+              type: 'bindings',
+            },
+            operation: <any>{},
+          },
+          {
+            output: {
+              bindingsStream: iterators[1],
+              metadata: () => Promise.resolve({
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 5 },
+                pageSize: 100,
+                requestTime: 20,
+                canContainUndefs: false,
+                variables: [ DF.variable('b') ],
+              }),
+              type: 'bindings',
+            },
+            operation: <any>{},
+          },
+        ],
+        context,
+      };
+      await expect(actor.test(action)).rejects
+        .toThrow(new Error('Actor actor can only join entries with at least one common variable'));
+
+      for (const iter of iterators) {
+        iter.destroy();
+      }
+    });
+
     it('should generate correct test metadata', async() => {
       await expect(actor.test(action)).resolves
         .toEqual({
@@ -270,6 +318,75 @@ IActorRdfJoinSelectivityOutput
           persistedItems: 4,
           blockingItems: 4,
           requestTime: 1.4,
+        });
+
+      for (const iter of iterators) {
+        iter.destroy();
+      }
+    });
+
+    it('should generate correct test metadata when right is smaller than left', async() => {
+      // Close the iterators already declared since we will not be using them
+      for (const iter of iterators) {
+        iter.destroy();
+      }
+      action = {
+        type: 'inner',
+        entries: [
+          {
+            output: {
+              bindingsStream: new ArrayIterator<RDF.Bindings>([
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a') ],
+                  [ DF.variable('b'), DF.literal('b') ],
+                ]),
+              ], { autoStart: false }),
+              metadata: () => Promise.resolve(
+                {
+                  state: new MetadataValidationState(),
+                  cardinality: { type: 'estimate', value: 5 },
+                  pageSize: 100,
+                  requestTime: 10,
+                  canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('b') ],
+                },
+              ),
+              type: 'bindings',
+            },
+            operation: <any>{},
+          },
+          {
+            output: {
+              bindingsStream: new ArrayIterator<RDF.Bindings>([
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a') ],
+                  [ DF.variable('c'), DF.literal('c') ],
+                ]),
+              ], { autoStart: false }),
+              metadata: () => Promise.resolve(
+                {
+                  state: new MetadataValidationState(),
+                  cardinality: { type: 'estimate', value: 4 },
+                  pageSize: 100,
+                  requestTime: 20,
+                  canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('c') ],
+                },
+              ),
+              type: 'bindings',
+            },
+            operation: <any>{},
+          },
+        ],
+        context,
+      };
+
+      await expect(actor.test(action)).resolves
+        .toEqual({
+          iterations: 9,
+          persistedItems: 4,
+          blockingItems: 4,
+          requestTime: 1.3,
         });
 
       for (const iter of iterators) {
@@ -296,7 +413,7 @@ IActorRdfJoinSelectivityOutput
             state: expect.any(MetadataValidationState),
             cardinality: { type: 'estimate', value: 20 },
             canContainUndefs: false,
-            variables: [],
+            variables: [ DF.variable('a'), DF.variable('b') ],
           });
         await expect(output.bindingsStream).toEqualBindingsStream([]);
       });
@@ -313,14 +430,14 @@ IActorRdfJoinSelectivityOutput
           [ DF.variable('a'), DF.literal('a') ],
           [ DF.variable('b'), DF.literal('b') ],
         ]),
-      ]);
+      ], { autoStart: false });
       variables0 = [ DF.variable('a'), DF.variable('b') ];
       action.entries[1].output.bindingsStream = new ArrayIterator<RDF.Bindings>([
         BF.bindings([
           [ DF.variable('a'), DF.literal('a') ],
           [ DF.variable('c'), DF.literal('c') ],
         ]),
-      ]);
+      ], { autoStart: false });
       variables1 = [ DF.variable('a'), DF.variable('c') ];
       await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
         await expect(output.metadata()).resolves
@@ -402,7 +519,7 @@ IActorRdfJoinSelectivityOutput
           [ DF.variable('a'), DF.literal('3') ],
           [ DF.variable('b'), DF.literal('4') ],
         ]),
-      ]);
+      ], { autoStart: false });
       variables0 = [ DF.variable('a'), DF.variable('b') ];
       action.entries[1].output.bindingsStream = new ArrayIterator<RDF.Bindings>([
         BF.bindings([
@@ -429,7 +546,7 @@ IActorRdfJoinSelectivityOutput
           [ DF.variable('a'), DF.literal('0') ],
           [ DF.variable('c'), DF.literal('4') ],
         ]),
-      ]);
+      ], { autoStart: false });
       variables1 = [ DF.variable('a'), DF.variable('c') ];
       await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
         const expected = [
@@ -483,6 +600,81 @@ IActorRdfJoinSelectivityOutput
         // Mapping to string and sorting since we don't know order (well, we sort of know, but we might not!)
         expect((await arrayifyStream(output.bindingsStream)).map(bindingsToString).sort())
           .toEqual(expected.map(bindingsToString).sort());
+      });
+    });
+
+    it('should flip when right is smaller than left', async() => {
+      // Close the iterators already declared since we will not be using them
+      for (const iter of iterators) {
+        iter.destroy();
+      }
+
+      action = {
+        type: 'inner',
+        entries: [
+          {
+            output: {
+              bindingsStream: new ArrayIterator<RDF.Bindings>([
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a') ],
+                  [ DF.variable('b'), DF.literal('b') ],
+                ]),
+              ], { autoStart: false }),
+              metadata: () => Promise.resolve(
+                {
+                  state: new MetadataValidationState(),
+                  cardinality: { type: 'estimate', value: 5 },
+                  pageSize: 100,
+                  requestTime: 10,
+                  canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('b') ],
+                },
+              ),
+              type: 'bindings',
+            },
+            operation: <any>{},
+          },
+          {
+            output: {
+              bindingsStream: new ArrayIterator<RDF.Bindings>([
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a') ],
+                  [ DF.variable('c'), DF.literal('c') ],
+                ]),
+              ], { autoStart: false }),
+              metadata: () => Promise.resolve(
+                {
+                  state: new MetadataValidationState(),
+                  cardinality: { type: 'estimate', value: 4 },
+                  pageSize: 100,
+                  requestTime: 20,
+                  canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('c') ],
+                },
+              ),
+              type: 'bindings',
+            },
+            operation: <any>{},
+          },
+        ],
+        context,
+      };
+
+      await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
+        await expect(output.metadata()).resolves
+          .toEqual({
+            state: expect.any(MetadataValidationState),
+            cardinality: { type: 'estimate', value: 20 },
+            canContainUndefs: false,
+            variables: [ DF.variable('a'), DF.variable('c'), DF.variable('b') ],
+          });
+        await expect(output.bindingsStream).toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('a'), DF.literal('a') ],
+            [ DF.variable('c'), DF.literal('c') ],
+            [ DF.variable('b'), DF.literal('b') ],
+          ]),
+        ]);
       });
     });
   });

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-parse-shaclc",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A shaclc rdf-parse actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,12 +37,12 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-rdf-parse": "^3.0.3",
-    "@comunica/types": "^3.0.3",
+    "@comunica/bus-rdf-parse": "^3.2.1",
+    "@comunica/types": "^3.2.1",
+    "@jeswr/stream-to-string": "^2.0.0",
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0",
     "readable-stream": "^4.4.2",
-    "shaclc-parse": "^1.4.0",
-    "stream-to-string": "^1.2.0"
+    "shaclc-parse": "^1.4.0"
   }
 }

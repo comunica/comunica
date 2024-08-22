@@ -1,12 +1,12 @@
 import type { MediatorHttp } from '@comunica/bus-http';
 import type { IQuadDestination } from '@comunica/bus-rdf-update-quads';
-import type { IActionContext } from '@comunica/types';
+import type { ComunicaDataFactory, IActionContext } from '@comunica/types';
+import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
+import { ArrayIterator } from 'asynciterator';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import { termToString } from 'rdf-string-ttl';
-
-const stringifyStream = require('stream-to-string');
 
 /**
  * A quad destination that represents an LDP resource.
@@ -23,6 +23,7 @@ export class QuadDestinationSparql implements IQuadDestination {
     url: string,
     context: IActionContext,
     mediatorHttp: MediatorHttp,
+    dataFactory: ComunicaDataFactory,
   ) {
     this.url = url;
     this.context = context;
@@ -32,20 +33,33 @@ export class QuadDestinationSparql implements IQuadDestination {
         { input, init, context: this.context },
       ),
       prefixVariableQuestionMark: true,
+      dataFactory,
     });
   }
 
-  public insert(quads: AsyncIterator<RDF.Quad>): Promise<void> {
-    return this.wrapSparqlUpdateRequest('INSERT', quads);
+  public async update(
+    quadStreams: { insert?: AsyncIterator<RDF.Quad>; delete?: AsyncIterator<RDF.Quad> },
+  ): Promise<void> {
+    // Create combined query stream with quads to insert and delete
+    const queryStream = this.createCombinedQuadsQuery(quadStreams.insert, quadStreams.delete);
+    await this.wrapSparqlUpdateRequest(queryStream);
   }
 
-  public async delete(quads: AsyncIterator<RDF.Quad>): Promise<void> {
-    return this.wrapSparqlUpdateRequest('DELETE', quads);
+  private createCombinedQuadsQuery(
+    quadsToInsert?: AsyncIterator<RDF.Quad>,
+    quadsToDelete?: AsyncIterator<RDF.Quad>,
+  ): AsyncIterator<string> {
+    return new ArrayIterator<string>([], { autoStart: false })
+      .append(this.createQuadsQuery('DELETE', quadsToDelete))
+      .append(quadsToDelete && quadsToInsert ? [ ' ;\n' ] : [])
+      .append(this.createQuadsQuery('INSERT', quadsToInsert));
   }
 
-  public async wrapSparqlUpdateRequest(type: 'INSERT' | 'DELETE', quads: AsyncIterator<RDF.Quad>): Promise<void> {
-    // Wrap triples in DATA block
-    const dataWrapped = quads
+  private createQuadsQuery(type: 'INSERT' | 'DELETE', quads?: AsyncIterator<RDF.Quad>): AsyncIterator<string> {
+    if (!quads) {
+      return new ArrayIterator<string>([], { autoStart: false });
+    }
+    return quads
       .map((quad: RDF.Quad) => {
         let stringQuad = `${termToString(quad.subject)} ${termToString(quad.predicate)} ${termToString(quad.object)} .`;
         if (quad.graph.termType === 'DefaultGraph') {
@@ -57,9 +71,11 @@ export class QuadDestinationSparql implements IQuadDestination {
       })
       .prepend([ `${type} DATA {\n` ])
       .append([ '}' ]);
+  }
 
+  private async wrapSparqlUpdateRequest(queryStream: AsyncIterator<string>): Promise<void> {
     // Serialize query stream to string
-    const query = await stringifyStream(dataWrapped);
+    const query = await stringifyStream(queryStream);
 
     // Send update query to endpoint
     await this.endpointFetcher.fetchUpdate(this.url, query);

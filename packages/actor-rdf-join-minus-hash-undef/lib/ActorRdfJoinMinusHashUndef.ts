@@ -37,6 +37,9 @@ export class ActorRdfJoinMinusHashUndef extends ActorRdfJoin {
         await new Promise((resolve) => {
           buffer.bindingsStream.on('data', data => index.add(data));
           buffer.bindingsStream.on('end', resolve);
+          buffer.bindingsStream.on('error', (error) => {
+            bindingsStream.emit('error', error);
+          });
         });
         return output.bindingsStream.filter(data => !index.contains(data));
       }, {

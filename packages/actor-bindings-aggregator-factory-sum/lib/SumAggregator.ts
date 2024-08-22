@@ -3,6 +3,7 @@ import type { ITermFunction } from '@comunica/bus-function-factory';
 import type { IExpressionEvaluator } from '@comunica/expression-evaluator';
 import { typedLiteral, TypeURL } from '@comunica/expression-evaluator';
 import type * as E from '@comunica/expression-evaluator/lib/expressions';
+import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 
 type SumState = E.NumericLiteral;
@@ -13,6 +14,7 @@ export class SumAggregator extends AggregateEvaluator {
   public constructor(
     evaluator: IExpressionEvaluator,
     distinct: boolean,
+    private readonly dataFactory: ComunicaDataFactory,
     private readonly additionFunction: ITermFunction,
     throwError?: boolean,
   ) {
@@ -36,6 +38,6 @@ export class SumAggregator extends AggregateEvaluator {
     if (this.state === undefined) {
       return this.emptyValue();
     }
-    return this.state.toRDF();
+    return this.state.toRDF(this.dataFactory);
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-dereference-http",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A http dereference actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,12 +37,11 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-dereference": "^3.0.3",
-    "@comunica/bus-http": "^3.0.3",
-    "@comunica/core": "^3.0.3",
-    "cross-fetch": "^4.0.0",
-    "relative-to-absolute-iri": "^1.0.7",
-    "stream-to-string": "^1.2.0"
+    "@comunica/bus-dereference": "^3.2.1",
+    "@comunica/bus-http": "^3.2.1",
+    "@comunica/core": "^3.2.1",
+    "@jeswr/stream-to-string": "^2.0.0",
+    "relative-to-absolute-iri": "^1.0.7"
   },
   "browser": {
     "./lib/ActorDereferenceHttp.js": "./lib/ActorDereferenceHttp-browser.js"

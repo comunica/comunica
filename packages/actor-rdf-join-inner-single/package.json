@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-inner-single",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A single rdf-join actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,7 +37,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-rdf-join": "^3.0.3",
-    "@comunica/mediatortype-join-coefficients": "^3.0.3"
+    "@comunica/bus-rdf-join": "^3.2.1",
+    "@comunica/mediatortype-join-coefficients": "^3.2.1"
   }
 }

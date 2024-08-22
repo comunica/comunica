@@ -3,14 +3,21 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { MetadataValidationState } from '@comunica/metadata';
-import type { Bindings, IQueryOperationResult, IActionContext, BindingsStream } from '@comunica/types';
+import type {
+  Bindings,
+  IQueryOperationResult,
+  IActionContext,
+  BindingsStream,
+  ComunicaDataFactory,
+} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import {
   SingletonIterator,
   UnionIterator,
 } from 'asynciterator';
-import { Algebra } from 'sparqlalgebrajs';
+import { Algebra, Factory } from 'sparqlalgebrajs';
 
 /**
  * A comunica Path ZeroOrOne Query Operation Actor.
@@ -26,7 +33,9 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
     operation: Algebra.Path,
     context: IActionContext,
   ): Promise<IQueryOperationResult> {
-    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context);
+    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+    const algebraFactory = new Factory(dataFactory);
+    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context, dataFactory);
     const predicate = <Algebra.ZeroOrOnePath> operation.predicate;
     const sources = this.getPathSources(predicate);
 
@@ -49,7 +58,7 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
     }
 
     // Check if we require a distinct path operation
-    const distinct = await this.isPathArbitraryLengthDistinct(context, operation);
+    const distinct = await this.isPathArbitraryLengthDistinct(algebraFactory, context, operation);
     if (distinct.operation) {
       return distinct.operation;
     }
@@ -58,8 +67,7 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
     // Create an operator that resolve to the "One" part
     const bindingsOne = ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
       context,
-      operation: ActorAbstractPath.FACTORY
-        .createPath(operation.subject, predicate.path, operation.object, operation.graph),
+      operation: algebraFactory.createPath(operation.subject, predicate.path, operation.object, operation.graph),
     }));
 
     // Determine the bindings stream based on the variable-ness of subject and object
@@ -68,25 +76,20 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
       // Both subject and object are variables
       // To determine the "Zero" part, we
       // query ?s ?p ?o. FILTER ?s = ?0, to get all possible namedNodes in de the db
-      const varP = this.generateVariable(operation);
+      const varP = this.generateVariable(dataFactory, operation);
       const bindingsZero = ActorQueryOperation.getSafeBindings(
         await this.mediatorQueryOperation.mediate({
           context,
-          operation: ActorAbstractPath.FACTORY.createFilter(
-            this.assignPatternSources(ActorAbstractPath.FACTORY
+          operation: algebraFactory.createFilter(
+            this.assignPatternSources(algebraFactory, algebraFactory
               .createPattern(operation.subject, varP, operation.object, operation.graph), sources),
-            ActorAbstractPath.FACTORY.createOperatorExpression('=', [
-              ActorAbstractPath.FACTORY.createTermExpression(operation.subject),
-              ActorAbstractPath.FACTORY.createTermExpression(operation.object),
+            algebraFactory.createOperatorExpression('=', [
+              algebraFactory.createTermExpression(operation.subject),
+              algebraFactory.createTermExpression(operation.object),
             ]),
           ),
         }),
-      ).bindingsStream.transform({
-        map(bindings) {
-          return bindings.delete(varP);
-        },
-        autoStart: false,
-      });
+      ).bindingsStream.map(bindings => bindings.delete(varP));
       bindingsStream = new UnionIterator([
         bindingsZero,
         bindingsOne.bindingsStream,

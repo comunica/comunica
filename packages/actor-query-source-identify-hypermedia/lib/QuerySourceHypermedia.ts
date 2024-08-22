@@ -7,9 +7,10 @@ import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-a
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { ILink, MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
-import { KeysQuerySourceIdentify } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import type {
   BindingsStream,
+  ComunicaDataFactory,
   FragmentSelectorShape,
   IActionContext,
   IAggregatedStore,
@@ -23,6 +24,7 @@ import { TransformIterator } from 'asynciterator';
 import { LRUCache } from 'lru-cache';
 import { Readable } from 'readable-stream';
 import type { Algebra } from 'sparqlalgebrajs';
+import { Factory } from 'sparqlalgebrajs';
 import type { ISourceState } from './LinkedRdfSourcesAsyncRdfIterator';
 import { MediatedLinkedRdfSourcesAsyncRdfIterator } from './MediatedLinkedRdfSourcesAsyncRdfIterator';
 import { StreamingStoreMetadata } from './StreamingStoreMetadata';
@@ -34,6 +36,7 @@ export class QuerySourceHypermedia implements IQuerySource {
   public readonly aggregateStore: boolean;
   public readonly mediators: IMediatorArgs;
   public readonly logWarning: (warningMessage: string) => void;
+  public readonly dataFactory: ComunicaDataFactory;
   public readonly bindingsFactory: BindingsFactory;
 
   /**
@@ -52,6 +55,7 @@ export class QuerySourceHypermedia implements IQuerySource {
     aggregateStore: boolean,
     mediators: IMediatorArgs,
     logWarning: (warningMessage: string) => void,
+    dataFactory: ComunicaDataFactory,
     bindingsFactory: BindingsFactory,
   ) {
     this.referenceValue = firstUrl;
@@ -62,6 +66,7 @@ export class QuerySourceHypermedia implements IQuerySource {
     this.mediators = mediators;
     this.aggregateStore = aggregateStore;
     this.logWarning = logWarning;
+    this.dataFactory = dataFactory;
     this.bindingsFactory = bindingsFactory;
     this.sourcesState = new LRUCache<string, Promise<ISourceState>>({ max: this.cacheSize });
   }
@@ -79,7 +84,11 @@ export class QuerySourceHypermedia implements IQuerySource {
     // Optimized match with aggregated store if enabled and started.
     const aggregatedStore: IAggregatedStore | undefined = this.getAggregateStore(context);
     if (aggregatedStore && operation.type === 'pattern' && aggregatedStore.started) {
-      return new QuerySourceRdfJs(aggregatedStore, this.bindingsFactory).queryBindings(operation, context);
+      return new QuerySourceRdfJs(
+        aggregatedStore,
+        context.getSafe(KeysInitQuery.dataFactory),
+        this.bindingsFactory,
+      ).queryBindings(operation, context);
     }
 
     // Initialize the sources state on first call
@@ -88,6 +97,8 @@ export class QuerySourceHypermedia implements IQuerySource {
         .catch(error => it.destroy(error));
     }
 
+    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+    const algebraFactory = new Factory(dataFactory);
     const it: MediatedLinkedRdfSourcesAsyncRdfIterator = new MediatedLinkedRdfSourcesAsyncRdfIterator(
       this.cacheSize,
       operation,
@@ -101,6 +112,8 @@ export class QuerySourceHypermedia implements IQuerySource {
       this.mediators.mediatorMetadataAccumulate,
       this.mediators.mediatorRdfResolveHypermediaLinks,
       this.mediators.mediatorRdfResolveHypermediaLinksQueue,
+      dataFactory,
+      algebraFactory,
     );
     if (aggregatedStore) {
       aggregatedStore.started = true;

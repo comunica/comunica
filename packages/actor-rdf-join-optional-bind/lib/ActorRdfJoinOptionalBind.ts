@@ -6,10 +6,10 @@ import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
-import { KeysQueryOperation } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { Bindings, BindingsStream, MetadataBindings } from '@comunica/types';
-import { Algebra } from 'sparqlalgebrajs';
+import type { Bindings, BindingsStream, ComunicaDataFactory, MetadataBindings } from '@comunica/types';
+import { Algebra, Factory } from 'sparqlalgebrajs';
 
 /**
  * A comunica Optional Bind RDF Join Actor.
@@ -26,11 +26,18 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
       physicalName: 'bind',
       limitEntries: 2,
       canHandleUndefs: true,
+      isLeaf: false,
     });
   }
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
-    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context);
+    const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
+    const algebraFactory = new Factory(dataFactory);
+    const bindingsFactory = await BindingsFactory.create(
+      this.mediatorMergeBindingsContext,
+      action.context,
+      dataFactory,
+    );
     // Close the right stream, since we don't need that one
     action.entries[1].output.bindingsStream.close();
 
@@ -52,6 +59,7 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
         return output.bindingsStream;
       },
       true,
+      algebraFactory,
       bindingsFactory,
     );
 
@@ -64,6 +72,7 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
           await ActorRdfJoin.getMetadatas(action.entries),
           action.context,
           { canContainUndefs: true },
+          true,
         ),
       },
     };
@@ -73,6 +82,11 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
     action: IActionRdfJoin,
     metadatas: MetadataBindings[],
   ): Promise<IMediatorTypeJoinCoefficients> {
+    // This actor only works well with common variables
+    if (ActorRdfJoin.overlappingVariables(metadatas).length === 0) {
+      throw new Error(`Actor ${this.name} only join entries with at least one common variable`);
+    }
+
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
 
@@ -93,10 +107,10 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
       persistedItems: 0,
       blockingItems: 0,
       requestTime: requestInitialTimes[0] +
-        metadatas[0].cardinality.value * selectivity * (
+        metadatas[0].cardinality.value * (
           requestItemTimes[0] +
           requestInitialTimes[1] +
-          metadatas[1].cardinality.value * requestItemTimes[1]
+          selectivity * metadatas[1].cardinality.value * requestItemTimes[1]
         ),
     };
   }
@@ -111,7 +125,7 @@ export interface IActorRdfJoinOptionalBindArgs extends IActorRdfJoinArgs {
   /**
    * Multiplier for selectivity values
    * @range {double}
-   * @default {0.0001}
+   * @default {0.000001}
    */
   selectivityModifier: number;
   /**

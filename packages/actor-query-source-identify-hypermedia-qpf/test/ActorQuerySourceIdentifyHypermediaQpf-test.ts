@@ -1,3 +1,4 @@
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { empty, TransformIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -107,7 +108,7 @@ describe('ActorQuerySourceIdentifyHypermediaQpf', () => {
 
   describe('#createSource', () => {
     it('should create an RdfSourceQpf', async() => {
-      const context = new ActionContext();
+      const context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
       const quads = empty();
       const source: any = await (<any> actor).createSource('url', metadata, context, false, quads);
       expect(source).toBeInstanceOf(QuerySourceQpf);
@@ -129,6 +130,7 @@ describe('ActorQuerySourceIdentifyHypermediaQpf', () => {
         url: '',
         metadata,
         context: new ActionContext({
+          [KeysInitQuery.dataFactory.name]: DF,
           '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'source' },
         }),
       })).resolves.toEqual({ filterFactor: 1 });
@@ -140,6 +142,7 @@ describe('ActorQuerySourceIdentifyHypermediaQpf', () => {
         url: '',
         metadata,
         context: new ActionContext({
+          [KeysInitQuery.dataFactory.name]: DF,
           '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'source' },
         }),
         handledDatasets: {},
@@ -152,6 +155,7 @@ describe('ActorQuerySourceIdentifyHypermediaQpf', () => {
         url: '',
         metadata,
         context: new ActionContext({
+          [KeysInitQuery.dataFactory.name]: DF,
           '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'source' },
         }),
         forceSourceType: 'qpf',
@@ -178,6 +182,7 @@ describe('ActorQuerySourceIdentifyHypermediaQpf', () => {
         url: '',
         metadata,
         context: new ActionContext({
+          [KeysInitQuery.dataFactory.name]: DF,
           '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'source' },
         }),
       })).rejects.toThrow(new Error('Illegal state: found no TPF/QPF search form anymore in metadata.'));
@@ -189,6 +194,7 @@ describe('ActorQuerySourceIdentifyHypermediaQpf', () => {
         url: '',
         metadata,
         context: new ActionContext({
+          [KeysInitQuery.dataFactory.name]: DF,
           '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'source' },
         }),
         handledDatasets: { DATASET: true },
@@ -205,6 +211,7 @@ describe('ActorQuerySourceIdentifyHypermediaQpf', () => {
         url: '',
         metadata,
         context: new ActionContext({
+          [KeysInitQuery.dataFactory.name]: DF,
           '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'source' },
         }),
       });

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-rdf-update-hypermedia",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A comunica bus for rdf-update-hypermedia events.",
   "lsd:module": true,
   "license": "MIT",
@@ -36,7 +36,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-rdf-update-quads": "^3.0.3",
-    "@comunica/core": "^3.0.3"
+    "@comunica/bus-rdf-update-quads": "^3.2.1",
+    "@comunica/core": "^3.2.1"
   }
 }

@@ -2,6 +2,7 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
@@ -14,7 +15,7 @@ import { ActorRdfJoinSymmetricHash } from '../lib/ActorRdfJoinSymmetricHash';
 import '@comunica/jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 
 function bindingsToString(b: Bindings): string {
   // eslint-disable-next-line ts/require-array-sort-compare
@@ -28,7 +29,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    context = new ActionContext();
+    context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
   });
 
   describe('The ActorRdfJoinSymmetricHash module', () => {
@@ -65,8 +66,8 @@ IActorRdfJoinSelectivityOutput
         mediate: async() => ({ selectivity: 1 }),
       };
       actor = new ActorRdfJoinSymmetricHash({ name: 'actor', bus, mediatorJoinSelectivity });
-      variables0 = [];
-      variables1 = [];
+      variables0 = [ DF.variable('a') ];
+      variables1 = [ DF.variable('a'), DF.variable('b') ];
       action = {
         type: 'inner',
         entries: [
@@ -219,6 +220,49 @@ IActorRdfJoinSelectivityOutput
           .toThrow(new Error('Actor actor can not join streams containing undefs'));
       });
 
+      it('should fail on non-overlapping variables', async() => {
+        action = {
+          type: 'inner',
+          entries: [
+            {
+              output: {
+                bindingsStream: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
+                metadata: () => Promise.resolve(
+                  {
+                    state: new MetadataValidationState(),
+                    cardinality: { type: 'estimate', value: 4 },
+                    pageSize: 100,
+                    requestTime: 10,
+                    canContainUndefs: false,
+                    variables: [ DF.variable('a') ],
+                  },
+                ),
+                type: 'bindings',
+              },
+              operation: <any>{},
+            },
+            {
+              output: {
+                bindingsStream: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
+                metadata: () => Promise.resolve({
+                  state: new MetadataValidationState(),
+                  cardinality: { type: 'estimate', value: 5 },
+                  pageSize: 100,
+                  requestTime: 20,
+                  canContainUndefs: false,
+                  variables: [ DF.variable('b') ],
+                }),
+                type: 'bindings',
+              },
+              operation: <any>{},
+            },
+          ],
+          context,
+        };
+        await expect(actor.test(action)).rejects
+          .toThrow(new Error('Actor actor can only join entries with at least one common variable'));
+      });
+
       it('should generate correct test metadata', async() => {
         await expect(actor.test(action)).resolves
           .toHaveProperty('iterations', (await (<any> action.entries[0].output).metadata()).cardinality.value +
@@ -244,7 +288,7 @@ IActorRdfJoinSelectivityOutput
           state: expect.any(MetadataValidationState),
           canContainUndefs: false,
           cardinality: { type: 'estimate', value: 20 },
-          variables: [],
+          variables: [ DF.variable('a'), DF.variable('b') ],
         });
         await expect(output.bindingsStream).toEqualBindingsStream([]);
       });

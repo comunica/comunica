@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-source-identify-rdfjs",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A rdfjs query-source-identify actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,17 +37,16 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bindings-factory": "^3.0.3",
-    "@comunica/bus-merge-bindings-context": "^3.0.3",
-    "@comunica/bus-query-source-identify": "^3.0.3",
-    "@comunica/context-entries": "^3.0.3",
-    "@comunica/core": "^3.0.3",
-    "@comunica/metadata": "^3.0.3",
-    "@comunica/types": "^3.0.3",
+    "@comunica/bindings-factory": "^3.2.1",
+    "@comunica/bus-merge-bindings-context": "^3.2.1",
+    "@comunica/bus-query-source-identify": "^3.2.1",
+    "@comunica/context-entries": "^3.2.1",
+    "@comunica/core": "^3.2.1",
+    "@comunica/metadata": "^3.2.1",
+    "@comunica/types": "^3.2.1",
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0",
-    "rdf-data-factory": "^1.1.1",
     "rdf-terms": "^1.11.0",
-    "sparqlalgebrajs": "^4.3.3"
+    "sparqlalgebrajs": "^4.3.7"
   }
 }

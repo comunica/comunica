@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-context-preprocess-query-source-skolemize",
-  "version": "3.0.3",
+  "version": "3.2.1",
   "description": "A query-source-skolemize context-preprocess actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,16 +37,15 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-context-preprocess": "^3.0.3",
-    "@comunica/context-entries": "^3.0.3",
-    "@comunica/core": "^3.0.3",
-    "@comunica/data-factory": "^3.0.1",
-    "@comunica/metadata": "^3.0.3",
-    "@comunica/types": "^3.0.3",
+    "@comunica/bus-context-preprocess": "^3.2.1",
+    "@comunica/context-entries": "^3.2.1",
+    "@comunica/core": "^3.2.1",
+    "@comunica/data-factory": "^3.1.0",
+    "@comunica/metadata": "^3.2.1",
+    "@comunica/types": "^3.2.1",
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0",
-    "rdf-data-factory": "^1.1.2",
     "rdf-terms": "^1.11.0",
-    "sparqlalgebrajs": "^4.3.0"
+    "sparqlalgebrajs": "^4.3.7"
   }
 }

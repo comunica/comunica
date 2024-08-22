@@ -8,8 +8,9 @@ import type {
   MediatorRdfJoin,
 } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { MetadataBindings, IJoinEntry } from '@comunica/types';
+import type { MetadataBindings, IJoinEntry, ComunicaDataFactory } from '@comunica/types';
 import { Factory } from 'sparqlalgebrajs';
 
 /**
@@ -19,8 +20,6 @@ import { Factory } from 'sparqlalgebrajs';
 export class ActorRdfJoinMultiSequential extends ActorRdfJoin {
   public readonly mediatorJoin: MediatorRdfJoin;
 
-  public static readonly FACTORY = new Factory();
-
   public constructor(args: IActorRdfJoinMultiSequentialArgs) {
     super(args, {
       logicalType: 'inner',
@@ -28,15 +27,19 @@ export class ActorRdfJoinMultiSequential extends ActorRdfJoin {
       limitEntries: 3,
       limitEntriesMin: true,
       canHandleUndefs: true,
+      isLeaf: false,
     });
   }
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
+    const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
+    const algebraFactory = new Factory(dataFactory);
+
     // Join the two first streams, and then join the result with the remaining streams
     const firstEntry: IJoinEntry = {
       output: ActorQueryOperation.getSafeBindings(await this.mediatorJoin
         .mediate({ type: action.type, entries: [ action.entries[0], action.entries[1] ], context: action.context })),
-      operation: ActorRdfJoinMultiSequential.FACTORY
+      operation: algebraFactory
         .createJoin([ action.entries[0].operation, action.entries[1].operation ], false),
     };
     const remainingEntries: IJoinEntry[] = action.entries.slice(1);

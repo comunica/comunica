@@ -1,6 +1,7 @@
 import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IExpressionEvaluator } from '@comunica/expression-evaluator';
 import type * as E from '@comunica/expression-evaluator/lib/expressions';
 import type { IActionContext } from '@comunica/types';
@@ -22,7 +23,7 @@ export class ExpressionEvaluator implements IExpressionEvaluator {
 
   public async evaluate(mapping: RDF.Bindings): Promise<RDF.Term> {
     const result = await this.internalEvaluator.evaluatorExpressionEvaluation(this.expr, mapping);
-    return result.toRDF();
+    return result.toRDF(this.context.getSafe(KeysInitQuery.dataFactory));
   }
 
   public async evaluateAsEBV(mapping: RDF.Bindings): Promise<boolean> {
