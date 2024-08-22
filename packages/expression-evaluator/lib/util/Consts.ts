@@ -17,7 +17,7 @@ export enum TypeAlias {
 }
 
 const DF = new DataFactory();
-// TODO: only used in aggregator. But not aggregator specific
+
 export function typedLiteral(value: string, type: TypeURL): RDF.Literal {
   return DF.literal(value, DF.namedNode(type));
 }

@@ -92,7 +92,6 @@ describe('ActorQueryOperationFilter', () => {
 
   describe('An ActorQueryOperationFilter instance', () => {
     let actor: ActorQueryOperationFilter;
-    let factory: Factory;
     let mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
 
     beforeEach(() => {
@@ -107,7 +106,6 @@ describe('ActorQueryOperationFilter', () => {
         mediatorQueryOperation,
         mediatorExpressionEvaluatorFactory,
       });
-      factory = new Factory();
     });
 
     it('should test on filter', async() => {
@@ -223,85 +221,5 @@ describe('ActorQueryOperationFilter', () => {
       await expect(output.metadata()).resolves
         .toMatchObject({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]});
     });
-
-    // TODO: was rempoved in busify branch? probably want to relocate when getting 100% coverage
-    // eslint-disable-next-line jest/no-commented-out-tests
-    // describe('should be able to handle EXIST filters', () => {
-    // eslint-disable-next-line jest/no-commented-out-tests
-    //   it('like a simple EXIST that is true', async() => {
-    //     const resolver = ActorQueryOperation
-    //       .createExistenceResolver(new ActionContext(), actor.mediatorQueryOperation, BF);
-    //     const expr: Algebra.ExistenceExpression = factory.createExistenceExpression(
-    //       false,
-    //       factory.createBgp([]),
-    //     );
-    //     const result = resolver(expr, BF.bindings());
-    //     await expect(result).resolves.toBe(true);
-    //   });
-    //
-    // eslint-disable-next-line jest/no-commented-out-tests
-    //   it('like a simple EXIST that is false', async() => {
-    //     const resolver = ActorQueryOperation
-    //       .createExistenceResolver(new ActionContext(), actor.mediatorQueryOperation, BF);
-    //     mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
-    //       bindingsStream: new ArrayIterator([], { autoStart: false }),
-    //       metadata: () => Promise.resolve({ cardinality: 0, canContainUndefs: false }),
-    //       operated: arg,
-    //       type: 'bindings',
-    //       variables: [ DF.variable('a') ],
-    //     });
-    //     const expr: Algebra.ExistenceExpression = factory.createExistenceExpression(
-    //       false,
-    //       factory.createBgp([]),
-    //     );
-    //     const result = resolver(expr, BF.bindings());
-    //     await expect(result).resolves.toBe(false);
-    //   });
-    //
-    // eslint-disable-next-line jest/no-commented-out-tests
-    //   it('like a NOT EXISTS', async() => {
-    //     const resolver = ActorQueryOperation
-    //       .createExistenceResolver(new ActionContext(), actor.mediatorQueryOperation, BF);
-    //     mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
-    //       bindingsStream: new ArrayIterator([], { autoStart: false }),
-    //       metadata: () => Promise.resolve({ cardinality: 0, canContainUndefs: false }),
-    //       operated: arg,
-    //       type: 'bindings',
-    //       variables: [ DF.variable('a') ],
-    //     });
-    //     const expr: Algebra.ExistenceExpression = factory.createExistenceExpression(
-    //       true,
-    //       factory.createBgp([]),
-    //     );
-    //     const result = resolver(expr, BF.bindings());
-    //     await expect(result).resolves.toBe(true);
-    //   });
-    //
-    // eslint-disable-next-line jest/no-commented-out-tests
-    //   it('like an EXIST that errors', async() => {
-    //     const resolver = ActorQueryOperation
-    //       .createExistenceResolver(new ActionContext(), actor.mediatorQueryOperation, BF);
-    //     const bindingsStream = new ArrayIterator([{}, {}, {}]).transform({
-    //       autoStart: false,
-    //       transform(item, done, push) {
-    //         push(item);
-    //         bindingsStream.emit('error', 'Test error');
-    //         done();
-    //       },
-    //     });
-    //     mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
-    //       bindingsStream,
-    //       metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
-    //       operated: arg,
-    //       type: 'bindings',
-    //       variables: [ DF.variable('a') ],
-    //     });
-    //     const expr: Algebra.ExistenceExpression = factory.createExistenceExpression(
-    //       false,
-    //       factory.createBgp([]),
-    //     );
-    //     await expect(resolver(expr, BF.bindings())).rejects.toBeTruthy();
-    //   });
-    // });
   });
 });

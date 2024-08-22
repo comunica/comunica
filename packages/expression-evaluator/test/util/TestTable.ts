@@ -41,7 +41,6 @@ abstract class Table<RowType extends Row> {
     result = aliases[result] || result;
     const evaluated = await generalEvaluate({
       expression: template(expr, additionalPrefixes),
-      expectEquality: true,
       generalEvaluationConfig: config,
       exprEvalFactory,
     });
@@ -52,7 +51,6 @@ abstract class Table<RowType extends Row> {
     const { config, additionalPrefixes, exprEvalFactory } = this.def;
     const result = await generalErrorEvaluation({
       expression: template(expr, additionalPrefixes),
-      expectEquality: false,
       generalEvaluationConfig: config,
       exprEvalFactory,
     });
@@ -151,7 +149,6 @@ export class UnaryTable extends Table<[string, string]> {
   }
 }
 
-// TODO: Let tables only test function evaluation from the definitions, not the whole evaluator.
 export class BinaryTable extends Table<[string, string, string]> {
   protected readonly parser: TableParser<[string, string, string]>;
   protected readonly def: TestTableConfig;

@@ -13,7 +13,6 @@ describe('evaluation of \'bound\'', () => {
   it('\'bound\' on bounded variable returns true', async() => {
     const evaluated = await generalEvaluate({
       expression: 'SELECT * WHERE { ?s ?p ?o FILTER(BOUND(?s))}',
-      expectEquality: true,
       exprEvalFactory: getMockEEFactory({
         mediatorFunctionFactory: createFuncMediator(),
       }),
@@ -27,7 +26,6 @@ describe('evaluation of \'bound\'', () => {
   it('\'bound\' on unbounded variable returns false', async() => {
     const evaluated = await generalEvaluate({
       expression: 'SELECT * WHERE { ?s ?p ?o FILTER(BOUND(?s))}',
-      expectEquality: true,
       exprEvalFactory: getMockEEFactory({
         mediatorFunctionFactory: createFuncMediator(),
       }),
