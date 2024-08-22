@@ -1514,7 +1514,6 @@ class LogicalAnd extends BaseFunctionDefinition {
 // SameTerm -------------------------------------------------------------------
 
 /**
- * TODO: why is this a special function?
  * https://www.w3.org/TR/sparql11-query/#func-sameTerm
  * This function doesn't require type promotion or subtype-substitution, everything works on TermExpression
  */

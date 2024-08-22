@@ -1,12 +1,5 @@
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
-import type { IExpressionEvaluator } from '@comunica/expression-evaluator';
-import {
-  isSubTypeOf,
-  EmptyAggregateError,
-  TermTransformer,
-  TypeAlias,
-} from '@comunica/expression-evaluator';
-import type * as E from '@comunica/expression-evaluator/lib/expressions';
+import * as Eval from '@comunica/expression-evaluator';
 import type { ISuperTypeProvider } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import * as RdfString from 'rdf-string';
@@ -21,16 +14,16 @@ export abstract class AggregateEvaluator {
   protected readonly variableValues: Set<string>;
 
   protected readonly superTypeProvider: ISuperTypeProvider;
-  protected readonly termTransformer: TermTransformer;
+  protected readonly termTransformer: Eval.TermTransformer;
 
   protected constructor(
-    protected readonly evaluator: IExpressionEvaluator,
+    protected readonly evaluator: Eval.IExpressionEvaluator,
     protected readonly distinct: boolean,
     private readonly throwError = false,
   ) {
     this.errorOccurred = false;
     this.superTypeProvider = evaluator.context.getSafe(KeysExpressionEvaluator.superTypeProvider);
-    this.termTransformer = new TermTransformer(this.superTypeProvider);
+    this.termTransformer = new Eval.TermTransformer(this.superTypeProvider);
 
     this.variableValues = new Set();
   }
@@ -51,7 +44,7 @@ export abstract class AggregateEvaluator {
   public emptyValue(): RDF.Term | undefined {
     const val = this.emptyValueTerm();
     if (val === undefined && this.throwError) {
-      throw new EmptyAggregateError();
+      throw new Eval.EmptyAggregateError();
     }
     return val;
   }
@@ -98,13 +91,13 @@ export abstract class AggregateEvaluator {
     }
   }
 
-  protected termToNumericOrError(term: RDF.Term): E.NumericLiteral {
+  protected termToNumericOrError(term: RDF.Term): Eval.NumericLiteral {
     if (term.termType !== 'Literal') {
       throw new Error(`Term with value ${term.value} has type ${term.termType} and is not a numeric literal`);
     } else if (
-      !isSubTypeOf(term.datatype.value, TypeAlias.SPARQL_NUMERIC, this.superTypeProvider)) {
+      !Eval.isSubTypeOf(term.datatype.value, Eval.TypeAlias.SPARQL_NUMERIC, this.superTypeProvider)) {
       throw new Error(`Term datatype ${term.datatype.value} with value ${term.value} has type ${term.termType} and is not a numeric literal`);
     }
-    return <E.NumericLiteral> this.termTransformer.transformLiteral(term);
+    return <Eval.NumericLiteral> this.termTransformer.transformLiteral(term);
   }
 }

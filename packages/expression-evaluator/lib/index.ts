@@ -1,5 +1,5 @@
 export { TermTransformer } from './transformers/TermTransformer';
-export { IInternalEvaluator, FunctionApplication, IEvalContext, OverloadTree } from './functions/OverloadTree';
+export { IInternalEvaluator, FunctionApplication, IEvalContext, OverloadTree, FunctionArgumentsCache } from './functions/OverloadTree';
 export { prepareEvaluatorActionContext } from './util/Context';
 export {
   declare,
@@ -12,6 +12,7 @@ export {
   decimal,
   float,
   expressionToVar,
+  Builder,
 } from './functions/Helpers';
 export {
   ExpressionError,
@@ -26,6 +27,10 @@ export {
   NoAggregator,
   UnboundVariableError,
   CastError,
+  ExtensionFunctionError,
+  InvalidLexicalForm,
+  InvalidArity,
+  UnknownOperator,
 } from './util/Errors';
 export {
   typedLiteral,
@@ -36,6 +41,7 @@ export {
   NamedOperator,
   GeneralOperator,
   KnownOperator,
+  KnownLiteralTypes,
 } from './util/Consts';
 export { isSubTypeOf } from './util/TypeHandling';
 export {
@@ -80,6 +86,8 @@ export {
   TermExpression,
   VariableExpression,
   Expression,
+  isNonLexicalLiteral,
+  OperatorExpression,
 } from './expressions';
 export { addDurationToDateTime, elapsedDuration } from './util/SpecAlgos';
 export { IExpressionEvaluator } from './types';

@@ -4,7 +4,6 @@ import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, materializeOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import * as Eval from '@comunica/expression-evaluator';
-import { expressionToVar } from '@comunica/expression-evaluator/lib/functions/Helpers';
 import type { ComunicaDataFactory, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { Factory } from 'sparqlalgebrajs';
@@ -48,7 +47,7 @@ export class InternalEvaluator {
   }
 
   private variable(expr: Eval.Variable, mapping: RDF.Bindings): Eval.Term {
-    const term = mapping.get(expressionToVar(this.context.getSafe(KeysInitQuery.dataFactory), expr));
+    const term = mapping.get(Eval.expressionToVar(this.context.getSafe(KeysInitQuery.dataFactory), expr));
     if (!term) {
       throw new Eval.UnboundVariableError(expr.name, mapping);
     }

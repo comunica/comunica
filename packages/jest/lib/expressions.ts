@@ -11,10 +11,9 @@ import type {
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
-import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import { prepareEvaluatorActionContext } from '@comunica/expression-evaluator/lib/util/Context';
+import * as Eval from '@comunica/expression-evaluator';
 import type { GeneralSuperTypeDict, IActionContext, ISuperTypeProvider } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
@@ -77,7 +76,6 @@ export function nonLiteral(): RDF.Term {
   return DF.namedNode('http://example.org/');
 }
 
-// Sets default values for some context entries
 export function getMockEEActionContext(actionContext?: IActionContext): IActionContext {
   return new ActionContext({
     [KeysInitQuery.queryTimestamp.name]: new Date(Date.now()),
@@ -90,13 +88,9 @@ export function getMockEEActionContext(actionContext?: IActionContext): IActionC
 export function getMockInternalEvaluator(factory?: ActorExpressionEvaluatorFactory, context?: IActionContext):
 InternalEvaluator {
   return new InternalEvaluator(
-    prepareEvaluatorActionContext(getMockEEActionContext(context)),
+    Eval.prepareEvaluatorActionContext(getMockEEActionContext(context)),
     getMockMediatorFunctionFactory(),
-    <any>{
-      async mediate(_: any) {
-        throw new Error('mediatorQueryOperation mock of mockEEFactory not implemented');
-      },
-    },
+    <any> {},
     <any> {},
   );
 }
@@ -145,14 +139,6 @@ export function getMockMediatorFunctionFactory(): MediatorFunctionFactory {
   return <any>{
     async mediate(_: any) {
       throw new Error('mediatorFunctionFactory mock not implemented');
-    },
-  };
-}
-
-export function getMockMediatorTermComparatorFactory(): MediatorTermComparatorFactory {
-  return <any>{
-    async mediate(_: any) {
-      throw new Error('mediatorTermComparatorFactory mock not implemented');
     },
   };
 }

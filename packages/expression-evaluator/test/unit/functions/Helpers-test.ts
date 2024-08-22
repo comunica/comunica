@@ -2,10 +2,8 @@ import type { ExpressionEvaluator } from '@comunica/actor-expression-evaluator-f
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
 import type { ISuperTypeProvider } from '@comunica/types';
-import { TypeURL } from '../../../lib';
-import { bool, declare } from '../../../lib/functions/Helpers';
-import type { Builder } from '../../../lib/functions/Helpers';
-import type { FunctionArgumentsCache } from '../../../lib/functions/OverloadTree';
+import { TypeURL, bool, declare } from '../../../lib';
+import type { FunctionArgumentsCache, Builder } from '../../../lib';
 import { getMockExpression } from '../../util/utils';
 
 import fn = jest.fn;

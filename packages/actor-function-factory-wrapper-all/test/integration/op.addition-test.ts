@@ -1,6 +1,6 @@
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import { TypeURL } from '@comunica/expression-evaluator/lib/util/Consts';
+import * as Eval from '@comunica/expression-evaluator';
 import { dateTimeTyped, dayTimeDurationTyped, int, numeric } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
 import type { ITestTableConfigBase } from '@comunica/expression-evaluator/test/util/utils';
@@ -63,7 +63,7 @@ describe('evaluation of \'+\' like', () => {
     ...baseConfig,
     config: new ActionContext().set(KeysExpressionEvaluator.superTypeProvider, {
       cache: new LRUCache<string, any>({ max: 1_000 }),
-      discoverer: () => TypeURL.XSD_INTEGER,
+      discoverer: () => Eval.TypeURL.XSD_INTEGER,
     }),
     testTable: `
       "2"^^example:int "3"^^example:int = ${int('5')}

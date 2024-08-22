@@ -7,8 +7,7 @@ import type {
 import { ActorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
-import { SparqlOperator } from '@comunica/expression-evaluator';
-import { prepareEvaluatorActionContext } from '@comunica/expression-evaluator/lib/util/Context';
+import * as Eval from '@comunica/expression-evaluator';
 import { TermComparatorExpressionEvaluator } from './TermComparatorExpressionEvaluator';
 
 /**
@@ -25,7 +24,7 @@ export class ActorTermComparatorFactoryExpressionEvaluator extends ActorTermComp
    * @param context.context IActionContext
    */
   public async run({ context }: IActionTermComparatorFactory): Promise<IActorTermComparatorFactoryOutput> {
-    context = prepareEvaluatorActionContext(context);
+    context = Eval.prepareEvaluatorActionContext(context);
     return new TermComparatorExpressionEvaluator(
       new InternalEvaluator(
         context,
@@ -38,9 +37,9 @@ export class ActorTermComparatorFactoryExpressionEvaluator extends ActorTermComp
         ),
       ),
       await this.mediatorFunctionFactory
-        .mediate({ functionName: SparqlOperator.EQUAL, context, requireTermExpression: true }),
+        .mediate({ functionName: Eval.SparqlOperator.EQUAL, context, requireTermExpression: true }),
       await this.mediatorFunctionFactory
-        .mediate({ functionName: SparqlOperator.LT, context, requireTermExpression: true }),
+        .mediate({ functionName: Eval.SparqlOperator.LT, context, requireTermExpression: true }),
     );
   }
 }

@@ -1,6 +1,6 @@
 import type { TermSparqlFunction } from '@comunica/bus-function-factory';
 import { SparqlOperator } from '@comunica/expression-evaluator';
-import * as E from '@comunica/expression-evaluator/lib/expressions';
+import * as Eval from '@comunica/expression-evaluator';
 import { getMockExpression } from '@comunica/expression-evaluator/test/util/utils';
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
 import { sparqlFunctions } from '../../lib/implementation/SparqlFunctions';
@@ -10,19 +10,19 @@ describe('lesser than', () => {
   describe('on sparql star tripples', () => {
     it('allows Generalized RDF Triples', async() => {
       const op = <TermSparqlFunction> sparqlFunctions[SparqlOperator.LT];
-      const dg = new E.DefaultGraph();
+      const dg = new Eval.DefaultGraph();
       expect(op.applyOnTerms(
         [
-          new E.Quad(
-            new E.IntegerLiteral(2),
-            new E.IntegerLiteral(2),
-            new E.IntegerLiteral(2),
+          new Eval.Quad(
+            new Eval.IntegerLiteral(2),
+            new Eval.IntegerLiteral(2),
+            new Eval.IntegerLiteral(2),
             dg,
           ),
-          new E.Quad(
-            new E.IntegerLiteral(2),
-            new E.IntegerLiteral(3),
-            new E.IntegerLiteral(2),
+          new Eval.Quad(
+            new Eval.IntegerLiteral(2),
+            new Eval.IntegerLiteral(3),
+            new Eval.IntegerLiteral(2),
             dg,
           ),
         ],
@@ -32,7 +32,7 @@ describe('lesser than', () => {
           algExpr: getMockExpression(),
           context: getMockEEActionContext(),
         }),
-      )).toEqual(new E.BooleanLiteral(true));
+      )).toEqual(new Eval.BooleanLiteral(true));
     });
   });
 });

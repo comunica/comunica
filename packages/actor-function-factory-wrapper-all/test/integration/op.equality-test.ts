@@ -1,6 +1,6 @@
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import { TypeURL } from '@comunica/expression-evaluator/lib/util/Consts';
+import * as Eval from '@comunica/expression-evaluator';
 import {
   bool,
   dateTime,
@@ -57,7 +57,7 @@ describe('evaluation of \'=\'', () => {
         ...config,
         config: new ActionContext().set(KeysExpressionEvaluator.superTypeProvider, {
           cache: new LRUCache<string, any>({ max: 1_000 }),
-          discoverer: () => TypeURL.XSD_INTEGER,
+          discoverer: () => Eval.TypeURL.XSD_INTEGER,
         }),
         testTable: `
          "2"^^example:int "2"^^example:int = true
@@ -153,6 +153,8 @@ describe('evaluation of \'=\'', () => {
         <http://example.com/a> <http://example.com/b> = false
         <http://example.com> 1 = false
         1 <http://example.com> = false
+        
+        "a"^^xsd:unknown "a"^^xsd:unknown = true
       `,
       errorTable: `
         1 true = 'Equality test for literals with unsupported datatypes'

@@ -1,18 +1,16 @@
-import { AlgebraTransformer } from '@comunica/actor-expression-evaluator-factory-default/lib/AlgebraTransformer';
 import { NamedExtension } from '@comunica/actor-function-factory-wrapper-all/lib/implementation/NamedExtension';
 import {
-  namedFunctions,
   sparqlFunctions,
+  namedFunctions,
 } from '@comunica/actor-function-factory-wrapper-all/lib/implementation/SparqlFunctions';
 import { createFuncMediator } from '@comunica/actor-function-factory-wrapper-all/test/util';
 import type { IExpressionFunction, MediatorFunctionFactory } from '@comunica/bus-function-factory';
-import * as E from '@comunica/expression-evaluator/lib/expressions';
-import { prepareEvaluatorActionContext } from '@comunica/expression-evaluator/lib/util/Context';
-import * as Err from '@comunica/expression-evaluator/lib/util/Errors';
+import * as Eval from '@comunica/expression-evaluator';
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
 import { DataFactory } from 'rdf-data-factory';
 import { expressionTypes, types } from 'sparqlalgebrajs/lib/algebra';
 import { Wildcard } from 'sparqljs';
+import { AlgebraTransformer } from '../lib/AlgebraTransformer';
 
 const DF = new DataFactory();
 
@@ -33,7 +31,7 @@ describe('AlgebraTransformer', () => {
     }});
     algebraTransformer = new AlgebraTransformer(
       // This basically requires the function bus.
-      prepareEvaluatorActionContext(getMockEEActionContext()),
+      Eval.prepareEvaluatorActionContext(getMockEEActionContext()),
       createFuncMediator(),
     );
   });
@@ -43,25 +41,25 @@ describe('AlgebraTransformer', () => {
       type: types.EXPRESSION,
       expressionType: expressionTypes.TERM,
       term: DF.namedNode('http://example.com'),
-    })).resolves.toEqual(new E.NamedNode('http://example.com'));
+    })).resolves.toEqual(new Eval.NamedNode('http://example.com'));
 
     await expect(algebraTransformer.transformAlgebra({
       type: types.EXPRESSION,
       expressionType: expressionTypes.TERM,
       term: DF.blankNode('foo'),
-    })).resolves.toEqual(new E.BlankNode('foo'));
+    })).resolves.toEqual(new Eval.BlankNode('foo'));
 
     await expect(algebraTransformer.transformAlgebra({
       type: types.EXPRESSION,
       expressionType: expressionTypes.TERM,
       term: DF.literal('foo'),
-    })).resolves.toEqual(new E.StringLiteral('foo'));
+    })).resolves.toEqual(new Eval.StringLiteral('foo'));
 
     await expect(algebraTransformer.transformAlgebra({
       type: types.EXPRESSION,
       expressionType: expressionTypes.TERM,
       term: DF.variable('foo'),
-    })).resolves.toEqual(new E.Variable('?foo'));
+    })).resolves.toEqual(new Eval.Variable('?foo'));
   });
 
   it('transform special operator upper case', async() => {
@@ -70,7 +68,7 @@ describe('AlgebraTransformer', () => {
       expressionType: expressionTypes.OPERATOR,
       operator: 'BNODE',
       args: [],
-    })).resolves.toBeInstanceOf(E.Operator);
+    })).resolves.toBeInstanceOf(Eval.Operator);
   });
 
   it('transform special operator lower case', async() => {
@@ -79,7 +77,7 @@ describe('AlgebraTransformer', () => {
       expressionType: expressionTypes.OPERATOR,
       operator: 'bnode',
       args: [],
-    })).resolves.toBeInstanceOf(E.Operator);
+    })).resolves.toBeInstanceOf(Eval.Operator);
   });
 
   it('transform special operator bad arity', async() => {
@@ -88,7 +86,7 @@ describe('AlgebraTransformer', () => {
       expressionType: expressionTypes.OPERATOR,
       operator: 'if',
       args: [],
-    })).rejects.toThrow(Err.InvalidArity);
+    })).rejects.toThrow(Eval.InvalidArity);
   });
 
   it('transform special operator infinite arity', async() => {
@@ -97,7 +95,7 @@ describe('AlgebraTransformer', () => {
       expressionType: expressionTypes.OPERATOR,
       operator: 'coalesce',
       args: [],
-    })).resolves.toBeInstanceOf(E.Operator);
+    })).resolves.toBeInstanceOf(Eval.Operator);
   });
 
   it('transform regular operator lower case', async() => {
@@ -110,7 +108,7 @@ describe('AlgebraTransformer', () => {
         expressionType: expressionTypes.TERM,
         term: DF.literal(''),
       }],
-    })).resolves.toBeInstanceOf(E.Operator);
+    })).resolves.toBeInstanceOf(Eval.Operator);
   });
 
   it('transform regular operator upper case', async() => {
@@ -123,7 +121,7 @@ describe('AlgebraTransformer', () => {
         expressionType: expressionTypes.TERM,
         term: DF.literal(''),
       }],
-    })).resolves.toBeInstanceOf(E.Operator);
+    })).resolves.toBeInstanceOf(Eval.Operator);
   });
 
   it('transform regular operator bad arity', async() => {
@@ -132,7 +130,7 @@ describe('AlgebraTransformer', () => {
       expressionType: expressionTypes.OPERATOR,
       operator: '!',
       args: [],
-    })).rejects.toThrow(Err.InvalidArity);
+    })).rejects.toThrow(Eval.InvalidArity);
   });
 
   it('transform not existing operator bad arity', async() => {
@@ -141,7 +139,7 @@ describe('AlgebraTransformer', () => {
       expressionType: expressionTypes.OPERATOR,
       operator: 'foo',
       args: [],
-    })).rejects.toThrow(Err.UnknownOperator);
+    })).rejects.toThrow(Eval.UnknownOperator);
   });
 
   it('transform existence', async() => {
@@ -154,7 +152,7 @@ describe('AlgebraTransformer', () => {
         variables: [],
         bindings: [],
       },
-    })).resolves.toEqual(new E.Existence({
+    })).resolves.toEqual(new Eval.Existence({
       type: types.EXPRESSION,
       expressionType: expressionTypes.EXISTENCE,
       not: false,
@@ -177,7 +175,7 @@ describe('AlgebraTransformer', () => {
         expressionType: expressionTypes.TERM,
         term: DF.variable('a'),
       },
-    })).resolves.toEqual(new E.Aggregate('count', {
+    })).resolves.toEqual(new Eval.Aggregate('count', {
       type: types.EXPRESSION,
       expressionType: expressionTypes.AGGREGATE,
       aggregator: 'count',
@@ -195,6 +193,6 @@ describe('AlgebraTransformer', () => {
       type: types.EXPRESSION,
       expressionType: expressionTypes.WILDCARD,
       wildcard: new Wildcard(),
-    })).resolves.toEqual(new E.NamedNode('*'));
+    })).resolves.toEqual(new Eval.NamedNode('*'));
   });
 });
