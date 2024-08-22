@@ -411,7 +411,13 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
             operation.metadata = originalMetadata;
             if (isModified) {
               this.logDebug(context, `Push down filter into pattern for ?${pushableResult.variable.value}`);
-              return [ true, operation ];
+              return [ true, factory.createJoin([
+                operation,
+                factory.createValues(
+                  [ pushableResult.variable ],
+                  [{ [`?${pushableResult.variable.value}`]: <RDF.NamedNode | RDF.Literal> pushableResult.term }],
+                ),
+              ]) ];
             }
           }
         }
@@ -433,7 +439,13 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
               operation.object.equals(pushableResult.variable) ? pushableResult.term : operation.object,
             );
             operation.metadata = originalMetadata;
-            return [ true, operation ];
+            return [ true, factory.createJoin([
+              operation,
+              factory.createValues(
+                [ pushableResult.variable ],
+                [{ [`?${pushableResult.variable.value}`]: <RDF.NamedNode | RDF.Literal> pushableResult.term }],
+              ),
+            ]) ];
           }
         }
 

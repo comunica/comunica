@@ -936,7 +936,13 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
                 AF.createTermExpression(DF.namedNode('s')),
               ]),
               AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
-            )).toEqual([ true, AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o1')) ]);
+            )).toEqual([ true, AF.createJoin([
+              AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o1')),
+              AF.createValues(
+                [ DF.variable('s') ],
+                [{ '?s': DF.namedNode('s') }],
+              ),
+            ]) ]);
           });
 
           it('is pushed down for ?s=<s>, and keeps source annotations', async() => {
@@ -948,9 +954,15 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               ]),
               ActorQueryOperation
                 .assignOperationSource(AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')), src1),
-            )).toEqual([ true, ActorQueryOperation
-              .assignOperationSource(AF
-                .createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o1')), src1) ]);
+            )).toEqual([ true, AF.createJoin([
+              ActorQueryOperation
+                .assignOperationSource(AF
+                  .createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o1')), src1),
+              AF.createValues(
+                [ DF.variable('s') ],
+                [{ '?s': DF.namedNode('s') }],
+              ),
+            ]) ]);
           });
 
           it('is pushed down for ?s=<s> into quoted triple', async() => {
@@ -964,11 +976,17 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
                 DF.variable('p'),
                 DF.namedNode('o1'),
               ),
-            )).toEqual([ true, AF.createPattern(
-              DF.quad(DF.namedNode('s'), DF.namedNode('s'), DF.namedNode('s')),
-              DF.variable('p'),
-              DF.namedNode('o1'),
-            ) ]);
+            )).toEqual([ true, AF.createJoin([
+              AF.createPattern(
+                DF.quad(DF.namedNode('s'), DF.namedNode('s'), DF.namedNode('s')),
+                DF.variable('p'),
+                DF.namedNode('o1'),
+              ),
+              AF.createValues(
+                [ DF.variable('s') ],
+                [{ '?s': DF.namedNode('s') }],
+              ),
+            ]) ]);
           });
 
           it('is pushed down for <s>=?s', async() => {
@@ -978,7 +996,13 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
                 AF.createTermExpression(DF.variable('s')),
               ]),
               AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
-            )).toEqual([ true, AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o1')) ]);
+            )).toEqual([ true, AF.createJoin([
+              AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o1')),
+              AF.createValues(
+                [ DF.variable('s') ],
+                [{ '?s': DF.namedNode('s') }],
+              ),
+            ]) ]);
           });
 
           it('is pushed down for ?s=_:s', async() => {
@@ -988,7 +1012,13 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
                 AF.createTermExpression(DF.blankNode('s')),
               ]),
               AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
-            )).toEqual([ true, AF.createPattern(DF.blankNode('s'), DF.variable('p'), DF.namedNode('o1')) ]);
+            )).toEqual([ true, AF.createJoin([
+              AF.createPattern(DF.blankNode('s'), DF.variable('p'), DF.namedNode('o1')),
+              AF.createValues(
+                [ DF.variable('s') ],
+                [{ '?s': <any> DF.blankNode('s') }],
+              ),
+            ]) ]);
           });
 
           it('is pushed down for ?o="o"', async() => {
@@ -998,7 +1028,13 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
                 AF.createTermExpression(DF.literal('o')),
               ]),
               AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
-            )).toEqual([ true, AF.createPattern(DF.variable('s'), DF.variable('p'), DF.literal('o')) ]);
+            )).toEqual([ true, AF.createJoin([
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.literal('o')),
+              AF.createValues(
+                [ DF.variable('o') ],
+                [{ '?o': DF.literal('o') }],
+              ),
+            ]) ]);
           });
 
           it('is pushed down for "o"=?o', async() => {
@@ -1008,7 +1044,13 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
                 AF.createTermExpression(DF.variable('o')),
               ]),
               AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
-            )).toEqual([ true, AF.createPattern(DF.variable('s'), DF.variable('p'), DF.literal('o')) ]);
+            )).toEqual([ true, AF.createJoin([
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.literal('o')),
+              AF.createValues(
+                [ DF.variable('o') ],
+                [{ '?o': DF.literal('o') }],
+              ),
+            ]) ]);
           });
 
           it('is not pushed down for ?o="01"^xsd:number', async() => {
@@ -1129,7 +1171,13 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
                 AF.createTermExpression(DF.namedNode('s')),
               ]),
               AF.createPath(DF.variable('s'), AF.createNps([]), DF.namedNode('o1')),
-            )).toEqual([ true, AF.createPath(DF.namedNode('s'), AF.createNps([]), DF.namedNode('o1')) ]);
+            )).toEqual([ true, AF.createJoin([
+              AF.createPath(DF.namedNode('s'), AF.createNps([]), DF.namedNode('o1')),
+              AF.createValues(
+                [ DF.variable('s') ],
+                [{ '?s': DF.namedNode('s') }],
+              ),
+            ]) ]);
           });
 
           it('is pushed down for <s>=?s', async() => {
@@ -1139,7 +1187,13 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
                 AF.createTermExpression(DF.variable('s')),
               ]),
               AF.createPath(DF.variable('s'), AF.createNps([]), DF.namedNode('o1')),
-            )).toEqual([ true, AF.createPath(DF.namedNode('s'), AF.createNps([]), DF.namedNode('o1')) ]);
+            )).toEqual([ true, AF.createJoin([
+              AF.createPath(DF.namedNode('s'), AF.createNps([]), DF.namedNode('o1')),
+              AF.createValues(
+                [ DF.variable('s') ],
+                [{ '?s': DF.namedNode('s') }],
+              ),
+            ]) ]);
           });
 
           it('is pushed down for ?o="o"', async() => {
@@ -1149,7 +1203,13 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
                 AF.createTermExpression(DF.literal('o')),
               ]),
               AF.createPath(DF.variable('s'), AF.createNps([]), DF.variable('o')),
-            )).toEqual([ true, AF.createPath(DF.variable('s'), AF.createNps([]), DF.literal('o')) ]);
+            )).toEqual([ true, AF.createJoin([
+              AF.createPath(DF.variable('s'), AF.createNps([]), DF.literal('o')),
+              AF.createValues(
+                [ DF.variable('o') ],
+                [{ '?o': DF.literal('o') }],
+              ),
+            ]) ]);
           });
 
           it('is pushed down for "o"=?o', async() => {
@@ -1159,7 +1219,13 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
                 AF.createTermExpression(DF.variable('o')),
               ]),
               AF.createPath(DF.variable('s'), AF.createNps([]), DF.variable('o')),
-            )).toEqual([ true, AF.createPath(DF.variable('s'), AF.createNps([]), DF.literal('o')) ]);
+            )).toEqual([ true, AF.createJoin([
+              AF.createPath(DF.variable('s'), AF.createNps([]), DF.literal('o')),
+              AF.createValues(
+                [ DF.variable('o') ],
+                [{ '?o': DF.literal('o') }],
+              ),
+            ]) ]);
           });
 
           it('is not pushed down for ?o="01"^xsd:number', async() => {
