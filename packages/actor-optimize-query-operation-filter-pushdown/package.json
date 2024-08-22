@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-optimize-query-operation-filter-pushdown",
-  "version": "3.2.2",
+  "version": "3.2.3",
   "description": "A filter-pushdown optimize-query-operation actor",
   "lsd:module": true,
   "license": "MIT",

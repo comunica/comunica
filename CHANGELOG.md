@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v3.2.3"></a>
+## [v3.2.3](https://github.com/comunica/comunica/compare/v3.2.2...v3.2.3) - 2024-08-22
+
+### Fixed
+* [Fix filter pushdown into patterns losing variable bindings](https://github.com/comunica/comunica/commit/dde1720f8c54b5d3be922c18a3acf81a7716f5a2)
+
 <a name="v3.2.2"></a>
 ## [v3.2.2](https://github.com/comunica/comunica/compare/v3.2.1...v3.2.2) - 2024-08-19
 

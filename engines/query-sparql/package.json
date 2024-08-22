@@ -1,6 +1,6 @@
 {
   "name": "@comunica/query-sparql",
-  "version": "3.2.2",
+  "version": "3.2.3",
   "description": "A SPARQL query engine for querying over decentralized RDF knowledge graphs on the Web",
   "license": "MIT",
   "homepage": "https://comunica.dev/",
@@ -86,7 +86,7 @@
     "@comunica/actor-optimize-query-operation-bgp-to-join": "^3.2.1",
     "@comunica/actor-optimize-query-operation-construct-distinct": "^3.2.1",
     "@comunica/actor-optimize-query-operation-describe-to-constructs-subject": "^3.2.1",
-    "@comunica/actor-optimize-query-operation-filter-pushdown": "^3.2.2",
+    "@comunica/actor-optimize-query-operation-filter-pushdown": "^3.2.3",
     "@comunica/actor-optimize-query-operation-group-sources": "^3.2.2",
     "@comunica/actor-optimize-query-operation-join-bgp": "^3.2.1",
     "@comunica/actor-optimize-query-operation-join-connected": "^3.2.1",
