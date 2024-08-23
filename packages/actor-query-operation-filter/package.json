@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-filter",
-  "version": "3.2.1",
+  "version": "3.2.2",
   "description": "A filter query-operation actor",
   "lsd:module": true,
   "license": "MIT",
@@ -39,7 +39,7 @@
   "dependencies": {
     "@comunica/bindings-factory": "^3.2.1",
     "@comunica/bus-expression-evaluator-factory": "^1.0.0",
-    "@comunica/bus-query-operation": "^3.2.1",
+    "@comunica/bus-query-operation": "^3.2.2",
     "@comunica/core": "^3.2.1",
     "@comunica/expression-evaluator": "^3.2.1",
     "@comunica/types": "^3.2.1",

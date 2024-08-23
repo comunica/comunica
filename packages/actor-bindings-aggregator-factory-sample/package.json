@@ -42,6 +42,6 @@
     "@rdfjs/types": "*"
   },
   "devDependencies": {
-    "@comunica/expression-evaluator": "3.2.1"
+    "@comunica/expression-evaluator": "^3.2.1"
   }
 }

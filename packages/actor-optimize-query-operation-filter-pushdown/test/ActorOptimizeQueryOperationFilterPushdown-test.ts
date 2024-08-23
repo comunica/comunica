@@ -1,8 +1,8 @@
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { DataFactory } from 'rdf-data-factory';
-import type { Algebra } from 'sparqlalgebrajs';
-import { Factory } from 'sparqlalgebrajs';
+import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorOptimizeQueryOperationFilterPushdown } from '../lib/ActorOptimizeQueryOperationFilterPushdown';
 
 const AF = new Factory();
@@ -19,7 +19,16 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
     let actor: ActorOptimizeQueryOperationFilterPushdown;
 
     beforeEach(() => {
-      actor = new ActorOptimizeQueryOperationFilterPushdown({ name: 'actor', bus });
+      actor = new ActorOptimizeQueryOperationFilterPushdown({
+        name: 'actor',
+        bus,
+        aggressivePushdown: true,
+        maxIterations: 10,
+        splitConjunctive: true,
+        mergeConjunctive: true,
+        pushIntoLeftJoins: false,
+        pushEqualityIntoPatterns: true,
+      });
     });
 
     it('should test', async() => {
@@ -55,6 +64,305 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           ),
           [ DF.variable('s'), DF.variable('p') ],
         ));
+      });
+
+      it('for an operation with filter with aggressivePushdown false', async() => {
+        actor = new ActorOptimizeQueryOperationFilterPushdown({
+          name: 'actor',
+          bus,
+          aggressivePushdown: false,
+          maxIterations: 10,
+          splitConjunctive: true,
+          mergeConjunctive: true,
+          pushIntoLeftJoins: false,
+          pushEqualityIntoPatterns: true,
+        });
+
+        const operationIn = AF.createFilter(
+          AF.createProject(
+            AF.createBgp([]),
+            [ DF.variable('s'), DF.variable('p') ],
+          ),
+          AF.createTermExpression(DF.variable('s')),
+        );
+        const { operation: operationOut } = await actor.run({
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+          operation: operationIn,
+        });
+        expect(operationOut).toEqual(operationIn);
+      });
+
+      it('for an operation with conjunctive filter', async() => {
+        const operationIn = AF.createFilter(
+          AF.createJoin([
+            AF.createPattern(DF.variable('s1'), DF.namedNode('p'), DF.namedNode('o')),
+            AF.createPattern(DF.variable('s2'), DF.namedNode('p'), DF.namedNode('o')),
+          ]),
+          AF.createOperatorExpression(
+            '&&',
+            [
+              AF.createTermExpression(DF.variable('s1')),
+              AF.createTermExpression(DF.variable('s2')),
+            ],
+          ),
+        );
+        const { operation: operationOut } = await actor.run({
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+          operation: operationIn,
+        });
+        expect(operationOut).toEqual(AF.createJoin([
+          AF.createFilter(
+            AF.createPattern(DF.variable('s1'), DF.namedNode('p'), DF.namedNode('o')),
+            AF.createTermExpression(DF.variable('s1')),
+          ),
+          AF.createFilter(
+            AF.createPattern(DF.variable('s2'), DF.namedNode('p'), DF.namedNode('o')),
+            AF.createTermExpression(DF.variable('s2')),
+          ),
+        ]));
+      });
+
+      it('for an operation with conjunctive filter with splitConjunctive false', async() => {
+        actor = new ActorOptimizeQueryOperationFilterPushdown({
+          name: 'actor',
+          bus,
+          aggressivePushdown: true,
+          maxIterations: 10,
+          splitConjunctive: false,
+          mergeConjunctive: true,
+          pushIntoLeftJoins: false,
+          pushEqualityIntoPatterns: true,
+        });
+
+        const operationIn = AF.createFilter(
+          AF.createJoin([
+            AF.createPattern(DF.variable('s1'), DF.namedNode('p'), DF.namedNode('o')),
+            AF.createPattern(DF.variable('s2'), DF.namedNode('p'), DF.namedNode('o')),
+          ]),
+          AF.createOperatorExpression(
+            '&&',
+            [
+              AF.createTermExpression(DF.variable('s1')),
+              AF.createTermExpression(DF.variable('s2')),
+            ],
+          ),
+        );
+        const { operation: operationOut } = await actor.run({
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+          operation: operationIn,
+        });
+        expect(operationOut).toEqual(operationIn);
+      });
+
+      it('for an operation with nested filters', async() => {
+        const operationIn = AF.createFilter(
+          AF.createFilter(
+            AF.createFilter(
+              AF.createPattern(DF.variable('s1'), DF.variable('s2'), DF.variable('s3')),
+              AF.createTermExpression(DF.variable('s3')),
+            ),
+            AF.createTermExpression(DF.variable('s2')),
+          ),
+          AF.createTermExpression(DF.variable('s1')),
+        );
+        const { operation: operationOut } = await actor.run({
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+          operation: operationIn,
+        });
+        expect(operationOut).toEqual(AF.createFilter(
+          AF.createPattern(DF.variable('s1'), DF.variable('s2'), DF.variable('s3')),
+          AF.createOperatorExpression('&&', [
+            AF.createOperatorExpression('&&', [
+              AF.createTermExpression(DF.variable('s2')),
+              AF.createTermExpression(DF.variable('s1')),
+            ]),
+            AF.createTermExpression(DF.variable('s3')),
+          ]),
+        ));
+      });
+
+      it('for an operation with nested filters with mergeConjunctive false', async() => {
+        actor = new ActorOptimizeQueryOperationFilterPushdown({
+          name: 'actor',
+          bus,
+          aggressivePushdown: true,
+          maxIterations: 10,
+          splitConjunctive: true,
+          mergeConjunctive: false,
+          pushIntoLeftJoins: false,
+          pushEqualityIntoPatterns: true,
+        });
+
+        const operationIn = AF.createFilter(
+          AF.createFilter(
+            AF.createFilter(
+              AF.createPattern(DF.variable('s1'), DF.variable('s2'), DF.variable('s3')),
+              AF.createTermExpression(DF.variable('s3')),
+            ),
+            AF.createTermExpression(DF.variable('s2')),
+          ),
+          AF.createTermExpression(DF.variable('s1')),
+        );
+        const { operation: operationOut } = await actor.run({
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+          operation: operationIn,
+        });
+        expect(operationOut).toEqual(AF.createFilter(
+          AF.createFilter(
+            AF.createFilter(
+              AF.createPattern(DF.variable('s1'), DF.variable('s2'), DF.variable('s3')),
+              AF.createTermExpression(DF.variable('s3')),
+            ),
+            AF.createTermExpression(DF.variable('s1')),
+          ),
+          AF.createTermExpression(DF.variable('s2')),
+        ));
+      });
+    });
+
+    describe('shouldAttemptPushDown', () => {
+      beforeEach(() => {
+        actor = new ActorOptimizeQueryOperationFilterPushdown({
+          name: 'actor',
+          bus,
+          aggressivePushdown: false,
+          maxIterations: 10,
+          splitConjunctive: true,
+          mergeConjunctive: true,
+          pushIntoLeftJoins: true,
+          pushEqualityIntoPatterns: true,
+        });
+      });
+
+      it('returns true if aggressivePushdown is true', () => {
+        actor = new ActorOptimizeQueryOperationFilterPushdown({
+          name: 'actor',
+          bus,
+          aggressivePushdown: true,
+          maxIterations: 10,
+          splitConjunctive: true,
+          mergeConjunctive: true,
+          pushIntoLeftJoins: true,
+          pushEqualityIntoPatterns: true,
+        });
+        const op = AF.createFilter(null!, null!);
+        expect(actor.shouldAttemptPushDown(op, [], new Map())).toBeTruthy();
+      });
+
+      it('returns true if the filter is extremely selective (1)', () => {
+        const op = AF.createFilter(AF.createNop(), AF.createOperatorExpression(
+          '=',
+          [
+            AF.createTermExpression(DF.variable('s')),
+            AF.createTermExpression(DF.namedNode('iri')),
+          ],
+        ));
+        expect(actor.shouldAttemptPushDown(op, [], new Map())).toBeTruthy();
+      });
+
+      it('returns true if the filter is extremely selective (2)', () => {
+        const op = AF.createFilter(AF.createNop(), AF.createOperatorExpression(
+          '=',
+          [
+            AF.createTermExpression(DF.namedNode('iri')),
+            AF.createTermExpression(DF.variable('s')),
+          ],
+        ));
+        expect(actor.shouldAttemptPushDown(op, [], new Map())).toBeTruthy();
+      });
+
+      it('returns true if federated with filter support for one', () => {
+        const src1 = <any> {};
+        const src2 = <any> {};
+        const op = AF.createFilter(
+          AF.createJoin([
+            ActorQueryOperation.assignOperationSource(
+              AF.createPattern(DF.variable('s1'), DF.namedNode('p'), DF.namedNode('o')),
+              src1,
+            ),
+            ActorQueryOperation.assignOperationSource(
+              AF.createPattern(DF.variable('s1'), DF.namedNode('p'), DF.namedNode('o')),
+              src2,
+            ),
+          ]),
+          AF.createTermExpression(DF.variable('v')),
+        );
+        const shapes = new Map();
+        shapes.set(src1, {
+          type: 'operation',
+          operation: {
+            operationType: 'type',
+            type: Algebra.types.NOP,
+          },
+        });
+        shapes.set(src2, {
+          type: 'operation',
+          operation: {
+            operationType: 'type',
+            type: Algebra.types.FILTER,
+          },
+        });
+        expect(actor.shouldAttemptPushDown(op, [ src1, src2 ], shapes)).toBeTruthy();
+      });
+
+      it('returns false if federated with filter support for none', () => {
+        const src1 = <any> {};
+        const src2 = <any> {};
+        const op = AF.createFilter(
+          AF.createJoin([
+            ActorQueryOperation.assignOperationSource(
+              AF.createPattern(DF.variable('s1'), DF.namedNode('p'), DF.namedNode('o')),
+              src1,
+            ),
+            ActorQueryOperation.assignOperationSource(
+              AF.createPattern(DF.variable('s1'), DF.namedNode('p'), DF.namedNode('o')),
+              src2,
+            ),
+          ]),
+          AF.createTermExpression(DF.variable('v')),
+        );
+        const shapes = new Map();
+        shapes.set(src1, {
+          type: 'operation',
+          operation: {
+            operationType: 'type',
+            type: Algebra.types.NOP,
+          },
+        });
+        shapes.set(src2, {
+          type: 'operation',
+          operation: {
+            operationType: 'type',
+            type: Algebra.types.NOP,
+          },
+        });
+        expect(actor.shouldAttemptPushDown(op, [ src1, src2 ], shapes)).toBeFalsy();
+      });
+
+      it('returns false otherwise', () => {
+        const src1 = <any> {};
+        const op = AF.createFilter(
+          AF.createJoin([
+            ActorQueryOperation.assignOperationSource(
+              AF.createPattern(DF.variable('s1'), DF.namedNode('p'), DF.namedNode('o')),
+              src1,
+            ),
+            ActorQueryOperation.assignOperationSource(
+              AF.createPattern(DF.variable('s2'), DF.namedNode('p'), DF.namedNode('o')),
+              src1,
+            ),
+          ]),
+          AF.createTermExpression(DF.variable('v')),
+        );
+        const shapes = new Map();
+        shapes.set(src1, {
+          type: 'operation',
+          operation: {
+            operationType: 'type',
+            type: Algebra.types.PATTERN,
+          },
+        });
+        expect(actor.shouldAttemptPushDown(op, [], shapes)).toBeFalsy();
       });
     });
 
@@ -160,74 +468,102 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           expect(filterPushdown(
             AF.createTermExpression(DF.namedNode('s')),
             AF.createExtend(AF.createBgp([]), DF.variable('v'), AF.createTermExpression(DF.namedNode('o'))),
-          )).toEqual(
-            AF.createExtend(
-              AF.createFilter(AF.createBgp([]), AF.createTermExpression(DF.namedNode('s'))),
-              DF.variable('v'),
-              AF.createTermExpression(DF.namedNode('o')),
-            ),
-          );
+          )).toEqual([ true, AF.createExtend(
+            AF.createFilter(AF.createBgp([]), AF.createTermExpression(DF.namedNode('s'))),
+            DF.variable('v'),
+            AF.createTermExpression(DF.namedNode('o')),
+          ) ]);
         });
 
         it('is not pushed down when variables overlap', async() => {
           expect(filterPushdown(
             AF.createTermExpression(DF.variable('v')),
             AF.createExtend(AF.createBgp([]), DF.variable('v'), AF.createTermExpression(DF.namedNode('o'))),
-          )).toEqual(
-            AF.createFilter(
-              AF.createExtend(
-                AF.createBgp([]),
-                DF.variable('v'),
-                AF.createTermExpression(DF.namedNode('o')),
-              ),
-              AF.createTermExpression(DF.variable('v')),
+          )).toEqual([ false, AF.createFilter(
+            AF.createExtend(
+              AF.createBgp([]),
+              DF.variable('v'),
+              AF.createTermExpression(DF.namedNode('o')),
             ),
-          );
+            AF.createTermExpression(DF.variable('v')),
+          ) ]);
         });
 
         it('is replaced with a no-op for FILTER(false)', async() => {
           expect(filterPushdown(
             AF.createTermExpression(DF.literal('false')),
             AF.createExtend(AF.createBgp([]), DF.variable('v'), AF.createTermExpression(DF.namedNode('o'))),
-          )).toEqual(
-            AF.createUnion([]),
-          );
+          )).toEqual([ true, AF.createUnion([]) ]);
         });
       });
 
       describe('for a filter operation', () => {
-        it('is pushed down when variables do not overlap', async() => {
+        it('is not pushed down when variables do not overlap', async() => {
           expect(filterPushdown(
             AF.createTermExpression(DF.variable('a')),
             AF.createFilter(AF.createBgp([]), AF.createTermExpression(DF.variable('b'))),
-          )).toEqual(
-            AF.createFilter(
-              AF.createFilter(AF.createBgp([]), AF.createTermExpression(DF.variable('a'))),
-              AF.createTermExpression(DF.variable('b')),
-            ),
-          );
+          )).toEqual([ false, AF.createFilter(
+            AF.createFilter(AF.createBgp([]), AF.createTermExpression(DF.variable('a'))),
+            AF.createTermExpression(DF.variable('b')),
+          ) ]);
         });
-        it('is pushed down when variables overlap', async() => {
+
+        it('is pushed down without going deeper when variables overlap', async() => {
           expect(filterPushdown(
             AF.createTermExpression(DF.variable('a')),
             AF.createFilter(
               AF.createBgp([]),
               AF.createOperatorExpression('id', [ AF.createTermExpression(DF.variable('a')) ]),
             ),
-          )).toEqual(
+          )).toEqual([ false, AF.createFilter(
+            AF.createFilter(AF.createBgp([]), AF.createTermExpression(DF.variable('a'))),
+            AF.createOperatorExpression('id', [ AF.createTermExpression(DF.variable('a')) ]),
+          ) ]);
+        });
+
+        it('is pushed down deeper when variables overlap', async() => {
+          expect(filterPushdown(
+            AF.createTermExpression(DF.variable('a')),
             AF.createFilter(
-              AF.createFilter(AF.createBgp([]), AF.createTermExpression(DF.variable('a'))),
+              AF.createJoin([
+                AF.createPattern(DF.variable('a'), DF.variable('a'), DF.variable('a')),
+                AF.createPattern(DF.variable('b'), DF.variable('b'), DF.variable('b')),
+              ]),
               AF.createOperatorExpression('id', [ AF.createTermExpression(DF.variable('a')) ]),
             ),
-          );
+          )).toEqual([ true, AF.createFilter(
+            AF.createJoin([
+              AF.createFilter(
+                AF.createPattern(DF.variable('a'), DF.variable('a'), DF.variable('a')),
+                AF.createTermExpression(DF.variable('a')),
+              ),
+              AF.createPattern(DF.variable('b'), DF.variable('b'), DF.variable('b')),
+            ]),
+            AF.createOperatorExpression('id', [ AF.createTermExpression(DF.variable('a')) ]),
+          ) ]);
         });
+
         it('is replaced with a no-op  for FILTER(false)', async() => {
           expect(filterPushdown(
             AF.createTermExpression(DF.literal('false')),
             AF.createFilter(AF.createBgp([]), AF.createTermExpression(DF.variable('b'))),
-          )).toEqual(
-            AF.createUnion([]),
-          );
+          )).toEqual([ true, AF.createUnion([]) ]);
+        });
+
+        it('is not pushed down for existence expressions', async() => {
+          expect(filterPushdown(
+            AF.createExistenceExpression(false, AF.createNop()),
+            AF.createJoin([
+              AF.createPattern(DF.variable('a'), DF.variable('a'), DF.variable('a')),
+              AF.createPattern(DF.variable('b'), DF.variable('b'), DF.variable('b')),
+            ]),
+          )).toEqual([ false, AF.createFilter(
+            AF.createJoin([
+              AF.createPattern(DF.variable('a'), DF.variable('a'), DF.variable('a')),
+              AF.createPattern(DF.variable('b'), DF.variable('b'), DF.variable('b')),
+            ]),
+            AF.createExistenceExpression(false, AF.createNop()),
+          ) ]);
         });
       });
 
@@ -239,18 +575,16 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
               AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
             ]),
-          )).toEqual(
-            AF.createJoin([
-              AF.createFilter(
-                AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
-                AF.createTermExpression(DF.variable('s')),
-              ),
-              AF.createFilter(
-                AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
-                AF.createTermExpression(DF.variable('s')),
-              ),
-            ]),
-          );
+          )).toEqual([ true, AF.createJoin([
+            AF.createFilter(
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+              AF.createTermExpression(DF.variable('s')),
+            ),
+            AF.createFilter(
+              AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
+              AF.createTermExpression(DF.variable('s')),
+            ),
+          ]) ]);
         });
 
         it('is not pushed down for partially-overlapping variables', async() => {
@@ -263,18 +597,16 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
               AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
             ]),
-          )).toEqual(
-            AF.createFilter(
-              AF.createJoin([
-                AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
-                AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
-              ]),
-              AF.createOperatorExpression('+', [
-                AF.createTermExpression(DF.variable('s')),
-                AF.createTermExpression(DF.variable('x')),
-              ]),
-            ),
-          );
+          )).toEqual([ false, AF.createFilter(
+            AF.createJoin([
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+              AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
+            ]),
+            AF.createOperatorExpression('+', [
+              AF.createTermExpression(DF.variable('s')),
+              AF.createTermExpression(DF.variable('x')),
+            ]),
+          ) ]);
         });
 
         it('is replaced with a no-op for FILTER(false)', async() => {
@@ -284,9 +616,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
               AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
             ]),
-          )).toEqual(
-            AF.createUnion([]),
-          );
+          )).toEqual([ true, AF.createUnion([]) ]);
         });
 
         it('is voided for non-overlapping variables', async() => {
@@ -296,12 +626,10 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               AF.createPattern(DF.variable('s'), DF.namedNode('p1'), DF.namedNode('o1')),
               AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
             ]),
-          )).toEqual(
-            AF.createJoin([
-              AF.createPattern(DF.variable('s'), DF.namedNode('p1'), DF.namedNode('o1')),
-              AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
-            ]),
-          );
+          )).toEqual([ true, AF.createJoin([
+            AF.createPattern(DF.variable('s'), DF.namedNode('p1'), DF.namedNode('o1')),
+            AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
+          ]) ]);
         });
 
         it('is pushed down for fully-, partially-, and not-overlapping variables', async() => {
@@ -316,47 +644,43 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               AF.createPattern(DF.variable('s'), DF.variable('x'), DF.namedNode('o1')),
               AF.createPattern(DF.variable('a'), DF.variable('b'), DF.namedNode('o1')),
             ]),
-          )).toEqual(
+          )).toEqual([ true, AF.createJoin([
+            // Fully overlapping
             AF.createJoin([
-              // Fully overlapping
-              AF.createJoin([
-                AF.createFilter(
-                  AF.createPattern(DF.variable('s'), DF.variable('x'), DF.namedNode('o1')),
-                  AF.createOperatorExpression('+', [
-                    AF.createTermExpression(DF.variable('s')),
-                    AF.createTermExpression(DF.variable('x')),
-                  ]),
-                ),
-              ]),
-              // Partially overlapping
               AF.createFilter(
-                AF.createJoin([
-                  AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
-                  AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
-                ]),
+                AF.createPattern(DF.variable('s'), DF.variable('x'), DF.namedNode('o1')),
                 AF.createOperatorExpression('+', [
                   AF.createTermExpression(DF.variable('s')),
                   AF.createTermExpression(DF.variable('x')),
                 ]),
               ),
-              // Not overlapping
-              AF.createJoin([
-                AF.createPattern(DF.variable('a'), DF.variable('b'), DF.namedNode('o1')),
-              ]),
             ]),
-          );
+            // Partially overlapping
+            AF.createFilter(
+              AF.createJoin([
+                AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+                AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
+              ]),
+              AF.createOperatorExpression('+', [
+                AF.createTermExpression(DF.variable('s')),
+                AF.createTermExpression(DF.variable('x')),
+              ]),
+            ),
+            // Not overlapping
+            AF.createJoin([
+              AF.createPattern(DF.variable('a'), DF.variable('b'), DF.namedNode('o1')),
+            ]),
+          ]) ]);
         });
 
         it('is not pushed down for for empty joins', async() => {
           expect(filterPushdown(
             AF.createTermExpression(DF.variable('s')),
             AF.createJoin([]),
-          )).toEqual(
-            AF.createFilter(
-              AF.createJoin([]),
-              AF.createTermExpression(DF.variable('s')),
-            ),
-          );
+          )).toEqual([ false, AF.createFilter(
+            AF.createJoin([]),
+            AF.createTermExpression(DF.variable('s')),
+          ) ]);
         });
       });
 
@@ -365,9 +689,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           expect(filterPushdown(
             AF.createTermExpression(DF.variable('s')),
             AF.createNop(),
-          )).toEqual(
-            AF.createNop(),
-          );
+          )).toEqual([ true, AF.createNop() ]);
         });
       });
 
@@ -379,15 +701,13 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               AF.createBgp([]),
               [ DF.variable('s'), DF.variable('p') ],
             ),
-          )).toEqual(
-            AF.createProject(
-              AF.createFilter(
-                AF.createBgp([]),
-                AF.createTermExpression(DF.variable('s')),
-              ),
-              [ DF.variable('s'), DF.variable('p') ],
+          )).toEqual([ true, AF.createProject(
+            AF.createFilter(
+              AF.createBgp([]),
+              AF.createTermExpression(DF.variable('s')),
             ),
-          );
+            [ DF.variable('s'), DF.variable('p') ],
+          ) ]);
         });
 
         it('is replaced with a no-op for FILTER(false)', async() => {
@@ -397,9 +717,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               AF.createBgp([]),
               [ DF.variable('s'), DF.variable('p') ],
             ),
-          )).toEqual(
-            AF.createUnion([]),
-          );
+          )).toEqual([ true, AF.createUnion([]) ]);
         });
 
         it('is voided when variables do not overlap', async() => {
@@ -409,12 +727,10 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               AF.createBgp([]),
               [ DF.variable('a') ],
             ),
-          )).toEqual(
-            AF.createProject(
-              AF.createBgp([]),
-              [ DF.variable('a') ],
-            ),
-          );
+          )).toEqual([ true, AF.createProject(
+            AF.createBgp([]),
+            [ DF.variable('a') ],
+          ) ]);
         });
       });
 
@@ -426,18 +742,16 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
               AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
             ]),
-          )).toEqual(
-            AF.createUnion([
-              AF.createFilter(
-                AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
-                AF.createTermExpression(DF.variable('s')),
-              ),
-              AF.createFilter(
-                AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
-                AF.createTermExpression(DF.variable('s')),
-              ),
-            ]),
-          );
+          )).toEqual([ true, AF.createUnion([
+            AF.createFilter(
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+              AF.createTermExpression(DF.variable('s')),
+            ),
+            AF.createFilter(
+              AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
+              AF.createTermExpression(DF.variable('s')),
+            ),
+          ]) ]);
         });
 
         it('is not pushed down for partially-overlapping variables', async() => {
@@ -450,18 +764,16 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
               AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
             ]),
-          )).toEqual(
-            AF.createFilter(
-              AF.createUnion([
-                AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
-                AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
-              ]),
-              AF.createOperatorExpression('+', [
-                AF.createTermExpression(DF.variable('s')),
-                AF.createTermExpression(DF.variable('x')),
-              ]),
-            ),
-          );
+          )).toEqual([ false, AF.createFilter(
+            AF.createUnion([
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+              AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
+            ]),
+            AF.createOperatorExpression('+', [
+              AF.createTermExpression(DF.variable('s')),
+              AF.createTermExpression(DF.variable('x')),
+            ]),
+          ) ]);
         });
 
         it('is replaced with a no-op for FILTER(false)', async() => {
@@ -471,9 +783,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
               AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
             ]),
-          )).toEqual(
-            AF.createUnion([]),
-          );
+          )).toEqual([ true, AF.createUnion([]) ]);
         });
 
         it('is voided for non-overlapping variables', async() => {
@@ -483,12 +793,10 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               AF.createPattern(DF.variable('s'), DF.namedNode('p1'), DF.namedNode('o1')),
               AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
             ]),
-          )).toEqual(
-            AF.createUnion([
-              AF.createPattern(DF.variable('s'), DF.namedNode('p1'), DF.namedNode('o1')),
-              AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
-            ]),
-          );
+          )).toEqual([ true, AF.createUnion([
+            AF.createPattern(DF.variable('s'), DF.namedNode('p1'), DF.namedNode('o1')),
+            AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
+          ]) ]);
         });
 
         it('is pushed down for fully-, partially-, and not-overlapping variables', async() => {
@@ -503,35 +811,33 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               AF.createPattern(DF.variable('s'), DF.variable('x'), DF.namedNode('o1')),
               AF.createPattern(DF.variable('a'), DF.variable('b'), DF.namedNode('o1')),
             ]),
-          )).toEqual(
+          )).toEqual([ true, AF.createUnion([
+            // Fully overlapping
             AF.createUnion([
-              // Fully overlapping
-              AF.createUnion([
-                AF.createFilter(
-                  AF.createPattern(DF.variable('s'), DF.variable('x'), DF.namedNode('o1')),
-                  AF.createOperatorExpression('+', [
-                    AF.createTermExpression(DF.variable('s')),
-                    AF.createTermExpression(DF.variable('x')),
-                  ]),
-                ),
-              ]),
-              // Partially overlapping
               AF.createFilter(
-                AF.createUnion([
-                  AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
-                  AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
-                ]),
+                AF.createPattern(DF.variable('s'), DF.variable('x'), DF.namedNode('o1')),
                 AF.createOperatorExpression('+', [
                   AF.createTermExpression(DF.variable('s')),
                   AF.createTermExpression(DF.variable('x')),
                 ]),
               ),
-              // Not overlapping
-              AF.createUnion([
-                AF.createPattern(DF.variable('a'), DF.variable('b'), DF.namedNode('o1')),
-              ]),
             ]),
-          );
+            // Partially overlapping
+            AF.createFilter(
+              AF.createUnion([
+                AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+                AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
+              ]),
+              AF.createOperatorExpression('+', [
+                AF.createTermExpression(DF.variable('s')),
+                AF.createTermExpression(DF.variable('x')),
+              ]),
+            ),
+            // Not overlapping
+            AF.createUnion([
+              AF.createPattern(DF.variable('a'), DF.variable('b'), DF.namedNode('o1')),
+            ]),
+          ]) ]);
         });
       });
 
@@ -543,15 +849,13 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               [ DF.variable('s'), DF.variable('p') ],
               [],
             ),
-          )).toEqual(
-            AF.createFilter(
-              AF.createValues(
-                [ DF.variable('s'), DF.variable('p') ],
-                [],
-              ),
-              AF.createTermExpression(DF.variable('s')),
+          )).toEqual([ false, AF.createFilter(
+            AF.createValues(
+              [ DF.variable('s'), DF.variable('p') ],
+              [],
             ),
-          );
+            AF.createTermExpression(DF.variable('s')),
+          ) ]);
         });
 
         it('is replaced with a no-op for FILTER(false)', async() => {
@@ -561,9 +865,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               [ DF.variable('s'), DF.variable('p') ],
               [],
             ),
-          )).toEqual(
-            AF.createUnion([]),
-          );
+          )).toEqual([ true, AF.createUnion([]) ]);
         });
 
         it('is voided when variables do not overlap', async() => {
@@ -573,12 +875,427 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               [ DF.variable('a') ],
               [],
             ),
-          )).toEqual(
-            AF.createValues(
-              [ DF.variable('a') ],
-              [],
-            ),
-          );
+          )).toEqual([ true, AF.createValues(
+            [ DF.variable('a') ],
+            [],
+          ) ]);
+        });
+      });
+
+      describe('for a left-join operation', () => {
+        describe('with pushIntoLeftJoins false', () => {
+          it('is not pushed down', async() => {
+            expect(filterPushdown(
+              AF.createTermExpression(DF.variable('s')),
+              AF.createLeftJoin(
+                AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+                AF.createPattern(DF.variable('so'), DF.namedNode('p2'), DF.namedNode('o2')),
+              ),
+            )).toEqual([ false, AF.createFilter(
+              AF.createLeftJoin(
+                AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+                AF.createPattern(DF.variable('so'), DF.namedNode('p2'), DF.namedNode('o2')),
+              ),
+              AF.createTermExpression(DF.variable('s')),
+            ) ]);
+          });
+        });
+
+        describe('with pushIntoLeftJoins true', () => {
+          beforeEach(() => {
+            actor = new ActorOptimizeQueryOperationFilterPushdown({
+              name: 'actor',
+              bus,
+              aggressivePushdown: true,
+              maxIterations: 10,
+              splitConjunctive: true,
+              mergeConjunctive: true,
+              pushIntoLeftJoins: true,
+              pushEqualityIntoPatterns: true,
+            });
+          });
+
+          it('is pushed down when right variables do no intersect', async() => {
+            expect(filterPushdown(
+              AF.createTermExpression(DF.variable('s')),
+              AF.createLeftJoin(
+                AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+                AF.createPattern(DF.variable('so'), DF.namedNode('p2'), DF.namedNode('o2')),
+              ),
+            )).toEqual([ true, AF.createLeftJoin(
+              AF.createFilter(
+                AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+                AF.createTermExpression(DF.variable('s')),
+              ),
+              AF.createPattern(DF.variable('so'), DF.namedNode('p2'), DF.namedNode('o2')),
+            ) ]);
+          });
+
+          it('is not pushed down when right variables intersect', async() => {
+            expect(filterPushdown(
+              AF.createTermExpression(DF.variable('s')),
+              AF.createLeftJoin(
+                AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+                AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
+              ),
+            )).toEqual([ false, AF.createFilter(
+              AF.createLeftJoin(
+                AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+                AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.namedNode('o2')),
+              ),
+              AF.createTermExpression(DF.variable('s')),
+            ) ]);
+          });
+        });
+      });
+
+      describe('for a pattern operation', () => {
+        describe('with pushEqualityIntoPatterns true', () => {
+          it('is pushed down for ?s=<s>', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('s')),
+                AF.createTermExpression(DF.namedNode('s')),
+              ]),
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+            )).toEqual([ true, AF.createJoin([
+              AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o1')),
+              AF.createValues(
+                [ DF.variable('s') ],
+                [{ '?s': DF.namedNode('s') }],
+              ),
+            ]) ]);
+          });
+
+          it('is pushed down for ?s=<s>, and keeps source annotations', async() => {
+            const src1 = <any> {};
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('s')),
+                AF.createTermExpression(DF.namedNode('s')),
+              ]),
+              ActorQueryOperation
+                .assignOperationSource(AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')), src1),
+            )).toEqual([ true, AF.createJoin([
+              ActorQueryOperation
+                .assignOperationSource(AF
+                  .createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o1')), src1),
+              AF.createValues(
+                [ DF.variable('s') ],
+                [{ '?s': DF.namedNode('s') }],
+              ),
+            ]) ]);
+          });
+
+          it('is pushed down for ?s=<s> into quoted triple', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('s')),
+                AF.createTermExpression(DF.namedNode('s')),
+              ]),
+              AF.createPattern(
+                DF.quad(DF.variable('s'), DF.variable('s'), DF.variable('s')),
+                DF.variable('p'),
+                DF.namedNode('o1'),
+              ),
+            )).toEqual([ true, AF.createJoin([
+              AF.createPattern(
+                DF.quad(DF.namedNode('s'), DF.namedNode('s'), DF.namedNode('s')),
+                DF.variable('p'),
+                DF.namedNode('o1'),
+              ),
+              AF.createValues(
+                [ DF.variable('s') ],
+                [{ '?s': DF.namedNode('s') }],
+              ),
+            ]) ]);
+          });
+
+          it('is pushed down for <s>=?s', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.namedNode('s')),
+                AF.createTermExpression(DF.variable('s')),
+              ]),
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+            )).toEqual([ true, AF.createJoin([
+              AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o1')),
+              AF.createValues(
+                [ DF.variable('s') ],
+                [{ '?s': DF.namedNode('s') }],
+              ),
+            ]) ]);
+          });
+
+          it('is pushed down for ?s=_:s', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('s')),
+                AF.createTermExpression(DF.blankNode('s')),
+              ]),
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+            )).toEqual([ true, AF.createJoin([
+              AF.createPattern(DF.blankNode('s'), DF.variable('p'), DF.namedNode('o1')),
+              AF.createValues(
+                [ DF.variable('s') ],
+                [{ '?s': <any> DF.blankNode('s') }],
+              ),
+            ]) ]);
+          });
+
+          it('is pushed down for ?o="o"', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('o')),
+                AF.createTermExpression(DF.literal('o')),
+              ]),
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+            )).toEqual([ true, AF.createJoin([
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.literal('o')),
+              AF.createValues(
+                [ DF.variable('o') ],
+                [{ '?o': DF.literal('o') }],
+              ),
+            ]) ]);
+          });
+
+          it('is pushed down for "o"=?o', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.literal('o')),
+                AF.createTermExpression(DF.variable('o')),
+              ]),
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+            )).toEqual([ true, AF.createJoin([
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.literal('o')),
+              AF.createValues(
+                [ DF.variable('o') ],
+                [{ '?o': DF.literal('o') }],
+              ),
+            ]) ]);
+          });
+
+          it('is not pushed down for ?o="01"^xsd:number', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('o')),
+                AF.createTermExpression(DF.literal('o', DF.namedNode('http://www.w3.org/2001/XMLSchema#number'))),
+              ]),
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+            )).toEqual([ false, AF.createFilter(
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('o')),
+                AF.createTermExpression(DF.literal('o', DF.namedNode('http://www.w3.org/2001/XMLSchema#number'))),
+              ]),
+            ) ]);
+          });
+
+          it('is not pushed down for "01"^xsd:number=?o', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.literal('o', DF.namedNode('http://www.w3.org/2001/XMLSchema#number'))),
+                AF.createTermExpression(DF.variable('o')),
+              ]),
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+            )).toEqual([ false, AF.createFilter(
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.literal('o', DF.namedNode('http://www.w3.org/2001/XMLSchema#number'))),
+                AF.createTermExpression(DF.variable('o')),
+              ]),
+            ) ]);
+          });
+
+          it('is not pushed down for ?o=("a" + "b")', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('o')),
+                AF.createOperatorExpression('+', [
+                  AF.createTermExpression(DF.literal('a')),
+                  AF.createTermExpression(DF.literal('b')),
+                ]),
+              ]),
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+            )).toEqual([ false, AF.createFilter(
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('o')),
+                AF.createOperatorExpression('+', [
+                  AF.createTermExpression(DF.literal('a')),
+                  AF.createTermExpression(DF.literal('b')),
+                ]),
+              ]),
+            ) ]);
+          });
+
+          it('is not pushed down for ("a" + "b")=?o', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createOperatorExpression('+', [
+                  AF.createTermExpression(DF.literal('a')),
+                  AF.createTermExpression(DF.literal('b')),
+                ]),
+                AF.createTermExpression(DF.variable('o')),
+              ]),
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+            )).toEqual([ false, AF.createFilter(
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+              AF.createOperatorExpression('=', [
+                AF.createOperatorExpression('+', [
+                  AF.createTermExpression(DF.literal('a')),
+                  AF.createTermExpression(DF.literal('b')),
+                ]),
+                AF.createTermExpression(DF.variable('o')),
+              ]),
+            ) ]);
+          });
+        });
+
+        describe('with pushEqualityIntoPatterns false', () => {
+          beforeEach(() => {
+            actor = new ActorOptimizeQueryOperationFilterPushdown({
+              name: 'actor',
+              bus,
+              aggressivePushdown: true,
+              maxIterations: 10,
+              splitConjunctive: true,
+              mergeConjunctive: true,
+              pushIntoLeftJoins: true,
+              pushEqualityIntoPatterns: false,
+            });
+          });
+
+          it('is pushed down for ?s=<s>', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('s')),
+                AF.createTermExpression(DF.namedNode('s')),
+              ]),
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+            )).toEqual([ false, AF.createFilter(
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('s')),
+                AF.createTermExpression(DF.namedNode('s')),
+              ]),
+            ) ]);
+          });
+        });
+      });
+
+      describe('for a path operation', () => {
+        describe('with pushEqualityIntoPatterns true', () => {
+          it('is pushed down for ?s=<s>', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('s')),
+                AF.createTermExpression(DF.namedNode('s')),
+              ]),
+              AF.createPath(DF.variable('s'), AF.createNps([]), DF.namedNode('o1')),
+            )).toEqual([ true, AF.createJoin([
+              AF.createPath(DF.namedNode('s'), AF.createNps([]), DF.namedNode('o1')),
+              AF.createValues(
+                [ DF.variable('s') ],
+                [{ '?s': DF.namedNode('s') }],
+              ),
+            ]) ]);
+          });
+
+          it('is pushed down for <s>=?s', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.namedNode('s')),
+                AF.createTermExpression(DF.variable('s')),
+              ]),
+              AF.createPath(DF.variable('s'), AF.createNps([]), DF.namedNode('o1')),
+            )).toEqual([ true, AF.createJoin([
+              AF.createPath(DF.namedNode('s'), AF.createNps([]), DF.namedNode('o1')),
+              AF.createValues(
+                [ DF.variable('s') ],
+                [{ '?s': DF.namedNode('s') }],
+              ),
+            ]) ]);
+          });
+
+          it('is pushed down for ?o="o"', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('o')),
+                AF.createTermExpression(DF.literal('o')),
+              ]),
+              AF.createPath(DF.variable('s'), AF.createNps([]), DF.variable('o')),
+            )).toEqual([ true, AF.createJoin([
+              AF.createPath(DF.variable('s'), AF.createNps([]), DF.literal('o')),
+              AF.createValues(
+                [ DF.variable('o') ],
+                [{ '?o': DF.literal('o') }],
+              ),
+            ]) ]);
+          });
+
+          it('is pushed down for "o"=?o', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.literal('o')),
+                AF.createTermExpression(DF.variable('o')),
+              ]),
+              AF.createPath(DF.variable('s'), AF.createNps([]), DF.variable('o')),
+            )).toEqual([ true, AF.createJoin([
+              AF.createPath(DF.variable('s'), AF.createNps([]), DF.literal('o')),
+              AF.createValues(
+                [ DF.variable('o') ],
+                [{ '?o': DF.literal('o') }],
+              ),
+            ]) ]);
+          });
+
+          it('is not pushed down for ?o="01"^xsd:number', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('o')),
+                AF.createTermExpression(DF.literal('o', DF.namedNode('http://www.w3.org/2001/XMLSchema#number'))),
+              ]),
+              AF.createPath(DF.variable('s'), AF.createNps([]), DF.variable('o')),
+            )).toEqual([ false, AF.createFilter(
+              AF.createPath(DF.variable('s'), AF.createNps([]), DF.variable('o')),
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('o')),
+                AF.createTermExpression(DF.literal('o', DF.namedNode('http://www.w3.org/2001/XMLSchema#number'))),
+              ]),
+            ) ]);
+          });
+        });
+
+        describe('with pushEqualityIntoPatterns false', () => {
+          beforeEach(() => {
+            actor = new ActorOptimizeQueryOperationFilterPushdown({
+              name: 'actor',
+              bus,
+              aggressivePushdown: true,
+              maxIterations: 10,
+              splitConjunctive: true,
+              mergeConjunctive: true,
+              pushIntoLeftJoins: true,
+              pushEqualityIntoPatterns: false,
+            });
+          });
+
+          it('is pushed down for ?s=<s>', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('s')),
+                AF.createTermExpression(DF.namedNode('s')),
+              ]),
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+            )).toEqual([ false, AF.createFilter(
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('s')),
+                AF.createTermExpression(DF.namedNode('s')),
+              ]),
+            ) ]);
+          });
         });
       });
 
@@ -586,19 +1303,17 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
         it('is not pushed down', async() => {
           expect(filterPushdown(
             AF.createTermExpression(DF.variable('s')),
-            AF.createLeftJoin(
+            AF.createMinus(
               AF.createNop(),
               AF.createNop(),
             ),
-          )).toEqual(
-            AF.createFilter(
-              AF.createLeftJoin(
-                AF.createNop(),
-                AF.createNop(),
-              ),
-              AF.createTermExpression(DF.variable('s')),
+          )).toEqual([ false, AF.createFilter(
+            AF.createMinus(
+              AF.createNop(),
+              AF.createNop(),
             ),
-          );
+            AF.createTermExpression(DF.variable('s')),
+          ) ]);
         });
       });
     });
