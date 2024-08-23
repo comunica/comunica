@@ -1,13 +1,11 @@
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 
-import * as E from '@comunica/expression-evaluator/lib/expressions';
-import { TermTransformer } from '@comunica/expression-evaluator/lib/transformers/TermTransformer';
-import * as Err from '@comunica/expression-evaluator/lib/util/Errors';
+import * as ExprEval from '@comunica/expression-evaluator';
 import type { IActionContext } from '@comunica/types';
 import { Algebra as Alg } from 'sparqlalgebrajs';
 
-export class AlgebraTransformer extends TermTransformer {
+export class AlgebraTransformer extends ExprEval.TermTransformer {
   public constructor(
     private readonly context: IActionContext,
     private readonly mediatorFunctionFactory: MediatorFunctionFactory,
@@ -15,7 +13,7 @@ export class AlgebraTransformer extends TermTransformer {
     super(context.getSafe(KeysExpressionEvaluator.superTypeProvider));
   }
 
-  public async transformAlgebra(expr: Alg.Expression): Promise<E.Expression> {
+  public async transformAlgebra(expr: Alg.Expression): Promise<ExprEval.Expression> {
     const types = Alg.expressionTypes;
 
     switch (expr.expressionType) {
@@ -34,12 +32,12 @@ export class AlgebraTransformer extends TermTransformer {
     }
   }
 
-  private static transformWildcard(term: Alg.WildcardExpression): E.Expression {
-    return new E.NamedNode(term.wildcard.value);
+  private static transformWildcard(term: Alg.WildcardExpression): ExprEval.Expression {
+    return new ExprEval.NamedNode(term.wildcard.value);
   }
 
   private async getOperator(operator: string, expr: Alg.OperatorExpression | Alg.NamedExpression):
-  Promise<E.OperatorExpression> {
+  Promise<ExprEval.OperatorExpression> {
     const operatorFunc = await this.mediatorFunctionFactory.mediate({
       functionName: operator,
       arguments: expr.args,
@@ -47,25 +45,25 @@ export class AlgebraTransformer extends TermTransformer {
     });
     const operatorArgs = await Promise.all(expr.args.map(arg => this.transformAlgebra(arg)));
     if (!operatorFunc.checkArity(operatorArgs)) {
-      throw new Err.InvalidArity(operatorArgs, operator);
+      throw new ExprEval.InvalidArity(operatorArgs, operator);
     }
-    return new E.Operator(operator, operatorArgs, operatorFunc.apply);
+    return new ExprEval.Operator(operator, operatorArgs, operatorFunc.apply);
   }
 
-  private async transformOperator(expr: Alg.OperatorExpression): Promise<E.OperatorExpression> {
+  private async transformOperator(expr: Alg.OperatorExpression): Promise<ExprEval.OperatorExpression> {
     return this.getOperator(expr.operator.toLowerCase(), expr);
   }
 
-  private async transformNamed(expr: Alg.NamedExpression): Promise<E.OperatorExpression> {
+  private async transformNamed(expr: Alg.NamedExpression): Promise<ExprEval.OperatorExpression> {
     return this.getOperator(expr.name.value, expr);
   }
 
-  public static transformAggregate(expr: Alg.AggregateExpression): E.Aggregate {
+  public static transformAggregate(expr: Alg.AggregateExpression): ExprEval.Aggregate {
     const name = expr.aggregator;
-    return new E.Aggregate(name, expr);
+    return new ExprEval.Aggregate(name, expr);
   }
 
-  public static transformExistence(expr: Alg.ExistenceExpression): E.Existence {
-    return new E.Existence(expr);
+  public static transformExistence(expr: Alg.ExistenceExpression): ExprEval.Existence {
+    return new ExprEval.Existence(expr);
   }
 }

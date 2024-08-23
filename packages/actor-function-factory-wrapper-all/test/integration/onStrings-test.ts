@@ -1,6 +1,6 @@
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import { TypeURL } from '@comunica/expression-evaluator/lib/util/Consts';
+import * as Eval from '@comunica/expression-evaluator';
 import { bool, int, numeric } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
 import type { ITestTableConfigBase } from '@comunica/expression-evaluator/test/util/utils';
@@ -33,7 +33,7 @@ describe('string functions', () => {
           if (unknownType.includes('specialString')) {
             return 'https://example.org/string';
           }
-          return TypeURL.XSD_STRING;
+          return Eval.TypeURL.XSD_STRING;
         },
       }),
       testTable: `
@@ -174,7 +174,7 @@ describe('string functions', () => {
       notation: Notation.Function,
       config: new ActionContext().set(KeysExpressionEvaluator.superTypeProvider, {
         cache: new LRUCache<string, any>({ max: 1_000 }),
-        discoverer: () => TypeURL.XSD_STRING,
+        discoverer: () => Eval.TypeURL.XSD_STRING,
       }),
       testTable: `
       "bar" 1 1 = "b"

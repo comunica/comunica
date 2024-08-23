@@ -141,9 +141,10 @@ export class TermTransformer implements ITermTransformer {
         }
         return new E.DoubleLiteral(doubleVal, dataType, lit.value);
       }
+
       return new E.Literal<string>(lit.value, dataType, lit.value);
     } catch (error: unknown) {
-      if (error instanceof Error && isExpressionError(error)) {
+      if (isExpressionError(<Error> error)) {
         return new E.NonLexicalLiteral(undefined, dataType, this.superTypeProvider, lit.value);
       }
       throw error;

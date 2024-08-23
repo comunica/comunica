@@ -60,6 +60,28 @@ describe('CountAggregator', () => {
     it('with respect to empty input', async() => {
       await expect(runAggregator(aggregator, [])).resolves.toEqual(DF.literal(''));
     });
+
+    it('with a list of language strings', async() => {
+      const input = [
+        BF.bindings([[ DF.variable('x'), DF.literal('a', 'en') ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('b', 'en') ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('c', 'en') ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('d', 'en') ]]),
+      ];
+
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(DF.literal('a b c d', 'en'));
+    });
+
+    it('with a list of different language strings', async() => {
+      const input = [
+        BF.bindings([[ DF.variable('x'), DF.literal('a', 'en') ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('b', 'en') ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('c', 'nl') ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('d', 'en') ]]),
+      ];
+
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(DF.literal('a b c d'));
+    });
   });
 
   describe('with custom separator', () => {

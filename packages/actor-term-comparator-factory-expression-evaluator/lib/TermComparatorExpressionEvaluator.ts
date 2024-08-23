@@ -1,7 +1,7 @@
 import type { InternalEvaluator } from '@comunica/actor-expression-evaluator-factory-default/lib/InternalEvaluator';
 import type { ITermFunction } from '@comunica/bus-function-factory';
 import type { ITermComparator } from '@comunica/bus-term-comparator-factory';
-import type * as E from '@comunica/expression-evaluator/lib/expressions';
+import type * as Eval from '@comunica/expression-evaluator';
 import type * as RDF from '@rdfjs/types';
 
 export class TermComparatorExpressionEvaluator implements ITermComparator {
@@ -75,15 +75,15 @@ export class TermComparatorExpressionEvaluator implements ITermComparator {
   }
 
   private orderLiteralTypes(litA: RDF.Literal, litB: RDF.Literal): -1 | 0 | 1 {
-    const myLitA: E.Literal<any> = this.internalEvaluator.transformer.transformLiteral(litA);
-    const myLitB: E.Literal<any> = this.internalEvaluator.transformer.transformLiteral(litB);
+    const myLitA: Eval.Literal<any> = this.internalEvaluator.transformer.transformLiteral(litA);
+    const myLitB: Eval.Literal<any> = this.internalEvaluator.transformer.transformLiteral(litB);
 
     try {
-      if ((<E.BooleanLiteral> this.equalityFunction.applyOnTerms([ myLitA, myLitB ], this.internalEvaluator))
+      if ((<Eval.BooleanLiteral> this.equalityFunction.applyOnTerms([ myLitA, myLitB ], this.internalEvaluator))
         .typedValue) {
         return 0;
       }
-      if ((<E.BooleanLiteral> this.lessThanFunction.applyOnTerms([ myLitA, myLitB ], this.internalEvaluator))
+      if ((<Eval.BooleanLiteral> this.lessThanFunction.applyOnTerms([ myLitA, myLitB ], this.internalEvaluator))
         .typedValue) {
         return -1;
       }

@@ -1,9 +1,5 @@
 import { DataFactory } from 'rdf-data-factory';
-import { ExpressionError, isExpressionError } from '../../../lib';
-import {
-  ExtensionFunctionError,
-  InvalidLexicalForm,
-} from '../../../lib/util/Errors';
+import { ExpressionError, isExpressionError, ExtensionFunctionError, InvalidLexicalForm } from '../../../lib';
 
 const DF = new DataFactory();
 

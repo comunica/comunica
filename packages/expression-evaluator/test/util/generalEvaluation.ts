@@ -1,6 +1,7 @@
-import type { InternalEvaluator } from '@comunica/actor-expression-evaluator-factory-default/lib/InternalEvaluator';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
+import { KeysInitQuery } from '@comunica/context-entries';
+import { ActionContext } from '@comunica/core';
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -15,17 +16,9 @@ export interface IGeneralEvaluationArg {
   expression: string;
   generalEvaluationConfig?: IActionContext;
   /**
-   * Boolean pointing out if the result of async and sync evaluation should be the same.
-   * Default: Check / true
-   */
-  expectEquality?: boolean;
-  /**
    * The factory that will create the evaluator used for this evaluation.
    */
   exprEvalFactory?: ActorExpressionEvaluatorFactory;
-
-  // TODO: remove legacyContext in *final* update (probably when preparing the EE for function bussification)
-  legacyContext?: Partial<InternalEvaluator>;
 }
 
 export async function generalEvaluate(arg: IGeneralEvaluationArg):
@@ -34,14 +27,18 @@ Promise<{ asyncResult: RDF.Term; syncResult?: RDF.Term }> {
   const asyncResult = await evaluateAsync(
     arg.expression,
     bindings,
-    getMockEEActionContext(arg.generalEvaluationConfig),
+    new ActionContext({
+      [KeysInitQuery.queryTimestamp.name]: new Date(Date.now()),
+      [KeysInitQuery.functionArgumentsCache.name]: {},
+      [KeysInitQuery.dataFactory.name]: DF,
+    }).merge(arg.generalEvaluationConfig ?? new ActionContext()),
     arg.exprEvalFactory,
   );
   return { asyncResult };
 }
 
 export async function generalErrorEvaluation(arg: IGeneralEvaluationArg):
-Promise<{ asyncError: unknown; syncError?: unknown } | undefined > {
+Promise<{ asyncError: unknown; syncError?: unknown } | undefined> {
   const bindings: RDF.Bindings = arg.bindings ? arg.bindings : BF.bindings();
   try {
     await evaluateAsync(

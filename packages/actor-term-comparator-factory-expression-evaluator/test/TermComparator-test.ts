@@ -2,7 +2,7 @@ import { sparqlFunctions } from '@comunica/actor-function-factory-wrapper-all/li
 import type { TermSparqlFunction } from '@comunica/bus-function-factory';
 import type { ITermComparator } from '@comunica/bus-term-comparator-factory';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
-import { TypeURL, TypeURL as DT } from '@comunica/expression-evaluator/lib/util/Consts';
+import * as Eval from '@comunica/expression-evaluator';
 import { getMockEEActionContext, getMockInternalEvaluator } from '@comunica/jest';
 import type { SuperTypeCallback } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -13,27 +13,27 @@ import { TermComparatorExpressionEvaluator } from '../lib/TermComparatorExpressi
 const DF = new DataFactory();
 
 function int(value: string): RDF.Literal {
-  return DF.literal(value, DF.namedNode(DT.XSD_INTEGER));
+  return DF.literal(value, DF.namedNode(Eval.TypeURL.XSD_INTEGER));
 }
 
 function float(value: string): RDF.Literal {
-  return DF.literal(value, DF.namedNode(DT.XSD_FLOAT));
+  return DF.literal(value, DF.namedNode(Eval.TypeURL.XSD_FLOAT));
 }
 
 function decimal(value: string): RDF.Literal {
-  return DF.literal(value, DF.namedNode(DT.XSD_DECIMAL));
+  return DF.literal(value, DF.namedNode(Eval.TypeURL.XSD_DECIMAL));
 }
 
 function double(value: string): RDF.Literal {
-  return DF.literal(value, DF.namedNode(DT.XSD_DOUBLE));
+  return DF.literal(value, DF.namedNode(Eval.TypeURL.XSD_DOUBLE));
 }
 
 function string(value: string): RDF.Literal {
-  return DF.literal(value, DF.namedNode(DT.XSD_STRING));
+  return DF.literal(value, DF.namedNode(Eval.TypeURL.XSD_STRING));
 }
 
 function dateTime(value: string): RDF.Literal {
-  return DF.literal(value, DF.namedNode(DT.XSD_DATE_TIME));
+  return DF.literal(value, DF.namedNode(Eval.TypeURL.XSD_DATE_TIME));
 }
 
 function orderByFactory(typeDiscoveryCallback?: SuperTypeCallback): ITermComparator {
@@ -131,7 +131,7 @@ describe('terms order', () => {
     await orderTestIsLower(DF.literal('a', 'en'), DF.literal('b', 'en'));
   });
   it('boolean type comparison', async() => {
-    const bool = DF.namedNode(DT.XSD_BOOLEAN);
+    const bool = DF.namedNode(Eval.TypeURL.XSD_BOOLEAN);
     await orderTestIsLower(DF.literal('false', bool), DF.literal('true', bool));
   });
 
@@ -147,8 +147,8 @@ describe('terms order', () => {
 
   it('mixed unknown integer comparison', async() => {
     // OrderTestIsLower(int('1'), decimal('011'));
-    await orderTestIsLower(DF.literal('011', DF.namedNode(DT.XSD_ENTITY)), int('1'));
-    await orderTestIsLower(DF.literal('011', DF.namedNode(DT.XSD_ENTITY)), decimal('011'));
+    await orderTestIsLower(DF.literal('011', DF.namedNode(Eval.TypeURL.XSD_ENTITY)), int('1'));
+    await orderTestIsLower(DF.literal('011', DF.namedNode(Eval.TypeURL.XSD_ENTITY)), decimal('011'));
   });
 
   it('handles unknown extended types as basic literals', async() => {
@@ -157,10 +157,10 @@ describe('terms order', () => {
   });
 
   it('handles extended types', async() => {
-    const discover: SuperTypeCallback = _ => TypeURL.XSD_DECIMAL;
+    const discover: SuperTypeCallback = _ => Eval.TypeURL.XSD_DECIMAL;
     const someType = DF.namedNode('https://example.org/some-decimal');
     await orderTestIsEqual(
-      DF.literal('2', DF.namedNode(TypeURL.XSD_DECIMAL)),
+      DF.literal('2', DF.namedNode(Eval.TypeURL.XSD_DECIMAL)),
       DF.literal('2', someType),
       discover,
     );

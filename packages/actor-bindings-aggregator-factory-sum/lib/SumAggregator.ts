@@ -1,12 +1,11 @@
 import { AggregateEvaluator } from '@comunica/bus-bindings-aggeregator-factory';
 import type { ITermFunction } from '@comunica/bus-function-factory';
-import type { IExpressionEvaluator } from '@comunica/expression-evaluator';
+import type { IExpressionEvaluator, NumericLiteral } from '@comunica/expression-evaluator';
 import { typedLiteral, TypeURL } from '@comunica/expression-evaluator';
-import type * as E from '@comunica/expression-evaluator/lib/expressions';
 import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 
-type SumState = E.NumericLiteral;
+type SumState = NumericLiteral;
 
 export class SumAggregator extends AggregateEvaluator {
   private state: SumState | undefined = undefined;
@@ -30,7 +29,7 @@ export class SumAggregator extends AggregateEvaluator {
       this.state = this.termToNumericOrError(term);
     } else {
       const internalTerm = this.termToNumericOrError(term);
-      this.state = <E.NumericLiteral> this.additionFunction.applyOnTerms([ this.state, internalTerm ], this.evaluator);
+      this.state = <NumericLiteral> this.additionFunction.applyOnTerms([ this.state, internalTerm ], this.evaluator);
     }
   }
 
