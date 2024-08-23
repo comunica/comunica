@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-inner-multi-bind",
-  "version": "3.2.1",
+  "version": "3.2.2",
   "description": "A multi-bind rdf-join actor",
   "lsd:module": true,
   "license": "MIT",
@@ -39,7 +39,7 @@
   "dependencies": {
     "@comunica/bindings-factory": "^3.2.1",
     "@comunica/bus-merge-bindings-context": "^3.2.1",
-    "@comunica/bus-query-operation": "^3.2.1",
+    "@comunica/bus-query-operation": "^3.2.2",
     "@comunica/bus-rdf-join": "^3.2.1",
     "@comunica/bus-rdf-join-entries-sort": "^3.2.1",
     "@comunica/context-entries": "^3.2.1",
