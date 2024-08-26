@@ -5,6 +5,7 @@ import { filterMatchingQuotedQuads, quadsToBindings } from '@comunica/bus-query-
 import type { MediatorRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import { KeysQueryOperation } from '@comunica/context-entries';
+import { MetadataValidationState } from '@comunica/metadata';
 import type {
   IQuerySource,
   BindingsStream,
@@ -114,7 +115,7 @@ export class QuerySourceQpf implements IQuerySource {
       if (this.defaultGraph) {
         wrappedQuads = this.reverseMapQuadsToDefaultGraph(wrappedQuads);
       }
-      wrappedQuads.setProperty('metadata', metadata);
+      wrappedQuads.setProperty('metadata', { ...metadata, state: new MetadataValidationState() });
       this.cacheQuads(wrappedQuads, DF.variable(''), DF.variable(''), DF.variable(''), DF.variable(''));
     }
   }
@@ -238,6 +239,7 @@ export class QuerySourceQpf implements IQuerySource {
           // Without union-default-graph, the default graph must be empty.
           const quads = new ArrayIterator<RDF.Quad>([], { autoStart: false });
           quads.setProperty('metadata', {
+            state: new MetadataValidationState(),
             requestTime: 0,
             cardinality: { type: 'exact', value: 0 },
             first: null,
@@ -296,7 +298,10 @@ export class QuerySourceQpf implements IQuerySource {
           metadata: rdfMetadataOuput.metadata,
           requestTime: dereferenceRdfOutput.requestTime,
         });
-      quads!.setProperty('metadata', { ...metadata, canContainUndefs: false, subsetOf: self.url });
+      quads!.setProperty(
+        'metadata',
+        { ...metadata, state: new MetadataValidationState(), canContainUndefs: false, subsetOf: self.url },
+      );
 
       // While we could resolve this before metadata extraction, we do it afterwards to ensure metadata emission
       // before the end event is emitted.
