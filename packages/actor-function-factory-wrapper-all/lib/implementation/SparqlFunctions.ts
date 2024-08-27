@@ -1839,7 +1839,7 @@ class ExpressionFunctionConcat extends ExpressionFunctionBase {
  * https://www.w3.org/TR/sparql11-query/#func-bnode
  * id has to be distinct over all id's in dataset
  */
-class ExpressionFunctionBNode extends ExpressionFunctionBase {
+class ExpressionFunctionBnode extends ExpressionFunctionBase {
   /**
    * This OverloadTree with the constant function will handle both type promotion and subtype-substitution
    */
@@ -1863,7 +1863,7 @@ class ExpressionFunctionBNode extends ExpressionFunctionBase {
 
         let strInput: string | undefined;
         if (input) {
-          const operation = ExpressionFunctionBNode.bnodeTree.search(
+          const operation = ExpressionFunctionBnode.bnodeTree.search(
             [ input ],
             exprEval.context.getSafe(KeysExpressionEvaluator.superTypeProvider),
             exprEval.context.getSafe(KeysInitQuery.functionArgumentsCache),
@@ -1874,7 +1874,7 @@ class ExpressionFunctionBNode extends ExpressionFunctionBase {
           strInput = operation(exprEval)([ input ]).str();
         }
 
-        const bnode = new BlankNodeBindingsScoped(strInput ?? `BNODE_${ExpressionFunctionBNode.bnodeCounter++}`);
+        const bnode = new BlankNodeBindingsScoped(strInput ?? `BNODE_${ExpressionFunctionBnode.bnodeCounter++}`);
         return new BlankNode(bnode);
       },
     });
@@ -2009,7 +2009,7 @@ export const sparqlFunctions: Record<SparqlOperator, ExpressionFunctionBase> = {
   // Annoying functions
   concat: new ExpressionFunctionConcat(),
   // Context dependent functions
-  bnode: new ExpressionFunctionBNode(),
+  bnode: new ExpressionFunctionBnode(),
 };
 
 /**
