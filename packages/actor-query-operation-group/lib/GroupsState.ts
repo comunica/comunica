@@ -2,7 +2,7 @@ import type { BindingsFactory } from '@comunica/bindings-factory';
 import type {
   IBindingsAggregator,
   MediatorBindingsAggregatorFactory,
-} from '@comunica/bus-bindings-aggeregator-factory';
+} from '@comunica/bus-bindings-aggregator-factory';
 import type { HashFunction } from '@comunica/bus-hash-bindings';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { Bindings, ComunicaDataFactory, IActionContext } from '@comunica/types';

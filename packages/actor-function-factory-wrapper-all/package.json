@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-function-factory-wrapper-all",
-  "version": "1.0.0",
+  "version": "3.2.1",
   "description": "A wrapper-all functions actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,7 +37,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-function-factory": "^1.0.0",
+    "@comunica/bus-function-factory": "^3.2.1",
     "@comunica/context-entries": "^3.2.1",
     "@comunica/core": "^3.2.1",
     "@comunica/data-factory": "^3.1.0",

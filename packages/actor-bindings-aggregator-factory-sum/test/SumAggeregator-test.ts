@@ -1,5 +1,5 @@
 import { createFuncMediator } from '@comunica/actor-function-factory-wrapper-all/test/util';
-import type { IBindingsAggregator } from '@comunica/bus-bindings-aggeregator-factory';
+import type { IBindingsAggregator } from '@comunica/bus-bindings-aggregator-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import { KeysInitQuery } from '@comunica/context-entries';

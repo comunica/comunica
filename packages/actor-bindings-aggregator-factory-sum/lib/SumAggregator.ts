@@ -1,4 +1,4 @@
-import { AggregateEvaluator } from '@comunica/bus-bindings-aggeregator-factory';
+import { AggregateEvaluator } from '@comunica/bus-bindings-aggregator-factory';
 import type { ITermFunction } from '@comunica/bus-function-factory';
 import type { IExpressionEvaluator, NumericLiteral } from '@comunica/expression-evaluator';
 import { typedLiteral, TypeURL } from '@comunica/expression-evaluator';

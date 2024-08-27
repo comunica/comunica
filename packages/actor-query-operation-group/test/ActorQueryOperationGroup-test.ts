@@ -13,7 +13,7 @@ import type {
   IActionBindingsAggregatorFactory,
   IActorBindingsAggregatorFactoryOutput,
   MediatorBindingsAggregatorFactory,
-} from '@comunica/bus-bindings-aggeregator-factory';
+} from '@comunica/bus-bindings-aggregator-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';

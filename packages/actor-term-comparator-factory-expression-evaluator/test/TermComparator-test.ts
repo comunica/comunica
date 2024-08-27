@@ -1,5 +1,5 @@
 import { sparqlFunctions } from '@comunica/actor-function-factory-wrapper-all/lib/implementation/SparqlFunctions';
-import type { TermSparqlFunction } from '@comunica/bus-function-factory';
+import type { TermFunctionBase } from '@comunica/bus-function-factory';
 import type { ITermComparator } from '@comunica/bus-term-comparator-factory';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import * as Eval from '@comunica/expression-evaluator';
@@ -45,8 +45,8 @@ function orderByFactory(typeDiscoveryCallback?: SuperTypeCallback): ITermCompara
     getMockEEActionContext();
   return new TermComparatorExpressionEvaluator(
     getMockInternalEvaluator(undefined, context),
-    <TermSparqlFunction> sparqlFunctions['='],
-    <TermSparqlFunction> sparqlFunctions['<'],
+    <TermFunctionBase> sparqlFunctions['='],
+    <TermFunctionBase> sparqlFunctions['<'],
   );
 }
 

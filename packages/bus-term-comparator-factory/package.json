@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-term-comparator-factory",
-  "version": "1.0.0",
+  "version": "3.2.1",
   "description": "A comunica bus for term-comparator-factory events.",
   "lsd:module": true,
   "license": "MIT",
@@ -36,7 +36,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-function-factory": "^1.0.0",
+    "@comunica/bus-function-factory": "^3.2.1",
     "@comunica/bus-merge-bindings-context": "^3.2.1",
     "@comunica/bus-query-operation": "^3.2.1",
     "@comunica/core": "^3.2.1",

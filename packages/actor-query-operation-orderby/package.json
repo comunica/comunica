@@ -37,9 +37,9 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-expression-evaluator-factory": "^1.0.0",
+    "@comunica/bus-expression-evaluator-factory": "^3.2.1",
     "@comunica/bus-query-operation": "^3.2.2",
-    "@comunica/bus-term-comparator-factory": "^1.0.0",
+    "@comunica/bus-term-comparator-factory": "^3.2.1",
     "@comunica/core": "^3.2.1",
     "@comunica/expression-evaluator": "^3.2.1",
     "@comunica/types": "^3.2.1",

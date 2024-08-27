@@ -1,6 +1,6 @@
 import type { ExpressionEvaluator } from '@comunica/actor-expression-evaluator-factory-default/lib/ExpressionEvaluator';
 import { sparqlFunctions } from '@comunica/actor-function-factory-wrapper-all/lib/implementation/SparqlFunctions';
-import type { TermSparqlFunction } from '@comunica/bus-function-factory';
+import type { TermFunctionBase } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
 import type { ISuperTypeProvider } from '@comunica/types';
@@ -125,7 +125,7 @@ describe('OverloadTree', () => {
   it('will cache addition function', () => {
     const one = new IntegerLiteral(1);
     const two = new IntegerLiteral(2);
-    const additionFunction = <TermSparqlFunction> sparqlFunctions['+'];
+    const additionFunction = <TermFunctionBase> sparqlFunctions['+'];
     expect(functionArgumentsCache['+']).toBeUndefined();
     const res = additionFunction.applyOnTerms([ one, two ], expressionEvaluator);
     expect(res.str()).toBe('3');
@@ -145,7 +145,7 @@ describe('OverloadTree', () => {
     const apple = new StringLiteral('apple');
     const one = new IntegerLiteral(1);
     const two = new IntegerLiteral(2);
-    const subtractFunction = <TermSparqlFunction> sparqlFunctions.substr;
+    const subtractFunction = <TermFunctionBase> sparqlFunctions.substr;
     expect(functionArgumentsCache.substr).toBeUndefined();
     expect(subtractFunction.applyOnTerms([ apple, one, two ], expressionEvaluator).str()).toBe('ap');
 

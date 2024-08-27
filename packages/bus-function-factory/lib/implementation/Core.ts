@@ -11,10 +11,22 @@ import type { IExpressionFunction, ITermFunction } from '../ActorFunctionFactory
 // Overloaded Functions
 // ----------------------------------------------------------------------------
 
-export abstract class BaseFunctionDefinition implements IExpressionFunction {
-  protected abstract readonly arity: number | number[];
-  public abstract apply: (evalContext: IEvalContext) => Promise<Eval.TermExpression>;
-  public abstract operator: Eval.GeneralOperator;
+interface BaseFunctionDefinitionArgs {
+  arity: number | number[];
+  operator: Eval.GeneralOperator;
+  apply: (evalContext: IEvalContext) => Promise<Eval.TermExpression>;
+}
+
+export class ExpressionFunctionBase implements IExpressionFunction {
+  protected readonly arity: number | number[];
+  public readonly operator: Eval.GeneralOperator;
+  public readonly apply: (evalContext: IEvalContext) => Promise<Eval.TermExpression>;
+
+  public constructor({ arity, operator, apply }: BaseFunctionDefinitionArgs) {
+    this.arity = arity;
+    this.operator = operator;
+    this.apply = apply;
+  }
 
   public checkArity(args: Eval.Expression[]): boolean {
     if (Array.isArray(this.arity)) {
@@ -27,6 +39,12 @@ export abstract class BaseFunctionDefinition implements IExpressionFunction {
 
     return args.length === this.arity;
   }
+}
+
+interface TermSparqlFunctionArgs {
+  arity: number | number[];
+  operator: Eval.GeneralOperator;
+  overloads: OverloadTree;
 }
 
 /**
@@ -47,10 +65,22 @@ export abstract class BaseFunctionDefinition implements IExpressionFunction {
  * See also: https://www.w3.org/TR/definitionTypesparql11-query/#func-rdfTerms
  * and https://www.w3.org/TR/sparql11-query/#OperatorMapping
  */
-export abstract class TermSparqlFunction
-  extends BaseFunctionDefinition implements ITermFunction {
+export class TermFunctionBase extends ExpressionFunctionBase implements ITermFunction {
   public readonly supportsTermExpressions = true;
-  protected abstract readonly overloads: OverloadTree;
+  protected readonly overloads: OverloadTree;
+
+  public constructor({ arity, operator, overloads }: TermSparqlFunctionArgs) {
+    super({
+      arity,
+      operator,
+      apply: async({ args, exprEval, mapping }: IEvalContext): Promise<Eval.TermExpression> => this.applyOnTerms(
+        await Promise.all(args.map(arg => exprEval.evaluatorExpressionEvaluation(arg, mapping))),
+        exprEval,
+      ),
+    });
+
+    this.overloads = overloads;
+  }
 
   public applyOnTerms(args: Eval.TermExpression[], exprEval: IInternalEvaluator): Eval.TermExpression {
     const concreteFunction =
@@ -61,11 +91,6 @@ export abstract class TermSparqlFunction
       ) ?? this.handleInvalidTypes(args);
     return concreteFunction(exprEval)(args);
   }
-
-  public apply = async({ args, exprEval, mapping }: IEvalContext): Promise<Eval.TermExpression> => this.applyOnTerms(
-    await Promise.all(args.map(arg => exprEval.evaluatorExpressionEvaluation(arg, mapping))),
-    exprEval,
-  );
 
   protected handleInvalidTypes(args: Eval.TermExpression[]): never {
     throw new Eval.InvalidArgumentTypes(args, this.operator);

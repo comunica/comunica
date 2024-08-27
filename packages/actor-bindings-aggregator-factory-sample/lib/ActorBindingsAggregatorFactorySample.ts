@@ -2,10 +2,10 @@ import type {
   IActionBindingsAggregatorFactory,
   IActorBindingsAggregatorFactoryArgs,
   IActorBindingsAggregatorFactoryOutput,
-} from '@comunica/bus-bindings-aggeregator-factory';
+} from '@comunica/bus-bindings-aggregator-factory';
 import {
   ActorBindingsAggregatorFactory,
-} from '@comunica/bus-bindings-aggeregator-factory';
+} from '@comunica/bus-bindings-aggregator-factory';
 import type { IActorTest } from '@comunica/core';
 import { SampleAggregator } from './SampleAggregator';
 
