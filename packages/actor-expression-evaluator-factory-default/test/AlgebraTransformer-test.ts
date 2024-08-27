@@ -26,7 +26,10 @@ describe('AlgebraTransformer', () => {
         if (res) {
           return res;
         }
-        return new NamedExtension(functionName, async() => DF.namedNode('http://example.com'));
+        return new NamedExtension({
+          operator: functionName,
+          functionDefinition: async() => DF.namedNode('http://example.com'),
+        });
       },
     }});
     algebraTransformer = new AlgebraTransformer(
