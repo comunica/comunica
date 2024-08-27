@@ -26,6 +26,7 @@
     "access": "public"
   },
   "files": [
+    "components",
     "lib/**/*.d.ts",
     "lib/**/*.js",
     "lib/**/*.js.map"
@@ -33,8 +34,7 @@
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
-    "build:components": "componentsjs-generator",
-    "bench": "node \"../../node_modules/typescript/bin/tsc\" && node benchmarks/*.js"
+    "build:components": "componentsjs-generator"
   },
   "dependencies": {
     "@comunica/context-entries": "^3.2.1",

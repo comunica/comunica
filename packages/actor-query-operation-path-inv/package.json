@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-path-inv",
-  "version": "3.2.1",
+  "version": "3.2.2",
   "description": "A path-inv query-operation actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,8 +37,8 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/actor-abstract-path": "^3.2.1",
-    "@comunica/bus-query-operation": "^3.2.1",
+    "@comunica/actor-abstract-path": "^3.2.2",
+    "@comunica/bus-query-operation": "^3.2.2",
     "@comunica/context-entries": "^3.1.0",
     "@comunica/types": "^3.2.1",
     "sparqlalgebrajs": "^4.3.7"

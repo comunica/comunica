@@ -38,7 +38,7 @@
   "dependencies": {
     "@comunica/context-entries": "^3.2.1",
     "@comunica/core": "^3.2.1",
-    "@comunica/expression-evaluator": "3.2.1",
+    "@comunica/expression-evaluator": "^3.2.1",
     "sparqlalgebrajs": "^4.2.0"
   }
 }
