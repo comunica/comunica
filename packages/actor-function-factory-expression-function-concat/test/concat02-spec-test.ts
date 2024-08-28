@@ -1,6 +1,7 @@
+import * as Data from '@comunica/actor-function-factory-wrapper-all/test/spec/_data';
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../../bus-function-factory/test/util';
-import * as Data from './_data';
+import { ActorFunctionFactoryExpressionFunctionConcat } from '../lib';
 
 /**
  * REQUEST: concat02.rq
@@ -29,6 +30,9 @@ import * as Data from './_data';
 describe('We should respect the concat02 spec', () => {
   const { s1, s2, s3, s4, s5, s6, s7 } = Data.data2();
   runFuncTestTable({
+    registeredActors: [
+      args => new ActorFunctionFactoryExpressionFunctionConcat(args),
+    ],
     arity: 2,
     notation: Notation.Function,
     operation: 'CONCAT',

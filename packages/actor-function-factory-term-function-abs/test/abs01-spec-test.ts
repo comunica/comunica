@@ -1,7 +1,16 @@
+import { ActorFunctionFactoryTermFunctionEquality } from '@comunica/actor-function-factory-term-function-equality';
+import {
+  ActorFunctionFactoryTermFunctionGreaterThanEqual,
+} from '@comunica/actor-function-factory-term-function-greater-than-equal';
+import { ActorFunctionFactoryTermFunctionLesserThan } from '@comunica/actor-function-factory-term-function-lesser-than';
+import {
+  ActorFunctionFactoryTermFunctionLesserThanEqual,
+} from '@comunica/actor-function-factory-term-function-lesser-than-equal';
+import * as Data from '@comunica/actor-function-factory-wrapper-all/test/spec/_data';
 import { bool } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../../bus-function-factory/test/util';
-import * as Data from './_data';
+import { runFuncTestTable } from '../../bus-function-factory/test/util';
+import { ActorFunctionFactoryTermFunctionAbs } from '../lib';
 
 /**
  * REQUEST: abs01.rq
@@ -30,6 +39,13 @@ import * as Data from './_data';
 describe('We should respect the abs01 spec', () => {
   const { n1, n2, n3, n4, n5 } = Data.data();
   runFuncTestTable({
+    registeredActors: [
+      args => new ActorFunctionFactoryTermFunctionGreaterThanEqual(args),
+      args => new ActorFunctionFactoryTermFunctionLesserThanEqual(args),
+      args => new ActorFunctionFactoryTermFunctionLesserThan(args),
+      args => new ActorFunctionFactoryTermFunctionEquality(args),
+      args => new ActorFunctionFactoryTermFunctionAbs(args),
+    ],
     arity: 2,
     notation: Notation.Infix,
     operation: '>=',

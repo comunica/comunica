@@ -1,54 +1,58 @@
+import * as Data from '@comunica/actor-function-factory-wrapper-all/test/spec/_data';
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { bool } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../../bus-function-factory/test/util';
-import * as Data from './_data';
+import { ActorFunctionFactoryTermFunctionContains } from '../lib';
 
 /**
- * REQUEST: ends01.rq
+ * REQUEST: contains01.rq
  *
  * PREFIX : <http://example.org/>
  * PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
  * SELECT ?s ?str WHERE {
- *   ?s ?p ?str
- *   FILTER STRENDS(?str, "bc")
+ *   ?s :str ?str
+ *   FILTER CONTAINS(?str, "a")
  * }
  */
 
 /**
  * Manifest Entry
- * :ends01 rdf:type mf:QueryEvaluationTest ;
- *   mf:name    "STRENDS()" ;
- *   mf:feature sparql:strends ;
+ * :contains01 rdf:type mf:QueryEvaluationTest ;
+ *   mf:name    "CONTAINS()" ;
+ *   mf:feature sparql:contains ;
  *     dawgt:approval dawgt:Approved ;
  *     dawgt:approvedBy <http://www.w3.org/2009/sparql/meeting/2012-01-31#resolution_3> ;
  *     mf:action
- *          [ qt:query  <ends01.rq> ;
+ *          [ qt:query  <contains01.rq> ;
  *            qt:data   <data.ttl> ] ;
- *     mf:result  <ends01.srx> ;
+ *     mf:result  <contains01.srx> ;
  *   .
  */
 
-describe('We should respect the ends01 spec', () => {
+describe('We should respect the contains01 spec', () => {
   const { s1, s2, s3, s4, s5, s6, s7 } = Data.data();
   runFuncTestTable({
-    notation: Notation.Function,
+    registeredActors: [
+      args => new ActorFunctionFactoryTermFunctionContains(args),
+    ],
     arity: 2,
+    notation: Notation.Function,
+    operation: 'CONTAINS',
     aliases: bool,
-    operation: 'STRENDS',
     testTable: `
-      '${s1}' "bc" = false
-      '${s2}' "bc" = false
-      '${s3}' "bc" = false
-      '${s4}' "bc" = false
-      '${s5}' "bc" = false
-      '${s6}' "bc" = true
-      '${s7}' "bc" = false
+    '${s1}' "a" = false
+    '${s2}' "a" = true
+    '${s3}' "a" = false
+    '${s4}' "a" = false
+    '${s5}' "a" = false
+    '${s6}' "a" = true
+    '${s7}' "a" = false
     `,
   });
 });
 
 /**
- * RESULTS: ends01.srx
+ * RESULTS: contains01.srx
  *
  * <?xml version="1.0" encoding="utf-8"?>
  * <sparql xmlns="http://www.w3.org/2005/sparql-results#">
@@ -57,6 +61,10 @@ describe('We should respect the ends01 spec', () => {
  *   <variable name="str"/>
  * </head>
  * <results>
+ *     <result>
+ *       <binding name="s"><uri>http://example.org/s2</uri></binding>
+ *       <binding name="str"><literal xml:lang="en">bar</literal></binding>
+ *     </result>
  *     <result>
  *       <binding name="s"><uri>http://example.org/s6</uri></binding>
  *       <binding name="str"><literal datatype="http://www.w3.org/2001/XMLSchema#string">abc</literal></binding>

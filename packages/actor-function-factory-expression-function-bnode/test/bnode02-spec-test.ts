@@ -1,6 +1,9 @@
+import { ActorFunctionFactoryTermFunctionEquality } from '@comunica/actor-function-factory-term-function-equality';
+import { ActorFunctionFactoryTermFunctionInequality } from '@comunica/actor-function-factory-term-function-inequality';
 import { bool } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../../bus-function-factory/test/util';
+import { runFuncTestTable } from '../../bus-function-factory/test/util';
+import { ActorFunctionFactoryExpressionFunctionBnode } from '../lib';
 
 /**
  * REQUEST: bnode02.rq
@@ -28,6 +31,11 @@ import { runFuncTestTable } from '../../../bus-function-factory/test/util';
 // This does of course not correspond to the actual spec test.
 describe('We should respect the bnode02 spec', () => {
   runFuncTestTable({
+    registeredActors: [
+      args => new ActorFunctionFactoryExpressionFunctionBnode(args),
+      args => new ActorFunctionFactoryTermFunctionInequality(args),
+      args => new ActorFunctionFactoryTermFunctionEquality(args),
+    ],
     arity: 2,
     operation: '!=',
     aliases: bool,

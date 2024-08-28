@@ -35,7 +35,8 @@ export function createFuncMediator<E extends object>(
       if (availableActor) {
         return availableActor.run(action);
       }
-      throw new Error('No registered actors on the function bus answered the mediator');
+      throw new Error(`No registered actors on the function bus answered the mediator for:
+${action.functionName}`);
     },
   };
   return mediatorFunctionFactory;

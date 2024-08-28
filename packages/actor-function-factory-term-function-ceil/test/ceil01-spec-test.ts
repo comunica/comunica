@@ -1,7 +1,8 @@
 import { int, decimal } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../../bus-function-factory/test/util';
-import * as Data from './_data';
+import * as Data from '../../actor-function-factory-wrapper-all/test/spec/_data';
+import { runFuncTestTable } from '../../bus-function-factory/test/util';
+import { ActorFunctionFactoryTermFunctionCeil } from '../lib';
 
 /**
  * REQUEST: ceil01.rq
@@ -30,6 +31,9 @@ import * as Data from './_data';
 describe('We should respect the ceil01 spec', () => {
   const { n1, n2, n3, n4, n5 } = Data.data();
   runFuncTestTable({
+    registeredActors: [
+      args => new ActorFunctionFactoryTermFunctionCeil(args),
+    ],
     arity: 1,
     operation: 'ceil',
     notation: Notation.Function,

@@ -1,7 +1,8 @@
+import * as Data from '@comunica/actor-function-factory-wrapper-all/test/spec/_data';
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { int, decimal } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../../bus-function-factory/test/util';
-import * as Data from './_data';
+import { ActorFunctionFactoryTermFunctionFloor } from '../lib';
 
 /**
  * REQUEST: floor01.rq
@@ -30,6 +31,9 @@ import * as Data from './_data';
 describe('We should respect the floor01 spec', () => {
   const { n1, n2, n3, n4, n5 } = Data.data();
   runFuncTestTable({
+    registeredActors: [
+      args => new ActorFunctionFactoryTermFunctionFloor(args),
+    ],
     notation: Notation.Function,
     operation: 'FLOOR',
     arity: 1,

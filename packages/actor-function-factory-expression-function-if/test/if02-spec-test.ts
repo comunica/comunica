@@ -1,5 +1,7 @@
+import { ActorFunctionFactoryTermFunctionDivision } from '@comunica/actor-function-factory-term-function-division';
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../../bus-function-factory/test/util';
+import { ActorFunctionFactoryExpressionFunctionIf } from '../lib';
 
 /**
  * REQUEST: if02.rq
@@ -23,11 +25,15 @@ import { runFuncTestTable } from '../../../bus-function-factory/test/util';
 
 describe('We should respect the if02 spec', () => {
   runFuncTestTable({
+    registeredActors: [
+      args => new ActorFunctionFactoryExpressionFunctionIf(args),
+      args => new ActorFunctionFactoryTermFunctionDivision(args),
+    ],
     notation: Notation.Function,
     arity: 'vary',
     operation: 'IF',
     errorTable: `
-    '1/0' false true = ''
+    '1/0' false true = 'Integer division by 0'
     `,
   });
 });
