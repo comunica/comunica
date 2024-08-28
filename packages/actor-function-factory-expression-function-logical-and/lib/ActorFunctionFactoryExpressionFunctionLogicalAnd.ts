@@ -3,6 +3,7 @@ import type {
   IActorFunctionFactoryArgs,
   IActorFunctionFactoryOutput,
   IActorFunctionFactoryOutputTerm,
+  IExpressionFunction,
 } from '@comunica/bus-function-factory';
 import {
   ActorFunctionFactory,
@@ -28,6 +29,9 @@ export class ActorFunctionFactoryExpressionFunctionLogicalAnd extends ActorFunct
 
   public async run<T extends IActionFunctionFactory>(_: T):
   Promise<T extends { requireTermExpression: true } ? IActorFunctionFactoryOutputTerm : IActorFunctionFactoryOutput> {
-    return <any> new ExpressionFunctionLogicalAnd();
+    return <T extends { requireTermExpression: true } ?
+      IActorFunctionFactoryOutputTerm :
+      IActorFunctionFactoryOutput>
+      <IExpressionFunction> new ExpressionFunctionLogicalAnd();
   }
 }

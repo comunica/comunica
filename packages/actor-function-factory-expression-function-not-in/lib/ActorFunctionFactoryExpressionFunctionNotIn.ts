@@ -3,6 +3,7 @@ import type {
   IActorFunctionFactoryArgs,
   IActorFunctionFactoryOutput,
   IActorFunctionFactoryOutputTerm,
+  IExpressionFunction,
   MediatorFunctionFactory,
   MediatorFunctionFactoryUnsafe,
 } from '@comunica/bus-function-factory';
@@ -44,6 +45,9 @@ export class ActorFunctionFactoryExpressionFunctionNotIn extends ActorFunctionFa
       arguments: args.arguments,
     });
 
-    return <any> new ExpressionFunctionNotIn(inFunction);
+    return <T extends { requireTermExpression: true } ?
+      IActorFunctionFactoryOutputTerm :
+      IActorFunctionFactoryOutput>
+      <IExpressionFunction> new ExpressionFunctionNotIn(inFunction);
   }
 }

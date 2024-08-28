@@ -46,7 +46,7 @@ export class ActorFunctionFactoryWrapperAll extends ActorFunctionFactory {
     if (res) {
       return <T extends { requireTermExpression: true } ?
         IActorFunctionFactoryOutputTerm :
-        IActorFunctionFactoryOutput>res;
+        IActorFunctionFactoryOutput> res;
     }
 
     const extensionFinder: AsyncExtensionFunctionCreator =

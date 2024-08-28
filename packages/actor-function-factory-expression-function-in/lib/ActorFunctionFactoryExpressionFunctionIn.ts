@@ -3,6 +3,7 @@ import type {
   IActorFunctionFactoryArgs,
   IActorFunctionFactoryOutput,
   IActorFunctionFactoryOutputTerm,
+  IExpressionFunction,
   MediatorFunctionFactory,
   MediatorFunctionFactoryUnsafe,
 } from '@comunica/bus-function-factory';
@@ -44,6 +45,9 @@ export class ActorFunctionFactoryExpressionFunctionIn extends ActorFunctionFacto
       arguments: args.arguments,
     });
 
-    return <any> new ExpressionFunctionIn(equalityFunction);
+    return <T extends { requireTermExpression: true } ?
+      IActorFunctionFactoryOutputTerm :
+      IActorFunctionFactoryOutput>
+      <IExpressionFunction> new ExpressionFunctionIn(equalityFunction);
   }
 }
