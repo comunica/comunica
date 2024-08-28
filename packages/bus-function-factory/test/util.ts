@@ -1,11 +1,17 @@
-import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
+import type { IActorFunctionFactoryArgs, MediatorFunctionFactory } from '@comunica/bus-function-factory';
+import { Bus } from '@comunica/core';
 import type { TestTableConfig } from '@comunica/expression-evaluator/test/util/utils';
 import { runTestTable } from '@comunica/expression-evaluator/test/util/utils';
 import { getMockEEFactory } from '@comunica/jest';
 import type { ActorFunctionFactory, IActionFunctionFactory } from '../lib';
 
-export function createFuncMediator(
-  registeredActors: ((mediator: MediatorFunctionFactory) => ActorFunctionFactory)[],
+interface RunFuncTestTableArgs extends IActorFunctionFactoryArgs {
+  mediatorFunctionFactory: MediatorFunctionFactory;
+}
+
+export function createFuncMediator<E extends object>(
+  registeredActors: ((arg: RunFuncTestTableArgs & E) => ActorFunctionFactory)[],
+  additionalArgs: E,
 ): MediatorFunctionFactory {
   const mediatorFunctionFactory = <MediatorFunctionFactory> {
     async mediate(action: IActionFunctionFactory) {
@@ -13,7 +19,12 @@ export function createFuncMediator(
       let index = 0;
       while (!availableActor && index < registeredActors.length) {
         try {
-          const actor = registeredActors[index](mediatorFunctionFactory);
+          const actor = registeredActors[index]({
+            mediatorFunctionFactory,
+            bus: new Bus({ name: 'test' }),
+            name: 'test',
+            ...additionalArgs,
+          });
           await actor.test(action);
           availableActor = actor;
         } catch {
@@ -30,13 +41,16 @@ export function createFuncMediator(
   return mediatorFunctionFactory;
 }
 
-export function runFuncTestTable(
-  arg: TestTableConfig & { registeredActors?: ((mediator: MediatorFunctionFactory) => ActorFunctionFactory)[] },
+export function runFuncTestTable<E extends object>(
+  arg: TestTableConfig & {
+    registeredActors?: ((arg: RunFuncTestTableArgs & E) => ActorFunctionFactory)[];
+    additionalArgs?: E;
+  },
 ): void {
   if (arg.registeredActors) {
     return runTestTable({
       exprEvalFactory: getMockEEFactory({
-        mediatorFunctionFactory: createFuncMediator(arg.registeredActors),
+        mediatorFunctionFactory: createFuncMediator(arg.registeredActors, <E> arg.additionalArgs ?? {}),
       }),
       ...arg,
     });
