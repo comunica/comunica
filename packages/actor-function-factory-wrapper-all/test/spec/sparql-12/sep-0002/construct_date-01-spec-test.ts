@@ -3,7 +3,7 @@ import {
   compactTermString,
 } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../../util';
+import { runFuncTestTable } from '../../../../../bus-function-factory/test/util';
 
 describe('Construct date', () => {
   /**

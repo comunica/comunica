@@ -1,6 +1,6 @@
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
 import { DataFactory } from 'rdf-data-factory';
-import { runFuncTestTable } from '../util';
+import { runFuncTestTable } from '../../../bus-function-factory/test/util';
 
 const DF = new DataFactory();
 

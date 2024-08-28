@@ -4,7 +4,7 @@ import { generalEvaluate } from '@comunica/expression-evaluator/test/util/genera
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
 import { DataFactory } from 'rdf-data-factory';
 import { expressionTypes, types } from 'sparqlalgebrajs/lib/algebra';
-import { createFuncMediator } from '../util';
+import { createFuncMediator } from '../../../bus-function-factory/test/util';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);

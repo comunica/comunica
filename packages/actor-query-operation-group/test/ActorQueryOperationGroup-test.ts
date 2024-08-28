@@ -6,7 +6,7 @@ import { MinAggregator } from '@comunica/actor-bindings-aggregator-factory-min';
 import { SampleAggregator } from '@comunica/actor-bindings-aggregator-factory-sample';
 import { SumAggregator } from '@comunica/actor-bindings-aggregator-factory-sum';
 import { WildcardCountAggregator } from '@comunica/actor-bindings-aggregator-factory-wildcard-count';
-import { createFuncMediator } from '@comunica/actor-function-factory-wrapper-all/test/util';
+import { createFuncMediator } from 'packages/bus-function-factory/test/util';
 import { createTermCompMediator } from '@comunica/actor-term-comparator-factory-expression-evaluator/test/util';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type {

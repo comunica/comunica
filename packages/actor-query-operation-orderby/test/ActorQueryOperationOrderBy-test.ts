@@ -1,4 +1,4 @@
-import { createFuncMediator } from '@comunica/actor-function-factory-wrapper-all/test/util';
+import { createFuncMediator } from 'packages/bus-function-factory/test/util';
 import { createTermCompMediator } from '@comunica/actor-term-comparator-factory-expression-evaluator/test/util';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';

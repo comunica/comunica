@@ -1,7 +1,7 @@
 import { bool } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
 import type { ITestTableConfigBase } from '@comunica/expression-evaluator/test/util/utils';
-import { runFuncTestTable } from '../util';
+import { runFuncTestTable } from '../../../bus-function-factory/test/util';
 
 describe('We should respect the rand01 spec', () => {
   const config: ITestTableConfigBase = {

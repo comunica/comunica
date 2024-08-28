@@ -3,7 +3,7 @@ import {
   sparqlFunctions,
   namedFunctions,
 } from '@comunica/actor-function-factory-wrapper-all/lib/implementation/SparqlFunctions';
-import { createFuncMediator } from '@comunica/actor-function-factory-wrapper-all/test/util';
+import { createFuncMediator } from 'packages/bus-function-factory/test/util';
 import type { IExpressionFunction, MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import * as Eval from '@comunica/expression-evaluator';
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';

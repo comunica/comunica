@@ -4,7 +4,7 @@ import * as Eval from '@comunica/expression-evaluator';
 import { getMockExpression } from '@comunica/expression-evaluator/test/util/utils';
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
 import { sparqlFunctions } from '../../lib/implementation/SparqlFunctions';
-import { createFuncMediator } from '../util';
+import { createFuncMediator } from '../../../bus-function-factory/test/util';
 
 describe('lesser than', () => {
   describe('on sparql star tripples', () => {

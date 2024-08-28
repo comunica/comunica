@@ -5,7 +5,7 @@ import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
 import type { AsyncExtensionFunctionCreator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
-import { runFuncTestTable } from '../util';
+import { runFuncTestTable } from '../../../bus-function-factory/test/util';
 
 const DF = new DataFactory();
 

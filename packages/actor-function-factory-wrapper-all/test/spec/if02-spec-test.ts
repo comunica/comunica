@@ -1,5 +1,5 @@
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../util';
+import { runFuncTestTable } from '../../../bus-function-factory/test/util';
 
 /**
  * REQUEST: if02.rq

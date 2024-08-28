@@ -1,4 +1,4 @@
-import { createFuncMediator } from '@comunica/actor-function-factory-wrapper-all/test/util';
+import { createFuncMediator } from 'packages/bus-function-factory/test/util';
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import { Bus } from '@comunica/core';
 import { getMockMediatorMergeBindingsContext, getMockMediatorQueryOperation } from '@comunica/jest';

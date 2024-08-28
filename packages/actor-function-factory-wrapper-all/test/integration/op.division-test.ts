@@ -5,7 +5,7 @@ import { decimal, numeric } from '@comunica/expression-evaluator/test/util/Alias
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
 import type { ITestTableConfigBase } from '@comunica/expression-evaluator/test/util/utils';
 import { LRUCache } from 'lru-cache';
-import { runFuncTestTable } from '../util';
+import { runFuncTestTable } from '../../../bus-function-factory/test/util';
 
 describe('evaluation of \'/\' like', () => {
   const config: ITestTableConfigBase = {

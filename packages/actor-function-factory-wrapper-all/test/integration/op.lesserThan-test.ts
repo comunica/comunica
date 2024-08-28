@@ -11,7 +11,7 @@ import {
 } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
 import type { ITestTableConfigBase } from '@comunica/expression-evaluator/test/util/utils';
-import { runFuncTestTable } from '../util';
+import { runFuncTestTable } from '../../../bus-function-factory/test/util';
 
 const config: ITestTableConfigBase = {
   arity: 2,

@@ -1,5 +1,5 @@
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../util';
+import { runFuncTestTable } from '../../../bus-function-factory/test/util';
 
 describe('evaluation of \'TRIPLE\'', () => {
   // Originates from: https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#triple-function
