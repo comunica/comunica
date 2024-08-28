@@ -1508,7 +1508,7 @@ class TermFunctionPredicate extends TermFunctionBase {
 /**
  * https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#object
  */
-class TermFunctionObjectSparqlFunction extends TermFunctionBase {
+class TermFunctionObject extends TermFunctionBase {
   public constructor() {
     super({
       arity: 1,
@@ -1994,7 +1994,7 @@ export const sparqlFunctions: Record<SparqlOperator, ExpressionFunctionBase> = {
   triple: new TermFunctionTriple(),
   subject: new TermFunctionSubject(),
   predicate: new TermFunctionPredicate(),
-  object: new TermFunctionObjectSparqlFunction(),
+  object: new TermFunctionObject(),
   istriple: new TermFunctionIsTriple(),
 
   // Special
