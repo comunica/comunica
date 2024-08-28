@@ -2203,7 +2203,7 @@ class TermFunctionXsdToDuration extends TermFunctionBase {
   public constructor() {
     super({
       arity: 1,
-      operator: TypeURL.XSD_DAY_TIME_DURATION,
+      operator: TypeURL.XSD_DURATION,
       overloads: declare(TypeURL.XSD_DURATION)
         // https://www.w3.org/TR/xpath-functions/#casting-to-durations
         .onUnary(TypeURL.XSD_DURATION, () => (val: DurationLiteral) =>

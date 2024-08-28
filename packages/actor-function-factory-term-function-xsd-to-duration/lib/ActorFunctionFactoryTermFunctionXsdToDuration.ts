@@ -20,10 +20,10 @@ export class ActorFunctionFactoryTermFunctionXsdToDuration extends ActorFunction
   }
 
   public async test(action: IActionFunctionFactory): Promise<IActorTest> {
-    if (action.functionName === TypeURL.XSD_DAY_TIME_DURATION) {
+    if (action.functionName === TypeURL.XSD_DURATION) {
       return true;
     }
-    throw new Error(`Actor ${this.name} can only provide implementations for ${TypeURL.XSD_DAY_TIME_DURATION}`);
+    throw new Error(`Actor ${this.name} can only provide implementations for ${TypeURL.XSD_DURATION}`);
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):
