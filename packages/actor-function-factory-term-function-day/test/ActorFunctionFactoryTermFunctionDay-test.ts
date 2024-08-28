@@ -15,12 +15,8 @@ describe('ActorFunctionFactoryTermFunctionDay', () => {
       actor = new ActorFunctionFactoryTermFunctionDay({ name: 'actor', bus });
     });
 
-    it('should test', () => {
-      return expect(actor.test({ todo: true })).resolves.toEqual({ todo: true }); // TODO
-    });
+    it.todo('should test');
 
-    it('should run', () => {
-      return expect(actor.run({ todo: true })).resolves.toMatchObject({ todo: true }); // TODO
-    });
+    it.todo('should run');
   });
 });

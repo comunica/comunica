@@ -1,5 +1,5 @@
 import { Bus } from '@comunica/core';
-import { ActorFunctionFactoryTermFunctionGreaterThan } from '../lib/ActorFunctionFactoryTermFunctionGreaterThan';
+import type { ActorFunctionFactoryTermFunctionGreaterThan } from '../lib/ActorFunctionFactoryTermFunctionGreaterThan';
 
 describe('ActorFunctionFactoryTermFunctionGreaterThan', () => {
   let bus: any;
@@ -12,15 +12,11 @@ describe('ActorFunctionFactoryTermFunctionGreaterThan', () => {
     let actor: ActorFunctionFactoryTermFunctionGreaterThan;
 
     beforeEach(() => {
-      actor = new ActorFunctionFactoryTermFunctionGreaterThan({ name: 'actor', bus });
+      // Actor = new ActorFunctionFactoryTermFunctionGreaterThan({ name: 'actor', bus });
     });
 
-    it('should test', () => {
-      return expect(actor.test({ todo: true })).resolves.toEqual({ todo: true }); // TODO
-    });
+    it.todo('should test');
 
-    it('should run', () => {
-      return expect(actor.run({ todo: true })).resolves.toMatchObject({ todo: true }); // TODO
-    });
+    it.todo('should run');
   });
 });

@@ -1,5 +1,5 @@
 import { Bus } from '@comunica/core';
-import { ActorFunctionFactoryTermFunctionInequality } from '../lib/ActorFunctionFactoryTermFunctionInequality';
+import type { ActorFunctionFactoryTermFunctionInequality } from '../lib/ActorFunctionFactoryTermFunctionInequality';
 
 describe('ActorFunctionFactoryTermFunctionInequality', () => {
   let bus: any;
@@ -12,15 +12,11 @@ describe('ActorFunctionFactoryTermFunctionInequality', () => {
     let actor: ActorFunctionFactoryTermFunctionInequality;
 
     beforeEach(() => {
-      actor = new ActorFunctionFactoryTermFunctionInequality({ name: 'actor', bus });
+      // Actor = new ActorFunctionFactoryTermFunctionInequality({ name: 'actor', bus });
     });
 
-    it('should test', () => {
-      return expect(actor.test({ todo: true })).resolves.toEqual({ todo: true }); // TODO
-    });
+    it.todo('should test');
 
-    it('should run', () => {
-      return expect(actor.run({ todo: true })).resolves.toMatchObject({ todo: true }); // TODO
-    });
+    it.todo('should run');
   });
 });

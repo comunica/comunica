@@ -1,5 +1,5 @@
 import { Bus } from '@comunica/core';
-import { ActorFunctionFactoryExpressionFunctionIn } from '../lib/ActorFunctionFactoryExpressionFunctionIn';
+import type { ActorFunctionFactoryExpressionFunctionIn } from '../lib/ActorFunctionFactoryExpressionFunctionIn';
 
 describe('ActorFunctionFactoryExpressionFunctionIn', () => {
   let bus: any;
@@ -12,15 +12,11 @@ describe('ActorFunctionFactoryExpressionFunctionIn', () => {
     let actor: ActorFunctionFactoryExpressionFunctionIn;
 
     beforeEach(() => {
-      actor = new ActorFunctionFactoryExpressionFunctionIn({ name: 'actor', bus });
+      // Actor = new ActorFunctionFactoryExpressionFunctionIn({ name: 'actor', bus });
     });
 
-    it('should test', () => {
-      return expect(actor.test({ todo: true })).resolves.toEqual({ todo: true }); // TODO
-    });
+    it.todo('should test');
 
-    it('should run', () => {
-      return expect(actor.run({ todo: true })).resolves.toMatchObject({ todo: true }); // TODO
-    });
+    it.todo('should run');
   });
 });

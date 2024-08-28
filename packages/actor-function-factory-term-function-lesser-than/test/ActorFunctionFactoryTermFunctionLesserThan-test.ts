@@ -1,5 +1,5 @@
 import { Bus } from '@comunica/core';
-import { ActorFunctionFactoryTermFunctionLesserThan } from '../lib/ActorFunctionFactoryTermFunctionLesserThan';
+import type { ActorFunctionFactoryTermFunctionLesserThan } from '../lib/ActorFunctionFactoryTermFunctionLesserThan';
 
 describe('ActorFunctionFactoryTermFunctionLesserThan', () => {
   let bus: any;
@@ -12,15 +12,11 @@ describe('ActorFunctionFactoryTermFunctionLesserThan', () => {
     let actor: ActorFunctionFactoryTermFunctionLesserThan;
 
     beforeEach(() => {
-      actor = new ActorFunctionFactoryTermFunctionLesserThan({ name: 'actor', bus });
+      // Actor = new ActorFunctionFactoryTermFunctionLesserThan({ name: 'actor', bus });
     });
 
-    it('should test', () => {
-      return expect(actor.test({ todo: true })).resolves.toEqual({ todo: true }); // TODO
-    });
+    it.todo('should test');
 
-    it('should run', () => {
-      return expect(actor.run({ todo: true })).resolves.toMatchObject({ todo: true }); // TODO
-    });
+    it.todo('should run');
   });
 });

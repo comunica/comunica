@@ -27,7 +27,7 @@ export class ActorFunctionFactoryWrapperAll extends ActorFunctionFactory {
   }
 
   public async test(args: IActionFunctionFactory): Promise<IActorTest> {
-    if (args.functionName in SparqlOperators || args.functionName.startsWith('http://')) {
+    if (args.functionName in SparqlOperators || args.functionName.startsWith('http://www.w3.org/')) {
       throw new Error('no');
     }
     return true;
