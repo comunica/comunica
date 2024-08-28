@@ -11,6 +11,7 @@ import {
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import * as Eval from '@comunica/expression-evaluator';
+import { SparqlOperators } from '@comunica/expression-evaluator';
 import type { AsyncExtensionFunctionCreator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -25,10 +26,10 @@ export class ActorFunctionFactoryWrapperAll extends ActorFunctionFactory {
     super(args);
   }
 
-  public async test(_: IActionFunctionFactory): Promise<IActorTest> {
-    // If (action.functionName === Eval.SparqlOperator.NOT) {
-    //   throw new Error(`Actor does not execute the NOT function (so we can test the test the dedicated actor)`);
-    // }
+  public async test(args: IActionFunctionFactory): Promise<IActorTest> {
+    if (args.functionName in SparqlOperators || args.functionName.startsWith('http://')) {
+      throw new Error('no');
+    }
     return true;
   }
 

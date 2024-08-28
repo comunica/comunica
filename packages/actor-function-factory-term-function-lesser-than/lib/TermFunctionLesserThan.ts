@@ -1,3 +1,4 @@
+import type { ITermFunction } from '@comunica/bus-function-factory';
 import { TermFunctionBase } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import type {
@@ -24,8 +25,7 @@ import {
 } from '@comunica/expression-evaluator';
 
 export class TermFunctionLesserThan extends TermFunctionBase {
-  // TODO: when all is done, this should be injected in some way!
-  public constructor(private readonly equalityFunction: TermFunctionBase) {
+  public constructor(private readonly equalityFunction: ITermFunction) {
     super({
       arity: 2,
       operator: SparqlOperator.LT,

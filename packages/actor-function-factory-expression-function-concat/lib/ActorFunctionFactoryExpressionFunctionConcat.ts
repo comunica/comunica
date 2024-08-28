@@ -28,6 +28,6 @@ export class ActorFunctionFactoryExpressionFunctionConcat extends ActorFunctionF
 
   public async run<T extends IActionFunctionFactory>(_: T):
   Promise<T extends { requireTermExpression: true } ? IActorFunctionFactoryOutputTerm : IActorFunctionFactoryOutput> {
-    return new ExpressionFunctionConcat();
+    return <any> new ExpressionFunctionConcat();
   }
 }

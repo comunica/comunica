@@ -28,6 +28,6 @@ export class ActorFunctionFactoryExpressionFunctionCoalesce extends ActorFunctio
 
   public async run<T extends IActionFunctionFactory>(_: T):
   Promise<T extends { requireTermExpression: true } ? IActorFunctionFactoryOutputTerm : IActorFunctionFactoryOutput> {
-    return new ExpressionFunctionCoalesce();
+    return <any> new ExpressionFunctionCoalesce();
   }
 }

@@ -9,7 +9,8 @@
   "actors": [
     {
       "@id": "urn:comunica:default:function-factory/actors#expression-function-not-in",
-      "@type": "ActorFunctionFactoryExpressionFunctionNotIn"
+      "@type": "ActorFunctionFactoryExpressionFunctionNotIn",
+      "mediatorFunctionFactory": { "@id": "urn:comunica:default:function-factory/mediators#main" }
     }
   ]
 }

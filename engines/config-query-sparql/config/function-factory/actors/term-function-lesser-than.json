@@ -9,7 +9,8 @@
   "actors": [
     {
       "@id": "urn:comunica:default:function-factory/actors#term-function-lesser-than",
-      "@type": "ActorFunctionFactoryTermFunctionLesserThan"
+      "@type": "ActorFunctionFactoryTermFunctionLesserThan",
+      "mediatorFunctionFactory": { "@id": "urn:comunica:default:function-factory/mediators#main" }
     }
   ]
 }

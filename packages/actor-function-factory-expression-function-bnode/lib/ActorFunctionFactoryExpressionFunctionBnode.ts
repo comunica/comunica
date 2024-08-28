@@ -28,6 +28,6 @@ export class ActorFunctionFactoryExpressionFunctionBnode extends ActorFunctionFa
 
   public async run<T extends IActionFunctionFactory>(_: T):
   Promise<T extends { requireTermExpression: true } ? IActorFunctionFactoryOutputTerm : IActorFunctionFactoryOutput> {
-    return new ExpressionFunctionBnode();
+    return <any> new ExpressionFunctionBnode();
   }
 }

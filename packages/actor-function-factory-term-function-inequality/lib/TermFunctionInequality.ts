@@ -1,3 +1,4 @@
+import type { ITermFunction } from '@comunica/bus-function-factory';
 import { TermFunctionBase } from '@comunica/bus-function-factory';
 import type {
   BooleanLiteral,
@@ -9,7 +10,7 @@ import {
 } from '@comunica/expression-evaluator';
 
 export class TermFunctionInequality extends TermFunctionBase {
-  public constructor(private readonly equalityFunction: TermFunctionBase) {
+  public constructor(private readonly equalityFunction: ITermFunction) {
     super({
       arity: 2,
       operator: SparqlOperator.NOT_EQUAL,

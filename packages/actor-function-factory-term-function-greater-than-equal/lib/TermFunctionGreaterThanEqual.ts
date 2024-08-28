@@ -1,3 +1,4 @@
+import type { ITermFunction } from '@comunica/bus-function-factory';
 import { TermFunctionBase } from '@comunica/bus-function-factory';
 
 import {
@@ -6,7 +7,7 @@ import {
 } from '@comunica/expression-evaluator';
 
 export class TermFunctionGreaterThanEqual extends TermFunctionBase {
-  public constructor(private readonly lessThanEqualFunction: TermFunctionBase) {
+  public constructor(private readonly lessThanEqualFunction: ITermFunction) {
     super({
       arity: 2,
       operator: SparqlOperator.GTE,

@@ -28,6 +28,6 @@ export class ActorFunctionFactoryExpressionFunctionIf extends ActorFunctionFacto
 
   public async run<T extends IActionFunctionFactory>(_: T):
   Promise<T extends { requireTermExpression: true } ? IActorFunctionFactoryOutputTerm : IActorFunctionFactoryOutput> {
-    return new ExpressionFunctionIf();
+    return <any> new ExpressionFunctionIf();
   }
 }

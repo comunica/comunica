@@ -28,6 +28,6 @@ export class ActorFunctionFactoryExpressionFunctionLogicalOr extends ActorFuncti
 
   public async run<T extends IActionFunctionFactory>(_: T):
   Promise<T extends { requireTermExpression: true } ? IActorFunctionFactoryOutputTerm : IActorFunctionFactoryOutput> {
-    return new ExpressionFunctionLogicalOr();
+    return <any> new ExpressionFunctionLogicalOr();
   }
 }

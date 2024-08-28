@@ -8,7 +8,7 @@ import {
   ActorFunctionFactory,
 } from '@comunica/bus-function-factory';
 import type { IActorTest } from '@comunica/core';
-import { SparqlOperator } from '@comunica/expression-evaluator';
+import { TypeURL } from '@comunica/expression-evaluator';
 import { TermFunctionXsdToString } from './TermFunctionXsdToString';
 
 /**
@@ -20,10 +20,10 @@ export class ActorFunctionFactoryTermFunctionXsdToString extends ActorFunctionFa
   }
 
   public async test(action: IActionFunctionFactory): Promise<IActorTest> {
-    if (action.functionName === SparqlOperator.XSD_STRING) {
+    if (action.functionName === TypeURL.XSD_STRING) {
       return true;
     }
-    throw new Error(`Actor ${this.name} can only provide implementations for ${SparqlOperator.XSD_STRING}`);
+    throw new Error(`Actor ${this.name} can only provide implementations for ${TypeURL.XSD_STRING}`);
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

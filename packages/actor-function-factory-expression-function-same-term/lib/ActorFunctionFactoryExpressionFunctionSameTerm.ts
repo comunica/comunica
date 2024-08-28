@@ -28,6 +28,6 @@ export class ActorFunctionFactoryExpressionFunctionSameTerm extends ActorFunctio
 
   public async run<T extends IActionFunctionFactory>(_: T):
   Promise<T extends { requireTermExpression: true } ? IActorFunctionFactoryOutputTerm : IActorFunctionFactoryOutput> {
-    return new ExpressionFunctionSameTerm();
+    return <any> new ExpressionFunctionSameTerm();
   }
 }

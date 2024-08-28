@@ -1,3 +1,4 @@
+import type { IExpressionFunction } from '@comunica/bus-function-factory';
 import { ExpressionFunctionBase } from '@comunica/bus-function-factory';
 import type {
   BooleanLiteral,
@@ -15,8 +16,7 @@ import {
  * This function doesn't require type promotion or subtype-substitution, everything works on TermExpression
  */
 export class ExpressionFunctionNotIn extends ExpressionFunctionBase {
-  // TODO: when all is done, this should be injected in some way!
-  public constructor(private readonly inFunction: ExpressionFunctionBase) {
+  public constructor(private readonly inFunction: IExpressionFunction) {
     super({
       arity: Number.POSITIVE_INFINITY,
       operator: SparqlOperator.NOT_IN,

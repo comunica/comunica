@@ -1,4 +1,4 @@
-import type { TermFunctionBase } from '@comunica/bus-function-factory';
+import type { ITermFunction } from '@comunica/bus-function-factory';
 import { ExpressionFunctionBase } from '@comunica/bus-function-factory';
 import type {
   BooleanLiteral,
@@ -17,8 +17,7 @@ import {
  * This function doesn't require type promotion or subtype-substitution, everything works on TermExpression
  */
 export class ExpressionFunctionIn extends ExpressionFunctionBase {
-  // TODO: when all is done, this should be injected in some way!
-  public constructor(private readonly equalityFunction: TermFunctionBase) {
+  public constructor(private readonly equalityFunction: ITermFunction) {
     super({
       arity: Number.POSITIVE_INFINITY,
       operator: SparqlOperator.IN,

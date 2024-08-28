@@ -3,6 +3,8 @@ import type {
   IActorFunctionFactoryArgs,
   IActorFunctionFactoryOutput,
   IActorFunctionFactoryOutputTerm,
+  MediatorFunctionFactory,
+  MediatorFunctionFactoryUnsafe,
 } from '@comunica/bus-function-factory';
 import {
   ActorFunctionFactory,
@@ -11,12 +13,19 @@ import type { IActorTest } from '@comunica/core';
 import { SparqlOperator } from '@comunica/expression-evaluator';
 import { TermFunctionInequality } from './TermFunctionInequality';
 
+interface ActorFunctionFactoryTermFunctionInequalityArgs extends IActorFunctionFactoryArgs {
+  mediatorFunctionFactory: MediatorFunctionFactoryUnsafe;
+}
+
 /**
  * A comunica TermFunctionInequality Function Factory Actor.
  */
 export class ActorFunctionFactoryTermFunctionInequality extends ActorFunctionFactory {
-  public constructor(args: IActorFunctionFactoryArgs) {
+  private readonly mediatorFunctionFactory: MediatorFunctionFactory;
+
+  public constructor(args: ActorFunctionFactoryTermFunctionInequalityArgs) {
     super(args);
+    this.mediatorFunctionFactory = <MediatorFunctionFactory> args.mediatorFunctionFactory;
   }
 
   public async test(action: IActionFunctionFactory): Promise<IActorTest> {
@@ -26,8 +35,15 @@ export class ActorFunctionFactoryTermFunctionInequality extends ActorFunctionFac
     throw new Error(`Actor ${this.name} can only provide implementations for ${SparqlOperator.NOT_EQUAL}`);
   }
 
-  public async run<T extends IActionFunctionFactory>(_: T):
+  public async run<T extends IActionFunctionFactory>(args: T):
   Promise<T extends { requireTermExpression: true } ? IActorFunctionFactoryOutputTerm : IActorFunctionFactoryOutput> {
-    return new TermFunctionInequality();
+    const equalityFunction = await this.mediatorFunctionFactory.mediate({
+      functionName: SparqlOperator.EQUAL,
+      requireTermExpression: true,
+      context: args.context,
+      arguments: args.arguments,
+    });
+
+    return new TermFunctionInequality(equalityFunction);
   }
 }

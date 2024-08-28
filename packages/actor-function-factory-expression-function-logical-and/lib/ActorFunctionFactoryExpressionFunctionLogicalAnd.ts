@@ -28,6 +28,6 @@ export class ActorFunctionFactoryExpressionFunctionLogicalAnd extends ActorFunct
 
   public async run<T extends IActionFunctionFactory>(_: T):
   Promise<T extends { requireTermExpression: true } ? IActorFunctionFactoryOutputTerm : IActorFunctionFactoryOutput> {
-    return new ExpressionFunctionLogicalAnd();
+    return <any> new ExpressionFunctionLogicalAnd();
   }
 }

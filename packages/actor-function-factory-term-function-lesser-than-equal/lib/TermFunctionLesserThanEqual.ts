@@ -1,3 +1,4 @@
+import type { ITermFunction } from '@comunica/bus-function-factory';
 import { TermFunctionBase } from '@comunica/bus-function-factory';
 import type {
   BooleanLiteral,
@@ -10,8 +11,8 @@ import {
 
 export class TermFunctionLesserThanEqual extends TermFunctionBase {
   public constructor(
-    private readonly equalityFunction: TermFunctionBase,
-    private readonly lessThanFunction: TermFunctionBase,
+    private readonly equalityFunction: ITermFunction,
+    private readonly lessThanFunction: ITermFunction,
   ) {
     super({
       arity: 2,

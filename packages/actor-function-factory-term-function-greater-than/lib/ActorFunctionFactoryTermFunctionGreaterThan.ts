@@ -3,6 +3,8 @@ import type {
   IActorFunctionFactoryArgs,
   IActorFunctionFactoryOutput,
   IActorFunctionFactoryOutputTerm,
+  MediatorFunctionFactory,
+  MediatorFunctionFactoryUnsafe,
 } from '@comunica/bus-function-factory';
 import {
   ActorFunctionFactory,
@@ -11,12 +13,19 @@ import type { IActorTest } from '@comunica/core';
 import { SparqlOperator } from '@comunica/expression-evaluator';
 import { TermFunctionGreaterThan } from './TermFunctionGreaterThan';
 
+interface ActorFunctionFactoryTermFunctionGreaterThanArgs extends IActorFunctionFactoryArgs {
+  mediatorFunctionFactory: MediatorFunctionFactoryUnsafe;
+}
+
 /**
  * A comunica TermFunctionGreaterThan Function Factory Actor.
  */
 export class ActorFunctionFactoryTermFunctionGreaterThan extends ActorFunctionFactory {
-  public constructor(args: IActorFunctionFactoryArgs) {
+  private readonly mediatorFunctionFactory: MediatorFunctionFactory;
+
+  public constructor(args: ActorFunctionFactoryTermFunctionGreaterThanArgs) {
     super(args);
+    this.mediatorFunctionFactory = <MediatorFunctionFactory> args.mediatorFunctionFactory;
   }
 
   public async test(action: IActionFunctionFactory): Promise<IActorTest> {
@@ -26,8 +35,15 @@ export class ActorFunctionFactoryTermFunctionGreaterThan extends ActorFunctionFa
     throw new Error(`Actor ${this.name} can only provide implementations for ${SparqlOperator.GT}`);
   }
 
-  public async run<T extends IActionFunctionFactory>(_: T):
+  public async run<T extends IActionFunctionFactory>(args: T):
   Promise<T extends { requireTermExpression: true } ? IActorFunctionFactoryOutputTerm : IActorFunctionFactoryOutput> {
-    return new TermFunctionGreaterThan();
+    const lessThanFunction = await this.mediatorFunctionFactory.mediate({
+      functionName: SparqlOperator.LT,
+      requireTermExpression: true,
+      context: args.context,
+      arguments: args.arguments,
+    });
+
+    return new TermFunctionGreaterThan(lessThanFunction);
   }
 }
