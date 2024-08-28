@@ -9,12 +9,12 @@ import {
 } from '@comunica/bus-function-factory';
 import type { IActorTest } from '@comunica/core';
 import { SparqlOperator } from '@comunica/expression-evaluator';
-import { TermFunctionStrLan } from './TermFunctionStrLan';
+import { TermFunctionStrLang } from './TermFunctionStrLang';
 
 /**
- * A comunica TermFunctionStrLan Function Factory Actor.
+ * A comunica TermFunctionStrLang Function Factory Actor.
  */
-export class ActorFunctionFactoryTermFunctionStrLan extends ActorFunctionFactory {
+export class ActorFunctionFactoryTermFunctionStrLang extends ActorFunctionFactory {
   public constructor(args: IActorFunctionFactoryArgs) {
     super(args);
   }
@@ -28,6 +28,6 @@ export class ActorFunctionFactoryTermFunctionStrLan extends ActorFunctionFactory
 
   public async run<T extends IActionFunctionFactory>(_: T):
   Promise<T extends { requireTermExpression: true } ? IActorFunctionFactoryOutputTerm : IActorFunctionFactoryOutput> {
-    return new TermFunctionStrLan();
+    return new TermFunctionStrLang();
   }
 }

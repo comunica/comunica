@@ -1,7 +1,8 @@
+import * as Data from '@comunica/actor-function-factory-wrapper-all/test/spec/_data';
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { bool } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../../bus-function-factory/test/util';
-import * as Data from './_data';
+import { ActorFunctionFactoryTermFunctionIsNumeric } from '../lib';
 
 /**
  * REQUEST: isnumeric01.rq
@@ -30,6 +31,9 @@ import * as Data from './_data';
 describe('We should respect the isnumeric01 spec', () => {
   const { n1, n2, n3, n4, n5, s1, s2, s3, s4, s5, s6, s7, d1, d2, d3, d4 } = Data.data();
   runFuncTestTable({
+    registeredActors: [
+      args => new ActorFunctionFactoryTermFunctionIsNumeric(args),
+    ],
     aliases: bool,
     operation: 'isNumeric',
     notation: Notation.Function,

@@ -1,6 +1,10 @@
+import { ActorFunctionFactoryExpressionFunctionBnode } from '@comunica/actor-function-factory-expression-function-bnode';
+
+import { ActorFunctionFactoryTermFunctionStr } from '@comunica/actor-function-factory-term-function-str';
+import * as Data from '@comunica/actor-function-factory-wrapper-all/test/spec/_data';
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../../bus-function-factory/test/util';
-import * as Data from './_data';
+import { ActorFunctionFactoryTermFunctionAddition } from '../lib';
 
 /**
  * REQUEST: plus-2-corrected.rq
@@ -44,18 +48,23 @@ describe('We should respect the plus-2-corrected spec', () => {
     x8q,
   } = Data.dataBuiltin3();
   runFuncTestTable({
+    registeredActors: [
+      args => new ActorFunctionFactoryTermFunctionAddition(args),
+      args => new ActorFunctionFactoryExpressionFunctionBnode(args),
+      args => new ActorFunctionFactoryTermFunctionStr(args),
+    ],
     notation: Notation.Infix,
     operation: '+',
     arity: 2,
     errorTable: `
-    'str(${x1p})'              'str(${x1q})' = ''
-    'str(BNODE())'             'str(${x2q})' = ''
-    'str(<http://example/a>)'  'str(${x3q})' = ''
-    'str(${x4p})'              'str(${x4q})' = ''
-    'str(${x5p})'              'str(${x5q})' = ''
-    'str(${x6p})'              'str(${x6q})' = ''
-    'str(${x7p})'              'str(${x7q})' = ''
-    'str(${x8p})'              'str(${x8q})' = ''
+    'str(${x1p})'              'str(${x1q})' = 'Argument types not valid for operator'
+    'str(BNODE())'             'str(${x2q})' = 'Argument types not valid for operator'
+    'str(<http://example/a>)'  'str(${x3q})' = 'Argument types not valid for operator'
+    'str(${x4p})'              'str(${x4q})' = 'Argument types not valid for operator'
+    'str(${x5p})'              'str(${x5q})' = 'Argument types not valid for operator'
+    'str(${x6p})'              'str(${x6q})' = 'Argument types not valid for operator'
+    'str(${x7p})'              'str(${x7q})' = 'Argument types not valid for operator'
+    'str(${x8p})'              'str(${x8q})' = 'Argument types not valid for operator'
     `,
   });
 });

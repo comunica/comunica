@@ -1,5 +1,5 @@
 import { Bus } from '@comunica/core';
-import { ActorFunctionFactoryTermFunctionStrLan } from '../lib/ActorFunctionFactoryTermFunctionStrLan';
+import { ActorFunctionFactoryTermFunctionStrLang } from '../lib/ActorFunctionFactoryTermFunctionStrLang';
 
 describe('ActorFunctionFactoryTermFunctionStrLan', () => {
   let bus: any;
@@ -9,10 +9,10 @@ describe('ActorFunctionFactoryTermFunctionStrLan', () => {
   });
 
   describe('An ActorFunctionFactoryTermFunctionStrLan instance', () => {
-    let actor: ActorFunctionFactoryTermFunctionStrLan;
+    let actor: ActorFunctionFactoryTermFunctionStrLang;
 
     beforeEach(() => {
-      actor = new ActorFunctionFactoryTermFunctionStrLan({ name: 'actor', bus });
+      actor = new ActorFunctionFactoryTermFunctionStrLang({ name: 'actor', bus });
     });
 
     it.todo('should test');

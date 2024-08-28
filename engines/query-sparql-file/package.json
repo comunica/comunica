@@ -124,7 +124,7 @@
     "@comunica/actor-function-factory-term-function-str-len": "^3.2.1",
     "@comunica/actor-function-factory-term-function-str-uuid": "^3.2.1",
     "@comunica/actor-function-factory-term-function-uuid": "^3.2.1",
-    "@comunica/actor-function-factory-term-function-str-lan": "^3.2.1",
+    "@comunica/actor-function-factory-term-function-str-lang": "^3.2.1",
     "@comunica/actor-function-factory-term-function-str-dt": "^3.2.1",
     "@comunica/actor-function-factory-term-function-is-literal": "^3.2.1",
     "@comunica/actor-function-factory-term-function-is-numeric": "^3.2.1",

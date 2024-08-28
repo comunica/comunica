@@ -10,7 +10,7 @@ import {
 /**
  * https://www.w3.org/TR/sparql11-query/#func-strlang
  */
-export class TermFunctionStrLan extends TermFunctionBase {
+export class TermFunctionStrLang extends TermFunctionBase {
   public constructor() {
     super({
       arity: 2,

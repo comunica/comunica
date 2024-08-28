@@ -1,7 +1,8 @@
+import * as Data from '@comunica/actor-function-factory-wrapper-all/test/spec/_data';
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { int } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../../bus-function-factory/test/util';
-import * as Data from './_data';
+import { ActorFunctionFactoryTermFunctionMonth } from '../lib';
 
 /**
  * REQUEST: month-01.rq
@@ -29,6 +30,9 @@ import * as Data from './_data';
 describe('We should respect the month-01 spec', () => {
   const { d1, d2, d3, d4 } = Data.data();
   runFuncTestTable({
+    registeredActors: [
+      args => new ActorFunctionFactoryTermFunctionMonth(args),
+    ],
     operation: 'MONTH',
     notation: Notation.Function,
     arity: 1,

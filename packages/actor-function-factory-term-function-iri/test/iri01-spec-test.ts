@@ -1,11 +1,15 @@
+import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import type { ITestTableConfigBase } from '@comunica/expression-evaluator/test/util/utils';
-import { runFuncTestTable } from '../../../bus-function-factory/test/util';
+import { ActorFunctionFactoryTermFunctionIri } from '../lib';
 
 describe('We should respect the iri01 spec', () => {
-  const config: ITestTableConfigBase = {
+  const config: FuncTestTableConfig<object> = {
+    registeredActors: [
+      args => new ActorFunctionFactoryTermFunctionIri(args),
+    ],
     config: new ActionContext().set(KeysInitQuery.baseIRI, 'http://example.org'),
     arity: 1,
     operation: '',

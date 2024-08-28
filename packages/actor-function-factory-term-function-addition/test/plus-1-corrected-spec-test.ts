@@ -1,7 +1,9 @@
+import { ActorFunctionFactoryExpressionFunctionBnode } from '@comunica/actor-function-factory-expression-function-bnode';
+import * as Data from '@comunica/actor-function-factory-wrapper-all/test/spec/_data';
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { int, decimal } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../../bus-function-factory/test/util';
-import * as Data from './_data';
+import { ActorFunctionFactoryTermFunctionAddition } from '../lib';
 
 /**
  * REQUEST: plus-1-corrected.rq
@@ -44,6 +46,10 @@ describe('We should respect the plus-1-corrected spec', () => {
     x8q,
   } = Data.dataBuiltin3();
   runFuncTestTable({
+    registeredActors: [
+      args => new ActorFunctionFactoryTermFunctionAddition(args),
+      args => new ActorFunctionFactoryExpressionFunctionBnode(args),
+    ],
     notation: Notation.Infix,
     operation: '+',
     arity: 2,
@@ -52,12 +58,12 @@ describe('We should respect the plus-1-corrected spec', () => {
       '${x5p}' '${x5q}' = '${decimal('3')}'
     `,
     errorTable: `
-      '${x1p}' '${x1q}' = ''
-      'BNODE()' '${x2q}' = ''
-      '<http://example/a>' '${x3q}' = ''
-      '${x6p}' '${x6q}' = ''
-      '${x7p}' '${x7q}' = ''
-      '${x8p}' '${x8q}' = ''
+      '${x1p}' '${x1q}' = 'Argument types not valid for operator'
+      'BNODE()' '${x2q}' = 'Argument types not valid for operator'
+      '<http://example/a>' '${x3q}' = 'Argument types not valid for operator'
+      '${x6p}' '${x6q}' = 'Argument types not valid for operator'
+      '${x7p}' '${x7q}' = 'Argument types not valid for operator'
+      '${x8p}' '${x8q}' = 'Argument types not valid for operator'
     `,
   });
 });

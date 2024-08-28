@@ -1,26 +1,21 @@
+import * as Data from '@comunica/actor-function-factory-wrapper-all/test/spec/_data';
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../../bus-function-factory/test/util';
-import * as Data from './_data';
+import { ActorFunctionFactoryTermFunctionMd5 } from '../lib';
 
 /**
- * REQUEST: md5-01.rq
+ * REQUEST: md5-02.rq
  *
  * PREFIX : <http://example.org/>
  * SELECT (MD5(?l) AS ?hash) WHERE {
- *   :s1 :str ?l
+ *   :s4 :str ?l
  * }
  */
 
 /**
  * Manifest Entry
- *   mf:feature sparql:md5 ;
- *     dawgt:approval dawgt:Approved ;
- *     dawgt:approvedBy <http://www.w3.org/2009/sparql/meeting/2012-01-31#resolution_3> ;
- *     mf:action
- *          [ qt:query  <md5-01.rq> ;
- *            qt:data   <data.ttl> ] ;
- *     mf:result  <md5-01.srx> ;
- *   .
+ * :md5-02 rdf:type mf:QueryEvaluationTest ;
+ *   mf:name    "MD5() over Unicode data" ;
  *   mf:feature sparql:md5 ;
  *     dawgt:approval dawgt:Approved ;
  *     dawgt:approvedBy <http://www.w3.org/2009/sparql/meeting/2012-01-31#resolution_3> ;
@@ -31,20 +26,23 @@ import * as Data from './_data';
  *   .
  */
 
-describe('We should respect the md5-01 spec', () => {
-  const { s1 } = Data.data();
+describe('We should respect the md5-02 spec', () => {
+  const { s4 } = Data.data();
   runFuncTestTable({
-    arity: 1,
-    notation: Notation.Function,
+    registeredActors: [
+      args => new ActorFunctionFactoryTermFunctionMd5(args),
+    ],
     operation: 'MD5',
+    notation: Notation.Function,
+    arity: 1,
     testTable: `
-      '${s1}' = "acbd18db4cc2f85cedef654fccc4a4d8"
+      '${s4}' = "e7ada485d13b1decf628c9211bc3a97b"
     `,
   });
 });
 
 /**
- * RESULTS: md5-01.srx
+ * RESULTS: md5-02.srx
  *
  * <?xml version="1.0" encoding="utf-8"?>
  * <sparql xmlns="http://www.w3.org/2005/sparql-results#">
@@ -53,7 +51,7 @@ describe('We should respect the md5-01 spec', () => {
  * </head>
  * <results>
  *     <result>
- *       <binding name="hash"><literal>acbd18db4cc2f85cedef654fccc4a4d8</literal></binding>
+ *       <binding name="hash"><literal>e7ada485d13b1decf628c9211bc3a97b</literal></binding>
  *     </result>
  * </results>
  * </sparql>

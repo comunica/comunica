@@ -9,6 +9,11 @@ interface RunFuncTestTableArgs extends IActorFunctionFactoryArgs {
   mediatorFunctionFactory: MediatorFunctionFactory;
 }
 
+export interface FuncTestTableConfig<E> extends TestTableConfig {
+  registeredActors?: ((arg: RunFuncTestTableArgs & E) => ActorFunctionFactory)[];
+  additionalArgs?: E;
+}
+
 export function createFuncMediator<E extends object>(
   registeredActors: ((arg: RunFuncTestTableArgs & E) => ActorFunctionFactory)[],
   additionalArgs: E,
@@ -42,12 +47,7 @@ ${action.functionName}`);
   return mediatorFunctionFactory;
 }
 
-export function runFuncTestTable<E extends object>(
-  arg: TestTableConfig & {
-    registeredActors?: ((arg: RunFuncTestTableArgs & E) => ActorFunctionFactory)[];
-    additionalArgs?: E;
-  },
-): void {
+export function runFuncTestTable<E extends object>(arg: FuncTestTableConfig<E>): void {
   if (arg.registeredActors) {
     return runTestTable({
       exprEvalFactory: getMockEEFactory({

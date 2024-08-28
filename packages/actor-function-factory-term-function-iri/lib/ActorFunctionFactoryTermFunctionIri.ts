@@ -20,10 +20,12 @@ export class ActorFunctionFactoryTermFunctionIri extends ActorFunctionFactory {
   }
 
   public async test(action: IActionFunctionFactory): Promise<IActorTest> {
-    if (action.functionName === SparqlOperator.IRI) {
+    if (action.functionName === SparqlOperator.IRI || action.functionName === SparqlOperator.URI) {
       return true;
     }
-    throw new Error(`Actor ${this.name} can only provide implementations for ${SparqlOperator.IRI}`);
+    throw new Error(
+      `Actor ${this.name} can only provide implementations for ${SparqlOperator.IRI} and ${SparqlOperator.URI}`,
+    );
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

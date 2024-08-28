@@ -1,6 +1,8 @@
+import { ActorFunctionFactoryTermFunctionEquality } from '@comunica/actor-function-factory-term-function-equality';
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { bool } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../../bus-function-factory/test/util';
+import { ActorFunctionFactoryExpressionFunctionIn } from '../lib';
 
 /**
  * REQUEST: in02.rq
@@ -26,6 +28,10 @@ import { runFuncTestTable } from '../../../bus-function-factory/test/util';
 
 describe('We should respect the in02 spec', () => {
   runFuncTestTable({
+    registeredActors: [
+      args => new ActorFunctionFactoryExpressionFunctionIn(args),
+      args => new ActorFunctionFactoryTermFunctionEquality(args),
+    ],
     aliases: bool,
     notation: Notation.Infix,
     operation: 'IN',

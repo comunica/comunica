@@ -39,7 +39,7 @@ export class ActorFunctionFactoryExpressionFunctionIn extends ActorFunctionFacto
   public async run<T extends IActionFunctionFactory>(args: T):
   Promise<T extends { requireTermExpression: true } ? IActorFunctionFactoryOutputTerm : IActorFunctionFactoryOutput> {
     const equalityFunction = await this.mediatorFunctionFactory.mediate({
-      functionName: SparqlOperator.IN,
+      functionName: SparqlOperator.EQUAL,
       requireTermExpression: true,
       context: args.context,
       arguments: args.arguments,

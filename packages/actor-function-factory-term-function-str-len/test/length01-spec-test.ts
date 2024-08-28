@@ -1,7 +1,8 @@
+import * as Data from '@comunica/actor-function-factory-wrapper-all/test/spec/_data';
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { int } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../../bus-function-factory/test/util';
-import * as Data from './_data';
+import {ActorFunctionFactoryTermFunctionStrLen} from "../lib";
 
 /**
  * REQUEST: length01.rq
@@ -29,6 +30,9 @@ import * as Data from './_data';
 describe('We should respect the length01 spec', () => {
   const { s1, s2, s3, s4, s5, s6, s7 } = Data.data();
   runFuncTestTable({
+    registeredActors: [
+      args => new ActorFunctionFactoryTermFunctionStrLen(args),
+    ],
     operation: 'STRLEN',
     notation: Notation.Function,
     arity: 1,
