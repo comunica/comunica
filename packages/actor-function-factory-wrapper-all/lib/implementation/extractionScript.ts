@@ -120,12 +120,12 @@ function getFunctionConfig(camelCaseName: string): string {
     }
   ]
 }
-    `.trim();
+`.trimStart();
 }
 
 function getSparqlActorBody(camelCaseName: string, operatorName: string, isSpecial: boolean): string {
   const testCase: string = isSpecial ?
-    `action.functionName === SparqlOperator.${operatorName} || action.requireTermExpression` :
+    `action.functionName === SparqlOperator.${operatorName} && !action.requireTermExpression` :
     `action.functionName === SparqlOperator.${operatorName}`;
   const testError = isSpecial ?
     `Actor \${this.name} can only provide non-termExpression implementations for \${SparqlOperator.${operatorName}}` :
@@ -164,7 +164,7 @@ export class ActorFunctionFactory${camelCaseName} extends ActorFunctionFactory {
     return new ${camelCaseName}();
   }
 }
-    `.trim();
+`.trimStart();
 }
 
 function updateEngineDependencies(camelCaseName: string): void {
@@ -230,7 +230,9 @@ function createActorPackage(camelCaseName: string, functionBody: string): void {
   const updatedReadmeContent = readmeContent.replaceAll(
     /### Config Parameters(.|\n)*/gu,
     `\n`,
-  ).replaceAll(/\n{3}/gu, '\n');
+  )
+    .replaceAll(/\n{3}/gu, '\n')
+    .replaceAll('/^1.0.0/components', '/^3.0.0/components');
 
   writeFileSync(actorFilePath, actorBody);
   writeFileSync(bodyFile, updatedFunctionBody);
@@ -252,13 +254,27 @@ function extractFunctions(functionsFileLocation: string): void {
     const { camelCaseName, functionBody } = match;
     createActorPackage(camelCaseName, functionBody);
     updateEngineConfig(camelCaseName);
-
-    break;
   }
 }
 
 function main(): void {
   extractFunctions('packages/actor-function-factory-wrapper-all/lib/implementation/SparqlFunctions.ts');
+
+  const configListFile = `engines/config-query-sparql/config/function-factory/actors.json`;
+  const configList = readFileSync(configListFile).toString();
+  const importList = (/"import": \[([^\]]+)\]/u.exec(configList))![1];
+  const sortedImport = importList
+    .trim()
+    .replaceAll(/[\n ]+/gu, '')
+    .replaceAll(/"([^"]+)"/gu, '$1')
+    .split(',')
+    .sort()
+    .map(x => `\n    "${x}"`)
+    .join(',');
+  const updatedConfigList = configList
+    .replaceAll(/"import": \[([^\]]+)\]/gu, `"import": [${sortedImport}\n  ]`);
+
+  writeFileSync(configListFile, updatedConfigList);
 }
 
 main();
