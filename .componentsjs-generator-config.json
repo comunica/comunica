@@ -46,6 +46,11 @@
     "RequestInfo",
     "RequestInit",
 
+    "IStatistic",
+    "ILink",
+    "StatisticLinkDiscovery",
+    "StatisticLinkDereference",
+
     "IQueryableResultStream",
     "IQueryableResultBindings",
     "IQueryableResultQuads",

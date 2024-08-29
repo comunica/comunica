@@ -8,6 +8,7 @@ import { KeysCore, KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/cont
 import type { IAction, IActorTest } from '@comunica/core';
 import type { FunctionArgumentsCache, Logger } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import { StatisticsHolder } from './StatisticsHolder';
 
 /**
  * A comunica Set Defaults Context Preprocess Actor.
@@ -35,7 +36,8 @@ export class ActorContextPreprocessSetDefaults extends ActorContextPreprocess {
         .setDefault(KeysQuerySourceIdentify.sourceIds, new Map())
         .setDefault(KeysCore.log, this.logger)
         .setDefault(KeysInitQuery.functionArgumentsCache, this.defaultFunctionArgumentsCache)
-        .setDefault(KeysQuerySourceIdentify.hypermediaSourcesAggregatedStores, new Map());
+        .setDefault(KeysQuerySourceIdentify.hypermediaSourcesAggregatedStores, new Map())
+        .setDefault(KeysInitQuery.statistics, new StatisticsHolder());
 
       // Handle default query format
       let queryFormat: RDF.QueryFormat = { language: 'sparql', version: '1.1' };

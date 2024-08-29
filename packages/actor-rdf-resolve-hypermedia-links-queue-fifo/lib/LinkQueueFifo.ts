@@ -1,5 +1,5 @@
-import type { ILink } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { ILinkQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
+import type { ILink } from '@comunica/types';
 
 /**
  * A link queue in FIFO (first-in first-out) order.

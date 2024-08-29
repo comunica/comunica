@@ -6,15 +6,19 @@ import type {
 import { ActorContextPreprocess } from '@comunica/bus-context-preprocess';
 import type { ActorHttpInvalidateListenable, IActionHttpInvalidate } from '@comunica/bus-http-invalidate';
 import type { MediatorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
-import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation, KeysTrackableStatistics }
+  from '@comunica/context-entries';
 import type { IAction, IActorTest } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
 import type {
+  ILink,
   IQuerySourceWrapper,
   QuerySourceUnidentified,
   QuerySourceUnidentifiedExpanded,
   IActionContext,
   IQuerySourceUnidentifiedExpanded,
+  IStatisticsHolder,
+  IStatisticBase,
 } from '@comunica/types';
 import { LRUCache } from 'lru-cache';
 
@@ -54,6 +58,26 @@ export class ActorContextPreprocessQuerySourceIdentify extends ActorContextPrepr
         .map(querySource => this.expandSource(querySource)));
       const querySources: IQuerySourceWrapper[] = await Promise.all(querySourcesUnidentifiedExpanded
         .map(async querySourceUnidentified => this.identifySource(querySourceUnidentified, action.context)));
+
+      /**
+       * When identifying sources in preprocess actor, we record this as a dereference seed document event
+       */
+      const statistics: IStatisticsHolder = action.context.getSafe(KeysInitQuery.statistics);
+      const statisticDereferenceLinks: IStatisticBase<ILink> | undefined = statistics
+        .get(KeysTrackableStatistics.dereferencedLinks);
+
+      if (statisticDereferenceLinks) {
+        for (const querySource of querySources) {
+          const linkStatistic: ILink = {
+            url: <string> querySource.source.referenceValue,
+            metadata: {
+              seed: true,
+            },
+          };
+          statisticDereferenceLinks.updateStatistic(linkStatistic, querySource.source);
+        }
+      }
+
       context = action.context
         .delete(KeysInitQuery.querySourcesUnidentified)
         .set(KeysQueryOperation.querySources, querySources);

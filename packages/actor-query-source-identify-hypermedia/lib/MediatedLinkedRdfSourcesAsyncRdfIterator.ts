@@ -1,11 +1,20 @@
 import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
-import type { ILink, MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
+import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type {
   ILinkQueue,
   MediatorRdfResolveHypermediaLinksQueue,
 } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
-import { KeysQueryOperation } from '@comunica/context-entries';
-import type { IActionContext, IAggregatedStore, IQueryBindingsOptions, MetadataBindings } from '@comunica/types';
+import { KeysQueryOperation, KeysInitQuery, KeysTrackableStatistics } from '@comunica/context-entries';
+import type {
+  IActionContext,
+  IAggregatedStore,
+  IQueryBindingsOptions,
+  MetadataBindings,
+  ILink,
+  IStatisticBase,
+  IStatisticsHolder,
+  IDiscoverEventData,
+} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -144,9 +153,22 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     return this.linkQueue;
   }
 
-  protected async getSourceLinks(metadata: Record<string, any>): Promise<ILink[]> {
+  protected async getSourceLinks(metadata: Record<string, any>, startSource: ISourceState): Promise<ILink[]> {
     try {
       const { links } = await this.mediatorRdfResolveHypermediaLinks.mediate({ context: this.context, metadata });
+      const statistics: IStatisticsHolder = this.context.getSafe(KeysInitQuery.statistics);
+      const traversalTracker: IStatisticBase<IDiscoverEventData> | undefined = statistics
+        .get(KeysTrackableStatistics.discoveredLinks);
+
+      for (const link of links) {
+        if (traversalTracker) {
+          const linkStatistic: ILink = {
+            url: link.url,
+            metadata: { ...link.metadata },
+          };
+          traversalTracker.updateStatistic(linkStatistic, startSource.link);
+        }
+      }
 
       // Filter URLs to avoid cyclic next-page loops
       return links.filter((link) => {
