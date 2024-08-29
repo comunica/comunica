@@ -4,7 +4,6 @@ import {
   CastError,
   declare,
   integer,
-  parseXSDInteger,
   TypeURL,
 } from '@comunica/expression-evaluator';
 import type {
@@ -27,7 +26,7 @@ export class TermFunctionXsdToInteger extends TermFunctionBase {
         })
         .onString1(() => (val: Term) => {
           const str = val.str();
-          const result = /^\d+$/u.test(str) ? parseXSDInteger(str) : undefined;
+          const result = /^\d+$/u.test(str) ? Number.parseInt(str, 10) : undefined;
           if (result === undefined) {
             throw new CastError(val, TypeURL.XSD_INTEGER);
           }

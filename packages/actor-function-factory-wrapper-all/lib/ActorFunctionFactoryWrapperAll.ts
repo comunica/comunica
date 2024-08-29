@@ -10,7 +10,6 @@ import {
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import * as Eval from '@comunica/expression-evaluator';
-import { SparqlOperators } from '@comunica/expression-evaluator';
 import type { AsyncExtensionFunctionCreator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -25,10 +24,10 @@ export class ActorFunctionFactoryWrapperAll extends ActorFunctionFactory {
   }
 
   public async test(args: IActionFunctionFactory): Promise<IActorTest> {
-    if (args.functionName in SparqlOperators || args.functionName.startsWith('http://www.w3.org/')) {
-      throw new Error('no');
+    if (args.functionName.startsWith('http') && !args.functionName.startsWith('http://www.w3.org/')) {
+      return true;
     }
-    return true;
+    throw new Error('no');
   }
 
   public async run<T extends IActionFunctionFactory>({ functionName, context }: T):
