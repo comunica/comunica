@@ -2907,6 +2907,11 @@
     "@pollyjs/core" "^6.0.5"
     "@pollyjs/persister" "^6.0.5"
 
+"@types/spark-md5@^3.0.1":
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/@types/spark-md5/-/spark-md5-3.0.4.tgz#c1221d63c069d95aba0c06a765b80661cacc12bf"
+  integrity sha512-qtOaDz+IXiNndPgYb6t1YoutnGvFRtWSNzpVjkAPCfB2UzTyybuD4Tjgs7VgRawum3JnJNRwNQd4N//SvrHg1Q==
+
 "@types/sparqljs@^3.0.0", "@types/sparqljs@^3.1.3":
   version "3.1.10"
   resolved "https://registry.npmjs.org/@types/sparqljs/-/sparqljs-3.1.10.tgz"
@@ -2948,6 +2953,11 @@
   version "0.3.6"
   resolved "https://registry.npmjs.org/@types/uritemplate/-/uritemplate-0.3.6.tgz"
   integrity sha512-31BMGZ8GgLxgXxLnqg4KbbyYJjU1flhTTD2+PVQStVUPXSk0IIpK0zt+tH3eLT7ZRwLnzQw6JhYx69qza3U0wg==
+
+"@types/uuid@^9.0.0":
+  version "9.0.8"
+  resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-9.0.8.tgz#7545ba4fc3c003d6c756f651f3bf163d8f0f29ba"
+  integrity sha512-jg+97EGIcY9AGHJJRaaPVgetKDsrTgbRjQ5Msgjh/DQKEFl0DtyRr/VCOyD1T2R1MNeWPK/u7JoGhlDZnKBAfA==
 
 "@types/yargs-parser@*":
   version "21.0.3"
@@ -12508,7 +12518,7 @@ source-map@^0.7.4:
   resolved "https://registry.npmjs.org/source-map/-/source-map-0.7.4.tgz"
   integrity sha512-l3BikUxvPOcn5E74dZiq5BGsTb5yEwhaTSzccU6t4sDOH8NWJCstKO5QT2CvtFoK6F0saL7p9xHAqHOlCPJygA==
 
-spark-md5@^3.0.2:
+spark-md5@^3.0.1:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/spark-md5/-/spark-md5-3.0.2.tgz#7952c4a30784347abcee73268e473b9c0167e3fc"
   integrity sha512-wcFzz9cDfbuqe0FZzfi2or1sgyIrsDwmPwfZC4hiNidPdPINjeUwNfv5kldczoEAcjl9Y1L3SM7Uz2PUEQzxQw==
@@ -13680,11 +13690,6 @@ utils-merge@1.0.1:
   version "1.0.1"
   resolved "https://registry.npmjs.org/utils-merge/-/utils-merge-1.0.1.tgz"
   integrity sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==
-
-uuid@^10.0.0:
-  version "10.0.0"
-  resolved "https://registry.yarnpkg.com/uuid/-/uuid-10.0.0.tgz#5a95aa454e6e002725c79055fd42aaba30ca6294"
-  integrity sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ==
 
 uuid@^3.3.2:
   version "3.4.0"
