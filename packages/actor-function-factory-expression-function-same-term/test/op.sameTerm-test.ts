@@ -1,9 +1,13 @@
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { bool, merge, numeric } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../../bus-function-factory/test/util';
+import { ActorFunctionFactoryExpressionFunctionSameTerm } from '../lib';
 
 describe('evaluation of \'sameTerm\'', () => {
   runFuncTestTable({
+    registeredActors: [
+      args => new ActorFunctionFactoryExpressionFunctionSameTerm(args),
+    ],
     operation: 'sameTerm',
     arity: 2,
     notation: Notation.Function,

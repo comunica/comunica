@@ -1,15 +1,15 @@
-import type { TermFunctionBase } from '@comunica/bus-function-factory';
-import { SparqlOperator } from '@comunica/expression-evaluator';
+import { ActorFunctionFactoryTermFunctionAddition } from '@comunica/actor-function-factory-term-function-addition';
+import { TermFunctionEquality } from '@comunica/actor-function-factory-term-function-equality/lib/TermFunctionEquality';
+import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import * as Eval from '@comunica/expression-evaluator';
 import { getMockExpression } from '@comunica/expression-evaluator/test/util/utils';
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
-import { sparqlFunctions } from '../../lib/implementation/SparqlFunctions';
-import { createFuncMediator } from '../../../bus-function-factory/test/util';
+import { TermFunctionLesserThan } from '../lib/TermFunctionLesserThan';
 
 describe('lesser than', () => {
   describe('on sparql star tripples', () => {
     it('allows Generalized RDF Triples', async() => {
-      const op = <TermFunctionBase> sparqlFunctions[SparqlOperator.LT];
+      const op = new TermFunctionLesserThan(new TermFunctionEquality());
       const dg = new Eval.DefaultGraph();
       expect(op.applyOnTerms(
         [
@@ -27,7 +27,9 @@ describe('lesser than', () => {
           ),
         ],
         await getMockEEFactory({
-          mediatorFunctionFactory: createFuncMediator(),
+          mediatorFunctionFactory: createFuncMediator([
+            args => new ActorFunctionFactoryTermFunctionAddition(args),
+          ], {}),
         }).run({
           algExpr: getMockExpression(),
           context: getMockEEActionContext(),

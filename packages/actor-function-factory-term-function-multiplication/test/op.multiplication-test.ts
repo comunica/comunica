@@ -1,9 +1,13 @@
+import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { error, merge, numeric } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import type { ITestTableConfigBase } from '@comunica/expression-evaluator/test/util/utils';
-import { runFuncTestTable } from '../../../bus-function-factory/test/util';
+import { ActorFunctionFactoryTermFunctionMultiplication } from '../lib';
 
-const config: ITestTableConfigBase = {
+const config: FuncTestTableConfig<object> = {
+  registeredActors: [
+    args => new ActorFunctionFactoryTermFunctionMultiplication(args),
+  ],
   arity: 2,
   operation: '*',
   aliases: merge(numeric, error),
@@ -37,9 +41,9 @@ describe('evaluation of \'*\' like', () => {
       anyNum NaN    = NaN
     `,
     errorTable: `
-      anyNum error = ''
-      error  anyNum   = ''
-      error  error = ''
+      anyNum error = 'Argument types not valid for operator'
+      error  anyNum   = 'Argument types not valid for operator'
+      error  error = 'Argument types not valid for operator'
     `,
   });
 });

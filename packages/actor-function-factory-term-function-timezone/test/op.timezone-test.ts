@@ -1,9 +1,13 @@
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { dateTyped, timeTyped } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../../bus-function-factory/test/util';
+import { ActorFunctionFactoryTermFunctionTimezone } from '../lib';
 
 describe('evaluation of \'timezone\'', () => {
   runFuncTestTable({
+    registeredActors: [
+      args => new ActorFunctionFactoryTermFunctionTimezone(args),
+    ],
     operation: 'timezone',
     arity: 1,
     notation: Notation.Function,

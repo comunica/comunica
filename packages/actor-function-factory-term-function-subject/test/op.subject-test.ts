@@ -1,9 +1,13 @@
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../../bus-function-factory/test/util';
+import { ActorFunctionFactoryTermFunctionSubject } from '../lib';
 
 describe('evaluation of \'SUBJECT\'', () => {
   // Originates from: https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#subject
   runFuncTestTable({
+    registeredActors: [
+      args => new ActorFunctionFactoryTermFunctionSubject(args),
+    ],
     arity: 1,
     notation: Notation.Function,
     operation: 'SUBJECT',
@@ -13,6 +17,9 @@ describe('evaluation of \'SUBJECT\'', () => {
     ],
   });
   runFuncTestTable({
+    registeredActors: [
+      args => new ActorFunctionFactoryTermFunctionSubject(args),
+    ],
     arity: 1,
     notation: Notation.Function,
     operation: 'SUBJECT',

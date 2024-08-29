@@ -1,14 +1,45 @@
+import { ActorFunctionFactoryTermFunctionXsdToDate } from '@comunica/actor-function-factory-term-function-xsd-to-date';
+import {
+  ActorFunctionFactoryTermFunctionXsdToDatetime,
+} from '@comunica/actor-function-factory-term-function-xsd-to-datetime';
+import {
+  ActorFunctionFactoryTermFunctionXsdToDayTimeDuration,
+} from '@comunica/actor-function-factory-term-function-xsd-to-day-time-duration';
+import {
+  ActorFunctionFactoryTermFunctionXsdToDecimal,
+} from '@comunica/actor-function-factory-term-function-xsd-to-decimal';
+import {
+  ActorFunctionFactoryTermFunctionXsdToDouble,
+} from '@comunica/actor-function-factory-term-function-xsd-to-double';
+import {
+  ActorFunctionFactoryTermFunctionXsdToDuration,
+} from '@comunica/actor-function-factory-term-function-xsd-to-duration';
+import { ActorFunctionFactoryTermFunctionXsdToFloat } from '@comunica/actor-function-factory-term-function-xsd-to-float';
+import {
+  ActorFunctionFactoryTermFunctionXsdToInteger,
+} from '@comunica/actor-function-factory-term-function-xsd-to-integer';
+import {
+  ActorFunctionFactoryTermFunctionXsdToString,
+} from '@comunica/actor-function-factory-term-function-xsd-to-string';
+import { ActorFunctionFactoryTermFunctionXsdToTime } from '@comunica/actor-function-factory-term-function-xsd-to-time';
+import {
+  ActorFunctionFactoryTermFunctionXsdToYearMonthDuration,
+} from '@comunica/actor-function-factory-term-function-xsd-to-year-month-duration';
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import {
   dayTimeDurationTyped,
   durationTyped,
   yearMonthDurationTyped,
 } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../../bus-function-factory/test/util';
+import { ActorFunctionFactoryTermFunctionXsdToBoolean } from '../lib';
 
 describe('evaluation of XPath constructors', () => {
   describe('to string', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionXsdToString(args),
+      ],
       arity: 1,
       notation: Notation.Function,
       operation: 'xsd:string',
@@ -34,6 +65,9 @@ describe('evaluation of XPath constructors', () => {
 
   describe('to float', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionXsdToFloat(args),
+      ],
       arity: 1,
       operation: 'xsd:float',
       notation: Notation.Function,
@@ -71,18 +105,21 @@ describe('evaluation of XPath constructors', () => {
         "-INF" = "-INF"^^xsd:float'
       `,
       errorTable: `
-        "http://example.org/z"^^xsd:string = ''
-        "string"^^xsd:string = ''
-        "2002-10-10T17:00:00Z"^^xsd:string = ''
-        "true"^^xsd:string = ''
-        "false"^^xsd:string = ''
-        "foo"^^xsd:float = ''
+        "http://example.org/z"^^xsd:string = 'Argument types not valid for operator'
+        "string"^^xsd:string = 'Argument types not valid for operator'
+        "2002-10-10T17:00:00Z"^^xsd:string = 'Argument types not valid for operator'
+        "true"^^xsd:string = 'Argument types not valid for operator'
+        "false"^^xsd:string = 'Argument types not valid for operator'
+        "foo"^^xsd:float = 'Argument types not valid for operator'
       `,
     });
   });
 
   describe('to double', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionXsdToDouble(args),
+      ],
       arity: 1,
       notation: Notation.Function,
       operation: 'xsd:double',
@@ -120,18 +157,21 @@ describe('evaluation of XPath constructors', () => {
         "-INF" = "-INF"^^xsd:double
       `,
       errorTable: `
-        "http://example.org/z"^^xsd:string = ''
-        "string"^^xsd:string = ''
-        "2002-10-10T17:00:00Z"^^xsd:string = ''
-        "true"^^xsd:string = ''
-        "false"^^xsd:string = ''
-        "foo"^^xsd:double = ''
+        "http://example.org/z"^^xsd:string = 'Argument types not valid for operator'
+        "string"^^xsd:string = 'Argument types not valid for operator'
+        "2002-10-10T17:00:00Z"^^xsd:string = 'Argument types not valid for operator'
+        "true"^^xsd:string = 'Argument types not valid for operator'
+        "false"^^xsd:string = 'Argument types not valid for operator'
+        "foo"^^xsd:double = 'Argument types not valid for operator'
       `,
     });
   });
 
   describe('to decimal', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionXsdToDecimal(args),
+      ],
       arity: 1,
       notation: Notation.Function,
       operation: 'xsd:decimal',
@@ -166,25 +206,28 @@ describe('evaluation of XPath constructors', () => {
         "-2.5"^^xsd:decimal = "-2.5"^^xsd:decimal
       `,
       errorTable: `
-        "http://example.org/z"^^xsd:string = ''
-        <http://example.org/z> = ''
-        "string"^^xsd:string = ''
-        "-10.2E3"^^xsd:string = ''
-        "0E1"^^xsd:string = ''
-        "1E0"^^xsd:string = ''
-        "2002-10-10T17:00:00Z"^^xsd:string = ''
-        "true"^^xsd:string = ''
-        "false"^^xsd:string = ''
-        "foo"^^xsd:decimal = ''
-        "NaN"^^xsd:double = ''
-        "+INF"^^xsd:double = ''
-        "-INF"^^xsd:double = ''
+        "http://example.org/z"^^xsd:string = 'Argument types not valid for operator'
+        <http://example.org/z> = 'Argument types not valid for operator'
+        "string"^^xsd:string = 'Argument types not valid for operator'
+        "-10.2E3"^^xsd:string = 'Argument types not valid for operator'
+        "0E1"^^xsd:string = 'Argument types not valid for operator'
+        "1E0"^^xsd:string = 'Argument types not valid for operator'
+        "2002-10-10T17:00:00Z"^^xsd:string = 'Argument types not valid for operator'
+        "true"^^xsd:string = 'Argument types not valid for operator'
+        "false"^^xsd:string = 'Argument types not valid for operator'
+        "foo"^^xsd:decimal = 'Argument types not valid for operator'
+        "NaN"^^xsd:double = 'Argument types not valid for operator'
+        "+INF"^^xsd:double = 'Argument types not valid for operator'
+        "-INF"^^xsd:double = 'Argument types not valid for operator'
       `,
     });
   });
 
   describe('to integer', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionXsdToInteger(args),
+      ],
       arity: 1,
       notation: Notation.Function,
       operation: 'xsd:integer',
@@ -212,25 +255,28 @@ describe('evaluation of XPath constructors', () => {
         "-2.5"^^xsd:decimal = "-2"^^xsd:integer
       `,
       errorTable: `
-        "-10.2E3"^^xsd:string = ''
-        "+33.3300"^^xsd:string = ''
-        "0.0"^^xsd:string = ''
-        "0E1"^^xsd:string = ''
-        "1.5"^^xsd:string = ''
-        "1E0"^^xsd:string = ''
-        "2002-10-10T17:00:00Z"^^xsd:string = ''
-        "false"^^xsd:string = ''
-        "true"^^xsd:string = ''
-        "foo"^^xsd:integer = ''
-        "NaN"^^xsd:double = ''
-        "+INF"^^xsd:double = ''
-        "-INF"^^xsd:double = ''
+        "-10.2E3"^^xsd:string = 'Argument types not valid for operator'
+        "+33.3300"^^xsd:string = 'Argument types not valid for operator'
+        "0.0"^^xsd:string = 'Argument types not valid for operator'
+        "0E1"^^xsd:string = 'Argument types not valid for operator'
+        "1.5"^^xsd:string = 'Argument types not valid for operator'
+        "1E0"^^xsd:string = 'Argument types not valid for operator'
+        "2002-10-10T17:00:00Z"^^xsd:string = 'Argument types not valid for operator'
+        "false"^^xsd:string = 'Argument types not valid for operator'
+        "true"^^xsd:string = 'Argument types not valid for operator'
+        "foo"^^xsd:integer = 'Argument types not valid for operator'
+        "NaN"^^xsd:double = 'Argument types not valid for operator'
+        "+INF"^^xsd:double = 'Argument types not valid for operator'
+        "-INF"^^xsd:double = 'Argument types not valid for operator'
       `,
     });
   });
 
   describe('to dateTime', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionXsdToDatetime(args),
+      ],
       arity: 1,
       notation: Notation.Function,
       operation: 'xsd:dateTime',
@@ -247,15 +293,18 @@ describe('evaluation of XPath constructors', () => {
       `,
       errorTable: `
         "foo" = ''
-        "1234567789"^^xsd:integer = ''
-        "foo"^^xsd:dateTime = ''
-        "1999-03-17" = ''
+        "1234567789"^^xsd:integer = 'Argument types not valid for operator'
+        "foo"^^xsd:dateTime = 'Argument types not valid for operator'
+        "1999-03-17" = 'Argument types not valid for operator'
       `,
     });
   });
 
   describe('to boolean', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionXsdToBoolean(args),
+      ],
       arity: 1,
       notation: Notation.Function,
       operation: 'xsd:boolean',
@@ -284,22 +333,25 @@ describe('evaluation of XPath constructors', () => {
         "-2.5"^^xsd:decimal = "true"^^xsd:boolean
       `,
       errorTable: `
-        "http://example.org/z"^^xsd:string = ''
-        "string"^^xsd:string = ''
-        "-10.2E3"^^xsd:string = ''
-        "+33.3300"^^xsd:string = ''
-        "0.0"^^xsd:string = ''
-        "0E1"^^xsd:string = ''
-        "1.5"^^xsd:string = ''
-        "1E0"^^xsd:string = ''
-        "2002-10-10T17:00:00Z"^^xsd:string = ''
-        "foo"^^xsd:boolean = ''
+        "http://example.org/z"^^xsd:string = 'Argument types not valid for operator'
+        "string"^^xsd:string = 'Argument types not valid for operator'
+        "-10.2E3"^^xsd:string = 'Argument types not valid for operator'
+        "+33.3300"^^xsd:string = 'Argument types not valid for operator'
+        "0.0"^^xsd:string = 'Argument types not valid for operator'
+        "0E1"^^xsd:string = 'Argument types not valid for operator'
+        "1.5"^^xsd:string = 'Argument types not valid for operator'
+        "1E0"^^xsd:string = 'Argument types not valid for operator'
+        "2002-10-10T17:00:00Z"^^xsd:string = 'Argument types not valid for operator'
+        "foo"^^xsd:boolean = 'Argument types not valid for operator'
       `,
     });
   });
 
   describe('to date', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionXsdToDate(args),
+      ],
       arity: 1,
       notation: Notation.Function,
       operation: 'xsd:date',
@@ -313,13 +365,16 @@ describe('evaluation of XPath constructors', () => {
         "1999-03-17Z"^^xsd:date = "1999-03-17Z"^^xsd:date
       `,
       errorTable: `
-        "1999-03-17ZZ"^^xsd:date = ''
+        "1999-03-17ZZ"^^xsd:date = 'Argument types not valid for operator'
       `,
     });
   });
 
   describe('to time', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionXsdToTime(args),
+      ],
       arity: 1,
       notation: Notation.Function,
       operation: 'xsd:time',
@@ -333,13 +388,16 @@ describe('evaluation of XPath constructors', () => {
         "06:00:00"^^xsd:time = "06:00:00"^^xsd:time
       `,
       errorTable: `
-        "06:00:00Z+00:00"^^xsd:time = ''
+        "06:00:00Z+00:00"^^xsd:time = 'Argument types not valid for operator'
       `,
     });
   });
 
   describe('to duration', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionXsdToDuration(args),
+      ],
       arity: 1,
       notation: Notation.Function,
       operation: 'xsd:duration',
@@ -351,6 +409,9 @@ describe('evaluation of XPath constructors', () => {
 
   describe('to yearMonthDuration', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionXsdToYearMonthDuration(args),
+      ],
       arity: 1,
       notation: Notation.Function,
       operation: 'xsd:yearMonthDuration',
@@ -361,13 +422,16 @@ describe('evaluation of XPath constructors', () => {
         ${dayTimeDurationTyped('P1DT1H1M1.1S')} = ${yearMonthDurationTyped('P0M')}
       `,
       errorTable: `
-        '"-PT10H"' = ''
+        '"-PT10H"' = 'Argument types not valid for operator'
       `,
     });
   });
 
   describe('to dayTimeDuration', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionXsdToDayTimeDuration(args),
+      ],
       arity: 1,
       notation: Notation.Function,
       operation: 'xsd:dayTimeDuration',
@@ -378,7 +442,7 @@ describe('evaluation of XPath constructors', () => {
         '${yearMonthDurationTyped('-P5Y2M')}' = '${dayTimeDurationTyped('PT0S')}'
       `,
       errorTable: `
-        '"P5Y30M"' = ''
+        '"P5Y30M"' = 'Argument types not valid for operator'
       `,
     });
   });

@@ -1,3 +1,5 @@
+import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import {
   dateTimeTyped,
   error,
@@ -6,10 +8,12 @@ import {
   yearMonthDurationTyped,
 } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import type { ITestTableConfigBase } from '@comunica/expression-evaluator/test/util/utils';
-import { runFuncTestTable } from '../../../bus-function-factory/test/util';
+import { ActorFunctionFactoryTermFunctionSubtraction } from '../lib';
 
-const config: ITestTableConfigBase = {
+const config: FuncTestTableConfig<object> = {
+  registeredActors: [
+    args => new ActorFunctionFactoryTermFunctionSubtraction(args),
+  ],
   arity: 2,
   operation: '-',
   aliases: merge(numeric, error),

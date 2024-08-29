@@ -6,6 +6,7 @@ import type { AsyncExtensionFunctionCreator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { runFuncTestTable } from '../../../bus-function-factory/test/util';
+import { ActorFunctionFactoryWrapperAll } from '../../lib';
 
 const DF = new DataFactory();
 
@@ -31,6 +32,9 @@ describe('extension functions:', () => {
 
     describe('Can be evaluated', () => {
       runFuncTestTable({
+        registeredActors: [
+          args => new ActorFunctionFactoryWrapperAll(args),
+        ],
         arity: 2,
         notation: Notation.Function,
         operation: '<https://example.org/functions#equal>',
@@ -87,6 +91,9 @@ describe('extension functions:', () => {
         3f   NaN = ${e}
         `;
       runFuncTestTable({
+        registeredActors: [
+          args => new ActorFunctionFactoryWrapperAll(args),
+        ],
         arity: 2,
         notation: Notation.Function,
         operation: '<https://example.org/functions#equal>',
@@ -97,6 +104,9 @@ describe('extension functions:', () => {
 
     describe('throws error when providing a failing implementation', () => {
       runFuncTestTable({
+        registeredActors: [
+          args => new ActorFunctionFactoryWrapperAll(args),
+        ],
         arity: 1,
         notation: Notation.Function,
         operation: '<https://example.org/functions#bad>',
@@ -113,6 +123,9 @@ describe('extension functions:', () => {
     describe('upper case', () => {
       const stringType = DF.namedNode('http://www.w3.org/2001/XMLSchema#string');
       runFuncTestTable({
+        registeredActors: [
+          args => new ActorFunctionFactoryWrapperAll(args),
+        ],
         arity: 1,
         notation: Notation.Function,
         operation: '<http://example.org/functions#to-upper-case>',

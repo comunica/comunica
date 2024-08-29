@@ -1,11 +1,17 @@
+import { ActorFunctionFactoryTermFunctionNot } from '@comunica/actor-function-factory-term-function-not';
+import { ActorFunctionFactoryTermFunctionUnaryMinus } from '@comunica/actor-function-factory-term-function-unary-minus';
+import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { bool } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import type { ITestTableConfigBase } from '@comunica/expression-evaluator/test/util/utils';
-import { runFuncTestTable } from '../../../bus-function-factory/test/util';
+import { ActorFunctionFactoryTermFunctionUnaryPlus } from '../lib';
 
 describe('unary functions', () => {
   describe('evaluation of \'! (unary)\' like', () => {
-    const config: ITestTableConfigBase = {
+    const config: FuncTestTableConfig<object> = {
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionNot(args),
+      ],
       arity: 1,
       operation: '!',
       notation: Notation.Prefix,
@@ -31,6 +37,9 @@ describe('unary functions', () => {
 
   describe('evaluation of \'+ (unary)\' like', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionUnaryPlus(args),
+      ],
       arity: 1,
       operation: '+',
       notation: Notation.Prefix,
@@ -48,6 +57,9 @@ describe('unary functions', () => {
   describe('evaluation of \'- (unary)\' like', () => {
     // '- "0"^^xsd:float       = "-0."^^xsd:float   ' // TODO: Document
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionUnaryMinus(args),
+      ],
       arity: 1,
       operation: '-',
       notation: Notation.Prefix,

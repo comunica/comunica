@@ -1,9 +1,13 @@
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../../bus-function-factory/test/util';
+import { ActorFunctionFactoryTermFunctionTriple } from '../lib';
 
 describe('evaluation of \'TRIPLE\'', () => {
   // Originates from: https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#triple-function
   runFuncTestTable({
+    registeredActors: [
+      args => new ActorFunctionFactoryTermFunctionTriple(args),
+    ],
     arity: 'vary',
     notation: Notation.Function,
     operation: 'TRIPLE',
