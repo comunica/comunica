@@ -41,9 +41,9 @@ describe('evaluation of \'*\' like', () => {
       anyNum NaN    = NaN
     `,
     errorTable: `
-      anyNum error = 'Argument types not valid for operator'
-      error  anyNum   = 'Argument types not valid for operator'
-      error  error = 'Argument types not valid for operator'
+      anyNum invalidDateTime = 'Argument types not valid for operator'
+      invalidDateTime  anyNum   = 'Argument types not valid for operator'
+      invalidDateTime  invalidDateTime = 'Argument types not valid for operator'
     `,
   });
 });

@@ -41,7 +41,7 @@ describe('We should respect the timezone-01 spec', () => {
       '${d3}' = "PT0S"^^xsd:dayTimeDuration
     `,
     errorTable: `
-      '${d4}' = 'Argument types not valid for operator'    
+      '${d4}' = 'has no timezone'    
     `,
   });
 });

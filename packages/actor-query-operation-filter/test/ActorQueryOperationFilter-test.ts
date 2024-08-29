@@ -1,6 +1,13 @@
-import { createFuncMediator } from 'packages/bus-function-factory/test/util';
+import {
+  ActorFunctionFactoryExpressionFunctionConcat,
+} from '@comunica/actor-function-factory-expression-function-concat';
+import { ActorFunctionFactoryTermFunctionAddition } from '@comunica/actor-function-factory-term-function-addition';
+import { ActorFunctionFactoryTermFunctionEquality } from '@comunica/actor-function-factory-term-function-equality';
+import { ActorFunctionFactoryTermFunctionIri } from '@comunica/actor-function-factory-term-function-iri';
+import { ActorFunctionFactoryTermFunctionStr } from '@comunica/actor-function-factory-term-function-str';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
+import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
@@ -97,7 +104,13 @@ describe('ActorQueryOperationFilter', () => {
     beforeEach(() => {
       mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
         mediatorQueryOperation,
-        mediatorFunctionFactory: createFuncMediator(),
+        mediatorFunctionFactory: createFuncMediator([
+          args => new ActorFunctionFactoryTermFunctionAddition(args),
+          args => new ActorFunctionFactoryTermFunctionEquality(args),
+          args => new ActorFunctionFactoryTermFunctionStr(args),
+          args => new ActorFunctionFactoryExpressionFunctionConcat(args),
+          args => new ActorFunctionFactoryTermFunctionIri(args),
+        ], {}),
       });
 
       actor = new ActorQueryOperationFilter({

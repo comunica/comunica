@@ -6,7 +6,6 @@ import { MinAggregator } from '@comunica/actor-bindings-aggregator-factory-min';
 import { SampleAggregator } from '@comunica/actor-bindings-aggregator-factory-sample';
 import { SumAggregator } from '@comunica/actor-bindings-aggregator-factory-sum';
 import { WildcardCountAggregator } from '@comunica/actor-bindings-aggregator-factory-wildcard-count';
-import { createFuncMediator } from 'packages/bus-function-factory/test/util';
 import { createTermCompMediator } from '@comunica/actor-term-comparator-factory-expression-evaluator/test/util';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type {
@@ -16,6 +15,7 @@ import type {
 } from '@comunica/bus-bindings-aggregator-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
+import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
@@ -88,6 +88,8 @@ const sumZ: Algebra.BoundAggregate = {
 
 const hashFunction = (bindings: any) => JSON.stringify(bindings);
 
+const mediatorFunctionFactory: MediatorFunctionFactory = createFuncMediator([], {});
+
 function getDefaultMediatorQueryOperation() {
   return {
     mediate: (arg: any) => Promise.resolve({
@@ -121,7 +123,6 @@ interface ICaseOutput {
 async function aggregatorFactory(factory: ActorExpressionEvaluatorFactory, { expr, context }:
 IActionBindingsAggregatorFactory):
   Promise<IActorBindingsAggregatorFactoryOutput> {
-  const mediatorFunctionFactory: MediatorFunctionFactory = createFuncMediator();
   const mediatorTermComparatorFactory: MediatorTermComparatorFactory = createTermCompMediator();
   context = getMockEEActionContext(context);
 
@@ -218,7 +219,7 @@ function constructCase(
   };
   const expressionEvaluatorFactory = getMockEEFactory({
     mediatorQueryOperation,
-    mediatorFunctionFactory: createFuncMediator(),
+    mediatorFunctionFactory,
   });
   const mediatorBindingsAggregatorFactory = <MediatorBindingsAggregatorFactory> {
     async mediate(args: IActionBindingsAggregatorFactory):

@@ -40,7 +40,6 @@ export class ActorFunctionFactoryExpressionFunctionNotIn extends ActorFunctionFa
   Promise<T extends { requireTermExpression: true } ? IActorFunctionFactoryOutputTerm : IActorFunctionFactoryOutput> {
     const inFunction = await this.mediatorFunctionFactory.mediate({
       functionName: SparqlOperator.IN,
-      requireTermExpression: true,
       context: args.context,
       arguments: args.arguments,
     });

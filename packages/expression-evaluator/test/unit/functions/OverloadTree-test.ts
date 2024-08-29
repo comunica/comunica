@@ -1,10 +1,11 @@
 import type { ExpressionEvaluator } from '@comunica/actor-expression-evaluator-factory-default/lib/ExpressionEvaluator';
-import { sparqlFunctions } from '@comunica/actor-function-factory-wrapper-all/lib/implementation/SparqlFunctions';
+import { TermFunctionAddition } from '@comunica/actor-function-factory-term-function-addition/lib/TermFunctionAddition';
 import type { TermFunctionBase } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
 import type { ISuperTypeProvider } from '@comunica/types';
-import { TypeURL } from '../../../lib';
+import { TypeURL, OverloadTree } from '../../../lib';
+import type { FunctionArgumentsCache, KnownLiteralTypes } from '../../../lib';
 import {
   IntegerLiteral,
   isLiteralTermExpression,
@@ -12,9 +13,6 @@ import {
   StringLiteral,
 } from '../../../lib/expressions';
 import type { ISerializable } from '../../../lib/expressions';
-import type { FunctionArgumentsCache } from '../../../lib/functions/OverloadTree';
-import { OverloadTree } from '../../../lib/functions/OverloadTree';
-import type { KnownLiteralTypes } from '../../../lib/util/Consts';
 import { getMockExpression } from '../../util/utils';
 
 describe('OverloadTree', () => {
@@ -125,7 +123,7 @@ describe('OverloadTree', () => {
   it('will cache addition function', () => {
     const one = new IntegerLiteral(1);
     const two = new IntegerLiteral(2);
-    const additionFunction = <TermFunctionBase> sparqlFunctions['+'];
+    const additionFunction = <TermFunctionBase> new TermFunctionAddition();
     expect(functionArgumentsCache['+']).toBeUndefined();
     const res = additionFunction.applyOnTerms([ one, two ], expressionEvaluator);
     expect(res.str()).toBe('3');

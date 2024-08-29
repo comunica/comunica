@@ -1,7 +1,7 @@
-import { createFuncMediator } from 'packages/bus-function-factory/test/util';
 import type { IBindingsAggregator } from '@comunica/bus-bindings-aggregator-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
+import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { SparqlOperator } from '@comunica/expression-evaluator';
 import {
@@ -18,6 +18,7 @@ import {
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { SumAggregator } from '../lib';
+import {ActorFunctionFactoryTermFunctionAddition} from "@comunica/actor-function-factory-term-function-addition";
 
 async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Bindings[]): Promise<RDF.Term | undefined> {
   for (const bindings of input) {
@@ -54,7 +55,9 @@ describe('SumAggregator', () => {
 
   beforeEach(() => {
     expressionEvaluatorFactory = getMockEEFactory();
-    mediatorFunctionFactory = createFuncMediator();
+    mediatorFunctionFactory = createFuncMediator([
+      args => new ActorFunctionFactoryTermFunctionAddition(args),
+    ], ç});
 
     context = getMockEEActionContext();
   });

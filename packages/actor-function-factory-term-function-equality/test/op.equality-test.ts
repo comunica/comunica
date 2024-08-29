@@ -123,6 +123,7 @@ describe('evaluation of \'=\'', () => {
   describe('with date operants like', () => {
     // Originates from: https://www.w3.org/TR/xpath-functions/#func-date-equal
     runFuncTestTable({
+      ...config,
       operation: '=',
       arity: 2,
       notation: Notation.Infix,
@@ -137,6 +138,7 @@ describe('evaluation of \'=\'', () => {
   describe('with time operants like', () => {
     // Originates from: https://www.w3.org/TR/xpath-functions/#func-time-equal
     runFuncTestTable({
+      ...config,
       operation: '=',
       arity: 2,
       notation: Notation.Infix,

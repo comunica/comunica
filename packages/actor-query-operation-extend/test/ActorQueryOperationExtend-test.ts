@@ -1,8 +1,10 @@
-import { createFuncMediator } from 'packages/bus-function-factory/test/util';
+import { ActorFunctionFactoryTermFunctionAddition } from '@comunica/actor-function-factory-term-function-addition';
+import { ActorFunctionFactoryTermFunctionStrLen } from '@comunica/actor-function-factory-term-function-str-len';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type {
   MediatorExpressionEvaluatorFactory,
 } from '@comunica/bus-expression-evaluator-factory';
+import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Actor, Bus } from '@comunica/core';
 import * as sparqlee from '@comunica/expression-evaluator';
@@ -89,7 +91,10 @@ describe('ActorQueryOperationExtend', () => {
     };
     mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
       mediatorQueryOperation,
-      mediatorFunctionFactory: createFuncMediator(),
+      mediatorFunctionFactory: createFuncMediator([
+        args => new ActorFunctionFactoryTermFunctionStrLen(args),
+        args => new ActorFunctionFactoryTermFunctionAddition(args),
+      ], {}),
     });
 
     context = getMockEEActionContext();

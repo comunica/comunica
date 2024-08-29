@@ -1,12 +1,15 @@
-import { NamedExtension } from '@comunica/actor-function-factory-wrapper-all/lib/implementation/NamedExtension';
 import {
-  sparqlFunctions,
-  namedFunctions,
-} from '@comunica/actor-function-factory-wrapper-all/lib/implementation/SparqlFunctions';
-import { createFuncMediator } from 'packages/bus-function-factory/test/util';
-import type { IExpressionFunction, MediatorFunctionFactory } from '@comunica/bus-function-factory';
+  ActorFunctionFactoryExpressionFunctionBnode,
+} from '@comunica/actor-function-factory-expression-function-bnode';
+import {
+  ActorFunctionFactoryExpressionFunctionCoalesce,
+} from '@comunica/actor-function-factory-expression-function-coalesce';
+import { ActorFunctionFactoryExpressionFunctionIf } from '@comunica/actor-function-factory-expression-function-if';
+import { ActorFunctionFactoryTermFunctionNot } from '@comunica/actor-function-factory-term-function-not';
+import { ActorFunctionFactoryTermFunctionUnaryMinus } from '@comunica/actor-function-factory-term-function-unary-minus';
+import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import * as Eval from '@comunica/expression-evaluator';
-import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
+import { getMockEEActionContext } from '@comunica/jest';
 import { DataFactory } from 'rdf-data-factory';
 import { expressionTypes, types } from 'sparqlalgebrajs/lib/algebra';
 import { Wildcard } from 'sparqljs';
@@ -17,25 +20,16 @@ const DF = new DataFactory();
 describe('AlgebraTransformer', () => {
   let algebraTransformer: AlgebraTransformer;
   beforeEach(() => {
-    const factory = getMockEEFactory({ mediatorFunctionFactory: <MediatorFunctionFactory> {
-      async mediate({ functionName }) {
-        const res: IExpressionFunction | undefined = {
-          ...sparqlFunctions,
-          ...namedFunctions,
-        }[functionName];
-        if (res) {
-          return res;
-        }
-        return new NamedExtension({
-          operator: functionName,
-          functionDefinition: async() => DF.namedNode('http://example.com'),
-        });
-      },
-    }});
     algebraTransformer = new AlgebraTransformer(
       // This basically requires the function bus.
       Eval.prepareEvaluatorActionContext(getMockEEActionContext()),
-      createFuncMediator(),
+      createFuncMediator([
+        args => new ActorFunctionFactoryExpressionFunctionBnode(args),
+        args => new ActorFunctionFactoryExpressionFunctionIf(args),
+        args => new ActorFunctionFactoryExpressionFunctionCoalesce(args),
+        args => new ActorFunctionFactoryTermFunctionUnaryMinus(args),
+        args => new ActorFunctionFactoryTermFunctionNot(args),
+      ], {}),
     );
   });
 
@@ -142,7 +136,7 @@ describe('AlgebraTransformer', () => {
       expressionType: expressionTypes.OPERATOR,
       operator: 'foo',
       args: [],
-    })).rejects.toThrow(Eval.UnknownOperator);
+    })).rejects.toMatchObject(new Error('No registered actors on the function bus answered the mediator for:\nfoo'));
   });
 
   it('transform existence', async() => {

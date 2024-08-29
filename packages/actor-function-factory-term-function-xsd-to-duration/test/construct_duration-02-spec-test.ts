@@ -27,13 +27,13 @@ describe('Construct duration', () => {
       arity: 1,
       notation: Notation.Function,
       errorTable: `
-        '"P"' = 'Argument types not valid for operator'
-        '"-P"' = 'Argument types not valid for operator'
-        '"PT"' = 'Argument types not valid for operator'
-        '"-PT"' = 'Argument types not valid for operator'
-        '"PS"' = 'Argument types not valid for operator'
-        '""' = 'Argument types not valid for operator'
-        '"T1S"' = 'Argument types not valid for operator'
+        '"P"' = 'Failed to parse "P" as duration'
+        '"-P"' = 'Failed to parse "-P" as duration'
+        '"PT"' = 'Failed to parse "PT" as duration'
+        '"-PT"' = 'Failed to parse "-PT" as duration'
+        '"PS"' = 'Failed to parse "PS" as duration'
+        '""' = 'Failed to parse "" as duration'
+        '"T1S"' = 'Failed to parse "T1S" as duration'
       `,
     });
   });

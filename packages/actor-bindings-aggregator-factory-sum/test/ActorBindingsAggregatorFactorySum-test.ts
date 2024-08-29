@@ -1,8 +1,9 @@
-import { createFuncMediator } from 'packages/bus-function-factory/test/util';
+import { ActorFunctionFactoryTermFunctionAddition } from '@comunica/actor-function-factory-term-function-addition';
 import type {
   MediatorExpressionEvaluatorFactory,
 } from '@comunica/bus-expression-evaluator-factory';
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
+import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { Bus } from '@comunica/core';
 import {
   BF,
@@ -40,7 +41,9 @@ describe('ActorBindingsAggregatorFactorySum', () => {
     mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
       mediatorQueryOperation,
     });
-    mediatorFunctionFactory = createFuncMediator();
+    mediatorFunctionFactory = createFuncMediator([
+      args => new ActorFunctionFactoryTermFunctionAddition(args),
+    ], {});
   });
 
   describe('An ActorBindingsAggregatorFactoryMax instance', () => {

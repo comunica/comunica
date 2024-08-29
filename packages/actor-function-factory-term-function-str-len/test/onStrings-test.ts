@@ -7,19 +7,19 @@ import { ActorFunctionFactoryTermFunctionStrBefore } from '@comunica/actor-funct
 import { ActorFunctionFactoryTermFunctionStrEnds } from '@comunica/actor-function-factory-term-function-str-ends';
 import { ActorFunctionFactoryTermFunctionStrStarts } from '@comunica/actor-function-factory-term-function-str-starts';
 import { ActorFunctionFactoryTermFunctionSubStr } from '@comunica/actor-function-factory-term-function-sub-str';
+import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import * as Eval from '@comunica/expression-evaluator';
 import { bool, int, numeric } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import type { ITestTableConfigBase } from '@comunica/expression-evaluator/test/util/utils';
 import { LRUCache } from 'lru-cache';
 import { ActorFunctionFactoryTermFunctionStrLen } from '../lib';
 
 describe('string functions', () => {
   describe('evaluation of \'strlen\' like', () => {
-    const baseConfig: ITestTableConfigBase = {
+    const baseConfig: FuncTestTableConfig<object> = {
       registeredActors: [
         args => new ActorFunctionFactoryTermFunctionStrLen(args),
       ],

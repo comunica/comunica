@@ -1,7 +1,8 @@
-import { createFuncMediator } from 'packages/bus-function-factory/test/util';
+import { ActorFunctionFactoryTermFunctionStrLen } from '@comunica/actor-function-factory-term-function-str-len';
 import { createTermCompMediator } from '@comunica/actor-term-comparator-factory-expression-evaluator/test/util';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
+import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import { Bus } from '@comunica/core';
@@ -16,6 +17,9 @@ import { ActorQueryOperationOrderBy } from '../lib/ActorQueryOperationOrderBy';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
+const mediatorFunctionFactory = createFuncMediator([
+  args => new ActorFunctionFactoryTermFunctionStrLen(args),
+], {});
 
 describe('ActorQueryOperationOrderBy with mixed term types', () => {
   let bus: any;
@@ -53,7 +57,7 @@ describe('ActorQueryOperationOrderBy with mixed term types', () => {
       }),
     };
     mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
-      mediatorFunctionFactory: createFuncMediator(),
+      mediatorFunctionFactory: createFuncMediator([], {}),
     });
     mediatorTermComparatorFactory = createTermCompMediator();
     context = getMockEEActionContext();
@@ -167,7 +171,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     };
 
     mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
-      mediatorFunctionFactory: createFuncMediator(),
+      mediatorFunctionFactory,
     });
     mediatorTermComparatorFactory = createTermCompMediator();
     context = getMockEEActionContext();
@@ -389,7 +393,7 @@ describe('ActorQueryOperationOrderBy with multiple comparators', () => {
     };
 
     mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
-      mediatorFunctionFactory: createFuncMediator(),
+      mediatorFunctionFactory,
     });
     mediatorTermComparatorFactory = createTermCompMediator();
     context = getMockEEActionContext();
@@ -611,7 +615,7 @@ describe('ActorQueryOperationOrderBy with integer type', () => {
     };
 
     mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
-      mediatorFunctionFactory: createFuncMediator(),
+      mediatorFunctionFactory,
     });
     mediatorTermComparatorFactory = createTermCompMediator();
     context = getMockEEActionContext();
@@ -711,7 +715,7 @@ describe('ActorQueryOperationOrderBy with double type', () => {
     };
 
     mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
-      mediatorFunctionFactory: createFuncMediator(),
+      mediatorFunctionFactory,
     });
     mediatorTermComparatorFactory = createTermCompMediator();
     context = getMockEEActionContext();
@@ -811,7 +815,7 @@ describe('ActorQueryOperationOrderBy with decimal type', () => {
     };
 
     mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
-      mediatorFunctionFactory: createFuncMediator(),
+      mediatorFunctionFactory,
     });
     mediatorTermComparatorFactory = createTermCompMediator();
     context = getMockEEActionContext();
@@ -910,7 +914,7 @@ describe('ActorQueryOperationOrderBy with float type', () => {
       }),
     };
     mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
-      mediatorFunctionFactory: createFuncMediator(),
+      mediatorFunctionFactory,
     });
     mediatorTermComparatorFactory = createTermCompMediator();
     context = getMockEEActionContext();
@@ -1009,7 +1013,7 @@ describe('ActorQueryOperationOrderBy with mixed literal types', () => {
       }),
     };
     mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
-      mediatorFunctionFactory: createFuncMediator(),
+      mediatorFunctionFactory,
     });
     mediatorTermComparatorFactory = createTermCompMediator();
     context = getMockEEActionContext();
@@ -1109,7 +1113,7 @@ describe('Another ActorQueryOperationOrderBy with mixed types', () => {
     };
 
     mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
-      mediatorFunctionFactory: createFuncMediator(),
+      mediatorFunctionFactory,
     });
     mediatorTermComparatorFactory = createTermCompMediator();
     context = getMockEEActionContext();

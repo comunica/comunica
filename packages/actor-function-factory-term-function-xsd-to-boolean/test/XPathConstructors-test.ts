@@ -14,7 +14,9 @@ import {
 import {
   ActorFunctionFactoryTermFunctionXsdToDuration,
 } from '@comunica/actor-function-factory-term-function-xsd-to-duration';
-import { ActorFunctionFactoryTermFunctionXsdToFloat } from '@comunica/actor-function-factory-term-function-xsd-to-float';
+import {
+  ActorFunctionFactoryTermFunctionXsdToFloat,
+} from '@comunica/actor-function-factory-term-function-xsd-to-float';
 import {
   ActorFunctionFactoryTermFunctionXsdToInteger,
 } from '@comunica/actor-function-factory-term-function-xsd-to-integer';
@@ -105,12 +107,12 @@ describe('evaluation of XPath constructors', () => {
         "-INF" = "-INF"^^xsd:float'
       `,
       errorTable: `
-        "http://example.org/z"^^xsd:string = 'Argument types not valid for operator'
-        "string"^^xsd:string = 'Argument types not valid for operator'
-        "2002-10-10T17:00:00Z"^^xsd:string = 'Argument types not valid for operator'
-        "true"^^xsd:string = 'Argument types not valid for operator'
-        "false"^^xsd:string = 'Argument types not valid for operator'
-        "foo"^^xsd:float = 'Argument types not valid for operator'
+        "http://example.org/z"^^xsd:string = 'Invalid cast'
+        "string"^^xsd:string = 'Invalid cast'
+        "2002-10-10T17:00:00Z"^^xsd:string = 'Invalid cast'
+        "true"^^xsd:string = 'Invalid cast'
+        "false"^^xsd:string = 'Invalid cast'
+        "foo"^^xsd:float = 'Invalid lexical form'
       `,
     });
   });
@@ -157,12 +159,12 @@ describe('evaluation of XPath constructors', () => {
         "-INF" = "-INF"^^xsd:double
       `,
       errorTable: `
-        "http://example.org/z"^^xsd:string = 'Argument types not valid for operator'
-        "string"^^xsd:string = 'Argument types not valid for operator'
-        "2002-10-10T17:00:00Z"^^xsd:string = 'Argument types not valid for operator'
-        "true"^^xsd:string = 'Argument types not valid for operator'
-        "false"^^xsd:string = 'Argument types not valid for operator'
-        "foo"^^xsd:double = 'Argument types not valid for operator'
+        "http://example.org/z"^^xsd:string = 'Invalid cast'
+        "string"^^xsd:string = 'Invalid cast'
+        "2002-10-10T17:00:00Z"^^xsd:string = 'Invalid cast'
+        "true"^^xsd:string = 'Invalid cast'
+        "false"^^xsd:string = 'Invalid cast'
+        "foo"^^xsd:double = 'Invalid lexical form'
       `,
     });
   });
@@ -206,19 +208,19 @@ describe('evaluation of XPath constructors', () => {
         "-2.5"^^xsd:decimal = "-2.5"^^xsd:decimal
       `,
       errorTable: `
-        "http://example.org/z"^^xsd:string = 'Argument types not valid for operator'
+        "http://example.org/z"^^xsd:string = 'Invalid cast'
         <http://example.org/z> = 'Argument types not valid for operator'
-        "string"^^xsd:string = 'Argument types not valid for operator'
-        "-10.2E3"^^xsd:string = 'Argument types not valid for operator'
-        "0E1"^^xsd:string = 'Argument types not valid for operator'
-        "1E0"^^xsd:string = 'Argument types not valid for operator'
-        "2002-10-10T17:00:00Z"^^xsd:string = 'Argument types not valid for operator'
-        "true"^^xsd:string = 'Argument types not valid for operator'
-        "false"^^xsd:string = 'Argument types not valid for operator'
-        "foo"^^xsd:decimal = 'Argument types not valid for operator'
-        "NaN"^^xsd:double = 'Argument types not valid for operator'
-        "+INF"^^xsd:double = 'Argument types not valid for operator'
-        "-INF"^^xsd:double = 'Argument types not valid for operator'
+        "string"^^xsd:string = 'Invalid cast'
+        "-10.2E3"^^xsd:string = 'Invalid cast'
+        "0E1"^^xsd:string = 'Invalid cast'
+        "1E0"^^xsd:string = 'Invalid cast'
+        "2002-10-10T17:00:00Z"^^xsd:string = 'Invalid cast'
+        "true"^^xsd:string = 'Invalid cast'
+        "false"^^xsd:string = 'Invalid cast'
+        "foo"^^xsd:decimal = 'Invalid lexical form'
+        "NaN"^^xsd:double = 'Invalid cast'
+        "+INF"^^xsd:double = 'Invalid cast'
+        "-INF"^^xsd:double = 'Invalid cast'
       `,
     });
   });
@@ -255,19 +257,19 @@ describe('evaluation of XPath constructors', () => {
         "-2.5"^^xsd:decimal = "-2"^^xsd:integer
       `,
       errorTable: `
-        "-10.2E3"^^xsd:string = 'Argument types not valid for operator'
-        "+33.3300"^^xsd:string = 'Argument types not valid for operator'
-        "0.0"^^xsd:string = 'Argument types not valid for operator'
-        "0E1"^^xsd:string = 'Argument types not valid for operator'
-        "1.5"^^xsd:string = 'Argument types not valid for operator'
-        "1E0"^^xsd:string = 'Argument types not valid for operator'
-        "2002-10-10T17:00:00Z"^^xsd:string = 'Argument types not valid for operator'
-        "false"^^xsd:string = 'Argument types not valid for operator'
-        "true"^^xsd:string = 'Argument types not valid for operator'
-        "foo"^^xsd:integer = 'Argument types not valid for operator'
-        "NaN"^^xsd:double = 'Argument types not valid for operator'
-        "+INF"^^xsd:double = 'Argument types not valid for operator'
-        "-INF"^^xsd:double = 'Argument types not valid for operator'
+        "-10.2E3"^^xsd:string = 'Invalid cast'
+        "+33.3300"^^xsd:string = 'Invalid cast'
+        "0.0"^^xsd:string = 'Invalid cast'
+        "0E1"^^xsd:string = 'Invalid cast'
+        "1.5"^^xsd:string = 'Invalid cast'
+        "1E0"^^xsd:string = 'Invalid cast'
+        "2002-10-10T17:00:00Z"^^xsd:string = 'Invalid cast'
+        "false"^^xsd:string = 'Invalid cast'
+        "true"^^xsd:string = 'Invalid cast'
+        "foo"^^xsd:integer = 'Invalid lexical form'
+        "NaN"^^xsd:double = 'Invalid cast'
+        "+INF"^^xsd:double = 'Invalid cast'
+        "-INF"^^xsd:double = 'Invalid cast'
       `,
     });
   });
@@ -292,10 +294,10 @@ describe('evaluation of XPath constructors', () => {
         "1999-03-17-07:25"^^xsd:date = "1999-03-17T00:00:00-07:25"^^xsd:dateTime
       `,
       errorTable: `
-        "foo" = ''
+        "foo" = 'Failed to parse "foo"'
         "1234567789"^^xsd:integer = 'Argument types not valid for operator'
-        "foo"^^xsd:dateTime = 'Argument types not valid for operator'
-        "1999-03-17" = 'Argument types not valid for operator'
+        "foo"^^xsd:dateTime = 'Invalid lexical form'
+        "1999-03-17" = 'Failed to parse "1999-03-17"'
       `,
     });
   });
@@ -333,16 +335,16 @@ describe('evaluation of XPath constructors', () => {
         "-2.5"^^xsd:decimal = "true"^^xsd:boolean
       `,
       errorTable: `
-        "http://example.org/z"^^xsd:string = 'Argument types not valid for operator'
-        "string"^^xsd:string = 'Argument types not valid for operator'
-        "-10.2E3"^^xsd:string = 'Argument types not valid for operator'
-        "+33.3300"^^xsd:string = 'Argument types not valid for operator'
-        "0.0"^^xsd:string = 'Argument types not valid for operator'
-        "0E1"^^xsd:string = 'Argument types not valid for operator'
-        "1.5"^^xsd:string = 'Argument types not valid for operator'
-        "1E0"^^xsd:string = 'Argument types not valid for operator'
-        "2002-10-10T17:00:00Z"^^xsd:string = 'Argument types not valid for operator'
-        "foo"^^xsd:boolean = 'Argument types not valid for operator'
+        "http://example.org/z"^^xsd:string = 'Invalid cast'
+        "string"^^xsd:string = 'Invalid cast'
+        "-10.2E3"^^xsd:string = 'Invalid cast'
+        "+33.3300"^^xsd:string = 'Invalid cast'
+        "0.0"^^xsd:string = 'Invalid cast'
+        "0E1"^^xsd:string = 'Invalid cast'
+        "1.5"^^xsd:string = 'Invalid cast'
+        "1E0"^^xsd:string = 'Invalid cast'
+        "2002-10-10T17:00:00Z"^^xsd:string = 'Invalid cast'
+        "foo"^^xsd:boolean = 'Invalid lexical form'
       `,
     });
   });
@@ -365,7 +367,7 @@ describe('evaluation of XPath constructors', () => {
         "1999-03-17Z"^^xsd:date = "1999-03-17Z"^^xsd:date
       `,
       errorTable: `
-        "1999-03-17ZZ"^^xsd:date = 'Argument types not valid for operator'
+        "1999-03-17ZZ"^^xsd:date = 'Invalid lexical form'
       `,
     });
   });
@@ -388,7 +390,7 @@ describe('evaluation of XPath constructors', () => {
         "06:00:00"^^xsd:time = "06:00:00"^^xsd:time
       `,
       errorTable: `
-        "06:00:00Z+00:00"^^xsd:time = 'Argument types not valid for operator'
+        "06:00:00Z+00:00"^^xsd:time = 'Invalid lexical form'
       `,
     });
   });
@@ -422,7 +424,7 @@ describe('evaluation of XPath constructors', () => {
         ${dayTimeDurationTyped('P1DT1H1M1.1S')} = ${yearMonthDurationTyped('P0M')}
       `,
       errorTable: `
-        '"-PT10H"' = 'Argument types not valid for operator'
+        '"-PT10H"' = 'Failed to parse "-PT10H"'
       `,
     });
   });
@@ -442,7 +444,7 @@ describe('evaluation of XPath constructors', () => {
         '${yearMonthDurationTyped('-P5Y2M')}' = '${dayTimeDurationTyped('PT0S')}'
       `,
       errorTable: `
-        '"P5Y30M"' = 'Argument types not valid for operator'
+        '"P5Y30M"' = 'Failed to parse "P5Y30M"'
       `,
     });
   });

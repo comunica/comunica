@@ -79,6 +79,9 @@ describe('Year', () => {
   describe('We should allow YEAR on xsd:dateTime', () => {
     const { d1, d2, d3, d4 } = Data.data();
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionYear(args),
+      ],
       operation: 'YEAR',
       arity: 1,
       notation: Notation.Function,

@@ -24,10 +24,10 @@ describe('Construct time', () => {
       arity: 1,
       notation: Notation.Function,
       errorTable: `
-        '"24:00:01"' = 'Argument types not valid for operator'
-        '"05:60:00"' = 'Argument types not valid for operator'
-        '"00:00:61"' = 'Argument types not valid for operator'
-        '""' = 'Argument types not valid for operator'
+        '"24:00:01"' = 'Failed to parse "24:00:01" as time'
+        '"05:60:00"' = 'Failed to parse "05:60:00" as time'
+        '"00:00:61"' = 'Failed to parse "00:00:61" as time'
+        '""' = 'Failed to parse "" as time'
       `,
     });
   });

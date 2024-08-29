@@ -1,7 +1,7 @@
-import { bool } from 'packages/expression-evaluator/test/util/Aliases';
-import { Notation } from 'packages/expression-evaluator/test/util/TestTable';
-import * as Data from '../../actor-function-factory-wrapper-all/test/spec/_data';
-import { runFuncTestTable } from '../../bus-function-factory/test/util';
+import * as Data from '@comunica/actor-function-factory-wrapper-all/test/spec/_data';
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
+import { bool } from '@comunica/expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
 import { ActorFunctionFactoryTermFunctionStrEnds } from '../lib';
 
 /**

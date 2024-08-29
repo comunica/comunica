@@ -24,10 +24,10 @@ describe('Construct date', () => {
       arity: 1,
       notation: Notation.Function,
       errorTable: `
-        '"2000-00-01"' = 'Argument types not valid for operator'
-        '"2000-13-01"' = 'Argument types not valid for operator'
-        '"2000-06-00"' = 'Argument types not valid for operator'
-        '"2000-06-32"' = 'Argument types not valid for operator'
+        '"2000-00-01"' = 'Failed to parse "2000-00-01" as date'
+        '"2000-13-01"' = 'Failed to parse "2000-13-01" as date'
+        '"2000-06-00"' = 'Failed to parse "2000-06-00" as date'
+        '"2000-06-32"' = 'Failed to parse "2000-06-32" as date'
       `,
     });
   });

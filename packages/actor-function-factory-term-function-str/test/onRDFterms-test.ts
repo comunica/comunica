@@ -1,3 +1,7 @@
+import {
+  ActorFunctionFactoryExpressionFunctionBnode,
+} from '@comunica/actor-function-factory-expression-function-bnode';
+import { ActorFunctionFactoryTermFunctionAddition } from '@comunica/actor-function-factory-term-function-addition';
 import { ActorFunctionFactoryTermFunctionDatatype } from '@comunica/actor-function-factory-term-function-datatype';
 import { ActorFunctionFactoryTermFunctionIri } from '@comunica/actor-function-factory-term-function-iri';
 import { ActorFunctionFactoryTermFunctionIsBlank } from '@comunica/actor-function-factory-term-function-is-blank';
@@ -15,6 +19,7 @@ describe('evaluation of functions on RDF terms', () => {
     runFuncTestTable({
       registeredActors: [
         args => new ActorFunctionFactoryTermFunctionStr(args),
+        args => new ActorFunctionFactoryTermFunctionAddition(args),
       ],
       arity: 1,
       notation: Notation.Function,
@@ -99,6 +104,7 @@ describe('evaluation of functions on RDF terms', () => {
     runFuncTestTable({
       registeredActors: [
         args => new ActorFunctionFactoryTermFunctionIsIri(args),
+        args => new ActorFunctionFactoryExpressionFunctionBnode(args),
       ],
       arity: 1,
       aliases: bool,
@@ -116,6 +122,7 @@ describe('evaluation of functions on RDF terms', () => {
     runFuncTestTable({
       registeredActors: [
         args => new ActorFunctionFactoryTermFunctionIsIri(args),
+        args => new ActorFunctionFactoryExpressionFunctionBnode(args),
       ],
       arity: 1,
       aliases: bool,
@@ -133,6 +140,7 @@ describe('evaluation of functions on RDF terms', () => {
     runFuncTestTable({
       registeredActors: [
         args => new ActorFunctionFactoryTermFunctionIsBlank(args),
+        args => new ActorFunctionFactoryExpressionFunctionBnode(args),
       ],
       arity: 1,
       aliases: bool,
@@ -150,6 +158,7 @@ describe('evaluation of functions on RDF terms', () => {
     runFuncTestTable({
       registeredActors: [
         args => new ActorFunctionFactoryTermFunctionIsLiteral(args),
+        args => new ActorFunctionFactoryExpressionFunctionBnode(args),
       ],
       arity: 1,
       aliases: bool,
@@ -168,6 +177,7 @@ describe('evaluation of functions on RDF terms', () => {
     runFuncTestTable({
       registeredActors: [
         args => new ActorFunctionFactoryTermFunctionIsNumeric(args),
+        args => new ActorFunctionFactoryExpressionFunctionBnode(args),
       ],
       arity: 1,
       aliases: bool,

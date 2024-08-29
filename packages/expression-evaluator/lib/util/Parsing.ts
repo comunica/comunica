@@ -67,6 +67,9 @@ export function parseXSDInteger(value: string): number | undefined {
 export function parseDateTime(dateTimeStr: string): IDateTimeRepresentation {
   // https://www.w3.org/TR/xmlschema-2/#dateTime
   const [ date, time ] = dateTimeStr.split('T');
+  if (time === undefined) {
+    throw new ParseError(dateTimeStr, 'dateTime');
+  }
   return { ...parseDate(date), ...__parseTime(time) };
 }
 
