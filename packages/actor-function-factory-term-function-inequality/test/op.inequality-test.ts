@@ -1,3 +1,6 @@
+import { ActorFunctionFactoryTermFunctionEquality } from '@comunica/actor-function-factory-term-function-equality';
+import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import {
   bool,
   dateTime,
@@ -9,10 +12,13 @@ import {
   timeTyped,
 } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import type { ITestTableConfigBase } from '@comunica/expression-evaluator/test/util/utils';
-import { runFuncTestTable } from '../../../bus-function-factory/test/util';
+import { ActorFunctionFactoryTermFunctionInequality } from '../lib';
 
-const config: ITestTableConfigBase = {
+const config: FuncTestTableConfig<object> = {
+  registeredActors: [
+    args => new ActorFunctionFactoryTermFunctionInequality(args),
+    args => new ActorFunctionFactoryTermFunctionEquality(args),
+  ],
   arity: 2,
   operation: '!=',
   aliases: merge(numeric, str, dateTime, bool),
@@ -94,6 +100,7 @@ describe('evaluation of \'!=\'', () => {
   describe('with date operants like', () => {
     // Originates from: https://www.w3.org/TR/xpath-functions/#func-date-equal
     runFuncTestTable({
+      ...config,
       operation: '!=',
       arity: 2,
       notation: Notation.Infix,
@@ -108,6 +115,7 @@ describe('evaluation of \'!=\'', () => {
   describe('with time operants like', () => {
     // Originates from: https://www.w3.org/TR/xpath-functions/#func-time-equal
     runFuncTestTable({
+      ...config,
       operation: '!=',
       arity: 2,
       notation: Notation.Infix,
@@ -123,6 +131,7 @@ describe('evaluation of \'!=\'', () => {
   describe('with duration operants like', () => {
     // These tests are just inverse of the spec tests of =
     runFuncTestTable({
+      ...config,
       operation: '!=',
       arity: 2,
       notation: Notation.Infix,

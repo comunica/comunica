@@ -1,10 +1,13 @@
+import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { bool, error, merge } from '@comunica/expression-evaluator/test/util/Aliases';
-
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import type { ITestTableConfigBase } from '@comunica/expression-evaluator/test/util/utils';
-import { runFuncTestTable } from '../../../bus-function-factory/test/util';
+import { ActorFunctionFactoryExpressionFunctionLogicalOr } from '../lib';
 
-const config: ITestTableConfigBase = {
+const config: FuncTestTableConfig<object> = {
+  registeredActors: [
+    args => new ActorFunctionFactoryExpressionFunctionLogicalOr(args),
+  ],
   operation: '||',
   arity: 2,
   aliases: merge(bool, error),

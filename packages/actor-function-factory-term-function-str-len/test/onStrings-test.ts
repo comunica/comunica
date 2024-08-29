@@ -1,3 +1,13 @@
+import { ActorFunctionFactoryTermFunctionContains } from '@comunica/actor-function-factory-term-function-contains';
+import { ActorFunctionFactoryTermFunctionLangmatches } from '@comunica/actor-function-factory-term-function-langmatches';
+import { ActorFunctionFactoryTermFunctionRegex } from '@comunica/actor-function-factory-term-function-regex';
+import { ActorFunctionFactoryTermFunctionReplace } from '@comunica/actor-function-factory-term-function-replace';
+import { ActorFunctionFactoryTermFunctionStrAfter } from '@comunica/actor-function-factory-term-function-str-after';
+import { ActorFunctionFactoryTermFunctionStrBefore } from '@comunica/actor-function-factory-term-function-str-before';
+import { ActorFunctionFactoryTermFunctionStrEnds } from '@comunica/actor-function-factory-term-function-str-ends';
+import { ActorFunctionFactoryTermFunctionStrStarts } from '@comunica/actor-function-factory-term-function-str-starts';
+import { ActorFunctionFactoryTermFunctionSubStr } from '@comunica/actor-function-factory-term-function-sub-str';
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import * as Eval from '@comunica/expression-evaluator';
@@ -5,11 +15,14 @@ import { bool, int, numeric } from '@comunica/expression-evaluator/test/util/Ali
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
 import type { ITestTableConfigBase } from '@comunica/expression-evaluator/test/util/utils';
 import { LRUCache } from 'lru-cache';
-import { runFuncTestTable } from '../../../bus-function-factory/test/util';
+import { ActorFunctionFactoryTermFunctionStrLen } from '../lib';
 
 describe('string functions', () => {
   describe('evaluation of \'strlen\' like', () => {
     const baseConfig: ITestTableConfigBase = {
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionStrLen(args),
+      ],
       arity: 1,
       operation: 'strlen',
       notation: Notation.Function,
@@ -45,6 +58,9 @@ describe('string functions', () => {
 
   describe('evaluation of \'strstarts\' like', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionStrStarts(args),
+      ],
       arity: 2,
       operation: 'strstarts',
       notation: Notation.Function,
@@ -63,6 +79,9 @@ describe('string functions', () => {
 
   describe('evaluation of \'strends\' like', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionStrEnds(args),
+      ],
       arity: 2,
       operation: 'strends',
       notation: Notation.Function,
@@ -81,6 +100,9 @@ describe('string functions', () => {
 
   describe('evaluation of \'contains\' like', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionContains(args),
+      ],
       arity: 2,
       operation: 'contains',
       notation: Notation.Function,
@@ -101,6 +123,9 @@ describe('string functions', () => {
   // TODO: Add errors for when non BCP47 strings are passed
   describe('evaluation of \'langMatches\' like', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionLangmatches(args),
+      ],
       arity: 2,
       operation: 'langMatches',
       notation: Notation.Function,
@@ -123,6 +148,9 @@ describe('string functions', () => {
   describe('evaluations of \'strbefore\' like', () => {
     // Inspired on the specs: https://www.w3.org/TR/sparql11-query/#func-strbefore
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionStrBefore(args),
+      ],
       arity: 2,
       aliases: bool,
       operation: 'STRBEFORE',
@@ -146,6 +174,9 @@ describe('string functions', () => {
   describe('evaluations of \'strafter\' like', () => {
     // Inspired on the specs: https://www.w3.org/TR/sparql11-query/#func-strafter
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionStrAfter(args),
+      ],
       arity: 2,
       aliases: bool,
       operation: 'STRAFTER',
@@ -169,6 +200,9 @@ describe('string functions', () => {
   describe('evaluations of \'substr\' like', () => {
     // Last test is dedicated to type promotion
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionSubStr(args),
+      ],
       arity: 'vary',
       operation: 'substr',
       notation: Notation.Function,
@@ -201,6 +235,9 @@ describe('string functions', () => {
   describe('evaluation of \'regex\' like', () => {
     // TODO: Test better
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionRegex(args),
+      ],
       arity: 'vary',
       operation: 'regex',
       notation: Notation.Function,
@@ -221,6 +258,9 @@ describe('string functions', () => {
 
   describe('evaluation of \'replace\' like', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionReplace(args),
+      ],
       arity: 'vary',
       operation: 'replace',
       notation: Notation.Function,

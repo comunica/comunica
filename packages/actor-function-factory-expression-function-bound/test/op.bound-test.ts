@@ -1,20 +1,30 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
+import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
+import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import * as Eval from '@comunica/expression-evaluator';
 import { generalEvaluate } from '@comunica/expression-evaluator/test/util/generalEvaluation';
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
 import { DataFactory } from 'rdf-data-factory';
 import { expressionTypes, types } from 'sparqlalgebrajs/lib/algebra';
-import { createFuncMediator } from '../../../bus-function-factory/test/util';
+import { ActorFunctionFactoryExpressionFunctionBound } from '../lib';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
 
 describe('evaluation of \'bound\'', () => {
+  let mediatorFunctionFactory: MediatorFunctionFactory;
+
+  beforeEach(() => {
+    mediatorFunctionFactory = createFuncMediator([
+      args => new ActorFunctionFactoryExpressionFunctionBound(args),
+    ], {});
+  });
+
   it('\'bound\' on bounded variable returns true', async() => {
     const evaluated = await generalEvaluate({
       expression: 'SELECT * WHERE { ?s ?p ?o FILTER(BOUND(?s))}',
       exprEvalFactory: getMockEEFactory({
-        mediatorFunctionFactory: createFuncMediator(),
+        mediatorFunctionFactory,
       }),
       bindings: BF.bindings([
         [ DF.variable('s'), DF.namedNode('http://example.com') ],
@@ -27,7 +37,7 @@ describe('evaluation of \'bound\'', () => {
     const evaluated = await generalEvaluate({
       expression: 'SELECT * WHERE { ?s ?p ?o FILTER(BOUND(?s))}',
       exprEvalFactory: getMockEEFactory({
-        mediatorFunctionFactory: createFuncMediator(),
+        mediatorFunctionFactory,
       }),
     });
     expect(evaluated.asyncResult).toEqual(DF.literal('false', DF.namedNode(Eval.TypeURL.XSD_BOOLEAN)));
@@ -35,7 +45,7 @@ describe('evaluation of \'bound\'', () => {
 
   it('\'bound\' on term returns error', async() => {
     const evaluator = await getMockEEFactory({
-      mediatorFunctionFactory: createFuncMediator(),
+      mediatorFunctionFactory,
     }).run({
       algExpr: {
         type: types.EXPRESSION,

@@ -1,10 +1,21 @@
+import { ActorFunctionFactoryTermFunctionDatatype } from '@comunica/actor-function-factory-term-function-datatype';
+import { ActorFunctionFactoryTermFunctionIri } from '@comunica/actor-function-factory-term-function-iri';
+import { ActorFunctionFactoryTermFunctionIsBlank } from '@comunica/actor-function-factory-term-function-is-blank';
+import { ActorFunctionFactoryTermFunctionIsIri } from '@comunica/actor-function-factory-term-function-is-iri';
+import { ActorFunctionFactoryTermFunctionIsLiteral } from '@comunica/actor-function-factory-term-function-is-literal';
+import { ActorFunctionFactoryTermFunctionIsNumeric } from '@comunica/actor-function-factory-term-function-is-numeric';
+import { ActorFunctionFactoryTermFunctionLang } from '@comunica/actor-function-factory-term-function-lang';
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { bool } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../../bus-function-factory/test/util';
+import { ActorFunctionFactoryTermFunctionStr } from '../lib';
 
 describe('evaluation of functions on RDF terms', () => {
   describe('like \'str\' receiving', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionStr(args),
+      ],
       arity: 1,
       notation: Notation.Function,
       operation: 'str',
@@ -20,6 +31,9 @@ describe('evaluation of functions on RDF terms', () => {
     });
 
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionStr(args),
+      ],
       arity: 1,
       notation: Notation.Function,
       operation: 'STR',
@@ -32,6 +46,9 @@ describe('evaluation of functions on RDF terms', () => {
 
   describe('like \'lang\' receiving', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionLang(args),
+      ],
       arity: 1,
       notation: Notation.Function,
       operation: 'lang',
@@ -45,6 +62,9 @@ describe('evaluation of functions on RDF terms', () => {
     });
 
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionLang(args),
+      ],
       arity: 1,
       notation: Notation.Function,
       operation: 'LANG',
@@ -57,6 +77,9 @@ describe('evaluation of functions on RDF terms', () => {
 
   describe('like \'datatype\' receiving', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionDatatype(args),
+      ],
       arity: 1,
       notation: Notation.Function,
       operation: 'datatype',
@@ -74,6 +97,9 @@ describe('evaluation of functions on RDF terms', () => {
 
   describe('like \'isIRI\' receiving', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionIsIri(args),
+      ],
       arity: 1,
       aliases: bool,
       notation: Notation.Function,
@@ -88,6 +114,9 @@ describe('evaluation of functions on RDF terms', () => {
 
   describe('like \'isURI\' receiving', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionIsIri(args),
+      ],
       arity: 1,
       aliases: bool,
       notation: Notation.Function,
@@ -102,6 +131,9 @@ describe('evaluation of functions on RDF terms', () => {
 
   describe('like \'isBlank\' receiving', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionIsBlank(args),
+      ],
       arity: 1,
       aliases: bool,
       notation: Notation.Function,
@@ -116,6 +148,9 @@ describe('evaluation of functions on RDF terms', () => {
 
   describe('like \'isLiteral\' receiving', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionIsLiteral(args),
+      ],
       arity: 1,
       aliases: bool,
       notation: Notation.Function,
@@ -131,6 +166,9 @@ describe('evaluation of functions on RDF terms', () => {
 
   describe('like \'isNumeric\' receiving', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionIsNumeric(args),
+      ],
       arity: 1,
       aliases: bool,
       notation: Notation.Function,
@@ -148,6 +186,9 @@ describe('evaluation of functions on RDF terms', () => {
 
   describe('like \'iri\' receiving', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionIri(args),
+      ],
       arity: 1,
       notation: Notation.Function,
       operation: 'iri',
@@ -164,6 +205,9 @@ describe('evaluation of functions on RDF terms', () => {
 
   describe('like \'uri\' receiving', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionIri(args),
+      ],
       arity: 1,
       notation: Notation.Function,
       operation: 'uri',

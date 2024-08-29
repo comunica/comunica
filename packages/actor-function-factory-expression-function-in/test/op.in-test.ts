@@ -1,9 +1,16 @@
+import { ActorFunctionFactoryExpressionFunctionNotIn } from '@comunica/actor-function-factory-expression-function-not-in';
+import { ActorFunctionFactoryTermFunctionEquality } from '@comunica/actor-function-factory-term-function-equality';
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { bool, merge, numeric } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../../bus-function-factory/test/util';
+import { ActorFunctionFactoryExpressionFunctionIn } from '../lib';
 
 describe('evaluations of \'IN\'', () => {
   runFuncTestTable({
+    registeredActors: [
+      args => new ActorFunctionFactoryExpressionFunctionIn(args),
+      args => new ActorFunctionFactoryTermFunctionEquality(args),
+    ],
     operation: 'IN',
     arity: 2,
     notation: Notation.Infix,
@@ -20,6 +27,11 @@ describe('evaluations of \'IN\'', () => {
   });
 
   runFuncTestTable({
+    registeredActors: [
+      args => new ActorFunctionFactoryExpressionFunctionIn(args),
+      args => new ActorFunctionFactoryTermFunctionEquality(args),
+      args => new ActorFunctionFactoryExpressionFunctionNotIn(args),
+    ],
     operation: 'NOT IN',
     arity: 2,
     notation: Notation.Infix,

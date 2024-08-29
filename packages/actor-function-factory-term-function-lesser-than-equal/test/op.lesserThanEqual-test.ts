@@ -1,3 +1,7 @@
+import { ActorFunctionFactoryTermFunctionEquality } from '@comunica/actor-function-factory-term-function-equality';
+import { ActorFunctionFactoryTermFunctionLesserThan } from '@comunica/actor-function-factory-term-function-lesser-than';
+import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import {
@@ -12,10 +16,14 @@ import {
   yearMonthDurationTyped,
 } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import type { ITestTableConfigBase } from '@comunica/expression-evaluator/test/util/utils';
-import { runFuncTestTable } from '../../../bus-function-factory/test/util';
+import { ActorFunctionFactoryTermFunctionLesserThanEqual } from '../lib';
 
-const config: ITestTableConfigBase = {
+const config: FuncTestTableConfig<object> = {
+  registeredActors: [
+    args => new ActorFunctionFactoryTermFunctionLesserThanEqual(args),
+    args => new ActorFunctionFactoryTermFunctionEquality(args),
+    args => new ActorFunctionFactoryTermFunctionLesserThan(args),
+  ],
   arity: 2,
   operation: '<=',
   aliases: merge(numeric, str, dateTime, bool),
@@ -127,6 +135,7 @@ describe('evaluation of \'<=\'', () => {
   describe('with date operants like', () => {
     // Originates from: https://www.w3.org/TR/xpath-functions/#func-date-less-than
     runFuncTestTable({
+      ...config,
       operation: '<=',
       arity: 2,
       notation: Notation.Infix,
@@ -141,6 +150,7 @@ describe('evaluation of \'<=\'', () => {
   describe('with time operants like', () => {
     // Originates from: https://www.w3.org/TR/xpath-functions/#func-time-less-than
     runFuncTestTable({
+      ...config,
       operation: '<=',
       arity: 2,
       notation: Notation.Infix,
@@ -157,6 +167,7 @@ describe('evaluation of \'<=\'', () => {
   describe('with dayTimeDuration operants like', () => {
     // Based on the spec tests of <
     runFuncTestTable({
+      ...config,
       operation: '<=',
       arity: 2,
       notation: Notation.Infix,

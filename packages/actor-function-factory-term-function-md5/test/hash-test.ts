@@ -1,9 +1,17 @@
+import { ActorFunctionFactoryTermFunctionSha1 } from '@comunica/actor-function-factory-term-function-sha1';
+import { ActorFunctionFactoryTermFunctionSha256 } from '@comunica/actor-function-factory-term-function-sha256';
+import { ActorFunctionFactoryTermFunctionSha384 } from '@comunica/actor-function-factory-term-function-sha384';
+import { ActorFunctionFactoryTermFunctionSha512 } from '@comunica/actor-function-factory-term-function-sha512';
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../../bus-function-factory/test/util';
+import { ActorFunctionFactoryTermFunctionMd5 } from '../lib';
 
 describe('hash functions', () => {
   describe('evaluation of \'md5\' like', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionMd5(args),
+      ],
       arity: 1,
       operation: 'md5',
       notation: Notation.Function,
@@ -18,6 +26,9 @@ describe('hash functions', () => {
 
   describe('evaluation of \'sha1\' like', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionSha1(args),
+      ],
       arity: 1,
       operation: 'sha1',
       notation: Notation.Function,
@@ -32,6 +43,9 @@ describe('hash functions', () => {
 
   describe('evaluation of \'sha256\' like', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionSha256(args),
+      ],
       arity: 1,
       operation: 'sha256',
       notation: Notation.Function,
@@ -46,6 +60,9 @@ describe('hash functions', () => {
 
   describe('evaluation of \'sha384\' like', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionSha384(args),
+      ],
       arity: 1,
       operation: 'sha384',
       notation: Notation.Function,
@@ -60,6 +77,9 @@ describe('hash functions', () => {
 
   describe('evaluation of \'sha512\' like', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionSha512(args),
+      ],
       arity: 1,
       operation: 'sha512',
       notation: Notation.Function,
