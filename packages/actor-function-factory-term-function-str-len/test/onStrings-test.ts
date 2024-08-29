@@ -1,5 +1,7 @@
 import { ActorFunctionFactoryTermFunctionContains } from '@comunica/actor-function-factory-term-function-contains';
-import { ActorFunctionFactoryTermFunctionLangmatches } from '@comunica/actor-function-factory-term-function-langmatches';
+import {
+  ActorFunctionFactoryTermFunctionLangmatches,
+} from '@comunica/actor-function-factory-term-function-langmatches';
 import { ActorFunctionFactoryTermFunctionRegex } from '@comunica/actor-function-factory-term-function-regex';
 import { ActorFunctionFactoryTermFunctionReplace } from '@comunica/actor-function-factory-term-function-replace';
 import { ActorFunctionFactoryTermFunctionStrAfter } from '@comunica/actor-function-factory-term-function-str-after';

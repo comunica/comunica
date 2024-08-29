@@ -1,4 +1,6 @@
-import { ActorFunctionFactoryExpressionFunctionBnode } from '@comunica/actor-function-factory-expression-function-bnode';
+import {
+  ActorFunctionFactoryExpressionFunctionBnode,
+} from '@comunica/actor-function-factory-expression-function-bnode';
 
 import { ActorFunctionFactoryTermFunctionStr } from '@comunica/actor-function-factory-term-function-str';
 import * as Data from '@comunica/actor-function-factory-wrapper-all/test/spec/_data';

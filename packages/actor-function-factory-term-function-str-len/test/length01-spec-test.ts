@@ -2,7 +2,7 @@ import * as Data from '@comunica/actor-function-factory-wrapper-all/test/spec/_d
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { int } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import {ActorFunctionFactoryTermFunctionStrLen} from "../lib";
+import { ActorFunctionFactoryTermFunctionStrLen } from '../lib';
 
 /**
  * REQUEST: length01.rq

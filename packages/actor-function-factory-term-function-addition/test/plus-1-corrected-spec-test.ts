@@ -1,4 +1,6 @@
-import { ActorFunctionFactoryExpressionFunctionBnode } from '@comunica/actor-function-factory-expression-function-bnode';
+import {
+  ActorFunctionFactoryExpressionFunctionBnode,
+} from '@comunica/actor-function-factory-expression-function-bnode';
 import * as Data from '@comunica/actor-function-factory-wrapper-all/test/spec/_data';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { int, decimal } from '@comunica/expression-evaluator/test/util/Aliases';

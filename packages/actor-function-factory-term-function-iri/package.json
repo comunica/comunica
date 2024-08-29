@@ -38,7 +38,9 @@
   },
   "dependencies": {
     "@comunica/bus-function-factory": "^3.2.1",
+    "@comunica/context-entries": "^3.2.1",
     "@comunica/core": "^3.2.1",
-    "@comunica/expression-evaluator": "^3.2.1"
+    "@comunica/expression-evaluator": "^3.2.1",
+    "relative-to-absolute-iri": "^1.0.7"
   }
 }

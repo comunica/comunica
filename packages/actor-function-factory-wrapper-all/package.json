@@ -40,16 +40,8 @@
     "@comunica/bus-function-factory": "^3.2.1",
     "@comunica/context-entries": "^3.2.1",
     "@comunica/core": "^3.2.1",
-    "@comunica/data-factory": "^3.1.0",
     "@comunica/expression-evaluator": "^3.2.1",
     "@comunica/types": "^3.2.1",
-    "@types/spark-md5": "^3.0.2",
-    "@types/uuid": "^9.0.0",
-    "bignumber.js": "^9.0.1",
-    "hash.js": "^1.1.7",
-    "rdf-data-factory": "^1.1.2",
-    "relative-to-absolute-iri": "^1.0.6",
-    "spark-md5": "^3.0.1",
-    "uuid": "^9.0.0"
+    "rdf-data-factory": "^1.1.2"
   }
 }
