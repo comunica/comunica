@@ -1,9 +1,10 @@
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { TypeURL } from '@comunica/expression-evaluator';
 import {
   compactTermString,
 } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../../../../bus-function-factory/test/util';
+import { ActorFunctionFactoryTermFunctionXsdToDate } from '../lib';
 
 describe('Construct date', () => {
   /**
@@ -17,6 +18,9 @@ describe('Construct date', () => {
 
   describe('respect the construct_date-01 spec', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionXsdToDate(args),
+      ],
       operation: 'xsd:date',
       arity: 1,
       notation: Notation.Function,

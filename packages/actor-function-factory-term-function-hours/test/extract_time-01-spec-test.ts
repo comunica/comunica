@@ -1,9 +1,12 @@
+import { ActorFunctionFactoryTermFunctionMinutes } from '@comunica/actor-function-factory-term-function-minutes';
+import { ActorFunctionFactoryTermFunctionSeconds } from '@comunica/actor-function-factory-term-function-seconds';
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import {
   int,
   timeTyped,
 } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../../../../bus-function-factory/test/util';
+import { ActorFunctionFactoryTermFunctionHours } from '../lib';
 
 describe('Extract time', () => {
   /**
@@ -17,6 +20,9 @@ describe('Extract time', () => {
 
   describe('respect the extract_time-01 spec', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionHours(args),
+      ],
       operation: 'HOURS',
       arity: 1,
       notation: Notation.Function,
@@ -26,6 +32,9 @@ describe('Extract time', () => {
     });
 
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionMinutes(args),
+      ],
       operation: 'MINUTES',
       arity: 1,
       notation: Notation.Function,
@@ -35,6 +44,9 @@ describe('Extract time', () => {
     });
 
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionSeconds(args),
+      ],
       operation: 'SECONDS',
       arity: 1,
       notation: Notation.Function,

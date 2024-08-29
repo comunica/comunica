@@ -1,9 +1,12 @@
+import { ActorFunctionFactoryTermFunctionDay } from '@comunica/actor-function-factory-term-function-day';
+import { ActorFunctionFactoryTermFunctionMonth } from '@comunica/actor-function-factory-term-function-month';
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import {
   int,
   dateTyped,
 } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../../../../bus-function-factory/test/util';
+import { ActorFunctionFactoryTermFunctionYear } from '../lib';
 
 describe('Extract date', () => {
   /**
@@ -17,6 +20,9 @@ describe('Extract date', () => {
 
   describe('respect the extract_date-01 spec', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionYear(args),
+      ],
       operation: 'YEAR',
       arity: 1,
       notation: Notation.Function,
@@ -26,6 +32,9 @@ describe('Extract date', () => {
     });
 
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionMonth(args),
+      ],
       operation: 'MONTH',
       arity: 1,
       notation: Notation.Function,
@@ -35,6 +44,9 @@ describe('Extract date', () => {
     });
 
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionDay(args),
+      ],
       operation: 'DAY',
       arity: 1,
       notation: Notation.Function,

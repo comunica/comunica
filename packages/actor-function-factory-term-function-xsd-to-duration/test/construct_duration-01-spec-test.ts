@@ -1,10 +1,11 @@
 /* eslint max-len: 0 */
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { TypeURL } from '@comunica/expression-evaluator';
 import {
   compactTermString,
 } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../../../../bus-function-factory/test/util';
+import { ActorFunctionFactoryTermFunctionXsdToDuration } from '../lib';
 
 describe('construct duration', () => {
   /**
@@ -28,6 +29,9 @@ describe('construct duration', () => {
 
   describe('respect the construct_duration-01 spec', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionXsdToDuration(args),
+      ],
       operation: 'xsd:duration',
       arity: 1,
       notation: Notation.Function,

@@ -1,5 +1,6 @@
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../../../../bus-function-factory/test/util';
+import { ActorFunctionFactoryTermFunctionXsdToTime } from '../lib';
 
 describe('Construct time', () => {
   /**
@@ -16,14 +17,17 @@ describe('Construct time', () => {
 
   describe('respect the construct_time-02 spec', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionXsdToTime(args),
+      ],
       operation: 'xsd:time',
       arity: 1,
       notation: Notation.Function,
       errorTable: `
-        '"24:00:01"' = ''
-        '"05:60:00"' = ''
-        '"00:00:61"' = ''
-        '""' = ''
+        '"24:00:01"' = 'Argument types not valid for operator'
+        '"05:60:00"' = 'Argument types not valid for operator'
+        '"00:00:61"' = 'Argument types not valid for operator'
+        '""' = 'Argument types not valid for operator'
       `,
     });
   });

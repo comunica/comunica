@@ -1,6 +1,9 @@
+import { ActorFunctionFactoryTermFunctionEquality } from '@comunica/actor-function-factory-term-function-equality';
+import { ActorFunctionFactoryTermFunctionLesserThan } from '@comunica/actor-function-factory-term-function-lesser-than';
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { bool, yearMonthDurationTyped } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../../../../bus-function-factory/test/util';
+import { ActorFunctionFactoryTermFunctionGreaterThan } from '../lib';
 
 describe('compare yearMonthDuration 01', () => {
   /**
@@ -20,6 +23,10 @@ describe('compare yearMonthDuration 01', () => {
 
   describe('respect the lesserThan compare_yearMonthDuration-01 spec', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionEquality(args),
+        args => new ActorFunctionFactoryTermFunctionLesserThan(args),
+      ],
       operation: '<',
       arity: 2,
       notation: Notation.Infix,
@@ -36,6 +43,11 @@ describe('compare yearMonthDuration 01', () => {
 
   describe('respect the largerThan compare_yearMonthDuration-01 spec', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionEquality(args),
+        args => new ActorFunctionFactoryTermFunctionLesserThan(args),
+        args => new ActorFunctionFactoryTermFunctionGreaterThan(args),
+      ],
       operation: '>',
       arity: 2,
       notation: Notation.Infix,

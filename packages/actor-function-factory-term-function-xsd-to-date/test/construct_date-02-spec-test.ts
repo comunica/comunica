@@ -1,5 +1,6 @@
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../../../../bus-function-factory/test/util';
+import { ActorFunctionFactoryTermFunctionXsdToDate } from '../lib';
 
 describe('Construct date', () => {
   /**
@@ -16,14 +17,17 @@ describe('Construct date', () => {
 
   describe('respect the construct_date-02 spec', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionXsdToDate(args),
+      ],
       operation: 'xsd:date',
       arity: 1,
       notation: Notation.Function,
       errorTable: `
-        '"2000-00-01"' = ''
-        '"2000-13-01"' = ''
-        '"2000-06-00"' = ''
-        '"2000-06-32"' = ''
+        '"2000-00-01"' = 'Argument types not valid for operator'
+        '"2000-13-01"' = 'Argument types not valid for operator'
+        '"2000-06-00"' = 'Argument types not valid for operator'
+        '"2000-06-32"' = 'Argument types not valid for operator'
       `,
     });
   });

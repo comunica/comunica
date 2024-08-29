@@ -1,4 +1,5 @@
 /* eslint max-len: 0 */
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import {
   dateTyped,
   dayTimeDurationTyped,
@@ -6,7 +7,7 @@ import {
   timeTyped,
 } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../../../../bus-function-factory/test/util';
+import { ActorFunctionFactoryTermFunctionSubtraction } from '../lib';
 
 describe('subtract duration and dayTimeDuration 01', () => {
   /**
@@ -23,6 +24,9 @@ describe('subtract duration and dayTimeDuration 01', () => {
 
   describe('respect the duration_dayTimeDuration_subtract-01 spec', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionSubtraction(args),
+      ],
       operation: '-',
       arity: 2,
       notation: Notation.Infix,

@@ -1,5 +1,6 @@
 import { ActorFunctionFactoryTermFunctionIsIri } from '@comunica/actor-function-factory-term-function-is-iri';
 import { ActorFunctionFactoryTermFunctionRegex } from '@comunica/actor-function-factory-term-function-regex';
+import { ActorFunctionFactoryTermFunctionStr } from '@comunica/actor-function-factory-term-function-str';
 import { ActorFunctionFactoryTermFunctionStrLen } from '@comunica/actor-function-factory-term-function-str-len';
 import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
@@ -42,6 +43,7 @@ describe('We should respect the uuid01 spec', () => {
       args => new ActorFunctionFactoryTermFunctionUuid(args),
       args => new ActorFunctionFactoryTermFunctionRegex(args),
       args => new ActorFunctionFactoryTermFunctionStrLen(args),
+      args => new ActorFunctionFactoryTermFunctionStr(args),
     ],
     aliases: bool,
     arity: 'vary',

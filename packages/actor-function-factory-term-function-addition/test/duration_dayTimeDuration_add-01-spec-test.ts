@@ -1,4 +1,5 @@
 /* eslint max-len: 0 */
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import {
   dateTyped,
   dayTimeDurationTyped,
@@ -6,7 +7,7 @@ import {
   timeTyped,
 } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../../../../bus-function-factory/test/util';
+import { ActorFunctionFactoryTermFunctionAddition } from '../lib';
 
 describe('Add duration and dayTimeDuration 01', () => {
   /**
@@ -23,6 +24,9 @@ describe('Add duration and dayTimeDuration 01', () => {
 
   describe('respect the duration_dayTimeDuration_add-01 spec', () => {
     runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermFunctionAddition(args),
+      ],
       operation: '+',
       arity: 2,
       notation: Notation.Infix,
