@@ -1,4 +1,6 @@
-import { createFuncMediator } from 'packages/bus-function-factory/test/util';
+import { ActorFunctionFactoryTermFunctionEquality } from '@comunica/actor-function-factory-term-function-equality';
+import { ActorFunctionFactoryTermFunctionLesserThan } from '@comunica/actor-function-factory-term-function-lesser-than';
+import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { ActionContext, Bus } from '@comunica/core';
 import {
   getMockEEActionContext,
@@ -23,7 +25,10 @@ describe('ActorTermComparatorFactoryExpressionEvaluator', () => {
       actor = new ActorTermComparatorFactoryExpressionEvaluator({
         name: 'actor',
         bus,
-        mediatorFunctionFactory: createFuncMediator(),
+        mediatorFunctionFactory: createFuncMediator([
+          args => new ActorFunctionFactoryTermFunctionEquality(args),
+          args => new ActorFunctionFactoryTermFunctionLesserThan(args),
+        ], {}),
         mediatorQueryOperation: getMockMediatorQueryOperation(),
         mediatorMergeBindingsContext: getMockMediatorMergeBindingsContext(),
       });

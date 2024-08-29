@@ -6,6 +6,8 @@ import { MinAggregator } from '@comunica/actor-bindings-aggregator-factory-min';
 import { SampleAggregator } from '@comunica/actor-bindings-aggregator-factory-sample';
 import { SumAggregator } from '@comunica/actor-bindings-aggregator-factory-sum';
 import { WildcardCountAggregator } from '@comunica/actor-bindings-aggregator-factory-wildcard-count';
+import { ActorFunctionFactoryTermFunctionAddition } from '@comunica/actor-function-factory-term-function-addition';
+import { ActorFunctionFactoryTermFunctionDivision } from '@comunica/actor-function-factory-term-function-division';
 import { createTermCompMediator } from '@comunica/actor-term-comparator-factory-expression-evaluator/test/util';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type {
@@ -88,7 +90,10 @@ const sumZ: Algebra.BoundAggregate = {
 
 const hashFunction = (bindings: any) => JSON.stringify(bindings);
 
-const mediatorFunctionFactory: MediatorFunctionFactory = createFuncMediator([], {});
+const mediatorFunctionFactory: MediatorFunctionFactory = createFuncMediator([
+  args => new ActorFunctionFactoryTermFunctionAddition(args),
+  args => new ActorFunctionFactoryTermFunctionDivision(args),
+], {});
 
 function getDefaultMediatorQueryOperation() {
   return {
@@ -273,7 +278,7 @@ describe('ActorQueryOperationGroup', () => {
     };
     const expressionEvaluatorFactory = getMockEEFactory({
       mediatorQueryOperation,
-      mediatorFunctionFactory: createFuncMediator(),
+      mediatorFunctionFactory,
     });
     mediatorBindingsAggregatorFactory = <MediatorBindingsAggregatorFactory> {
       async mediate(args: IActionBindingsAggregatorFactory):

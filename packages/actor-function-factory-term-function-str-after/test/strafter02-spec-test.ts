@@ -70,7 +70,7 @@ describe('We should respect the strafter02 spec', () => {
       '${s1}' "b"@cy = 'Argument types not valid for operator'
       '${s1}' ""@en  = 'Argument types not valid for operator'
   
-      '${s2}' "b"@cy = 'Argument types not valid for operator'
+      '${s2}' "b"@cy = 'incompatible language literals'
   
       '${s3}' ""@en  = 'Argument types not valid for operator'
       '${s3}' "b"@cy = 'Argument types not valid for operator'
