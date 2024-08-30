@@ -1,8 +1,8 @@
 import { ActorFunctionFactoryTermFunctionEquality } from '@comunica/actor-function-factory-term-function-equality';
 import { ActorFunctionFactoryTermFunctionInequality } from '@comunica/actor-function-factory-term-function-inequality';
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { bool } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../bus-function-factory/test/util';
 import { ActorFunctionFactoryExpressionFunctionBnode } from '../lib';
 
 /**

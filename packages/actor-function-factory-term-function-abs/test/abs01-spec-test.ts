@@ -6,10 +6,10 @@ import { ActorFunctionFactoryTermFunctionLesserThan } from '@comunica/actor-func
 import {
   ActorFunctionFactoryTermFunctionLesserThanEqual,
 } from '@comunica/actor-function-factory-term-function-lesser-than-equal';
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import * as Data from '@comunica/expression-evaluator/test/spec/_data';
 import { bool } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import { runFuncTestTable } from '../../bus-function-factory/test/util';
 import { ActorFunctionFactoryTermFunctionAbs } from '../lib';
 
 /**
