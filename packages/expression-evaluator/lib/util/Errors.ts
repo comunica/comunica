@@ -160,12 +160,6 @@ export class InvalidExpression<T> extends Error {
   }
 }
 
-export class UnknownOperator extends Error {
-  public constructor(name: string) {
-    super(`Unknown operator: '${pp(name)}`);
-  }
-}
-
 export class ExtensionFunctionError extends Error {
   public constructor(name: string, functionError: unknown) {
     if (functionError instanceof Error) {

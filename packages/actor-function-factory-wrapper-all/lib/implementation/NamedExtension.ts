@@ -12,10 +12,6 @@ interface NamedExtensionArgs {
 }
 
 export class NamedExtension extends ExpressionFunctionBase {
-  // TODO: the context should be checked in the test part of the actor.
-  //  The fact that this can be done is async now is a nice feature!
-  //  It means that named function definitions could be queried over the web!
-  // TODO: when all is done, this should be injected in some way!
   public constructor({ operator, functionDefinition }: NamedExtensionArgs) {
     super({
       arity: Number.POSITIVE_INFINITY,

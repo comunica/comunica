@@ -98,7 +98,7 @@ describe('extension functions:', () => {
         notation: Notation.Function,
         operation: '<https://example.org/functions#equal>',
         aliases: numeric,
-        errorTable: errorTable('Unknown named operator'),
+        errorTable: errorTable('No registered actors'),
       });
     });
 

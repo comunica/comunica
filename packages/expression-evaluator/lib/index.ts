@@ -36,7 +36,6 @@ export {
   ExtensionFunctionError,
   InvalidLexicalForm,
   InvalidArity,
-  UnknownOperator,
 } from './util/Errors';
 export {
   typedLiteral,
