@@ -36,7 +36,6 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-rdf-resolve-hypermedia-links": "^3.2.1",
     "@comunica/core": "^3.2.1",
     "@comunica/types": "^3.2.1"
   }
