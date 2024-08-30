@@ -4,6 +4,7 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActorDereferenceRdfOutput } from '@comunica/bus-dereference-rdf';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
@@ -347,6 +348,7 @@ describe('QuerySourceQpf', () => {
               },
             ],
           },
+          state: expect.any(MetadataValidationState),
           cardinality: { type: 'exact', value: 2 },
           variables: [
             DF.variable('v1'),
@@ -377,6 +379,7 @@ describe('QuerySourceQpf', () => {
               },
             ],
           },
+          state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: 2 },
           variables: [
             DF.variable('v1'),
@@ -408,6 +411,7 @@ describe('QuerySourceQpf', () => {
               },
             ],
           },
+          state: expect.any(MetadataValidationState),
           cardinality: { type: 'exact', value: 2 },
           variables: [
             DF.variable('v1'),
@@ -434,6 +438,7 @@ describe('QuerySourceQpf', () => {
             DF.variable('v2'),
             DF.variable('v3'),
           ],
+          state: expect.any(MetadataValidationState),
         });
       });
 
@@ -579,6 +584,7 @@ describe('QuerySourceQpf', () => {
           subsetOf: 'url',
           cardinality: { type: 'exact', value: 2 },
           order: undefined,
+          state: expect.any(MetadataValidationState),
           variables: [ v1, v2 ],
         });
       });
@@ -593,6 +599,7 @@ describe('QuerySourceQpf', () => {
           subsetOf: 'url',
           cardinality: { type: 'estimate', value: 2 },
           order: undefined,
+          state: expect.any(MetadataValidationState),
           variables: [ v1, v2 ],
         });
       });

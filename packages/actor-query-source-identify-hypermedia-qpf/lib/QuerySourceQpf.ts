@@ -115,7 +115,8 @@ export class QuerySourceQpf implements IQuerySource {
       if (this.defaultGraph) {
         wrappedQuads = this.reverseMapQuadsToDefaultGraph(wrappedQuads);
       }
-      wrappedQuads.setProperty('metadata', { ...metadata, state: new MetadataValidationState() });
+      metadata = { ...metadata, state: new MetadataValidationState() };
+      wrappedQuads.setProperty('metadata', metadata);
       this.cacheQuads(wrappedQuads, DF.variable(''), DF.variable(''), DF.variable(''), DF.variable(''));
     }
   }

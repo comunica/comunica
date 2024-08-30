@@ -214,12 +214,14 @@ export class QuerySourceSparql implements IQuerySource {
         return reject(error);
       }
     })
-      .then(cardinality => target.setProperty('metadata', {
-        state: new MetadataValidationState(),
-        cardinality,
-        canContainUndefs,
-        variables: variablesCount,
-      }))
+      .then((cardinality) => {
+        target.setProperty('metadata', {
+          state: new MetadataValidationState(),
+          cardinality,
+          canContainUndefs,
+          variables: variablesCount,
+        });
+      })
       .catch(() => target.setProperty('metadata', {
         state: new MetadataValidationState(),
         cardinality: COUNT_INFINITY,
