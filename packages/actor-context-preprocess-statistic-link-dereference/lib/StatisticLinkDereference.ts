@@ -10,15 +10,14 @@ export class StatisticLinkDereference extends StatisticBase<ILink> {
   }
 
   public updateStatistic(link: ILink, source: IQuerySource): boolean {
-    const metadata: Record<string, any> = {
-      type: source.constructor.name,
-      dereferencedTimestamp: performance.now(),
-      dereferenceOrder: this.count,
-      ...link.metadata,
-    };
     this.emit({
       url: link.url,
-      metadata,
+      metadata: {
+        type: source.constructor.name,
+        dereferencedTimestamp: performance.now(),
+        dereferenceOrder: this.count,
+        ...link.metadata,
+      },
       context: link.context,
       transform: link.transform,
     });
