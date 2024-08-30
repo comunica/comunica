@@ -3,7 +3,7 @@ import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import * as Eval from '@comunica/expression-evaluator';
-import { compactTermString, int, numeric, str } from '@comunica/expression-evaluator/test/util/Aliases';
+import { compactTermString, int, merge, numeric, str } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
 import { LRUCache } from 'lru-cache';
 import { ActorFunctionFactoryTermFunctionStrLen } from '../lib';
@@ -15,28 +15,8 @@ describe('evaluation of \'strlen\' like', () => {
     ],
     arity: 1,
     operation: 'strlen',
-    aliases: str,
     notation: Notation.Function,
-  };
-  runFuncTestTable({
-    ...baseConfig,
-    testTable: `
-      aaa = '${int('3')}'
-      empty = '${int('0')}'
-      '${compactTermString('Annabel', 'xsd:name')}' = '${int('7')}'
-    `,
-  });
-});
-
-describe('evaluation of \'strlen\' like', () => {
-  const baseConfig: FuncTestTableConfig<object> = {
-    registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionStrLen(args),
-    ],
-    arity: 1,
-    operation: 'strlen',
-    notation: Notation.Function,
-    aliases: numeric,
+    aliases: merge(numeric, str),
   };
   runFuncTestTable({
     ...baseConfig,
@@ -46,6 +26,8 @@ describe('evaluation of \'strlen\' like', () => {
         "aa"^^xsd:string = 2i
         "👪"^^xsd:string = 1i
         "👨‍👩‍👧‍👦"^^xsd:string = ${int('7')}
+        empty = '${int('0')}'
+        '${compactTermString('Annabel', 'xsd:name')}' = '${int('7')}'
       `,
   });
   runFuncTestTable({

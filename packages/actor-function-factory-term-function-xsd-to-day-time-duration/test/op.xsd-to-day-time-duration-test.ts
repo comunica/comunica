@@ -1,5 +1,9 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { dayTimeDurationTyped, durationTyped, yearMonthDurationTyped } from '@comunica/expression-evaluator/test/util/Aliases';
+import {
+  dayTimeDurationTyped,
+  durationTyped,
+  yearMonthDurationTyped,
+} from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
 import { ActorFunctionFactoryTermFunctionXsdToDayTimeDuration } from '../lib';
 
