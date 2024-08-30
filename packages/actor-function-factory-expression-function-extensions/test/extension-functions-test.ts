@@ -33,7 +33,7 @@ describe('extension functions:', () => {
     describe('Can be evaluated', () => {
       runFuncTestTable({
         registeredActors: [
-          args => new ActorFunctionFactoryWrapperAll(args),
+          args => new ActorFunctionFactoryExpressionFunctionExtensions(args),
         ],
         arity: 2,
         notation: Notation.Function,
@@ -105,7 +105,7 @@ describe('extension functions:', () => {
     describe('throws error when providing a failing implementation', () => {
       runFuncTestTable({
         registeredActors: [
-          args => new ActorFunctionFactoryWrapperAll(args),
+          args => new ActorFunctionFactoryExpressionFunctionExtensions(args),
         ],
         arity: 1,
         notation: Notation.Function,
@@ -124,7 +124,7 @@ describe('extension functions:', () => {
       const stringType = DF.namedNode('http://www.w3.org/2001/XMLSchema#string');
       runFuncTestTable({
         registeredActors: [
-          args => new ActorFunctionFactoryWrapperAll(args),
+          args => new ActorFunctionFactoryExpressionFunctionExtensions(args),
         ],
         arity: 1,
         notation: Notation.Function,
