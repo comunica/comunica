@@ -1,9 +1,8 @@
 import type { IActionContextPreprocess, IActorContextPreprocessOutput, IActorContextPreprocessArgs }
   from '@comunica/bus-context-preprocess';
 import { ActorContextPreprocess } from '@comunica/bus-context-preprocess';
-import { KeysInitQuery, KeysTrackableStatistics } from '@comunica/context-entries';
+import { KeysTrackableStatistics } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
-import type { IStatisticsHolder } from '@comunica/types';
 import { StatisticLinkDiscovery } from './StatisticLinkDiscovery';
 
 /**
@@ -19,9 +18,7 @@ export class ActorContextPreprocessStatisticLinkDiscovery extends ActorContextPr
   }
 
   public async run(action: IActionContextPreprocess): Promise<IActorContextPreprocessOutput> {
-    const statisticsHolder: IStatisticsHolder = action.context.getSafe(KeysInitQuery.statistics);
-    statisticsHolder.set(KeysTrackableStatistics.discoveredLinks, new StatisticLinkDiscovery());
-
-    return { context: action.context };
+    const context = action.context.set(KeysTrackableStatistics.discoveredLinks, new StatisticLinkDiscovery());
+    return { context };
   }
 }

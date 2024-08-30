@@ -1,5 +1,5 @@
 import type { ILinkQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
-import { KeysInitQuery, KeysTrackableStatistics } from '@comunica/context-entries';
+import { KeysTrackableStatistics } from '@comunica/context-entries';
 import { MetadataValidationState } from '@comunica/metadata';
 import type {
   ILink,
@@ -8,7 +8,6 @@ import type {
   MetadataBindings,
   IQueryBindingsOptions,
   IStatisticBase,
-  IStatisticsHolder,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator, BufferedIteratorOptions } from 'asynciterator';
@@ -317,8 +316,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
             this.sourceStateGetter(nextLink, handledDatasets)
               .then((nextSourceState) => {
                 // Find any statistics tracking dereference events
-                const statistics: IStatisticsHolder = this.context.getSafe(KeysInitQuery.statistics);
-                const statisticDereferenceLinks: IStatisticBase<ILink> | undefined = statistics.get(
+                const statisticDereferenceLinks: IStatisticBase<ILink> | undefined = this.context.get(
                   KeysTrackableStatistics.dereferencedLinks,
                 );
 

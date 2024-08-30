@@ -17,7 +17,6 @@ import type {
   QuerySourceUnidentifiedExpanded,
   IActionContext,
   IQuerySourceUnidentifiedExpanded,
-  IStatisticsHolder,
   IStatisticBase,
 } from '@comunica/types';
 import { LRUCache } from 'lru-cache';
@@ -62,8 +61,7 @@ export class ActorContextPreprocessQuerySourceIdentify extends ActorContextPrepr
       /**
        * When identifying sources in preprocess actor, we record this as a dereference seed document event
        */
-      const statistics: IStatisticsHolder = action.context.getSafe(KeysInitQuery.statistics);
-      const statisticDereferenceLinks: IStatisticBase<ILink> | undefined = statistics
+      const statisticDereferenceLinks: IStatisticBase<ILink> | undefined = action.context
         .get(KeysTrackableStatistics.dereferencedLinks);
 
       if (statisticDereferenceLinks) {

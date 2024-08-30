@@ -1,11 +1,10 @@
-import { StatisticsHolder } from '@comunica/actor-context-preprocess-set-defaults';
 import { StatisticLinkDiscovery } from '@comunica/actor-context-preprocess-statistic-link-discovery';
 import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
 import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
-import { KeysInitQuery, KeysTrackableStatistics } from '@comunica/context-entries';
+import { KeysTrackableStatistics } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext, IQuerySource, ILink } from '@comunica/types';
 import { setTaskScheduler } from 'asynciterator';
@@ -24,7 +23,6 @@ setTaskScheduler(task => setImmediate(task));
 describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
   describe('A MediatedLinkedRdfSourcesAsyncRdfIterator instance', () => {
     let context: IActionContext;
-    let statisticsHolder: StatisticsHolder;
     let sourceFactory: () => any;
     let operation: Algebra.Operation;
     let mediatorMetadataAccumulate: MediatorRdfMetadataAccumulate;
@@ -33,8 +31,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
     let sourceStateGetter: SourceStateGetter;
 
     beforeEach(() => {
-      statisticsHolder = new StatisticsHolder();
-      context = new ActionContext({}).set(KeysInitQuery.statistics, statisticsHolder);
+      context = new ActionContext({});
       AF.createPattern(
         DF.namedNode('s'),
         DF.namedNode('p'),
@@ -374,7 +371,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         jest.setSystemTime(new Date('2021-01-01T00:00:00Z').getTime());
 
         const statisticTracker: StatisticLinkDiscovery = new StatisticLinkDiscovery();
-        statisticsHolder.set(KeysTrackableStatistics.discoveredLinks, statisticTracker);
+        context = context.set(KeysTrackableStatistics.discoveredLinks, statisticTracker);
 
         const source = sourceFactory();
         // Here we pass a partial source state object, as the link attribute is required to track

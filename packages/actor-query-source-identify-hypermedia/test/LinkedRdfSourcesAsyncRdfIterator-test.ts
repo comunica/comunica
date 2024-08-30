@@ -1,10 +1,9 @@
 import { Readable } from 'node:stream';
-import { StatisticsHolder } from '@comunica/actor-context-preprocess-set-defaults';
 import { StatisticLinkDereference } from '@comunica/actor-context-preprocess-statistic-link-dereference';
 import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { ILinkQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
-import { KeysInitQuery, KeysTrackableStatistics } from '@comunica/context-entries';
+import { KeysTrackableStatistics } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
 import type { ILink, IActionContext, IQueryBindingsOptions, MetadataBindings } from '@comunica/types';
@@ -109,7 +108,7 @@ function getPage(link: ILink): number {
 describe('LinkedRdfSourcesAsyncRdfIterator', () => {
   const operation = AF.createPattern(v, v, v, v);
   const queryBindingsOptions: IQueryBindingsOptions = {};
-  const context = new ActionContext().set(KeysInitQuery.statistics, new StatisticsHolder());
+  let context: IActionContext = new ActionContext();
 
   // Source input is array of arrays (`data`), with every array corresponding to a page.
   let data: RDF.Bindings[][];
@@ -690,8 +689,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       const statisticTracker: StatisticLinkDereference = new StatisticLinkDereference();
       statisticTracker.on(cb);
 
-      const statHolderContext: StatisticsHolder = context.get(KeysInitQuery.statistics)!;
-      statHolderContext.set(KeysTrackableStatistics.dereferencedLinks, statisticTracker);
+      context = context.set(KeysTrackableStatistics.dereferencedLinks, statisticTracker);
 
       data = toBindings([[
         [ 'a', 'b', 'c' ],

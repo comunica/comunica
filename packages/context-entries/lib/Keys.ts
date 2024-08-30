@@ -12,7 +12,6 @@ import type {
   QuerySourceUnidentified,
   IQuerySourceWrapper,
   QuerySourceReference,
-  IStatisticsHolder,
   IStatisticBase,
   IDiscoverEventData,
   ILink,
@@ -193,12 +192,6 @@ export const KeysInitQuery = {
    * A boolean value denoting whether results should be deduplicated or not.
    */
   distinctConstruct: new ActionContextKey<boolean>('@comunica/actor-init-query:distinctConstruct'),
-  /**
-   * Map holding all statistics being tracked, filled with keys from KeysTrackableStatistics
-   */
-  statistics: new ActionContextKey<IStatisticsHolder>(
-    '@comunica/actor-context-preprocess-set-default:statistics',
-  ),
 };
 
 export const KeysQueryOperation = {

@@ -4,7 +4,7 @@ import type {
   ILinkQueue,
   MediatorRdfResolveHypermediaLinksQueue,
 } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
-import { KeysQueryOperation, KeysInitQuery, KeysTrackableStatistics } from '@comunica/context-entries';
+import { KeysQueryOperation, KeysTrackableStatistics } from '@comunica/context-entries';
 import type {
   IActionContext,
   IAggregatedStore,
@@ -12,7 +12,6 @@ import type {
   MetadataBindings,
   ILink,
   IStatisticBase,
-  IStatisticsHolder,
   IDiscoverEventData,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -156,12 +155,11 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   protected async getSourceLinks(metadata: Record<string, any>, startSource: ISourceState): Promise<ILink[]> {
     try {
       const { links } = await this.mediatorRdfResolveHypermediaLinks.mediate({ context: this.context, metadata });
-      const statistics: IStatisticsHolder = this.context.getSafe(KeysInitQuery.statistics);
-      const traversalTracker: IStatisticBase<IDiscoverEventData> | undefined = statistics
-        .get(KeysTrackableStatistics.discoveredLinks);
+      const traversalTracker: IStatisticBase<IDiscoverEventData> | undefined =
+        this.context.get(KeysTrackableStatistics.discoveredLinks);
 
-      for (const link of links) {
-        if (traversalTracker) {
+      if (traversalTracker) {
+        for (const link of links) {
           const linkStatistic: ILink = {
             url: link.url,
             metadata: { ...link.metadata },

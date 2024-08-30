@@ -1,4 +1,3 @@
-import { StatisticsHolder } from '@comunica/actor-context-preprocess-set-defaults';
 import { StatisticLinkDereference } from '@comunica/actor-context-preprocess-statistic-link-dereference';
 import type { MediatorContextPreprocess } from '@comunica/bus-context-preprocess';
 import type { ActorHttpInvalidateListenable } from '@comunica/bus-http-invalidate';
@@ -20,10 +19,7 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
     bus = new Bus({ name: 'bus' });
     mediatorContextPreprocess = <any> {
       async mediate(action: IAction) {
-        return { context: action.context.set(new ActionContextKey('processed'), true).set(
-          KeysInitQuery.statistics,
-          new StatisticsHolder(),
-        ) };
+        return { context: action.context.set(new ActionContextKey('processed'), true) };
       },
     };
   });
@@ -59,7 +55,7 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
 
     describe('run', () => {
       beforeEach(() => {
-        contextIn = new ActionContext({ [KeysInitQuery.statistics.name]: new StatisticsHolder() });
+        contextIn = new ActionContext({});
       });
       it('with an empty context', async() => {
         const { context: contextOut } = await actor.run({ context: contextIn });
@@ -187,8 +183,7 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
           {
             ofUnidentified: {
               value: 'source2',
-              context: contextSource.set(new ActionContextKey('processed'), true)
-                .set(KeysInitQuery.statistics, new StatisticsHolder()),
+              context: contextSource.set(new ActionContextKey('processed'), true),
             },
           },
         ]);
@@ -206,8 +201,7 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
           {
             ofUnidentified: {
               value: 'source2',
-              context: new ActionContext(contextSource).set(new ActionContextKey('processed'), true)
-                .set(KeysInitQuery.statistics, new StatisticsHolder()),
+              context: new ActionContext(contextSource).set(new ActionContextKey('processed'), true),
             },
           },
         ]);
@@ -237,8 +231,7 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
 
         const statisticTracker: StatisticLinkDereference = new StatisticLinkDereference();
 
-        const statHolderContext: StatisticsHolder = contextIn.get(KeysInitQuery.statistics)!;
-        statHolderContext.set(KeysTrackableStatistics.dereferencedLinks, statisticTracker);
+        contextIn = contextIn.set(KeysTrackableStatistics.dereferencedLinks, statisticTracker);
         statisticTracker.on(cb);
 
         const contextSource = { a: 'b' };
@@ -300,8 +293,7 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
         .set(KeysInitQuery.querySourcesUnidentified, [
           source1,
           source1,
-        ])
-        .set(KeysInitQuery.statistics, new StatisticsHolder());
+        ]);
       const { context: contextOut } = await actor.run({ context: contextIn });
       expect(contextOut).not.toBe(contextIn);
       expect(contextOut.get(KeysQueryOperation.querySources)).toEqual([
@@ -317,8 +309,7 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
       const contextIn = new ActionContext()
         .set(KeysInitQuery.querySourcesUnidentified, [
           source1,
-        ])
-        .set(KeysInitQuery.statistics, new StatisticsHolder());
+        ]);
       const { context: contextOut1 } = await actor.run({ context: contextIn });
       const { context: contextOut2 } = await actor.run({ context: contextIn });
       expect(contextOut1.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0])
