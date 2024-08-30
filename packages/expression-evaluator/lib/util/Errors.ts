@@ -131,7 +131,7 @@ export class EmptyAggregateError extends ExpressionError {
 
 export class ParseError extends ExpressionError {
   public constructor(str: string, type: string) {
-    super(`Failed to parse ${str} as ${type}.`);
+    super(`Failed to parse "${str}" as ${type}.`);
   }
 }
 
@@ -157,12 +157,6 @@ export class InvalidArity extends Error {
 export class InvalidExpression<T> extends Error {
   public constructor(expr: T) {
     super(`Invalid SPARQL Expression '${pp(expr)}'`);
-  }
-}
-
-export class UnknownOperator extends Error {
-  public constructor(name: string) {
-    super(`Unknown operator: '${pp(name)}`);
   }
 }
 

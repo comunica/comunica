@@ -1,5 +1,5 @@
-import type { IBindingsAggregator } from '@comunica/bus-bindings-aggeregator-factory';
-import { AggregateEvaluator } from '@comunica/bus-bindings-aggeregator-factory';
+import type { IBindingsAggregator } from '@comunica/bus-bindings-aggregator-factory';
+import { AggregateEvaluator } from '@comunica/bus-bindings-aggregator-factory';
 import type { ITermFunction } from '@comunica/bus-function-factory';
 import type { IExpressionEvaluator } from '@comunica/expression-evaluator';
 import * as Eval from '@comunica/expression-evaluator';

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-bindings-aggregator-factory-max",
-  "version": "1.0.0",
+  "version": "3.2.1",
   "description": "A max bindings aggregator factory actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,12 +37,12 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-bindings-aggeregator-factory": "^1.0.0",
+    "@comunica/bus-bindings-aggregator-factory": "^3.2.1",
     "@comunica/core": "^3.2.1",
     "@rdfjs/types": "*"
   },
   "devDependencies": {
-    "@comunica/bus-term-comparator-factory": "^1.0.0",
+    "@comunica/bus-term-comparator-factory": "^3.2.1",
     "@comunica/expression-evaluator": "^3.2.1"
   }
 }

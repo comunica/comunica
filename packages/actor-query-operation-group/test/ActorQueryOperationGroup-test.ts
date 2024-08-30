@@ -6,16 +6,18 @@ import { MinAggregator } from '@comunica/actor-bindings-aggregator-factory-min';
 import { SampleAggregator } from '@comunica/actor-bindings-aggregator-factory-sample';
 import { SumAggregator } from '@comunica/actor-bindings-aggregator-factory-sum';
 import { WildcardCountAggregator } from '@comunica/actor-bindings-aggregator-factory-wildcard-count';
-import { createFuncMediator } from '@comunica/actor-function-factory-wrapper-all/test/util';
+import { ActorFunctionFactoryTermFunctionAddition } from '@comunica/actor-function-factory-term-function-addition';
+import { ActorFunctionFactoryTermFunctionDivision } from '@comunica/actor-function-factory-term-function-division';
 import { createTermCompMediator } from '@comunica/actor-term-comparator-factory-expression-evaluator/test/util';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type {
   IActionBindingsAggregatorFactory,
   IActorBindingsAggregatorFactoryOutput,
   MediatorBindingsAggregatorFactory,
-} from '@comunica/bus-bindings-aggeregator-factory';
+} from '@comunica/bus-bindings-aggregator-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
+import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
@@ -88,6 +90,11 @@ const sumZ: Algebra.BoundAggregate = {
 
 const hashFunction = (bindings: any) => JSON.stringify(bindings);
 
+const mediatorFunctionFactory: MediatorFunctionFactory = createFuncMediator([
+  args => new ActorFunctionFactoryTermFunctionAddition(args),
+  args => new ActorFunctionFactoryTermFunctionDivision(args),
+], {});
+
 function getDefaultMediatorQueryOperation() {
   return {
     mediate: (arg: any) => Promise.resolve({
@@ -121,7 +128,6 @@ interface ICaseOutput {
 async function aggregatorFactory(factory: ActorExpressionEvaluatorFactory, { expr, context }:
 IActionBindingsAggregatorFactory):
   Promise<IActorBindingsAggregatorFactoryOutput> {
-  const mediatorFunctionFactory: MediatorFunctionFactory = createFuncMediator();
   const mediatorTermComparatorFactory: MediatorTermComparatorFactory = createTermCompMediator();
   context = getMockEEActionContext(context);
 
@@ -218,7 +224,7 @@ function constructCase(
   };
   const expressionEvaluatorFactory = getMockEEFactory({
     mediatorQueryOperation,
-    mediatorFunctionFactory: createFuncMediator(),
+    mediatorFunctionFactory,
   });
   const mediatorBindingsAggregatorFactory = <MediatorBindingsAggregatorFactory> {
     async mediate(args: IActionBindingsAggregatorFactory):
@@ -272,7 +278,7 @@ describe('ActorQueryOperationGroup', () => {
     };
     const expressionEvaluatorFactory = getMockEEFactory({
       mediatorQueryOperation,
-      mediatorFunctionFactory: createFuncMediator(),
+      mediatorFunctionFactory,
     });
     mediatorBindingsAggregatorFactory = <MediatorBindingsAggregatorFactory> {
       async mediate(args: IActionBindingsAggregatorFactory):

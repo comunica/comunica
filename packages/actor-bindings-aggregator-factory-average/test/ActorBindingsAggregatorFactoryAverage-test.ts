@@ -1,8 +1,10 @@
-import { createFuncMediator } from '@comunica/actor-function-factory-wrapper-all/test/util';
+import { ActorFunctionFactoryTermFunctionAddition } from '@comunica/actor-function-factory-term-function-addition';
+import { ActorFunctionFactoryTermFunctionDivision } from '@comunica/actor-function-factory-term-function-division';
 import type {
   MediatorExpressionEvaluatorFactory,
 } from '@comunica/bus-expression-evaluator-factory';
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
+import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { Bus } from '@comunica/core';
 import {
   getMockEEActionContext,
@@ -23,7 +25,10 @@ describe('ActorBindingsAggregatorFactoryAverage', () => {
     bus = new Bus({ name: 'bus' });
 
     mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory();
-    mediatorFunctionFactory = createFuncMediator();
+    mediatorFunctionFactory = createFuncMediator([
+      args => new ActorFunctionFactoryTermFunctionAddition(args),
+      args => new ActorFunctionFactoryTermFunctionDivision(args),
+    ], {});
 
     context = getMockEEActionContext();
   });

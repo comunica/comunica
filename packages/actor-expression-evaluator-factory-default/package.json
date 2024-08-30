@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-expression-evaluator-factory-default",
-  "version": "1.0.0",
+  "version": "3.2.1",
   "description": "A default expression-evaluator-factory actor",
   "lsd:module": true,
   "license": "MIT",
@@ -38,8 +38,8 @@
   },
   "dependencies": {
     "@comunica/bindings-factory": "^3.2.1",
-    "@comunica/bus-expression-evaluator-factory": "^1.0.0",
-    "@comunica/bus-function-factory": "^1.0.0",
+    "@comunica/bus-expression-evaluator-factory": "^3.2.1",
+    "@comunica/bus-function-factory": "^3.2.1",
     "@comunica/bus-query-operation": "^3.2.1",
     "@comunica/context-entries": "^3.2.1",
     "@comunica/core": "^3.2.1",

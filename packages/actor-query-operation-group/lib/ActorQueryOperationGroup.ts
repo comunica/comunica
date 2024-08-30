@@ -1,5 +1,5 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
-import type { MediatorBindingsAggregatorFactory } from '@comunica/bus-bindings-aggeregator-factory';
+import type { MediatorBindingsAggregatorFactory } from '@comunica/bus-bindings-aggregator-factory';
 import type { MediatorHashBindings } from '@comunica/bus-hash-bindings';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';

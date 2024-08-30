@@ -1,10 +1,12 @@
 import type { ExpressionEvaluator } from '@comunica/actor-expression-evaluator-factory-default/lib/ExpressionEvaluator';
-import { sparqlFunctions } from '@comunica/actor-function-factory-wrapper-all/lib/implementation/SparqlFunctions';
-import type { TermSparqlFunction } from '@comunica/bus-function-factory';
+import { TermFunctionAddition } from '@comunica/actor-function-factory-term-function-addition/lib/TermFunctionAddition';
+import { TermFunctionSubStr } from '@comunica/actor-function-factory-term-function-sub-str/lib/TermFunctionSubStr';
+import type { TermFunctionBase } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
 import type { ISuperTypeProvider } from '@comunica/types';
-import { TypeURL } from '../../../lib';
+import { TypeURL, OverloadTree } from '../../../lib';
+import type { FunctionArgumentsCache, KnownLiteralTypes } from '../../../lib';
 import {
   IntegerLiteral,
   isLiteralTermExpression,
@@ -12,9 +14,6 @@ import {
   StringLiteral,
 } from '../../../lib/expressions';
 import type { ISerializable } from '../../../lib/expressions';
-import type { FunctionArgumentsCache } from '../../../lib/functions/OverloadTree';
-import { OverloadTree } from '../../../lib/functions/OverloadTree';
-import type { KnownLiteralTypes } from '../../../lib/util/Consts';
 import { getMockExpression } from '../../util/utils';
 
 describe('OverloadTree', () => {
@@ -125,7 +124,7 @@ describe('OverloadTree', () => {
   it('will cache addition function', () => {
     const one = new IntegerLiteral(1);
     const two = new IntegerLiteral(2);
-    const additionFunction = <TermSparqlFunction> sparqlFunctions['+'];
+    const additionFunction = <TermFunctionBase> new TermFunctionAddition();
     expect(functionArgumentsCache['+']).toBeUndefined();
     const res = additionFunction.applyOnTerms([ one, two ], expressionEvaluator);
     expect(res.str()).toBe('3');
@@ -145,7 +144,7 @@ describe('OverloadTree', () => {
     const apple = new StringLiteral('apple');
     const one = new IntegerLiteral(1);
     const two = new IntegerLiteral(2);
-    const subtractFunction = <TermSparqlFunction> sparqlFunctions.substr;
+    const subtractFunction = new TermFunctionSubStr();
     expect(functionArgumentsCache.substr).toBeUndefined();
     expect(subtractFunction.applyOnTerms([ apple, one, two ], expressionEvaluator).str()).toBe('ap');
 

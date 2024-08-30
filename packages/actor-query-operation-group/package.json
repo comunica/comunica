@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "@comunica/bindings-factory": "^3.2.1",
-    "@comunica/bus-bindings-aggeregator-factory": "^1.0.0",
+    "@comunica/bus-bindings-aggregator-factory": "^3.2.1",
     "@comunica/bus-hash-bindings": "^3.2.1",
     "@comunica/bus-merge-bindings-context": "^3.2.1",
     "@comunica/bus-query-operation": "^3.2.2",

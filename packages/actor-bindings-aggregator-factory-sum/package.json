@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-bindings-aggregator-factory-sum",
-  "version": "1.0.0",
+  "version": "3.2.1",
   "description": "A sum bindings aggregator factory actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,8 +37,8 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-bindings-aggeregator-factory": "^1.0.0",
-    "@comunica/bus-function-factory": "^1.0.0",
+    "@comunica/bus-bindings-aggregator-factory": "^3.2.1",
+    "@comunica/bus-function-factory": "^3.2.1",
     "@comunica/context-entries": "^3.2.1",
     "@comunica/core": "^3.2.1",
     "@comunica/expression-evaluator": "^3.2.1",

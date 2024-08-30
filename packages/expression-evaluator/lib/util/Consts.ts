@@ -199,18 +199,6 @@ export enum SparqlOperator {
   COALESCE = 'coalesce',
 }
 
-export const SparqlOperators: Set<string> = new Set(Object.values(SparqlOperator));
-
-export enum SetFunction {
-  COUNT = 'count',
-  SUM = 'sum',
-  MIN = 'min',
-  MAX = 'max',
-  AVG = 'avg',
-  GROUP_CONCAT = 'group_concat',
-  SAMPLE = 'sample',
-}
-
 export type NamedOperator =
   // XPath Constructor functions
   // https://www.w3.org/TR/sparql11-query/#FunctionMapping

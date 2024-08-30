@@ -1,6 +1,7 @@
-import { createFuncMediator } from '@comunica/actor-function-factory-wrapper-all/test/util';
+import { ActorFunctionFactoryTermFunctionAddition } from '@comunica/actor-function-factory-term-function-addition';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
+import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
 import * as sparqlee from '@comunica/expression-evaluator';
@@ -36,7 +37,9 @@ describe('ActorQueryOperationLeftJoin', () => {
     };
     mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
       mediatorQueryOperation,
-      mediatorFunctionFactory: createFuncMediator(),
+      mediatorFunctionFactory: createFuncMediator([
+        args => new ActorFunctionFactoryTermFunctionAddition(args),
+      ], {}),
     });
     mediatorJoin = {
       mediate: (arg: any) => Promise.resolve({

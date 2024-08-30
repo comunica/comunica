@@ -36,14 +36,12 @@ export {
   ExtensionFunctionError,
   InvalidLexicalForm,
   InvalidArity,
-  UnknownOperator,
 } from './util/Errors';
 export {
   typedLiteral,
   TypeURL,
   TypeAlias,
   SparqlOperator,
-  SparqlOperators,
   NamedOperator,
   GeneralOperator,
   KnownOperator,
@@ -105,7 +103,6 @@ export {
   parseYearMonthDuration,
   parseXSDDecimal,
   parseXSDFloat,
-  parseXSDInteger,
   parseDate,
 } from './util/Parsing';
 export {

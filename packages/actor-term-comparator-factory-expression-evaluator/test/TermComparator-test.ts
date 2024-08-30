@@ -1,5 +1,7 @@
-import { sparqlFunctions } from '@comunica/actor-function-factory-wrapper-all/lib/implementation/SparqlFunctions';
-import type { TermSparqlFunction } from '@comunica/bus-function-factory';
+import { TermFunctionEquality } from '@comunica/actor-function-factory-term-function-equality/lib/TermFunctionEquality';
+import {
+  TermFunctionLesserThan,
+} from '@comunica/actor-function-factory-term-function-lesser-than/lib/TermFunctionLesserThan';
 import type { ITermComparator } from '@comunica/bus-term-comparator-factory';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import * as Eval from '@comunica/expression-evaluator';
@@ -43,10 +45,11 @@ function orderByFactory(typeDiscoveryCallback?: SuperTypeCallback): ITermCompara
       cache: new LRUCache<string, any>({ max: 1_000 }),
     }) :
     getMockEEActionContext();
+  const equalityFunc = new TermFunctionEquality();
   return new TermComparatorExpressionEvaluator(
     getMockInternalEvaluator(undefined, context),
-    <TermSparqlFunction> sparqlFunctions['='],
-    <TermSparqlFunction> sparqlFunctions['<'],
+    equalityFunc,
+    new TermFunctionLesserThan(equalityFunc),
   );
 }
 

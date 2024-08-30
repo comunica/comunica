@@ -1,6 +1,6 @@
 {
-  "name": "@comunica/bus-bindings-aggeregator-factory",
-  "version": "1.0.0",
+  "name": "@comunica/bus-bindings-aggregator-factory",
+  "version": "3.2.1",
   "description": "A comunica actor for creating Binding-Aggregators.",
   "lsd:module": true,
   "license": "MIT",
@@ -8,7 +8,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/bus-bindings-aggeregator-factory"
+    "directory": "packages/bus-bindings-aggregator-factory"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"
@@ -16,7 +16,7 @@
   "keywords": [
     "comunica",
     "bus",
-    "bindings-aggeregator-factory"
+    "bindings-aggregator-factory"
   ],
   "sideEffects": false,
   "main": "lib/index.js",
@@ -36,7 +36,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-expression-evaluator-factory": "^1.0.0",
+    "@comunica/bus-expression-evaluator-factory": "^3.2.1",
     "@comunica/context-entries": "^3.2.1",
     "@comunica/core": "^3.2.1",
     "@comunica/expression-evaluator": "^3.2.1",

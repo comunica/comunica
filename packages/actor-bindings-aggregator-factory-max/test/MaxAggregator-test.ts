@@ -1,5 +1,5 @@
 import { createTermCompMediator } from '@comunica/actor-term-comparator-factory-expression-evaluator/test/util';
-import type { IBindingsAggregator } from '@comunica/bus-bindings-aggeregator-factory';
+import type { IBindingsAggregator } from '@comunica/bus-bindings-aggregator-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import {

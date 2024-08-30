@@ -69,6 +69,8 @@
     "AggregateEvaluator",
     "ExpressionEvaluator",
     "AggregateEvaluator",
+    "ExpressionFunctionBase",
+    "TermFunctionBase",
 
     "TermTransformer",
     "IInternalEvaluator",

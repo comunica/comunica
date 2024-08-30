@@ -1,7 +1,9 @@
-import { createFuncMediator } from '@comunica/actor-function-factory-wrapper-all/test/util';
-import type { IBindingsAggregator } from '@comunica/bus-bindings-aggeregator-factory';
+import { ActorFunctionFactoryTermFunctionAddition } from '@comunica/actor-function-factory-term-function-addition';
+import { ActorFunctionFactoryTermFunctionDivision } from '@comunica/actor-function-factory-term-function-division';
+import type { IBindingsAggregator } from '@comunica/bus-bindings-aggregator-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
+import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { SparqlOperator } from '@comunica/expression-evaluator';
 import {
@@ -58,7 +60,10 @@ describe('AverageAggregator', () => {
   let context: IActionContext;
 
   beforeEach(() => {
-    mediatorFunctionFactory = createFuncMediator();
+    mediatorFunctionFactory = createFuncMediator([
+      args => new ActorFunctionFactoryTermFunctionAddition(args),
+      args => new ActorFunctionFactoryTermFunctionDivision(args),
+    ], {});
     expressionEvaluatorFactory = getMockEEFactory({
       mediatorFunctionFactory,
     });
