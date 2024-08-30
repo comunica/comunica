@@ -27,7 +27,7 @@ export class ActorQuerySourceIdentifyHypermediaAnnotateSource extends ActorQuery
     if (action.context.get(KEY_CONTEXT_WRAPPED)) {
       throw new Error('Unable to wrap query source multiple times');
     }
-    return { filterFactor: 0 };
+    return { filterFactor: Number.POSITIVE_INFINITY };
   }
 
   public async run(action: IActionQuerySourceIdentifyHypermedia): Promise<IActorQuerySourceIdentifyHypermediaOutput> {

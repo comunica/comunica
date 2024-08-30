@@ -2,6 +2,7 @@ import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorHttp } from '@comunica/bus-http';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { Actor } from '@comunica/core';
+import { MetadataValidationState } from '@comunica/metadata';
 import type {
   IQuerySource,
   BindingsStream,
@@ -213,12 +214,16 @@ export class QuerySourceSparql implements IQuerySource {
         return reject(error);
       }
     })
-      .then(cardinality => target.setProperty('metadata', {
-        cardinality,
-        canContainUndefs,
-        variables: variablesCount,
-      }))
+      .then((cardinality) => {
+        target.setProperty('metadata', {
+          state: new MetadataValidationState(),
+          cardinality,
+          canContainUndefs,
+          variables: variablesCount,
+        });
+      })
       .catch(() => target.setProperty('metadata', {
+        state: new MetadataValidationState(),
         cardinality: COUNT_INFINITY,
         canContainUndefs,
         variables: variablesCount,
