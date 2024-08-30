@@ -11,11 +11,11 @@
   "actors": [
     {
       "@id": "urn:comunica:default:context-preprocess/actors#statistic-link-dereference",
-      "type": "ActorContextPreprocessStatisticLinkDereference"
+      "@type": "ActorContextPreprocessStatisticLinkDereference"
     },
     {
       "@id": "urn:comunica:default:context-preprocess/actors#statistic-link-discovery",
-      "type": "ActorContextPreprocessStatisticLinkDiscovery"
+      "@type": "ActorContextPreprocessStatisticLinkDiscovery"
     }
   ]
 }

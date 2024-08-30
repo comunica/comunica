@@ -2,7 +2,7 @@ import { StatisticLinkDereference } from '@comunica/actor-context-preprocess-sta
 import type { MediatorContextPreprocess } from '@comunica/bus-context-preprocess';
 import type { ActorHttpInvalidateListenable } from '@comunica/bus-http-invalidate';
 import type { IActionQuerySourceIdentify, MediatorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
-import { KeysInitQuery, KeysQueryOperation, KeysTrackableStatistics }
+import { KeysInitQuery, KeysQueryOperation, KeysStatistics }
   from '@comunica/context-entries';
 import type { IAction } from '@comunica/core';
 import { ActionContext, ActionContextKey, Bus } from '@comunica/core';
@@ -231,7 +231,7 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
 
         const statisticTracker: StatisticLinkDereference = new StatisticLinkDereference();
 
-        contextIn = contextIn.set(KeysTrackableStatistics.dereferencedLinks, statisticTracker);
+        contextIn = contextIn.set(KeysStatistics.dereferencedLinks, statisticTracker);
         statisticTracker.on(cb);
 
         const contextSource = { a: 'b' };

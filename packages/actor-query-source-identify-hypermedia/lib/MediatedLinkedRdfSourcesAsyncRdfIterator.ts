@@ -4,7 +4,7 @@ import type {
   ILinkQueue,
   MediatorRdfResolveHypermediaLinksQueue,
 } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
-import { KeysQueryOperation, KeysTrackableStatistics } from '@comunica/context-entries';
+import { KeysQueryOperation, KeysStatistics } from '@comunica/context-entries';
 import type {
   IActionContext,
   IAggregatedStore,
@@ -156,7 +156,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     try {
       const { links } = await this.mediatorRdfResolveHypermediaLinks.mediate({ context: this.context, metadata });
       const traversalTracker: IStatisticBase<IDiscoverEventData> | undefined =
-        this.context.get(KeysTrackableStatistics.discoveredLinks);
+        this.context.get(KeysStatistics.discoveredLinks);
 
       if (traversalTracker) {
         for (const link of links) {

@@ -4,7 +4,7 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
 import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
-import { KeysTrackableStatistics } from '@comunica/context-entries';
+import { KeysStatistics } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext, IQuerySource, ILink } from '@comunica/types';
 import { setTaskScheduler } from 'asynciterator';
@@ -371,7 +371,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         jest.setSystemTime(new Date('2021-01-01T00:00:00Z').getTime());
 
         const statisticTracker: StatisticLinkDiscovery = new StatisticLinkDiscovery();
-        context = context.set(KeysTrackableStatistics.discoveredLinks, statisticTracker);
+        context = context.set(KeysStatistics.discoveredLinks, statisticTracker);
 
         const source = sourceFactory();
         // Here we pass a partial source state object, as the link attribute is required to track

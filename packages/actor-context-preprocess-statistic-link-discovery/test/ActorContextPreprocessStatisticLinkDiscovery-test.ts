@@ -1,4 +1,4 @@
-import { KeysTrackableStatistics } from '@comunica/context-entries';
+import { KeysStatistics } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { ActorContextPreprocessStatisticLinkDiscovery } from '../lib/ActorContextPreprocessStatisticLinkDiscovery';
 import { StatisticLinkDiscovery } from '../lib/StatisticLinkDiscovery';
@@ -28,7 +28,7 @@ describe('ActorContextPreprocessStatisticLinkDiscovery', () => {
         const contextIn = new ActionContext({});
         const { context: contextOut } = await actor.run({ context: contextIn });
 
-        expect(contextOut.keys()).toEqual([ KeysTrackableStatistics.discoveredLinks ]);
+        expect(contextOut.keys()).toEqual([ KeysStatistics.discoveredLinks ]);
 
         expect(StatisticLinkDiscovery).toHaveBeenCalledTimes(1);
       });

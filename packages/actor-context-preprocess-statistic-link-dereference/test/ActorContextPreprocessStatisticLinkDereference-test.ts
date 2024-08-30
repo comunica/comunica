@@ -1,4 +1,4 @@
-import { KeysTrackableStatistics } from '@comunica/context-entries';
+import { KeysStatistics } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { ActorContextPreprocessStatisticLinkDereference } from '../lib/ActorContextPreprocessStatisticLinkDereference';
 import { StatisticLinkDereference } from '../lib/StatisticLinkDereference';
@@ -28,7 +28,7 @@ describe('ActorContextPreprocessStatisticLinkDereference', () => {
         const contextIn = new ActionContext({});
         const { context: contextOut } = await actor.run({ context: contextIn });
 
-        expect(contextOut.keys()).toEqual([ KeysTrackableStatistics.dereferencedLinks ]);
+        expect(contextOut.keys()).toEqual([ KeysStatistics.dereferencedLinks ]);
 
         expect(StatisticLinkDereference).toHaveBeenCalledTimes(1);
       });

@@ -3,7 +3,7 @@ import { StatisticLinkDereference } from '@comunica/actor-context-preprocess-sta
 import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { ILinkQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
-import { KeysTrackableStatistics } from '@comunica/context-entries';
+import { KeysStatistics } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
 import type { ILink, IActionContext, IQueryBindingsOptions, MetadataBindings } from '@comunica/types';
@@ -689,7 +689,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       const statisticTracker: StatisticLinkDereference = new StatisticLinkDereference();
       statisticTracker.on(cb);
 
-      context = context.set(KeysTrackableStatistics.dereferencedLinks, statisticTracker);
+      context = context.set(KeysStatistics.dereferencedLinks, statisticTracker);
 
       data = toBindings([[
         [ 'a', 'b', 'c' ],

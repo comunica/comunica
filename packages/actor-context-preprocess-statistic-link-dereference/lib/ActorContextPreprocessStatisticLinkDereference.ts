@@ -4,7 +4,7 @@ import type {
   IActorContextPreprocessArgs }
   from '@comunica/bus-context-preprocess';
 import { ActorContextPreprocess } from '@comunica/bus-context-preprocess';
-import { KeysTrackableStatistics } from '@comunica/context-entries';
+import { KeysStatistics } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import { StatisticLinkDereference } from './StatisticLinkDereference';
 
@@ -21,7 +21,7 @@ export class ActorContextPreprocessStatisticLinkDereference extends ActorContext
   }
 
   public async run(action: IActionContextPreprocess): Promise<IActorContextPreprocessOutput> {
-    const context = action.context.set(KeysTrackableStatistics.dereferencedLinks, new StatisticLinkDereference());
+    const context = action.context.set(KeysStatistics.dereferencedLinks, new StatisticLinkDereference());
     return { context };
   }
 }

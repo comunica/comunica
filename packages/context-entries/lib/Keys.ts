@@ -302,7 +302,7 @@ export const KeysRdfJoin = {
   lastPhysicalJoin: new ActionContextKey<string>('@comunica/bus-rdf-join:lastPhysicalJoin'),
 };
 
-export const KeysTrackableStatistics = {
+export const KeysStatistics = {
   /**
    * All discovered links during query execution. Not all of them will necessarily be dereferenced.
    */

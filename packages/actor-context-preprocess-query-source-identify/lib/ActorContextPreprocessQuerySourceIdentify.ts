@@ -6,7 +6,7 @@ import type {
 import { ActorContextPreprocess } from '@comunica/bus-context-preprocess';
 import type { ActorHttpInvalidateListenable, IActionHttpInvalidate } from '@comunica/bus-http-invalidate';
 import type { MediatorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
-import { KeysInitQuery, KeysQueryOperation, KeysTrackableStatistics }
+import { KeysInitQuery, KeysQueryOperation, KeysStatistics }
   from '@comunica/context-entries';
 import type { IAction, IActorTest } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
@@ -62,7 +62,7 @@ export class ActorContextPreprocessQuerySourceIdentify extends ActorContextPrepr
        * When identifying sources in preprocess actor, we record this as a dereference seed document event
        */
       const statisticDereferenceLinks: IStatisticBase<ILink> | undefined = action.context
-        .get(KeysTrackableStatistics.dereferencedLinks);
+        .get(KeysStatistics.dereferencedLinks);
 
       if (statisticDereferenceLinks) {
         for (const querySource of querySources) {

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-context-preprocess-statistic-link-discovery",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "description": "A statistic-link-discovery context-preprocess actor",
   "lsd:module": true,
   "license": "MIT",
