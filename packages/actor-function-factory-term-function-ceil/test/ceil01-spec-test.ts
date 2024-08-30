@@ -1,7 +1,7 @@
 import { int, decimal } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
-import * as Data from '../../actor-function-factory-wrapper-all/test/spec/_data';
 import { runFuncTestTable } from '../../bus-function-factory/test/util';
+import * as Data from '../../expression-evaluator/test/spec/_data';
 import { ActorFunctionFactoryTermFunctionCeil } from '../lib';
 
 /**

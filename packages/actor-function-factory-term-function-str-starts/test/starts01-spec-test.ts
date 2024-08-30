@@ -1,6 +1,6 @@
 import { ActorFunctionFactoryTermFunctionStr } from '@comunica/actor-function-factory-term-function-str';
-import * as Data from '@comunica/actor-function-factory-wrapper-all/test/spec/_data';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
+import * as Data from '@comunica/expression-evaluator/test/spec/_data';
 import { bool } from '@comunica/expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
 import { ActorFunctionFactoryTermFunctionStrStarts } from '../lib';

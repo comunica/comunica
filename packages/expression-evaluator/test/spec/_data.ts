@@ -1,4 +1,4 @@
-import { dateTyped, dateTimeTyped, decimal, int } from '@comunica/expression-evaluator/test/util/Aliases';
+import { dateTyped, dateTimeTyped, decimal, int } from '../util/Aliases';
 
 // Data ------------------------------------------------------------------------
 // @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
