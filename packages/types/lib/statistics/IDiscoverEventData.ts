@@ -1,5 +1,5 @@
 /**
- * Interface for the data emitted by link discovery statistic trackers. 
+ * Interface for the data emitted by link discovery statistic trackers.
  * The parent node represents the URL where the discovered URL is retrieved from.
  */
 export interface IDiscoverEventData {
