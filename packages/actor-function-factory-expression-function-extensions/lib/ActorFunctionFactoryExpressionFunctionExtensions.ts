@@ -7,7 +7,7 @@ import type {
   IActorFunctionFactoryArgs,
   IActorFunctionFactoryOutputTerm,
 } from '@comunica/bus-function-factory';
-import { KeysExpressionEvaluator } from '@comunica/context-entries';
+import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import type { AsyncExtensionFunctionCreator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -29,7 +29,9 @@ export class ActorFunctionFactoryExpressionFunctionExtensions extends ActorFunct
     if (definition) {
       return true;
     }
-    throw new Error('no');
+    throw new Error(
+      `Actor ${this.name} can only provide non-termExpression implementations for functions that are provided through config entries like: ${KeysInitQuery.extensionFunctionCreator.name} or ${KeysInitQuery.extensionFunctions.name}`,
+    );
   }
 
   public async run<T extends IActionFunctionFactory>({ context, functionName }: T):
