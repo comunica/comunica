@@ -1,6 +1,3 @@
-// TODO: this thing will be it's own actor but it's just a little special.
-//  It will also be the only consumer of the context items:
-//  KeysInitQuery.extensionFunctions and KeysInitQuery.extensionFunctionCreator
 import { ExpressionFunctionBase } from '@comunica/bus-function-factory/lib/implementation/Core';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import * as Eval from '@comunica/expression-evaluator';

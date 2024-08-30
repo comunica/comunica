@@ -7,6 +7,7 @@
     "ccqs:config/function-factory/actors/expression-function-bound.json",
     "ccqs:config/function-factory/actors/expression-function-coalesce.json",
     "ccqs:config/function-factory/actors/expression-function-concat.json",
+    "ccqs:config/function-factory/actors/expression-function-extensions.json",
     "ccqs:config/function-factory/actors/expression-function-if.json",
     "ccqs:config/function-factory/actors/expression-function-in.json",
     "ccqs:config/function-factory/actors/expression-function-logical-and.json",
@@ -86,7 +87,6 @@
     "ccqs:config/function-factory/actors/term-function-xsd-to-string.json",
     "ccqs:config/function-factory/actors/term-function-xsd-to-time.json",
     "ccqs:config/function-factory/actors/term-function-xsd-to-year-month-duration.json",
-    "ccqs:config/function-factory/actors/term-function-year.json",
-    "ccqs:config/function-factory/actors/wrapper-all.json"
+    "ccqs:config/function-factory/actors/term-function-year.json"
   ]
 }

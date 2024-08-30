@@ -1,14 +1,14 @@
 {
-  "name": "@comunica/actor-function-factory-wrapper-all",
+  "name": "@comunica/actor-function-factory-expression-function-extensions",
   "version": "3.2.1",
-  "description": "A wrapper-all functions actor",
+  "description": "A expression-function-extensions function-factory actor",
   "lsd:module": true,
   "license": "MIT",
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-functions-wrapper-all"
+    "directory": "packages/actor-function-factory-expression-function-extensions"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"
@@ -16,8 +16,8 @@
   "keywords": [
     "comunica",
     "actor",
-    "functions",
-    "wrapper-all"
+    "function-factory",
+    "expression-function-extensions"
   ],
   "sideEffects": false,
   "main": "lib/index.js",
@@ -32,7 +32,7 @@
     "lib/**/*.js.map"
   ],
   "scripts": {
-    "build": "npm run build:ts && npm run build:components",
+    "build": "yarn run build:ts && yarn run build:components",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
     "build:components": "componentsjs-generator"
   },

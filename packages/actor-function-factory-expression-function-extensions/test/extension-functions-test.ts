@@ -1,3 +1,4 @@
+import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { bool, compactTermString, merge, numeric } from '@comunica/expression-evaluator/test/util/Aliases';
@@ -5,8 +6,7 @@ import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
 import type { AsyncExtensionFunctionCreator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
-import { runFuncTestTable } from '../../../bus-function-factory/test/util';
-import { ActorFunctionFactoryWrapperAll } from '../../lib';
+import { ActorFunctionFactoryExpressionFunctionExtensions } from '../lib';
 
 const DF = new DataFactory();
 
@@ -92,7 +92,7 @@ describe('extension functions:', () => {
         `;
       runFuncTestTable({
         registeredActors: [
-          args => new ActorFunctionFactoryWrapperAll(args),
+          args => new ActorFunctionFactoryExpressionFunctionExtensions(args),
         ],
         arity: 2,
         notation: Notation.Function,

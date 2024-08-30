@@ -1,23 +1,23 @@
-import type {
-  IActionFunctionFactory,
-  IActorFunctionFactoryArgs,
-  IActorFunctionFactoryOutput,
-  IActorFunctionFactoryOutputTerm,
-} from '@comunica/bus-function-factory';
 import {
   ActorFunctionFactory,
+} from '@comunica/bus-function-factory';
+import type {
+  IActionFunctionFactory,
+  IActorFunctionFactoryOutput,
+  IActorFunctionFactoryArgs,
+  IActorFunctionFactoryOutputTerm,
 } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import type { AsyncExtensionFunctionCreator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
-import { NamedExtension } from './implementation/NamedExtension';
+import { NamedExtension } from './NamedExtension';
 
 /**
- * A comunica Wrapper All Functions Actor.
+ * A comunica Expression Function Extensions Function Factory Actor.
  */
-export class ActorFunctionFactoryWrapperAll extends ActorFunctionFactory {
+export class ActorFunctionFactoryExpressionFunctionExtensions extends ActorFunctionFactory {
   public constructor(args: IActorFunctionFactoryArgs) {
     super(args);
   }
@@ -32,7 +32,7 @@ export class ActorFunctionFactoryWrapperAll extends ActorFunctionFactory {
     throw new Error('no');
   }
 
-  public async run<T extends IActionFunctionFactory>({ functionName, context }: T):
+  public async run<T extends IActionFunctionFactory>({ context, functionName }: T):
   Promise<T extends { requireTermExpression: true } ? IActorFunctionFactoryOutputTerm : IActorFunctionFactoryOutput> {
     const extensionFinder: AsyncExtensionFunctionCreator =
       context.getSafe(KeysExpressionEvaluator.extensionFunctionCreator);
