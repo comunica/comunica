@@ -4,6 +4,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import { ArrayIterator, BufferedIterator, range } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationAsk } from '../lib/ActorQueryOperationAsk';
+import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -91,12 +92,12 @@ describe('ActorQueryOperationAsk', () => {
 
     it('should test on ask', async() => {
       const op: any = { operation: { type: 'ask' }, context: new ActionContext() };
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should not test on non-ask', async() => {
       const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports ask operations, but got some-other-type`);
     });
 
     it('should run on a non-empty stream', async() => {

@@ -1,6 +1,7 @@
 import type { IActorArgsMediaTypedFixed } from '@comunica/actor-abstract-mediatyped';
 import { ActorAbstractMediaTypedFixed } from '@comunica/actor-abstract-mediatyped';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type {
   IActionSparqlSerialize,
@@ -34,8 +35,11 @@ IActorQueryResultSerializeOutput
   }
   /* eslint-enable max-len */
 
-  public async testHandleChecked(_action: IActionSparqlSerialize, _context: IActionContext): Promise<boolean> {
-    return true;
+  public async testHandleChecked(
+    _action: IActionSparqlSerialize,
+    _context: IActionContext,
+  ): Promise<TestResult<boolean>> {
+    return passTestVoid();
   }
 }
 

@@ -130,7 +130,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
         operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.ZERO_OR_ONE_PATH }},
       };
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should test on different paths', async() => {
@@ -138,7 +138,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
         operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }},
       };
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`This Actor only supports ZeroOrOnePath Path operations.`);
     });
 
     it('should mediate with distinct if not in context', async() => {

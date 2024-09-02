@@ -7,6 +7,8 @@ import type {
 import {
   ActorRdfJoin,
 } from '@comunica/bus-rdf-join';
+import type { TestResult } from '@comunica/core';
+import { passTest } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { MetadataBindings } from '@comunica/types';
 import { UnionIterator } from 'asynciterator';
@@ -51,13 +53,13 @@ export class ActorRdfJoinOptionalOptPlus extends ActorRdfJoin {
   protected async getJoinCoefficients(
     action: IActionRdfJoin,
     metadatas: MetadataBindings[],
-  ): Promise<IMediatorTypeJoinCoefficients> {
-    return {
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients>> {
+    return passTest({
       iterations: metadatas[0].cardinality.value + metadatas[1].cardinality.value,
       persistedItems: 0,
       blockingItems: 0,
       requestTime: 0,
-    };
+    });
   }
 }
 

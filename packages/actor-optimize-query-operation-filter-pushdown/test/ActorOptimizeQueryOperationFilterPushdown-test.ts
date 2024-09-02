@@ -4,6 +4,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorOptimizeQueryOperationFilterPushdown } from '../lib/ActorOptimizeQueryOperationFilterPushdown';
+import '@comunica/jest';
 
 const AF = new Factory();
 const DF = new DataFactory();
@@ -32,7 +33,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
     });
 
     it('should test', async() => {
-      await expect(actor.test({ context: new ActionContext(), operation: AF.createNop() })).resolves.toBeTruthy();
+      await expect(actor.test({ context: new ActionContext(), operation: AF.createNop() })).resolves.toPassTestVoid();
     });
 
     describe('run', () => {

@@ -203,7 +203,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
             variables: [ DF.variable('a') ],
           },
         };
-        await expect(actor.sortJoinEntries([ e1, e2, e3 ], context)).resolves.toEqual({
+        await expect(actor.sortJoinEntries([ e1, e2, e3 ], context)).resolves.toPassTest({
           first: e3,
           second: e1,
           remaining: [ e2 ],
@@ -248,7 +248,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
             variables: [ DF.variable('a') ],
           },
         };
-        await expect(actor.sortJoinEntries([ e1, e2, e3 ], context)).resolves.toEqual({
+        await expect(actor.sortJoinEntries([ e1, e2, e3 ], context)).resolves.toPassTest({
           first: e2,
           second: e3,
           remaining: [ e1 ],
@@ -292,7 +292,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
             variables: [ DF.variable('a') ],
           },
         };
-        await expect(actor.sortJoinEntries([ e1, e2, e3 ], context)).resolves.toEqual({
+        await expect(actor.sortJoinEntries([ e1, e2, e3 ], context)).resolves.toPassTest({
           first: e3,
           second: e1,
           remaining: [ e2 ],
@@ -336,7 +336,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
             variables: [ DF.variable('a') ],
           },
         };
-        await expect(actor.sortJoinEntries([ e1, e2, e3 ], context)).resolves.toEqual({
+        await expect(actor.sortJoinEntries([ e1, e2, e3 ], context)).resolves.toPassTest({
           first: e3,
           second: e1,
           remaining: [ e2 ],
@@ -380,7 +380,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
             variables: [ DF.variable('a'), DF.variable('b') ],
           },
         };
-        await expect(actor.sortJoinEntries([ e1, e2, e3 ], context)).resolves.toEqual({
+        await expect(actor.sortJoinEntries([ e1, e2, e3 ], context)).resolves.toPassTest({
           first: e3,
           second: e1,
           remaining: [ e2 ],
@@ -424,8 +424,8 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
             variables: [ DF.variable('a'), DF.variable('b') ],
           },
         };
-        await expect(actor.sortJoinEntries([ e1, e2, e3 ], context)).rejects
-          .toThrow(`Actor actor can only join with common variables`);
+        await expect(actor.sortJoinEntries([ e1, e2, e3 ], context)).resolves
+          .toFailTest(`Actor actor can only join with common variables`);
       });
     });
 
@@ -648,7 +648,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
               variables: [ DF.variable('a') ],
             },
           ],
-        )).resolves.toEqual({
+        )).resolves.toPassTest({
           iterations: 1.200_000_000_000_000_2e-7,
           persistedItems: 2,
           blockingItems: 2,
@@ -703,7 +703,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
               variables: [ DF.variable('a') ],
             },
           ],
-        )).rejects.toThrow(`Actor actor can not be called recursively`);
+        )).resolves.toFailTest(`Actor actor can not be called recursively`);
       });
 
       it('throws if entries[1] has no source', async() => {
@@ -752,7 +752,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
               variables: [ DF.variable('a') ],
             },
           ],
-        )).rejects.toThrow(`Actor actor can only process if entries[1] has a source`);
+        )).resolves.toFailTest(`Actor actor can only process if entries[1] has a source`);
       });
 
       it('throws if the entries[1] source accepts no filterBindings', async() => {
@@ -801,7 +801,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
               variables: [ DF.variable('a') ],
             },
           ],
-        )).rejects.toThrow(`Actor actor can only process if entries[1] accept filterBindings`);
+        )).resolves.toFailTest(`Actor actor can only process if entries[1] accept filterBindings`);
       });
     });
   });

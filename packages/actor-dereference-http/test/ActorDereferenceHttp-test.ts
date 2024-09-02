@@ -6,6 +6,7 @@ import { LoggerVoid } from '@comunica/logger-void';
 import { MediatorRace } from '@comunica/mediator-race';
 import type { IActionContext } from '@comunica/types';
 import { ActorDereferenceHttp } from '../lib/ActorDereferenceHttp';
+import '@comunica/jest';
 
 // TODO: Remove when targeting NodeJS 18+
 if (!globalThis.ReadableStream) {
@@ -125,15 +126,16 @@ describe('ActorDereferenceHttp', () => {
     });
 
     it('should test on https', async() => {
-      await expect(actor.test({ url: 'https://www.google.com/', context })).resolves.toBeTruthy();
+      await expect(actor.test({ url: 'https://www.google.com/', context })).resolves.toPassTestVoid();
     });
 
     it('should test on http', async() => {
-      await expect(actor.test({ url: 'http://www.google.com/', context })).resolves.toBeTruthy();
+      await expect(actor.test({ url: 'http://www.google.com/', context })).resolves.toPassTestVoid();
     });
 
     it('should not test on ftp', async() => {
-      await expect(actor.test({ url: 'ftp://www.google.com/', context })).rejects.toBeTruthy();
+      await expect(actor.test({ url: 'ftp://www.google.com/', context })).resolves
+        .toFailTest(`Cannot retrieve ftp://www.google.com/ because it is not an HTTP(S) URL.`);
     });
 
     it('should run with a web stream', async() => {

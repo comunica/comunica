@@ -85,12 +85,12 @@ describe('ActorQueryOperationLeftJoin', () => {
 
     it('should test on leftjoin', async() => {
       const op: any = { operation: { type: 'leftjoin' }};
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should not test on non-leftjoin', async() => {
       const op: any = { operation: { type: 'some-other-type' }};
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports leftjoin operations, but got some-other-type`);
     });
 
     it('should run', async() => {

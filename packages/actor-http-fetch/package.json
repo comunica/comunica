@@ -37,6 +37,7 @@
   "dependencies": {
     "@comunica/bus-http": "^3.2.1",
     "@comunica/context-entries": "^3.2.1",
+    "@comunica/core": "^3.2.1",
     "@comunica/mediatortype-time": "^3.2.1"
   },
   "browser": {

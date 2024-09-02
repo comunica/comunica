@@ -4,7 +4,8 @@ import {
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import type {
   IQueryOperationResultBindings,
   IActionContext,
@@ -36,8 +37,8 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
       .apply([], patterns.map(pattern => getVariables(getTermsNested(pattern)))));
   }
 
-  public async testOperation(_operation: Algebra.Construct, _context: IActionContext): Promise<IActorTest> {
-    return true;
+  public async testOperation(_operation: Algebra.Construct, _context: IActionContext): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async runOperation(operationOriginal: Algebra.Construct, context: IActionContext):

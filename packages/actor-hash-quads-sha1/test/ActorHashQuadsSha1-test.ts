@@ -5,6 +5,7 @@ import type { IActionContext } from '@comunica/types';
 import type { Quad } from 'rdf-data-factory';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorHashQuadsSha1 } from '../lib/ActorHashQuadsSha1';
+import '@comunica/jest';
 
 const DF = new DataFactory();
 
@@ -46,7 +47,7 @@ describe('ActorHashQuadsSha1', () => {
         context: new ActionContext(),
         allowHashCollisions: true,
       };
-      await expect(actor.test(action)).resolves.toBe(true);
+      await expect(actor.test(action)).resolves.toPassTestVoid();
     });
 
     it('should not test with allowHashCollisions false', async() => {
@@ -54,7 +55,8 @@ describe('ActorHashQuadsSha1', () => {
         context: new ActionContext(),
         allowHashCollisions: false,
       };
-      await expect(actor.test(action)).rejects.toBeTruthy();
+      await expect(actor.test(action)).resolves
+        .toFailTest(`Actor actor can not provide hash functions without hash collisions`);
     });
 
     it('should run', async() => {

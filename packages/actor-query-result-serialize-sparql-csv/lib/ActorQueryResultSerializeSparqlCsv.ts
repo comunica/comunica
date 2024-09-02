@@ -6,6 +6,8 @@ import type {
 import {
   ActorQueryResultSerializeFixedMediaTypes,
 } from '@comunica/bus-query-result-serialize';
+import type { TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import type { Bindings, IActionContext, IQueryOperationResultBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { Readable } from 'readable-stream';
@@ -64,11 +66,14 @@ export class ActorQueryResultSerializeSparqlCsv extends ActorQueryResultSerializ
     return stringValue;
   }
 
-  public override async testHandleChecked(action: IActionSparqlSerialize, _context: IActionContext): Promise<boolean> {
+  public override async testHandleChecked(
+    action: IActionSparqlSerialize,
+    _context: IActionContext,
+  ): Promise<TestResult<boolean>> {
     if (action.type !== 'bindings') {
-      throw new Error('This actor can only handle bindings streams.');
+      return failTest(() => 'This actor can only handle bindings streams.');
     }
-    return true;
+    return passTestVoid();
   }
 
   public async runHandle(action: IActionSparqlSerialize, _mediaType: string | undefined, _context: IActionContext):

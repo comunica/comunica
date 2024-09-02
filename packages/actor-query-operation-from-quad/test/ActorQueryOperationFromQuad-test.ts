@@ -8,6 +8,7 @@ import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationFromQuad } from '../lib/ActorQueryOperationFromQuad';
+import '@comunica/jest';
 
 const quad = require('rdf-quad');
 
@@ -975,12 +976,12 @@ describe('ActorQueryOperationFromQuad', () => {
 
     it('should test on from', async() => {
       const op: any = { operation: { type: 'from' }, context: new ActionContext() };
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should not test on non-from', async() => {
       const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports from operations, but got some-other-type`);
     });
 
     it('should run', async() => {

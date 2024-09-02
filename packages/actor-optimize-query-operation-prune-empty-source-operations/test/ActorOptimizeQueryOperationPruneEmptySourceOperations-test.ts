@@ -9,6 +9,7 @@ import { Algebra, Factory } from 'sparqlalgebrajs';
 import {
   ActorOptimizeQueryOperationPruneEmptySourceOperations,
 } from '../lib/ActorOptimizeQueryOperationPruneEmptySourceOperations';
+import '@comunica/jest';
 
 const AF = new Factory();
 const DF = new DataFactory();
@@ -107,7 +108,7 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
         await expect(actor.test({
           context: new ActionContext(),
           operation: ActorQueryOperation.assignOperationSource(AF.createNop(), <any>{}),
-        })).rejects.toThrow(`Actor actor does not work with top-level operation sources.`);
+        })).resolves.toFailTest(`Actor actor does not work with top-level operation sources.`);
       });
     });
 

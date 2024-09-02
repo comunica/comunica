@@ -206,13 +206,31 @@ describe('ActorQueryOperationGroup', () => {
   describe('An ActorQueryOperationGroup instance', () => {
     it('should test on group', async() => {
       const { actor, op } = constructCase({});
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should not test on non-group', async() => {
       const op: any = { operation: { type: 'some-other-type' }};
       const { actor } = constructCase({});
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports group operations, but got some-other-type`);
+    });
+
+    it('should not test on unsupported operators', async() => {
+      const op: any = {
+        operation: {
+          type: Algebra.types.GROUP,
+          input: undefined,
+          variables: undefined,
+          aggregates: [{ expression: {
+            args: [],
+            expressionType: 'operator',
+            operator: 'DUMMY',
+          }}],
+        },
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
+      const { actor } = constructCase({});
+      await expect(actor.test(op)).resolves.toFailTest(`Unknown operator: '"DUMMY"`);
     });
 
     it('should test on distinct aggregate', async() => {
@@ -223,7 +241,7 @@ describe('ActorQueryOperationGroup', () => {
         inputOp: simpleXYZinput,
         aggregates: [{ ...countY, distinct: true }],
       });
-      await expect(actor.test(op)).resolves.toBe(true);
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should group on a single var', async() => {

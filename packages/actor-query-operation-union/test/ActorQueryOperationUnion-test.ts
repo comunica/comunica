@@ -399,7 +399,7 @@ describe('ActorQueryOperationUnion', () => {
       const input = [ op3(), op2() ];
       await expect(actor.test(<any> {
         operation: { type: 'union', input, context: new ActionContext() },
-      })).resolves.toBeTruthy();
+      })).resolves.toPassTestVoid();
       for (const op of input) {
         op.stream.destroy();
       }
@@ -410,7 +410,7 @@ describe('ActorQueryOperationUnion', () => {
       await expect(actor.test(<any> {
         operation: { type: 'some-other-type', input },
         context: new ActionContext(),
-      })).rejects.toBeTruthy();
+      })).resolves.toFailTest(`Actor actor only supports union operations, but got some-other-type`);
       for (const op of input) {
         op.stream.destroy();
       }

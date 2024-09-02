@@ -1,7 +1,7 @@
 import type { ActorRdfJoin, IActionRdfJoin } from '@comunica/bus-rdf-join';
 import { KeysQueryOperation } from '@comunica/context-entries';
-import type { IActorReply, IMediatorArgs } from '@comunica/core';
-import { Actor, Mediator } from '@comunica/core';
+import type { IActorReply, IMediatorArgs, TestResult } from '@comunica/core';
+import { failTest, passTest, Actor, Mediator } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { IQueryOperationResult } from '@comunica/types';
 
@@ -23,15 +23,18 @@ export class MediatorJoinCoefficientsFixed
   protected async mediateWith(
     action: IActionRdfJoin,
     testResults: IActorReply<ActorRdfJoin, IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryOperationResult>[],
-  ): Promise<ActorRdfJoin> {
+  ): Promise<TestResult<ActorRdfJoin>> {
     // Obtain test results
-    const errors: Error[] = [];
-    const promises = testResults
-      .map(({ reply }) => reply)
-      .map(promise => promise.catch((error) => {
-        errors.push(error);
-      }));
-    const coefficients = await Promise.all(promises);
+    const errors: (() => string)[] = [];
+    const promises = testResults.map(({ reply }) => reply);
+    const coefficients = (await Promise.all(promises)).map((testResult) => {
+      if (testResult.isFailed()) {
+        errors.push(testResult.getFailMessage());
+        // eslint-disable-next-line array-callback-return
+        return;
+      }
+      return testResult.get();
+    });
 
     // Calculate costs
     let costs: (number | undefined)[] = coefficients
@@ -73,8 +76,8 @@ export class MediatorJoinCoefficientsFixed
 
     // Reject if all actors rejected
     if (minIndex < 0) {
-      throw new Error(`All actors rejected their test in ${this.name}\n${
-        errors.map(error => error.message).join('\n')}`);
+      return failTest(() => `All actors rejected their test in ${this.name}\n${
+        errors.map(error => error()).join('\n')}`);
     }
 
     // Return actor with lowest cost
@@ -97,7 +100,7 @@ export class MediatorJoinCoefficientsFixed
       });
     }
 
-    return bestActor;
+    return passTest(bestActor);
   }
 }
 

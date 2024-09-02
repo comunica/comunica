@@ -10,6 +10,7 @@ import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorQueryProcessSequential } from '../lib/ActorQueryProcessSequential';
+import '@comunica/jest';
 
 const DF = new DataFactory();
 const AF = new Factory();
@@ -78,7 +79,7 @@ describe('ActorQueryProcessSequential', () => {
           query: 'q',
           context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }).set(KeysInitQuery.explain, 'parsed'),
         }))
-          .rejects.toThrow(`actor is not able to explain queries.`);
+          .resolves.toFailTest(`actor is not able to explain queries.`);
       });
 
       it('rejects on raw explain in context', async() => {
@@ -86,7 +87,7 @@ describe('ActorQueryProcessSequential', () => {
           query: 'q',
           context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }).setRaw('explain', 'parsed'),
         }))
-          .rejects.toThrow(`actor is not able to explain queries.`);
+          .resolves.toFailTest(`actor is not able to explain queries.`);
       });
 
       it('handles no explain in context', async() => {
@@ -94,7 +95,7 @@ describe('ActorQueryProcessSequential', () => {
           query: 'q',
           context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
         })).resolves
-          .toBeTruthy();
+          .toPassTestVoid();
       });
     });
 

@@ -6,7 +6,8 @@ import type {
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, FragmentSelectorShape, IActionContext, IQuerySourceWrapper } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { mapTermsNested, uniqTerms } from 'rdf-terms';
@@ -27,8 +28,8 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     super(args);
   }
 
-  public async test(_action: IActionOptimizeQueryOperation): Promise<IActorTest> {
-    return true;
+  public async test(_action: IActionOptimizeQueryOperation): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {

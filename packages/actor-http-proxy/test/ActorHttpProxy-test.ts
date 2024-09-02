@@ -4,6 +4,7 @@ import { Bus, ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorHttpProxy } from '../lib/ActorHttpProxy';
 import { ProxyHandlerStatic } from '../lib/ProxyHandlerStatic';
+import '@comunica/jest';
 
 describe('ActorHttpProxy', () => {
   let bus: any;
@@ -49,13 +50,13 @@ describe('ActorHttpProxy', () => {
 
     it('should test on a valid proxy handler', async() => {
       const input = 'http://example.org';
-      await expect(actor.test({ input, context })).resolves.toEqual({ time: Number.POSITIVE_INFINITY });
+      await expect(actor.test({ input, context })).resolves.toPassTest({ time: Number.POSITIVE_INFINITY });
     });
 
     it('should not test on a no proxy handler', async() => {
       const input = 'http://example.org';
-      await expect(actor.test({ input, context: new ActionContext({}) })).rejects
-        .toThrow(new Error('Actor actor could not find a proxy handler in the context.'));
+      await expect(actor.test({ input, context: new ActionContext({}) })).resolves
+        .toFailTest('Actor actor could not find a proxy handler in the context.');
     });
 
     it('should not test on an invalid proxy handler', async() => {
@@ -63,8 +64,8 @@ describe('ActorHttpProxy', () => {
       context = new ActionContext({
         [KeysHttpProxy.httpProxyHandler.name]: { getProxy: () => null },
       });
-      await expect(actor.test({ input, context })).rejects
-        .toThrow(new Error('Actor actor could not determine a proxy for the given request.'));
+      await expect(actor.test({ input, context })).resolves
+        .toFailTest('Actor actor could not determine a proxy for the given request.');
     });
 
     it('should run when the proxy does not return an x-final-url header', async() => {

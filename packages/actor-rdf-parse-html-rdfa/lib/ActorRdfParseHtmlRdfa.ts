@@ -5,7 +5,8 @@ import type {
 } from '@comunica/bus-rdf-parse-html';
 import { ActorRdfParseHtml } from '@comunica/bus-rdf-parse-html';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
 import { RdfaParser } from 'rdfa-streaming-parser';
 
@@ -17,8 +18,8 @@ export class ActorRdfParseHtmlRdfa extends ActorRdfParseHtml {
     super(args);
   }
 
-  public async test(_action: IActionRdfParseHtml): Promise<IActorTest> {
-    return true;
+  public async test(_action: IActionRdfParseHtml): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async run(action: IActionRdfParseHtml): Promise<IActorRdfParseHtmlOutput> {

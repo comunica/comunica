@@ -5,7 +5,8 @@ import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import type {
   Bindings,
   BindingsStream,
@@ -29,8 +30,8 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
     super(args, 'distinct');
   }
 
-  public async testOperation(_operation: Algebra.Distinct, _context: IActionContext): Promise<IActorTest> {
-    return true;
+  public async testOperation(_operation: Algebra.Distinct, _context: IActionContext): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async runOperation(operation: Algebra.Distinct, context: IActionContext): Promise<IQueryOperationResult> {

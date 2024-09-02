@@ -7,6 +7,7 @@ import { LoggerVoid } from '@comunica/logger-void';
 import type { IActionContext } from '@comunica/types';
 import { Readable } from 'readable-stream';
 import { ActorHttpFetch } from '../lib/ActorHttpFetch';
+import '@comunica/jest';
 
 // Mock fetch
 jest.spyOn(globalThis, 'fetch').mockImplementation((input: any, init?: any) => Promise.resolve(<Response> <unknown>{
@@ -64,7 +65,7 @@ describe('ActorHttpFetch', () => {
 
     it('should test', async() => {
       await expect(actor.test({ input: <Request> { url: 'https://www.google.com/' }, context })).resolves
-        .toEqual({ time: Number.POSITIVE_INFINITY });
+        .toPassTest({ time: Number.POSITIVE_INFINITY });
     });
 
     it('should run on an existing URI', async() => {

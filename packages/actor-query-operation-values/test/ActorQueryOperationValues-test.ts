@@ -52,7 +52,7 @@ describe('ActorQueryOperationValues', () => {
         operation: { type: 'values' },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should not test on non-values', async() => {
@@ -60,7 +60,7 @@ describe('ActorQueryOperationValues', () => {
         operation: { type: 'some-other-type' },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports values operations, but got some-other-type`);
     });
 
     it('should run on a 1 variable and 1 value', async() => {

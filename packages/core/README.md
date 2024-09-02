@@ -26,3 +26,4 @@ $ yarn add @comunica/core
 * [`BusIndexed`](https://comunica.github.io/comunica/classes/_comunica_core.BusIndexed.html): A bus that indexes identified actors, so that actions with a corresponding identifier can be published more efficiently.
 * [`Logger`](https://comunica.github.io/comunica/classes/_comunica_types.Logger.html): A logger accepts messages from different levels and emits them in a certain way.
 * [`ActionContext`](https://comunica.github.io/comunica/classes/_comunica_core.ActionContext.html): Implementation of IActionContext using Immutable.js.
+* [`TestResult`])(https://comunica.github.io/comunica/classes/_comunica_core.TestResult.html): A test result represents the result of an actor test that can either be passed or failed.

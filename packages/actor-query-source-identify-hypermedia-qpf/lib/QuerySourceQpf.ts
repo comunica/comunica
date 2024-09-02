@@ -78,11 +78,7 @@ export class QuerySourceQpf implements IQuerySource {
     this.url = url;
     this.bindingsRestricted = bindingsRestricted;
     this.cachedQuads = {};
-    const searchForm = this.getSearchForm(metadata);
-    if (!searchForm) {
-      throw new Error('Illegal state: found no TPF/QPF search form anymore in metadata.');
-    }
-    this.searchForm = searchForm;
+    this.searchForm = this.getSearchForm(metadata)!;
     this.defaultGraph = metadata.defaultGraph ? this.dataFactory.namedNode(metadata.defaultGraph) : undefined;
     if (initialQuads) {
       let wrappedQuads: AsyncIterator<RDF.Quad> = wrap<RDF.Quad>(initialQuads);

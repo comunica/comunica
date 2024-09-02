@@ -1,4 +1,4 @@
-import type { Actor, IAction, IActorOutput, IActorReply, IActorTest, IMediatorArgs } from '@comunica/core';
+import type { Actor, IAction, IActorOutput, IActorReply, IActorTest, IMediatorArgs, TestResult } from '@comunica/core';
 import { Mediator } from '@comunica/core';
 
 /**
@@ -21,11 +21,9 @@ export class MediatorAll<A extends Actor<I, T, O>, I extends IAction, T extends 
       testResults = [];
     }
     for (const testResult of testResults) {
-      try {
-        await testResult.reply;
+      const reply = await testResult.reply;
+      if (reply.isPassed()) {
         validActors.push(testResult.actor);
-      } catch {
-        // Ignore errors
       }
     }
 
@@ -35,7 +33,7 @@ export class MediatorAll<A extends Actor<I, T, O>, I extends IAction, T extends 
     return outputs[0];
   }
 
-  protected async mediateWith(): Promise<A> {
+  protected async mediateWith(): Promise<TestResult<A>> {
     throw new Error('Unsupported operation: MediatorAll#mediateWith');
   }
 }

@@ -4,7 +4,8 @@ import {
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
 import type {
   BindingsStream,
@@ -94,8 +95,8 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
     return accumulatedMetadata;
   }
 
-  public async testOperation(_operation: Algebra.Union, _context: IActionContext): Promise<IActorTest> {
-    return true;
+  public async testOperation(_operation: Algebra.Union, _context: IActionContext): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async runOperation(operation: Algebra.Union, context: IActionContext):

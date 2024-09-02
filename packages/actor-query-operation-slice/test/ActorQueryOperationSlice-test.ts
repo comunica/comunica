@@ -115,12 +115,12 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should test on slices', async() => {
       const op: any = { operation: { type: 'slice', start: 0, length: 100 }, context: new ActionContext() };
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should not test on non-slices', async() => {
       const op: any = { operation: { type: 'no-slice' }};
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports slice operations, but got no-slice`);
     });
 
     it('should run on a stream for start 0 and length 100', async() => {

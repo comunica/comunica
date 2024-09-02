@@ -1,5 +1,6 @@
 import type { Actor, IAction, IActorOutput, IActorTest } from './Actor';
 import type { Bus, IActorReply } from './Bus';
+import type { TestResult } from './TestResult';
 
 /**
  * A mediator can mediate an action over a bus of actors.
@@ -69,7 +70,7 @@ O extends IActorOutput,
    * @param {I} action The action to mediate for.
    * @return {Promise<O extends IActorOutput>} A promise that resolves to the _best_ actor.
    */
-  public async mediateActor(action: I): Promise<A> {
+  public async mediateActor(action: I): Promise<TestResult<A>> {
     // Mediate to one actor and run that actor.
     return await this.mediateWith(action, this.publish(action));
   }
@@ -84,10 +85,25 @@ O extends IActorOutput,
    * @param {I} action The action to mediate for.
    * @return {Promise<O extends IActorOutput>} A promise that resolves to the mediation result.
    */
-  public async mediate(action: I): Promise<O> {
+  public async mediateTestable(action: I): Promise<TestResult<O>> {
     // Mediate to one actor and run the action on it
-    const actor: A = await this.mediateActor(action);
-    return actor.runObservable(action);
+    const actorResult = await this.mediateActor(action);
+    return actorResult.mapAsync(actor => actor.runObservable(action));
+  }
+
+  /**
+   * Mediate for the given action.
+   *
+   * This will send the test action on all actors in the bus.
+   * The action will be run on the actor that tests _best_,
+   * of which the result will be returned.
+   *
+   * @param {I} action The action to mediate for.
+   * @return {Promise<O extends IActorOutput>} A promise that resolves to the mediation result.
+   */
+  public async mediate(action: I): Promise<O> {
+    const testable = await this.mediateTestable(action);
+    return testable.getOrThrow();
   }
 
   /**
@@ -101,7 +117,7 @@ O extends IActorOutput,
    * O extends IActorOutput>[]} testResults The actor test results for the action.
    * @return {Promise<A extends Actor<I, T, O>>} A promise that resolves to the _best_ actor.
    */
-  protected abstract mediateWith(action: I, testResults: IActorReply<A, I, T, O>[]): Promise<A>;
+  protected abstract mediateWith(action: I, testResults: IActorReply<A, I, T, O>[]): Promise<TestResult<A>>;
 }
 
 export interface IMediatorArgs<

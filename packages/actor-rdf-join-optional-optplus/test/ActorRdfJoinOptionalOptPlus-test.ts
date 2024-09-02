@@ -54,7 +54,7 @@ IActorRdfJoinSelectivityOutput
           type: 'optional',
           entries: [],
           context,
-        })).rejects.toThrow('actor requires at least two join entries.');
+        })).resolves.toFailTest('actor requires at least two join entries.');
       });
 
       it('should not test on one entry', async() => {
@@ -62,7 +62,7 @@ IActorRdfJoinSelectivityOutput
           type: 'optional',
           entries: <any> [{}],
           context,
-        })).rejects.toThrow('actor requires at least two join entries.');
+        })).resolves.toFailTest('actor requires at least two join entries.');
       });
 
       it('should not test on three entries', async() => {
@@ -70,7 +70,7 @@ IActorRdfJoinSelectivityOutput
           type: 'optional',
           entries: <any> [{}, {}, {}],
           context,
-        })).rejects.toThrow('actor requires 2 join entries at most. The input contained 3.');
+        })).resolves.toFailTest('actor requires 2 join entries at most. The input contained 3.');
       });
 
       it('should not test on a non-optional operation', async() => {
@@ -78,7 +78,7 @@ IActorRdfJoinSelectivityOutput
           type: 'inner',
           entries: <any> [{}, {}],
           context,
-        })).rejects.toThrow(`actor can only handle logical joins of type 'optional', while 'inner' was given.`);
+        })).resolves.toFailTest(`actor can only handle logical joins of type 'optional', while 'inner' was given.`);
       });
 
       it('should test on two entries', async() => {
@@ -107,7 +107,7 @@ IActorRdfJoinSelectivityOutput
             },
           ],
           context,
-        })).resolves.toEqual({
+        })).resolves.toPassTest({
           iterations: 8,
           blockingItems: 0,
           persistedItems: 0,

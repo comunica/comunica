@@ -6,6 +6,7 @@ import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationConstruct } from '../lib/ActorQueryOperationConstruct';
+import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -110,7 +111,7 @@ describe('ActorQueryOperationConstruct', () => {
         operation: { type: 'construct', template: []},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should not test on non-construct', async() => {
@@ -118,7 +119,7 @@ describe('ActorQueryOperationConstruct', () => {
         operation: { type: 'some-other-type', template: []},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports construct operations, but got some-other-type`);
     });
 
     it('should run on an empty template', async() => {

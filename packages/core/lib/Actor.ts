@@ -1,6 +1,7 @@
 import type { IActionContext, Logger } from '@comunica/types';
 import type { Bus } from './Bus';
 import { CONTEXT_KEY_LOGGER } from './ContextEntries';
+import type { TestResult } from './TestResult';
 
 /**
  * An actor can act on messages of certain types and provide output of a certain type.
@@ -59,7 +60,7 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
    * @param {I} action The action to test.
    * @return {Promise<T>} A promise that resolves to the test result.
    */
-  public abstract test(action: I): Promise<T>;
+  public abstract test(action: I): Promise<TestResult<T>>;
 
   /**
    * Run the given action on this actor.

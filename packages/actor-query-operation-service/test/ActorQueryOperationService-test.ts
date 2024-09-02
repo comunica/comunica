@@ -89,7 +89,7 @@ describe('ActorQueryOperationService', () => {
         operation: { type: 'service', silent: false, name: DF.namedNode('dummy') },
         context: new ActionContext(),
       };
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should not test on non-service', async() => {
@@ -97,7 +97,7 @@ describe('ActorQueryOperationService', () => {
         operation: { type: 'some-other-type' },
         context: new ActionContext(),
       };
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports service operations, but got some-other-type`);
     });
 
     it('should not test on service with a non-named node name', async() => {
@@ -105,7 +105,7 @@ describe('ActorQueryOperationService', () => {
         operation: { type: 'service', silent: false, name: DF.literal('dummy') },
         context: new ActionContext(),
       };
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`actor can only query services by IRI, while a Literal was given.`);
     });
 
     it('should run', async() => {

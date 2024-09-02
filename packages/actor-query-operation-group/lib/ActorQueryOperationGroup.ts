@@ -4,7 +4,8 @@ import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import { AsyncEvaluator } from '@comunica/expression-evaluator';
 import type { BindingsStream, ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
 import { ArrayIterator, TransformIterator } from 'asynciterator';
@@ -22,7 +23,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
     super(args, 'group');
   }
 
-  public async testOperation(operation: Algebra.Group, context: IActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Group, context: IActionContext): Promise<TestResult<IActorTest>> {
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
     const bindingsFactory = await BindingsFactory.create(
       this.mediatorMergeBindingsContext,
@@ -31,13 +32,18 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
     );
     for (const aggregate of operation.aggregates) {
       // Will throw for unsupported expressions
-      const _ = new AsyncEvaluator(
-        dataFactory,
-        aggregate.expression,
-        ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation, bindingsFactory),
-      );
+      try {
+        const _ = new AsyncEvaluator(
+          dataFactory,
+          aggregate.expression,
+          ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation, bindingsFactory),
+        );
+      } catch (error: unknown) {
+        // TODO: return TestResult in ActorQueryOperation.getAsyncExpressionContext
+        return failTest(() => (<Error> error).message);
+      }
     }
-    return true;
+    return passTestVoid();
   }
 
   public async runOperation(operation: Algebra.Group, context: IActionContext):

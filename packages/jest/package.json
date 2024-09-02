@@ -39,7 +39,9 @@
   },
   "dependencies": {
     "@comunica/bindings-factory": "^3.2.1",
+    "@comunica/core": "^3.2.1",
     "@comunica/types": "^3.2.1",
+    "@jest/expect-utils": "^29.7.0",
     "@rdfjs/types": "*",
     "arrayify-stream": "^2.0.1"
   }

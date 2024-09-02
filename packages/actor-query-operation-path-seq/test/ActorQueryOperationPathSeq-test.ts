@@ -115,12 +115,12 @@ describe('ActorQueryOperationPathSeq', () => {
 
     it('should test on Seq paths', async() => {
       const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.SEQ }}};
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should test on different paths', async() => {
       const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }}};
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`This Actor only supports seq Path operations.`);
     });
 
     it('should support Seq paths', async() => {

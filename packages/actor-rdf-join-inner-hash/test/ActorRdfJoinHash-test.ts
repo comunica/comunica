@@ -117,7 +117,7 @@ IActorRdfJoinSelectivityOutput
 
     it('should only handle 2 streams', async() => {
       action.entries.push(<any> {});
-      await expect(actor.test(action)).rejects.toBeTruthy();
+      await expect(actor.test(action)).resolves.toFailTest(`actor requires 2 join entries at most. The input contained 3.`);
       for (const iter of iterators) {
         iter.destroy();
       }
@@ -164,8 +164,8 @@ IActorRdfJoinSelectivityOutput
         ],
         context,
       };
-      await expect(actor.test(action)).rejects
-        .toThrow(new Error('Actor actor can not join streams containing undefs'));
+      await expect(actor.test(action)).resolves
+        .toFailTest('Actor actor can not join streams containing undefs');
 
       for (const iter of iterators) {
         iter.destroy();
@@ -211,8 +211,8 @@ IActorRdfJoinSelectivityOutput
         ],
         context,
       };
-      await expect(actor.test(action)).rejects
-        .toThrow(new Error('Actor actor can not join streams containing undefs'));
+      await expect(actor.test(action)).resolves
+        .toFailTest('Actor actor can not join streams containing undefs');
 
       for (const iter of iterators) {
         iter.destroy();
@@ -256,8 +256,8 @@ IActorRdfJoinSelectivityOutput
         ],
         context,
       };
-      await expect(actor.test(action)).rejects
-        .toThrow(new Error('Actor actor can not join streams containing undefs'));
+      await expect(actor.test(action)).resolves
+        .toFailTest('Actor actor can not join streams containing undefs');
 
       for (const iter of iterators) {
         iter.destroy();
@@ -303,8 +303,8 @@ IActorRdfJoinSelectivityOutput
         ],
         context,
       };
-      await expect(actor.test(action)).rejects
-        .toThrow(new Error('Actor actor can only join entries with at least one common variable'));
+      await expect(actor.test(action)).resolves
+        .toFailTest('Actor actor can only join entries with at least one common variable');
 
       for (const iter of iterators) {
         iter.destroy();
@@ -313,7 +313,7 @@ IActorRdfJoinSelectivityOutput
 
     it('should generate correct test metadata', async() => {
       await expect(actor.test(action)).resolves
-        .toEqual({
+        .toPassTest({
           iterations: 9,
           persistedItems: 4,
           blockingItems: 4,
@@ -382,7 +382,7 @@ IActorRdfJoinSelectivityOutput
       };
 
       await expect(actor.test(action)).resolves
-        .toEqual({
+        .toPassTest({
           iterations: 9,
           persistedItems: 4,
           blockingItems: 4,

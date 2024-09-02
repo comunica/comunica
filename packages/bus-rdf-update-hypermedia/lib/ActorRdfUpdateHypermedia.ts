@@ -1,6 +1,6 @@
 import type { IQuadDestination } from '@comunica/bus-rdf-update-quads';
-import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
-import { Actor } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate, TestResult } from '@comunica/core';
+import { failTest, Actor } from '@comunica/core';
 
 /**
  * A comunica actor for rdf-update-hypermedia events.
@@ -26,14 +26,14 @@ export abstract class ActorRdfUpdateHypermedia
     this.destinationType = destinationType;
   }
 
-  public async test(action: IActionRdfUpdateHypermedia): Promise<IActorTest> {
+  public async test(action: IActionRdfUpdateHypermedia): Promise<TestResult<IActorTest>> {
     if (action.forceDestinationType && this.destinationType !== action.forceDestinationType) {
-      throw new Error(`Actor ${this.name} is not able to handle destination type ${action.forceDestinationType}.`);
+      return failTest(() => `Actor ${this.name} is not able to handle destination type ${action.forceDestinationType}.`);
     }
     return this.testMetadata(action);
   }
 
-  public abstract testMetadata(action: IActionRdfUpdateHypermedia): Promise<IActorTest>;
+  public abstract testMetadata(action: IActionRdfUpdateHypermedia): Promise<TestResult<IActorTest>>;
 }
 
 export interface IActionRdfUpdateHypermedia extends IAction {

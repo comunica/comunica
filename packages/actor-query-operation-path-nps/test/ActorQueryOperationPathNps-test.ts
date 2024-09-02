@@ -85,7 +85,7 @@ describe('ActorQueryOperationPathNps', () => {
         operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.NPS }},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should test on different paths', async() => {
@@ -93,7 +93,7 @@ describe('ActorQueryOperationPathNps', () => {
         operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`This Actor only supports nps Path operations.`);
     });
 
     it('should support Nps paths', async() => {

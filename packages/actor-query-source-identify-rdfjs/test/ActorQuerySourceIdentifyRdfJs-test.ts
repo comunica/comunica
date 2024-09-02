@@ -6,6 +6,7 @@ import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQuerySourceIdentifyRdfJs, QuerySourceRdfJs } from '..';
 import 'jest-rdf';
+import '@comunica/jest';
 
 const mediatorMergeBindingsContext: any = {
   mediate(arg: any) {
@@ -56,28 +57,28 @@ describe('ActorQuerySourceIdentifyRdfJs', () => {
         await expect(actor.test({
           querySourceUnidentified: { type: 'rdfjs', value: source },
           context: new ActionContext(),
-        })).resolves.toBeTruthy();
+        })).resolves.toPassTestVoid();
       });
 
       it('should not test with sparql type', async() => {
         await expect(actor.test({
           querySourceUnidentified: { type: 'sparql', value: source },
           context: new ActionContext(),
-        })).rejects.toThrow(`actor requires a single query source with rdfjs type to be present in the context.`);
+        })).resolves.toFailTest(`actor requires a single query source with rdfjs type to be present in the context.`);
       });
 
       it('should not test with string value', async() => {
         await expect(actor.test({
           querySourceUnidentified: { type: 'rdfjs', value: 'abc' },
           context: new ActionContext(),
-        })).rejects.toThrow(`actor received an invalid rdfjs query source.`);
+        })).resolves.toFailTest(`actor received an invalid rdfjs query source.`);
       });
 
       it('should not test with invalid source value', async() => {
         await expect(actor.test({
           querySourceUnidentified: { type: 'rdfjs', value: <any>{}},
           context: new ActionContext(),
-        })).rejects.toThrow(`actor received an invalid rdfjs query source.`);
+        })).resolves.toFailTest(`actor received an invalid rdfjs query source.`);
       });
     });
 

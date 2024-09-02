@@ -123,7 +123,7 @@ describe('ActorQueryOperationExtend', () => {
         operation: example(defaultExpression),
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should not test on non-extend', async() => {
@@ -131,7 +131,33 @@ describe('ActorQueryOperationExtend', () => {
         operation: { type: 'some-other-type' },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports extend operations, but got some-other-type`);
+    });
+
+    it('should not test on unsupported operators', async() => {
+      const op: any = {
+        operation: {
+          type: 'extend',
+          input: {
+            type: 'bgp',
+            patterns: [{
+              subject: { value: 's' },
+              predicate: { value: 'p' },
+              object: { value: 'o' },
+              graph: { value: '' },
+              type: 'pattern',
+            }],
+          },
+          variable: { termType: 'Variable', value: 'l' },
+          expression: {
+            args: [],
+            expressionType: 'operator',
+            operator: 'DUMMY',
+          },
+        },
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
+      await expect(actor.test(op)).resolves.toFailTest(`Unknown operator: '"DUMMY"`);
     });
 
     it('should run', async() => {

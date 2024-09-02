@@ -9,6 +9,7 @@ import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationUpdateDeleteInsert } from '../lib/ActorQueryOperationUpdateDeleteInsert';
 import 'jest-rdf';
+import '@comunica/jest';
 
 const factory = new Factory();
 const DF = new DataFactory();
@@ -84,7 +85,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
         operation: { type: 'deleteinsert' },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should not test on readOnly', async() => {
@@ -92,7 +93,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
         operation: { type: 'deleteinsert' },
         context: new ActionContext({ [KeysQueryOperation.readOnly.name]: true }),
       };
-      await expect(actor.test(op)).rejects.toThrow(`Attempted a write operation in read-only mode`);
+      await expect(actor.test(op)).resolves.toFailTest(`Attempted a write operation in read-only mode`);
     });
 
     it('should not test on non-deleteinsert', async() => {
@@ -100,7 +101,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
         operation: { type: 'some-other-type' },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports deleteinsert operations, but got some-other-type`);
     });
 
     it('should run without operation input', async() => {

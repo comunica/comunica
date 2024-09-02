@@ -5,6 +5,8 @@ import type {
   IActorRdfJoinArgs,
   IActorRdfJoinOutputInner,
 } from '@comunica/bus-rdf-join';
+import type { TestResult } from '@comunica/core';
+import { passTest } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { BindingsStream, MetadataBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -166,7 +168,7 @@ export class ActorRdfJoinOptionalHash extends ActorRdfJoin {
   protected async getJoinCoefficients(
     action: IActionRdfJoin,
     metadatas: MetadataBindings[],
-  ): Promise<IMediatorTypeJoinCoefficients> {
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients>> {
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
     let iterations = metadatas[0].cardinality.value + metadatas[1].cardinality.value;
@@ -178,13 +180,13 @@ export class ActorRdfJoinOptionalHash extends ActorRdfJoin {
       // Our blocking implementation is slightly more performant.
       iterations *= 0.9;
     }
-    return {
+    return passTest({
       iterations,
       persistedItems: metadatas[0].cardinality.value,
       blockingItems: this.blocking ? metadatas[0].cardinality.value : 0,
       requestTime: requestInitialTimes[0] + metadatas[0].cardinality.value * requestItemTimes[0] +
         requestInitialTimes[1] + metadatas[1].cardinality.value * requestItemTimes[1],
-    };
+    });
   }
 }
 

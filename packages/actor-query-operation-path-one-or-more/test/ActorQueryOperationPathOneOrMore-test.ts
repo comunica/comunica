@@ -118,12 +118,12 @@ describe('ActorQueryOperationPathOneOrMore', () => {
 
     it('should test on OneOrMore paths', async() => {
       const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.ONE_OR_MORE_PATH }}};
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should test on different paths', async() => {
       const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }}};
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`This Actor only supports OneOrMorePath Path operations.`);
     });
 
     it('should mediate with distinct if not yet in context', async() => {

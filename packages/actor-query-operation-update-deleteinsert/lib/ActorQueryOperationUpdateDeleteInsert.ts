@@ -8,7 +8,7 @@ import {
 } from '@comunica/bus-query-operation';
 import type { MediatorRdfUpdateQuads } from '@comunica/bus-rdf-update-quads';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
 import type { IQueryOperationResult, BindingsStream, IActionContext, ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -31,9 +31,8 @@ export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTy
   public async testOperation(
     operation: Algebra.DeleteInsert,
     context: IActionContext,
-  ): Promise<IActorTest> {
-    ActorQueryOperation.throwOnReadOnly(context);
-    return true;
+  ): Promise<TestResult<IActorTest>> {
+    return ActorQueryOperation.testReadOnly(context);
   }
 
   public async runOperation(operation: Algebra.DeleteInsert, context: IActionContext):

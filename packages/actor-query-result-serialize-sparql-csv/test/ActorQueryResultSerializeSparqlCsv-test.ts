@@ -7,6 +7,7 @@ import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryResultSerializeSparqlCsv } from '..';
+import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -184,7 +185,7 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
 
     describe('for getting media types', () => {
       it('should test', async() => {
-        await expect(actor.test({ context, mediaTypes: true })).resolves.toBeTruthy();
+        await expect(actor.test({ context, mediaTypes: true })).resolves.toPassTest({ mediaTypes: true });
       });
 
       it('should run', async() => {
@@ -197,7 +198,7 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
     describe('for serializing', () => {
       it('should not test on quad streams', async() => {
         await expect(actor.test({ context, handle: <any> { type: 'quads' }, handleMediaType: 'text/csv' }))
-          .rejects.toBeTruthy();
+          .resolves.toFailTest(`This actor can only handle bindings streams.`);
       });
 
       it('should test on text/csv bindings', async() => {
@@ -217,7 +218,7 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
           handle: <any> { booleanResult: Promise.resolve(true), type: 'boolean' },
           handleMediaType: 'text/csv',
         }))
-          .rejects.toBeTruthy();
+          .resolves.toFailTest(`This actor can only handle bindings streams.`);
       });
 
       it('should not test on N-Triples', async() => {
@@ -227,7 +228,7 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
           handle: <any> { bindingsStream: stream, type: 'bindings' },
           handleMediaType: 'application/n-triples',
         }))
-          .rejects.toBeTruthy();
+          .resolves.toFailTest(`Unrecognized media type: application/n-triples`);
         stream.destroy();
       });
 

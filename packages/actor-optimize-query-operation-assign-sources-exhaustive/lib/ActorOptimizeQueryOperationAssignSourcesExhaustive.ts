@@ -7,7 +7,8 @@ import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operat
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { getDataDestinationValue } from '@comunica/bus-rdf-update-quads';
 import { KeysInitQuery, KeysQueryOperation, KeysRdfUpdateQuads } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, IDataDestination, IQuerySourceWrapper } from '@comunica/types';
 import { Algebra, Factory, Util } from 'sparqlalgebrajs';
 
@@ -19,8 +20,8 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
     super(args);
   }
 
-  public async test(_action: IActionOptimizeQueryOperation): Promise<IActorTest> {
-    return true;
+  public async test(_action: IActionOptimizeQueryOperation): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {

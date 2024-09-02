@@ -10,6 +10,8 @@ import type {
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
+import type { TestResult } from '@comunica/core';
+import { failTest, passTest } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type {
   Bindings,
@@ -111,7 +113,8 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
 
     // Order the entries so we can pick the first one (usually the one with the lowest cardinality)
     const entriesUnsorted = await ActorRdfJoin.getEntriesWithMetadatas(action.entries);
-    const entries = await ActorRdfJoin.sortJoinEntries(this.mediatorJoinEntriesSort, entriesUnsorted, action.context);
+    const entries = (await ActorRdfJoin
+      .sortJoinEntries(this.mediatorJoinEntriesSort, entriesUnsorted, action.context)).getOrThrow();
 
     this.logDebug(
       action.context,
@@ -188,10 +191,14 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
   public async getJoinCoefficients(
     action: IActionRdfJoin,
     metadatas: MetadataBindings[],
-  ): Promise<IMediatorTypeJoinCoefficients> {
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients>> {
     // Order the entries so we can pick the first one (usually the one with the lowest cardinality)
-    const entries = await ActorRdfJoin.sortJoinEntries(this.mediatorJoinEntriesSort, action.entries
+    const entriesTest = await ActorRdfJoin.sortJoinEntries(this.mediatorJoinEntriesSort, action.entries
       .map((entry, i) => ({ ...entry, metadata: metadatas[i] })), action.context);
+    if (entriesTest.isFailed()) {
+      return entriesTest;
+    }
+    const entries = entriesTest.get();
     metadatas = entries.map(entry => entry.metadata);
 
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
@@ -208,19 +215,19 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
     // Reject binding on some operation types
     if (remainingEntries
       .some(entry => !this.canBindWithOperation(entry.operation))) {
-      throw new Error(`Actor ${this.name} can not bind on Extend and Group operations`);
+      return failTest(() => `Actor ${this.name} can not bind on Extend and Group operations`);
     }
 
     // Reject binding on modified operations, since using the output directly would be significantly more efficient.
     if (remainingEntries.some(entry => entry.operationModified)) {
-      throw new Error(`Actor ${this.name} can not be used over remaining entries with modified operations`);
+      return failTest(() => `Actor ${this.name} can not be used over remaining entries with modified operations`);
     }
 
     // Only run this actor if the smallest stream is significantly smaller than the largest stream.
     // We must use Math.max, because the last metadata is not necessarily the biggest, but it's the least preferred.
     if (metadatas[0].cardinality.value * this.minMaxCardinalityRatio >
       Math.max(...metadatas.map(metadata => metadata.cardinality.value))) {
-      throw new Error(`Actor ${this.name} can only run if the smallest stream is much smaller than largest stream`);
+      return failTest(() => `Actor ${this.name} can only run if the smallest stream is much smaller than largest stream`);
     }
 
     // Determine selectivities of smallest entry with all other entries
@@ -239,7 +246,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
     const receiveItemCostRemaining = remainingRequestItemTimes
       .reduce((sum, element) => sum + element, 0);
 
-    return {
+    return passTest({
       iterations: metadatas[0].cardinality.value * cardinalityRemaining,
       persistedItems: 0,
       blockingItems: 0,
@@ -249,7 +256,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
           receiveInitialCostRemaining +
           cardinalityRemaining * receiveItemCostRemaining
         ),
-    };
+    });
   }
 }
 

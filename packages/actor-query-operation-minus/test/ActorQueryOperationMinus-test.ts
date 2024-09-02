@@ -71,12 +71,12 @@ describe('ActorQueryOperationMinus', () => {
 
     it('should test on minus', async() => {
       const op: any = { operation: { type: 'minus' }};
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should not test on non-minus', async() => {
       const op: any = { operation: { type: 'some-other-type' }};
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports minus operations, but got some-other-type`);
     });
 
     it('should run', async() => {

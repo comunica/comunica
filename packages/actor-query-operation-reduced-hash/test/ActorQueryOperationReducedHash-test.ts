@@ -93,12 +93,12 @@ describe('ActorQueryOperationReducedHash', () => {
 
     it('should test on reduced', async() => {
       const op: any = { operation: { type: 'reduced' }};
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should not test on non-reduced', async() => {
       const op: any = { operation: { type: 'some-other-type' }};
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports reduced operations, but got some-other-type`);
     });
 
     it('should run', async() => {

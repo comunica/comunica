@@ -10,6 +10,8 @@ import type {
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
 import { KeysInitQuery } from '@comunica/context-entries';
+import type { TestResult } from '@comunica/core';
+import { passTest } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type {
   MetadataBindings,
@@ -85,7 +87,7 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin {
   protected async getJoinCoefficients(
     action: IActionRdfJoin,
     metadatas: MetadataBindings[],
-  ): Promise<IMediatorTypeJoinCoefficients> {
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients>> {
     metadatas = [ ...metadatas ];
     // Determine the two smallest streams by sorting (e.g. via cardinality)
     const entriesWithMetadata = await this.sortJoinEntries(action.entries
@@ -94,7 +96,7 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin {
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
 
-    return {
+    return passTest({
       iterations: metadatas[0].cardinality.value * metadatas[1].cardinality.value *
         metadatas.slice(2).reduce((acc, metadata) => acc * metadata.cardinality.value, 1),
       persistedItems: 0,
@@ -103,7 +105,7 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin {
         requestInitialTimes[1] + metadatas[1].cardinality.value * requestItemTimes[1] +
         metadatas.slice(2).reduce((sum, metadata, i) => sum + requestInitialTimes.slice(2)[i] +
           metadata.cardinality.value * requestItemTimes.slice(2)[i], 0),
-    };
+    });
   }
 }
 

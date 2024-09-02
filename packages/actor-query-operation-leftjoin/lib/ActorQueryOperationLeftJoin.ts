@@ -4,7 +4,8 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { MediatorRdfJoin } from '@comunica/bus-rdf-join';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import { AsyncEvaluator, isExpressionError } from '@comunica/expression-evaluator';
 import type { IQueryOperationResult, Bindings, IActionContext, IJoinEntry, ComunicaDataFactory } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -20,8 +21,8 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
     super(args, 'leftjoin');
   }
 
-  public async testOperation(_operation: Algebra.LeftJoin, _context: IActionContext): Promise<IActorTest> {
-    return true;
+  public async testOperation(_operation: Algebra.LeftJoin, _context: IActionContext): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async runOperation(operationOriginal: Algebra.LeftJoin, context: IActionContext):

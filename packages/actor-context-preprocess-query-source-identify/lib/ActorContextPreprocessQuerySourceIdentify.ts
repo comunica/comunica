@@ -7,8 +7,8 @@ import { ActorContextPreprocess } from '@comunica/bus-context-preprocess';
 import type { ActorHttpInvalidateListenable, IActionHttpInvalidate } from '@comunica/bus-http-invalidate';
 import type { MediatorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
-import type { IAction, IActorTest } from '@comunica/core';
-import { ActionContext } from '@comunica/core';
+import type { IAction, IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid, ActionContext } from '@comunica/core';
 import type {
   IQuerySourceWrapper,
   QuerySourceUnidentified,
@@ -39,8 +39,8 @@ export class ActorContextPreprocessQuerySourceIdentify extends ActorContextPrepr
     }
   }
 
-  public async test(_action: IAction): Promise<IActorTest> {
-    return true;
+  public async test(_action: IAction): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async run(action: IAction): Promise<IActorContextPreprocessOutput> {

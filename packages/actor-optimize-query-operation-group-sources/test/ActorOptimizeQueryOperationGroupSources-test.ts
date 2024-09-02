@@ -5,6 +5,7 @@ import type { IQuerySourceWrapper } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorOptimizeQueryOperationGroupSources } from '../lib/ActorOptimizeQueryOperationGroupSources';
+import '@comunica/jest';
 
 const AF = new Factory();
 const DF = new DataFactory();
@@ -88,14 +89,14 @@ describe('ActorOptimizeQueryOperationGroupSources', () => {
 
     describe('test', () => {
       it('should handle operations without top-level source', async() => {
-        await expect(actor.test({ context: new ActionContext(), operation: AF.createNop() })).resolves.toBeTruthy();
+        await expect(actor.test({ context: new ActionContext(), operation: AF.createNop() })).resolves.toPassTestVoid();
       });
 
       it('should not handle operations with top-level source', async() => {
         await expect(actor.test({
           context: new ActionContext(),
           operation: ActorQueryOperation.assignOperationSource(AF.createNop(), <any>{}),
-        })).rejects.toThrow(`Actor actor does not work with top-level operation sources.`);
+        })).resolves.toFailTest(`Actor actor does not work with top-level operation sources.`);
       });
     });
 

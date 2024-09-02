@@ -3,6 +3,8 @@ import type { IActionRdfJoin, IActorRdfJoinArgs, IActorRdfJoinOutputInner } from
 import { ActorRdfJoin, ChunkedIterator } from '@comunica/bus-rdf-join';
 import type { MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
 import { KeysInitQuery } from '@comunica/context-entries';
+import type { TestResult } from '@comunica/core';
+import { failTest, passTest } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type {
   IJoinEntryWithMetadata,
@@ -40,7 +42,7 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin {
 
     // Order the entries so we can pick the first one (usually the one with the lowest cardinality)
     const entriesUnsorted = await ActorRdfJoin.getEntriesWithMetadatas(action.entries);
-    const entries = await this.sortJoinEntries(entriesUnsorted, action.context);
+    const entries = (await this.sortJoinEntries(entriesUnsorted, action.context)).getOrThrow();
 
     this.logDebug(
       action.context,
@@ -96,8 +98,12 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin {
   protected async sortJoinEntries(
     entries: IJoinEntryWithMetadata[],
     context: IActionContext,
-  ): Promise<IJoinEntryWithMetadata[]> {
-    entries = await ActorRdfJoin.sortJoinEntries(this.mediatorJoinEntriesSort, entries, context);
+  ): Promise<TestResult<IJoinEntryWithMetadata[]>> {
+    const entriesTest = await ActorRdfJoin.sortJoinEntries(this.mediatorJoinEntriesSort, entries, context);
+    if (entriesTest.isFailed()) {
+      return entriesTest;
+    }
+    entries = entriesTest.get();
 
     // Prioritize entries with modified operations, so these are not re-executed
     entries = entries.sort((entryLeft, entryRight) => {
@@ -107,19 +113,23 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin {
       return 0;
     });
 
-    return entries;
+    return passTest(entries);
   }
 
   public async getJoinCoefficients(
     action: IActionRdfJoin,
     metadatas: MetadataBindings[],
-  ): Promise<IMediatorTypeJoinCoefficients> {
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients>> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const algebraFactory = new Factory(dataFactory);
 
     // Order the entries so we can pick the first one (usually the one with the lowest cardinality)
-    const entries = await this.sortJoinEntries(action.entries
+    const entriesTest = await this.sortJoinEntries(action.entries
       .map((entry, i) => ({ ...entry, metadata: metadatas[i] })), action.context);
+    if (entriesTest.isFailed()) {
+      return entriesTest;
+    }
+    const entries = entriesTest.get();
     metadatas = entries.map(entry => entry.metadata);
 
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
@@ -136,12 +146,12 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin {
     // Reject binding on operations without sources
     const sources = remainingEntries.map(entry => ActorQueryOperation.getOperationSource(entry.operation));
     if (sources.some(source => !source)) {
-      throw new Error(`Actor ${this.name} can not bind on remaining operations without source annotation`);
+      return failTest(() => `Actor ${this.name} can not bind on remaining operations without source annotation`);
     }
 
     // Reject binding on operations with un-equal sources
     if (sources.some(source => source !== sources[0])) {
-      throw new Error(`Actor ${this.name} can not bind on remaining operations with non-equal source annotation`);
+      return failTest(() => `Actor ${this.name} can not bind on remaining operations with non-equal source annotation`);
     }
 
     // Reject if the source can not handle bindings
@@ -150,7 +160,7 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin {
     const selectorShape = await sourceWrapper.source.getSelectorShape(action.context);
     if (!ActorQueryOperation
       .doesShapeAcceptOperation(selectorShape, testingOperation, { joinBindings: true })) {
-      throw new Error(`Actor ${this.name} detected a source that can not handle passing down join bindings`);
+      return failTest(() => `Actor ${this.name} detected a source that can not handle passing down join bindings`);
     }
 
     // Determine selectivities of smallest entry with all other entries
@@ -165,13 +175,13 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin {
       .map((entry, i) => entry.metadata.cardinality.value * selectivities[i])
       .reduce((sum, element) => sum + element, 0);
 
-    return {
+    return passTest({
       iterations: 1,
       persistedItems: metadatas[0].cardinality.value,
       blockingItems: metadatas[0].cardinality.value,
       requestTime: requestInitialTimes[0] + metadatas[0].cardinality.value * requestItemTimes[0] +
         requestInitialTimes[1] + cardinalityRemaining * requestItemTimes[1],
-    };
+    });
   }
 
   public createOperationFromEntries(

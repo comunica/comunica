@@ -1,5 +1,5 @@
-import type { IAction, IActorOutput, IActorTest } from '@comunica/core';
-import { ActionContext, Actor, Bus, Mediator } from '@comunica/core';
+import type { IAction, IActorOutput, IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTest, ActionContext, Actor, Bus, Mediator } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { MediatorNumber } from '..';
 
@@ -139,19 +139,19 @@ describe('MediatorNumber', () => {
       });
     });
 
-    describe('with actors throwing errors', () => {
+    describe('with actors failing', () => {
       beforeEach(() => {
         mediatorMin = new MediatorNumber({
           bus,
           field: 'field',
-          ignoreErrors: true,
+          ignoreFailures: true,
           name: 'mediatorMin',
           type: 'min',
         });
         mediatorMax = new MediatorNumber({
           bus,
           field: 'field',
-          ignoreErrors: true,
+          ignoreFailures: true,
           name: 'mediatorMax',
           type: 'max',
         });
@@ -169,19 +169,19 @@ describe('MediatorNumber', () => {
       });
     });
 
-    describe('with only an actor throwing errors, where errors are ignored', () => {
+    describe('with only an actor failing, where failures are ignored', () => {
       beforeEach(() => {
         mediatorMin = new MediatorNumber({
           bus,
           field: 'field',
-          ignoreErrors: true,
+          ignoreFailures: true,
           name: 'mediatorMin',
           type: 'min',
         });
         mediatorMax = new MediatorNumber({
           bus,
           field: 'field',
-          ignoreErrors: true,
+          ignoreFailures: true,
           name: 'mediatorMax',
           type: 'max',
         });
@@ -205,19 +205,19 @@ describe('MediatorNumber', () => {
       });
     });
 
-    describe('with only an actor throwing errors, where errors are not ignored', () => {
+    describe('with only an actor failing, where failures are not ignored', () => {
       beforeEach(() => {
         mediatorMin = new MediatorNumber({
           bus,
           field: 'field',
-          ignoreErrors: false,
+          ignoreFailures: false,
           name: 'mediatorMin',
           type: 'min',
         });
         mediatorMax = new MediatorNumber({
           bus,
           field: 'field',
-          ignoreErrors: false,
+          ignoreFailures: false,
           name: 'mediatorMax',
           type: 'max',
         });
@@ -243,8 +243,8 @@ class DummyActor extends Actor<IAction, IDummyTest, IDummyTest> {
     this.id = id;
   }
 
-  public async test(action: IAction): Promise<IDummyTest> {
-    return { field: this.id };
+  public async test(action: IAction): Promise<TestResult<IDummyTest>> {
+    return passTest({ field: this.id });
   }
 
   public async run(action: IAction): Promise<IDummyTest> {
@@ -260,8 +260,8 @@ class DummyActorInvalid extends Actor<IAction, IDummyTest, IDummyTest> {
     this.id = id;
   }
 
-  public async test(action: IAction): Promise<IDummyTest> {
-    return <any> {};
+  public async test(action: IAction): Promise<TestResult<IDummyTest>> {
+    return passTest(<any> {});
   }
 
   public async run(action: IAction): Promise<IDummyTest> {
@@ -270,8 +270,8 @@ class DummyActorInvalid extends Actor<IAction, IDummyTest, IDummyTest> {
 }
 
 class ErrorDummyActor extends DummyActor {
-  public override async test(action: IAction): Promise<IDummyTest> {
-    throw new Error('abc');
+  public override async test(action: IAction): Promise<TestResult<IDummyTest>> {
+    return failTest(() => 'abc');
   }
 }
 

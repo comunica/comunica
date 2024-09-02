@@ -272,22 +272,22 @@ IActorRdfJoinSelectivityOutput
     });
 
     it('should not test on 0 streams', async() => {
-      await expect(actor.test({ type: 'inner', entries: [], context })).rejects
-        .toThrow(new Error('actor requires at least two join entries.'));
+      await expect(actor.test({ type: 'inner', entries: [], context })).resolves
+        .toFailTest('actor requires at least two join entries.');
     });
 
     it('should not test on 1 stream', async() => {
-      await expect(actor.test({ type: 'inner', entries: [ <any> null ], context })).rejects
-        .toThrow(new Error('actor requires at least two join entries.'));
+      await expect(actor.test({ type: 'inner', entries: [ <any> null ], context })).resolves
+        .toFailTest('actor requires at least two join entries.');
     });
 
     it('should not test on 2 streams', async() => {
-      await expect(actor.test({ type: 'inner', entries: [ <any> null, <any> null ], context })).rejects
-        .toThrow(new Error('actor requires 3 join entries at least. The input contained 2.'));
+      await expect(actor.test({ type: 'inner', entries: [ <any> null, <any> null ], context })).resolves
+        .toFailTest('actor requires 3 join entries at least. The input contained 2.');
     });
 
     it('should test on 3 streams', async() => {
-      await expect(actor.test(action3)).resolves.toEqual({
+      await expect(actor.test(action3)).resolves.toPassTest({
         iterations: 40,
         persistedItems: 0,
         blockingItems: 0,
@@ -296,7 +296,7 @@ IActorRdfJoinSelectivityOutput
     });
 
     it('should test on 4 streams', async() => {
-      await expect(actor.test(action4)).resolves.toEqual({
+      await expect(actor.test(action4)).resolves.toPassTest({
         iterations: 80,
         persistedItems: 0,
         blockingItems: 0,

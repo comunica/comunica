@@ -6,7 +6,8 @@ import {
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import { AsyncEvaluator, isExpressionError } from '@comunica/expression-evaluator';
 import type { Bindings, ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -21,17 +22,24 @@ export class ActorQueryOperationFilter extends ActorQueryOperationTypedMediated<
     super(args, 'filter');
   }
 
-  public async testOperation(operation: Algebra.Filter, context: IActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Filter, context: IActionContext): Promise<TestResult<IActorTest>> {
     // Will throw error for unsupported operators
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
     const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context, dataFactory);
-    const config = { ...ActorQueryOperation.getAsyncExpressionContext(
-      context,
-      this.mediatorQueryOperation,
-      bindingsFactory,
-    ) };
-    const _ = new AsyncEvaluator(dataFactory, operation.expression, config);
-    return true;
+    try {
+      const config = {
+        ...ActorQueryOperation.getAsyncExpressionContext(
+          context,
+          this.mediatorQueryOperation,
+          bindingsFactory,
+        ),
+      };
+      const _ = new AsyncEvaluator(dataFactory, operation.expression, config);
+      return passTestVoid();
+    } catch (error: unknown) {
+      // TODO: return TestResult in ActorQueryOperation.getAsyncExpressionContext
+      return failTest(() => (<Error> error).message);
+    }
   }
 
   public async runOperation(operation: Algebra.Filter, context: IActionContext):

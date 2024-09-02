@@ -29,7 +29,7 @@ describe('ActorHttpInvalidateListenable', () => {
     });
 
     it('should test', async() => {
-      await expect(actor.test({ context: new ActionContext() })).resolves.toBeTruthy();
+      await expect(actor.test({ context: new ActionContext() })).resolves.toPassTestVoid();
     });
 
     it('should run', async() => {
@@ -50,7 +50,7 @@ describe('ActorHttpInvalidateListenable', () => {
     });
 
     it('should test', async() => {
-      await expect(actor.test({ context: new ActionContext() })).resolves.toBeTruthy();
+      await expect(actor.test({ context: new ActionContext() })).resolves.toPassTestVoid();
       expect(l0).not.toHaveBeenCalled();
       expect(l1).not.toHaveBeenCalled();
     });

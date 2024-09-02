@@ -55,7 +55,7 @@ describe('ActorInitQuery', () => {
 
     describe('test', () => {
       it('should be true', async() => {
-        await expect(actor.test(<any> {})).resolves.toBeTruthy();
+        await expect(actor.test(<any> {})).resolves.toPassTestVoid();
       });
     });
 

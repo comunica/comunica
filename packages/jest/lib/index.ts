@@ -8,6 +8,9 @@ declare global {
       toEqualBindings: (actual: RDF.Bindings) => R;
       toEqualBindingsArray: (actual: RDF.Bindings[]) => R;
       toEqualBindingsStream: (actual: RDF.Bindings[]) => Promise<R>;
+      toPassTest: (actual: any) => R;
+      toPassTestVoid: () => R;
+      toFailTest: (actual: string) => R;
     }
   }
 }

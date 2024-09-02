@@ -111,7 +111,7 @@ describe('ActorQueryOperationPathAlt', () => {
         operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.ALT }},
         context: new ActionContext(),
       };
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should test on different paths', async() => {
@@ -119,12 +119,12 @@ describe('ActorQueryOperationPathAlt', () => {
         operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }},
         context: new ActionContext(),
       };
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`This Actor only supports alt Path operations.`);
     });
 
     it('should not test on non-leftjoin', async() => {
       const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports path operations, but got some-other-type`);
     });
 
     it('should support Alt paths', async() => {

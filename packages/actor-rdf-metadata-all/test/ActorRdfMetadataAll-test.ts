@@ -5,6 +5,7 @@ import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { ActorRdfMetadataAll } from '../lib/ActorRdfMetadataAll';
+import '@comunica/jest';
 
 const quad = require('rdf-quad');
 const stream = require('streamify-array');
@@ -61,11 +62,11 @@ describe('ActorRdfMetadataAll', () => {
     });
 
     it('should test on a triple stream', async() => {
-      await expect(actor.test({ url: '', quads: input, triples: true, context })).resolves.toBeTruthy();
+      await expect(actor.test({ url: '', quads: input, triples: true, context })).resolves.toPassTestVoid();
     });
 
     it('should test on a quad stream', async() => {
-      await expect(actor.test({ url: '', quads: input, context })).resolves.toBeTruthy();
+      await expect(actor.test({ url: '', quads: input, context })).resolves.toPassTestVoid();
     });
 
     it('should run', async() => {

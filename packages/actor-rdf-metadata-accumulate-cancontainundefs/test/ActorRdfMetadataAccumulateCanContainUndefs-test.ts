@@ -1,6 +1,7 @@
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorRdfMetadataAccumulateCanContainUndefs } from '../lib/ActorRdfMetadataAccumulateCanContainUndefs';
+import '@comunica/jest';
 
 describe('ActorRdfMetadataAccumulateCanContainUndefs', () => {
   let bus: any;
@@ -20,7 +21,7 @@ describe('ActorRdfMetadataAccumulateCanContainUndefs', () => {
 
     describe('test', () => {
       it('should always pass', async() => {
-        await expect(actor.test({ context, mode: 'initialize' })).resolves.toBeTruthy();
+        await expect(actor.test({ context, mode: 'initialize' })).resolves.toPassTestVoid();
       });
     });
 

@@ -8,6 +8,7 @@ import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra } from 'sparqlalgebrajs';
 import { ActorQueryOperationOrderBy } from '../lib/ActorQueryOperationOrderBy';
+import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -220,7 +221,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
         operation: { type: 'orderby', expressions: []},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should test on a descending orderby', async() => {
@@ -228,7 +229,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
         operation: { type: 'orderby', expressions: [ descOrderA ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should test on multiple expressions', async() => {
@@ -236,7 +237,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
         operation: { type: 'orderby', expressions: [ orderA, descOrderA, orderA1 ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should not test on non-orderby', async() => {
@@ -244,7 +245,19 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
         operation: { type: 'some-other-type' },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports orderby operations, but got some-other-type`);
+    });
+
+    it('should not test on unsupported operators', async() => {
+      const op: any = {
+        operation: { type: 'orderby', expressions: [{
+          args: [],
+          expressionType: 'operator',
+          operator: 'DUMMY',
+        }]},
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
+      await expect(actor.test(op)).resolves.toFailTest(`Unknown operator: '"DUMMY"`);
     });
 
     it('should run', async() => {

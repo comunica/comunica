@@ -39,14 +39,14 @@ describe('ActorQueryProcessAnnotateSourceBinding', () => {
 
     it('should wrap once', async() => {
       await expect(actor.test({ query: 'aQuery', context }))
-        .resolves.toBe(true);
+        .resolves.toPassTestVoid();
     });
 
     it('should run only once', async() => {
       context = context.set(KEY_CONTEXT_WRAPPED, true);
       await expect(actor.test({ query: 'aQuery', context }))
-        .rejects
-        .toThrow('Unable to query process multiple times');
+        .resolves
+        .toFailTest('Unable to query process multiple times');
     });
 
     it('should add single source in context to binding', async() => {

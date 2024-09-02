@@ -1,5 +1,5 @@
-import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
-import { Actor } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate, TestResult } from '@comunica/core';
+import { failTest, Actor } from '@comunica/core';
 import type { IQuerySource } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 
@@ -31,16 +31,18 @@ IActorQuerySourceIdentifyHypermediaOutput
     this.sourceType = sourceType;
   }
 
-  public async test(action: IActionQuerySourceIdentifyHypermedia): Promise<IActorQuerySourceIdentifyHypermediaTest> {
+  public async test(
+    action: IActionQuerySourceIdentifyHypermedia,
+  ): Promise<TestResult<IActorQuerySourceIdentifyHypermediaTest>> {
     if (action.forceSourceType && this.sourceType !== action.forceSourceType) {
-      throw new Error(`Actor ${this.name} is not able to handle source type ${action.forceSourceType}.`);
+      return failTest(() => `Actor ${this.name} is not able to handle source type ${action.forceSourceType}.`);
     }
     return this.testMetadata(action);
   }
 
   public abstract testMetadata(
     action: IActionQuerySourceIdentifyHypermedia,
-  ): Promise<IActorQuerySourceIdentifyHypermediaTest>;
+  ): Promise<TestResult<IActorQuerySourceIdentifyHypermediaTest>>;
 }
 
 export interface IActionQuerySourceIdentifyHypermedia extends IAction {

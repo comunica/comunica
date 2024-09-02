@@ -6,7 +6,8 @@ import {
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import { AsyncEvaluator, isExpressionError, orderTypes } from '@comunica/expression-evaluator';
 import type { Bindings, ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
 import type { Term } from '@rdfjs/types';
@@ -25,20 +26,25 @@ export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated
     this.window = args.window ?? Number.POSITIVE_INFINITY;
   }
 
-  public async testOperation(operation: Algebra.OrderBy, context: IActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.OrderBy, context: IActionContext): Promise<TestResult<IActorTest>> {
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
     const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context, dataFactory);
 
     // Will throw error for unsupported operators
     for (let expr of operation.expressions) {
       expr = this.extractSortExpression(expr);
-      const _ = new AsyncEvaluator(
-        dataFactory,
-        expr,
-        ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation, bindingsFactory),
-      );
+      try {
+        const _ = new AsyncEvaluator(
+          dataFactory,
+          expr,
+          ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation, bindingsFactory),
+        );
+      } catch (error: unknown) {
+        // TODO: return TestResult in ActorQueryOperation.getAsyncExpressionContext
+        return failTest(() => (<Error> error).message);
+      }
     }
-    return true;
+    return passTestVoid();
   }
 
   public async runOperation(operation: Algebra.OrderBy, context: IActionContext):

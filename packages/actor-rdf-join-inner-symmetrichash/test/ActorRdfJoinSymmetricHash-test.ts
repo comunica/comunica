@@ -142,8 +142,8 @@ IActorRdfJoinSelectivityOutput
           ],
           context,
         };
-        await expect(actor.test(action)).rejects
-          .toThrow(new Error('Actor actor can not join streams containing undefs'));
+        await expect(actor.test(action)).resolves
+          .toFailTest('Actor actor can not join streams containing undefs');
       });
 
       it('should fail on undefs in right stream', async() => {
@@ -179,8 +179,8 @@ IActorRdfJoinSelectivityOutput
           ],
           context,
         };
-        await expect(actor.test(action)).rejects
-          .toThrow(new Error('Actor actor can not join streams containing undefs'));
+        await expect(actor.test(action)).resolves
+          .toFailTest('Actor actor can not join streams containing undefs');
       });
 
       it('should fail on undefs in left and right stream', async() => {
@@ -216,8 +216,8 @@ IActorRdfJoinSelectivityOutput
           ],
           context,
         };
-        await expect(actor.test(action)).rejects
-          .toThrow(new Error('Actor actor can not join streams containing undefs'));
+        await expect(actor.test(action)).resolves
+          .toFailTest('Actor actor can not join streams containing undefs');
       });
 
       it('should fail on non-overlapping variables', async() => {
@@ -259,14 +259,13 @@ IActorRdfJoinSelectivityOutput
           ],
           context,
         };
-        await expect(actor.test(action)).rejects
-          .toThrow(new Error('Actor actor can only join entries with at least one common variable'));
+        await expect(actor.test(action)).resolves
+          .toFailTest('Actor actor can only join entries with at least one common variable');
       });
 
       it('should generate correct test metadata', async() => {
         await expect(actor.test(action)).resolves
-          .toHaveProperty('iterations', (await (<any> action.entries[0].output).metadata()).cardinality.value +
-          (await (<any> action.entries[1].output).metadata()).cardinality.value);
+          .toPassTest({ iterations: 9, persistedItems: 9, blockingItems: 0, requestTime: 0 });
       });
     });
 

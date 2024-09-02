@@ -1,5 +1,13 @@
-import type { Actor, IAction, IActorOutput, IActorReply, IActorTest, IMediatorArgs } from '@comunica/core';
-import { Mediator } from '@comunica/core';
+import type {
+  Actor,
+  IAction,
+  IActorOutput,
+  IActorReply,
+  IActorTest,
+  IMediatorArgs,
+  TestResult,
+} from '@comunica/core';
+import { failTest, passTest, Mediator } from '@comunica/core';
 
 /**
  * A mediator that can mediate over a single number field.
@@ -12,7 +20,7 @@ export class MediatorNumber<A extends Actor<I, T, O>, I extends IAction, T exten
   extends Mediator<A, I, T, O> implements IMediatorNumberArgs<A, I, T, O> {
   public readonly field: string;
   public readonly type: 'min' | 'max';
-  public readonly ignoreErrors: boolean;
+  public readonly ignoreFailures: boolean;
   public readonly indexPicker: (tests: T[]) => number;
 
   public constructor(args: IMediatorNumberArgs<A, I, T, O>) {
@@ -47,25 +55,33 @@ export class MediatorNumber<A extends Actor<I, T, O>, I extends IAction, T exten
     return value === undefined ? defaultValue : value;
   }
 
-  protected async mediateWith(action: I, testResults: IActorReply<A, I, T, O>[]): Promise<A> {
-    let promises = testResults.map(({ reply }) => reply);
-    const errors: Error[] = [];
-    if (this.ignoreErrors) {
+  protected async mediateWith(action: I, testResults: IActorReply<A, I, T, O>[]): Promise<TestResult<A>> {
+    let wrappedResults = await Promise.all(testResults.map(({ reply }) => reply));
+
+    // Collect failures if we want to ignore them
+    const failures: (() => string)[] = [];
+    if (this.ignoreFailures) {
       const dummy: any = {};
       dummy[this.field] = null;
-      // eslint-disable-next-line ts/no-floating-promises
-      promises = promises.map(promise => promise.catch((error) => {
-        errors.push(error);
-        return dummy;
-      }));
+      wrappedResults = wrappedResults.map((result) => {
+        if (result.isFailed()) {
+          failures.push(result.getFailMessage());
+          return passTest(dummy);
+        }
+        return result;
+      });
     }
-    const results = await Promise.all(promises);
+
+    // Resolve values
+    const results = wrappedResults.map(result => result.getOrThrow());
+
+    // Determine one value
     const index = this.indexPicker(results);
     if (index < 0) {
-      throw new Error(`All actors rejected their test in ${this.name}\n${
-        errors.map(error => error.message).join('\n')}`);
+      return failTest(() => `All actors rejected their test in ${this.name}\n${
+        failures.map(error => error()).join('\n')}`);
     }
-    return testResults[index].actor;
+    return passTest(testResults[index].actor);
   }
 }
 
@@ -88,7 +104,7 @@ O extends IActorOutput,
   type: 'min' | 'max';
 
   /**
-   * If actors that throw test errors should be ignored
+   * If actors that throw fail tests should be ignored
    */
-  ignoreErrors?: boolean;
+  ignoreFailures?: boolean;
 }

@@ -61,7 +61,7 @@ describe('ActorQueryOperationPathLink', () => {
 
     it('should test on Link paths', async() => {
       const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.LINK }}};
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should test on different paths', async() => {
@@ -69,7 +69,7 @@ describe('ActorQueryOperationPathLink', () => {
         operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }},
         context: new ActionContext(),
       };
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`This Actor only supports link Path operations.`);
     });
 
     it('should support Link paths', async() => {

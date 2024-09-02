@@ -1,5 +1,7 @@
 import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
+import type { TestResult } from '@comunica/core';
+import { passTest } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { Bindings, MetadataBindings } from '@comunica/types';
 import { HashJoin } from 'asyncjoin';
@@ -46,7 +48,7 @@ export class ActorRdfJoinHash extends ActorRdfJoin {
   protected async getJoinCoefficients(
     action: IActionRdfJoin,
     metadatas: MetadataBindings[],
-  ): Promise<IMediatorTypeJoinCoefficients> {
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients>> {
     // Ensure the left build stream is the smallest
     if (metadatas[1].cardinality.value < metadatas[0].cardinality.value) {
       metadatas = [ metadatas[1], metadatas[0] ];
@@ -54,12 +56,12 @@ export class ActorRdfJoinHash extends ActorRdfJoin {
 
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
-    return {
+    return passTest({
       iterations: metadatas[0].cardinality.value + metadatas[1].cardinality.value,
       persistedItems: metadatas[0].cardinality.value,
       blockingItems: metadatas[0].cardinality.value,
       requestTime: requestInitialTimes[0] + metadatas[0].cardinality.value * requestItemTimes[0] +
         requestInitialTimes[1] + metadatas[1].cardinality.value * requestItemTimes[1],
-    };
+    });
   }
 }

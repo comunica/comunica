@@ -1,4 +1,4 @@
-import type { Actor, IAction, IActorOutput, IActorReply, IActorTest, IMediatorArgs } from '@comunica/core';
+import type { Actor, IAction, IActorOutput, IActorReply, IActorTest, IMediatorArgs, TestResult } from '@comunica/core';
 import { Mediator } from '@comunica/core';
 
 /**
@@ -14,7 +14,7 @@ O extends IActorOutput,
 >
   extends Mediator<A, I, T, O>
   implements IMediatorCombineUnionArgs<A, I, T, O> {
-  public readonly filterErrors: boolean | undefined;
+  public readonly filterFailures: boolean | undefined;
   public readonly field: string;
   public readonly combiner: (results: O[]) => O;
 
@@ -31,21 +31,19 @@ O extends IActorOutput,
       testResults = [];
     }
 
-    if (this.filterErrors) {
+    if (this.filterFailures) {
       const _testResults: IActorReply<A, I, T, O>[] = [];
       for (const result of testResults) {
-        try {
-          await result.reply;
+        const reply = await result.reply;
+        if (reply.isPassed()) {
           _testResults.push(result);
-        } catch {
-          // Ignore errors
         }
       }
       testResults = _testResults;
     }
 
-    // Delegate test errors.
-    await Promise.all(testResults.map(({ reply }) => reply));
+    // Delegate reply errors.
+    await Promise.all(testResults.map(async({ reply }) => (await reply).getOrThrow()));
 
     // Run action on all actors.
     const results: O[] = await Promise.all(testResults.map(result => result.actor.runObservable(action)));
@@ -54,7 +52,7 @@ O extends IActorOutput,
     return this.combiner(results);
   }
 
-  protected mediateWith(): Promise<A> {
+  protected mediateWith(): Promise<TestResult<any>> {
     throw new Error('Method not supported.');
   }
 
@@ -83,7 +81,7 @@ O extends IActorOutput,
   /**
    * If actors that throw test errors should be ignored
    */
-  filterErrors?: boolean;
+  filterFailures?: boolean;
   /**
    * The field name of the test result field over which must be mediated.
    */

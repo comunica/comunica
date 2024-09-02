@@ -1,8 +1,8 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { Actor, IActorTest, Mediator } from '@comunica/core';
-import { ActionContext, Bus } from '@comunica/core';
+import type { Actor, IActorTest, Mediator, TestResult } from '@comunica/core';
+import { passTest, ActionContext, Bus } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import { MetadataValidationState } from '@comunica/metadata';
 import type { IPhysicalQueryPlanLogger, IPlanNode, MetadataBindings } from '@comunica/types';
@@ -11,6 +11,7 @@ import { BufferedIterator, MultiTransformIterator, SingletonIterator } from 'asy
 import { DataFactory } from 'rdf-data-factory';
 import type { IActionRdfJoin } from '../lib/ActorRdfJoin';
 import { ActorRdfJoin } from '../lib/ActorRdfJoin';
+import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -70,13 +71,13 @@ IActorRdfJoinSelectivityOutput
   protected getJoinCoefficients(
     action: IActionRdfJoin,
     metadatas: MetadataBindings[],
-  ): Promise<IMediatorTypeJoinCoefficients> {
-    return Promise.resolve({
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients>> {
+    return Promise.resolve(passTest({
       iterations: 5,
       persistedItems: 2,
       blockingItems: 3,
       requestTime: 10,
-    });
+    }));
   }
 }
 
@@ -697,36 +698,35 @@ IActorRdfJoinSelectivityOutput
 
     it('should reject if the logical type does not match', async() => {
       action.type = 'optional';
-      await expect(instance.test(action)).rejects.toThrow(`name can only handle logical joins of type 'inner', while 'optional' was given.`);
+      await expect(instance.test(action)).resolves.toFailTest(`name can only handle logical joins of type 'inner', while 'optional' was given.`);
     });
 
     it('should reject if there are 0 entries', async() => {
       action.entries = [];
-      await expect(instance.test(action)).rejects.toThrow('name requires at least two join entries.');
+      await expect(instance.test(action)).resolves.toFailTest('name requires at least two join entries.');
     });
 
     it('should reject if there is 1 entry', async() => {
       action.entries = [ action.entries[0] ];
-      await expect(instance.test(action)).rejects.toThrow('name requires at least two join entries.');
+      await expect(instance.test(action)).resolves.toFailTest('name requires at least two join entries.');
     });
 
     it('should reject if there are too many entries', async() => {
       action.entries.push(<any> { bindings: { type: 'bindings' }});
       instance = new Dummy(mediatorJoinSelectivity, 2);
-      await expect(instance.test(action)).rejects.toThrow(`name requires 2 join entries at most. The input contained 3.`);
+      await expect(instance.test(action)).resolves.toFailTest(`name requires 2 join entries at most. The input contained 3.`);
     });
 
     it('should reject if there are too few entries', async() => {
       instance = new Dummy(mediatorJoinSelectivity, 3, true);
-      await expect(instance.test(action)).rejects.toThrow(`name requires 3 join entries at least. The input contained 2.`);
+      await expect(instance.test(action)).resolves.toFailTest(`name requires 3 join entries at least. The input contained 2.`);
     });
 
     it('should throw an error if an entry has an incorrect type', async() => {
       action.entries.push(<any> { output: { type: 'invalid' }});
       action.entries.push(<any> { output: { type: 'invalid' }});
       instance = new Dummy(mediatorJoinSelectivity, 99);
-      await expect(instance.test(action)).rejects
-        .toThrow(`Invalid type of a join entry: Expected 'bindings' but got 'invalid'`);
+      await expect(instance.test(action)).resolves.toFailTest(`Invalid type of a join entry: Expected 'bindings' but got 'invalid'`);
     });
 
     it('should return a value if both metadata objects are present', async() => {
@@ -742,7 +742,8 @@ IActorRdfJoinSelectivityOutput
         canContainUndefs: false,
         variables: [],
       });
-      await expect(instance.test(action)).resolves.toHaveProperty('iterations', 5);
+      await expect(instance.test(action))
+        .resolves.toPassTest({ iterations: 5, persistedItems: 2, blockingItems: 3, requestTime: 10 });
     });
 
     it('should fail on undefs in left stream', async() => {
@@ -752,8 +753,7 @@ IActorRdfJoinSelectivityOutput
         canContainUndefs: true,
         variables: [],
       });
-      await expect(instance.test(action)).rejects
-        .toThrow(new Error('Actor name can not join streams containing undefs'));
+      await expect(instance.test(action)).resolves.toFailTest('Actor name can not join streams containing undefs');
     });
 
     it('should fail on undefs in right stream', async() => {
@@ -763,8 +763,7 @@ IActorRdfJoinSelectivityOutput
         canContainUndefs: true,
         variables: [],
       });
-      await expect(instance.test(action)).rejects
-        .toThrow(new Error('Actor name can not join streams containing undefs'));
+      await expect(instance.test(action)).resolves.toFailTest('Actor name can not join streams containing undefs');
     });
 
     it('should fail on undefs in left and right stream', async() => {
@@ -780,8 +779,7 @@ IActorRdfJoinSelectivityOutput
         canContainUndefs: true,
         variables: [],
       });
-      await expect(instance.test(action)).rejects
-        .toThrow(new Error('Actor name can not join streams containing undefs'));
+      await expect(instance.test(action)).resolves.toFailTest('Actor name can not join streams containing undefs');
     });
   });
 
@@ -796,7 +794,7 @@ IActorRdfJoinSelectivityOutput
         variables: [],
       });
       await expect(instance.test(action)).resolves
-        .toEqual({
+        .toPassTest({
           iterations: 5,
           persistedItems: 2,
           blockingItems: 3,
@@ -812,7 +810,7 @@ IActorRdfJoinSelectivityOutput
         variables: [],
       });
       await expect(instance.test(action)).resolves
-        .toEqual({
+        .toPassTest({
           iterations: 5,
           persistedItems: 2,
           blockingItems: 3,
@@ -834,7 +832,7 @@ IActorRdfJoinSelectivityOutput
         variables: [],
       });
       await expect(instance.test(action)).resolves
-        .toEqual({
+        .toPassTest({
           iterations: 5,
           persistedItems: 2,
           blockingItems: 3,

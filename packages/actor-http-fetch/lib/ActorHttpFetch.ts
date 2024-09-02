@@ -1,6 +1,8 @@
 import type { IActionHttp, IActorHttpOutput, IActorHttpArgs } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
 import { KeysHttp } from '@comunica/context-entries';
+import type { TestResult } from '@comunica/core';
+import { passTest } from '@comunica/core';
 import type { IMediatorTypeTime } from '@comunica/mediatortype-time';
 import type { Readable } from 'readable-stream';
 import { FetchInitPreprocessor } from './FetchInitPreprocessor';
@@ -27,8 +29,8 @@ export class ActorHttpFetch extends ActorHttp {
       `Browser-${globalThis.navigator.userAgent}`})`;
   }
 
-  public async test(_action: IActionHttp): Promise<IMediatorTypeTime> {
-    return { time: Number.POSITIVE_INFINITY };
+  public async test(_action: IActionHttp): Promise<TestResult<IMediatorTypeTime>> {
+    return passTest({ time: Number.POSITIVE_INFINITY });
   }
 
   /**

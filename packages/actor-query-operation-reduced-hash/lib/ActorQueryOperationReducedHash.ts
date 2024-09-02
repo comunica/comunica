@@ -1,7 +1,8 @@
 import type { MediatorHashBindings } from '@comunica/bus-hash-bindings';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import type {
   Bindings,
   BindingsStream,
@@ -23,8 +24,8 @@ export class ActorQueryOperationReducedHash extends ActorQueryOperationTypedMedi
     super(args, 'reduced');
   }
 
-  public async testOperation(_operation: Algebra.Reduced, _context: IActionContext): Promise<IActorTest> {
-    return true;
+  public async testOperation(_operation: Algebra.Reduced, _context: IActionContext): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async runOperation(operation: Algebra.Reduced, context: IActionContext): Promise<IQueryOperationResult> {

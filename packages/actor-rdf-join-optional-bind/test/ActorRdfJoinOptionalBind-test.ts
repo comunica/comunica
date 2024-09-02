@@ -129,7 +129,7 @@ IQueryOperationResultBindings
               variables: [ DF.variable('b') ],
             },
           ],
-        )).rejects.toThrow('Actor actor only join entries with at least one common variable');
+        )).resolves.toFailTest('Actor actor only join entries with at least one common variable');
       });
 
       it('should handle two entries', async() => {
@@ -166,7 +166,7 @@ IQueryOperationResultBindings
               variables: [ DF.variable('a') ],
             },
           ],
-        )).resolves.toEqual({
+        )).resolves.toPassTest({
           iterations: 0.480_000_000_000_000_1,
           persistedItems: 0,
           blockingItems: 0,
@@ -208,7 +208,7 @@ IQueryOperationResultBindings
               variables: [ DF.variable('a'), DF.variable('c'), DF.variable('e') ],
             },
           ],
-        )).resolves.toEqual({
+        )).resolves.toPassTest({
           iterations: 0.480_000_000_000_000_1,
           persistedItems: 0,
           blockingItems: 0,
@@ -250,7 +250,7 @@ IQueryOperationResultBindings
               variables: [ DF.variable('a') ],
             },
           ],
-        )).rejects.toThrow('Actor actor can not bind on Extend and Group operations');
+        )).resolves.toFailTest('Actor actor can not bind on Extend and Group operations');
       });
 
       it('should reject on a right stream of type group', async() => {
@@ -287,7 +287,7 @@ IQueryOperationResultBindings
               variables: [ DF.variable('a') ],
             },
           ],
-        )).rejects.toThrow('Actor actor can not bind on Extend and Group operations');
+        )).resolves.toFailTest('Actor actor can not bind on Extend and Group operations');
       });
 
       it('should not reject on a left stream of type group', async() => {
@@ -324,7 +324,7 @@ IQueryOperationResultBindings
               variables: [ DF.variable('a') ],
             },
           ],
-        )).resolves.toEqual({
+        )).resolves.toPassTest({
           iterations: 0.480_000_000_000_000_1,
           persistedItems: 0,
           blockingItems: 0,

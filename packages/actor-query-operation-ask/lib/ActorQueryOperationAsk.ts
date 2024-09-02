@@ -1,6 +1,7 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import type {
   IActionContext,
   IQueryOperationResult,
@@ -16,8 +17,8 @@ export class ActorQueryOperationAsk extends ActorQueryOperationTypedMediated<Alg
     super(args, 'ask');
   }
 
-  public async testOperation(_operation: Algebra.Ask, _context: IActionContext): Promise<IActorTest> {
-    return true;
+  public async testOperation(_operation: Algebra.Ask, _context: IActionContext): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async runOperation(operation: Algebra.Ask, context: IActionContext): Promise<IQueryOperationResult> {

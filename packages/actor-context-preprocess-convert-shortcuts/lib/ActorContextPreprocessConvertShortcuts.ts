@@ -1,7 +1,7 @@
 import type { IActorContextPreprocessOutput, IActorContextPreprocessArgs } from '@comunica/bus-context-preprocess';
 import { ActorContextPreprocess } from '@comunica/bus-context-preprocess';
-import type { IAction, IActorTest } from '@comunica/core';
-import { ActionContextKey } from '@comunica/core';
+import type { IAction, IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid, ActionContextKey } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 
 /**
@@ -14,8 +14,8 @@ export class ActorContextPreprocessConvertShortcuts extends ActorContextPreproce
     super(args);
   }
 
-  public async test(_action: IAction): Promise<IActorTest> {
-    return true;
+  public async test(_action: IAction): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async run(action: IAction): Promise<IActorContextPreprocessOutput> {

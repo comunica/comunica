@@ -1,7 +1,7 @@
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import { KeysCore, KeysQueryOperation } from '@comunica/context-entries';
-import type { IAction, IActorOutput } from '@comunica/core';
-import { ActionContext, Actor, Bus } from '@comunica/core';
+import type { IAction, IActorOutput, TestResult } from '@comunica/core';
+import { failTest, passTest, ActionContext, Actor, Bus } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -62,9 +62,9 @@ describe('MediatorJoinCoefficientsFixed', () => {
 
       await expect(mediator.mediate(action))
         .rejects.toThrow(`All actors rejected their test in mediator
-Actor 1 rejects
-Actor 2 rejects
-Actor 3 rejects`);
+Actor 1 fails
+Actor 2 fails
+Actor 3 fails`);
     });
 
     it('should handle a single actor', async() => {
@@ -167,7 +167,7 @@ Actor 3 rejects`);
       );
     });
 
-    it('should handle multiple single actors with one rejecting', async() => {
+    it('should handle multiple single actors with one failing', async() => {
       new DummyActor(1, {
         iterations: 10,
         persistedItems: 20,
@@ -475,11 +475,11 @@ class DummyActor extends Actor<IAction, IMediatorTypeJoinCoefficients, IDummyOut
     this.reject = reject;
   }
 
-  public async test(action: IAction): Promise<IMediatorTypeJoinCoefficients> {
+  public async test(action: IAction): Promise<TestResult<IMediatorTypeJoinCoefficients>> {
     if (this.reject) {
-      throw new Error(`Actor ${this.id} rejects`);
+      return failTest(() => `Actor ${this.id} fails`);
     }
-    return this.coeffs;
+    return passTest(this.coeffs);
   }
 
   public async run(action: IAction): Promise<IDummyOutput> {

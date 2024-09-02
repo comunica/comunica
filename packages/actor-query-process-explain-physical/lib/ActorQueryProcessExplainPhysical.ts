@@ -8,8 +8,8 @@ import {
   ActorQueryProcess,
 } from '@comunica/bus-query-process';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
-import { ActionContextKey } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid, ActionContextKey } from '@comunica/core';
 import { MemoryPhysicalQueryPlanLogger } from './MemoryPhysicalQueryPlanLogger';
 
 /**
@@ -22,12 +22,12 @@ export class ActorQueryProcessExplainPhysical extends ActorQueryProcess {
     super(args);
   }
 
-  public async test(action: IActionQueryProcess): Promise<IActorTest> {
+  public async test(action: IActionQueryProcess): Promise<TestResult<IActorTest>> {
     const mode = (action.context.get(KeysInitQuery.explain) || action.context.get(new ActionContextKey('explain')));
     if (mode !== 'physical' && mode !== 'physical-json') {
-      throw new Error(`${this.name} can only explain in 'physical' or 'physical-json' mode.`);
+      return failTest(() => `${this.name} can only explain in 'physical' or 'physical-json' mode.`);
     }
-    return true;
+    return passTestVoid();
   }
 
   public async run(action: IActionQueryProcess): Promise<IActorQueryProcessOutput> {

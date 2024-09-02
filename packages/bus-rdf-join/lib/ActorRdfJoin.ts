@@ -3,8 +3,8 @@ import type {
   MediatorRdfJoinSelectivity,
 } from '@comunica/bus-rdf-join-selectivity';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IAction, IActorArgs, Mediate } from '@comunica/core';
-import { Actor } from '@comunica/core';
+import type { IAction, IActorArgs, Mediate, TestResult } from '@comunica/core';
+import { passTest, failTest, Actor } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import { cachifyMetadata, MetadataValidationState } from '@comunica/metadata';
 import type {
@@ -283,11 +283,11 @@ export abstract class ActorRdfJoin
     mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort,
     entries: IJoinEntryWithMetadata[],
     context: IActionContext,
-  ): Promise<IJoinEntryWithMetadata[]> {
+  ): Promise<TestResult<IJoinEntryWithMetadata[]>> {
     // If there is a stream that can contain undefs, we don't modify the join order.
     const canContainUndefs = entries.some(entry => entry.metadata.canContainUndefs);
     if (canContainUndefs) {
-      return entries;
+      return passTest(entries);
     }
 
     // Calculate number of occurrences of each variable
@@ -312,7 +312,7 @@ export abstract class ActorRdfJoin
 
     // Reject if no entries have common variables
     if (multiOccurrenceVariables.length === 0) {
-      throw new Error(`Bind join can only join entries with at least one common variable`);
+      return failTest(() => `Bind join can only join entries with at least one common variable`);
     }
 
     // Determine entries without common variables
@@ -331,7 +331,7 @@ export abstract class ActorRdfJoin
       }
     }
 
-    return (await mediatorJoinEntriesSort.mediate({ entries, context })).entries
+    return passTest((await mediatorJoinEntriesSort.mediate({ entries, context })).entries
       .sort((entryLeft, entryRight) => {
         // Sort to make sure that entries without common variables come last in the array.
         // For all other entries, the original order is kept.
@@ -343,7 +343,7 @@ export abstract class ActorRdfJoin
         return leftWithoutCommonVariables ?
           1 :
             -1;
-      });
+      }));
   }
 
   /**
@@ -353,20 +353,20 @@ export abstract class ActorRdfJoin
    * @param {IActionRdfJoin} action The input action containing the relevant iterators
    * @returns {Promise<IMediatorTypeJoinCoefficients>} The join coefficients.
    */
-  public async test(action: IActionRdfJoin): Promise<IMediatorTypeJoinCoefficients> {
+  public async test(action: IActionRdfJoin): Promise<TestResult<IMediatorTypeJoinCoefficients>> {
     // Validate logical join type
     if (action.type !== this.logicalType) {
-      throw new Error(`${this.name} can only handle logical joins of type '${this.logicalType}', while '${action.type}' was given.`);
+      return failTest(() => `${this.name} can only handle logical joins of type '${this.logicalType}', while '${action.type}' was given.`);
     }
 
     // Don't allow joining of one or zero streams
     if (action.entries.length <= 1) {
-      throw new Error(`${this.name} requires at least two join entries.`);
+      return failTest(() => `${this.name} requires at least two join entries.`);
     }
 
     // Check if this actor can handle the given number of streams
     if (this.limitEntriesMin ? action.entries.length < this.limitEntries : action.entries.length > this.limitEntries) {
-      throw new Error(`${this.name} requires ${this.limitEntries
+      return failTest(() => `${this.name} requires ${this.limitEntries
       } join entries at ${this.limitEntriesMin ? 'least' : 'most'
       }. The input contained ${action.entries.length}.`);
     }
@@ -374,8 +374,7 @@ export abstract class ActorRdfJoin
     // Check if all streams are bindings streams
     for (const entry of action.entries) {
       if (entry.output.type !== 'bindings') {
-        // eslint-disable-next-line ts/restrict-template-expressions
-        throw new Error(`Invalid type of a join entry: Expected 'bindings' but got '${entry.output.type}'`);
+        return failTest(() => `Invalid type of a join entry: Expected 'bindings' but got '${entry.output.type}'`);
       }
     }
 
@@ -385,14 +384,14 @@ export abstract class ActorRdfJoin
     if (!this.canHandleUndefs) {
       for (const metadata of metadatas) {
         if (metadata.canContainUndefs) {
-          throw new Error(`Actor ${this.name} can not join streams containing undefs`);
+          return failTest(() => `Actor ${this.name} can not join streams containing undefs`);
         }
       }
     }
 
     // This actor only works with common variables
     if (this.requiresVariableOverlap && ActorRdfJoin.overlappingVariables(metadatas).length === 0) {
-      throw new Error(`Actor ${this.name} can only join entries with at least one common variable`);
+      return failTest(() => `Actor ${this.name} can only join entries with at least one common variable`);
     }
 
     return await this.getJoinCoefficients(action, metadatas);
@@ -452,7 +451,7 @@ export abstract class ActorRdfJoin
       Object.assign(planMetadata, physicalPlanMetadata);
       const cardinalities = metadatas.map(ActorRdfJoin.getCardinality);
       planMetadata.cardinalities = cardinalities;
-      planMetadata.joinCoefficients = await this.getJoinCoefficients(action, metadatas);
+      planMetadata.joinCoefficients = (await this.getJoinCoefficients(action, metadatas)).getOrThrow();
 
       // If this is a leaf operation, include join entries in plan metadata.
       if (this.isLeaf) {
@@ -490,7 +489,7 @@ export abstract class ActorRdfJoin
   protected abstract getJoinCoefficients(
     action: IActionRdfJoin,
     metadatas: MetadataBindings[],
-  ): Promise<IMediatorTypeJoinCoefficients>;
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients>>;
 }
 
 export interface IActorRdfJoinArgs

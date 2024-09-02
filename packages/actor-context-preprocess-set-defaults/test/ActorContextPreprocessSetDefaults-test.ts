@@ -2,6 +2,7 @@ import { KeysCore, KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/cont
 import { ActionContext, Bus } from '@comunica/core';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorContextPreprocessSetDefaults } from '../lib/ActorContextPreprocessSetDefaults';
+import '@comunica/jest';
 
 describe('ActorContextPreprocessSetDefaults', () => {
   let bus: any;
@@ -18,7 +19,7 @@ describe('ActorContextPreprocessSetDefaults', () => {
     });
 
     it('should test', async() => {
-      await expect(actor.test({ context: new ActionContext() })).resolves.toBeTruthy();
+      await expect(actor.test({ context: new ActionContext() })).resolves.toPassTestVoid();
     });
 
     describe('run', () => {

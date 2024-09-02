@@ -401,7 +401,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
               variables: [ DF.variable('a') ],
             },
           ],
-        )).resolves.toEqual({
+        )).resolves.toPassTest({
           iterations: 1,
           persistedItems: 2,
           blockingItems: 2,
@@ -457,7 +457,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
               variables: [ DF.variable('a') ],
             },
           ],
-        )).resolves.toEqual({
+        )).resolves.toPassTest({
           iterations: 1,
           persistedItems: 3,
           blockingItems: 3,
@@ -511,7 +511,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
               variables: [ DF.variable('a') ],
             },
           ],
-        )).rejects.toThrow('Actor actor can not bind on remaining operations without source annotation');
+        )).resolves.toFailTest('Actor actor can not bind on remaining operations without source annotation');
       });
 
       it('should reject when remaining entries have unequal sources', async() => {
@@ -560,7 +560,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
               variables: [ DF.variable('a') ],
             },
           ],
-        )).rejects.toThrow('Actor actor can not bind on remaining operations with non-equal source annotation');
+        )).resolves.toFailTest('Actor actor can not bind on remaining operations with non-equal source annotation');
       });
 
       it('should reject when remaining entries do not accept the operation', async() => {
@@ -609,7 +609,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
               variables: [ DF.variable('a') ],
             },
           ],
-        )).rejects.toThrow('Actor actor detected a source that can not handle passing down join bindings');
+        )).resolves.toFailTest('Actor actor detected a source that can not handle passing down join bindings');
       });
     });
 

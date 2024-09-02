@@ -1,6 +1,7 @@
 import { deskolemizeQuad } from '@comunica/actor-context-preprocess-query-source-skolemize';
 import { KeysInitQuery, KeysQuerySourceIdentify, KeysRdfUpdateQuads } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -38,8 +39,8 @@ export function deskolemize(action: IActionRdfUpdateQuads): IActionRdfUpdateQuad
  * @see IQuadDestination
  */
 export abstract class ActorRdfUpdateQuadsDestination extends ActorRdfUpdateQuads {
-  public async test(_action: IActionRdfUpdateQuads): Promise<IActorTest> {
-    return true;
+  public async test(_action: IActionRdfUpdateQuads): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async run(action: IActionRdfUpdateQuads): Promise<IActorRdfUpdateQuadsOutput> {

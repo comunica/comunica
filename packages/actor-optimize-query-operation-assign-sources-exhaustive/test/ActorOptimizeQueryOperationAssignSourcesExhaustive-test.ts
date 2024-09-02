@@ -7,6 +7,7 @@ import { Algebra, Factory } from 'sparqlalgebrajs';
 import {
   ActorOptimizeQueryOperationAssignSourcesExhaustive,
 } from '../lib/ActorOptimizeQueryOperationAssignSourcesExhaustive';
+import '@comunica/jest';
 
 const AF = new Factory();
 const DF = new DataFactory();
@@ -54,7 +55,7 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
       await expect(actor.test({
         operation: AF.createNop(),
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
-      })).resolves.toBeTruthy();
+      })).resolves.toPassTestVoid();
     });
 
     describe('run', () => {

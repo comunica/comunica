@@ -110,7 +110,7 @@ describe('ActorQueryOperationFilter', () => {
         operation: { type: 'filter', expression: truthyExpression },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should fail on unsupported operators', async() => {
@@ -118,12 +118,12 @@ describe('ActorQueryOperationFilter', () => {
         operation: { type: 'filter', expression: unknownExpression },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Unknown operator: '"DUMMY"`);
     });
 
     it('should not test on non-filter', async() => {
       const op: any = { operation: { type: 'some-other-type' }};
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports filter operations, but got some-other-type`);
     });
 
     it('should return the full stream for a truthy filter', async() => {

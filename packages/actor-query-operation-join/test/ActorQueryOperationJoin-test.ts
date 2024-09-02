@@ -71,12 +71,12 @@ describe('ActorQueryOperationJoin', () => {
 
     it('should test on join', async() => {
       const op: any = { operation: { type: 'join' }};
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should not test on non-join', async() => {
       const op: any = { operation: { type: 'some-other-type' }};
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports join operations, but got some-other-type`);
     });
 
     it('should run', async() => {

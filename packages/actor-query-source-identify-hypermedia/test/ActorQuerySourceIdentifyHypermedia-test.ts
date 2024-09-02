@@ -99,21 +99,21 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
           await expect(actor.test({
             querySourceUnidentified: { value: 'abc' },
             context,
-          })).resolves.toBeTruthy();
+          })).resolves.toPassTestVoid();
         });
 
         it('should not test on a null value', async() => {
           await expect(actor.test({
             querySourceUnidentified: { value: <any> null },
             context,
-          })).rejects.toThrow(`actor requires a single query source with a URL value to be present in the context.`);
+          })).resolves.toFailTest(`actor requires a single query source with a URL value to be present in the context.`);
         });
 
         it('should not test on an invalid value', async() => {
           await expect(actor.test({
             querySourceUnidentified: { value: <any> { bla: true }},
             context,
-          })).rejects.toThrow(`actor requires a single query source with a URL value to be present in the context.`);
+          })).resolves.toFailTest(`actor requires a single query source with a URL value to be present in the context.`);
         });
       });
 

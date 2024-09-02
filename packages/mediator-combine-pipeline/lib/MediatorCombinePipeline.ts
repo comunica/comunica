@@ -1,4 +1,4 @@
-import type { Actor, IAction, IActorOutput, IActorReply, IActorTest, IMediatorArgs } from '@comunica/core';
+import type { Actor, IAction, IActorOutput, IActorReply, IActorTest, IMediatorArgs, TestResult } from '@comunica/core';
 import { Mediator } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 
@@ -12,7 +12,7 @@ H extends IAction | (IActorOutput & { context: IActionContext }),
 T extends IActorTest,
 >
   extends Mediator<A, H, T, H> {
-  public readonly filterErrors: boolean | undefined;
+  public readonly filterFailures: boolean | undefined;
   public readonly order: 'increasing' | 'decreasing' | undefined;
   public readonly field: string | undefined;
 
@@ -29,21 +29,20 @@ T extends IActorTest,
       return action;
     }
 
-    if (this.filterErrors) {
+    if (this.filterFailures) {
       const _testResults: IActorReply<A, H, T, H>[] = [];
       for (const result of testResults) {
-        try {
-          await result.reply;
+        const reply = await result.reply;
+        if (reply.isPassed()) {
           _testResults.push(result);
-        } catch {
-          // Ignore errors
         }
       }
       testResults = _testResults;
     }
 
     // Delegate test errors.
-    testResults = await Promise.all(testResults.map(async({ actor, reply }) => ({ actor, reply: await reply })));
+    testResults = await Promise.all(testResults
+      .map(async({ actor, reply }) => ({ actor, reply: (await reply).getOrThrow() })));
 
     // Order the test results if ordering is enabled
     if (this.order) {
@@ -76,7 +75,7 @@ T extends IActorTest,
     return handle;
   }
 
-  protected mediateWith(): Promise<A> {
+  protected mediateWith(): Promise<TestResult<A>> {
     throw new Error('Method not supported.');
   }
 }
@@ -91,7 +90,7 @@ O extends IActorOutput,
   /**
    * If actors that throw test errors should be ignored
    */
-  filterErrors?: boolean;
+  filterFailures?: boolean;
   /**
    * The field to use for ordering (if the ordering strategy is chosen).
    * Leave undefined if the test output is a number rather than an object.

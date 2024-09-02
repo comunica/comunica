@@ -7,6 +7,7 @@ import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationLoad } from '../lib/ActorQueryOperationLoad';
+import '@comunica/jest';
 
 const DF = new DataFactory();
 const AF = new Factory();
@@ -54,7 +55,7 @@ describe('ActorQueryOperationLoad', () => {
         operation: { type: 'load' },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should not test on readOnly', async() => {
@@ -62,7 +63,7 @@ describe('ActorQueryOperationLoad', () => {
         operation: { type: 'load' },
         context: new ActionContext({ [KeysQueryOperation.readOnly.name]: true }),
       };
-      await expect(actor.test(op)).rejects.toThrow(`Attempted a write operation in read-only mode`);
+      await expect(actor.test(op)).resolves.toFailTest(`Attempted a write operation in read-only mode`);
     });
 
     it('should not test on non-load', async() => {
@@ -70,7 +71,7 @@ describe('ActorQueryOperationLoad', () => {
         operation: { type: 'some-other-type' },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports load operations, but got some-other-type`);
     });
 
     it('should run', async() => {

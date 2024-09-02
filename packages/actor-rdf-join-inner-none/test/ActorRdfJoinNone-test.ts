@@ -55,7 +55,7 @@ IActorRdfJoinSelectivityOutput
             },
           ],
           context,
-        })).rejects.toThrow('Actor actor can only join zero entries');
+        })).resolves.toFailTest('Actor actor can only join zero entries');
       });
 
       it('should test on zero entries', async() => {
@@ -63,7 +63,7 @@ IActorRdfJoinSelectivityOutput
           type: 'inner',
           entries: [],
           context,
-        })).resolves.toEqual({
+        })).resolves.toPassTest({
           iterations: 0,
           persistedItems: 0,
           blockingItems: 0,

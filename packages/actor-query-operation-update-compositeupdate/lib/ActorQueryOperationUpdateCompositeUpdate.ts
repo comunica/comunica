@@ -3,7 +3,7 @@ import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
 import type { IActionContext, IQueryOperationResult } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -19,9 +19,8 @@ export class ActorQueryOperationUpdateCompositeUpdate
   public async testOperation(
     operation: Algebra.CompositeUpdate,
     context: IActionContext,
-  ): Promise<IActorTest> {
-    ActorQueryOperation.throwOnReadOnly(context);
-    return true;
+  ): Promise<TestResult<IActorTest>> {
+    return ActorQueryOperation.testReadOnly(context);
   }
 
   public async runOperation(operationOriginal: Algebra.CompositeUpdate, context: IActionContext):

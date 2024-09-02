@@ -9,6 +9,8 @@ import type {
 import { ChunkedIterator, ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
 import { KeysInitQuery, KeysRdfJoin } from '@comunica/context-entries';
+import type { TestResult } from '@comunica/core';
+import { failTest, passTest } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type {
   BindingsStream,
@@ -52,7 +54,11 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
   public async sortJoinEntries(
     entries: IJoinEntryWithMetadata[],
     context: IActionContext,
-  ): Promise<{ first: IJoinEntryWithMetadata; second: IJoinEntryWithMetadata; remaining: IJoinEntryWithMetadata[] }> {
+  ): Promise<TestResult<{
+    first: IJoinEntryWithMetadata;
+    second: IJoinEntryWithMetadata;
+    remaining: IJoinEntryWithMetadata[];
+  }>> {
     let { entries: entriesSorted } = await this.mediatorJoinEntriesSort.mediate({ entries, context });
 
     // Prioritize entries with modified operations, so these are not re-executed
@@ -87,12 +93,12 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
     }
 
     if (secondSharedVariables === 0) {
-      throw new Error(`Actor ${this.name} can only join with common variables`);
+      return failTest(() => `Actor ${this.name} can only join with common variables`);
     }
 
     const remaining = entriesSorted;
     remaining.splice(secondIndex, 1);
-    return { first, second: second!, remaining };
+    return passTest({ first, second: second!, remaining });
   }
 
   public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
@@ -101,10 +107,10 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
 
     // Determine the two smallest streams by sorting (e.g. via cardinality)
     const entriesUnsorted = await ActorRdfJoin.getEntriesWithMetadatas([ ...action.entries ]);
-    const { first, second: secondIn, remaining: remainingIn } = await this.sortJoinEntries(
+    const { first, second: secondIn, remaining: remainingIn } = (await this.sortJoinEntries(
       entriesUnsorted,
       action.context,
-    );
+    )).getOrThrow();
 
     // Clone first stream, because we will use it twice
     const smallestStream1 = first.output.bindingsStream;
@@ -183,27 +189,31 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
   public async getJoinCoefficients(
     action: IActionRdfJoin,
     metadatas: MetadataBindings[],
-  ): Promise<IMediatorTypeJoinCoefficients> {
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients>> {
     // Avoid infinite recursion
     if (action.context.get(KeysRdfJoin.lastPhysicalJoin) === this.physicalName) {
-      throw new Error(`Actor ${this.name} can not be called recursively`);
+      return failTest(() => `Actor ${this.name} can not be called recursively`);
     }
 
     metadatas = [ ...metadatas ];
     // Determine the two smallest streams by sorting (e.g. via cardinality)
-    const { first, second, remaining } = await this.sortJoinEntries(action.entries
+    const sortedResult = await this.sortJoinEntries(action.entries
       .map((entry, i) => ({ ...entry, metadata: metadatas[i] })), action.context);
+    if (sortedResult.isFailed()) {
+      return sortedResult;
+    }
+    const { first, second, remaining } = sortedResult.get();
 
     // Only pass if the second entry accepts filterBindings
     const sourceWrapper: IQuerySourceWrapper | undefined = ActorQueryOperation.getOperationSource(second.operation);
     if (!sourceWrapper) {
-      throw new Error(`Actor ${this.name} can only process if entries[1] has a source`);
+      return failTest(() => `Actor ${this.name} can only process if entries[1] has a source`);
     }
     const testingOperation = second.operation;
     const selectorShape = await sourceWrapper.source.getSelectorShape(action.context);
     if (!ActorQueryOperation
       .doesShapeAcceptOperation(selectorShape, testingOperation, { filterBindings: true })) {
-      throw new Error(`Actor ${this.name} can only process if entries[1] accept filterBindings`);
+      return failTest(() => `Actor ${this.name} can only process if entries[1] accept filterBindings`);
     }
 
     // Determine cost coefficients
@@ -217,14 +227,14 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
     const cardinalityRemaining = remaining
       .reduce((mul, remain) => mul * remain.metadata.cardinality.value * this.selectivityModifier, 1);
 
-    return {
+    return passTest({
       iterations: selectivity * this.selectivityModifier *
         second.metadata.cardinality.value * cardinalityRemaining,
       persistedItems: first.metadata.cardinality.value,
       blockingItems: first.metadata.cardinality.value,
       requestTime: requestInitialTimes[0] + metadatas[0].cardinality.value * requestItemTimes[0] +
         requestInitialTimes[1] + cardinalityRemaining * requestItemTimes[1],
-    };
+    });
   }
 }
 

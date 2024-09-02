@@ -7,6 +7,8 @@ import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
+import type { TestResult } from '@comunica/core';
+import { failTest, passTest } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { Bindings, BindingsStream, ComunicaDataFactory, MetadataBindings } from '@comunica/types';
 import { Algebra, Factory } from 'sparqlalgebrajs';
@@ -81,10 +83,10 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
   public async getJoinCoefficients(
     action: IActionRdfJoin,
     metadatas: MetadataBindings[],
-  ): Promise<IMediatorTypeJoinCoefficients> {
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients>> {
     // This actor only works well with common variables
     if (ActorRdfJoin.overlappingVariables(metadatas).length === 0) {
-      throw new Error(`Actor ${this.name} only join entries with at least one common variable`);
+      return failTest(() => `Actor ${this.name} only join entries with at least one common variable`);
     }
 
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
@@ -93,7 +95,7 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
     // Reject binding on some operation types
     if (action.entries[1].operation.type === Algebra.types.EXTEND ||
       action.entries[1].operation.type === Algebra.types.GROUP) {
-      throw new Error(`Actor ${this.name} can not bind on Extend and Group operations`);
+      return failTest(() => `Actor ${this.name} can not bind on Extend and Group operations`);
     }
 
     // Determine selectivity of join
@@ -102,7 +104,7 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
       context: action.context,
     })).selectivity * this.selectivityModifier;
 
-    return {
+    return passTest({
       iterations: metadatas[0].cardinality.value * metadatas[1].cardinality.value * selectivity,
       persistedItems: 0,
       blockingItems: 0,
@@ -112,7 +114,7 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
           requestInitialTimes[1] +
           selectivity * metadatas[1].cardinality.value * requestItemTimes[1]
         ),
-    };
+    });
   }
 }
 

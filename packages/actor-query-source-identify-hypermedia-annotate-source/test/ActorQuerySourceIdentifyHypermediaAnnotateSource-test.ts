@@ -48,7 +48,7 @@ describe('ActorQuerySourceIdentifyHypermediaSourceAttribution', () => {
 
     it('should test', async() => {
       await expect(actor.test({ metadata: <any> null, quads: <any> null, url: '', context }))
-        .resolves.toEqual({ filterFactor: 0 });
+        .resolves.toPassTest({ filterFactor: 0 });
     });
 
     it('should run', async() => {

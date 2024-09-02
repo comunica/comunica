@@ -1,6 +1,7 @@
 import type { IActorArgsMediaTypedFixed } from '@comunica/actor-abstract-mediatyped';
 import { ActorAbstractMediaTypedFixed } from '@comunica/actor-abstract-mediatyped';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import type { IActionRdfParse, IActorRdfParseOutput } from './ActorRdfParse';
 
 /**
@@ -25,8 +26,8 @@ export abstract class ActorRdfParseFixedMediaTypes extends
   }
   /* eslint-enable max-len */
 
-  public async testHandleChecked(_action: IActionRdfParse): Promise<boolean> {
-    return true;
+  public async testHandleChecked(_action: IActionRdfParse): Promise<TestResult<boolean>> {
+    return passTestVoid();
   }
 }
 

@@ -1,5 +1,5 @@
 import type { IBus } from '..';
-import { Actor, Bus, Mediator } from '..';
+import { failTest, passTest, Actor, Bus, Mediator } from '..';
 
 describe('Mediator', () => {
   let bus: IBus;
@@ -65,19 +65,19 @@ describe('Mediator', () => {
 
     const actorTest = (action: any) => {
       return new Promise((resolve) => {
-        resolve({ type: 'test', sent: action });
+        resolve(passTest({ type: 'test', sent: action }));
       });
     };
     const actorRun = (action: any) => {
       return new Promise((resolve) => {
-        resolve({ type: 'run', sent: action });
+        resolve(passTest({ type: 'run', sent: action }));
       });
     };
     const mediateWithFirst = async(action: any, testResults: any) => {
-      return testResults[0].actor;
+      return passTest(testResults[0].actor);
     };
     const mediateWithFirstError = async() => {
-      throw new Error('some error');
+      return failTest(() => 'some error');
     };
 
     describe('without 1 actor in the bus', () => {

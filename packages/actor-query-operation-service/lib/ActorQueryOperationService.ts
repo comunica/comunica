@@ -4,7 +4,8 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { MediatorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
 import type {
   ComunicaDataFactory,
@@ -29,11 +30,11 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
     super(args, 'service');
   }
 
-  public async testOperation(operation: Algebra.Service, _context: IActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Service, _context: IActionContext): Promise<TestResult<IActorTest>> {
     if (operation.name.termType !== 'NamedNode') {
-      throw new Error(`${this.name} can only query services by IRI, while a ${operation.name.termType} was given.`);
+      return failTest(() => `${this.name} can only query services by IRI, while a ${operation.name.termType} was given.`);
     }
-    return true;
+    return passTestVoid();
   }
 
   public async runOperation(operation: Algebra.Service, context: IActionContext):

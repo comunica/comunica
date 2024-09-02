@@ -1,5 +1,6 @@
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest } from '@comunica/core';
 import { cachifyMetadata } from '@comunica/metadata';
 import type {
   IQueryOperationResult,
@@ -25,13 +26,13 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
     }
   }
 
-  public async test(action: IActionQueryOperation): Promise<IActorTest> {
+  public async test(action: IActionQueryOperation): Promise<TestResult<IActorTest>> {
     if (!action.operation) {
-      throw new Error('Missing field \'operation\' in a query operation action.');
+      return failTest(() => 'Missing field \'operation\' in a query operation action.');
     }
     if (action.operation.type !== this.operationName) {
-      throw new Error(`Actor ${this.name} only supports ${this.operationName} operations, but got ${
-        action.operation.type}`);
+      return failTest(() => `Actor ${this.name} only supports ${this.operationName} operations, but got ${
+          action.operation.type}`);
     }
     const operation: O = <O> action.operation;
     return this.testOperation(operation, action.context);
@@ -63,7 +64,7 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
     return output;
   }
 
-  protected abstract testOperation(operation: O, context: IActionContext): Promise<IActorTest>;
+  protected abstract testOperation(operation: O, context: IActionContext): Promise<TestResult<IActorTest>>;
 
   protected abstract runOperation(operation: O, context: IActionContext):
   Promise<IQueryOperationResult>;

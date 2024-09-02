@@ -6,7 +6,8 @@ import type {
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext, IQuerySourceWrapper } from '@comunica/types';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 
@@ -18,11 +19,11 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
     super(args);
   }
 
-  public async test(action: IActionOptimizeQueryOperation): Promise<IActorTest> {
+  public async test(action: IActionOptimizeQueryOperation): Promise<TestResult<IActorTest>> {
     if (ActorQueryOperation.getOperationSource(action.operation)) {
-      throw new Error(`Actor ${this.name} does not work with top-level operation sources.`);
+      return failTest(() => `Actor ${this.name} does not work with top-level operation sources.`);
     }
-    return true;
+    return passTestVoid();
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {

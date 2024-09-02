@@ -64,12 +64,12 @@ describe('ActorQueryOperationSource', () => {
         await expect(actor.test({
           context: new ActionContext(),
           operation: ActorQueryOperation.assignOperationSource(AF.createNop(), <any>{}),
-        })).resolves.toEqual({ httpRequests: 1 });
+        })).resolves.toPassTest({ httpRequests: 1 });
       });
 
       it('should not handle operations without top-level source', async() => {
         await expect(actor.test({ context: new ActionContext(), operation: AF.createNop() }))
-          .rejects.toThrow(`Actor actor requires an operation with source annotation.`);
+          .resolves.toFailTest(`Actor actor requires an operation with source annotation.`);
       });
     });
 

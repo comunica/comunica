@@ -1,6 +1,7 @@
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorRdfMetadataAccumulateCardinality } from '../lib/ActorRdfMetadataAccumulateCardinality';
+import '@comunica/jest';
 
 describe('ActorRdfMetadataAccumulateCardinality', () => {
   let bus: any;
@@ -20,7 +21,7 @@ describe('ActorRdfMetadataAccumulateCardinality', () => {
 
     describe('test', () => {
       it('should always pass', async() => {
-        await expect(actor.test({ context, mode: 'initialize' })).resolves.toBeTruthy();
+        await expect(actor.test({ context, mode: 'initialize' })).resolves.toPassTestVoid();
       });
     });
 

@@ -1,7 +1,7 @@
 import type { BindingsFactory } from '@comunica/bindings-factory';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
-import type { IActorArgs, IActorTest, IAction, Mediate } from '@comunica/core';
-import { Actor } from '@comunica/core';
+import type { IActorArgs, IActorTest, IAction, Mediate, TestResult } from '@comunica/core';
+import { failTest, passTestVoid, Actor } from '@comunica/core';
 import { BlankNodeBindingsScoped } from '@comunica/data-factory';
 import type {
   IQueryOperationResult,
@@ -184,13 +184,14 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
   }
 
   /**
-   * Throw an error if the context contains the readOnly flag.
+   * Test if the context contains the readOnly flag.
    * @param context An action context.
    */
-  public static throwOnReadOnly(context: IActionContext): void {
+  public static testReadOnly(context: IActionContext): TestResult<any> {
     if (context.get(KeysQueryOperation.readOnly)) {
-      throw new Error(`Attempted a write operation in read-only mode`);
+      return failTest(() => `Attempted a write operation in read-only mode`);
     }
+    return passTestVoid();
   }
 
   /**

@@ -53,7 +53,7 @@ describe('ActorRdfJoinOptionalHash', () => {
           type: 'optional',
           entries: [],
           context,
-        })).rejects.toThrow('actor requires at least two join entries.');
+        })).resolves.toFailTest('actor requires at least two join entries.');
       });
 
       it('should not test on one entry', async() => {
@@ -61,7 +61,7 @@ describe('ActorRdfJoinOptionalHash', () => {
           type: 'optional',
           entries: <any> [{}],
           context,
-        })).rejects.toThrow('actor requires at least two join entries.');
+        })).resolves.toFailTest('actor requires at least two join entries.');
       });
 
       it('should not test on three entries', async() => {
@@ -69,7 +69,7 @@ describe('ActorRdfJoinOptionalHash', () => {
           type: 'optional',
           entries: <any> [{}, {}, {}],
           context,
-        })).rejects.toThrow('actor requires 2 join entries at most. The input contained 3.');
+        })).resolves.toFailTest('actor requires 2 join entries at most. The input contained 3.');
       });
 
       it('should not test on a non-optional operation', async() => {
@@ -77,7 +77,7 @@ describe('ActorRdfJoinOptionalHash', () => {
           type: 'inner',
           entries: <any> [{}, {}],
           context,
-        })).rejects.toThrow(`actor can only handle logical joins of type 'optional', while 'inner' was given.`);
+        })).resolves.toFailTest(`actor can only handle logical joins of type 'optional', while 'inner' was given.`);
       });
 
       it('should not test on entries without overlapping variables', async() => {
@@ -108,7 +108,7 @@ describe('ActorRdfJoinOptionalHash', () => {
             },
           ],
           context,
-        })).rejects.toThrow('Actor actor can only join entries with at least one common variable');
+        })).resolves.toFailTest('Actor actor can only join entries with at least one common variable');
       });
 
       it('should test on two entries', async() => {
@@ -139,7 +139,7 @@ describe('ActorRdfJoinOptionalHash', () => {
             },
           ],
           context,
-        })).resolves.toEqual({
+        })).resolves.toPassTest({
           iterations: 7.2,
           blockingItems: 4,
           persistedItems: 4,
@@ -177,7 +177,7 @@ describe('ActorRdfJoinOptionalHash', () => {
             },
           ],
           context,
-        })).resolves.toEqual({
+        })).resolves.toPassTest({
           iterations: 7.2,
           blockingItems: 4,
           persistedItems: 4,
@@ -352,7 +352,7 @@ describe('ActorRdfJoinOptionalHash', () => {
           type: 'optional',
           entries: [],
           context,
-        })).rejects.toThrow('actor requires at least two join entries.');
+        })).resolves.toFailTest('actor requires at least two join entries.');
       });
 
       it('should not test on one entry', async() => {
@@ -360,7 +360,7 @@ describe('ActorRdfJoinOptionalHash', () => {
           type: 'optional',
           entries: <any> [{}],
           context,
-        })).rejects.toThrow('actor requires at least two join entries.');
+        })).resolves.toFailTest('actor requires at least two join entries.');
       });
 
       it('should not test on three entries', async() => {
@@ -368,7 +368,7 @@ describe('ActorRdfJoinOptionalHash', () => {
           type: 'optional',
           entries: <any> [{}, {}, {}],
           context,
-        })).rejects.toThrow('actor requires 2 join entries at most. The input contained 3.');
+        })).resolves.toFailTest('actor requires 2 join entries at most. The input contained 3.');
       });
 
       it('should not test on a non-optional operation', async() => {
@@ -376,7 +376,7 @@ describe('ActorRdfJoinOptionalHash', () => {
           type: 'inner',
           entries: <any> [{}, {}],
           context,
-        })).rejects.toThrow(`actor can only handle logical joins of type 'optional', while 'inner' was given.`);
+        })).resolves.toFailTest(`actor can only handle logical joins of type 'optional', while 'inner' was given.`);
       });
 
       it('should not test on entries without overlapping variables', async() => {
@@ -407,7 +407,7 @@ describe('ActorRdfJoinOptionalHash', () => {
             },
           ],
           context,
-        })).rejects.toThrow('Actor actor can only join entries with at least one common variable');
+        })).resolves.toFailTest('Actor actor can only join entries with at least one common variable');
       });
 
       it('should test on two entries', async() => {
@@ -438,7 +438,7 @@ describe('ActorRdfJoinOptionalHash', () => {
             },
           ],
           context,
-        })).resolves.toEqual({
+        })).resolves.toPassTest({
           iterations: 8,
           blockingItems: 0,
           persistedItems: 4,
@@ -476,7 +476,7 @@ describe('ActorRdfJoinOptionalHash', () => {
             },
           ],
           context,
-        })).resolves.toEqual({
+        })).resolves.toPassTest({
           iterations: 8,
           blockingItems: 0,
           persistedItems: 4,
@@ -741,7 +741,7 @@ describe('ActorRdfJoinOptionalHash', () => {
           type: 'optional',
           entries: [],
           context,
-        })).rejects.toThrow('actor requires at least two join entries.');
+        })).resolves.toFailTest('actor requires at least two join entries.');
       });
 
       it('should not test on one entry', async() => {
@@ -749,7 +749,7 @@ describe('ActorRdfJoinOptionalHash', () => {
           type: 'optional',
           entries: <any> [{}],
           context,
-        })).rejects.toThrow('actor requires at least two join entries.');
+        })).resolves.toFailTest('actor requires at least two join entries.');
       });
 
       it('should not test on three entries', async() => {
@@ -757,7 +757,7 @@ describe('ActorRdfJoinOptionalHash', () => {
           type: 'optional',
           entries: <any> [{}, {}, {}],
           context,
-        })).rejects.toThrow('actor requires 2 join entries at most. The input contained 3.');
+        })).resolves.toFailTest('actor requires 2 join entries at most. The input contained 3.');
       });
 
       it('should not test on a non-optional operation', async() => {
@@ -765,7 +765,7 @@ describe('ActorRdfJoinOptionalHash', () => {
           type: 'inner',
           entries: <any> [{}, {}],
           context,
-        })).rejects.toThrow(`actor can only handle logical joins of type 'optional', while 'inner' was given.`);
+        })).resolves.toFailTest(`actor can only handle logical joins of type 'optional', while 'inner' was given.`);
       });
 
       it('should not test on entries without overlapping variables', async() => {
@@ -796,7 +796,7 @@ describe('ActorRdfJoinOptionalHash', () => {
             },
           ],
           context,
-        })).rejects.toThrow('Actor actor can only join entries with at least one common variable');
+        })).resolves.toFailTest('Actor actor can only join entries with at least one common variable');
       });
 
       it('should test on two entries', async() => {
@@ -827,7 +827,7 @@ describe('ActorRdfJoinOptionalHash', () => {
             },
           ],
           context,
-        })).resolves.toEqual({
+        })).resolves.toPassTest({
           iterations: 5.760000000000001,
           blockingItems: 4,
           persistedItems: 4,
@@ -863,7 +863,7 @@ describe('ActorRdfJoinOptionalHash', () => {
             },
           ],
           context,
-        })).rejects.toThrow(`Actor actor can not join streams containing undefs`);
+        })).resolves.toFailTest(`Actor actor can not join streams containing undefs`);
       });
     });
 
@@ -1033,7 +1033,7 @@ describe('ActorRdfJoinOptionalHash', () => {
           type: 'optional',
           entries: [],
           context,
-        })).rejects.toThrow('actor requires at least two join entries.');
+        })).resolves.toFailTest('actor requires at least two join entries.');
       });
 
       it('should not test on one entry', async() => {
@@ -1041,7 +1041,7 @@ describe('ActorRdfJoinOptionalHash', () => {
           type: 'optional',
           entries: <any> [{}],
           context,
-        })).rejects.toThrow('actor requires at least two join entries.');
+        })).resolves.toFailTest('actor requires at least two join entries.');
       });
 
       it('should not test on three entries', async() => {
@@ -1049,7 +1049,7 @@ describe('ActorRdfJoinOptionalHash', () => {
           type: 'optional',
           entries: <any> [{}, {}, {}],
           context,
-        })).rejects.toThrow('actor requires 2 join entries at most. The input contained 3.');
+        })).resolves.toFailTest('actor requires 2 join entries at most. The input contained 3.');
       });
 
       it('should not test on a non-optional operation', async() => {
@@ -1057,7 +1057,7 @@ describe('ActorRdfJoinOptionalHash', () => {
           type: 'inner',
           entries: <any> [{}, {}],
           context,
-        })).rejects.toThrow(`actor can only handle logical joins of type 'optional', while 'inner' was given.`);
+        })).resolves.toFailTest(`actor can only handle logical joins of type 'optional', while 'inner' was given.`);
       });
 
       it('should not test on entries without overlapping variables', async() => {
@@ -1088,7 +1088,7 @@ describe('ActorRdfJoinOptionalHash', () => {
             },
           ],
           context,
-        })).rejects.toThrow('Actor actor can only join entries with at least one common variable');
+        })).resolves.toFailTest('Actor actor can only join entries with at least one common variable');
       });
 
       it('should test on two entries', async() => {
@@ -1119,7 +1119,7 @@ describe('ActorRdfJoinOptionalHash', () => {
             },
           ],
           context,
-        })).resolves.toEqual({
+        })).resolves.toPassTest({
           iterations: 6.4,
           blockingItems: 0,
           persistedItems: 4,
@@ -1127,7 +1127,7 @@ describe('ActorRdfJoinOptionalHash', () => {
         });
       });
 
-      it('should test on two entries with undefs', async() => {
+      it('should not test on two entries with undefs', async() => {
         await expect(actor.test({
           type: 'optional',
           entries: <any> [
@@ -1155,7 +1155,7 @@ describe('ActorRdfJoinOptionalHash', () => {
             },
           ],
           context,
-        })).rejects.toThrow(`Actor actor can not join streams containing undefs`);
+        })).resolves.toFailTest(`Actor actor can not join streams containing undefs`);
       });
     });
 

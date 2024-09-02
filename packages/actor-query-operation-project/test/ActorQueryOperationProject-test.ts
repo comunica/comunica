@@ -59,7 +59,7 @@ describe('ActorQueryOperationProject', () => {
         operation: { type: 'project', input: 'in' },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should not test on non-projects', async() => {
@@ -67,7 +67,7 @@ describe('ActorQueryOperationProject', () => {
         operation: { type: 'bgp', input: 'in' },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports project operations, but got bgp`);
     });
 
     it('should run on a stream with variables that should not be deleted or are missing', async() => {

@@ -3,6 +3,8 @@ import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from
 import {
   ActorRdfJoin,
 } from '@comunica/bus-rdf-join';
+import type { TestResult } from '@comunica/core';
+import { passTest } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { MetadataBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -75,10 +77,10 @@ export class ActorRdfJoinMinusHashUndef extends ActorRdfJoin {
   protected async getJoinCoefficients(
     action: IActionRdfJoin,
     metadatas: MetadataBindings[],
-  ): Promise<IMediatorTypeJoinCoefficients> {
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients>> {
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
-    return {
+    return passTest({
       // Slightly increase iteration cost, as operations in our BindingsIndex do not happen in constant time
       // This enables the mediator to favor other minus actors,
       // while this one will only be selected when streams contain undefs.
@@ -87,6 +89,6 @@ export class ActorRdfJoinMinusHashUndef extends ActorRdfJoin {
       blockingItems: metadatas[0].cardinality.value,
       requestTime: requestInitialTimes[0] + metadatas[0].cardinality.value * requestItemTimes[0] +
         requestInitialTimes[1] + metadatas[1].cardinality.value * requestItemTimes[1],
-    };
+    });
   }
 }

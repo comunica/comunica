@@ -5,6 +5,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorHashBindingsSha1 } from '../lib/ActorHashBindingsSha1';
+import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -47,7 +48,7 @@ describe('ActorHashBindingsSha1', () => {
         context: new ActionContext(),
         allowHashCollisions: true,
       };
-      await expect(actor.test(action)).resolves.toBe(true);
+      await expect(actor.test(action)).resolves.toPassTestVoid();
     });
 
     it('should not test with allowHashCollisions false', async() => {
@@ -55,7 +56,8 @@ describe('ActorHashBindingsSha1', () => {
         context: new ActionContext(),
         allowHashCollisions: false,
       };
-      await expect(actor.test(action)).rejects.toBeTruthy();
+      await expect(actor.test(action)).resolves
+        .toFailTest(`Actor actor can not provide hash functions without hash collisions`);
     });
 
     it('should run', async() => {

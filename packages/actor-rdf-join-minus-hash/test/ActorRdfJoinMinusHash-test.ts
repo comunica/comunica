@@ -45,7 +45,7 @@ IActorRdfJoinSelectivityOutput
           type: 'minus',
           entries: [],
           context,
-        })).rejects.toThrow('actor requires at least two join entries.');
+        })).resolves.toFailTest('actor requires at least two join entries.');
       });
 
       it('should not test on one entry', async() => {
@@ -53,7 +53,7 @@ IActorRdfJoinSelectivityOutput
           type: 'minus',
           entries: <any> [{}],
           context,
-        })).rejects.toThrow('actor requires at least two join entries.');
+        })).resolves.toFailTest('actor requires at least two join entries.');
       });
 
       it('should not test on three entries', async() => {
@@ -61,7 +61,7 @@ IActorRdfJoinSelectivityOutput
           type: 'minus',
           entries: <any> [{}, {}, {}],
           context,
-        })).rejects.toThrow('actor requires 2 join entries at most. The input contained 3.');
+        })).resolves.toFailTest('actor requires 2 join entries at most. The input contained 3.');
       });
 
       it('should not test on a non-minus operation', async() => {
@@ -69,7 +69,7 @@ IActorRdfJoinSelectivityOutput
           type: 'inner',
           entries: <any> [{}, {}],
           context,
-        })).rejects.toThrow(`actor can only handle logical joins of type 'minus', while 'inner' was given.`);
+        })).resolves.toFailTest(`actor can only handle logical joins of type 'minus', while 'inner' was given.`);
       });
 
       it('should not test on two entries with undefs', async() => {
@@ -94,7 +94,7 @@ IActorRdfJoinSelectivityOutput
             },
           ],
           context,
-        })).rejects.toThrow('Actor actor can not join streams containing undefs');
+        })).resolves.toFailTest('Actor actor can not join streams containing undefs');
       });
 
       it('should test on two entries', async() => {
@@ -125,7 +125,7 @@ IActorRdfJoinSelectivityOutput
             },
           ],
           context,
-        })).resolves.toEqual({
+        })).resolves.toPassTest({
           iterations: 8,
           blockingItems: 4,
           persistedItems: 4,

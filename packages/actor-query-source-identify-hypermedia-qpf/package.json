@@ -46,6 +46,7 @@
     "@comunica/bus-rdf-metadata": "^3.2.1",
     "@comunica/bus-rdf-metadata-extract": "^3.2.1",
     "@comunica/context-entries": "^3.2.1",
+    "@comunica/core": "^3.2.1",
     "@comunica/types": "^3.2.1",
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0",

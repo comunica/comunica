@@ -1,5 +1,6 @@
 import type { ActionObserver } from './ActionObserver';
 import type { Actor, IAction, IActorOutput, IActorTest } from './Actor';
+import type { TestResult } from './TestResult';
 
 /**
  * A publish-subscribe bus for sending actions to actors
@@ -208,7 +209,7 @@ T extends IActorTest,
 O extends IActorOutput,
 > {
   actor: A;
-  reply: Promise<T>;
+  reply: Promise<TestResult<T>>;
 }
 
 export type IReply<

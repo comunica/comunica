@@ -10,7 +10,7 @@
       "@type": "MediatorNumber",
       "type": "min",
       "field": "time",
-      "ignoreErrors": true,
+      "ignoreFailures": true,
       "bus": {
         "@id": "ActorHttp:_fallback_bus",
         "@type": "cc:components/Bus.jsonld#Bus"
@@ -21,7 +21,7 @@
       "@type": "MediatorNumber",
       "type": "min",
       "field": "time",
-      "ignoreErrors": true,
+      "ignoreFailures": true,
       "bus": { "@id": "ActorHttp:_default_bus" }
     }
   ]

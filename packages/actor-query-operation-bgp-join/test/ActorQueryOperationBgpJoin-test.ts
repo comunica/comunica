@@ -41,12 +41,12 @@ describe('ActorQueryOperationBgpJoin', () => {
 
     it('should test on bgp', async() => {
       const op = <any> { operation: { type: 'bgp' }};
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should not test on non-bgp', async() => {
       const op = <any> { operation: { type: 'some-other-type' }};
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports bgp operations, but got some-other-type`);
     });
 
     it('should run', async() => {

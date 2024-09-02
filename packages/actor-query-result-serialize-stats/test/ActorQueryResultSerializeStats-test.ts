@@ -9,6 +9,7 @@ import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActionObserverHttp, ActorQueryResultSerializeStats } from '..';
+import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -87,7 +88,7 @@ describe('ActorQueryResultSerializeStats', () => {
     });
     describe('for getting media types', () => {
       it('should test', async() => {
-        await expect(actor.test({ mediaTypes: true, context })).resolves.toBeTruthy();
+        await expect(actor.test({ mediaTypes: true, context })).resolves.toPassTest({ mediaTypes: true });
       });
 
       it('should run', async() => {
@@ -114,7 +115,7 @@ describe('ActorQueryResultSerializeStats', () => {
           handle: <any> { type: 'quads', quadStream: stream },
           handleMediaType: 'debug',
           context,
-        })).resolves.toBeTruthy();
+        })).resolves.toPassTest({ handle: true });
         stream.destroy();
       });
 
@@ -125,7 +126,7 @@ describe('ActorQueryResultSerializeStats', () => {
           handleMediaType: 'application/n-triples',
           context,
         }))
-          .rejects.toBeTruthy();
+          .resolves.toFailTest(`Unrecognized media type: application/n-triples`);
         stream.destroy();
       });
 
@@ -133,7 +134,7 @@ describe('ActorQueryResultSerializeStats', () => {
         await expect(actor.test(
           { handle: <any> { type: 'unknown' }, handleMediaType: 'debug', context },
         ))
-          .rejects.toBeTruthy();
+          .resolves.toFailTest(`This actor can only handle bindings streams or quad streams.`);
       });
 
       it('should run on a bindings stream', async() => {

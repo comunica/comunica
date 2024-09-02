@@ -3,7 +3,7 @@ import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica
 import type { MediatorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
 import type { MediatorRdfUpdateQuads } from '@comunica/bus-rdf-update-quads';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
@@ -20,9 +20,8 @@ export class ActorQueryOperationLoad extends ActorQueryOperationTypedMediated<Al
     super(args, 'load');
   }
 
-  public async testOperation(operation: Algebra.Load, context: IActionContext): Promise<IActorTest> {
-    ActorQueryOperation.throwOnReadOnly(context);
-    return true;
+  public async testOperation(operation: Algebra.Load, context: IActionContext): Promise<TestResult<IActorTest>> {
+    return ActorQueryOperation.testReadOnly(context);
   }
 
   public async runOperation(operation: Algebra.Load, context: IActionContext):

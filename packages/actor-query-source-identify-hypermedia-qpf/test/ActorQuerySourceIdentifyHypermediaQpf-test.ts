@@ -4,6 +4,7 @@ import { empty, TransformIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { QuerySourceQpf } from '../lib';
 import { ActorQuerySourceIdentifyHypermediaQpf } from '../lib/ActorQuerySourceIdentifyHypermediaQpf';
+import '@comunica/jest';
 
 const DF = new DataFactory();
 const v1 = DF.variable('v1');
@@ -133,7 +134,7 @@ describe('ActorQuerySourceIdentifyHypermediaQpf', () => {
           [KeysInitQuery.dataFactory.name]: DF,
           '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'source' },
         }),
-      })).resolves.toEqual({ filterFactor: 1 });
+      })).resolves.toPassTest({ filterFactor: 1 });
     });
 
     it('should test with a single source and empty handledDatasets', async() => {
@@ -146,7 +147,7 @@ describe('ActorQuerySourceIdentifyHypermediaQpf', () => {
           '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'source' },
         }),
         handledDatasets: {},
-      })).resolves.toEqual({ filterFactor: 1 });
+      })).resolves.toPassTest({ filterFactor: 1 });
     });
 
     it('should test with a single source forced to qpf', async() => {
@@ -159,7 +160,7 @@ describe('ActorQuerySourceIdentifyHypermediaQpf', () => {
           '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'source' },
         }),
         forceSourceType: 'qpf',
-      })).resolves.toEqual({ filterFactor: 1 });
+      })).resolves.toPassTest({ filterFactor: 1 });
     });
 
     it('should not test with a single source forced to non-qpf', async() => {
@@ -171,8 +172,8 @@ describe('ActorQuerySourceIdentifyHypermediaQpf', () => {
           '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'source' },
         }),
         forceSourceType: 'non-qpf',
-      })).rejects
-        .toThrow(new Error('Actor actor is not able to handle source type non-qpf.'));
+      })).resolves
+        .toFailTest('Actor actor is not able to handle source type non-qpf.');
     });
 
     it('should not test without a search form', async() => {
@@ -185,10 +186,10 @@ describe('ActorQuerySourceIdentifyHypermediaQpf', () => {
           [KeysInitQuery.dataFactory.name]: DF,
           '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'source' },
         }),
-      })).rejects.toThrow(new Error('Illegal state: found no TPF/QPF search form anymore in metadata.'));
+      })).resolves.toFailTest('Illegal state: found no TPF/QPF search form anymore in metadata.');
     });
 
-    it('should when the dataset has already been handled', async() => {
+    it('should not test when the dataset has already been handled', async() => {
       await expect(actor.test({
         quads: <any> null,
         url: '',
@@ -198,8 +199,8 @@ describe('ActorQuerySourceIdentifyHypermediaQpf', () => {
           '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'source' },
         }),
         handledDatasets: { DATASET: true },
-      })).rejects.toThrow(
-        new Error('Actor actor can only be applied for the first page of a QPF dataset.'),
+      })).resolves.toFailTest(
+        'Actor actor can only be applied for the first page of a QPF dataset.',
       );
     });
   });

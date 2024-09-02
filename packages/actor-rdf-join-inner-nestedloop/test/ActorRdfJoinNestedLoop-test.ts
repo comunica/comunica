@@ -115,7 +115,7 @@ IActorRdfJoinSelectivityOutput
 
       it('should only handle 2 streams', async() => {
         action.entries.push(<any> {});
-        await expect(actor.test(action)).rejects.toBeTruthy();
+        await expect(actor.test(action)).resolves.toFailTest(`actor requires 2 join entries at most. The input contained 3.`);
       });
 
       it('should handle undefs in left stream', async() => {
@@ -128,7 +128,7 @@ IActorRdfJoinSelectivityOutput
           variables: [],
         });
         await expect(actor.test(action)).resolves
-          .toEqual({
+          .toPassTest({
             iterations: 20,
             persistedItems: 0,
             blockingItems: 0,
@@ -146,7 +146,7 @@ IActorRdfJoinSelectivityOutput
           variables: [],
         });
         await expect(actor.test(action)).resolves
-          .toEqual({
+          .toPassTest({
             iterations: 20,
             persistedItems: 0,
             blockingItems: 0,
@@ -172,7 +172,7 @@ IActorRdfJoinSelectivityOutput
           variables: [],
         });
         await expect(actor.test(action)).resolves
-          .toEqual({
+          .toPassTest({
             iterations: 20,
             persistedItems: 0,
             blockingItems: 0,
@@ -182,8 +182,7 @@ IActorRdfJoinSelectivityOutput
 
       it('should generate correct test metadata', async() => {
         await expect(actor.test(action)).resolves
-          .toHaveProperty('iterations', (await (<any> action.entries[0].output).metadata()).cardinality.value *
-        (await (<any> action.entries[1].output).metadata()).cardinality.value);
+          .toPassTest({ blockingItems: 0, iterations: 20, persistedItems: 0, requestTime: 1.4 });
       });
     });
 

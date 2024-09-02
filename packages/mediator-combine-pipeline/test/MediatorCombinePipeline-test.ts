@@ -1,5 +1,5 @@
-import type { IAction, IActorOutput, IActorTest } from '@comunica/core';
-import { Actor, Bus, Mediator, ActionContext } from '@comunica/core';
+import type { IAction, IActorOutput, IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTest, Actor, Bus, Mediator, ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { MediatorCombinePipeline } from '../lib/MediatorCombinePipeline';
 
@@ -172,11 +172,11 @@ describe('MediatorCombinePipeline', () => {
     });
   });
 
-  describe('An MediatorCombinePipeline instance with erroring actors', () => {
+  describe('An MediatorCombinePipeline instance with failing actors', () => {
     let mediator: MediatorCombinePipeline<DummyActor, IDummyAction, IActorTest>;
 
     beforeEach(() => {
-      mediator = new MediatorCombinePipeline({ name: 'mediator', bus, filterErrors: true });
+      mediator = new MediatorCombinePipeline({ name: 'mediator', bus, filterFailures: true });
       new DummyActor(10, bus);
       new DummyActor(100, bus);
       new DummyActor(1, bus);
@@ -231,8 +231,8 @@ class DummyActor extends Actor<IDummyAction, IActorTest, IDummyOutput> {
     this.testOutput = testOutput;
   }
 
-  public async test(action: IDummyAction): Promise<IActorTest> {
-    return this.testOutput ?? true;
+  public async test(action: IDummyAction): Promise<TestResult<IActorTest>> {
+    return passTest(this.testOutput ?? true);
   }
 
   public async run(action: IDummyAction): Promise<IDummyOutput> {
@@ -249,8 +249,8 @@ class DummyThrowActor extends DummyActor {
     super(id, bus, testOutput);
   }
 
-  public override async test(action: IDummyAction): Promise<IActorTest> {
-    throw new Error('Dummy Error');
+  public override async test(action: IDummyAction): Promise<TestResult<IActorTest>> {
+    return failTest(() => 'Dummy Error');
   }
 }
 class DummyConcatActor extends Actor<IDummyConcatAction, IActorTest, IDummyConcatOutput> {
@@ -267,8 +267,8 @@ class DummyConcatActor extends Actor<IDummyConcatAction, IActorTest, IDummyConca
     this.testOutput = testOutput;
   }
 
-  public async test(action: IDummyConcatAction): Promise<IActorTest> {
-    return this.testOutput ?? true;
+  public async test(action: IDummyConcatAction): Promise<TestResult<IActorTest>> {
+    return passTest(this.testOutput ?? true);
   }
 
   public async run(action: IDummyConcatAction): Promise<IDummyConcatOutput> {

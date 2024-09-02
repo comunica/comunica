@@ -5,7 +5,8 @@ import {
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import { KeysQueryOperation } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import type {
   IQueryOperationResultBindings,
   Bindings,
@@ -40,12 +41,12 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     this.predicateType = predicateType;
   }
 
-  public async testOperation(operation: Algebra.Path, _context: IActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Path, _context: IActionContext): Promise<TestResult<IActorTest>> {
     if (operation.predicate.type !== this.predicateType) {
-      throw new Error(`This Actor only supports ${this.predicateType} Path operations.`);
+      return failTest(() => `This Actor only supports ${this.predicateType} Path operations.`);
     }
 
-    return true;
+    return passTestVoid();
   }
 
   // Generates a variable that does not yet occur in the path

@@ -3,7 +3,8 @@ import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTyped } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActorArgs, IActorTest } from '@comunica/core';
+import type { IActorArgs, IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
 import type {
   IQueryOperationResult,
@@ -26,8 +27,8 @@ export class ActorQueryOperationValues extends ActorQueryOperationTyped<Algebra.
     super(args, 'values');
   }
 
-  public async testOperation(_operation: Algebra.Values, _context: IActionContext): Promise<IActorTest> {
-    return true;
+  public async testOperation(_operation: Algebra.Values, _context: IActionContext): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async runOperation(operation: Algebra.Values, context: IActionContext):

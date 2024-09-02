@@ -146,7 +146,7 @@ IQueryOperationResultBindings
               variables: [ DF.variable('a') ],
             },
           ],
-        )).resolves.toEqual({
+        )).resolves.toPassTest({
           iterations: 80.48000000000002,
           persistedItems: 0,
           blockingItems: 0,
@@ -200,7 +200,7 @@ IQueryOperationResultBindings
               variables: [ DF.variable('a'), DF.variable('b') ],
             },
           ],
-        )).resolves.toEqual({
+        )).resolves.toPassTest({
           iterations: 80.48000000000002,
           persistedItems: 0,
           blockingItems: 0,
@@ -253,7 +253,7 @@ IQueryOperationResultBindings
               variables: [ DF.variable('a') ],
             },
           ],
-        )).rejects.toThrow('Actor actor can not bind on Extend and Group operations');
+        )).resolves.toFailTest('Actor actor can not bind on Extend and Group operations');
       });
 
       it('should reject on a right stream of type group', async() => {
@@ -290,7 +290,7 @@ IQueryOperationResultBindings
               variables: [ DF.variable('a') ],
             },
           ],
-        )).rejects.toThrow('Actor actor can not bind on Extend and Group operations');
+        )).resolves.toFailTest('Actor actor can not bind on Extend and Group operations');
       });
 
       it('should reject on a right stream containing group', async() => {
@@ -327,7 +327,7 @@ IQueryOperationResultBindings
               variables: [ DF.variable('a') ],
             },
           ],
-        )).rejects.toThrow('Actor actor can not bind on Extend and Group operations');
+        )).resolves.toFailTest('Actor actor can not bind on Extend and Group operations');
       });
 
       it('should not reject on a left stream of type group', async() => {
@@ -364,7 +364,7 @@ IQueryOperationResultBindings
               variables: [ DF.variable('a') ],
             },
           ],
-        )).resolves.toEqual({
+        )).resolves.toPassTest({
           iterations: 48.00000000000001,
           persistedItems: 0,
           blockingItems: 0,
@@ -407,7 +407,7 @@ IQueryOperationResultBindings
               variables: [ DF.variable('a') ],
             },
           ],
-        )).rejects.toThrow('Actor actor can not be used over remaining entries with modified operations');
+        )).resolves.toFailTest('Actor actor can not be used over remaining entries with modified operations');
       });
 
       it('should reject if smallest is not significantly smaller than the largest', async() => {
@@ -456,7 +456,7 @@ IQueryOperationResultBindings
               variables: [ DF.variable('a') ],
             },
           ],
-        )).rejects.toThrow(`Actor actor can only run if the smallest stream is much smaller than largest stream`);
+        )).resolves.toFailTest(`Actor actor can only run if the smallest stream is much smaller than largest stream`);
       });
     });
 
@@ -499,7 +499,7 @@ IQueryOperationResultBindings
             },
           ],
           context,
-        )).resolves.toEqual([
+        )).resolves.toPassTest([
           {
             output: <any> {},
             operation: <any> {},
@@ -555,7 +555,7 @@ IQueryOperationResultBindings
               variables: [ DF.variable('a') ],
             },
           },
-        ], context)).resolves.toEqual([
+        ], context)).resolves.toPassTest([
           {
             output: <any> {},
             operation: <any> {},
@@ -625,7 +625,7 @@ IQueryOperationResultBindings
             },
           ],
           context,
-        )).resolves.toEqual([
+        )).resolves.toPassTest([
           {
             output: <any> {},
             operation: <any> {},
@@ -695,7 +695,7 @@ IQueryOperationResultBindings
             },
           ],
           context,
-        )).resolves.toEqual([
+        )).resolves.toPassTest([
           {
             output: <any> {},
             operation: <any> {},
@@ -755,7 +755,7 @@ IQueryOperationResultBindings
             },
           ],
           context,
-        )).rejects.toThrow('Bind join can only join entries with at least one common variable');
+        )).resolves.toFailTest('Bind join can only join entries with at least one common variable');
       });
 
       it('sorts entries without common variables in the back', async() => {
@@ -794,7 +794,7 @@ IQueryOperationResultBindings
             },
           ],
           context,
-        )).resolves.toEqual([
+        )).resolves.toPassTest([
           {
             output: <any> {},
             operation: <any> {},
@@ -904,7 +904,7 @@ IQueryOperationResultBindings
             },
           ],
           context,
-        )).resolves.toEqual([
+        )).resolves.toPassTest([
           {
             output: <any> {},
             operation: <any> {},

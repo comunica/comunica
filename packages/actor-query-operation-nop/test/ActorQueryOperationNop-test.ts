@@ -46,12 +46,12 @@ describe('ActorQueryOperationNop', () => {
 
     it('should test on nop', async() => {
       const op: any = { operation: { type: 'nop' }, context: new ActionContext() };
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should not test on non-nop', async() => {
       const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports nop operations, but got some-other-type`);
     });
 
     it('should run', async() => {

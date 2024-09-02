@@ -7,6 +7,7 @@ import { ActionContext, ActionContextKey, Bus } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
 import { RdfStore } from 'rdf-stores';
 import { ActorContextPreprocessQuerySourceIdentify } from '../lib/ActorContextPreprocessQuerySourceIdentify';
+import '@comunica/jest';
 
 describe('ActorContextPreprocessQuerySourceIdentify', () => {
   let bus: any;
@@ -47,7 +48,7 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
     });
 
     it('should test', async() => {
-      await expect(actor.test({ context: new ActionContext() })).resolves.toBeTruthy();
+      await expect(actor.test({ context: new ActionContext() })).resolves.toPassTestVoid();
     });
 
     describe('run', () => {

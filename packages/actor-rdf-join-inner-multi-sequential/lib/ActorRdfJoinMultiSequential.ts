@@ -9,6 +9,8 @@ import type {
 } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import { KeysInitQuery } from '@comunica/context-entries';
+import type { TestResult } from '@comunica/core';
+import { passTest } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { MetadataBindings, IJoinEntry, ComunicaDataFactory } from '@comunica/types';
 import { Factory } from 'sparqlalgebrajs';
@@ -56,10 +58,10 @@ export class ActorRdfJoinMultiSequential extends ActorRdfJoin {
   protected async getJoinCoefficients(
     action: IActionRdfJoin,
     metadatas: MetadataBindings[],
-  ): Promise<IMediatorTypeJoinCoefficients> {
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients>> {
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
-    return {
+    return passTest({
       iterations: metadatas[0].cardinality.value * metadatas[1].cardinality.value *
         metadatas.slice(2).reduce((acc, metadata) => acc * metadata.cardinality.value, 1),
       persistedItems: 0,
@@ -69,7 +71,7 @@ export class ActorRdfJoinMultiSequential extends ActorRdfJoin {
         metadatas.slice(2)
           .reduce((sum, metadata, i) => sum + requestInitialTimes[i] +
             metadata.cardinality.value * requestItemTimes[i], 0),
-    };
+    });
   }
 }
 
