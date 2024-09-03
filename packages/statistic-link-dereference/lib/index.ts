@@ -1,1 +1,1 @@
-export * from './StatisticLinkDereference'
+export * from './StatisticLinkDereference';

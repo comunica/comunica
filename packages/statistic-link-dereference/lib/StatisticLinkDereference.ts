@@ -1,7 +1,7 @@
+import { KeysStatistics } from '@comunica/context-entries';
+import type { ActionContextKey } from '@comunica/core';
 import { StatisticBase } from '@comunica/statistic-base';
 import type { ILink, IQuerySource, IStatisticBase } from '@comunica/types';
-import { ActionContextKey } from '@comunica/core';
-import { KeysStatistics } from '@comunica/context-entries';
 
 export class StatisticLinkDereference extends StatisticBase<ILink> {
   public count: number;

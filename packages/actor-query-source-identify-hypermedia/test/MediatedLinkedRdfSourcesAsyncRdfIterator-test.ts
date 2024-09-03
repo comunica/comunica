@@ -1,4 +1,3 @@
-import { StatisticLinkDiscovery } from '@comunica/statistic-link-discovery';
 import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
@@ -6,6 +5,7 @@ import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolv
 import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import { KeysStatistics } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
+import { StatisticLinkDiscovery } from '@comunica/statistic-link-discovery';
 import type { IActionContext, IQuerySource, ILink } from '@comunica/types';
 import { setTaskScheduler } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';

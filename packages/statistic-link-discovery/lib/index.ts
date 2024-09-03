@@ -1,1 +1,1 @@
-export * from './StatisticLinkDiscovery'
+export * from './StatisticLinkDiscovery';

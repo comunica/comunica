@@ -1,7 +1,7 @@
+import { KeysStatistics } from '@comunica/context-entries';
+import type { ActionContextKey } from '@comunica/core';
 import { StatisticBase } from '@comunica/statistic-base';
 import type { IDiscoverEventData, ILink, IStatisticBase } from '@comunica/types';
-import { ActionContextKey } from '@comunica/core';
-import { KeysStatistics } from '@comunica/context-entries';
 
 export class StatisticLinkDiscovery extends StatisticBase<IDiscoverEventData> {
   // Key this statistic tracker should be saved under in context
