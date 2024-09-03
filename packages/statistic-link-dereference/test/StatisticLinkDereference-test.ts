@@ -11,7 +11,6 @@ import type {
 import type { Quad } from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { Operation, Ask, Update } from 'sparqlalgebrajs/lib/algebra';
-import { ActorContextPreprocessStatisticLinkDereference } from '../lib';
 import { StatisticLinkDereference } from '../lib/StatisticLinkDereference';
 
 class MockQuerySource implements IQuerySource {
@@ -43,13 +42,11 @@ describe('StatisticLinkDereference', () => {
   });
 
   describe('An StatisticLinkDereference instance should', () => {
-    let actor: ActorContextPreprocessStatisticLinkDereference;
     let link: ILink;
     let source: IQuerySource;
     let cb: (data: ILink) => void;
 
     beforeEach(() => {
-      actor = new ActorContextPreprocessStatisticLinkDereference({ name: 'actor', bus });
       link = { url: 'url', metadata: { key: 'value' }};
       cb = jest.fn((data: ILink) => {});
 

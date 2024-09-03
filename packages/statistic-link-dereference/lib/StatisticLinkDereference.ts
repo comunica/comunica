@@ -1,12 +1,16 @@
-import { StatisticBase } from '@comunica/bus-context-preprocess';
-import type { ILink, IQuerySource } from '@comunica/types';
+import { StatisticBase } from '@comunica/statistic-base';
+import type { ILink, IQuerySource, IStatisticBase } from '@comunica/types';
+import { ActionContextKey } from '@comunica/core';
+import { KeysStatistics } from '@comunica/context-entries';
 
 export class StatisticLinkDereference extends StatisticBase<ILink> {
   public count: number;
+  public key: ActionContextKey<IStatisticBase<ILink>>;
 
   public constructor() {
     super();
     this.count = 0;
+    this.key = KeysStatistics.dereferencedLinks;
   }
 
   public updateStatistic(link: ILink, source: IQuerySource): boolean {

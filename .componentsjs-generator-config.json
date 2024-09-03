@@ -13,7 +13,10 @@
     "packages/jest",
     "packages/packager",
     "packages/runner-cli",
-    "packages/expression-evaluator"
+    "packages/expression-evaluator",
+    "packages/statistic-base",
+    "packages/statistic-link-dereference",
+    "packages/statistic-link-discovery"
   ],
   "ignoreComponents": [
     "Error",

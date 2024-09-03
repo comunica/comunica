@@ -1,4 +1,4 @@
-import { StatisticLinkDiscovery } from '@comunica/actor-context-preprocess-statistic-link-discovery';
+import { StatisticLinkDiscovery } from '@comunica/statistic-link-discovery';
 import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';

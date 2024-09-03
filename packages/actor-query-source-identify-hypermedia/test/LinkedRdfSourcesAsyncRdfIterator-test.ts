@@ -1,5 +1,5 @@
 import { Readable } from 'node:stream';
-import { StatisticLinkDereference } from '@comunica/actor-context-preprocess-statistic-link-dereference';
+import { StatisticLinkDereference } from '@comunica/statistic-link-dereference';
 import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { ILinkQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';

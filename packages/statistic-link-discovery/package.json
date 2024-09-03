@@ -1,0 +1,37 @@
+{
+    "name": "@comunica/statistic-link-discovery",
+    "version": "3.2.1",
+    "description": "Comunica package that defines the statistic tracking link discovery events",
+    "license": "MIT",
+    "homepage": "https://comunica.dev/",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/comunica/comunica.git",
+      "directory": "packages/statistic-link-discovery"
+    },
+    "bugs": {
+      "url": "https://github.com/comunica/comunica/issues"
+    },
+    "keywords": [
+      "comunica",
+      "statistic",
+      "link discovery"
+    ],
+    "sideEffects": false,
+    "main": "lib/index.js",
+    "typings": "lib/index",
+    "publishConfig": {
+      "access": "public"
+    },
+    "files": [
+        "bin/**/*.d.ts",
+        "bin/**/*.js",
+        "bin/**/*.js.map"
+        ],
+    "scripts": {
+      "build": "node \"../../node_modules/typescript/bin/tsc\""
+    },
+    "dependencies": {
+        "@comunica/statistic-base": "^3.2.1"
+    }
+  }

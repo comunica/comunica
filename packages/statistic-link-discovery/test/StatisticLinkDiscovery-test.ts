@@ -1,6 +1,5 @@
 import { Bus } from '@comunica/core';
 import type { ILink, IDiscoverEventData } from '@comunica/types';
-import { ActorContextPreprocessStatisticLinkDiscovery } from '../lib';
 import { StatisticLinkDiscovery } from '../lib/StatisticLinkDiscovery';
 
 describe('StatisticLinkDiscovery', () => {
@@ -15,13 +14,11 @@ describe('StatisticLinkDiscovery', () => {
   });
 
   describe('An StatisticLinkDereference instance should', () => {
-    let actor: ActorContextPreprocessStatisticLinkDiscovery;
     let parent: ILink;
     let child: ILink;
     let cb: (arg0: IDiscoverEventData) => void;
 
     beforeEach(() => {
-      actor = new ActorContextPreprocessStatisticLinkDiscovery({ name: 'actor', bus });
       parent = {
         url: 'parent',
         metadata: {

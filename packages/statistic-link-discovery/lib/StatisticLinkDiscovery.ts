@@ -1,7 +1,12 @@
-import { StatisticBase } from '@comunica/bus-context-preprocess';
-import type { IDiscoverEventData, ILink } from '@comunica/types';
+import { StatisticBase } from '@comunica/statistic-base';
+import type { IDiscoverEventData, ILink, IStatisticBase } from '@comunica/types';
+import { ActionContextKey } from '@comunica/core';
+import { KeysStatistics } from '@comunica/context-entries';
 
 export class StatisticLinkDiscovery extends StatisticBase<IDiscoverEventData> {
+  // Key this statistic tracker should be saved under in context
+  public key: ActionContextKey<IStatisticBase<ILink>>;
+
   // Number of discover events tracked
   public count: number;
 
@@ -14,6 +19,7 @@ export class StatisticLinkDiscovery extends StatisticBase<IDiscoverEventData> {
     super();
     this.count = 0;
     this.metadata = {};
+    this.key = KeysStatistics.discoveredLinks;
   }
 
   public updateStatistic(link: ILink, parent: ILink): boolean {
