@@ -32,5 +32,9 @@
     "build": "node \"../../node_modules/typescript/bin/tsc\""
   },
   "dependencies": {
+    "@comunica/context-entries": "^3.2.1",
+    "@comunica/core": "^3.2.1",
+    "@comunica/statistic-base": "^3.2.1",
+    "@comunica/types": "^3.2.1"
   }
 }
