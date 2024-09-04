@@ -23,7 +23,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
 
   public async test(action: IActionOptimizeQueryOperation): Promise<TestResult<IActorTest>> {
     if (ActorQueryOperation.getOperationSource(action.operation)) {
-      return failTest(() => `Actor ${this.name} does not work with top-level operation sources.`);
+      return failTest(`Actor ${this.name} does not work with top-level operation sources.`);
     }
     return passTestVoid();
   }

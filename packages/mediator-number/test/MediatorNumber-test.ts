@@ -271,7 +271,7 @@ class DummyActorInvalid extends Actor<IAction, IDummyTest, IDummyTest> {
 
 class ErrorDummyActor extends DummyActor {
   public override async test(action: IAction): Promise<TestResult<IDummyTest>> {
-    return failTest(() => 'abc');
+    return failTest('abc');
   }
 }
 

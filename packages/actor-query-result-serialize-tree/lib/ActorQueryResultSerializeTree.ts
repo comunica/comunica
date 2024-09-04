@@ -52,7 +52,7 @@ export class ActorQueryResultSerializeTree extends ActorQueryResultSerializeFixe
 
   public override async testHandleChecked(action: IActionSparqlSerialize): Promise<TestResult<boolean>> {
     if (action.type !== 'bindings') {
-      return failTest(() => 'This actor can only handle bindings streams.');
+      return failTest('This actor can only handle bindings streams.');
     }
     return passTestVoid();
   }

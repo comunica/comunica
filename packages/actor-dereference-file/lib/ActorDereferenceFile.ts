@@ -18,7 +18,7 @@ export class ActorDereferenceFile extends ActorDereference {
       accessSync(getPath(url), constants.F_OK);
     } catch (error: unknown) {
       // eslint-disable-next-line ts/restrict-template-expressions
-      return failTest(() => `This actor only works on existing local files. (${error})`);
+      return failTest(`This actor only works on existing local files. (${error})`);
     }
     return passTestVoid();
   }

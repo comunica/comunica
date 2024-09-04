@@ -40,7 +40,7 @@ export class ActorQueryResultSerializeStats extends ActorQueryResultSerializeFix
     _context: IActionContext,
   ): Promise<TestResult<boolean>> {
     if (![ 'bindings', 'quads' ].includes(action.type)) {
-      return failTest(() => 'This actor can only handle bindings streams or quad streams.');
+      return failTest('This actor can only handle bindings streams or quad streams.');
     }
     return passTestVoid();
   }

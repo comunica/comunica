@@ -41,7 +41,7 @@ export class ActorQuerySourceIdentifyHypermedia extends ActorQuerySourceIdentify
 
   public async test(action: IActionQuerySourceIdentify): Promise<TestResult<IActorTest>> {
     if (typeof action.querySourceUnidentified.value !== 'string') {
-      return failTest(() => `${this.name} requires a single query source with a URL value to be present in the context.`);
+      return failTest(`${this.name} requires a single query source with a URL value to be present in the context.`);
     }
     return passTestVoid();
   }

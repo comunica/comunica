@@ -27,7 +27,7 @@ export class ActorQueryProcessAnnotateSourceBinding extends ActorQueryProcess {
 
   public async test(action: IActionQueryProcess): Promise<TestResult<IActorTest>> {
     if (action.context.get(KEY_CONTEXT_WRAPPED)) {
-      return failTest(() => 'Unable to query process multiple times');
+      return failTest('Unable to query process multiple times');
     }
     return passTestVoid();
   }

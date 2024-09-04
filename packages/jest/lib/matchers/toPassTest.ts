@@ -7,7 +7,7 @@ export default {
   toPassTest(received: TestResult<any>, actual: any) {
     if (!received.isPassed()) {
       return {
-        message: () => `expected a failed test result "${received.getFailMessage()()}" to pass to value "${actual}"`,
+        message: () => `expected a failed test result "${received.getFailMessage()}" to pass to value "${actual}"`,
         pass: false,
       };
     }

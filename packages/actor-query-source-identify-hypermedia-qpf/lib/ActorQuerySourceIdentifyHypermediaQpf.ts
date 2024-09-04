@@ -41,7 +41,7 @@ export class ActorQuerySourceIdentifyHypermediaQpf extends ActorQuerySourceIdent
     action: IActionQuerySourceIdentifyHypermedia,
   ): Promise<TestResult<IActorQuerySourceIdentifyHypermediaTest>> {
     if (action.forceSourceType && (action.forceSourceType !== 'qpf' && action.forceSourceType !== 'brtpf')) {
-      return failTest(() => `Actor ${this.name} is not able to handle source type ${action.forceSourceType}.`);
+      return failTest(`Actor ${this.name} is not able to handle source type ${action.forceSourceType}.`);
     }
     return this.testMetadata(action);
   }
@@ -56,10 +56,10 @@ export class ActorQuerySourceIdentifyHypermediaQpf extends ActorQuerySourceIdent
       action.forceSourceType === 'brtpf',
     );
     if (!searchForm) {
-      return failTest(() => 'Illegal state: found no TPF/QPF search form anymore in metadata.');
+      return failTest('Illegal state: found no TPF/QPF search form anymore in metadata.');
     }
     if (action.handledDatasets && action.handledDatasets[searchForm.dataset]) {
-      return failTest(() => `Actor ${this.name} can only be applied for the first page of a QPF dataset.`);
+      return failTest(`Actor ${this.name} can only be applied for the first page of a QPF dataset.`);
     }
     return passTest({ filterFactor: 1 });
   }

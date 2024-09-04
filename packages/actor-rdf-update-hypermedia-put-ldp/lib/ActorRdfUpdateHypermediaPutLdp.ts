@@ -25,10 +25,10 @@ export class ActorRdfUpdateHypermediaPutLdp extends ActorRdfUpdateHypermedia {
   public async testMetadata(action: IActionRdfUpdateHypermedia): Promise<TestResult<IActorTest>> {
     if (!action.forceDestinationType) {
       if (!action.metadata.allowHttpMethods || !action.metadata.allowHttpMethods.includes('PUT')) {
-        return failTest(() => `Actor ${this.name} could not detect a destination with 'Allow: PUT' header.`);
+        return failTest(`Actor ${this.name} could not detect a destination with 'Allow: PUT' header.`);
       }
       if (action.exists) {
-        return failTest(() => `Actor ${this.name} can only put on a destination that does not already exists.`);
+        return failTest(`Actor ${this.name} can only put on a destination that does not already exists.`);
       }
     }
     return passTestVoid();

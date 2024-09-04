@@ -11,7 +11,7 @@ import { quadToStringQuad } from 'rdf-string';
 export class ActorHashQuadsSha1 extends ActorHashQuads {
   public async test(action: IActionHashQuads): Promise<TestResult<IActorTest>> {
     if (!action.allowHashCollisions) {
-      return failTest(() => `Actor ${this.name} can not provide hash functions without hash collisions`);
+      return failTest(`Actor ${this.name} can not provide hash functions without hash collisions`);
     }
     return passTestVoid();
   }

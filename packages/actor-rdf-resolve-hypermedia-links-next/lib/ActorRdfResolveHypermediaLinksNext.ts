@@ -17,7 +17,7 @@ export class ActorRdfResolveHypermediaLinksNext extends ActorRdfResolveHypermedi
 
   public async test(action: IActionRdfResolveHypermediaLinks): Promise<TestResult<IActorTest>> {
     if (!action.metadata.next || action.metadata.next.length === 0) {
-      return failTest(() => `Actor ${this.name} requires a 'next' metadata entry.`);
+      return failTest(`Actor ${this.name} requires a 'next' metadata entry.`);
     }
     return passTestVoid();
   }

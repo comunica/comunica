@@ -8,7 +8,7 @@ const BF = new BindingsFactory(DF);
 
 describe('toPassTest', () => {
   it('should not succeed for a failed test', () => {
-    expect(failTest(() => 'abc')).not.toPassTest('abc');
+    expect(failTest('abc')).not.toPassTest('abc');
   });
 
   it('should succeed for a passed test', () => {
@@ -20,7 +20,7 @@ describe('toPassTest', () => {
   });
 
   it('should fail for equal fail message', () => {
-    expect(() => expect(failTest(() => 'abc')).toPassTest(123))
+    expect(() => expect(failTest('abc')).toPassTest(123))
       .toThrow(`expected a failed test result "abc" to pass to value "123"`);
   });
 

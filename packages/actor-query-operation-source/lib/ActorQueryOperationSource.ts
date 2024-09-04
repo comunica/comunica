@@ -21,7 +21,7 @@ export class ActorQueryOperationSource extends ActorQueryOperation {
 
   public async test(action: IActionQueryOperation): Promise<TestResult<IActorTest>> {
     if (!ActorQueryOperation.getOperationSource(action.operation)) {
-      return failTest(() => `Actor ${this.name} requires an operation with source annotation.`);
+      return failTest(`Actor ${this.name} requires an operation with source annotation.`);
     }
     return passTest({ httpRequests: 1 });
   }

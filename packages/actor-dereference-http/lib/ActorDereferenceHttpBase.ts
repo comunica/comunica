@@ -52,7 +52,7 @@ export abstract class ActorDereferenceHttpBase extends ActorDereference implemen
 
   public async test({ url }: IActionDereference): Promise<TestResult<IActorTest>> {
     if (!/^https?:/u.test(url)) {
-      return failTest(() => `Cannot retrieve ${url} because it is not an HTTP(S) URL.`);
+      return failTest(`Cannot retrieve ${url} because it is not an HTTP(S) URL.`);
     }
     return passTestVoid();
   }

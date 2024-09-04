@@ -11,15 +11,15 @@ export default {
       };
     }
 
-    if (!received.getFailMessage()().includes(actual)) {
+    if (!received.getFailMessage().includes(actual)) {
       return {
-        message: () => `expected a failed test result "${received.getFailMessage()()}" to fail to message "${actual}"`,
+        message: () => `expected a failed test result "${received.getFailMessage()}" to fail to message "${actual}"`,
         pass: false,
       };
     }
 
     return {
-      message: () => `expected failed test result "${received.getFailMessage()()}" not to fail`,
+      message: () => `expected failed test result "${received.getFailMessage()}" not to fail`,
       pass: true,
     };
   },

@@ -6,7 +6,7 @@ export default {
   toPassTestVoid(received: TestResult<any>) {
     if (!received.isPassed()) {
       return {
-        message: () => `expected a failed test result "${received.getFailMessage()()}" to pass to a void value`,
+        message: () => `expected a failed test result "${received.getFailMessage()}" to pass to a void value`,
         pass: false,
       };
     }

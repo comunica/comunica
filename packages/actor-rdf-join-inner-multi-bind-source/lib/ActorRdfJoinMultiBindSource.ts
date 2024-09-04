@@ -146,12 +146,12 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin {
     // Reject binding on operations without sources
     const sources = remainingEntries.map(entry => ActorQueryOperation.getOperationSource(entry.operation));
     if (sources.some(source => !source)) {
-      return failTest(() => `Actor ${this.name} can not bind on remaining operations without source annotation`);
+      return failTest(`Actor ${this.name} can not bind on remaining operations without source annotation`);
     }
 
     // Reject binding on operations with un-equal sources
     if (sources.some(source => source !== sources[0])) {
-      return failTest(() => `Actor ${this.name} can not bind on remaining operations with non-equal source annotation`);
+      return failTest(`Actor ${this.name} can not bind on remaining operations with non-equal source annotation`);
     }
 
     // Reject if the source can not handle bindings
@@ -160,7 +160,7 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin {
     const selectorShape = await sourceWrapper.source.getSelectorShape(action.context);
     if (!ActorQueryOperation
       .doesShapeAcceptOperation(selectorShape, testingOperation, { joinBindings: true })) {
-      return failTest(() => `Actor ${this.name} detected a source that can not handle passing down join bindings`);
+      return failTest(`Actor ${this.name} detected a source that can not handle passing down join bindings`);
     }
 
     // Determine selectivities of smallest entry with all other entries

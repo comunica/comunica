@@ -47,7 +47,7 @@ export abstract class ActorAbstractMediaTyped<HI, HT, HO>
       return (await this.testMediaTypeFormats(action.context))
         .map(mediaTypeFormats => ({ mediaTypeFormats }));
     }
-    return failTest(() => 'Either a handle, mediaTypes or mediaTypeFormats action needs to be provided');
+    return failTest('Either a handle, mediaTypes or mediaTypeFormats action needs to be provided');
   }
 
   /**

@@ -28,7 +28,7 @@ export abstract class ActorRdfUpdateHypermedia
 
   public async test(action: IActionRdfUpdateHypermedia): Promise<TestResult<IActorTest>> {
     if (action.forceDestinationType && this.destinationType !== action.forceDestinationType) {
-      return failTest(() => `Actor ${this.name} is not able to handle destination type ${action.forceDestinationType}.`);
+      return failTest(`Actor ${this.name} is not able to handle destination type ${action.forceDestinationType}.`);
     }
     return this.testMetadata(action);
   }

@@ -77,7 +77,7 @@ describe('Mediator', () => {
       return passTest(testResults[0].actor);
     };
     const mediateWithFirstError = async() => {
-      return failTest(() => 'some error');
+      return failTest('some error');
     };
 
     describe('without 1 actor in the bus', () => {

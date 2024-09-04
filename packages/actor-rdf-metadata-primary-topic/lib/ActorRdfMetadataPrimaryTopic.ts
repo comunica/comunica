@@ -19,7 +19,7 @@ export class ActorRdfMetadataPrimaryTopic extends ActorRdfMetadata {
 
   public async test(action: IActionRdfMetadata): Promise<TestResult<IActorTest>> {
     if (action.triples) {
-      return failTest(() => 'This actor only supports non-triple quad streams.');
+      return failTest('This actor only supports non-triple quad streams.');
     }
     return passTestVoid();
   }

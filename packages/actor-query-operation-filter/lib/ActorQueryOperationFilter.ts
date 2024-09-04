@@ -38,7 +38,7 @@ export class ActorQueryOperationFilter extends ActorQueryOperationTypedMediated<
       return passTestVoid();
     } catch (error: unknown) {
       // TODO: return TestResult in ActorQueryOperation.getAsyncExpressionContext
-      return failTest(() => (<Error> error).message);
+      return failTest((<Error> error).message);
     }
   }
 

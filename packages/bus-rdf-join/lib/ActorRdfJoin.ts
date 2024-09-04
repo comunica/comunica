@@ -312,7 +312,7 @@ export abstract class ActorRdfJoin
 
     // Reject if no entries have common variables
     if (multiOccurrenceVariables.length === 0) {
-      return failTest(() => `Bind join can only join entries with at least one common variable`);
+      return failTest(`Bind join can only join entries with at least one common variable`);
     }
 
     // Determine entries without common variables
@@ -356,17 +356,17 @@ export abstract class ActorRdfJoin
   public async test(action: IActionRdfJoin): Promise<TestResult<IMediatorTypeJoinCoefficients>> {
     // Validate logical join type
     if (action.type !== this.logicalType) {
-      return failTest(() => `${this.name} can only handle logical joins of type '${this.logicalType}', while '${action.type}' was given.`);
+      return failTest(`${this.name} can only handle logical joins of type '${this.logicalType}', while '${action.type}' was given.`);
     }
 
     // Don't allow joining of one or zero streams
     if (action.entries.length <= 1) {
-      return failTest(() => `${this.name} requires at least two join entries.`);
+      return failTest(`${this.name} requires at least two join entries.`);
     }
 
     // Check if this actor can handle the given number of streams
     if (this.limitEntriesMin ? action.entries.length < this.limitEntries : action.entries.length > this.limitEntries) {
-      return failTest(() => `${this.name} requires ${this.limitEntries
+      return failTest(`${this.name} requires ${this.limitEntries
       } join entries at ${this.limitEntriesMin ? 'least' : 'most'
       }. The input contained ${action.entries.length}.`);
     }
@@ -374,7 +374,8 @@ export abstract class ActorRdfJoin
     // Check if all streams are bindings streams
     for (const entry of action.entries) {
       if (entry.output.type !== 'bindings') {
-        return failTest(() => `Invalid type of a join entry: Expected 'bindings' but got '${entry.output.type}'`);
+        // eslint-disable-next-line ts/restrict-template-expressions
+        return failTest(`Invalid type of a join entry: Expected 'bindings' but got '${entry.output.type}'`);
       }
     }
 
@@ -384,14 +385,14 @@ export abstract class ActorRdfJoin
     if (!this.canHandleUndefs) {
       for (const metadata of metadatas) {
         if (metadata.canContainUndefs) {
-          return failTest(() => `Actor ${this.name} can not join streams containing undefs`);
+          return failTest(`Actor ${this.name} can not join streams containing undefs`);
         }
       }
     }
 
     // This actor only works with common variables
     if (this.requiresVariableOverlap && ActorRdfJoin.overlappingVariables(metadatas).length === 0) {
-      return failTest(() => `Actor ${this.name} can only join entries with at least one common variable`);
+      return failTest(`Actor ${this.name} can only join entries with at least one common variable`);
     }
 
     return await this.getJoinCoefficients(action, metadatas);

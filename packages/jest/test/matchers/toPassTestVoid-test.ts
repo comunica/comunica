@@ -8,7 +8,7 @@ const BF = new BindingsFactory(DF);
 
 describe('toPassTestVoid', () => {
   it('should not succeed for a failed test', () => {
-    expect(failTest(() => 'abc')).not.toPassTestVoid();
+    expect(failTest('abc')).not.toPassTestVoid();
   });
 
   it('should succeed for a passed test', () => {
@@ -20,7 +20,7 @@ describe('toPassTestVoid', () => {
   });
 
   it('should fail for equal fail message', () => {
-    expect(() => expect(failTest(() => 'abc')).toPassTestVoid())
+    expect(() => expect(failTest('abc')).toPassTestVoid())
       .toThrow(`expected a failed test result "abc" to pass to a void value`);
   });
 

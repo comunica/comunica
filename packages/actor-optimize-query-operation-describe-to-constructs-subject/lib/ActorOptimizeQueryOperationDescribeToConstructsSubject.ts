@@ -21,7 +21,7 @@ export class ActorOptimizeQueryOperationDescribeToConstructsSubject extends Acto
 
   public async test(action: IActionOptimizeQueryOperation): Promise<TestResult<IActorTest>> {
     if (action.operation.type !== Algebra.types.DESCRIBE) {
-      return failTest(() => `Actor ${this.name} only supports describe operations, but got ${action.operation.type}`);
+      return failTest(`Actor ${this.name} only supports describe operations, but got ${action.operation.type}`);
     }
     return passTest(true);
   }

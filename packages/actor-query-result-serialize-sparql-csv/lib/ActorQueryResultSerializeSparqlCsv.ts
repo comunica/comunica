@@ -71,7 +71,7 @@ export class ActorQueryResultSerializeSparqlCsv extends ActorQueryResultSerializ
     _context: IActionContext,
   ): Promise<TestResult<boolean>> {
     if (action.type !== 'bindings') {
-      return failTest(() => 'This actor can only handle bindings streams.');
+      return failTest('This actor can only handle bindings streams.');
     }
     return passTestVoid();
   }

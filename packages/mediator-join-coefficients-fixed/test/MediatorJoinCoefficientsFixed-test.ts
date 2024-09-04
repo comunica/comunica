@@ -477,7 +477,7 @@ class DummyActor extends Actor<IAction, IMediatorTypeJoinCoefficients, IDummyOut
 
   public async test(action: IAction): Promise<TestResult<IMediatorTypeJoinCoefficients>> {
     if (this.reject) {
-      return failTest(() => `Actor ${this.id} fails`);
+      return failTest(`Actor ${this.id} fails`);
     }
     return passTest(this.coeffs);
   }

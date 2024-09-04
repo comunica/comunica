@@ -121,7 +121,7 @@ class DummyActor extends Actor<IAction, IDummyTest, IDummyTest> {
 
   public async test(action: IAction): Promise<TestResult<IDummyTest>> {
     if (this.fail) {
-      return failTest(() => `${this.id}`);
+      return failTest(`${this.id}`);
     }
     if (this.reject) {
       throw new Error(`${this.id}`);

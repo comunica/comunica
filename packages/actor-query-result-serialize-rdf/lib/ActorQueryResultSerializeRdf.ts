@@ -33,7 +33,7 @@ export class ActorQueryResultSerializeRdf extends ActorQueryResultSerialize
   Promise<TestResult<IActorTest>> {
     // Check if we are provided with a quad stream
     if (action.type !== 'quads') {
-      return failTest(() => `Actor ${this.name} can only handle quad streams`);
+      return failTest(`Actor ${this.name} can only handle quad streams`);
     }
 
     // Check if the given media type can be handled
@@ -41,7 +41,7 @@ export class ActorQueryResultSerializeRdf extends ActorQueryResultSerialize
       { context, mediaTypes: true },
     );
     if (!(mediaType in mediaTypes)) {
-      return failTest(() => `Actor ${this.name} can not handle media type ${mediaType}. All available types: ${
+      return failTest(`Actor ${this.name} can not handle media type ${mediaType}. All available types: ${
         // eslint-disable-next-line ts/restrict-template-expressions
         Object.keys(mediaTypes)}`);
     }

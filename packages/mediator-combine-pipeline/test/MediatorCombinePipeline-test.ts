@@ -250,7 +250,7 @@ class DummyThrowActor extends DummyActor {
   }
 
   public override async test(action: IDummyAction): Promise<TestResult<IActorTest>> {
-    return failTest(() => 'Dummy Error');
+    return failTest('Dummy Error');
   }
 }
 class DummyConcatActor extends Actor<IDummyConcatAction, IActorTest, IDummyConcatOutput> {

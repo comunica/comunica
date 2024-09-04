@@ -23,7 +23,7 @@ export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbst
 
   public async testHandle(action: HI, mediaType: string | undefined, context: IActionContext): Promise<TestResult<HT>> {
     if (!mediaType || !(mediaType in this.mediaTypePriorities)) {
-      return failTest(() => `Unrecognized media type: ${mediaType}`);
+      return failTest(`Unrecognized media type: ${mediaType}`);
     }
     return await this.testHandleChecked(action, context);
   }

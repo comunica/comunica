@@ -14,7 +14,7 @@ const canonicalize = require('canonicalize');
 export class ActorHashBindingsSha1 extends ActorHashBindings {
   public async test(action: IActionHashBindings): Promise<TestResult<IActorTest>> {
     if (!action.allowHashCollisions) {
-      return failTest(() => `Actor ${this.name} can not provide hash functions without hash collisions`);
+      return failTest(`Actor ${this.name} can not provide hash functions without hash collisions`);
     }
     return passTestVoid();
   }

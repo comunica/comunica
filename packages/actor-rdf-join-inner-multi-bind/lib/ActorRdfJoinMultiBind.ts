@@ -215,19 +215,19 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
     // Reject binding on some operation types
     if (remainingEntries
       .some(entry => !this.canBindWithOperation(entry.operation))) {
-      return failTest(() => `Actor ${this.name} can not bind on Extend and Group operations`);
+      return failTest(`Actor ${this.name} can not bind on Extend and Group operations`);
     }
 
     // Reject binding on modified operations, since using the output directly would be significantly more efficient.
     if (remainingEntries.some(entry => entry.operationModified)) {
-      return failTest(() => `Actor ${this.name} can not be used over remaining entries with modified operations`);
+      return failTest(`Actor ${this.name} can not be used over remaining entries with modified operations`);
     }
 
     // Only run this actor if the smallest stream is significantly smaller than the largest stream.
     // We must use Math.max, because the last metadata is not necessarily the biggest, but it's the least preferred.
     if (metadatas[0].cardinality.value * this.minMaxCardinalityRatio >
       Math.max(...metadatas.map(metadata => metadata.cardinality.value))) {
-      return failTest(() => `Actor ${this.name} can only run if the smallest stream is much smaller than largest stream`);
+      return failTest(`Actor ${this.name} can only run if the smallest stream is much smaller than largest stream`);
     }
 
     // Determine selectivities of smallest entry with all other entries

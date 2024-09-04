@@ -59,7 +59,7 @@ export class MediatorNumber<A extends Actor<I, T, O>, I extends IAction, T exten
     let wrappedResults = await Promise.all(testResults.map(({ reply }) => reply));
 
     // Collect failures if we want to ignore them
-    const failures: (() => string)[] = [];
+    const failures: string[] = [];
     if (this.ignoreFailures) {
       const dummy: any = {};
       dummy[this.field] = null;
@@ -78,8 +78,8 @@ export class MediatorNumber<A extends Actor<I, T, O>, I extends IAction, T exten
     // Determine one value
     const index = this.indexPicker(results);
     if (index < 0) {
-      return failTest(() => `All actors rejected their test in ${this.name}\n${
-        failures.map(error => error()).join('\n')}`);
+      return failTest(`All actors rejected their test in ${this.name}\n${
+        failures.join('\n')}`);
     }
     return passTest(testResults[index].actor);
   }

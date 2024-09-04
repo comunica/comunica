@@ -93,7 +93,7 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
     }
 
     if (secondSharedVariables === 0) {
-      return failTest(() => `Actor ${this.name} can only join with common variables`);
+      return failTest(`Actor ${this.name} can only join with common variables`);
     }
 
     const remaining = entriesSorted;
@@ -192,7 +192,7 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
   ): Promise<TestResult<IMediatorTypeJoinCoefficients>> {
     // Avoid infinite recursion
     if (action.context.get(KeysRdfJoin.lastPhysicalJoin) === this.physicalName) {
-      return failTest(() => `Actor ${this.name} can not be called recursively`);
+      return failTest(`Actor ${this.name} can not be called recursively`);
     }
 
     metadatas = [ ...metadatas ];
@@ -207,13 +207,13 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
     // Only pass if the second entry accepts filterBindings
     const sourceWrapper: IQuerySourceWrapper | undefined = ActorQueryOperation.getOperationSource(second.operation);
     if (!sourceWrapper) {
-      return failTest(() => `Actor ${this.name} can only process if entries[1] has a source`);
+      return failTest(`Actor ${this.name} can only process if entries[1] has a source`);
     }
     const testingOperation = second.operation;
     const selectorShape = await sourceWrapper.source.getSelectorShape(action.context);
     if (!ActorQueryOperation
       .doesShapeAcceptOperation(selectorShape, testingOperation, { filterBindings: true })) {
-      return failTest(() => `Actor ${this.name} can only process if entries[1] accept filterBindings`);
+      return failTest(`Actor ${this.name} can only process if entries[1] accept filterBindings`);
     }
 
     // Determine cost coefficients

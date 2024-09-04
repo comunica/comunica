@@ -20,7 +20,7 @@ export class MediatorRace<A extends Actor<I, T, O>, I extends IAction, T extends
 
   protected mediateWith(action: I, testResults: IActorReply<A, I, T, O>[]): Promise<TestResult<A>> {
     return new Promise((resolve, reject) => {
-      const errors: (() => string)[] = [];
+      const errors: string[] = [];
       for (const testResult of testResults) {
         testResult.reply.then((reply) => {
           if (reply.isPassed()) {
@@ -28,8 +28,8 @@ export class MediatorRace<A extends Actor<I, T, O>, I extends IAction, T extends
           } else {
             errors.push(reply.getFailMessage());
             if (errors.length === testResults.length) {
-              resolve(failTest(() => `${this.name} mediated over all rejecting actors:\n${
-                  errors.map(subError => subError()).join('\n')}`));
+              resolve(failTest(`${this.name} mediated over all rejecting actors:\n${
+                  errors.join('\n')}`));
             }
           }
         }).catch((error) => {

@@ -23,7 +23,7 @@ export class ActorRdfUpdateQuadsRdfJsStore extends ActorRdfUpdateQuadsDestinatio
     const destination = getContextDestination(action.context);
     if (!destination || typeof destination === 'string' ||
       (!('remove' in destination) && 'value' in destination && !(<RDF.Store> destination.value)?.remove)) {
-      return failTest(() => `${this.name} received an invalid rdfjsStore.`);
+      return failTest(`${this.name} received an invalid rdfjsStore.`);
     }
     return passTestVoid();
   }

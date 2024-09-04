@@ -24,7 +24,7 @@ export function passTestVoid(): TestResultPassed<any> {
  * Create a new test result that represents a test failure.
  * @param message The error message that describes the failure.
  */
-export function failTest(message: () => string): TestResultFailed {
+export function failTest(message: string): TestResultFailed {
   return new TestResultFailed(message);
 }
 
@@ -108,9 +108,9 @@ export class TestResultPassed<T> {
  * Instead, `testFail` should be used.
  */
 export class TestResultFailed {
-  protected readonly failMessage: () => string;
+  protected readonly failMessage: string;
 
-  public constructor(failMessage: () => string) {
+  public constructor(failMessage: string) {
     this.failMessage = failMessage;
   }
 
@@ -141,13 +141,13 @@ export class TestResultFailed {
    * Get the value of the passed test, or throw an error if the test failed.
    */
   public getOrThrow(): never {
-    throw new Error(this.getFailMessage()());
+    throw new Error(this.getFailMessage());
   }
 
   /**
    * Get the failure message callback of the failed test, or undefined if the test passed.
    */
-  public getFailMessage(): () => string {
+  public getFailMessage(): string {
     return this.failMessage;
   }
 

@@ -20,7 +20,7 @@ export class ActorQueryParseSparql extends ActorQueryParse {
 
   public async test(action: IActionQueryParse): Promise<TestResult<IActorTest>> {
     if (action.queryFormat && action.queryFormat.language !== 'sparql') {
-      return failTest(() => 'This actor can only parse SPARQL queries');
+      return failTest('This actor can only parse SPARQL queries');
     }
     return passTestVoid();
   }

@@ -78,7 +78,7 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
     _context: IActionContext,
   ): Promise<TestResult<boolean>> {
     if (![ 'bindings', 'boolean' ].includes(action.type)) {
-      return failTest(() => 'This actor can only handle bindings streams or booleans.');
+      return failTest('This actor can only handle bindings streams or booleans.');
     }
     return passTestVoid();
   }

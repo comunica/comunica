@@ -8,11 +8,11 @@ const BF = new BindingsFactory(DF);
 
 describe('toFailTest', () => {
   it('should succeed for an equal fail message', () => {
-    expect(failTest(() => 'abc')).toFailTest('abc');
+    expect(failTest('abc')).toFailTest('abc');
   });
 
   it('should not succeed for non-equal fail message', () => {
-    expect(failTest(() => 'abc')).not.toFailTest('def');
+    expect(failTest('abc')).not.toFailTest('def');
   });
 
   it('should not succeed for a passed test', () => {
@@ -20,12 +20,12 @@ describe('toFailTest', () => {
   });
 
   it('should not fail for equal fail message', () => {
-    expect(() => expect(failTest(() => 'abc')).not.toFailTest('abc'))
+    expect(() => expect(failTest('abc')).not.toFailTest('abc'))
       .toThrow(`expected failed test result "abc" not to fail`);
   });
 
   it('should fail for non-equal fail message', () => {
-    expect(() => expect(failTest(() => 'abc')).toFailTest('def'))
+    expect(() => expect(failTest('abc')).toFailTest('def'))
       .toThrow(`expected a failed test result "abc" to fail to message "def"`);
   });
 

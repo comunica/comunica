@@ -20,7 +20,7 @@ export class ActorRdfJoinSingle extends ActorRdfJoin {
   public override async test(action: IActionRdfJoin): Promise<TestResult<IMediatorTypeJoinCoefficients>> {
     // Allow joining of one or zero streams
     if (action.entries.length !== 1) {
-      return failTest(() => `Actor ${this.name} can only join a single entry`);
+      return failTest(`Actor ${this.name} can only join a single entry`);
     }
     return await this.getJoinCoefficients();
   }

@@ -52,7 +52,7 @@ describe('TestResult', () => {
 
     describe('getFailMessage', () => {
       it('should get undefined', () => {
-        const message: (() => string) | undefined = result.getFailMessage();
+        const message: string | undefined = result.getFailMessage();
         expect(message).toBeUndefined();
       });
 
@@ -60,13 +60,13 @@ describe('TestResult', () => {
         if (result.isPassed()) {
           const message: undefined = result.getFailMessage();
         } else {
-          const message: () => string = result.getFailMessage();
+          const message: string = result.getFailMessage();
         }
       });
 
       it('should be type-narrowed after isFailed', () => {
         if (result.isFailed()) {
-          const message: () => string = result.getFailMessage();
+          const message: string = result.getFailMessage();
         } else {
           const message: undefined = result.getFailMessage();
         }
@@ -93,7 +93,7 @@ describe('TestResult', () => {
   describe('for a failed value', () => {
     let result: TestResult<number>;
     beforeEach(() => {
-      result = failTest(() => 'I have failed');
+      result = failTest('I have failed');
     });
 
     describe('isPassed', () => {
@@ -139,21 +139,21 @@ describe('TestResult', () => {
 
     describe('getFailMessage', () => {
       it('should get the message', () => {
-        const message: (() => string) | undefined = result.getFailMessage();
-        expect(message!()).toBe('I have failed');
+        const message: string | undefined = result.getFailMessage();
+        expect(message).toBe('I have failed');
       });
 
       it('should be type-narrowed after isPassed', () => {
         if (result.isPassed()) {
           const message: undefined = result.getFailMessage();
         } else {
-          const message: () => string = result.getFailMessage();
+          const message: string = result.getFailMessage();
         }
       });
 
       it('should be type-narrowed after isFailed', () => {
         if (result.isFailed()) {
-          const message: () => string = result.getFailMessage();
+          const message: string = result.getFailMessage();
         } else {
           const message: undefined = result.getFailMessage();
         }

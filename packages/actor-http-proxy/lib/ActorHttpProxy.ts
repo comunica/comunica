@@ -19,10 +19,10 @@ export class ActorHttpProxy extends ActorHttp {
   public async test(action: IActionHttp): Promise<TestResult<IMediatorTypeTime>> {
     const proxyHandler: IProxyHandler | undefined = action.context.get(KeysHttpProxy.httpProxyHandler);
     if (!proxyHandler) {
-      return failTest(() => `Actor ${this.name} could not find a proxy handler in the context.`);
+      return failTest(`Actor ${this.name} could not find a proxy handler in the context.`);
     }
     if (!await proxyHandler.getProxy(action)) {
-      return failTest(() => `Actor ${this.name} could not determine a proxy for the given request.`);
+      return failTest(`Actor ${this.name} could not determine a proxy for the given request.`);
     }
     return passTest({ time: Number.POSITIVE_INFINITY });
   }

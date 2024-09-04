@@ -21,10 +21,10 @@ export class ActorRdfUpdateHypermediaPatchSparqlUpdate extends ActorRdfUpdateHyp
 
   public async testMetadata(action: IActionRdfUpdateHypermedia): Promise<TestResult<IActorTest>> {
     if (!action.forceDestinationType && !action.metadata.patchSparqlUpdate) {
-      return failTest(() => `Actor ${this.name} could not detect a destination with 'application/sparql-update' as 'Accept-Patch' header.`);
+      return failTest(`Actor ${this.name} could not detect a destination with 'application/sparql-update' as 'Accept-Patch' header.`);
     }
     if (!action.forceDestinationType && !action.exists) {
-      return failTest(() => `Actor ${this.name} can only patch a destination that already exists.`);
+      return failTest(`Actor ${this.name} can only patch a destination that already exists.`);
     }
     return passTestVoid();
   }

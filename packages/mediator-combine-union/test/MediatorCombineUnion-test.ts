@@ -117,7 +117,7 @@ class DummyThrowActor extends DummyActor {
   }
 
   public override async test(action: IAction): Promise<TestResult<IDummyTest>> {
-    return failTest(() => 'Dummy Error');
+    return failTest('Dummy Error');
   }
 }
 

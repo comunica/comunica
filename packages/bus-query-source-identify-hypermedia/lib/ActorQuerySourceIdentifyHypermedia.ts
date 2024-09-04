@@ -35,7 +35,7 @@ IActorQuerySourceIdentifyHypermediaOutput
     action: IActionQuerySourceIdentifyHypermedia,
   ): Promise<TestResult<IActorQuerySourceIdentifyHypermediaTest>> {
     if (action.forceSourceType && this.sourceType !== action.forceSourceType) {
-      return failTest(() => `Actor ${this.name} is not able to handle source type ${action.forceSourceType}.`);
+      return failTest(`Actor ${this.name} is not able to handle source type ${action.forceSourceType}.`);
     }
     return this.testMetadata(action);
   }

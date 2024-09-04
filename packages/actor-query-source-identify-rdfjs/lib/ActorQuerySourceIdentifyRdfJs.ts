@@ -26,10 +26,10 @@ export class ActorQuerySourceIdentifyRdfJs extends ActorQuerySourceIdentify {
   public async test(action: IActionQuerySourceIdentify): Promise<TestResult<IActorTest>> {
     const source = action.querySourceUnidentified;
     if (source.type !== undefined && source.type !== 'rdfjs') {
-      return failTest(() => `${this.name} requires a single query source with rdfjs type to be present in the context.`);
+      return failTest(`${this.name} requires a single query source with rdfjs type to be present in the context.`);
     }
     if (typeof source.value === 'string' || !('match' in source.value)) {
-      return failTest(() => `${this.name} received an invalid rdfjs query source.`);
+      return failTest(`${this.name} received an invalid rdfjs query source.`);
     }
     return passTestVoid();
   }

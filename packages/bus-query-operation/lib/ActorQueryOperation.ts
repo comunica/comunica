@@ -189,7 +189,7 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    */
   public static testReadOnly(context: IActionContext): TestResult<any> {
     if (context.get(KeysQueryOperation.readOnly)) {
-      return failTest(() => `Attempted a write operation in read-only mode`);
+      return failTest(`Attempted a write operation in read-only mode`);
     }
     return passTestVoid();
   }

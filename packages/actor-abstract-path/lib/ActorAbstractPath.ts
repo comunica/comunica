@@ -43,7 +43,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
 
   public async testOperation(operation: Algebra.Path, _context: IActionContext): Promise<TestResult<IActorTest>> {
     if (operation.predicate.type !== this.predicateType) {
-      return failTest(() => `This Actor only supports ${this.predicateType} Path operations.`);
+      return failTest(`This Actor only supports ${this.predicateType} Path operations.`);
     }
 
     return passTestVoid();

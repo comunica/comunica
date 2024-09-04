@@ -36,7 +36,7 @@ export class ActorQueryResultSerializeSimple extends ActorQueryResultSerializeFi
     _context: IActionContext,
   ): Promise<TestResult<boolean>> {
     if (![ 'bindings', 'quads', 'boolean', 'void' ].includes(action.type)) {
-      return failTest(() => 'This actor can only handle bindings streams, quad streams, booleans, or updates.');
+      return failTest('This actor can only handle bindings streams, quad streams, booleans, or updates.');
     }
     return passTestVoid();
   }

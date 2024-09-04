@@ -24,7 +24,7 @@ export class ActorQueryProcessExplainParsed extends ActorQueryProcess {
   public async test(action: IActionQueryProcess): Promise<TestResult<IActorTest>> {
     if ((action.context.get(KeysInitQuery.explain) ||
       action.context.get(new ActionContextKey('explain'))) !== 'parsed') {
-      return failTest(() => `${this.name} can only explain in 'parsed' mode.`);
+      return failTest(`${this.name} can only explain in 'parsed' mode.`);
     }
     return passTestVoid();
   }

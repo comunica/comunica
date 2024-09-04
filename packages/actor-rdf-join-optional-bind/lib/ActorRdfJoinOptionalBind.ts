@@ -86,7 +86,7 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
   ): Promise<TestResult<IMediatorTypeJoinCoefficients>> {
     // This actor only works well with common variables
     if (ActorRdfJoin.overlappingVariables(metadatas).length === 0) {
-      return failTest(() => `Actor ${this.name} only join entries with at least one common variable`);
+      return failTest(`Actor ${this.name} only join entries with at least one common variable`);
     }
 
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
@@ -95,7 +95,7 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
     // Reject binding on some operation types
     if (action.entries[1].operation.type === Algebra.types.EXTEND ||
       action.entries[1].operation.type === Algebra.types.GROUP) {
-      return failTest(() => `Actor ${this.name} can not bind on Extend and Group operations`);
+      return failTest(`Actor ${this.name} can not bind on Extend and Group operations`);
     }
 
     // Determine selectivity of join

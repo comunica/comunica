@@ -25,7 +25,7 @@ export class MediatorJoinCoefficientsFixed
     testResults: IActorReply<ActorRdfJoin, IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryOperationResult>[],
   ): Promise<TestResult<ActorRdfJoin>> {
     // Obtain test results
-    const errors: (() => string)[] = [];
+    const errors: string[] = [];
     const promises = testResults.map(({ reply }) => reply);
     const coefficients = (await Promise.all(promises)).map((testResult) => {
       if (testResult.isFailed()) {
@@ -76,8 +76,8 @@ export class MediatorJoinCoefficientsFixed
 
     // Reject if all actors rejected
     if (minIndex < 0) {
-      return failTest(() => `All actors rejected their test in ${this.name}\n${
-        errors.map(error => error()).join('\n')}`);
+      return failTest(`All actors rejected their test in ${this.name}\n${
+        errors.join('\n')}`);
     }
 
     // Return actor with lowest cost
