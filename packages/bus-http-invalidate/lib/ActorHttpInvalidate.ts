@@ -13,9 +13,13 @@ import { Actor } from '@comunica/core';
  * @see IActorHttpInvalidateOutput
  */
 export abstract class ActorHttpInvalidate extends Actor<IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput> {
+  /* eslint-disable max-len */
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {HTTP invalidation failed: none of the configured actors were able to invalidate ${action.url}} busFailMessage
    */
+  /* eslint-enable max-len */
   public constructor(args: IActorHttpInvalidateArgs) {
     super(args);
   }

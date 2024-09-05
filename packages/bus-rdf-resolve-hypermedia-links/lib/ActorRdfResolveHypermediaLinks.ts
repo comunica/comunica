@@ -16,9 +16,13 @@ import type * as RDF from '@rdfjs/types';
  */
 export abstract class ActorRdfResolveHypermediaLinks
   extends Actor<IActionRdfResolveHypermediaLinks, IActorTest, IActorRdfResolveHypermediaLinksOutput> {
+  /* eslint-disable max-len */
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {Hypermedia link resolution failed: none of the configured actors were able to resolve links from metadata} busFailMessage
    */
+  /* eslint-enable max-len */
   public constructor(args: IActorRdfResolveHypermediaLinksArgs) {
     super(args);
   }

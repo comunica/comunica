@@ -28,8 +28,7 @@ export class MediatorRace<A extends Actor<I, T, O>, I extends IAction, T extends
           } else {
             errors.push(reply.getFailMessage());
             if (errors.length === testResults.length) {
-              resolve(failTest(`${this.name} mediated over all rejecting actors:\n${
-                  errors.join('\n')}`));
+              resolve(failTest(this.constructFailureMessage(action, errors)));
             }
           }
         }).catch((error) => {

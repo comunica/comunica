@@ -15,9 +15,13 @@ import type { AsyncIterator } from 'asynciterator';
  * @see IActorRdfUpdateQuadsOutput
  */
 export abstract class ActorRdfUpdateQuads extends Actor<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput> {
+  /* eslint-disable max-len */
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {RDF updating failed: none of the configured actors were able to handle an update} busFailMessage
    */
+  /* eslint-enable max-len */
   public constructor(args: IActorRdfUpdateQuadsArgs) {
     super(args);
   }

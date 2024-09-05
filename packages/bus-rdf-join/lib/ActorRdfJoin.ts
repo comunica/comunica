@@ -67,10 +67,14 @@ export abstract class ActorRdfJoin
    */
   protected readonly requiresVariableOverlap?: boolean;
 
+  /* eslint-disable max-len */
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {RDF joining failed: none of the configured actors were able to handle the join type ${action.type}} busFailMessage
    * @param options - Actor-specific join options.
    */
+  /* eslint-enable max-len */
   public constructor(args: IActorRdfJoinArgs, options: IActorRdfJoinInternalOptions) {
     super(args);
     this.logicalType = options.logicalType;

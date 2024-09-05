@@ -15,7 +15,9 @@ import type { Quad } from 'rdf-data-factory';
  */
 export abstract class ActorHashQuads extends Actor<IActionHashQuads, IActorTest, IActorHashQuadsOutput> {
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {Failed to obtaining hash functions for quads} busFailMessage
    */
   public constructor(args: IActorHashQuadsArgs) {
     super(args);

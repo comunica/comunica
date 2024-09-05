@@ -14,9 +14,13 @@ import type * as RDF from '@rdfjs/types';
  * @see IActorRdfParseHtmlOutput
  */
 export abstract class ActorRdfParseHtml extends Actor<IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput> {
+  /* eslint-disable max-len */
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {RDF HTML parsing failed: none of the configured parsers were able to parse RDF in HTML} busFailMessage
    */
+  /* eslint-enable max-len */
   public constructor(args: IActorRdfParseHtmlArgs) {
     super(args);
   }

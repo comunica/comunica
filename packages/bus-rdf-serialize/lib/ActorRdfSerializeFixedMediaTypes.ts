@@ -23,7 +23,9 @@ IActorRdfSerializeOutput
   /* eslint-disable max-len */
   /**
    * TODO: rm this (and eslint-disable) once we remove the abstract media typed actor
-   * @param args - @defaultNested {<cbrs:components/ActorRdfSerialize.jsonld#ActorRdfSerialize_default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<cbrs:components/ActorRdfSerialize.jsonld#ActorRdfSerialize_default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {RDF serialization failed: none of the configured serializers were able to handle media type ${action.handleMediaType}} busFailMessage
    */
   public constructor(args: IActorRdfSerializeFixedMediaTypesArgs) {
     super(args);

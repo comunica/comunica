@@ -17,7 +17,9 @@ import type { Algebra } from 'sparqlalgebrajs';
 export abstract class ActorOptimizeQueryOperation
   extends Actor<IActionOptimizeQueryOperation, IActorTest, IActorOptimizeQueryOperationOutput> {
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {Query optimization failed: none of the configured actors were able to optimize} busFailMessage
    */
   public constructor(args: IActorOptimizeQueryOperationArgs) {
     super(args);

@@ -32,9 +32,13 @@ import type { IQueryOperationResultBase, IActionContext } from '@comunica/types'
  */
 export abstract class ActorQueryResultSerialize
   extends ActorAbstractMediaTyped<IActionSparqlSerialize, IActorTest, IActorQueryResultSerializeOutput> {
+  /* eslint-disable max-len */
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {Query result serialization failed: none of the configured actors were able to serialize for type ${action.handle.type}} busFailMessage
    */
+  /* eslint-enable max-len */
   public constructor(args: IActorQueryResultSerializeArgs) {
     super(args);
   }

@@ -15,9 +15,13 @@ import type { Algebra } from 'sparqlalgebrajs';
  * @see IActorQueryParseOutput
  */
 export abstract class ActorQueryParse extends Actor<IActionQueryParse, IActorTest, IActorQueryParseOutput> {
+  /* eslint-disable max-len */
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {Query parsing failed: none of the configured parsers were able to the query "${action.query}"} busFailMessage
    */
+  /* eslint-enable max-len */
   public constructor(args: IActorQueryParseArgs) {
     super(args);
   }

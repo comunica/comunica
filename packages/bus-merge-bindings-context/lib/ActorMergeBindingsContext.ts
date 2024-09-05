@@ -16,9 +16,13 @@ import type { IActionContext } from '@comunica/types';
 
 export abstract class ActorMergeBindingsContext
   extends Actor<IActionMergeBindingsContext, IActorTest, IActorMergeBindingsContextOutput> {
+  /* eslint-disable max-len */
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {Merging of bindings contexts failed: none of the configured actors were able to handle the merging} busFailMessage
    */
+  /* eslint-enable max-len */
   public constructor(args: IActorMergeBindingsContextArgs) {
     super(args);
   }

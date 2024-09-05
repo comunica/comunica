@@ -16,9 +16,13 @@ import type { MetadataBindings } from '@comunica/types';
  */
 export abstract class ActorRdfMetadataAccumulate
   extends Actor<IActionRdfMetadataAccumulate, IActorTest, IActorRdfMetadataAccumulateOutput> {
+  /* eslint-disable max-len */
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {Metadata accumulation failed: none of the configured actors were able to accumulate metadata in mode ${action.mode}} busFailMessage
    */
+  /* eslint-enable max-len */
   public constructor(args: IActorRdfMetadataAccumulateArgs) {
     super(args);
   }

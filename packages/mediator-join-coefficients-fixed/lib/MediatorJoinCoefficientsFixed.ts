@@ -76,8 +76,7 @@ export class MediatorJoinCoefficientsFixed
 
     // Reject if all actors rejected
     if (minIndex < 0) {
-      return failTest(`All actors rejected their test in ${this.name}\n${
-        errors.join('\n')}`);
+      return failTest(this.constructFailureMessage(action, errors));
     }
 
     // Return actor with lowest cost

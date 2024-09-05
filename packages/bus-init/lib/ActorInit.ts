@@ -16,7 +16,9 @@ import type { Readable } from 'readable-stream';
  */
 export abstract class ActorInit extends Actor<IActionInit, IActorTest, IActorOutputInit> {
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {Initialization failed: none of the configured actors were to initialize} busFailMessage
    */
   public constructor(args: IActorInitArgs) {
     super(args);

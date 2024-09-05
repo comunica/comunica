@@ -189,19 +189,17 @@ describe('MediatorNumber', () => {
       });
 
       it('should not mediate to the minimum value for type MIN', async() => {
-        await expect(mediatorMin.mediate({ context })).rejects.toThrow(new Error(
-          'All actors rejected their test in mediatorMin\n' +
-          'abc\n' +
-          'abc',
-        ));
+        await expect(mediatorMin.mediate({ context })).rejects.toThrow(`BUS FAIL MESSAGE
+    Error messages of failing actors:
+        abc
+        abc`);
       });
 
       it('should not mediate to the maximum value for type MAX', async() => {
-        await expect(mediatorMax.mediate({ context })).rejects.toThrow(new Error(
-          'All actors rejected their test in mediatorMax\n' +
-          'abc\n' +
-          'abc',
-        ));
+        await expect(mediatorMax.mediate({ context })).rejects.toThrow(`BUS FAIL MESSAGE
+    Error messages of failing actors:
+        abc
+        abc`);
       });
     });
 
@@ -239,7 +237,7 @@ class DummyActor extends Actor<IAction, IDummyTest, IDummyTest> {
   public readonly id: number | undefined;
 
   public constructor(id: number | undefined, bus: Bus<DummyActor, IAction, IDummyTest, IDummyTest>) {
-    super({ name: `dummy${id}`, bus });
+    super({ name: `dummy${id}`, bus, busFailMessage: 'BUS FAIL MESSAGE' });
     this.id = id;
   }
 
@@ -256,7 +254,7 @@ class DummyActorInvalid extends Actor<IAction, IDummyTest, IDummyTest> {
   public readonly id: number;
 
   public constructor(id: number, bus: Bus<DummyActor, IAction, IDummyTest, IDummyTest>) {
-    super({ name: `dummy${id}`, bus });
+    super({ name: `dummy${id}`, bus, busFailMessage: 'BUS FAIL MESSAGE' });
     this.id = id;
   }
 

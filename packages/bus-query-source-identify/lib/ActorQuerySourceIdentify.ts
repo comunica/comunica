@@ -15,9 +15,13 @@ import type { IQuerySourceWrapper, QuerySourceUnidentifiedExpanded } from '@comu
  */
 export abstract class ActorQuerySourceIdentify
   extends Actor<IActionQuerySourceIdentify, IActorTest, IActorQuerySourceIdentifyOutput> {
+  /* eslint-disable max-len */
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {Query source identification failed: none of the configured actors were able to identify ${action.querySourceUnidentified.value}} busFailMessage
    */
+  /* eslint-enable max-len */
   public constructor(args: IActorQuerySourceIdentifyArgs) {
     super(args);
   }

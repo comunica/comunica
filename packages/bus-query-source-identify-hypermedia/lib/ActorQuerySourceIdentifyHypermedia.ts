@@ -22,10 +22,14 @@ IActorQuerySourceIdentifyHypermediaOutput
 > {
   protected readonly sourceType: string;
 
+  /* eslint-disable max-len */
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {Query source hypermedia identification failed: none of the configured actors were able to identify ${action.url}} busFailMessage
    * @param sourceType The source type.
    */
+  /* eslint-enable max-len */
   public constructor(args: IActorQuerySourceIdentifyHypermediaArgs, sourceType: string) {
     super(args);
     this.sourceType = sourceType;

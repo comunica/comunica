@@ -16,7 +16,9 @@ import type { IActionContext } from '@comunica/types';
 export abstract class ActorContextPreprocess
   extends Actor<IActionContextPreprocess, IActorTest, IActorContextPreprocessOutput> {
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {Context preprocessing failed} busFailMessage
    */
   public constructor(args: IActorContextPreprocessArgs) {
     super(args);

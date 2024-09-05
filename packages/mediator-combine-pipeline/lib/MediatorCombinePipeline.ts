@@ -42,7 +42,13 @@ T extends IActorTest,
 
     // Delegate test errors.
     testResults = await Promise.all(testResults
-      .map(async({ actor, reply }) => ({ actor, reply: (await reply).getOrThrow() })));
+      .map(async({ actor, reply }) => {
+        try {
+          return { actor, reply: (await reply).getOrThrow() };
+        } catch (error: unknown) {
+          throw new Error(this.constructFailureMessage(action, [ (<Error> error).message ]));
+        }
+      }));
 
     // Order the test results if ordering is enabled
     if (this.order) {

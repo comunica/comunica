@@ -15,9 +15,13 @@ import type * as RDF from '@rdfjs/types';
  */
 export abstract class ActorRdfMetadataExtract
   extends Actor<IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput> {
+  /* eslint-disable max-len */
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {Metadata extraction failed: none of the configured actors were able to extract metadata from ${action.url}} busFailMessage
    */
+  /* eslint-enable max-len */
   public constructor(args: IActorRdfMetadataExtractArgs) {
     super(args);
   }

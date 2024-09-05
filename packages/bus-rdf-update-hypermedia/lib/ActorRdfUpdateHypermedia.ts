@@ -17,10 +17,14 @@ export abstract class ActorRdfUpdateHypermedia
   extends Actor<IActionRdfUpdateHypermedia, IActorTest, IActorRdfUpdateHypermediaOutput> {
   protected readonly destinationType: string;
 
+  /* eslint-disable max-len */
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {RDF hypermedia updating failed: none of the configured actors were able to handle an update for ${action.url}} busFailMessage
    * @param destinationType - The destination type.
    */
+  /* eslint-enable max-len */
   public constructor(args: IActorRdfUpdateHypermediaArgs, destinationType: string) {
     super(args);
     this.destinationType = destinationType;

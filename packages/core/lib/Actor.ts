@@ -42,6 +42,9 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
     if (this.beforeActors.length > 0) {
       this.bus.addDependencies(this, this.beforeActors);
     }
+    if (args.busFailMessage) {
+      this.bus.failMessage = args.busFailMessage;
+    }
   }
 
   /**
@@ -169,6 +172,14 @@ export interface IActorArgs<I extends IAction, T extends IActorTest, O extends I
    * The bus this actor subscribes to.
    */
   bus: Bus<Actor<I, T, O>, I, T, O>;
+  /**
+   * The message that will be configured in the bus for reporting failures.
+   *
+   * This message may be a template string that contains references to the executed `action`.
+   * For example, the following templated string is allowed:
+   * "RDF dereferencing failed: no actors could handle ${action.handle.mediaType}"
+   */
+  busFailMessage?: string;
   /**
    * Actor that must be registered in the bus before this actor.
    */

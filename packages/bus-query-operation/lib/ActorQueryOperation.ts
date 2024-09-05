@@ -41,9 +41,13 @@ let bnodeCounter = 0;
  * @see IQueryOperationResult
  */
 export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, IActorTest, IQueryOperationResult> {
+  /* eslint-disable max-len */
   /**
-   * @param args - @defaultNested {<default_bus> a <cbqo:components/BusQueryOperation.jsonld#BusQueryOperation>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cbqo:components/BusQueryOperation.jsonld#BusQueryOperation>} bus
+   *   \ @defaultNested {Query operation processing failed: none of the configured actors were able to handle the operation type ${action.operation.type}} busFailMessage
    */
+  /* eslint-enable max-len */
   protected constructor(args: IActorQueryOperationArgs) {
     super(args);
   }

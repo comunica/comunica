@@ -53,6 +53,32 @@ describe('Mediator', () => {
       expect(mediator.bus).toEqual(bus);
     });
 
+    describe('constructFailureMessage', () => {
+      beforeEach(() => {
+        bus.failMessage = `This is a message based on $\{action.a} and $\{action.b.c}`;
+      });
+
+      it('instantiates templated strings', () => {
+        expect(mediator.constructFailureMessage(
+          { a: 'A', b: { c: 'C' }},
+          [ 'fail1', 'fail2' ],
+        )).toBe(`This is a message based on A and C
+    Error messages of failing actors:
+        fail1
+        fail2`);
+      });
+
+      it('instantiates templated strings with missing action fields', () => {
+        expect(mediator.constructFailureMessage(
+          { a: 'A' },
+          [ 'fail1', 'fail2' ],
+        )).toBe(`This is a message based on A and $\{action.b.c}
+    Error messages of failing actors:
+        fail1
+        fail2`);
+      });
+    });
+
     describe('without actors in the bus', () => {
       it('should throw an error when mediated over', async() => {
         await expect(mediator.mediate({})).rejects.toBeInstanceOf(Error);

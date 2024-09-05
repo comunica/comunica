@@ -23,9 +23,13 @@ const toWebReadableStream = require('readable-stream-node-to-web');
  * @see IActorHttpOutput
  */
 export abstract class ActorHttp extends Actor<IActionHttp, IActorTest, IActorHttpOutput> {
+  /* eslint-disable max-len */
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {HTTP request failed: none of the configured actors were able to handle ${action.input}} busFailMessage
    */
+  /* eslint-enable max-len */
   public constructor(args: IActorHttpArgs) {
     super(args);
   }

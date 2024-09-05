@@ -78,8 +78,7 @@ export class MediatorNumber<A extends Actor<I, T, O>, I extends IAction, T exten
     // Determine one value
     const index = this.indexPicker(results);
     if (index < 0) {
-      return failTest(`All actors rejected their test in ${this.name}\n${
-        failures.join('\n')}`);
+      return failTest(this.constructFailureMessage(action, failures));
     }
     return passTest(testResults[index].actor);
   }

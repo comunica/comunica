@@ -17,9 +17,13 @@ import type { IJoinEntry } from '@comunica/types';
  */
 export abstract class ActorRdfJoinSelectivity
   extends Actor<IActionRdfJoinSelectivity, IMediatorTypeAccuracy, IActorRdfJoinSelectivityOutput> {
+  /* eslint-disable max-len */
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {Determining join selectivity failed: none of the configured actors were able to calculate selectivities} busFailMessage
    */
+  /* eslint-enable max-len */
   public constructor(args: IActorRdfJoinSelectivityArgs) {
     super(args);
   }

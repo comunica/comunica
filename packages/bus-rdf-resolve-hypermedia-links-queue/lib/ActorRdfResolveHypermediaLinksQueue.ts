@@ -15,9 +15,13 @@ import type { ILinkQueue } from './ILinkQueue';
  */
 export abstract class ActorRdfResolveHypermediaLinksQueue extends
   Actor<IActionRdfResolveHypermediaLinksQueue, IActorTest, IActorRdfResolveHypermediaLinksQueueOutput> {
+  /* eslint-disable max-len */
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {Link queue creation failed: none of the configured actors were able to create a link queue starting from ${action.firstUrl}} busFailMessage
    */
+  /* eslint-enable max-len */
   public constructor(args: IActorRdfResolveHypermediaLinksQueueArgs) {
     super(args);
   }

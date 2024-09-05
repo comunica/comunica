@@ -118,6 +118,30 @@ O extends IActorOutput,
    * @return {Promise<A extends Actor<I, T, O>>} A promise that resolves to the _best_ actor.
    */
   protected abstract mediateWith(action: I, testResults: IActorReply<A, I, T, O>[]): Promise<TestResult<A>>;
+
+  /**
+   * Construct a human-friendly failure message that accumulates the given actors's failure messages.
+   * @param action The action that was executed.
+   * @param actorFailures The failure messages that were collected from actor tests based on the given executed action.
+   * @protected
+   */
+  protected constructFailureMessage(action: I, actorFailures: string[]): string {
+    const prefix = `\n        `;
+    const failMessage = this.bus.failMessage
+      .replaceAll(/\$\{(.*?)\}/gu, (match, key) => Mediator
+        .getObjectValue({ action }, key.split('.')) || match);
+    return `${failMessage}\n    Error messages of failing actors:${prefix}${actorFailures.join(prefix)}`;
+  }
+
+  protected static getObjectValue(obj: any, path: string[]): any {
+    if (path.length === 0) {
+      return obj;
+    }
+    if (obj) {
+      return Mediator.getObjectValue(obj[path[0]], path.slice(1));
+    }
+    return undefined;
+  }
 }
 
 export interface IMediatorArgs<

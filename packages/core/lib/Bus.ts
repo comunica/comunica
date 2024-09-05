@@ -24,6 +24,7 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
   protected readonly observers: ActionObserver<I, O>[] = [];
   // Mapping from dependency (after) to dependents (before)
   protected readonly dependencyLinks: Map<A, A[]> = new Map();
+  public failMessage: string;
 
   /**
    * All enumerable properties from the `args` object are inherited to this bus.
@@ -34,6 +35,7 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
    */
   public constructor(args: IBusArgs) {
     Object.assign(this, args);
+    this.failMessage = `All actors over bus ${this.name} failed to handle an action`;
   }
 
   /**

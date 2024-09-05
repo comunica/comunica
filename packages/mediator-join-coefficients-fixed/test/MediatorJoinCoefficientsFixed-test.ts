@@ -61,10 +61,11 @@ describe('MediatorJoinCoefficientsFixed', () => {
       new DummyActor(3, <any>{}, bus, true);
 
       await expect(mediator.mediate(action))
-        .rejects.toThrow(`All actors rejected their test in mediator
-Actor 1 fails
-Actor 2 fails
-Actor 3 fails`);
+        .rejects.toThrow(`BUS FAIL MESSAGE
+    Error messages of failing actors:
+        Actor 1 fails
+        Actor 2 fails
+        Actor 3 fails`);
     });
 
     it('should handle a single actor', async() => {
@@ -468,7 +469,7 @@ class DummyActor extends Actor<IAction, IMediatorTypeJoinCoefficients, IDummyOut
     bus: Bus<DummyActor, IAction, IMediatorTypeJoinCoefficients, IDummyOutput>,
     reject = false,
   ) {
-    super({ name: `dummy${id}`, bus });
+    super({ name: `dummy${id}`, bus, busFailMessage: 'BUS FAIL MESSAGE' });
     this.physicalName = `PHYSICAL${id}`;
     this.id = id;
     this.coeffs = coeffs;

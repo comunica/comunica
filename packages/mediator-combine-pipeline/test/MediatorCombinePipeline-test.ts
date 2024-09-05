@@ -226,7 +226,7 @@ class DummyActor extends Actor<IDummyAction, IActorTest, IDummyOutput> {
     bus: Bus<DummyActor, IDummyAction, IActorTest, IDummyOutput>,
     testOutput: IActorTest = {},
   ) {
-    super({ name: `dummy${id}`, bus });
+    super({ name: `dummy${id}`, bus, busFailMessage: 'BUS FAIL MESSAGE' });
     this.id = id;
     this.testOutput = testOutput;
   }
@@ -262,7 +262,7 @@ class DummyConcatActor extends Actor<IDummyConcatAction, IActorTest, IDummyConca
     bus: Bus<DummyConcatActor, IDummyConcatAction, IActorTest, IDummyConcatOutput>,
     testOutput: IActorTest,
   ) {
-    super({ name: `dummy${id}`, bus });
+    super({ name: `dummy${id}`, bus, busFailMessage: 'BUS FAIL MESSAGE' });
     this.id = id;
     this.testOutput = testOutput;
   }

@@ -17,7 +17,9 @@ import type { IJoinEntryWithMetadata } from '@comunica/types';
 export abstract class ActorRdfJoinEntriesSort
   extends Actor<IActionRdfJoinEntriesSort, IActorTest, IActorRdfJoinEntriesSortOutput> {
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {Sorting join entries failed: none of the configured actors were able to sort} busFailMessage
    */
   public constructor(args: IActorRdfJoinEntriesSortArgs) {
     super(args);

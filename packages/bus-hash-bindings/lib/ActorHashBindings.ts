@@ -17,7 +17,9 @@ import type { Bindings } from '@comunica/types';
 export abstract class ActorHashBindings
   extends Actor<IActionHashBindings, IActorTest, IActorHashBindingsOutput> {
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {Failed to obtaining hash functions for bindings} busFailMessage
    */
   public constructor(args: IActorHashBindingsArgs) {
     super(args);
