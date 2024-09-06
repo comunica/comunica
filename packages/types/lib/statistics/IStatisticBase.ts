@@ -27,7 +27,7 @@ export interface IStatisticBase<T> {
   /**
    * @returns All listeners on statistic
    */
-  rawListeners: () => ((data: T) => any)[];
+  getListeners: () => ((data: T) => any)[];
 
   /**
    * Updates the statistic with new information from query processing

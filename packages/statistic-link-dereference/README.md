@@ -14,10 +14,26 @@ This module is part of the [Comunica framework](https://github.com/comunica/comu
 $ yarn add @comunica/statistic-link-dereference
 ```
 
-## Adding to the context
+## Using the tracker
 
 ```javascript
-    let context = new ActionContext();
+    const QueryEngine = require('@comunica/query-sparql').QueryEngine;
+    const myEngine = new QueryEngine();
     const statisticTracker = new StatisticLinkDereference();
-    context = context.set(statisticTracker.key, statisticTracker);
+
+    // Print any data emitted by the tracker
+    statisticTracker.on((data) => console.log(data));
+
+    // Add the tracker to the context
+    let context = {sources: ['https://fragments.dbpedia.org/2015/en']};
+    context[statisticTracker.key.name] = statisticTracker;
+
+    // Execute the query
+    const bindingsStream = await myEngine.queryBindings(`
+    SELECT ?s ?p ?o WHERE {
+        ?s ?p ?o
+    } LIMIT 10`, context);
+    bindingsStream.on('data', (binding) => {
+        console.log(binding.toString());
+    });
 ```

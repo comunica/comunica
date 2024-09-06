@@ -37,7 +37,7 @@ describe('StatisticLinkDiscovery', () => {
     // TODO Move to statisticBase
     it('attach an event listener', () => {
       statisticLinkDiscovery.on(cb);
-      expect(statisticLinkDiscovery.rawListeners()).toEqual(
+      expect(statisticLinkDiscovery.getListenerss()).toEqual(
         [ cb ],
       );
     });

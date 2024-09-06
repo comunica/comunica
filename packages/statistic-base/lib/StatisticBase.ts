@@ -34,7 +34,7 @@ export abstract class StatisticBase<TEventData> implements IStatisticBase<TEvent
     return true;
   }
 
-  public rawListeners(): ((data: TEventData) => any)[] {
+  public getListeners(): ((data: TEventData) => any)[] {
     return this.listeners;
   }
 
