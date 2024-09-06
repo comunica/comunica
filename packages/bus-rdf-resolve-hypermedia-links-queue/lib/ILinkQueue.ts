@@ -1,4 +1,4 @@
-import type { ILink } from '@comunica/bus-rdf-resolve-hypermedia-links';
+import type { ILink } from '@comunica/types';
 
 /**
  * A datastructure that accepts links, and emits them in an implementation-defined order.

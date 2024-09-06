@@ -12,6 +12,9 @@ import type {
   QuerySourceUnidentified,
   IQuerySourceWrapper,
   QuerySourceReference,
+  IStatisticBase,
+  IDiscoverEventData,
+  ILink,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { IDocumentLoader } from 'jsonld-context-parser';
@@ -297,4 +300,19 @@ export const KeysRdfJoin = {
    * The last physical join actor that was executed.
    */
   lastPhysicalJoin: new ActionContextKey<string>('@comunica/bus-rdf-join:lastPhysicalJoin'),
+};
+
+export const KeysStatistics = {
+  /**
+   * All discovered links during query execution. Not all of them will necessarily be dereferenced.
+   */
+  discoveredLinks: new ActionContextKey<IStatisticBase<IDiscoverEventData>>(
+    '@comunica/bus-context-preprocess:discoveredLinks',
+  ),
+  /**
+   * Information about what links are dereferenced and when
+   */
+  dereferencedLinks: new ActionContextKey<IStatisticBase<ILink>>(
+    '@comunica/bus-context-preprocess:dereferencedLinks',
+  ),
 };
