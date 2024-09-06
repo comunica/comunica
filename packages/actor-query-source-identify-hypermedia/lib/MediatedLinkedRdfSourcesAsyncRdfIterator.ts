@@ -155,10 +155,9 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   protected async getSourceLinks(metadata: Record<string, any>, startSource: ISourceState): Promise<ILink[]> {
     try {
       const { links } = await this.mediatorRdfResolveHypermediaLinks.mediate({ context: this.context, metadata });
+      // Update discovery event statistic if available
       const traversalTracker: IStatisticBase<IDiscoverEventData> | undefined =
         this.context.get(KeysStatistics.discoveredLinks);
-
-      // Update discovery event statistic if available
       if (traversalTracker) {
         for (const link of links) {
           traversalTracker.updateStatistic({ url: link.url, metadata: { ...link.metadata }}, startSource.link);

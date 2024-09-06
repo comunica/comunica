@@ -58,12 +58,9 @@ export class ActorContextPreprocessQuerySourceIdentify extends ActorContextPrepr
       const querySources: IQuerySourceWrapper[] = await Promise.all(querySourcesUnidentifiedExpanded
         .map(async querySourceUnidentified => this.identifySource(querySourceUnidentified, action.context)));
 
-      /**
-       * When identifying sources in preprocess actor, we record this as a dereference seed document event
-       */
+      // When identifying sources in preprocess actor, we record this as a dereference seed document event
       const statisticDereferenceLinks: IStatisticBase<ILink> | undefined = action.context
         .get(KeysStatistics.dereferencedLinks);
-
       if (statisticDereferenceLinks) {
         for (const querySource of querySources) {
           statisticDereferenceLinks.updateStatistic({
