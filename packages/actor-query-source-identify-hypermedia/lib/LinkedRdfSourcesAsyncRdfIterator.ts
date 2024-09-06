@@ -315,12 +315,10 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
             this.iteratorsPendingCreation++;
             this.sourceStateGetter(nextLink, handledDatasets)
               .then((nextSourceState) => {
-                // Find any statistics tracking dereference events
+                // If we find a statistic tracking dereference events we emit the relevant data
                 const statisticDereferenceLinks: IStatisticBase<ILink> | undefined = this.context.get(
                   KeysStatistics.dereferencedLinks,
                 );
-
-                // If we find a statistic tracking dereference events we emit the relevant data
                 if (statisticDereferenceLinks) {
                   statisticDereferenceLinks.updateStatistic(
                     {
