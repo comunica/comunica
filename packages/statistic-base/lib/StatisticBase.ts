@@ -1,7 +1,7 @@
 import type { IStatisticBase } from '@comunica/types';
 
 /**
- * Base class for statistics with event emitter logic implemented. Each statistic tracker implementation
+ * Base class for statistics with event emitter logic implemented. Statistic tracker implementations
  * should only define their updateStatistic function.
  */
 export abstract class StatisticBase<TEventData> implements IStatisticBase<TEventData> {

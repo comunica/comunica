@@ -158,13 +158,10 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
       const traversalTracker: IStatisticBase<IDiscoverEventData> | undefined =
         this.context.get(KeysStatistics.discoveredLinks);
 
+      // Update discovery event statistic if available
       if (traversalTracker) {
         for (const link of links) {
-          const linkStatistic: ILink = {
-            url: link.url,
-            metadata: { ...link.metadata },
-          };
-          traversalTracker.updateStatistic(linkStatistic, startSource.link);
+          traversalTracker.updateStatistic({ url: link.url, metadata: { ...link.metadata }}, startSource.link);
         }
       }
 

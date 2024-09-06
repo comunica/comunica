@@ -66,13 +66,12 @@ export class ActorContextPreprocessQuerySourceIdentify extends ActorContextPrepr
 
       if (statisticDereferenceLinks) {
         for (const querySource of querySources) {
-          const linkStatistic: ILink = {
+          statisticDereferenceLinks.updateStatistic({
             url: <string> querySource.source.referenceValue,
             metadata: {
               seed: true,
             },
-          };
-          statisticDereferenceLinks.updateStatistic(linkStatistic, querySource.source);
+          }, querySource.source);
         }
       }
 
