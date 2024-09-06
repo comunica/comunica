@@ -10,7 +10,8 @@
     {
       "@id": "urn:comunica:default:query-operation/actors#construct",
       "@type": "ActorQueryOperationConstruct",
-      "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" }
+      "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
+      "mediatorProcessIterator": { "@id": "urn:comunica:default:process-iterator/mediators#main" }
     }
   ]
 }

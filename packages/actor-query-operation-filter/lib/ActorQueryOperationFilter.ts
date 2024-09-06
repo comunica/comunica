@@ -1,11 +1,12 @@
 import { BindingsFactory, bindingsToString } from '@comunica/bindings-factory';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
+import { MediatorProcessIterator } from '@comunica/bus-process-iterator';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
-import type { IActorTest } from '@comunica/core';
+import { ActionContext, type IActorTest } from '@comunica/core';
 import { AsyncEvaluator, isExpressionError } from '@comunica/expression-evaluator';
 import type { Bindings, IActionContext, IQueryOperationResult } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -15,6 +16,7 @@ import type { Algebra } from 'sparqlalgebrajs';
  */
 export class ActorQueryOperationFilter extends ActorQueryOperationTypedMediated<Algebra.Filter> {
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+  public readonly mediatorProcessIterator: MediatorProcessIterator;
 
   public constructor(args: IActorQueryOperationFilterSparqleeArgs) {
     super(args, 'filter');
@@ -74,7 +76,18 @@ export class ActorQueryOperationFilter extends ActorQueryOperationTypedMediated<
     };
 
     // eslint-disable-next-line ts/no-misused-promises
-    const bindingsStream = output.bindingsStream.transform<Bindings>({ transform, autoStart: false });
+    const _bindingsStream = output.bindingsStream.transform<Bindings>({ transform, autoStart: false });
+
+    // Apply iterator processing actors on filtered stream
+    const { stream } = await this.mediatorProcessIterator.mediate({
+      type: "binding",
+      streamSource: this.name,
+      stream: _bindingsStream, 
+      context: new ActionContext()
+    });
+    const bindingsStream = stream;
+
+    
     return { type: 'bindings', bindingsStream, metadata: output.metadata };
   }
 }
@@ -84,4 +97,8 @@ export interface IActorQueryOperationFilterSparqleeArgs extends IActorQueryOpera
    * A mediator for creating binding context merge handlers
    */
   mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+  /**
+   * A mediator for applying processing the filtered binding stream
+   */
+  mediatorProcessIterator: MediatorProcessIterator;
 }
