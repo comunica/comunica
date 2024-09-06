@@ -19,14 +19,14 @@ describe('StatisticLinkDiscovery', () => {
   describe('An StatisticLinkDereference instance should', () => {
     it('attach an event listener', () => {
       mockStatisticBase.on(cb);
-      expect(mockStatisticBase.getListenerss()).toEqual(
+      expect(mockStatisticBase.getListeners()).toEqual(
         [ cb ],
       );
     });
     it('attach same function multiple times', () => {
       mockStatisticBase.on(cb);
       mockStatisticBase.on(cb);
-      expect(mockStatisticBase.getListenerss()).toEqual(
+      expect(mockStatisticBase.getListeners()).toEqual(
         [ cb, cb ],
       );
     });
@@ -34,7 +34,7 @@ describe('StatisticLinkDiscovery', () => {
     it('detach an event listener', () => {
       mockStatisticBase.on(cb);
       mockStatisticBase.removeListener(cb);
-      expect(mockStatisticBase.getListenerss()).toEqual(
+      expect(mockStatisticBase.getListeners()).toEqual(
         [ ],
       );
     });
@@ -43,14 +43,14 @@ describe('StatisticLinkDiscovery', () => {
       mockStatisticBase.on(cb);
       mockStatisticBase.on(cb);
       mockStatisticBase.removeListener(cb);
-      expect(mockStatisticBase.getListenerss()).toEqual(
+      expect(mockStatisticBase.getListeners()).toEqual(
         [ ],
       );
     });
 
     it('do nothing when detaching without listeners', () => {
       mockStatisticBase.removeListener(cb);
-      expect(mockStatisticBase.getListenerss()).toEqual(
+      expect(mockStatisticBase.getListeners()).toEqual(
         [ ],
       );
     });

@@ -56,7 +56,7 @@ describe('StatisticLinkDereference', () => {
     // TODO Move to statisticBase
     it('attach an event listener', () => {
       statisticLinkDereference.on(cb);
-      expect(statisticLinkDereference.getListenerss()).toEqual(
+      expect(statisticLinkDereference.getListeners()).toEqual(
         [ cb ],
       );
     });
