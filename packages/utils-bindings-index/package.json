@@ -1,23 +1,21 @@
 {
-  "name": "@comunica/actor-rdf-join-optional-hash",
+  "name": "@comunica/utils-bindings-index",
   "version": "3.2.2",
-  "description": "A optional-hash rdf-join actor",
-  "lsd:module": true,
+  "description": "Utilities related to a bindings index",
   "license": "MIT",
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-rdf-join-optional-hash"
+    "directory": "packages/utils-bindings-index"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"
   },
   "keywords": [
     "comunica",
-    "actor",
-    "rdf-join",
-    "optional-hash"
+    "utils",
+    "bindings-index"
   ],
   "sideEffects": false,
   "main": "lib/index.js",
@@ -37,14 +35,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-query-operation": "^3.2.2",
-    "@comunica/bus-rdf-join": "^3.2.1",
-    "@comunica/core": "^3.2.1",
-    "@comunica/mediatortype-join-coefficients": "^3.2.1",
     "@comunica/types": "^3.2.1",
-    "@comunica/utils-bindings-index": "^3.2.2",
-    "@rdfjs/types": "*",
-    "asynciterator": "^3.9.0",
-    "rdf-string": "^1.6.3"
+    "@rdfjs/types": "*"
   }
 }

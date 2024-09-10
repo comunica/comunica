@@ -9,13 +9,12 @@ import type { TestResult } from '@comunica/core';
 import { passTest } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { BindingsStream, MetadataBindings } from '@comunica/types';
+import type { IBindingsIndex } from '@comunica/utils-bindings-index';
+import { BindingsIndexDef, BindingsIndexUndef } from '@comunica/utils-bindings-index';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { UnionIterator, ArrayIterator, MultiTransformIterator, BufferedIterator } from 'asynciterator';
 import { termToString } from 'rdf-string';
-import { BindingsIndexDef } from './BindingsIndexDef';
-import { BindingsIndexUndef } from './BindingsIndexUndef';
-import type { IBindingsIndex } from './IBindingsIndex';
 
 /**
  * A comunica Optional Hash RDF Join Actor.

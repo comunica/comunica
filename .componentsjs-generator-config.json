@@ -13,7 +13,8 @@
     "packages/jest",
     "packages/packager",
     "packages/runner-cli",
-    "packages/expression-evaluator"
+    "packages/expression-evaluator",
+    "packages/utils-bindings-index"
   ],
   "ignoreComponents": [
     "Error",
