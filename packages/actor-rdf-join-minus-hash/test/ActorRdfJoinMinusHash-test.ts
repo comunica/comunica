@@ -696,6 +696,76 @@ IActorRdfJoinSelectivityOutput
         ]);
       });
 
+      it('should handle all undefs in right entry', async() => {
+        const action: IActionRdfJoin = {
+          type: 'minus',
+          entries: [
+            {
+              output: <any> {
+                bindingsStream: new ArrayIterator([
+                  BF.bindings([
+                    [ DF.variable('a'), DF.literal('1') ],
+                    [ DF.variable('b'), DF.literal('1') ],
+                  ]),
+                  BF.bindings([
+                    [ DF.variable('a'), DF.literal('2') ],
+                    [ DF.variable('b'), DF.literal('2') ],
+                  ]),
+                  BF.bindings([
+                    [ DF.variable('a'), DF.literal('3') ],
+                    [ DF.variable('b'), DF.literal('3') ],
+                  ]),
+                ], { autoStart: false }),
+                metadata: () => Promise.resolve({
+                  cardinality: 3,
+                  canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('b') ],
+                }),
+                type: 'bindings',
+              },
+              operation: <any> {},
+            },
+            {
+              output: <any> {
+                bindingsStream: new ArrayIterator([
+                  BF.bindings([
+                    [ DF.variable('a'), DF.literal('1') ],
+                  ]),
+                  BF.bindings([]),
+                ], { autoStart: false }),
+                metadata: () => Promise.resolve({
+                  cardinality: 2,
+                  canContainUndefs: false,
+                  variables: [ DF.variable('a'), DF.variable('b') ],
+                }),
+                type: 'bindings',
+              },
+              operation: <any> {},
+            },
+          ],
+          context,
+        };
+        const { result } = await actor.getOutput(action);
+
+        // Validate output
+        expect(result.type).toBe('bindings');
+        await expect(result.metadata()).resolves.toEqual({
+          cardinality: 3,
+          canContainUndefs: false,
+          variables: [ DF.variable('a'), DF.variable('b') ],
+        });
+        await expect(result.bindingsStream).toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('a'), DF.literal('2') ],
+            [ DF.variable('b'), DF.literal('2') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('a'), DF.literal('3') ],
+            [ DF.variable('b'), DF.literal('3') ],
+          ]),
+        ]);
+      });
+
       it('should handle undef in left entry', async() => {
         const action: IActionRdfJoin = {
           type: 'minus',

@@ -6,6 +6,6 @@ import type { Bindings } from '@comunica/types';
 export interface IBindingsIndex<V> {
   put: (bindings: Bindings, value: V) => V;
   get: (bindings: Bindings) => V[];
-  getFirst: (bindings: Bindings) => V | undefined;
+  getFirst: (bindings: Bindings, matchUndefsAsWildcard: boolean) => V | undefined;
   values: () => V[];
 }

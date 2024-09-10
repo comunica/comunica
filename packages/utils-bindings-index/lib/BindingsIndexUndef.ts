@@ -13,10 +13,16 @@ export class BindingsIndexUndef<V> implements IBindingsIndex<V> {
   private readonly keys: RDF.Variable[];
   private readonly data: IDataIndex<V> = {};
   private readonly hashFn: (term: RDF.Term | undefined) => string;
+  private readonly allowDisjointDomains: boolean;
 
-  public constructor(keys: RDF.Variable[], hashFn: (term: RDF.Term | undefined) => string) {
+  public constructor(
+    keys: RDF.Variable[],
+    hashFn: (term: RDF.Term | undefined) => string,
+    allowDisjointDomains: boolean,
+  ) {
     this.keys = keys;
     this.hashFn = hashFn;
+    this.allowDisjointDomains = allowDisjointDomains && this.keys.length > 0;
   }
 
   /**
@@ -25,14 +31,14 @@ export class BindingsIndexUndef<V> implements IBindingsIndex<V> {
    * @param {V} value The value to put.
    */
   public put(bindings: Bindings, value: V): V {
-    if (this.isBindingsValid(bindings)) {
+    if (this.allowDisjointDomains || this.isBindingsValid(bindings)) {
       let dataIt: IDataIndex<V> | V = this.data;
       for (let i = 0; i < this.keys.length; i++) {
         const key = this.keys[i];
         const dataKey = this.hashFn(bindings.get(key));
-        let subDataIt: IDataIndex<V> | V | undefined = (<IDataIndex<V>> dataIt)[dataKey];
+        let subDataIt: IDataIndex<V> | V | undefined = (<IDataIndex<V>>dataIt)[dataKey];
         if (!subDataIt) {
-          subDataIt = ((<IDataIndex<V>> dataIt))[dataKey] = i === this.keys.length - 1 ? value : {};
+          subDataIt = ((<IDataIndex<V>>dataIt))[dataKey] = i === this.keys.length - 1 ? value : {};
         }
         dataIt = subDataIt;
       }
@@ -57,8 +63,8 @@ export class BindingsIndexUndef<V> implements IBindingsIndex<V> {
    * @return {V[]} The values.
    */
   public get(bindings: Bindings): V[] {
-    // Always return undefined if the bindings contain none of the expected keys
-    if (!this.isBindingsValid(bindings)) {
+    // Always return empty if the bindings contain none of the expected keys
+    if (!(this.allowDisjointDomains || this.isBindingsValid(bindings))) {
       return [];
     }
 
@@ -99,18 +105,25 @@ export class BindingsIndexUndef<V> implements IBindingsIndex<V> {
   /**
    * Get the first value of the given bindings is contained in this index.
    * @param {Bindings} bindings A bindings.
+   * @param matchUndefsAsWildcard If undefs in the given bindings should match with any existing values.
+   *                              Otherwise, undefs will only match values that were inserted as undefs.
    * @return {V | undefined} The value.
    */
-  public getFirst(bindings: Bindings): V | undefined {
+  public getFirst(bindings: Bindings, matchUndefsAsWildcard = true): V | undefined {
     // Always return undefined if the bindings contain none of the expected keys
-    if (!this.isBindingsValid(bindings)) {
+    if (!(this.allowDisjointDomains || this.isBindingsValid(bindings))) {
       return undefined;
     }
 
-    return this.getRecursiveFirst(bindings, this.keys, [ this.data ]);
+    return this.getRecursiveFirst(bindings, this.keys, [ this.data ], matchUndefsAsWildcard);
   }
 
-  protected getRecursiveFirst(bindings: Bindings, keys: RDF.Variable[], dataIndexes: IDataIndex<V>[]): V | undefined {
+  protected getRecursiveFirst(
+    bindings: Bindings,
+    keys: RDF.Variable[],
+    dataIndexes: IDataIndex<V>[],
+    matchUndefsAsWildcard: boolean,
+  ): V | undefined {
     if (keys.length === 0) {
       return <V> dataIndexes[0];
     }
@@ -121,13 +134,13 @@ export class BindingsIndexUndef<V> implements IBindingsIndex<V> {
     for (const data of dataIndexes) {
       // If the index contained a variable, all terms will match.
       const dataKey = this.hashFn(bindings.get(key));
-      if (dataKey) {
+      if (dataKey || !matchUndefsAsWildcard) {
         // Check the entry for the term, and the variable term.
         const subDatas = <IDataIndex<V>[]> [ data[dataKey], data[''] ].filter(Boolean);
         if (subDatas.length === 0) {
           continue;
         }
-        const ret = this.getRecursiveFirst(bindings, keys, subDatas);
+        const ret = this.getRecursiveFirst(bindings, keys, subDatas, matchUndefsAsWildcard);
         if (ret) {
           return ret;
         }
@@ -137,7 +150,7 @@ export class BindingsIndexUndef<V> implements IBindingsIndex<V> {
         if (subDatas.length === 0) {
           continue;
         }
-        const ret = this.getRecursiveFirst(bindings, keys, subDatas);
+        const ret = this.getRecursiveFirst(bindings, keys, subDatas, matchUndefsAsWildcard);
         if (ret) {
           return ret;
         }

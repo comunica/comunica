@@ -47,9 +47,16 @@
       "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" }
     },
     {
-      "@id": "urn:comunica:default:rdf-join/actors#inner-hash",
+      "@id": "urn:comunica:default:rdf-join/actors#inner-hash-def",
       "@type": "ActorRdfJoinHash",
-      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" }
+      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
+      "canHandleUndefs": false
+    },
+    {
+      "@id": "urn:comunica:default:rdf-join/actors#inner-hash-undef",
+      "@type": "ActorRdfJoinHash",
+      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
+      "canHandleUndefs": true
     },
     {
       "@id": "urn:comunica:default:rdf-join/actors#inner-symmetric-hash",

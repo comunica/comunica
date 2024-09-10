@@ -37,6 +37,7 @@ export class ActorRdfJoinOptionalHash extends ActorRdfJoin {
       new BindingsIndexUndef(
         commonVariables,
         (term: RDF.Term | undefined) => term && term.termType !== 'Variable' ? termToString(term) : '',
+        true,
       ) :
       new BindingsIndexDef(commonVariables, ActorRdfJoin.hashNonClashing);
   }
@@ -58,7 +59,7 @@ export class ActorRdfJoinOptionalHash extends ActorRdfJoin {
           .constructIndex(this.canHandleUndefs, commonVariables);
         await new Promise((resolve) => {
           buffer.bindingsStream.on('data', (bindings) => {
-            const iterator = index.getFirst(bindings) ?? index.put(bindings, []);
+            const iterator = index.getFirst(bindings, true) ?? index.put(bindings, []);
             iterator.push(bindings);
           });
           buffer.bindingsStream.on('end', resolve);
@@ -99,7 +100,7 @@ export class ActorRdfJoinOptionalHash extends ActorRdfJoin {
           .constructIndex(this.canHandleUndefs, commonVariables);
         let indexActive = true;
         buffer.bindingsStream.on('data', (bindings) => {
-          const iterator = index.getFirst(bindings) ??
+          const iterator = index.getFirst(bindings, true) ??
             index.put(bindings, new BufferedIterator<RDF.Bindings>({ autoStart: false }));
           (<any> iterator)._push(bindings);
         });

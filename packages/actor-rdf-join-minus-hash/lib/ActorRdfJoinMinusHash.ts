@@ -30,6 +30,7 @@ export class ActorRdfJoinMinusHash extends ActorRdfJoin {
       new BindingsIndexUndef(
         commonVariables,
         (term: RDF.Term | undefined) => term && term.termType !== 'Variable' ? termToString(term) : '',
+        false,
       ) :
       new BindingsIndexDef(commonVariables, ActorRdfJoin.hashNonClashing);
   }
@@ -59,7 +60,7 @@ export class ActorRdfJoinMinusHash extends ActorRdfJoin {
       });
 
       // From the left-hand iterator filter out all entries of the index
-      return output.bindingsStream.filter(bindings => !index.getFirst(bindings));
+      return output.bindingsStream.filter(bindings => !index.getFirst(bindings, true));
     }, {
       autoStart: false,
       onClose() {
