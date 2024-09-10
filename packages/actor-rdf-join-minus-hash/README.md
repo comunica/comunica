@@ -3,7 +3,7 @@
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-rdf-join-minus-hash.svg)](https://www.npmjs.com/package/@comunica/actor-rdf-join-minus-hash)
 
 An [RDF Join](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join) actor that anti-joins (minus) 2 streams using the hash join algorithm.
-This actor does not support streams that can have undefined values.
+Depending on how this actor is configured, it either does or does not support streams that can have undefined values.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
@@ -30,7 +30,8 @@ After installing, this package can be added to your engine's configuration as fo
     {
       "@id": "urn:comunica:default:rdf-join/actors#minus-hash",
       "@type": "ActorRdfJoinMinusHash",
-      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" }
+      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
+      "canHandleUndefs": true
     }
   ]
 }
@@ -39,3 +40,4 @@ After installing, this package can be added to your engine's configuration as fo
 ### Config Parameters
 
 * `mediatorJoinSelectivity`: A mediator over the [RDF Join Selectivity bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join-selectivity).
+* `canHandleUndefs`: If this actor can handle undefined values. If false, performance will be slightly better.

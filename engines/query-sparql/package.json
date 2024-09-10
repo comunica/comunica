@@ -162,7 +162,6 @@
     "@comunica/actor-rdf-join-inner-single": "^3.2.1",
     "@comunica/actor-rdf-join-inner-symmetrichash": "^3.2.1",
     "@comunica/actor-rdf-join-minus-hash": "^3.2.2",
-    "@comunica/actor-rdf-join-minus-hash-undef": "^3.2.2",
     "@comunica/actor-rdf-join-optional-bind": "^3.2.2",
     "@comunica/actor-rdf-join-optional-hash": "^3.2.2",
     "@comunica/actor-rdf-join-optional-nestedloop": "^3.2.1",
