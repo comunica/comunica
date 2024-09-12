@@ -4,6 +4,7 @@ import type {
   IActorQueryResultSerializeOutput,
 } from '@comunica/bus-query-result-serialize';
 import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-result-serialize';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type {
@@ -71,7 +72,7 @@ export class ActorQueryResultSerializeStats extends ActorQueryResultSerializeFix
         (<IQueryOperationResultBindings> action).bindingsStream :
         (<IQueryOperationResultQuads> action).quadStream;
 
-    const startTime = this.now();
+    const startTime: number = action.context.getSafe(KeysInitQuery.queryTimestampHighResolution);
     let result = 1;
 
     function* end(cb: () => string): Generator<string> {

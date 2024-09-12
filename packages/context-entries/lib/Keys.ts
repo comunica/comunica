@@ -135,9 +135,16 @@ export const KeysInitQuery = {
   ),
   /**
    * A timestamp representing the current time.
-   *                 This is required for certain SPARQL operations such as NOW().
+   * This is required for certain SPARQL operations such as NOW().
    */
   queryTimestamp: new ActionContextKey<Date>('@comunica/actor-init-query:queryTimestamp'),
+  /**
+   * A high resolution timestamp representing the time elapsed since Performance.timeOrigin`.
+   * It can be used to precisely measure durations from the start of query execution.
+   */
+  queryTimestampHighResolution: new ActionContextKey<DOMHighResTimeStamp>(
+    '@comunica/actor-init-query:queryTimestampHighResolution',
+  ),
   /**
    * @range {functionNamedNode: RDF.NamedNode) => ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined}
    * Extension function creator for a given function IRI.

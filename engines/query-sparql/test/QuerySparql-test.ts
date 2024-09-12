@@ -1,7 +1,7 @@
 /** @jest-environment setup-polly-jest/jest-environment-node */
 
 import { QuerySourceSkolemized } from '@comunica/actor-context-preprocess-query-source-skolemize';
-import { KeysHttpWayback, KeysQuerySourceIdentify } from '@comunica/context-entries';
+import { KeysHttpWayback, KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { BlankNodeScoped } from '@comunica/data-factory';
 import type { QueryBindings, QueryStringContext } from '@comunica/types';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
@@ -188,12 +188,15 @@ describe('System test: QuerySparql', () => {
         });
 
         it('should have stats that are strictly increasing', async() => {
-          const context: QueryStringContext = { sources: [
-            { type: 'serialized', value, mediaType: 'application/ld+json', baseIRI: 'http://example.org/' },
-          ]};
+          const context: QueryStringContext = {
+            sources: [
+              { type: 'serialized', value, mediaType: 'application/ld+json', baseIRI: 'http://example.org/' },
+            ],
+            [KeysInitQuery.queryTimestampHighResolution.name]: performance.now(),
+          };
 
           const resultString: string = await stringifyStream(
-            (await engine.resultToString(await engine.query(query, context), 'stats')).data,
+            (await engine.resultToString(await engine.query(query, context), 'stats', context)).data,
           );
           const times = resultString.split('\n').slice(1, -1).map(line => Number.parseFloat(line.split(',')[1]));
           expect(times).toHaveLength(3);

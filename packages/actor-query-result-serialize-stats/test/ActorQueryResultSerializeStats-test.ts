@@ -1,6 +1,7 @@
 import { Readable } from 'node:stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { ActorHttpInvalidateListenable, IInvalidateListener } from '@comunica/bus-http-invalidate';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { BindingsStream, IActionContext } from '@comunica/types';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
@@ -21,7 +22,7 @@ describe('ActorQueryResultSerializeStats', () => {
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    context = new ActionContext();
+    context = new ActionContext({ [KeysInitQuery.queryTimestampHighResolution.name]: performance.now() });
   });
 
   describe('The ActorQueryResultSerializeStats module', () => {
@@ -139,7 +140,11 @@ describe('ActorQueryResultSerializeStats', () => {
 
       it('should run on a bindings stream', async() => {
         await expect(stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'bindings', bindingsStream: bindingsStream() }, handleMediaType: 'debug', context },
+          {
+            handle: <any> { type: 'bindings', bindingsStream: bindingsStream(), context },
+            handleMediaType: 'debug',
+            context,
+          },
         )
         )).handle.data)).resolves.toBe(
           `Result,Delay (ms),HTTP requests
@@ -154,7 +159,11 @@ TOTAL,3.14,0
         (<any> httpObserver).onRun(null, null, null);
         (<any> httpObserver).onRun(null, null, null);
         await expect(stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'bindings', bindingsStream: bindingsStream() }, handleMediaType: 'debug', context },
+          {
+            handle: <any> { type: 'bindings', bindingsStream: bindingsStream(), context },
+            handleMediaType: 'debug',
+            context,
+          },
         )
         )).handle.data)).resolves.toBe(
           `Result,Delay (ms),HTTP requests
@@ -172,7 +181,11 @@ TOTAL,3.14,2
         (<any> httpObserver).onRun(null, null, null);
         (<any> httpObserver).onRun(null, null, null);
         await expect(stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'bindings', bindingsStream: bindingsStream() }, handleMediaType: 'debug', context },
+          {
+            handle: <any> { type: 'bindings', bindingsStream: bindingsStream(), context },
+            handleMediaType: 'debug',
+            context,
+          },
         )
         )).handle.data)).resolves.toBe(
           `Result,Delay (ms),HTTP requests
@@ -185,7 +198,7 @@ TOTAL,3.14,2
 
       it('should run on a quad stream', async() => {
         await expect(stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'quads', quadStream: quadStream() }, handleMediaType: 'debug', context },
+          { handle: <any> { type: 'quads', quadStream: quadStream(), context }, handleMediaType: 'debug', context },
         ))).handle.data)).resolves.toBe(
           `Result,Delay (ms),HTTP requests
 1,3.14,0
@@ -198,7 +211,7 @@ TOTAL,3.14,0
       it('should emit an error when a bindings stream emits an error', async() => {
         await expect(stringifyStream((<any> (await actor.run(
           {
-            handle: <any> { type: 'bindings', bindingsStream: streamError },
+            handle: <any> { type: 'bindings', bindingsStream: streamError, context },
             handleMediaType: 'application/json',
             context,
           },
@@ -207,7 +220,11 @@ TOTAL,3.14,0
 
       it('should emit an error when a quad stream emits an error', async() => {
         await expect(stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'quads', quadStream: streamError }, handleMediaType: 'application/json', context },
+          {
+            handle: <any> { type: 'quads', quadStream: streamError, context },
+            handleMediaType: 'application/json',
+            context,
+          },
         ))).handle.data)).rejects.toBeTruthy();
       });
     });

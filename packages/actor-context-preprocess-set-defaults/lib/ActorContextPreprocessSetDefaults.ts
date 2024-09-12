@@ -34,6 +34,7 @@ export class ActorContextPreprocessSetDefaults extends ActorContextPreprocess {
       // Set default values
       context = context
         .setDefault(KeysInitQuery.queryTimestamp, new Date())
+        .setDefault(KeysInitQuery.queryTimestampHighResolution, performance.now())
         .setDefault(KeysQuerySourceIdentify.sourceIds, new Map())
         .setDefault(KeysCore.log, this.logger)
         .setDefault(KeysInitQuery.functionArgumentsCache, this.defaultFunctionArgumentsCache)

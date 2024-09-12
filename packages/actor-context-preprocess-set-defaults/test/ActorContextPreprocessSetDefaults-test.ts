@@ -35,6 +35,7 @@ describe('ActorContextPreprocessSetDefaults', () => {
         expect(contextOut).toEqual(new ActionContext({
           [KeysInitQuery.dataFactory.name]: expect.any(DataFactory),
           [KeysInitQuery.queryTimestamp.name]: expect.any(Date),
+          [KeysInitQuery.queryTimestampHighResolution.name]: expect.anything(),
           [KeysQuerySourceIdentify.sourceIds.name]: new Map(),
           [KeysCore.log.name]: 'L',
           [KeysInitQuery.functionArgumentsCache.name]: {},
@@ -51,6 +52,7 @@ describe('ActorContextPreprocessSetDefaults', () => {
         expect(contextOut).toEqual(new ActionContext({
           [KeysInitQuery.dataFactory.name]: expect.any(DataFactory),
           [KeysInitQuery.queryTimestamp.name]: expect.any(Date),
+          [KeysInitQuery.queryTimestampHighResolution.name]: expect.anything(),
           [KeysQuerySourceIdentify.sourceIds.name]: new Map(),
           [KeysCore.log.name]: 'L',
           [KeysInitQuery.functionArgumentsCache.name]: {},

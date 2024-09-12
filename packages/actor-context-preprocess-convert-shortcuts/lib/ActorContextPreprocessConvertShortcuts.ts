@@ -49,6 +49,7 @@ export interface IActorContextPreprocessConvertShortcutsArgs extends IActorConte
    *   "log": "@comunica/core:log",
    *   "datetime": "@comunica/actor-http-memento:datetime",
    *   "queryTimestamp": "@comunica/actor-init-query:queryTimestamp",
+   *   "queryTimestampHighResolution": "@comunica/actor-init-query:queryTimestampHighResolution",
    *   "httpProxyHandler": "@comunica/actor-http-proxy:httpProxyHandler",
    *   "lenient": "@comunica/actor-init-query:lenient",
    *   "httpIncludeCredentials": "@comunica/bus-http:include-credentials",
