@@ -148,6 +148,7 @@ describe('ActorQueryResultSerializeStats', () => {
         )
         )).handle.data)).resolves.toBe(
           `Result,Delay (ms),HTTP requests
+PLANNING,3.14,0
 1,3.14,0
 2,3.14,0
 TOTAL,3.14,0
@@ -167,6 +168,7 @@ TOTAL,3.14,0
         )
         )).handle.data)).resolves.toBe(
           `Result,Delay (ms),HTTP requests
+PLANNING,3.14,2
 1,3.14,2
 2,3.14,2
 TOTAL,3.14,2
@@ -189,6 +191,7 @@ TOTAL,3.14,2
         )
         )).handle.data)).resolves.toBe(
           `Result,Delay (ms),HTTP requests
+PLANNING,3.14,2
 1,3.14,2
 2,3.14,2
 TOTAL,3.14,2
@@ -201,6 +204,7 @@ TOTAL,3.14,2
           { handle: <any> { type: 'quads', quadStream: quadStream(), context }, handleMediaType: 'debug', context },
         ))).handle.data)).resolves.toBe(
           `Result,Delay (ms),HTTP requests
+PLANNING,3.14,0
 1,3.14,0
 2,3.14,0
 TOTAL,3.14,0

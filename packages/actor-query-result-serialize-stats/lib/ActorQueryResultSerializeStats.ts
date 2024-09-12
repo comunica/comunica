@@ -58,10 +58,10 @@ export class ActorQueryResultSerializeStats extends ActorQueryResultSerializeFix
     return `${row}\n`;
   }
 
-  public createFooter(startTime: number): string {
-    const footer: string = [ 'TOTAL', this.delay(startTime), this.httpObserver.requests,
+  public createSpecialLine(label: string, startTime: number): string {
+    const line: string = [ label, this.delay(startTime), this.httpObserver.requests,
     ].join(',');
-    return `${footer}\n`;
+    return `${line}\n`;
   }
 
   public async runHandle(action: IActionSparqlSerialize, _mediaType: string, _context: IActionContext):
@@ -80,7 +80,8 @@ export class ActorQueryResultSerializeStats extends ActorQueryResultSerializeFix
     }
     const stream = wrap(resultStream)
       .map(() => this.createStat(startTime, result++))
-      .append(wrap(end(() => this.createFooter(startTime))));
+      .prepend([ this.createSpecialLine('PLANNING', startTime) ])
+      .append(wrap(end(() => this.createSpecialLine('TOTAL', startTime))));
 
     this.pushHeader(data);
     data.wrap(<any> stream);

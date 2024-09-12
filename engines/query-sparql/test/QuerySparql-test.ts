@@ -199,7 +199,7 @@ describe('System test: QuerySparql', () => {
             (await engine.resultToString(await engine.query(query, context), 'stats', context)).data,
           );
           const times = resultString.split('\n').slice(1, -1).map(line => Number.parseFloat(line.split(',')[1]));
-          expect(times).toHaveLength(3);
+          expect(times).toHaveLength(4);
           for (let i = 0; i < 2; i++) {
             expect(times[i]).toBeLessThanOrEqual(times[i + 1]);
           }
