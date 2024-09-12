@@ -363,7 +363,51 @@ describe('ActorQueryOperationUnion', () => {
       ], true, context, mediatorRdfMetadataAccumulate)).resolves
         .toMatchObject({
           cardinality: { type: 'estimate', value: 3 },
+          canContainUndefs: true,
+          variables: [ DF.variable('a'), DF.variable('b') ],
+        });
+    });
+
+    it('should union identical variables if bindings is true', async() => {
+      await expect(ActorQueryOperationUnion.unionMetadata([
+        {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 1 },
           canContainUndefs: false,
+          variables: [ DF.variable('a'), DF.variable('b') ],
+        },
+        {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 2 },
+          canContainUndefs: false,
+          variables: [ DF.variable('a'), DF.variable('b') ],
+        },
+      ], true, context, mediatorRdfMetadataAccumulate)).resolves
+        .toMatchObject({
+          cardinality: { type: 'estimate', value: 3 },
+          canContainUndefs: false,
+          variables: [ DF.variable('a'), DF.variable('b') ],
+        });
+    });
+
+    it('should union variables identical if bindings is true but keep original canContainUndefs if true', async() => {
+      await expect(ActorQueryOperationUnion.unionMetadata([
+        {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 1 },
+          canContainUndefs: true,
+          variables: [ DF.variable('a'), DF.variable('b') ],
+        },
+        {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 2 },
+          canContainUndefs: false,
+          variables: [ DF.variable('a'), DF.variable('b') ],
+        },
+      ], true, context, mediatorRdfMetadataAccumulate)).resolves
+        .toMatchObject({
+          cardinality: { type: 'estimate', value: 3 },
+          canContainUndefs: true,
           variables: [ DF.variable('a'), DF.variable('b') ],
         });
     });
@@ -433,7 +477,7 @@ describe('ActorQueryOperationUnion', () => {
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toMatchObject({
         cardinality: { type: 'estimate', value: 5 },
-        canContainUndefs: false,
+        canContainUndefs: true,
         variables: [ DF.variable('a'), DF.variable('b') ],
       });
       expect(output.type).toBe('bindings');

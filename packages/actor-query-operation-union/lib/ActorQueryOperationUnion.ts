@@ -42,6 +42,18 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
   }
 
   /**
+   * Check if the variables of all operations are identical.
+   * @param variables Double array of variables to from operations.
+   */
+  public static areAllVariablesIdentical(variables: RDF.Variable[][]): boolean {
+    const scopedVariables = variables
+      .map(variables => variables.map(v => v.value))
+      .map(variables => variables.sort((a, b) => a.localeCompare(b)))
+      .map(variables => variables.join(','));
+    return scopedVariables.every(val => val === scopedVariables[0]);
+  }
+
+  /**
    * Takes the union of the given metadata array.
    * It will ensure that the cardinality metadata value is properly calculated.
    * @param {{[p: string]: any}[]} metadatas Array of metadata.
@@ -88,8 +100,11 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
 
     // Union variables
     if (bindings) {
-      accumulatedMetadata.variables = ActorQueryOperationUnion
-        .unionVariables(metadatas.map(metadata => metadata.variables));
+      const variables = metadatas.map(metadata => metadata.variables);
+      accumulatedMetadata.variables = ActorQueryOperationUnion.unionVariables(variables);
+      if (!accumulatedMetadata.canContainUndefs && !ActorQueryOperationUnion.areAllVariablesIdentical(variables)) {
+        accumulatedMetadata.canContainUndefs = true;
+      }
     }
 
     return accumulatedMetadata;
