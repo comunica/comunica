@@ -1,7 +1,7 @@
 import type { BindingsFactory } from '@comunica/bindings-factory';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorArgs, IActorTest, IAction, Mediate } from '@comunica/core';
-import { Actor } from '@comunica/core';
+import { ActionContextKey, Actor } from '@comunica/core';
 import { BlankNodeBindingsScoped } from '@comunica/data-factory';
 import type {
   IQueryOperationResult,
@@ -255,6 +255,16 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
     }
     return shape.operation.pattern.type === operation.type;
   }
+
+  /**
+   * Helper function to set the wrapping status of the query operation
+   * @param context context of the operation
+   * @param value If it should be set to false or true
+   * @returns The updated context
+   */
+  public static setContextWrapped(context: IActionContext, value: boolean) {
+    return context.set(KEY_CONTEXT_WRAPPED_QUERY_OPERATION, value);
+  }
 }
 
 export interface IActionQueryOperation extends IAction {
@@ -284,3 +294,10 @@ export interface IAsyncExpressionContext extends IBaseExpressionContext {
   bnode: (input?: string | undefined) => Promise<RDF.BlankNode>;
   exists?: (expr: Algebra.ExistenceExpression, bindings: Bindings) => Promise<boolean>;
 }
+
+/**
+ * Key that shows if the query operation has already been wrapped by a process iterator call
+ */
+export const KEY_CONTEXT_WRAPPED_QUERY_OPERATION = new ActionContextKey<boolean>(
+  '@comunica/actor-query-operation:wrapped',
+);

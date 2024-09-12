@@ -1,5 +1,5 @@
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import { ActionContextKey, type IActorTest } from '@comunica/core';
 import { cachifyMetadata } from '@comunica/metadata';
 import type {
   IQueryOperationResult,
@@ -52,6 +52,8 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
       );
       action.context = action.context.set(KeysInitQuery.physicalQueryPlanNode, action.operation);
     }
+    // Set wrapped to false to allow recursive calls to query operation to also be wrapped
+    action.context = ActorQueryOperation.setContextWrapped(action.context, false);
 
     const operation: O = <O> action.operation;
     const subContext = action.context.set(KeysQueryOperation.operation, operation);
@@ -60,6 +62,10 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
       output.metadata = <any>
         cachifyMetadata<IMetadata<RDF.QuadTermName | RDF.Variable>, RDF.QuadTermName | RDF.Variable>(output.metadata);
     }
+    // TODO Remove this temp code
+    const nameMap: Map<string, string> = action.context.get(new ActionContextKey('test-map-name-actor'))!;
+    nameMap.set('name', this.name);
+    console.log(nameMap);
     return output;
   }
 

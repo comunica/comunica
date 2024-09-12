@@ -1,11 +1,10 @@
-import { MediatorProcessIterator } from '@comunica/bus-process-iterator';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
-import { ActionContext, type IActorTest } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
 import type {
   BindingsStream,
@@ -26,7 +25,6 @@ import type { Algebra } from 'sparqlalgebrajs';
  */
 export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<Algebra.Union> {
   public readonly mediatorRdfMetadataAccumulate: MediatorRdfMetadataAccumulate;
-  public readonly mediatorProcessIterator: MediatorProcessIterator;
 
   public constructor(args: IActorQueryOperationUnionArgs) {
     super(args, 'union');
@@ -121,7 +119,7 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
       const bindingsStream: BindingsStream = new UnionIterator(outputs.map(
         (output: IQueryOperationResultBindings) => output.bindingsStream,
       ), { autoStart: false });
-  
+
       const metadata: () => Promise<MetadataBindings> = () => Promise.all(outputs.map(output => output.metadata()))
         .then(subMeta => ActorQueryOperationUnion
           .unionMetadata(subMeta, true, context, this.mediatorRdfMetadataAccumulate));

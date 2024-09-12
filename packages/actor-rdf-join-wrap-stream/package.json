@@ -1,14 +1,14 @@
 {
-  "name": "@comunica/actor-process-iterator-count-intermediate-results",
+  "name": "@comunica/actor-rdf-join-wrap-stream",
   "version": "3.2.1",
-  "description": "A count-intermediate-results process-iterator actor",
+  "description": "A wrap-stream rdf-join actor",
   "lsd:module": true,
   "license": "MIT",
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-process-iterator-count-intermediate-results"
+    "directory": "packages/actor-rdf-join-wrap-stream"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"
@@ -16,8 +16,8 @@
   "keywords": [
     "comunica",
     "actor",
-    "process-iterator",
-    "count-intermediate-results"
+    "rdf-join",
+    "wrap-stream"
   ],
   "sideEffects": false,
   "main": "lib/index.js",
@@ -37,7 +37,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-process-iterator": "^3.2.0",
-    "@comunica/core": "^3.2.0"
+    "@comunica/bus-rdf-join": "^3.2.1",
+    "@comunica/core": "^3.2.1"
   }
 }

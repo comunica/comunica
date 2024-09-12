@@ -1,60 +1,64 @@
-import { Actor, IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
-import type { AsyncIterator } from 'asynciterator';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
+import { Actor } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
-
-// TODO: Maybe make this class generic and have seperate implementation for Quads, bindings, etc.
+import type { AsyncIterator } from 'asynciterator';
 
 /**
  * A comunica actor for process-iterator events.
  *
  * Actor types:
- * * Input:  IActionProcessIterator:      TODO: fill in.
+ *  Input:  IActionProcessIterator: Data that denotes what type of stream is being wrapped,
+ *   what actor produced this stream, and the stream itself
  * * Test:   <none>
- * * Output: IActorProcessIteratorOutput: TODO: fill in.
+ * * Output: IActorProcessIteratorOutput: The wrapped stream with the
  *
  * @see IActionProcessIterator
  * @see IActorProcessIteratorOutput
  */
-export abstract class ActorProcessIterator extends Actor<IActionProcessIterator, IActorTest, IActorProcessIteratorOutput> {
-
+export abstract class ActorProcessIterator<T extends AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>>
+  extends Actor<IActionProcessIterator<T>, IActorTest, IActorProcessIteratorOutput<T>> {
   /**
-  * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
-  */
+   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   */
   public constructor(args: IActorProcessIteratorArgs) {
     super(args);
   }
 
-  abstract processBindingsIterator(bindingsStream: AsyncIterator<RDF.Bindings>): AsyncIterator<RDF.Bindings>;
+  public async run(action: IActionProcessIterator<T>): Promise<IActorProcessIteratorOutput<T>> {
+    // TODO: Possibly remove redundant run / processStream seperation, as most of the logic will need
+    // reside in processStream anyways, like checken if we event want to process the stream. (depending on operation)
+    action.stream = this.processStream(action.stream, action.metadata);
+    return action;
+  }
 
-  abstract processQuadsIterator(quadStream: AsyncIterator<RDF.Quad>): AsyncIterator<RDF.Quad>
-
+  abstract processStream<T extends AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>>(stream: T,
+    metadata?: Record<string, any>): T;
 }
 
-export interface IActionProcessIterator extends IAction {
+export interface IActionProcessIterator<T> extends IAction {
   /**
-   * Type of stream that will be processed
+   * The operation that produced the stream
    */
-  type: "binding" | "quad";
-  /**
-   * The name of the actor that produced the stream
-   */
-  streamSource: string;
+  operation: string;
   /**
    * The stream that will be processed by the actor
    */
-  stream: AsyncIterator<any>;
+  stream: T;
+  /**
+   * Optional metadata
+   */
+  metadata?: Record<string, any>;
 }
 
-export interface IActorProcessIteratorOutput extends IActorOutput {
+export interface IActorProcessIteratorOutput<T> extends IActorOutput {
   /**
    * Processed stream
    */
-  stream: AsyncIterator<any>;
+  stream: T;
 }
 
-export type IActorProcessIteratorArgs = IActorArgs<
-IActionProcessIterator, IActorTest, IActorProcessIteratorOutput>;
+export type IActorProcessIteratorArgs
+ = IActorArgs<IActionProcessIterator<any>, IActorTest, IActorProcessIteratorOutput<any>>;
 
-export type MediatorProcessIterator = Mediate<
-IActionProcessIterator, IActorProcessIteratorOutput>;
-
+export type MediatorProcessIterator
+= Mediate<IActionProcessIterator<AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>>, IActorProcessIteratorOutput<AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>>>;

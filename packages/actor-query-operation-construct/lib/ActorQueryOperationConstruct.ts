@@ -3,7 +3,7 @@ import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
-import { ActionContext, type IActorTest } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
 import type {
   IQueryOperationResultBindings,
   IActionContext,
@@ -15,14 +15,11 @@ import type { AsyncIterator } from 'asynciterator';
 import { getTermsNested, getVariables, uniqTerms } from 'rdf-terms';
 import { Algebra } from 'sparqlalgebrajs';
 import { BindingsToQuadsIterator } from './BindingsToQuadsIterator';
-import { MediatorProcessIterator } from '@comunica/bus-process-iterator';
 
 /**
  * A comunica Construct Query Operation Actor.
  */
 export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediated<Algebra.Construct> {
-  public readonly mediatorProcessIterator: MediatorProcessIterator;
-
   public constructor(args: IActorQueryOperationTypedMediatedArgs) {
     super(args, 'construct');
   }
@@ -54,20 +51,10 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
 
     // Construct triples using the result based on the pattern.
     // If it's a DESCRIBE query don't apply the blank node localisation.
-    const _quadStream: AsyncIterator<RDF.Quad> = new BindingsToQuadsIterator(
+    const quadStream: AsyncIterator<RDF.Quad> = new BindingsToQuadsIterator(
       operationOriginal.template,
       output.bindingsStream,
     );
-
-    
-    // Apply iterator processing actors on quad stream
-    const { stream } = await this.mediatorProcessIterator.mediate({
-      type: "quad",
-      streamSource: this.name,
-      stream: _quadStream, 
-      context: new ActionContext()
-    });
-    const quadStream = stream;
 
     // Let the final metadata contain the estimated number of triples
     const metadata: (() => Promise<MetadataQuads>) = () => output.metadata().then(meta => ({
@@ -87,12 +74,4 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
       type: 'quads',
     };
   }
-}
-
-
-export interface IActorQueryOperationConstructArgs extends IActorQueryOperationTypedMediatedArgs {
-  /**
-   * A mediator for applying processing the filtered binding stream
-   */
-  mediatorProcessIterator: MediatorProcessIterator;
 }

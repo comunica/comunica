@@ -3,13 +3,12 @@ import type { MediatorHashBindings } from '@comunica/bus-hash-bindings';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
-import { ActionContext, type IActorTest } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
 import { AsyncEvaluator } from '@comunica/expression-evaluator';
 import type { BindingsStream, IActionContext, IQueryOperationResult } from '@comunica/types';
 import { ArrayIterator, TransformIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 import { GroupsState } from './GroupsState';
-import { MediatorProcessIterator } from '@comunica/bus-process-iterator';
 
 /**
  * A comunica Group Query Operation Actor.
@@ -17,7 +16,6 @@ import { MediatorProcessIterator } from '@comunica/bus-process-iterator';
 export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<Algebra.Group> {
   public readonly mediatorHashBindings: MediatorHashBindings;
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
-  public readonly mediatorProcessIterator: MediatorProcessIterator;
 
   public constructor(args: IActorQueryOperationGroupArgs) {
     super(args, 'group');
@@ -61,7 +59,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
     );
 
     // Wrap a new promise inside an iterator that completes when the stream has ended or when an error occurs
-    const _bindingsStream = new TransformIterator(() => new Promise<BindingsStream>((resolve, reject) => {
+    const bindingsStream = new TransformIterator(() => new Promise<BindingsStream>((resolve, reject) => {
       const groups = new GroupsState(hashFunction, operation, sparqleeConfig, bindingsFactory);
 
       // Phase 2: Collect aggregator results
@@ -89,15 +87,6 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
       });
     }), { autoStart: false });
 
-    // Apply iterator processing actors on filtered stream
-    const { stream } = await this.mediatorProcessIterator.mediate({
-      type: "binding",
-      streamSource: this.name,
-      stream: _bindingsStream, 
-      context: new ActionContext()
-    });
-    const bindingsStream = stream;
-    
     return {
       type: 'bindings',
       bindingsStream,
@@ -112,8 +101,4 @@ export interface IActorQueryOperationGroupArgs extends IActorQueryOperationTyped
    * A mediator for creating binding context merge handlers
    */
   mediatorMergeBindingsContext: MediatorMergeBindingsContext;
-  /**
-   * 
-   */
-  mediatorProcessIterator: MediatorProcessIterator;
 }

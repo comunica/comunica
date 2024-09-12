@@ -233,6 +233,12 @@ export const KeysQueryOperation = {
    * The sources to query over.
    */
   querySources: new ActionContextKey<IQuerySourceWrapper[]>('@comunica/bus-query-operation:querySources'),
+  /**
+   * The process-iterator mediator that will wrap operation outputs of query-operation and rdf-join actors
+   * to allow users to define processors over Asynciterators
+   */
+  mediatorProcessIterator: new ActionContextKey<any>
+  ('@comunica/bus-query-operation:processIteratorMediator'),
 };
 
 export const KeysRdfParseJsonLd = {

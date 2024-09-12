@@ -27,6 +27,7 @@ export class ActorQueryOperationSource extends ActorQueryOperation {
 
   public async run(action: IActionQueryOperation): Promise<IQueryOperationResult> {
     // Log to physical plan
+    console.log('RUNNING SORUCE!!!!!!!');
     const physicalQueryPlanLogger: IPhysicalQueryPlanLogger | undefined = action.context
       .get(KeysInitQuery.physicalQueryPlanLogger);
     if (physicalQueryPlanLogger) {
@@ -42,8 +43,8 @@ export class ActorQueryOperationSource extends ActorQueryOperation {
     }
 
     const sourceWrapper: IQuerySourceWrapper = ActorQueryOperation.getOperationSource(action.operation)!;
-    const mergedContext = sourceWrapper.context ? action.context.merge(sourceWrapper.context) : action.context;
-
+    let mergedContext = sourceWrapper.context ? action.context.merge(sourceWrapper.context) : action.context;
+    mergedContext = ActorQueryOperation.setContextWrapped(mergedContext, false);
     // Check if the operation is a CONSTRUCT query
     // We recurse because it may be wrapped in other operations such as SLICE and FROM
     let construct = false;
