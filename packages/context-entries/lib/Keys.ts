@@ -12,6 +12,7 @@ import type {
   QuerySourceUnidentified,
   IQuerySourceWrapper,
   QuerySourceReference,
+  ComunicaDataFactory,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { IDocumentLoader } from 'jsonld-context-parser';
@@ -65,7 +66,7 @@ export const KeysHttp = {
   /**
    * Retry fetch, if server replies with a 5xx error response. Requires httpRetryCount to be set.
    */
-  httpRetryOnServerError: new ActionContextKey<number>('@comunica/bus-http:http-retry-on-server-error'),
+  httpRetryOnServerError: new ActionContextKey<boolean>('@comunica/bus-http:http-retry-on-server-error'),
 };
 
 export const KeysHttpWayback = {
@@ -195,7 +196,7 @@ export const KeysInitQuery = {
   /**
    * The data factory for creating terms and quads.
    */
-  dataFactory: new ActionContextKey<RDF.DataFactory>('@comunica/actor-init-query:dataFactory'),
+  dataFactory: new ActionContextKey<ComunicaDataFactory>('@comunica/actor-init-query:dataFactory'),
   /**
    * A boolean value denoting whether results should be deduplicated or not.
    */
@@ -206,7 +207,7 @@ export const KeysQueryOperation = {
   /**
    * Context entry for the current query operation.
    */
-  operation: new ActionContextKey<string>('@comunica/bus-query-operation:operation'),
+  operation: new ActionContextKey<Algebra.Operation>('@comunica/bus-query-operation:operation'),
   /**
    * @type {any} The metadata from the left streams within a join operation.
    */

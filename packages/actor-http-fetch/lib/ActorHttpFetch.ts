@@ -153,7 +153,7 @@ export class ActorHttpFetch extends ActorHttp {
 
       // We remove or update the timeout
       if (requestTimeout !== undefined) {
-        const httpBodyTimeout = action.context?.get(KeysHttp.httpBodyTimeout) || false;
+        const httpBodyTimeout = action.context?.get(KeysHttp.httpBodyTimeout) ?? false;
         if (httpBodyTimeout && response.body) {
           // eslint-disable-next-line ts/no-misused-promises
           onTimeout = () => response.body?.cancel(new Error(`HTTP timeout when reading the body of ${response.url}.

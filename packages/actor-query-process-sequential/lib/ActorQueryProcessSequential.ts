@@ -44,7 +44,7 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
   }
 
   public async test(action: IActionQueryProcess): Promise<TestResult<IActorTest>> {
-    if (action.context.get(KeysInitQuery.explain) || action.context.get(new ActionContextKey('explain'))) {
+    if (action.context.get(KeysInitQuery.explain) ?? action.context.get(new ActionContextKey('explain'))) {
       return failTest(`${this.name} is not able to explain queries.`);
     }
     return passTestVoid();

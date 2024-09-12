@@ -6,7 +6,6 @@ import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operat
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
-import type { ComunicaDataFactory } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory, Util } from 'sparqlalgebrajs';
 
@@ -19,7 +18,7 @@ export class ActorOptimizeQueryOperationBgpToJoin extends ActorOptimizeQueryOper
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
-    const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
+    const dataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const algebraFactory = new Factory(dataFactory);
 
     const operation = Util.mapOperation(action.operation, {

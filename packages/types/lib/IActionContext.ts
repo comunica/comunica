@@ -37,7 +37,9 @@ export interface IActionContext {
  * For example, the `query-operation` bus declares the `operation` entry,
  * which should be named as `@comunica/bus-query-operation:operation`.
  */
-// eslint-disable-next-line unused-imports/no-unused-vars
 export interface IActionContextKey<V> {
   readonly name: string;
+  // A dummy field that we must define to make TypeScript bind the type `V`, otherwise it would always be `any`.
+  // This field will be undefined, so it will never exist in JavaScript.
+  readonly dummy: V | undefined;
 }

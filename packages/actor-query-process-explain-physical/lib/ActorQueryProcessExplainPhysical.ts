@@ -23,7 +23,7 @@ export class ActorQueryProcessExplainPhysical extends ActorQueryProcess {
   }
 
   public async test(action: IActionQueryProcess): Promise<TestResult<IActorTest>> {
-    const mode = (action.context.get(KeysInitQuery.explain) || action.context.get(new ActionContextKey('explain')));
+    const mode = (action.context.get(KeysInitQuery.explain) ?? action.context.get(new ActionContextKey('explain')));
     if (mode !== 'physical' && mode !== 'physical-json') {
       return failTest(`${this.name} can only explain in 'physical' or 'physical-json' mode.`);
     }
@@ -58,7 +58,7 @@ export class ActorQueryProcessExplainPhysical extends ActorQueryProcess {
         break;
     }
 
-    const mode: 'physical' | 'physical-json' = (action.context.get(KeysInitQuery.explain) ??
+    const mode: 'parsed' | 'logical' | 'physical' | 'physical-json' = (action.context.get(KeysInitQuery.explain) ??
       action.context.getSafe(new ActionContextKey('explain')));
     return {
       result: {

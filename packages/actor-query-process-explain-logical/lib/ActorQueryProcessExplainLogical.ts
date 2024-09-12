@@ -22,7 +22,7 @@ export class ActorQueryProcessExplainLogical extends ActorQueryProcess {
   }
 
   public async test(action: IActionQueryProcess): Promise<TestResult<IActorTest>> {
-    if ((action.context.get(KeysInitQuery.explain) ||
+    if ((action.context.get(KeysInitQuery.explain) ??
       action.context.get(new ActionContextKey('explain'))) !== 'logical') {
       return failTest(`${this.name} can only explain in 'logical' mode.`);
     }

@@ -1,4 +1,6 @@
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActionContext, IActionContextKey } from '@comunica/types';
+import { DataFactory } from 'rdf-data-factory';
 import { ActionContext, ActionContextKey } from '../lib';
 
 describe('ActionContext', () => {
@@ -22,6 +24,7 @@ describe('ActionContext', () => {
 
         expect(context.get(key1)).toBe('abc');
         expect(context.get(key2)).toBe(123);
+        context.getSafe(key3).slice(1, 2);
         expect(context.get(key3)).toEqual([ true, false ]);
       });
 
@@ -59,6 +62,15 @@ describe('ActionContext', () => {
         expect(context.getSafe(key1)).toBe('abc');
         expect(() => context.getSafe(key2)).toThrow(`Context entry ${key2.name} is required but not available`);
         expect(context.getSafe(key3)).toEqual([ true, false ]);
+      });
+
+      it('should get a complex object', () => {
+        context = context
+          .set(KeysInitQuery.dataFactory, new DataFactory());
+
+        const df = context.getSafe(KeysInitQuery.dataFactory);
+        expect(df).toBeInstanceOf(DataFactory);
+        expect(df.literal('abc').termType).toBe('Literal');
       });
 
       it('should fail during compilation for an incorrect key value', () => {
