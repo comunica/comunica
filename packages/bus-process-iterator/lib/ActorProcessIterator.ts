@@ -1,8 +1,10 @@
+import type { LogicalJoinType } from '@comunica/bus-rdf-join';
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
-import { IActionContext } from '@comunica/types';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
+import type { types } from 'sparqlalgebrajs/lib/algebra';
 
 /**
  * A comunica actor for process-iterator events.
@@ -18,6 +20,7 @@ import type { AsyncIterator } from 'asynciterator';
  */
 export abstract class ActorProcessIterator<T extends AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>>
   extends Actor<IActionProcessIterator<T>, IActorTest, IActorProcessIteratorOutput<T>> {
+  public wraps: possibleOperationTypes[];
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
@@ -27,9 +30,24 @@ export abstract class ActorProcessIterator<T extends AsyncIterator<RDF.Bindings>
 
   public async run(action: IActionProcessIterator<T>): Promise<IActorProcessIteratorOutput<T>> {
     // TODO: Possibly remove redundant run / processStream seperation, as most of the logic will need
-    // reside in processStream anyways, like checken if we event want to process the stream. (depending on operation)
+    // reside in processStream anyways
     action.stream = this.processStream(action.stream, action.context, action.metadata);
     return action;
+  }
+
+  /**
+   * Test will only succeed if the operation we're wrapping is included in the types
+   * @param action
+   * @returns
+   */
+  public async test(
+    action: IActionProcessIterator<AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>>,
+  ): Promise<IActorTest> {
+    console.log(`Run test: ${action.operation}, wraps: ${this.wraps}`);
+    if (this.wraps === undefined || this.wraps.includes(action.operation as possibleOperationTypes)) {
+      return true;
+    }
+    return false;
   }
 
   abstract processStream<T extends AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>>(stream: T,
@@ -58,8 +76,15 @@ export interface IActorProcessIteratorOutput<T> extends IActorOutput {
   stream: T;
 }
 
-export type IActorProcessIteratorArgs
- = IActorArgs<IActionProcessIterator<any>, IActorTest, IActorProcessIteratorOutput<any>>;
+export interface IActorProcessIteratorArgs
+  extends IActorArgs<IActionProcessIterator<any>, IActorTest, IActorProcessIteratorOutput<any>> {
+  /**
+   * What types of operations the actor will wrap. If undefined the actor wraps every operation
+   */
+  wraps?: possibleOperationTypes[];
+}
+
+export type possibleOperationTypes = types | LogicalJoinType;
 
 export type MediatorProcessIterator
 = Mediate<IActionProcessIterator<AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>>, IActorProcessIteratorOutput<AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>>>;

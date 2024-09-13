@@ -33,7 +33,7 @@ export class ActorQueryOperationWrapStream extends ActorQueryOperation {
     // Prevent infinite recursion. In consequent query operation calls this key should be set to false
     // To allow the operation to wrap ALL query operation runs
     action.context = ActorQueryOperation.setContextWrapped(action.context, true);
-    
+
     // TODO how can I know what actor actually did the task? Without using this ugly mf
     const nameMap = new Map<string, string>();
     action.context = action.context.set(new ActionContextKey('test-map-name-actor'), nameMap);

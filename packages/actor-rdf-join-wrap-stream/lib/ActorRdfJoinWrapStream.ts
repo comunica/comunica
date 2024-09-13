@@ -1,5 +1,5 @@
 import type { MediatorProcessIterator } from '@comunica/bus-process-iterator';
-import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs, MediatorRdfJoin, IActorRdfJoinInternalOptions } from '@comunica/bus-rdf-join';
+import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs, MediatorRdfJoin } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin, KEY_CONTEXT_WRAPPED_RDF_JOIN } from '@comunica/bus-rdf-join';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { IQueryOperationResultBindings, MetadataBindings } from '@comunica/types';
@@ -23,13 +23,14 @@ export class ActorRdfJoinWrapStream extends ActorRdfJoin {
       isLeaf: false,
     });
   }
+
   /**
    * Override the test to ensure that wrappper is ran for every join
-   * @param action 
-   * @returns 
+   * @param action
+   * @returns
    */
   public override async test(action: IActionRdfJoin): Promise<IMediatorTypeJoinCoefficients> {
-    console.log(`Testing, value of action context key: ${action.context.get(KEY_CONTEXT_WRAPPED_RDF_JOIN)}`)
+    console.log(`Testing, value of action context key: ${action.context.get(KEY_CONTEXT_WRAPPED_RDF_JOIN)}`);
     if (action.context.get(KEY_CONTEXT_WRAPPED_RDF_JOIN)) {
       throw new Error('Unable to wrap join operation multiple times');
     }
@@ -42,7 +43,8 @@ export class ActorRdfJoinWrapStream extends ActorRdfJoin {
     // Prevent infinite recursion. In consequent query operation calls this key is set to false
     // To allow the operation to wrap ALL rdf-join runs
     action.context = ActorRdfJoin.setContextWrapped(action.context, true);
-    console.log(`Wrap join, num entries: ${action.entries.length}`)
+    console.log(`Wrap join, num entries: ${action.entries.length}`);
+    console.log(`operation: ${action.type}`);
     const result: IQueryOperationResultBindings = await this.mediatorJoin.mediate(action);
     result.bindingsStream = <AsyncIterator<RDF.Bindings>>
     (await this.mediatorProcessIterator.mediate(
@@ -79,5 +81,5 @@ export interface IActorRdfJoinWrapStreamArgs extends IActorRdfJoinArgs {
   /**
    * Mediator that calls next join to be wrapped
    */
-  mediatorJoin: MediatorRdfJoin
+  mediatorJoin: MediatorRdfJoin;
 }

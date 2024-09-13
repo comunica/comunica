@@ -1,12 +1,12 @@
+import type { IPartialResult } from '@comunica/actor-process-iterator-record-intermediate-results';
 import { KeysStatistics } from '@comunica/context-entries';
 import type { ActionContextKey } from '@comunica/core';
 import { StatisticBase } from '@comunica/statistic-base';
-import type { ILink, IQuerySource, IStatisticBase } from '@comunica/types';
-import { IPartialResult } from '@comunica/actor-process-iterator-record-intermediate-results';
+import type { IStatisticBase } from '@comunica/types';
 
 export class StatisticIntermediateResults extends StatisticBase<IPartialResult> {
   public count: number;
-  public key: ActionContextKey<IStatisticBase<IPartialResult>>;;
+  public key: ActionContextKey<IStatisticBase<IPartialResult>>; ;
 
   public constructor() {
     super();

@@ -2,7 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Fstatistic-link-dereference.svg)](https://www.npmjs.com/package/@comunica/statistic-link-dereference)
 
-A statistics tracker package for tracking intermediate results produced during query execution in Comunica. 
+A statistics tracker package for tracking intermediate results produced during query execution in Comunica.
 This class must be added to the context with the key defined in the class.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
@@ -14,7 +14,7 @@ This module is part of the [Comunica framework](https://github.com/comunica/comu
 ```bash
 $ yarn add @comunica/statistic-link-dereference
 ```
-TODO Update README.md on how to use tracker. This will probably be through defining the wrap stream, process iterator actor, 
+TODO Update README.md on how to use tracker. This will probably be through defining the wrap stream, process iterator actor,
 and context preprocess actor. Consider whether we want comunica to add this through a preprocess actor or through the config
 ## Using the tracker
 
