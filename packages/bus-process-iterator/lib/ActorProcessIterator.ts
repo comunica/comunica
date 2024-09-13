@@ -31,7 +31,7 @@ export abstract class ActorProcessIterator<T extends AsyncIterator<RDF.Bindings>
   public async run(action: IActionProcessIterator<T>): Promise<IActorProcessIteratorOutput<T>> {
     // TODO: Possibly remove redundant run / processStream seperation, as most of the logic will need
     // reside in processStream anyways
-    action.stream = this.processStream(action.stream, action.context, action.metadata);
+    action.stream = this.processStream(action.operation, action.stream, action.context, action.metadata);
     return action;
   }
 
@@ -43,14 +43,14 @@ export abstract class ActorProcessIterator<T extends AsyncIterator<RDF.Bindings>
   public async test(
     action: IActionProcessIterator<AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>>,
   ): Promise<IActorTest> {
-    if (this.wraps === undefined || this.wraps.includes(action.operation as possibleOperationTypes)) {
-      return true;
+    if (!this.wraps === undefined && !this.wraps.includes(action.operation as possibleOperationTypes)) {
+      throw new Error(`Operation type not supported in configuration of ${this.name}`);
     }
-    return false;
+    return true;
   }
 
-  abstract processStream<T extends AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>>(stream: T,
-    context: IActionContext, metadata?: Record<string, any>): T;
+  abstract processStream<T extends AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>>(operation: string, 
+    stream: T, context: IActionContext, metadata?: Record<string, any>): T;
 }
 
 export interface IActionProcessIterator<T> extends IAction {

@@ -323,7 +323,7 @@ export const KeysStatistics = {
     '@comunica/statistic:dereferencedLinks',
   ),
   /**
-   *
+   * Intermediate results produced during query execution
    */
   intermediateResults: new ActionContextKey<IPartialResult>(
     '@comunica/statistic:intermediateResults',

@@ -47,7 +47,7 @@ export class ActorRdfJoinWrapStream extends ActorRdfJoin {
     result.bindingsStream = <AsyncIterator<RDF.Bindings>>
     (await this.mediatorProcessIterator.mediate(
       { operation: action.type, stream: result.bindingsStream, context: action.context, metadata: {
-        type: 'rdf-join',
+        joinEntries: action.entries.length,
         ...await result.metadata(),
         ...result.context,
       }},
