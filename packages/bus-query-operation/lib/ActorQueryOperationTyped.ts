@@ -65,7 +65,7 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
     // TODO Remove this temp code
     const nameMap: Map<string, string> = action.context.get(new ActionContextKey('test-map-name-actor'))!;
     nameMap.set('name', this.name);
-    console.log(nameMap);
+    
     return output;
   }
 

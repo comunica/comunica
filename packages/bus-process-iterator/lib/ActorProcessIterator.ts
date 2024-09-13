@@ -1,5 +1,6 @@
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
+import { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 
@@ -27,12 +28,12 @@ export abstract class ActorProcessIterator<T extends AsyncIterator<RDF.Bindings>
   public async run(action: IActionProcessIterator<T>): Promise<IActorProcessIteratorOutput<T>> {
     // TODO: Possibly remove redundant run / processStream seperation, as most of the logic will need
     // reside in processStream anyways, like checken if we event want to process the stream. (depending on operation)
-    action.stream = this.processStream(action.stream, action.metadata);
+    action.stream = this.processStream(action.stream, action.context, action.metadata);
     return action;
   }
 
   abstract processStream<T extends AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>>(stream: T,
-    metadata?: Record<string, any>): T;
+    context: IActionContext, metadata?: Record<string, any>): T;
 }
 
 export interface IActionProcessIterator<T> extends IAction {

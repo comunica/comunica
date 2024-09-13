@@ -44,6 +44,7 @@ export class MediatorJoinCoefficientsFixed
             coeff.requestTime * this.ioWeight;
         }
       });
+    console.log(costs);
     const maxCost = Math.max(...(<number[]> costs.filter(cost => cost !== undefined)));
 
     // If we have a limit indicator in the context,
@@ -79,6 +80,7 @@ export class MediatorJoinCoefficientsFixed
 
     // Return actor with lowest cost
     const bestActor = testResults[minIndex].actor;
+    console.log(`Best actor: ${bestActor.name}`);
 
     // Emit calculations in logger
     if (bestActor.includeInLogs) {

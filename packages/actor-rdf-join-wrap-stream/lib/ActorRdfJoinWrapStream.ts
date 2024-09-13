@@ -13,24 +13,36 @@ export class ActorRdfJoinWrapStream extends ActorRdfJoin {
   public readonly mediatorJoin: MediatorRdfJoin;
   public readonly mediatorProcessIterator: MediatorProcessIterator;
 
-  public constructor(args: IActorRdfJoinArgs, options: IActorRdfJoinInternalOptions) {
-    super(args, options);
+  public constructor(args: IActorRdfJoinWrapStreamArgs) {
+    super(args, {
+      logicalType: 'inner',
+      physicalName: 'wrap-stream',
+      limitEntries: 0,
+      limitEntriesMin: true,
+      canHandleUndefs: true,
+      isLeaf: false,
+    });
   }
-
+  /**
+   * Override the test to ensure that wrappper is ran for every join
+   * @param action 
+   * @returns 
+   */
   public override async test(action: IActionRdfJoin): Promise<IMediatorTypeJoinCoefficients> {
+    console.log(`Testing, value of action context key: ${action.context.get(KEY_CONTEXT_WRAPPED_RDF_JOIN)}`)
     if (action.context.get(KEY_CONTEXT_WRAPPED_RDF_JOIN)) {
       throw new Error('Unable to wrap join operation multiple times');
     }
 
     const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
-    return this.getJoinCoefficients(action, metadatas); // TODO implement
+    return this.getJoinCoefficients(action, metadatas);
   }
 
   public override async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
     // Prevent infinite recursion. In consequent query operation calls this key is set to false
     // To allow the operation to wrap ALL rdf-join runs
     action.context = ActorRdfJoin.setContextWrapped(action.context, true);
-
+    console.log(`Wrap join, num entries: ${action.entries.length}`)
     const result: IQueryOperationResultBindings = await this.mediatorJoin.mediate(action);
     result.bindingsStream = <AsyncIterator<RDF.Bindings>>
     (await this.mediatorProcessIterator.mediate(
@@ -49,12 +61,12 @@ export class ActorRdfJoinWrapStream extends ActorRdfJoin {
     _action: IActionRdfJoin,
     _metadatas: MetadataBindings[],
   ): Promise<IMediatorTypeJoinCoefficients> {
-    // Ensure this is always run if the test passes
+    // By returning negative coefficients this actor always runs when test passes
     return {
-      iterations: 0,
-      persistedItems: 0,
-      blockingItems: 0,
-      requestTime: 0,
+      iterations: -1,
+      persistedItems: -1,
+      blockingItems: -1,
+      requestTime: -1,
     };
   }
 }
@@ -64,4 +76,8 @@ export interface IActorRdfJoinWrapStreamArgs extends IActorRdfJoinArgs {
    * Mediator that runs all transforms defined by user over the output stream of the query operation
    */
   mediatorProcessIterator: MediatorProcessIterator;
+  /**
+   * Mediator that calls next join to be wrapped
+   */
+  mediatorJoin: MediatorRdfJoin
 }

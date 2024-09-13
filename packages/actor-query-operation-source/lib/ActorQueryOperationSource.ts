@@ -27,7 +27,6 @@ export class ActorQueryOperationSource extends ActorQueryOperation {
 
   public async run(action: IActionQueryOperation): Promise<IQueryOperationResult> {
     // Log to physical plan
-    console.log('RUNNING SORUCE!!!!!!!');
     const physicalQueryPlanLogger: IPhysicalQueryPlanLogger | undefined = action.context
       .get(KeysInitQuery.physicalQueryPlanLogger);
     if (physicalQueryPlanLogger) {
