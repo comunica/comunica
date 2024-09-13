@@ -19,6 +19,7 @@ import type {
 import type * as RDF from '@rdfjs/types';
 import type { IDocumentLoader } from 'jsonld-context-parser';
 import type { Algebra } from 'sparqlalgebrajs';
+import { IPartialResult } from '../../actor-process-iterator-record-intermediate-results/lib';
 
 /**
  * When adding entries to this file, also add a shortcut for them in the contextKeyShortcuts TSDoc comment in
@@ -313,12 +314,18 @@ export const KeysStatistics = {
    * All discovered links during query execution. Not all of them will necessarily be dereferenced.
    */
   discoveredLinks: new ActionContextKey<IStatisticBase<IDiscoverEventData>>(
-    '@comunica/bus-context-preprocess:discoveredLinks',
+    '@comunica/statistic:discoveredLinks',
   ),
   /**
    * Information about what links are dereferenced and when
    */
   dereferencedLinks: new ActionContextKey<IStatisticBase<ILink>>(
-    '@comunica/bus-context-preprocess:dereferencedLinks',
+    '@comunica/statistic:dereferencedLinks',
   ),
+  /**
+   * 
+   */
+  intermediateResults: new ActionContextKey<IPartialResult>(
+    '@comunica/statistic:intermediateResults'
+  )
 };
