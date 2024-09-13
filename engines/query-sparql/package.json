@@ -94,7 +94,7 @@
     "@comunica/actor-optimize-query-operation-rewrite-add": "^3.2.1",
     "@comunica/actor-optimize-query-operation-rewrite-copy": "^3.2.1",
     "@comunica/actor-optimize-query-operation-rewrite-move": "^3.2.1",
-    "@comunica/actor-process-iterator-count-intermediate-results": "^3.2.1",
+    "@comunica/actor-process-iterator-record-intermediate-results": "^3.2.1",
     "@comunica/actor-query-operation-ask": "^3.2.2",
     "@comunica/actor-query-operation-bgp-join": "^3.2.2",
     "@comunica/actor-query-operation-construct": "^3.2.2",
