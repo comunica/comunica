@@ -16,6 +16,7 @@ import type {
   IJoinEntry,
   IJoinEntryWithMetadata,
   ComunicaDataFactory,
+  MetadataVariable,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { termToString } from 'rdf-string';
@@ -94,10 +95,10 @@ export abstract class ActorRdfJoin
    * @param {string[]} variables
    * @returns {string} A hash string.
    */
-  public static hash(bindings: Bindings, variables: RDF.Variable[]): string {
+  public static hash(bindings: Bindings, variables: MetadataVariable[]): string {
     return variables
       .map((variable) => {
-        const term = bindings.get(variable);
+        const term = bindings.get(variable.variable);
         if (term) {
           return term.value;
         }
@@ -131,24 +132,50 @@ export abstract class ActorRdfJoin
    * @param {MetadataBindings[]} metadatas An array of optional metadata objects for the entries.
    * @returns {RDF.Variable[]} An array of variables.
    */
-  public static overlappingVariables(metadatas: MetadataBindings[]): RDF.Variable[] {
-    const variables = metadatas.map(metadata => metadata.variables);
-    let baseArray = variables[0];
-    for (const array of variables.slice(1)) {
-      baseArray = baseArray.filter(el => array.some(value => value.value === el.value));
+  public static overlappingVariables(metadatas: MetadataBindings[]): MetadataVariable[] {
+    const variablesIndexed: Record<string, { variable: RDF.Variable; canBeUndef: boolean; occurrences: number }> = {};
+    for (const metadata of metadatas) {
+      for (const variable of metadata.variables) {
+        if (!variablesIndexed[variable.variable.value]) {
+          variablesIndexed[variable.variable.value] = {
+            variable: variable.variable,
+            canBeUndef: variable.canBeUndef,
+            occurrences: 0,
+          };
+        }
+        const entry = variablesIndexed[variable.variable.value];
+        entry.canBeUndef = entry.canBeUndef || variable.canBeUndef;
+        entry.occurrences++;
+      }
     }
-    return baseArray;
+    return Object.values(variablesIndexed)
+      .filter(entry => entry.occurrences === metadatas.length)
+      .map(entry => ({ variable: entry.variable, canBeUndef: entry.canBeUndef }));
   }
 
   /**
    * Returns the variables that will occur in the joined bindings.
    * @param dataFactory The data factory.
    * @param {MetadataBindings[]} metadatas An array of metadata objects for the entries.
+   * @param optional If an optional join is being performed.
    * @returns {RDF.Variable[]} An array of joined variables.
    */
-  public static joinVariables(dataFactory: ComunicaDataFactory, metadatas: MetadataBindings[]): RDF.Variable[] {
-    return [ ...new Set(metadatas.flatMap(metadata => metadata.variables.map(variable => variable.value))) ]
-      .map(variable => dataFactory.variable(variable));
+  public static joinVariables(
+    dataFactory: ComunicaDataFactory,
+    metadatas: MetadataBindings[],
+    optional = false,
+  ): MetadataVariable[] {
+    const variablesIndexed: Record<string, boolean> = {};
+    let first = true;
+    for (const metadata of metadatas) {
+      for (const variable of metadata.variables) {
+        variablesIndexed[variable.variable.value] = variablesIndexed[variable.variable.value] || variable.canBeUndef ||
+          (!first && optional && !(variable.variable.value in variablesIndexed));
+      }
+      first = false;
+    }
+    return Object.entries(variablesIndexed)
+      .map(([ variableLabel, canBeUndef ]) => ({ variable: dataFactory.variable(variableLabel), canBeUndef }));
   }
 
   /**
@@ -271,8 +298,7 @@ export abstract class ActorRdfJoin
         type: cardinalityJoined.type,
         value: cardinalityJoined.value,
       },
-      canContainUndefs: partialMetadata.canContainUndefs ?? metadatas.some(metadata => metadata.canContainUndefs),
-      variables: ActorRdfJoin.joinVariables(context.getSafe(KeysInitQuery.dataFactory), metadatas),
+      variables: ActorRdfJoin.joinVariables(context.getSafe(KeysInitQuery.dataFactory), metadatas, optional),
     };
   }
 
@@ -289,8 +315,8 @@ export abstract class ActorRdfJoin
     context: IActionContext,
   ): Promise<TestResult<IJoinEntryWithMetadata[]>> {
     // If there is a stream that can contain undefs, we don't modify the join order.
-    const canContainUndefs = entries.some(entry => entry.metadata.canContainUndefs);
-    if (canContainUndefs) {
+    const hasUndefVars = entries.some(entry => entry.metadata.variables.some(variable => variable.canBeUndef));
+    if (hasUndefVars) {
       return passTest(entries);
     }
 
@@ -298,11 +324,11 @@ export abstract class ActorRdfJoin
     const variableOccurrences: Record<string, number> = {};
     for (const entry of entries) {
       for (const variable of entry.metadata.variables) {
-        let counter = variableOccurrences[variable.value];
+        let counter = variableOccurrences[variable.variable.value];
         if (!counter) {
           counter = 0;
         }
-        variableOccurrences[variable.value] = ++counter;
+        variableOccurrences[variable.variable.value] = ++counter;
       }
     }
 
@@ -325,7 +351,7 @@ export abstract class ActorRdfJoin
     for (const entry of entries) {
       let hasCommon = false;
       for (const variable of entry.metadata.variables) {
-        if (multiOccurrenceVariables.includes(variable.value)) {
+        if (multiOccurrenceVariables.includes(variable.variable.value)) {
           hasCommon = true;
           break;
         }
@@ -388,7 +414,7 @@ export abstract class ActorRdfJoin
     // Check if this actor can handle undefs
     if (!this.canHandleUndefs) {
       for (const metadata of metadatas) {
-        if (metadata.canContainUndefs) {
+        if (metadata.variables.some(variable => variable.canBeUndef)) {
           return failTest(`Actor ${this.name} can not join streams containing undefs`);
         }
       }

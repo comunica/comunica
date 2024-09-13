@@ -21,12 +21,7 @@ export function getMetadataBindings(data: BindingsStream): () => Promise<Metadat
   return cachifyMetadata(() => new Promise<Record<string, any>>((resolve, reject) => {
     data.getProperty('metadata', (metadata: Record<string, any>) => resolve(metadata));
     data.on('error', reject);
-  }).then((metadataRaw) => {
-    if (!('canContainUndefs' in metadataRaw)) {
-      metadataRaw.canContainUndefs = false;
-    }
-    return validateMetadataBindings(metadataRaw);
-  }));
+  }).then(metadataRaw => validateMetadataBindings(metadataRaw)));
 }
 
 /**
@@ -47,7 +42,7 @@ export function validateMetadataQuads(metadataRaw: Record<string, any>): Metadat
  * @param metadataRaw A raw metadata object.
  */
 export function validateMetadataBindings(metadataRaw: Record<string, any>): MetadataBindings {
-  for (const key of [ 'cardinality', 'canContainUndefs', 'variables' ]) {
+  for (const key of [ 'cardinality', 'variables' ]) {
     if (!(key in metadataRaw)) {
       throw new Error(`Invalid metadata: missing ${key} in ${JSON.stringify(metadataRaw)}`);
     }

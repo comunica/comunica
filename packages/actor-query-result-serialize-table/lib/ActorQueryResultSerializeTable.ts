@@ -83,7 +83,7 @@ export class ActorQueryResultSerializeTable extends ActorQueryResultSerializeFix
       resultStream = (<IQueryOperationResultBindings>action).bindingsStream.map(
         bindings => this.createRow(labels, bindings),
       );
-      const labels = (await (<IQueryOperationResultBindings>action).metadata()).variables;
+      const labels = (await (<IQueryOperationResultBindings>action).metadata()).variables.map(v => v.variable);
       this.pushHeader(data, labels);
     } else {
       resultStream = (<IQueryOperationResultQuads>action).quadStream.map(quad => `${getTerms(quad).map(term => this.pad(this.termToString(term))).join(' ')}\n`);

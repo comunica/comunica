@@ -33,8 +33,9 @@ describe('ActorQueryOperationService', () => {
           ]),
           metadata: () => Promise.resolve({
             cardinality: 3,
-            canContainUndefs: true,
-            variables: [ DF.variable('a') ],
+            variables: [
+              { variable: DF.variable('a'), canBeUndef: false },
+            ],
           }),
           operated: arg,
           type: 'bindings',
@@ -115,7 +116,9 @@ describe('ActorQueryOperationService', () => {
       };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 3, canContainUndefs: true, variables: [ DF.variable('a') ]});
+        .toEqual({ cardinality: 3, variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+        ]});
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
         BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
@@ -133,7 +136,7 @@ describe('ActorQueryOperationService', () => {
       };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves
-        .toMatchObject({ cardinality: { type: 'exact', value: 1 }, canContainUndefs: false, variables: []});
+        .toMatchObject({ cardinality: { type: 'exact', value: 1 }, variables: []});
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings(),
       ]);
@@ -166,7 +169,9 @@ describe('ActorQueryOperationService', () => {
         scopedSource: { value: 'QUERY_SOURCE_WRAPPER', type: undefined },
       });
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 3, canContainUndefs: true, variables: [ DF.variable('a') ]});
+        .toEqual({ cardinality: 3, variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+        ]});
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
         BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
@@ -193,7 +198,9 @@ describe('ActorQueryOperationService', () => {
         scopedSource: { value: 'QUERY_SOURCE_WRAPPER', type: 'sparql' },
       });
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 3, canContainUndefs: true, variables: [ DF.variable('a') ]});
+        .toEqual({ cardinality: 3, variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+        ]});
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
         BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),

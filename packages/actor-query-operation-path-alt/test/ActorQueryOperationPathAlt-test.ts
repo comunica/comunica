@@ -34,8 +34,7 @@ describe('ActorQueryOperationPathAlt', () => {
         metadata: () => Promise.resolve({
           state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 3 },
-          canContainUndefs: false,
-          variables: [ DF.variable('a') ],
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
         }),
         operated: arg,
         type: 'bindings',
@@ -44,7 +43,7 @@ describe('ActorQueryOperationPathAlt', () => {
     mediatorRdfMetadataAccumulate = <any> {
       async mediate(action: IActionRdfMetadataAccumulate) {
         if (action.mode === 'initialize') {
-          return { metadata: { cardinality: { type: 'exact', value: 0 }, canContainUndefs: false }};
+          return { metadata: { cardinality: { type: 'exact', value: 0 }}};
         }
 
         const metadata = { ...action.accumulatedMetadata };
@@ -68,9 +67,6 @@ describe('ActorQueryOperationPathAlt', () => {
           metadata.pageSize = metadata.pageSize ?? 0;
           subMetadata.pageSize = subMetadata.pageSize ?? 0;
           metadata.pageSize += subMetadata.pageSize;
-        }
-        if (subMetadata.canContainUndefs) {
-          metadata.canContainUndefs = true;
         }
 
         return { metadata };
@@ -140,8 +136,7 @@ describe('ActorQueryOperationPathAlt', () => {
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 6 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),

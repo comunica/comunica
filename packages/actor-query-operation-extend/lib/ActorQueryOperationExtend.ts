@@ -57,7 +57,7 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
     );
 
     // Throw if the variable has already been bound
-    if ((await output.metadata()).variables.some(innerVariable => innerVariable.equals(variable))) {
+    if ((await output.metadata()).variables.some(innerVariable => innerVariable.variable.equals(variable))) {
       throw new Error(`Illegal binding to variable '${variable.value}' that has already been bound`);
     }
 
@@ -99,7 +99,7 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
       bindingsStream,
       async metadata() {
         const outputMetadata = await output.metadata();
-        return { ...outputMetadata, variables: [ ...outputMetadata.variables, variable ]};
+        return { ...outputMetadata, variables: [ ...outputMetadata.variables, { variable, canBeUndef: false }]};
       },
     };
   }

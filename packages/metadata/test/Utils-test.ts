@@ -66,21 +66,14 @@ describe('Utils', () => {
       const it = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
       it.setProperty('metadata', { cardinality: { value: 10 }, variables: []});
       await expect(getMetadataBindings(it)()).resolves
-        .toEqual({ canContainUndefs: false, cardinality: { value: 10 }, variables: []});
-    });
-
-    it('resolves for valid metadata with canContainUndefs', async() => {
-      const it = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
-      it.setProperty('metadata', { canContainUndefs: true, cardinality: { value: 10 }, variables: []});
-      await expect(getMetadataBindings(it)()).resolves
-        .toEqual({ canContainUndefs: true, cardinality: { value: 10 }, variables: []});
+        .toEqual({ cardinality: { value: 10 }, variables: []});
     });
 
     it('resolves for slow metadata', async() => {
       const it = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
       setImmediate(() => it.setProperty('metadata', { cardinality: { value: 10 }, variables: []}));
       await expect(getMetadataBindings(it)()).resolves
-        .toEqual({ canContainUndefs: false, cardinality: { value: 10 }, variables: []});
+        .toEqual({ cardinality: { value: 10 }, variables: []});
     });
 
     it('rejects for an erroring stream', async() => {
@@ -92,7 +85,7 @@ describe('Utils', () => {
     it('rejects for incomplete metadata', async() => {
       const it = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
       setImmediate(() => it.setProperty('metadata', {}));
-      await expect(getMetadataBindings(it)()).rejects.toThrow(`Invalid metadata: missing cardinality in {"canContainUndefs":false}`);
+      await expect(getMetadataBindings(it)()).rejects.toThrow(`Invalid metadata: missing cardinality in {}`);
     });
   });
 });

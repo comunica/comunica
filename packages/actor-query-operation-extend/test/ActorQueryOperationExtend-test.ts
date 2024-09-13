@@ -77,7 +77,10 @@ describe('ActorQueryOperationExtend', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator(input),
-        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]}),
+        metadata: () => Promise.resolve({
+          cardinality: 3,
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+        }),
         operated: arg,
         type: 'bindings',
       }),
@@ -183,7 +186,10 @@ describe('ActorQueryOperationExtend', () => {
 
       expect(output.type).toBe('bindings');
       await expect(output.metadata()).resolves
-        .toMatchObject({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a'), DF.variable('l') ]});
+        .toMatchObject({ cardinality: 3, variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+          { variable: DF.variable('l'), canBeUndef: false },
+        ]});
     });
 
     it('should not extend bindings on erroring expressions', async() => {
@@ -200,7 +206,10 @@ describe('ActorQueryOperationExtend', () => {
       expect(warn).toHaveBeenCalledTimes(3);
       expect(output.type).toBe('bindings');
       await expect(output.metadata()).resolves
-        .toMatchObject({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a'), DF.variable('l') ]});
+        .toMatchObject({ cardinality: 3, variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+          { variable: DF.variable('l'), canBeUndef: false },
+        ]});
     });
 
     it('should emit error when evaluation code returns a hard error', async() => {

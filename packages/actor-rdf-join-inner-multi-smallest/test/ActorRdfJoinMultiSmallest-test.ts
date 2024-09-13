@@ -108,8 +108,11 @@ IActorRdfJoinSelectivityOutput
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('b') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 },
               ),
               type: 'bindings',
@@ -134,8 +137,11 @@ IActorRdfJoinSelectivityOutput
                   cardinality: { type: 'estimate', value: 5 },
                   pageSize: 100,
                   requestTime: 20,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('c') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('c'), canBeUndef: false },
+                  ],
                 },
               ),
               type: 'bindings',
@@ -160,8 +166,11 @@ IActorRdfJoinSelectivityOutput
                   cardinality: { type: 'estimate', value: 2 },
                   pageSize: 100,
                   requestTime: 30,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('b') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 },
               ),
               type: 'bindings',
@@ -192,8 +201,11 @@ IActorRdfJoinSelectivityOutput
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('b') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 },
               ),
               type: 'bindings',
@@ -218,8 +230,11 @@ IActorRdfJoinSelectivityOutput
                   cardinality: { type: 'estimate', value: 5 },
                   pageSize: 100,
                   requestTime: 20,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('c') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('c'), canBeUndef: false },
+                  ],
                 },
               ),
               type: 'bindings',
@@ -244,8 +259,11 @@ IActorRdfJoinSelectivityOutput
                   cardinality: { type: 'estimate', value: 2 },
                   pageSize: 100,
                   requestTime: 30,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('b') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 },
               ),
               type: 'bindings',
@@ -270,8 +288,11 @@ IActorRdfJoinSelectivityOutput
                   cardinality: { type: 'estimate', value: 2 },
                   pageSize: 100,
                   requestTime: 40,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('d') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('d'), canBeUndef: false },
+                  ],
                 },
               ),
               type: 'bindings',
@@ -331,8 +352,12 @@ IActorRdfJoinSelectivityOutput
       await expect((<any> output).metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 40 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a'), DF.variable('c'), DF.variable('b') ],
+
+        variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+          { variable: DF.variable('c'), canBeUndef: false },
+          { variable: DF.variable('b'), canBeUndef: false },
+        ],
       });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
@@ -360,8 +385,13 @@ IActorRdfJoinSelectivityOutput
       await expect((<any> output).metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 80 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a'), DF.variable('c'), DF.variable('b'), DF.variable('d') ],
+
+        variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+          { variable: DF.variable('c'), canBeUndef: false },
+          { variable: DF.variable('b'), canBeUndef: false },
+          { variable: DF.variable('d'), canBeUndef: false },
+        ],
       });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([

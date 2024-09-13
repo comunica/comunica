@@ -4,7 +4,13 @@ import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { Bindings, IQueryOperationResult, IActionContext, ComunicaDataFactory } from '@comunica/types';
+import type {
+  Bindings,
+  IQueryOperationResult,
+  IActionContext,
+  ComunicaDataFactory,
+  MetadataVariable,
+} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { MultiTransformIterator, TransformIterator, EmptyIterator, BufferedIterator } from 'asynciterator';
 import { termToString } from 'rdf-string';
@@ -129,9 +135,10 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
           },
         },
       );
-      const variables: RDF.Variable[] = operation.graph.termType === 'Variable' ?
+      const variables: MetadataVariable[] = (operation.graph.termType === 'Variable' ?
           [ subjectVar, operation.object, operation.graph ] :
-          [ subjectVar, operation.object ];
+          [ subjectVar, operation.object ])
+        .map(variable => ({ variable, canBeUndef: false }));
       return {
         type: 'bindings',
         bindingsStream,
@@ -167,7 +174,8 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
         bindingsStream,
         metadata: async() => ({
           ...await starEval.metadata(),
-          variables: operation.graph.termType === 'Variable' ? [ operation.graph ] : [],
+          variables: (operation.graph.termType === 'Variable' ? [ operation.graph ] : [])
+            .map(variable => ({ variable, canBeUndef: false })),
         }),
       };
     }
@@ -185,7 +193,8 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
       algebraFactory,
       bindingsFactory,
     );
-    const variables: RDF.Variable[] = operation.graph.termType === 'Variable' ? [ value, operation.graph ] : [ value ];
+    const variables = (operation.graph.termType === 'Variable' ? [ value, operation.graph ] : [ value ])
+      .map(variable => ({ variable, canBeUndef: false }));
     return {
       type: 'bindings',
       bindingsStream: starEval.bindingsStream,

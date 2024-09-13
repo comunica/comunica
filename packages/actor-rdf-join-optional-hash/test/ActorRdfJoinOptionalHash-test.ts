@@ -91,7 +91,9 @@ describe('ActorRdfJoinOptionalHash', () => {
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
-                  variables: [ DF.variable('a') ],
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
               },
             },
@@ -102,7 +104,9 @@ describe('ActorRdfJoinOptionalHash', () => {
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
-                  variables: [ DF.variable('b') ],
+                  variables: [
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 }),
               },
             },
@@ -122,7 +126,9 @@ describe('ActorRdfJoinOptionalHash', () => {
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
-                  variables: [ DF.variable('a') ],
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
               },
             },
@@ -133,7 +139,9 @@ describe('ActorRdfJoinOptionalHash', () => {
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
-                  variables: [ DF.variable('a') ],
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
               },
             },
@@ -158,8 +166,9 @@ describe('ActorRdfJoinOptionalHash', () => {
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
-                  canContainUndefs: true,
-                  variables: [ DF.variable('a') ],
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: true },
+                  ],
                 }),
               },
             },
@@ -170,8 +179,9 @@ describe('ActorRdfJoinOptionalHash', () => {
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
-                  canContainUndefs: true,
-                  variables: [ DF.variable('a') ],
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: true },
+                  ],
                 }),
               },
             },
@@ -201,8 +211,9 @@ describe('ActorRdfJoinOptionalHash', () => {
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 3 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a') ],
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -227,8 +238,11 @@ describe('ActorRdfJoinOptionalHash', () => {
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 3 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('b') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -245,8 +259,10 @@ describe('ActorRdfJoinOptionalHash', () => {
           .toEqual({
             state: expect.any(MetadataValidationState),
             cardinality: { type: 'estimate', value: 9 },
-            canContainUndefs: true,
-            variables: [ DF.variable('a'), DF.variable('b') ],
+            variables: [
+              { variable: DF.variable('a'), canBeUndef: false },
+              { variable: DF.variable('b'), canBeUndef: true },
+            ],
           });
         await expect(result.bindingsStream).toEqualBindingsStream([
           BF.bindings([
@@ -281,8 +297,10 @@ describe('ActorRdfJoinOptionalHash', () => {
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 3 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -298,8 +316,11 @@ describe('ActorRdfJoinOptionalHash', () => {
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 3 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('b') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -316,8 +337,10 @@ describe('ActorRdfJoinOptionalHash', () => {
           .toEqual({
             state: expect.any(MetadataValidationState),
             cardinality: { type: 'estimate', value: 9 },
-            canContainUndefs: true,
-            variables: [ DF.variable('a'), DF.variable('b') ],
+            variables: [
+              { variable: DF.variable('a'), canBeUndef: false },
+              { variable: DF.variable('b'), canBeUndef: true },
+            ],
           });
         await expect(result.bindingsStream).toEqualBindingsStream([
           BF.bindings([
@@ -353,8 +376,10 @@ describe('ActorRdfJoinOptionalHash', () => {
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 3 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -366,8 +391,11 @@ describe('ActorRdfJoinOptionalHash', () => {
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 3 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('b') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -384,8 +412,10 @@ describe('ActorRdfJoinOptionalHash', () => {
           .toEqual({
             state: expect.any(MetadataValidationState),
             cardinality: { type: 'estimate', value: 9 },
-            canContainUndefs: true,
-            variables: [ DF.variable('a'), DF.variable('b') ],
+            variables: [
+              { variable: DF.variable('a'), canBeUndef: false },
+              { variable: DF.variable('b'), canBeUndef: true },
+            ],
           });
         await expect(result.bindingsStream.toArray()).rejects.toThrow('optional-hash-error');
       });
@@ -458,7 +488,9 @@ describe('ActorRdfJoinOptionalHash', () => {
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
-                  variables: [ DF.variable('a') ],
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
               },
             },
@@ -469,7 +501,9 @@ describe('ActorRdfJoinOptionalHash', () => {
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
-                  variables: [ DF.variable('b') ],
+                  variables: [
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 }),
               },
             },
@@ -489,7 +523,9 @@ describe('ActorRdfJoinOptionalHash', () => {
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
-                  variables: [ DF.variable('a') ],
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
               },
             },
@@ -500,7 +536,9 @@ describe('ActorRdfJoinOptionalHash', () => {
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
-                  variables: [ DF.variable('a') ],
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
               },
             },
@@ -525,8 +563,9 @@ describe('ActorRdfJoinOptionalHash', () => {
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
-                  canContainUndefs: true,
-                  variables: [ DF.variable('a') ],
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: true },
+                  ],
                 }),
               },
             },
@@ -537,8 +576,9 @@ describe('ActorRdfJoinOptionalHash', () => {
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
-                  canContainUndefs: true,
-                  variables: [ DF.variable('a') ],
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: true },
+                  ],
                 }),
               },
             },
@@ -568,8 +608,10 @@ describe('ActorRdfJoinOptionalHash', () => {
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 3 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -594,8 +636,11 @@ describe('ActorRdfJoinOptionalHash', () => {
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 3 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('b') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -612,8 +657,10 @@ describe('ActorRdfJoinOptionalHash', () => {
           .toEqual({
             state: expect.any(MetadataValidationState),
             cardinality: { type: 'estimate', value: 9 },
-            canContainUndefs: true,
-            variables: [ DF.variable('a'), DF.variable('b') ],
+            variables: [
+              { variable: DF.variable('a'), canBeUndef: false },
+              { variable: DF.variable('b'), canBeUndef: true },
+            ],
           });
         await expect(result.bindingsStream).toEqualBindingsStream([
           BF.bindings([
@@ -648,8 +695,10 @@ describe('ActorRdfJoinOptionalHash', () => {
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 3 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -665,8 +714,11 @@ describe('ActorRdfJoinOptionalHash', () => {
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 3 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('b') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -683,8 +735,10 @@ describe('ActorRdfJoinOptionalHash', () => {
           .toEqual({
             state: expect.any(MetadataValidationState),
             cardinality: { type: 'estimate', value: 9 },
-            canContainUndefs: true,
-            variables: [ DF.variable('a'), DF.variable('b') ],
+            variables: [
+              { variable: DF.variable('a'), canBeUndef: false },
+              { variable: DF.variable('b'), canBeUndef: true },
+            ],
           });
         await expect(result.bindingsStream).toEqualBindingsStream([
           BF.bindings([
@@ -739,8 +793,10 @@ describe('ActorRdfJoinOptionalHash', () => {
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 3 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -752,8 +808,11 @@ describe('ActorRdfJoinOptionalHash', () => {
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 3 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('b') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -770,8 +829,10 @@ describe('ActorRdfJoinOptionalHash', () => {
           .toEqual({
             state: expect.any(MetadataValidationState),
             cardinality: { type: 'estimate', value: 9 },
-            canContainUndefs: true,
-            variables: [ DF.variable('a'), DF.variable('b') ],
+            variables: [
+              { variable: DF.variable('a'), canBeUndef: false },
+              { variable: DF.variable('b'), canBeUndef: true },
+            ],
           });
         await expect(result.bindingsStream).toEqualBindingsStream([
           BF.bindings([
@@ -810,8 +871,10 @@ describe('ActorRdfJoinOptionalHash', () => {
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 3 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -823,8 +886,11 @@ describe('ActorRdfJoinOptionalHash', () => {
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 3 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('b') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -841,8 +907,10 @@ describe('ActorRdfJoinOptionalHash', () => {
           .toEqual({
             state: expect.any(MetadataValidationState),
             cardinality: { type: 'estimate', value: 9 },
-            canContainUndefs: true,
-            variables: [ DF.variable('a'), DF.variable('b') ],
+            variables: [
+              { variable: DF.variable('a'), canBeUndef: false },
+              { variable: DF.variable('b'), canBeUndef: true },
+            ],
           });
         await expect(result.bindingsStream.toArray()).rejects.toThrow('optional-hash-error');
       });
@@ -915,7 +983,9 @@ describe('ActorRdfJoinOptionalHash', () => {
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
-                  variables: [ DF.variable('a') ],
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
               },
             },
@@ -926,7 +996,9 @@ describe('ActorRdfJoinOptionalHash', () => {
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
-                  variables: [ DF.variable('b') ],
+                  variables: [
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 }),
               },
             },
@@ -946,7 +1018,9 @@ describe('ActorRdfJoinOptionalHash', () => {
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
-                  variables: [ DF.variable('a') ],
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
               },
             },
@@ -957,7 +1031,9 @@ describe('ActorRdfJoinOptionalHash', () => {
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
-                  variables: [ DF.variable('a') ],
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
               },
             },
@@ -982,7 +1058,7 @@ describe('ActorRdfJoinOptionalHash', () => {
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
-                  canContainUndefs: true,
+                  variables: [{ variable: DF.variable('a'), canBeUndef: true }],
                 }),
               },
             },
@@ -993,7 +1069,7 @@ describe('ActorRdfJoinOptionalHash', () => {
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
-                  canContainUndefs: true,
+                  variables: [{ variable: DF.variable('a'), canBeUndef: true }],
                 }),
               },
             },
@@ -1018,8 +1094,10 @@ describe('ActorRdfJoinOptionalHash', () => {
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 3 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -1044,8 +1122,11 @@ describe('ActorRdfJoinOptionalHash', () => {
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 3 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('b') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -1062,8 +1143,10 @@ describe('ActorRdfJoinOptionalHash', () => {
           .toEqual({
             state: expect.any(MetadataValidationState),
             cardinality: { type: 'estimate', value: 9 },
-            canContainUndefs: true,
-            variables: [ DF.variable('a'), DF.variable('b') ],
+            variables: [
+              { variable: DF.variable('a'), canBeUndef: false },
+              { variable: DF.variable('b'), canBeUndef: true },
+            ],
           });
         await expect(result.bindingsStream).toEqualBindingsStream([
           BF.bindings([
@@ -1102,8 +1185,10 @@ describe('ActorRdfJoinOptionalHash', () => {
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 3 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -1115,8 +1200,11 @@ describe('ActorRdfJoinOptionalHash', () => {
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 3 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('b') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -1133,8 +1221,10 @@ describe('ActorRdfJoinOptionalHash', () => {
           .toEqual({
             state: expect.any(MetadataValidationState),
             cardinality: { type: 'estimate', value: 9 },
-            canContainUndefs: true,
-            variables: [ DF.variable('a'), DF.variable('b') ],
+            variables: [
+              { variable: DF.variable('a'), canBeUndef: false },
+              { variable: DF.variable('b'), canBeUndef: true },
+            ],
           });
         await expect(result.bindingsStream.toArray()).rejects.toThrow('optional-hash-error');
       });
@@ -1207,7 +1297,9 @@ describe('ActorRdfJoinOptionalHash', () => {
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
-                  variables: [ DF.variable('a') ],
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
               },
             },
@@ -1218,7 +1310,9 @@ describe('ActorRdfJoinOptionalHash', () => {
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
-                  variables: [ DF.variable('b') ],
+                  variables: [
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 }),
               },
             },
@@ -1238,7 +1332,9 @@ describe('ActorRdfJoinOptionalHash', () => {
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
-                  variables: [ DF.variable('a') ],
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
               },
             },
@@ -1249,7 +1345,9 @@ describe('ActorRdfJoinOptionalHash', () => {
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
-                  variables: [ DF.variable('a') ],
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
               },
             },
@@ -1274,7 +1372,7 @@ describe('ActorRdfJoinOptionalHash', () => {
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
-                  canContainUndefs: true,
+                  variables: [{ variable: DF.variable('a'), canBeUndef: true }],
                 }),
               },
             },
@@ -1285,7 +1383,7 @@ describe('ActorRdfJoinOptionalHash', () => {
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
-                  canContainUndefs: true,
+                  variables: [{ variable: DF.variable('a'), canBeUndef: true }],
                 }),
               },
             },
@@ -1310,8 +1408,10 @@ describe('ActorRdfJoinOptionalHash', () => {
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 3 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -1336,8 +1436,11 @@ describe('ActorRdfJoinOptionalHash', () => {
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 3 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('b') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -1354,8 +1457,10 @@ describe('ActorRdfJoinOptionalHash', () => {
           .toEqual({
             state: expect.any(MetadataValidationState),
             cardinality: { type: 'estimate', value: 9 },
-            canContainUndefs: true,
-            variables: [ DF.variable('a'), DF.variable('b') ],
+            variables: [
+              { variable: DF.variable('a'), canBeUndef: false },
+              { variable: DF.variable('b'), canBeUndef: true },
+            ],
           });
         await expect(result.bindingsStream).toEqualBindingsStream([
           BF.bindings([
@@ -1394,8 +1499,10 @@ describe('ActorRdfJoinOptionalHash', () => {
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 3 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -1407,8 +1514,11 @@ describe('ActorRdfJoinOptionalHash', () => {
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 3 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('b') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -1425,8 +1535,10 @@ describe('ActorRdfJoinOptionalHash', () => {
           .toEqual({
             state: expect.any(MetadataValidationState),
             cardinality: { type: 'estimate', value: 9 },
-            canContainUndefs: true,
-            variables: [ DF.variable('a'), DF.variable('b') ],
+            variables: [
+              { variable: DF.variable('a'), canBeUndef: false },
+              { variable: DF.variable('b'), canBeUndef: true },
+            ],
           });
         await expect(result.bindingsStream.toArray()).rejects.toThrow('optional-hash-error');
       });

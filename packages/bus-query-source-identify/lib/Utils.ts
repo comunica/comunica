@@ -195,9 +195,6 @@ export function setMetadata(
   forceEstimateCardinality: boolean,
 ): void {
   const getMetadataCb = (metadataRaw: Record<string, any>): void => {
-    if (!('canContainUndefs' in metadataRaw)) {
-      metadataRaw.canContainUndefs = false;
-    }
     if (forceEstimateCardinality) {
       metadataRaw.cardinality.type = 'estimate';
     }
@@ -239,7 +236,6 @@ export function quadsMetadataToBindingsMetadata(
 ): MetadataBindings {
   return {
     ...metadataQuads,
-    canContainUndefs: false,
     order: metadataQuads.order ?
       quadsOrderToBindingsOrder(dataFactory, metadataQuads.order, elementVariables) :
       undefined,
@@ -249,7 +245,7 @@ export function quadsMetadataToBindingsMetadata(
         terms: quadsOrderToBindingsOrder(dataFactory, orderDef.terms, elementVariables),
       })) :
       undefined,
-    variables,
+    variables: variables.map(variable => ({ variable, canBeUndef: false })),
   };
 }
 

@@ -71,7 +71,7 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
       async metadata() {
         const joinMetadata = await join.metadata();
         const variables = joinMetadata.variables.filter(variable => !generatedVariableNames
-          .some(generatedVariableName => generatedVariableName.value === variable.value));
+          .some(generatedVariableName => generatedVariableName.value === variable.variable.value));
         return { ...joinMetadata, variables };
       },
     };

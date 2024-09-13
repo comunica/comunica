@@ -356,8 +356,8 @@ describe('QueryEngineBase', () => {
         metadata: async() => ({
           state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 1 },
-          canContainUndefs: false,
-          variables: [ DF.variable('a') ],
+
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
         }),
         context: new ActionContext({ c: 'd' }),
       });
@@ -371,7 +371,7 @@ describe('QueryEngineBase', () => {
       await expect(final.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 1 },
-        canContainUndefs: false,
+
         variables: [ DF.variable('a') ],
       });
       expect(final.context).toEqual(new ActionContext({ c: 'd' }));
@@ -386,8 +386,8 @@ describe('QueryEngineBase', () => {
         metadata: async() => ({
           state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 1 },
-          canContainUndefs: false,
-          variables: [ DF.variable('a') ],
+
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
         }),
         context: new ActionContext({ c: 'd' }),
       });
@@ -399,8 +399,8 @@ describe('QueryEngineBase', () => {
       await expect(final.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 1 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       expect(final.context).toEqual(new ActionContext({ c: 'd' }));
     });
@@ -441,7 +441,7 @@ describe('QueryEngineBase', () => {
         ]),
         metadata: async() => (<any>{
           cardinality: { type: 'estimate', value: 1 },
-          canContainUndefs: false,
+
           variables: [ DF.variable('a') ],
         }),
       });
@@ -454,8 +454,8 @@ describe('QueryEngineBase', () => {
       ]);
       await expect(internal.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 1 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
     });
 
@@ -465,7 +465,7 @@ describe('QueryEngineBase', () => {
         execute: async() => new ArrayIterator([
           DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
         ]),
-        metadata: async() => (<any>{ cardinality: 1, canContainUndefs: false }),
+        metadata: async() => (<any>{ cardinality: 1 }),
       });
 
       expect(internal.type).toBe('quads');
@@ -474,7 +474,7 @@ describe('QueryEngineBase', () => {
       ]);
       await expect(internal.metadata()).resolves.toEqual({
         cardinality: 1,
-        canContainUndefs: false,
+
       });
     });
 

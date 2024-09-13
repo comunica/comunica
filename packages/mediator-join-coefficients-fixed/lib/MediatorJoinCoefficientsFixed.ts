@@ -87,7 +87,7 @@ export class MediatorJoinCoefficientsFixed
       Actor.getContextLogger(action.context)?.debug(`Determined physical join operator '${bestActor.logicalType}-${bestActor.physicalName}'`, {
         entries: action.entries.length,
         variables: await Promise.all(action.entries
-          .map(async entry => (await entry.output.metadata()).variables.map(variable => variable.value))),
+          .map(async entry => (await entry.output.metadata()).variables.map(variable => variable.variable.value))),
         costs: Object.fromEntries(costs.map((coeff, i) => [
           `${testResults[i].actor.logicalType}-${testResults[i].actor.physicalName}`,
           coeff,

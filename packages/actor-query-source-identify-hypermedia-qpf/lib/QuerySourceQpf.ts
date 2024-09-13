@@ -259,7 +259,6 @@ export class QuerySourceQpf implements IQuerySource {
             first: null,
             next: null,
             last: null,
-            canContainUndefs: false,
           });
           return quads;
         }
@@ -312,7 +311,7 @@ export class QuerySourceQpf implements IQuerySource {
           metadata: rdfMetadataOuput.metadata,
           requestTime: dereferenceRdfOutput.requestTime,
         });
-      quads!.setProperty('metadata', { ...metadata, canContainUndefs: false, subsetOf: self.url });
+      quads!.setProperty('metadata', { ...metadata, subsetOf: self.url });
 
       // While we could resolve this before metadata extraction, we do it afterwards to ensure metadata emission
       // before the end event is emitted.
@@ -380,7 +379,7 @@ export class QuerySourceQpf implements IQuerySource {
     for (const binding of await filterBindings.bindings.toArray()) {
       const value: string[] = [ '(' ];
       for (const variable of filterBindings.metadata.variables) {
-        const term = binding.get(variable);
+        const term = binding.get(variable.variable);
         value.push(term ? termToStringTtl(term) : 'UNDEF');
         value.push(' ');
       }
@@ -395,7 +394,7 @@ export class QuerySourceQpf implements IQuerySource {
     }
 
     // Append to URL (brTPF uses the SPARQL VALUES syntax, without the VALUES prefix)
-    const valuesUrl = encodeURIComponent(`(${filterBindings.metadata.variables.map(variable => `?${variable.value}`).join(' ')}) { ${values.join(' ')} }`);
+    const valuesUrl = encodeURIComponent(`(${filterBindings.metadata.variables.map(variable => `?${variable.variable.value}`).join(' ')}) { ${values.join(' ')} }`);
     return `${url}&values=${valuesUrl}`;
   }
 

@@ -6,7 +6,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
-import type { IQueryOperationResultBindings, Bindings, IActionContext } from '@comunica/types';
+import type { IQueryOperationResultBindings, Bindings, IActionContext, MetadataVariable } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
@@ -58,16 +58,21 @@ IActorRdfJoinSelectivityOutput
 >;
     let actor: ActorRdfJoinSymmetricHash;
     let action: IActionRdfJoin;
-    let variables0: RDF.Variable[];
-    let variables1: RDF.Variable[];
+    let variables0: MetadataVariable[];
+    let variables1: MetadataVariable[];
 
     beforeEach(() => {
       mediatorJoinSelectivity = <any> {
         mediate: async() => ({ selectivity: 1 }),
       };
       actor = new ActorRdfJoinSymmetricHash({ name: 'actor', bus, mediatorJoinSelectivity });
-      variables0 = [ DF.variable('a') ];
-      variables1 = [ DF.variable('a'), DF.variable('b') ];
+      variables0 = [
+        { variable: DF.variable('a'), canBeUndef: false },
+      ];
+      variables1 = [
+        { variable: DF.variable('a'), canBeUndef: false },
+        { variable: DF.variable('b'), canBeUndef: false },
+      ];
       action = {
         type: 'inner',
         entries: [
@@ -77,7 +82,7 @@ IActorRdfJoinSelectivityOutput
               metadata: () => Promise.resolve({
                 state: new MetadataValidationState(),
                 cardinality: { type: 'estimate', value: 4 },
-                canContainUndefs: false,
+
                 variables: variables0,
               }),
               type: 'bindings',
@@ -90,7 +95,7 @@ IActorRdfJoinSelectivityOutput
               metadata: () => Promise.resolve({
                 state: new MetadataValidationState(),
                 cardinality: { type: 'estimate', value: 5 },
-                canContainUndefs: false,
+
                 variables: variables1,
               }),
               type: 'bindings',
@@ -119,8 +124,7 @@ IActorRdfJoinSelectivityOutput
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 4 },
-                  canContainUndefs: true,
-                  variables: [],
+                  variables: [{ variable: DF.variable('a'), canBeUndef: true }],
                 }),
                 type: 'bindings',
               },
@@ -132,7 +136,7 @@ IActorRdfJoinSelectivityOutput
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 5 },
-                  canContainUndefs: false,
+
                   variables: [],
                 }),
                 type: 'bindings',
@@ -156,7 +160,7 @@ IActorRdfJoinSelectivityOutput
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 4 },
-                  canContainUndefs: false,
+
                   variables: [],
                 }),
                 type: 'bindings',
@@ -169,8 +173,7 @@ IActorRdfJoinSelectivityOutput
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 5 },
-                  canContainUndefs: true,
-                  variables: [],
+                  variables: [{ variable: DF.variable('a'), canBeUndef: true }],
                 }),
                 type: 'bindings',
               },
@@ -193,8 +196,7 @@ IActorRdfJoinSelectivityOutput
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 4 },
-                  canContainUndefs: true,
-                  variables: [],
+                  variables: [{ variable: DF.variable('a'), canBeUndef: true }],
                 }),
                 type: 'bindings',
               },
@@ -206,8 +208,7 @@ IActorRdfJoinSelectivityOutput
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 5 },
-                  canContainUndefs: true,
-                  variables: [],
+                  variables: [{ variable: DF.variable('a'), canBeUndef: true }],
                 }),
                 type: 'bindings',
               },
@@ -233,8 +234,10 @@ IActorRdfJoinSelectivityOutput
                     cardinality: { type: 'estimate', value: 4 },
                     pageSize: 100,
                     requestTime: 10,
-                    canContainUndefs: false,
-                    variables: [ DF.variable('a') ],
+
+                    variables: [
+                      { variable: DF.variable('a'), canBeUndef: false },
+                    ],
                   },
                 ),
                 type: 'bindings',
@@ -249,8 +252,10 @@ IActorRdfJoinSelectivityOutput
                   cardinality: { type: 'estimate', value: 5 },
                   pageSize: 100,
                   requestTime: 20,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('b') ],
+
+                  variables: [
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -285,9 +290,12 @@ IActorRdfJoinSelectivityOutput
       await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
         await expect(output.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
-          canContainUndefs: false,
+
           cardinality: { type: 'estimate', value: 20 },
-          variables: [ DF.variable('a'), DF.variable('b') ],
+          variables: [
+            { variable: DF.variable('a'), canBeUndef: false },
+            { variable: DF.variable('b'), canBeUndef: false },
+          ],
         });
         await expect(output.bindingsStream).toEqualBindingsStream([]);
       });
@@ -305,20 +313,30 @@ IActorRdfJoinSelectivityOutput
           [ DF.variable('b'), DF.literal('b') ],
         ]),
       ]);
-      variables0 = [ DF.variable('a'), DF.variable('b') ];
+      variables0 = [
+        { variable: DF.variable('a'), canBeUndef: false },
+        { variable: DF.variable('b'), canBeUndef: false },
+      ];
       action.entries[1].output.bindingsStream = new ArrayIterator<RDF.Bindings>([
         BF.bindings([
           [ DF.variable('a'), DF.literal('a') ],
           [ DF.variable('c'), DF.literal('c') ],
         ]),
       ]);
-      variables1 = [ DF.variable('a'), DF.variable('c') ];
+      variables1 = [
+        { variable: DF.variable('a'), canBeUndef: false },
+        { variable: DF.variable('c'), canBeUndef: false },
+      ];
       await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
         await expect(output.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
-          canContainUndefs: false,
+
           cardinality: { type: 'estimate', value: 20 },
-          variables: [ DF.variable('a'), DF.variable('b'), DF.variable('c') ],
+          variables: [
+            { variable: DF.variable('a'), canBeUndef: false },
+            { variable: DF.variable('b'), canBeUndef: false },
+            { variable: DF.variable('c'), canBeUndef: false },
+          ],
         });
         await expect(output.bindingsStream).toEqualBindingsStream([
           BF.bindings([
@@ -342,20 +360,30 @@ IActorRdfJoinSelectivityOutput
           [ DF.variable('b'), DF.literal('b') ],
         ]),
       ]);
-      variables0 = [ DF.variable('a'), DF.variable('b') ];
+      variables0 = [
+        { variable: DF.variable('a'), canBeUndef: false },
+        { variable: DF.variable('b'), canBeUndef: false },
+      ];
       action.entries[1].output.bindingsStream = new ArrayIterator<RDF.Bindings>([
         BF.bindings([
           [ DF.variable('a'), DF.literal('d') ],
           [ DF.variable('c'), DF.literal('c') ],
         ]),
       ]);
-      variables1 = [ DF.variable('a'), DF.variable('c') ];
+      variables1 = [
+        { variable: DF.variable('a'), canBeUndef: false },
+        { variable: DF.variable('c'), canBeUndef: false },
+      ];
       await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
         await expect(output.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
-          canContainUndefs: false,
+
           cardinality: { type: 'estimate', value: 20 },
-          variables: [ DF.variable('a'), DF.variable('b'), DF.variable('c') ],
+          variables: [
+            { variable: DF.variable('a'), canBeUndef: false },
+            { variable: DF.variable('b'), canBeUndef: false },
+            { variable: DF.variable('c'), canBeUndef: false },
+          ],
         });
         await expect(output.bindingsStream).toEqualBindingsStream([]);
       });
@@ -393,7 +421,10 @@ IActorRdfJoinSelectivityOutput
           [ DF.variable('b'), DF.literal('4') ],
         ]),
       ]);
-      variables0 = [ DF.variable('a'), DF.variable('b') ];
+      variables0 = [
+        { variable: DF.variable('a'), canBeUndef: false },
+        { variable: DF.variable('b'), canBeUndef: false },
+      ];
       action.entries[1].output.bindingsStream = new ArrayIterator<RDF.Bindings>([
         BF.bindings([
           [ DF.variable('a'), DF.literal('1') ],
@@ -420,7 +451,10 @@ IActorRdfJoinSelectivityOutput
           [ DF.variable('c'), DF.literal('4') ],
         ]),
       ]);
-      variables1 = [ DF.variable('a'), DF.variable('c') ];
+      variables1 = [
+        { variable: DF.variable('a'), canBeUndef: false },
+        { variable: DF.variable('c'), canBeUndef: false },
+      ];
       await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
         const expected = [
           BF.bindings([
@@ -466,9 +500,13 @@ IActorRdfJoinSelectivityOutput
         ];
         await expect(output.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
-          canContainUndefs: false,
+
           cardinality: { type: 'estimate', value: 20 },
-          variables: [ DF.variable('a'), DF.variable('b'), DF.variable('c') ],
+          variables: [
+            { variable: DF.variable('a'), canBeUndef: false },
+            { variable: DF.variable('b'), canBeUndef: false },
+            { variable: DF.variable('c'), canBeUndef: false },
+          ],
         });
         // Mapping to string and sorting since we don't know order (well, we sort of know, but we might not!)
         expect((await arrayifyStream(output.bindingsStream)).map(bindingsToString).sort())

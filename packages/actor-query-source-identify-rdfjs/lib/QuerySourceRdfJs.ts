@@ -144,7 +144,6 @@ export class QuerySourceRdfJs implements IQuerySource {
     it.setProperty('metadata', {
       state: new MetadataValidationState(),
       cardinality: { type: wouldRequirePostFiltering ? 'estimate' : 'exact', value: cardinality },
-      canContainUndefs: false,
     });
   }
 

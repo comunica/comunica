@@ -192,7 +192,7 @@ describe('QuerySourceHypermedia', () => {
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'exact', value: 0 },
-            canContainUndefs: false,
+
             a: 2,
           },
           source: {
@@ -248,7 +248,7 @@ describe('QuerySourceHypermedia', () => {
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'exact', value: 1 },
-            canContainUndefs: false,
+
             a: 2,
           },
           source: {
@@ -300,7 +300,7 @@ describe('QuerySourceHypermedia', () => {
           a: 2,
           state: expect.any(MetadataValidationState),
           cardinality: { type: 'exact', value: 2 },
-          canContainUndefs: false,
+
           firstMeta: true,
         });
       });
@@ -660,8 +660,11 @@ describe('QuerySourceHypermedia', () => {
             type: 'estimate',
             value: 0,
           },
-          canContainUndefs: false,
-          variables: [ DF.variable('s'), DF.variable('p'), DF.variable('o') ],
+          variables: [
+            { variable: DF.variable('s'), canBeUndef: false },
+            { variable: DF.variable('p'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+          ],
         });
         expect(it3.getProperty('metadata')).toEqual({
           state: expect.any(MetadataValidationState),
@@ -669,8 +672,10 @@ describe('QuerySourceHypermedia', () => {
             type: 'estimate',
             value: 0,
           },
-          canContainUndefs: false,
-          variables: [ DF.variable('p'), DF.variable('o') ],
+          variables: [
+            { variable: DF.variable('p'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+          ],
         });
 
         // Expect the metadata to be modified for every page
@@ -770,54 +775,79 @@ describe('QuerySourceHypermedia', () => {
         expect(it2Meta).toHaveBeenCalledTimes(8);
         expect(it2Meta).toHaveBeenNthCalledWith(1, {
           state: expect.any(MetadataValidationState),
-          canContainUndefs: false,
+
           cardinality: { type: 'estimate', value: 0 },
-          variables: [ DF.variable('s'), DF.variable('p'), DF.variable('o') ],
+          variables: [
+            { variable: DF.variable('s'), canBeUndef: false },
+            { variable: DF.variable('p'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+          ],
         });
         expect(it2Meta).toHaveBeenNthCalledWith(2, {
           state: expect.any(MetadataValidationState),
           a: 1,
           firstMeta: true,
           cardinality: { type: 'estimate', value: 0 },
-          canContainUndefs: false,
-          variables: [ DF.variable('s'), DF.variable('p'), DF.variable('o') ],
+
+          variables: [
+            { variable: DF.variable('s'), canBeUndef: false },
+            { variable: DF.variable('p'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+          ],
         });
         expect(it2Meta).toHaveBeenNthCalledWith(4, {
           state: expect.any(MetadataValidationState),
           a: 1,
           cardinality: { type: 'estimate', value: 2 },
-          canContainUndefs: false,
-          variables: [ DF.variable('s'), DF.variable('p'), DF.variable('o') ],
+
+          variables: [
+            { variable: DF.variable('s'), canBeUndef: false },
+            { variable: DF.variable('p'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+          ],
         });
         expect(it2Meta).toHaveBeenNthCalledWith(6, {
           state: expect.any(MetadataValidationState),
           a: 1,
           cardinality: { type: 'estimate', value: 3 },
-          canContainUndefs: false,
-          variables: [ DF.variable('s'), DF.variable('p'), DF.variable('o') ],
+
+          variables: [
+            { variable: DF.variable('s'), canBeUndef: false },
+            { variable: DF.variable('p'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+          ],
         });
         expect(it3Meta).toHaveBeenCalledTimes(4);
         expect(it3Meta).toHaveBeenNthCalledWith(1, {
           state: expect.any(MetadataValidationState),
-          canContainUndefs: false,
+
           cardinality: { type: 'estimate', value: 0 },
-          variables: [ DF.variable('p'), DF.variable('o') ],
+          variables: [
+            { variable: DF.variable('p'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+          ],
         });
         expect(it3Meta).toHaveBeenNthCalledWith(2, {
           state: expect.any(MetadataValidationState),
           a: 1,
           cardinality: { type: 'estimate', value: 0 },
           firstMeta: true,
-          canContainUndefs: false,
-          variables: [ DF.variable('p'), DF.variable('o') ],
+
+          variables: [
+            { variable: DF.variable('p'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+          ],
         });
         expect(it3Meta).toHaveBeenNthCalledWith(4, {
           state: expect.any(MetadataValidationState),
           a: 1,
           cardinality: { type: 'estimate', value: 0 },
           firstMeta: true,
-          canContainUndefs: false,
-          variables: [ DF.variable('p'), DF.variable('o') ],
+
+          variables: [
+            { variable: DF.variable('p'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+          ],
         });
 
         expect(spy).toHaveBeenCalledTimes(2);

@@ -1,4 +1,4 @@
-import type { Bindings } from '@comunica/types';
+import type { Bindings, MetadataVariable } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { IBindingsIndex } from './IBindingsIndex';
 
@@ -16,11 +16,11 @@ export class BindingsIndexUndef<V> implements IBindingsIndex<V> {
   private readonly allowDisjointDomains: boolean;
 
   public constructor(
-    keys: RDF.Variable[],
+    keys: MetadataVariable[],
     hashFn: (term: RDF.Term | undefined) => string,
     allowDisjointDomains: boolean,
   ) {
-    this.keys = keys;
+    this.keys = keys.map(v => v.variable);
     this.hashFn = hashFn;
     this.allowDisjointDomains = allowDisjointDomains && this.keys.length > 0;
   }

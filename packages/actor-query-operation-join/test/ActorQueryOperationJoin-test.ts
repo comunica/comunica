@@ -24,7 +24,10 @@ describe('ActorQueryOperationJoin', () => {
           BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
           BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
         ], { autoStart: false }),
-        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]}),
+        metadata: () => Promise.resolve({
+          cardinality: 3,
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+        }),
         operated: arg,
         type: 'bindings',
       }),
@@ -34,8 +37,10 @@ describe('ActorQueryOperationJoin', () => {
         bindingsStream: new UnionIterator(arg.entries.map((entry: IJoinEntry) => entry.output.bindingsStream)),
         metadata: () => Promise.resolve({
           cardinality: 100,
-          canContainUndefs: false,
-          variables: [ DF.variable('a'), DF.variable('b') ],
+          variables: [
+            { variable: DF.variable('a'), canBeUndef: false },
+            { variable: DF.variable('b'), canBeUndef: false },
+          ],
         }),
         operated: arg,
         type: 'bindings',
@@ -85,8 +90,10 @@ describe('ActorQueryOperationJoin', () => {
       expect(output.type).toBe('bindings');
       await expect(output.metadata()).resolves.toEqual({
         cardinality: 100,
-        canContainUndefs: false,
-        variables: [ DF.variable('a'), DF.variable('b') ],
+        variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+          { variable: DF.variable('b'), canBeUndef: false },
+        ],
       });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),

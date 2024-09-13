@@ -96,7 +96,8 @@ export class ActorQueryResultSerializeSparqlXml extends ActorQueryResultSerializ
     data.push(
       serializer.serializeNode({
         name: 'head',
-        children: metadata.variables.map(variable => ({ name: 'variable', attributes: { name: variable.value }})),
+        children: metadata.variables
+          .map(variable => ({ name: 'variable', attributes: { name: variable.variable.value }})),
       }),
     );
 

@@ -52,14 +52,20 @@ export interface IMetadata<OrderItemsType extends RDF.Variable | RDF.QuadTermNam
 export type TermsOrder<OrderItemsType> = { term: OrderItemsType; direction: 'asc' | 'desc' }[];
 export type MetadataBindings = IMetadata<RDF.Variable> & {
   /**
-   * If any of the bindings could contain an undefined variable binding.
-   * If this is false, then all variables are guaranteed to have a defined bound value in the bindingsStream.
-   */
-  canContainUndefs: boolean;
-  /**
    * The list of variables for which bindings are provided in the bindings stream.
    */
-  variables: RDF.Variable[];
+  variables: MetadataVariable[];
+};
+export type MetadataVariable = {
+  /**
+   * The variable.
+   */
+  variable: RDF.Variable;
+  /**
+   * If the bindings stream could contain undefined bindings for this variable.
+   * If this is false, then values for this variable are guaranteed to be defined in the bindingsStream.
+   */
+  canBeUndef: boolean;
 };
 export type MetadataQuads = IMetadata<RDF.QuadTermName>;
 

@@ -76,8 +76,7 @@ IQueryOperationResultBindings
             metadata: () => Promise.resolve({
               state: new MetadataValidationState(),
               cardinality: { type: 'estimate', value: data.length },
-              canContainUndefs: false,
-              variables: [ DF.variable('bound') ],
+              variables: [{ variable: DF.variable('bound'), canBeUndef: false }],
             }),
             type: 'bindings',
           };
@@ -117,16 +116,20 @@ IQueryOperationResultBindings
               cardinality: { type: 'estimate', value: 3 },
               pageSize: 100,
               requestTime: 10,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
+
+              variables: [
+                { variable: DF.variable('a'), canBeUndef: false },
+              ],
             },
             {
               state: new MetadataValidationState(),
               cardinality: { type: 'estimate', value: 2 },
               pageSize: 100,
               requestTime: 20,
-              canContainUndefs: false,
-              variables: [ DF.variable('b') ],
+
+              variables: [
+                { variable: DF.variable('b'), canBeUndef: false },
+              ],
             },
           ],
         )).resolves.toFailTest('Actor actor only join entries with at least one common variable');
@@ -154,16 +157,20 @@ IQueryOperationResultBindings
               cardinality: { type: 'estimate', value: 3 },
               pageSize: 100,
               requestTime: 10,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
+
+              variables: [
+                { variable: DF.variable('a'), canBeUndef: false },
+              ],
             },
             {
               state: new MetadataValidationState(),
               cardinality: { type: 'estimate', value: 2 },
               pageSize: 100,
               requestTime: 20,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
+
+              variables: [
+                { variable: DF.variable('a'), canBeUndef: false },
+              ],
             },
           ],
         )).resolves.toPassTest({
@@ -196,16 +203,24 @@ IQueryOperationResultBindings
               cardinality: { type: 'estimate', value: 3 },
               pageSize: 100,
               requestTime: 10,
-              canContainUndefs: false,
-              variables: [ DF.variable('a'), DF.variable('b'), DF.variable('d') ],
+
+              variables: [
+                { variable: DF.variable('a'), canBeUndef: false },
+                { variable: DF.variable('b'), canBeUndef: false },
+                { variable: DF.variable('d'), canBeUndef: false },
+              ],
             },
             {
               state: new MetadataValidationState(),
               cardinality: { type: 'estimate', value: 2 },
               pageSize: 100,
               requestTime: 20,
-              canContainUndefs: false,
-              variables: [ DF.variable('a'), DF.variable('c'), DF.variable('e') ],
+
+              variables: [
+                { variable: DF.variable('a'), canBeUndef: false },
+                { variable: DF.variable('c'), canBeUndef: false },
+                { variable: DF.variable('e'), canBeUndef: false },
+              ],
             },
           ],
         )).resolves.toPassTest({
@@ -238,16 +253,20 @@ IQueryOperationResultBindings
               cardinality: { type: 'estimate', value: 3 },
               pageSize: 100,
               requestTime: 10,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
+
+              variables: [
+                { variable: DF.variable('a'), canBeUndef: false },
+              ],
             },
             {
               state: new MetadataValidationState(),
               cardinality: { type: 'estimate', value: 2 },
               pageSize: 100,
               requestTime: 20,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
+
+              variables: [
+                { variable: DF.variable('a'), canBeUndef: false },
+              ],
             },
           ],
         )).resolves.toFailTest('Actor actor can not bind on Extend and Group operations');
@@ -275,16 +294,20 @@ IQueryOperationResultBindings
               cardinality: { type: 'estimate', value: 3 },
               pageSize: 100,
               requestTime: 10,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
+
+              variables: [
+                { variable: DF.variable('a'), canBeUndef: false },
+              ],
             },
             {
               state: new MetadataValidationState(),
               cardinality: { type: 'estimate', value: 2 },
               pageSize: 100,
               requestTime: 20,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
+
+              variables: [
+                { variable: DF.variable('a'), canBeUndef: false },
+              ],
             },
           ],
         )).resolves.toFailTest('Actor actor can not bind on Extend and Group operations');
@@ -312,16 +335,20 @@ IQueryOperationResultBindings
               cardinality: { type: 'estimate', value: 3 },
               pageSize: 100,
               requestTime: 10,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
+
+              variables: [
+                { variable: DF.variable('a'), canBeUndef: false },
+              ],
             },
             {
               state: new MetadataValidationState(),
               cardinality: { type: 'estimate', value: 2 },
               pageSize: 100,
               requestTime: 20,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
+
+              variables: [
+                { variable: DF.variable('a'), canBeUndef: false },
+              ],
             },
           ],
         )).resolves.toPassTest({
@@ -350,8 +377,10 @@ IQueryOperationResultBindings
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 3 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -377,8 +406,11 @@ IQueryOperationResultBindings
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 3 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('b') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -410,8 +442,10 @@ IQueryOperationResultBindings
         await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: 7.2 },
-          canContainUndefs: true,
-          variables: [ DF.variable('a'), DF.variable('b') ],
+          variables: [
+            { variable: DF.variable('a'), canBeUndef: false },
+            { variable: DF.variable('b'), canBeUndef: true },
+          ],
         });
 
         // Validate mock calls
@@ -424,14 +458,19 @@ IQueryOperationResultBindings
             [KeysQueryOperation.joinLeftMetadata.name]: {
               state: expect.any(MetadataValidationState),
               cardinality: { type: 'estimate', value: 3 },
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
+
+              variables: [
+                { variable: DF.variable('a'), canBeUndef: false },
+              ],
             },
             [KeysQueryOperation.joinRightMetadatas.name]: [{
               state: expect.any(MetadataValidationState),
               cardinality: { type: 'estimate', value: 3 },
-              canContainUndefs: false,
-              variables: [ DF.variable('a'), DF.variable('b') ],
+
+              variables: [
+                { variable: DF.variable('a'), canBeUndef: false },
+                { variable: DF.variable('b'), canBeUndef: false },
+              ],
             }],
             [KeysQueryOperation.joinBindings.name]: BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
           }),
@@ -444,14 +483,19 @@ IQueryOperationResultBindings
             [KeysQueryOperation.joinLeftMetadata.name]: {
               state: expect.any(MetadataValidationState),
               cardinality: { type: 'estimate', value: 3 },
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
+
+              variables: [
+                { variable: DF.variable('a'), canBeUndef: false },
+              ],
             },
             [KeysQueryOperation.joinRightMetadatas.name]: [{
               state: expect.any(MetadataValidationState),
               cardinality: { type: 'estimate', value: 3 },
-              canContainUndefs: false,
-              variables: [ DF.variable('a'), DF.variable('b') ],
+
+              variables: [
+                { variable: DF.variable('a'), canBeUndef: false },
+                { variable: DF.variable('b'), canBeUndef: false },
+              ],
             }],
             [KeysQueryOperation.joinBindings.name]: BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
           }),
@@ -464,14 +508,19 @@ IQueryOperationResultBindings
             [KeysQueryOperation.joinLeftMetadata.name]: {
               state: expect.any(MetadataValidationState),
               cardinality: { type: 'estimate', value: 3 },
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
+
+              variables: [
+                { variable: DF.variable('a'), canBeUndef: false },
+              ],
             },
             [KeysQueryOperation.joinRightMetadatas.name]: [{
               state: expect.any(MetadataValidationState),
               cardinality: { type: 'estimate', value: 3 },
-              canContainUndefs: false,
-              variables: [ DF.variable('a'), DF.variable('b') ],
+
+              variables: [
+                { variable: DF.variable('a'), canBeUndef: false },
+                { variable: DF.variable('b'), canBeUndef: false },
+              ],
             }],
             [KeysQueryOperation.joinBindings.name]: BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
           }),

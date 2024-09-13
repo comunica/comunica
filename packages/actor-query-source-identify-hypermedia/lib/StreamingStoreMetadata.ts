@@ -21,7 +21,6 @@ export class StreamingStoreMetadata extends StreamingStore implements IAggregate
   protected baseMetadata: MetadataBindings = {
     state: new MetadataValidationState(),
     cardinality: { type: 'exact', value: 0 },
-    canContainUndefs: false,
     variables: [],
   };
 
@@ -72,7 +71,6 @@ export class StreamingStoreMetadata extends StreamingStore implements IAggregate
         type: 'estimate',
         value: count,
       },
-      canContainUndefs: false,
     };
     iterator.setProperty('metadata', metadata);
     iterator.setProperty('lastCount', count);
@@ -114,7 +112,6 @@ export class StreamingStoreMetadata extends StreamingStore implements IAggregate
         type: 'estimate',
         value: count,
       },
-      canContainUndefs: false,
       variables: [],
     };
 

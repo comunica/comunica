@@ -70,7 +70,6 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
         type: meta.cardinality.type,
         value: meta.cardinality.value * operationOriginal.template.length,
       },
-      canContainUndefs: false,
       availableOrders: undefined,
     }));
 

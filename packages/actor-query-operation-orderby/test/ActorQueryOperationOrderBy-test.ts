@@ -148,7 +148,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
           BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
           BF.bindings([[ DF.variable('a'), DF.literal('333') ]]),
         ]),
-        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
+        metadata: () => Promise.resolve({ cardinality: 3 }),
         operated: arg,
         type: 'bindings',
         variables: [ DF.variable('a') ],
@@ -267,7 +267,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
       };
       const output = await actor.run(op);
       await expect(ActorQueryOperation.getSafeBindings(output).metadata()).resolves
-        .toEqual({ cardinality: 3, canContainUndefs: false });
+        .toEqual({ cardinality: 3 });
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
@@ -290,7 +290,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
       };
       const output = await actor.run(op);
       await expect(ActorQueryOperation.getSafeBindings(output).metadata()).resolves
-        .toEqual({ cardinality: 3, canContainUndefs: false });
+        .toEqual({ cardinality: 3 });
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         BF.bindings([[ DF.variable('a'), DF.literal('22') ]]),
@@ -306,7 +306,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
       };
       const output = await actor.run(op);
       await expect(ActorQueryOperation.getSafeBindings(output).metadata()).resolves
-        .toEqual({ cardinality: 3, canContainUndefs: false });
+        .toEqual({ cardinality: 3 });
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
@@ -322,7 +322,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
       };
       const output = await actor.run(op);
       await expect(ActorQueryOperation.getSafeBindings(output).metadata()).resolves
-        .toEqual({ cardinality: 3, canContainUndefs: false });
+        .toEqual({ cardinality: 3 });
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         BF.bindings([[ DF.variable('a'), DF.literal('333') ]]),
@@ -338,7 +338,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
       };
       const output = await actor.run(op);
       await expect(ActorQueryOperation.getSafeBindings(output).metadata()).resolves
-        .toEqual({ cardinality: 3, canContainUndefs: false });
+        .toEqual({ cardinality: 3 });
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         BF.bindings([[ DF.variable('a'), DF.literal('22') ]]),

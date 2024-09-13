@@ -73,8 +73,9 @@ describe('ActorQueryOperationValues', () => {
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toMatchObject({
         cardinality: { type: 'exact', value: 1 },
-        canContainUndefs: false,
-        variables: [ DF.variable('v') ],
+        variables: [
+          { variable: DF.variable('v'), canBeUndef: false },
+        ],
       });
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -94,8 +95,9 @@ describe('ActorQueryOperationValues', () => {
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toMatchObject({
         cardinality: { type: 'exact', value: 2 },
-        canContainUndefs: false,
-        variables: [ DF.variable('v') ],
+        variables: [
+          { variable: DF.variable('v'), canBeUndef: false },
+        ],
       });
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -121,8 +123,10 @@ describe('ActorQueryOperationValues', () => {
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toMatchObject({
         cardinality: { type: 'exact', value: 2 },
-        canContainUndefs: false,
-        variables: [ DF.variable('v'), DF.variable('w') ],
+        variables: [
+          { variable: DF.variable('v'), canBeUndef: false },
+          { variable: DF.variable('w'), canBeUndef: false },
+        ],
       });
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -150,8 +154,10 @@ describe('ActorQueryOperationValues', () => {
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toMatchObject({
         cardinality: { type: 'exact', value: 2 },
-        canContainUndefs: true,
-        variables: [ DF.variable('v'), DF.variable('w') ],
+        variables: [
+          { variable: DF.variable('v'), canBeUndef: false },
+          { variable: DF.variable('w'), canBeUndef: true },
+        ],
       });
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([

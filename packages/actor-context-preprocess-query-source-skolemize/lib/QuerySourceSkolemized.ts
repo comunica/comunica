@@ -48,7 +48,6 @@ export class QuerySourceSkolemized implements IQuerySource {
       it.setProperty('metadata', {
         state: new MetadataValidationState(),
         cardinality: { type: 'exact', value: 0 },
-        canContainUndefs: false,
         variables: [],
       });
       return it;

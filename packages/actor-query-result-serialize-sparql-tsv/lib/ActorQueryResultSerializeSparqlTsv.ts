@@ -64,12 +64,12 @@ export class ActorQueryResultSerializeSparqlTsv extends ActorQueryResultSerializ
     const data = new Readable();
     // Write head
     const metadata = await bindingsAction.metadata();
-    data.push(`${metadata.variables.map((variable: RDF.Variable) => variable.value).join('\t')}\n`);
+    data.push(`${metadata.variables.map(variable => variable.variable.value).join('\t')}\n`);
 
     // Write Bindings
     data.wrap(<any> bindingsAction.bindingsStream.map((bindings: RDF.Bindings) => `${metadata.variables
-      .map((key: RDF.Variable) => ActorQueryResultSerializeSparqlTsv
-        .bindingToTsvBindings(bindings.get(key)))
+      .map(key => ActorQueryResultSerializeSparqlTsv
+        .bindingToTsvBindings(bindings.get(key.variable)))
       .join('\t')}\n`));
 
     return { data };

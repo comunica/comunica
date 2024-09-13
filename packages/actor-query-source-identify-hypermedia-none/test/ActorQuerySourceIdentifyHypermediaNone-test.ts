@@ -63,10 +63,13 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
       })).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'exact', value: 2 },
-        canContainUndefs: false,
         availableOrders: undefined,
         order: undefined,
-        variables: [ v1, v2, v3 ],
+        variables: [
+          { variable: v1, canBeUndef: false },
+          { variable: v2, canBeUndef: false },
+          { variable: v3, canBeUndef: false },
+        ],
       });
       await expect(stream).toEqualBindingsStream([
         BF.fromRecord({
@@ -96,10 +99,12 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
       })).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 2 },
-        canContainUndefs: false,
         availableOrders: undefined,
         order: undefined,
-        variables: [ v1, v2 ],
+        variables: [
+          { variable: v1, canBeUndef: false },
+          { variable: v2, canBeUndef: false },
+        ],
       });
       await expect(stream).toEqualBindingsStream([
         BF.fromRecord({

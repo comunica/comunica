@@ -1,3 +1,4 @@
+import type { MetadataVariable } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { IBindingsIndex } from './IBindingsIndex';
 
@@ -12,8 +13,8 @@ export class BindingsIndexDef<V> implements IBindingsIndex<V> {
   private readonly hashFn: (term: RDF.Bindings, keys: RDF.Variable[]) => string;
   private readonly index: Record<string, V>;
 
-  public constructor(keys: RDF.Variable[], hashFn: (term: RDF.Bindings, keys: RDF.Variable[]) => string) {
-    this.keys = keys;
+  public constructor(keys: MetadataVariable[], hashFn: (term: RDF.Bindings, keys: RDF.Variable[]) => string) {
+    this.keys = keys.map(v => v.variable);
     this.hashFn = hashFn;
     this.index = {};
   }

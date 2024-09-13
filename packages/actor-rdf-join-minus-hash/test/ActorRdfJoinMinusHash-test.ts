@@ -80,7 +80,12 @@ IActorRdfJoinSelectivityOutput
               output: {
                 type: 'bindings',
                 metadata: () => Promise.resolve(
-                  { cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: true },
+                  {
+                    cardinality: 4,
+                    pageSize: 100,
+                    requestTime: 10,
+                    variables: [{ variable: DF.variable('a'), canBeUndef: true }],
+                  },
                 ),
               },
             },
@@ -88,7 +93,12 @@ IActorRdfJoinSelectivityOutput
               output: {
                 type: 'bindings',
                 metadata: () => Promise.resolve(
-                  { cardinality: 4, pageSize: 100, requestTime: 10, canContainUndefs: true },
+                  {
+                    cardinality: 4,
+                    pageSize: 100,
+                    requestTime: 10,
+                    variables: [{ variable: DF.variable('a'), canBeUndef: true }],
+                  },
                 ),
               },
             },
@@ -108,7 +118,7 @@ IActorRdfJoinSelectivityOutput
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
-                  canContainUndefs: false,
+                  variables: [],
                 }),
               },
             },
@@ -119,7 +129,7 @@ IActorRdfJoinSelectivityOutput
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
-                  canContainUndefs: false,
+                  variables: [],
                 }),
               },
             },
@@ -148,8 +158,10 @@ IActorRdfJoinSelectivityOutput
                 bindingsStream: readable,
                 metadata: () => Promise.resolve({
                   cardinality: 3,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -163,8 +175,10 @@ IActorRdfJoinSelectivityOutput
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({
                   cardinality: 2,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -178,7 +192,7 @@ IActorRdfJoinSelectivityOutput
         // Validate output
         expect(result.type).toBe('bindings');
         await expect(result.metadata()).resolves
-          .toEqual({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]});
+          .toEqual({ cardinality: 3, variables: [{ variable: DF.variable('a'), canBeUndef: false }]});
         await expect(arrayifyStream(result.bindingsStream)).rejects.toThrow(new Error('Error'));
       });
 
@@ -198,8 +212,10 @@ IActorRdfJoinSelectivityOutput
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({
                   cardinality: 3,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -210,8 +226,10 @@ IActorRdfJoinSelectivityOutput
                 bindingsStream: readable,
                 metadata: () => Promise.resolve({
                   cardinality: 2,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -225,7 +243,7 @@ IActorRdfJoinSelectivityOutput
         // Validate output
         expect(result.type).toBe('bindings');
         await expect(result.metadata()).resolves
-          .toEqual({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]});
+          .toEqual({ cardinality: 3, variables: [{ variable: DF.variable('a'), canBeUndef: false }]});
         await expect(arrayifyStream(result.bindingsStream)).rejects.toThrow(new Error('Error'));
       });
 
@@ -242,8 +260,10 @@ IActorRdfJoinSelectivityOutput
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({
                   cardinality: 3,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -257,8 +277,10 @@ IActorRdfJoinSelectivityOutput
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({
                   cardinality: 2,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -272,7 +294,7 @@ IActorRdfJoinSelectivityOutput
         // Validate output
         expect(result.type).toBe('bindings');
         await expect(result.metadata()).resolves
-          .toEqual({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]});
+          .toEqual({ cardinality: 3, variables: [{ variable: DF.variable('a'), canBeUndef: false }]});
         await expect(result.bindingsStream).toEqualBindingsStream([
           BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
         ]);
@@ -291,8 +313,10 @@ IActorRdfJoinSelectivityOutput
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({
                   cardinality: 3,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -306,8 +330,10 @@ IActorRdfJoinSelectivityOutput
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({
                   cardinality: 2,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('b') ],
+
+                  variables: [
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -321,7 +347,7 @@ IActorRdfJoinSelectivityOutput
         // Validate output
         expect(result.type).toBe('bindings');
         await expect(result.metadata()).resolves
-          .toEqual({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]});
+          .toEqual({ cardinality: 3, variables: [{ variable: DF.variable('a'), canBeUndef: false }]});
         await expect(result.bindingsStream).toEqualBindingsStream([
           BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
           BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
@@ -392,7 +418,7 @@ IActorRdfJoinSelectivityOutput
                     cardinality: { type: 'estimate', value: 4 },
                     pageSize: 100,
                     requestTime: 10,
-                    canContainUndefs: false,
+
                   },
                 ),
               },
@@ -405,7 +431,7 @@ IActorRdfJoinSelectivityOutput
                     cardinality: { type: 'estimate', value: 4 },
                     pageSize: 100,
                     requestTime: 10,
-                    canContainUndefs: false,
+
                   },
                 ),
               },
@@ -435,8 +461,10 @@ IActorRdfJoinSelectivityOutput
                 bindingsStream: readable,
                 metadata: () => Promise.resolve({
                   cardinality: 3,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -450,8 +478,10 @@ IActorRdfJoinSelectivityOutput
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({
                   cardinality: 2,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -466,8 +496,10 @@ IActorRdfJoinSelectivityOutput
         expect(result.type).toBe('bindings');
         await expect(result.metadata()).resolves.toEqual({
           cardinality: 3,
-          canContainUndefs: false,
-          variables: [ DF.variable('a') ],
+
+          variables: [
+            { variable: DF.variable('a'), canBeUndef: false },
+          ],
         });
         await expect(arrayifyStream(result.bindingsStream)).rejects.toThrow(new Error('Error'));
       });
@@ -488,8 +520,10 @@ IActorRdfJoinSelectivityOutput
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({
                   cardinality: 3,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -500,8 +534,10 @@ IActorRdfJoinSelectivityOutput
                 bindingsStream: readable,
                 metadata: () => Promise.resolve({
                   cardinality: 2,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -516,8 +552,10 @@ IActorRdfJoinSelectivityOutput
         expect(result.type).toBe('bindings');
         await expect(result.metadata()).resolves.toEqual({
           cardinality: 3,
-          canContainUndefs: false,
-          variables: [ DF.variable('a') ],
+
+          variables: [
+            { variable: DF.variable('a'), canBeUndef: false },
+          ],
         });
         await expect(arrayifyStream(result.bindingsStream)).rejects.toThrow(new Error('Error'));
       });
@@ -535,8 +573,10 @@ IActorRdfJoinSelectivityOutput
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({
                   cardinality: 3,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -550,8 +590,10 @@ IActorRdfJoinSelectivityOutput
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({
                   cardinality: 2,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -566,8 +608,10 @@ IActorRdfJoinSelectivityOutput
         expect(result.type).toBe('bindings');
         await expect(result.metadata()).resolves.toEqual({
           cardinality: 3,
-          canContainUndefs: false,
-          variables: [ DF.variable('a') ],
+
+          variables: [
+            { variable: DF.variable('a'), canBeUndef: false },
+          ],
         });
         await expect(result.bindingsStream).toEqualBindingsStream([
           BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
@@ -587,8 +631,10 @@ IActorRdfJoinSelectivityOutput
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({
                   cardinality: 3,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -602,8 +648,10 @@ IActorRdfJoinSelectivityOutput
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({
                   cardinality: 2,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('b') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -618,8 +666,10 @@ IActorRdfJoinSelectivityOutput
         expect(result.type).toBe('bindings');
         await expect(result.metadata()).resolves.toEqual({
           cardinality: 3,
-          canContainUndefs: false,
-          variables: [ DF.variable('a') ],
+
+          variables: [
+            { variable: DF.variable('a'), canBeUndef: false },
+          ],
         });
         await expect(result.bindingsStream).toEqualBindingsStream([
           BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
@@ -650,8 +700,11 @@ IActorRdfJoinSelectivityOutput
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({
                   cardinality: 3,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('b') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -669,8 +722,11 @@ IActorRdfJoinSelectivityOutput
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({
                   cardinality: 2,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('b') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: true },
+                    { variable: DF.variable('b'), canBeUndef: true },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -685,8 +741,11 @@ IActorRdfJoinSelectivityOutput
         expect(result.type).toBe('bindings');
         await expect(result.metadata()).resolves.toEqual({
           cardinality: 3,
-          canContainUndefs: false,
-          variables: [ DF.variable('a'), DF.variable('b') ],
+
+          variables: [
+            { variable: DF.variable('a'), canBeUndef: false },
+            { variable: DF.variable('b'), canBeUndef: false },
+          ],
         });
         await expect(result.bindingsStream).toEqualBindingsStream([
           BF.bindings([
@@ -718,8 +777,11 @@ IActorRdfJoinSelectivityOutput
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({
                   cardinality: 3,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('b') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -735,8 +797,11 @@ IActorRdfJoinSelectivityOutput
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({
                   cardinality: 2,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('b') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: true },
+                    { variable: DF.variable('b'), canBeUndef: true },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -751,8 +816,11 @@ IActorRdfJoinSelectivityOutput
         expect(result.type).toBe('bindings');
         await expect(result.metadata()).resolves.toEqual({
           cardinality: 3,
-          canContainUndefs: false,
-          variables: [ DF.variable('a'), DF.variable('b') ],
+
+          variables: [
+            { variable: DF.variable('a'), canBeUndef: false },
+            { variable: DF.variable('b'), canBeUndef: false },
+          ],
         });
         await expect(result.bindingsStream).toEqualBindingsStream([
           BF.bindings([
@@ -786,8 +854,10 @@ IActorRdfJoinSelectivityOutput
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({
                   cardinality: 3,
-                  canContainUndefs: true,
-                  variables: [ DF.variable('a'), DF.variable('b') ],
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: true },
+                    { variable: DF.variable('b'), canBeUndef: true },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -807,8 +877,11 @@ IActorRdfJoinSelectivityOutput
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({
                   cardinality: 2,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('b') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -823,8 +896,10 @@ IActorRdfJoinSelectivityOutput
         expect(result.type).toBe('bindings');
         await expect(result.metadata()).resolves.toEqual({
           cardinality: 3,
-          canContainUndefs: true,
-          variables: [ DF.variable('a'), DF.variable('b') ],
+          variables: [
+            { variable: DF.variable('a'), canBeUndef: true },
+            { variable: DF.variable('b'), canBeUndef: true },
+          ],
         });
         await expect(result.bindingsStream).toEqualBindingsStream([
           BF.bindings([
@@ -854,8 +929,10 @@ IActorRdfJoinSelectivityOutput
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({
                   cardinality: 3,
-                  canContainUndefs: true,
-                  variables: [ DF.variable('a'), DF.variable('b') ],
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: true },
+                    { variable: DF.variable('b'), canBeUndef: true },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -873,8 +950,10 @@ IActorRdfJoinSelectivityOutput
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({
                   cardinality: 2,
-                  canContainUndefs: true,
-                  variables: [ DF.variable('a'), DF.variable('b') ],
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: true },
+                    { variable: DF.variable('b'), canBeUndef: true },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -889,8 +968,10 @@ IActorRdfJoinSelectivityOutput
         expect(result.type).toBe('bindings');
         await expect(result.metadata()).resolves.toEqual({
           cardinality: 3,
-          canContainUndefs: true,
-          variables: [ DF.variable('a'), DF.variable('b') ],
+          variables: [
+            { variable: DF.variable('a'), canBeUndef: true },
+            { variable: DF.variable('b'), canBeUndef: true },
+          ],
         });
         await expect(result.bindingsStream).toEqualBindingsStream([
           BF.bindings([

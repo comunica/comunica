@@ -80,7 +80,10 @@ describe('ActorQueryResultSerializeTable', () => {
       ], { autoStart: false });
       streamError = new Readable();
       streamError._read = () => streamError.emit('error', new Error('ActorQueryResultSerializeTable-test'));
-      metadata = <any> { variables: [ DF.variable('k1'), DF.variable('k2') ]};
+      metadata = <any> { variables: [
+        { variable: DF.variable('k1'), canBeUndef: false },
+        { variable: DF.variable('k2'), canBeUndef: false },
+      ]};
     });
 
     describe('for getting media types', () => {

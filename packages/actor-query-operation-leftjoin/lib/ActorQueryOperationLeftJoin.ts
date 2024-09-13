@@ -58,7 +58,7 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
           // eslint-disable-next-line ts/no-misused-promises
           transform: async(bindings: Bindings, done: () => void, push: (item: Bindings) => void) => {
             // If variables of the right-hand entry are missing, we skip expression evaluation
-            if (!expressionVariables.every(variable => bindings.has(variable.value))) {
+            if (!expressionVariables.every(variable => bindings.has(variable.variable.value))) {
               push(bindings);
               return done();
             }

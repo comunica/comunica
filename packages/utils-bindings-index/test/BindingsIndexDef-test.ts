@@ -37,7 +37,7 @@ describe('BindingsIndexDef', () => {
 
   describe('with one key', () => {
     beforeEach(() => {
-      index = new BindingsIndexDef([ DF.variable('a') ], hashFn);
+      index = new BindingsIndexDef([{ variable: DF.variable('a'), canBeUndef: false }], hashFn);
     });
 
     describe('without bindings', () => {
@@ -77,7 +77,11 @@ describe('BindingsIndexDef', () => {
 
   describe('with three keys', () => {
     beforeEach(() => {
-      index = new BindingsIndexDef([ DF.variable('a'), DF.variable('b'), DF.variable('c') ], hashFn);
+      index = new BindingsIndexDef([
+        { variable: DF.variable('a'), canBeUndef: false },
+        { variable: DF.variable('b'), canBeUndef: false },
+        { variable: DF.variable('c'), canBeUndef: false },
+      ], hashFn);
     });
 
     describe('without bindings', () => {

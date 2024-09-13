@@ -7,7 +7,13 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import { AsyncEvaluator } from '@comunica/expression-evaluator';
-import type { BindingsStream, ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
+import type {
+  BindingsStream,
+  ComunicaDataFactory,
+  IActionContext,
+  IQueryOperationResult,
+  MetadataVariable,
+} from '@comunica/types';
 import { ArrayIterator, TransformIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 import { GroupsState } from './GroupsState';
@@ -61,10 +67,10 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
     // The variables in scope are the variables on which we group, i.e. pattern.variables.
     // For 'GROUP BY ?x, ?z', this is [?x, ?z], for 'GROUP by expr(?x) as ?e' this is [?e].
     // But also in scope are the variables defined by the aggregations, since GROUP has to handle this.
-    const variables = [
+    const variables: MetadataVariable[] = [
       ...operation.variables,
       ...aggregates.map(agg => agg.variable),
-    ];
+    ].map(variable => ({ variable, canBeUndef: false }));
 
     const sparqleeConfig = ActorQueryOperation.getAsyncExpressionContext(
       context,

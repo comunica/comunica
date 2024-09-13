@@ -30,8 +30,8 @@ describe('ActorQueryOperationSlice', () => {
         ], { autoStart: false }),
         metadata: () => Promise.resolve({
           cardinality: { type: 'estimate', value: 3 },
-          canContainUndefs: false,
-          variables: [ DF.variable('a') ],
+
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
         }),
         operated: arg,
         type: 'bindings',
@@ -46,8 +46,8 @@ describe('ActorQueryOperationSlice', () => {
         ], { autoStart: false }),
         metadata: () => Promise.resolve({
           cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
-          canContainUndefs: false,
-          variables: [ DF.variable('a') ],
+
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
         }),
         operated: arg,
         type: 'bindings',
@@ -62,8 +62,7 @@ describe('ActorQueryOperationSlice', () => {
         ], { autoStart: false }),
         metadata: () => Promise.resolve({
           cardinality: { type: 'estimate', value: 3 },
-          canContainUndefs: true,
-          variables: [ DF.variable('a') ],
+          variables: [{ variable: DF.variable('a'), canBeUndef: true }],
         }),
         operated: arg,
         type: 'bindings',
@@ -76,7 +75,7 @@ describe('ActorQueryOperationSlice', () => {
           DF.quad(DF.namedNode('http://example.com/s'), DF.namedNode('http://example.com/p'), DF.literal('2')),
           DF.quad(DF.namedNode('http://example.com/s'), DF.namedNode('http://example.com/p'), DF.literal('3')),
         ], { autoStart: false }),
-        metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 3 }, canContainUndefs: false }),
+        metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 3 }}),
         operated: arg,
         type: 'quads',
       }),
@@ -128,8 +127,8 @@ describe('ActorQueryOperationSlice', () => {
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 3 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       expect(output.type).toBe('bindings');
       expect(mediatorQueryOperation.mediate.mock.calls[0][0].context.get(KeysQueryOperation.limitIndicator))
@@ -146,8 +145,8 @@ describe('ActorQueryOperationSlice', () => {
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 2 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -161,8 +160,8 @@ describe('ActorQueryOperationSlice', () => {
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 0 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([]);
@@ -173,8 +172,8 @@ describe('ActorQueryOperationSlice', () => {
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 3 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -189,8 +188,8 @@ describe('ActorQueryOperationSlice', () => {
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 2 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -204,8 +203,8 @@ describe('ActorQueryOperationSlice', () => {
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 0 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       expect(mediatorQueryOperation.mediate.mock.calls[0][0].context.get(KeysQueryOperation.limitIndicator))
         .toBeUndefined();
@@ -218,8 +217,8 @@ describe('ActorQueryOperationSlice', () => {
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 2 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -233,8 +232,8 @@ describe('ActorQueryOperationSlice', () => {
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 1 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -247,8 +246,8 @@ describe('ActorQueryOperationSlice', () => {
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 1 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -261,8 +260,8 @@ describe('ActorQueryOperationSlice', () => {
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 0 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([]);
@@ -273,8 +272,8 @@ describe('ActorQueryOperationSlice', () => {
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 0 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       await expect(output.bindingsStream).toEqualBindingsStream([]);
     });
@@ -284,8 +283,8 @@ describe('ActorQueryOperationSlice', () => {
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 0 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([]);
@@ -296,8 +295,8 @@ describe('ActorQueryOperationSlice', () => {
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 0 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([]);
@@ -308,8 +307,8 @@ describe('ActorQueryOperationSlice', () => {
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 0 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([]);
@@ -325,8 +324,8 @@ describe('ActorQueryOperationSlice', () => {
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -346,8 +345,7 @@ describe('ActorQueryOperationSlice', () => {
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 3 },
-        canContainUndefs: true,
-        variables: [ DF.variable('a') ],
+        variables: [{ variable: DF.variable('a'), canBeUndef: true }],
       });
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -362,8 +360,8 @@ describe('ActorQueryOperationSlice', () => {
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 3 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -378,7 +376,7 @@ describe('ActorQueryOperationSlice', () => {
       const op: any = { operation: { type: 'project', start: 0, length: 2 }, context: new ActionContext() };
       const output = ActorQueryOperation.getSafeQuads(await actor.run(op));
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: { type: 'estimate', value: 2 }, canContainUndefs: false });
+        .toEqual({ cardinality: { type: 'estimate', value: 2 }});
       expect(output.type).toBe('quads');
       await expect(arrayifyStream(output.quadStream)).resolves.toEqual([
         DF.quad(DF.namedNode('http://example.com/s'), DF.namedNode('http://example.com/p'), DF.literal('1')),

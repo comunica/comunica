@@ -324,8 +324,9 @@ describe('QuerySourceSparql', () => {
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve))).resolves
         .toEqual({
           cardinality: { type: 'exact', value: 3 },
-          canContainUndefs: false,
-          variables: [ DF.variable('p') ],
+          variables: [
+            { variable: DF.variable('p'), canBeUndef: false },
+          ],
         });
       await expect(stream).toEqualBindingsStream([
         BF.fromRecord({
@@ -350,8 +351,9 @@ describe('QuerySourceSparql', () => {
       await expect(new Promise(resolve => stream1.getProperty('metadata', resolve))).resolves
         .toEqual({
           cardinality: { type: 'exact', value: 3 },
-          canContainUndefs: false,
-          variables: [ DF.variable('p') ],
+          variables: [
+            { variable: DF.variable('p'), canBeUndef: false },
+          ],
         });
       await stream1.toArray();
 
@@ -366,8 +368,9 @@ describe('QuerySourceSparql', () => {
       await expect(new Promise(resolve => stream2.getProperty('metadata', resolve))).resolves
         .toEqual({
           cardinality: { type: 'exact', value: 3 },
-          canContainUndefs: false,
-          variables: [ DF.variable('p') ],
+          variables: [
+            { variable: DF.variable('p'), canBeUndef: false },
+          ],
         });
       await stream2.toArray();
 
@@ -384,8 +387,9 @@ describe('QuerySourceSparql', () => {
       await expect(new Promise(resolve => stream1.getProperty('metadata', resolve))).resolves
         .toEqual({
           cardinality: { type: 'exact', value: 3 },
-          canContainUndefs: false,
-          variables: [ DF.variable('p') ],
+          variables: [
+            { variable: DF.variable('p'), canBeUndef: false },
+          ],
         });
       await stream1.toArray();
 
@@ -400,8 +404,10 @@ describe('QuerySourceSparql', () => {
       await expect(new Promise(resolve => stream2.getProperty('metadata', resolve))).resolves
         .toEqual({
           cardinality: { type: 'exact', value: 3 },
-          canContainUndefs: false,
-          variables: [ DF.variable('p') ],
+
+          variables: [
+            { variable: DF.variable('p'), canBeUndef: false },
+          ],
         });
       await stream2.toArray();
 
@@ -420,8 +426,9 @@ describe('QuerySourceSparql', () => {
       await expect(new Promise(resolve => stream1.getProperty('metadata', resolve))).resolves
         .toEqual({
           cardinality: { type: 'exact', value: 3 },
-          canContainUndefs: false,
-          variables: [ DF.variable('p') ],
+          variables: [
+            { variable: DF.variable('p'), canBeUndef: false },
+          ],
         });
       await stream1.toArray();
 
@@ -436,8 +443,10 @@ describe('QuerySourceSparql', () => {
       await expect(new Promise(resolve => stream2.getProperty('metadata', resolve))).resolves
         .toEqual({
           cardinality: { type: 'exact', value: 3 },
-          canContainUndefs: false,
-          variables: [ DF.variable('p') ],
+
+          variables: [
+            { variable: DF.variable('p'), canBeUndef: false },
+          ],
         });
       await stream2.toArray();
 
@@ -535,7 +544,7 @@ describe('QuerySourceSparql', () => {
   }
 }` ]) :
               Readable.from([ `{
-  "head": { "vars": [ "p" ]
+  "head": { "vars": [ "p1" ]
   } ,
   "results": { 
     "bindings": [
@@ -547,7 +556,7 @@ describe('QuerySourceSparql', () => {
       },
       {
         "notp": { "type": "uri" , "value": "p3" },
-        "p": { "type": "uri" , "value": "p3" }
+        "p1": { "type": "uri" , "value": "p3" }
       }
     ]
   }
@@ -559,8 +568,8 @@ describe('QuerySourceSparql', () => {
       source = new QuerySourceSparql('http://example.org/sparql', ctx, thisMediator, 'values', DF, AF, BF, false, 64, 10);
       const stream = source.queryBindings(
         AF.createLeftJoin(
-          AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph()),
-          AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph()),
+          AF.createPattern(DF.namedNode('s'), DF.variable('p1'), DF.namedNode('o'), DF.defaultGraph()),
+          AF.createPattern(DF.namedNode('s'), DF.variable('p2'), DF.namedNode('o'), DF.defaultGraph()),
         ),
         ctx,
       );
@@ -568,14 +577,16 @@ describe('QuerySourceSparql', () => {
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve))).resolves
         .toEqual({
           cardinality: { type: 'exact', value: 3 },
-          canContainUndefs: true,
-          variables: [ DF.variable('p') ],
+          variables: [
+            { variable: DF.variable('p1'), canBeUndef: false },
+            { variable: DF.variable('p2'), canBeUndef: true },
+          ],
         });
       await expect(stream).toEqualBindingsStream([
         BF.fromRecord({}),
         BF.fromRecord({}),
         BF.fromRecord({
-          p: DF.namedNode('p3'),
+          p1: DF.namedNode('p3'),
         }),
       ]);
     });
@@ -648,8 +659,10 @@ describe('QuerySourceSparql', () => {
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve))).resolves
         .toEqual({
           cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
-          canContainUndefs: false,
-          variables: [ DF.variable('p') ],
+
+          variables: [
+            { variable: DF.variable('p'), canBeUndef: false },
+          ],
         });
     });
 
@@ -700,8 +713,10 @@ describe('QuerySourceSparql', () => {
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve))).resolves
         .toEqual({
           cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
-          canContainUndefs: false,
-          variables: [ DF.variable('p') ],
+
+          variables: [
+            { variable: DF.variable('p'), canBeUndef: false },
+          ],
         });
     });
 
@@ -881,7 +896,7 @@ describe('QuerySourceSparql', () => {
       await expect(new Promise(resolve => ret.getProperty('metadata', resolve))).resolves
         .toEqual({
           cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
-          canContainUndefs: false,
+
           variables: [],
         });
     });
@@ -909,8 +924,10 @@ describe('QuerySourceSparql', () => {
       })).resolves
         .toEqual({
           cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
-          canContainUndefs: false,
-          variables: [ DF.variable('p') ],
+
+          variables: [
+            { variable: DF.variable('p'), canBeUndef: false },
+          ],
         });
 
       jest.useRealTimers();
@@ -1014,8 +1031,10 @@ WHERE { undefined:s ?p undefined:o. }` }),
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve))).resolves
         .toEqual({
           cardinality: { type: 'exact', value: 3 },
-          canContainUndefs: false,
-          variables: [ DF.variable('p') ],
+
+          variables: [
+            { variable: DF.variable('p'), canBeUndef: false },
+          ],
         });
       await expect(stream.toArray()).resolves.toBeRdfIsomorphic([
         DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
@@ -1203,7 +1222,9 @@ WHERE { undefined:s ?p undefined:o. }` }),
           BF.fromRecord({ a: DF.namedNode('a1') }),
           BF.fromRecord({ a: DF.namedNode('a2') }),
         ], { autoStart: false }),
-        metadata: <any> { variables: [ DF.variable('a') ]},
+        metadata: <any> { variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+        ]},
       })).resolves.toEqual(AF.createJoin([
         AF.createValues([ DF.variable('a') ], [
           { '?a': DF.namedNode('a1') },
@@ -1228,36 +1249,42 @@ WHERE { undefined:s ?p undefined:o. }` }),
     });
   });
 
-  describe('operationCanContainUndefs', () => {
-    it('should be false for a triple pattern', () => {
-      expect(QuerySourceSparql.operationCanContainUndefs(
+  describe('getOperationUndefs', () => {
+    it('should be empty for a triple pattern', () => {
+      expect(QuerySourceSparql.getOperationUndefs(
         AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')),
-      )).toBe(false);
+      )).toEqual([]);
     });
 
-    it('should be true for a left join', () => {
-      expect(QuerySourceSparql.operationCanContainUndefs(
+    it('should handle a left join', () => {
+      expect(QuerySourceSparql.getOperationUndefs(
         AF.createLeftJoin(
           AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')),
           AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')),
         ),
-      )).toBe(true);
+      )).toEqual([]);
+      expect(QuerySourceSparql.getOperationUndefs(
+        AF.createLeftJoin(
+          AF.createPattern(DF.namedNode('s'), DF.variable('p1'), DF.namedNode('o')),
+          AF.createPattern(DF.namedNode('s'), DF.variable('p2'), DF.namedNode('o')),
+        ),
+      )).toEqual([ DF.variable('p2') ]);
     });
 
-    it('should be true for a nested left join', () => {
-      expect(QuerySourceSparql.operationCanContainUndefs(
+    it('should handle a nested left join', () => {
+      expect(QuerySourceSparql.getOperationUndefs(
         AF.createProject(
           AF.createLeftJoin(
-            AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')),
-            AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')),
+            AF.createPattern(DF.namedNode('s'), DF.variable('p1'), DF.namedNode('o')),
+            AF.createPattern(DF.namedNode('s'), DF.variable('p2'), DF.namedNode('o')),
           ),
           [],
         ),
-      )).toBe(true);
+      )).toEqual([ DF.variable('p2') ]);
     });
 
-    it('should be true for values with undefs', () => {
-      expect(QuerySourceSparql.operationCanContainUndefs(
+    it('should handle values with undefs', () => {
+      expect(QuerySourceSparql.getOperationUndefs(
         AF.createValues(
           [ DF.variable('v'), DF.variable('w') ],
           [
@@ -1265,11 +1292,11 @@ WHERE { undefined:s ?p undefined:o. }` }),
             { '?v': DF.namedNode('v2'), '?w': DF.namedNode('w2') },
           ],
         ),
-      )).toBe(true);
+      )).toEqual([ DF.variable('w') ]);
     });
 
-    it('should be false for values without undefs', () => {
-      expect(QuerySourceSparql.operationCanContainUndefs(
+    it('should handle values without undefs', () => {
+      expect(QuerySourceSparql.getOperationUndefs(
         AF.createValues(
           [ DF.variable('v'), DF.variable('w') ],
           [
@@ -1277,43 +1304,43 @@ WHERE { undefined:s ?p undefined:o. }` }),
             { '?v': DF.namedNode('v2'), '?w': DF.namedNode('w2') },
           ],
         ),
-      )).toBe(false);
+      )).toEqual([]);
     });
 
-    it('should be true for union without equal variables', () => {
-      expect(QuerySourceSparql.operationCanContainUndefs(
+    it('should handle union without equal variables', () => {
+      expect(QuerySourceSparql.getOperationUndefs(
         AF.createUnion(
           [
             AF.createPattern(DF.variable('s'), DF.variable('p1'), DF.namedNode('o')),
             AF.createPattern(DF.variable('s'), DF.variable('p2'), DF.namedNode('o')),
           ],
         ),
-      )).toBe(true);
+      )).toEqual([ DF.variable('p1'), DF.variable('p2') ]);
     });
 
-    it('should be false for union with equal variables', () => {
-      expect(QuerySourceSparql.operationCanContainUndefs(
+    it('should handle union with equal variables', () => {
+      expect(QuerySourceSparql.getOperationUndefs(
         AF.createUnion(
           [
             AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o')),
             AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o')),
           ],
         ),
-      )).toBe(false);
+      )).toEqual([]);
     });
 
-    it('should be true for union with equal variables but an inner with undefs', () => {
-      expect(QuerySourceSparql.operationCanContainUndefs(
+    it('should handle union with equal variables but an inner with undefs', () => {
+      expect(QuerySourceSparql.getOperationUndefs(
         AF.createUnion(
           [
-            AF.createPattern(DF.namedNode('s'), DF.variable('p1'), DF.namedNode('o')),
+            AF.createPattern(DF.variable('p'), DF.variable('p1'), DF.namedNode('o')),
             AF.createLeftJoin(
               AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')),
-              AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')),
+              AF.createPattern(DF.namedNode('s'), DF.variable('p1'), DF.namedNode('o')),
             ),
           ],
         ),
-      )).toBe(true);
+      )).toEqual([ DF.variable('p1') ]);
     });
   });
 });

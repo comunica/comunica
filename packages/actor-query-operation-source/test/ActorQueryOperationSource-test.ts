@@ -186,7 +186,7 @@ describe('ActorQueryOperationSource', () => {
         expect(result.type).toBe('bindings');
         await expect(result.metadata()).resolves.toEqual({
           cardinality: { value: 10 },
-          canContainUndefs: false,
+
           variables: [],
         });
         await expect(result.bindingsStream).toEqualBindingsStream([]);
@@ -198,7 +198,7 @@ describe('ActorQueryOperationSource', () => {
         expect(result.type).toBe('bindings');
         await expect(result.metadata()).resolves.toEqual({
           cardinality: { value: 10 },
-          canContainUndefs: false,
+
           variables: [],
         });
         await expect(result.bindingsStream).toEqualBindingsStream([]);
@@ -223,7 +223,7 @@ describe('ActorQueryOperationSource', () => {
         expect(result.type).toBe('bindings');
         await expect(result.metadata()).resolves.toEqual({
           cardinality: { value: 10 },
-          canContainUndefs: false,
+
           variables: [],
         });
         await expect(result.bindingsStream).toEqualBindingsStream([]);

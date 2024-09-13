@@ -39,7 +39,6 @@ export class ActorQueryOperationNop extends ActorQueryOperationTypedMediated<Alg
       metadata: () => Promise.resolve({
         state: new MetadataValidationState(),
         cardinality: { type: 'exact', value: 1 },
-        canContainUndefs: false,
         variables: [],
       }),
       type: 'bindings',

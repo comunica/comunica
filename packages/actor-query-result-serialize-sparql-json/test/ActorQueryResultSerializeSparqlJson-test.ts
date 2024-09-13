@@ -167,7 +167,10 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
         quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
       ]);
-      metadata = <any> { variables: [ DF.variable('k1'), DF.variable('k2') ]};
+      metadata = <any> { variables: [
+        { variable: DF.variable('k1'), canBeUndef: false },
+        { variable: DF.variable('k2'), canBeUndef: false },
+      ]};
     });
 
     describe('for getting media types', () => {

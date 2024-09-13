@@ -54,7 +54,8 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
         algebraFactory,
         bindingsFactory,
       );
-      const variables = operation.graph.termType === 'Variable' ? [ objectVar, operation.graph ] : [ objectVar ];
+      const variables = (operation.graph.termType === 'Variable' ? [ objectVar, operation.graph ] : [ objectVar ])
+        .map(variable => ({ variable, canBeUndef: false }));
       return {
         type: 'bindings',
         bindingsStream: starEval.bindingsStream,
@@ -115,9 +116,10 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
           autoStart: false,
         },
       );
-      const variables = operation.graph.termType === 'Variable' ?
+      const variables = (operation.graph.termType === 'Variable' ?
           [ subjectVar, objectVar, operation.graph ] :
-          [ subjectVar, objectVar ];
+          [ subjectVar, objectVar ])
+        .map(variable => ({ variable, canBeUndef: false }));
       return {
         type: 'bindings',
         bindingsStream,
@@ -156,7 +158,8 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
       bindingsStream,
       metadata: async() => ({
         ...await results.metadata(),
-        variables: operation.graph.termType === 'Variable' ? [ operation.graph ] : [],
+        variables: (operation.graph.termType === 'Variable' ? [ operation.graph ] : [])
+          .map(variable => ({ variable, canBeUndef: false })),
       }),
     };
   }

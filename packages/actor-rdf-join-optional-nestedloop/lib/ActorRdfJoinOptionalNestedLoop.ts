@@ -36,7 +36,7 @@ export class ActorRdfJoinOptionalNestedLoop extends ActorRdfJoin {
           action.entries,
           await ActorRdfJoin.getMetadatas(action.entries),
           action.context,
-          { canContainUndefs: true },
+          {},
           true,
         ),
       },

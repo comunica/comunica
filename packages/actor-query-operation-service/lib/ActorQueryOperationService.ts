@@ -70,7 +70,6 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
           metadata: async() => ({
             state: new MetadataValidationState(),
             cardinality: { type: 'exact', value: 1 },
-            canContainUndefs: false,
             variables: [],
           }),
         };

@@ -6,7 +6,7 @@ import {
 import type { TestResult } from '@comunica/core';
 import { passTest } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { BindingsStream, MetadataBindings } from '@comunica/types';
+import type { BindingsStream, MetadataBindings, MetadataVariable } from '@comunica/types';
 import type { IBindingsIndex } from '@comunica/utils-bindings-index';
 import { BindingsIndexDef, BindingsIndexUndef } from '@comunica/utils-bindings-index';
 import type * as RDF from '@rdfjs/types';
@@ -25,7 +25,7 @@ export class ActorRdfJoinMinusHash extends ActorRdfJoin {
     });
   }
 
-  public static constructIndex<V>(undef: boolean, commonVariables: RDF.Variable[]): IBindingsIndex<V> {
+  public static constructIndex<V>(undef: boolean, commonVariables: MetadataVariable[]): IBindingsIndex<V> {
     return undef ?
       new BindingsIndexUndef(
         commonVariables,
@@ -40,7 +40,7 @@ export class ActorRdfJoinMinusHash extends ActorRdfJoin {
     const output = action.entries[0].output;
 
     const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
-    const commonVariables: RDF.Variable[] = ActorRdfJoin.overlappingVariables(metadatas);
+    const commonVariables = ActorRdfJoin.overlappingVariables(metadatas);
 
     // Destroy the buffer stream since it is not needed when
     // there are no common variables.

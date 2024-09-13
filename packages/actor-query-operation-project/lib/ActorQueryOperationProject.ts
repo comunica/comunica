@@ -11,6 +11,7 @@ import type {
   IActionContext,
   IQueryOperationResult,
   IQueryOperationResultBindings,
+  MetadataVariable,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -36,25 +37,31 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
       await this.mediatorQueryOperation.mediate({ operation: operation.input, context }),
     );
 
-    // Find all variables that should be deleted from the input stream.
+    // Index variables
     const outputMetadata = await output.metadata();
-    const variables = operation.variables;
-    const deleteVariables = outputMetadata.variables
-      .filter(variable => !variables.some(subVariable => variable.value === subVariable.value));
+    const variablesOutputIndexed: Record<string, MetadataVariable> = Object
+      .fromEntries(outputMetadata.variables.map(entry => [ entry.variable.value, entry ]));
+    const variablesOperation: MetadataVariable[] = operation.variables.map(v => ({ variable: v, canBeUndef: false }));
+    const variablesOperationIndexed: Record<string, MetadataVariable> = Object
+      .fromEntries(variablesOperation.map(entry => [ entry.variable.value, entry ]));
 
-    // Error if there are variables that are not bound in the input stream.
-    const missingVariables = variables
-      .filter(variable => !outputMetadata.variables.some(subVariable => variable.value === subVariable.value));
-    if (missingVariables.length > 0) {
-      outputMetadata.canContainUndefs = true;
-    }
+    // Find all variables that should be deleted from the input stream.
+    const deleteVariables = outputMetadata.variables
+      .filter(variable => !(variable.variable.value in variablesOperationIndexed));
+
+    // Determine if variables can be undef
+    const variablesOutput: MetadataVariable[] = variablesOperation.map(variable => ({
+      variable: variable.variable,
+      canBeUndef: !(variable.variable.value in variablesOutputIndexed) ||
+        variablesOutputIndexed[variable.variable.value].canBeUndef,
+    }));
 
     // Make sure the project variables are the only variables that are present in the bindings.
     let bindingsStream: BindingsStream = deleteVariables.length === 0 ?
       output.bindingsStream :
       output.bindingsStream.map((bindings: Bindings) => {
         for (const deleteVariable of deleteVariables) {
-          bindings = bindings.delete(deleteVariable);
+          bindings = bindings.delete(deleteVariable.variable);
         }
         return bindings;
       });
@@ -82,7 +89,7 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
     return {
       type: 'bindings',
       bindingsStream,
-      metadata: async() => ({ ...outputMetadata, variables }),
+      metadata: async() => ({ ...outputMetadata, variables: variablesOutput }),
     };
   }
 }

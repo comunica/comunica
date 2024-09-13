@@ -31,8 +31,7 @@ describe('ActorQueryOperationNop', () => {
         metadata: () => Promise.resolve({ cardinality: 3 }),
         operated: arg,
         type: 'bindings',
-        variables: [ DF.variable('a') ],
-        canContainUndefs: false,
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       }),
     };
   });
@@ -62,7 +61,7 @@ describe('ActorQueryOperationNop', () => {
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.bindingsStream).toEqualBindingsStream([ BF.bindings() ]);
       await expect(output.metadata()).resolves
-        .toMatchObject({ cardinality: { type: 'exact', value: 1 }, canContainUndefs: false, variables: []});
+        .toMatchObject({ cardinality: { type: 'exact', value: 1 }, variables: []});
     });
   });
 });

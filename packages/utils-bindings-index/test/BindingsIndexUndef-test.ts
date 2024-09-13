@@ -83,7 +83,9 @@ describe('BindingsIndexUndef', () => {
 
     describe('with one key', () => {
       beforeEach(() => {
-        index = new BindingsIndexUndef([ DF.variable('a') ], hashFn, false);
+        index = new BindingsIndexUndef([
+          { variable: DF.variable('a'), canBeUndef: true },
+        ], hashFn, false);
       });
 
       describe('without bindings', () => {
@@ -176,7 +178,11 @@ describe('BindingsIndexUndef', () => {
 
     describe('with three keys', () => {
       beforeEach(() => {
-        index = new BindingsIndexUndef([ DF.variable('a'), DF.variable('b'), DF.variable('c') ], hashFn, false);
+        index = new BindingsIndexUndef([
+          { variable: DF.variable('a'), canBeUndef: true },
+          { variable: DF.variable('b'), canBeUndef: true },
+          { variable: DF.variable('c'), canBeUndef: true },
+        ], hashFn, false);
       });
 
       describe('without bindings', () => {
@@ -924,7 +930,10 @@ describe('BindingsIndexUndef', () => {
 
     describe('with two keys', () => {
       beforeEach(() => {
-        index = new BindingsIndexUndef([ DF.variable('a'), DF.variable('b') ], hashFn, false);
+        index = new BindingsIndexUndef([
+          { variable: DF.variable('a'), canBeUndef: true },
+          { variable: DF.variable('b'), canBeUndef: true },
+        ], hashFn, false);
       });
 
       describe('with mixed bindings', () => {
@@ -1137,7 +1146,10 @@ describe('BindingsIndexUndef', () => {
 
     describe('with three keys and one extra key', () => {
       beforeEach(() => {
-        index = new BindingsIndexUndef([ DF.variable('b'), DF.variable('c') ], hashFn, false);
+        index = new BindingsIndexUndef([
+          { variable: DF.variable('b'), canBeUndef: true },
+          { variable: DF.variable('c'), canBeUndef: true },
+        ], hashFn, false);
         index.put(BF.bindings([
           [ DF.variable('d'), DF.namedNode('d0') ],
         ]), 1);
@@ -1282,7 +1294,9 @@ describe('BindingsIndexUndef', () => {
 
     describe('with one key', () => {
       beforeEach(() => {
-        index = new BindingsIndexUndef([ DF.variable('a') ], hashFn, true);
+        index = new BindingsIndexUndef([
+          { variable: DF.variable('a'), canBeUndef: true },
+        ], hashFn, true);
       });
 
       describe('without bindings', () => {
@@ -1375,7 +1389,11 @@ describe('BindingsIndexUndef', () => {
 
     describe('with three keys', () => {
       beforeEach(() => {
-        index = new BindingsIndexUndef([ DF.variable('a'), DF.variable('b'), DF.variable('c') ], hashFn, true);
+        index = new BindingsIndexUndef([
+          { variable: DF.variable('a'), canBeUndef: true },
+          { variable: DF.variable('b'), canBeUndef: true },
+          { variable: DF.variable('c'), canBeUndef: true },
+        ], hashFn, true);
       });
 
       describe('without bindings', () => {
@@ -2123,7 +2141,10 @@ describe('BindingsIndexUndef', () => {
 
     describe('with two keys', () => {
       beforeEach(() => {
-        index = new BindingsIndexUndef([ DF.variable('a'), DF.variable('b') ], hashFn, true);
+        index = new BindingsIndexUndef([
+          { variable: DF.variable('a'), canBeUndef: true },
+          { variable: DF.variable('b'), canBeUndef: true },
+        ], hashFn, true);
       });
 
       describe('with mixed bindings', () => {
@@ -2336,7 +2357,10 @@ describe('BindingsIndexUndef', () => {
 
     describe('with three keys and one extra key', () => {
       beforeEach(() => {
-        index = new BindingsIndexUndef([ DF.variable('b'), DF.variable('c') ], hashFn, true);
+        index = new BindingsIndexUndef([
+          { variable: DF.variable('b'), canBeUndef: true },
+          { variable: DF.variable('c'), canBeUndef: true },
+        ], hashFn, true);
         index.put(BF.bindings([
           [ DF.variable('d'), DF.namedNode('d0') ],
         ]), 1);

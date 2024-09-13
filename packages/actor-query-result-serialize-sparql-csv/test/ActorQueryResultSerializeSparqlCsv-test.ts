@@ -180,7 +180,10 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
           [ DF.variable('k2'), DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')) ],
         ]),
       ], { autoStart: false });
-      metadata = <any> { variables: [ DF.variable('k1'), DF.variable('k2') ]};
+      metadata = <any> { variables: [
+        { variable: DF.variable('k1'), canBeUndef: false },
+        { variable: DF.variable('k2'), canBeUndef: false },
+      ]};
     });
 
     describe('for getting media types', () => {
@@ -267,7 +270,9 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
           { context, handle: <any> {
             bindingsStream: bindingsStreamPartial(),
             type: 'bindings',
-            metadata: async() => ({ variables: [ DF.variable('k3') ]}),
+            metadata: async() => ({ variables: [
+              { variable: DF.variable('k3'), canBeUndef: true },
+            ]}),
           }, handleMediaType: 'text/csv' },
         ))).handle.data)).resolves.toBe(
           `k3\r

@@ -37,8 +37,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
             metadata: () => Promise.resolve({
               state: new MetadataValidationState(),
               cardinality: { type: 'estimate', value: 10 },
-              canContainUndefs: false,
-              variables: vars,
+              variables: vars.map(variable => ({ variable, canBeUndef: false })),
             }),
             operated: arg,
             type: 'bindings',
@@ -76,8 +75,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
           metadata: () => Promise.resolve({
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: distinct ? 1 : 3 },
-            canContainUndefs: false,
-            variables: vars,
+            variables: vars.map(variable => ({ variable, canBeUndef: false })),
           }),
           operated: arg,
           type: 'bindings',
@@ -153,8 +151,9 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 1 },
-        canContainUndefs: false,
-        variables: [ DF.variable('x') ],
+        variables: [
+          { variable: DF.variable('x'), canBeUndef: false },
+        ],
       });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('x'), DF.namedNode('1') ]]),
@@ -176,8 +175,9 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 1 },
-        canContainUndefs: false,
-        variables: [ DF.variable('x') ],
+        variables: [
+          { variable: DF.variable('x'), canBeUndef: false },
+        ],
       });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('x'), DF.namedNode('1') ]]),
@@ -199,8 +199,9 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 3 },
-        canContainUndefs: false,
-        variables: [ DF.variable('x') ],
+        variables: [
+          { variable: DF.variable('x'), canBeUndef: false },
+        ],
       });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('x'), DF.namedNode('s') ]]),
@@ -225,8 +226,9 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 3 },
-        canContainUndefs: false,
-        variables: [ DF.variable('x') ],
+        variables: [
+          { variable: DF.variable('x'), canBeUndef: false },
+        ],
       });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('x'), DF.namedNode('o') ]]),
@@ -251,7 +253,6 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 3 },
-        canContainUndefs: false,
         variables: [],
       });
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -274,7 +275,6 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'exact', value: 1 },
-        canContainUndefs: false,
         variables: [],
       });
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -297,8 +297,10 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 3 },
-        canContainUndefs: false,
-        variables: [ DF.variable('x'), DF.variable('y') ],
+        variables: [
+          { variable: DF.variable('x'), canBeUndef: false },
+          { variable: DF.variable('y'), canBeUndef: false },
+        ],
       });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
@@ -338,8 +340,10 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 3 },
-        canContainUndefs: false,
-        variables: [ DF.variable('x'), DF.variable('y') ],
+        variables: [
+          { variable: DF.variable('x'), canBeUndef: false },
+          { variable: DF.variable('y'), canBeUndef: false },
+        ],
       });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([

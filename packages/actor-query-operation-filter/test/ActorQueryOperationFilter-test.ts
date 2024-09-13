@@ -58,7 +58,10 @@ describe('ActorQueryOperationFilter', () => {
           BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
           BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
         ], { autoStart: false }),
-        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]}),
+        metadata: () => Promise.resolve({
+          cardinality: 3,
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+        }),
         operated: arg,
         type: 'bindings',
       }),
@@ -139,7 +142,7 @@ describe('ActorQueryOperationFilter', () => {
       ]);
       expect(output.type).toBe('bindings');
       await expect(output.metadata()).resolves
-        .toMatchObject({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]});
+        .toMatchObject({ cardinality: 3, variables: [{ variable: DF.variable('a'), canBeUndef: false }]});
     });
 
     it('should return an empty stream for a falsy filter', async() => {
@@ -150,7 +153,7 @@ describe('ActorQueryOperationFilter', () => {
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
       await expect(output.bindingsStream).toEqualBindingsStream([]);
       await expect(output.metadata()).resolves
-        .toMatchObject({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]});
+        .toMatchObject({ cardinality: 3, variables: [{ variable: DF.variable('a'), canBeUndef: false }]});
       expect(output.type).toBe('bindings');
     });
 
@@ -162,7 +165,7 @@ describe('ActorQueryOperationFilter', () => {
       const output: IQueryOperationResultBindings = <any> await actor.run(op);
       await expect(output.bindingsStream).toEqualBindingsStream([]);
       await expect(output.metadata()).resolves
-        .toMatchObject({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]});
+        .toMatchObject({ cardinality: 3, variables: [{ variable: DF.variable('a'), canBeUndef: false }]});
       expect(output.type).toBe('bindings');
     });
 
@@ -223,7 +226,7 @@ describe('ActorQueryOperationFilter', () => {
       ]);
       expect(output.type).toBe('bindings');
       await expect(output.metadata()).resolves
-        .toMatchObject({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]});
+        .toMatchObject({ cardinality: 3, variables: [{ variable: DF.variable('a'), canBeUndef: false }]});
     });
 
     describe('should be able to handle EXIST filters', () => {
@@ -251,10 +254,10 @@ describe('ActorQueryOperationFilter', () => {
           );
         mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
           bindingsStream: new ArrayIterator([], { autoStart: false }),
-          metadata: () => Promise.resolve({ cardinality: 0, canContainUndefs: false }),
+          metadata: () => Promise.resolve({ cardinality: 0 }),
           operated: arg,
           type: 'bindings',
-          variables: [ DF.variable('a') ],
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
         });
         const expr: Algebra.ExistenceExpression = factory.createExistenceExpression(
           false,
@@ -273,10 +276,10 @@ describe('ActorQueryOperationFilter', () => {
           );
         mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
           bindingsStream: new ArrayIterator([], { autoStart: false }),
-          metadata: () => Promise.resolve({ cardinality: 0, canContainUndefs: false }),
+          metadata: () => Promise.resolve({ cardinality: 0 }),
           operated: arg,
           type: 'bindings',
-          variables: [ DF.variable('a') ],
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
         });
         const expr: Algebra.ExistenceExpression = factory.createExistenceExpression(
           true,
@@ -303,10 +306,10 @@ describe('ActorQueryOperationFilter', () => {
         });
         mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
           bindingsStream,
-          metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
+          metadata: () => Promise.resolve({ cardinality: 3 }),
           operated: arg,
           type: 'bindings',
-          variables: [ DF.variable('a') ],
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
         });
         const expr: Algebra.ExistenceExpression = factory.createExistenceExpression(
           false,

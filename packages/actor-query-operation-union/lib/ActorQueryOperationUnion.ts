@@ -15,10 +15,10 @@ import type {
   MetadataBindings,
   MetadataQuads,
   IQueryOperationResultQuads,
+  MetadataVariable,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { UnionIterator } from 'asynciterator';
-import { uniqTerms } from 'rdf-terms';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -37,20 +37,26 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
    * @param {string[][]} variables Double array of variables to take the union of.
    * @return {string[]} The union of the given variables.
    */
-  public static unionVariables(variables: RDF.Variable[][]): RDF.Variable[] {
-    return uniqTerms(variables.flat());
-  }
-
-  /**
-   * Check if the variables of all operations are identical.
-   * @param variables Double array of variables to from operations.
-   */
-  public static areAllVariablesIdentical(variables: RDF.Variable[][]): boolean {
-    const scopedVariables = variables
-      .map(variables => variables.map(v => v.value))
-      .map(variables => variables.sort((a, b) => a.localeCompare(b)))
-      .map(variables => variables.join(','));
-    return scopedVariables.every(val => val === scopedVariables[0]);
+  public static unionVariables(variables: MetadataVariable[][]): MetadataVariable[] {
+    const variablesIndexed: Record<string, { variable: RDF.Variable; canBeUndef: boolean; occurrences: number }> = {};
+    for (const variablesA of variables) {
+      for (const variable of variablesA) {
+        if (!variablesIndexed[variable.variable.value]) {
+          variablesIndexed[variable.variable.value] = {
+            variable: variable.variable,
+            canBeUndef: variable.canBeUndef,
+            occurrences: 0,
+          };
+        }
+        const entry = variablesIndexed[variable.variable.value];
+        entry.canBeUndef = entry.canBeUndef || variable.canBeUndef;
+        entry.occurrences++;
+      }
+    }
+    return Object.values(variablesIndexed)
+      .map(entry => entry.occurrences === variables.length ?
+          { variable: entry.variable, canBeUndef: entry.canBeUndef } :
+          { variable: entry.variable, canBeUndef: true });
   }
 
   /**
@@ -100,11 +106,8 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
 
     // Union variables
     if (bindings) {
-      const variables = metadatas.map(metadata => metadata.variables);
+      const variables: MetadataVariable[][] = metadatas.map(metadata => metadata.variables);
       accumulatedMetadata.variables = ActorQueryOperationUnion.unionVariables(variables);
-      if (!accumulatedMetadata.canContainUndefs && !ActorQueryOperationUnion.areAllVariablesIdentical(variables)) {
-        accumulatedMetadata.canContainUndefs = true;
-      }
     }
 
     return accumulatedMetadata;

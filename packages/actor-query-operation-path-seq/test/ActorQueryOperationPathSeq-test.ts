@@ -49,7 +49,10 @@ describe('ActorQueryOperationPathSeq', () => {
 
         return Promise.resolve({
           bindingsStream: new ArrayIterator(bindings),
-          metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false, variables: vars }),
+          metadata: () => Promise.resolve({
+            cardinality: 3,
+            variables: vars.map(variable => ({ variable, canBeUndef: false })),
+          }),
           operated: arg,
           type: 'bindings',
         });
@@ -74,7 +77,6 @@ describe('ActorQueryOperationPathSeq', () => {
           bindingsStream: new ArrayIterator(bindings),
           metadata: async() => ({
             cardinality: 3,
-            canContainUndefs: false,
             variables: [
               ...(await arg.entries[0].output.metadata()).variables,
               ...(await arg.entries[1].output.metadata()).variables,
@@ -135,8 +137,9 @@ describe('ActorQueryOperationPathSeq', () => {
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: 3,
-        canContainUndefs: false,
-        variables: [ DF.variable('x') ],
+        variables: [
+          { variable: DF.variable('x'), canBeUndef: false },
+        ],
       });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('x'), DF.namedNode('2') ]]),
@@ -177,8 +180,9 @@ describe('ActorQueryOperationPathSeq', () => {
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: 3,
-        canContainUndefs: false,
-        variables: [ DF.variable('x') ],
+        variables: [
+          { variable: DF.variable('x'), canBeUndef: false },
+        ],
       });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('x'), DF.namedNode('2') ]]),

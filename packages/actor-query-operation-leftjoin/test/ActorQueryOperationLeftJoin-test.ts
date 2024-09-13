@@ -32,7 +32,9 @@ describe('ActorQueryOperationLeftJoin', () => {
           BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
           BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
         ], { autoStart: false }),
-        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: true, variables: [ DF.variable('a') ]}),
+        metadata: () => Promise.resolve({ cardinality: 3, variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+        ]}),
         operated: arg,
         type: 'bindings',
       }),
@@ -42,8 +44,10 @@ describe('ActorQueryOperationLeftJoin', () => {
         bindingsStream: new UnionIterator(arg.entries.map((entry: IJoinEntry) => entry.output.bindingsStream)),
         metadata: () => Promise.resolve({
           cardinality: 100,
-          canContainUndefs: true,
-          variables: [ DF.variable('a'), DF.variable('b') ],
+          variables: [
+            { variable: DF.variable('a'), canBeUndef: false },
+            { variable: DF.variable('b'), canBeUndef: true },
+          ],
         }),
         operated: arg,
         type: 'bindings',
@@ -102,8 +106,10 @@ describe('ActorQueryOperationLeftJoin', () => {
       expect(output.type).toBe('bindings');
       await expect(output.metadata()).resolves.toEqual({
         cardinality: 100,
-        canContainUndefs: true,
-        variables: [ DF.variable('a'), DF.variable('b') ],
+        variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+          { variable: DF.variable('b'), canBeUndef: true },
+        ],
       });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
@@ -136,8 +142,10 @@ describe('ActorQueryOperationLeftJoin', () => {
       ]);
       await expect(output.metadata()).resolves.toMatchObject({
         cardinality: 100,
-        canContainUndefs: true,
-        variables: [ DF.variable('a'), DF.variable('b') ],
+        variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+          { variable: DF.variable('b'), canBeUndef: true },
+        ],
       });
       expect(output.type).toBe('bindings');
     });
@@ -156,8 +164,9 @@ describe('ActorQueryOperationLeftJoin', () => {
               ], { autoStart: false }),
           metadata: () => Promise.resolve({
             cardinality: 1,
-            canContainUndefs: true,
-            variables: side === 'left' ? [ DF.variable('a') ] : [ DF.variable('c') ],
+            variables: side === 'left' ?
+                [{ variable: DF.variable('a'), canBeUndef: false }] :
+                [{ variable: DF.variable('c'), canBeUndef: false }],
           }),
           operated: arg,
           type: 'bindings',
@@ -189,8 +198,10 @@ describe('ActorQueryOperationLeftJoin', () => {
       await expect(output.bindingsStream).toEqualBindingsStream([]);
       await expect(output.metadata()).resolves.toMatchObject({
         cardinality: 100,
-        canContainUndefs: true,
-        variables: [ DF.variable('a'), DF.variable('b') ],
+        variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+          { variable: DF.variable('b'), canBeUndef: true },
+        ],
       });
       expect(output.type).toBe('bindings');
     });
@@ -222,8 +233,10 @@ describe('ActorQueryOperationLeftJoin', () => {
       await expect(output.bindingsStream).toEqualBindingsStream([]);
       await expect(output.metadata()).resolves.toMatchObject({
         cardinality: 100,
-        canContainUndefs: true,
-        variables: [ DF.variable('a'), DF.variable('b') ],
+        variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+          { variable: DF.variable('b'), canBeUndef: true },
+        ],
       });
       expect(output.type).toBe('bindings');
 

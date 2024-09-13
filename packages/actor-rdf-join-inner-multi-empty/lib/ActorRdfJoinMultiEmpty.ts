@@ -42,7 +42,6 @@ export class ActorRdfJoinMultiEmpty extends ActorRdfJoin {
         metadata: async() => ({
           state: new MetadataValidationState(),
           cardinality: { type: 'exact', value: 0 },
-          canContainUndefs: false,
           variables: ActorRdfJoin.joinVariables(dataFactory, await ActorRdfJoin.getMetadatas(action.entries)),
         }),
         type: 'bindings',

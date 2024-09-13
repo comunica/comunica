@@ -130,7 +130,6 @@ describe('QuerySourceSkolemized', () => {
     await expect(new Promise(resolve => it.getProperty('metadata', resolve))).resolves.toEqual({
       state: expect.any(MetadataValidationState),
       cardinality: { type: 'exact', value: 0 },
-      canContainUndefs: false,
       variables: [],
     });
     expect(sourceInner.queryBindings).not.toHaveBeenCalled();
@@ -153,7 +152,6 @@ describe('QuerySourceSkolemized', () => {
     await expect(new Promise(resolve => it.getProperty('metadata', resolve))).resolves.toEqual({
       state: expect.any(MetadataValidationState),
       cardinality: { type: 'exact', value: 0 },
-      canContainUndefs: false,
       variables: [],
     });
     expect(sourceInner.queryBindings).not.toHaveBeenCalled();

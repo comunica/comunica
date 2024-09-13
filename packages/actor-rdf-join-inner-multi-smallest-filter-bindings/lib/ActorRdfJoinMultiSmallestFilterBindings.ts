@@ -80,7 +80,7 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
     for (const [ i, entry ] of entriesSorted.entries()) {
       const sharedVariables = first.metadata.variables
         .filter(variableFirst => entry.metadata.variables
-          .some(variableSecond => variableFirst.equals(variableSecond))).length;
+          .some(variableSecond => variableFirst.variable.equals(variableSecond.variable))).length;
       if (!second || (sharedVariables > secondSharedVariables ||
         (sharedVariables === secondSharedVariables &&
           (entry.metadata.variables.length < second.metadata.variables.length ||
@@ -120,11 +120,11 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
     // The common variables array is guaranteed to be non-empty, due to the way the test of this actor is implemented.
     const commonVariables = first.metadata.variables
       .filter(variableFirst => secondIn.metadata.variables
-        .some(variableSecond => variableFirst.equals(variableSecond)));
+        .some(variableSecond => variableFirst.variable.equals(variableSecond.variable)));
     const hashes: Record<string, boolean> = {};
     const smallestStream1Projected: BindingsStream = smallestStream1.clone()
       .map(binding => binding.filter((value, key) =>
-        commonVariables.some(commonVariable => commonVariable.equals(key))))
+        commonVariables.some(commonVariable => commonVariable.variable.equals(key))))
       .filter((binding) => {
         const hash: string = bindingsToString(binding);
         return !(hash in hashes) && (hashes[hash] = true);

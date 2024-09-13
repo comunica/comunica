@@ -35,18 +35,13 @@ export class ActorRdfJoinOptionalOptPlus extends ActorRdfJoin {
     return { result: {
       type: 'bindings',
       bindingsStream: new UnionIterator([ clonedStream, joined.bindingsStream ], { autoStart: false }),
-      metadata: async(): Promise<MetadataBindings> => {
-        const [ leftMeta, joinedMeta ] = await Promise.all([ entries[0].output.metadata(), joined.metadata() ]);
-        return {
-          variables: joinedMeta.variables,
-          canContainUndefs: true,
-          cardinality: {
-            type: joinedMeta.cardinality.type,
-            value: leftMeta.cardinality.value + joinedMeta.cardinality.value,
-          },
-          state: this.constructState([ leftMeta, joinedMeta ]),
-        };
-      },
+      metadata: async() => await this.constructResultMetadata(
+        entries,
+        await ActorRdfJoin.getMetadatas(entries),
+        context,
+        {},
+        true,
+      ),
     }};
   }
 

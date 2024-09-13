@@ -36,7 +36,9 @@ describe('MediatorJoinCoefficientsFixed', () => {
               type: 'bindings',
               metadata: () => Promise.resolve({
                 cardinality: { type: 'estimate', value: 10 },
-                variables: [ DF.variable('V') ],
+                variables: [
+                  { variable: DF.variable('V'), canBeUndef: false },
+                ],
               }),
             },
             operation: <any> {},

@@ -209,7 +209,11 @@ implements IQueryEngine<QueryStringContextInner, QueryAlgebraContextInner> {
         return {
           resultType: 'bindings',
           execute: async() => internalResult.bindingsStream,
-          metadata: async() => <any> await internalResult.metadata(),
+          metadata: async() => {
+            const meta = <any> await internalResult.metadata();
+            meta.variables = meta.variables.map((variable: any) => variable.variable);
+            return meta;
+          },
           context: internalResult.context,
         };
       case 'quads':
@@ -244,7 +248,11 @@ implements IQueryEngine<QueryStringContextInner, QueryAlgebraContextInner> {
         return {
           type: 'bindings',
           bindingsStream: <BindingsStream> await finalResult.execute(),
-          metadata: async() => <any> await finalResult.metadata(),
+          metadata: async() => {
+            const meta = <any> await finalResult.metadata();
+            meta.variables = meta.variables.map((variable: any) => ({ variable, canBeUndef: false }));
+            return meta;
+          },
         };
       case 'quads':
         return {
