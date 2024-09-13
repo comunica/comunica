@@ -194,7 +194,7 @@ IActorRdfJoinSelectivityOutput
                   pageSize: 100,
                   requestTime: 10,
 
-                  variables: [],
+                  variables: [{ variable: DF.variable('a'), canBeUndef: false }],
                 },
               ),
               type: 'bindings',

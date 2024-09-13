@@ -95,8 +95,12 @@ IActorRdfJoinSelectivityOutput
     mediatorJoinSelectivity = <any> {
       mediate: async() => ({ selectivity: 0.8 }),
     };
-    variables0 = [];
-    variables1 = [];
+    variables0 = [
+      { variable: DF.variable('a'), canBeUndef: false },
+    ];
+    variables1 = [
+      { variable: DF.variable('a'), canBeUndef: false },
+    ];
     action = {
       type: 'inner',
       entries: [
@@ -697,8 +701,12 @@ IActorRdfJoinSelectivityOutput
 
     it('should handle entries', async() => {
       await expect(ActorRdfJoin.getMetadatas(action.entries)).resolves.toMatchObject([
-        { cardinality: { type: 'estimate', value: 10 }, variables: []},
-        { cardinality: { type: 'estimate', value: 5 }, variables: []},
+        { cardinality: { type: 'estimate', value: 10 }, variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+        ]},
+        { cardinality: { type: 'estimate', value: 5 }, variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+        ]},
       ]);
     });
   });

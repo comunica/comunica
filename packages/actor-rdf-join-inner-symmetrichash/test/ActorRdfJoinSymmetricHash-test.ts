@@ -137,7 +137,7 @@ IActorRdfJoinSelectivityOutput
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 5 },
 
-                  variables: [],
+                  variables: [{ variable: DF.variable('a'), canBeUndef: false }],
                 }),
                 type: 'bindings',
               },
@@ -161,7 +161,7 @@ IActorRdfJoinSelectivityOutput
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 4 },
 
-                  variables: [],
+                  variables: [{ variable: DF.variable('a'), canBeUndef: false }],
                 }),
                 type: 'bindings',
               },

@@ -55,7 +55,7 @@ export abstract class ActorRdfJoin
    */
   protected readonly limitEntriesMin: boolean;
   /**
-   * If this actor can handle undefs in the bindings.
+   * If this actor can handle undefs overlapping variable bindings.
    */
   protected readonly canHandleUndefs: boolean;
   /**
@@ -411,17 +411,18 @@ export abstract class ActorRdfJoin
 
     const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
 
-    // Check if this actor can handle undefs
+    // Check if this actor can handle undefs (for overlapping variables)
+    let overlappingVariables: MetadataVariable[] | undefined;
     if (!this.canHandleUndefs) {
-      for (const metadata of metadatas) {
-        if (metadata.variables.some(variable => variable.canBeUndef)) {
-          return failTest(`Actor ${this.name} can not join streams containing undefs`);
-        }
+      overlappingVariables = ActorRdfJoin.overlappingVariables(metadatas);
+      if (overlappingVariables.some(variable => variable.canBeUndef)) {
+        return failTest(`Actor ${this.name} can not join streams containing undefs`);
       }
     }
 
     // This actor only works with common variables
-    if (this.requiresVariableOverlap && ActorRdfJoin.overlappingVariables(metadatas).length === 0) {
+    if (this.requiresVariableOverlap &&
+      (overlappingVariables ?? ActorRdfJoin.overlappingVariables(metadatas)).length === 0) {
       return failTest(`Actor ${this.name} can only join entries with at least one common variable`);
     }
 
@@ -551,7 +552,7 @@ export interface IActorRdfJoinInternalOptions {
    */
   limitEntriesMin?: boolean;
   /**
-   * If this actor can handle undefs in the bindings.
+   * If this actor can handle undefs overlapping variable bindings.
    * Defaults to false.
    */
   canHandleUndefs?: boolean;
