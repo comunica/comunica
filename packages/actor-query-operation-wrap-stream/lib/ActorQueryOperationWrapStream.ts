@@ -5,7 +5,7 @@ import type {
   MediatorQueryOperation,
 } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, KEY_CONTEXT_WRAPPED_QUERY_OPERATION } from '@comunica/bus-query-operation';
-import { ActionContextKey, type IActorTest } from '@comunica/core';
+import { IActorTest } from '@comunica/core';
 import type { IQueryOperationResult } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -33,19 +33,13 @@ export class ActorQueryOperationWrapStream extends ActorQueryOperation {
     // Prevent infinite recursion. In consequent query operation calls this key should be set to false
     // To allow the operation to wrap ALL query operation runs
     action.context = ActorQueryOperation.setContextWrapped(action.context, true);
-
-    // TODO how can I know what actor actually did the task? Without using this ugly mf
-    const nameMap = new Map<string, string>();
-    action.context = action.context.set(new ActionContextKey('test-map-name-actor'), nameMap);
-
     const output: IQueryOperationResult = await this.mediatorQueryOperation.mediate(action);
     switch (output.type) {
       case 'bindings':
         output.bindingsStream = <AsyncIterator<RDF.Bindings>>
         (await this.mediatorProcessIterator.mediate(
-          { operation: action.operation.name, stream: output.bindingsStream, context: action.context, metadata: {
+          { operation: action.operation.type, stream: output.bindingsStream, context: action.context, metadata: {
             type: output.type,
-            actor: '',
             ...await output.metadata(),
             ...output.context,
           }},
@@ -54,9 +48,8 @@ export class ActorQueryOperationWrapStream extends ActorQueryOperation {
       case 'quads':
         output.quadStream = <AsyncIterator<RDF.Quad>>
         (await this.mediatorProcessIterator.mediate(
-          { operation: action.operation.name, stream: output.quadStream, context: action.context, metadata: {
+          { operation: action.operation.type, stream: output.quadStream, context: action.context, metadata: {
             type: output.type,
-            actor: '',
             ...await output.metadata(),
             ...output.context,
           }},

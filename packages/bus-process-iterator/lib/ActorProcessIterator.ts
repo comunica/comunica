@@ -43,7 +43,6 @@ export abstract class ActorProcessIterator<T extends AsyncIterator<RDF.Bindings>
   public async test(
     action: IActionProcessIterator<AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>>,
   ): Promise<IActorTest> {
-    console.log(`Run test: ${action.operation}, wraps: ${this.wraps}`);
     if (this.wraps === undefined || this.wraps.includes(action.operation as possibleOperationTypes)) {
       return true;
     }

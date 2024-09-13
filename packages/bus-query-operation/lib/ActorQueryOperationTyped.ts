@@ -62,10 +62,6 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
       output.metadata = <any>
         cachifyMetadata<IMetadata<RDF.QuadTermName | RDF.Variable>, RDF.QuadTermName | RDF.Variable>(output.metadata);
     }
-    // TODO Remove this temp code
-    const nameMap: Map<string, string> = action.context.get(new ActionContextKey('test-map-name-actor'))!;
-    nameMap.set('name', this.name);
-
     return output;
   }
 

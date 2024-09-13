@@ -439,28 +439,6 @@ export abstract class ActorRdfJoin
     const { result, physicalPlanMetadata } = await this.getOutput(action);
     const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
 
-    // TODO Add this logic to wrapper actor
-    // const mediatorProcessIterator: MediatorProcessIterator<AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>>
-    // | undefined = action.context.get(KeysQueryOperation.mediatorProcessIterator);
-
-    // const { stream } = mediatorProcessIterator ?
-    //   await mediatorProcessIterator.mediate({
-    //     operation: "rdf-join",
-    //     stream: <AsyncIterator<RDF.Bindings>> result.bindingsStream,
-    //     context: action.context,
-    //   }) :
-    //     { stream: result.bindingsStream };
-
-    // // Apply iterator processing actors on join stream
-    // const { stream } = await this.mediatorProcessIterator.mediate({
-    //   type: "binding",
-    //   streamSource: this.name,
-    //   stream: result.bindingsStream,
-    //   context: action.context
-    // });
-
-    // result.bindingsStream = <AsyncIterator<RDF.Bindings>> stream;
-
     // Fill in the physical plan metadata after determining action output
     if (planMetadata) {
       // eslint-disable-next-line ts/no-floating-promises

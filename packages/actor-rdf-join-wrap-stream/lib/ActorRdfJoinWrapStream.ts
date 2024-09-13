@@ -30,7 +30,6 @@ export class ActorRdfJoinWrapStream extends ActorRdfJoin {
    * @returns
    */
   public override async test(action: IActionRdfJoin): Promise<IMediatorTypeJoinCoefficients> {
-    console.log(`Testing, value of action context key: ${action.context.get(KEY_CONTEXT_WRAPPED_RDF_JOIN)}`);
     if (action.context.get(KEY_CONTEXT_WRAPPED_RDF_JOIN)) {
       throw new Error('Unable to wrap join operation multiple times');
     }
@@ -43,14 +42,12 @@ export class ActorRdfJoinWrapStream extends ActorRdfJoin {
     // Prevent infinite recursion. In consequent query operation calls this key is set to false
     // To allow the operation to wrap ALL rdf-join runs
     action.context = ActorRdfJoin.setContextWrapped(action.context, true);
-    console.log(`Wrap join, num entries: ${action.entries.length}`);
-    console.log(`operation: ${action.type}`);
     const result: IQueryOperationResultBindings = await this.mediatorJoin.mediate(action);
+
     result.bindingsStream = <AsyncIterator<RDF.Bindings>>
     (await this.mediatorProcessIterator.mediate(
       { operation: action.type, stream: result.bindingsStream, context: action.context, metadata: {
         type: 'rdf-join',
-        actor: '',
         ...await result.metadata(),
         ...result.context,
       }},
