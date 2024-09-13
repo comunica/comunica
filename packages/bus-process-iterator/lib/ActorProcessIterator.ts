@@ -49,7 +49,7 @@ export abstract class ActorProcessIterator<T extends AsyncIterator<RDF.Bindings>
     return true;
   }
 
-  abstract processStream<T extends AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>>(operation: string, 
+  abstract processStream<T extends AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>>(operation: string,
     stream: T, context: IActionContext, metadata?: Record<string, any>): T;
 }
 

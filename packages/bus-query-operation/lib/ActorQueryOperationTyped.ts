@@ -1,5 +1,5 @@
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
-import { ActionContextKey, type IActorTest } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
 import { cachifyMetadata } from '@comunica/metadata';
 import type {
   IQueryOperationResult,

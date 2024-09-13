@@ -5,7 +5,7 @@ import type {
   MediatorQueryOperation,
 } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, KEY_CONTEXT_WRAPPED_QUERY_OPERATION } from '@comunica/bus-query-operation';
-import { IActorTest } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
 import type { IQueryOperationResult } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
