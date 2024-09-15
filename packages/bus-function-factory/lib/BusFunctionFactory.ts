@@ -1,4 +1,4 @@
-import type { IActorReply, IActorTest, IBusIndexedArgs } from '@comunica/core';
+import type { IActorReply, IActorTest, IBusArgs } from '@comunica/core';
 import { Bus } from '@comunica/core';
 import type { ActorFunctionFactory, IActionFunctionFactory, IActorFunctionFactoryOutput } from './ActorFunctionFactory';
 
@@ -14,7 +14,7 @@ export class BusFunctionFactory
   protected readonly actorIdentifierFields: string[];
   protected readonly actionIdentifierFields: string[];
 
-  public constructor(args: IBusIndexedArgs) {
+  public constructor(args: IBusArgs) {
     super(args);
   }
 
