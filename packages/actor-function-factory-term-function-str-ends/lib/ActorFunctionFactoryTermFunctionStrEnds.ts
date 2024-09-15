@@ -5,25 +5,18 @@ import type {
   IActorFunctionFactoryOutputTerm,
 } from '@comunica/bus-function-factory';
 import {
-  ActorFunctionFactory,
+  ActorFunctionFactoryDedicated,
 } from '@comunica/bus-function-factory';
-import type { IActorTest } from '@comunica/core';
+
 import { SparqlOperator } from '@comunica/expression-evaluator';
 import { TermFunctionStrEnds } from './TermFunctionStrEnds';
 
 /**
  * A comunica TermFunctionStrEnds Function Factory Actor.
  */
-export class ActorFunctionFactoryTermFunctionStrEnds extends ActorFunctionFactory {
+export class ActorFunctionFactoryTermFunctionStrEnds extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args);
-  }
-
-  public async test(action: IActionFunctionFactory): Promise<IActorTest> {
-    if (action.functionName === SparqlOperator.STRENDS) {
-      return true;
-    }
-    throw new Error(`Actor ${this.name} can only provide implementations for ${SparqlOperator.STRENDS}`);
+    super(args, [ SparqlOperator.STRENDS ], true);
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

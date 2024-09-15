@@ -8,9 +8,9 @@ import type {
   MediatorFunctionFactoryUnsafe,
 } from '@comunica/bus-function-factory';
 import {
-  ActorFunctionFactory,
+  ActorFunctionFactoryDedicated,
 } from '@comunica/bus-function-factory';
-import type { IActorTest } from '@comunica/core';
+
 import { SparqlOperator } from '@comunica/expression-evaluator';
 import { ExpressionFunctionIn } from './ExpressionFunctionIn';
 
@@ -21,19 +21,12 @@ interface ActorFunctionFactoryExpressionFunctionInArgs extends IActorFunctionFac
 /**
  * A comunica ExpressionFunctionIn Function Factory Actor.
  */
-export class ActorFunctionFactoryExpressionFunctionIn extends ActorFunctionFactory {
+export class ActorFunctionFactoryExpressionFunctionIn extends ActorFunctionFactoryDedicated {
   private readonly mediatorFunctionFactory: MediatorFunctionFactory;
 
   public constructor(args: ActorFunctionFactoryExpressionFunctionInArgs) {
-    super(args);
+    super(args, [ SparqlOperator.IN ], false);
     this.mediatorFunctionFactory = <MediatorFunctionFactory> args.mediatorFunctionFactory;
-  }
-
-  public async test(action: IActionFunctionFactory): Promise<IActorTest> {
-    if (action.functionName === SparqlOperator.IN && !action.requireTermExpression) {
-      return true;
-    }
-    throw new Error(`Actor ${this.name} can only provide non-termExpression implementations for ${SparqlOperator.IN}`);
   }
 
   public async run<T extends IActionFunctionFactory>(args: T):

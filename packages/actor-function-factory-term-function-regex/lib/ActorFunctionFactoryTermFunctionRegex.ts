@@ -5,25 +5,18 @@ import type {
   IActorFunctionFactoryOutputTerm,
 } from '@comunica/bus-function-factory';
 import {
-  ActorFunctionFactory,
+  ActorFunctionFactoryDedicated,
 } from '@comunica/bus-function-factory';
-import type { IActorTest } from '@comunica/core';
+
 import { SparqlOperator } from '@comunica/expression-evaluator';
 import { TermFunctionRegex } from './TermFunctionRegex';
 
 /**
  * A comunica TermFunctionRegex Function Factory Actor.
  */
-export class ActorFunctionFactoryTermFunctionRegex extends ActorFunctionFactory {
+export class ActorFunctionFactoryTermFunctionRegex extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args);
-  }
-
-  public async test(action: IActionFunctionFactory): Promise<IActorTest> {
-    if (action.functionName === SparqlOperator.REGEX) {
-      return true;
-    }
-    throw new Error(`Actor ${this.name} can only provide implementations for ${SparqlOperator.REGEX}`);
+    super(args, [ SparqlOperator.REGEX ], true);
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

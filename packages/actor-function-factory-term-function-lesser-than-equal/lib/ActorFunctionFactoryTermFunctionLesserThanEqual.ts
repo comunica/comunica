@@ -7,9 +7,9 @@ import type {
   MediatorFunctionFactoryUnsafe,
 } from '@comunica/bus-function-factory';
 import {
-  ActorFunctionFactory,
+  ActorFunctionFactoryDedicated,
 } from '@comunica/bus-function-factory';
-import type { IActorTest } from '@comunica/core';
+
 import { SparqlOperator } from '@comunica/expression-evaluator';
 import { TermFunctionLesserThanEqual } from './TermFunctionLesserThanEqual';
 
@@ -20,19 +20,12 @@ interface ActorFunctionFactoryTermFunctionLesserThanEqualArgs extends IActorFunc
 /**
  * A comunica TermFunctionLesserThanEqual Function Factory Actor.
  */
-export class ActorFunctionFactoryTermFunctionLesserThanEqual extends ActorFunctionFactory {
+export class ActorFunctionFactoryTermFunctionLesserThanEqual extends ActorFunctionFactoryDedicated {
   private readonly mediatorFunctionFactory: MediatorFunctionFactory;
 
   public constructor(args: ActorFunctionFactoryTermFunctionLesserThanEqualArgs) {
-    super(args);
+    super(args, [ SparqlOperator.LTE ], true);
     this.mediatorFunctionFactory = <MediatorFunctionFactory> args.mediatorFunctionFactory;
-  }
-
-  public async test(action: IActionFunctionFactory): Promise<IActorTest> {
-    if (action.functionName === SparqlOperator.LTE) {
-      return true;
-    }
-    throw new Error(`Actor ${this.name} can only provide implementations for ${SparqlOperator.LTE}`);
   }
 
   public async run<T extends IActionFunctionFactory>(args: T):

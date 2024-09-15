@@ -5,25 +5,18 @@ import type {
   IActorFunctionFactoryOutputTerm,
 } from '@comunica/bus-function-factory';
 import {
-  ActorFunctionFactory,
+  ActorFunctionFactoryDedicated,
 } from '@comunica/bus-function-factory';
-import type { IActorTest } from '@comunica/core';
+
 import { SparqlOperator } from '@comunica/expression-evaluator';
 import { TermFunctionIsNumeric } from './TermFunctionIsNumeric';
 
 /**
  * A comunica TermFunctionIsNumeric Function Factory Actor.
  */
-export class ActorFunctionFactoryTermFunctionIsNumeric extends ActorFunctionFactory {
+export class ActorFunctionFactoryTermFunctionIsNumeric extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args);
-  }
-
-  public async test(action: IActionFunctionFactory): Promise<IActorTest> {
-    if (action.functionName === SparqlOperator.IS_NUMERIC) {
-      return true;
-    }
-    throw new Error(`Actor ${this.name} can only provide implementations for ${SparqlOperator.IS_NUMERIC}`);
+    super(args, [ SparqlOperator.IS_NUMERIC ], true);
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

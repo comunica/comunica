@@ -5,25 +5,17 @@ import type {
   IActorFunctionFactoryOutputTerm,
 } from '@comunica/bus-function-factory';
 import {
-  ActorFunctionFactory,
+  ActorFunctionFactoryDedicated,
 } from '@comunica/bus-function-factory';
-import type { IActorTest } from '@comunica/core';
 import { TypeURL } from '@comunica/expression-evaluator';
 import { TermFunctionXsdToInteger } from './TermFunctionXsdToInteger';
 
 /**
  * A comunica TermFunctionXsdToInteger Function Factory Actor.
  */
-export class ActorFunctionFactoryTermFunctionXsdToInteger extends ActorFunctionFactory {
+export class ActorFunctionFactoryTermFunctionXsdToInteger extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args);
-  }
-
-  public async test(action: IActionFunctionFactory): Promise<IActorTest> {
-    if (action.functionName === TypeURL.XSD_INTEGER) {
-      return true;
-    }
-    throw new Error(`Actor ${this.name} can only provide implementations for ${TypeURL.XSD_INTEGER}`);
+    super(args, [ TypeURL.XSD_INTEGER ], true);
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

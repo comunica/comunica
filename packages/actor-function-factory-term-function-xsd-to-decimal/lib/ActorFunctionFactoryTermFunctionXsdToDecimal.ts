@@ -5,25 +5,17 @@ import type {
   IActorFunctionFactoryOutputTerm,
 } from '@comunica/bus-function-factory';
 import {
-  ActorFunctionFactory,
+  ActorFunctionFactoryDedicated,
 } from '@comunica/bus-function-factory';
-import type { IActorTest } from '@comunica/core';
 import { TypeURL } from '@comunica/expression-evaluator';
 import { TermFunctionXsdToDecimal } from './TermFunctionXsdToDecimal';
 
 /**
  * A comunica TermFunctionXsdToDecimal Function Factory Actor.
  */
-export class ActorFunctionFactoryTermFunctionXsdToDecimal extends ActorFunctionFactory {
+export class ActorFunctionFactoryTermFunctionXsdToDecimal extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args);
-  }
-
-  public async test(action: IActionFunctionFactory): Promise<IActorTest> {
-    if (action.functionName === TypeURL.XSD_DECIMAL) {
-      return true;
-    }
-    throw new Error(`Actor ${this.name} can only provide implementations for ${TypeURL.XSD_DECIMAL}`);
+    super(args, [ TypeURL.XSD_DECIMAL ], true);
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

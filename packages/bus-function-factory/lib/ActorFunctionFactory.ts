@@ -18,7 +18,7 @@ import type { Algebra as Alg } from 'sparqlalgebrajs';
 export abstract class ActorFunctionFactory extends
   Actor<IActionFunctionFactory, IActorTest, IActorFunctionFactoryOutput> {
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args - @defaultNested {<default_bus> a <cbqo:components/BusFunctionFactory.jsonld#BusFunctionFactory>} bus
    */
   public constructor(args: IActorFunctionFactoryArgs) {
     super(args);

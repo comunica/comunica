@@ -79,6 +79,12 @@ export class BusIndexed<A extends Actor<I, T, O>, I extends IAction, T extends I
 }
 
 export interface IBusIndexedArgs extends IBusArgs {
+  /**
+   * Keys to follow down from the actor object.
+   */
   actorIdentifierFields: string[];
+  /**
+   * Keys to follow down from the action object.
+   */
   actionIdentifierFields: string[];
 }

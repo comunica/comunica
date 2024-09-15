@@ -5,25 +5,17 @@ import type {
   IActorFunctionFactoryOutputTerm,
 } from '@comunica/bus-function-factory';
 import {
-  ActorFunctionFactory,
+  ActorFunctionFactoryDedicated,
 } from '@comunica/bus-function-factory';
-import type { IActorTest } from '@comunica/core';
 import { TypeURL } from '@comunica/expression-evaluator';
 import { TermFunctionXsdToFloat } from './TermFunctionXsdToFloat';
 
 /**
  * A comunica TermFunctionXsdToFloat Function Factory Actor.
  */
-export class ActorFunctionFactoryTermFunctionXsdToFloat extends ActorFunctionFactory {
+export class ActorFunctionFactoryTermFunctionXsdToFloat extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args);
-  }
-
-  public async test(action: IActionFunctionFactory): Promise<IActorTest> {
-    if (action.functionName === TypeURL.XSD_FLOAT) {
-      return true;
-    }
-    throw new Error(`Actor ${this.name} can only provide implementations for ${TypeURL.XSD_FLOAT}`);
+    super(args, [ TypeURL.XSD_FLOAT ], true);
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

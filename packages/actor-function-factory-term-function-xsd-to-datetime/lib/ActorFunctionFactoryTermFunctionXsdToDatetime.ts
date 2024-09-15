@@ -5,25 +5,17 @@ import type {
   IActorFunctionFactoryOutputTerm,
 } from '@comunica/bus-function-factory';
 import {
-  ActorFunctionFactory,
+  ActorFunctionFactoryDedicated,
 } from '@comunica/bus-function-factory';
-import type { IActorTest } from '@comunica/core';
 import { TypeURL } from '@comunica/expression-evaluator';
 import { TermFunctionXsdToDatetime } from './TermFunctionXsdToDatetime';
 
 /**
  * A comunica TermFunctionXsdToDatetime Function Factory Actor.
  */
-export class ActorFunctionFactoryTermFunctionXsdToDatetime extends ActorFunctionFactory {
+export class ActorFunctionFactoryTermFunctionXsdToDatetime extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args);
-  }
-
-  public async test(action: IActionFunctionFactory): Promise<IActorTest> {
-    if (action.functionName === TypeURL.XSD_DATE_TIME) {
-      return true;
-    }
-    throw new Error(`Actor ${this.name} can only provide implementations for ${TypeURL.XSD_DATE_TIME}`);
+    super(args, [ TypeURL.XSD_DATE_TIME ], true);
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):
