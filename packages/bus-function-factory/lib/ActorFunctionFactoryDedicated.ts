@@ -19,9 +19,9 @@ export abstract class ActorFunctionFactoryDedicated extends ActorFunctionFactory
 
   public async test(action: IActionFunctionFactory): Promise<IActorTest> {
     // Name must match, if this is a term function, all is fine, if not, look whether term-function is not requested.
-    if (action.functionName in this.functionNames && (this.termFunction || !action.requireTermExpression)) {
+    if (this.functionNames.includes(action.functionName) && (this.termFunction || !action.requireTermExpression)) {
       return true;
     }
-    throw new Error(`Actor ${this.name} can only ${this.termFunction ? '' : 'non-termExpression '}provide implementations for ${this.functionNames.join(' and ')}`);
+    throw new Error(`Actor ${this.name} can not provide implementation for ${action.functionName}, only for ${this.termFunction ? '' : 'non-termExpression '}${this.functionNames.join(' and ')}.}`);
   }
 }
