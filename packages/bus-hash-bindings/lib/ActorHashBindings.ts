@@ -1,4 +1,4 @@
-import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediator } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { Bindings } from '@comunica/types';
 
@@ -14,14 +14,14 @@ import type { Bindings } from '@comunica/types';
  * @see IActorHashBindingsTest
  * @see IActorHashBindingsOutput
  */
-export abstract class ActorHashBindings
-  extends Actor<IActionHashBindings, IActorTest, IActorHashBindingsOutput> {
+export abstract class ActorHashBindings<TS = undefined>
+  extends Actor<IActionHashBindings, IActorTest, IActorHashBindingsOutput, TS> {
   /**
    * @param args -
    *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    *   \ @defaultNested {Failed to obtaining hash functions for bindings} busFailMessage
    */
-  public constructor(args: IActorHashBindingsArgs) {
+  public constructor(args: IActorHashBindingsArgs<TS>) {
     super(args);
   }
 }
@@ -49,11 +49,7 @@ export interface IActorHashBindingsOutput extends IActorOutput {
 
 export type HashFunction = (bindings: Bindings) => string;
 
-export type IActorHashBindingsArgs = IActorArgs<IActionHashBindings, IActorTest, IActorHashBindingsOutput>;
+export type IActorHashBindingsArgs<TS = undefined> =
+  IActorArgs<IActionHashBindings, IActorTest, IActorHashBindingsOutput, TS>;
 
-export type MediatorHashBindings = Mediator<
-Actor<IActionHashBindings, IActorTest, IActorHashBindingsOutput>,
-IActionHashBindings,
-IActorTest,
-IActorHashBindingsOutput
->;
+export type MediatorHashBindings = Mediate<IActionHashBindings, IActorHashBindingsOutput>;

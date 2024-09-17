@@ -57,7 +57,7 @@
     "asynciterator": "^3.9.0",
     "babel-loader": "^9.1.0",
     "benchmark": "^2.1.4",
-    "componentsjs-generator": "^4.0.1",
+    "componentsjs-generator": "^4.1.0",
     "depcheck": "^1.4.3",
     "eslint": "^8.57.0",
     "husky": "^9.0.0",

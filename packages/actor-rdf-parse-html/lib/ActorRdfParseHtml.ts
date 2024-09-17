@@ -21,7 +21,8 @@ export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
   private readonly busRdfParseHtml: Bus<Actor<
     IActionRdfParseHtml,
     IActorTest,
-    IActorRdfParseHtmlOutput
+    IActorRdfParseHtmlOutput,
+    undefined
   >, IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput>;
 
   /**
@@ -76,7 +77,8 @@ export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
 
       const htmlParseListeners: IHtmlParseListener[] = [];
       for (const output of outputs) {
-        const { htmlParseListener } = await output.actor.run(htmlAction);
+        // eslint-disable-next-line unicorn/no-useless-undefined
+        const { htmlParseListener } = await output.actor.run(htmlAction, undefined);
         htmlParseListeners.push(htmlParseListener);
       }
 
@@ -157,6 +159,6 @@ export interface IActorRdfParseHtmlArgs extends IActorRdfParseFixedMediaTypesArg
    * The RDF Parse HTML bus for fetching HTML listeners
    * @default {<npmd:@comunica/bus-rdf-parse-html/^3.0.0/components/ActorRdfParseHtml.jsonld#ActorRdfParseHtml_default_bus>}
    */
-  busRdfParseHtml: Bus<Actor<IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput>, IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput>;
+  busRdfParseHtml: Bus<Actor<IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput, undefined>, IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput>;
   /* eslint-enable max-len */
 }

@@ -13,8 +13,12 @@ import type { IActionContext } from '@comunica/types';
  *
  * @see ActorAbstractMediaTypedFixed
  */
-export abstract class ActorAbstractMediaTyped<HI, HT, HO>
-  extends Actor<IActionAbstractMediaTyped<HI>, IActorTestAbstractMediaTyped<HT>, IActorOutputAbstractMediaTyped<HO>> {
+export abstract class ActorAbstractMediaTyped<HI, HT, HO> extends Actor<
+  IActionAbstractMediaTyped<HI>,
+IActorTestAbstractMediaTyped<HT>,
+IActorOutputAbstractMediaTyped<HO>,
+undefined
+> {
   public constructor(args: IActorArgsMediaTyped<HI, HT, HO>) {
     super(args);
   }

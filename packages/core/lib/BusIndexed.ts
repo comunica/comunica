@@ -18,7 +18,7 @@ import { Bus } from './Bus';
  * @template T The test type of an actor.
  * @template O The output type of an actor.
  */
-export class BusIndexed<A extends Actor<I, T, O>, I extends IAction, T extends IActorTest, O extends IActorOutput>
+export class BusIndexed<A extends Actor<I, T, O, any>, I extends IAction, T extends IActorTest, O extends IActorOutput>
   extends Bus<A, I, T, O> {
   protected readonly actorsIndex: Record<string, A[]> = {};
   protected readonly actorIdentifierFields: string[];

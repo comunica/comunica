@@ -55,7 +55,7 @@ describe('ActorQueryOperationCreate', () => {
         },
         context: new ActionContext(),
       };
-      const output = <IQueryOperationResultVoid> await actor.run(op);
+      const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
       expect(output.type).toBe('void');
       await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].createGraphs).toEqual({
@@ -73,7 +73,7 @@ describe('ActorQueryOperationCreate', () => {
         },
         context: new ActionContext(),
       };
-      const output = <IQueryOperationResultVoid> await actor.run(op);
+      const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
       expect(output.type).toBe('void');
       await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].createGraphs).toEqual({

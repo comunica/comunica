@@ -76,7 +76,7 @@ describe('ActorQueryOperationUpdateCompositeUpdate', () => {
         },
         context: new ActionContext(),
       };
-      const output = <IQueryOperationResultVoid> await actor.run(op);
+      const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
       expect(output.type).toBe('void');
       await expect(output.execute()).resolves.toBeUndefined();
     });
@@ -91,7 +91,7 @@ describe('ActorQueryOperationUpdateCompositeUpdate', () => {
         },
         context: new ActionContext(),
       };
-      const output = <IQueryOperationResultVoid> await actor.run(op);
+      const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
       expect(output.type).toBe('void');
       await expect(output.execute()).resolves.toBeUndefined();
     });
@@ -108,7 +108,7 @@ describe('ActorQueryOperationUpdateCompositeUpdate', () => {
         },
         context: new ActionContext(),
       };
-      const output = <IQueryOperationResultVoid> await actor.run(op);
+      const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
       expect(output.type).toBe('void');
       await expect(output.execute()).resolves.toBeUndefined();
     });

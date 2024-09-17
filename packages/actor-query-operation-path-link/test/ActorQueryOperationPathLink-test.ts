@@ -79,7 +79,7 @@ describe('ActorQueryOperationPathLink', () => {
           factory.createLink(DF.namedNode('p')),
           DF.variable('x'),
         ), context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }) };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({ cardinality: 3 });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
@@ -96,7 +96,7 @@ describe('ActorQueryOperationPathLink', () => {
       };
       op.operation.predicate.metadata = { a: 'b' };
 
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({ cardinality: 3 });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),

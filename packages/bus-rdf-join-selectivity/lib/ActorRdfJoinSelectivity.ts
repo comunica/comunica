@@ -15,8 +15,8 @@ import type { IJoinEntry } from '@comunica/types';
  * @see IActorRdfJoinSelectivityTest
  * @see IActorRdfJoinSelectivityOutput
  */
-export abstract class ActorRdfJoinSelectivity
-  extends Actor<IActionRdfJoinSelectivity, IMediatorTypeAccuracy, IActorRdfJoinSelectivityOutput> {
+export abstract class ActorRdfJoinSelectivity<TS = undefined>
+  extends Actor<IActionRdfJoinSelectivity, IMediatorTypeAccuracy, IActorRdfJoinSelectivityOutput, TS> {
   /* eslint-disable max-len */
   /**
    * @param args -
@@ -24,7 +24,7 @@ export abstract class ActorRdfJoinSelectivity
    *   \ @defaultNested {Determining join selectivity failed: none of the configured actors were able to calculate selectivities} busFailMessage
    */
   /* eslint-enable max-len */
-  public constructor(args: IActorRdfJoinSelectivityArgs) {
+  public constructor(args: IActorRdfJoinSelectivityArgs<TS>) {
     super(args);
   }
 }
@@ -47,10 +47,11 @@ export interface IActorRdfJoinSelectivityOutput extends IActorOutput {
   selectivity: number;
 }
 
-export type IActorRdfJoinSelectivityArgs = IActorArgs<
+export type IActorRdfJoinSelectivityArgs<TS = undefined> = IActorArgs<
 IActionRdfJoinSelectivity,
 IMediatorTypeAccuracy,
-IActorRdfJoinSelectivityOutput
+IActorRdfJoinSelectivityOutput,
+TS
 >;
 
 export type MediatorRdfJoinSelectivity = Mediate<

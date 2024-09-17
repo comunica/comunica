@@ -114,7 +114,7 @@ describe('ActorQueryOperationService', () => {
         operation: { type: 'service', silent: false, name: DF.literal('dummy') },
         context: new ActionContext(),
       };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves
         .toEqual({ cardinality: 3, variables: [
           { variable: DF.variable('a'), canBeUndef: false },
@@ -134,7 +134,7 @@ describe('ActorQueryOperationService', () => {
         operation: { type: 'service', silent: true, name: DF.literal('dummy'), input: { type: 'error' }},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves
         .toMatchObject({ cardinality: { type: 'exact', value: 1 }, variables: []});
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -147,7 +147,7 @@ describe('ActorQueryOperationService', () => {
         operation: { type: 'service', silent: false, name: DF.literal('dummy'), input: { type: 'error' }},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      await expect(actor.run(op)).rejects.toBeTruthy();
+      await expect(actor.run(op, undefined)).rejects.toBeTruthy();
     });
 
     it('should run and use undefined source type when forceSparqlEndpoint is disabled', async() => {
@@ -164,7 +164,7 @@ describe('ActorQueryOperationService', () => {
         mediatorQuerySourceIdentify,
       });
 
-      const output = ActorQueryOperation.getSafeBindings(await actorThis.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actorThis.run(op, undefined));
       expect((<any> output).operated.operation.metadata).toEqual({
         scopedSource: { value: 'QUERY_SOURCE_WRAPPER', type: undefined },
       });
@@ -193,7 +193,7 @@ describe('ActorQueryOperationService', () => {
         mediatorQuerySourceIdentify,
       });
 
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       expect((<any> output).operated.operation.metadata).toEqual({
         scopedSource: { value: 'QUERY_SOURCE_WRAPPER', type: 'sparql' },
       });

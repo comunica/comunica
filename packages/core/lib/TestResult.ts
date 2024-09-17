@@ -3,21 +3,38 @@
  *
  * Test results are immutable.
  */
-export type TestResult<T> = TestResultPassed<T> | TestResultFailed;
+export type TestResult<T, TS = undefined> = TestResultPassed<T, TS> | TestResultFailed;
 
 /**
  * Create a new test result that represents a passed value.
  * @param value The value the test passed with.
  */
-export function passTest<T>(value: T): TestResultPassed<T> {
-  return new TestResultPassed<T>(value);
+export function passTest<T>(value: T): TestResultPassed<T, undefined> {
+  return new TestResultPassed<T, undefined>(value, undefined);
 }
 
 /**
  * Create a new test result that represents a passed void value.
  */
-export function passTestVoid(): TestResultPassed<any> {
-  return new TestResultPassed<any>(true);
+export function passTestVoid(): TestResultPassed<any, undefined> {
+  return new TestResultPassed<any, undefined>(true, undefined);
+}
+
+/**
+ * Create a new test result that represents a passed value with side data.
+ * @param value The value the test passed with.
+ * @param sideData Additional data to pass to the run phase.
+ */
+export function passTestWithSideData<T, S>(value: T, sideData: S): TestResultPassed<T, S> {
+  return new TestResultPassed<T, S>(value, sideData);
+}
+
+/**
+ * Create a new test result that represents a passed void value with side data.
+ * @param sideData Additional data to pass to the run phase.
+ */
+export function passTestVoidWithSideData<TS>(sideData: TS): TestResultPassed<any, TS> {
+  return new TestResultPassed<any, TS>(true, sideData);
 }
 
 /**
@@ -33,18 +50,20 @@ export function failTest(message: string): TestResultFailed {
  * This should not be constructed manually.
  * Instead, `testPass` should be used.
  */
-export class TestResultPassed<T> {
+export class TestResultPassed<T, TS> {
   protected readonly value: T;
+  protected readonly sideData: TS;
 
-  public constructor(passValue: T) {
+  public constructor(passValue: T, sideData: TS) {
     this.value = passValue;
+    this.sideData = sideData;
   }
 
   /**
    * Check if the test has passed.
    * If true, it will contain a value.
    */
-  public isPassed(): this is TestResultPassed<T> {
+  public isPassed(): this is TestResultPassed<T, TS> {
     return true;
   }
 
@@ -71,6 +90,13 @@ export class TestResultPassed<T> {
   }
 
   /**
+   * The side data that will be passed to run.
+   */
+  public getSideData(): TS {
+    return this.sideData;
+  }
+
+  /**
    * Get the failure message callback of the failed test, or undefined if the test passed.
    */
   public getFailMessage(): undefined {
@@ -85,8 +111,8 @@ export class TestResultPassed<T> {
    *
    * @param mapper A function that will transform the passed value.
    */
-  public map<T2>(mapper: (value: T) => T2): TestResultPassed<T2> {
-    return new TestResultPassed<T2>(mapper(this.value));
+  public map<T2>(mapper: (value: T, sideData: TS) => T2): TestResultPassed<T2, TS> {
+    return new TestResultPassed<T2, TS>(mapper(this.value, this.sideData), this.sideData);
   }
 
   /**
@@ -97,8 +123,8 @@ export class TestResultPassed<T> {
    *
    * @param mapper A function that will transform the passed value.
    */
-  public async mapAsync<T2>(mapper: (value: T) => Promise<T2>): Promise<TestResultPassed<T2>> {
-    return new TestResultPassed<T2>(await mapper(this.value));
+  public async mapAsync<T2>(mapper: (value: T, sideData: TS) => Promise<T2>): Promise<TestResultPassed<T2, TS>> {
+    return new TestResultPassed<T2, TS>(await mapper(this.value, this.sideData), this.sideData);
   }
 }
 
@@ -118,7 +144,7 @@ export class TestResultFailed {
    * Check if the test has passed.
    * If true, it will contain a value.
    */
-  public isPassed(): this is TestResultPassed<any> {
+  public isPassed(): this is TestResultPassed<any, any> {
     return false;
   }
 
@@ -141,6 +167,13 @@ export class TestResultFailed {
    * Get the value of the passed test, or throw an error if the test failed.
    */
   public getOrThrow(): never {
+    throw new Error(this.getFailMessage());
+  }
+
+  /**
+   * The side data that will be passed to run.
+   */
+  public getSideData(): never {
     throw new Error(this.getFailMessage());
   }
 

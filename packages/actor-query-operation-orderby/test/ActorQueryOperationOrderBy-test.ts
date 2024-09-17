@@ -78,7 +78,7 @@ describe('ActorQueryOperationOrderBy with mixed term types', () => {
         operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = await actor.run(op);
+      const output = await actor.run(op, undefined);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         BF.bindings([]),
@@ -105,7 +105,7 @@ describe('ActorQueryOperationOrderBy with mixed term types', () => {
         operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = await actor.run(op);
+      const output = await actor.run(op, undefined);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         BF.bindings([
@@ -265,7 +265,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
         operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = await actor.run(op);
+      const output = await actor.run(op, undefined);
       await expect(ActorQueryOperation.getSafeBindings(output).metadata()).resolves
         .toEqual({ cardinality: 3 });
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
@@ -288,7 +288,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
         operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = await actor.run(op);
+      const output = await actor.run(op, undefined);
       await expect(ActorQueryOperation.getSafeBindings(output).metadata()).resolves
         .toEqual({ cardinality: 3 });
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
@@ -304,7 +304,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
         operation: { type: 'orderby', input: {}, expressions: [ orderA1 ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = await actor.run(op);
+      const output = await actor.run(op, undefined);
       await expect(ActorQueryOperation.getSafeBindings(output).metadata()).resolves
         .toEqual({ cardinality: 3 });
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
@@ -320,7 +320,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
         operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = await actor.run(op);
+      const output = await actor.run(op, undefined);
       await expect(ActorQueryOperation.getSafeBindings(output).metadata()).resolves
         .toEqual({ cardinality: 3 });
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
@@ -336,7 +336,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
         operation: { type: 'orderby', input: {}, expressions: [ orderB ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = await actor.run(op);
+      const output = await actor.run(op, undefined);
       await expect(ActorQueryOperation.getSafeBindings(output).metadata()).resolves
         .toEqual({ cardinality: 3 });
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
@@ -357,7 +357,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
         operation: { type: 'orderby', input: {}, expressions: [ orderB ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await new Promise<void>(resolve => output.bindingsStream.on('error', () => resolve()));
     });
   });
@@ -449,7 +449,7 @@ describe('ActorQueryOperationOrderBy with multiple comparators', () => {
         operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = await actor.run(op);
+      const output = await actor.run(op, undefined);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         BF.bindings([
@@ -472,7 +472,7 @@ describe('ActorQueryOperationOrderBy with multiple comparators', () => {
         operation: { type: 'orderby', input: {}, expressions: [ orderB ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = await actor.run(op);
+      const output = await actor.run(op, undefined);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         BF.bindings([
@@ -495,7 +495,7 @@ describe('ActorQueryOperationOrderBy with multiple comparators', () => {
         operation: { type: 'orderby', input: {}, expressions: [ orderB, orderA ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = await actor.run(op);
+      const output = await actor.run(op, undefined);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         BF.bindings([
@@ -518,7 +518,7 @@ describe('ActorQueryOperationOrderBy with multiple comparators', () => {
         operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = await actor.run(op);
+      const output = await actor.run(op, undefined);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         BF.bindings([
@@ -541,7 +541,7 @@ describe('ActorQueryOperationOrderBy with multiple comparators', () => {
         operation: { type: 'orderby', input: {}, expressions: [ descOrderB ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = await actor.run(op);
+      const output = await actor.run(op, undefined);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         BF.bindings([
@@ -565,7 +565,7 @@ describe('ActorQueryOperationOrderBy with multiple comparators', () => {
         operation: { type: 'orderby', input: {}, expressions: [ orderB1, orderA1 ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = await actor.run(op);
+      const output = await actor.run(op, undefined);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         BF.bindings([
@@ -645,7 +645,7 @@ describe('ActorQueryOperationOrderBy with integer type', () => {
         operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = await actor.run(op);
+      const output = await actor.run(op, undefined);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         BF.bindings([
@@ -665,7 +665,7 @@ describe('ActorQueryOperationOrderBy with integer type', () => {
         operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = await actor.run(op);
+      const output = await actor.run(op, undefined);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         BF.bindings([
@@ -742,7 +742,7 @@ describe('ActorQueryOperationOrderBy with double type', () => {
         operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = await actor.run(op);
+      const output = await actor.run(op, undefined);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         BF.bindings([
@@ -762,7 +762,7 @@ describe('ActorQueryOperationOrderBy with double type', () => {
         operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = await actor.run(op);
+      const output = await actor.run(op, undefined);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         BF.bindings([
@@ -839,7 +839,7 @@ describe('ActorQueryOperationOrderBy with decimal type', () => {
         operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = await actor.run(op);
+      const output = await actor.run(op, undefined);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         BF.bindings([
@@ -859,7 +859,7 @@ describe('ActorQueryOperationOrderBy with decimal type', () => {
         operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = await actor.run(op);
+      const output = await actor.run(op, undefined);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         BF.bindings([
@@ -936,7 +936,7 @@ describe('ActorQueryOperationOrderBy with float type', () => {
         operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = await actor.run(op);
+      const output = await actor.run(op, undefined);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         BF.bindings([
@@ -956,7 +956,7 @@ describe('ActorQueryOperationOrderBy with float type', () => {
         operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = await actor.run(op);
+      const output = await actor.run(op, undefined);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         BF.bindings([
@@ -1033,7 +1033,7 @@ describe('ActorQueryOperationOrderBy with mixed literal types', () => {
         operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = await actor.run(op);
+      const output = await actor.run(op, undefined);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         BF.bindings([
@@ -1053,7 +1053,7 @@ describe('ActorQueryOperationOrderBy with mixed literal types', () => {
         operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = await actor.run(op);
+      const output = await actor.run(op, undefined);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         BF.bindings([
@@ -1131,7 +1131,7 @@ describe('Another ActorQueryOperationOrderBy with mixed types', () => {
           operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
           context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
         };
-        const output = await actor.run(op);
+        const output = await actor.run(op, undefined);
         const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
         expect(array).toBeFalsy();
       } catch {

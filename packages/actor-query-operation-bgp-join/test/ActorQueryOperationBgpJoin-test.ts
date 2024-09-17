@@ -57,7 +57,7 @@ describe('ActorQueryOperationBgpJoin', () => {
       const context = new ActionContext({ a: 'b', [KeysInitQuery.dataFactory.name]: DF });
       const op = <any> { operation: { type: 'bgp', patterns }, context };
 
-      const output: IQueryOperationResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op, undefined);
       await expect(output.metadata()).resolves
         .toEqual({ cardinality: 3, variables: [{ variable: DF.variable('a'), canBeUndef: false }]});
       expect(output.type).toBe('bindings');

@@ -14,11 +14,12 @@ import type * as RDF from '@rdfjs/types';
  * @see IActionQuerySourceIdentifyHypermedia
  * @see IActorQuerySourceIdentifyHypermediaOutput
  */
-export abstract class ActorQuerySourceIdentifyHypermedia
+export abstract class ActorQuerySourceIdentifyHypermedia<TS = undefined>
   extends Actor<
     IActionQuerySourceIdentifyHypermedia,
 IActorQuerySourceIdentifyHypermediaTest,
-IActorQuerySourceIdentifyHypermediaOutput
+IActorQuerySourceIdentifyHypermediaOutput,
+TS
 > {
   protected readonly sourceType: string;
 
@@ -30,14 +31,14 @@ IActorQuerySourceIdentifyHypermediaOutput
    * @param sourceType The source type.
    */
   /* eslint-enable max-len */
-  public constructor(args: IActorQuerySourceIdentifyHypermediaArgs, sourceType: string) {
+  public constructor(args: IActorQuerySourceIdentifyHypermediaArgs<TS>, sourceType: string) {
     super(args);
     this.sourceType = sourceType;
   }
 
   public async test(
     action: IActionQuerySourceIdentifyHypermedia,
-  ): Promise<TestResult<IActorQuerySourceIdentifyHypermediaTest>> {
+  ): Promise<TestResult<IActorQuerySourceIdentifyHypermediaTest, TS>> {
     if (action.forceSourceType && this.sourceType !== action.forceSourceType) {
       return failTest(`Actor ${this.name} is not able to handle source type ${action.forceSourceType}.`);
     }
@@ -46,7 +47,7 @@ IActorQuerySourceIdentifyHypermediaOutput
 
   public abstract testMetadata(
     action: IActionQuerySourceIdentifyHypermedia,
-  ): Promise<TestResult<IActorQuerySourceIdentifyHypermediaTest>>;
+  ): Promise<TestResult<IActorQuerySourceIdentifyHypermediaTest, TS>>;
 }
 
 export interface IActionQuerySourceIdentifyHypermedia extends IAction {
@@ -94,10 +95,11 @@ export interface IActorQuerySourceIdentifyHypermediaOutput extends IActorOutput 
   dataset?: string;
 }
 
-export type IActorQuerySourceIdentifyHypermediaArgs = IActorArgs<
+export type IActorQuerySourceIdentifyHypermediaArgs<TS = undefined> = IActorArgs<
 IActionQuerySourceIdentifyHypermedia,
 IActorQuerySourceIdentifyHypermediaTest,
-IActorQuerySourceIdentifyHypermediaOutput
+IActorQuerySourceIdentifyHypermediaOutput,
+TS
 >;
 
 export type MediatorQuerySourceIdentifyHypermedia = Mediate<

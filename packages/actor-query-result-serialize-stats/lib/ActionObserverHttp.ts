@@ -24,7 +24,7 @@ export class ActionObserverHttp extends ActionObserver<IActionHttp, IActorHttpOu
   /* eslint-enable max-len */
 
   public onRun(
-    _actor: Actor<IActionHttp, IActorTest, IActorHttpOutput>,
+    _actor: Actor<IActionHttp, IActorTest, IActorHttpOutput, undefined>,
     _action: IActionHttp,
     _output: Promise<IActorHttpOutput>,
   ): void {

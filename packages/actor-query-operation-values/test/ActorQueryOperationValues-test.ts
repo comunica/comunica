@@ -70,7 +70,7 @@ describe('ActorQueryOperationValues', () => {
         operation: { type: 'values', variables, bindings },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toMatchObject({
         cardinality: { type: 'exact', value: 1 },
         variables: [
@@ -92,7 +92,7 @@ describe('ActorQueryOperationValues', () => {
         operation: { type: 'values', variables, bindings },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toMatchObject({
         cardinality: { type: 'exact', value: 2 },
         variables: [
@@ -120,7 +120,7 @@ describe('ActorQueryOperationValues', () => {
         operation: { type: 'values', variables, bindings },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toMatchObject({
         cardinality: { type: 'exact', value: 2 },
         variables: [
@@ -151,7 +151,7 @@ describe('ActorQueryOperationValues', () => {
         operation: { type: 'values', variables, bindings },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toMatchObject({
         cardinality: { type: 'exact', value: 2 },
         variables: [

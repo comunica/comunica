@@ -86,7 +86,7 @@ describe('ActorQueryOperationJoin', () => {
 
     it('should run', async() => {
       const op: any = { operation: { type: 'join', input: [{}, {}, {}]}, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       expect(output.type).toBe('bindings');
       await expect(output.metadata()).resolves.toEqual({
         cardinality: 100,

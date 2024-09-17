@@ -13,8 +13,8 @@ import { failTest, Actor } from '@comunica/core';
  * @see IActionRdfUpdateHypermedia
  * @see IActorRdfUpdateHypermediaOutput
  */
-export abstract class ActorRdfUpdateHypermedia
-  extends Actor<IActionRdfUpdateHypermedia, IActorTest, IActorRdfUpdateHypermediaOutput> {
+export abstract class ActorRdfUpdateHypermedia<TS = undefined>
+  extends Actor<IActionRdfUpdateHypermedia, IActorTest, IActorRdfUpdateHypermediaOutput, TS> {
   protected readonly destinationType: string;
 
   /* eslint-disable max-len */
@@ -25,19 +25,19 @@ export abstract class ActorRdfUpdateHypermedia
    * @param destinationType - The destination type.
    */
   /* eslint-enable max-len */
-  public constructor(args: IActorRdfUpdateHypermediaArgs, destinationType: string) {
+  public constructor(args: IActorRdfUpdateHypermediaArgs<TS>, destinationType: string) {
     super(args);
     this.destinationType = destinationType;
   }
 
-  public async test(action: IActionRdfUpdateHypermedia): Promise<TestResult<IActorTest>> {
+  public async test(action: IActionRdfUpdateHypermedia): Promise<TestResult<IActorTest, TS>> {
     if (action.forceDestinationType && this.destinationType !== action.forceDestinationType) {
       return failTest(`Actor ${this.name} is not able to handle destination type ${action.forceDestinationType}.`);
     }
     return this.testMetadata(action);
   }
 
-  public abstract testMetadata(action: IActionRdfUpdateHypermedia): Promise<TestResult<IActorTest>>;
+  public abstract testMetadata(action: IActionRdfUpdateHypermedia): Promise<TestResult<IActorTest, TS>>;
 }
 
 export interface IActionRdfUpdateHypermedia extends IAction {
@@ -67,10 +67,11 @@ export interface IActorRdfUpdateHypermediaOutput extends IActorOutput {
   destination: IQuadDestination;
 }
 
-export type IActorRdfUpdateHypermediaArgs = IActorArgs<
+export type IActorRdfUpdateHypermediaArgs<TS = undefined> = IActorArgs<
 IActionRdfUpdateHypermedia,
 IActorTest,
-IActorRdfUpdateHypermediaOutput
+IActorRdfUpdateHypermediaOutput,
+TS
 >;
 
 export type MediatorRdfUpdateHypermedia = Mediate<IActionRdfUpdateHypermedia, IActorRdfUpdateHypermediaOutput>;

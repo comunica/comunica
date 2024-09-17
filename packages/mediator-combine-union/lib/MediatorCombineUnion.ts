@@ -7,24 +7,25 @@ import { Mediator } from '@comunica/core';
  * The actors that are registered first will have priority on setting overlapping fields.
  */
 export class MediatorCombineUnion<
-  A extends Actor<I, T, O>,
+  A extends Actor<I, T, O, TS>,
 I extends IAction,
 T extends IActorTest,
 O extends IActorOutput,
+TS = undefined,
 >
-  extends Mediator<A, I, T, O>
-  implements IMediatorCombineUnionArgs<A, I, T, O> {
+  extends Mediator<A, I, T, O, TS>
+  implements IMediatorCombineUnionArgs<A, I, T, O, TS> {
   public readonly filterFailures: boolean | undefined;
   public readonly field: string;
   public readonly combiner: (results: O[]) => O;
 
-  public constructor(args: IMediatorCombineUnionArgs<A, I, T, O>) {
+  public constructor(args: IMediatorCombineUnionArgs<A, I, T, O, TS>) {
     super(args);
     this.combiner = this.createCombiner();
   }
 
   public override async mediate(action: I): Promise<O> {
-    let testResults: IActorReply<A, I, T, O>[];
+    let testResults: IActorReply<A, I, T, O, TS>[];
     try {
       testResults = this.publish(action);
     } catch {
@@ -32,7 +33,7 @@ O extends IActorOutput,
     }
 
     if (this.filterFailures) {
-      const _testResults: IActorReply<A, I, T, O>[] = [];
+      const _testResults: IActorReply<A, I, T, O, TS>[] = [];
       for (const result of testResults) {
         const reply = await result.reply;
         if (reply.isPassed()) {
@@ -43,16 +44,23 @@ O extends IActorOutput,
     }
 
     // Delegate reply errors.
-    await Promise.all(testResults.map(async({ reply }) => (await reply).getOrThrow()));
+    const sideDatas: (TS | undefined)[] = [];
+    await Promise.all(testResults.map(async({ reply }, i) => {
+      const awaited = (await reply);
+      const value = awaited.getOrThrow();
+      sideDatas[i] = awaited.getSideData();
+      return value;
+    }));
 
     // Run action on all actors.
-    const results: O[] = await Promise.all(testResults.map(result => result.actor.runObservable(action)));
+    const results: O[] = await Promise.all(testResults
+      .map((result, i) => result.actor.runObservable(action, sideDatas[i]!)));
 
     // Return the combined results.
     return this.combiner(results);
   }
 
-  protected mediateWith(): Promise<TestResult<any>> {
+  protected mediateWith(): Promise<TestResult<any, TS>> {
     throw new Error('Method not supported.');
   }
 
@@ -72,12 +80,13 @@ O extends IActorOutput,
 }
 
 export interface IMediatorCombineUnionArgs<
-  A extends Actor<I, T, O>,
+  A extends Actor<I, T, O, TS>,
 I extends IAction,
 T extends IActorTest,
 O extends IActorOutput,
+TS = undefined,
 >
-  extends IMediatorArgs<A, I, T, O> {
+  extends IMediatorArgs<A, I, T, O, TS> {
   /**
    * If actors that throw test errors should be ignored
    */

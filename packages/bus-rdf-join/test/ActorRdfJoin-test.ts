@@ -20,7 +20,7 @@ class Dummy extends ActorRdfJoin {
   // Just here to have a valid dummy class
   public constructor(
     mediatorJoinSelectivity: Mediator<
-    Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
+    Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput, undefined>,
     IActionRdfJoinSelectivity,
 IActorTest,
 IActorRdfJoinSelectivityOutput
@@ -83,7 +83,7 @@ IActorRdfJoinSelectivityOutput
 describe('ActorRdfJoin', () => {
   let action: IActionRdfJoin;
   let mediatorJoinSelectivity: Mediator<
-  Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,
+  Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput, undefined>,
   IActionRdfJoinSelectivity,
 IActorTest,
 IActorRdfJoinSelectivityOutput

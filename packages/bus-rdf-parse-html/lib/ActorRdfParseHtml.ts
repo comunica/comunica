@@ -13,7 +13,8 @@ import type * as RDF from '@rdfjs/types';
  * @see IActionRdfParseHtml
  * @see IActorRdfParseHtmlOutput
  */
-export abstract class ActorRdfParseHtml extends Actor<IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput> {
+export abstract class ActorRdfParseHtml<TS = undefined>
+  extends Actor<IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput, TS> {
   /* eslint-disable max-len */
   /**
    * @param args -
@@ -21,7 +22,7 @@ export abstract class ActorRdfParseHtml extends Actor<IActionRdfParseHtml, IActo
    *   \ @defaultNested {RDF HTML parsing failed: none of the configured parsers were able to parse RDF in HTML} busFailMessage
    */
   /* eslint-enable max-len */
-  public constructor(args: IActorRdfParseHtmlArgs) {
+  public constructor(args: IActorRdfParseHtmlArgs<TS>) {
     super(args);
   }
 }
@@ -91,6 +92,7 @@ export interface IHtmlParseListener {
   onEnd: () => void;
 }
 
-export type IActorRdfParseHtmlArgs = IActorArgs<IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput>;
+export type IActorRdfParseHtmlArgs<TS = undefined> =
+  IActorArgs<IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput, TS>;
 
 export type MediatorRdfParseHtml = Mediate<IActionRdfParseHtml, IActorRdfParseHtmlOutput>;

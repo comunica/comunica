@@ -18,12 +18,13 @@ import type { TestResult } from './TestResult';
  * @template I The input type of an actor.
  * @template T The test type of an actor.
  * @template O The output type of an actor.
+ * @template TS The test side data type.
  */
-export abstract class Actor<I extends IAction, T extends IActorTest, O extends IActorOutput> implements
-    IActorArgs<I, T, O> {
+export abstract class Actor<I extends IAction, T extends IActorTest, O extends IActorOutput, TS = undefined>
+implements IActorArgs<I, T, O, TS> {
   public readonly name: string;
-  public readonly bus: Bus<Actor<I, T, O>, I, T, O>;
-  public readonly beforeActors: Actor<I, T, O>[] = [];
+  public readonly bus: Bus<Actor<I, T, O, TS>, I, T, O, TS>;
+  public readonly beforeActors: Actor<I, T, O, TS>[] = [];
 
   /**
    * All enumerable properties from the `args` object are inherited to this actor.
@@ -36,7 +37,7 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
    *        The bus this actor subscribes to.
    * @throws When required arguments are missing.
    */
-  protected constructor(args: IActorArgs<I, T, O>) {
+  protected constructor(args: IActorArgs<I, T, O, TS>) {
     Object.assign(this, args);
     this.bus.subscribe(this);
     if (this.beforeActors.length > 0) {
@@ -63,7 +64,7 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
    * @param {I} action The action to test.
    * @return {Promise<T>} A promise that resolves to the test result.
    */
-  public abstract test(action: I): Promise<TestResult<T>>;
+  public abstract test(action: I): Promise<TestResult<T, TS>>;
 
   /**
    * Run the given action on this actor.
@@ -74,7 +75,7 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
    * @param {I} action The action to run.
    * @return {Promise<T>} A promise that resolves to the run result.
    */
-  public abstract run(action: I): Promise<O>;
+  public abstract run(action: I, sideData: TS): Promise<O>;
 
   /**
    * Run the given action on this actor
@@ -83,8 +84,8 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
    * @param {I} action The action to run.
    * @return {Promise<T>} A promise that resolves to the run result.
    */
-  public runObservable(action: I): Promise<O> {
-    const output: Promise<O> = this.run(action);
+  public runObservable(action: I, sideData: TS): Promise<O> {
+    const output: Promise<O> = this.run(action, sideData);
     this.bus.onRun(this, action, output);
     return output;
   }
@@ -162,7 +163,7 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
   }
 }
 
-export interface IActorArgs<I extends IAction, T extends IActorTest, O extends IActorOutput> {
+export interface IActorArgs<I extends IAction, T extends IActorTest, O extends IActorOutput, TS = undefined> {
   /**
    * The name for this actor.
    * @default {<rdf:subject>}
@@ -171,7 +172,7 @@ export interface IActorArgs<I extends IAction, T extends IActorTest, O extends I
   /**
    * The bus this actor subscribes to.
    */
-  bus: Bus<Actor<I, T, O>, I, T, O>;
+  bus: Bus<Actor<I, T, O, TS>, I, T, O, TS>;
   /**
    * The message that will be configured in the bus for reporting failures.
    *
@@ -183,7 +184,7 @@ export interface IActorArgs<I extends IAction, T extends IActorTest, O extends I
   /**
    * Actor that must be registered in the bus before this actor.
    */
-  beforeActors?: Actor<I, T, O>[];
+  beforeActors?: Actor<I, T, O, TS>[];
 }
 
 /**
