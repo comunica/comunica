@@ -1,4 +1,4 @@
-import type { MediatorProcessIterator } from '@comunica/bus-process-iterator';
+import type { MediatorIteratorTransform } from '@comunica/bus-iterator-transform';
 import type {
   IActionQueryOperation,
   IActorQueryOperationArgs,
@@ -14,7 +14,7 @@ import type { AsyncIterator } from 'asynciterator';
  * A comunica Wrap Stream Query Operation Actor.
  */
 export class ActorQueryOperationWrapStream extends ActorQueryOperation {
-  public readonly mediatorProcessIterator: MediatorProcessIterator;
+  public readonly mediatorIteratorTransform: MediatorIteratorTransform;
   public readonly mediatorQueryOperation: MediatorQueryOperation;
 
   public constructor(args: IActorQueryOperationWrapStreamArgs) {
@@ -37,7 +37,7 @@ export class ActorQueryOperationWrapStream extends ActorQueryOperation {
     switch (output.type) {
       case 'bindings':
         output.bindingsStream = <AsyncIterator<RDF.Bindings>>
-        (await this.mediatorProcessIterator.mediate(
+        (await this.mediatorIteratorTransform.mediate(
           { operation: action.operation.type, stream: output.bindingsStream, context: action.context, metadata: {
             type: output.type,
             ...await output.metadata(),
@@ -47,7 +47,7 @@ export class ActorQueryOperationWrapStream extends ActorQueryOperation {
         break;
       case 'quads':
         output.quadStream = <AsyncIterator<RDF.Quad>>
-        (await this.mediatorProcessIterator.mediate(
+        (await this.mediatorIteratorTransform.mediate(
           { operation: action.operation.type, stream: output.quadStream, context: action.context, metadata: {
             type: output.type,
             ...await output.metadata(),
@@ -66,7 +66,7 @@ export interface IActorQueryOperationWrapStreamArgs extends IActorQueryOperation
   /**
    * Mediator that runs all transforms defined by user over the output stream of the query operation
    */
-  mediatorProcessIterator: MediatorProcessIterator;
+  mediatorIteratorTransform: MediatorIteratorTransform;
   /**
    * Mediator that runs the next query operation
    */

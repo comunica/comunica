@@ -11,7 +11,7 @@
       "@id": "urn:comunica:default:query-operation/actors#wrap-stream",
       "@type": "ActorQueryOperationWrapStream",
       "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
-      "mediatorProcessIterator": { "@id": "urn:comunica:default:process-iterator/mediators#main" }
+      "mediatorIteratorTransform": { "@id": "urn:comunica:default:iterator-transform/mediators#main" }
     }
   ]
 }

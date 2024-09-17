@@ -1,4 +1,4 @@
-import type { MediatorProcessIterator } from '@comunica/bus-process-iterator';
+import type { MediatorIteratorTransform } from '@comunica/bus-iterator-transform';
 import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs, MediatorRdfJoin } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin, KEY_CONTEXT_WRAPPED_RDF_JOIN } from '@comunica/bus-rdf-join';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
@@ -11,7 +11,7 @@ import type { AsyncIterator } from 'asynciterator';
  */
 export class ActorRdfJoinWrapStream extends ActorRdfJoin {
   public readonly mediatorJoin: MediatorRdfJoin;
-  public readonly mediatorProcessIterator: MediatorProcessIterator;
+  public readonly mediatorIteratorTransform: MediatorIteratorTransform;
 
   public constructor(args: IActorRdfJoinWrapStreamArgs) {
     super(args, {
@@ -45,7 +45,7 @@ export class ActorRdfJoinWrapStream extends ActorRdfJoin {
     const result: IQueryOperationResultBindings = await this.mediatorJoin.mediate(action);
 
     result.bindingsStream = <AsyncIterator<RDF.Bindings>>
-    (await this.mediatorProcessIterator.mediate(
+    (await this.mediatorIteratorTransform.mediate(
       { operation: action.type, stream: result.bindingsStream, context: action.context, metadata: {
         joinEntries: action.entries.length,
         ...await result.metadata(),
@@ -74,7 +74,7 @@ export interface IActorRdfJoinWrapStreamArgs extends IActorRdfJoinArgs {
   /**
    * Mediator that runs all transforms defined by user over the output stream of the query operation
    */
-  mediatorProcessIterator: MediatorProcessIterator;
+  mediatorIteratorTransform: MediatorIteratorTransform;
   /**
    * Mediator that calls next join to be wrapped
    */

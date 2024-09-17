@@ -1,5 +1,5 @@
-import type { IActorProcessIteratorArgs } from '@comunica/bus-process-iterator';
-import { ActorProcessIterator } from '@comunica/bus-process-iterator';
+import type { IActorIteratorTransformArgs } from '@comunica/bus-iterator-transform';
+import { ActorIteratorTransform } from '@comunica/bus-iterator-transform';
 import { KeysStatistics } from '@comunica/context-entries';
 import type { StatisticIntermediateResults } from '@comunica/statistic-intermediate-results';
 import type { Bindings, IActionContext } from '@comunica/types';
@@ -7,14 +7,15 @@ import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 
 /**
- * A comunica Count Intermediate Results Process Iterator Actor.
+ * A comunica Count Intermediate Results Iterator Transform Actor.
  */
-export class ActorProcessIteratorRecordIntermediateResults extends ActorProcessIterator<AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>> {
-  public constructor(args: IActorProcessIteratorArgs) {
+export class ActorIteratorTransformRecordIntermediateResults 
+  extends ActorIteratorTransform<AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>> {
+  public constructor(args: IActorIteratorTransformArgs) {
     super(args);
   }
 
-  public processStream<T extends AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>>(
+  public transformIterator<T extends AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>>(
     operation: string,
     stream: T,
     context: IActionContext,

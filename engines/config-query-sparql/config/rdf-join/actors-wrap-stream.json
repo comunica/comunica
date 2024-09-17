@@ -11,7 +11,7 @@
       "@type": "ActorRdfJoinWrapStream",
       "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
       "mediatorJoin": { "@id": "urn:comunica:default:rdf-join/mediators#main" },
-      "mediatorProcessIterator": { "@id": "urn:comunica:default:process-iterator/mediators#main" }
+      "mediatorIteratorTransform": { "@id": "urn:comunica:default:iterator-transform/mediators#main" }
     }
   ]
 }

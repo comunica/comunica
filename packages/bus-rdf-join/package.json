@@ -36,7 +36,6 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-process-iterator": "^3.2.1",
     "@comunica/bus-rdf-join-entries-sort": "^3.2.1",
     "@comunica/bus-rdf-join-selectivity": "^3.2.1",
     "@comunica/context-entries": "^3.2.1",

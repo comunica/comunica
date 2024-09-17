@@ -1,4 +1,4 @@
-import type { IPartialResult } from '@comunica/actor-process-iterator-record-intermediate-results';
+import type { IPartialResult } from '@comunica/actor-iterator-transform-record-intermediate-results';
 import { KeysStatistics } from '@comunica/context-entries';
 import type { ActionContextKey } from '@comunica/core';
 import { StatisticBase } from '@comunica/statistic-base';

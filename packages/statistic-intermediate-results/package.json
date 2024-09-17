@@ -35,6 +35,7 @@
     "build": "node \"../../node_modules/typescript/bin/tsc\""
   },
   "dependencies": {
+    "@comunica/actor-iterator-transform-record-intermediate-results": "^3.2.1",
     "@comunica/context-entries": "^3.2.1",
     "@comunica/core": "^3.2.1",
     "@comunica/statistic-base": "^3.2.1",

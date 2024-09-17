@@ -1,23 +1,22 @@
 {
-  "name": "@comunica/actor-process-iterator-record-intermediate-results",
+  "name": "@comunica/bus-iterator-transform",
   "version": "3.2.1",
-  "description": "A count-intermediate-results process-iterator actor",
+  "description": "A comunica bus for iterator-transform events.",
   "lsd:module": true,
   "license": "MIT",
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-process-iterator-count-intermediate-results"
+    "directory": "packages/bus-iterator-transform"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"
   },
   "keywords": [
     "comunica",
-    "actor",
-    "process-iterator",
-    "count-intermediate-results"
+    "bus",
+    "iterator-transform"
   ],
   "sideEffects": false,
   "main": "lib/index.js",
@@ -37,8 +36,6 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-process-iterator": "^3.2.0",
-    "@comunica/core": "^3.2.0",
-    "@comunica/statistic-intermediate-results": "^3.2.1"
+    "@comunica/core": "^3.2.0"
   }
 }
