@@ -44,14 +44,19 @@ export class ActorRdfJoinWrapStream extends ActorRdfJoin {
     action.context = ActorRdfJoin.setContextWrapped(action.context, true);
     const result: IQueryOperationResultBindings = await this.mediatorJoin.mediate(action);
 
-    result.bindingsStream = <AsyncIterator<RDF.Bindings>>
-    (await this.mediatorIteratorTransform.mediate(
-      { operation: action.type, stream: result.bindingsStream, context: action.context, metadata: {
+    // result.bindingsStream = <AsyncIterator<RDF.Bindings>>
+    const { stream, streamMetadata } = (await this.mediatorIteratorTransform.mediate(
+      { operation: action.type, 
+        stream: result.bindingsStream, streamMetadata: result.metadata, 
+        context: action.context, metadata: {
         joinEntries: action.entries.length,
         ...await result.metadata(),
         ...result.context,
       }},
-    )).stream;
+    ));
+    
+    result.bindingsStream = <AsyncIterator<RDF.Bindings>> stream;
+    result.metadata = <() => Promise<MetadataBindings>> streamMetadata
 
     return { result };
   }

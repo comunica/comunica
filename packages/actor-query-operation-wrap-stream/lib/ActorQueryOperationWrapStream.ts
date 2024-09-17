@@ -6,7 +6,7 @@ import type {
 } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, KEY_CONTEXT_WRAPPED_QUERY_OPERATION } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
-import type { IQueryOperationResult } from '@comunica/types';
+import type { IQueryOperationResult, MetadataBindings, MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 
@@ -36,24 +36,33 @@ export class ActorQueryOperationWrapStream extends ActorQueryOperation {
     const output: IQueryOperationResult = await this.mediatorQueryOperation.mediate(action);
     switch (output.type) {
       case 'bindings':
-        output.bindingsStream = <AsyncIterator<RDF.Bindings>>
-        (await this.mediatorIteratorTransform.mediate(
-          { operation: action.operation.type, stream: output.bindingsStream, context: action.context, metadata: {
+        let bindingIteratorTransformed = await this.mediatorIteratorTransform.mediate(
+          { 
+            operation: action.operation.type, 
+            stream: output.bindingsStream, streamMetadata: output.metadata, 
+            context: action.context, metadata: {
             type: output.type,
             ...await output.metadata(),
-            ...output.context,
-          }},
-        )).stream;
+            ...output.context }
+          }
+        );
+        output.bindingsStream = 
+          <AsyncIterator<RDF.Bindings>> bindingIteratorTransformed.stream;
+        output.metadata = 
+          <() => Promise<MetadataBindings>> bindingIteratorTransformed.streamMetadata;
         break;
       case 'quads':
-        output.quadStream = <AsyncIterator<RDF.Quad>>
-        (await this.mediatorIteratorTransform.mediate(
-          { operation: action.operation.type, stream: output.quadStream, context: action.context, metadata: {
+        let iteratorTransformed = await this.mediatorIteratorTransform.mediate(
+          { operation: action.operation.type, 
+            stream: output.quadStream, streamMetadata: output.metadata,
+            context: action.context, metadata: {
             type: output.type,
             ...await output.metadata(),
             ...output.context,
           }},
-        )).stream;
+        );
+        output.quadStream = <AsyncIterator<RDF.Quad>> iteratorTransformed.stream;
+        output.metadata = <() => Promise<MetadataQuads>> iteratorTransformed.streamMetadata;
         break;
       default:
         break;
