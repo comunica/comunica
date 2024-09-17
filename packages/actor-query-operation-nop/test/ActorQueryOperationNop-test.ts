@@ -58,7 +58,7 @@ describe('ActorQueryOperationNop', () => {
         operation: { type: 'nop' },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.bindingsStream).toEqualBindingsStream([ BF.bindings() ]);
       await expect(output.metadata()).resolves
         .toMatchObject({ cardinality: { type: 'exact', value: 1 }, variables: []});

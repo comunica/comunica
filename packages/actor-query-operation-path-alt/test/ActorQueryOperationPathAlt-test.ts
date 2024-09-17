@@ -132,7 +132,7 @@ describe('ActorQueryOperationPathAlt', () => {
         ]),
         DF.variable('x'),
       ), context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }) };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 6 },

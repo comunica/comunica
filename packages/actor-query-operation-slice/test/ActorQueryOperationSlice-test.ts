@@ -124,7 +124,7 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 0 and length 100', async() => {
       const op: any = { operation: { type: 'project', start: 0, length: 100 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 3 },
 
@@ -142,7 +142,7 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 1 and length 100', async() => {
       const op: any = { operation: { type: 'project', start: 1, length: 100 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 2 },
 
@@ -157,7 +157,7 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 3 and length 100', async() => {
       const op: any = { operation: { type: 'project', start: 3, length: 100 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 0 },
 
@@ -169,7 +169,7 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 0 and length 3', async() => {
       const op: any = { operation: { type: 'project', start: 0, length: 3 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 3 },
 
@@ -185,7 +185,7 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 0 and length 2', async() => {
       const op: any = { operation: { type: 'project', start: 0, length: 2 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 2 },
 
@@ -200,7 +200,7 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 0 and length 0', async() => {
       const op: any = { operation: { type: 'project', start: 0, length: 0 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 0 },
 
@@ -214,7 +214,7 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 1 and length 3', async() => {
       const op: any = { operation: { type: 'project', start: 1, length: 3 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 2 },
 
@@ -229,7 +229,7 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 1 and length 1', async() => {
       const op: any = { operation: { type: 'project', start: 1, length: 1 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 1 },
 
@@ -243,7 +243,7 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 2 and length 1', async() => {
       const op: any = { operation: { type: 'project', start: 2, length: 1 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 1 },
 
@@ -257,7 +257,7 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 2 and length 0', async() => {
       const op: any = { operation: { type: 'project', start: 2, length: 0 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 0 },
 
@@ -269,7 +269,7 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 3 and length 1', async() => {
       const op: any = { operation: { type: 'project', start: 3, length: 1 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 0 },
 
@@ -280,7 +280,7 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 3 and length 0', async() => {
       const op: any = { operation: { type: 'project', start: 3, length: 1 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 0 },
 
@@ -292,7 +292,7 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 4 and length 1', async() => {
       const op: any = { operation: { type: 'project', start: 4, length: 1 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 0 },
 
@@ -304,7 +304,7 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 4 and length 0', async() => {
       const op: any = { operation: { type: 'project', start: 4, length: 1 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 0 },
 
@@ -321,7 +321,7 @@ describe('ActorQueryOperationSlice', () => {
         name: 'actor',
       });
       const op: any = { operation: { type: 'project', start: 0, length: 100 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
 
@@ -342,7 +342,7 @@ describe('ActorQueryOperationSlice', () => {
         name: 'actor',
       });
       const op: any = { operation: { type: 'project', start: 0, length: 100 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 3 },
         variables: [{ variable: DF.variable('a'), canBeUndef: true }],
@@ -357,7 +357,7 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 0 and no length', async() => {
       const op: any = { operation: { type: 'project', start: 0 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 3 },
 
@@ -374,7 +374,7 @@ describe('ActorQueryOperationSlice', () => {
     it('should run on a stream of quads for start 0 and length 2', async() => {
       actor = new ActorQueryOperationSlice({ bus, mediatorQueryOperation: mediatorQueryOperationQuads, name: 'actor' });
       const op: any = { operation: { type: 'project', start: 0, length: 2 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeQuads(await actor.run(op));
+      const output = ActorQueryOperation.getSafeQuads(await actor.run(op, undefined));
       await expect(output.metadata()).resolves
         .toEqual({ cardinality: { type: 'estimate', value: 2 }});
       expect(output.type).toBe('quads');
@@ -391,7 +391,7 @@ describe('ActorQueryOperationSlice', () => {
         name: 'actor',
       });
       const op: any = { operation: { type: 'project', start: 0 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBoolean(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBoolean(await actor.run(op, undefined));
       expect(output.type).toBe('boolean');
       await expect(output.execute()).resolves.toBe(true);
     });

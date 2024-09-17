@@ -52,8 +52,8 @@ describe('MediatorNumber', () => {
   });
 
   describe('An MediatorNumber instance', () => {
-    let mediatorMin: MediatorNumber<DummyActor, IAction, IDummyTest, IDummyTest>;
-    let mediatorMax: MediatorNumber<DummyActor, IAction, IDummyTest, IDummyTest>;
+    let mediatorMin: MediatorNumber<DummyActor, IAction, IDummyTest, IDummyTest, undefined>;
+    let mediatorMax: MediatorNumber<DummyActor, IAction, IDummyTest, IDummyTest, undefined>;
 
     beforeEach(() => {
       mediatorMin = new MediatorNumber({ name: 'mediatorMin', bus, field: 'field', type: 'min' });

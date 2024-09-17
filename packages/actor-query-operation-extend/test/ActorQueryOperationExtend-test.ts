@@ -168,7 +168,7 @@ describe('ActorQueryOperationExtend', () => {
         operation: example(defaultExpression),
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output: IQueryOperationResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('a'), DF.literal('1') ],
@@ -200,7 +200,7 @@ describe('ActorQueryOperationExtend', () => {
         operation: example(faultyExpression),
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output: IQueryOperationResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op, undefined);
 
       await expect(arrayifyStream(output.bindingsStream)).resolves.toMatchObject(input);
       expect(warn).toHaveBeenCalledTimes(3);
@@ -224,7 +224,7 @@ describe('ActorQueryOperationExtend', () => {
         operation: example(faultyExpression),
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output: IQueryOperationResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op, undefined);
       await new Promise<void>((resolve, reject) => {
         output.bindingsStream.on('error', () => resolve());
         output.bindingsStream.on('data', reject);
@@ -251,7 +251,7 @@ describe('ActorQueryOperationExtend', () => {
         },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      await expect(actor.run(op)).rejects.toThrow(`Illegal binding to variable 'a' that has already been bound`);
+      await expect(actor.run(op, undefined)).rejects.toThrow(`Illegal binding to variable 'a' that has already been bound`);
     });
   });
 });

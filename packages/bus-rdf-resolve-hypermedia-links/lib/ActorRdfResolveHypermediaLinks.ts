@@ -14,8 +14,8 @@ import type * as RDF from '@rdfjs/types';
  * @see IActionRdfResolveHypermediaLinks
  * @see IActorRdfResolveHypermediaLinksOutput
  */
-export abstract class ActorRdfResolveHypermediaLinks
-  extends Actor<IActionRdfResolveHypermediaLinks, IActorTest, IActorRdfResolveHypermediaLinksOutput> {
+export abstract class ActorRdfResolveHypermediaLinks<TS = undefined>
+  extends Actor<IActionRdfResolveHypermediaLinks, IActorTest, IActorRdfResolveHypermediaLinksOutput, TS> {
   /* eslint-disable max-len */
   /**
    * @param args -
@@ -23,7 +23,7 @@ export abstract class ActorRdfResolveHypermediaLinks
    *   \ @defaultNested {Hypermedia link resolution failed: none of the configured actors were able to resolve links from metadata} busFailMessage
    */
   /* eslint-enable max-len */
-  public constructor(args: IActorRdfResolveHypermediaLinksArgs) {
+  public constructor(args: IActorRdfResolveHypermediaLinksArgs<TS>) {
     super(args);
   }
 }
@@ -70,10 +70,11 @@ export interface ILink {
   metadata?: Record<string, any>;
 }
 
-export type IActorRdfResolveHypermediaLinksArgs = IActorArgs<
+export type IActorRdfResolveHypermediaLinksArgs<TS = undefined> = IActorArgs<
 IActionRdfResolveHypermediaLinks,
 IActorTest,
-IActorRdfResolveHypermediaLinksOutput
+IActorRdfResolveHypermediaLinksOutput,
+TS
 >;
 
 export type MediatorRdfResolveHypermediaLinks = Mediate<

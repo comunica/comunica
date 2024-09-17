@@ -147,7 +147,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
         ),
         DF.variable('x'),
       ), context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }) };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 1 },
@@ -171,7 +171,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
         [KeysInitQuery.dataFactory.name]: DF,
         [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: false,
       }) };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 1 },
@@ -195,7 +195,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
         [KeysInitQuery.dataFactory.name]: DF,
         [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
       }) };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 3 },
@@ -222,7 +222,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
         [KeysInitQuery.dataFactory.name]: DF,
         [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
       }) };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 3 },
@@ -249,7 +249,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
         [KeysInitQuery.dataFactory.name]: DF,
         [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
       }) };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 3 },
@@ -271,7 +271,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
         [KeysInitQuery.dataFactory.name]: DF,
         [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
       }) };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'exact', value: 1 },
@@ -293,7 +293,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
         [KeysInitQuery.dataFactory.name]: DF,
         [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
       }) };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 3 },
@@ -336,7 +336,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
           [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
         }),
       };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 3 },

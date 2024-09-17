@@ -320,9 +320,9 @@ describe('Bus', () => {
     });
 
     describe('with ordered actors', () => {
-      let actor1o: Actor<IAction, IActorTest, IActorOutput>;
-      let actor2o: Actor<IAction, IActorTest, IActorOutput>;
-      let actor3o: Actor<IAction, IActorTest, IActorOutput>;
+      let actor1o: Actor<IAction, IActorTest, IActorOutput, any>;
+      let actor2o: Actor<IAction, IActorTest, IActorOutput, any>;
+      let actor3o: Actor<IAction, IActorTest, IActorOutput, any>;
 
       beforeEach(() => {
         actor1o = new (<any> Actor)({ name: 'actor1o', bus });

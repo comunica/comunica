@@ -33,8 +33,8 @@ import { instrumentIterator } from './instrumentIterator';
  * @see IActionRdfJoin
  * @see IActorQueryOperationOutput
  */
-export abstract class ActorRdfJoin
-  extends Actor<IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryOperationResultBindings> {
+export abstract class ActorRdfJoin<TS = undefined>
+  extends Actor<IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryOperationResultBindings, TS> {
   public readonly mediatorJoinSelectivity: MediatorRdfJoinSelectivity;
 
   /**
@@ -76,7 +76,7 @@ export abstract class ActorRdfJoin
    * @param options - Actor-specific join options.
    */
   /* eslint-enable max-len */
-  public constructor(args: IActorRdfJoinArgs, options: IActorRdfJoinInternalOptions) {
+  public constructor(args: IActorRdfJoinArgs<TS>, options: IActorRdfJoinInternalOptions) {
     super(args);
     this.logicalType = options.logicalType;
     this.physicalName = options.physicalName;
@@ -383,7 +383,7 @@ export abstract class ActorRdfJoin
    * @param {IActionRdfJoin} action The input action containing the relevant iterators
    * @returns {Promise<IMediatorTypeJoinCoefficients>} The join coefficients.
    */
-  public async test(action: IActionRdfJoin): Promise<TestResult<IMediatorTypeJoinCoefficients>> {
+  public async test(action: IActionRdfJoin): Promise<TestResult<IMediatorTypeJoinCoefficients, TS>> {
     // Validate logical join type
     if (action.type !== this.logicalType) {
       return failTest(`${this.name} can only handle logical joins of type '${this.logicalType}', while '${action.type}' was given.`);
@@ -521,11 +521,11 @@ export abstract class ActorRdfJoin
   protected abstract getJoinCoefficients(
     action: IActionRdfJoin,
     metadatas: MetadataBindings[],
-  ): Promise<TestResult<IMediatorTypeJoinCoefficients>>;
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients, TS>>;
 }
 
-export interface IActorRdfJoinArgs
-  extends IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryOperationResultBindings> {
+export interface IActorRdfJoinArgs<TS = undefined>
+  extends IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryOperationResultBindings, TS> {
   mediatorJoinSelectivity: MediatorRdfJoinSelectivity;
 }
 

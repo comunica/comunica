@@ -102,7 +102,7 @@ describe('ActorQueryOperationLeftJoin', () => {
         operation: { type: 'leftjoin', input: [{}, {}]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       expect(output.type).toBe('bindings');
       await expect(output.metadata()).resolves.toEqual({
         cardinality: 100,
@@ -131,7 +131,7 @@ describe('ActorQueryOperationLeftJoin', () => {
         operation: { type: 'leftjoin', input: [{}, {}], expression },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
@@ -177,7 +177,7 @@ describe('ActorQueryOperationLeftJoin', () => {
         operation: { type: 'leftjoin', input: [{ side: 'left' }, { side: 'right' }]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
         BF.bindings([[ DF.variable('c'), DF.literal('1') ]]),
@@ -194,7 +194,7 @@ describe('ActorQueryOperationLeftJoin', () => {
         operation: { type: 'leftjoin', input: [{}, {}], expression },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.bindingsStream).toEqualBindingsStream([]);
       await expect(output.metadata()).resolves.toMatchObject({
         cardinality: 100,
@@ -229,7 +229,7 @@ describe('ActorQueryOperationLeftJoin', () => {
         operation: { type: 'leftjoin', input: [{}, {}], expression },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.bindingsStream).toEqualBindingsStream([]);
       await expect(output.metadata()).resolves.toMatchObject({
         cardinality: 100,
@@ -280,7 +280,7 @@ describe('ActorQueryOperationLeftJoin', () => {
         operation: { type: 'leftjoin', input: [{}, {}], expression },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output: IQueryOperationResultBindings = <IQueryOperationResultBindings> await actor.run(op);
+      const output: IQueryOperationResultBindings = <IQueryOperationResultBindings> await actor.run(op, undefined);
       await new Promise<void>((resolve) => {
         output.bindingsStream.on('error', () => resolve());
         output.bindingsStream.on('data', () => {

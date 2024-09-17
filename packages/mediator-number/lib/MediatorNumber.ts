@@ -7,7 +7,7 @@ import type {
   IMediatorArgs,
   TestResult,
 } from '@comunica/core';
-import { failTest, passTest, Mediator } from '@comunica/core';
+import { passTestWithSideData, failTest, Mediator } from '@comunica/core';
 
 /**
  * A mediator that can mediate over a single number field.
@@ -16,14 +16,20 @@ import { failTest, passTest, Mediator } from '@comunica/core';
  * The 'field' parameter represents the field name of the test result field over which must be mediated.
  * The 'type' parameter
  */
-export class MediatorNumber<A extends Actor<I, T, O>, I extends IAction, T extends IActorTest, O extends IActorOutput>
-  extends Mediator<A, I, T, O> implements IMediatorNumberArgs<A, I, T, O> {
+export class MediatorNumber<
+  A extends Actor<I, T, O, TS>,
+I extends IAction,
+T extends IActorTest,
+O extends IActorOutput,
+TS,
+>
+  extends Mediator<A, I, T, O, TS> implements IMediatorNumberArgs<A, I, T, O, TS> {
   public readonly field: string;
   public readonly type: 'min' | 'max';
   public readonly ignoreFailures: boolean;
   public readonly indexPicker: (tests: T[]) => number;
 
-  public constructor(args: IMediatorNumberArgs<A, I, T, O>) {
+  public constructor(args: IMediatorNumberArgs<A, I, T, O, TS>) {
     super(args);
     this.indexPicker = this.createIndexPicker();
   }
@@ -55,7 +61,7 @@ export class MediatorNumber<A extends Actor<I, T, O>, I extends IAction, T exten
     return value === undefined ? defaultValue : value;
   }
 
-  protected async mediateWith(action: I, testResults: IActorReply<A, I, T, O>[]): Promise<TestResult<A>> {
+  protected async mediateWith(action: I, testResults: IActorReply<A, I, T, O, TS>[]): Promise<TestResult<A, TS>> {
     let wrappedResults = await Promise.all(testResults.map(({ reply }) => reply));
 
     // Collect failures if we want to ignore them
@@ -66,31 +72,37 @@ export class MediatorNumber<A extends Actor<I, T, O>, I extends IAction, T exten
       wrappedResults = wrappedResults.map((result) => {
         if (result.isFailed()) {
           failures.push(result.getFailMessage());
-          return passTest(dummy);
+          return passTestWithSideData<T, TS>(dummy, undefined!);
         }
         return result;
       });
     }
 
     // Resolve values
-    const results = wrappedResults.map(result => result.getOrThrow());
+    const sideDatas: (TS | undefined)[] = [];
+    const results = wrappedResults.map((result, i) => {
+      const value = result.getOrThrow();
+      sideDatas[i] = result.getSideData();
+      return value;
+    });
 
     // Determine one value
     const index = this.indexPicker(results);
     if (index < 0) {
       return failTest(this.constructFailureMessage(action, failures));
     }
-    return passTest(testResults[index].actor);
+    return passTestWithSideData(testResults[index].actor, sideDatas[index]!);
   }
 }
 
 export interface IMediatorNumberArgs<
-  A extends Actor<I, T, O>,
+  A extends Actor<I, T, O, TS>,
 I extends IAction,
 T extends IActorTest,
 O extends IActorOutput,
+TS,
 >
-  extends IMediatorArgs<A, I, T, O> {
+  extends IMediatorArgs<A, I, T, O, TS> {
   /**
    * The field name of the test result field over which must be mediated.
    */

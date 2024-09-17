@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "@types/minimist": "^1.2.2",
-    "componentsjs": "^6.0.1",
+    "componentsjs": "^6.1.0",
     "minimist": "^1.2.7",
     "process": "^0.11.10"
   }

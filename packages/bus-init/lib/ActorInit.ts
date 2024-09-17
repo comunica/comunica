@@ -14,7 +14,7 @@ import type { Readable } from 'readable-stream';
  *
  * @see IActionInit
  */
-export abstract class ActorInit extends Actor<IActionInit, IActorTest, IActorOutputInit> {
+export abstract class ActorInit extends Actor<IActionInit, IActorTest, IActorOutputInit, undefined> {
   /**
    * @param args -
    *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus

@@ -518,7 +518,7 @@ describe('ActorQueryOperationUnion', () => {
 
     it('should run on zero bindings streams', async() => {
       const op: any = { operation: { type: 'union', input: []}, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toMatchObject({
         cardinality: { type: 'exact', value: 0 },
 
@@ -530,7 +530,7 @@ describe('ActorQueryOperationUnion', () => {
 
     it('should run on two bindings streams', async() => {
       const op: any = { operation: { type: 'union', input: [ op3(), op2() ]}, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toMatchObject({
         cardinality: { type: 'estimate', value: 5 },
         variables: [
@@ -552,7 +552,7 @@ describe('ActorQueryOperationUnion', () => {
       const output = ActorQueryOperation.getSafeBindings(await actor.run(<any> {
         operation: { type: 'union', input: [ op3(), op2(), op2Undef() ]},
         context: new ActionContext(),
-      }));
+      }, undefined));
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 7 },
@@ -575,7 +575,7 @@ describe('ActorQueryOperationUnion', () => {
 
     it('should run with a right bindings stream with undefs', async() => {
       const op: any = { operation: { type: 'union', input: [ op3(), op2Undef() ]}, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toMatchObject({
         cardinality: { type: 'estimate', value: 5 },
         variables: [
@@ -613,7 +613,7 @@ describe('ActorQueryOperationUnion', () => {
 
       // Execute the operation, and expect a valid metadata
       const op: any = { operation: { type: 'union', input: [ op3(), opCustom ]}, context: new ActionContext() };
-      const output: IQueryOperationResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op, undefined);
       const outputMetadata = await output.metadata();
       expect(outputMetadata).toMatchObject({
         state: expect.any(MetadataValidationState),
@@ -638,7 +638,7 @@ describe('ActorQueryOperationUnion', () => {
 
     it('should run on two quad streams', async() => {
       const op: any = { operation: { type: 'union', input: [ opq1(), opq2() ]}, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeQuads(await actor.run(op));
+      const output = ActorQueryOperation.getSafeQuads(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toMatchObject({
         cardinality: { type: 'estimate', value: 4 },
       });
@@ -653,12 +653,12 @@ describe('ActorQueryOperationUnion', () => {
 
     it('should throw on different stream types', async() => {
       const op: any = { operation: { type: 'union', input: [ op2(), opq2() ]}, context: new ActionContext() };
-      await expect(actor.run(op)).rejects.toThrow(`Unable to union bindings and quads`);
+      await expect(actor.run(op, undefined)).rejects.toThrow(`Unable to union bindings and quads`);
     });
 
     it('should throw on unsupported stream types', async() => {
       const op: any = { operation: { type: 'union', input: [ opb1() ]}, context: new ActionContext() };
-      await expect(actor.run(op)).rejects.toThrow(`Unable to union boolean`);
+      await expect(actor.run(op, undefined)).rejects.toThrow(`Unable to union boolean`);
     });
   });
 });

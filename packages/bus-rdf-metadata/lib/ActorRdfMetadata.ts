@@ -13,7 +13,8 @@ import type * as RDF from '@rdfjs/types';
  * @see IActionDereferenceRdf
  * @see IActorDereferenceRdfOutput
  */
-export abstract class ActorRdfMetadata extends Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput> {
+export abstract class ActorRdfMetadata<TS = undefined>
+  extends Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput, TS> {
   /* eslint-disable max-len */
   /**
    * @param args -
@@ -21,7 +22,7 @@ export abstract class ActorRdfMetadata extends Actor<IActionRdfMetadata, IActorT
    *   \ @defaultNested {Metadata splicing failed: none of the configured actors were able to splice metadata from ${action.url}} busFailMessage
    */
   /* eslint-enable max-len */
-  public constructor(args: IActorRdfMetadataArgs) {
+  public constructor(args: IActorRdfMetadataArgs<TS>) {
     super(args);
   }
 }
@@ -54,6 +55,7 @@ export interface IActorRdfMetadataOutput extends IActorOutput {
   metadata: RDF.Stream;
 }
 
-export type IActorRdfMetadataArgs = IActorArgs<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>;
+export type IActorRdfMetadataArgs<TS = undefined> =
+  IActorArgs<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput, TS>;
 
 export type MediatorRdfMetadata = Mediate<IActionRdfMetadata, IActorRdfMetadataOutput>;

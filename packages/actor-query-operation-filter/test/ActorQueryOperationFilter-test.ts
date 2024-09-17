@@ -134,7 +134,7 @@ describe('ActorQueryOperationFilter', () => {
         operation: { type: 'filter', input: {}, expression: truthyExpression },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output: IQueryOperationResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
         BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
@@ -150,7 +150,7 @@ describe('ActorQueryOperationFilter', () => {
         operation: { type: 'filter', input: {}, expression: falsyExpression },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output: IQueryOperationResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([]);
       await expect(output.metadata()).resolves
         .toMatchObject({ cardinality: 3, variables: [{ variable: DF.variable('a'), canBeUndef: false }]});
@@ -162,7 +162,7 @@ describe('ActorQueryOperationFilter', () => {
         operation: { type: 'filter', input: {}, expression: erroringExpression },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output: IQueryOperationResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([]);
       await expect(output.metadata()).resolves
         .toMatchObject({ cardinality: 3, variables: [{ variable: DF.variable('a'), canBeUndef: false }]});
@@ -176,7 +176,7 @@ describe('ActorQueryOperationFilter', () => {
         operation: { type: 'filter', input: {}, expression: erroringExpression },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output: IQueryOperationResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op, undefined);
       output.bindingsStream.on('data', () => {
         // This is here to force the stream to start.
       });
@@ -204,7 +204,7 @@ describe('ActorQueryOperationFilter', () => {
         operation: { type: 'filter', input: {}, expression: erroringExpression },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output: IQueryOperationResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op, undefined);
       output.bindingsStream.on('data', () => {
         // This is here to force the stream to start.
       });
@@ -218,7 +218,7 @@ describe('ActorQueryOperationFilter', () => {
         [KeysInitQuery.baseIRI.name]: 'http://example.com',
       });
       const op: any = { operation: { type: 'filter', input: {}, expression }, context };
-      const output: IQueryOperationResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
         BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),

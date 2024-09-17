@@ -14,8 +14,8 @@ import type { MetadataBindings } from '@comunica/types';
  * @see IActionRdfMetadataAccumulate
  * @see IActorRdfMetadataAccumulateOutput
  */
-export abstract class ActorRdfMetadataAccumulate
-  extends Actor<IActionRdfMetadataAccumulate, IActorTest, IActorRdfMetadataAccumulateOutput> {
+export abstract class ActorRdfMetadataAccumulate<TS = undefined>
+  extends Actor<IActionRdfMetadataAccumulate, IActorTest, IActorRdfMetadataAccumulateOutput, TS> {
   /* eslint-disable max-len */
   /**
    * @param args -
@@ -23,7 +23,7 @@ export abstract class ActorRdfMetadataAccumulate
    *   \ @defaultNested {Metadata accumulation failed: none of the configured actors were able to accumulate metadata in mode ${action.mode}} busFailMessage
    */
   /* eslint-enable max-len */
-  public constructor(args: IActorRdfMetadataAccumulateArgs) {
+  public constructor(args: IActorRdfMetadataAccumulateArgs<TS>) {
     super(args);
   }
 }
@@ -63,10 +63,11 @@ export interface IActorRdfMetadataAccumulateOutput extends IActorOutput {
   metadata: Partial<MetadataBindings>;
 }
 
-export type IActorRdfMetadataAccumulateArgs = IActorArgs<
+export type IActorRdfMetadataAccumulateArgs<TS = undefined> = IActorArgs<
 IActionRdfMetadataAccumulate,
 IActorTest,
-IActorRdfMetadataAccumulateOutput
+IActorRdfMetadataAccumulateOutput,
+TS
 >;
 
 export type MediatorRdfMetadataAccumulate = Mediate<

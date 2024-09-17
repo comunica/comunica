@@ -13,8 +13,8 @@ import type { IQuerySourceWrapper, QuerySourceUnidentifiedExpanded } from '@comu
  * @see IActionQuerySourceIdentify
  * @see IActorQuerySourceIdentifyOutput
  */
-export abstract class ActorQuerySourceIdentify
-  extends Actor<IActionQuerySourceIdentify, IActorTest, IActorQuerySourceIdentifyOutput> {
+export abstract class ActorQuerySourceIdentify<TS = undefined>
+  extends Actor<IActionQuerySourceIdentify, IActorTest, IActorQuerySourceIdentifyOutput, TS> {
   /* eslint-disable max-len */
   /**
    * @param args -
@@ -22,7 +22,7 @@ export abstract class ActorQuerySourceIdentify
    *   \ @defaultNested {Query source identification failed: none of the configured actors were able to identify ${action.querySourceUnidentified.value}} busFailMessage
    */
   /* eslint-enable max-len */
-  public constructor(args: IActorQuerySourceIdentifyArgs) {
+  public constructor(args: IActorQuerySourceIdentifyArgs<TS>) {
     super(args);
   }
 }
@@ -41,10 +41,11 @@ export interface IActorQuerySourceIdentifyOutput extends IActorOutput {
   querySource: IQuerySourceWrapper;
 }
 
-export type IActorQuerySourceIdentifyArgs = IActorArgs<
+export type IActorQuerySourceIdentifyArgs<TS = undefined> = IActorArgs<
 IActionQuerySourceIdentify,
 IActorTest,
-IActorQuerySourceIdentifyOutput
+IActorQuerySourceIdentifyOutput,
+TS
 >;
 
 export type MediatorQuerySourceIdentify = Mediate<

@@ -22,7 +22,7 @@ const toWebReadableStream = require('readable-stream-node-to-web');
  * @see IActorHttpTest
  * @see IActorHttpOutput
  */
-export abstract class ActorHttp extends Actor<IActionHttp, IActorTest, IActorHttpOutput> {
+export abstract class ActorHttp<TS = undefined> extends Actor<IActionHttp, IActorTest, IActorHttpOutput, TS> {
   /* eslint-disable max-len */
   /**
    * @param args -
@@ -30,7 +30,7 @@ export abstract class ActorHttp extends Actor<IActionHttp, IActorTest, IActorHtt
    *   \ @defaultNested {HTTP request failed: none of the configured actors were able to handle ${action.input}} busFailMessage
    */
   /* eslint-enable max-len */
-  public constructor(args: IActorHttpArgs) {
+  public constructor(args: IActorHttpArgs<TS>) {
     super(args);
   }
 
@@ -84,6 +84,6 @@ export interface IActorHttpOutput extends IActorOutput, Response {
 
 }
 
-export type IActorHttpArgs = IActorArgs<IActionHttp, IActorTest, IActorHttpOutput>;
+export type IActorHttpArgs<TS = undefined> = IActorArgs<IActionHttp, IActorTest, IActorHttpOutput, TS>;
 
 export type MediatorHttp = Mediate<IActionHttp, IActorHttpOutput>;

@@ -258,7 +258,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('x'), DF.literal('aaa') ]]),
         BF.bindings([[ DF.variable('x'), DF.literal('bbb') ]]),
@@ -299,7 +299,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('x'), DF.literal('aaa') ],
@@ -354,7 +354,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ countY ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('x'), DF.literal('aaa') ],
@@ -410,7 +410,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ countY, sumZ ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('x'), DF.literal('aaa') ],
@@ -480,7 +480,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [{ ...countY, distinct: true }, sumZ ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('x'), DF.literal('aaa') ],
@@ -530,7 +530,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ countY ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('count'), int('5') ],
@@ -585,7 +585,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ sumY ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('x'), DF.literal('aaa') ]]),
         BF.bindings([[ DF.variable('x'), DF.literal('bbb') ]]),
@@ -648,7 +648,7 @@ describe('ActorQueryOperationGroup', () => {
         mediatorMergeBindingsContext,
       });
 
-      await expect(async() => arrayifyStream((<any> await actor.run(op)).bindingsStream))
+      await expect(async() => arrayifyStream((<any> await actor.run(op, undefined)).bindingsStream))
         .rejects
         .toBeTruthy();
     });
@@ -667,7 +667,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ countY ],
       });
       try {
-        await arrayifyStream((<any> await actor.run(op)).bindingsStream);
+        await arrayifyStream((<any> await actor.run(op, undefined)).bindingsStream);
         // eslint-disable-next-line jest/no-jasmine-globals
         fail();
       } catch (error: unknown) {
@@ -693,7 +693,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ countY ],
       });
       try {
-        await arrayifyStream((<any> await actor.run(op)).bindingsStream);
+        await arrayifyStream((<any> await actor.run(op, undefined)).bindingsStream);
         // eslint-disable-next-line jest/no-jasmine-globals
         fail('BindingStream did not error when it should');
       } catch (error: unknown) {
@@ -734,7 +734,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('count', 'x', 'c') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('c'), int('4') ],
@@ -763,7 +763,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregate ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('c'), int('1') ],
@@ -786,7 +786,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('count', 'x', 'c') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([]);
       await expect(output.metadata()).resolves.toEqual({
         cardinality: 0,
@@ -806,7 +806,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('count', 'x', 'c') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('c'), int('0') ],
@@ -832,7 +832,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('sum', 'x', 's') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('s'), int('10') ],
@@ -853,7 +853,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('sum', 'x', 's') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('s'), int('0') ],
@@ -885,7 +885,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('sum', 'x', 's') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('s'), float('10') ],
@@ -911,7 +911,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('min', 'x', 'm') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('m'), int('1') ],
@@ -932,7 +932,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('min', 'x', 'm') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings(),
       ]);
@@ -956,7 +956,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('max', 'x', 'm') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('m'), int('4') ]]),
       ]);
@@ -975,7 +975,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('max', 'x', 'm') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings(),
       ]);
@@ -1007,7 +1007,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('avg', 'x', 'a') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('a'), float('2.5') ]]),
       ]);
@@ -1039,7 +1039,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('avg', 'x', 'a') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('a'), decimal('2.5') ],
@@ -1060,7 +1060,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('avg', 'x', 'a') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('a'), int('0') ],
@@ -1086,7 +1086,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('sample', 'x', 's') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       expect((await arrayifyStream(output.bindingsStream))[0]).toBeTruthy();
       await expect(output.metadata()).resolves
         .toEqual({ cardinality: 4, variables: [
@@ -1103,7 +1103,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('sample', 'x', 's') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings(),
       ]);
@@ -1127,7 +1127,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('group_concat', 'x', 'g') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('g'), DF.literal('1 2 3 4') ],
@@ -1148,7 +1148,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('group_concat', 'x', 'g') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('g'), DF.literal('') ],
@@ -1175,7 +1175,7 @@ describe('ActorQueryOperationGroup', () => {
       });
       op.operation.aggregates[0].separator = ';';
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('g'), DF.literal('1;2;3;4') ],
@@ -1204,7 +1204,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       expect(spy).not.toHaveBeenCalled();
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('x'), DF.literal('aaa') ]]),

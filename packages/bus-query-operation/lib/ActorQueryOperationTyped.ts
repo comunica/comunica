@@ -16,17 +16,20 @@ import { ActorQueryOperation } from './ActorQueryOperation';
 /**
  * A base implementation for query operation actors for a specific operation type.
  */
-export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> extends ActorQueryOperation {
+export abstract class ActorQueryOperationTyped<
+  O extends Algebra.Operation,
+TS = undefined,
+> extends ActorQueryOperation<TS> {
   public readonly operationName: string;
 
-  protected constructor(args: IActorQueryOperationArgs, operationName: string) {
+  protected constructor(args: IActorQueryOperationArgs<TS>, operationName: string) {
     super(<any> { ...args, operationName });
     if (!this.operationName) {
       throw new Error('A valid "operationName" argument must be provided.');
     }
   }
 
-  public async test(action: IActionQueryOperation): Promise<TestResult<IActorTest>> {
+  public async test(action: IActionQueryOperation): Promise<TestResult<IActorTest, TS>> {
     if (!action.operation) {
       return failTest('Missing field \'operation\' in a query operation action.');
     }
@@ -38,7 +41,7 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
     return this.testOperation(operation, action.context);
   }
 
-  public async run(action: IActionQueryOperation): Promise<IQueryOperationResult> {
+  public async run(action: IActionQueryOperation, sideData: TS): Promise<IQueryOperationResult> {
     // Log to physical plan
     const physicalQueryPlanLogger: IPhysicalQueryPlanLogger | undefined = action.context
       .get(KeysInitQuery.physicalQueryPlanLogger);
@@ -56,7 +59,7 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
 
     const operation: O = <O> action.operation;
     const subContext = action.context.set(KeysQueryOperation.operation, operation);
-    const output: IQueryOperationResult = await this.runOperation(operation, subContext);
+    const output: IQueryOperationResult = await this.runOperation(operation, subContext, sideData);
     if ('metadata' in output) {
       output.metadata = <any>
         cachifyMetadata<IMetadata<RDF.QuadTermName | RDF.Variable>, RDF.QuadTermName | RDF.Variable>(output.metadata);
@@ -64,8 +67,8 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
     return output;
   }
 
-  protected abstract testOperation(operation: O, context: IActionContext): Promise<TestResult<IActorTest>>;
+  protected abstract testOperation(operation: O, context: IActionContext): Promise<TestResult<IActorTest, TS>>;
 
-  protected abstract runOperation(operation: O, context: IActionContext):
+  protected abstract runOperation(operation: O, context: IActionContext, sideData: TS):
   Promise<IQueryOperationResult>;
 }

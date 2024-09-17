@@ -993,7 +993,7 @@ describe('ActorQueryOperationFromQuad', () => {
         operation: { type: 'from', default: [ DF.namedNode('g') ], named: [], input },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output: IQueryOperationResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op, undefined);
       await expect(arrayifyStream(output.bindingsStream)).resolves.toMatchObject([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
         BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),

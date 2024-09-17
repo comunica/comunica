@@ -1,5 +1,5 @@
 import { Actor } from '@comunica/core';
-import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediator } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import type { Quad } from 'rdf-data-factory';
 
 /**
@@ -13,13 +13,14 @@ import type { Quad } from 'rdf-data-factory';
  * @see IActionHashQuads
  * @see IActorHashQuadsOutput
  */
-export abstract class ActorHashQuads extends Actor<IActionHashQuads, IActorTest, IActorHashQuadsOutput> {
+export abstract class ActorHashQuads<TS = undefined>
+  extends Actor<IActionHashQuads, IActorTest, IActorHashQuadsOutput, TS> {
   /**
    * @param args -
    *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    *   \ @defaultNested {Failed to obtaining hash functions for quads} busFailMessage
    */
-  public constructor(args: IActorHashQuadsArgs) {
+  public constructor(args: IActorHashQuadsArgs<TS>) {
     super(args);
   }
 }
@@ -47,15 +48,11 @@ export interface IActorHashQuadsOutput extends IActorOutput {
 
 export type HashFunction = (quad: Quad) => string;
 
-export type IActorHashQuadsArgs = IActorArgs<
+export type IActorHashQuadsArgs<TS = undefined> = IActorArgs<
 IActionHashQuads,
 IActorTest,
-IActorHashQuadsOutput
+IActorHashQuadsOutput,
+TS
 >;
 
-export type MediatorHashQuads = Mediator<
-Actor<IActionHashQuads, IActorTest, IActorHashQuadsOutput>,
-IActionHashQuads,
-IActorTest,
-IActorHashQuadsOutput
->;
+export type MediatorHashQuads = Mediate<IActionHashQuads, IActorHashQuadsOutput>;

@@ -102,7 +102,7 @@ describe('ActorQueryOperationAsk', () => {
 
     it('should run on a non-empty stream', async() => {
       const op: any = { operation: { type: 'ask' }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBoolean(await actor.run(op));
+      const output = ActorQueryOperation.getSafeBoolean(await actor.run(op, undefined));
       expect(output.type).toBe('boolean');
       await expect(output.execute()).resolves.toBeTruthy();
     });
@@ -112,7 +112,7 @@ describe('ActorQueryOperationAsk', () => {
       const actorEmpty = new ActorQueryOperationAsk(
         { name: 'actor', bus, mediatorQueryOperation: mediatorQueryOperationEmpty },
       );
-      const output = ActorQueryOperation.getSafeBoolean(await actorEmpty.run(op));
+      const output = ActorQueryOperation.getSafeBoolean(await actorEmpty.run(op, undefined));
       expect(output.type).toBe('boolean');
       await expect(output.execute()).resolves.toBeFalsy();
     });
@@ -122,7 +122,7 @@ describe('ActorQueryOperationAsk', () => {
       const actorError = new ActorQueryOperationAsk(
         { name: 'actor', bus, mediatorQueryOperation: mediatorQueryOperationError },
       );
-      const output = ActorQueryOperation.getSafeBoolean(await actorError.run(op));
+      const output = ActorQueryOperation.getSafeBoolean(await actorError.run(op, undefined));
       expect(output.type).toBe('boolean');
       await expect(output.execute()).rejects.toBeTruthy();
     });

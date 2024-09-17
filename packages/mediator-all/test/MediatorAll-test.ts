@@ -62,9 +62,9 @@ describe('MediatorAll', () => {
 
       it('should mediate to all resolving actors', async() => {
         await expect(mediator.mediate(<any> { a: 'b' })).resolves.toEqual({ field: 10 });
-        expect(a0.runObservable).toHaveBeenCalledWith({ a: 'b' });
-        expect(a1.runObservable).toHaveBeenCalledWith({ a: 'b' });
-        expect(a2.runObservable).toHaveBeenCalledWith({ a: 'b' });
+        expect(a0.runObservable).toHaveBeenCalledWith({ a: 'b' }, undefined);
+        expect(a1.runObservable).toHaveBeenCalledWith({ a: 'b' }, undefined);
+        expect(a2.runObservable).toHaveBeenCalledWith({ a: 'b' }, undefined);
       });
     });
 
@@ -114,9 +114,9 @@ describe('MediatorAll', () => {
 
       it('should mediate over the non-rejecting actors', async() => {
         await expect(mediator.mediate(<any> { a: 'b' })).resolves.toEqual({ field: 10 });
-        expect(a0.runObservable).toHaveBeenCalledWith({ a: 'b' });
+        expect(a0.runObservable).toHaveBeenCalledWith({ a: 'b' }, undefined);
         expect(a1.runObservable).not.toHaveBeenCalled();
-        expect(a2.runObservable).toHaveBeenCalledWith({ a: 'b' });
+        expect(a2.runObservable).toHaveBeenCalledWith({ a: 'b' }, undefined);
       });
     });
   });

@@ -12,7 +12,8 @@ import { Actor } from '@comunica/core';
  * @see IActionHttpInvalidate
  * @see IActorHttpInvalidateOutput
  */
-export abstract class ActorHttpInvalidate extends Actor<IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput> {
+export abstract class ActorHttpInvalidate<TS = undefined>
+  extends Actor<IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput, TS> {
   /* eslint-disable max-len */
   /**
    * @param args -
@@ -20,7 +21,7 @@ export abstract class ActorHttpInvalidate extends Actor<IActionHttpInvalidate, I
    *   \ @defaultNested {HTTP invalidation failed: none of the configured actors were able to invalidate ${action.url}} busFailMessage
    */
   /* eslint-enable max-len */
-  public constructor(args: IActorHttpInvalidateArgs) {
+  public constructor(args: IActorHttpInvalidateArgs<TS>) {
     super(args);
   }
 }
@@ -37,6 +38,7 @@ export interface IActorHttpInvalidateOutput extends IActorOutput {
 
 }
 
-export type IActorHttpInvalidateArgs = IActorArgs<IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput>;
+export type IActorHttpInvalidateArgs<TS = undefined> =
+  IActorArgs<IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput, TS>;
 
 export type MediatorHttpInvalidate = Mediate<IActionHttpInvalidate, IActorHttpInvalidateOutput>;

@@ -31,9 +31,14 @@ export function isHardError(context: IActionContext): boolean {
  * @see IActionDereference
  * @see IActorDereferenceOutput
  */
-export abstract class ActorDereferenceBase<I extends IAction, T extends IActorTest, O extends IActorDereferenceOutput>
-  extends Actor<I, T, O> {
-  public constructor(args: IActorArgs<I, T, O>) {
+export abstract class ActorDereferenceBase<
+  I extends IAction,
+T extends IActorTest,
+O extends IActorDereferenceOutput,
+TS = undefined,
+>
+  extends Actor<I, T, O, TS> {
+  public constructor(args: IActorArgs<I, T, O, TS>) {
     super(args);
   }
 

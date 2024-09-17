@@ -10,7 +10,7 @@ import type { IQueryOperationResult } from '@comunica/types';
  * to calculate an overall score and pick the actor with the lowest score.
  */
 export class MediatorJoinCoefficientsFixed
-  extends Mediator<ActorRdfJoin, IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryOperationResult> {
+  extends Mediator<ActorRdfJoin, IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryOperationResult, undefined> {
   public readonly cpuWeight: number;
   public readonly memoryWeight: number;
   public readonly timeWeight: number;

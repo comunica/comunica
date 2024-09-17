@@ -40,7 +40,8 @@ let bnodeCounter = 0;
  * @see IActionQueryOperation
  * @see IQueryOperationResult
  */
-export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, IActorTest, IQueryOperationResult> {
+export abstract class ActorQueryOperation<TS = undefined>
+  extends Actor<IActionQueryOperation, IActorTest, IQueryOperationResult, TS> {
   /* eslint-disable max-len */
   /**
    * @param args -
@@ -48,7 +49,7 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    *   \ @defaultNested {Query operation processing failed: none of the configured actors were able to handle the operation type ${action.operation.type}} busFailMessage
    */
   /* eslint-enable max-len */
-  protected constructor(args: IActorQueryOperationArgs) {
+  protected constructor(args: IActorQueryOperationArgs<TS>) {
     super(args);
   }
 
@@ -275,7 +276,12 @@ export interface IActionQueryOperation extends IAction {
   operation: Algebra.Operation;
 }
 
-export type IActorQueryOperationArgs = IActorArgs<IActionQueryOperation, IActorTest, IQueryOperationResult>;
+export type IActorQueryOperationArgs<TS = undefined> = IActorArgs<
+  IActionQueryOperation,
+IActorTest,
+IQueryOperationResult,
+TS
+>;
 
 export type MediatorQueryOperation = Mediate<IActionQueryOperation, IQueryOperationResult>;
 
