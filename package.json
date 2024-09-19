@@ -95,6 +95,6 @@
     "webpack-cli": "^5.0.0"
   },
   "resolutions": {
-    "@rdfjs/types": "1.1.0"
+    "@rdfjs/types": "1.1.2"
   }
 }
