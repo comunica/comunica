@@ -10,7 +10,7 @@ import type * as RDF from '@rdfjs/types';
 import { BufferedIterator, MultiTransformIterator, SingletonIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type { IActionRdfJoin } from '../lib/ActorRdfJoin';
-import { ActorRdfJoin } from '../lib/ActorRdfJoin';
+import { ActorRdfJoin, KEY_CONTEXT_WRAPPED_RDF_JOIN } from '../lib/ActorRdfJoin';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -937,6 +937,7 @@ IActorRdfJoinSelectivityOutput
         ...action,
         context: new ActionContext({
           [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
+          [KEY_CONTEXT_WRAPPED_RDF_JOIN.name]: false,
           [KeysInitQuery.physicalQueryPlanNode.name]: action,
         }),
       });

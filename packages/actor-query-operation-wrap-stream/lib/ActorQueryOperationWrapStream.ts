@@ -36,29 +36,30 @@ export class ActorQueryOperationWrapStream extends ActorQueryOperation {
     const output: IQueryOperationResult = await this.mediatorQueryOperation.mediate(action);
     switch (output.type) {
       case 'bindings':
-        let bindingIteratorTransformed = await this.mediatorIteratorTransform.mediate(
-          { 
-            operation: action.operation.type, 
-            stream: output.bindingsStream, streamMetadata: output.metadata, 
-            context: action.context, metadata: {
-            type: output.type,
-            ...await output.metadata(),
-            ...output.context }
-          }
+        const bindingIteratorTransformed = await this.mediatorIteratorTransform.mediate(
+          {
+            operation: action.operation.type,
+            stream: output.bindingsStream,
+            streamMetadata: output.metadata,
+            context: action.context,
+            metadata: {
+              type: output.type,
+              ...await output.metadata(),
+              resultContext: output.context,
+            },
+          },
         );
-        output.bindingsStream = 
+        output.bindingsStream =
           <AsyncIterator<RDF.Bindings>> bindingIteratorTransformed.stream;
-        output.metadata = 
+        output.metadata =
           <() => Promise<MetadataBindings>> bindingIteratorTransformed.streamMetadata;
         break;
       case 'quads':
-        let iteratorTransformed = await this.mediatorIteratorTransform.mediate(
-          { operation: action.operation.type, 
-            stream: output.quadStream, streamMetadata: output.metadata,
-            context: action.context, metadata: {
+        const iteratorTransformed = await this.mediatorIteratorTransform.mediate(
+          { operation: action.operation.type, stream: output.quadStream, streamMetadata: output.metadata, context: action.context, metadata: {
             type: output.type,
             ...await output.metadata(),
-            ...output.context,
+            resultContext: output.context,
           }},
         );
         output.quadStream = <AsyncIterator<RDF.Quad>> iteratorTransformed.stream;

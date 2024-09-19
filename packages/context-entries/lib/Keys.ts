@@ -14,12 +14,12 @@ import type {
   QuerySourceReference,
   IStatisticBase,
   IDiscoverEventData,
+  IPartialResult,
   ILink,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { IDocumentLoader } from 'jsonld-context-parser';
 import type { Algebra } from 'sparqlalgebrajs';
-import type { IPartialResult } from '../../actor-iterator-transform-record-intermediate-results/lib';
 
 /**
  * When adding entries to this file, also add a shortcut for them in the contextKeyShortcuts TSDoc comment in

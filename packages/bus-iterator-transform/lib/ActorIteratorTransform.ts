@@ -5,7 +5,6 @@ import type { IActionContext, MetadataBindings, MetadataQuads } from '@comunica/
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { types } from 'sparqlalgebrajs/lib/algebra';
-import { Stream } from 'stream';
 
 /**
  * A comunica actor for transform-iterator events.
@@ -19,8 +18,7 @@ import { Stream } from 'stream';
  * @see IActionIteratorTransform
  * @see IActorIteratorTransformOutput
  */
-export abstract class ActorIteratorTransform<T extends AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>,
-  M extends MetadataBindings | MetadataQuads>
+export abstract class ActorIteratorTransform<T extends AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>, M extends MetadataBindings | MetadataQuads>
   extends Actor<IActionIteratorTransform<T, M>, IActorTest, IActorIteratorTransformOutput<T, M>> {
   public wraps: possibleOperationTypes[];
   /**
@@ -33,13 +31,14 @@ export abstract class ActorIteratorTransform<T extends AsyncIterator<RDF.Binding
   public async run(action: IActionIteratorTransform<T, M>): Promise<IActorIteratorTransformOutput<T, M>> {
     // TODO: Possibly remove redundant run / processStream seperation, as most of the logic will need
     // reside in processStream anyways
-    const { stream, streamMetadata } = this.transformIterator(
-      action.operation, action.stream, action.streamMetadata, 
-      action.context, action.metadata
-    );
-    action.stream = stream;
-    action.streamMetadata = streamMetadata;
-    return action;
+    const { stream, streamMetadata } = this.transformIterator(action);
+    return {
+      operation: action.operation,
+      stream,
+      streamMetadata,
+      context: action.context,
+      metadata: action.metadata,
+    };
   }
 
   /**
@@ -48,19 +47,15 @@ export abstract class ActorIteratorTransform<T extends AsyncIterator<RDF.Binding
    * @returns
    */
   public async test(
-    action: IActionIteratorTransform<AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>, 
-    MetadataBindings | MetadataQuads>,
+    action: IActionIteratorTransform<AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>, MetadataBindings | MetadataQuads>,
   ): Promise<IActorTest> {
-    if (!this.wraps === undefined && !this.wraps.includes(action.operation as possibleOperationTypes)) {
+    if (!(this.wraps === undefined) && !this.wraps.includes(action.operation as possibleOperationTypes)) {
       throw new Error(`Operation type not supported in configuration of ${this.name}`);
     }
     return true;
   }
 
-  abstract transformIterator<T extends AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>> 
-  ( operation: string, stream: T, streamMetadata: () => Promise<M>, 
-    context: IActionContext, metadata?: Record<string, any>
-  ): ITransformIteratorOutput<T, M>;
+  abstract transformIterator<T extends AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>>(action: IActionIteratorTransform<T, M>): ITransformIteratorOutput<T, M>;
 }
 
 export interface IActionIteratorTransform<T, M> extends IAction {
@@ -73,7 +68,7 @@ export interface IActionIteratorTransform<T, M> extends IAction {
    */
   stream: T;
   /**
-   * Stream metadata 
+   * Stream metadata
    */
   streamMetadata: () => Promise<M>;
   /**
@@ -97,15 +92,19 @@ export interface IActorIteratorTransformOutput<T, M> extends IActorOutput {
   /**
    * Optionally transformed metadata
    */
-  streamMetadata: () => Promise<M>
+  streamMetadata: () => Promise<M>;
+  /**
+   * (Unchanged)Context given in action
+   */
+  context: IActionContext;
   /**
    * Optional operation metadata
    */
   metadata?: Record<string, any>;
-  
+
 }
 
-export interface ITransformIteratorOutput<T, M>{
+export interface ITransformIteratorOutput<T, M> {
   /**
    * Transformed stream
    */
@@ -126,6 +125,8 @@ export interface IActorIteratorTransformArgs
 
 export type possibleOperationTypes = types | LogicalJoinType;
 
-export type MediatorIteratorTransform= Mediate<IActionIteratorTransform<AsyncIterator<RDF.Bindings> | 
+export type MediatorIteratorTransform = Mediate<IActionIteratorTransform<AsyncIterator<RDF.Bindings> |
 AsyncIterator<RDF.Quad>, MetadataBindings | MetadataQuads>, IActorIteratorTransformOutput<
-AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>, MetadataBindings | MetadataQuads>>;
+AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>,
+MetadataBindings | MetadataQuads
+>>;
