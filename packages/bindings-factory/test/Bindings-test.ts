@@ -283,7 +283,7 @@ describe('Bindings', () => {
             [ 'f', DF.namedNode('ex:f') ],
           ]), { contextMergeHandlers });
           const bindingsOther: RDF.Bindings = <any> {
-            forEach: OriginalBindings.forEach.bind(OriginalBindings),
+            [Symbol.iterator]: OriginalBindings[Symbol.iterator].bind(OriginalBindings),
             equals: OriginalBindings.equals.bind(OriginalBindings),
           };
           expect(bindingsOther instanceof Bindings).toBeFalsy();
@@ -308,7 +308,7 @@ describe('Bindings', () => {
             [ 'b', DF.namedNode('ex:b') ],
           ]), { contextMergeHandlers });
           const bindingsOther: RDF.Bindings = <any> {
-            forEach: OriginalBindings.forEach.bind(OriginalBindings),
+            [Symbol.iterator]: OriginalBindings[Symbol.iterator].bind(OriginalBindings),
             equals: OriginalBindings.equals.bind(OriginalBindings),
           };
           expect(bindingsOther instanceof Bindings).toBeFalsy();
@@ -330,7 +330,7 @@ describe('Bindings', () => {
             [ 'b', DF.namedNode('ex:b') ],
           ]), { contextMergeHandlers });
           const bindingsOther: RDF.Bindings = <any> {
-            forEach: OriginalBindings.forEach.bind(OriginalBindings),
+            [Symbol.iterator]: OriginalBindings[Symbol.iterator].bind(OriginalBindings),
             equals: OriginalBindings.equals.bind(OriginalBindings),
           };
           expect(bindingsOther instanceof Bindings).toBeFalsy();
@@ -426,7 +426,7 @@ describe('Bindings', () => {
             [ 'f', DF.namedNode('ex:f') ],
           ]), { contextMergeHandlers });
           const bindingsOther: RDF.Bindings = <any> {
-            forEach: OriginalBindings.forEach.bind(OriginalBindings),
+            [Symbol.iterator]: OriginalBindings[Symbol.iterator].bind(OriginalBindings),
             equals: OriginalBindings.equals.bind(OriginalBindings),
           };
           expect(bindingsOther instanceof Bindings).toBeFalsy();
@@ -454,7 +454,7 @@ describe('Bindings', () => {
             [ 'b', DF.namedNode('ex:b') ],
           ]), { contextMergeHandlers });
           const bindingsOther: RDF.Bindings = <any> {
-            forEach: OriginalBindings.forEach.bind(OriginalBindings),
+            [Symbol.iterator]: OriginalBindings[Symbol.iterator].bind(OriginalBindings),
             equals: OriginalBindings.equals.bind(OriginalBindings),
           };
           expect(bindingsOther instanceof Bindings).toBeFalsy();
@@ -478,7 +478,7 @@ describe('Bindings', () => {
             [ 'a', DF.namedNode('ex:b') ],
           ]), { contextMergeHandlers });
           const bindingsOther: RDF.Bindings = <any> {
-            forEach: OriginalBindings.forEach.bind(OriginalBindings),
+            [Symbol.iterator]: OriginalBindings[Symbol.iterator].bind(OriginalBindings),
             equals: OriginalBindings.equals.bind(OriginalBindings),
           };
           expect(bindingsOther instanceof Bindings).toBeFalsy();

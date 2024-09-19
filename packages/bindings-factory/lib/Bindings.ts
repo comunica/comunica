@@ -110,46 +110,26 @@ export class Bindings implements RDF.Bindings {
     if (this.size < other.size && other instanceof Bindings) {
       return other.merge(this);
     }
-
     let entries = this.entries;
-    let nonCompatibleElements = false;
 
     // Check if other is of type Bindings, in that case we can access entries immediately.
     // This skips the unnecessary conversion from string to variable.
     if (other instanceof Bindings) {
-      // Benchmarking this function showed that foreach was faster than for...of, That's why we are disabling eslint.
-      // eslint-disable-next-line unicorn/no-array-for-each
-      other.entries.forEach((right, variable) => {
-        if (nonCompatibleElements) {
-          return;
-        }
+      for (const [ variable, right ] of other.entries) {
         const left = this.entries.get(variable);
         if (left && !left.equals(right)) {
-          // Set nonCompatibleElements to true to prevent further processing.
-          nonCompatibleElements = true;
-        } else {
-          entries = entries.set(variable, right);
-        }
-      });
-    } else {
-      // Benchmarking this function showed that foreach was faster than for...of, That's why we are disabling eslint.
-      // eslint-disable-next-line unicorn/no-array-for-each
-      other.forEach((right, variable) => {
-        if (nonCompatibleElements) {
           return;
         }
+        entries = entries.set(variable, right);
+      }
+    } else {
+      for (const [ variable, right ] of other) {
         const left = this.entries.get(variable.value);
         if (left && !left.equals(right)) {
-          // Set nonCompatibleElements to true to prevent further processing.
-          nonCompatibleElements = true;
-        } else {
-          entries = entries.set(variable.value, right);
+          return;
         }
-      });
-    }
-    if (nonCompatibleElements) {
-      // If there are no compatible elements, we return undefined.
-      return;
+        entries = entries.set(variable.value, right);
+      }
     }
 
     return this.createBindingsWithContexts(entries, other);
@@ -166,8 +146,7 @@ export class Bindings implements RDF.Bindings {
 
     // For code comments see Bindings.merge function
     if (other instanceof Bindings) {
-      // eslint-disable-next-line unicorn/no-array-for-each
-      other.entries.forEach((right, variable) => {
+      for (const [ variable, right ] of other.entries) {
         const left = this.entries.get(variable);
         let value: RDF.Term;
         if (left && !left.equals(right)) {
@@ -176,10 +155,9 @@ export class Bindings implements RDF.Bindings {
           value = right;
         }
         entries = entries.set(variable, value);
-      });
+      }
     } else {
-      // eslint-disable-next-line unicorn/no-array-for-each
-      other.forEach((right, variable) => {
+      for (const [ variable, right ] of other) {
         const left = this.entries.get(variable.value);
         let value: RDF.Term;
         if (left && !left.equals(right)) {
@@ -188,7 +166,7 @@ export class Bindings implements RDF.Bindings {
           value = right;
         }
         entries = entries.set(variable.value, value);
-      });
+      }
     }
 
     return this.createBindingsWithContexts(entries, other);
