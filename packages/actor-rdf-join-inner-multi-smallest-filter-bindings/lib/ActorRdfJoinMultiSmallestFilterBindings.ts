@@ -5,12 +5,13 @@ import type {
   IActorRdfJoinArgs,
   MediatorRdfJoin,
   IActorRdfJoinOutputInner,
+  IActorRdfJoinTestSideData,
 } from '@comunica/bus-rdf-join';
 import { ChunkedIterator, ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
 import { KeysInitQuery, KeysRdfJoin } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
-import { failTest, passTest } from '@comunica/core';
+import { passTestWithSideData, failTest, passTest } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type {
   BindingsStream,
@@ -19,7 +20,6 @@ import type {
   IJoinEntry,
   IJoinEntryWithMetadata,
   IQuerySourceWrapper,
-  MetadataBindings,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -188,8 +188,10 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
 
   public async getJoinCoefficients(
     action: IActionRdfJoin,
-    metadatas: MetadataBindings[],
-  ): Promise<TestResult<IMediatorTypeJoinCoefficients>> {
+    sideData: IActorRdfJoinTestSideData,
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients, IActorRdfJoinTestSideData>> {
+    let { metadatas } = sideData;
+
     // Avoid infinite recursion
     if (action.context.get(KeysRdfJoin.lastPhysicalJoin) === this.physicalName) {
       return failTest(`Actor ${this.name} can not be called recursively`);
@@ -227,14 +229,14 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
     const cardinalityRemaining = remaining
       .reduce((mul, remain) => mul * remain.metadata.cardinality.value * this.selectivityModifier, 1);
 
-    return passTest({
+    return passTestWithSideData({
       iterations: selectivity * this.selectivityModifier *
         second.metadata.cardinality.value * cardinalityRemaining,
       persistedItems: first.metadata.cardinality.value,
       blockingItems: first.metadata.cardinality.value,
       requestTime: requestInitialTimes[0] + metadatas[0].cardinality.value * requestItemTimes[0] +
         requestInitialTimes[1] + cardinalityRemaining * requestItemTimes[1],
-    });
+    }, sideData);
   }
 }
 

@@ -1,14 +1,17 @@
 import { ClosableTransformIterator } from '@comunica/bus-query-operation';
-import { ActorRdfJoin } from '@comunica/bus-rdf-join';
+import {
+  ActorRdfJoin,
+} from '@comunica/bus-rdf-join';
 import type {
   IActionRdfJoin,
   IActorRdfJoinArgs,
   IActorRdfJoinOutputInner,
+  IActorRdfJoinTestSideData,
 } from '@comunica/bus-rdf-join';
 import type { TestResult } from '@comunica/core';
-import { passTest } from '@comunica/core';
+import { passTestWithSideData } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { BindingsStream, MetadataBindings, MetadataVariable } from '@comunica/types';
+import type { BindingsStream, MetadataVariable } from '@comunica/types';
 import type { IBindingsIndex } from '@comunica/utils-bindings-index';
 import { BindingsIndexDef, BindingsIndexUndef } from '@comunica/utils-bindings-index';
 import type * as RDF from '@rdfjs/types';
@@ -167,8 +170,9 @@ export class ActorRdfJoinOptionalHash extends ActorRdfJoin {
 
   protected async getJoinCoefficients(
     action: IActionRdfJoin,
-    metadatas: MetadataBindings[],
-  ): Promise<TestResult<IMediatorTypeJoinCoefficients>> {
+    sideData: IActorRdfJoinTestSideData,
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients, IActorRdfJoinTestSideData>> {
+    const { metadatas } = sideData;
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
     let iterations = metadatas[0].cardinality.value + metadatas[1].cardinality.value;
@@ -180,13 +184,13 @@ export class ActorRdfJoinOptionalHash extends ActorRdfJoin {
       // Our blocking implementation is slightly more performant.
       iterations *= 0.9;
     }
-    return passTest({
+    return passTestWithSideData({
       iterations,
       persistedItems: metadatas[0].cardinality.value,
       blockingItems: this.blocking ? metadatas[0].cardinality.value : 0,
       requestTime: requestInitialTimes[0] + metadatas[0].cardinality.value * requestItemTimes[0] +
         requestInitialTimes[1] + metadatas[1].cardinality.value * requestItemTimes[1],
-    });
+    }, sideData);
   }
 }
 

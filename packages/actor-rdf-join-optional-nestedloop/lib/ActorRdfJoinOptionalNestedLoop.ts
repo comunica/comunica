@@ -1,11 +1,16 @@
-import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
+import type {
+  IActionRdfJoin,
+  IActorRdfJoinOutputInner,
+  IActorRdfJoinArgs,
+  IActorRdfJoinTestSideData,
+} from '@comunica/bus-rdf-join';
 import {
   ActorRdfJoin,
 } from '@comunica/bus-rdf-join';
 import type { TestResult } from '@comunica/core';
-import { passTest } from '@comunica/core';
+import { passTestWithSideData } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { Bindings, MetadataBindings } from '@comunica/types';
+import type { Bindings } from '@comunica/types';
 import { NestedLoopJoin } from 'asyncjoin';
 
 /**
@@ -45,16 +50,17 @@ export class ActorRdfJoinOptionalNestedLoop extends ActorRdfJoin {
 
   protected async getJoinCoefficients(
     action: IActionRdfJoin,
-    metadatas: MetadataBindings[],
-  ): Promise<TestResult<IMediatorTypeJoinCoefficients>> {
+    sideData: IActorRdfJoinTestSideData,
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients, IActorRdfJoinTestSideData>> {
+    const { metadatas } = sideData;
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
-    return passTest({
+    return passTestWithSideData({
       iterations: metadatas[0].cardinality.value * metadatas[1].cardinality.value,
       persistedItems: 0,
       blockingItems: 0,
       requestTime: requestInitialTimes[0] + metadatas[0].cardinality.value * requestItemTimes[0] +
         requestInitialTimes[1] + metadatas[1].cardinality.value * requestItemTimes[1],
-    });
+    }, sideData);
   }
 }

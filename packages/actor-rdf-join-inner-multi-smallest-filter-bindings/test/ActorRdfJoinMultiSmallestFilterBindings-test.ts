@@ -63,9 +63,9 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
             a.entries[1].operation.called = invocationCounter;
             invocationCounter++;
             return new ActorRdfJoinNestedLoop({ name: 'actor', bus, mediatorJoinSelectivity })
-              .run(a);
+              .run(a, undefined!);
           }
-          return actor.run(a);
+          return actor.run(a, undefined!);
         },
       };
       actor = new ActorRdfJoinMultiSmallestFilterBindings({
@@ -658,35 +658,37 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
             ],
             context: new ActionContext(),
           },
-          [
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 3 },
-              pageSize: 100,
-              requestTime: 10,
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 2 },
-              pageSize: 100,
-              requestTime: 20,
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 5 },
-              pageSize: 100,
-              requestTime: 30,
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-          ],
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                pageSize: 100,
+                requestTime: 10,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 20,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 5 },
+                pageSize: 100,
+                requestTime: 30,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+            ],
+          },
         )).resolves.toPassTest({
           iterations: 1.200_000_000_000_000_2e-7,
           persistedItems: 2,
@@ -716,35 +718,37 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
             context: new ActionContext()
               .set(KeysRdfJoin.lastPhysicalJoin, 'multi-smallest-filter-bindings'),
           },
-          [
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 3 },
-              pageSize: 100,
-              requestTime: 10,
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 2 },
-              pageSize: 100,
-              requestTime: 20,
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 5 },
-              pageSize: 100,
-              requestTime: 30,
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-          ],
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                pageSize: 100,
+                requestTime: 10,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 20,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 5 },
+                pageSize: 100,
+                requestTime: 30,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+            ],
+          },
         )).resolves.toFailTest(`Actor actor can not be called recursively`);
       });
 
@@ -768,35 +772,37 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
             ],
             context: new ActionContext(),
           },
-          [
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 3 },
-              pageSize: 100,
-              requestTime: 10,
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 2 },
-              pageSize: 100,
-              requestTime: 20,
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 5 },
-              pageSize: 100,
-              requestTime: 30,
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-          ],
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                pageSize: 100,
+                requestTime: 10,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 20,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 5 },
+                pageSize: 100,
+                requestTime: 30,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+            ],
+          },
         )).resolves.toFailTest(`Actor actor can only process if entries[1] has a source`);
       });
 
@@ -820,35 +826,37 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
             ],
             context: new ActionContext(),
           },
-          [
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 3 },
-              pageSize: 100,
-              requestTime: 10,
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 2 },
-              pageSize: 100,
-              requestTime: 20,
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 5 },
-              pageSize: 100,
-              requestTime: 30,
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-          ],
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                pageSize: 100,
+                requestTime: 10,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 20,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 5 },
+                pageSize: 100,
+                requestTime: 30,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+            ],
+          },
         )).resolves.toFailTest(`Actor actor can only process if entries[1] accept filterBindings`);
       });
     });

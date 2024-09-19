@@ -77,7 +77,7 @@ IActorRdfJoinSelectivityOutput
         const output = await actor.run(<any> {
           entries: [],
           context,
-        });
+        }, undefined!);
         await expect(output.bindingsStream).toEqualBindingsStream([ BF.bindings() ]);
         await expect(output.metadata()).resolves
           .toMatchObject({ cardinality: { type: 'exact', value: 1 }, variables: []});

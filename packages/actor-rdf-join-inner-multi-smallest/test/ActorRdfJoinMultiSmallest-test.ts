@@ -12,6 +12,7 @@ import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import type { IActorRdfJoinMultiSmallestTestSideData } from '../lib/ActorRdfJoinMultiSmallest';
 import { ActorRdfJoinMultiSmallest } from '../lib/ActorRdfJoinMultiSmallest';
 import '@comunica/jest';
 
@@ -73,15 +74,15 @@ IActorRdfJoinSelectivityOutput
       };
       invocationCounter = 0;
       mediatorJoin = {
-        mediate(a: any) {
+        async mediate(a: any) {
           if (a.entries.length === 2) {
             a.entries[0].operation.called = invocationCounter;
             a.entries[1].operation.called = invocationCounter;
             invocationCounter++;
             return new ActorRdfJoinNestedLoop({ name: 'actor', bus, mediatorJoinSelectivity })
-              .run(a);
+              .run(a, undefined!);
           }
-          return actor.run(a);
+          return actor.run(a, await getSideData(a));
         },
       };
       actor = new ActorRdfJoinMultiSmallest(
@@ -304,6 +305,10 @@ IActorRdfJoinSelectivityOutput
       });
     });
 
+    async function getSideData(action: IActionRdfJoin): Promise<IActorRdfJoinMultiSmallestTestSideData> {
+      return (await actor.test(action)).getSideData();
+    }
+
     it('should not test on 0 streams', async() => {
       await expect(actor.test({ type: 'inner', entries: [], context })).resolves
         .toFailTest('actor requires at least two join entries.');
@@ -347,7 +352,7 @@ IActorRdfJoinSelectivityOutput
 
     it('should run on 3 streams', async() => {
       const action = action3();
-      const output = await actor.run(action);
+      const output = await actor.run(action, await getSideData(action));
       expect(output.type).toBe('bindings');
       await expect((<any> output).metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
@@ -380,7 +385,7 @@ IActorRdfJoinSelectivityOutput
 
     it('should run on 4 streams', async() => {
       const action = action4();
-      const output = await actor.run(action);
+      const output = await actor.run(action, await getSideData(action));
       expect(output.type).toBe('bindings');
       await expect((<any> output).metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),

@@ -99,7 +99,7 @@ IActorRdfJoinSelectivityOutput
             },
           ],
           context,
-        });
+        }, undefined!);
         expect(output).toBe(entryOutput);
         await expect(output.metadata()).resolves.toEqual({ cardinality: 10 });
       });

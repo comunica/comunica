@@ -1,6 +1,6 @@
 import { Readable } from 'node:stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
-import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
+import type { IActionRdfJoin, IActorRdfJoinTestSideData } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import { KeysInitQuery } from '@comunica/context-entries';
@@ -119,6 +119,10 @@ IActorRdfJoinSelectivityOutput
         context,
       };
     });
+
+    async function getSideData(action: IActionRdfJoin): Promise<IActorRdfJoinTestSideData> {
+      return (await actor.test(action)).getSideData();
+    }
 
     it('should only handle 2 streams', async() => {
       action.entries.push(<any> {});
@@ -410,7 +414,7 @@ IActorRdfJoinSelectivityOutput
     });
 
     it('should generate correct metadata', async() => {
-      await actor.run(action).then(async(result: IQueryOperationResultBindings) => {
+      await actor.run(action, await getSideData(action)).then(async(result: IQueryOperationResultBindings) => {
         await expect((<any> result).metadata()).resolves.toHaveProperty('cardinality', {
           type: 'estimate',
           value: (await (<any> action.entries[0].output).metadata()).cardinality.value *
@@ -422,7 +426,7 @@ IActorRdfJoinSelectivityOutput
     });
 
     it('should return an empty stream for empty input', async() => {
-      await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
+      await actor.run(action, await getSideData(action)).then(async(output: IQueryOperationResultBindings) => {
         await expect(output.metadata()).resolves
           .toEqual({
             state: expect.any(MetadataValidationState),
@@ -463,7 +467,7 @@ IActorRdfJoinSelectivityOutput
         { variable: DF.variable('a'), canBeUndef: false },
         { variable: DF.variable('c'), canBeUndef: false },
       ];
-      await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
+      await actor.run(action, await getSideData(action)).then(async(output: IQueryOperationResultBindings) => {
         await expect(output.metadata()).resolves
           .toEqual({
             state: expect.any(MetadataValidationState),
@@ -511,7 +515,7 @@ IActorRdfJoinSelectivityOutput
         { variable: DF.variable('a'), canBeUndef: false },
         { variable: DF.variable('c'), canBeUndef: false },
       ];
-      await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
+      await actor.run(action, await getSideData(action)).then(async(output: IQueryOperationResultBindings) => {
         await expect(output.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
 
@@ -592,7 +596,7 @@ IActorRdfJoinSelectivityOutput
         { variable: DF.variable('a'), canBeUndef: false },
         { variable: DF.variable('c'), canBeUndef: false },
       ];
-      await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
+      await actor.run(action, await getSideData(action)).then(async(output: IQueryOperationResultBindings) => {
         const expected = [
           BF.bindings([
             [ DF.variable('a'), DF.literal('1') ],
@@ -714,7 +718,7 @@ IActorRdfJoinSelectivityOutput
         context,
       };
 
-      await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
+      await actor.run(action, await getSideData(action)).then(async(output: IQueryOperationResultBindings) => {
         await expect(output.metadata()).resolves
           .toEqual({
             state: expect.any(MetadataValidationState),
@@ -765,7 +769,7 @@ IActorRdfJoinSelectivityOutput
         { variable: DF.variable('a'), canBeUndef: false },
         { variable: DF.variable('c'), canBeUndef: false },
       ];
-      await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
+      await actor.run(action, await getSideData(action)).then(async(output: IQueryOperationResultBindings) => {
         await expect(arrayifyStream(output.bindingsStream)).rejects.toThrow('Error');
       });
     });
@@ -799,7 +803,7 @@ IActorRdfJoinSelectivityOutput
         { variable: DF.variable('a'), canBeUndef: false },
         { variable: DF.variable('c'), canBeUndef: false },
       ];
-      await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
+      await actor.run(action, await getSideData(action)).then(async(output: IQueryOperationResultBindings) => {
         await expect(arrayifyStream(output.bindingsStream)).rejects.toThrow('Error');
       });
     });
@@ -1183,8 +1187,12 @@ IActorRdfJoinSelectivityOutput
       }
     });
 
+    async function getSideData(action: IActionRdfJoin): Promise<IActorRdfJoinTestSideData> {
+      return (await actor.test(action)).getSideData();
+    }
+
     it('should generate correct metadata', async() => {
-      await actor.run(action).then(async(result: IQueryOperationResultBindings) => {
+      await actor.run(action, await getSideData(action)).then(async(result: IQueryOperationResultBindings) => {
         await expect((<any> result).metadata()).resolves.toHaveProperty('cardinality', {
           type: 'estimate',
           value: (await (<any> action.entries[0].output).metadata()).cardinality.value *
@@ -1196,7 +1204,7 @@ IActorRdfJoinSelectivityOutput
     });
 
     it('should return an empty stream for empty input', async() => {
-      await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
+      await actor.run(action, await getSideData(action)).then(async(output: IQueryOperationResultBindings) => {
         await expect(output.metadata()).resolves
           .toEqual({
             state: expect.any(MetadataValidationState),
@@ -1236,7 +1244,7 @@ IActorRdfJoinSelectivityOutput
         { variable: DF.variable('a'), canBeUndef: false },
         { variable: DF.variable('c'), canBeUndef: true },
       ];
-      await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
+      await actor.run(action, await getSideData(action)).then(async(output: IQueryOperationResultBindings) => {
         await expect(output.metadata()).resolves
           .toEqual({
             state: expect.any(MetadataValidationState),
@@ -1283,7 +1291,7 @@ IActorRdfJoinSelectivityOutput
         { variable: DF.variable('a'), canBeUndef: true },
         { variable: DF.variable('c'), canBeUndef: false },
       ];
-      await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
+      await actor.run(action, await getSideData(action)).then(async(output: IQueryOperationResultBindings) => {
         await expect(output.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: 20 },
@@ -1363,7 +1371,7 @@ IActorRdfJoinSelectivityOutput
         { variable: DF.variable('a'), canBeUndef: true },
         { variable: DF.variable('c'), canBeUndef: false },
       ];
-      await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
+      await actor.run(action, await getSideData(action)).then(async(output: IQueryOperationResultBindings) => {
         const expected = [
           BF.bindings([
             [ DF.variable('a'), DF.literal('1') ],
@@ -1484,7 +1492,7 @@ IActorRdfJoinSelectivityOutput
         context,
       };
 
-      await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
+      await actor.run(action, await getSideData(action)).then(async(output: IQueryOperationResultBindings) => {
         await expect(output.metadata()).resolves
           .toEqual({
             state: expect.any(MetadataValidationState),
@@ -1540,7 +1548,7 @@ IActorRdfJoinSelectivityOutput
         { variable: DF.variable('a'), canBeUndef: false },
         { variable: DF.variable('c'), canBeUndef: false },
       ];
-      await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
+      await actor.run(action, await getSideData(action)).then(async(output: IQueryOperationResultBindings) => {
         const expected = [
           BF.bindings([
             [ DF.variable('a'), DF.literal('1') ],
@@ -1602,7 +1610,7 @@ IActorRdfJoinSelectivityOutput
         { variable: DF.variable('a'), canBeUndef: false },
         { variable: DF.variable('c'), canBeUndef: false },
       ];
-      await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
+      await actor.run(action, await getSideData(action)).then(async(output: IQueryOperationResultBindings) => {
         const expected = [
           BF.bindings([
             [ DF.variable('a'), DF.literal('1') ],
@@ -1661,7 +1669,7 @@ IActorRdfJoinSelectivityOutput
         { variable: DF.variable('a'), canBeUndef: false },
         { variable: DF.variable('c'), canBeUndef: false },
       ];
-      await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
+      await actor.run(action, await getSideData(action)).then(async(output: IQueryOperationResultBindings) => {
         const expected = [
           BF.bindings([
             [ DF.variable('a'), DF.literal('2') ],
@@ -1718,7 +1726,7 @@ IActorRdfJoinSelectivityOutput
         { variable: DF.variable('a'), canBeUndef: false },
         { variable: DF.variable('c'), canBeUndef: false },
       ];
-      await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
+      await actor.run(action, await getSideData(action)).then(async(output: IQueryOperationResultBindings) => {
         const expected = [
           BF.bindings([
             [ DF.variable('a'), DF.literal('1') ],
@@ -1776,7 +1784,7 @@ IActorRdfJoinSelectivityOutput
         { variable: DF.variable('a'), canBeUndef: false },
         { variable: DF.variable('c'), canBeUndef: false },
       ];
-      await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
+      await actor.run(action, await getSideData(action)).then(async(output: IQueryOperationResultBindings) => {
         const expected = [
           BF.bindings([
             [ DF.variable('b'), DF.literal('3') ],
@@ -1827,7 +1835,7 @@ IActorRdfJoinSelectivityOutput
         { variable: DF.variable('a'), canBeUndef: false },
         { variable: DF.variable('c'), canBeUndef: false },
       ];
-      await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
+      await actor.run(action, await getSideData(action)).then(async(output: IQueryOperationResultBindings) => {
         const expected = [
           BF.bindings([
             [ DF.variable('a'), DF.literal('1') ],
@@ -1883,7 +1891,7 @@ IActorRdfJoinSelectivityOutput
         { variable: DF.variable('a'), canBeUndef: false },
         { variable: DF.variable('c'), canBeUndef: false },
       ];
-      await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
+      await actor.run(action, await getSideData(action)).then(async(output: IQueryOperationResultBindings) => {
         const expected = [
           BF.bindings([
             [ DF.variable('a'), DF.literal('1') ],
@@ -1943,7 +1951,7 @@ IActorRdfJoinSelectivityOutput
         { variable: DF.variable('a'), canBeUndef: false },
         { variable: DF.variable('c'), canBeUndef: false },
       ];
-      await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
+      await actor.run(action, await getSideData(action)).then(async(output: IQueryOperationResultBindings) => {
         const expected = [
           BF.bindings([
             [ DF.variable('a'), DF.literal('1') ],
@@ -2019,7 +2027,7 @@ IActorRdfJoinSelectivityOutput
         { variable: DF.variable('a'), canBeUndef: false },
         { variable: DF.variable('c'), canBeUndef: false },
       ];
-      await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
+      await actor.run(action, await getSideData(action)).then(async(output: IQueryOperationResultBindings) => {
         const expected = [
           BF.bindings([
             [ DF.variable('a'), DF.literal('1') ],
@@ -2089,7 +2097,7 @@ IActorRdfJoinSelectivityOutput
         { variable: DF.variable('a'), canBeUndef: false },
         { variable: DF.variable('c'), canBeUndef: false },
       ];
-      await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
+      await actor.run(action, await getSideData(action)).then(async(output: IQueryOperationResultBindings) => {
         const expected = [
           BF.bindings([
             [ DF.variable('a'), DF.literal('1') ],
@@ -2170,7 +2178,7 @@ IActorRdfJoinSelectivityOutput
         { variable: DF.variable('a'), canBeUndef: false },
         { variable: DF.variable('c'), canBeUndef: false },
       ];
-      await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
+      await actor.run(action, await getSideData(action)).then(async(output: IQueryOperationResultBindings) => {
         const expected = [
           BF.bindings([
             [ DF.variable('a'), DF.literal('1') ],
@@ -2238,7 +2246,7 @@ IActorRdfJoinSelectivityOutput
         { variable: DF.variable('a'), canBeUndef: false },
         { variable: DF.variable('c'), canBeUndef: false },
       ];
-      await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
+      await actor.run(action, await getSideData(action)).then(async(output: IQueryOperationResultBindings) => {
         await expect(arrayifyStream(output.bindingsStream)).rejects.toThrow('Error');
       });
     });
@@ -2272,7 +2280,7 @@ IActorRdfJoinSelectivityOutput
         { variable: DF.variable('a'), canBeUndef: false },
         { variable: DF.variable('c'), canBeUndef: false },
       ];
-      await actor.run(action).then(async(output: IQueryOperationResultBindings) => {
+      await actor.run(action, await getSideData(action)).then(async(output: IQueryOperationResultBindings) => {
         await expect(arrayifyStream(output.bindingsStream)).rejects.toThrow('Error');
       });
     });

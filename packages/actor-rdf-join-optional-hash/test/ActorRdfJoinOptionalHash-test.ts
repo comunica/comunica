@@ -251,7 +251,7 @@ describe('ActorRdfJoinOptionalHash', () => {
           ],
           context,
         };
-        const result = await actor.run(action);
+        const result = await actor.run(action, undefined!);
 
         // Validate output
         expect(result.type).toBe('bindings');
@@ -329,7 +329,7 @@ describe('ActorRdfJoinOptionalHash', () => {
           ],
           context,
         };
-        const result = await actor.run(action);
+        const result = await actor.run(action, undefined!);
 
         // Validate output
         expect(result.type).toBe('bindings');
@@ -404,7 +404,7 @@ describe('ActorRdfJoinOptionalHash', () => {
           ],
           context,
         };
-        const result = await actor.run(action);
+        const result = await actor.run(action, undefined!);
 
         // Validate output
         expect(result.type).toBe('bindings');
@@ -649,7 +649,7 @@ describe('ActorRdfJoinOptionalHash', () => {
           ],
           context,
         };
-        const result = await actor.run(action);
+        const result = await actor.run(action, undefined!);
 
         // Validate output
         expect(result.type).toBe('bindings');
@@ -727,7 +727,7 @@ describe('ActorRdfJoinOptionalHash', () => {
           ],
           context,
         };
-        const result = await actor.run(action);
+        const result = await actor.run(action, undefined!);
 
         // Validate output
         expect(result.type).toBe('bindings');
@@ -821,7 +821,7 @@ describe('ActorRdfJoinOptionalHash', () => {
           ],
           context,
         };
-        const result = await actor.run(action);
+        const result = await actor.run(action, undefined!);
 
         // Validate output
         expect(result.type).toBe('bindings');
@@ -899,7 +899,7 @@ describe('ActorRdfJoinOptionalHash', () => {
           ],
           context,
         };
-        const result = await actor.run(action);
+        const result = await actor.run(action, undefined!);
 
         // Validate output
         expect(result.type).toBe('bindings');
@@ -1135,7 +1135,7 @@ describe('ActorRdfJoinOptionalHash', () => {
           ],
           context,
         };
-        const result = await actor.run(action);
+        const result = await actor.run(action, undefined!);
 
         // Validate output
         expect(result.type).toBe('bindings');
@@ -1213,7 +1213,7 @@ describe('ActorRdfJoinOptionalHash', () => {
           ],
           context,
         };
-        const result = await actor.run(action);
+        const result = await actor.run(action, undefined!);
 
         // Validate output
         expect(result.type).toBe('bindings');
@@ -1449,7 +1449,7 @@ describe('ActorRdfJoinOptionalHash', () => {
           ],
           context,
         };
-        const result = await actor.run(action);
+        const result = await actor.run(action, undefined!);
 
         // Validate output
         expect(result.type).toBe('bindings');
@@ -1527,7 +1527,7 @@ describe('ActorRdfJoinOptionalHash', () => {
           ],
           context,
         };
-        const result = await actor.run(action);
+        const result = await actor.run(action, undefined!);
 
         // Validate output
         expect(result.type).toBe('bindings');
