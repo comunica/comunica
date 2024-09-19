@@ -44,7 +44,6 @@
     "@comunica/core": "^3.2.1",
     "@comunica/types": "^3.2.1",
     "asynciterator": "^3.9.0",
-    "process": "^0.11.10",
     "readable-stream": "^4.4.2"
   }
 }

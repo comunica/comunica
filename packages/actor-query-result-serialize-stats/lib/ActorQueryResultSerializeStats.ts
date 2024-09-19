@@ -16,8 +16,6 @@ import { wrap } from 'asynciterator';
 import { Readable } from 'readable-stream';
 import type { ActionObserverHttp } from './ActionObserverHttp';
 
-const process: NodeJS.Process = require('process/');
-
 /**
  * Serializes SPARQL results for testing and debugging.
  */
@@ -89,13 +87,7 @@ export class ActorQueryResultSerializeStats extends ActorQueryResultSerializeFix
     return { data };
   }
 
-  /* istanbul ignore next */
   public now(): number {
-    // TODO: remove when we will drop support of Node 14
-    if (typeof performance === 'undefined') {
-      const time: [number, number] = process.hrtime();
-      return time[0] * 1_000 + (time[1] / 1_000_000);
-    }
     return performance.now();
   }
 
