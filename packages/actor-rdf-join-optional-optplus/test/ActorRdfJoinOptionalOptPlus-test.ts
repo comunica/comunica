@@ -42,7 +42,7 @@ IActorRdfJoinSelectivityOutput
       mediatorJoin = <any> {
         mediate: async(action: IActionRdfJoin) => {
           const actor = new ActorRdfJoinNestedLoop({ name: 'actor', bus, mediatorJoinSelectivity });
-          return actor.run(action);
+          return actor.run(action, undefined!);
         },
       };
       actor = new ActorRdfJoinOptionalOptPlus({ name: 'actor', bus, mediatorJoinSelectivity, mediatorJoin });
@@ -170,7 +170,7 @@ IActorRdfJoinSelectivityOutput
           ],
           context,
         };
-        const result = await actor.run(action);
+        const result = await actor.run(action, undefined!);
 
         // Validate output
         expect(result.type).toBe('bindings');

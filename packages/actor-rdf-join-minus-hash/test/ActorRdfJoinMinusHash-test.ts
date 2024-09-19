@@ -418,7 +418,7 @@ IActorRdfJoinSelectivityOutput
                     cardinality: { type: 'estimate', value: 4 },
                     pageSize: 100,
                     requestTime: 10,
-
+                    variables: [],
                   },
                 ),
               },
@@ -431,7 +431,7 @@ IActorRdfJoinSelectivityOutput
                     cardinality: { type: 'estimate', value: 4 },
                     pageSize: 100,
                     requestTime: 10,
-
+                    variables: [],
                   },
                 ),
               },

@@ -1,10 +1,15 @@
 import { ClosableTransformIterator } from '@comunica/bus-query-operation';
-import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
+import type {
+  IActionRdfJoin,
+  IActorRdfJoinOutputInner,
+  IActorRdfJoinArgs,
+  IActorRdfJoinTestSideData,
+} from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { TestResult } from '@comunica/core';
-import { passTest } from '@comunica/core';
+import { passTestWithSideData } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { Bindings, BindingsStream, MetadataBindings } from '@comunica/types';
+import type { Bindings, BindingsStream } from '@comunica/types';
 import type { IBindingsIndex } from '@comunica/utils-bindings-index';
 import { BindingsIndexUndef } from '@comunica/utils-bindings-index';
 import type * as RDF from '@rdfjs/types';
@@ -27,16 +32,11 @@ export class ActorRdfJoinHash extends ActorRdfJoin {
     });
   }
 
-  public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
-    let metadatas = await ActorRdfJoin.getMetadatas(action.entries);
-
-    // Ensure the left build stream is the smallest
-    // TODO: in the next major version, use ActorRdfJoin.sortJoinEntries, which requires mediatorJoinEntriesSort
-    if (metadatas[1].cardinality.value < metadatas[0].cardinality.value) {
-      metadatas = [ metadatas[1], metadatas[0] ];
-      action = { ...action, entries: [ action.entries[1], action.entries[0] ]};
-    }
-
+  public async getOutput(
+    action: IActionRdfJoin,
+    sideData: IActorRdfJoinTestSideData,
+  ): Promise<IActorRdfJoinOutputInner> {
+    const metadatas = sideData.metadatas;
     let bindingsStream: BindingsStream;
     const variables = ActorRdfJoin.overlappingVariables(metadatas);
     if (this.canHandleUndefs) {
@@ -67,10 +67,10 @@ export class ActorRdfJoinHash extends ActorRdfJoin {
           output.bindingsStream,
           {
             multiTransform: (bindings: RDF.Bindings): AsyncIterator<RDF.Bindings> => new ArrayIterator<RDF.Bindings>(
-                <RDF.Bindings[]>(index.get(bindings).flat())
-                  .map(indexBindings => ActorRdfJoin.joinBindings(bindings, indexBindings))
-                  .filter(b => b !== null),
-                { autoStart: false },
+              <RDF.Bindings[]>(index.get(bindings).flat())
+                .map(indexBindings => ActorRdfJoin.joinBindings(bindings, indexBindings))
+                .filter(b => b !== null),
+              { autoStart: false },
             ),
             autoStart: false,
           },
@@ -102,13 +102,15 @@ export class ActorRdfJoinHash extends ActorRdfJoin {
 
   protected async getJoinCoefficients(
     action: IActionRdfJoin,
-    metadatas: MetadataBindings[],
-  ): Promise<TestResult<IMediatorTypeJoinCoefficients>> {
+    sideData: IActorRdfJoinTestSideData,
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients, IActorRdfJoinTestSideData>> {
     // Ensure the left build stream is the smallest
-    if (metadatas[1].cardinality.value < metadatas[0].cardinality.value) {
-      metadatas = [ metadatas[1], metadatas[0] ];
+    // TODO: in the next major version, use ActorRdfJoin.sortJoinEntries, which requires mediatorJoinEntriesSort
+    if (sideData.metadatas[1].cardinality.value < sideData.metadatas[0].cardinality.value) {
+      sideData.metadatas = [ sideData.metadatas[1], sideData.metadatas[0] ];
     }
 
+    const { metadatas } = sideData;
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
     let iterations = metadatas[0].cardinality.value + metadatas[1].cardinality.value;
@@ -116,13 +118,13 @@ export class ActorRdfJoinHash extends ActorRdfJoin {
       // Our non-undef implementation is slightly more performant.
       iterations *= 0.8;
     }
-    return passTest({
+    return passTestWithSideData({
       iterations,
       persistedItems: metadatas[0].cardinality.value,
       blockingItems: metadatas[0].cardinality.value,
       requestTime: requestInitialTimes[0] + metadatas[0].cardinality.value * requestItemTimes[0] +
         requestInitialTimes[1] + metadatas[1].cardinality.value * requestItemTimes[1],
-    });
+    }, sideData);
   }
 }
 

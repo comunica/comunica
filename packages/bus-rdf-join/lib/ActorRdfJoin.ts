@@ -33,8 +33,12 @@ import { instrumentIterator } from './instrumentIterator';
  * @see IActionRdfJoin
  * @see IActorQueryOperationOutput
  */
-export abstract class ActorRdfJoin<TS = undefined>
-  extends Actor<IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryOperationResultBindings, TS> {
+export abstract class ActorRdfJoin<TS extends IActorRdfJoinTestSideData = IActorRdfJoinTestSideData> extends Actor<
+  IActionRdfJoin,
+IMediatorTypeJoinCoefficients,
+IQueryOperationResultBindings,
+TS
+> {
   public readonly mediatorJoinSelectivity: MediatorRdfJoinSelectivity;
 
   /**
@@ -383,7 +387,9 @@ export abstract class ActorRdfJoin<TS = undefined>
    * @param {IActionRdfJoin} action The input action containing the relevant iterators
    * @returns {Promise<IMediatorTypeJoinCoefficients>} The join coefficients.
    */
-  public async test(action: IActionRdfJoin): Promise<TestResult<IMediatorTypeJoinCoefficients, TS>> {
+  public async test(
+    action: IActionRdfJoin,
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients, TS>> {
     // Validate logical join type
     if (action.type !== this.logicalType) {
       return failTest(`${this.name} can only handle logical joins of type '${this.logicalType}', while '${action.type}' was given.`);
@@ -426,15 +432,19 @@ export abstract class ActorRdfJoin<TS = undefined>
       return failTest(`Actor ${this.name} can only join entries with at least one common variable`);
     }
 
-    return await this.getJoinCoefficients(action, metadatas);
+    return await this.getJoinCoefficients(action, { metadatas });
   }
 
   /**
    * Returns default input for 0 or 1 entries. Calls the getOutput function otherwise
    * @param {IActionRdfJoin} action
+   * @param sideData Side data from the test method
    * @returns {Promise<IQueryOperationResultBindings>} A bindings result.
    */
-  public async run(action: IActionRdfJoin): Promise<IQueryOperationResultBindings> {
+  public async run(
+    action: IActionRdfJoin,
+    sideData: IActorRdfJoinTestSideData,
+  ): Promise<IQueryOperationResultBindings> {
     // Prepare logging to physical plan
     // This must be called before getOutput, because we need to override the plan node in the context
     let parentPhysicalQueryPlanNode;
@@ -465,8 +475,7 @@ export abstract class ActorRdfJoin<TS = undefined>
     }
 
     // Get action output
-    const { result, physicalPlanMetadata } = await this.getOutput(action);
-    const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
+    const { result, physicalPlanMetadata } = await this.getOutput(action, sideData);
 
     // Fill in the physical plan metadata after determining action output
     if (planMetadata) {
@@ -481,9 +490,9 @@ export abstract class ActorRdfJoin<TS = undefined>
         });
 
       Object.assign(planMetadata, physicalPlanMetadata);
-      const cardinalities = metadatas.map(ActorRdfJoin.getCardinality);
+      const cardinalities = sideData.metadatas.map(ActorRdfJoin.getCardinality);
       planMetadata.cardinalities = cardinalities;
-      planMetadata.joinCoefficients = (await this.getJoinCoefficients(action, metadatas)).getOrThrow();
+      planMetadata.joinCoefficients = (await this.getJoinCoefficients(action, sideData)).getOrThrow();
 
       // If this is a leaf operation, include join entries in plan metadata.
       if (this.isLeaf) {
@@ -508,24 +517,32 @@ export abstract class ActorRdfJoin<TS = undefined>
    * Returns the resulting output for joining the given entries.
    * This is called after removing the trivial cases in run.
    * @param {IActionRdfJoin} action
+   * @param sideData Side data from the test method
    * @returns {Promise<IActorRdfJoinOutputInner>}
    */
-  protected abstract getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner>;
+  protected abstract getOutput(
+    action: IActionRdfJoin,
+    sideData: IActorRdfJoinTestSideData,
+  ): Promise<IActorRdfJoinOutputInner>;
 
   /**
    * Calculate the join coefficients.
    * @param {IActionRdfJoin} action Join action
-   * @param metadatas Array of resolved metadata objects.
+   * @param sideData The test side data.
    * @returns {IMediatorTypeJoinCoefficients} The join coefficient estimates.
    */
   protected abstract getJoinCoefficients(
     action: IActionRdfJoin,
-    metadatas: MetadataBindings[],
+    sideData: IActorRdfJoinTestSideData,
   ): Promise<TestResult<IMediatorTypeJoinCoefficients, TS>>;
 }
 
-export interface IActorRdfJoinArgs<TS = undefined>
-  extends IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryOperationResultBindings, TS> {
+export interface IActorRdfJoinArgs<TS extends IActorRdfJoinTestSideData = IActorRdfJoinTestSideData> extends IActorArgs<
+  IActionRdfJoin,
+  IMediatorTypeJoinCoefficients,
+  IQueryOperationResultBindings,
+  TS
+> {
   mediatorJoinSelectivity: MediatorRdfJoinSelectivity;
 }
 
@@ -593,6 +610,10 @@ export interface IActorRdfJoinOutputInner {
    * Optional metadata that will be included as metadata within the physical query plan output.
    */
   physicalPlanMetadata?: any;
+}
+
+export interface IActorRdfJoinTestSideData {
+  metadatas: MetadataBindings[];
 }
 
 export type MediatorRdfJoin = Mediate<IActionRdfJoin, IQueryOperationResultBindings, IMediatorTypeJoinCoefficients>;

@@ -13,6 +13,7 @@ import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory, Algebra } from 'sparqlalgebrajs';
+import type { IActorRdfJoinMultiBindTestSideData } from '../lib/ActorRdfJoinMultiBind';
 import { ActorRdfJoinMultiBind } from '../lib/ActorRdfJoinMultiBind';
 import '@comunica/jest';
 
@@ -101,6 +102,10 @@ IQueryOperationResultBindings
       logSpy = jest.spyOn((<any> actor), 'logDebug').mockImplementation();
     });
 
+    async function getSideData(action: IActionRdfJoin): Promise<IActorRdfJoinMultiBindTestSideData> {
+      return (await actor.test(action)).getSideData();
+    }
+
     describe('getJoinCoefficients', () => {
       it('should handle three entries', async() => {
         await expect(actor.getJoinCoefficients(
@@ -122,38 +127,40 @@ IQueryOperationResultBindings
             ],
             context: new ActionContext(),
           },
-          [
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 3 },
-              pageSize: 100,
-              requestTime: 10,
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                pageSize: 100,
+                requestTime: 10,
 
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 2 },
-              pageSize: 100,
-              requestTime: 20,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 20,
 
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 500 },
-              pageSize: 100,
-              requestTime: 30,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 500 },
+                pageSize: 100,
+                requestTime: 30,
 
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-          ],
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+            ],
+          },
         )).resolves.toPassTest({
           iterations: 80.48000000000002,
           persistedItems: 0,
@@ -182,41 +189,43 @@ IQueryOperationResultBindings
             ],
             context: new ActionContext(),
           },
-          [
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 3 },
-              pageSize: 100,
-              requestTime: 10,
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                pageSize: 100,
+                requestTime: 10,
 
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-                { variable: DF.variable('b'), canBeUndef: false },
-              ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 2 },
-              pageSize: 100,
-              requestTime: 20,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                  { variable: DF.variable('b'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 20,
 
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-                { variable: DF.variable('b'), canBeUndef: false },
-              ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 500 },
-              pageSize: 100,
-              requestTime: 30,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                  { variable: DF.variable('b'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 500 },
+                pageSize: 100,
+                requestTime: 30,
 
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-                { variable: DF.variable('b'), canBeUndef: false },
-              ],
-            },
-          ],
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                  { variable: DF.variable('b'), canBeUndef: false },
+                ],
+              },
+            ],
+          },
         )).resolves.toPassTest({
           iterations: 80.48000000000002,
           persistedItems: 0,
@@ -252,28 +261,30 @@ IQueryOperationResultBindings
             ],
             context: new ActionContext(),
           },
-          [
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 3 },
-              pageSize: 100,
-              requestTime: 10,
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                pageSize: 100,
+                requestTime: 10,
 
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 2 },
-              pageSize: 100,
-              requestTime: 20,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 20,
 
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-          ],
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+            ],
+          },
         )).resolves.toFailTest('Actor actor can not bind on Extend and Group operations');
       });
 
@@ -293,28 +304,30 @@ IQueryOperationResultBindings
             ],
             context: new ActionContext(),
           },
-          [
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 3 },
-              pageSize: 100,
-              requestTime: 10,
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                pageSize: 100,
+                requestTime: 10,
 
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 2 },
-              pageSize: 100,
-              requestTime: 20,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 20,
 
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-          ],
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+            ],
+          },
         )).resolves.toFailTest('Actor actor can not bind on Extend and Group operations');
       });
 
@@ -334,28 +347,30 @@ IQueryOperationResultBindings
             ],
             context: new ActionContext(),
           },
-          [
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 3 },
-              pageSize: 100,
-              requestTime: 10,
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                pageSize: 100,
+                requestTime: 10,
 
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 2 },
-              pageSize: 100,
-              requestTime: 20,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 20,
 
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-          ],
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+            ],
+          },
         )).resolves.toFailTest('Actor actor can not bind on Extend and Group operations');
       });
 
@@ -375,28 +390,30 @@ IQueryOperationResultBindings
             ],
             context: new ActionContext(),
           },
-          [
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 300 },
-              pageSize: 100,
-              requestTime: 10,
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 300 },
+                pageSize: 100,
+                requestTime: 10,
 
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 2 },
-              pageSize: 100,
-              requestTime: 20,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 20,
 
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-          ],
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+            ],
+          },
         )).resolves.toPassTest({
           iterations: 48.00000000000001,
           persistedItems: 0,
@@ -422,28 +439,30 @@ IQueryOperationResultBindings
             ],
             context: new ActionContext(),
           },
-          [
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 3 },
-              pageSize: 100,
-              requestTime: 10,
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                pageSize: 100,
+                requestTime: 10,
 
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 2 },
-              pageSize: 100,
-              requestTime: 20,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 20,
 
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-          ],
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+            ],
+          },
         )).resolves.toFailTest('Actor actor can not be used over remaining entries with modified operations');
       });
 
@@ -467,38 +486,40 @@ IQueryOperationResultBindings
             ],
             context: new ActionContext(),
           },
-          [
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 3 },
-              pageSize: 100,
-              requestTime: 10,
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                pageSize: 100,
+                requestTime: 10,
 
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 2 },
-              pageSize: 100,
-              requestTime: 20,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 20,
 
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 5 },
-              pageSize: 100,
-              requestTime: 30,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 5 },
+                pageSize: 100,
+                requestTime: 30,
 
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-          ],
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+            ],
+          },
         )).resolves.toFailTest(`Actor actor can only run if the smallest stream is much smaller than largest stream`);
       });
     });
@@ -1131,7 +1152,7 @@ IQueryOperationResultBindings
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
-                  cardinality: { type: 'estimate', value: 3 },
+                  cardinality: { type: 'estimate', value: 300 },
 
                   variables: [
                     { variable: DF.variable('a'), canBeUndef: false },
@@ -1166,7 +1187,7 @@ IQueryOperationResultBindings
             },
           ],
         };
-        const { result, physicalPlanMetadata } = await actor.getOutput(action);
+        const { result, physicalPlanMetadata } = await actor.getOutput(action, await getSideData(action));
 
         // Validate output
         expect(result.type).toBe('bindings');
@@ -1198,7 +1219,7 @@ IQueryOperationResultBindings
         ]);
         await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
-          cardinality: { type: 'estimate', value: 2.400_000_000_000_000_4 },
+          cardinality: { type: 'estimate', value: 240 },
 
           variables: [
             { variable: DF.variable('a'), canBeUndef: false },
@@ -1244,7 +1265,7 @@ IQueryOperationResultBindings
             },
             [KeysQueryOperation.joinRightMetadatas.name]: [{
               state: expect.any(MetadataValidationState),
-              cardinality: { type: 'estimate', value: 3 },
+              cardinality: { type: 'estimate', value: 300 },
 
               variables: [
                 { variable: DF.variable('a'), canBeUndef: false },
@@ -1271,7 +1292,7 @@ IQueryOperationResultBindings
             },
             [KeysQueryOperation.joinRightMetadatas.name]: [{
               state: expect.any(MetadataValidationState),
-              cardinality: { type: 'estimate', value: 3 },
+              cardinality: { type: 'estimate', value: 300 },
 
               variables: [
                 { variable: DF.variable('a'), canBeUndef: false },
@@ -1317,7 +1338,7 @@ IQueryOperationResultBindings
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
-                  cardinality: { type: 'estimate', value: 3 },
+                  cardinality: { type: 'estimate', value: 300 },
 
                   variables: [
                     { variable: DF.variable('a'), canBeUndef: false },
@@ -1352,7 +1373,7 @@ IQueryOperationResultBindings
             },
           ],
         };
-        const { result } = await actor.getOutput(action);
+        const { result } = await actor.getOutput(action, await getSideData(action));
 
         // Validate output
         expect(result.type).toBe('bindings');
@@ -1384,7 +1405,7 @@ IQueryOperationResultBindings
         ]);
         await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
-          cardinality: { type: 'estimate', value: 2.400_000_000_000_000_4 },
+          cardinality: { type: 'estimate', value: 240 },
 
           variables: [
             { variable: DF.variable('a'), canBeUndef: false },
@@ -1412,7 +1433,7 @@ IQueryOperationResultBindings
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
-                  cardinality: { type: 'estimate', value: 3 },
+                  cardinality: { type: 'estimate', value: 300 },
 
                   variables: [
                     { variable: DF.variable('a'), canBeUndef: false },
@@ -1448,7 +1469,7 @@ IQueryOperationResultBindings
           ],
           context,
         };
-        const { result } = await actor.getOutput(action);
+        const { result } = await actor.getOutput(action, await getSideData(action));
 
         // Validate output
         expect(result.type).toBe('bindings');
@@ -1480,7 +1501,7 @@ IQueryOperationResultBindings
         ]);
         await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
-          cardinality: { type: 'estimate', value: 2.400_000_000_000_000_4 },
+          cardinality: { type: 'estimate', value: 240 },
 
           variables: [
             { variable: DF.variable('a'), canBeUndef: false },
@@ -1509,7 +1530,7 @@ IQueryOperationResultBindings
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
-                  cardinality: { type: 'estimate', value: 3 },
+                  cardinality: { type: 'estimate', value: 300 },
 
                   variables: [
                     { variable: DF.variable('a'), canBeUndef: false },
@@ -1535,7 +1556,7 @@ IQueryOperationResultBindings
                 ], { autoStart: false }),
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
-                  cardinality: { type: 'estimate', value: 4 },
+                  cardinality: { type: 'estimate', value: 400 },
 
                   variables: [
                     { variable: DF.variable('a'), canBeUndef: false },
@@ -1570,7 +1591,7 @@ IQueryOperationResultBindings
             },
           ],
         };
-        const { result } = await actor.getOutput(action);
+        const { result } = await actor.getOutput(action, await getSideData(action));
 
         // Validate output
         expect(result.type).toBe('bindings');
@@ -1602,7 +1623,7 @@ IQueryOperationResultBindings
         ]);
         await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
-          cardinality: { type: 'estimate', value: 9.600_000_000_000_001 },
+          cardinality: { type: 'estimate', value: 96000 },
 
           variables: [
             { variable: DF.variable('a'), canBeUndef: false },
@@ -1644,7 +1665,7 @@ IQueryOperationResultBindings
             [KeysQueryOperation.joinRightMetadatas.name]: [
               {
                 state: expect.any(MetadataValidationState),
-                cardinality: { type: 'estimate', value: 3 },
+                cardinality: { type: 'estimate', value: 300 },
 
                 variables: [
                   { variable: DF.variable('a'), canBeUndef: false },
@@ -1653,7 +1674,7 @@ IQueryOperationResultBindings
               },
               {
                 state: expect.any(MetadataValidationState),
-                cardinality: { type: 'estimate', value: 4 },
+                cardinality: { type: 'estimate', value: 400 },
 
                 variables: [
                   { variable: DF.variable('a'), canBeUndef: false },
@@ -1685,7 +1706,7 @@ IQueryOperationResultBindings
             [KeysQueryOperation.joinRightMetadatas.name]: [
               {
                 state: expect.any(MetadataValidationState),
-                cardinality: { type: 'estimate', value: 3 },
+                cardinality: { type: 'estimate', value: 300 },
 
                 variables: [
                   { variable: DF.variable('a'), canBeUndef: false },
@@ -1694,7 +1715,7 @@ IQueryOperationResultBindings
               },
               {
                 state: expect.any(MetadataValidationState),
-                cardinality: { type: 'estimate', value: 4 },
+                cardinality: { type: 'estimate', value: 400 },
 
                 variables: [
                   { variable: DF.variable('a'), canBeUndef: false },

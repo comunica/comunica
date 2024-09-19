@@ -1,7 +1,7 @@
-import type { ActorRdfJoin, IActionRdfJoin } from '@comunica/bus-rdf-join';
+import type { ActorRdfJoin, IActionRdfJoin, IActorRdfJoinTestSideData } from '@comunica/bus-rdf-join';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorReply, IMediatorArgs, TestResult } from '@comunica/core';
-import { failTest, passTest, Actor, Mediator } from '@comunica/core';
+import { passTestWithSideData, failTest, Actor, Mediator } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { IQueryOperationResult } from '@comunica/types';
 
@@ -9,8 +9,13 @@ import type { IQueryOperationResult } from '@comunica/types';
  * A mediator that mediates over actors implementing the Join Coefficients mediator type and assigns fixed weights
  * to calculate an overall score and pick the actor with the lowest score.
  */
-export class MediatorJoinCoefficientsFixed
-  extends Mediator<ActorRdfJoin, IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryOperationResult, undefined> {
+export class MediatorJoinCoefficientsFixed extends Mediator<
+  ActorRdfJoin,
+IActionRdfJoin,
+IMediatorTypeJoinCoefficients,
+IQueryOperationResult,
+IActorRdfJoinTestSideData
+> {
   public readonly cpuWeight: number;
   public readonly memoryWeight: number;
   public readonly timeWeight: number;
@@ -22,29 +27,35 @@ export class MediatorJoinCoefficientsFixed
 
   protected async mediateWith(
     action: IActionRdfJoin,
-    testResults: IActorReply<ActorRdfJoin, IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryOperationResult>[],
-  ): Promise<TestResult<ActorRdfJoin>> {
+    testResults: IActorReply<
+      ActorRdfJoin,
+IActionRdfJoin,
+IMediatorTypeJoinCoefficients,
+IQueryOperationResult,
+IActorRdfJoinTestSideData
+>[],
+  ): Promise<TestResult<ActorRdfJoin, IActorRdfJoinTestSideData>> {
     // Obtain test results
     const errors: string[] = [];
     const promises = testResults.map(({ reply }) => reply);
-    const coefficients = (await Promise.all(promises)).map((testResult) => {
+    const results = (await Promise.all(promises)).map((testResult) => {
       if (testResult.isFailed()) {
         errors.push(testResult.getFailMessage());
         // eslint-disable-next-line array-callback-return
         return;
       }
-      return testResult.get();
+      return { value: testResult.get(), sideData: testResult.getSideData() };
     });
 
     // Calculate costs
-    let costs: (number | undefined)[] = coefficients
+    let costs: (number | undefined)[] = results
       // eslint-disable-next-line array-callback-return
-      .map((coeff) => {
-        if (coeff) {
-          return coeff.iterations * this.cpuWeight +
-            coeff.persistedItems * this.memoryWeight +
-            coeff.blockingItems * this.timeWeight +
-            coeff.requestTime * this.ioWeight;
+      .map((result) => {
+        if (result) {
+          return result.value.iterations * this.cpuWeight +
+            result.value.persistedItems * this.memoryWeight +
+            result.value.blockingItems * this.timeWeight +
+            result.value.requestTime * this.ioWeight;
         }
       });
     const maxCost = Math.max(...(<number[]> costs.filter(cost => cost !== undefined)));
@@ -55,9 +66,9 @@ export class MediatorJoinCoefficientsFixed
     const limitIndicator: number | undefined = action.context.get(KeysQueryOperation.limitIndicator);
     if (limitIndicator) {
       costs = costs.map((cost, i) => {
-        if (cost !== undefined && (<any> coefficients[i]).blockingItems > 0 &&
+        if (cost !== undefined && (<any> results[i]?.value).blockingItems > 0 &&
 
-          (<any> coefficients[i]).iterations > limitIndicator) {
+          (<any> results[i]?.value).iterations > limitIndicator) {
           return cost + maxCost;
         }
         return cost;
@@ -92,19 +103,24 @@ export class MediatorJoinCoefficientsFixed
           `${testResults[i].actor.logicalType}-${testResults[i].actor.physicalName}`,
           coeff,
         ]).filter(entry => entry[1] !== undefined)),
-        coefficients: Object.fromEntries(coefficients.map((coeff, i) => [
+        coefficients: Object.fromEntries(results.map((result, i) => [
           `${testResults[i].actor.logicalType}-${testResults[i].actor.physicalName}`,
-          coeff,
+          result?.value,
         ]).filter(entry => entry[1] !== undefined)),
       });
     }
 
-    return passTest(bestActor);
+    return passTestWithSideData(bestActor, results[minIndex]!.sideData);
   }
 }
 
-export interface IMediatorJoinCoefficientsFixedArgs
-  extends IMediatorArgs<ActorRdfJoin, IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryOperationResult> {
+export interface IMediatorJoinCoefficientsFixedArgs extends IMediatorArgs<
+  ActorRdfJoin,
+IActionRdfJoin,
+IMediatorTypeJoinCoefficients,
+IQueryOperationResult,
+IActorRdfJoinTestSideData
+> {
   /**
    * Weight for the CPU cost
    */

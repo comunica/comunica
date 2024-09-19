@@ -110,7 +110,7 @@ IActorRdfJoinSelectivityOutput
             },
           ],
           context,
-        });
+        }, undefined!);
         await expect(output.bindingsStream).toEqualBindingsStream([]);
         await expect(output.metadata()).resolves
           .toMatchObject({ cardinality: { type: 'exact', value: 0 }, variables: []});

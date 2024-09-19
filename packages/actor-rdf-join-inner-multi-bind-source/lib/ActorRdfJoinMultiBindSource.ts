@@ -1,16 +1,20 @@
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import type { IActionRdfJoin, IActorRdfJoinArgs, IActorRdfJoinOutputInner } from '@comunica/bus-rdf-join';
+import type {
+  IActionRdfJoin,
+  IActorRdfJoinArgs,
+  IActorRdfJoinOutputInner,
+  IActorRdfJoinTestSideData,
+} from '@comunica/bus-rdf-join';
 import { ActorRdfJoin, ChunkedIterator } from '@comunica/bus-rdf-join';
 import type { MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
-import { failTest, passTest } from '@comunica/core';
+import { passTestWithSideData, failTest, passTest } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type {
   IJoinEntryWithMetadata,
   IQueryOperationResultBindings,
   IQuerySourceWrapper,
-  MetadataBindings,
   IActionContext,
   ComunicaDataFactory,
 } from '@comunica/types';
@@ -23,7 +27,7 @@ import { Factory } from 'sparqlalgebrajs';
 /**
  * A comunica Inner Multi Bind Source RDF Join Actor.
  */
-export class ActorRdfJoinMultiBindSource extends ActorRdfJoin {
+export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMultiBindSourceTestSideData> {
   public readonly selectivityModifier: number;
   public readonly blockSize: number;
   public readonly mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort;
@@ -36,14 +40,15 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin {
     });
   }
 
-  public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
+  public async getOutput(
+    action: IActionRdfJoin,
+    sideData: IActorRdfJoinMultiBindSourceTestSideData,
+  ): Promise<IActorRdfJoinOutputInner> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const algebraFactory = new Factory(dataFactory);
 
     // Order the entries so we can pick the first one (usually the one with the lowest cardinality)
-    const entriesUnsorted = await ActorRdfJoin.getEntriesWithMetadatas(action.entries);
-    const entries = (await this.sortJoinEntries(entriesUnsorted, action.context)).getOrThrow();
-
+    const entries = sideData.entriesSorted;
     this.logDebug(
       action.context,
       'First entry for Bind Join Source: ',
@@ -90,7 +95,7 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin {
         metadata: () => this.constructResultMetadata(entries, entries.map(entry => entry.metadata), action.context),
       },
       physicalPlanMetadata: {
-        bindIndex: entriesUnsorted.indexOf(entries[0]),
+        bindIndex: sideData.entriesUnsorted.indexOf(entries[0]),
       },
     };
   }
@@ -118,25 +123,27 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin {
 
   public async getJoinCoefficients(
     action: IActionRdfJoin,
-    metadatas: MetadataBindings[],
-  ): Promise<TestResult<IMediatorTypeJoinCoefficients>> {
+    sideData: IActorRdfJoinTestSideData,
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients, IActorRdfJoinMultiBindSourceTestSideData>> {
+    let { metadatas } = sideData;
+
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const algebraFactory = new Factory(dataFactory);
 
     // Order the entries so we can pick the first one (usually the one with the lowest cardinality)
-    const entriesTest = await this.sortJoinEntries(action.entries
-      .map((entry, i) => ({ ...entry, metadata: metadatas[i] })), action.context);
+    const entriesUnsorted = action.entries.map((entry, i) => ({ ...entry, metadata: metadatas[i] }));
+    const entriesTest = await this.sortJoinEntries(entriesUnsorted, action.context);
     if (entriesTest.isFailed()) {
       return entriesTest;
     }
-    const entries = entriesTest.get();
-    metadatas = entries.map(entry => entry.metadata);
+    const entriesSorted = entriesTest.get();
+    metadatas = entriesSorted.map(entry => entry.metadata);
 
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
 
     // Determine first stream and remaining ones
-    const remainingEntries = [ ...entries ];
+    const remainingEntries = [ ...entriesSorted ];
     const remainingRequestInitialTimes = [ ...requestInitialTimes ];
     const remainingRequestItemTimes = [ ...requestItemTimes ];
     remainingEntries.splice(0, 1);
@@ -166,7 +173,7 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin {
     // Determine selectivities of smallest entry with all other entries
     const selectivities = await Promise.all(remainingEntries
       .map(async entry => (await this.mediatorJoinSelectivity.mediate({
-        entries: [ entries[0], entry ],
+        entries: [ entriesSorted[0], entry ],
         context: action.context,
       })).selectivity * this.selectivityModifier));
 
@@ -175,13 +182,13 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin {
       .map((entry, i) => entry.metadata.cardinality.value * selectivities[i])
       .reduce((sum, element) => sum + element, 0);
 
-    return passTest({
+    return passTestWithSideData({
       iterations: 1,
       persistedItems: metadatas[0].cardinality.value,
       blockingItems: metadatas[0].cardinality.value,
       requestTime: requestInitialTimes[0] + metadatas[0].cardinality.value * requestItemTimes[0] +
         requestInitialTimes[1] + cardinalityRemaining * requestItemTimes[1],
-    });
+    }, { ...sideData, entriesUnsorted, entriesSorted });
   }
 
   public createOperationFromEntries(
@@ -195,7 +202,8 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin {
   }
 }
 
-export interface IActorRdfJoinInnerMultiBindSourceArgs extends IActorRdfJoinArgs {
+export interface IActorRdfJoinInnerMultiBindSourceArgs
+  extends IActorRdfJoinArgs<IActorRdfJoinMultiBindSourceTestSideData> {
   /**
    * Multiplier for selectivity values
    * @range {double}
@@ -211,4 +219,9 @@ export interface IActorRdfJoinInnerMultiBindSourceArgs extends IActorRdfJoinArgs
    * The join entries sort mediator
    */
   mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort;
+}
+
+export interface IActorRdfJoinMultiBindSourceTestSideData extends IActorRdfJoinTestSideData {
+  entriesUnsorted: IJoinEntryWithMetadata[];
+  entriesSorted: IJoinEntryWithMetadata[];
 }

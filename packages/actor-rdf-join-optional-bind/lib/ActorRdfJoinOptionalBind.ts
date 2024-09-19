@@ -4,13 +4,18 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
+import type {
+  IActionRdfJoin,
+  IActorRdfJoinOutputInner,
+  IActorRdfJoinArgs,
+  IActorRdfJoinTestSideData,
+} from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
-import { failTest, passTest } from '@comunica/core';
+import { passTestWithSideData, failTest } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { Bindings, BindingsStream, ComunicaDataFactory, MetadataBindings } from '@comunica/types';
+import type { Bindings, BindingsStream, ComunicaDataFactory } from '@comunica/types';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 
 /**
@@ -29,6 +34,7 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
       limitEntries: 2,
       canHandleUndefs: true,
       isLeaf: false,
+      requiresVariableOverlap: true,
     });
   }
 
@@ -82,12 +88,9 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
 
   public async getJoinCoefficients(
     action: IActionRdfJoin,
-    metadatas: MetadataBindings[],
-  ): Promise<TestResult<IMediatorTypeJoinCoefficients>> {
-    // This actor only works well with common variables
-    if (ActorRdfJoin.overlappingVariables(metadatas).length === 0) {
-      return failTest(`Actor ${this.name} only join entries with at least one common variable`);
-    }
+    sideData: IActorRdfJoinTestSideData,
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients, IActorRdfJoinTestSideData>> {
+    const { metadatas } = sideData;
 
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
@@ -104,7 +107,7 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
       context: action.context,
     })).selectivity * this.selectivityModifier;
 
-    return passTest({
+    return passTestWithSideData({
       iterations: metadatas[0].cardinality.value * metadatas[1].cardinality.value * selectivity,
       persistedItems: 0,
       blockingItems: 0,
@@ -114,7 +117,7 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
           requestInitialTimes[1] +
           selectivity * metadatas[1].cardinality.value * requestItemTimes[1]
         ),
-    });
+    }, sideData);
   }
 }
 

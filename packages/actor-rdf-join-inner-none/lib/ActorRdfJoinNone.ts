@@ -1,10 +1,15 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
-import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
+import type {
+  IActionRdfJoin,
+  IActorRdfJoinOutputInner,
+  IActorRdfJoinArgs,
+  IActorRdfJoinTestSideData,
+} from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
-import { failTest, passTest } from '@comunica/core';
+import { passTestWithSideData, failTest } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import { MetadataValidationState } from '@comunica/metadata';
 import type { ComunicaDataFactory } from '@comunica/types';
@@ -25,12 +30,14 @@ export class ActorRdfJoinNone extends ActorRdfJoin {
     });
   }
 
-  public override async test(action: IActionRdfJoin): Promise<TestResult<IMediatorTypeJoinCoefficients>> {
+  public override async test(
+    action: IActionRdfJoin,
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients, IActorRdfJoinTestSideData>> {
     // Allow joining of one or zero streams
     if (action.entries.length > 0) {
       return failTest(`Actor ${this.name} can only join zero entries`);
     }
-    return await this.getJoinCoefficients();
+    return await this.getJoinCoefficients(action, undefined!);
   }
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
@@ -53,13 +60,16 @@ export class ActorRdfJoinNone extends ActorRdfJoin {
     };
   }
 
-  protected async getJoinCoefficients(): Promise<TestResult<IMediatorTypeJoinCoefficients>> {
-    return passTest({
+  protected async getJoinCoefficients(
+    action: IActionRdfJoin,
+    sideData: IActorRdfJoinTestSideData,
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients, IActorRdfJoinTestSideData>> {
+    return passTestWithSideData({
       iterations: 0,
       persistedItems: 0,
       blockingItems: 0,
       requestTime: 0,
-    });
+    }, sideData);
   }
 }
 

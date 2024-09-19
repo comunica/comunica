@@ -69,9 +69,9 @@ IActorRdfJoinSelectivityOutput
             a.entries[0].called = invocationCounter;
             a.entries[1].called = invocationCounter;
             invocationCounter++;
-            return new ActorRdfJoinNestedLoop({ name: 'actor', bus, mediatorJoinSelectivity }).run(a);
+            return new ActorRdfJoinNestedLoop({ name: 'actor', bus, mediatorJoinSelectivity }).run(a, undefined!);
           }
-          return actor.run(a);
+          return actor.run(a, undefined!);
         },
       };
       actor = new ActorRdfJoinMultiSequential({ name: 'actor', bus, mediatorJoin, mediatorJoinSelectivity });
@@ -326,7 +326,7 @@ IActorRdfJoinSelectivityOutput
     });
 
     it('should run on 3 streams', async() => {
-      const output = await actor.run(action3);
+      const output = await actor.run(action3, undefined!);
       expect(output.type).toBe('bindings');
       await expect((<any> output).metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
@@ -358,7 +358,7 @@ IActorRdfJoinSelectivityOutput
     });
 
     it('should run on 4 streams', async() => {
-      const output = await actor.run(action4);
+      const output = await actor.run(action4, undefined!);
       expect(output.type).toBe('bindings');
       await expect((<any> output).metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),

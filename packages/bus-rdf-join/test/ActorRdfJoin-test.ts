@@ -2,14 +2,14 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator, TestResult } from '@comunica/core';
-import { passTest, ActionContext, Bus } from '@comunica/core';
+import { passTestWithSideData, ActionContext, Bus } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import { MetadataValidationState } from '@comunica/metadata';
-import type { IPhysicalQueryPlanLogger, IPlanNode, MetadataBindings, MetadataVariable } from '@comunica/types';
+import type { IPhysicalQueryPlanLogger, IPlanNode, MetadataVariable } from '@comunica/types';
 import { BufferedIterator, MultiTransformIterator, SingletonIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import type { IActionRdfJoin } from '../lib/ActorRdfJoin';
 import { ActorRdfJoin } from '../lib/ActorRdfJoin';
+import type { IActionRdfJoin, IActorRdfJoinTestSideData } from '../lib/ActorRdfJoin';
 import '@comunica/jest';
 
 const DF = new DataFactory();
@@ -69,14 +69,14 @@ IActorRdfJoinSelectivityOutput
 
   protected getJoinCoefficients(
     action: IActionRdfJoin,
-    metadatas: MetadataBindings[],
-  ): Promise<TestResult<IMediatorTypeJoinCoefficients>> {
-    return Promise.resolve(passTest({
+    sideData: IActorRdfJoinTestSideData,
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients, IActorRdfJoinTestSideData>> {
+    return Promise.resolve(passTestWithSideData({
       iterations: 5,
       persistedItems: 2,
       blockingItems: 3,
       requestTime: 10,
-    }));
+    }, { metadatas: []}));
   }
 }
 
@@ -1126,7 +1126,7 @@ IActorRdfJoinSelectivityOutput
     });
 
     it('calls getOutput if there are 2+ entries', async() => {
-      const runOutput = await instance.run(action);
+      const runOutput = await instance.run(action, undefined!);
       const innerOutput = (await instance.getOutput(action)).result;
       expect((<any> runOutput).dummy).toEqual(innerOutput.dummy);
       await expect(runOutput.metadata()).resolves.toEqual({
@@ -1146,7 +1146,7 @@ IActorRdfJoinSelectivityOutput
         cardinality: { type: 'estimate', value: 10 },
         variables: [{ variable: DF.variable('a'), canBeUndef: true }],
       });
-      await instance.run(action).then(async(result: any) => {
+      await instance.run(action, undefined!).then(async(result: any) => {
         return await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: 40 },
@@ -1170,7 +1170,21 @@ IActorRdfJoinSelectivityOutput
       });
       jest.spyOn(instance, 'getOutput');
 
-      const result = await instance.run(action);
+      const sideData: IActorRdfJoinTestSideData = {
+        metadatas: [
+          {
+            state: new MetadataValidationState(),
+            cardinality: { type: 'estimate', value: 10 },
+            variables: variables0,
+          },
+          {
+            state: new MetadataValidationState(),
+            cardinality: { type: 'estimate', value: 5 },
+            variables: variables0,
+          },
+        ],
+      };
+      const result = await instance.run(action, sideData);
       await result.bindingsStream.toArray();
       await new Promise(setImmediate);
 
@@ -1211,7 +1225,7 @@ IActorRdfJoinSelectivityOutput
           [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
           [KeysInitQuery.physicalQueryPlanNode.name]: action,
         }),
-      });
+      }, sideData);
     });
   });
 });
