@@ -29,15 +29,13 @@ export abstract class ActorIteratorTransform<T extends AsyncIterator<RDF.Binding
   }
 
   public async run(action: IActionIteratorTransform<T, M>): Promise<IActorIteratorTransformOutput<T, M>> {
-    // TODO: Possibly remove redundant run / processStream seperation, as most of the logic will need
-    // reside in processStream anyways
-    const { stream, streamMetadata } = this.transformIterator(action);
+    const { stream, streamMetadata } = await this.transformIterator(action);
     return {
       operation: action.operation,
       stream,
       streamMetadata,
       context: action.context,
-      metadata: action.metadata,
+      metadata: { ...action.metadata, ...(await streamMetadata()) },
     };
   }
 
@@ -55,7 +53,8 @@ export abstract class ActorIteratorTransform<T extends AsyncIterator<RDF.Binding
     return true;
   }
 
-  abstract transformIterator<T extends AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>>(action: IActionIteratorTransform<T, M>): ITransformIteratorOutput<T, M>;
+  abstract transformIterator<T extends AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>>
+    (action: IActionIteratorTransform<T, M>): Promise<ITransformIteratorOutput<T, M>>;
 }
 
 export interface IActionIteratorTransform<T, M> extends IAction {
