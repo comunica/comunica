@@ -3,6 +3,10 @@
   "version": "3.2.1",
   "description": "Comunica package that defines the statistic tracking link discovery events",
   "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",

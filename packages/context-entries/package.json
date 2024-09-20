@@ -3,6 +3,10 @@
   "version": "3.2.1",
   "description": "A collection of reusable Comunica context key definitions.",
   "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",

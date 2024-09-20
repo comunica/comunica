@@ -3,6 +3,10 @@
   "version": "3.2.1",
   "description": "A comunica runner that sends an 'init' event from a commandline process.",
   "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",

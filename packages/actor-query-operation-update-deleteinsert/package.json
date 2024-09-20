@@ -4,6 +4,10 @@
   "description": "A update-deleteinsert query-operation actor",
   "lsd:module": true,
   "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
   "homepage": "https://github.com/comunica/comunica#readme",
   "repository": "https://github.com/comunica/comunica/tree/master/packages/actor-query-operation-update-deleteinsert",
   "bugs": {

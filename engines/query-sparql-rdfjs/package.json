@@ -3,6 +3,10 @@
   "version": "3.2.3",
   "description": "A SPARQL query engine for querying over RDF/JS sources",
   "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
