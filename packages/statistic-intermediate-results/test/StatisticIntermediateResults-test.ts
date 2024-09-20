@@ -49,7 +49,7 @@ describe('StatisticIntermediateResults', () => {
     it('update intermediate result count', () => {
       expect(statisticIntermediateResults.updateStatistic(
         { data: BF.fromRecord({ v0: DF.namedNode('a') }), metadata: { key: 1 }},
-      )).toBeTruthy;
+      )).toBeTruthy();
     });
 
     it('emit event on update', () => {

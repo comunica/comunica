@@ -35,7 +35,7 @@ export class ActorQueryOperationWrapStream extends ActorQueryOperation {
     action.context = ActorQueryOperation.setContextWrapped(action.context, true);
     const output: IQueryOperationResult = await this.mediatorQueryOperation.mediate(action);
     switch (output.type) {
-      case 'bindings':
+      case 'bindings': {
         const bindingIteratorTransformed = await this.mediatorIteratorTransform.mediate(
           {
             operation: action.operation.type,
@@ -54,25 +54,28 @@ export class ActorQueryOperationWrapStream extends ActorQueryOperation {
         output.metadata =
           <() => Promise<MetadataBindings>> bindingIteratorTransformed.streamMetadata;
         break;
-      case 'quads':
+      }
+      case 'quads': {
         const iteratorTransformed = await this.mediatorIteratorTransform.mediate(
-          { 
-            operation: action.operation.type, 
-            stream: output.quadStream, 
-            streamMetadata: output.metadata, 
-            context: action.context, 
+          {
+            operation: action.operation.type,
+            stream: output.quadStream,
+            streamMetadata: output.metadata,
+            context: action.context,
             metadata: {
               type: output.type,
               ...await output.metadata(),
               resultContext: output.context,
-            }
-          }
+            },
+          },
         );
         output.quadStream = <AsyncIterator<RDF.Quad>> iteratorTransformed.stream;
         output.metadata = <() => Promise<MetadataQuads>> iteratorTransformed.streamMetadata;
         break;
-      default:
+      }
+      default: {
         break;
+      }
     }
     return output;
   }

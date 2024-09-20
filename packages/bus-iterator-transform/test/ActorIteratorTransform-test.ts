@@ -11,10 +11,16 @@ import { DataFactory } from 'rdf-data-factory';
 const DF = new DataFactory();
 const BF = new BindingsFactory();
 
-class DummyTransform extends ActorIteratorTransform<AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>, MetadataBindings | MetadataQuads> {
-  public transformIterator<T extends AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>, M extends MetadataBindings | MetadataQuads>(
+class DummyTransform extends ActorIteratorTransform<
+AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>,
+MetadataBindings | MetadataQuads
+> {
+  public async transformIterator<
+  T extends AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>,
+  M extends MetadataBindings | MetadataQuads,
+  >(
     action: IActionIteratorTransform<T, M>,
-  ): ITransformIteratorOutput<T, M> {
+  ): Promise<ITransformIteratorOutput<T, M>> {
     // Return unchanged
     return { stream: action.stream, streamMetadata: action.streamMetadata };
   }
@@ -66,10 +72,10 @@ describe('ActorIteratorTransform', () => {
         context: new ActionContext(),
       })).resolves.toBeTruthy();
     });
-    it('should run transformIterator', () => {
+    it('should run transformIterator', async() => {
       const context = new ActionContext();
       const spy = jest.spyOn(actor, 'transformIterator');
-      actor.run(
+      await actor.run(
         {
           operation: 'nop',
           stream: bindingsStream,

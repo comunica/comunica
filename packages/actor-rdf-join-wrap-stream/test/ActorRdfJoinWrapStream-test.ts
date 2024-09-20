@@ -30,9 +30,12 @@ class DummyTransform extends ActorIteratorTransform<AsyncIterator<RDF.Bindings>
 | AsyncIterator<RDF.Quad>, MetadataBindings | MetadataQuads> {
   public transformCalls = 0;
 
-  public transformIterator<T extends AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>, M extends MetadataBindings | MetadataQuads>(
+  public async transformIterator<
+  T extends AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>,
+  M extends MetadataBindings | MetadataQuads,
+  >(
     action: IActionIteratorTransform<T, M>,
-  ): ITransformIteratorOutput<T, M> {
+  ): Promise<ITransformIteratorOutput<T, M>> {
     // Return unchanged
     const transformedStream = <T> action.stream.map((data: RDF.Bindings | RDF.Quad) => {
       this.transformCalls++;
@@ -54,7 +57,14 @@ describe('ActorRdfJoinWrapStream', () => {
   let actorTransform1: DummyTransform;
   let actorTransform2: DummyTransform;
   let mediatorJoin: any;
-  let mediatorIteratorTransform: MediatorCombinePipeline<DummyTransform, IActionIteratorTransform<AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>, MetadataBindings | MetadataQuads>, IActorTest>;
+  let mediatorIteratorTransform: MediatorCombinePipeline<
+  DummyTransform,
+  IActionIteratorTransform<
+    AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>,
+    MetadataBindings | MetadataQuads
+  >,
+  IActorTest
+  >;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -82,11 +92,15 @@ describe('ActorRdfJoinWrapStream', () => {
           ).run(a);
         },
       };
-      mediatorIteratorTransform = new MediatorCombinePipeline(<any> { name: 'mediator', bus });
+      mediatorIteratorTransform = new MediatorCombinePipeline(
+        <any> { name: 'mediator', bus },
+      );
       actorTransform1 = new DummyTransform({ name: '1', bus });
       actorTransform2 = new DummyTransform({ name: '2', bus });
 
-      actorWrapStream = new ActorRdfJoinWrapStream({ name: 'actor', bus: busJoin, mediatorJoinSelectivity, mediatorJoin, mediatorIteratorTransform });
+      actorWrapStream = new ActorRdfJoinWrapStream(
+        { name: 'actor', bus: busJoin, mediatorJoinSelectivity, mediatorJoin, mediatorIteratorTransform },
+      );
 
       context = new ActionContext();
       action2 = {
@@ -150,7 +164,7 @@ describe('ActorRdfJoinWrapStream', () => {
     });
 
     it('should test', async() => {
-      return expect(actorWrapStream.test(action2)).resolves.toEqual({
+      await expect(actorWrapStream.test(action2)).resolves.toEqual({
         iterations: -1,
         persistedItems: -1,
         blockingItems: -1,
@@ -160,12 +174,15 @@ describe('ActorRdfJoinWrapStream', () => {
 
     it('should reject test if wrap context key is set', async() => {
       action2.context = action2.context.set(KEY_CONTEXT_WRAPPED_RDF_JOIN, true);
-      return expect(actorWrapStream.test(action2)).rejects.toThrow('Unable to wrap join operation multiple times');
+      await expect(actorWrapStream.test(action2))
+        .rejects.toThrow('Unable to wrap join operation multiple times');
     });
 
     it('should set wrapped to true during run', async() => {
       await actorWrapStream.run(action2);
-      expect(calledWithContext).toEqual(new ActionContext({ [KEY_CONTEXT_WRAPPED_RDF_JOIN.name]: true }));
+      expect(calledWithContext).toEqual(
+        new ActionContext({ [KEY_CONTEXT_WRAPPED_RDF_JOIN.name]: true }),
+      );
     });
 
     it('should correctly invoke transform actors on join result', async() => {
@@ -177,7 +194,10 @@ describe('ActorRdfJoinWrapStream', () => {
     });
 
     it('should handle undefined context from mediatorJoin', async() => {
-      const mockedMediatorTransformIterator = jest.spyOn(mediatorIteratorTransform, 'mediate').mockResolvedValue(
+      const mockedMediatorTransformIterator = jest.spyOn(
+        mediatorIteratorTransform,
+        'mediate',
+      ).mockResolvedValue(
         {
           operation: 'inner',
           stream: action2.bindingsStream,
@@ -229,7 +249,10 @@ describe('ActorRdfJoinWrapStream', () => {
       );
     });
     it('should handle join result context', async() => {
-      const mockedMediatorTransformIterator = jest.spyOn(mediatorIteratorTransform, 'mediate').mockResolvedValue(
+      const mockedMediatorTransformIterator = jest.spyOn(
+        mediatorIteratorTransform,
+        'mediate',
+      ).mockResolvedValue(
         {
           operation: 'inner',
           stream: action2.bindingsStream,
@@ -281,7 +304,10 @@ describe('ActorRdfJoinWrapStream', () => {
       );
     });
     it('should correctly pass through metadata from mediatorJoin', async() => {
-      const mockedMediatorTransformIterator = jest.spyOn(mediatorIteratorTransform, 'mediate').mockResolvedValue(
+      const mockedMediatorTransformIterator = jest.spyOn(
+        mediatorIteratorTransform,
+        'mediate',
+      ).mockResolvedValue(
         {
           operation: 'inner',
           stream: action2.bindingsStream,

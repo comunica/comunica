@@ -39,6 +39,7 @@
   "dependencies": {
     "@comunica/bus-iterator-transform": "^3.2.1",
     "@comunica/bus-query-operation": "^3.2.2",
-    "@comunica/core": "^3.2.1"
+    "@comunica/core": "^3.2.1",
+    "@comunica/types": "^3.2.1"
   }
 }

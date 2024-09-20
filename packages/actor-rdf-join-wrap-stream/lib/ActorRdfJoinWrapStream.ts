@@ -1,5 +1,10 @@
 import type { MediatorIteratorTransform } from '@comunica/bus-iterator-transform';
-import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs, MediatorRdfJoin } from '@comunica/bus-rdf-join';
+import type {
+  IActionRdfJoin,
+  IActorRdfJoinOutputInner,
+  IActorRdfJoinArgs,
+  MediatorRdfJoin }
+  from '@comunica/bus-rdf-join';
 import { ActorRdfJoin, KEY_CONTEXT_WRAPPED_RDF_JOIN } from '@comunica/bus-rdf-join';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { IQueryOperationResultBindings, MetadataBindings } from '@comunica/types';
@@ -24,11 +29,6 @@ export class ActorRdfJoinWrapStream extends ActorRdfJoin {
     });
   }
 
-  /**
-   * Override the test to ensure that wrappper is ran for every join
-   * @param action
-   * @returns
-   */
   public override async test(action: IActionRdfJoin): Promise<IMediatorTypeJoinCoefficients> {
     if (action.context.get(KEY_CONTEXT_WRAPPED_RDF_JOIN)) {
       throw new Error('Unable to wrap join operation multiple times');

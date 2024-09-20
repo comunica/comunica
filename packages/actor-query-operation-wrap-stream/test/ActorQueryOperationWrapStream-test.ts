@@ -15,14 +15,19 @@ import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import { MediatorCombinePipeline } from '@comunica/mediator-combine-pipeline';
 import { MetadataValidationState } from '@comunica/metadata';
-import type { IActionContext, IQueryOperationResultBindings, IQueryOperationResultQuads, MetadataBindings, MetadataQuads } from '@comunica/types';
-import * as RDF from '@rdfjs/types';
+import type {
+  IActionContext,
+  IQueryOperationResultBindings,
+  IQueryOperationResultQuads,
+  MetadataBindings,
+  MetadataQuads,
+} from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, MappingIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { types } from 'sparqlalgebrajs/lib/algebra';
 import { ActorQueryOperationWrapStream } from '../lib/ActorQueryOperationWrapStream';
-import { NodePath } from '@babel/core';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -31,7 +36,10 @@ class DummyTransform extends ActorIteratorTransform<AsyncIterator<RDF.Bindings>
 | AsyncIterator<RDF.Quad>, MetadataBindings | MetadataQuads> {
   public transformCalls = 0;
 
-  public async transformIterator<T extends AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>, M extends MetadataBindings | MetadataQuads>(
+  public async transformIterator<
+  T extends AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>,
+  M extends MetadataBindings | MetadataQuads,
+  >(
     action: IActionIteratorTransform<T, M>,
   ): Promise<ITransformIteratorOutput<T, M>> {
     // Return unchanged
@@ -87,17 +95,12 @@ describe('ActorQueryOperationWrapStream', () => {
         ]),
       ]);
       quadOutput = new ArrayIterator<RDF.Quad>([
-        DF.quad(DF.namedNode('s1'), 
-          DF.namedNode('p1'),
-          DF.namedNode('o1'),
-          DF.namedNode('g1')
-        ),
+        DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'), DF.namedNode('g1')),
       ]);
 
       mediatorJoinSelectivity = <any> {
         mediate: async() => ({ selectivity: 1 }),
       };
-      console.log(bsOutput)
       mediatorQueryOperation = {
         async mediate(a: any): Promise<IQueryOperationResultQuads | IQueryOperationResultBindings> {
           // Record the context it was called with, as jest calledWith looks only at object reference
@@ -132,12 +135,17 @@ describe('ActorQueryOperationWrapStream', () => {
           };
         },
       };
-      
+
       mediatorIteratorTransform = new MediatorCombinePipeline(<any> { name: 'mediator', bus });
       actorTransform1 = new DummyTransform({ name: '1', bus });
       actorTransform2 = new DummyTransform({ name: '2', bus });
 
-      actorWrapStream = new ActorQueryOperationWrapStream({ name: 'actor', bus: busJoin, mediatorQueryOperation, mediatorIteratorTransform });
+      actorWrapStream = new ActorQueryOperationWrapStream({
+        name: 'actor',
+        bus: busJoin,
+        mediatorQueryOperation,
+        mediatorIteratorTransform,
+      });
 
       context = new ActionContext();
       actionBindings = {
@@ -157,14 +165,14 @@ describe('ActorQueryOperationWrapStream', () => {
     });
 
     it('should test', async() => {
-      return expect(actorWrapStream.test(actionBindings)).resolves.toEqual({
+      await expect(actorWrapStream.test(actionBindings)).resolves.toEqual({
         httpRequests: Number.NEGATIVE_INFINITY,
       });
     });
 
     it('should reject test if wrap context key is set', async() => {
       actionBindings.context = actionBindings.context.set(KEY_CONTEXT_WRAPPED_QUERY_OPERATION, true);
-      return expect(actorWrapStream.test(actionBindings))
+      await expect(actorWrapStream.test(actionBindings))
         .rejects.toThrow('Unable to wrap query source multiple times');
     });
 
@@ -174,157 +182,167 @@ describe('ActorQueryOperationWrapStream', () => {
     });
 
     describe('binding output', () => {
-      it('should run', async () => {
-        const output: IQueryOperationResultBindings =   
+      it('should run', async() => {
+        const output: IQueryOperationResultBindings =
         <IQueryOperationResultBindings> await actorWrapStream.run(actionBindings);
         expect(output).toEqual({
           type: 'bindings',
           bindingsStream: expect.any(MappingIterator),
-          metadata: expect.any(Function)
+          metadata: expect.any(Function),
         });
       });
       it('should correctly invoke transform actors', async() => {
-        const output: IQueryOperationResultBindings =   
+        const output: IQueryOperationResultBindings =
           <IQueryOperationResultBindings> await actorWrapStream.run(actionBindings);
         await output.bindingsStream.toArray();
 
         expect(actorTransform1.transformCalls).toBe(2);
         expect(actorTransform2.transformCalls).toBe(2);
       });
-      it('should record query operation metadata and context', async () => {
-        const spyQueryOperation = jest.spyOn(mediatorQueryOperation, 'mediate').
-          mockReturnValue({
+      it('should record query operation metadata and context', async() => {
+        const spyQueryOperation = jest.spyOn(mediatorQueryOperation, 'mediate')
+          .mockReturnValue({
             type: 'bindings',
             bindingsStream: bsOutput,
-            metadata: async () => {return {a: 'value1', b: 'value2'}},
-            context: new ActionContext({c: 'value3'})
-        });
+            metadata: async() => {
+              return { a: 'value1', b: 'value2' };
+            },
+            context: new ActionContext({ c: 'value3' }),
+          });
         const spyIteratorTransform = jest.spyOn(mediatorIteratorTransform, 'mediate');
-        
-        const output: IQueryOperationResultBindings =   
+
+        const output: IQueryOperationResultBindings =
           <IQueryOperationResultBindings> await actorWrapStream.run(actionBindings);
         expect(spyIteratorTransform).toHaveBeenCalledWith({
           operation: types.NOP,
           stream: bsOutput,
           streamMetadata: expect.any(Function),
-          context: new ActionContext({[KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: true}),
+          context: new ActionContext({ [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: true }),
           metadata: {
             type: 'bindings',
-            a: 'value1', 
+            a: 'value1',
             b: 'value2',
-            resultContext: new ActionContext({c: 'value3'})
-          }
+            resultContext: new ActionContext({ c: 'value3' }),
+          },
         });
-      })
-      it('should record empty metadata and context', async () => {
-        const spyQueryOperation = jest.spyOn(mediatorQueryOperation, 'mediate').
-          mockReturnValue({
+      });
+      it('should record empty metadata and context', async() => {
+        const spyQueryOperation = jest.spyOn(mediatorQueryOperation, 'mediate')
+          .mockReturnValue({
             type: 'bindings',
             bindingsStream: bsOutput,
-            metadata: async () => {return {}},
-            context: undefined
-        });
+            metadata: async() => {
+              return {};
+            },
+            context: undefined,
+          });
         const spyIteratorTransform = jest.spyOn(mediatorIteratorTransform, 'mediate');
-        
-        const output: IQueryOperationResultBindings =   
+
+        const output: IQueryOperationResultBindings =
           <IQueryOperationResultBindings> await actorWrapStream.run(actionBindings);
         expect(spyIteratorTransform).toHaveBeenCalledWith({
           operation: types.NOP,
           stream: bsOutput,
           streamMetadata: expect.any(Function),
-          context: new ActionContext({[KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: true}),
+          context: new ActionContext({ [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: true }),
           metadata: {
             type: 'bindings',
-            resultContext: undefined
-          }
+            resultContext: undefined,
+          },
         });
       });
     });
     describe('quad output', () => {
-      it('should run', async () => {
-        const output: IQueryOperationResultQuads =   
+      it('should run', async() => {
+        const output: IQueryOperationResultQuads =
           <IQueryOperationResultQuads> await actorWrapStream.run(actionQuads);
         expect(output).toEqual({
           type: 'quads',
           quadStream: expect.any(MappingIterator),
-          metadata: expect.any(Function)
-        })
+          metadata: expect.any(Function),
+        });
       });
       it('should correctly invoke transform actors', async() => {
-        const output: IQueryOperationResultQuads =   
+        const output: IQueryOperationResultQuads =
           <IQueryOperationResultQuads> await actorWrapStream.run(actionQuads);
         await output.quadStream.toArray();
 
         expect(actorTransform1.transformCalls).toBe(1);
         expect(actorTransform2.transformCalls).toBe(1);
       });
-      it('should record query operation metadata and context', async () => {
-        const spyQueryOperation = jest.spyOn(mediatorQueryOperation, 'mediate').
-          mockReturnValue({
+      it('should record query operation metadata and context', async() => {
+        const spyQueryOperation = jest.spyOn(mediatorQueryOperation, 'mediate')
+          .mockReturnValue({
             type: 'quads',
             quadStream: quadOutput,
-            metadata: async () => {return {a: 'value1', b: 'value2'}},
-            context: new ActionContext({c: 'value3'})
-        });
+            metadata: async() => {
+              return { a: 'value1', b: 'value2' };
+            },
+            context: new ActionContext({ c: 'value3' }),
+          });
         const spyIteratorTransform = jest.spyOn(mediatorIteratorTransform, 'mediate');
-        
-        const output: IQueryOperationResultQuads =   
+
+        const output: IQueryOperationResultQuads =
           <IQueryOperationResultQuads> await actorWrapStream.run(actionQuads);
         expect(spyIteratorTransform).toHaveBeenCalledWith({
           operation: types.NOP,
           stream: quadOutput,
           streamMetadata: expect.any(Function),
-          context: new ActionContext({[KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: true}),
+          context: new ActionContext({ [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: true }),
           metadata: {
             type: 'quads',
-            a: 'value1', 
+            a: 'value1',
             b: 'value2',
-            resultContext: new ActionContext({c: 'value3'})
-          }
+            resultContext: new ActionContext({ c: 'value3' }),
+          },
         });
-      })
-      it('should record empty metadata and context', async () => {
-        const spyQueryOperation = jest.spyOn(mediatorQueryOperation, 'mediate').
-          mockReturnValue({
+      });
+      it('should record empty metadata and context', async() => {
+        const spyQueryOperation = jest.spyOn(mediatorQueryOperation, 'mediate')
+          .mockReturnValue({
             type: 'quads',
             quadStream: quadOutput,
-            metadata: async () => {return {}},
-            context: undefined
-        });
+            metadata: async() => {
+              return {};
+            },
+            context: undefined,
+          });
         const spyIteratorTransform = jest.spyOn(mediatorIteratorTransform, 'mediate');
-        
-        const output: IQueryOperationResultQuads =   
+
+        const output: IQueryOperationResultQuads =
           <IQueryOperationResultQuads> await actorWrapStream.run(actionQuads);
         expect(spyIteratorTransform).toHaveBeenCalledWith({
           operation: types.NOP,
           stream: quadOutput,
           streamMetadata: expect.any(Function),
-          context: new ActionContext({[KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: true}),
+          context: new ActionContext({ [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: true }),
           metadata: {
             type: 'quads',
-            resultContext: undefined
-          }
+            resultContext: undefined,
+          },
         });
       });
     });
-    it('should return input action when unsupported type is given', async () => {
-      const spyQueryOperation = jest.spyOn(mediatorQueryOperation, 'mediate').
-      mockReturnValue({
-        type: 'boolean',
-        quadStream: quadOutput,
-        metadata: async () => {return {}},
-        context: undefined
-      });
-      actionQuads.type = 'void'
-      const output: IQueryOperationResultQuads =   
+    it('should return input action when unsupported type is given', async() => {
+      const spyQueryOperation = jest.spyOn(mediatorQueryOperation, 'mediate')
+        .mockReturnValue({
+          type: 'boolean',
+          quadStream: quadOutput,
+          metadata: async() => {
+            return {};
+          },
+          context: undefined,
+        });
+      actionQuads.type = 'void';
+      const output: IQueryOperationResultQuads =
         <IQueryOperationResultQuads> await actorWrapStream.run(actionQuads);
       expect(output).toEqual(
         {
           type: 'boolean',
           quadStream: quadOutput,
           metadata: expect.any(Function),
-          context: undefined
-        }
+          context: undefined,
+        },
       );
     });
   });

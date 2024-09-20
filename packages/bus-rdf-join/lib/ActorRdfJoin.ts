@@ -475,13 +475,7 @@ export abstract class ActorRdfJoin
     return result;
   }
 
-  /**
-   * Helper function to set the wrapping status of the rdf-join call
-   * @param context context of the operation
-   * @param value If it should be set to false or true
-   * @returns The updated context
-   */
-  public static setContextWrapped(context: IActionContext, value: boolean) {
+  public static setContextWrapped(context: IActionContext, value: boolean): IActionContext {
     return context.set(KEY_CONTEXT_WRAPPED_RDF_JOIN, value);
   }
 

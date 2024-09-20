@@ -1,4 +1,5 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
+import { KEY_CONTEXT_WRAPPED_QUERY_OPERATION } from '@comunica/bus-query-operation';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultBindings } from '@comunica/types';
@@ -7,7 +8,6 @@ import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationBgpJoin } from '../lib/ActorQueryOperationBgpJoin';
 import '@comunica/jest';
-import { KEY_CONTEXT_WRAPPED_QUERY_OPERATION } from '@comunica/bus-query-operation';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -66,8 +66,8 @@ describe('ActorQueryOperationBgpJoin', () => {
       ]);
 
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
-        context: context.set(KeysQueryOperation.operation, op.operation).
-          set(KEY_CONTEXT_WRAPPED_QUERY_OPERATION, false),
+        context: context.set(KeysQueryOperation.operation, op.operation)
+          .set(KEY_CONTEXT_WRAPPED_QUERY_OPERATION, false),
         operation: FACTORY.createJoin(patterns),
       });
     });

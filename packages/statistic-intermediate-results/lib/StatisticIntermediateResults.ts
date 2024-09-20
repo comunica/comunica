@@ -12,7 +12,7 @@ export class StatisticIntermediateResults extends StatisticBase<IPartialResult> 
   }
 
   public updateStatistic(intermediateResult: IPartialResult): boolean {
-    intermediateResult.metadata.time = performance.now()
+    intermediateResult.metadata.time = performance.now();
     this.emit(intermediateResult);
     return true;
   }

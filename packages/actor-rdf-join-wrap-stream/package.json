@@ -37,7 +37,9 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
+    "@comunica/bus-iterator-transform": "^3.2.1",
     "@comunica/bus-rdf-join": "^3.2.1",
-    "@comunica/core": "^3.2.1"
+    "@comunica/mediatortype-join-coefficients": "^3.2.1",
+    "@comunica/types": "^3.2.1"
   }
 }

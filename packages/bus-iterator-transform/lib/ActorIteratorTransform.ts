@@ -18,7 +18,10 @@ import type { types } from 'sparqlalgebrajs/lib/algebra';
  * @see IActionIteratorTransform
  * @see IActorIteratorTransformOutput
  */
-export abstract class ActorIteratorTransform<T extends AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>, M extends MetadataBindings | MetadataQuads>
+export abstract class ActorIteratorTransform<
+T extends AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>,
+M extends MetadataBindings | MetadataQuads,
+>
   extends Actor<IActionIteratorTransform<T, M>, IActorTest, IActorIteratorTransformOutput<T, M>> {
   public wraps: possibleOperationTypes[];
   /**
@@ -39,22 +42,21 @@ export abstract class ActorIteratorTransform<T extends AsyncIterator<RDF.Binding
     };
   }
 
-  /**
-   * Test will only succeed if the operation we're wrapping is included in the types
-   * @param action
-   * @returns
-   */
   public async test(
-    action: IActionIteratorTransform<AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>, MetadataBindings | MetadataQuads>,
+    action: IActionIteratorTransform<
+    AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>,
+     MetadataBindings | MetadataQuads
+     >,
   ): Promise<IActorTest> {
-    if (!(this.wraps === undefined) && !this.wraps.includes(action.operation as possibleOperationTypes)) {
+    if (!(this.wraps === undefined) && !this.wraps.includes(<possibleOperationTypes> action.operation)) {
       throw new Error(`Operation type not supported in configuration of ${this.name}`);
     }
     return true;
   }
 
-  abstract transformIterator<T extends AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>>
-    (action: IActionIteratorTransform<T, M>): Promise<ITransformIteratorOutput<T, M>>;
+  public abstract transformIterator<
+  T extends AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>,
+  >(action: IActionIteratorTransform<T, M>): Promise<ITransformIteratorOutput<T, M>>;
 }
 
 export interface IActionIteratorTransform<T, M> extends IAction {
