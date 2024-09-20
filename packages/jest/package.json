@@ -43,6 +43,8 @@
     "@comunica/types": "^3.2.1",
     "@jest/expect-utils": "^29.7.0",
     "@rdfjs/types": "*",
-    "arrayify-stream": "^2.0.1"
+    "@types/object-inspect": "^1.13.0",
+    "arrayify-stream": "^2.0.1",
+    "object-inspect": "^1.13.2"
   }
 }

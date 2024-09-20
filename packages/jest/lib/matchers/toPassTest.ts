@@ -1,7 +1,8 @@
-// eslint-disable-next-line import/no-nodejs-modules
-import { inspect } from 'node:util';
 import type { TestResult } from '@comunica/core';
 import { equals } from '@jest/expect-utils';
+
+// eslint-disable-next-line ts/no-require-imports,ts/no-var-requires
+const inspect = require('object-inspect');
 
 export default {
   toPassTest(received: TestResult<any>, actual: any) {
