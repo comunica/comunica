@@ -56,10 +56,10 @@ describe('StatisticIntermediateResults', () => {
       // We first add parent to the statistic, as only child metadata is added on updateStatistic call
       statisticIntermediateResults.on(cb);
       statisticIntermediateResults.updateStatistic(
-        { data: BF.fromRecord({ v0: DF.namedNode('a') }), metadata: { key: 1 }},
+        { data: BF.fromRecord({ v0: DF.namedNode('a') }), metadata: { key: 1, time: performance.now() }},
       );
       expect(cb).toHaveBeenCalledWith(
-        { data: BF.fromRecord({ v0: DF.namedNode('a') }), metadata: { key: 1 }},
+        { data: BF.fromRecord({ v0: DF.namedNode('a') }), metadata: { key: 1, time: performance.now() }},
       );
     });
   });

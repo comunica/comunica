@@ -5,7 +5,6 @@
   "import": [
     "ccqs:config/rdf-join/actors-inner.json",
     "ccqs:config/rdf-join/actors-minus.json",
-    "ccqs:config/rdf-join/actors-optional.json",
-    "ccqs:config/rdf-join/actors-wrap-stream.json"
+    "ccqs:config/rdf-join/actors-optional.json"
   ]
 }

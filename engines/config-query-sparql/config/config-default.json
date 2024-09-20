@@ -18,8 +18,6 @@
     "ccqs:config/merge-bindings-context/mediators.json",
     "ccqs:config/optimize-query-operation/actors.json",
     "ccqs:config/optimize-query-operation/mediators.json",
-    "ccqs:config/process-iterator/mediators.json",
-    "ccqs:config/process-iterator/actors.json",
     "ccqs:config/query-operation/actors.json",
     "ccqs:config/query-operation/mediators.json",
     "ccqs:config/query-parse/actors.json",

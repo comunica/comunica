@@ -88,10 +88,10 @@ describe('ActorProcessIteratorCountIntermediateResults', () => {
           "Context entry @comunica/statistic:intermediateResults is required but not available"
         );
       });  
-      it('transform iterator should return mapped stream and unchanged metadata', () => {
+      it('transform iterator should return mapped stream and unchanged metadata', async () => {
         actionQuads.context = actionQuads.context.set(KeysStatistics.intermediateResults, 
           statisticIntermediateResults);
-        const output = actor.transformIterator(actionQuads);
+        const output = await actor.transformIterator(actionQuads);
         expect(output).toEqual({
           stream: expect.any(MappingIterator),
           streamMetadata: expect.any(Function)
@@ -131,11 +131,10 @@ describe('ActorProcessIteratorCountIntermediateResults', () => {
           "Context entry @comunica/statistic:intermediateResults is required but not available"
         );
       });  
-
-      it('transform iterator should return mapped stream and unchanged metadata', () => {
+      it('transform iterator should return mapped stream and unchanged metadata', async () => {
         actionBindings.context = actionQuads.context.set(KeysStatistics.intermediateResults, 
           statisticIntermediateResults);
-        const output = actor.transformIterator(actionBindings);
+        const output = await actor.transformIterator(actionBindings);
         expect(output).toEqual({
           stream: expect.any(MappingIterator),
           streamMetadata: expect.any(Function)
@@ -169,7 +168,5 @@ describe('ActorProcessIteratorCountIntermediateResults', () => {
         );
       });  
     });
-
-
   });
 });

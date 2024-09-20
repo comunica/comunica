@@ -7,6 +7,7 @@ import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationBgpJoin } from '../lib/ActorQueryOperationBgpJoin';
 import '@comunica/jest';
+import { KEY_CONTEXT_WRAPPED_QUERY_OPERATION } from '@comunica/bus-query-operation';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory();
@@ -65,7 +66,8 @@ describe('ActorQueryOperationBgpJoin', () => {
       ]);
 
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
-        context: context.set(KeysQueryOperation.operation, op.operation),
+        context: context.set(KeysQueryOperation.operation, op.operation).
+          set(KEY_CONTEXT_WRAPPED_QUERY_OPERATION, false),
         operation: FACTORY.createJoin(patterns),
       });
     });

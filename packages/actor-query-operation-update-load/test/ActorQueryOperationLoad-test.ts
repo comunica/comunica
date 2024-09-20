@@ -1,4 +1,4 @@
-import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import { ActorQueryOperation, KEY_CONTEXT_WRAPPED_QUERY_OPERATION } from '@comunica/bus-query-operation';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultVoid } from '@comunica/types';
@@ -92,6 +92,7 @@ describe('ActorQueryOperationLoad', () => {
         ),
         context: new ActionContext({
           [KeysQueryOperation.operation.name]: expect.anything(),
+          [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: false
         }),
       });
     });
@@ -115,6 +116,7 @@ describe('ActorQueryOperationLoad', () => {
         operation: expect.anything(),
         context: new ActionContext({
           '@comunica/bus-query-operation:operation': expect.anything(),
+          [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: false
         }),
       });
     });
@@ -195,6 +197,7 @@ describe('ActorQueryOperationLoad', () => {
         context: new ActionContext({
           [KeysInitQuery.lenient.name]: true,
           [KeysQueryOperation.operation.name]: expect.anything(),
+          [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: false
         }),
       });
     });

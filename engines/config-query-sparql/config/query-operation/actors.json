@@ -33,8 +33,6 @@
     "ccqs:config/query-operation/actors/query/path-zero-or-more.json",
     "ccqs:config/query-operation/actors/query/path-zero-or-one.json",
 
-    "ccqs:config/query-operation/actors/query/wrap-stream.json",
-
     "ccqs:config/query-operation/actors/update/clear.json",
     "ccqs:config/query-operation/actors/update/composite.json",
     "ccqs:config/query-operation/actors/update/create.json",
