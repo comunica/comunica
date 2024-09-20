@@ -578,21 +578,21 @@ describe('QuerySourceRdfJs', () => {
   describe('queryQuads', () => {
     it('should throw', () => {
       expect(() => source.queryQuads(<any> undefined, ctx))
-        .toThrow(`queryQuads is not implemented in QuerySourceQpf`);
+        .toThrow(`queryQuads is not implemented in QuerySourceRdfJs`);
     });
   });
 
   describe('queryBoolean', () => {
     it('should throw', () => {
       expect(() => source.queryBoolean(<any> undefined, ctx))
-        .toThrow(`queryBoolean is not implemented in QuerySourceQpf`);
+        .toThrow(`queryBoolean is not implemented in QuerySourceRdfJs`);
     });
   });
 
   describe('queryVoid', () => {
     it('should throw', () => {
       expect(() => source.queryVoid(<any> undefined, ctx))
-        .toThrow(`queryVoid is not implemented in QuerySourceQpf`);
+        .toThrow(`queryVoid is not implemented in QuerySourceRdfJs`);
     });
   });
 });
