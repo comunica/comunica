@@ -107,22 +107,29 @@ export class Bindings implements RDF.Bindings {
   }
 
   public merge(other: RDF.Bindings | Bindings): Bindings | undefined {
-    // Determine the union of keys
-    const keys = new Set([
-      ...this.iteratorToIterable(this.entries.keys()),
-      ...[ ...other.keys() ].map(key => key.value),
-    ]);
+    if (this.size < other.size && other instanceof Bindings) {
+      return other.merge(this);
+    }
+    let entries = this.entries;
 
-    // Collect entries
-    const entries: [string, RDF.Term][] = [];
-    for (const key of keys) {
-      const left = this.entries.get(key)!;
-      const right = other.get(this.dataFactory.variable!(key));
-      if (left && right && !left.equals(right)) {
-        return;
+    // Check if other is of type Bindings, in that case we can access entries immediately.
+    // This skips the unnecessary conversion from string to variable.
+    if (other instanceof Bindings) {
+      for (const [ variable, right ] of other.entries) {
+        const left = this.entries.get(variable);
+        if (left && !left.equals(right)) {
+          return;
+        }
+        entries = entries.set(variable, right);
       }
-      const value = left || right;
-      entries.push([ key, value ]);
+    } else {
+      for (const [ variable, right ] of other) {
+        const left = this.entries.get(variable.value);
+        if (left && !left.equals(right)) {
+          return;
+        }
+        entries = entries.set(variable.value, right);
+      }
     }
 
     return this.createBindingsWithContexts(entries, other);
@@ -132,31 +139,40 @@ export class Bindings implements RDF.Bindings {
     merger: (self: RDF.Term, other: RDF.Term, key: RDF.Variable) => RDF.Term,
     other: RDF.Bindings | Bindings,
   ): Bindings {
-    // Determine the union of keys
-    const keys = new Set([
-      ...this.iteratorToIterable(this.entries.keys()),
-      ...[ ...other.keys() ].map(key => key.value),
-    ]);
+    if (this.size < other.size && other instanceof Bindings) {
+      return other.mergeWith(merger, this);
+    }
+    let entries = this.entries;
 
-    // Collect entries
-    const entries: [string, RDF.Term][] = [];
-    for (const key of keys) {
-      const variable = this.dataFactory.variable!(key);
-      const left = this.entries.get(key)!;
-      const right = other.get(variable);
-      let value: RDF.Term;
-      if (left && right && !left.equals(right)) {
-        value = merger(left, right, variable);
-      } else {
-        value = left || right;
+    // For code comments see Bindings.merge function
+    if (other instanceof Bindings) {
+      for (const [ variable, right ] of other.entries) {
+        const left = this.entries.get(variable);
+        let value: RDF.Term;
+        if (left && !left.equals(right)) {
+          value = merger(left, right, this.dataFactory.variable!(variable));
+        } else {
+          value = right;
+        }
+        entries = entries.set(variable, value);
       }
-      entries.push([ key, value ]);
+    } else {
+      for (const [ variable, right ] of other) {
+        const left = this.entries.get(variable.value);
+        let value: RDF.Term;
+        if (left && !left.equals(right)) {
+          value = merger(left, right, variable);
+        } else {
+          value = right;
+        }
+        entries = entries.set(variable.value, value);
+      }
     }
 
     return this.createBindingsWithContexts(entries, other);
   }
 
-  protected createBindingsWithContexts(entries: [string, RDF.Term][], other: RDF.Bindings | Bindings): Bindings {
+  protected createBindingsWithContexts(entries: Map<string, RDF.Term>, other: RDF.Bindings | Bindings): Bindings {
     // If any context is empty, we skip merging contexts
     if (this.contextHolder && this.contextHolder.context) {
       let mergedContext = this.contextHolder.context;
@@ -167,13 +183,13 @@ export class Bindings implements RDF.Bindings {
       }
       return new Bindings(
         this.dataFactory,
-        Map(entries),
+        entries,
         { contextMergeHandlers: this.contextHolder.contextMergeHandlers, context: mergedContext },
       );
     }
 
     // Otherwise, use optional context from other
-    return new Bindings(this.dataFactory, Map(entries), (<Bindings> other).contextHolder);
+    return new Bindings(this.dataFactory, entries, (<Bindings> other).contextHolder);
   }
 
   private static mergeContext(

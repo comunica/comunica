@@ -336,7 +336,7 @@ IActorRdfJoinSelectivityOutput
         [ DF.variable('x'), DF.literal('a') ],
         [ DF.variable('y'), DF.literal('b') ],
       ]);
-      expect(ActorRdfJoin.joinBindings(single)).toEqual(single);
+      expect(ActorRdfJoin.joinBindings(single)?.equals(single)).toBeTruthy();
     });
 
     it('should return the right binding if the left is empty', () => {
@@ -345,7 +345,7 @@ IActorRdfJoinSelectivityOutput
         [ DF.variable('x'), DF.literal('a') ],
         [ DF.variable('y'), DF.literal('b') ],
       ]);
-      expect(ActorRdfJoin.joinBindings(left, right)).toEqual(right);
+      expect(ActorRdfJoin.joinBindings(left, right)?.equals(right)).toBeTruthy();
     });
 
     it('should return the left binding if the right is empty', () => {
@@ -354,7 +354,7 @@ IActorRdfJoinSelectivityOutput
         [ DF.variable('y'), DF.literal('b') ],
       ]);
       const right = BF.bindings();
-      expect(ActorRdfJoin.joinBindings(left, right)).toEqual(left);
+      expect(ActorRdfJoin.joinBindings(left, right)?.equals(left)).toBeTruthy();
     });
 
     it('should join 2 bindings with no overlapping variables', () => {
@@ -372,7 +372,7 @@ IActorRdfJoinSelectivityOutput
         [ DF.variable('v'), DF.literal('d') ],
         [ DF.variable('w'), DF.literal('e') ],
       ]);
-      expect(ActorRdfJoin.joinBindings(left, right)).toEqual(result);
+      expect(ActorRdfJoin.joinBindings(left, right)?.equals(result)).toBeTruthy();
     });
 
     it('should join 2 bindings with overlapping variables', () => {
@@ -389,7 +389,7 @@ IActorRdfJoinSelectivityOutput
         [ DF.variable('y'), DF.literal('b') ],
         [ DF.variable('w'), DF.literal('e') ],
       ]);
-      expect(ActorRdfJoin.joinBindings(left, right)).toEqual(result);
+      expect(ActorRdfJoin.joinBindings(left, right)?.equals(result)).toBeTruthy();
     });
 
     it('should not join bindings with conflicting mappings', () => {
