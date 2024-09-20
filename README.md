@@ -61,24 +61,21 @@ Read one of our [guides to **get started** with querying](https://comunica.dev/d
 Or jump right into one of the available query engines:
 * [Comunica SPARQL](https://github.com/comunica/comunica/tree/master/engines/query-sparql#readme): SPARQL/GraphQL querying from JavaScript applications or the CLI ([Browser-ready via a CDN](https://github.com/rdfjs/comunica-browser))
 
- - Source Customisation
+ - Engines with support for specific types of sources
    * [Comunica SPARQL File](https://github.com/comunica/comunica/tree/master/engines/query-sparql-file#readme): Engine to query over local RDF files
    * [Comunica SPARQL RDF/JS](https://github.com/comunica/comunica/tree/master/engines/query-sparql-rdfjs#readme): Engine to query over in-memory [RDF/JS-compliant sources](https://rdf.js.org/stream-spec/#source-interface).
-   * [Comunica SPARQL RDF/JS Lite](https://github.com/comunica/comunica/tree/master/engines/query-sparql-rdfjs-lite#readme): Engine optimized for bundle size to query over in-memory [RDF/JS-compliant sources](https://rdf.js.org/stream-spec/#source-interface).
+   * [Comunica SPARQL RDF/JS Lite](https://github.com/comunica/comunica/tree/master/engines/query-sparql-rdfjs-lite#readme): Engine optimized for small bundle size to query over in-memory [RDF/JS-compliant sources](https://rdf.js.org/stream-spec/#source-interface).
    * [Comunica SPARQL HDT](https://github.com/comunica/comunica-feature-hdt/tree/master/engines/query-sparql-hdt#readme): Library to query over local [HDT](https://www.rdfhdt.org/) files
+   * [Comunica SPARQL OSTRICH](https://github.com/comunica/comunica-feature-versioning/tree/master/engines/query-sparql-ostrich#readme): Library to query over local versioned [OSTRICH](https://github.com/rdfostrich/ostrich) archives
 
- - Solid Customisation
-   * [Comunica SPARQL Solid](https://github.com/comunica/comunica-feature-solid/tree/master/engines/query-sparql-solid#readme): Engine to query over files behind [Solid access control](https://solidproject.org/).
-
- - Link Traversal Research
+ - Engines with alternative querying paradigms:
    * [Comunica SPARQL Link Traversal](https://github.com/comunica/comunica-feature-link-traversal/tree/master/engines/query-sparql-link-traversal#readme): Engine to query over multiple files by following links between them.
+   * [Comunica SPARQL Solid](https://github.com/comunica/comunica-feature-solid/tree/master/engines/query-sparql-solid#readme): Engine to query over files behind [Solid access control](https://solidproject.org/).
    * [Comunica SPARQL Link Traversal Solid](https://github.com/comunica/comunica-feature-link-traversal/tree/master/engines/query-sparql-link-traversal-solid#readme): Engine to query within [Solid data vaults](https://solidproject.org/) by following links between documents.
-
- - Reasoning Support
    * [Comunica SPARQL Reasoning](https://github.com/comunica/comunica-feature-reasoning/tree/master/engines/query-sparql-reasoning): Engine that adds support for reasoning
    * [Comunica SPARQL Reasoning File](https://github.com/comunica/comunica-feature-reasoning/tree/master/engines/query-sparql-file-reasoning): Engine to query over local RDF files with support for reasoning
 
-## Modify or Extending Comunica
+## Modify or Extend Comunica
 
 [Read one of our guides to **get started** with modifying Comunica](https://comunica.dev/docs/modify/),
 or have a look at some [examples](https://github.com/comunica/examples):
@@ -106,7 +103,7 @@ If you want to develop new features
 or use the (potentially unstable) in-development version,
 you can set up a development environment for Comunica.
 
-Comunica requires [Node.JS](http://nodejs.org/) 8.0 or higher and the [Yarn](https://yarnpkg.com/en/) package manager.
+Comunica requires [Node.JS](http://nodejs.org/) and the [Yarn](https://yarnpkg.com/en/) package manager (only when using this repo).
 Comunica is tested on OSX, Linux and Windows.
 
 This project can be setup by cloning and installing it as follows:
@@ -120,8 +117,9 @@ $ yarn install
 **Note: `npm install` is not supported at the moment, as this project makes use of Yarn's [workspaces](https://yarnpkg.com/lang/en/docs/workspaces/) functionality**
 
 This will install the dependencies of all modules, and bootstrap the Lerna monorepo.
-After that, all [Comunica packages](https://github.com/comunica/comunica/tree/master/packages) are available in the `packages/` folder
-and can be used in a development environment, such as querying with [Comunica SPARQL (`@comunica/query-sparql`)](https://github.com/comunica/comunica/tree/master/engines/query-sparql).
+After that, all [Comunica packages](https://github.com/comunica/comunica/tree/master/packages) are available in the `packages/` folder,
+and the [Comunica engines](https://github.com/comunica/comunica/tree/master/engines) are available in the `engines/` folder.
+These can be used in a development environment, such as querying with [Comunica SPARQL (`@comunica/query-sparql`)](https://github.com/comunica/comunica/tree/master/engines/query-sparql).
 
 Furthermore, this will add pre-commit hooks using [husky](https://www.npmjs.com/package/husky) to build, lint and test.
 These hooks can temporarily be disabled at your own risk by adding the `-n` flag to the commit command.
@@ -135,10 +133,7 @@ make sure to run Node.js in production mode as follows:
 > NODE_ENV=production node packages/some-package/bin/some-bin.js
 ```
 
-The reason for this is that Comunica extensively generates
-internal `Error` objects.
-In non-production mode, these also produce long stacktraces,
-which may in some cases impact performance.
+Read more about benchmarking [on our website](https://comunica.dev/docs/modify/benchmarking/).
 
 ## Cite
 
