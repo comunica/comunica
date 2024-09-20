@@ -2,6 +2,7 @@ import { PassThrough } from 'node:stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { KeysCore, KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
+import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, wrap } from 'asynciterator';
@@ -323,6 +324,7 @@ describe('QuerySourceSparql', () => {
       ), ctx);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve))).resolves
         .toEqual({
+          state: expect.any(MetadataValidationState),
           cardinality: { type: 'exact', value: 3 },
           variables: [
             { variable: DF.variable('p'), canBeUndef: false },
@@ -350,6 +352,7 @@ describe('QuerySourceSparql', () => {
       ), ctx);
       await expect(new Promise(resolve => stream1.getProperty('metadata', resolve))).resolves
         .toEqual({
+          state: expect.any(MetadataValidationState),
           cardinality: { type: 'exact', value: 3 },
           variables: [
             { variable: DF.variable('p'), canBeUndef: false },
@@ -367,6 +370,7 @@ describe('QuerySourceSparql', () => {
       ), ctx);
       await expect(new Promise(resolve => stream2.getProperty('metadata', resolve))).resolves
         .toEqual({
+          state: expect.any(MetadataValidationState),
           cardinality: { type: 'exact', value: 3 },
           variables: [
             { variable: DF.variable('p'), canBeUndef: false },
@@ -386,6 +390,7 @@ describe('QuerySourceSparql', () => {
       ), ctx);
       await expect(new Promise(resolve => stream1.getProperty('metadata', resolve))).resolves
         .toEqual({
+          state: expect.any(MetadataValidationState),
           cardinality: { type: 'exact', value: 3 },
           variables: [
             { variable: DF.variable('p'), canBeUndef: false },
@@ -403,6 +408,7 @@ describe('QuerySourceSparql', () => {
       ), ctx);
       await expect(new Promise(resolve => stream2.getProperty('metadata', resolve))).resolves
         .toEqual({
+          state: expect.any(MetadataValidationState),
           cardinality: { type: 'exact', value: 3 },
 
           variables: [
@@ -425,6 +431,7 @@ describe('QuerySourceSparql', () => {
       ), ctx);
       await expect(new Promise(resolve => stream1.getProperty('metadata', resolve))).resolves
         .toEqual({
+          state: expect.any(MetadataValidationState),
           cardinality: { type: 'exact', value: 3 },
           variables: [
             { variable: DF.variable('p'), canBeUndef: false },
@@ -442,6 +449,7 @@ describe('QuerySourceSparql', () => {
       ), ctx);
       await expect(new Promise(resolve => stream2.getProperty('metadata', resolve))).resolves
         .toEqual({
+          state: expect.any(MetadataValidationState),
           cardinality: { type: 'exact', value: 3 },
 
           variables: [
@@ -576,6 +584,7 @@ describe('QuerySourceSparql', () => {
 
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve))).resolves
         .toEqual({
+          state: expect.any(MetadataValidationState),
           cardinality: { type: 'exact', value: 3 },
           variables: [
             { variable: DF.variable('p1'), canBeUndef: false },
@@ -658,6 +667,7 @@ describe('QuerySourceSparql', () => {
       );
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve))).resolves
         .toEqual({
+          state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
 
           variables: [
@@ -712,6 +722,8 @@ describe('QuerySourceSparql', () => {
       );
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve))).resolves
         .toEqual({
+          state: expect.any(MetadataValidationState),
+
           cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
 
           variables: [
@@ -895,6 +907,7 @@ describe('QuerySourceSparql', () => {
       );
       await expect(new Promise(resolve => ret.getProperty('metadata', resolve))).resolves
         .toEqual({
+          state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
 
           variables: [],
@@ -923,6 +936,7 @@ describe('QuerySourceSparql', () => {
         stream.getProperty('metadata', resolve);
       })).resolves
         .toEqual({
+          state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
 
           variables: [
@@ -1030,6 +1044,7 @@ WHERE { undefined:s ?p undefined:o. }` }),
       );
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve))).resolves
         .toEqual({
+          state: expect.any(MetadataValidationState),
           cardinality: { type: 'exact', value: 3 },
 
           variables: [

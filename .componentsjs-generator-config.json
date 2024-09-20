@@ -14,6 +14,9 @@
     "packages/packager",
     "packages/runner-cli",
     "packages/expression-evaluator",
+    "packages/statistic-base",
+    "packages/statistic-link-dereference",
+    "packages/statistic-link-discovery",
     "packages/utils-bindings-index"
   ],
   "ignoreComponents": [
@@ -46,6 +49,11 @@
     "Response",
     "RequestInfo",
     "RequestInit",
+
+    "IStatistic",
+    "ILink",
+    "StatisticLinkDiscovery",
+    "StatisticLinkDereference",
 
     "IQueryableResultStream",
     "IQueryableResultBindings",

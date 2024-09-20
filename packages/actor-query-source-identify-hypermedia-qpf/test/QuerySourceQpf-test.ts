@@ -4,6 +4,7 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActorDereferenceRdfOutput } from '@comunica/bus-dereference-rdf';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
@@ -352,6 +353,7 @@ describe('QuerySourceQpf', () => {
               },
             ],
           },
+          state: expect.any(MetadataValidationState),
           cardinality: { type: 'exact', value: 2 },
           variables: [
             { variable: DF.variable('v1'), canBeUndef: false },
@@ -381,6 +383,7 @@ describe('QuerySourceQpf', () => {
               },
             ],
           },
+          state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: 2 },
           variables: [
             { variable: DF.variable('v1'), canBeUndef: false },
@@ -411,6 +414,7 @@ describe('QuerySourceQpf', () => {
               },
             ],
           },
+          state: expect.any(MetadataValidationState),
           cardinality: { type: 'exact', value: 2 },
           variables: [
             { variable: DF.variable('v1'), canBeUndef: false },
@@ -436,6 +440,7 @@ describe('QuerySourceQpf', () => {
             { variable: DF.variable('v2'), canBeUndef: false },
             { variable: DF.variable('v3'), canBeUndef: false },
           ],
+          state: expect.any(MetadataValidationState),
         });
       });
 
@@ -582,6 +587,7 @@ describe('QuerySourceQpf', () => {
           subsetOf: 'url',
           cardinality: { type: 'exact', value: 2 },
           order: undefined,
+          state: expect.any(MetadataValidationState),
           variables: [{ variable: v1, canBeUndef: false }, { variable: v2, canBeUndef: false }],
         });
       });
@@ -595,6 +601,7 @@ describe('QuerySourceQpf', () => {
           subsetOf: 'url',
           cardinality: { type: 'estimate', value: 2 },
           order: undefined,
+          state: expect.any(MetadataValidationState),
           variables: [{ variable: v1, canBeUndef: false }, { variable: v2, canBeUndef: false }],
         });
       });

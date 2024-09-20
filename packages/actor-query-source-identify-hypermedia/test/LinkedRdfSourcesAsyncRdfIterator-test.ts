@@ -1,11 +1,12 @@
 import { Readable } from 'node:stream';
 import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
 import { BindingsFactory } from '@comunica/bindings-factory';
-import type { ILink } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { ILinkQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
+import { KeysStatistics } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
-import type { IActionContext, IQueryBindingsOptions, MetadataBindings } from '@comunica/types';
+import { StatisticLinkDereference } from '@comunica/statistic-link-dereference';
+import type { ILink, IActionContext, IQueryBindingsOptions, MetadataBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -107,7 +108,7 @@ function getPage(link: ILink): number {
 describe('LinkedRdfSourcesAsyncRdfIterator', () => {
   const operation = AF.createPattern(v, v, v, v);
   const queryBindingsOptions: IQueryBindingsOptions = {};
-  const context = new ActionContext();
+  let context: IActionContext = new ActionContext();
 
   // Source input is array of arrays (`data`), with every array corresponding to a page.
   let data: RDF.Bindings[][];
@@ -147,6 +148,10 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         },
       };
     };
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   it('A LinkedRdfSourcesAsyncRdfIterator instance with negative maxIterators', () => {
@@ -675,6 +680,33 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
           // Do nothing
         });
       })).rejects.toThrow(new Error('accumulateMetadata error'));
+    });
+    it('records dereference events when passed a dereference statistic', async() => {
+      const cb = jest.fn((data: ILink) => {});
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date('2021-01-01T00:00:00Z').getTime());
+
+      const statisticTracker: StatisticLinkDereference = new StatisticLinkDereference();
+      statisticTracker.on(cb);
+
+      context = context.set(KeysStatistics.dereferencedLinks, statisticTracker);
+
+      data = toBindings([[
+        [ 'a', 'b', 'c' ],
+        [ 'd', 'e', 'f' ],
+        [ 'g', 'h', 'i' ],
+      ]]);
+      const it = new DummyIterator(operation, queryBindingsOptions, context, 'first', sourceStateGetter);
+      await it.toArray();
+      expect(cb).toHaveBeenCalledWith({
+        url: 'P1',
+        metadata: {
+          dereferencedTimestamp: performance.now(),
+          dereferenceOrder: 0,
+          requestedPage: 1,
+          type: 'Object',
+        },
+      });
     });
   });
 });

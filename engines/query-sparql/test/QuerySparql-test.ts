@@ -1,6 +1,8 @@
 /** @jest-environment setup-polly-jest/jest-environment-node */
 
 import { QuerySourceSkolemized } from '@comunica/actor-context-preprocess-query-source-skolemize';
+import type { Bindings } from '@comunica/bindings-factory';
+import { BindingsFactory } from '@comunica/bindings-factory';
 import { KeysHttpWayback, KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { BlankNodeScoped } from '@comunica/data-factory';
 import type { QueryBindings, QueryStringContext } from '@comunica/types';
@@ -8,6 +10,7 @@ import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import 'jest-rdf';
+import '@comunica/jest';
 import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
@@ -15,6 +18,7 @@ import { QueryEngine } from '../lib/QueryEngine';
 import { fetch as cachedFetch } from './util';
 
 const DF = new DataFactory();
+const BF = new BindingsFactory(DF);
 const factory = new Factory();
 
 globalThis.fetch = cachedFetch;
@@ -657,24 +661,22 @@ describe('System test: QuerySparql', () => {
             FILTER(lang(?name) = 'nl')
           }
         }`, { sources: [ store ]});
-        const results = await arrayifyStream(await result.execute());
 
-        const expectedResult = [
-          [
+        const expectedResult: Bindings[] = [
+          BF.bindings([
             [ DF.variable('s'), DF.namedNode('http://ex.org/Pluto') ],
             [ DF.variable('p'), DF.namedNode('http://ex.org/type') ],
             [ DF.variable('o'), DF.namedNode('http://ex.org/Dog') ],
-          ],
-          [
+          ]),
+          BF.bindings([
             [ DF.variable('name'), DF.literal('Lorem ipsum', 'nl') ],
             [ DF.variable('s'), DF.namedNode('http://ex.org/Mickey') ],
             [ DF.variable('p'), DF.namedNode('http://ex.org/name') ],
             [ DF.variable('o'), DF.literal('Lorem ipsum', 'nl') ],
-          ],
+          ]),
         ];
 
-        const bindings = results.map(binding => [ ...binding ]);
-        expect(bindings).toMatchObject(expectedResult);
+        await expect(result.execute()).resolves.toEqualBindingsStream(expectedResult);
       });
 
       it('should handle join with empty estimate cardinality', async() => {

@@ -6,15 +6,17 @@ import type {
 import { ActorContextPreprocess } from '@comunica/bus-context-preprocess';
 import type { ActorHttpInvalidateListenable, IActionHttpInvalidate } from '@comunica/bus-http-invalidate';
 import type { MediatorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
-import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation, KeysStatistics } from '@comunica/context-entries';
 import type { IAction, IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid, ActionContext } from '@comunica/core';
 import type {
+  ILink,
   IQuerySourceWrapper,
   QuerySourceUnidentified,
   QuerySourceUnidentifiedExpanded,
   IActionContext,
   IQuerySourceUnidentifiedExpanded,
+  IStatisticBase,
 } from '@comunica/types';
 import { LRUCache } from 'lru-cache';
 
@@ -54,6 +56,21 @@ export class ActorContextPreprocessQuerySourceIdentify extends ActorContextPrepr
         .map(querySource => this.expandSource(querySource)));
       const querySources: IQuerySourceWrapper[] = await Promise.all(querySourcesUnidentifiedExpanded
         .map(async querySourceUnidentified => this.identifySource(querySourceUnidentified, action.context)));
+
+      // When identifying sources in preprocess actor, we record this as a dereference seed document event
+      const statisticDereferenceLinks: IStatisticBase<ILink> | undefined = action.context
+        .get(KeysStatistics.dereferencedLinks);
+      if (statisticDereferenceLinks) {
+        for (const querySource of querySources) {
+          statisticDereferenceLinks.updateStatistic({
+            url: <string> querySource.source.referenceValue,
+            metadata: {
+              seed: true,
+            },
+          }, querySource.source);
+        }
+      }
+
       context = action.context
         .delete(KeysInitQuery.querySourcesUnidentified)
         .set(KeysQueryOperation.querySources, querySources);
