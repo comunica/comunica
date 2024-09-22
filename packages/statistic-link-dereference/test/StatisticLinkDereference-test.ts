@@ -53,7 +53,6 @@ describe('StatisticLinkDereference', () => {
       source = new MockQuerySource('url');
     });
 
-    // TODO Move to statisticBase
     it('attach an event listener', () => {
       statisticLinkDereference.on(cb);
       expect(statisticLinkDereference.getListeners()).toEqual(

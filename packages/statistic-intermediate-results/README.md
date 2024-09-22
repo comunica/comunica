@@ -14,17 +14,16 @@ This module is part of the [Comunica framework](https://github.com/comunica/comu
 ```bash
 $ yarn add @comunica/statistic-link-dereference
 ```
-TODO Update README.md on how to use tracker. This will probably be through defining the wrap stream, process iterator actor,
-and context preprocess actor. Consider whether we want comunica to add this through a preprocess actor or through the config
 ## Using the tracker
 
+### Adding the tracker to the context
 ```javascript
     const QueryEngine = require('@comunica/query-sparql').QueryEngine;
     const myEngine = new QueryEngine();
-    const statisticTracker = new StatisticLinkDereference();
+    const statisticTracker = new StatisticIntermediateResults();
 
     // Print any data emitted by the tracker
-    statisticTracker.on((data) => console.log(data));
+    statisticTracker.on((intermediateResult) => console.log(intermediateResult));
 
     // Add the tracker to the context
     let context = {sources: ['https://fragments.dbpedia.org/2015/en']};
@@ -39,3 +38,8 @@ and context preprocess actor. Consider whether we want comunica to add this thro
         console.log(binding.toString());
     });
 ```
+
+### Allowing Comunica to call the tracker
+Comunica does not call the `updateStatistic` function by default. To enable this users should first add the following actors to the config:
+`actor-query-operation-wrap-stream` and `actor-rdf-join-wrap-stream`. This will call the `bus-iterator-transform` for each intermediate iterator produced
+by Comunica. Users should then add `actor-iterator-transform-record-intermediate-results` to the config, which will call the `updateStatistic` method of `statistic-intermediate-result` for each produced intermediate result.
