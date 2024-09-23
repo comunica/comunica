@@ -4,12 +4,12 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type { Quad } from 'rdf-data-factory';
 import { DataFactory } from 'rdf-data-factory';
-import { ActorHashQuadsSha1 } from '../lib/ActorHashQuadsSha1';
+import { ActorHashQuadsMurmur } from '../lib/ActorHashQuadsMurmur';
 import '@comunica/jest';
 
 const DF = new DataFactory();
 
-describe('ActorHashQuadsSha1', () => {
+describe('ActorHashQuadsMurmur', () => {
   let bus: any;
   let context: IActionContext;
 
@@ -18,28 +18,28 @@ describe('ActorHashQuadsSha1', () => {
     context = new ActionContext();
   });
 
-  describe('The ActorHashQuadsSha1 module', () => {
+  describe('The ActorHashQuadsMurmur module', () => {
     it('should be a function', () => {
-      expect(ActorHashQuadsSha1).toBeInstanceOf(Function);
+      expect(ActorHashQuadsMurmur).toBeInstanceOf(Function);
     });
 
-    it('should be a ActorHashQuadsSha1 constructor', () => {
-      expect(new (<any> ActorHashQuadsSha1)({ name: 'actor', bus })).toBeInstanceOf(ActorHashQuadsSha1);
-      expect(new (<any> ActorHashQuadsSha1)({ name: 'actor', bus })).toBeInstanceOf(ActorHashQuads);
+    it('should be a ActorHashQuadsMurmur constructor', () => {
+      expect(new (<any> ActorHashQuadsMurmur)({ name: 'actor', bus })).toBeInstanceOf(ActorHashQuadsMurmur);
+      expect(new (<any> ActorHashQuadsMurmur)({ name: 'actor', bus })).toBeInstanceOf(ActorHashQuads);
     });
 
-    it('should not be able to create new ActorHashQuadsSha1 objects without \'new\'', () => {
+    it('should not be able to create new ActorHashQuadsMurmur objects without \'new\'', () => {
       expect(() => {
-        (<any> ActorHashQuadsSha1)();
-      }).toThrow(`Class constructor ActorHashQuadsSha1 cannot be invoked without 'new'`);
+        (<any> ActorHashQuadsMurmur)();
+      }).toThrow(`Class constructor ActorHashQuadsMurmur cannot be invoked without 'new'`);
     });
   });
 
-  describe('An ActorHashQuadsSha1 instance', () => {
-    let actor: ActorHashQuadsSha1;
+  describe('An ActorHashQuadsMurmur instance', () => {
+    let actor: ActorHashQuadsMurmur;
 
     beforeEach(() => {
-      actor = new ActorHashQuadsSha1({ name: 'actor', bus });
+      actor = new ActorHashQuadsMurmur({ name: 'actor', bus });
     });
 
     it('should test with allowHashCollisions true', async() => {

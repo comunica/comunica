@@ -56,7 +56,7 @@
     "@comunica/actor-context-preprocess-set-defaults": "^3.2.1",
     "@comunica/actor-context-preprocess-source-to-destination": "^3.2.1",
     "@comunica/actor-hash-bindings-murmur": "^3.2.1",
-    "@comunica/actor-hash-quads-sha1": "^3.2.1",
+    "@comunica/actor-hash-quads-murmur": "^3.2.1",
     "@comunica/actor-init-query": "^3.2.1",
     "@comunica/actor-optimize-query-operation-assign-sources-exhaustive": "^3.2.2",
     "@comunica/actor-optimize-query-operation-bgp-to-join": "^3.2.1",

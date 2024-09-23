@@ -1,7 +1,7 @@
 {
-  "name": "@comunica/actor-hash-quads-sha1",
+  "name": "@comunica/actor-hash-quads-murmur",
   "version": "3.2.1",
-  "description": "A hash quads actor that provides the SHA1 function",
+  "description": "A murmur hash-quads actor",
   "lsd:module": true,
   "license": "MIT",
   "funding": {
@@ -12,7 +12,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-hash-quads-sha1"
+    "directory": "packages/actor-hash-quads-murmur"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"
@@ -20,9 +20,8 @@
   "keywords": [
     "comunica",
     "actor",
-    "hash",
-    "quads",
-    "sha1"
+    "hash-quads",
+    "murmur"
   ],
   "sideEffects": false,
   "main": "lib/index.js",
@@ -37,14 +36,14 @@
     "lib/**/*.js.map"
   ],
   "scripts": {
-    "build": "npm run build:ts && npm run build:components",
+    "build": "yarn run build:ts && yarn run build:components",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
     "@comunica/bus-hash-quads": "^3.2.1",
     "@comunica/core": "^3.2.1",
-    "hash.js": "^1.1.7",
-    "rdf-string": "^1.6.1"
+    "@types/imurmurhash": "^0.1.4",
+    "imurmurhash": "^0.1.4"
   }
 }
