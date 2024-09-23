@@ -163,7 +163,7 @@ describe('ActorRdfJoinWrapStream', () => {
       };
     });
 
-    it('should test', async() => {
+    it('should return correct coefficients', async() => {
       await expect(actorWrapStream.test(action2)).resolves.toEqual({
         iterations: -1,
         persistedItems: -1,

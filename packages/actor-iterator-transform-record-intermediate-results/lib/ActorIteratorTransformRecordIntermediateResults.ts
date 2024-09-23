@@ -1,6 +1,5 @@
 import type {
   IActionIteratorTransform,
-  IActorIteratorTransformArgs,
   ITransformIteratorOutput }
   from '@comunica/bus-iterator-transform';
 import { ActorIteratorTransform } from '@comunica/bus-iterator-transform';
@@ -11,7 +10,7 @@ import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 
 /**
- * A comunica Count Intermediate Results Iterator Transform Actor.
+ * A comunica Record Intermediate Results Iterator Transform Actor.
  * This actor simply updates the intermediate result statistic when an intermediate result is produced.
  */
 export class ActorIteratorTransformRecordIntermediateResults
@@ -19,10 +18,6 @@ export class ActorIteratorTransformRecordIntermediateResults
     AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>,
     MetadataBindings | MetadataQuads
 > {
-  public constructor(args: IActorIteratorTransformArgs) {
-    super(args);
-  }
-
   public async transformIterator<
     T extends AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>,
     M extends MetadataBindings | MetadataQuads,

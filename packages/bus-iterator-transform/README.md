@@ -24,4 +24,4 @@ $ yarn add @comunica/bus-iterator-transform
 
 ## Creating actors on this bus
 
-Actors extending [`ActorIteratorTransform`](TODO:jsdoc_url) are automatically subscribed to this bus.
+Actors extending [`ActorIteratorTransform`](https://comunica.github.io/comunica/classes/_comunica_bus_iterator_transform.ActorIteratorTransform.html) are automatically subscribed to this bus.

@@ -432,7 +432,7 @@ export abstract class ActorRdfJoin
         planMetadata,
       );
     }
-    // Ensure next call to rdf join will be wrapped
+
     action.context = ActorRdfJoin.setContextWrapped(action.context, false);
 
     // Get action output

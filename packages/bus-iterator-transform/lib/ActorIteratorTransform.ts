@@ -78,9 +78,6 @@ export interface IActionIteratorTransform<T, M> extends IAction {
   metadata?: Record<string, any>;
 }
 
-/**
- * TODO If this fails for multiple transforms its because of lack of context, SO CHECK IT
- */
 export interface IActorIteratorTransformOutput<T, M> extends IActorOutput {
   /**
    * The operation that produced the stream

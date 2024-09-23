@@ -1,14 +1,14 @@
 {
   "name": "@comunica/actor-iterator-transform-record-intermediate-results",
   "version": "3.2.1",
-  "description": "A count-intermediate-results iterator-transform actor",
+  "description": "A record-intermediate-results iterator-transform actor",
   "lsd:module": true,
   "license": "MIT",
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-iterator-transform-count-intermediate-results"
+    "directory": "packages/actor-iterator-transform-record-intermediate-results"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"
@@ -17,7 +17,7 @@
     "comunica",
     "actor",
     "iterator-transform",
-    "count-intermediate-results"
+    "record-intermediate-results"
   ],
   "sideEffects": false,
   "main": "lib/index.js",

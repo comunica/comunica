@@ -15,7 +15,7 @@ import { ActorIteratorTransformRecordIntermediateResults }
 const DF = new DataFactory();
 const BF = new BindingsFactory();
 
-describe('ActorProcessIteratorCountIntermediateResults', () => {
+describe('ActorProcessIteratorRecordIntermediateResults', () => {
   let bus: any;
 
   beforeEach(() => {
@@ -24,7 +24,7 @@ describe('ActorProcessIteratorCountIntermediateResults', () => {
     jest.setSystemTime(new Date('2021-01-01T00:00:00Z').getTime());
   });
 
-  describe('An ActorProcessIteratorCountIntermediateResults instance', () => {
+  describe('An ActorProcessIteratorRecordIntermediateResults instance', () => {
     let actor: ActorIteratorTransformRecordIntermediateResults;
     const statisticIntermediateResults = new StatisticIntermediateResults();
     let actionBindings: IActionIteratorTransform<AsyncIterator<RDF.Bindings>, MetadataBindings>;
@@ -120,7 +120,7 @@ describe('ActorProcessIteratorCountIntermediateResults', () => {
         );
       });
       it('transform iterator should return mapped stream and unchanged metadata', async() => {
-        actionBindings.context = actionQuads.context.set(
+        actionBindings.context = actionBindings.context.set(
           KeysStatistics.intermediateResults,
           statisticIntermediateResults,
         );
@@ -133,7 +133,7 @@ describe('ActorProcessIteratorCountIntermediateResults', () => {
 
       it('should apply transform to input bindings stream', async() => {
         const statisticEmitSpy = jest.spyOn(statisticIntermediateResults, 'emit');
-        actionBindings.context = actionQuads.context.set(
+        actionBindings.context = actionBindings.context.set(
           KeysStatistics.intermediateResults,
           statisticIntermediateResults,
         );

@@ -333,7 +333,7 @@ describe('ActorQueryOperationWrapStream', () => {
           },
           context: undefined,
         });
-      actionQuads.type = 'void';
+      actionQuads.type = 'boolean';
       const output: IQueryOperationResultQuads =
         <IQueryOperationResultQuads> await actorWrapStream.run(actionQuads);
       expect(output).toEqual(

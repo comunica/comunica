@@ -12,28 +12,35 @@ This module is part of the [Comunica framework](https://github.com/comunica/comu
 ## Install
 
 ```bash
-$ yarn add @comunica/statistic-link-dereference
+$ yarn add @comunica/statistic-intermediate-results
 ```
 ## Using the tracker
 
 ### Adding the tracker to the context
 ```javascript
+    // Import the tracker
+    import { StatisticIntermediateResults } from '@comunica/statistic-intermediate-results';
+
+    // Create the Comunica engine
     const QueryEngine = require('@comunica/query-sparql').QueryEngine;
     const myEngine = new QueryEngine();
     const statisticTracker = new StatisticIntermediateResults();
 
-    // Print any data emitted by the tracker
+    // Set up an event listener to handle data emitted by the tracker
     statisticTracker.on((intermediateResult) => console.log(intermediateResult));
 
-    // Add the tracker to the context
+    // Create a context object with the data source and add the tracker
     let context = {sources: ['https://fragments.dbpedia.org/2015/en']};
     context[statisticTracker.key.name] = statisticTracker;
 
-    // Execute the query
+    // Execute a SPARQL query using the engine with the configured context
     const bindingsStream = await myEngine.queryBindings(`
     SELECT ?s ?p ?o WHERE {
         ?s ?p ?o
     } LIMIT 10`, context);
+
+    // Process the query results, as this runs intermediate results will be
+    // logged
     bindingsStream.on('data', (binding) => {
         console.log(binding.toString());
     });
