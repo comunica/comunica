@@ -30,8 +30,7 @@ export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
   public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
     const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
     const variables = ActorRdfJoin.overlappingVariables(metadatas);
-    const { hashFunction } = await this.mediatorHashBindings
-      .mediate({ allowHashCollisions: true, context: action.context });
+    const { hashFunction } = await this.mediatorHashBindings.mediate({ context: action.context });
     const variablesRaw = variables.map(v => v.variable);
     const join = new SymmetricHashJoin<Bindings, number, Bindings>(
       action.entries[0].output.bindingsStream,

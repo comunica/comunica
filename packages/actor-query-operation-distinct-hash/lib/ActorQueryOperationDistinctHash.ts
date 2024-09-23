@@ -76,7 +76,7 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
     context: IActionContext,
     variables: RDF.Variable[],
   ): Promise<(bindings: Bindings) => boolean> {
-    const { hashFunction } = await this.mediatorHashBindings.mediate({ allowHashCollisions: true, context });
+    const { hashFunction } = await this.mediatorHashBindings.mediate({ context });
     const hashes: Record<number, boolean> = {};
     return (bindings: Bindings) => {
       const hash: number = hashFunction(bindings, variables);
@@ -95,7 +95,7 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
     if (this.mediatorHashQuads === undefined) {
       return _quad => true;
     }
-    const { hashFunction } = await this.mediatorHashQuads.mediate({ allowHashCollisions: true, context });
+    const { hashFunction } = await this.mediatorHashQuads.mediate({ context });
     const hashes: Record<number, boolean> = {};
     return (quad: RDF.Quad) => {
       const hash: number = hashFunction(quad);

@@ -1,7 +1,7 @@
 import type { IActionHashBindings, IActorHashBindingsOutput } from '@comunica/bus-hash-bindings';
 import { ActorHashBindings } from '@comunica/bus-hash-bindings';
 import type { TestResult, IActorTest } from '@comunica/core';
-import { failTest, passTestVoid } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 
 // eslint-disable-next-line ts/no-require-imports,ts/no-var-requires
 const MurmurHash3 = require('imurmurhash');
@@ -10,10 +10,7 @@ const MurmurHash3 = require('imurmurhash');
  * A comunica Murmur Hash Bindings Actor.
  */
 export class ActorHashBindingsMurmur extends ActorHashBindings {
-  public async test(action: IActionHashBindings): Promise<TestResult<IActorTest>> {
-    if (!action.allowHashCollisions) {
-      return failTest(`Actor ${this.name} can not provide hash functions without hash collisions`);
-    }
+  public async test(_action: IActionHashBindings): Promise<TestResult<IActorTest>> {
     return passTestVoid();
   }
 
@@ -26,7 +23,6 @@ export class ActorHashBindingsMurmur extends ActorHashBindings {
         }
         return hash.result();
       },
-      hashCollisions: true,
     };
   }
 }

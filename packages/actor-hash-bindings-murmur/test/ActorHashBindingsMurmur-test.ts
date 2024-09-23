@@ -43,30 +43,18 @@ describe('ActorHashBindingsMurmur', () => {
       actor = new ActorHashBindingsMurmur({ name: 'actor', bus });
     });
 
-    it('should test with allowHashCollisions true', async() => {
+    it('should test', async() => {
       const action: IActionHashBindings = {
         context: new ActionContext(),
-        allowHashCollisions: true,
       };
       await expect(actor.test(action)).resolves.toPassTestVoid();
-    });
-
-    it('should not test with allowHashCollisions false', async() => {
-      const action: IActionHashBindings = {
-        context: new ActionContext(),
-        allowHashCollisions: false,
-      };
-      await expect(actor.test(action)).resolves
-        .toFailTest(`Actor actor can not provide hash functions without hash collisions`);
     });
 
     it('should run', async() => {
       const action: IActionHashBindings = {
         context: new ActionContext(),
-        allowHashCollisions: false,
       };
       const result = await actor.run(action);
-      expect(result.hashCollisions).toBe(true);
       const vars = [ DF.variable('a'), DF.variable('b') ];
 
       expect(result.hashFunction(BF.bindings([

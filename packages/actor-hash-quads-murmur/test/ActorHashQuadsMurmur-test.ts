@@ -42,30 +42,18 @@ describe('ActorHashQuadsMurmur', () => {
       actor = new ActorHashQuadsMurmur({ name: 'actor', bus });
     });
 
-    it('should test with allowHashCollisions true', async() => {
+    it('should test', async() => {
       const action: IActionHashQuads = {
         context: new ActionContext(),
-        allowHashCollisions: true,
       };
       await expect(actor.test(action)).resolves.toPassTestVoid();
-    });
-
-    it('should not test with allowHashCollisions false', async() => {
-      const action: IActionHashQuads = {
-        context: new ActionContext(),
-        allowHashCollisions: false,
-      };
-      await expect(actor.test(action)).resolves
-        .toFailTest(`Actor actor can not provide hash functions without hash collisions`);
     });
 
     it('should run', async() => {
       const action: IActionHashQuads = {
         context: new ActionContext(),
-        allowHashCollisions: false,
       };
       const result = await actor.run(action);
-      expect(result.hashCollisions).toBe(true);
 
       const quad1: Quad = DF.quad(
         DF.namedNode('s'),

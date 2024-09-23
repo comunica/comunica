@@ -87,8 +87,7 @@ export class ActorRdfJoinHash extends ActorRdfJoin {
       });
     } else {
       /* Don't handle undefined values in bindings */
-      const { hashFunction } = await this.mediatorHashBindings
-        .mediate({ allowHashCollisions: true, context: action.context });
+      const { hashFunction } = await this.mediatorHashBindings.mediate({ context: action.context });
       const variablesRaw = variables.map(v => v.variable);
       bindingsStream = new HashJoin<Bindings, number, Bindings>(
         action.entries[0].output.bindingsStream,

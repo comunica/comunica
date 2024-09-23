@@ -57,7 +57,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
     const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context, dataFactory);
     // Create a hash function
-    const { hashFunction } = await this.mediatorHashBindings.mediate({ allowHashCollisions: true, context });
+    const { hashFunction } = await this.mediatorHashBindings.mediate({ context });
 
     // Get result stream for the input query
     const { input, aggregates } = operation;

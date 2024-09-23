@@ -26,25 +26,19 @@ export abstract class ActorHashQuads<TS = undefined>
 }
 
 export interface IActionHashQuads extends IAction {
-  /**
-   * If hash collisions are allowed.
-   */
-  allowHashCollisions: boolean;
 }
 
 export interface IActorHashQuadsOutput extends IActorOutput {
   /**
    * A number-based hash factory of the given object.
    * It is recommended to always return 32-bit numbers to enable SMI optimization.
+   *
+   * Hash functions could produce collisions for non-equal quads.
+   *
    * @param {RDF.Quad} quads The quads to hash.
    * @return {string} The object's hash.
    */
   hashFunction: HashFunction;
-
-  /**
-   * If hash collisions are possible with the given hash function.
-   */
-  hashCollisions: boolean;
 }
 
 export type HashFunction = (quad: Quad) => number;

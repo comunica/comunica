@@ -53,7 +53,7 @@ export class ActorQueryOperationReducedHash extends ActorQueryOperationTypedMedi
     context: IActionContext,
     variables: RDF.Variable[],
   ): Promise<(bindings: Bindings) => boolean> {
-    const { hashFunction } = await this.mediatorHashBindings.mediate({ allowHashCollisions: true, context });
+    const { hashFunction } = await this.mediatorHashBindings.mediate({ context });
     const hashes = new LRUCache<number, boolean>({ max: this.cacheSize });
     return (bindings: Bindings) => {
       const hash: number = hashFunction(bindings, variables);
