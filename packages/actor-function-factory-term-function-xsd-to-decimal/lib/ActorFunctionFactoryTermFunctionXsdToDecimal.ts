@@ -15,7 +15,11 @@ import { TermFunctionXsdToDecimal } from './TermFunctionXsdToDecimal';
  */
 export class ActorFunctionFactoryTermFunctionXsdToDecimal extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ TypeURL.XSD_DECIMAL ], true);
+    super({
+      ...args,
+      functionNames: [ TypeURL.XSD_DECIMAL ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

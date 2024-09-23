@@ -15,7 +15,11 @@ import { TermFunctionXsdToInteger } from './TermFunctionXsdToInteger';
  */
 export class ActorFunctionFactoryTermFunctionXsdToInteger extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ TypeURL.XSD_INTEGER ], true);
+    super({
+      ...args,
+      functionNames: [ TypeURL.XSD_INTEGER ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

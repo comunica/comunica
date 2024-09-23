@@ -15,7 +15,11 @@ import { TermFunctionTimezone } from './TermFunctionTimezone';
  */
 export class ActorFunctionFactoryTermFunctionTimezone extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.TIMEZONE ], true);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.TIMEZONE ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

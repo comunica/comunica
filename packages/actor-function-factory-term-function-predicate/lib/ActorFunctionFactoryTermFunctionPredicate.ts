@@ -16,7 +16,11 @@ import { TermFunctionPredicate } from './TermFunctionPredicate';
  */
 export class ActorFunctionFactoryTermFunctionPredicate extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.PREDICATE ], true);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.PREDICATE ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

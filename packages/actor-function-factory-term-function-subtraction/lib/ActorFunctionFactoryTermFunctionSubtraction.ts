@@ -16,7 +16,11 @@ import { TermFunctionSubtraction } from './TermFunctionSubtraction';
  */
 export class ActorFunctionFactoryTermFunctionSubtraction extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.SUBTRACTION ], true);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.SUBTRACTION ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

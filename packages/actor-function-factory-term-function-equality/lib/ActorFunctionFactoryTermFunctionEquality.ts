@@ -16,7 +16,11 @@ import { TermFunctionEquality } from './TermFunctionEquality';
  */
 export class ActorFunctionFactoryTermFunctionEquality extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.EQUAL ], true);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.EQUAL ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

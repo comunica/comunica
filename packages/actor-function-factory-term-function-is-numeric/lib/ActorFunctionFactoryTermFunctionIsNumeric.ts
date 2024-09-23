@@ -16,7 +16,11 @@ import { TermFunctionIsNumeric } from './TermFunctionIsNumeric';
  */
 export class ActorFunctionFactoryTermFunctionIsNumeric extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.IS_NUMERIC ], true);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.IS_NUMERIC ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

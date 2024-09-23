@@ -16,7 +16,11 @@ import { TermFunctionIsBlank } from './TermFunctionIsBlank';
  */
 export class ActorFunctionFactoryTermFunctionIsBlank extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.IS_BLANK ], true);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.IS_BLANK ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

@@ -17,7 +17,11 @@ import { ExpressionFunctionBound } from './ExpressionFunctionBound';
  */
 export class ActorFunctionFactoryExpressionFunctionBound extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.BOUND ], false);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.BOUND ],
+      termFunction: false,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

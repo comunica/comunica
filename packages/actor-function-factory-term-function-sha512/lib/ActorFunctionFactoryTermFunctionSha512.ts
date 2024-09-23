@@ -16,7 +16,11 @@ import { TermFunctionSha512 } from './TermFunctionSha512';
  */
 export class ActorFunctionFactoryTermFunctionSha512 extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.SHA512 ], true);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.SHA512 ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

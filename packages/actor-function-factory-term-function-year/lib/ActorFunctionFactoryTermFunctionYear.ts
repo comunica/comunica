@@ -15,7 +15,11 @@ import { TermFunctionYear } from './TermFunctionYear';
  */
 export class ActorFunctionFactoryTermFunctionYear extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.YEAR ], true);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.YEAR ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

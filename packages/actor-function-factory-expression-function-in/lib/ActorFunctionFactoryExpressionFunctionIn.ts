@@ -14,7 +14,7 @@ import {
 import { SparqlOperator } from '@comunica/expression-evaluator';
 import { ExpressionFunctionIn } from './ExpressionFunctionIn';
 
-interface ActorFunctionFactoryExpressionFunctionInArgs extends IActorFunctionFactoryArgs {
+interface IActorFunctionFactoryExpressionFunctionInArgs extends IActorFunctionFactoryArgs {
   mediatorFunctionFactory: MediatorFunctionFactoryUnsafe;
 }
 
@@ -24,8 +24,12 @@ interface ActorFunctionFactoryExpressionFunctionInArgs extends IActorFunctionFac
 export class ActorFunctionFactoryExpressionFunctionIn extends ActorFunctionFactoryDedicated {
   private readonly mediatorFunctionFactory: MediatorFunctionFactory;
 
-  public constructor(args: ActorFunctionFactoryExpressionFunctionInArgs) {
-    super(args, [ SparqlOperator.IN ], false);
+  public constructor(args: IActorFunctionFactoryExpressionFunctionInArgs) {
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.IN ],
+      termFunction: false,
+    });
     this.mediatorFunctionFactory = <MediatorFunctionFactory> args.mediatorFunctionFactory;
   }
 

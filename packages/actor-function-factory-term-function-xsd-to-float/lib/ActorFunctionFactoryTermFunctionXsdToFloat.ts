@@ -15,7 +15,11 @@ import { TermFunctionXsdToFloat } from './TermFunctionXsdToFloat';
  */
 export class ActorFunctionFactoryTermFunctionXsdToFloat extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ TypeURL.XSD_FLOAT ], true);
+    super({
+      ...args,
+      functionNames: [ TypeURL.XSD_FLOAT ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

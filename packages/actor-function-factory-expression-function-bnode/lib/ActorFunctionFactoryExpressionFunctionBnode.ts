@@ -17,7 +17,11 @@ import { ExpressionFunctionBnode } from './ExpressionFunctionBnode';
  */
 export class ActorFunctionFactoryExpressionFunctionBnode extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.BNODE ], false);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.BNODE ],
+      termFunction: false,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

@@ -16,7 +16,11 @@ import { TermFunctionDatatype } from './TermFunctionDatatype';
  */
 export class ActorFunctionFactoryTermFunctionDatatype extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.DATATYPE ], true);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.DATATYPE ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

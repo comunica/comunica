@@ -17,7 +17,11 @@ import { ExpressionFunctionConcat } from './ExpressionFunctionConcat';
  */
 export class ActorFunctionFactoryExpressionFunctionConcat extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.CONCAT ], false);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.CONCAT ],
+      termFunction: false,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

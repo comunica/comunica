@@ -16,7 +16,11 @@ import { TermFunctionReplace } from './TermFunctionReplace';
  */
 export class ActorFunctionFactoryTermFunctionReplace extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.REPLACE ], true);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.REPLACE ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

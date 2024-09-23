@@ -16,7 +16,11 @@ import { TermFunctionIsIri } from './TermFunctionIsIri';
  */
 export class ActorFunctionFactoryTermFunctionIsIri extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.IS_IRI, SparqlOperator.IS_URI ], true);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.IS_IRI, SparqlOperator.IS_URI ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

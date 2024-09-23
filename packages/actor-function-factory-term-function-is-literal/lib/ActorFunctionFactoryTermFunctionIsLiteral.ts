@@ -16,7 +16,11 @@ import { TermFunctionIsLiteral } from './TermFunctionIsLiteral';
  */
 export class ActorFunctionFactoryTermFunctionIsLiteral extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.IS_LITERAL ], true);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.IS_LITERAL ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

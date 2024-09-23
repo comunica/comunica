@@ -16,7 +16,11 @@ import { TermFunctionIsTriple } from './TermFunctionIsTriple';
  */
 export class ActorFunctionFactoryTermFunctionIsTriple extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.IS_TRIPLE ], true);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.IS_TRIPLE ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

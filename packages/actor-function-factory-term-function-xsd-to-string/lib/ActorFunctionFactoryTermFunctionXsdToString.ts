@@ -15,7 +15,11 @@ import { TermFunctionXsdToString } from './TermFunctionXsdToString';
  */
 export class ActorFunctionFactoryTermFunctionXsdToString extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ TypeURL.XSD_STRING ], true);
+    super({
+      ...args,
+      functionNames: [ TypeURL.XSD_STRING ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

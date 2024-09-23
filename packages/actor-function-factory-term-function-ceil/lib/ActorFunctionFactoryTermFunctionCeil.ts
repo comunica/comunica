@@ -16,7 +16,11 @@ import { TermFunctionCeil } from './TermFunctionCeil';
  */
 export class ActorFunctionFactoryTermFunctionCeil extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.CEIL ], true);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.CEIL ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

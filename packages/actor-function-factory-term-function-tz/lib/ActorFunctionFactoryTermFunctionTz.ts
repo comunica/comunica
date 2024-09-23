@@ -15,7 +15,11 @@ import { TermFunctionTz } from './TermFunctionTz';
  */
 export class ActorFunctionFactoryTermFunctionTz extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.TZ ], true);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.TZ ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

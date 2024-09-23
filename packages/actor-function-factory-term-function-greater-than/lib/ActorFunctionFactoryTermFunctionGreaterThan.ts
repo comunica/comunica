@@ -13,7 +13,7 @@ import {
 import { SparqlOperator } from '@comunica/expression-evaluator';
 import { TermFunctionGreaterThan } from './TermFunctionGreaterThan';
 
-interface ActorFunctionFactoryTermFunctionGreaterThanArgs extends IActorFunctionFactoryArgs {
+interface IActorFunctionFactoryTermFunctionGreaterThanArgs extends IActorFunctionFactoryArgs {
   mediatorFunctionFactory: MediatorFunctionFactoryUnsafe;
 }
 
@@ -23,8 +23,12 @@ interface ActorFunctionFactoryTermFunctionGreaterThanArgs extends IActorFunction
 export class ActorFunctionFactoryTermFunctionGreaterThan extends ActorFunctionFactoryDedicated {
   private readonly mediatorFunctionFactory: MediatorFunctionFactory;
 
-  public constructor(args: ActorFunctionFactoryTermFunctionGreaterThanArgs) {
-    super(args, [ SparqlOperator.GT ], true);
+  public constructor(args: IActorFunctionFactoryTermFunctionGreaterThanArgs) {
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.GT ],
+      termFunction: true,
+    });
     this.mediatorFunctionFactory = <MediatorFunctionFactory> args.mediatorFunctionFactory;
   }
 

@@ -17,7 +17,11 @@ import { ExpressionFunctionCoalesce } from './ExpressionFunctionCoalesce';
  */
 export class ActorFunctionFactoryExpressionFunctionCoalesce extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.COALESCE ], false);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.COALESCE ],
+      termFunction: false,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

@@ -16,7 +16,11 @@ import { ExpressionFunctionLogicalOr } from './ExpressionFunctionLogicalOr';
  */
 export class ActorFunctionFactoryExpressionFunctionLogicalOr extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.LOGICAL_OR ], false);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.LOGICAL_OR ],
+      termFunction: false,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

@@ -17,7 +17,11 @@ import { ExpressionFunctionLogicalAnd } from './ExpressionFunctionLogicalAnd';
  */
 export class ActorFunctionFactoryExpressionFunctionLogicalAnd extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.LOGICAL_AND ], false);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.LOGICAL_AND ],
+      termFunction: false,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

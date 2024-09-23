@@ -16,7 +16,11 @@ import { TermFunctionHours } from './TermFunctionHours';
  */
 export class ActorFunctionFactoryTermFunctionHours extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.HOURS ], true);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.HOURS ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

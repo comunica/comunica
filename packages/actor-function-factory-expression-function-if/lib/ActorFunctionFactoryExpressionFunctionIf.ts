@@ -17,7 +17,11 @@ import { ExpressionFunctionIf } from './ExpressionFunctionIf';
  */
 export class ActorFunctionFactoryExpressionFunctionIf extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.IF ], false);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.IF ],
+      termFunction: false,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

@@ -16,7 +16,11 @@ import { TermFunctionContains } from './TermFunctionContains';
  */
 export class ActorFunctionFactoryTermFunctionContains extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.CONTAINS ], true);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.CONTAINS ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

@@ -16,7 +16,11 @@ import { TermFunctionEncodeForUri } from './TermFunctionEncodeForUri';
  */
 export class ActorFunctionFactoryTermFunctionEncodeForUri extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.ENCODE_FOR_URI ], true);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.ENCODE_FOR_URI ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

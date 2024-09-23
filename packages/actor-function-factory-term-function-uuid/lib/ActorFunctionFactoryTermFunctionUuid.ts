@@ -15,7 +15,11 @@ import { TermFunctionUuid } from './TermFunctionUuid';
  */
 export class ActorFunctionFactoryTermFunctionUuid extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.UUID ], true);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.UUID ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

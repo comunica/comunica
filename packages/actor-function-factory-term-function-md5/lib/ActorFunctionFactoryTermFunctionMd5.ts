@@ -16,7 +16,11 @@ import { TermFunctionMd5 } from './TermFunctionMd5';
  */
 export class ActorFunctionFactoryTermFunctionMd5 extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.MD5 ], true);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.MD5 ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

@@ -15,7 +15,11 @@ import { TermFunctionUcase } from './TermFunctionUcase';
  */
 export class ActorFunctionFactoryTermFunctionUcase extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.UCASE ], true);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.UCASE ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

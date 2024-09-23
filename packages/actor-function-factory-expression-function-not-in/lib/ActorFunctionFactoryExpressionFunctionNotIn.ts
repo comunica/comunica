@@ -13,7 +13,7 @@ import {
 import { SparqlOperator } from '@comunica/expression-evaluator';
 import { ExpressionFunctionNotIn } from './ExpressionFunctionNotIn';
 
-interface ActorFunctionFactoryExpressionFunctionNotInArgs extends IActorFunctionFactoryArgs {
+interface IActorFunctionFactoryExpressionFunctionNotInArgs extends IActorFunctionFactoryArgs {
   mediatorFunctionFactory: MediatorFunctionFactoryUnsafe;
 }
 
@@ -23,8 +23,12 @@ interface ActorFunctionFactoryExpressionFunctionNotInArgs extends IActorFunction
 export class ActorFunctionFactoryExpressionFunctionNotIn extends ActorFunctionFactoryDedicated {
   private readonly mediatorFunctionFactory: MediatorFunctionFactory;
 
-  public constructor(args: ActorFunctionFactoryExpressionFunctionNotInArgs) {
-    super(args, [ SparqlOperator.NOT_IN ], false);
+  public constructor(args: IActorFunctionFactoryExpressionFunctionNotInArgs) {
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.NOT_IN ],
+      termFunction: false,
+    });
     this.mediatorFunctionFactory = <MediatorFunctionFactory> args.mediatorFunctionFactory;
   }
 

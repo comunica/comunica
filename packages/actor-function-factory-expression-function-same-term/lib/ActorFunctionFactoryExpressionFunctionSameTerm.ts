@@ -16,7 +16,11 @@ import { ExpressionFunctionSameTerm } from './ExpressionFunctionSameTerm';
  */
 export class ActorFunctionFactoryExpressionFunctionSameTerm extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.SAME_TERM ], false);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.SAME_TERM ],
+      termFunction: false,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

@@ -16,7 +16,11 @@ import { TermFunctionXsdToDouble } from './TermFunctionXsdToDouble';
  */
 export class ActorFunctionFactoryTermFunctionXsdToDouble extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ TypeURL.XSD_DOUBLE ], true);
+    super({
+      ...args,
+      functionNames: [ TypeURL.XSD_DOUBLE ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

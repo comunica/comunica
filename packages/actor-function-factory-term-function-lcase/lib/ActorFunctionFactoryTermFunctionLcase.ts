@@ -16,7 +16,11 @@ import { TermFunctionLcase } from './TermFunctionLcase';
  */
 export class ActorFunctionFactoryTermFunctionLcase extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.LCASE ], true);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.LCASE ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

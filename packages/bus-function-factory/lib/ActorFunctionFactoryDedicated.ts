@@ -11,10 +11,8 @@ export abstract class ActorFunctionFactoryDedicated extends ActorFunctionFactory
   public readonly functionNames: StringArray;
   public readonly termFunction: boolean;
 
-  protected constructor(args: IActorFunctionFactoryArgs, functionNames: StringArray, termFunction: boolean) {
+  protected constructor(args: IActorFunctionFactoryDedicatedArgs) {
     super(args);
-    this.functionNames = functionNames;
-    this.termFunction = termFunction;
   }
 
   public async test(action: IActionFunctionFactory): Promise<IActorTest> {
@@ -22,6 +20,11 @@ export abstract class ActorFunctionFactoryDedicated extends ActorFunctionFactory
     if (this.functionNames.includes(action.functionName) && (this.termFunction || !action.requireTermExpression)) {
       return true;
     }
-    throw new Error(`Actor ${this.name} can not provide implementation for ${action.functionName}, only for ${this.termFunction ? '' : 'non-termExpression '}${this.functionNames.join(' and ')}.}`);
+    throw new Error(`Actor ${this.name} can not provide implementation for "${action.functionName}", only for ${this.termFunction ? '' : 'non-termExpression '}${this.functionNames.join(' and ')}.`);
   }
+}
+
+export interface IActorFunctionFactoryDedicatedArgs extends IActorFunctionFactoryArgs {
+  functionNames: StringArray;
+  termFunction: boolean;
 }

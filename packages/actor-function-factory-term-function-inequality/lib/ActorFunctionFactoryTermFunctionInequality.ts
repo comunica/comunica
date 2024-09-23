@@ -13,7 +13,7 @@ import {
 import { SparqlOperator } from '@comunica/expression-evaluator';
 import { TermFunctionInequality } from './TermFunctionInequality';
 
-interface ActorFunctionFactoryTermFunctionInequalityArgs extends IActorFunctionFactoryArgs {
+interface IActorFunctionFactoryTermFunctionInequalityArgs extends IActorFunctionFactoryArgs {
   mediatorFunctionFactory: MediatorFunctionFactoryUnsafe;
 }
 
@@ -23,8 +23,12 @@ interface ActorFunctionFactoryTermFunctionInequalityArgs extends IActorFunctionF
 export class ActorFunctionFactoryTermFunctionInequality extends ActorFunctionFactoryDedicated {
   private readonly mediatorFunctionFactory: MediatorFunctionFactory;
 
-  public constructor(args: ActorFunctionFactoryTermFunctionInequalityArgs) {
-    super(args, [ SparqlOperator.NOT_EQUAL ], true);
+  public constructor(args: IActorFunctionFactoryTermFunctionInequalityArgs) {
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.NOT_EQUAL ],
+      termFunction: true,
+    });
     this.mediatorFunctionFactory = <MediatorFunctionFactory> args.mediatorFunctionFactory;
   }
 

@@ -15,7 +15,11 @@ import { TermFunctionXsdToBoolean } from './TermFunctionXsdToBoolean';
  */
 export class ActorFunctionFactoryTermFunctionXsdToBoolean extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ TypeURL.XSD_BOOLEAN ], true);
+    super({
+      ...args,
+      functionNames: [ TypeURL.XSD_BOOLEAN ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

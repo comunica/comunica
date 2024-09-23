@@ -15,7 +15,11 @@ import { TermFunctionTriple } from './TermFunctionTriple';
  */
 export class ActorFunctionFactoryTermFunctionTriple extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.TRIPLE ], true);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.TRIPLE ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

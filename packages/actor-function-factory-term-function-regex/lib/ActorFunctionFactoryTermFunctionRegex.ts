@@ -16,7 +16,11 @@ import { TermFunctionRegex } from './TermFunctionRegex';
  */
 export class ActorFunctionFactoryTermFunctionRegex extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.REGEX ], true);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.REGEX ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

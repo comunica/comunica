@@ -16,7 +16,11 @@ import { TermFunctionNot } from './TermFunctionNot';
  */
 export class ActorFunctionFactoryTermFunctionNot extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.NOT ], true);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.NOT ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

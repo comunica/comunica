@@ -15,7 +15,11 @@ import { TermFunctionUnaryPlus } from './TermFunctionUnaryPlus';
  */
 export class ActorFunctionFactoryTermFunctionUnaryPlus extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.UPLUS ], true);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.UPLUS ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

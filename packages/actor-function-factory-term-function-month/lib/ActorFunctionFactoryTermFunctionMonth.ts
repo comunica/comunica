@@ -16,7 +16,11 @@ import { TermFunctionMonth } from './TermFunctionMonth';
  */
 export class ActorFunctionFactoryTermFunctionMonth extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.MONTH ], true);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.MONTH ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

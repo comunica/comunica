@@ -16,7 +16,11 @@ import { TermFunctionLangmatches } from './TermFunctionLangmatches';
  */
 export class ActorFunctionFactoryTermFunctionLangmatches extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.LANG_MATCHES ], true);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.LANG_MATCHES ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

@@ -16,7 +16,11 @@ import { TermFunctionRound } from './TermFunctionRound';
  */
 export class ActorFunctionFactoryTermFunctionRound extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.ROUND ], true);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.ROUND ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

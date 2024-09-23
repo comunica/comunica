@@ -15,7 +15,11 @@ import { TermFunctionXsdToDatetime } from './TermFunctionXsdToDatetime';
  */
 export class ActorFunctionFactoryTermFunctionXsdToDatetime extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ TypeURL.XSD_DATE_TIME ], true);
+    super({
+      ...args,
+      functionNames: [ TypeURL.XSD_DATE_TIME ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

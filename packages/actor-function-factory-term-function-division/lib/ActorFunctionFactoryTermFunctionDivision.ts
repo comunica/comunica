@@ -16,7 +16,11 @@ import { TermFunctionDivision } from './TermFunctionDivision';
  */
 export class ActorFunctionFactoryTermFunctionDivision extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.DIVISION ], true);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.DIVISION ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

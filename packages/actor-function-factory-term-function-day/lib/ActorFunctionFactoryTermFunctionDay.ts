@@ -16,7 +16,11 @@ import { TermFunctionDay } from './TermFunctionDay';
  */
 export class ActorFunctionFactoryTermFunctionDay extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.DAY ], true);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.DAY ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

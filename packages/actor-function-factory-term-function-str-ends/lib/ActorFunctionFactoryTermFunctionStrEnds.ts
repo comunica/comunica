@@ -16,7 +16,11 @@ import { TermFunctionStrEnds } from './TermFunctionStrEnds';
  */
 export class ActorFunctionFactoryTermFunctionStrEnds extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.STRENDS ], true);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.STRENDS ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

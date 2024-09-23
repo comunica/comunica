@@ -16,7 +16,11 @@ import { TermFunctionSha256 } from './TermFunctionSha256';
  */
 export class ActorFunctionFactoryTermFunctionSha256 extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args, [ SparqlOperator.SHA256 ], true);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.SHA256 ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):
