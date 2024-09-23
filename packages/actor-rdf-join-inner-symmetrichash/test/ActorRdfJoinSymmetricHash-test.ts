@@ -1,4 +1,5 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
+import type { MediatorHashBindings } from '@comunica/bus-hash-bindings';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
@@ -56,6 +57,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
 IActorTest,
 IActorRdfJoinSelectivityOutput
 >;
+    let mediatorHashBindings: MediatorHashBindings;
     let actor: ActorRdfJoinSymmetricHash;
     let action: IActionRdfJoin;
     let variables0: MetadataVariable[];
@@ -65,7 +67,13 @@ IActorRdfJoinSelectivityOutput
       mediatorJoinSelectivity = <any> {
         mediate: async() => ({ selectivity: 1 }),
       };
-      actor = new ActorRdfJoinSymmetricHash({ name: 'actor', bus, mediatorJoinSelectivity });
+      mediatorHashBindings = <any> {
+        mediate: async() => ({
+          hashFunction: (bindings: RDF.Bindings, variables: RDF.Variable[]) => bindingsToString(bindings
+            .filter((value, key) => variables.some(variable => variable.equals(key)))),
+        }),
+      };
+      actor = new ActorRdfJoinSymmetricHash({ name: 'actor', bus, mediatorJoinSelectivity, mediatorHashBindings });
       variables0 = [
         { variable: DF.variable('a'), canBeUndef: false },
       ];

@@ -1,3 +1,4 @@
+import type { MediatorHashBindings } from '@comunica/bus-hash-bindings';
 import type {
   IActionRdfJoin,
   IActorRdfJoinOutputInner,
@@ -15,6 +16,8 @@ import { SymmetricHashJoin } from 'asyncjoin';
  * A comunica Hash RDF Join Actor.
  */
 export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
+  public readonly mediatorHashBindings: MediatorHashBindings;
+
   public constructor(args: IActorRdfJoinSymmetricHashArgs) {
     super(args, {
       logicalType: 'inner',
@@ -27,10 +30,13 @@ export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
   public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
     const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
     const variables = ActorRdfJoin.overlappingVariables(metadatas);
-    const join = new SymmetricHashJoin<Bindings, string, Bindings>(
+    const { hashFunction } = await this.mediatorHashBindings
+      .mediate({ allowHashCollisions: true, context: action.context });
+    const variablesRaw = variables.map(v => v.variable);
+    const join = new SymmetricHashJoin<Bindings, number, Bindings>(
       action.entries[0].output.bindingsStream,
       action.entries[1].output.bindingsStream,
-      entry => ActorRdfJoinSymmetricHash.hash(entry, variables),
+      entry => hashFunction(entry, variablesRaw),
       <any> ActorRdfJoin.joinBindings,
     );
     return {
@@ -60,4 +66,8 @@ export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
 }
 
 export interface IActorRdfJoinSymmetricHashArgs extends IActorRdfJoinArgs {
+  /**
+   * The mediator for hashing bindings.
+   */
+  mediatorHashBindings: MediatorHashBindings;
 }

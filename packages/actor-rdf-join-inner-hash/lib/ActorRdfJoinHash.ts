@@ -1,3 +1,4 @@
+import type { MediatorHashBindings } from '@comunica/bus-hash-bindings';
 import { ClosableTransformIterator } from '@comunica/bus-query-operation';
 import type {
   IActionRdfJoin,
@@ -22,6 +23,8 @@ import { termToString } from 'rdf-string';
  * A comunica Hash RDF Join Actor.
  */
 export class ActorRdfJoinHash extends ActorRdfJoin {
+  public readonly mediatorHashBindings: MediatorHashBindings;
+
   public constructor(args: IActorRdfJoinHashArgs) {
     super(args, {
       logicalType: 'inner',
@@ -84,10 +87,13 @@ export class ActorRdfJoinHash extends ActorRdfJoin {
       });
     } else {
       /* Don't handle undefined values in bindings */
-      bindingsStream = new HashJoin<Bindings, string, Bindings>(
+      const { hashFunction } = await this.mediatorHashBindings
+        .mediate({ allowHashCollisions: true, context: action.context });
+      const variablesRaw = variables.map(v => v.variable);
+      bindingsStream = new HashJoin<Bindings, number, Bindings>(
         action.entries[0].output.bindingsStream,
         action.entries[1].output.bindingsStream,
-        entry => ActorRdfJoin.hash(entry, variables),
+        entry => hashFunction(entry, variablesRaw),
         <any> ActorRdfJoin.joinBindings,
       );
     }
@@ -129,6 +135,10 @@ export class ActorRdfJoinHash extends ActorRdfJoin {
 }
 
 export interface IActorRdfJoinHashArgs extends IActorRdfJoinArgs {
+  /**
+   * The mediator for hashing bindings.
+   */
+  mediatorHashBindings: MediatorHashBindings;
   /**
    * If this actor can handle undefined values.
    * If false, performance will be slightly better.

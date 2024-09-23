@@ -133,35 +133,6 @@ IActorRdfJoinSelectivityOutput
     };
   });
 
-  describe('hash', () => {
-    it('should hash to concatenation of values of variables', () => {
-      expect(ActorRdfJoin.hash(
-        BF.bindings([
-          [ DF.variable('x'), DF.namedNode('http://www.example.org/instance#a') ],
-          [ DF.variable('y'), DF.literal('XYZ', DF.namedNode('ex:abc')) ],
-        ]),
-        [
-          { variable: DF.variable('x'), canBeUndef: false },
-          { variable: DF.variable('y'), canBeUndef: false },
-        ],
-      )).toBe('http://www.example.org/instance#aXYZ');
-    });
-
-    it('should not let hash being influenced by a variable that is not present in bindings', () => {
-      expect(ActorRdfJoin.hash(
-        BF.bindings([
-          [ DF.variable('x'), DF.namedNode('http://www.example.org/instance#a') ],
-          [ DF.variable('y'), DF.literal('XYZ', DF.namedNode('ex:abc')) ],
-        ]),
-        [
-          { variable: DF.variable('x'), canBeUndef: false },
-          { variable: DF.variable('y'), canBeUndef: false },
-          { variable: DF.variable('z'), canBeUndef: false },
-        ],
-      )).toBe('http://www.example.org/instance#aXYZ');
-    });
-  });
-
   describe('hashNonClashing', () => {
     it('should hash to concatenation of values of variables', () => {
       expect(ActorRdfJoin.hashNonClashing(

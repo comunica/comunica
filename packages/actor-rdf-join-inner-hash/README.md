@@ -31,6 +31,7 @@ After installing, this package can be added to your engine's configuration as fo
       "@id": "urn:comunica:default:rdf-join/actors#inner-hash",
       "@type": "ActorRdfJoinHash",
       "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
+      "mediatorHashBindings": { "@id": "urn:comunica:default:hash-bindings/mediators#main" },
       "canHandleUndefs": true
     }
   ]
@@ -40,4 +41,5 @@ After installing, this package can be added to your engine's configuration as fo
 ### Config Parameters
 
 * `mediatorJoinSelectivity`: A mediator over the [RDF Join Selectivity bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join-selectivity).
+* `mediatorHashBindings`: A mediator over the [Hash Bindings bus](https://github.com/comunica/comunica/tree/master/packages/bus-hash-bindings).
 * `canHandleUndefs`: If this actor can handle undefined values. If false, performance will be slightly better.

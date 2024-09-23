@@ -41,6 +41,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
+    "@comunica/bus-hash-bindings": "^3.2.1",
     "@comunica/bus-rdf-join": "^3.2.1",
     "@comunica/core": "^3.2.1",
     "@comunica/mediatortype-join-coefficients": "^3.2.1",

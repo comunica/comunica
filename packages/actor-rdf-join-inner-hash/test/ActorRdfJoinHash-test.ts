@@ -1,5 +1,6 @@
 import { Readable } from 'node:stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
+import type { MediatorHashBindings } from '@comunica/bus-hash-bindings';
 import type { IActionRdfJoin, IActorRdfJoinTestSideData } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
@@ -56,6 +57,7 @@ describe('ActorRdfJoinHash', () => {
 IActorTest,
 IActorRdfJoinSelectivityOutput
 >;
+    let mediatorHashBindings: MediatorHashBindings;
     let actor: ActorRdfJoinHash;
     let action: IActionRdfJoin;
     let variables0: MetadataVariable[];
@@ -66,7 +68,19 @@ IActorRdfJoinSelectivityOutput
       mediatorJoinSelectivity = <any> {
         mediate: async() => ({ selectivity: 1 }),
       };
-      actor = new ActorRdfJoinHash({ name: 'actor', bus, mediatorJoinSelectivity, canHandleUndefs: false });
+      mediatorHashBindings = <any> {
+        mediate: async() => ({
+          hashFunction: (bindings: RDF.Bindings, variables: RDF.Variable[]) => bindingsToString(bindings
+            .filter((value, key) => variables.some(variable => variable.equals(key)))),
+        }),
+      };
+      actor = new ActorRdfJoinHash({
+        name: 'actor',
+        bus,
+        mediatorJoinSelectivity,
+        canHandleUndefs: false,
+        mediatorHashBindings,
+      });
       variables0 = [
         { variable: DF.variable('a'), canBeUndef: false },
       ];
@@ -816,6 +830,7 @@ IActorRdfJoinSelectivityOutput
       IActorTest,
       IActorRdfJoinSelectivityOutput
     >;
+    let mediatorHashBindings: MediatorHashBindings;
     let actor: ActorRdfJoinHash;
     let action: IActionRdfJoin;
     let variables0: MetadataVariable[];
@@ -828,7 +843,19 @@ IActorRdfJoinSelectivityOutput
       mediatorJoinSelectivity = <any> {
         mediate: async() => ({ selectivity: 1 }),
       };
-      actor = new ActorRdfJoinHash({ name: 'actor', bus, mediatorJoinSelectivity, canHandleUndefs: true });
+      mediatorHashBindings = <any> {
+        mediate: async() => ({
+          hashFunction: (bindings: RDF.Bindings, variables: RDF.Variable[]) => bindingsToString(bindings
+            .filter((value, key) => variables.some(variable => variable.equals(key)))),
+        }),
+      };
+      actor = new ActorRdfJoinHash({
+        name: 'actor',
+        bus,
+        mediatorJoinSelectivity,
+        canHandleUndefs: true,
+        mediatorHashBindings,
+      });
       variables0 = [
         { variable: DF.variable('a'), canBeUndef: false },
       ];

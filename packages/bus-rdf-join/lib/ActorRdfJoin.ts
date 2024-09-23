@@ -93,26 +93,6 @@ TS
 
   /**
    * Creates a hash of the given bindings by concatenating the results of the given variables.
-   * This can cause clashes for equal terms.
-   * This function will not sort the variables and expects them to be in the same order for every call.
-   * @param {Bindings} bindings
-   * @param {string[]} variables
-   * @returns {string} A hash string.
-   */
-  public static hash(bindings: Bindings, variables: MetadataVariable[]): string {
-    return variables
-      .map((variable) => {
-        const term = bindings.get(variable.variable);
-        if (term) {
-          return term.value;
-        }
-        return '';
-      })
-      .join('');
-  }
-
-  /**
-   * Creates a hash of the given bindings by concatenating the results of the given variables.
    * This is guaranteed to not produce clashing bindings for unequal terms.
    * This function will not sort the variables and expects them to be in the same order for every call.
    * @param {Bindings} bindings
