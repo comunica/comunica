@@ -9,7 +9,7 @@ import type { Algebra } from 'sparqlalgebrajs';
 /**
  * A simple type alias for strings that should be hashes of Bindings
  */
-export type BindingsHash = string;
+export type BindingsHash = number;
 
 /**
  * A state container for a single group
@@ -41,6 +41,7 @@ export class GroupsState {
     private readonly pattern: Algebra.Group,
     private readonly sparqleeConfig: IAsyncEvaluatorContext,
     private readonly bindingsFactory: BindingsFactory,
+    private readonly variables: RDF.Variable[],
   ) {
     this.groups = new Map();
     this.groupsInitializer = new Map();
@@ -182,6 +183,6 @@ export class GroupsState {
    * @param {Bindings} bindings - Bindings to hash
    */
   private hashBindings(bindings: Bindings): BindingsHash {
-    return this.hashFunction(bindings);
+    return this.hashFunction(bindings, this.variables);
   }
 }

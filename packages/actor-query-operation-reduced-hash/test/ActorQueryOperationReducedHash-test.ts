@@ -46,16 +46,16 @@ describe('ActorQueryOperationReducedHash', () => {
       );
     });
     it('should create a filter', async() => {
-      await expect(actor.newHashFilter(new ActionContext())).resolves.toBeInstanceOf(Function);
+      await expect(actor.newHashFilter(new ActionContext(), [ DF.variable('a') ])).resolves.toBeInstanceOf(Function);
     });
 
     it('should create a filter that is a predicate', async() => {
-      const filter = await actor.newHashFilter(new ActionContext());
+      const filter = await actor.newHashFilter(new ActionContext(), [ DF.variable('a') ]);
       expect(filter(BF.bindings([[ DF.variable('a'), DF.literal('a') ]]))).toBe(true);
     });
 
     it('should create a filter that only returns true once for equal objects', async() => {
-      const filter = await actor.newHashFilter(new ActionContext());
+      const filter = await actor.newHashFilter(new ActionContext(), [ DF.variable('a') ]);
       expect(filter(BF.bindings([[ DF.variable('a'), DF.literal('a') ]]))).toBe(true);
       expect(filter(BF.bindings([[ DF.variable('a'), DF.literal('a') ]]))).toBe(false);
       expect(filter(BF.bindings([[ DF.variable('a'), DF.literal('a') ]]))).toBe(false);
@@ -68,9 +68,9 @@ describe('ActorQueryOperationReducedHash', () => {
     });
 
     it('should create a filters that are independent', async() => {
-      const filter1 = await actor.newHashFilter(new ActionContext());
-      const filter2 = await actor.newHashFilter(new ActionContext());
-      const filter3 = await actor.newHashFilter(new ActionContext());
+      const filter1 = await actor.newHashFilter(new ActionContext(), [ DF.variable('a') ]);
+      const filter2 = await actor.newHashFilter(new ActionContext(), [ DF.variable('a') ]);
+      const filter3 = await actor.newHashFilter(new ActionContext(), [ DF.variable('a') ]);
       expect(filter1(BF.bindings([[ DF.variable('a'), DF.literal('b') ]]))).toBe(true);
       expect(filter1(BF.bindings([[ DF.variable('a'), DF.literal('b') ]]))).toBe(false);
 

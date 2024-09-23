@@ -55,7 +55,9 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
       output,
     );
 
-    const bindingsStream: BindingsStream = outputBindings.bindingsStream.filter(await this.newHashFilter(context));
+    const variables = (await outputBindings.metadata()).variables.map(v => v.variable);
+    const bindingsStream: BindingsStream = outputBindings.bindingsStream
+      .filter(await this.newHashFilter(context, variables));
     return {
       type: 'bindings',
       bindingsStream,
@@ -67,14 +69,17 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
    * Create a new distinct filter function.
    * This will maintain an internal hash datastructure so that every bindings object only returns true once.
    * @param context The action context.
+   * @param variables The variables to take into account while hashing.
    * @return {(bindings: Bindings) => boolean} A distinct filter for bindings.
    */
-  public async newHashFilter(context: IActionContext): Promise<(bindings: Bindings) => boolean> {
+  public async newHashFilter(
+    context: IActionContext,
+    variables: RDF.Variable[],
+  ): Promise<(bindings: Bindings) => boolean> {
     const { hashFunction } = await this.mediatorHashBindings.mediate({ allowHashCollisions: true, context });
-    const hashes: Record<string, boolean> = {};
+    const hashes: Record<number, boolean> = {};
     return (bindings: Bindings) => {
-      const hash: string = hashFunction(bindings);
-
+      const hash: number = hashFunction(bindings, variables);
       return !(hash in hashes) && (hashes[hash] = true);
     };
   }
@@ -91,10 +96,9 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
       return _quad => true;
     }
     const { hashFunction } = await this.mediatorHashQuads.mediate({ allowHashCollisions: true, context });
-    const hashes: Record<string, boolean> = {};
+    const hashes: Record<number, boolean> = {};
     return (quad: RDF.Quad) => {
-      const hash: string = hashFunction(quad);
-
+      const hash: number = hashFunction(quad);
       return !(hash in hashes) && (hashes[hash] = true);
     };
   }

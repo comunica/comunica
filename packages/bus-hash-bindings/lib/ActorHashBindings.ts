@@ -1,6 +1,7 @@
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { Bindings } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 
 /**
  * A comunica actor for hash-bindings events.
@@ -35,7 +36,8 @@ export interface IActionHashBindings extends IAction {
 
 export interface IActorHashBindingsOutput extends IActorOutput {
   /**
-   * A string-based hash of the given object.
+   * A number-based hash factory of the given object.
+   * It is recommended to always return 32-bit numbers to enable SMI optimization.
    * @param {Bindings} bindings The bindings to hash.
    * @return {string} The object's hash.
    */
@@ -47,7 +49,7 @@ export interface IActorHashBindingsOutput extends IActorOutput {
   hashCollisions: boolean;
 }
 
-export type HashFunction = (bindings: Bindings) => string;
+export type HashFunction = (bindings: Bindings, variables: RDF.Variable[]) => number;
 
 export type IActorHashBindingsArgs<TS = undefined> =
   IActorArgs<IActionHashBindings, IActorTest, IActorHashBindingsOutput, TS>;

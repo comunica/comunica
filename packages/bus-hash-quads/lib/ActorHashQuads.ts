@@ -34,8 +34,9 @@ export interface IActionHashQuads extends IAction {
 
 export interface IActorHashQuadsOutput extends IActorOutput {
   /**
-   * A string-based hash of the given object.
-   * @param {Quads} quads The quads to hash.
+   * A number-based hash factory of the given object.
+   * It is recommended to always return 32-bit numbers to enable SMI optimization.
+   * @param {RDF.Quad} quads The quads to hash.
    * @return {string} The object's hash.
    */
   hashFunction: HashFunction;
@@ -46,7 +47,7 @@ export interface IActorHashQuadsOutput extends IActorOutput {
   hashCollisions: boolean;
 }
 
-export type HashFunction = (quad: Quad) => string;
+export type HashFunction = (quad: Quad) => number;
 
 export type IActorHashQuadsArgs<TS = undefined> = IActorArgs<
 IActionHashQuads,

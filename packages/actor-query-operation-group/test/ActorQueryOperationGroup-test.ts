@@ -4,6 +4,7 @@ import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { Bindings } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -67,7 +68,7 @@ const sumZ: Algebra.BoundAggregate = {
   variable: DF.variable('sum'),
 };
 
-const hashFunction = (bindings: any) => JSON.stringify(bindings);
+const hashFunction = (bindings: any, variables: RDF.Variable[]) => <number> <any> JSON.stringify(bindings);
 
 function getDefaultMediatorQueryOperation() {
   return {
@@ -188,14 +189,26 @@ describe('ActorQueryOperationGroup', () => {
   describe('A GroupState instance', () => {
     it('should throw an error if collectResults is called multiple times', async() => {
       const { actor, op } = constructCase({});
-      const temp = new GroupsState(hashFunction, <Algebra.Group> op.operation, { dataFactory: DF }, BF);
+      const temp = new GroupsState(
+        hashFunction,
+<Algebra.Group> op.operation,
+{ dataFactory: DF },
+BF,
+[ DF.variable('x') ],
+      );
       await expect(temp.collectResults()).resolves.toBeTruthy();
       await expect(temp.collectResults()).rejects.toThrow('collectResult');
     });
 
     it('should throw an error if consumeBindings is called after collectResults', async() => {
       const { actor, op } = constructCase({});
-      const temp = new GroupsState(hashFunction, <Algebra.Group> op.operation, { dataFactory: DF }, BF);
+      const temp = new GroupsState(
+        hashFunction,
+<Algebra.Group> op.operation,
+{ dataFactory: DF },
+BF,
+[ DF.variable('x') ],
+      );
       await expect(temp.collectResults()).resolves.toBeTruthy();
       await expect(temp.consumeBindings(BF.bindings([[ DF.variable('x'), DF.literal('aaa') ]])))
         .rejects.toThrow('collectResult');

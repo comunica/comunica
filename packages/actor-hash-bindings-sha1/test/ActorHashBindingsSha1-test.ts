@@ -67,28 +67,29 @@ describe('ActorHashBindingsSha1', () => {
       };
       const result = await actor.run(action);
       expect(result.hashCollisions).toBe(true);
+      const vars = [ DF.variable('a'), DF.variable('b') ];
 
       expect(result.hashFunction(BF.bindings([
         [ DF.variable('a'), DF.namedNode('ex:a') ],
         [ DF.variable('b'), DF.namedNode('ex:b') ],
-      ]))).toEqual(result.hashFunction(BF.bindings([
+      ]), vars)).toEqual(result.hashFunction(BF.bindings([
         [ DF.variable('a'), DF.namedNode('ex:a') ],
         [ DF.variable('b'), DF.namedNode('ex:b') ],
-      ])));
+      ]), vars));
       expect(result.hashFunction(BF.bindings([
         [ DF.variable('b'), DF.namedNode('ex:b') ],
         [ DF.variable('a'), DF.namedNode('ex:a') ],
-      ]))).toEqual(result.hashFunction(BF.bindings([
+      ]), vars)).toEqual(result.hashFunction(BF.bindings([
         [ DF.variable('a'), DF.namedNode('ex:a') ],
         [ DF.variable('b'), DF.namedNode('ex:b') ],
-      ])));
+      ]), vars));
       expect(result.hashFunction(BF.bindings([
         [ DF.variable('a'), DF.namedNode('ex:a') ],
         [ DF.variable('b'), DF.namedNode('ex:b') ],
-      ]))).not.toEqual(result.hashFunction(BF.bindings([
+      ]), vars)).not.toEqual(result.hashFunction(BF.bindings([
         [ DF.variable('a'), DF.namedNode('ex:a') ],
         [ DF.variable('c'), DF.namedNode('ex:b') ],
-      ])));
+      ]), vars));
     });
   });
 });

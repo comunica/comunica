@@ -20,7 +20,7 @@ export class ActorHashQuadsSha1 extends ActorHashQuads {
     return {
       hashFunction: quad => sha1()
         .update(JSON.stringify(quadToStringQuad(quad)))
-        .digest('hex'),
+        .digest()[0],
       hashCollisions: true,
     };
   }

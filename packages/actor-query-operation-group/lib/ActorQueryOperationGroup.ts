@@ -78,9 +78,11 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
       bindingsFactory,
     );
 
+    const variablesInner = (await output.metadata()).variables.map(v => v.variable);
+
     // Wrap a new promise inside an iterator that completes when the stream has ended or when an error occurs
     const bindingsStream = new TransformIterator(() => new Promise<BindingsStream>((resolve, reject) => {
-      const groups = new GroupsState(hashFunction, operation, sparqleeConfig, bindingsFactory);
+      const groups = new GroupsState(hashFunction, operation, sparqleeConfig, bindingsFactory, variablesInner);
 
       // Phase 2: Collect aggregator results
       // We can only return when the binding stream ends, when that happens
