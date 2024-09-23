@@ -4,7 +4,6 @@ import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { Bindings } from '@comunica/types';
-import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -68,8 +67,6 @@ const sumZ: Algebra.BoundAggregate = {
   variable: DF.variable('sum'),
 };
 
-const hashFunction = (bindings: any, variables: RDF.Variable[]) => <number> <any> JSON.stringify(bindings);
-
 function getDefaultMediatorQueryOperation() {
   return {
     mediate: (arg: any) => Promise.resolve({
@@ -120,10 +117,6 @@ function constructCase(
         }),
       };
 
-  const mediatorHashBindings: any = {
-    mediate: () => Promise.resolve({ hashFunction }),
-  };
-
   const operation: Algebra.Group = {
     type: Algebra.types.GROUP,
     input: inputOp,
@@ -136,7 +129,6 @@ function constructCase(
     name: 'actor',
     bus,
     mediatorQueryOperation,
-    mediatorHashBindings,
     mediatorMergeBindingsContext,
   });
   return { actor, bus, mediatorQueryOperation, op };
@@ -157,14 +149,10 @@ function decimal(value: string) {
 describe('ActorQueryOperationGroup', () => {
   let bus: any;
   let mediatorQueryOperation: any;
-  let mediatorHashBindings: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = getDefaultMediatorQueryOperation();
-    mediatorHashBindings = {
-      mediate: () => Promise.resolve({ hashFunction }),
-    };
   });
 
   describe('The ActorQueryOperationGroup module', () => {
@@ -190,7 +178,6 @@ describe('ActorQueryOperationGroup', () => {
     it('should throw an error if collectResults is called multiple times', async() => {
       const { actor, op } = constructCase({});
       const temp = new GroupsState(
-        hashFunction,
 <Algebra.Group> op.operation,
 { dataFactory: DF },
 BF,
@@ -203,7 +190,6 @@ BF,
     it('should throw an error if consumeBindings is called after collectResults', async() => {
       const { actor, op } = constructCase({});
       const temp = new GroupsState(
-        hashFunction,
 <Algebra.Group> op.operation,
 { dataFactory: DF },
 BF,
@@ -656,7 +642,6 @@ BF,
       const actor = new ActorQueryOperationGroup({
         name: 'actor',
         bus,
-        mediatorHashBindings,
         mediatorQueryOperation: <any> myMediatorQueryOperation,
         mediatorMergeBindingsContext,
       });

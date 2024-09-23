@@ -1,5 +1,5 @@
 import type { BindingsFactory } from '@comunica/bindings-factory';
-import type { HashFunction } from '@comunica/bus-hash-bindings';
+import { bindingsToCompactString } from '@comunica/bindings-factory';
 import type { IAsyncEvaluatorContext } from '@comunica/expression-evaluator';
 import { AsyncAggregateEvaluator } from '@comunica/expression-evaluator';
 import type { Bindings } from '@comunica/types';
@@ -9,7 +9,7 @@ import type { Algebra } from 'sparqlalgebrajs';
 /**
  * A simple type alias for strings that should be hashes of Bindings
  */
-export type BindingsHash = number;
+export type BindingsHash = string;
 
 /**
  * A state container for a single group
@@ -37,7 +37,6 @@ export class GroupsState {
   private resultHasBeenCalled: boolean;
 
   public constructor(
-    private readonly hashFunction: HashFunction,
     private readonly pattern: Algebra.Group,
     private readonly sparqleeConfig: IAsyncEvaluatorContext,
     private readonly bindingsFactory: BindingsFactory,
@@ -183,6 +182,6 @@ export class GroupsState {
    * @param {Bindings} bindings - Bindings to hash
    */
   private hashBindings(bindings: Bindings): BindingsHash {
-    return this.hashFunction(bindings, this.variables);
+    return bindingsToCompactString(bindings, this.variables);
   }
 }

@@ -1,5 +1,4 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
-import type { MediatorHashBindings } from '@comunica/bus-hash-bindings';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
@@ -22,7 +21,6 @@ import { GroupsState } from './GroupsState';
  * A comunica Group Query Operation Actor.
  */
 export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<Algebra.Group> {
-  public readonly mediatorHashBindings: MediatorHashBindings;
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   public constructor(args: IActorQueryOperationGroupArgs) {
@@ -56,8 +54,6 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
   Promise<IQueryOperationResult> {
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
     const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context, dataFactory);
-    // Create a hash function
-    const { hashFunction } = await this.mediatorHashBindings.mediate({ context });
 
     // Get result stream for the input query
     const { input, aggregates } = operation;
@@ -82,7 +78,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
 
     // Wrap a new promise inside an iterator that completes when the stream has ended or when an error occurs
     const bindingsStream = new TransformIterator(() => new Promise<BindingsStream>((resolve, reject) => {
-      const groups = new GroupsState(hashFunction, operation, sparqleeConfig, bindingsFactory, variablesInner);
+      const groups = new GroupsState(operation, sparqleeConfig, bindingsFactory, variablesInner);
 
       // Phase 2: Collect aggregator results
       // We can only return when the binding stream ends, when that happens
@@ -118,7 +114,6 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
 }
 
 export interface IActorQueryOperationGroupArgs extends IActorQueryOperationTypedMediatedArgs {
-  mediatorHashBindings: MediatorHashBindings;
   /**
    * A mediator for creating binding context merge handlers
    */

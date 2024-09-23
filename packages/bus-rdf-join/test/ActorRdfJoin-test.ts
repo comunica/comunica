@@ -133,28 +133,6 @@ IActorRdfJoinSelectivityOutput
     };
   });
 
-  describe('hashNonClashing', () => {
-    it('should hash to concatenation of values of variables', () => {
-      expect(ActorRdfJoin.hashNonClashing(
-        BF.bindings([
-          [ DF.variable('x'), DF.namedNode('http://www.example.org/instance#a') ],
-          [ DF.variable('y'), DF.literal('XYZ', DF.namedNode('ex:abc')) ],
-        ]),
-        [ DF.variable('x'), DF.variable('y') ],
-      )).toBe('http://www.example.org/instance#a"XYZ"^^ex:abc');
-    });
-
-    it('should not let hash being influenced by a variable that is not present in bindings', () => {
-      expect(ActorRdfJoin.hashNonClashing(
-        BF.bindings([
-          [ DF.variable('x'), DF.namedNode('http://www.example.org/instance#a') ],
-          [ DF.variable('y'), DF.literal('XYZ', DF.namedNode('ex:abc')) ],
-        ]),
-        [ DF.variable('x'), DF.variable('y'), DF.variable('z') ],
-      )).toBe('http://www.example.org/instance#a"XYZ"^^ex:abc');
-    });
-  });
-
   describe('overlappingVariables', () => {
     it('should return an empty array if there is no overlap', () => {
       expect(ActorRdfJoin.overlappingVariables([

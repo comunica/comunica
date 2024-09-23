@@ -19,7 +19,6 @@ import type {
   MetadataVariable,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { termToString } from 'rdf-string';
 import { instrumentIterator } from './instrumentIterator';
 
 /**
@@ -89,26 +88,6 @@ TS
     this.canHandleUndefs = options.canHandleUndefs ?? false;
     this.isLeaf = options.isLeaf ?? true;
     this.requiresVariableOverlap = options.requiresVariableOverlap ?? false;
-  }
-
-  /**
-   * Creates a hash of the given bindings by concatenating the results of the given variables.
-   * This is guaranteed to not produce clashing bindings for unequal terms.
-   * This function will not sort the variables and expects them to be in the same order for every call.
-   * @param {Bindings} bindings
-   * @param {string[]} variables
-   * @returns {string} A hash string.
-   */
-  public static hashNonClashing(bindings: RDF.Bindings, variables: RDF.Variable[]): string {
-    return variables
-      .map((variable) => {
-        const term = bindings.get(variable);
-        if (term) {
-          return termToString(term);
-        }
-        return '';
-      })
-      .join('');
   }
 
   /**

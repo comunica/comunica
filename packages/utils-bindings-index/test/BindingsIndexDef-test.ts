@@ -1,12 +1,11 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
-import { ActorRdfJoin } from '@comunica/bus-rdf-join';
+import { BindingsFactory, bindingsToCompactString } from '@comunica/bindings-factory';
 import { DataFactory } from 'rdf-data-factory';
 import { BindingsIndexDef } from '../lib/BindingsIndexDef';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
 
-const hashFn = ActorRdfJoin.hashNonClashing;
+const hashFn = bindingsToCompactString;
 
 describe('BindingsIndexDef', () => {
   let index: BindingsIndexDef<number>;

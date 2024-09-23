@@ -1,3 +1,4 @@
+import { bindingsToCompactString } from '@comunica/bindings-factory';
 import { ClosableTransformIterator } from '@comunica/bus-query-operation';
 import type {
   IActionRdfJoin,
@@ -37,7 +38,7 @@ export class ActorRdfJoinMinusHash extends ActorRdfJoin {
         (term: RDF.Term | undefined) => term && term.termType !== 'Variable' ? termToString(term) : '',
         false,
       ) :
-      new BindingsIndexDef(commonVariables, ActorRdfJoin.hashNonClashing);
+      new BindingsIndexDef(commonVariables, bindingsToCompactString);
   }
 
   public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
