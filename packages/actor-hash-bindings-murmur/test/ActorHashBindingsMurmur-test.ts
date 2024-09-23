@@ -4,13 +4,13 @@ import { ActorHashBindings } from '@comunica/bus-hash-bindings';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
-import { ActorHashBindingsSha1 } from '../lib/ActorHashBindingsSha1';
+import { ActorHashBindingsMurmur } from '../lib/ActorHashBindingsMurmur';
 import '@comunica/jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
 
-describe('ActorHashBindingsSha1', () => {
+describe('ActorHashBindingsMurmur', () => {
   let bus: any;
   let context: IActionContext;
 
@@ -19,28 +19,28 @@ describe('ActorHashBindingsSha1', () => {
     context = new ActionContext();
   });
 
-  describe('The ActorHashBindingsSha1 module', () => {
+  describe('The ActorHashBindingsMurmur module', () => {
     it('should be a function', () => {
-      expect(ActorHashBindingsSha1).toBeInstanceOf(Function);
+      expect(ActorHashBindingsMurmur).toBeInstanceOf(Function);
     });
 
-    it('should be a ActorHashBindingsSha1 constructor', () => {
-      expect(new (<any> ActorHashBindingsSha1)({ name: 'actor', bus })).toBeInstanceOf(ActorHashBindingsSha1);
-      expect(new (<any> ActorHashBindingsSha1)({ name: 'actor', bus })).toBeInstanceOf(ActorHashBindings);
+    it('should be a ActorHashBindingsMurmur constructor', () => {
+      expect(new (<any> ActorHashBindingsMurmur)({ name: 'actor', bus })).toBeInstanceOf(ActorHashBindingsMurmur);
+      expect(new (<any> ActorHashBindingsMurmur)({ name: 'actor', bus })).toBeInstanceOf(ActorHashBindings);
     });
 
-    it('should not be able to create new ActorHashBindingsSha1 objects without \'new\'', () => {
+    it('should not be able to create new ActorHashBindingsMurmur objects without \'new\'', () => {
       expect(() => {
-        (<any> ActorHashBindingsSha1)();
-      }).toThrow(`Class constructor ActorHashBindingsSha1 cannot be invoked without 'new'`);
+        (<any> ActorHashBindingsMurmur)();
+      }).toThrow(`Class constructor ActorHashBindingsMurmur cannot be invoked without 'new'`);
     });
   });
 
-  describe('An ActorHashBindingsSha1 instance', () => {
-    let actor: ActorHashBindingsSha1;
+  describe('An ActorHashBindingsMurmur instance', () => {
+    let actor: ActorHashBindingsMurmur;
 
     beforeEach(() => {
-      actor = new ActorHashBindingsSha1({ name: 'actor', bus });
+      actor = new ActorHashBindingsMurmur({ name: 'actor', bus });
     });
 
     it('should test with allowHashCollisions true', async() => {

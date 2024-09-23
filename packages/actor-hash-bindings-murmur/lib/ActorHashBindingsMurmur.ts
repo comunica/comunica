@@ -1,13 +1,15 @@
 import type { IActionHashBindings, IActorHashBindingsOutput } from '@comunica/bus-hash-bindings';
 import { ActorHashBindings } from '@comunica/bus-hash-bindings';
-import type { IActorTest, TestResult } from '@comunica/core';
+import type { TestResult, IActorTest } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
-import { sha1 } from 'hash.js';
+
+// eslint-disable-next-line ts/no-require-imports,ts/no-var-requires
+const MurmurHash3 = require('imurmurhash');
 
 /**
- * A comunica Memento Http Actor.
+ * A comunica Murmur Hash Bindings Actor.
  */
-export class ActorHashBindingsSha1 extends ActorHashBindings {
+export class ActorHashBindingsMurmur extends ActorHashBindings {
   public async test(action: IActionHashBindings): Promise<TestResult<IActorTest>> {
     if (!action.allowHashCollisions) {
       return failTest(`Actor ${this.name} can not provide hash functions without hash collisions`);
@@ -18,11 +20,11 @@ export class ActorHashBindingsSha1 extends ActorHashBindings {
   public async run(_action: IActionHashBindings): Promise<IActorHashBindingsOutput> {
     return {
       hashFunction: (bindings, variables) => {
-        let hash = sha1();
+        let hash = MurmurHash3();
         for (const variable of variables) {
-          hash = hash.update(bindings.get(variable)?.value);
+          hash = hash.hash(bindings.get(variable)?.value ?? 'UNDEF');
         }
-        return hash.digest()[0];
+        return hash.result();
       },
       hashCollisions: true,
     };

@@ -2739,6 +2739,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/imurmurhash@^0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@types/imurmurhash/-/imurmurhash-0.1.4.tgz#edf6afe39cf3d3b9196787de4cd0c2ffc5f9b175"
+  integrity sha512-Zo/QlTiAvOP3pd9nuPOw33k0l/QssLOBrriShWzUE4qhIZByIF3rCoyF8ZTxdyFTUM2mYljYLqMUeLvA3NJUmQ==
+
 "@types/istanbul-lib-coverage@*", "@types/istanbul-lib-coverage@^2.0.0", "@types/istanbul-lib-coverage@^2.0.1":
   version "2.0.6"
   resolved "https://registry.npmjs.org/@types/istanbul-lib-coverage/-/istanbul-lib-coverage-2.0.6.tgz"

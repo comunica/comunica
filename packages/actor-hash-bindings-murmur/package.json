@@ -1,7 +1,7 @@
 {
-  "name": "@comunica/actor-hash-bindings-sha1",
+  "name": "@comunica/actor-hash-bindings-murmur",
   "version": "3.2.1",
-  "description": "A hash bindings actor that provides the SHA1 function",
+  "description": "A murmur hash-bindings actor",
   "lsd:module": true,
   "license": "MIT",
   "funding": {
@@ -12,7 +12,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-hash-bindings-sha1"
+    "directory": "packages/actor-hash-bindings-murmur"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"
@@ -20,9 +20,8 @@
   "keywords": [
     "comunica",
     "actor",
-    "hash",
-    "bindings",
-    "sha1"
+    "hash-bindings",
+    "murmur"
   ],
   "sideEffects": false,
   "main": "lib/index.js",
@@ -44,6 +43,7 @@
   "dependencies": {
     "@comunica/bus-hash-bindings": "^3.2.1",
     "@comunica/core": "^3.2.1",
-    "hash.js": "^1.1.7"
+    "@types/imurmurhash": "^0.1.4",
+    "imurmurhash": "^0.1.4"
   }
 }
