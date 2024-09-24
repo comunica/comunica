@@ -1,7 +1,6 @@
 import { Readable } from 'node:stream';
 import type {
   IActionAbstractMediaTypedHandle,
-  IActionAbstractMediaTypedMediaTypes,
   IActorOutputAbstractMediaTypedHandle,
   IActorOutputAbstractMediaTypedMediaTypes,
 } from '@comunica/actor-abstract-mediatyped';
@@ -61,12 +60,7 @@ describe('ActorAbstractDereferenceParse', () => {
       },
       // @ts-expect-error
       mediatorParseMediatypes: {
-        async mediate(action: IActionAbstractMediaTypedMediaTypes):
-        Promise<IActorOutputAbstractMediaTypedMediaTypes> {
-          return {
-            mediaTypes: {},
-          };
-        },
+        mediate: () => Promise.resolve<IActorOutputAbstractMediaTypedMediaTypes>({ mediaTypes: {}}),
       },
       mediaMappings: {
         x: 'y',

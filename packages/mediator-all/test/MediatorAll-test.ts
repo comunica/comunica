@@ -139,17 +139,17 @@ class DummyActor extends Actor<IAction, IDummyTest, IDummyTest> {
     this.fail = fail;
   }
 
-  public test(action: IAction): Promise<TestResult<IDummyTest>> {
+  public test(): Promise<TestResult<IDummyTest>> {
     if (this.fail) {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         setTimeout(() => resolve(failTest(`${this.id}`)), 10);
       });
     }
-    return new Promise((resolve, reject) => setTimeout(() => resolve(passTest({ field: this.id })), this.delay));
+    return new Promise(resolve => setTimeout(() => resolve(passTest({ field: this.id })), this.delay));
   }
 
-  public run(action: IAction): Promise<IDummyTest> {
-    return new Promise((resolve, reject) => setTimeout(() => resolve({ field: this.id }), this.delay));
+  public run(): Promise<IDummyTest> {
+    return new Promise(resolve => setTimeout(() => resolve({ field: this.id }), this.delay));
   }
 }
 

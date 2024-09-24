@@ -67,7 +67,7 @@ class DummyIteratorMultiple extends DummyIterator {
 
 // Dummy class that produces multiple next page links
 class DummyIteratorErrorLinks extends DummyIterator {
-  protected override async getSourceLinks(metadata: Record<string, any>): Promise<ILink[]> {
+  protected override async getSourceLinks(): Promise<ILink[]> {
     throw new Error('DummyErrorLinks');
   }
 }
@@ -93,10 +93,7 @@ class DummyIteratorErrorLinkQueueLater extends DummyIterator {
 
 // Dummy class with a rejecting accumulateMetadata
 class DummyIteratorErrorAccumulate extends DummyIterator {
-  protected override accumulateMetadata(
-    accumulatedMetadata: MetadataBindings,
-    appendingMetadata: MetadataBindings,
-  ): Promise<MetadataBindings> {
+  protected override accumulateMetadata(): Promise<MetadataBindings> {
     return Promise.reject(new Error('accumulateMetadata error'));
   }
 }
@@ -682,7 +679,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       })).rejects.toThrow(new Error('accumulateMetadata error'));
     });
     it('records dereference events when passed a dereference statistic', async() => {
-      const cb = jest.fn((data: ILink) => {});
+      const cb = jest.fn(() => {});
       jest.useFakeTimers();
       jest.setSystemTime(new Date('2021-01-01T00:00:00Z').getTime());
 

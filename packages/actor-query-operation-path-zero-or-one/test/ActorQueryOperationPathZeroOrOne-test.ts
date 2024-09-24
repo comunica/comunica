@@ -84,9 +84,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
     };
     // Mediator with no actors attached to it
     mediatorMergeBindingsContext = {
-      mediate(arg: any) {
-        return {};
-      },
+      mediate: () => ({}),
     };
     source1 = <any> {};
     source2 = <any> {};

@@ -47,30 +47,6 @@ describe('ActorOptimizeQueryOperationGroupSources', () => {
       }),
     },
   };
-  const sourceJoinOrPattern: IQuerySourceWrapper = <any> {
-    source: {
-      referenceValue: 'source1',
-      getSelectorShape: () => ({
-        type: 'disjunction',
-        children: [
-          {
-            type: 'operation',
-            operation: {
-              operationType: 'type',
-              type: Algebra.types.PATTERN,
-            },
-          },
-          {
-            type: 'operation',
-            operation: {
-              operationType: 'type',
-              type: Algebra.types.JOIN,
-            },
-          },
-        ],
-      }),
-    },
-  };
 
   const ctx = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
 

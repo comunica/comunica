@@ -6,7 +6,7 @@ import { KeysInitQuery, KeysQueryOperation, KeysStatistics }
 import type { IAction } from '@comunica/core';
 import { ActionContext, ActionContextKey, Bus } from '@comunica/core';
 import { StatisticLinkDereference } from '@comunica/statistic-link-dereference';
-import type { IActionContext, ILink, IQuerySourceWrapper } from '@comunica/types';
+import type { IActionContext, IQuerySourceWrapper } from '@comunica/types';
 import { RdfStore } from 'rdf-stores';
 import { ActorContextPreprocessQuerySourceIdentify } from '../lib/ActorContextPreprocessQuerySourceIdentify';
 import '@comunica/jest';
@@ -209,7 +209,7 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
       });
 
       it('should record dereference events when passed dereference statistic', async() => {
-        const cb = jest.fn((data: ILink) => {});
+        const cb = jest.fn(() => {});
         jest.useFakeTimers();
         jest.setSystemTime(new Date('2021-01-01T00:00:00Z').getTime());
 
@@ -267,7 +267,6 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
     let actor: ActorContextPreprocessQuerySourceIdentify;
     let mediatorQuerySourceIdentify: MediatorQuerySourceIdentify;
     let httpInvalidator: ActorHttpInvalidateListenable;
-    let listener = null;
 
     beforeEach(() => {
       mediatorQuerySourceIdentify = <any> {
@@ -276,7 +275,7 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
         },
       };
       httpInvalidator = <any>{
-        addInvalidateListener: (l: any) => listener = l,
+        addInvalidateListener: jest.fn(),
       };
       actor = new ActorContextPreprocessQuerySourceIdentify({
         name: 'actor',

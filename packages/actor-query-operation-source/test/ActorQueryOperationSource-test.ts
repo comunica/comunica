@@ -32,12 +32,12 @@ describe('ActorQueryOperationSource', () => {
     source1 = <any> {
       source: {
         referenceValue: 'source1',
-        queryBindings: jest.fn((op) => {
+        queryBindings: jest.fn(() => {
           const bindingsStream = new ArrayIterator([], { autoStart: false });
           bindingsStream.setProperty('metadata', { cardinality: { value: 10 }, variables: []});
           return bindingsStream;
         }),
-        queryQuads: jest.fn((op) => {
+        queryQuads: jest.fn(() => {
           const quadStream = new ArrayIterator([], { autoStart: false });
           quadStream.setProperty('metadata', { cardinality: { value: 10 }});
           return quadStream;

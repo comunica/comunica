@@ -1,13 +1,10 @@
-import { Bus } from '@comunica/core';
 import type { ILink, IDiscoverEventData } from '@comunica/types';
 import { StatisticLinkDiscovery } from '../lib/StatisticLinkDiscovery';
 
 describe('StatisticLinkDiscovery', () => {
-  let bus: any;
   let statisticLinkDiscovery: StatisticLinkDiscovery;
 
   beforeEach(() => {
-    bus = new Bus({ name: 'bus' });
     jest.useFakeTimers();
     jest.setSystemTime(new Date('2021-01-01T00:00:00Z').getTime());
     statisticLinkDiscovery = new StatisticLinkDiscovery();
@@ -31,7 +28,7 @@ describe('StatisticLinkDiscovery', () => {
           childkey: 5,
         },
       };
-      cb = jest.fn((arg0: IDiscoverEventData) => {});
+      cb = jest.fn(() => {});
     });
 
     // TODO Move to statisticBase

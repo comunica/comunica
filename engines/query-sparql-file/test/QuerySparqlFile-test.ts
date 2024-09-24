@@ -8,7 +8,6 @@ import { QueryEngine } from '../lib/QueryEngine';
 
 describe('System test: QuerySparqlFile', () => {
   let engine: QueryEngine;
-  let spyQueryOrExplain: any;
 
   beforeEach(() => {
     engine = new QueryEngine();

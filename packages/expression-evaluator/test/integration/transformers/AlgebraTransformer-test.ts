@@ -12,7 +12,7 @@ describe('AlgebraTransformer', () => {
   let algebraTransformer: AlgebraTransformer;
   beforeEach(() => {
     algebraTransformer = new AlgebraTransformer({
-      creator: _ => args => DF.namedNode('http://example.com'),
+      creator: _ => () => DF.namedNode('http://example.com'),
       type: 'sync',
       ...getDefaultSharedContext(),
     });

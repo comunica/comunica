@@ -168,7 +168,6 @@ describe('ActorDereferenceHttp', () => {
     });
 
     it('should run with an text/plain content type', async() => {
-      const headers = new Headers({});
       const output = await actor.run({ url: 'https://www.google.com/plaincontenttype', context });
       expect(output.url).toBe('https://www.google.com/index.html');
       expect(output.headers).toEqual(new Headers({ 'content-type': 'text/plain' }));

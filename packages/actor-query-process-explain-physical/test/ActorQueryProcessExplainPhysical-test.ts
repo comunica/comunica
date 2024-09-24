@@ -25,7 +25,7 @@ describe('ActorQueryProcessExplainPhysical', () => {
         async optimize(query: string, context: any) {
           return { operation: `${query}OPT`, context };
         },
-        evaluate: jest.fn(async(query: string, context: any) => {
+        evaluate: jest.fn(async() => {
           return {
             type: 'bindings',
             bindingsStream: new ArrayIterator([], { autoStart: false }),
@@ -96,7 +96,7 @@ describe('ActorQueryProcessExplainPhysical', () => {
       });
 
       it('handles physical explain in context for quad outputs', async() => {
-        (<any> queryProcessor).evaluate = async(query: string, context: any) => {
+        (<any> queryProcessor).evaluate = async() => {
           return {
             type: 'quads',
             quadStream: new ArrayIterator([], { autoStart: false }),
@@ -117,7 +117,7 @@ describe('ActorQueryProcessExplainPhysical', () => {
       });
 
       it('handles physical explain in context for boolean outputs', async() => {
-        (<any> queryProcessor).evaluate = async(query: string, context: any) => {
+        (<any> queryProcessor).evaluate = async() => {
           return {
             type: 'boolean',
             execute: jest.fn(),
@@ -138,7 +138,7 @@ describe('ActorQueryProcessExplainPhysical', () => {
       });
 
       it('handles physical explain in context for void outputs', async() => {
-        (<any> queryProcessor).evaluate = async(query: string, context: any) => {
+        (<any> queryProcessor).evaluate = async() => {
           return {
             type: 'void',
             execute: jest.fn(),

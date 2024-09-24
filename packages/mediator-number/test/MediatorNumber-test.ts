@@ -241,11 +241,11 @@ class DummyActor extends Actor<IAction, IDummyTest, IDummyTest> {
     this.id = id;
   }
 
-  public async test(action: IAction): Promise<TestResult<IDummyTest>> {
+  public async test(): Promise<TestResult<IDummyTest>> {
     return passTest({ field: this.id });
   }
 
-  public async run(action: IAction): Promise<IDummyTest> {
+  public async run(): Promise<IDummyTest> {
     return { field: this.id };
   }
 }
@@ -258,17 +258,17 @@ class DummyActorInvalid extends Actor<IAction, IDummyTest, IDummyTest> {
     this.id = id;
   }
 
-  public async test(action: IAction): Promise<TestResult<IDummyTest>> {
+  public async test(): Promise<TestResult<IDummyTest>> {
     return passTest(<any> {});
   }
 
-  public async run(action: IAction): Promise<IDummyTest> {
+  public async run(): Promise<IDummyTest> {
     return { field: this.id };
   }
 }
 
 class ErrorDummyActor extends DummyActor {
-  public override async test(action: IAction): Promise<TestResult<IDummyTest>> {
+  public override async test(): Promise<TestResult<IDummyTest>> {
     return failTest('abc');
   }
 }

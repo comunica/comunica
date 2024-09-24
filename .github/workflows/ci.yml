@@ -233,13 +233,13 @@ jobs:
         uses: benchmark-action/github-action-benchmark@v1
         with:
           name: Benchmarks detailed results
-          tool: 'customSmallerIsBetter'
+          tool: customSmallerIsBetter
           output-file-path: ghbench-detail.json
           github-token: ${{ secrets.PAT }}
           auto-push: true
           alert-comment-cc-users: '@rubensworks'
-          gh-repository: 'github.com/comunica/comunica-performance-results'
-          gh-pages-branch: 'master'
+          gh-repository: github.com/comunica/comunica-performance-results
+          gh-pages-branch: master
           benchmark-data-dir-path: ${{ env.BENCHMARK_DATA_DIR_PATH_DETAIL }}
       - name: Cleanup benchmark-action data
         run: rm -rf ./benchmark-data-repository
@@ -247,7 +247,7 @@ jobs:
         uses: benchmark-action/github-action-benchmark@v1
         with:
           name: Benchmarks total results
-          tool: 'customSmallerIsBetter'
+          tool: customSmallerIsBetter
           output-file-path: ghbench-total.json
           github-token: ${{ secrets.PAT }}
           auto-push: true
@@ -256,8 +256,8 @@ jobs:
           comment-on-alert: true
           alert-comment-cc-users: '@rubensworks'
           summary-always: true
-          gh-repository: 'github.com/comunica/comunica-performance-results'
-          gh-pages-branch: 'master'
+          gh-repository: github.com/comunica/comunica-performance-results
+          gh-pages-branch: master
           benchmark-data-dir-path: ${{ env.BENCHMARK_DATA_DIR_PATH_TOTAL }}
       - name: Prepare comment on commit with link to performance results
         run: echo -e "Performance benchmarks succeeded! 🚀\n\n\[[Summarized results](https://comunica.github.io/comunica-performance-results/comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-total/)\] \[[Detailed results](https://comunica.github.io/comunica-performance-results/comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-detail/)\]" > ./commit-comment-body.txt

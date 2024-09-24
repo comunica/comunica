@@ -1,5 +1,4 @@
 import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
 import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
@@ -16,7 +15,6 @@ import { MediatedLinkedRdfSourcesAsyncRdfIterator } from '../lib/MediatedLinkedR
 
 const DF = new DataFactory();
 const AF = new Factory();
-const BF = new BindingsFactory(DF);
 
 setTaskScheduler(task => setImmediate(task));
 

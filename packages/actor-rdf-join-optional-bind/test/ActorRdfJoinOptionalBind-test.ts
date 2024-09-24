@@ -17,9 +17,7 @@ const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
 const FACTORY = new Factory();
 const mediatorMergeBindingsContext: any = {
-  mediate(arg: any) {
-    return {};
-  },
+  mediate: () => ({}),
 };
 
 describe('ActorRdfJoinOptionalBind', () => {

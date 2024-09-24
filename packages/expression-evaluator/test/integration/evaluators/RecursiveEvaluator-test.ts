@@ -113,7 +113,7 @@ describe('recursive evaluators', () => {
       expect(() => evaluator.evaluate({
         expressionType: ExpressionType.AsyncExtension,
         name: DF.namedNode('http://example.com'),
-        async apply(_) {
+        async apply() {
           throw new Error('Error');
         },
         args: [],
@@ -220,7 +220,7 @@ describe('recursive evaluators', () => {
       await expect(evaluator.evaluate({
         expressionType: ExpressionType.SyncExtension,
         name: DF.namedNode('http://example.com'),
-        apply(_) {
+        apply() {
           throw new Error('Error');
         },
         args: [],

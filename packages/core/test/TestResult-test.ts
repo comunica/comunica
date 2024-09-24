@@ -28,17 +28,17 @@ describe('TestResult', () => {
 
       it('should be type-narrowed after isPassed', () => {
         if (result.isPassed()) {
-          const value: number = result.get();
+          const _value: number = result.get();
         } else {
-          const value: undefined = result.get();
+          const _value: undefined = result.get();
         }
       });
 
       it('should be type-narrowed after isFailed', () => {
         if (result.isFailed()) {
-          const value: undefined = result.get();
+          const _value: undefined = result.get();
         } else {
-          const value: number = result.get();
+          const _value: number = result.get();
         }
       });
     });
@@ -65,17 +65,17 @@ describe('TestResult', () => {
 
       it('should be type-narrowed after isPassed', () => {
         if (result.isPassed()) {
-          const message: undefined = result.getFailMessage();
+          const _message: undefined = result.getFailMessage();
         } else {
-          const message: string = result.getFailMessage();
+          const _message: string = result.getFailMessage();
         }
       });
 
       it('should be type-narrowed after isFailed', () => {
         if (result.isFailed()) {
-          const message: string = result.getFailMessage();
+          const _message: string = result.getFailMessage();
         } else {
-          const message: undefined = result.getFailMessage();
+          const _message: undefined = result.getFailMessage();
         }
       });
     });
@@ -123,17 +123,17 @@ describe('TestResult', () => {
 
       it('should be type-narrowed after isPassed', () => {
         if (result.isPassed()) {
-          const value: number = result.get();
+          const _value: number = result.get();
         } else {
-          const value: undefined = result.get();
+          const _value: undefined = result.get();
         }
       });
 
       it('should be type-narrowed after isFailed', () => {
         if (result.isFailed()) {
-          const value: undefined = result.get();
+          const _value: undefined = result.get();
         } else {
-          const value: number = result.get();
+          const _value: number = result.get();
         }
       });
     });
@@ -160,17 +160,17 @@ describe('TestResult', () => {
 
       it('should be type-narrowed after isPassed', () => {
         if (result.isPassed()) {
-          const message: undefined = result.getFailMessage();
+          const _message: undefined = result.getFailMessage();
         } else {
-          const message: string = result.getFailMessage();
+          const _message: string = result.getFailMessage();
         }
       });
 
       it('should be type-narrowed after isFailed', () => {
         if (result.isFailed()) {
-          const message: string = result.getFailMessage();
+          const _message: string = result.getFailMessage();
         } else {
-          const message: undefined = result.getFailMessage();
+          const _message: undefined = result.getFailMessage();
         }
       });
     });
@@ -218,17 +218,17 @@ describe('TestResult', () => {
 
       it('should be type-narrowed after isPassed', () => {
         if (result.isPassed()) {
-          const value: any = result.get();
+          const _value: any = result.get();
         } else {
-          const value: undefined = result.get();
+          const _value: undefined = result.get();
         }
       });
 
       it('should be type-narrowed after isFailed', () => {
         if (result.isFailed()) {
-          const value: undefined = result.get();
+          const _value: undefined = result.get();
         } else {
-          const value: any = result.get();
+          const _value: any = result.get();
         }
       });
     });
@@ -255,17 +255,17 @@ describe('TestResult', () => {
 
       it('should be type-narrowed after isPassed', () => {
         if (result.isPassed()) {
-          const message: undefined = result.getFailMessage();
+          const _message: undefined = result.getFailMessage();
         } else {
-          const message: string = result.getFailMessage();
+          const _message: string = result.getFailMessage();
         }
       });
 
       it('should be type-narrowed after isFailed', () => {
         if (result.isFailed()) {
-          const message: string = result.getFailMessage();
+          const _message: string = result.getFailMessage();
         } else {
-          const message: undefined = result.getFailMessage();
+          const _message: undefined = result.getFailMessage();
         }
       });
     });
@@ -297,17 +297,17 @@ describe('TestResult', () => {
 
       it('should be type-narrowed after isPassed', () => {
         if (result.isPassed()) {
-          const value: any = result.get();
+          const _value: any = result.get();
         } else {
-          const value: undefined = result.get();
+          const _value: undefined = result.get();
         }
       });
 
       it('should be type-narrowed after isFailed', () => {
         if (result.isFailed()) {
-          const value: undefined = result.get();
+          const _value: undefined = result.get();
         } else {
-          const value: any = result.get();
+          const _value: any = result.get();
         }
       });
     });
@@ -334,17 +334,17 @@ describe('TestResult', () => {
 
       it('should be type-narrowed after isPassed', () => {
         if (result.isPassed()) {
-          const message: undefined = result.getFailMessage();
+          const _message: undefined = result.getFailMessage();
         } else {
-          const message: string = result.getFailMessage();
+          const _message: string = result.getFailMessage();
         }
       });
 
       it('should be type-narrowed after isFailed', () => {
         if (result.isFailed()) {
-          const message: string = result.getFailMessage();
+          const _message: string = result.getFailMessage();
         } else {
-          const message: undefined = result.getFailMessage();
+          const _message: undefined = result.getFailMessage();
         }
       });
     });
@@ -376,17 +376,17 @@ describe('TestResult', () => {
 
       it('should be type-narrowed after isPassed', () => {
         if (result.isPassed()) {
-          const value: number = result.get();
+          const _value: number = result.get();
         } else {
-          const value: undefined = result.get();
+          const _value: undefined = result.get();
         }
       });
 
       it('should be type-narrowed after isFailed', () => {
         if (result.isFailed()) {
-          const value: undefined = result.get();
+          const _value: undefined = result.get();
         } else {
-          const value: number = result.get();
+          const _value: number = result.get();
         }
       });
     });
@@ -411,17 +411,17 @@ describe('TestResult', () => {
 
       it('should be type-narrowed after isPassed', () => {
         if (result.isPassed()) {
-          const message: undefined = result.getFailMessage();
+          const _message: undefined = result.getFailMessage();
         } else {
-          const message: string = result.getFailMessage();
+          const _message: string = result.getFailMessage();
         }
       });
 
       it('should be type-narrowed after isFailed', () => {
         if (result.isFailed()) {
-          const message: string = result.getFailMessage();
+          const _message: string = result.getFailMessage();
         } else {
-          const message: undefined = result.getFailMessage();
+          const _message: undefined = result.getFailMessage();
         }
       });
     });

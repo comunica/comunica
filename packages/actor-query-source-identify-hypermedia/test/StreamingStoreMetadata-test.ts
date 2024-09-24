@@ -7,7 +7,7 @@ describe('StreamingStoreMetadata', () => {
         undefined,
         () => Promise.reject(new Error('StreamingStoreMetadata error')),
       );
-      const it1 = store.match();
+      const _it1 = store.match();
       store.setBaseMetadata(<any>{}, true);
     });
   });

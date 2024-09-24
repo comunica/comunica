@@ -231,7 +231,7 @@ class DummyActor extends Actor<IDummyAction, IActorTest, IDummyOutput> {
     this.testOutput = testOutput;
   }
 
-  public async test(action: IDummyAction): Promise<TestResult<IActorTest>> {
+  public async test(): Promise<TestResult<IActorTest>> {
     return passTest(this.testOutput ?? true);
   }
 
@@ -249,7 +249,7 @@ class DummyThrowActor extends DummyActor {
     super(id, bus, testOutput);
   }
 
-  public override async test(action: IDummyAction): Promise<TestResult<IActorTest>> {
+  public override async test(): Promise<TestResult<IActorTest>> {
     return failTest('Dummy Error');
   }
 }
@@ -267,7 +267,7 @@ class DummyConcatActor extends Actor<IDummyConcatAction, IActorTest, IDummyConca
     this.testOutput = testOutput;
   }
 
-  public async test(action: IDummyConcatAction): Promise<TestResult<IActorTest>> {
+  public async test(): Promise<TestResult<IActorTest>> {
     return passTest(this.testOutput ?? true);
   }
 

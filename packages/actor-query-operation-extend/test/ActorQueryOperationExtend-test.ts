@@ -111,9 +111,7 @@ describe('ActorQueryOperationExtend', () => {
     let mediatorMergeBindingsContext: any;
     beforeEach(() => {
       mediatorMergeBindingsContext = {
-        mediate(arg: any) {
-          return {};
-        },
+        mediate: () => ({}),
       };
 
       actor = new ActorQueryOperationExtend(

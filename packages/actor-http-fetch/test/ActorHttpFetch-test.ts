@@ -10,7 +10,7 @@ import { ActorHttpFetch } from '../lib/ActorHttpFetch';
 import '@comunica/jest';
 
 // Mock fetch
-jest.spyOn(globalThis, 'fetch').mockImplementation((input: any, init?: any) => Promise.resolve(<Response> <unknown>{
+jest.spyOn(globalThis, 'fetch').mockImplementation((input: any) => Promise.resolve(<Response> <unknown>{
   status: input.url === 'https://www.google.com/' ? 200 : 404,
   ...input.url === 'NOBODY' ? {} : { body: { destroy: jest.fn(), on: jest.fn() }},
 }));
@@ -404,7 +404,7 @@ describe('ActorHttpFetch', () => {
         }),
       });
       const body = <Readable><any> response.body;
-      for await (const chunk of body) {
+      for await (const _ of body) {
         // We just want to consume everything
       }
       expect(clearTimeout).toHaveBeenCalledTimes(1);

@@ -1,5 +1,3 @@
-/* eslint-disable unicorn/filename-case */
-/* eslint-enable unicorn/filename-case */
 /* ! @license MIT ©2013-2016 Ruben Verborgh, Ghent University - imec */
 /* Single-function HTTP(S) request module for browsers */
 /* Translated from https://github.com/LinkedDataFragments/Client.js/blob/master/lib/browser/Request.js */

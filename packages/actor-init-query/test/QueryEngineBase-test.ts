@@ -83,7 +83,7 @@ describe('QueryEngineBase', () => {
           }),
     };
     mediatorHttpInvalidate = {
-      mediate: (arg: any) => Promise.resolve(true),
+      mediate: () => Promise.resolve(true),
     };
     context = new ActionContext();
   });
@@ -202,7 +202,7 @@ describe('QueryEngineBase', () => {
       it('should return a rejected promise on an invalid request', async() => {
         const ctx: QueryStringContext = { sources: [ 'abc' ]};
         // Make it reject instead of reading input
-        mediatorQueryProcess.mediate = (action: any) => Promise.reject(new Error('a'));
+        mediatorQueryProcess.mediate = () => Promise.reject(new Error('a'));
         await expect(queryEngine.query('INVALID QUERY', ctx)).rejects.toBeTruthy();
       });
 
@@ -296,7 +296,7 @@ describe('QueryEngineBase', () => {
     describe('getResultMediaTypeFormats', () => {
       it('should return the media type formats', async() => {
         const med: any = {
-          mediate: (arg: any) => Promise.resolve({ mediaTypeFormats: { data: 'DATA' }}),
+          mediate: () => Promise.resolve({ mediaTypeFormats: { data: 'DATA' }}),
         };
         actor = new ActorInitQuery({
           bus,
@@ -339,7 +339,7 @@ describe('QueryEngineBase', () => {
 
     it('should return a rejected promise on an invalid request', async() => {
       // Make it reject instead of reading input
-      mediatorQueryProcess.mediate = (action: any) => Promise.reject(new Error('a'));
+      mediatorQueryProcess.mediate = () => Promise.reject(new Error('a'));
       await expect(queryEngine.query('INVALID QUERY', { sources: [ 'abc' ]})).rejects.toBeTruthy();
     });
   });

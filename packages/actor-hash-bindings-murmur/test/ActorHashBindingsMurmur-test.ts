@@ -2,7 +2,6 @@ import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionHashBindings } from '@comunica/bus-hash-bindings';
 import { ActorHashBindings } from '@comunica/bus-hash-bindings';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorHashBindingsMurmur } from '../lib/ActorHashBindingsMurmur';
 import '@comunica/jest';
@@ -12,11 +11,9 @@ const BF = new BindingsFactory(DF);
 
 describe('ActorHashBindingsMurmur', () => {
   let bus: any;
-  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    context = new ActionContext();
   });
 
   describe('The ActorHashBindingsMurmur module', () => {

@@ -353,10 +353,9 @@ describe('System test: QuerySparql', () => {
           integerType = DF.namedNode('http://www.w3.org/2001/XMLSchema#integer');
           funcAllow = 'allowAll';
           baseFunctions = {
-            'http://example.org/functions#allowAll': async(args: RDF.Term[]) => DF.literal('true', booleanType),
+            'http://example.org/functions#allowAll': async() => DF.literal('true', booleanType),
           };
-          baseFunctionCreator = (functionName: RDF.NamedNode) =>
-            async(args: RDF.Term[]) => DF.literal('true', booleanType);
+          baseFunctionCreator = () => async() => DF.literal('true', booleanType);
           store = new Store();
           quads = [
             DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:p1'), DF.literal('apple', stringType)),

@@ -98,9 +98,9 @@ describe('ActorRdfMetadataAll', () => {
           output.data.on('data', () => {
             // Do nothing
           });
-          return Promise.all([ new Promise((resolve, reject) => {
+          return Promise.all([ new Promise((resolve) => {
             output.data.on('error', resolve);
-          }), new Promise((resolve, reject) => {
+          }), new Promise((resolve) => {
             output.metadata.on('error', resolve);
           }) ]).then((errors) => {
             expect(errors).toHaveLength(2);
@@ -112,9 +112,9 @@ describe('ActorRdfMetadataAll', () => {
       await actor.run({ url: '', quads: input, context })
         .then((output) => {
           setImmediate(() => input.emit('error', new Error('RDF Meta Primary Topic error')));
-          return Promise.all([ new Promise((resolve, reject) => {
+          return Promise.all([ new Promise((resolve) => {
             output.data.on('error', resolve);
-          }), new Promise((resolve, reject) => {
+          }), new Promise((resolve) => {
             output.metadata.on('error', resolve);
           }) ]).then((errors) => {
             expect(errors).toHaveLength(2);

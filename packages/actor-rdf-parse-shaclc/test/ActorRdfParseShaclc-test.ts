@@ -11,7 +11,6 @@ const quad = require('rdf-quad');
 
 describe('ActorRdfParseShaclc', () => {
   let bus: any;
-  let mediatorHttp: any;
   let context: IActionContext;
 
   beforeEach(() => {
@@ -78,9 +77,6 @@ describe('ActorRdfParseShaclc', () => {
   describe('An ActorRdfParseShaclc instance', () => {
     let actor: ActorRdfParseShaclc;
     let input: Readable;
-    // Let inputGraphs: Readable;
-    let inputLinkHeader: Readable;
-    let inputSkipped: Readable;
 
     beforeEach(() => {
       actor = new ActorRdfParseShaclc({ bus, mediaTypePriorities: {
@@ -95,17 +91,6 @@ describe('ActorRdfParseShaclc', () => {
     });
 
     describe('for parsing', () => {
-      beforeEach(() => {
-        inputLinkHeader = Readable.from([ `{
-          "@id": "http://www.example.org/",
-          "term": "value"
-        }` ]);
-        inputSkipped = Readable.from([ `{
-          "@id": "http://www.example.org/",
-          "skipped": "value"
-        }` ]);
-      });
-
       it('should test on text/shaclc', async() => {
         await expect(actor
           .test({ handle: { data: input, context }, handleMediaType: 'text/shaclc', context }))

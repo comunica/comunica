@@ -26,7 +26,7 @@ describe('extension functions:', () => {
         };
       }
       if (functionNamedNode.value === 'https://example.org/functions#bad') {
-        return (args: RDF.Term[]) => {
+        return () => {
           throw new Error('error');
         };
       }

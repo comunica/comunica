@@ -28,7 +28,7 @@ export class ActorHttpNative extends ActorHttp {
       `Browser-${globalThis.navigator.userAgent}`})`;
   }
 
-  public async test(action: IActionHttp): Promise<TestResult<IMediatorTypeTime>> {
+  public async test(_action: IActionHttp): Promise<TestResult<IMediatorTypeTime>> {
     return passTest({ time: Number.POSITIVE_INFINITY });
   }
 
