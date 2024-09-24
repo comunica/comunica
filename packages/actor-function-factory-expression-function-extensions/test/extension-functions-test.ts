@@ -68,27 +68,27 @@ describe('extension functions:', () => {
 
     describe('throws error when not providing implementation', () => {
       const errorTable: (e: string) => string = e => `
-        3i 3i = ${e}
-        3d 3d = ${e}
-        3f 3f = ${e}
+        3i 3i = '${e}'
+        3d 3d = '${e}'
+        3f 3f = '${e}'
       
-        3i -5i = ${e}
-        3d -5d = ${e}
-        3f -5f = ${e}
+        3i -5i = '${e}'
+        3d -5d = '${e}'
+        3f -5f = '${e}'
       
-        3i 3f = ${e}
-        3i 3d = ${e}
-        3d 3f = ${e}
-        -0f 0f = ${e}
+        3i 3f = '${e}'
+        3i 3d = '${e}'
+        3d 3f = '${e}'
+        -0f 0f = '${e}'
       
-        INF  INF = ${e}
-        -INF -INF = ${e}
-        INF  3f  = ${e}
-        3f   INF = ${e}
-        INF  NaN = ${e}
-        NaN  NaN = ${e}
-        NaN  3f  = ${e}
-        3f   NaN = ${e}
+        INF  INF = '${e}'
+        -INF -INF = '${e}'
+        INF  3f  = '${e}'
+        3f   INF = '${e}'
+        INF  NaN = '${e}'
+        NaN  NaN = '${e}'
+        NaN  3f  = '${e}'
+        3f   NaN = '${e}'
         `;
       runFuncTestTable({
         registeredActors: [
@@ -98,7 +98,7 @@ describe('extension functions:', () => {
         notation: Notation.Function,
         operation: '<https://example.org/functions#equal>',
         aliases: numeric,
-        errorTable: errorTable('No registered actors'),
+        errorTable: errorTable('test-mediator-function-factory mediated over all rejecting actors'),
       });
     });
 

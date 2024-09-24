@@ -1,11 +1,11 @@
-import {
-  ActorFunctionFactory,
-} from '@comunica/bus-function-factory';
 import type {
   IActionFunctionFactory,
   IActorFunctionFactoryOutput,
   IActorFunctionFactoryArgs,
   IActorFunctionFactoryOutputTerm,
+} from '@comunica/bus-function-factory';
+import {
+  ActorFunctionFactory,
 } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';

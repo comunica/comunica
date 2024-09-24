@@ -5,25 +5,22 @@ import type {
   IActorFunctionFactoryOutputTerm,
 } from '@comunica/bus-function-factory';
 import {
-  ActorFunctionFactory,
+  ActorFunctionFactoryDedicated,
 } from '@comunica/bus-function-factory';
-import type { IActorTest } from '@comunica/core';
+
 import { SparqlOperator } from '@comunica/expression-evaluator';
 import { TermFunctionEncodeForUri } from './TermFunctionEncodeForUri';
 
 /**
  * A comunica TermFunctionEncodeForUri Function Factory Actor.
  */
-export class ActorFunctionFactoryTermFunctionEncodeForUri extends ActorFunctionFactory {
+export class ActorFunctionFactoryTermFunctionEncodeForUri extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args);
-  }
-
-  public async test(action: IActionFunctionFactory): Promise<IActorTest> {
-    if (action.functionName === SparqlOperator.ENCODE_FOR_URI) {
-      return true;
-    }
-    throw new Error(`Actor ${this.name} can only provide implementations for ${SparqlOperator.ENCODE_FOR_URI}`);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.ENCODE_FOR_URI ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

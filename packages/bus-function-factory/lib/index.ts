@@ -1,2 +1,4 @@
 export * from './ActorFunctionFactory';
-export { ExpressionFunctionBase, TermFunctionBase } from './implementation/Core';
+export * from './ActorFunctionFactoryDedicated';
+export * from './BusFunctionFactory';
+export * from './implementation/Core';

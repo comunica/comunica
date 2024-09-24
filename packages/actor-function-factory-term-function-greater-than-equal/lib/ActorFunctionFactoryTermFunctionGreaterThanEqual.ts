@@ -7,32 +7,29 @@ import type {
   MediatorFunctionFactoryUnsafe,
 } from '@comunica/bus-function-factory';
 import {
-  ActorFunctionFactory,
+  ActorFunctionFactoryDedicated,
 } from '@comunica/bus-function-factory';
-import type { IActorTest } from '@comunica/core';
+
 import { SparqlOperator } from '@comunica/expression-evaluator';
 import { TermFunctionGreaterThanEqual } from './TermFunctionGreaterThanEqual';
 
-interface ActorFunctionFactoryTermFunctionGreaterThanEqualArgs extends IActorFunctionFactoryArgs {
+interface IActorFunctionFactoryTermFunctionGreaterThanEqualArgs extends IActorFunctionFactoryArgs {
   mediatorFunctionFactory: MediatorFunctionFactoryUnsafe;
 }
 
 /**
  * A comunica TermFunctionGreaterThanEqual Function Factory Actor.
  */
-export class ActorFunctionFactoryTermFunctionGreaterThanEqual extends ActorFunctionFactory {
+export class ActorFunctionFactoryTermFunctionGreaterThanEqual extends ActorFunctionFactoryDedicated {
   private readonly mediatorFunctionFactory: MediatorFunctionFactory;
 
-  public constructor(args: ActorFunctionFactoryTermFunctionGreaterThanEqualArgs) {
-    super(args);
+  public constructor(args: IActorFunctionFactoryTermFunctionGreaterThanEqualArgs) {
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.GTE ],
+      termFunction: true,
+    });
     this.mediatorFunctionFactory = <MediatorFunctionFactory> args.mediatorFunctionFactory;
-  }
-
-  public async test(action: IActionFunctionFactory): Promise<IActorTest> {
-    if (action.functionName === SparqlOperator.GTE) {
-      return true;
-    }
-    throw new Error(`Actor ${this.name} can only provide implementations for ${SparqlOperator.GTE}`);
   }
 
   public async run<T extends IActionFunctionFactory>(args: T):

@@ -5,25 +5,21 @@ import type {
   IActorFunctionFactoryOutputTerm,
 } from '@comunica/bus-function-factory';
 import {
-  ActorFunctionFactory,
+  ActorFunctionFactoryDedicated,
 } from '@comunica/bus-function-factory';
-import type { IActorTest } from '@comunica/core';
 import { TypeURL } from '@comunica/expression-evaluator';
 import { TermFunctionXsdToBoolean } from './TermFunctionXsdToBoolean';
 
 /**
  * A comunica TermFunctionXsdToBoolean Function Factory Actor.
  */
-export class ActorFunctionFactoryTermFunctionXsdToBoolean extends ActorFunctionFactory {
+export class ActorFunctionFactoryTermFunctionXsdToBoolean extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args);
-  }
-
-  public async test(action: IActionFunctionFactory): Promise<IActorTest> {
-    if (action.functionName === TypeURL.XSD_BOOLEAN) {
-      return true;
-    }
-    throw new Error(`Actor ${this.name} can only provide implementations for ${TypeURL.XSD_BOOLEAN}`);
+    super({
+      ...args,
+      functionNames: [ TypeURL.XSD_BOOLEAN ],
+      termFunction: true,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

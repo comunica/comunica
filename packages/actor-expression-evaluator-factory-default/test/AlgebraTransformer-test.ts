@@ -136,7 +136,7 @@ describe('AlgebraTransformer', () => {
       expressionType: expressionTypes.OPERATOR,
       operator: 'foo',
       args: [],
-    })).rejects.toMatchObject(new Error('No registered actors on the function bus answered the mediator for:\nfoo'));
+    })).rejects.toThrow('No actors are able to reply to a message in the bus test-bus-function-factory');
   });
 
   it('transform existence', async() => {

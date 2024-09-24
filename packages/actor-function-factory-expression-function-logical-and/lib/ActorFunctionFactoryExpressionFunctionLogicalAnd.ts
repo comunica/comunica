@@ -6,25 +6,22 @@ import type {
   IExpressionFunction,
 } from '@comunica/bus-function-factory';
 import {
-  ActorFunctionFactory,
+  ActorFunctionFactoryDedicated,
 } from '@comunica/bus-function-factory';
-import type { IActorTest } from '@comunica/core';
+
 import { SparqlOperator } from '@comunica/expression-evaluator';
 import { ExpressionFunctionLogicalAnd } from './ExpressionFunctionLogicalAnd';
 
 /**
  * A comunica ExpressionFunctionLogicalAnd Function Factory Actor.
  */
-export class ActorFunctionFactoryExpressionFunctionLogicalAnd extends ActorFunctionFactory {
+export class ActorFunctionFactoryExpressionFunctionLogicalAnd extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args);
-  }
-
-  public async test(action: IActionFunctionFactory): Promise<IActorTest> {
-    if (action.functionName === SparqlOperator.LOGICAL_AND && !action.requireTermExpression) {
-      return true;
-    }
-    throw new Error(`Actor ${this.name} can only provide non-termExpression implementations for ${SparqlOperator.LOGICAL_AND}`);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.LOGICAL_AND ],
+      termFunction: false,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):

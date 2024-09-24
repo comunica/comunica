@@ -8,32 +8,28 @@ import type {
   MediatorFunctionFactoryUnsafe,
 } from '@comunica/bus-function-factory';
 import {
-  ActorFunctionFactory,
+  ActorFunctionFactoryDedicated,
 } from '@comunica/bus-function-factory';
-import type { IActorTest } from '@comunica/core';
 import { SparqlOperator } from '@comunica/expression-evaluator';
 import { ExpressionFunctionNotIn } from './ExpressionFunctionNotIn';
 
-interface ActorFunctionFactoryExpressionFunctionNotInArgs extends IActorFunctionFactoryArgs {
+interface IActorFunctionFactoryExpressionFunctionNotInArgs extends IActorFunctionFactoryArgs {
   mediatorFunctionFactory: MediatorFunctionFactoryUnsafe;
 }
 
 /**
  * A comunica ExpressionFunctionNotIn Function Factory Actor.
  */
-export class ActorFunctionFactoryExpressionFunctionNotIn extends ActorFunctionFactory {
+export class ActorFunctionFactoryExpressionFunctionNotIn extends ActorFunctionFactoryDedicated {
   private readonly mediatorFunctionFactory: MediatorFunctionFactory;
 
-  public constructor(args: ActorFunctionFactoryExpressionFunctionNotInArgs) {
-    super(args);
+  public constructor(args: IActorFunctionFactoryExpressionFunctionNotInArgs) {
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.NOT_IN ],
+      termFunction: false,
+    });
     this.mediatorFunctionFactory = <MediatorFunctionFactory> args.mediatorFunctionFactory;
-  }
-
-  public async test(action: IActionFunctionFactory): Promise<IActorTest> {
-    if (action.functionName === SparqlOperator.NOT_IN && !action.requireTermExpression) {
-      return true;
-    }
-    throw new Error(`Actor ${this.name} can only provide non-termExpression implementations for ${SparqlOperator.NOT_IN}`);
   }
 
   public async run<T extends IActionFunctionFactory>(args: T):

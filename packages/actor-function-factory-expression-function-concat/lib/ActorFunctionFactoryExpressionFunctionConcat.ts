@@ -6,25 +6,22 @@ import type {
   IExpressionFunction,
 } from '@comunica/bus-function-factory';
 import {
-  ActorFunctionFactory,
+  ActorFunctionFactoryDedicated,
 } from '@comunica/bus-function-factory';
-import type { IActorTest } from '@comunica/core';
+
 import { SparqlOperator } from '@comunica/expression-evaluator';
 import { ExpressionFunctionConcat } from './ExpressionFunctionConcat';
 
 /**
  * A comunica ExpressionFunctionConcat Function Factory Actor.
  */
-export class ActorFunctionFactoryExpressionFunctionConcat extends ActorFunctionFactory {
+export class ActorFunctionFactoryExpressionFunctionConcat extends ActorFunctionFactoryDedicated {
   public constructor(args: IActorFunctionFactoryArgs) {
-    super(args);
-  }
-
-  public async test(action: IActionFunctionFactory): Promise<IActorTest> {
-    if (action.functionName === SparqlOperator.CONCAT && !action.requireTermExpression) {
-      return true;
-    }
-    throw new Error(`Actor ${this.name} can only provide non-termExpression implementations for ${SparqlOperator.CONCAT}`);
+    super({
+      ...args,
+      functionNames: [ SparqlOperator.CONCAT ],
+      termFunction: false,
+    });
   }
 
   public async run<T extends IActionFunctionFactory>(_: T):
