@@ -75,11 +75,23 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
       source: {
         referenceValue: 'source1',
         getSelectorShape: () => ({
-          type: 'operation',
-          operation: {
-            operationType: 'type',
-            type: Algebra.types.ASK,
-          },
+          type: 'disjunction',
+          children: [
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.ASK,
+              },
+            },
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.NOP,
+              },
+            },
+          ],
         }),
         async queryBoolean() {
           return true;

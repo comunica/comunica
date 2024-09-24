@@ -297,11 +297,30 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           },
         });
         shapes.set(src2, {
-          type: 'operation',
-          operation: {
-            operationType: 'type',
-            type: Algebra.types.FILTER,
-          },
+          type: 'disjunction',
+          children: [
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.FILTER,
+              },
+            },
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.JOIN,
+              },
+            },
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.PATTERN,
+              },
+            },
+          ],
         });
         expect(actor.shouldAttemptPushDown(op, [ src1, src2 ], shapes)).toBeTruthy();
       });

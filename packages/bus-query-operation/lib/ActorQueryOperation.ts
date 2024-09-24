@@ -243,40 +243,77 @@ export abstract class ActorQueryOperation<TS = undefined>
   public static doesShapeAcceptOperation(
     shape: FragmentSelectorShape,
     operation: Algebra.Operation,
-    options?: {
-      joinBindings?: boolean;
-      filterBindings?: boolean;
-    },
+    options?: FragmentSelectorShapeTestFlags,
+  ): boolean {
+    return ActorQueryOperation.doesShapeAcceptOperationRecurseShape(shape, shape, operation, options);
+  }
+
+  protected static doesShapeAcceptOperationRecurseShape(
+    shapeTop: FragmentSelectorShape,
+    shapeActive: FragmentSelectorShape,
+    operation: Algebra.Operation,
+    options?: FragmentSelectorShapeTestFlags,
   ): boolean {
     // Recurse into the shape
-    if (shape.type === 'conjunction') {
-      return shape.children.every(child => ActorQueryOperation.doesShapeAcceptOperation(child, operation, options));
+    if (shapeActive.type === 'conjunction') {
+      return shapeActive.children
+        .every(child => ActorQueryOperation.doesShapeAcceptOperationRecurseShape(shapeTop, child, operation, options));
     }
-    if (shape.type === 'disjunction') {
-      return shape.children.some(child => ActorQueryOperation.doesShapeAcceptOperation(child, operation, options));
+    if (shapeActive.type === 'disjunction') {
+      return shapeActive.children
+        .some(child => ActorQueryOperation.doesShapeAcceptOperationRecurseShape(shapeTop, child, operation, options));
     }
-    if (shape.type === 'arity') {
-      return ActorQueryOperation.doesShapeAcceptOperation(shape.child, operation, options);
+    if (shapeActive.type === 'arity') {
+      return ActorQueryOperation.doesShapeAcceptOperationRecurseShape(shapeTop, shapeActive.child, operation, options);
     }
 
     // Validate options
-    if ((options?.joinBindings && !shape.joinBindings) ?? (options?.filterBindings && !shape.filterBindings)) {
+    if ((options?.joinBindings && !shapeActive.joinBindings) ??
+      (options?.filterBindings && !shapeActive.filterBindings)) {
       return false;
     }
 
     // Check if the shape's operation matches with the given operation
-    const shapeOperation = shape.operation;
+    const shapeOperation = shapeActive.operation;
     switch (shapeOperation.operationType) {
       case 'type': {
+        if (!ActorQueryOperation.doesShapeAcceptOperationRecurseOperation(shapeTop, shapeActive, operation, options)) {
+          return false;
+        }
         return shapeOperation.type === operation.type;
       }
       case 'pattern': {
+        if (!ActorQueryOperation.doesShapeAcceptOperationRecurseOperation(shapeTop, shapeActive, operation, options)) {
+          return false;
+        }
         return shapeOperation.pattern.type === operation.type;
       }
       case 'wildcard': {
         return true;
       }
     }
+  }
+
+  protected static doesShapeAcceptOperationRecurseOperation(
+    shapeTop: FragmentSelectorShape,
+    shapeActive: FragmentSelectorShape,
+    operation: Algebra.Operation,
+    options?: FragmentSelectorShapeTestFlags,
+  ): boolean {
+    // Recurse into the operation, and restart from the top-level shape
+    if (operation.input) {
+      const inputs: Algebra.Operation[] = Array.isArray(operation.input) ? operation.input : [ operation.input ];
+      if (!inputs.every(input => ActorQueryOperation
+        .doesShapeAcceptOperationRecurseShape(shapeTop, shapeTop, input, options))) {
+        return false;
+      }
+    }
+    if (operation.patterns && !operation.patterns
+      .every((input: Algebra.Pattern) => ActorQueryOperation
+        .doesShapeAcceptOperationRecurseShape(shapeTop, shapeTop, input, options))) {
+      return false;
+    }
+    return true;
   }
 }
 
@@ -313,3 +350,8 @@ export interface IAsyncExpressionContext extends IBaseExpressionContext {
   bnode: (input?: string | undefined) => Promise<RDF.BlankNode>;
   exists?: (expr: Algebra.ExistenceExpression, bindings: Bindings) => Promise<boolean>;
 }
+
+export type FragmentSelectorShapeTestFlags = {
+  joinBindings?: boolean;
+  filterBindings?: boolean;
+};

@@ -492,5 +492,107 @@ describe('ActorQueryOperation', () => {
         },
       }, AF.createNop(), { filterBindings: true })).toBeFalsy();
     });
+
+    it('should not accept shapes with unsupported sub-operations', () => {
+      expect(ActorQueryOperation.doesShapeAcceptOperation({
+        type: 'operation',
+        operation: {
+          operationType: 'type',
+          type: Algebra.types.BGP,
+        },
+      }, AF.createBgp([
+        AF.createPattern(undefined!, undefined!, undefined!),
+      ]))).toBeFalsy();
+
+      expect(ActorQueryOperation.doesShapeAcceptOperation({
+        type: 'operation',
+        operation: {
+          operationType: 'type',
+          type: Algebra.types.JOIN,
+        },
+      }, AF.createJoin([
+        AF.createPattern(undefined!, undefined!, undefined!),
+      ]))).toBeFalsy();
+
+      expect(ActorQueryOperation.doesShapeAcceptOperation({
+        type: 'operation',
+        operation: {
+          operationType: 'type',
+          type: Algebra.types.FILTER,
+        },
+      }, AF.createFilter(
+        AF.createPattern(undefined!, undefined!, undefined!),
+        undefined!,
+      ))).toBeFalsy();
+    });
+
+    it('should accept shapes with supported sub-operations', () => {
+      expect(ActorQueryOperation.doesShapeAcceptOperation({
+        type: 'disjunction',
+        children: [
+          {
+            type: 'operation',
+            operation: {
+              operationType: 'type',
+              type: Algebra.types.BGP,
+            },
+          },
+          {
+            type: 'operation',
+            operation: {
+              operationType: 'type',
+              type: Algebra.types.PATTERN,
+            },
+          },
+        ],
+      }, AF.createBgp([
+        AF.createPattern(undefined!, undefined!, undefined!),
+      ]))).toBeTruthy();
+
+      expect(ActorQueryOperation.doesShapeAcceptOperation({
+        type: 'disjunction',
+        children: [
+          {
+            type: 'operation',
+            operation: {
+              operationType: 'type',
+              type: Algebra.types.JOIN,
+            },
+          },
+          {
+            type: 'operation',
+            operation: {
+              operationType: 'type',
+              type: Algebra.types.PATTERN,
+            },
+          },
+        ],
+      }, AF.createJoin([
+        AF.createPattern(undefined!, undefined!, undefined!),
+      ]))).toBeTruthy();
+
+      expect(ActorQueryOperation.doesShapeAcceptOperation({
+        type: 'disjunction',
+        children: [
+          {
+            type: 'operation',
+            operation: {
+              operationType: 'type',
+              type: Algebra.types.FILTER,
+            },
+          },
+          {
+            type: 'operation',
+            operation: {
+              operationType: 'type',
+              type: Algebra.types.PATTERN,
+            },
+          },
+        ],
+      }, AF.createFilter(
+        AF.createPattern(undefined!, undefined!, undefined!),
+        undefined!,
+      ))).toBeTruthy();
+    });
   });
 });
