@@ -48,7 +48,7 @@
     "@comunica/mediatortype-join-coefficients": "^3.2.1",
     "@comunica/utils-bindings-index": "^3.2.2",
     "asynciterator": "^3.9.0",
-    "asyncjoin": "^1.2.3",
+    "asyncjoin": "^1.2.4",
     "rdf-string": "^1.6.3"
   }
 }
