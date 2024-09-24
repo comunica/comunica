@@ -98,11 +98,11 @@ class DummyActor extends Actor<IAction, IDummyTest, IDummyTest> {
     this.data = data;
   }
 
-  public async test(action: IAction): Promise<TestResult<IDummyTest>> {
+  public async test(): Promise<TestResult<IDummyTest>> {
     return passTest({ field: this.data, otherField: 'ignored' });
   }
 
-  public async run(action: IAction): Promise<IDummyTest> {
+  public async run(): Promise<IDummyTest> {
     return { field: this.data, otherField: 'ignored' };
   }
 }
@@ -116,7 +116,7 @@ class DummyThrowActor extends DummyActor {
     super(id, data, bus);
   }
 
-  public override async test(action: IAction): Promise<TestResult<IDummyTest>> {
+  public override async test(): Promise<TestResult<IDummyTest>> {
     return failTest('Dummy Error');
   }
 }

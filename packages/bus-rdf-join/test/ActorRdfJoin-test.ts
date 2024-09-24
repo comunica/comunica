@@ -67,10 +67,7 @@ IActorRdfJoinSelectivityOutput
     return { result, physicalPlanMetadata: { meta: true }};
   }
 
-  protected getJoinCoefficients(
-    action: IActionRdfJoin,
-    sideData: IActorRdfJoinTestSideData,
-  ): Promise<TestResult<IMediatorTypeJoinCoefficients, IActorRdfJoinTestSideData>> {
+  protected getJoinCoefficients(): Promise<TestResult<IMediatorTypeJoinCoefficients, IActorRdfJoinTestSideData>> {
     return Promise.resolve(passTestWithSideData({
       iterations: 5,
       persistedItems: 2,

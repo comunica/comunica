@@ -2,7 +2,7 @@ import type { ILink } from '@comunica/types';
 import { StatisticBase } from '../lib';
 
 class MockStatisticBase<T> extends StatisticBase<T> {
-  public updateStatistic(...data: any[]): void {}
+  public updateStatistic(): void {}
 }
 
 describe('StatisticLinkDiscovery', () => {
@@ -12,8 +12,8 @@ describe('StatisticLinkDiscovery', () => {
 
   beforeEach(() => {
     mockStatisticBase = new MockStatisticBase();
-    cb = jest.fn((data: ILink) => {});
-    cb1 = jest.fn((data1: ILink) => {});
+    cb = jest.fn(() => {});
+    cb1 = jest.fn(() => {});
   });
 
   describe('An StatisticLinkDereference instance should', () => {

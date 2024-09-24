@@ -1,10 +1,5 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import { failTest, passTest } from '@comunica/core';
-import { DataFactory } from 'rdf-data-factory';
 import '../../lib';
-
-const DF = new DataFactory();
-const BF = new BindingsFactory(DF);
 
 describe('toFailTest', () => {
   it('should succeed for an equal fail message', () => {

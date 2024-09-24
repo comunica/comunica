@@ -54,9 +54,7 @@ describe('ActorQueryOperationOrderBy with mixed term types', () => {
     let mediatorMergeBindingsContext: any;
     beforeEach(() => {
       mediatorMergeBindingsContext = {
-        mediate(arg: any) {
-          return {};
-        },
+        mediate: () => ({}),
       };
       actor = new ActorQueryOperationOrderBy({
         name: 'actor',
@@ -136,9 +134,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorMergeBindingsContext = {
-      mediate(arg: any) {
-        return {};
-      },
+      mediate: () => ({}),
     };
 
     mediatorQueryOperation = {
@@ -189,9 +185,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
 
     beforeEach(() => {
       mediatorMergeBindingsContext = {
-        mediate(arg: any) {
-          return {};
-        },
+        mediate: () => ({}),
       };
 
       actor = new ActorQueryOperationOrderBy({
@@ -405,9 +399,7 @@ describe('ActorQueryOperationOrderBy with multiple comparators', () => {
 
     beforeEach(() => {
       mediatorMergeBindingsContext = {
-        mediate(arg: any) {
-          return {};
-        },
+        mediate: () => ({}),
       };
 
       actor = new ActorQueryOperationOrderBy({
@@ -620,9 +612,7 @@ describe('ActorQueryOperationOrderBy with integer type', () => {
 
     beforeEach(() => {
       mediatorMergeBindingsContext = {
-        mediate(arg: any) {
-          return {};
-        },
+        mediate: () => ({}),
       };
 
       actor = new ActorQueryOperationOrderBy({
@@ -717,9 +707,7 @@ describe('ActorQueryOperationOrderBy with double type', () => {
 
     beforeEach(() => {
       mediatorMergeBindingsContext = {
-        mediate(arg: any) {
-          return {};
-        },
+        mediate: () => ({}),
       };
 
       actor = new ActorQueryOperationOrderBy({
@@ -814,9 +802,7 @@ describe('ActorQueryOperationOrderBy with decimal type', () => {
 
     beforeEach(() => {
       mediatorMergeBindingsContext = {
-        mediate(arg: any) {
-          return {};
-        },
+        mediate: () => ({}),
       };
 
       actor = new ActorQueryOperationOrderBy({
@@ -911,9 +897,7 @@ describe('ActorQueryOperationOrderBy with float type', () => {
 
     beforeEach(() => {
       mediatorMergeBindingsContext = {
-        mediate(arg: any) {
-          return {};
-        },
+        mediate: () => ({}),
       };
 
       actor = new ActorQueryOperationOrderBy({
@@ -1008,9 +992,7 @@ describe('ActorQueryOperationOrderBy with mixed literal types', () => {
 
     beforeEach(() => {
       mediatorMergeBindingsContext = {
-        mediate(arg: any) {
-          return {};
-        },
+        mediate: () => ({}),
       };
 
       actor = new ActorQueryOperationOrderBy({
@@ -1100,14 +1082,11 @@ describe('Another ActorQueryOperationOrderBy with mixed types', () => {
   describe('An ActorQueryOperationOrderBy instance', () => {
     let actor: ActorQueryOperationOrderBy;
     let orderA: Algebra.TermExpression;
-    let descOrderA: Algebra.OperatorExpression;
     let mediatorMergeBindingsContext: any;
 
     beforeEach(() => {
       mediatorMergeBindingsContext = {
-        mediate(arg: any) {
-          return {};
-        },
+        mediate: () => ({}),
       };
 
       actor = new ActorQueryOperationOrderBy({
@@ -1117,12 +1096,6 @@ describe('Another ActorQueryOperationOrderBy with mixed types', () => {
         mediatorMergeBindingsContext,
       });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
-      descOrderA = {
-        type: Algebra.types.EXPRESSION,
-        expressionType: Algebra.expressionTypes.OPERATOR,
-        operator: 'desc',
-        args: [ orderA ],
-      };
     });
 
     it('should not sort since its not a literal ascending', async() => {

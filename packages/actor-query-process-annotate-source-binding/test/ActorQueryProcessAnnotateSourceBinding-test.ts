@@ -53,7 +53,7 @@ describe('ActorQueryProcessAnnotateSourceBinding', () => {
       bindings = bindings.setContextEntry(KeysMergeBindingsContext.sourcesBinding, [ 'S1' ]);
 
       mediatorQueryProcess = {
-        async mediate(arg: any) {
+        async mediate() {
           return { result: { type: 'bindings', bindingsStream: new ArrayIterator([ bindings ]) }};
         },
       };
@@ -75,7 +75,7 @@ describe('ActorQueryProcessAnnotateSourceBinding', () => {
       bindings = bindings.setContextEntry(KeysMergeBindingsContext.sourcesBinding, [ 'S1', 'S2' ]);
 
       mediatorQueryProcess = {
-        async mediate(arg: any) {
+        async mediate() {
           return { result: { type: 'bindings', bindingsStream: new ArrayIterator([ bindings ]) }};
         },
       };
@@ -95,7 +95,7 @@ describe('ActorQueryProcessAnnotateSourceBinding', () => {
 
     it('should fail gracefully when binding does not have context', async() => {
       mediatorQueryProcess = {
-        async mediate(arg: any) {
+        async mediate() {
           return { result: { type: 'bindings', bindingsStream: new ArrayIterator([ bindings ]) }};
         },
       };
@@ -117,7 +117,7 @@ describe('ActorQueryProcessAnnotateSourceBinding', () => {
       bindings = bindings.setContextEntry(KeysMergeBindingsContext.sourcesBinding, []);
 
       mediatorQueryProcess = {
-        async mediate(arg: any) {
+        async mediate() {
           return { result: { type: 'bindings', bindingsStream: new ArrayIterator([ bindings ]) }};
         },
       };

@@ -60,16 +60,13 @@ describe('MediatorRace', () => {
     describe('with passing and failing actors', () => {
       let busm: Bus<DummyActor, IAction, IDummyTest, IDummyTest>;
       let mediator: MediatorRace<DummyActor, IAction, IDummyTest, IDummyTest>;
-      let actor0;
-      let actor1;
-      let actor2;
 
       beforeEach(() => {
         busm = new Bus({ name: 'bus' });
         mediator = new MediatorRace({ name: 'mediator', bus: busm });
-        busm.subscribe(actor0 = new DummyActor(10, 100, busm, false));
-        busm.subscribe(actor1 = new DummyActor(100, 0, busm, true));
-        busm.subscribe(actor2 = new DummyActor(1, 200, busm, false));
+        busm.subscribe(new DummyActor(10, 100, busm, false));
+        busm.subscribe(new DummyActor(100, 0, busm, true));
+        busm.subscribe(new DummyActor(1, 200, busm, false));
       });
 
       it('should mediate to the earliest non-rejecting resolver', async() => {
@@ -80,16 +77,13 @@ describe('MediatorRace', () => {
     describe('with passing and rejecting actors', () => {
       let busm: Bus<DummyActor, IAction, IDummyTest, IDummyTest>;
       let mediator: MediatorRace<DummyActor, IAction, IDummyTest, IDummyTest>;
-      let actor0;
-      let actor1;
-      let actor2;
 
       beforeEach(() => {
         busm = new Bus({ name: 'bus' });
         mediator = new MediatorRace({ name: 'mediator', bus: busm });
-        busm.subscribe(actor0 = new DummyActor(10, 100, busm, false));
-        busm.subscribe(actor1 = new DummyActor(100, 0, busm, false, true));
-        busm.subscribe(actor2 = new DummyActor(1, 200, busm, false));
+        busm.subscribe(new DummyActor(10, 100, busm, false));
+        busm.subscribe(new DummyActor(100, 0, busm, false, true));
+        busm.subscribe(new DummyActor(1, 200, busm, false));
       });
 
       it('should throw when mediating', async() => {
@@ -119,18 +113,18 @@ class DummyActor extends Actor<IAction, IDummyTest, IDummyTest> {
     this.reject = Boolean(reject);
   }
 
-  public async test(action: IAction): Promise<TestResult<IDummyTest>> {
+  public async test(): Promise<TestResult<IDummyTest>> {
     if (this.fail) {
       return failTest(`${this.id}`);
     }
     if (this.reject) {
       throw new Error(`${this.id}`);
     }
-    return new Promise((resolve, reject) => setTimeout(() => resolve(passTest({ field: this.id })), this.delay));
+    return new Promise(resolve => setTimeout(() => resolve(passTest({ field: this.id })), this.delay));
   }
 
-  public async run(action: IAction): Promise<IDummyTest> {
-    return new Promise((resolve, reject) => setTimeout(() => resolve({ field: this.id }), this.delay));
+  public async run(): Promise<IDummyTest> {
+    return new Promise(resolve => setTimeout(() => resolve({ field: this.id }), this.delay));
   }
 }
 

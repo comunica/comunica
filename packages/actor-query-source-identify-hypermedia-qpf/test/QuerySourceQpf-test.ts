@@ -3,7 +3,7 @@ import { Readable } from 'node:stream';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActorDereferenceRdfOutput } from '@comunica/bus-dereference-rdf';
 import { KeysQueryOperation } from '@comunica/context-entries';
-import { ActionContext, Bus } from '@comunica/core';
+import { ActionContext } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -29,7 +29,6 @@ const pAllQuad = AF.createPattern(v1, v2, v3, v4);
 const pAllTriple = AF.createPattern(v1, v2, v3);
 
 describe('QuerySourceQpf', () => {
-  let bus: any;
   let metadata: any;
   let mediatorMetadata: any;
   let mediatorMetadataExtract: any;
@@ -42,8 +41,6 @@ describe('QuerySourceQpf', () => {
   let G: RDF.Term;
 
   beforeEach(() => {
-    bus = new Bus({ name: 'bus' });
-
     mediatorMetadata = {
       async mediate(args: any) {
         const data = new PassThrough({ objectMode: true });

@@ -33,10 +33,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
     let mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort;
     let mediatorJoin: MediatorRdfJoin;
     let actor: ActorRdfJoinMultiSmallestFilterBindings;
-    let logSpy: jest.SpyInstance;
     let source1: IQuerySourceWrapper;
-    let source2: IQuerySourceWrapper;
-    let source3TriplePattern: IQuerySourceWrapper;
     let source4: IQuerySourceWrapper;
     let source5Context: IQuerySourceWrapper;
 
@@ -77,7 +74,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
         mediatorJoinSelectivity,
         mediatorJoinEntriesSort,
       });
-      logSpy = jest.spyOn((<any> actor), 'logDebug').mockImplementation();
+      jest.spyOn((<any> actor), 'logDebug').mockImplementation();
       source1 = <IQuerySourceWrapper> <any> {
         source: {
           getSelectorShape() {
@@ -97,28 +94,6 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
               autoStart: false,
             });
           }),
-        },
-      };
-      source2 = <IQuerySourceWrapper> <any> {
-        source: {
-          getSelectorShape() {
-            return {
-              type: 'operation',
-              operation: { operationType: 'type', type: Algebra.types.PROJECT },
-              filterBindings: true,
-            };
-          },
-        },
-      };
-      source3TriplePattern = <IQuerySourceWrapper> <any> {
-        source: {
-          getSelectorShape() {
-            return {
-              type: 'operation',
-              operation: { operationType: 'type', type: Algebra.types.PATTERN },
-              filterBindings: true,
-            };
-          },
         },
       };
       source4 = <IQuerySourceWrapper> <any> {

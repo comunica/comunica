@@ -7,7 +7,6 @@ describe('ActionContext', () => {
   const key1: IActionContextKey<string> = new ActionContextKey<string>('key1');
   const key2: IActionContextKey<number> = new ActionContextKey<number>('key2');
   const key3: IActionContextKey<boolean[]> = new ActionContextKey<boolean[]>('key3');
-  const key4: IActionContextKey<boolean[]> = new ActionContextKey<boolean[]>('key4');
 
   describe('for an empty instance', () => {
     let context: IActionContext;
@@ -47,7 +46,7 @@ describe('ActionContext', () => {
 
       it('should fail during compilation for an incorrect key value', () => {
         // @ts-expect-error
-        const a: number = context.get(key1);
+        const _a: number = context.get(key1);
       });
     });
 
@@ -75,12 +74,12 @@ describe('ActionContext', () => {
 
       it('should fail during compilation for an incorrect key value', () => {
         // @ts-expect-error
-        const a: number = context.getSafe(key1);
+        const _a: number = context.getSafe(key1);
       });
 
       it('should fail during compilation for an undefined casting', () => {
         // @ts-expect-error
-        const a: undefined = context.getSafe(key1);
+        const _a: undefined = context.getSafe(key1);
       });
     });
 

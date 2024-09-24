@@ -3,7 +3,6 @@ import { KeysCore, KeysQueryOperation } from '@comunica/context-entries';
 import type { IAction, IActorOutput, TestResult } from '@comunica/core';
 import { failTest, passTest, ActionContext, Actor, Bus } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { MediatorJoinCoefficientsFixed } from '../lib/MediatorJoinCoefficientsFixed';
 
@@ -12,14 +11,12 @@ const DF = new DataFactory();
 describe('MediatorJoinCoefficientsFixed', () => {
   describe('An MediatorJoinCoefficientsFixed instance', () => {
     let bus: any;
-    let context: IActionContext;
     let mediator: MediatorJoinCoefficientsFixed;
     let debugLog: any;
     let action: IActionRdfJoin;
 
     beforeEach(() => {
       bus = new Bus({ name: 'bus' });
-      context = new ActionContext();
       mediator = new MediatorJoinCoefficientsFixed({
         name: 'mediator',
         bus,
@@ -478,14 +475,14 @@ class DummyActor extends Actor<IAction, IMediatorTypeJoinCoefficients, IDummyOut
     this.reject = reject;
   }
 
-  public async test(action: IAction): Promise<TestResult<IMediatorTypeJoinCoefficients>> {
+  public async test(): Promise<TestResult<IMediatorTypeJoinCoefficients>> {
     if (this.reject) {
       return failTest(`Actor ${this.id} fails`);
     }
     return passTest(this.coeffs);
   }
 
-  public async run(action: IAction): Promise<IDummyOutput> {
+  public async run(): Promise<IDummyOutput> {
     return { id: this.id };
   }
 }

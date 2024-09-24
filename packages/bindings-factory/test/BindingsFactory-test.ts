@@ -4,11 +4,6 @@ import { Bindings } from '../lib/Bindings';
 import { BindingsFactory } from '../lib/BindingsFactory';
 
 const DF = new DataFactory();
-const mediatorMergeBindingsContext: any = {
-  mediate(arg: any) {
-    return {};
-  },
-};
 
 describe('BindingsFactory', () => {
   let factory: RDF.BindingsFactory;

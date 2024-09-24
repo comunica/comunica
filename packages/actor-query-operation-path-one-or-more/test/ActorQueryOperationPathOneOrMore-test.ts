@@ -102,9 +102,7 @@ describe('ActorQueryOperationPathOneOrMore', () => {
     let mediatorMergeBindingsContext: any;
     beforeEach(() => {
       mediatorMergeBindingsContext = {
-        mediate(arg: any) {
-          return {};
-        },
+        mediate: () => ({}),
       };
 
       actor = new ActorQueryOperationPathOneOrMore({

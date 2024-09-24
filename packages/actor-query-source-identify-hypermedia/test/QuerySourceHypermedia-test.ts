@@ -30,16 +30,12 @@ const BF = new BindingsFactory(DF);
 const quad = require('rdf-quad');
 const streamifyArray = require('streamify-array');
 
-const v = DF.variable('v');
-
 describe('QuerySourceHypermedia', () => {
   let context: IActionContext;
   let mediatorDereferenceRdf: MediatorDereferenceRdf;
   let mediatorMetadata: any;
   let mediatorMetadataExtract: any;
   let mediatorQuerySourceIdentifyHypermedia: any;
-  let mediatorRdfResolveHypermediaLinks: any;
-  let mediatorRdfResolveHypermediaLinksQueue: any;
   let mediators: any;
   let logWarning: (warningMessage: string) => void;
   let operation: Algebra.Operation;
@@ -54,8 +50,6 @@ describe('QuerySourceHypermedia', () => {
     mediatorMetadata = utilMediators.mediatorMetadata;
     mediatorMetadataExtract = utilMediators.mediatorMetadataExtract;
     mediatorQuerySourceIdentifyHypermedia = utilMediators.mediatorQuerySourceIdentifyHypermedia;
-    mediatorRdfResolveHypermediaLinks = utilMediators.mediatorRdfResolveHypermediaLinks;
-    mediatorRdfResolveHypermediaLinksQueue = utilMediators.mediatorRdfResolveHypermediaLinksQueue;
     mediators = utilMediators;
     logWarning = jest.fn();
     operation = AF.createPattern(
@@ -312,7 +306,7 @@ describe('QuerySourceHypermedia', () => {
           mediate: () => Promise.resolve({ links: i < 3 ? [{ url: `next${i}` }] : []}),
         };
         mediatorsThis.mediatorQuerySourceIdentifyHypermedia = {
-          mediate(args: any) {
+          mediate() {
             if (i < 3) {
               i++;
             }
@@ -860,7 +854,7 @@ describe('QuerySourceHypermedia', () => {
           mediate: () => Promise.resolve({ links: i < 3 ? [{ url: `next${i}` }] : []}),
         };
         mediatorsThis.mediatorQuerySourceIdentifyHypermedia = {
-          mediate: jest.fn((args: any) => {
+          mediate: jest.fn(() => {
             if (i < 3) {
               i++;
             }
@@ -973,7 +967,7 @@ describe('QuerySourceHypermedia', () => {
           mediate: () => Promise.resolve({ links: i < 3 ? [{ url: `next${i}` }] : []}),
         };
         mediatorsThis.mediatorQuerySourceIdentifyHypermedia = {
-          mediate: jest.fn((args: any) => {
+          mediate: jest.fn(() => {
             if (i < 3) {
               i++;
             }

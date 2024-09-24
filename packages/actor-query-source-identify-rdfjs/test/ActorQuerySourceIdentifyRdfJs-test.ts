@@ -1,7 +1,6 @@
 import { ActorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQuerySourceIdentifyRdfJs, QuerySourceRdfJs } from '..';
@@ -9,19 +8,15 @@ import 'jest-rdf';
 import '@comunica/jest';
 
 const mediatorMergeBindingsContext: any = {
-  mediate(arg: any) {
-    return {};
-  },
+  mediate: () => ({}),
 };
 const DF = new DataFactory();
 
 describe('ActorQuerySourceIdentifyRdfJs', () => {
   let bus: any;
-  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    context = new ActionContext();
   });
 
   describe('The ActorQuerySourceIdentifyRdfJs module', () => {

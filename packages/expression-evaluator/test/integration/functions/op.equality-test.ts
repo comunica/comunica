@@ -47,7 +47,7 @@ describe('evaluation of \'=\'', () => {
       config: {
         type: 'sync',
         config: {
-          getSuperType: unknownType => TypeURL.XSD_INTEGER,
+          getSuperType: () => TypeURL.XSD_INTEGER,
           dataFactory: DF,
         },
       },

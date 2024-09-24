@@ -10,9 +10,7 @@ import '@comunica/jest';
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
 const mediatorMergeBindingsContext: any = {
-  mediate(arg: any) {
-    return {};
-  },
+  mediate: () => ({}),
 };
 
 describe('ActorQueryOperationService', () => {
@@ -184,14 +182,6 @@ describe('ActorQueryOperationService', () => {
         operation: { type: 'service', silent: false, name: DF.literal('dummy') },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const actorThis = new ActorQueryOperationService({
-        bus,
-        forceSparqlEndpoint: true,
-        mediatorQueryOperation,
-        name: 'actor',
-        mediatorMergeBindingsContext,
-        mediatorQuerySourceIdentify,
-      });
 
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
       expect((<any> output).operated.operation.metadata).toEqual({

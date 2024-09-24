@@ -81,7 +81,7 @@ describe('ActorQueryOperationSlice', () => {
       }),
     };
     mediatorQueryOperationBoolean = {
-      mediate: (arg: any) => Promise.resolve({
+      mediate: () => Promise.resolve({
         execute: async() => true,
         type: 'boolean',
       }),

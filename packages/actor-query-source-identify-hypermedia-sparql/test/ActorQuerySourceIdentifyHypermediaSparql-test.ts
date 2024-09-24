@@ -8,9 +8,7 @@ import { QuerySourceSparql } from '../lib/QuerySourceSparql';
 import '@comunica/jest';
 
 const mediatorMergeBindingsContext: any = {
-  mediate(arg: any) {
-    return {};
-  },
+  mediate: () => ({}),
 };
 
 const DF = new DataFactory();

@@ -1,7 +1,6 @@
 import type { IActionHashQuads } from '@comunica/bus-hash-quads';
 import { ActorHashQuads } from '@comunica/bus-hash-quads';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IActionContext } from '@comunica/types';
 import type { Quad } from 'rdf-data-factory';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorHashQuadsMurmur } from '../lib/ActorHashQuadsMurmur';
@@ -11,11 +10,9 @@ const DF = new DataFactory();
 
 describe('ActorHashQuadsMurmur', () => {
   let bus: any;
-  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    context = new ActionContext();
   });
 
   describe('The ActorHashQuadsMurmur module', () => {

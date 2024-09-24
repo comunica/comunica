@@ -48,7 +48,7 @@ describe('evaluation of \'/\' like', () => {
       type: 'sync',
       config: {
         dataFactory: DF,
-        getSuperType: unknownType => TypeURL.XSD_INTEGER,
+        getSuperType: () => TypeURL.XSD_INTEGER,
       },
     },
     testTable: `

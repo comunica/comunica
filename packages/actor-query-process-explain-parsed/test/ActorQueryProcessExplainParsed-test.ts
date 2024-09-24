@@ -17,7 +17,7 @@ describe('ActorQueryProcessExplainParsed', () => {
 
     beforeEach(() => {
       queryProcessor = <any>{
-        async parse(query: string, context: any) {
+        async parse(query: string) {
           return { operation: `${query}OP` };
         },
       };

@@ -35,11 +35,6 @@ function parse(query: string): Algebra.Expression {
 describe('ActorQueryOperationFilter', () => {
   let bus: any;
   let mediatorQueryOperation: any;
-  const simpleSPOInput = new Factory().createBgp([ new Factory().createPattern(
-    DF.variable('s'),
-    DF.variable('p'),
-    DF.variable('o'),
-  ) ]);
   const truthyExpression = parse('"nonemptystring"');
   const falsyExpression = parse('""');
   const erroringExpression = parse('?a + ?a');
@@ -94,9 +89,7 @@ describe('ActorQueryOperationFilter', () => {
 
     beforeEach(() => {
       mediatorMergeBindingsContext = {
-        mediate(arg: any) {
-          return {};
-        },
+        mediate: () => ({}),
       };
 
       actor = new ActorQueryOperationFilter({

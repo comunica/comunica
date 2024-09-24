@@ -50,9 +50,7 @@ describe('ActorQueryProcessSequential', () => {
       })),
     };
     mediatorMergeBindingsContext = {
-      mediate(arg: any) {
-        return {};
-      },
+      mediate: () => ({}),
     };
   });
 

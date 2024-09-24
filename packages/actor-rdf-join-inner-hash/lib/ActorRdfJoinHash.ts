@@ -70,6 +70,7 @@ export class ActorRdfJoinHash extends ActorRdfJoin {
           output.bindingsStream,
           {
             multiTransform: (bindings: RDF.Bindings): AsyncIterator<RDF.Bindings> => new ArrayIterator<RDF.Bindings>(
+              // eslint-disable-next-line ts/no-unnecessary-type-assertion
               <RDF.Bindings[]>(index.get(bindings).flat())
                 .map(indexBindings => ActorRdfJoin.joinBindings(bindings, indexBindings))
                 .filter(b => b !== null),

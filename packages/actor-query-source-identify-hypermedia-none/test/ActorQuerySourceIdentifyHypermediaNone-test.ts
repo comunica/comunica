@@ -22,9 +22,7 @@ const v2 = DF.variable('v2');
 const v3 = DF.variable('v3');
 
 const mediatorMergeBindingsContext: any = {
-  mediate(arg: any) {
-    return {};
-  },
+  mediate: () => ({}),
 };
 
 describe('ActorQuerySourceIdentifyHypermediaNone', () => {

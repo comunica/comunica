@@ -1,4 +1,3 @@
-import { Bus } from '@comunica/core';
 import type {
   ILink,
   BindingsStream,
@@ -31,11 +30,9 @@ class MockQuerySource implements IQuerySource {
 }
 
 describe('StatisticLinkDereference', () => {
-  let bus: any;
   let statisticLinkDereference: StatisticLinkDereference;
 
   beforeEach(() => {
-    bus = new Bus({ name: 'bus' });
     jest.useFakeTimers();
     jest.setSystemTime(new Date('2021-01-01T00:00:00Z').getTime());
     statisticLinkDereference = new StatisticLinkDereference();
@@ -48,7 +45,7 @@ describe('StatisticLinkDereference', () => {
 
     beforeEach(() => {
       link = { url: 'url', metadata: { key: 'value' }};
-      cb = jest.fn((data: ILink) => {});
+      cb = jest.fn(() => {});
 
       source = new MockQuerySource('url');
     });

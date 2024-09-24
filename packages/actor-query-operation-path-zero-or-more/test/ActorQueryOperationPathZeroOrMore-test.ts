@@ -28,9 +28,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorMergeBindingsContext = {
-      mediate(arg: any) {
-        return {};
-      },
+      mediate: () => ({}),
     };
 
     mediatorQueryOperation = {

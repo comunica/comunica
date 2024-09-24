@@ -15,9 +15,7 @@ import '@comunica/jest';
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF, {});
 const mediatorMergeBindingsContext: any = {
-  mediate(arg: any) {
-    return {};
-  },
+  mediate: () => ({}),
 };
 
 const simpleXYZinput = {
@@ -176,7 +174,7 @@ describe('ActorQueryOperationGroup', () => {
 
   describe('A GroupState instance', () => {
     it('should throw an error if collectResults is called multiple times', async() => {
-      const { actor, op } = constructCase({});
+      const { op } = constructCase({});
       const temp = new GroupsState(
 <Algebra.Group> op.operation,
 { dataFactory: DF },
@@ -188,7 +186,7 @@ BF,
     });
 
     it('should throw an error if consumeBindings is called after collectResults', async() => {
-      const { actor, op } = constructCase({});
+      const { op } = constructCase({});
       const temp = new GroupsState(
 <Algebra.Group> op.operation,
 { dataFactory: DF },

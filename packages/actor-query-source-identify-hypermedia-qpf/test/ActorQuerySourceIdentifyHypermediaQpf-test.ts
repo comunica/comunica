@@ -13,9 +13,7 @@ const v3 = DF.variable('v3');
 const v4 = DF.variable('v4');
 
 const mediatorMergeBindingsContext: any = {
-  mediate(arg: any) {
-    return {};
-  },
+  mediate: () => ({}),
 };
 
 describe('ActorQuerySourceIdentifyHypermediaQpf', () => {

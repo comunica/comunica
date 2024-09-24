@@ -5,11 +5,9 @@ import { MetadataValidationState } from '@comunica/metadata';
 import type { IQuerySource } from '@comunica/types';
 import { wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { Factory } from 'sparqlalgebrajs';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
-const AF = new Factory();
 
 // @ts-expect-error
 export const mediatorQuerySourceIdentifyHypermedia: MediatorQuerySourceIdentifyHypermedia = {

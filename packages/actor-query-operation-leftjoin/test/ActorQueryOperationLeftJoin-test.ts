@@ -20,9 +20,7 @@ describe('ActorQueryOperationLeftJoin', () => {
   let mediatorMergeBindingsContext: any;
   beforeEach(() => {
     mediatorMergeBindingsContext = {
-      mediate(arg: any) {
-        return {};
-      },
+      mediate: () => ({}),
     };
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {

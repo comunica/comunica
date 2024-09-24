@@ -21,9 +21,7 @@ const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
 const FACTORY = new Factory();
 const mediatorMergeBindingsContext: any = {
-  mediate(arg: any) {
-    return {};
-  },
+  mediate: () => ({}),
 };
 
 describe('ActorRdfJoinMultiBind', () => {
@@ -64,7 +62,7 @@ IQueryOperationResultBindings
       };
       context = new ActionContext({ a: 'b', [KeysInitQuery.dataFactory.name]: DF });
       mediatorQueryOperation = <any> {
-        mediate: jest.fn(async(arg: IActionQueryOperation): Promise<IQueryOperationResultBindings> => {
+        mediate: jest.fn(async(): Promise<IQueryOperationResultBindings> => {
           return {
             bindingsStream: new ArrayIterator<RDF.Bindings>([
               BF.bindings([

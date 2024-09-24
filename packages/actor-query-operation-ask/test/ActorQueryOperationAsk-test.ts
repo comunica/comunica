@@ -1,7 +1,7 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
-import { ArrayIterator, BufferedIterator, range } from 'asynciterator';
+import { ArrayIterator, BufferedIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationAsk } from '../lib/ActorQueryOperationAsk';
 import '@comunica/jest';
@@ -14,7 +14,6 @@ describe('ActorQueryOperationAsk', () => {
   let mediatorQueryOperation: any;
   let mediatorQueryOperationEmpty: any;
   let mediatorQueryOperationError: any;
-  let mediatorQueryOperationInf: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -41,7 +40,7 @@ describe('ActorQueryOperationAsk', () => {
       }),
     };
     mediatorQueryOperationError = {
-      mediate: (arg: any) => new Promise((resolve, reject) => {
+      mediate: (arg: any) => new Promise((resolve) => {
         const bindingsStream = new BufferedIterator();
         setImmediate(() => bindingsStream.emit('error', new Error('Error!')));
         resolve({
@@ -51,15 +50,6 @@ describe('ActorQueryOperationAsk', () => {
           type: 'bindings',
           variables: [ DF.variable('a') ],
         });
-      }),
-    };
-    mediatorQueryOperationInf = {
-      mediate: (arg: any) => Promise.resolve({
-        bindingsStream: range(0, Number.POSITIVE_INFINITY),
-        metadata: () => Promise.resolve({ cardinality: 0 }),
-        operated: arg,
-        type: 'bindings',
-        variables: [ DF.variable('a') ],
       }),
     };
   });

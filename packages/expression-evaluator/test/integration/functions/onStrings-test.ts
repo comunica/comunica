@@ -179,7 +179,7 @@ describe('string functions', () => {
         type: 'sync',
         config: {
           dataFactory: DF,
-          getSuperType: unknownType => TypeURL.XSD_STRING,
+          getSuperType: () => TypeURL.XSD_STRING,
         },
       },
       testTable: `
