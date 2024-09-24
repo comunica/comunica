@@ -433,7 +433,7 @@ export abstract class ActorRdfJoin
       );
     }
 
-    action.context = ActorRdfJoin.setContextWrapped(action.context, false);
+    action.context = this.setContextWrapped(action.context);
 
     // Get action output
     const { result, physicalPlanMetadata } = await this.getOutput(action);
@@ -475,8 +475,8 @@ export abstract class ActorRdfJoin
     return result;
   }
 
-  public static setContextWrapped(context: IActionContext, value: boolean): IActionContext {
-    return context.set(KEY_CONTEXT_WRAPPED_RDF_JOIN, value);
+  public setContextWrapped(context: IActionContext): IActionContext {
+    return context.set(KEY_CONTEXT_WRAPPED_RDF_JOIN, this);
   }
 
   /**

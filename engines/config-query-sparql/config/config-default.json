@@ -58,6 +58,11 @@
     "ccqs:config/rdf-update-hypermedia/actors.json",
     "ccqs:config/rdf-update-hypermedia/mediators.json",
     "ccqs:config/rdf-update-quads/actors.json",
-    "ccqs:config/rdf-update-quads/mediators.json"
+    "ccqs:config/rdf-update-quads/mediators.json",
+
+    "ccqs:config/rdf-join/actors-wrap-stream.json",
+    "ccqs:config/query-operation/actors/query/wrap-stream.json",
+    "ccqs:config/iterator-transform/actors.json",
+    "ccqs:config/iterator-transform/mediators.json"
   ]
 }

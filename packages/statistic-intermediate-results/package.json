@@ -7,7 +7,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/statistic-link-dereference"
+    "directory": "packages/statistic-intermediate-results"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"
@@ -15,7 +15,7 @@
   "keywords": [
     "comunica",
     "statistic",
-    "intermeidate results"
+    "intermediate results"
   ],
   "sideEffects": false,
   "main": "lib/index.js",

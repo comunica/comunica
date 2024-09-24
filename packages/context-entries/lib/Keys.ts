@@ -14,7 +14,7 @@ import type {
   QuerySourceReference,
   IStatisticBase,
   IDiscoverEventData,
-  IPartialResult,
+  PartialResult,
   ILink,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -319,7 +319,7 @@ export const KeysStatistics = {
   /**
    * Intermediate results produced during query execution
    */
-  intermediateResults: new ActionContextKey<IPartialResult>(
+  intermediateResults: new ActionContextKey<PartialResult>(
     '@comunica/statistic:intermediateResults',
   ),
 };

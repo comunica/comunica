@@ -32,13 +32,15 @@ M extends MetadataBindings | MetadataQuads,
   }
 
   public async run(action: IActionIteratorTransform<T, M>): Promise<IActorIteratorTransformOutput<T, M>> {
-    const { stream, streamMetadata } = await this.transformIterator(action);
+    const { stream, metadata } = await this.transformIterator(action);
     return {
+      type: action.type,
       operation: action.operation,
       stream,
-      streamMetadata,
+      metadata,
+      originalAction: action.originalAction,
       context: action.context,
-      metadata: { ...action.metadata, ...(await streamMetadata()) },
+    
     };
   }
 
@@ -61,6 +63,10 @@ M extends MetadataBindings | MetadataQuads,
 
 export interface IActionIteratorTransform<T, M> extends IAction {
   /**
+   * Whether the stream produces bindings or quads
+   */
+  type: 'bindings' | 'quads';
+  /**
    * The operation that produced the stream
    */
   operation: string;
@@ -71,14 +77,18 @@ export interface IActionIteratorTransform<T, M> extends IAction {
   /**
    * Stream metadata
    */
-  streamMetadata: () => Promise<M>;
+  metadata: () => Promise<M>;
   /**
-   * Optional metadata
+   * Action that produced the stream
    */
-  metadata?: Record<string, any>;
+  originalAction: IAction;
 }
 
 export interface IActorIteratorTransformOutput<T, M> extends IActorOutput {
+  /**
+  * Whether the stream produces bindings or quads
+  */
+  type: 'bindings' | 'quads';
   /**
    * The operation that produced the stream
    */
@@ -90,16 +100,15 @@ export interface IActorIteratorTransformOutput<T, M> extends IActorOutput {
   /**
    * Optionally transformed metadata
    */
-  streamMetadata: () => Promise<M>;
+  metadata: () => Promise<M>;
+  /**
+   * Action that produced the stream
+   */
+  originalAction: IAction;
   /**
    * (Unchanged)Context given in action
    */
   context: IActionContext;
-  /**
-   * Optional operation metadata
-   */
-  metadata?: Record<string, any>;
-
 }
 
 export interface ITransformIteratorOutput<T, M> {
@@ -110,7 +119,7 @@ export interface ITransformIteratorOutput<T, M> {
   /**
    * Optionally transformed metadata
    */
-  streamMetadata: () => Promise<M>;
+  metadata: () => Promise<M>;
 }
 
 export interface IActorIteratorTransformArgs

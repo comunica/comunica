@@ -3,7 +3,7 @@
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-query-operation-wrap-stream.svg)](https://www.npmjs.com/package/@comunica/actor-query-operation-wrap-stream)
 
 A comunica Wrap Stream Query Operation Actor. This actor calls the `bus-iterator-transform` for all iterators produced by `query-operation` actors.
-This actor should only be included if you require the functionality of `bus-iterator-transform` as it will likely slow down query execution.
+This actor should only be included if you require the functionality of `bus-iterator-transform` as it may slow down query execution.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).

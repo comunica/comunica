@@ -256,8 +256,8 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
     return shape.operation.pattern.type === operation.type;
   }
 
-  public static setContextWrapped(context: IActionContext, value: boolean): IActionContext {
-    return context.set(KEY_CONTEXT_WRAPPED_QUERY_OPERATION, value);
+  public setContextWrapped(context: IActionContext): IActionContext {
+    return context.set(KEY_CONTEXT_WRAPPED_QUERY_OPERATION, this);
   }
 }
 

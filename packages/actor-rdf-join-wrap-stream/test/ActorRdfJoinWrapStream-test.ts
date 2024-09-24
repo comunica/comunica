@@ -41,7 +41,7 @@ class DummyTransform extends ActorIteratorTransform<AsyncIterator<RDF.Bindings>
       this.transformCalls++;
       return data;
     });
-    return { stream: transformedStream, streamMetadata: action.streamMetadata };
+    return { stream: transformedStream, metadata: action.metadata };
   }
 }
 
@@ -199,10 +199,12 @@ describe('ActorRdfJoinWrapStream', () => {
         'mediate',
       ).mockResolvedValue(
         {
+          type: 'bindings',
           operation: 'inner',
           stream: action2.bindingsStream,
-          streamMetadata: action2.streamMetadata,
+          metadata: action2.metadata,
           context: new ActionContext(),
+          originalAction: action2
         },
       );
       const mockedMediatorJoin = jest.spyOn(mediatorJoin, 'mediate').mockResolvedValue(
@@ -254,10 +256,12 @@ describe('ActorRdfJoinWrapStream', () => {
         'mediate',
       ).mockResolvedValue(
         {
+          type: 'bindings',
           operation: 'inner',
           stream: action2.bindingsStream,
-          streamMetadata: action2.streamMetadata,
+          metadata: action2.metadata,
           context: new ActionContext(),
+          originalAction: action2
         },
       );
       const mockedMediatorJoin = jest.spyOn(mediatorJoin, 'mediate').mockResolvedValue(
@@ -309,10 +313,12 @@ describe('ActorRdfJoinWrapStream', () => {
         'mediate',
       ).mockResolvedValue(
         {
+          type: 'bindings',
           operation: 'inner',
           stream: action2.bindingsStream,
-          streamMetadata: action2.streamMetadata,
+          metadata: action2.metadata,
           context: new ActionContext(),
+          originalAction: action2
         },
       );
       const mockedMediatorJoin = jest.spyOn(mediatorJoin, 'mediate').mockResolvedValue(

@@ -26,13 +26,20 @@ export class ActorIteratorTransformRecordIntermediateResults
   ): Promise<ITransformIteratorOutput<T, M>> {
     const statisticIntermediateResults: StatisticIntermediateResults = action.context
       .getSafe(KeysStatistics.intermediateResults);
+    // TODO SEPERATE THE TWO CASES BY TYPE
     const output = <T> action.stream.map((data) => {
       statisticIntermediateResults.updateStatistic(
-        { data, metadata: { operation: action.operation, ...action.metadata }},
+        { 
+          type: action.type, 
+          data, 
+          metadata: { 
+            operation: action.operation,
+             ...action.metadata 
+          }},
       );
       return data;
     });
     // Return metadata unchanged
-    return { stream: output, streamMetadata: action.streamMetadata };
+    return { stream: output, metadata: action.metadata };
   }
 }

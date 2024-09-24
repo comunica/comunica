@@ -22,7 +22,7 @@ export class ActorQueryOperationWrapStream extends ActorQueryOperation {
   }
 
   public async test(action: IActionQueryOperation): Promise<IActorTest> {
-    if (action.context.get(KEY_CONTEXT_WRAPPED_QUERY_OPERATION)) {
+    if (action.context.get(KEY_CONTEXT_WRAPPED_QUERY_OPERATION) === this) {
       throw new Error('Unable to wrap query source multiple times');
     }
     // Ensure this is always run if not already wrapped
@@ -32,45 +32,39 @@ export class ActorQueryOperationWrapStream extends ActorQueryOperation {
   public async run(action: IActionQueryOperation): Promise<IQueryOperationResult> {
     // Prevent infinite recursion. In consequent query operation calls this key should be set to false
     // To allow the operation to wrap ALL query operation runs
-    action.context = ActorQueryOperation.setContextWrapped(action.context, true);
+    action.context = this.setContextWrapped(action.context);
     const output: IQueryOperationResult = await this.mediatorQueryOperation.mediate(action);
     switch (output.type) {
       case 'bindings': {
         const bindingIteratorTransformed = await this.mediatorIteratorTransform.mediate(
           {
+            type: 'bindings',
             operation: action.operation.type,
             stream: output.bindingsStream,
-            streamMetadata: output.metadata,
+            metadata: output.metadata,
+            originalAction: action,
             context: action.context,
-            metadata: {
-              type: output.type,
-              ...await output.metadata(),
-              resultContext: output.context,
-            },
           },
         );
         output.bindingsStream =
           <AsyncIterator<RDF.Bindings>> bindingIteratorTransformed.stream;
         output.metadata =
-          <() => Promise<MetadataBindings>> bindingIteratorTransformed.streamMetadata;
+          <() => Promise<MetadataBindings>> bindingIteratorTransformed.metadata;
         break;
       }
       case 'quads': {
         const iteratorTransformed = await this.mediatorIteratorTransform.mediate(
           {
+            type: 'quads',
             operation: action.operation.type,
             stream: output.quadStream,
-            streamMetadata: output.metadata,
+            metadata: output.metadata,
             context: action.context,
-            metadata: {
-              type: output.type,
-              ...await output.metadata(),
-              resultContext: output.context,
-            },
+            originalAction: action
           },
         );
         output.quadStream = <AsyncIterator<RDF.Quad>> iteratorTransformed.stream;
-        output.metadata = <() => Promise<MetadataQuads>> iteratorTransformed.streamMetadata;
+        output.metadata = <() => Promise<MetadataQuads>> iteratorTransformed.metadata;
         break;
       }
       default: {
