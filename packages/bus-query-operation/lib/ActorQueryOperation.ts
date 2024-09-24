@@ -248,6 +248,7 @@ export abstract class ActorQueryOperation<TS = undefined>
       filterBindings?: boolean;
     },
   ): boolean {
+    // Recurse into the shape
     if (shape.type === 'conjunction') {
       return shape.children.every(child => ActorQueryOperation.doesShapeAcceptOperation(child, operation, options));
     }
@@ -258,14 +259,24 @@ export abstract class ActorQueryOperation<TS = undefined>
       return ActorQueryOperation.doesShapeAcceptOperation(shape.child, operation, options);
     }
 
+    // Validate options
     if ((options?.joinBindings && !shape.joinBindings) ?? (options?.filterBindings && !shape.filterBindings)) {
       return false;
     }
 
-    if (shape.operation.operationType === 'type') {
-      return shape.operation.type === 'project' || shape.operation.type === operation.type;
+    // Check if the shape's operation matches with the given operation
+    const shapeOperation = shape.operation;
+    switch (shapeOperation.operationType) {
+      case 'type': {
+        return shapeOperation.type === operation.type;
+      }
+      case 'pattern': {
+        return shapeOperation.pattern.type === operation.type;
+      }
+      case 'wildcard': {
+        return true;
+      }
     }
-    return shape.operation.pattern.type === operation.type;
   }
 }
 

@@ -19,8 +19,7 @@ describe('ActorOptimizeQueryOperationGroupSources', () => {
       getSelectorShape: () => ({
         type: 'operation',
         operation: {
-          operationType: 'type',
-          type: Algebra.types.PROJECT,
+          operationType: 'wildcard',
         },
       }),
     },
@@ -31,8 +30,7 @@ describe('ActorOptimizeQueryOperationGroupSources', () => {
       getSelectorShape: () => ({
         type: 'operation',
         operation: {
-          operationType: 'type',
-          type: Algebra.types.PROJECT,
+          operationType: 'wildcard',
         },
       }),
     },

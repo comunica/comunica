@@ -11,7 +11,7 @@ import { DataFactory } from 'rdf-data-factory';
 // Needed to load Headers
 import 'jest-rdf';
 import { Readable } from 'readable-stream';
-import { Algebra, Factory } from 'sparqlalgebrajs';
+import { Factory } from 'sparqlalgebrajs';
 import { QuerySourceSparql } from '../lib/QuerySourceSparql';
 import '@comunica/jest';
 
@@ -91,24 +91,8 @@ describe('QuerySourceSparql', () => {
         children: [
           {
             type: 'operation',
-            operation: { operationType: 'type', type: Algebra.types.PROJECT },
+            operation: { operationType: 'wildcard' },
             joinBindings: true,
-          },
-          {
-            type: 'operation',
-            operation: { operationType: 'type', type: Algebra.types.CONSTRUCT },
-          },
-          {
-            type: 'operation',
-            operation: { operationType: 'type', type: Algebra.types.DESCRIBE },
-          },
-          {
-            type: 'operation',
-            operation: { operationType: 'type', type: Algebra.types.ASK },
-          },
-          {
-            type: 'operation',
-            operation: { operationType: 'type', type: Algebra.types.COMPOSITE_UPDATE },
           },
         ],
       });

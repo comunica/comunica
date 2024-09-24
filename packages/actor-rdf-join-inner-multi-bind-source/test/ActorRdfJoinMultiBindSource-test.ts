@@ -67,7 +67,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
           getSelectorShape() {
             return {
               type: 'operation',
-              operation: { operationType: 'type', type: Algebra.types.PROJECT },
+              operation: { operationType: 'wildcard' },
               joinBindings: true,
             };
           },
@@ -88,7 +88,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
           getSelectorShape() {
             return {
               type: 'operation',
-              operation: { operationType: 'type', type: Algebra.types.PROJECT },
+              operation: { operationType: 'wildcard' },
               joinBindings: true,
             };
           },
@@ -110,7 +110,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
           getSelectorShape() {
             return {
               type: 'operation',
-              operation: { operationType: 'type', type: Algebra.types.PROJECT },
+              operation: { operationType: 'wildcard' },
               joinBindings: true,
             };
           },

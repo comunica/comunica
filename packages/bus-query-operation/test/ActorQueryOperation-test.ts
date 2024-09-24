@@ -293,14 +293,19 @@ describe('ActorQueryOperation', () => {
       }, AF.createNop())).toBeTruthy();
     });
 
-    it('should accept equal operations with type type for project', () => {
+    it('should accept all operations with type wildcard', () => {
       expect(ActorQueryOperation.doesShapeAcceptOperation({
         type: 'operation',
         operation: {
-          operationType: 'type',
-          type: Algebra.types.PROJECT,
+          operationType: 'wildcard',
         },
       }, AF.createNop())).toBeTruthy();
+      expect(ActorQueryOperation.doesShapeAcceptOperation({
+        type: 'operation',
+        operation: {
+          operationType: 'wildcard',
+        },
+      }, AF.createBgp([]))).toBeTruthy();
     });
 
     it('should not accept unequal operations with type type', () => {

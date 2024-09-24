@@ -21,8 +21,7 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
       getSelectorShape: () => ({
         type: 'operation',
         operation: {
-          operationType: 'type',
-          type: Algebra.types.PROJECT,
+          operationType: 'wildcard',
         },
       }),
     },

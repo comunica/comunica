@@ -20,8 +20,8 @@ import { TransformIterator, wrap } from 'asynciterator';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import { LRUCache } from 'lru-cache';
 import { uniqTerms } from 'rdf-terms';
-import type { Factory } from 'sparqlalgebrajs';
-import { Algebra, toSparql, Util } from 'sparqlalgebrajs';
+import type { Factory, Algebra } from 'sparqlalgebrajs';
+import { toSparql, Util } from 'sparqlalgebrajs';
 import type { BindMethod } from './ActorQuerySourceIdentifyHypermediaSparql';
 
 const COUNT_INFINITY: RDF.QueryResultCardinality = { type: 'estimate', value: Number.POSITIVE_INFINITY };
@@ -32,24 +32,8 @@ export class QuerySourceSparql implements IQuerySource {
     children: [
       {
         type: 'operation',
-        operation: { operationType: 'type', type: Algebra.types.PROJECT },
+        operation: { operationType: 'wildcard' },
         joinBindings: true,
-      },
-      {
-        type: 'operation',
-        operation: { operationType: 'type', type: Algebra.types.CONSTRUCT },
-      },
-      {
-        type: 'operation',
-        operation: { operationType: 'type', type: Algebra.types.DESCRIBE },
-      },
-      {
-        type: 'operation',
-        operation: { operationType: 'type', type: Algebra.types.ASK },
-      },
-      {
-        type: 'operation',
-        operation: { operationType: 'type', type: Algebra.types.COMPOSITE_UPDATE },
       },
     ],
   };

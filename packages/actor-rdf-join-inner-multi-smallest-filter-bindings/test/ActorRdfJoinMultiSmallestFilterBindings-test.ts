@@ -83,7 +83,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
           getSelectorShape() {
             return {
               type: 'operation',
-              operation: { operationType: 'type', type: Algebra.types.PROJECT },
+              operation: { operationType: 'wildcard' },
               filterBindings: true,
             };
           },
