@@ -29,6 +29,13 @@ export class ActorRdfMetadataAccumulateCardinality extends ActorRdfMetadataAccum
     const cardinality: QueryResultCardinality = { ...action.accumulatedMetadata.cardinality };
 
     if (cardinality.dataset) {
+      // If the accumulated cardinality refers to that of the full default graph (applicable for SPARQL endpoints)
+      if (action.accumulatedMetadata.defaultGraph === cardinality.dataset &&
+        cardinality.dataset !== action.appendingMetadata.cardinality.dataset) {
+        // Use the cardinality of the appending metadata.
+        return { metadata: { cardinality: action.appendingMetadata.cardinality }};
+      }
+
       if (action.appendingMetadata.cardinality.dataset) {
         // If the accumulated cardinality is dataset-wide
         if (cardinality.dataset !== action.appendingMetadata.cardinality.dataset &&
