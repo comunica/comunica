@@ -5,21 +5,21 @@ Values are compared using JavaScript's Set equality semantics.</p>
 <p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>,
 and should only be used by <a href="https://comunica.dev/docs/modify/">developers that want to build their own query engine</a>.</p>
 <p><a href="https://comunica.dev/docs/query/">Click here if you just want to query with Comunica</a>.</p>
-<a id="md:install" class="tsd-anchor"></a><h2 class="tsd-anchor-link">Install<a href="#md:install" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2><pre><code class="bash"><span class="hl-0">$</span><span class="hl-1"> </span><span class="hl-2">yarn</span><span class="hl-1"> </span><span class="hl-2">add</span><span class="hl-1"> </span><span class="hl-2">@comunica/actor-merge-binding-factory-context-union</span>
+<a id="md:install" class="tsd-anchor"></a><h2 class="tsd-anchor-link">Install<a href="#md:install" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2><pre><code class="bash"><span class="hl-0">$</span><span class="hl-1"> </span><span class="hl-2">yarn</span><span class="hl-1"> </span><span class="hl-2">add</span><span class="hl-1"> </span><span class="hl-2">@comunica/actor-merge-bindings-context-union</span>
 </code><button type="button">Copy</button></pre>
 
 <a id="md:configure" class="tsd-anchor"></a><h2 class="tsd-anchor-link">Configure<a href="#md:configure" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2><p>After installing, this package can be added to your engine's configuration as follows:</p>
 <pre><code class="text">{
   &quot;@context&quot;: [
     ...
-    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-merge-binding-factory-context-union/^1.0.0/components/context.jsonld&quot;
+    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-merge-bindings-context-union/^3.0.0/components/context.jsonld&quot;
   ],
   &quot;actors&quot;: [
     ...
-    {
-      &quot;@id&quot;: &quot;urn:comunica:default:merge-binding-factory/actors#context-union&quot;,
-      &quot;@type&quot;: &quot;ActorMergeBindingFactoryContextUnion&quot;,
-      &quot;contextKey&quot;: &quot;sources&quot;
+   {
+      &quot;@id&quot;: &quot;urn:comunica:default:merge-bindings-context/actors#source-binding-union&quot;,
+      &quot;@type&quot;: &quot;ActorMergeBindingsContextUnion&quot;,
+      &quot;contextKey&quot;: &quot;@comunica/bus-merge-bindings-context:sourcesBinding&quot;
     }
   ]
 }
