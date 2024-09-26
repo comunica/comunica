@@ -1,0 +1,10 @@
+# Datasources: https://lindas.admin.ch/query https://sparql.rhea-db.org/sparql
+PREFIX schema: <http://schema.org/>
+SELECT * WHERE {
+  ?substance a schema:DefinedTerm ;
+      schema:identifier ?identifier ;
+      schema:inDefinedTermSet <https://ld.admin.ch/cube/dimension/el01> .
+  ?compound <http://rdf.rhea-db.org/formula> ?identifier ;
+      <http://rdf.rhea-db.org/name> ?name ;
+      <http://rdf.rhea-db.org/accession> ?accession .
+}

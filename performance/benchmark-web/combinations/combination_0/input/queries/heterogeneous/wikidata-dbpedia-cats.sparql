@@ -1,0 +1,11 @@
+# Datasources: https://dbpedia.org/sparql https://query.wikidata.org/sparql
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT * WHERE {
+  ?cat wdt:P31 wd:Q146 ;
+       wdt:P19 [ wdt:P17 wd:Q30 ] ; # wd:Q695511
+       rdfs:label ?name .
+  FILTER(LANG(?name) = "en")
+}
+
