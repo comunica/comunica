@@ -90,28 +90,6 @@ implements IActorArgs<I, T, O, TS> {
     return output;
   }
 
-  /**
-   * Initialize this actor.
-   * This should be used for doing things that take a while,
-   * such as opening files.
-   *
-   * @return {Promise<void>} A promise that resolves when the actor has been initialized.
-   */
-  public async initialize(): Promise<any> {
-    return true;
-  }
-
-  /**
-   * Deinitialize this actor.
-   * This should be used for cleaning up things when the application is shut down,
-   * such as closing files and removing temporary files.
-   *
-   * @return {Promise<void>} A promise that resolves when the actor has been deinitialized.
-   */
-  public async deinitialize(): Promise<any> {
-    return true;
-  }
-
   /* Proxy methods for the (optional) logger that is defined in the context */
 
   protected getDefaultLogData(context: IActionContext, data?: (() => any)): any {

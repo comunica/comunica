@@ -51,14 +51,6 @@ describe('Actor', () => {
       expect(actor.bus).toEqual(bus);
     });
 
-    it('should be initializable', async() => {
-      await expect(actor.initialize()).resolves.toBeTruthy();
-    });
-
-    it('should be deinitializable', async() => {
-      await expect(actor.deinitialize()).resolves.toBeTruthy();
-    });
-
     it('should call bus#onRun and actor#run when actor#runObservable is called', () => {
       const action = { myAction: true };
       const output = actor.runObservable(action);

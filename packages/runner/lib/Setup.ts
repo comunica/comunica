@@ -1,4 +1,4 @@
-import type { IActionInit, IActorOutputInit } from '@comunica/bus-init';
+import type { IActionInit } from '@comunica/bus-init';
 import { ComponentsManager } from 'componentsjs';
 import type {
   IComponentsManagerBuilderOptions,
@@ -65,16 +65,7 @@ export async function run(
   }
 
   const runner: Runner = await instantiateComponent(configResourceUrl, runnerUri, properties);
-  await runner.initialize();
-  let output: IActorOutputInit[];
-  try {
-    output = await runner.run(action);
-  } catch (error: unknown) {
-    await runner.deinitialize();
-    throw error;
-  }
-  await runner.deinitialize();
-  return output;
+  return await runner.run(action);
 }
 
 /**

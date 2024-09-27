@@ -42,28 +42,6 @@ export class Runner {
   }
 
   /**
-   * Initialize the actors.
-   * This should be used for doing things that take a while,
-   * such as opening files.
-   *
-   * @return {Promise<void>} A promise that resolves when the actors have been initialized.
-   */
-  public initialize(): Promise<any> {
-    return Promise.all(this.actors.map(actor => actor.initialize())).then(() => true);
-  }
-
-  /**
-   * Deinitialize the actors.
-   * This should be used for cleaning up things when the application is shut down,
-   * such as closing files and removing temporary files.
-   *
-   * @return {Promise<void>} A promise that resolves when the actors have been deinitialized.
-   */
-  public async deinitialize(): Promise<any> {
-    return Promise.all(this.actors.map(actor => actor.deinitialize())).then(() => true);
-  }
-
-  /**
    * Collect the given actors that are available in this runner.
    *
    * Example:

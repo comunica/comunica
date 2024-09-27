@@ -107,16 +107,6 @@ describe('Runner', () => {
       expect(actor2.run).toHaveBeenCalledWith({ context, argv: [ 'a', 'b' ], env: { c: 'd' }}, undefined);
     });
 
-    it('should be initializable', async() => {
-      (<any> runner).actors = [ actor1, actor2 ];
-      await expect(runner.initialize()).resolves.toBeTruthy();
-    });
-
-    it('should be deinitializable', async() => {
-      (<any> runner).actors = [ actor1, actor2 ];
-      await expect(runner.deinitialize()).resolves.toBeTruthy();
-    });
-
     describe('collectActors', () => {
       it('should collect for no identifiers', async() => {
         expect(runner.collectActors({})).toEqual({});
