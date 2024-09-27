@@ -35,20 +35,21 @@ export class ActorHttpRetry extends ActorHttp {
   public async run(action: IActionHttp): Promise<IActorHttpOutput> {
     const url = ActorHttp.getInputUrl(action.input);
 
-    const retryCount = action.context.getSafe<number>(KeysHttp.httpRetryCount) + 1;
+    // Attempt once + the number of retries specified by the user
+    const attemptLimit = action.context.getSafe<number>(KeysHttp.httpRetryCount) + 1;
     const retryDelay = action.context.get<number>(KeysHttp.httpRetryDelay) ?? 0;
     const retryStatusCodes = action.context.get<number[]>(KeysHttp.httpRetryStatusCodes);
 
     // This is declared outside the loop so it can be used for the final error message
-    for (let attempt = 0; attempt < retryCount; attempt++) {
+    for (let attempt = 1; attempt <= attemptLimit; attempt++) {
       if (url.host in this.activeDelays) {
         this.logDebug(action.context, 'Delaying request due to host rate limit', () => ({
           url: url.href,
           delayedUntil: this.activeDelays[url.host].date.toISOString(),
-          currentAttempt: `${attempt} / ${retryCount}`,
+          currentAttempt: `${attempt} / ${attemptLimit}`,
         }));
         await ActorHttpRetry.waitUntil(this.activeDelays[url.host].date);
-      } else if (attempt > 0) {
+      } else if (attempt > 1) {
         await ActorHttpRetry.waitUntil(new Date(Date.now() + retryDelay));
       }
 
@@ -66,7 +67,7 @@ export class ActorHttpRetry extends ActorHttp {
           url: url.href,
           status: response.status,
           statusText: response.statusText,
-          currentAttempt: `${attempt} / ${retryCount}`,
+          currentAttempt: `${attempt} / ${attemptLimit}`,
         }));
         continue;
       }
@@ -78,7 +79,7 @@ export class ActorHttpRetry extends ActorHttp {
           url: url.href,
           status: response.status,
           statusText: response.statusText,
-          currentAttempt: `${attempt} / ${retryCount}`,
+          currentAttempt: `${attempt} / ${attemptLimit}`,
         }));
         continue;
       }
@@ -107,7 +108,7 @@ export class ActorHttpRetry extends ActorHttp {
           status: response.status,
           statusText: response.statusText,
           retryAfter: retryAfter.toISOString(),
-          currentAttempt: `${attempt} / ${retryCount}`,
+          currentAttempt: `${attempt} / ${attemptLimit}`,
         }));
 
         continue;
@@ -121,7 +122,7 @@ export class ActorHttpRetry extends ActorHttp {
           url: url.href,
           status: response.status,
           statusText: response.statusText,
-          currentAttempt: `${attempt} / ${retryCount}`,
+          currentAttempt: `${attempt} / ${attemptLimit}`,
         }));
         break;
       }
@@ -134,7 +135,7 @@ export class ActorHttpRetry extends ActorHttp {
           url: url.href,
           status: response.status,
           statusText: response.statusText,
-          currentAttempt: `${attempt} / ${retryCount}`,
+          currentAttempt: `${attempt} / ${attemptLimit}`,
         }));
         break;
       }
@@ -144,7 +145,7 @@ export class ActorHttpRetry extends ActorHttp {
         url: url.href,
         status: response.status,
         statusText: response.statusText,
-        currentAttempt: `${attempt} / ${retryCount}`,
+        currentAttempt: `${attempt} / ${attemptLimit}`,
       }));
     }
 
