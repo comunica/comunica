@@ -44,7 +44,11 @@ function setConfig(config: any): void {
         ],
       },
       plugins: [
-        new NodePolyfillPlugin(),
+        new NodePolyfillPlugin({
+          additionalAliases: [
+            'process',
+          ],
+        }),
         new DefinePlugin({ 'process.stdout.isTTY': false }),
       ],
       resolve: {
