@@ -119,11 +119,12 @@ module.exports = config([
   {
     // Webpack configurations
     files: [
-      '**/webpack.config.js',
+      '**/webpack.config.ts',
     ],
     rules: {
       'ts/no-var-requires': 'off',
       'ts/no-require-imports': 'off',
+      'import/extensions': 'off',
       'import/no-nodejs-modules': 'off',
       'import/no-extraneous-dependencies': 'off',
     },
@@ -131,32 +132,19 @@ module.exports = config([
   {
     // Karma config and Lerna custom script because they have identical rules
     files: [
-      'karma.config.js',
-      'lerna-custom-script.js',
+      'karma.conf.ts',
     ],
     rules: {
       'ts/no-var-requires': 'off',
       'ts/no-require-imports': 'off',
-      'import/no-nodejs-modules': 'off',
     },
   },
   {
     // Karma setup script
     files: [
-      'karma-setup.js',
+      'karma.setup.ts',
     ],
     rules: {
-      'import/no-nodejs-modules': 'off',
-      'import/no-extraneous-dependencies': 'off',
-    },
-  },
-  {
-    // Jest setup script
-    files: [
-      'setup-jest.js',
-    ],
-    rules: {
-      'ts/no-require-imports': 'off',
       'import/no-extraneous-dependencies': 'off',
     },
   },
