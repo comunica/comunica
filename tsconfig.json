@@ -8,7 +8,6 @@
     ],
     "module": "commonjs",
     "resolveJsonModule": true,
-
     "strict": true,
     "strictFunctionTypes": true,
     "strictPropertyInitialization": false,
@@ -21,14 +20,15 @@
     "sourceMap": true
   },
   "include": [
-    "engines/*/bin/**/*",
-    "engines/*/lib/**/*",
-    "packages/*/bin/**/*",
-    "packages/*/lib/**/*",
-    "packages/*/benchmarks/**/*",
-    "performance/*/lib/**/*"
+    "./engines/*/bin/**/*.ts",
+    "./engines/*/lib/**/*.ts",
+    "./packages/*/bin/**/*.ts",
+    "./packages/*/lib/**/*.ts",
+    "./packages/*/benchmarks/**/*.ts",
+    "./performance/*/lib/**/*.ts"
   ],
   "exclude": [
+    "**/*.d.ts",
     "**/node_modules"
   ]
 }
