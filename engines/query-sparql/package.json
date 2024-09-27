@@ -178,6 +178,7 @@
     "@comunica/actor-hash-quads-murmur": "^4.0.0",
     "@comunica/actor-http-fetch": "^4.0.0",
     "@comunica/actor-http-proxy": "^4.0.0",
+    "@comunica/actor-http-retry": "^4.0.0",
     "@comunica/actor-http-wayback": "^4.0.0",
     "@comunica/actor-init-query": "^4.0.0",
     "@comunica/actor-optimize-query-operation-assign-sources-exhaustive": "^4.0.0",
