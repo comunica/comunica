@@ -44,7 +44,6 @@
     "@jeswr/stream-to-string": "^2.0.0",
     "is-stream": "^2.0.1",
     "readable-from-web": "^1.0.0",
-    "readable-stream-node-to-web": "^1.0.1",
-    "web-streams-ponyfill": "^1.4.2"
+    "readable-stream-node-to-web": "^1.0.1"
   }
 }
