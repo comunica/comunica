@@ -48,6 +48,6 @@
     "@rdfjs/types": "*",
     "rdf-string": "^1.6.3",
     "rdf-terms": "^1.11.0",
-    "readable-stream": "^4.4.2"
+    "readable-stream": "^4.5.2"
   }
 }

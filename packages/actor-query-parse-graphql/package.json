@@ -44,6 +44,6 @@
     "@comunica/bus-query-parse": "^3.2.1",
     "@comunica/context-entries": "^3.2.1",
     "@comunica/core": "^3.2.1",
-    "graphql-to-sparql": "^3.0.1"
+    "graphql-to-sparql": "^4.0.0"
   }
 }

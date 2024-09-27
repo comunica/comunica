@@ -44,6 +44,6 @@
     "@comunica/bus-rdf-metadata": "^3.2.1",
     "@comunica/core": "^3.2.1",
     "@rdfjs/types": "*",
-    "readable-stream": "^4.4.2"
+    "readable-stream": "^4.5.2"
   }
 }
