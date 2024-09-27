@@ -34,9 +34,9 @@
     "access": "public"
   },
   "bin": {
+    "comunica-dynamic-sparql": "bin/query-dynamic.js",
     "comunica-sparql": "bin/query.js",
-    "comunica-sparql-http": "bin/http.js",
-    "comunica-dynamic-sparql": "bin/query-dynamic.js"
+    "comunica-sparql-http": "bin/http.js"
   },
   "files": [
     "bin/**/*.d.ts",
