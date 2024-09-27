@@ -31,7 +31,7 @@ async function depInfo({ location }, log) {
   const { files } = JSON.parse(readFileSync(path.join(location, 'package.json'), 'utf8'));
   let ignore;
   let checkedDeps;
-  if (location.startsWith(path.join(__dirname, '/engines'))) {
+  if (location.startsWith(path.join(process.cwd(), '/engines'))) {
     // First check whether we have a default engine file
     if (!folders.some(elem => elem.name === 'engine-default.js')) {
       return {
@@ -85,8 +85,8 @@ async function depInfo({ location }, log) {
 }
 
 async function depfixTask(log) {
-  const packages = (await (log.packages || loadPackages())).filter(package => package.location.startsWith(path.join(__dirname, '/packages')));
-  const resolutions = Object.keys(JSON.parse(readFileSync(path.join(__dirname, 'package.json'), 'utf8')).resolutions ?? {});
+  const packages = (await (log.packages || loadPackages())).filter(package => package.location.startsWith(path.join(process.cwd(), '/packages')));
+  const resolutions = Object.keys(JSON.parse(readFileSync(path.join(process.cwd(), 'package.json'), 'utf8')).resolutions ?? {});
 
   // eslint-disable-next-line unicorn/no-array-for-each
   await iter.forEach(packages, { log })(async(package) => {
@@ -142,10 +142,10 @@ async function depfixTask(log) {
 
 async function depcheckTask(log) {
   const packages = (await (log.packages || loadPackages())).filter(
-    package => package.location.startsWith(path.join(__dirname, '/packages')) ||
-      package.location.startsWith(path.join(__dirname, '/engines')),
+    package => package.location.startsWith(path.join(process.cwd(), '/packages')) ||
+      package.location.startsWith(path.join(process.cwd(), '/engines')),
   );
-  const resolutions = Object.keys(JSON.parse(readFileSync(path.join(__dirname, 'package.json'), 'utf8')).resolutions ?? {});
+  const resolutions = Object.keys(JSON.parse(readFileSync(path.join(process.cwd(), 'package.json'), 'utf8')).resolutions ?? {});
 
   // eslint-disable-next-line unicorn/no-array-for-each
   return iter.forEach(packages, { log })(async(package) => {
@@ -180,8 +180,8 @@ const ncu = require('npm-check-updates');
 
 async function updateTask(log) {
   const packages = (await (log.packages || loadPackages())).filter(
-    package => package.location.startsWith(path.join(__dirname, '/packages')) ||
-      package.location.startsWith(path.join(__dirname, '/engines')),
+    package => package.location.startsWith(path.join(process.cwd(), '/packages')) ||
+      package.location.startsWith(path.join(process.cwd(), '/engines')),
   );
 
   // eslint-disable-next-line unicorn/no-array-for-each
@@ -197,7 +197,7 @@ async function updateTask(log) {
 }
 
 async function updateTaskMajor(log) {
-  const packages = (await (log.packages || loadPackages())).filter(package => package.location.startsWith(path.join(__dirname, '/packages')));
+  const packages = (await (log.packages || loadPackages())).filter(package => package.location.startsWith(path.join(process.cwd(), '/packages')));
 
   // eslint-disable-next-line unicorn/no-array-for-each
   await iter.forEach(packages, { log })(async(package) => {

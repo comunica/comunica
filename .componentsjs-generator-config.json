@@ -17,7 +17,8 @@
     "packages/statistic-base",
     "packages/statistic-link-dereference",
     "packages/statistic-link-discovery",
-    "packages/utils-bindings-index"
+    "packages/utils-bindings-index",
+    "packages/utils-monorepo"
   ],
   "ignoreComponents": [
     "Error",
