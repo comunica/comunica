@@ -219,6 +219,7 @@
     "process": "^0.11.10"
   },
   "browser": {
-    "./lib/index.js": "./lib/index-browser.js"
+    "./lib/index.js": "./lib/index-browser.js",
+    "./test/util": "./test/util-browser"
   }
 }
