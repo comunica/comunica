@@ -14,7 +14,7 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/actor-merge-binding-factory-context-union
+$ yarn add @comunica/actor-merge-bindings-context-union
 ```
 
 ## Configure
@@ -24,14 +24,14 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-merge-binding-factory-context-union/^1.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-merge-bindings-context-union/^3.0.0/components/context.jsonld"
   ],
   "actors": [
     ...
-    {
-      "@id": "urn:comunica:default:merge-binding-factory/actors#context-union",
-      "@type": "ActorMergeBindingFactoryContextUnion",
-      "contextKey": "sources"
+   {
+      "@id": "urn:comunica:default:merge-bindings-context/actors#source-binding-union",
+      "@type": "ActorMergeBindingsContextUnion",
+      "contextKey": "@comunica/bus-merge-bindings-context:sourcesBinding"
     }
   ]
 }

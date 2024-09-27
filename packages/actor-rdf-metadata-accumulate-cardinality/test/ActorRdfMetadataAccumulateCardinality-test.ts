@@ -117,6 +117,18 @@ describe('ActorRdfMetadataAccumulateCardinality', () => {
           appendingMetadata: <any> { cardinality: { type: 'estimate', value: 3, dataset: 'def' }, subsetOf: 'abc' },
         })).resolves.toEqual({ metadata: { cardinality: { type: 'estimate', value: 3, dataset: 'def' }}});
       });
+
+      it('should handle appending to metadata with cardinalities covering the whole defaultGraph', async() => {
+        await expect(actor.run({
+          context,
+          mode: 'append',
+          accumulatedMetadata: <any> {
+            cardinality: { type: 'estimate', value: 20000, dataset: 'dg' },
+            defaultGraph: 'dg',
+          },
+          appendingMetadata: <any> { cardinality: { type: 'exact', value: 3 }},
+        })).resolves.toEqual({ metadata: { cardinality: { type: 'exact', value: 3 }}});
+      });
     });
   });
 });
