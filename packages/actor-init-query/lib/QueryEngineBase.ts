@@ -127,7 +127,7 @@ implements IQueryEngine<QueryStringContextInner, QueryAlgebraContextInner> {
     const actionContext: IActionContext = ActionContext.ensureActionContext(context);
 
     // Invalidate caches if cache argument is set to false
-    if (actionContext.get(KeysInitQuery.noCache)) {
+    if (actionContext.get(KeysInitQuery.invalidateCache)) {
       await this.invalidateHttpCache();
     }
 

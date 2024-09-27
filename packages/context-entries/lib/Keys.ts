@@ -195,7 +195,7 @@ export const KeysInitQuery = {
   /**
    * A boolean value denoting whether caching is disabled or not.
    */
-  noCache: new ActionContextKey<boolean>('@comunica/actor-init-query:noCache'),
+  invalidateCache: new ActionContextKey<boolean>('@comunica/actor-init-query:invalidateCache'),
   /**
    * The data factory for creating terms and quads.
    */

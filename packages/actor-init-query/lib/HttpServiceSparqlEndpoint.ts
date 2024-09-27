@@ -43,7 +43,6 @@ export class HttpServiceSparqlEndpoint {
   public readonly port: number;
   public readonly workers: number;
 
-  public readonly invalidateCacheBeforeQuery: boolean;
   public readonly freshWorkerPerQuery: boolean;
   public readonly contextOverride: boolean;
 
@@ -54,7 +53,6 @@ export class HttpServiceSparqlEndpoint {
     this.timeout = args.timeout ?? 60_000;
     this.port = args.port ?? 3_000;
     this.workers = args.workers ?? 1;
-    this.invalidateCacheBeforeQuery = Boolean(args.invalidateCacheBeforeQuery);
     this.freshWorkerPerQuery = Boolean(args.freshWorkerPerQuery);
     this.contextOverride = Boolean(args.contextOverride);
 
@@ -151,7 +149,6 @@ export class HttpServiceSparqlEndpoint {
       exit(1);
     }
 
-    const invalidateCacheBeforeQuery: boolean = args.invalidateCache;
     const freshWorkerPerQuery: boolean = args.freshWorker;
     const contextOverride: boolean = args.contextOverride;
     const port = args.port;
@@ -165,7 +162,6 @@ export class HttpServiceSparqlEndpoint {
       defaultConfigPath,
       configPath,
       context,
-      invalidateCacheBeforeQuery,
       freshWorkerPerQuery,
       contextOverride,
       moduleRootPath,
@@ -355,11 +351,6 @@ export class HttpServiceSparqlEndpoint {
       );
       response.end(JSON.stringify({ message: 'Resource not found. Queries are accepted on /sparql.' }));
       return;
-    }
-
-    if (this.invalidateCacheBeforeQuery) {
-      // Invalidate cache
-      await engine.invalidateHttpCache();
     }
 
     // Parse the query, depending on the HTTP method
@@ -689,7 +680,6 @@ export interface IHttpServiceSparqlEndpointArgs extends IDynamicQueryEngineOptio
   timeout?: number;
   port?: number;
   workers?: number;
-  invalidateCacheBeforeQuery?: boolean;
   freshWorkerPerQuery?: boolean;
   contextOverride?: boolean;
   moduleRootPath: string;
