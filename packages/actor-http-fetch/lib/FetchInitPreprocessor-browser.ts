@@ -1,5 +1,3 @@
-/* eslint-disable unicorn/filename-case */
-
 import type { IFetchInitPreprocessor } from './IFetchInitPreprocessor';
 
 /**

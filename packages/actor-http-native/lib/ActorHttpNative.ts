@@ -23,7 +23,7 @@ export class ActorHttpNative extends ActorHttp {
     this.requester = new Requester(args.agentOptions);
   }
 
-  public async test(action: IActionHttp): Promise<TestResult<IMediatorTypeTime>> {
+  public async test(_action: IActionHttp): Promise<TestResult<IMediatorTypeTime>> {
     return passTest({ time: Number.POSITIVE_INFINITY });
   }
 

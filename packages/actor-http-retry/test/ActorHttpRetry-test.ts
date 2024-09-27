@@ -150,7 +150,7 @@ describe('ActorHttpRetry', () => {
       const retryAfterDate = new Date(200);
       jest.spyOn(Date, 'now').mockReturnValue(0);
       jest.spyOn(ActorHttpRetry, 'parseRetryAfterHeader').mockReturnValue(retryAfterDate);
-      jest.spyOn(globalThis, 'setTimeout').mockImplementation((callback, ms?: number) => <any>callback());
+      jest.spyOn(globalThis, 'setTimeout').mockImplementation(callback => <any>callback());
       const response: Response = <any> { ok: false, status: 429, headers: new Headers() };
       jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(response);
       expect(ActorHttpRetry.waitUntil).not.toHaveBeenCalled();
@@ -177,7 +177,7 @@ describe('ActorHttpRetry', () => {
 
   describe('waitUntil', () => {
     beforeEach(() => {
-      jest.spyOn(globalThis, 'setTimeout').mockImplementation((callback, ms?: number) => <any> callback());
+      jest.spyOn(globalThis, 'setTimeout').mockImplementation(callback => <any> callback());
     });
 
     it('should wait until the specified time', async() => {
