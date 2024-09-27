@@ -29,7 +29,7 @@
     "test:browser": "karma start --single-run",
     "test:changed": "lerna run test --since HEAD",
     "test:integration": "npx lerna run integration --concurrency 1",
-    "test:node": "jest --runInBand",
+    "test:node": "jest --selectProjects combined --runInBand",
     "test:spec": "npx lerna run spec --concurrency 1",
     "postinstall": "yarn husky",
     "publish": "yarn run build",
