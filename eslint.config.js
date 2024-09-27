@@ -179,6 +179,9 @@ module.exports = config([
       'performance/*/combinations/**',
       // TODO: Remove this once solid-client-authn supports node 18.
       'engines/query-sparql/test/QuerySparql-solid-test.ts',
+      // Dev-only files that are not checked in
+      '**/bintest/**',
+      '**/componentsjs-error-state.json',
     ],
   },
 ]);
