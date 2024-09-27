@@ -47,8 +47,7 @@
     "@comunica/mediatortype-time": "^4.0.0",
     "@types/http-link-header": "^1.0.7",
     "follow-redirects": "^1.15.2",
-    "http-link-header": "^1.1.3",
-    "process": "^0.11.10"
+    "http-link-header": "^1.1.3"
   },
   "browser": {
     "./lib/Requester.js": "./lib/Requester-browser.js"

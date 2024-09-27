@@ -4,31 +4,26 @@ import { KeysHttp } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
 import { passTest } from '@comunica/core';
 import type { IMediatorTypeTime } from '@comunica/mediatortype-time';
-import Requester from './Requester';
 
-const process: NodeJS.Process = require('process/');
+// eslint-disable-next-line import/extensions
+import { version as actorVersion } from '../package.json';
+
+import Requester from './Requester';
 
 /**
  * A comunica Follow Redirects Http Actor.
  */
 export class ActorHttpNative extends ActorHttp {
-  private readonly userAgent: string;
+  private static readonly userAgent = ActorHttp.createUserAgent('ActorHttpNative', actorVersion);
 
   private readonly requester: Requester;
 
   public constructor(args: IActorHttpNativeArgs) {
     super(args);
-    this.userAgent = ActorHttpNative.createUserAgent();
     this.requester = new Requester(args.agentOptions);
   }
 
-  public static createUserAgent(): string {
-    return `Comunica/actor-http-native (${typeof globalThis.navigator === 'undefined' ?
-      `Node.js ${process.version}; ${process.platform}` :
-      `Browser-${globalThis.navigator.userAgent}`})`;
-  }
-
-  public async test(_action: IActionHttp): Promise<TestResult<IMediatorTypeTime>> {
+  public async test(action: IActionHttp): Promise<TestResult<IMediatorTypeTime>> {
     return passTest({ time: Number.POSITIVE_INFINITY });
   }
 
@@ -58,7 +53,7 @@ export class ActorHttpNative extends ActorHttp {
       options.headers = new Headers();
     }
     if (!options.headers.has('user-agent')) {
-      options.headers.append('user-agent', this.userAgent);
+      options.headers.append('user-agent', ActorHttpNative.userAgent);
     }
 
     options.method = options.method || 'GET';
