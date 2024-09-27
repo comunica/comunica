@@ -23,7 +23,6 @@ module.exports = function(engine) {
         baseIRI: options.baseIRI,
         sources,
         httpProxyHandler: proxyUrl ? new ProxyHandlerStatic(proxyUrl) : null,
-        httpRetryOnServerError: true,
         httpRetryCount: 3,
         httpRetryDelay: 10,
       });

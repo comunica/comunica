@@ -71,9 +71,10 @@ export const KeysHttp = {
    */
   httpRetryDelay: new ActionContextKey<number>('@comunica/bus-http:http-retry-delay'),
   /**
-   * Retry fetch, if server replies with a 5xx error response. Requires httpRetryCount to be set.
+   * HTTP status codes that should always trigger a retry, regardless of the default behaviour.
+   * This can be used to, for example, force retries on server-side errors in the 500 range.
    */
-  httpRetryOnServerError: new ActionContextKey<boolean>('@comunica/bus-http:http-retry-on-server-error'),
+  httpRetryStatusCodes: new ActionContextKey<number[]>('@comunica/bus-http:http-retry-status-codes'),
 };
 
 export const KeysHttpWayback = {

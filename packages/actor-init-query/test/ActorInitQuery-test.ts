@@ -673,33 +673,6 @@ LIMIT 100
         expect(stderr).toContain(`The --httpRetryDelay option requires the --httpRetryCount option to be set`);
       });
 
-      it('handles the --httpRetryOnServerError flag', async() => {
-        const stdout = await stringifyStream(<any> (await actor.run({
-          argv: [ sourceHypermedia, '-q', queryString, '--httpRetryCount=2', '--httpRetryOnServerError' ],
-          env: {},
-          stdin: <Readable><any> new PassThrough(),
-          context,
-        })).stdout);
-        expect(stdout).toContain(`{"a":"triple"}`);
-        expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
-          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          sources: [{ value: sourceHypermedia }],
-          log: expect.any(LoggerPretty),
-          [KeysHttp.httpRetryCount.name]: 2,
-          [KeysHttp.httpRetryOnServerError.name]: true,
-        });
-      });
-
-      it('handles --httpRetryOnServerError flag requiring --httpRetryCount', async() => {
-        const stderr = await stringifyStream(<any> (await actor.run({
-          argv: [ sourceHypermedia, '-q', queryString, '--httpRetryOnServerError' ],
-          env: {},
-          stdin: <Readable><any> new PassThrough(),
-          context,
-        })).stderr);
-        expect(stderr).toContain(`The --httpRetryOnServerError option requires the --httpRetryCount option to be set`);
-      });
-
       it('handles the --unionDefaultGraph flag', async() => {
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermedia, '-q', queryString, '--unionDefaultGraph' ],
