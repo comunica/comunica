@@ -10,7 +10,7 @@ import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { TestResult } from '@comunica/core';
 import { passTestWithSideData } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { Bindings, BindingsStream } from '@comunica/types';
+import type { Bindings, BindingsStream, IJoinEntry } from '@comunica/types';
 import type { IBindingsIndex } from '@comunica/utils-bindings-index';
 import { BindingsIndexUndef } from '@comunica/utils-bindings-index';
 import type * as RDF from '@rdfjs/types';
@@ -22,7 +22,7 @@ import { termToString } from 'rdf-string';
 /**
  * A comunica Hash RDF Join Actor.
  */
-export class ActorRdfJoinHash extends ActorRdfJoin {
+export class ActorRdfJoinHash extends ActorRdfJoin<IActorRdfJoinHashTestSideData> {
   public readonly mediatorHashBindings: MediatorHashBindings;
 
   public constructor(args: IActorRdfJoinHashArgs) {
@@ -37,7 +37,7 @@ export class ActorRdfJoinHash extends ActorRdfJoin {
 
   public async getOutput(
     action: IActionRdfJoin,
-    sideData: IActorRdfJoinTestSideData,
+    sideData: IActorRdfJoinHashTestSideData,
   ): Promise<IActorRdfJoinOutputInner> {
     const metadatas = sideData.metadatas;
     let bindingsStream: BindingsStream;
@@ -45,8 +45,8 @@ export class ActorRdfJoinHash extends ActorRdfJoin {
     if (this.canHandleUndefs) {
       /* Handle undefined values in bindings */
 
-      const buffer = action.entries[0].output;
-      const output = action.entries[1].output;
+      const buffer = sideData.entriesSorted[0].output;
+      const output = sideData.entriesSorted[1].output;
       bindingsStream = new ClosableTransformIterator(async() => {
         // We index all bindings from the left-hand iterator first in a blocking manner.
         const index: IBindingsIndex<RDF.Bindings[]> = new BindingsIndexUndef(
@@ -90,8 +90,8 @@ export class ActorRdfJoinHash extends ActorRdfJoin {
       const { hashFunction } = await this.mediatorHashBindings.mediate({ context: action.context });
       const variablesRaw = variables.map(v => v.variable);
       bindingsStream = new HashJoin<Bindings, number, Bindings>(
-        action.entries[0].output.bindingsStream,
-        action.entries[1].output.bindingsStream,
+        sideData.entriesSorted[0].output.bindingsStream,
+        sideData.entriesSorted[1].output.bindingsStream,
         entry => hashFunction(entry, variablesRaw),
         <any> ActorRdfJoin.joinBindings,
       );
@@ -100,7 +100,7 @@ export class ActorRdfJoinHash extends ActorRdfJoin {
       result: {
         type: 'bindings',
         bindingsStream,
-        metadata: async() => await this.constructResultMetadata(action.entries, metadatas, action.context),
+        metadata: async() => await this.constructResultMetadata(sideData.entriesSorted, metadatas, action.context),
       },
     };
   }
@@ -108,11 +108,12 @@ export class ActorRdfJoinHash extends ActorRdfJoin {
   protected async getJoinCoefficients(
     action: IActionRdfJoin,
     sideData: IActorRdfJoinTestSideData,
-  ): Promise<TestResult<IMediatorTypeJoinCoefficients, IActorRdfJoinTestSideData>> {
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients, IActorRdfJoinHashTestSideData>> {
     // Ensure the left build stream is the smallest
-    // TODO: in the next major version, use ActorRdfJoin.sortJoinEntries, which requires mediatorJoinEntriesSort
+    let entriesSorted = action.entries;
     if (sideData.metadatas[1].cardinality.value < sideData.metadatas[0].cardinality.value) {
       sideData.metadatas = [ sideData.metadatas[1], sideData.metadatas[0] ];
+      entriesSorted = [ action.entries[1], action.entries[0] ];
     }
 
     const { metadatas } = sideData;
@@ -129,11 +130,11 @@ export class ActorRdfJoinHash extends ActorRdfJoin {
       blockingItems: metadatas[0].cardinality.value,
       requestTime: requestInitialTimes[0] + metadatas[0].cardinality.value * requestItemTimes[0] +
         requestInitialTimes[1] + metadatas[1].cardinality.value * requestItemTimes[1],
-    }, sideData);
+    }, { ...sideData, entriesSorted });
   }
 }
 
-export interface IActorRdfJoinHashArgs extends IActorRdfJoinArgs {
+export interface IActorRdfJoinHashArgs extends IActorRdfJoinArgs<IActorRdfJoinHashTestSideData> {
   /**
    * The mediator for hashing bindings.
    */
@@ -143,4 +144,8 @@ export interface IActorRdfJoinHashArgs extends IActorRdfJoinArgs {
    * If false, performance will be slightly better.
    */
   canHandleUndefs: boolean;
+}
+
+export interface IActorRdfJoinHashTestSideData extends IActorRdfJoinTestSideData {
+  entriesSorted: IJoinEntry[];
 }

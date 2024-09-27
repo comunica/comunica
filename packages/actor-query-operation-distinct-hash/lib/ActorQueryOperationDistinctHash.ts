@@ -37,8 +37,7 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
   public async runOperation(operation: Algebra.Distinct, context: IActionContext): Promise<IQueryOperationResult> {
     const output = await this.mediatorQueryOperation.mediate({ operation: operation.input, context });
 
-    // TODO: In next/major, remove undefined check when mediatorHashQuads is made required
-    if (output.type === 'quads' && this.mediatorHashQuads !== undefined) {
+    if (output.type === 'quads') {
       const outputQuads: IQueryOperationResultQuads = ActorQueryOperation.getSafeQuads(
         output,
       );
@@ -91,10 +90,6 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
    * @return {(quad: RDF.Quad) => boolean} A distinct filter for quads.
    */
   public async newHashFilterQuads(context: IActionContext): Promise<(quad: RDF.Quad) => boolean> {
-    // TODO: In next/major, this check can be removed when mediatorHashQuads is made required
-    if (this.mediatorHashQuads === undefined) {
-      return _quad => true;
-    }
     const { hashFunction } = await this.mediatorHashQuads.mediate({ context });
     const hashes: Record<number, boolean> = {};
     return (quad: RDF.Quad) => {
@@ -106,6 +101,5 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
 
 export interface IActorQueryOperationDistinctHashArgs extends IActorQueryOperationTypedMediatedArgs {
   mediatorHashBindings: MediatorHashBindings;
-  // TODO: In next/major, this field should be made required in the next major update
-  mediatorHashQuads?: MediatorHashQuads;
+  mediatorHashQuads: MediatorHashQuads;
 }

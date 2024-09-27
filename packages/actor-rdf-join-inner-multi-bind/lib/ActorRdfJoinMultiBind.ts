@@ -36,10 +36,6 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   public constructor(args: IActorRdfJoinMultiBindArgs) {
-    // TODO: remove this fallback in the next major update
-    if (args.minMaxCardinalityRatio === undefined) {
-      args.minMaxCardinalityRatio = 60;
-    }
     super(args, {
       logicalType: 'inner',
       physicalName: 'bind',
@@ -281,7 +277,7 @@ export interface IActorRdfJoinMultiBindArgs extends IActorRdfJoinArgs<IActorRdfJ
    * @range {double}
    * @default {60}
    */
-  minMaxCardinalityRatio?: number;
+  minMaxCardinalityRatio: number;
   /**
    * The join entries sort mediator
    */

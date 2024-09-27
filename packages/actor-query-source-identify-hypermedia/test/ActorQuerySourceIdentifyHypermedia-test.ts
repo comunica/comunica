@@ -646,8 +646,7 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
           ]);
           expect(mediatorQuerySourceIdentifyHypermedia.mediate).toHaveBeenCalledTimes(2);
 
-          // TODO: remove the limit once https://github.com/comunica/rdf-streaming-store.js/issues/6 is fixed
-          await expect(it2.toArray({ limit: 4 })).resolves.toEqualBindingsArray([
+          await expect(it2.toArray()).resolves.toEqualBindingsArray([
             BF.fromRecord({
               s: DF.namedNode('s1'),
               p: DF.namedNode('p1'),

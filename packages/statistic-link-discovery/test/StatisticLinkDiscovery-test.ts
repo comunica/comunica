@@ -31,14 +31,6 @@ describe('StatisticLinkDiscovery', () => {
       cb = jest.fn(() => {});
     });
 
-    // TODO Move to statisticBase
-    it('attach an event listener', () => {
-      statisticLinkDiscovery.on(cb);
-      expect(statisticLinkDiscovery.getListeners()).toEqual(
-        [ cb ],
-      );
-    });
-
     it('update metadata links', () => {
       statisticLinkDiscovery.updateStatistic(child, parent);
       expect(statisticLinkDiscovery.metadata).toEqual({

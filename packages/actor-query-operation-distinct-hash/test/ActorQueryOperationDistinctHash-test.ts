@@ -152,17 +152,6 @@ describe('ActorQueryOperationDistinctHash', () => {
       expect(filter3(DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')))).toBe(true);
       expect(filter3(DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')))).toBe(false);
     });
-
-    // TODO remove this test once mediatorHashQuads has become a required argument
-    it('should not filter when mediatorHashQuads is not defined', async() => {
-      actor = new ActorQueryOperationDistinctHash(
-        { name: 'actor', bus, mediatorQueryOperation: mediatorHashBindings, mediatorHashBindings },
-      );
-
-      const filter = await actor.newHashFilterQuads(new ActionContext());
-      expect(filter(DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')))).toBe(true);
-      expect(filter(DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')))).toBe(true);
-    });
   });
 
   describe('An ActorQueryOperationDistinctHash instance', () => {

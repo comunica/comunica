@@ -96,6 +96,7 @@ IQueryOperationResultBindings
         mediatorJoinSelectivity,
         mediatorJoinEntriesSort,
         mediatorMergeBindingsContext,
+        minMaxCardinalityRatio: 100,
       });
       logSpy = jest.spyOn((<any> actor), 'logDebug').mockImplementation();
     });

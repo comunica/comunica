@@ -8,11 +8,6 @@ import type { IActionContext } from '@comunica/types';
 import { ActorDereferenceHttp } from '../lib/ActorDereferenceHttp';
 import '@comunica/jest';
 
-// TODO: Remove when targeting NodeJS 18+
-if (!globalThis.ReadableStream) {
-  globalThis.ReadableStream = require('web-streams-ponyfill').ReadableStream;
-}
-
 describe('ActorDereferenceHttp', () => {
   let bus: any;
   let mediatorHttp: any;

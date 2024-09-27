@@ -19,11 +19,6 @@ const DF = new DataFactory();
 const AF = new Factory();
 const BF = new BindingsFactory(DF);
 
-// TODO: Remove when targeting NodeJS 18+
-if (!globalThis.ReadableStream) {
-  globalThis.ReadableStream = require('web-streams-ponyfill').ReadableStream;
-}
-
 describe('QuerySourceSparql', () => {
   let logger: any;
   let ctx: IActionContext;

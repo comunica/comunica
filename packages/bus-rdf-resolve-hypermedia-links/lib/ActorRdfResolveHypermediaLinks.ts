@@ -41,9 +41,6 @@ export interface IActorRdfResolveHypermediaLinksOutput extends IActorOutput {
   links: ILink[];
 }
 
-// TODO remove this in next major version
-export { ILink } from '@comunica/types';
-
 export type IActorRdfResolveHypermediaLinksArgs<TS = undefined> = IActorArgs<
 IActionRdfResolveHypermediaLinks,
 IActorTest,
