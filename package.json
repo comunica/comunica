@@ -41,7 +41,7 @@
   "devDependencies": {
     "@babel/core": "^7.20.2",
     "@babel/preset-env": "^7.20.2",
-    "@playwright/test": "^1.0.0",
+    "@playwright/test": "^1.47.2",
     "@pollyjs/adapter-node-http": "^6.0.5",
     "@pollyjs/core": "^6.0.5",
     "@pollyjs/persister-fs": "^6.0.5",
@@ -89,6 +89,7 @@
     "streamify-array": "^1.0.1",
     "ts-jest": "^29.0.5",
     "ts-loader": "^9.4.1",
+    "ts-node": "^10.9.2",
     "typedoc": "^0.26.0",
     "typescript": "^5.3.3",
     "webpack": "^5.75.0",
