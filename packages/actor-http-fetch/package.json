@@ -1,7 +1,7 @@
 {
   "name": "@comunica/actor-http-fetch",
   "version": "4.0.0",
-  "description": "A node-fetch http actor",
+  "description": "A fetch http actor",
   "lsd:module": true,
   "license": "MIT",
   "funding": {
