@@ -21,7 +21,7 @@ export class QuerySourceSkolemized implements IQuerySource {
    */
   public readonly innerSource: IQuerySource;
   /**
-   * ID of the inner source, see KeysRdfResolveQuadPattern.sourceIds.
+   * ID of the inner source, see KeysQuerySourceIdentify.sourceIds.
    */
   public readonly sourceId: string;
 
