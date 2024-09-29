@@ -42,6 +42,6 @@
     "@comunica/types": "^3.2.1",
     "@jeswr/stream-to-string": "^2.0.0",
     "jsonld-context-parser": "^2.2.2",
-    "jsonld-streaming-parser": "^3.0.1"
+    "jsonld-streaming-parser": "^4.0.0"
   }
 }
