@@ -1,5 +1,4 @@
 import { ActorRdfJoinNestedLoop } from '@comunica/actor-rdf-join-inner-nestedloop';
-import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { MediatorRdfJoin, IActionRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinEntriesSort, MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
 import type { MediatorRdfJoinSelectivity } from '@comunica/bus-rdf-join-selectivity';
@@ -8,6 +7,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext, IQuerySourceWrapper, IJoinEntryWithMetadata } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
+import { assignOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, AsyncIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -144,7 +144,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
       it('should handle 3 entries', async() => {
         const e1: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 3 },
@@ -157,7 +157,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
         };
         const e2: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 5 },
@@ -170,7 +170,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
         };
         const e3: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 1 },
@@ -191,7 +191,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
       it('should prioritize modified operations', async() => {
         const e1: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 3 },
@@ -204,7 +204,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
         };
         const e2: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 5 },
@@ -218,7 +218,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
         };
         const e3: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 1 },
@@ -239,7 +239,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
       it('should prioritize shared variables for the second entry', async() => {
         const e1: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 5 },
@@ -252,7 +252,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
         };
         const e2: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 3 },
@@ -265,7 +265,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
         };
         const e3: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 1 },
@@ -286,7 +286,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
       it('should prioritize fewest variables for the second entry', async() => {
         const e1: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 3 },
@@ -299,7 +299,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
         };
         const e2: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 3 },
@@ -313,7 +313,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
         };
         const e3: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 1 },
@@ -334,7 +334,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
       it('should prioritize shared variables over fewest variables for the second entry', async() => {
         const e1: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 3 },
@@ -349,7 +349,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
         };
         const e2: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 3 },
@@ -365,7 +365,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
         };
         const e3: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 1 },
@@ -387,7 +387,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
       it('should throw for no shared variables for the second entry', async() => {
         const e1: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 3 },
@@ -400,7 +400,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
         };
         const e2: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 3 },
@@ -413,7 +413,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
         };
         const e3: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 1 },
@@ -456,7 +456,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
                 }),
                 type: 'bindings',
               },
-              operation: ActorQueryOperation.assignOperationSource(
+              operation: assignOperationSource(
                 AF.createPattern(DF.variable('a'), DF.namedNode('ex:p1'), DF.variable('b')),
                 source1,
               ),
@@ -546,7 +546,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
                 }),
                 type: 'bindings',
               },
-              operation: ActorQueryOperation.assignOperationSource(
+              operation: assignOperationSource(
                 AF.createPattern(DF.variable('a'), DF.namedNode('ex:p1'), DF.variable('b')),
                 source5Context,
               ),
@@ -620,7 +620,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
             entries: [
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+                operation: assignOperationSource(AF.createNop(), source1),
               },
               {
                 output: <any>{},
@@ -628,7 +628,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
               },
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+                operation: assignOperationSource(AF.createNop(), source1),
               },
             ],
             context: new ActionContext(),
@@ -679,7 +679,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
             entries: [
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+                operation: assignOperationSource(AF.createNop(), source1),
               },
               {
                 output: <any>{},
@@ -687,7 +687,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
               },
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+                operation: assignOperationSource(AF.createNop(), source1),
               },
             ],
             context: new ActionContext()
@@ -742,7 +742,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
               },
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+                operation: assignOperationSource(AF.createNop(), source1),
               },
             ],
             context: new ActionContext(),
@@ -788,7 +788,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
             entries: [
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source4),
+                operation: assignOperationSource(AF.createNop(), source4),
               },
               {
                 output: <any>{},
@@ -796,7 +796,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
               },
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+                operation: assignOperationSource(AF.createNop(), source1),
               },
             ],
             context: new ActionContext(),

@@ -1,5 +1,5 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
+import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type {
@@ -7,6 +7,7 @@ import type {
   IQueryOperationResult,
   IQueryOperationResultBindings,
 } from '@comunica/types';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -26,7 +27,7 @@ export class ActorQueryOperationAsk extends ActorQueryOperationTypedMediated<Alg
     const output: IQueryOperationResult = await this.mediatorQueryOperation.mediate(
       { operation: operation.input, context },
     );
-    const { bindingsStream }: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(output);
+    const { bindingsStream }: IQueryOperationResultBindings = getSafeBindings(output);
     return { type: 'boolean', execute: async() => (await bindingsStream.take(1).toArray()).length === 1 };
   }
 }

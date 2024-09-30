@@ -17,6 +17,7 @@ import type {
   IQueryOperationResultBindings,
 } from '@comunica/types';
 import { BindingsFactory, bindingsToString } from '@comunica/utils-bindings-factory';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -52,7 +53,7 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
   Promise<IQueryOperationResult> {
     const { expression, input, variable } = operation;
 
-    const output: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(
+    const output: IQueryOperationResultBindings = getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: input, context }),
     );
 

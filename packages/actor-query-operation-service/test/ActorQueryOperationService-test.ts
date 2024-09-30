@@ -2,6 +2,7 @@ import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationService } from '../lib/ActorQueryOperationService';
@@ -112,7 +113,7 @@ describe('ActorQueryOperationService', () => {
         operation: { type: 'service', silent: false, name: DF.literal('dummy') },
         context: new ActionContext(),
       };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves
         .toEqual({ cardinality: 3, variables: [
           { variable: DF.variable('a'), canBeUndef: false },
@@ -132,7 +133,7 @@ describe('ActorQueryOperationService', () => {
         operation: { type: 'service', silent: true, name: DF.literal('dummy'), input: { type: 'error' }},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves
         .toMatchObject({ cardinality: { type: 'exact', value: 1 }, variables: []});
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -162,7 +163,7 @@ describe('ActorQueryOperationService', () => {
         mediatorQuerySourceIdentify,
       });
 
-      const output = ActorQueryOperation.getSafeBindings(await actorThis.run(op, undefined));
+      const output = getSafeBindings(await actorThis.run(op, undefined));
       expect((<any> output).operated.operation.metadata).toEqual({
         scopedSource: { value: 'QUERY_SOURCE_WRAPPER', type: undefined },
       });
@@ -183,7 +184,7 @@ describe('ActorQueryOperationService', () => {
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
 
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
+      const output = getSafeBindings(await actor.run(op, undefined));
       expect((<any> output).operated.operation.metadata).toEqual({
         scopedSource: { value: 'QUERY_SOURCE_WRAPPER', type: 'sparql' },
       });

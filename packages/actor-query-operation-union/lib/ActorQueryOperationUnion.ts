@@ -1,6 +1,5 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
-  ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
@@ -17,6 +16,7 @@ import type {
   MetadataVariable,
 } from '@comunica/types';
 import { MetadataValidationState } from '@comunica/utils-metadata';
+import { getSafeBindings, getSafeQuads } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { UnionIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -133,7 +133,7 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
 
     // Handle bindings
     if (outputType === 'bindings' || operation.input.length === 0) {
-      const outputs: IQueryOperationResultBindings[] = outputsRaw.map(ActorQueryOperation.getSafeBindings);
+      const outputs: IQueryOperationResultBindings[] = outputsRaw.map(getSafeBindings);
 
       const bindingsStream: BindingsStream = new UnionIterator(outputs.map(
         (output: IQueryOperationResultBindings) => output.bindingsStream,
@@ -147,7 +147,7 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
 
     // Handle quads
     if (outputType === 'quads') {
-      const outputs: IQueryOperationResultQuads[] = outputsRaw.map(ActorQueryOperation.getSafeQuads);
+      const outputs: IQueryOperationResultQuads[] = outputsRaw.map(getSafeQuads);
 
       const quadStream = new UnionIterator(outputs.map(
         (output: IQueryOperationResultQuads) => output.quadStream,

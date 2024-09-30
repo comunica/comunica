@@ -1,7 +1,6 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type {
   Bindings,
@@ -11,6 +10,7 @@ import type {
   MetadataVariable,
 } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { MultiTransformIterator, TransformIterator, EmptyIterator, BufferedIterator } from 'asynciterator';
 import { termToString } from 'rdf-string';
@@ -49,7 +49,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
       const predVar = this.generateVariable(dataFactory, operation);
       const single = this.assignPatternSources(algebraFactory, algebraFactory
         .createPattern(operation.subject, predVar, operation.object, operation.graph), sources);
-      const results = ActorQueryOperation.getSafeBindings(
+      const results = getSafeBindings(
         await this.mediatorQueryOperation.mediate({ context, operation: single }),
       );
       const subjectVar = operation.subject;

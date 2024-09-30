@@ -10,6 +10,7 @@ import { failTest, passTestVoid } from '@comunica/core';
 import { AsyncEvaluator, isExpressionError, orderTypes } from '@comunica/expression-evaluator';
 import type { Bindings, ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import type { Term } from '@rdfjs/types';
 import { Algebra } from 'sparqlalgebrajs';
 import { SortIterator } from './SortIterator';
@@ -50,7 +51,7 @@ export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated
   public async runOperation(operation: Algebra.OrderBy, context: IActionContext):
   Promise<IQueryOperationResult> {
     const outputRaw = await this.mediatorQueryOperation.mediate({ operation: operation.input, context });
-    const output = ActorQueryOperation.getSafeBindings(outputRaw);
+    const output = getSafeBindings(outputRaw);
 
     const options = { window: this.window };
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);

@@ -1,6 +1,6 @@
 import type { MediatorHashBindings } from '@comunica/bus-hash-bindings';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
+import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type {
@@ -10,6 +10,7 @@ import type {
   IQueryOperationResult,
   IQueryOperationResultBindings,
 } from '@comunica/types';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -30,7 +31,7 @@ export class ActorQueryOperationReducedHash extends ActorQueryOperationTypedMedi
   }
 
   public async runOperation(operation: Algebra.Reduced, context: IActionContext): Promise<IQueryOperationResult> {
-    const output: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(
+    const output: IQueryOperationResultBindings = getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: operation.input, context }),
     );
     const variables = (await output.metadata()).variables.map(v => v.variable);

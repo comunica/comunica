@@ -1,10 +1,10 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
-  ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { IActorTest, TestResult } from '@comunica/core';
 import type { IActionContext, IQueryOperationResult } from '@comunica/types';
+import { getSafeVoid, testReadOnly } from '@comunica/utils-query-operation';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -20,7 +20,7 @@ export class ActorQueryOperationUpdateCompositeUpdate
     operation: Algebra.CompositeUpdate,
     context: IActionContext,
   ): Promise<TestResult<IActorTest>> {
-    return ActorQueryOperation.testReadOnly(context);
+    return testReadOnly(context);
   }
 
   public async runOperation(operationOriginal: Algebra.CompositeUpdate, context: IActionContext):
@@ -28,8 +28,7 @@ export class ActorQueryOperationUpdateCompositeUpdate
     const execute = (): Promise<void> => (async(): Promise<void> => {
       // Execute update operations in sequence
       for (const operation of operationOriginal.updates) {
-        const subResult = ActorQueryOperation
-          .getSafeVoid(await this.mediatorQueryOperation.mediate({ operation, context }));
+        const subResult = getSafeVoid(await this.mediatorQueryOperation.mediate({ operation, context }));
         await subResult.execute();
       }
     })();

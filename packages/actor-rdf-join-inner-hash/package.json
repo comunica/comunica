@@ -42,12 +42,12 @@
   },
   "dependencies": {
     "@comunica/bus-hash-bindings": "^3.2.1",
-    "@comunica/bus-query-operation": "^3.2.2",
     "@comunica/bus-rdf-join": "^3.2.1",
     "@comunica/core": "^3.2.1",
     "@comunica/mediatortype-join-coefficients": "^3.2.1",
     "@comunica/types": "^3.2.1",
     "@comunica/utils-bindings-index": "^3.2.2",
+    "@comunica/utils-iterator": "^3.2.1",
     "asynciterator": "^3.9.0",
     "asyncjoin": "^1.2.4",
     "rdf-string": "^1.6.3"

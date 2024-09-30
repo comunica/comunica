@@ -1,6 +1,6 @@
-import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getSafeBindings, getSafeQuads } from '@comunica/utils-query-operation';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationDistinctHash } from '..';
@@ -183,7 +183,7 @@ describe('ActorQueryOperationDistinctHash', () => {
 
       it('should handle bindings', async() => {
         const op: any = { operation: { type: 'distinct' }, context: new ActionContext() };
-        const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
+        const output = getSafeBindings(await actor.run(op, undefined));
         await expect(output.metadata()).resolves.toEqual({ cardinality: 5, variables: [ DF.variable('a') ]});
         expect(output.type).toBe('bindings');
         await expect(output.bindingsStream).toEqualBindingsStream([
@@ -204,7 +204,7 @@ describe('ActorQueryOperationDistinctHash', () => {
 
       it('should filter duplicate quads', async() => {
         const op: any = { operation: { type: 'distinct' }, context: new ActionContext() };
-        const output = ActorQueryOperation.getSafeQuads(await actor.run(op, undefined));
+        const output = getSafeQuads(await actor.run(op, undefined));
         await expect(output.metadata()).resolves.toEqual({ cardinality: 3 });
         expect(output.type).toBe('quads');
         await expect(output.quadStream.toArray()).resolves.toEqual([

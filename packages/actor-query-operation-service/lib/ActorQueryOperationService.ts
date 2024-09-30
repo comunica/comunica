@@ -1,6 +1,6 @@
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
+import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { MediatorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
@@ -13,6 +13,7 @@ import type {
 } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
+import { assignOperationSource, getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { SingletonIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -51,8 +52,8 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
     // Attach the source to the operation, and execute
     let output: IQueryOperationResultBindings;
     try {
-      output = ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
-        operation: ActorQueryOperation.assignOperationSource(operation.input, querySource),
+      output = getSafeBindings(await this.mediatorQueryOperation.mediate({
+        operation: assignOperationSource(operation.input, querySource),
         context,
       }));
     } catch (error: unknown) {

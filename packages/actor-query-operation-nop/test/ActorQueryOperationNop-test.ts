@@ -1,7 +1,7 @@
-import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationNop } from '../lib/ActorQueryOperationNop';
@@ -56,7 +56,7 @@ describe('ActorQueryOperationNop', () => {
         operation: { type: 'nop' },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.bindingsStream).toEqualBindingsStream([ BF.bindings() ]);
       await expect(output.metadata()).resolves
         .toMatchObject({ cardinality: { type: 'exact', value: 1 }, variables: []});

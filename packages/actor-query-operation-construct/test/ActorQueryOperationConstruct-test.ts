@@ -2,6 +2,7 @@ import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getSafeQuads } from '@comunica/utils-query-operation';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -127,7 +128,7 @@ describe('ActorQueryOperationConstruct', () => {
         operation: { type: 'construct', template: []},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = ActorQueryOperation.getSafeQuads(await actor.run(op, undefined));
+      const output = getSafeQuads(await actor.run(op, undefined));
       await expect((<any> output).metadata()).resolves
         .toEqual({ cardinality: { type: 'estimate', value: 0 }});
       expect(output.type).toBe('quads');
@@ -139,7 +140,7 @@ describe('ActorQueryOperationConstruct', () => {
         DF.quad(DF.blankNode('s1'), DF.namedNode('p1'), DF.literal('o1')),
         DF.quad(DF.blankNode('s2'), DF.namedNode('p2'), DF.literal('o2')),
       ], type: 'construct' }, context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }) };
-      const output = ActorQueryOperation.getSafeQuads(await actor.run(op, undefined));
+      const output = getSafeQuads(await actor.run(op, undefined));
       await expect((<any> output).metadata()).resolves
         .toEqual({ cardinality: { type: 'estimate', value: 2 }});
       expect(output.type).toBe('quads');
@@ -154,7 +155,7 @@ describe('ActorQueryOperationConstruct', () => {
         DF.quad(DF.blankNode('s1'), DF.variable('a'), DF.literal('o1')),
         DF.quad(DF.blankNode('s2'), DF.namedNode('p2'), DF.variable('a'), DF.variable('a')),
       ], type: 'construct' }, context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }) };
-      const output = ActorQueryOperation.getSafeQuads(await actor.run(op, undefined));
+      const output = getSafeQuads(await actor.run(op, undefined));
       await expect((<any> output).metadata()).resolves
         .toEqual({ cardinality: { type: 'estimate', value: 6 }});
       expect(output.type).toBe('quads');

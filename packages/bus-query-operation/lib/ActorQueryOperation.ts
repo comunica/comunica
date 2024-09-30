@@ -1,25 +1,19 @@
-import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
-import type { IActorArgs, IActorTest, IAction, Mediate, TestResult } from '@comunica/core';
-import { failTest, passTestVoid, Actor } from '@comunica/core';
+import { KeysInitQuery } from '@comunica/context-entries';
+import type { IActorArgs, IActorTest, IAction, Mediate } from '@comunica/core';
+import { Actor } from '@comunica/core';
 import type {
   IQueryOperationResult,
-  IQueryOperationResultBindings,
-  IQueryOperationResultBoolean,
-  IQueryOperationResultQuads,
-  IQueryOperationResultVoid,
   Bindings,
   IActionContext,
   FunctionArgumentsCache,
-  IQuerySourceWrapper,
-  FragmentSelectorShape,
   ComunicaDataFactory,
 } from '@comunica/types';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { BlankNodeBindingsScoped } from '@comunica/utils-data-factory';
+import { getSafeBindings, materializeOperation } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
-import { materializeOperation } from './Bindings';
 
 /**
  * A counter that keeps track blank node generated through BNODE() SPARQL
@@ -51,61 +45,6 @@ export abstract class ActorQueryOperation<TS = undefined>
   /* eslint-enable max-len */
   protected constructor(args: IActorQueryOperationArgs<TS>) {
     super(args);
-  }
-
-  /**
-   * Safely cast a query operation output to a bindings output.
-   * This will throw a runtime error if the output is of the incorrect type.
-   * @param {IQueryOperationResult} output A query operation output.
-   * @return {IQueryOperationResultBindings} A bindings query operation output.
-   */
-  public static getSafeBindings(output: IQueryOperationResult): IQueryOperationResultBindings {
-    ActorQueryOperation.validateQueryOutput(output, 'bindings');
-    return <IQueryOperationResultBindings> output;
-  }
-
-  /**
-   * Safely cast a query operation output to a quads output.
-   * This will throw a runtime error if the output is of the incorrect type.
-   * @param {IQueryOperationResult} output A query operation output.
-   * @return {IQueryOperationResultQuads} A quads query operation output.
-   */
-  public static getSafeQuads(output: IQueryOperationResult): IQueryOperationResultQuads {
-    ActorQueryOperation.validateQueryOutput(output, 'quads');
-    return <IQueryOperationResultQuads> output;
-  }
-
-  /**
-   * Safely cast a query operation output to a boolean output.
-   * This will throw a runtime error if the output is of the incorrect type.
-   * @param {IQueryOperationResult} output A query operation output.
-   * @return {IQueryOperationResultBoolean} A boolean query operation output.
-   */
-  public static getSafeBoolean(output: IQueryOperationResult): IQueryOperationResultBoolean {
-    ActorQueryOperation.validateQueryOutput(output, 'boolean');
-    return <IQueryOperationResultBoolean> output;
-  }
-
-  /**
-   * Safely cast a query operation output to a void output.
-   * This will throw a runtime error if the output is of the incorrect type.
-   * @param {IQueryOperationResult} output A query operation output.
-   * @return {IQueryOperationResultVoid} A void query operation output.
-   */
-  public static getSafeVoid(output: IQueryOperationResult): IQueryOperationResultVoid {
-    ActorQueryOperation.validateQueryOutput(output, 'void');
-    return <IQueryOperationResultVoid> output;
-  }
-
-  /**
-   * Throw an error if the output type does not match the expected type.
-   * @param {IQueryOperationResult} output A query operation output.
-   * @param {string} expectedType The expected output type.
-   */
-  public static validateQueryOutput(output: IQueryOperationResult, expectedType: IQueryOperationResult['type']): void {
-    if (output.type !== expectedType) {
-      throw new Error(`Invalid query output type: Expected '${expectedType}' but got '${output.type}'`);
-    }
   }
 
   protected static getBaseExpressionContext(context: IActionContext): IBaseExpressionContext {
@@ -183,137 +122,9 @@ export abstract class ActorQueryOperation<TS = undefined>
       const operation = materializeOperation(expr.input, bindings, algebraFactory, bindingsFactory);
 
       const outputRaw = await mediatorQueryOperation.mediate({ operation, context });
-      const output = ActorQueryOperation.getSafeBindings(outputRaw);
+      const output = getSafeBindings(outputRaw);
       return expr.not !== ((await output.bindingsStream.take(1).toArray()).length === 1);
     };
-  }
-
-  /**
-   * Test if the context contains the readOnly flag.
-   * @param context An action context.
-   */
-  public static testReadOnly(context: IActionContext): TestResult<any> {
-    if (context.get(KeysQueryOperation.readOnly)) {
-      return failTest(`Attempted a write operation in read-only mode`);
-    }
-    return passTestVoid();
-  }
-
-  /**
-   * Obtain the query source attached to the given operation.
-   * @param operation An algebra operation.
-   */
-  public static getOperationSource(operation: Algebra.Operation): IQuerySourceWrapper | undefined {
-    return <IQuerySourceWrapper> operation.metadata?.scopedSource;
-  }
-
-  /**
-   * Assign a source wrapper to the given operation.
-   * The operation is copied and returned.
-   * @param operation An operation.
-   * @param source A source wrapper.
-   */
-  public static assignOperationSource<O extends Algebra.Operation>(operation: O, source: IQuerySourceWrapper): O {
-    operation = { ...operation };
-    operation.metadata = operation.metadata ? { ...operation.metadata } : {};
-    operation.metadata.scopedSource = source;
-    return operation;
-  }
-
-  /**
-   * Remove the source wrapper from the given operation.
-   * The operation is mutated.
-   * @param operation An operation.
-   */
-  public static removeOperationSource(operation: Algebra.Operation): void {
-    delete operation.metadata?.scopedSource;
-    if (operation.metadata && Object.keys(operation.metadata).length === 0) {
-      delete operation.metadata;
-    }
-  }
-
-  /**
-   * Check if the given shape accepts the given query operation.
-   * @param shape A shape to test the query operation against.
-   * @param operation A query operation to test.
-   * @param options Additional options to consider.
-   * @param options.joinBindings If additional bindings will be pushed down to the source for joining.
-   * @param options.filterBindings If additional bindings will be pushed down to the source for filtering.
-   */
-  public static doesShapeAcceptOperation(
-    shape: FragmentSelectorShape,
-    operation: Algebra.Operation,
-    options?: FragmentSelectorShapeTestFlags,
-  ): boolean {
-    return ActorQueryOperation.doesShapeAcceptOperationRecurseShape(shape, shape, operation, options);
-  }
-
-  protected static doesShapeAcceptOperationRecurseShape(
-    shapeTop: FragmentSelectorShape,
-    shapeActive: FragmentSelectorShape,
-    operation: Algebra.Operation,
-    options?: FragmentSelectorShapeTestFlags,
-  ): boolean {
-    // Recurse into the shape
-    if (shapeActive.type === 'conjunction') {
-      return shapeActive.children
-        .every(child => ActorQueryOperation.doesShapeAcceptOperationRecurseShape(shapeTop, child, operation, options));
-    }
-    if (shapeActive.type === 'disjunction') {
-      return shapeActive.children
-        .some(child => ActorQueryOperation.doesShapeAcceptOperationRecurseShape(shapeTop, child, operation, options));
-    }
-    if (shapeActive.type === 'arity') {
-      return ActorQueryOperation.doesShapeAcceptOperationRecurseShape(shapeTop, shapeActive.child, operation, options);
-    }
-
-    // Validate options
-    if ((options?.joinBindings && !shapeActive.joinBindings) ??
-      (options?.filterBindings && !shapeActive.filterBindings)) {
-      return false;
-    }
-
-    // Check if the shape's operation matches with the given operation
-    const shapeOperation = shapeActive.operation;
-    switch (shapeOperation.operationType) {
-      case 'type': {
-        if (!ActorQueryOperation.doesShapeAcceptOperationRecurseOperation(shapeTop, shapeActive, operation, options)) {
-          return false;
-        }
-        return shapeOperation.type === operation.type;
-      }
-      case 'pattern': {
-        if (!ActorQueryOperation.doesShapeAcceptOperationRecurseOperation(shapeTop, shapeActive, operation, options)) {
-          return false;
-        }
-        return shapeOperation.pattern.type === operation.type;
-      }
-      case 'wildcard': {
-        return true;
-      }
-    }
-  }
-
-  protected static doesShapeAcceptOperationRecurseOperation(
-    shapeTop: FragmentSelectorShape,
-    shapeActive: FragmentSelectorShape,
-    operation: Algebra.Operation,
-    options?: FragmentSelectorShapeTestFlags,
-  ): boolean {
-    // Recurse into the operation, and restart from the top-level shape
-    if (operation.input) {
-      const inputs: Algebra.Operation[] = Array.isArray(operation.input) ? operation.input : [ operation.input ];
-      if (!inputs.every(input => ActorQueryOperation
-        .doesShapeAcceptOperationRecurseShape(shapeTop, shapeTop, input, options))) {
-        return false;
-      }
-    }
-    if (operation.patterns && !operation.patterns
-      .every((input: Algebra.Pattern) => ActorQueryOperation
-        .doesShapeAcceptOperationRecurseShape(shapeTop, shapeTop, input, options))) {
-      return false;
-    }
-    return true;
   }
 }
 

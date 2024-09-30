@@ -49,6 +49,7 @@
     "@comunica/types": "^3.2.1",
     "@comunica/utils-bindings-factory": "^3.2.1",
     "@comunica/utils-metadata": "^3.2.1",
+    "@comunica/utils-query-operation": "^3.2.1",
     "asynciterator": "^3.9.0",
     "sparqlalgebrajs": "^4.3.8"
   }

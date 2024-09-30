@@ -11,6 +11,7 @@ import type {
 } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
+import { getSafeBindings, getSafeQuads } from '@comunica/utils-query-operation';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationUnion } from '../lib/ActorQueryOperationUnion';
@@ -518,7 +519,7 @@ describe('ActorQueryOperationUnion', () => {
 
     it('should run on zero bindings streams', async() => {
       const op: any = { operation: { type: 'union', input: []}, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toMatchObject({
         cardinality: { type: 'exact', value: 0 },
 
@@ -530,7 +531,7 @@ describe('ActorQueryOperationUnion', () => {
 
     it('should run on two bindings streams', async() => {
       const op: any = { operation: { type: 'union', input: [ op3(), op2() ]}, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toMatchObject({
         cardinality: { type: 'estimate', value: 5 },
         variables: [
@@ -549,7 +550,7 @@ describe('ActorQueryOperationUnion', () => {
     });
 
     it('should run on three bindings streams', async() => {
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(<any> {
+      const output = getSafeBindings(await actor.run(<any> {
         operation: { type: 'union', input: [ op3(), op2(), op2Undef() ]},
         context: new ActionContext(),
       }, undefined));
@@ -575,7 +576,7 @@ describe('ActorQueryOperationUnion', () => {
 
     it('should run with a right bindings stream with undefs', async() => {
       const op: any = { operation: { type: 'union', input: [ op3(), op2Undef() ]}, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toMatchObject({
         cardinality: { type: 'estimate', value: 5 },
         variables: [
@@ -638,7 +639,7 @@ describe('ActorQueryOperationUnion', () => {
 
     it('should run on two quad streams', async() => {
       const op: any = { operation: { type: 'union', input: [ opq1(), opq2() ]}, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeQuads(await actor.run(op, undefined));
+      const output = getSafeQuads(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toMatchObject({
         cardinality: { type: 'estimate', value: 4 },
       });

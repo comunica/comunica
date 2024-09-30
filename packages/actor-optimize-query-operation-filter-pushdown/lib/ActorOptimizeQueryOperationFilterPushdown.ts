@@ -4,11 +4,11 @@ import type {
   IActorOptimizeQueryOperationOutput,
 } from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
-import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, FragmentSelectorShape, IActionContext, IQuerySourceWrapper } from '@comunica/types';
+import { doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { mapTermsNested, uniqTerms } from 'rdf-terms';
 import { Factory, Algebra, Util } from 'sparqlalgebrajs';
@@ -162,7 +162,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     }
 
     // Push down if federated and at least one accepts the filter
-    if (sources.some(source => ActorQueryOperation.doesShapeAcceptOperation(sourceShapes.get(source)!, operation))) {
+    if (sources.some(source => doesShapeAcceptOperation(sourceShapes.get(source)!, operation))) {
       return true;
     }
 
@@ -177,7 +177,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
   public getSources(operation: Algebra.Operation): IQuerySourceWrapper[] {
     const sources = new Set<IQuerySourceWrapper>();
     const sourceAdder = (subOperation: Algebra.Operation): boolean => {
-      const src = ActorQueryOperation.getOperationSource(subOperation);
+      const src = getOperationSource(subOperation);
       if (src) {
         sources.add(src);
       }

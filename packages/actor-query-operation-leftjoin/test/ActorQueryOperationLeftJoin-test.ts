@@ -5,6 +5,7 @@ import * as sparqlee from '@comunica/expression-evaluator';
 import { isExpressionError } from '@comunica/expression-evaluator';
 import type { IQueryOperationResultBindings, Bindings, IJoinEntry } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import { ArrayIterator, UnionIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationLeftJoin } from '../lib';
@@ -100,7 +101,7 @@ describe('ActorQueryOperationLeftJoin', () => {
         operation: { type: 'leftjoin', input: [{}, {}]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
+      const output = getSafeBindings(await actor.run(op, undefined));
       expect(output.type).toBe('bindings');
       await expect(output.metadata()).resolves.toEqual({
         cardinality: 100,
@@ -129,7 +130,7 @@ describe('ActorQueryOperationLeftJoin', () => {
         operation: { type: 'leftjoin', input: [{}, {}], expression },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
@@ -175,7 +176,7 @@ describe('ActorQueryOperationLeftJoin', () => {
         operation: { type: 'leftjoin', input: [{ side: 'left' }, { side: 'right' }]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
         BF.bindings([[ DF.variable('c'), DF.literal('1') ]]),
@@ -192,7 +193,7 @@ describe('ActorQueryOperationLeftJoin', () => {
         operation: { type: 'leftjoin', input: [{}, {}], expression },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.bindingsStream).toEqualBindingsStream([]);
       await expect(output.metadata()).resolves.toMatchObject({
         cardinality: 100,
@@ -227,7 +228,7 @@ describe('ActorQueryOperationLeftJoin', () => {
         operation: { type: 'leftjoin', input: [{}, {}], expression },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.bindingsStream).toEqualBindingsStream([]);
       await expect(output.metadata()).resolves.toMatchObject({
         cardinality: 100,

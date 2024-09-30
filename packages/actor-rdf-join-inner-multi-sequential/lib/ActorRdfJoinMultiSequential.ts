@@ -1,6 +1,3 @@
-import {
-  ActorQueryOperation,
-} from '@comunica/bus-query-operation';
 import type {
   IActionRdfJoin,
   IActorRdfJoinOutputInner,
@@ -14,6 +11,7 @@ import type { TestResult } from '@comunica/core';
 import { passTestWithSideData } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { IJoinEntry, ComunicaDataFactory } from '@comunica/types';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import { Factory } from 'sparqlalgebrajs';
 
 /**
@@ -40,7 +38,7 @@ export class ActorRdfJoinMultiSequential extends ActorRdfJoin {
 
     // Join the two first streams, and then join the result with the remaining streams
     const firstEntry: IJoinEntry = {
-      output: ActorQueryOperation.getSafeBindings(await this.mediatorJoin
+      output: getSafeBindings(await this.mediatorJoin
         .mediate({ type: action.type, entries: [ action.entries[0], action.entries[1] ], context: action.context })),
       operation: algebraFactory
         .createJoin([ action.entries[0].operation, action.entries[1].operation ], false),

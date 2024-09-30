@@ -1,5 +1,4 @@
 import type { MediatorHashBindings } from '@comunica/bus-hash-bindings';
-import { ClosableTransformIterator } from '@comunica/bus-query-operation';
 import type {
   IActionRdfJoin,
   IActorRdfJoinOutputInner,
@@ -13,6 +12,7 @@ import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-
 import type { Bindings, BindingsStream, IJoinEntry } from '@comunica/types';
 import type { IBindingsIndex } from '@comunica/utils-bindings-index';
 import { BindingsIndexUndef } from '@comunica/utils-bindings-index';
+import { ClosableTransformIterator } from '@comunica/utils-iterator';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, MultiTransformIterator } from 'asynciterator';

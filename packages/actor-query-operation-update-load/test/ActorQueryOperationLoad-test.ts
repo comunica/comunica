@@ -1,7 +1,7 @@
-import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultVoid } from '@comunica/types';
+import { assignOperationSource } from '@comunica/utils-query-operation';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -91,7 +91,7 @@ describe('ActorQueryOperationLoad', () => {
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamDeleted).toBeUndefined();
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
         operation: AF.createConstruct(
-          ActorQueryOperation.assignOperationSource(
+          assignOperationSource(
             AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
             <any> 'SRC',
           ),

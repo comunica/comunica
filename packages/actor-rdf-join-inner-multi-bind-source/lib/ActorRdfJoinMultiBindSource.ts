@@ -1,11 +1,10 @@
-import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type {
   IActionRdfJoin,
   IActorRdfJoinArgs,
   IActorRdfJoinOutputInner,
   IActorRdfJoinTestSideData,
 } from '@comunica/bus-rdf-join';
-import { ActorRdfJoin, ChunkedIterator } from '@comunica/bus-rdf-join';
+import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
@@ -18,6 +17,8 @@ import type {
   IActionContext,
   ComunicaDataFactory,
 } from '@comunica/types';
+import { ChunkedIterator } from '@comunica/utils-iterator';
+import { doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { UnionIterator } from 'asynciterator';
@@ -69,7 +70,7 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
     remainingEntries.splice(0, 1);
 
     // Get source for remaining entries (guaranteed thanks to prior check in getJoinCoefficients())
-    const sourceWrapper: IQuerySourceWrapper = ActorQueryOperation.getOperationSource(remainingEntries[0].operation)!;
+    const sourceWrapper = <IQuerySourceWrapper> getOperationSource(remainingEntries[0].operation);
 
     // Determine the operation to pass
     const operation = this.createOperationFromEntries(algebraFactory, remainingEntries);
@@ -151,7 +152,7 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
     remainingRequestItemTimes.splice(0, 1);
 
     // Reject binding on operations without sources
-    const sources = remainingEntries.map(entry => ActorQueryOperation.getOperationSource(entry.operation));
+    const sources = remainingEntries.map(entry => getOperationSource(entry.operation));
     if (sources.some(source => !source)) {
       return failTest(`Actor ${this.name} can not bind on remaining operations without source annotation`);
     }
@@ -162,11 +163,10 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
     }
 
     // Reject if the source can not handle bindings
-    const sourceWrapper: IQuerySourceWrapper = sources[0]!;
+    const sourceWrapper: IQuerySourceWrapper = <IQuerySourceWrapper> sources[0];
     const testingOperation = this.createOperationFromEntries(algebraFactory, remainingEntries);
     const selectorShape = await sourceWrapper.source.getSelectorShape(action.context);
-    if (!ActorQueryOperation
-      .doesShapeAcceptOperation(selectorShape, testingOperation, { joinBindings: true })) {
+    if (!doesShapeAcceptOperation(selectorShape, testingOperation, { joinBindings: true })) {
       return failTest(`Actor ${this.name} detected a source that can not handle passing down join bindings`);
     }
 

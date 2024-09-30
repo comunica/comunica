@@ -1,4 +1,3 @@
-import { ClosableTransformIterator } from '@comunica/bus-query-operation';
 import type {
   IActionRdfJoin,
   IActorRdfJoinOutputInner,
@@ -15,6 +14,7 @@ import type { BindingsStream, MetadataVariable } from '@comunica/types';
 import { bindingsToCompactString } from '@comunica/utils-bindings-factory';
 import type { IBindingsIndex } from '@comunica/utils-bindings-index';
 import { BindingsIndexDef, BindingsIndexUndef } from '@comunica/utils-bindings-index';
+import { ClosableTransformIterator } from '@comunica/utils-iterator';
 import type * as RDF from '@rdfjs/types';
 import { termToString } from 'rdf-string';
 

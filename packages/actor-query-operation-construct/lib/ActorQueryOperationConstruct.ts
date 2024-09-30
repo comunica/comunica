@@ -1,6 +1,5 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
-  ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
@@ -13,6 +12,7 @@ import type {
   MetadataQuads,
   ComunicaDataFactory,
 } from '@comunica/types';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { getTermsNested, getVariables, uniqTerms } from 'rdf-terms';
@@ -50,7 +50,7 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
     const operation: Algebra.Operation = { type: Algebra.types.PROJECT, input: operationOriginal.input, variables };
 
     // Evaluate the input query
-    const output: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(
+    const output: IQueryOperationResultBindings = getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation, context }),
     );
 

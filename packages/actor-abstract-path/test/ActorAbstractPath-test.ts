@@ -1,6 +1,6 @@
-import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Actor, Bus } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
+import { assignOperationSource } from '@comunica/utils-query-operation';
 import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import { Factory } from 'sparqlalgebrajs';
@@ -49,8 +49,8 @@ describe('ActorAbstractPath', () => {
     describe('getPathSources', () => {
       it('handles alt', () => {
         expect(actor.getPathSources(AF.createAlt([
-          ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('a')), source1),
-          ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('a')), source2),
+          assignOperationSource(AF.createLink(DF.namedNode('a')), source1),
+          assignOperationSource(AF.createLink(DF.namedNode('a')), source2),
         ]))).toEqual([
           source1,
           source2,
@@ -60,8 +60,8 @@ describe('ActorAbstractPath', () => {
       it('handles nested alt', () => {
         expect(actor.getPathSources(AF.createInv(
           AF.createAlt([
-            ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('a')), source1),
-            ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('a')), source2),
+            assignOperationSource(AF.createLink(DF.namedNode('a')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('a')), source2),
           ]),
         ))).toEqual([
           source1,
@@ -71,8 +71,8 @@ describe('ActorAbstractPath', () => {
 
       it('handles seq', () => {
         expect(actor.getPathSources(AF.createSeq([
-          ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('a')), source1),
-          ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('a')), source2),
+          assignOperationSource(AF.createLink(DF.namedNode('a')), source1),
+          assignOperationSource(AF.createLink(DF.namedNode('a')), source2),
         ]))).toEqual([
           source1,
           source2,
@@ -81,7 +81,7 @@ describe('ActorAbstractPath', () => {
 
       it('handles inv', () => {
         expect(actor.getPathSources(AF.createInv(
-          ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('a')), source1),
+          assignOperationSource(AF.createLink(DF.namedNode('a')), source1),
         ))).toEqual([
           source1,
         ]);
@@ -89,7 +89,7 @@ describe('ActorAbstractPath', () => {
 
       it('handles link', () => {
         expect(actor.getPathSources(
-          ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('a')), source1),
+          assignOperationSource(AF.createLink(DF.namedNode('a')), source1),
         )).toEqual([
           source1,
         ]);
@@ -113,7 +113,7 @@ describe('ActorAbstractPath', () => {
           AF,
           AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
           [ source1 ],
-        )).toEqual(ActorQueryOperation.assignOperationSource(
+        )).toEqual(assignOperationSource(
           AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
           source1,
         ));
@@ -125,11 +125,11 @@ describe('ActorAbstractPath', () => {
           AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
           [ source1, source2 ],
         )).toEqual(AF.createUnion([
-          ActorQueryOperation.assignOperationSource(
+          assignOperationSource(
             AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
             source1,
           ),
-          ActorQueryOperation.assignOperationSource(
+          assignOperationSource(
             AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
             source2,
           ),

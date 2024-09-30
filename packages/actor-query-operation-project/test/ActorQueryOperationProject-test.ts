@@ -3,6 +3,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { BlankNodeBindingsScoped, BlankNodeScoped } from '@comunica/utils-data-factory';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import { ArrayIterator, SingletonIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationProject } from '../lib/ActorQueryOperationProject';
@@ -80,7 +81,7 @@ describe('ActorQueryOperationProject', () => {
         operation: { type: 'project', input: 'in', variables: [ DF.variable('a'), DF.variable('delet') ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves
         .toEqual({ variables: [
           { variable: DF.variable('a'), canBeUndef: false },
@@ -100,7 +101,7 @@ describe('ActorQueryOperationProject', () => {
         operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves
         .toEqual({ variables: [
           { variable: DF.variable('a'), canBeUndef: false },
@@ -119,7 +120,7 @@ describe('ActorQueryOperationProject', () => {
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
 
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         variables: [
           { variable: DF.variable('a'), canBeUndef: false },
@@ -160,7 +161,7 @@ describe('ActorQueryOperationProject', () => {
         operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves
         .toEqual({ variables: [
           { variable: DF.variable('a'), canBeUndef: false },
@@ -208,7 +209,7 @@ describe('ActorQueryOperationProject', () => {
         operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves
         .toEqual({ variables: [
           { variable: DF.variable('a'), canBeUndef: false },
@@ -256,7 +257,7 @@ describe('ActorQueryOperationProject', () => {
         operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves
         .toEqual({ variables: [
           { variable: DF.variable('a'), canBeUndef: true },
@@ -296,7 +297,7 @@ describe('ActorQueryOperationProject', () => {
         operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves
         .toEqual({ variables: [
           { variable: DF.variable('a'), canBeUndef: false },

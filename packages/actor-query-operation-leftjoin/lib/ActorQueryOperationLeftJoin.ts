@@ -8,6 +8,7 @@ import { passTestVoid } from '@comunica/core';
 import { AsyncEvaluator, isExpressionError } from '@comunica/expression-evaluator';
 import type { IQueryOperationResult, Bindings, IActionContext, IJoinEntry, ComunicaDataFactory } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -34,7 +35,7 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
         operation: subOperation,
       }))))
       .map(({ output, operation }) => ({
-        output: ActorQueryOperation.getSafeBindings(output),
+        output: getSafeBindings(output),
         operation,
       }));
     const joined = await this.mediatorJoin.mediate({ type: 'optional', entries, context });

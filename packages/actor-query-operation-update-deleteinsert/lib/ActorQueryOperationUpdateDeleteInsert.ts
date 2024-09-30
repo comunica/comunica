@@ -2,7 +2,6 @@ import { BindingsToQuadsIterator } from '@comunica/actor-query-operation-constru
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
-  ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { MediatorRdfUpdateQuads } from '@comunica/bus-rdf-update-quads';
@@ -10,6 +9,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import type { IQueryOperationResult, BindingsStream, IActionContext, ComunicaDataFactory } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getSafeBindings, testReadOnly } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
@@ -32,7 +32,7 @@ export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTy
     operation: Algebra.DeleteInsert,
     context: IActionContext,
   ): Promise<TestResult<IActorTest>> {
-    return ActorQueryOperation.testReadOnly(context);
+    return testReadOnly(context);
   }
 
   public async runOperation(operation: Algebra.DeleteInsert, context: IActionContext):
@@ -41,7 +41,7 @@ export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTy
     const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context, dataFactory);
     // Evaluate the where clause
     const whereBindings: BindingsStream = operation.where ?
-      ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation
+      getSafeBindings(await this.mediatorQueryOperation
         .mediate({ operation: operation.where, context })).bindingsStream :
       new ArrayIterator<RDF.Bindings>([ bindingsFactory.bindings() ], { autoStart: false });
 

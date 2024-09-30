@@ -3,6 +3,7 @@ import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type { Bindings } from '@comunica/utils-bindings-factory';
+import { assignOperationSource, getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -129,7 +130,7 @@ describe('ActorQueryOperationPathOneOrMore', () => {
         factory.createOneOrMorePath(factory.createLink(DF.namedNode('p'))),
         DF.variable('x'),
       ), context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }) };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { value: 1 },
         variables: [
@@ -150,7 +151,7 @@ describe('ActorQueryOperationPathOneOrMore', () => {
         [KeysInitQuery.dataFactory.name]: DF,
         [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: false,
       }) };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { value: 1 },
         variables: [
@@ -171,7 +172,7 @@ describe('ActorQueryOperationPathOneOrMore', () => {
         [KeysInitQuery.dataFactory.name]: DF,
         [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
       }) };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { value: 4 },
         variables: [
@@ -194,7 +195,7 @@ describe('ActorQueryOperationPathOneOrMore', () => {
         [KeysInitQuery.dataFactory.name]: DF,
         [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
       }) };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { value: 3 },
         variables: [
@@ -217,7 +218,7 @@ describe('ActorQueryOperationPathOneOrMore', () => {
         [KeysInitQuery.dataFactory.name]: DF,
         [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
       }) };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { value: 3 },
         variables: [],
@@ -237,7 +238,7 @@ describe('ActorQueryOperationPathOneOrMore', () => {
         [KeysInitQuery.dataFactory.name]: DF,
         [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
       }) };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { value: 3 },
         variables: [
@@ -253,7 +254,7 @@ describe('ActorQueryOperationPathOneOrMore', () => {
       const op: any = { operation: factory.createPath(
         DF.namedNode('s'),
         factory.createOneOrMorePath(
-          ActorQueryOperation.assignOperationSource(factory.createLink(DF.namedNode('p')), <any> {}),
+          assignOperationSource(factory.createLink(DF.namedNode('p')), <any> {}),
         ),
         DF.variable('o'),
         DF.variable('g'),
@@ -261,7 +262,7 @@ describe('ActorQueryOperationPathOneOrMore', () => {
         [KeysInitQuery.dataFactory.name]: DF,
         [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
       }) };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { value: 3 },
         variables: [
@@ -335,7 +336,7 @@ describe('ActorQueryOperationPathOneOrMore', () => {
         [KeysInitQuery.dataFactory.name]: DF,
         [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
       }) };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { value: 1 },
         variables: [
@@ -372,7 +373,7 @@ describe('ActorQueryOperationPathOneOrMore', () => {
         [KeysInitQuery.dataFactory.name]: DF,
         [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
       }) };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { value: 1 },
         variables: [

@@ -2,7 +2,6 @@ import type { MediatorHashBindings } from '@comunica/bus-hash-bindings';
 import type { MediatorHashQuads } from '@comunica/bus-hash-quads';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
-  ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { IActorTest, TestResult } from '@comunica/core';
@@ -15,6 +14,7 @@ import type {
   IQueryOperationResultBindings,
   IQueryOperationResultQuads,
 } from '@comunica/types';
+import { getSafeBindings, getSafeQuads } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -38,7 +38,7 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
     const output = await this.mediatorQueryOperation.mediate({ operation: operation.input, context });
 
     if (output.type === 'quads') {
-      const outputQuads: IQueryOperationResultQuads = ActorQueryOperation.getSafeQuads(
+      const outputQuads: IQueryOperationResultQuads = getSafeQuads(
         output,
       );
 
@@ -50,7 +50,7 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
       };
     }
 
-    const outputBindings: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(
+    const outputBindings: IQueryOperationResultBindings = getSafeBindings(
       output,
     );
 

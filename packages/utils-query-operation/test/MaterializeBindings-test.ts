@@ -2,7 +2,7 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
-import { materializeOperation, materializeTerm } from '..';
+import { materializeOperation, materializeTerm } from '../lib/MaterializeBindings';
 
 const DF = new DataFactory();
 const AF = new Factory();

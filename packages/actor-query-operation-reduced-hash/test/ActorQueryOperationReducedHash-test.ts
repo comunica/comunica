@@ -1,6 +1,6 @@
-import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationReducedHash } from '..';
@@ -103,7 +103,7 @@ describe('ActorQueryOperationReducedHash', () => {
 
     it('should run', async() => {
       const op: any = { operation: { type: 'reduced' }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({ cardinality: 5, variables: [ DF.variable('a') ]});
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -150,7 +150,7 @@ describe('Smaller cache than number of queries', () => {
   });
   it('should run', async() => {
     const op: any = { operation: { type: 'reduced' }, context: new ActionContext() };
-    const output = ActorQueryOperation.getSafeBindings(await actor.run(op, undefined));
+    const output = getSafeBindings(await actor.run(op, undefined));
     await expect(output.metadata()).resolves.toEqual({ cardinality: 7, variables: [ DF.variable('a') ]});
     expect(output.type).toBe('bindings');
     await expect(output.bindingsStream).toEqualBindingsStream([

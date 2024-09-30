@@ -17,9 +17,9 @@ import type {
   ComunicaDataFactory,
   MetadataVariable,
 } from '@comunica/types';
+import { instrumentIterator } from '@comunica/utils-iterator';
 import { cachifyMetadata, MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
-import { instrumentIterator } from './instrumentIterator';
 
 /**
  * A comunica actor for joining 2 binding streams.

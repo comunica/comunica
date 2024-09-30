@@ -40,10 +40,10 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-query-operation": "^3.2.2",
     "@comunica/core": "^3.2.1",
     "@comunica/types": "^3.2.1",
     "@comunica/utils-bindings-factory": "^3.2.1",
+    "@comunica/utils-iterator": "^3.2.1",
     "@comunica/utils-metadata": "^3.2.1",
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0",

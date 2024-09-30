@@ -13,6 +13,7 @@ import type {
   MetadataVariable,
 } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import { ArrayIterator, TransformIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 import { GroupsState } from './GroupsState';
@@ -58,7 +59,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
     // Get result stream for the input query
     const { input, aggregates } = operation;
     const outputRaw = await this.mediatorQueryOperation.mediate({ operation: input, context });
-    const output = ActorQueryOperation.getSafeBindings(outputRaw);
+    const output = getSafeBindings(outputRaw);
 
     // The variables in scope are the variables on which we group, i.e. pattern.variables.
     // For 'GROUP BY ?x, ?z', this is [?x, ?z], for 'GROUP by expr(?x) as ?e' this is [?e].

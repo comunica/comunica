@@ -1,6 +1,6 @@
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
-import { getMetadataBindings, getMetadataQuads, MetadataValidationState } from '../lib';
+import { cachifyMetadata, getMetadataBindings, getMetadataQuads, MetadataValidationState } from '../lib';
 
 describe('Utils', () => {
   describe('getMetadataQuads', () => {
@@ -86,6 +86,32 @@ describe('Utils', () => {
       const it = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
       setImmediate(() => it.setProperty('metadata', {}));
       await expect(getMetadataBindings(it)()).rejects.toThrow(`Invalid metadata: missing cardinality in {}`);
+    });
+  });
+
+  describe('#cachifyMetadata', () => {
+    it('should remember an instance', async() => {
+      let counter = 0;
+      const cb = jest.fn(async() => ({ state: new MetadataValidationState(), value: counter++ }));
+      const cached = cachifyMetadata(<any> cb);
+      expect((await cached()).value).toBe(0);
+      expect((await cached()).value).toBe(0);
+      expect(cb).toHaveBeenCalledTimes(1);
+    });
+
+    it('should handle invalidation', async() => {
+      let counter = 0;
+      const state = new MetadataValidationState();
+      const cb = jest.fn(async() => ({ state, value: counter++ }));
+      const cached = cachifyMetadata(<any> cb);
+      expect((await cached()).value).toBe(0);
+      expect((await cached()).value).toBe(0);
+      expect(cb).toHaveBeenCalledTimes(1);
+
+      state.invalidate();
+      expect((await cached()).value).toBe(1);
+      expect((await cached()).value).toBe(1);
+      expect(cb).toHaveBeenCalledTimes(2);
     });
   });
 });

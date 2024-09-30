@@ -1,4 +1,3 @@
-import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type {
   IActionRdfJoin,
   IActorRdfJoinArgs,
@@ -6,7 +5,7 @@ import type {
   IActorRdfJoinOutputInner,
   IActorRdfJoinTestSideData,
 } from '@comunica/bus-rdf-join';
-import { ChunkedIterator, ActorRdfJoin } from '@comunica/bus-rdf-join';
+import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
 import { KeysInitQuery, KeysRdfJoin } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
@@ -21,6 +20,8 @@ import type {
   IQuerySourceWrapper,
 } from '@comunica/types';
 import { bindingsToString } from '@comunica/utils-bindings-factory';
+import { ChunkedIterator } from '@comunica/utils-iterator';
+import { doesShapeAcceptOperation, getOperationSource, getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { UnionIterator } from 'asynciterator';
@@ -138,7 +139,7 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
     );
 
     // Push down bindings of first stream when querying for second stream
-    const sourceWrapper: IQuerySourceWrapper = ActorQueryOperation.getOperationSource(secondIn.operation)!;
+    const sourceWrapper = <IQuerySourceWrapper> getOperationSource(secondIn.operation);
     const secondStream = new UnionIterator(chunkedStreams.map(chunk => sourceWrapper.source.queryBindings(
       secondIn.operation,
       sourceWrapper.context ? action.context.merge(sourceWrapper.context) : action.context,
@@ -159,7 +160,7 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
 
     // Join the two selected streams
     const joinedEntry: IJoinEntry = {
-      output: ActorQueryOperation.getSafeBindings(await this.mediatorJoin
+      output: getSafeBindings(await this.mediatorJoin
         .mediate({
           type: action.type,
           entries: [ first, second ],
@@ -207,14 +208,13 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
     const { first, second, remaining } = sortedResult.get();
 
     // Only pass if the second entry accepts filterBindings
-    const sourceWrapper: IQuerySourceWrapper | undefined = ActorQueryOperation.getOperationSource(second.operation);
+    const sourceWrapper: IQuerySourceWrapper | undefined = getOperationSource(second.operation);
     if (!sourceWrapper) {
       return failTest(`Actor ${this.name} can only process if entries[1] has a source`);
     }
     const testingOperation = second.operation;
     const selectorShape = await sourceWrapper.source.getSelectorShape(action.context);
-    if (!ActorQueryOperation
-      .doesShapeAcceptOperation(selectorShape, testingOperation, { filterBindings: true })) {
+    if (!doesShapeAcceptOperation(selectorShape, testingOperation, { filterBindings: true })) {
       return failTest(`Actor ${this.name} can only process if entries[1] accept filterBindings`);
     }
 

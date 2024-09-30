@@ -17,8 +17,10 @@
     "packages/utils-bindings-factory",
     "packages/utils-bindings-index",
     "packages/utils-data-factory",
+    "packages/utils-iterator",
     "packages/utils-jest",
-    "packages/utils-monorepo"
+    "packages/utils-monorepo",
+    "packages/utils-query-operation"
   ],
   "ignoreComponents": [
     "Error",

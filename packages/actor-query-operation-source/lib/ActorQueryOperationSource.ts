@@ -9,6 +9,7 @@ import type {
   IQuerySourceWrapper,
 } from '@comunica/types';
 import { getMetadataBindings, getMetadataQuads } from '@comunica/utils-metadata';
+import { getOperationSource } from '@comunica/utils-query-operation';
 import { Algebra, Util } from 'sparqlalgebrajs';
 
 /**
@@ -20,7 +21,7 @@ export class ActorQueryOperationSource extends ActorQueryOperation {
   }
 
   public async test(action: IActionQueryOperation): Promise<TestResult<IActorTest>> {
-    if (!ActorQueryOperation.getOperationSource(action.operation)) {
+    if (!getOperationSource(action.operation)) {
       return failTest(`Actor ${this.name} requires an operation with source annotation.`);
     }
     return passTest({ httpRequests: 1 });
@@ -42,7 +43,7 @@ export class ActorQueryOperationSource extends ActorQueryOperation {
       action.context = action.context.set(KeysInitQuery.physicalQueryPlanNode, action.operation);
     }
 
-    const sourceWrapper: IQuerySourceWrapper = ActorQueryOperation.getOperationSource(action.operation)!;
+    const sourceWrapper: IQuerySourceWrapper = getOperationSource(action.operation)!;
     const mergedContext = sourceWrapper.context ? action.context.merge(sourceWrapper.context) : action.context;
 
     // Check if the operation is a CONSTRUCT query

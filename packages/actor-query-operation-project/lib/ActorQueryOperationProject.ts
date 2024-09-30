@@ -1,5 +1,5 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
+import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
@@ -13,6 +13,7 @@ import type {
   MetadataVariable,
 } from '@comunica/types';
 import { BlankNodeBindingsScoped } from '@comunica/utils-data-factory';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -33,7 +34,7 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
 
     // Resolve the input
-    const output: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(
+    const output: IQueryOperationResultBindings = getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: operation.input, context }),
     );
 

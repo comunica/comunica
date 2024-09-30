@@ -1,6 +1,6 @@
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
-import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { IActionContext } from '@comunica/types';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { BufferedIterator } from 'asynciterator';
@@ -77,13 +77,13 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
         }
 
         const pendingOperation = self.pendingOperations.pop()!;
-        const results = ActorQueryOperation.getSafeBindings(
+        const results = getSafeBindings(
           await self.mediatorQueryOperation.mediate({ operation: pendingOperation.operation, context: self.context }),
         );
         const runningOperation = results.bindingsStream.transform<RDF.Term>({
           autoStart: false,
           transform(bindings, next, push) {
-            const newTerm: RDF.Term = bindings.get(pendingOperation.variable)!;
+            const newTerm: RDF.Term = <RDF.Term> bindings.get(pendingOperation.variable);
             push(newTerm);
             next();
           },

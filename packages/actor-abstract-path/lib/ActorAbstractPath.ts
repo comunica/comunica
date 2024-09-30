@@ -1,6 +1,5 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
-  ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import { KeysQueryOperation } from '@comunica/context-entries';
@@ -15,6 +14,7 @@ import type {
   ComunicaDataFactory,
 } from '@comunica/types';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { assignOperationSource, getOperationSource, getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import {
@@ -70,7 +70,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
   Promise<{ context: IActionContext; operation: IQueryOperationResultBindings | undefined }> {
     if (!context.get(KeysQueryOperation.isPathArbitraryLengthDistinctKey)) {
       context = context.set(KeysQueryOperation.isPathArbitraryLengthDistinctKey, true);
-      return { context, operation: ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
+      return { context, operation: getSafeBindings(await this.mediatorQueryOperation.mediate({
         operation: algebraFactory.createDistinct(path),
         context,
       })) };
@@ -98,7 +98,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
       this.assignPatternSources(algebraFactory, algebraFactory.createPattern(subject, predVar, object, graph), sources),
       this.assignPatternSources(algebraFactory, algebraFactory.createPattern(object, predVar, subject, graph), sources),
     ]);
-    const results = ActorQueryOperation.getSafeBindings(
+    const results = getSafeBindings(
       await this.mediatorQueryOperation.mediate({ context, operation: findGraphs }),
     );
 
@@ -235,9 +235,10 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
 
     const thisVariable = this.generateVariable(<ComunicaDataFactory> algebraFactory.dataFactory);
     const path = algebraFactory.createPath(object, predicate, thisVariable, graph);
-    const results = ActorQueryOperation.getSafeBindings(
+    const results = getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: path, context }),
     );
+
     // TODO: fixme
     // eslint-disable-next-line ts/no-misused-promises
     results.bindingsStream.on('data', async(bindings: Bindings) => {
@@ -339,7 +340,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
       // Construct path that leads us one step through predicate
       const thisVariable = this.generateVariable(<ComunicaDataFactory> algebraFactory.dataFactory);
       const path = algebraFactory.createPath(objectVal, predicate, thisVariable, graph);
-      const results = ActorQueryOperation.getSafeBindings(
+      const results = getSafeBindings(
         await this.mediatorQueryOperation.mediate({ operation: path, context }),
       );
 
@@ -395,7 +396,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
         return this.getPathSources(operation.path);
       case Algebra.types.LINK:
       case Algebra.types.NPS: {
-        const source = ActorQueryOperation.getOperationSource(operation);
+        const source = getOperationSource(operation);
         if (!source) {
           throw new Error(`Could not find a required source on a link path operation`);
         }
@@ -413,10 +414,10 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
       throw new Error(`Attempted to assign zero sources to a pattern during property path handling`);
     }
     if (sources.length === 1) {
-      return ActorQueryOperation.assignOperationSource(pattern, sources[0]);
+      return assignOperationSource(pattern, sources[0]);
     }
     return algebraFactory.createUnion(sources
-      .map(source => ActorQueryOperation.assignOperationSource(pattern, source)), true);
+      .map(source => assignOperationSource(pattern, source)), true);
   }
 }
 

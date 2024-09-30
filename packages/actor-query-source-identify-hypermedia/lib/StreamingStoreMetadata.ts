@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-nodejs-modules
 import type { EventEmitter } from 'node:events';
-import { ClosableTransformIterator } from '@comunica/bus-query-operation';
 import type { MetadataQuads, IAggregatedStore, MetadataBindings } from '@comunica/types';
+import { ClosableTransformIterator } from '@comunica/utils-iterator';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';

@@ -2,7 +2,6 @@ import type { BindOrder } from '@comunica/actor-rdf-join-inner-multi-bind';
 import { ActorRdfJoinMultiBind } from '@comunica/actor-rdf-join-inner-multi-bind';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
-import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type {
   IActionRdfJoin,
   IActorRdfJoinOutputInner,
@@ -16,6 +15,7 @@ import { passTestWithSideData, failTest } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { Bindings, BindingsStream, ComunicaDataFactory } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 
 /**
@@ -61,7 +61,7 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
         // Send the materialized patterns to the mediator for recursive join evaluation.
         // Length of operations will always be 1
         const operation = operations[0];
-        const output = ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate(
+        const output = getSafeBindings(await this.mediatorQueryOperation.mediate(
           { operation, context: subContext?.set(KeysQueryOperation.joinBindings, operationBindings) },
         ));
         return output.bindingsStream;

@@ -1,4 +1,3 @@
-import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinEntriesSort, MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
 import type { MediatorRdfJoinSelectivity } from '@comunica/bus-rdf-join-selectivity';
@@ -7,6 +6,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IQuerySourceWrapper, IActionContext } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
+import { assignOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, AsyncIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -165,7 +165,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
                 }),
                 type: 'bindings',
               },
-              operation: ActorQueryOperation.assignOperationSource(
+              operation: assignOperationSource(
                 AF.createPattern(DF.variable('a'), DF.namedNode('ex:p1'), DF.variable('b')),
                 source1,
               ),
@@ -287,7 +287,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
                 }),
                 type: 'bindings',
               },
-              operation: ActorQueryOperation.assignOperationSource(
+              operation: assignOperationSource(
                 AF.createPattern(DF.variable('a'), DF.namedNode('ex:p1'), DF.variable('b')),
                 source4Context,
               ),
@@ -388,7 +388,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
             entries: [
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+                operation: assignOperationSource(AF.createNop(), source1),
               },
               {
                 output: <any>{},
@@ -396,7 +396,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
               },
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+                operation: assignOperationSource(AF.createNop(), source1),
               },
             ],
             context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
@@ -450,16 +450,16 @@ describe('ActorRdfJoinMultiBindSource', () => {
             entries: [
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+                operation: assignOperationSource(AF.createNop(), source1),
                 operationModified: true,
               },
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+                operation: assignOperationSource(AF.createNop(), source1),
               },
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+                operation: assignOperationSource(AF.createNop(), source1),
                 operationModified: true,
               },
             ],
@@ -514,7 +514,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
             entries: [
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+                operation: assignOperationSource(AF.createNop(), source1),
               },
               {
                 output: <any>{},
@@ -571,7 +571,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
             entries: [
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+                operation: assignOperationSource(AF.createNop(), source1),
               },
               {
                 output: <any>{},
@@ -579,7 +579,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
               },
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source2),
+                operation: assignOperationSource(AF.createNop(), source2),
               },
             ],
             context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
@@ -628,7 +628,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
             entries: [
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source3TriplePattern),
+                operation: assignOperationSource(AF.createNop(), source3TriplePattern),
               },
               {
                 output: <any>{},
@@ -636,7 +636,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
               },
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source3TriplePattern),
+                operation: assignOperationSource(AF.createNop(), source3TriplePattern),
               },
             ],
             context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),

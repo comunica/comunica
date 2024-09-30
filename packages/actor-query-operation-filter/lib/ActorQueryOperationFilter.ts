@@ -10,6 +10,7 @@ import { failTest, passTestVoid } from '@comunica/core';
 import { AsyncEvaluator, isExpressionError } from '@comunica/expression-evaluator';
 import type { Bindings, ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
 import { BindingsFactory, bindingsToString } from '@comunica/utils-bindings-factory';
+import { getSafeBindings, validateQueryOutput } from '@comunica/utils-query-operation';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -45,8 +46,8 @@ export class ActorQueryOperationFilter extends ActorQueryOperationTypedMediated<
   public async runOperation(operation: Algebra.Filter, context: IActionContext):
   Promise<IQueryOperationResult> {
     const outputRaw = await this.mediatorQueryOperation.mediate({ operation: operation.input, context });
-    const output = ActorQueryOperation.getSafeBindings(outputRaw);
-    ActorQueryOperation.validateQueryOutput(output, 'bindings');
+    const output = getSafeBindings(outputRaw);
+    validateQueryOutput(output, 'bindings');
 
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
     const bindingsFactory = await BindingsFactory.create(

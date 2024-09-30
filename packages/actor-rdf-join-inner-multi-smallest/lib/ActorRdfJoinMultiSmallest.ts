@@ -1,6 +1,3 @@
-import {
-  ActorQueryOperation,
-} from '@comunica/bus-query-operation';
 import type {
   IActionRdfJoin,
   IActorRdfJoinOutputInner,
@@ -20,6 +17,7 @@ import type {
   IJoinEntryWithMetadata,
   ComunicaDataFactory,
 } from '@comunica/types';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import { Factory } from 'sparqlalgebrajs';
 
 /**
@@ -69,7 +67,7 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin<IActorRdfJoinMultiSm
 
     // Join the two selected streams, and then join the result with the remaining streams
     const firstEntry: IJoinEntry = {
-      output: ActorQueryOperation.getSafeBindings(await this.mediatorJoin
+      output: getSafeBindings(await this.mediatorJoin
         .mediate({ type: action.type, entries: [ smallestEntry1, smallestEntry2 ], context: action.context })),
       operation: algebraFactory
         .createJoin([ smallestEntry1.operation, smallestEntry2.operation ], false),

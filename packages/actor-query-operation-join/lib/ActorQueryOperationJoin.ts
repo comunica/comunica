@@ -1,12 +1,12 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
-  ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { MediatorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { IQueryOperationResult, IActionContext, IJoinEntry } from '@comunica/types';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -33,7 +33,7 @@ export class ActorQueryOperationJoin extends ActorQueryOperationTypedMediated<Al
         operation: subOperation,
       }))))
       .map(({ output, operation }) => ({
-        output: ActorQueryOperation.getSafeBindings(output),
+        output: getSafeBindings(output),
         operation,
       }));
 

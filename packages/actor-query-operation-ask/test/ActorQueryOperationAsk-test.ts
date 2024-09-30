@@ -1,6 +1,7 @@
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getSafeBoolean } from '@comunica/utils-query-operation';
 import { ArrayIterator, BufferedIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationAsk } from '../lib/ActorQueryOperationAsk';
@@ -92,7 +93,7 @@ describe('ActorQueryOperationAsk', () => {
 
     it('should run on a non-empty stream', async() => {
       const op: any = { operation: { type: 'ask' }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBoolean(await actor.run(op, undefined));
+      const output = getSafeBoolean(await actor.run(op, undefined));
       expect(output.type).toBe('boolean');
       await expect(output.execute()).resolves.toBeTruthy();
     });
@@ -102,7 +103,7 @@ describe('ActorQueryOperationAsk', () => {
       const actorEmpty = new ActorQueryOperationAsk(
         { name: 'actor', bus, mediatorQueryOperation: mediatorQueryOperationEmpty },
       );
-      const output = ActorQueryOperation.getSafeBoolean(await actorEmpty.run(op, undefined));
+      const output = getSafeBoolean(await actorEmpty.run(op, undefined));
       expect(output.type).toBe('boolean');
       await expect(output.execute()).resolves.toBeFalsy();
     });
@@ -112,7 +113,7 @@ describe('ActorQueryOperationAsk', () => {
       const actorError = new ActorQueryOperationAsk(
         { name: 'actor', bus, mediatorQueryOperation: mediatorQueryOperationError },
       );
-      const output = ActorQueryOperation.getSafeBoolean(await actorError.run(op, undefined));
+      const output = getSafeBoolean(await actorError.run(op, undefined));
       expect(output.type).toBe('boolean');
       await expect(output.execute()).rejects.toBeTruthy();
     });

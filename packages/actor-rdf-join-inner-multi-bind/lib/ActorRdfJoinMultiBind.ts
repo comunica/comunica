@@ -1,6 +1,5 @@
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
-import { ActorQueryOperation, materializeOperation } from '@comunica/bus-query-operation';
 import type {
   IActionRdfJoin,
   IActorRdfJoinOutputInner,
@@ -21,6 +20,7 @@ import type {
   IQueryOperationResultBindings,
 } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getSafeBindings, materializeOperation } from '@comunica/utils-query-operation';
 import { MultiTransformIterator, TransformIterator, UnionIterator } from 'asynciterator';
 import { Factory, Algebra, Util } from 'sparqlalgebrajs';
 
@@ -143,7 +143,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
         const operation = operations.length === 1 ?
           operations[0] :
           algebraFactory.createJoin(operations);
-        const output = ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate(
+        const output = getSafeBindings(await this.mediatorQueryOperation.mediate(
           { operation, context: subContext?.set(KeysQueryOperation.joinBindings, operationBindings) },
         ));
         return output.bindingsStream;

@@ -1,6 +1,6 @@
-import { ClosableIterator } from '@comunica/bus-query-operation';
 import type { BindingsStream, ComunicaDataFactory, MetadataBindings, MetadataQuads, TermsOrder } from '@comunica/types';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { ClosableIterator } from '@comunica/utils-iterator';
 import { validateMetadataQuads } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
