@@ -148,29 +148,34 @@ async function depcheckTask(log) {
   const resolutions = Object.keys(JSON.parse(readFileSync(path.join(process.cwd(), 'package.json'), 'utf8')).resolutions ?? {});
 
   // eslint-disable-next-line unicorn/no-array-for-each
-  return iter.forEach(packages, { log })(async(package) => {
+  const failures = [];
+  await iter.forEach(packages, { log })(async(package) => {
     const { missingDeps, unusedDeps, allDeps } = await depInfo(package);
 
     if (missingDeps.length > 0) {
-      throw new Error(`Missing dependencies:  ${missingDeps.join(', ')} from ${package.name}`);
+      failures.push(`Missing dependencies:  ${missingDeps.join(', ')} from ${package.name}`);
     }
 
     if (unusedDeps.length > 0) {
-      throw new Error(`Extra dependencies: ${unusedDeps.join(', ')} in ${package.name}`);
+      failures.push(`Extra dependencies: ${unusedDeps.join(', ')} in ${package.name}`);
     }
 
     if (allDeps.includes(package.name)) {
-      throw new Error(`${package.name} is a dependency of itself`);
+      failures.push(`${package.name} is a dependency of itself`);
     }
 
     // Now check all resolutions use a star ("*") import
     const packageJson = JSON.parse(readFileSync(path.join(package.location, 'package.json'), 'utf8'));
     for (const dep of Object.keys(packageJson.dependencies ?? {})) {
       if (resolutions.includes(dep) && packageJson.dependencies[dep] !== '*') {
-        throw new Error(`Resolution not using '*' import for ${dep} in ${package.name}`);
+        failures.push(`Resolution not using '*' import for ${dep} in ${package.name}`);
       }
     }
   });
+  if (failures.length > 0) {
+    console.error("Depcheck failures: \n- " + failures.join('\n- '));
+    throw new Error("Failed depcheck");
+  }
 }
 
 module.exports.depfixTask = depfixTask;
