@@ -48,6 +48,7 @@
     "Response",
     "RequestInfo",
     "RequestInit",
+    "AsyncIterator",
 
     "IStatistic",
     "ILink",

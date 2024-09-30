@@ -14,6 +14,7 @@ import type {
   QuerySourceReference,
   IStatisticBase,
   IDiscoverEventData,
+  PartialResult,
   ILink,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -307,12 +308,18 @@ export const KeysStatistics = {
    * All discovered links during query execution. Not all of them will necessarily be dereferenced.
    */
   discoveredLinks: new ActionContextKey<IStatisticBase<IDiscoverEventData>>(
-    '@comunica/bus-context-preprocess:discoveredLinks',
+    '@comunica/statistic:discoveredLinks',
   ),
   /**
    * Information about what links are dereferenced and when
    */
   dereferencedLinks: new ActionContextKey<IStatisticBase<ILink>>(
-    '@comunica/bus-context-preprocess:dereferencedLinks',
+    '@comunica/statistic:dereferencedLinks',
+  ),
+  /**
+   * Intermediate results produced during query execution
+   */
+  intermediateResults: new ActionContextKey<PartialResult>(
+    '@comunica/statistic:intermediateResults',
   ),
 };

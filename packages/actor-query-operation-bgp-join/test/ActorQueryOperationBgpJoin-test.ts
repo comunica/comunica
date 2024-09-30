@@ -1,4 +1,5 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
+import { KEY_CONTEXT_WRAPPED_QUERY_OPERATION } from '@comunica/bus-query-operation';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultBindings } from '@comunica/types';
@@ -65,7 +66,8 @@ describe('ActorQueryOperationBgpJoin', () => {
       ]);
 
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
-        context: context.set(KeysQueryOperation.operation, op.operation),
+        context: context.set(KeysQueryOperation.operation, op.operation)
+          .set(KEY_CONTEXT_WRAPPED_QUERY_OPERATION, false),
         operation: FACTORY.createJoin(patterns),
       });
     });

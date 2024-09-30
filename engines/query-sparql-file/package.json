@@ -69,6 +69,7 @@
     "@comunica/actor-http-proxy": "^3.2.1",
     "@comunica/actor-http-wayback": "^3.2.1",
     "@comunica/actor-init-query": "^3.2.1",
+    "@comunica/actor-iterator-transform-record-intermediate-results": "^3.2.1",
     "@comunica/actor-optimize-query-operation-assign-sources-exhaustive": "^3.2.2",
     "@comunica/actor-optimize-query-operation-bgp-to-join": "^3.2.1",
     "@comunica/actor-optimize-query-operation-construct-distinct": "^3.2.1",
