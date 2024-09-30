@@ -7,7 +7,7 @@ import { LoggerVoid } from '@comunica/logger-void';
 import type { IActionContext } from '@comunica/types';
 import { Readable } from 'readable-stream';
 import { ActorHttpFetch } from '../lib/ActorHttpFetch';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 // Mock fetch
 jest.spyOn(globalThis, 'fetch').mockImplementation((input: any) => Promise.resolve(<Response> <unknown>{

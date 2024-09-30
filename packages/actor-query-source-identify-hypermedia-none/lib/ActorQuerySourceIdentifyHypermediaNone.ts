@@ -1,5 +1,4 @@
 import { QuerySourceRdfJs } from '@comunica/actor-query-source-identify-rdfjs';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type {
   IActionQuerySourceIdentifyHypermedia,
@@ -12,6 +11,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
 import { passTest } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { storeStream } from 'rdf-store-stream';
 
 /**

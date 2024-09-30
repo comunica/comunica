@@ -1,8 +1,6 @@
-import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorHttp } from '@comunica/bus-http';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { Actor } from '@comunica/core';
-import { MetadataValidationState } from '@comunica/metadata';
 import type {
   Bindings,
   BindingsStream,
@@ -14,6 +12,8 @@ import type {
   MetadataBindings,
   MetadataVariable,
 } from '@comunica/types';
+import type { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator, wrap } from 'asynciterator';

@@ -15,7 +15,7 @@ import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationSource } from '../lib/ActorQueryOperationSource';
 import 'jest-rdf';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const AF = new Factory();
 const DF = new DataFactory();

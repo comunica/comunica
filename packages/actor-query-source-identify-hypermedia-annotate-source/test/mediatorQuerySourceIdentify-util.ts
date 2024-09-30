@@ -1,8 +1,8 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionQuerySourceIdentifyHypermedia, MediatorQuerySourceIdentifyHypermedia }
   from '@comunica/bus-query-source-identify-hypermedia';
-import { MetadataValidationState } from '@comunica/metadata';
 import type { IQuerySource } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import { wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 

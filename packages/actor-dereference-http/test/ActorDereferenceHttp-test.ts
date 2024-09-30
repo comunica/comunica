@@ -6,7 +6,7 @@ import { LoggerVoid } from '@comunica/logger-void';
 import { MediatorRace } from '@comunica/mediator-race';
 import type { IActionContext } from '@comunica/types';
 import { ActorDereferenceHttp } from '../lib/ActorDereferenceHttp';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 describe('ActorDereferenceHttp', () => {
   let bus: any;

@@ -1,7 +1,7 @@
 import { Actor, Bus, passTestVoid } from '@comunica/core';
 import { ActorAbstractMediaTyped } from '../lib/ActorAbstractMediaTyped';
 import { ActorAbstractMediaTypedFixed } from '../lib/ActorAbstractMediaTypedFixed';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 describe('ActorAbstractMediaTypedFixed', () => {
   const bus = new Bus({ name: 'bus' });

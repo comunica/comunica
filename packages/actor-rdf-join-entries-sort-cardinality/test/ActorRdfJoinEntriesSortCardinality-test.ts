@@ -1,7 +1,7 @@
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorRdfJoinEntriesSortCardinality } from '../lib/ActorRdfJoinEntriesSortCardinality';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 describe('ActorRdfJoinEntriesSortCardinality', () => {
   let bus: any;

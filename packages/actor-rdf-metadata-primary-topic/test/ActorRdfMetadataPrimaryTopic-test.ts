@@ -5,7 +5,7 @@ import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { ActorRdfMetadataPrimaryTopic } from '../lib/ActorRdfMetadataPrimaryTopic';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
 const stream = require('streamify-array');

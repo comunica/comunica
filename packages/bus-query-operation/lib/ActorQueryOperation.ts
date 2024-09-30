@@ -1,8 +1,6 @@
-import type { BindingsFactory } from '@comunica/bindings-factory';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorArgs, IActorTest, IAction, Mediate, TestResult } from '@comunica/core';
 import { failTest, passTestVoid, Actor } from '@comunica/core';
-import { BlankNodeBindingsScoped } from '@comunica/data-factory';
 import type {
   IQueryOperationResult,
   IQueryOperationResultBindings,
@@ -16,6 +14,8 @@ import type {
   FragmentSelectorShape,
   ComunicaDataFactory,
 } from '@comunica/types';
+import type { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { BlankNodeBindingsScoped } from '@comunica/utils-data-factory';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';

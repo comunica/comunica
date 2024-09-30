@@ -1,4 +1,3 @@
-import { bindingsToCompactString } from '@comunica/bindings-factory';
 import { ClosableTransformIterator } from '@comunica/bus-query-operation';
 import type {
   IActionRdfJoin,
@@ -13,6 +12,7 @@ import type { TestResult } from '@comunica/core';
 import { passTestWithSideData } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { BindingsStream, MetadataVariable } from '@comunica/types';
+import { bindingsToCompactString } from '@comunica/utils-bindings-factory';
 import type { IBindingsIndex } from '@comunica/utils-bindings-index';
 import { BindingsIndexDef, BindingsIndexUndef } from '@comunica/utils-bindings-index';
 import type * as RDF from '@rdfjs/types';

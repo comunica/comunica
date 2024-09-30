@@ -3,7 +3,7 @@ import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultVoid } from '@comunica/types';
 import { ActorQueryOperationUpdateCompositeUpdate } from '../lib/ActorQueryOperationUpdateCompositeUpdate';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 describe('ActorQueryOperationUpdateCompositeUpdate', () => {
   let bus: any;

@@ -1,4 +1,3 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type {
@@ -16,6 +15,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
 import { failTest, passTest } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import { Factory } from 'sparqlalgebrajs';
 import { QuerySourceQpf } from './QuerySourceQpf';

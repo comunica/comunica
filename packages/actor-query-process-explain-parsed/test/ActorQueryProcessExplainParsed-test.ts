@@ -2,7 +2,7 @@ import type { IQueryProcessSequential } from '@comunica/bus-query-process';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { ActorQueryProcessExplainParsed } from '../lib/ActorQueryProcessExplainParsed';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 describe('ActorQueryProcessExplainParsed', () => {
   let bus: any;

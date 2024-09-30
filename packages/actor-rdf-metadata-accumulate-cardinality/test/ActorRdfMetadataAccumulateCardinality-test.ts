@@ -1,7 +1,7 @@
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorRdfMetadataAccumulateCardinality } from '../lib/ActorRdfMetadataAccumulateCardinality';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 describe('ActorRdfMetadataAccumulateCardinality', () => {
   let bus: any;

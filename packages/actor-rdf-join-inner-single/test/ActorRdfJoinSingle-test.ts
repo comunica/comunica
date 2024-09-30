@@ -3,7 +3,7 @@ import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorRdfJoinSingle } from '../lib/ActorRdfJoinSingle';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 describe('ActorRdfJoinSingle', () => {
   let bus: any;

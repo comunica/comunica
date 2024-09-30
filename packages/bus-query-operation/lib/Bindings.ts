@@ -1,5 +1,5 @@
-import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { Bindings } from '@comunica/types';
+import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import type { Variable } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';

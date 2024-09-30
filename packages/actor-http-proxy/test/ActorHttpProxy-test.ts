@@ -4,7 +4,7 @@ import { Bus, ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorHttpProxy } from '../lib/ActorHttpProxy';
 import { ProxyHandlerStatic } from '../lib/ProxyHandlerStatic';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 describe('ActorHttpProxy', () => {
   let bus: any;

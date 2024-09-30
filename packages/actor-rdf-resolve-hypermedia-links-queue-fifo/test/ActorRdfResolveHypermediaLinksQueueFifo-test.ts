@@ -1,7 +1,7 @@
 import { ActionContext, Bus } from '@comunica/core';
 import { LinkQueueFifo } from '..';
 import { ActorRdfResolveHypermediaLinksQueueFifo } from '../lib/ActorRdfResolveHypermediaLinksQueueFifo';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 describe('ActorRdfResolveHypermediaLinksQueueFifo', () => {
   let bus: any;

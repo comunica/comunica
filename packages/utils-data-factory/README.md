@@ -1,6 +1,6 @@
 # Comunica Data Factory
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Fdata-factory.svg)](https://www.npmjs.com/package/@comunica/data-factory)
+[![npm version](https://badge.fury.io/js/%40comunica%2Futils-data-factory.svg)](https://www.npmjs.com/package/@comunica/utils-data-factory)
 
 [RDFJS DataFactory](http://rdf.js.org/data-model-spec/) utilities.
 
@@ -12,7 +12,7 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/data-factory
+$ yarn add @comunica/utils-data-factory
 ```
 
 ## Exposed classes

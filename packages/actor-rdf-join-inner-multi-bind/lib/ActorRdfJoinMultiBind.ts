@@ -1,4 +1,3 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, materializeOperation } from '@comunica/bus-query-operation';
@@ -21,6 +20,7 @@ import type {
   IJoinEntryWithMetadata,
   IQueryOperationResultBindings,
 } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MultiTransformIterator, TransformIterator, UnionIterator } from 'asynciterator';
 import { Factory, Algebra, Util } from 'sparqlalgebrajs';
 

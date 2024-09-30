@@ -5,7 +5,7 @@ import type { IQuerySourceWrapper } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorOptimizeQueryOperationGroupSources } from '../lib/ActorOptimizeQueryOperationGroupSources';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const AF = new Factory();
 const DF = new DataFactory();

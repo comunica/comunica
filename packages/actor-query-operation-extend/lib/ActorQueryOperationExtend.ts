@@ -1,4 +1,3 @@
-import { BindingsFactory, bindingsToString } from '@comunica/bindings-factory';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
@@ -17,6 +16,7 @@ import type {
   IQueryOperationResult,
   IQueryOperationResultBindings,
 } from '@comunica/types';
+import { BindingsFactory, bindingsToString } from '@comunica/utils-bindings-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**

@@ -8,7 +8,7 @@ import type { IActionContext } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfParseRdfXml } from '..';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
 

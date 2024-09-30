@@ -42,7 +42,6 @@
   },
   "dependencies": {
     "@comunica/actor-rdf-metadata-extract-hydra-controls": "^3.2.1",
-    "@comunica/bindings-factory": "^3.2.1",
     "@comunica/bus-dereference-rdf": "^3.2.1",
     "@comunica/bus-merge-bindings-context": "^3.2.1",
     "@comunica/bus-query-source-identify": "^3.2.2",
@@ -51,8 +50,9 @@
     "@comunica/bus-rdf-metadata-extract": "^3.2.1",
     "@comunica/context-entries": "^3.2.1",
     "@comunica/core": "^3.2.1",
-    "@comunica/metadata": "^3.2.1",
     "@comunica/types": "^3.2.1",
+    "@comunica/utils-bindings-factory": "^3.2.1",
+    "@comunica/utils-metadata": "^3.2.1",
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0",
     "rdf-string": "^1.6.1",

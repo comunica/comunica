@@ -1,10 +1,10 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionHashBindings } from '@comunica/bus-hash-bindings';
 import { ActorHashBindings } from '@comunica/bus-hash-bindings';
 import { ActionContext, Bus } from '@comunica/core';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorHashBindingsMurmur } from '../lib/ActorHashBindingsMurmur';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);

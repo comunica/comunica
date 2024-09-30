@@ -1,8 +1,6 @@
 import { Readable, Transform } from 'node:stream';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
-import { MetadataValidationState } from '@comunica/metadata';
 import type {
   IActionContext,
   QueryStringContext,
@@ -15,6 +13,8 @@ import type {
   IQueryOperationResultVoid,
   IQueryEngine,
 } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
@@ -23,7 +23,7 @@ import { translate } from 'sparqlalgebrajs';
 import { QueryEngineBase } from '../lib';
 import { ActorInitQuery } from '../lib/ActorInitQuery';
 import { ActorInitQueryBase } from '../lib/ActorInitQueryBase';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 import 'jest-rdf';
 
 const DF = new DataFactory();

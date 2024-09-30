@@ -1,15 +1,15 @@
 import { Readable } from 'node:stream';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import { MetadataValidationState } from '@comunica/metadata';
 import type { BindingsStream, IActionContext } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import {
   ActorQuerySourceIdentifyHypermediaNone,
 } from '../lib/ActorQuerySourceIdentifyHypermediaNone';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
 const streamifyArray = require('streamify-array');

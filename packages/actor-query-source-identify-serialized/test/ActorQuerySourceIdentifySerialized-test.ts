@@ -1,13 +1,13 @@
 import { QuerySourceRdfJs } from '@comunica/actor-query-source-identify-rdfjs';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionQuerySourceIdentify, MediatorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
 import type { IActionRdfParseHandle, MediatorRdfParseHandle } from '@comunica/bus-rdf-parse';
 import { ActionContext, Bus } from '@comunica/core';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorQuerySourceIdentifySerialized } from '../lib/ActorQuerySourceIdentifySerialized';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const streamifyArray = require('streamify-array');
 

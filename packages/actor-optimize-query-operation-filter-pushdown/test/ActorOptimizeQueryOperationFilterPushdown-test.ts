@@ -4,7 +4,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorOptimizeQueryOperationFilterPushdown } from '../lib/ActorOptimizeQueryOperationFilterPushdown';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const AF = new Factory();
 const DF = new DataFactory();

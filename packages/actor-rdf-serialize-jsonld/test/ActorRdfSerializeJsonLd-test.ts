@@ -4,7 +4,7 @@ import type { IActionContext } from '@comunica/types';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import { ArrayIterator } from 'asynciterator';
 import { ActorRdfSerializeJsonLd } from '../lib/ActorRdfSerializeJsonLd';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
 const streamifyArray = require('streamify-array');

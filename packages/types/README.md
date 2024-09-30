@@ -19,7 +19,7 @@ $ yarn add @comunica/types
 
 ```typescript
 import { Bindings } from '@comunica/types';
-import { BindingsFactory } from '@comunica/bindings-factory';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 
 // ...
 

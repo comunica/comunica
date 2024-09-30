@@ -1,4 +1,3 @@
-import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
@@ -15,6 +14,7 @@ import type {
   IQuerySourceWrapper,
   ComunicaDataFactory,
 } from '@comunica/types';
+import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import {

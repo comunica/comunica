@@ -41,7 +41,6 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bindings-factory": "^3.2.1",
     "@comunica/bus-merge-bindings-context": "^3.2.1",
     "@comunica/bus-query-operation": "^3.2.2",
     "@comunica/bus-rdf-join": "^3.2.1",
@@ -49,6 +48,7 @@
     "@comunica/core": "^3.2.1",
     "@comunica/expression-evaluator": "^3.2.1",
     "@comunica/types": "^3.2.1",
+    "@comunica/utils-bindings-factory": "^3.2.1",
     "sparqlalgebrajs": "^4.3.8"
   }
 }

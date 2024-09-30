@@ -6,7 +6,7 @@ import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinMultiEmpty } from '../lib/ActorRdfJoinMultiEmpty';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 

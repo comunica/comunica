@@ -2,7 +2,7 @@ import { ActorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorRdfMetadataExtractHydraControls } from '../lib/ActorRdfMetadataExtractHydraControls';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
 const stream = require('streamify-array');

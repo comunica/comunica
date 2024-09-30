@@ -1,6 +1,6 @@
 # Comunica Jest helpers
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Fjest.svg)](https://www.npmjs.com/package/@comunica/jest)
+[![npm version](https://badge.fury.io/js/%40comunica%2Futils-jest.svg)](https://www.npmjs.com/package/@comunica/utils-jest)
 
 Jest test helpers for Comunica
 
@@ -12,7 +12,7 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add --save-dev @comunica/jest
+$ yarn add --save-dev @comunica/utils-jest
 ```
 
 ## Configuration
@@ -23,16 +23,16 @@ This can be done by adding the following entry to your Jest configuration:
 ```json
 {
   "jest": {
-    "setupFilesAfterEnv": ["@comunica/jest"]
+    "setupFilesAfterEnv": ["@comunica/utils-jest"]
   }
 }
 ```
 
 If you are already using an existing test framework script file,
-make sure to add @comunica/jest as follows to your file:
+make sure to add @comunica/utils-jest as follows to your file:
 ```javascript
 ...
-require('@comunica/jest');
+require('@comunica/utils-jest');
 ```
 
 ## _Optional: Typescript typings configuration_
@@ -42,7 +42,7 @@ you will need to import the typings of this package to make the TS compiler reco
 
 For this, include the following import at the top of each applicable test file:
 ```
-import "@comunica/jest";
+import "@comunica/utils-jest";
 ```
 
 ## API
@@ -50,7 +50,7 @@ import "@comunica/jest";
 All examples below make use of these helpers:
 
 ```js
-import { BindingsFactory } from '@comunica/bindings-factory';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { DataFactory } from 'rdf-data-factory';
 
 const BF = new BindingsFactory(DF);

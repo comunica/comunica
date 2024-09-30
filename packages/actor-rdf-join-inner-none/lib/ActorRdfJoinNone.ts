@@ -1,4 +1,3 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type {
   IActionRdfJoin,
@@ -11,8 +10,9 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
 import { passTestWithSideData, failTest } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import { MetadataValidationState } from '@comunica/metadata';
 import type { ComunicaDataFactory } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 

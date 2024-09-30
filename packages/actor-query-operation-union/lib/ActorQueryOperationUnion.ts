@@ -6,7 +6,6 @@ import {
 import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
-import { MetadataValidationState } from '@comunica/metadata';
 import type {
   BindingsStream,
   IQueryOperationResultBindings,
@@ -17,6 +16,7 @@ import type {
   IQueryOperationResultQuads,
   MetadataVariable,
 } from '@comunica/types';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import { UnionIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';

@@ -5,7 +5,7 @@ import { Factory } from 'sparqlalgebrajs';
 import {
   ActorOptimizeQueryOperationDescribeToConstructsSubject,
 } from '../lib/ActorOptimizeQueryOperationDescribeToConstructsSubject';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const AF = new Factory();

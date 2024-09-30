@@ -1,16 +1,16 @@
 import { Readable } from 'node:stream';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import arrayifyStream from 'arrayify-stream';
 import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
 import { RdfStore } from 'rdf-stores';
 import { Factory } from 'sparqlalgebrajs';
 import { QuerySourceRdfJs } from '../lib';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const AF = new Factory();

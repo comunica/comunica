@@ -1,15 +1,15 @@
-import type { Bindings } from '@comunica/bindings-factory';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import { KeysMergeBindingsContext } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext, IQueryOperationResultBindings } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import type { Bindings } from '@comunica/utils-bindings-factory';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import {
   ActorQueryProcessAnnotateSourceBinding,
   KEY_CONTEXT_WRAPPED,
 } from '../lib/ActorQueryProcessAnnotateSourceBinding';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);

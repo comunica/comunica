@@ -1,4 +1,4 @@
-import { bindingsToString } from '@comunica/bindings-factory';
+import { bindingsToString } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import toEqualBindings from './toEqualBindings';
 

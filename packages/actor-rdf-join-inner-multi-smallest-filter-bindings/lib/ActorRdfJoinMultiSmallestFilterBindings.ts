@@ -1,4 +1,3 @@
-import { bindingsToString } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type {
   IActionRdfJoin,
@@ -21,6 +20,7 @@ import type {
   IJoinEntryWithMetadata,
   IQuerySourceWrapper,
 } from '@comunica/types';
+import { bindingsToString } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { UnionIterator } from 'asynciterator';

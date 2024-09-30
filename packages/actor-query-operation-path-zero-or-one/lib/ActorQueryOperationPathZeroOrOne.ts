@@ -1,10 +1,8 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
-import { MetadataValidationState } from '@comunica/metadata';
 import type {
   Bindings,
   IQueryOperationResult,
@@ -12,6 +10,8 @@ import type {
   BindingsStream,
   ComunicaDataFactory,
 } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import {
   SingletonIterator,

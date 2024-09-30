@@ -1,6 +1,6 @@
 # Comunica Bindings Factory
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Fbindings-factory.svg)](https://www.npmjs.com/package/@comunica/bindings-factory)
+[![npm version](https://badge.fury.io/js/%40comunica%2Futils-bindings-factory.svg)](https://www.npmjs.com/package/@comunica/utils-bindings-factory)
 
 This package provides a factory for `Bindings` objects, which allow variables to be mapped to RDF terms.
 This package implements the RDF/JS [`BindingsFactory`](http://rdf.js.org/query-spec/#bindingsfactory-interface)
@@ -17,15 +17,15 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/bindings-factory
+$ yarn add @comunica/utils-bindings-factory
 ```
 
 ## Usage
 
 ```typescript
 import * as RDF from '@rdfjs/types';
-import { DataFactory } from '@comunica/data-factory';
-import { BindingsFactory } from '@comunica/bindings-factory';
+import { DataFactory } from '@comunica/utils-data-factory';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);

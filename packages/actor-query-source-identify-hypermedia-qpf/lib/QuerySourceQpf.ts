@@ -1,11 +1,9 @@
 import type { ISearchForm } from '@comunica/actor-rdf-metadata-extract-hydra-controls';
-import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
 import { filterMatchingQuotedQuads, quadsToBindings } from '@comunica/bus-query-source-identify';
 import type { MediatorRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import { KeysQueryOperation } from '@comunica/context-entries';
-import { MetadataValidationState } from '@comunica/metadata';
 import type {
   IQuerySource,
   BindingsStream,
@@ -15,6 +13,8 @@ import type {
   MetadataBindings,
   ComunicaDataFactory,
 } from '@comunica/types';
+import type { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, TransformIterator, wrap } from 'asynciterator';

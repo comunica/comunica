@@ -1,7 +1,7 @@
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorRdfMetadataAccumulateRequestTime } from '../lib/ActorRdfMetadataAccumulateRequestTime';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 describe('ActorRdfMetadataAccumulateRequestTime', () => {
   let bus: any;

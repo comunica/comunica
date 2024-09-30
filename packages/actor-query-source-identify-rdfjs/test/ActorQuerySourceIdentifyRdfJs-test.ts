@@ -5,7 +5,7 @@ import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQuerySourceIdentifyRdfJs, QuerySourceRdfJs } from '..';
 import 'jest-rdf';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const mediatorMergeBindingsContext: any = {
   mediate: () => ({}),

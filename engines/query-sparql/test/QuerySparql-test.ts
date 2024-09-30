@@ -1,16 +1,16 @@
 /** @jest-environment setup-polly-jest/jest-environment-node */
 
 import { QuerySourceSkolemized } from '@comunica/actor-context-preprocess-query-source-skolemize';
-import type { Bindings } from '@comunica/bindings-factory';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import { KeysHttpWayback, KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
-import { BlankNodeScoped } from '@comunica/data-factory';
 import type { QueryBindings, QueryStringContext } from '@comunica/types';
+import type { Bindings } from '@comunica/utils-bindings-factory';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { BlankNodeScoped } from '@comunica/utils-data-factory';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import 'jest-rdf';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';

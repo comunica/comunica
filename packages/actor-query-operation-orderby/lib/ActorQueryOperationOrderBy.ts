@@ -1,4 +1,3 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
@@ -10,6 +9,7 @@ import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import { AsyncEvaluator, isExpressionError, orderTypes } from '@comunica/expression-evaluator';
 import type { Bindings, ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type { Term } from '@rdfjs/types';
 import { Algebra } from 'sparqlalgebrajs';
 import { SortIterator } from './SortIterator';

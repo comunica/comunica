@@ -2,7 +2,7 @@ import type { Readable } from 'node:stream';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorRdfMetadataExtractAllowHttpMethods } from '../lib/ActorRdfMetadataExtractAllowHttpMethods';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 describe('ActorRdfMetadataExtractAllowHttpMethods', () => {
   let bus: any;

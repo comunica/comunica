@@ -1,6 +1,6 @@
 import { ActionContext, Bus } from '@comunica/core';
 import { ActorContextPreprocessConvertShortcuts } from '../lib/ActorContextPreprocessConvertShortcuts';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 describe('ActorContextPreprocessConvertShortcuts', () => {
   let bus: any;

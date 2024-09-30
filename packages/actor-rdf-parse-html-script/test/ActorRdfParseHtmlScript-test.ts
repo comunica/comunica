@@ -7,7 +7,7 @@ import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfParseHtmlScript } from '../lib/ActorRdfParseHtmlScript';
 import { HtmlScriptListener } from '../lib/HtmlScriptListener';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
 

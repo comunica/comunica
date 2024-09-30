@@ -3,7 +3,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfUpdateHypermediaSparql } from '../lib/ActorRdfUpdateHypermediaSparql';
 import { QuadDestinationSparql } from '../lib/QuadDestinationSparql';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 

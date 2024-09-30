@@ -1,4 +1,3 @@
-import { Bindings } from '@comunica/bindings-factory';
 import type {
   IActionQueryProcess,
   IActorQueryProcessOutput,
@@ -10,6 +9,7 @@ import { KeysMergeBindingsContext } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid, ActionContextKey } from '@comunica/core';
 import type { BindingsStream } from '@comunica/types';
+import { Bindings } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 

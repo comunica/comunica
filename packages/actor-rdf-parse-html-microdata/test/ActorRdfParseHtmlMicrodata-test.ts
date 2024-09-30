@@ -5,7 +5,7 @@ import type { IActionContext } from '@comunica/types';
 import { MicrodataRdfParser } from 'microdata-rdf-streaming-parser';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfParseHtmlMicrodata } from '../lib/ActorRdfParseHtmlMicrodata';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
 

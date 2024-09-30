@@ -6,7 +6,7 @@ import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import type { AsyncIterator } from 'asynciterator';
 import { ActorRdfSerializeN3 } from '../lib/ActorRdfSerializeN3';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
 const streamifyArray = require('streamify-array');

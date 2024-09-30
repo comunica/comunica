@@ -1,7 +1,8 @@
 {
-  "name": "@comunica/data-factory",
-  "version": "3.1.0",
-  "description": "RDFJS DataFactory utilities",
+  "name": "@comunica/utils-metadata",
+  "version": "3.2.1",
+  "description": "Metadata helpers for Comunica",
+  "lsd:module": true,
   "license": "MIT",
   "funding": {
     "type": "opencollective",
@@ -11,17 +12,14 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/data-factory"
+    "directory": "packages/utils-metadata"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"
   },
   "keywords": [
-    "semantic",
-    "actor",
-    "framework",
-    "events",
-    "messages"
+    "comunica",
+    "metadata"
   ],
   "sideEffects": false,
   "main": "lib/index.js",
@@ -30,14 +28,22 @@
     "access": "public"
   },
   "files": [
+    "bin/**/*.d.ts",
+    "bin/**/*.js",
+    "bin/**/*.js.map",
+    "components",
     "lib/**/*.d.ts",
     "lib/**/*.js",
     "lib/**/*.js.map"
   ],
   "scripts": {
-    "build": "node \"../../node_modules/typescript/bin/tsc\""
+    "build": "yarn run build:ts && yarn run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@rdfjs/types": "*"
+    "@comunica/types": "^3.2.1",
+    "@rdfjs/types": "*",
+    "asynciterator": "^3.9.0"
   }
 }

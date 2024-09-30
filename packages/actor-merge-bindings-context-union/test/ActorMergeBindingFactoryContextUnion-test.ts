@@ -2,7 +2,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorMergeBindingsContextUnion } from '../lib/ActorMergeBindingsContextUnion';
 import { SetUnionBindingsContextMergeHandler } from '../lib/SetUnionBindingsContextMergeHandler';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 describe('ActorMergeBindingFactoryContextUnion', () => {
   let bus: any;

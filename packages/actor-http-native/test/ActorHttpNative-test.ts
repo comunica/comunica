@@ -7,7 +7,7 @@ import { LoggerVoid } from '@comunica/logger-void';
 import type { IActionContext } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
 import { ActorHttpNative } from '../lib/ActorHttpNative';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 // eslint-disable-next-line jest/no-mocks-import
 const mockSetup = require('./__mocks__/follow-redirects').mockSetup;

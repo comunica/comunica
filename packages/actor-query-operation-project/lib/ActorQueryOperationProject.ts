@@ -3,7 +3,6 @@ import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
-import { BlankNodeBindingsScoped } from '@comunica/data-factory';
 import type {
   Bindings,
   BindingsStream,
@@ -13,6 +12,7 @@ import type {
   IQueryOperationResultBindings,
   MetadataVariable,
 } from '@comunica/types';
+import { BlankNodeBindingsScoped } from '@comunica/utils-data-factory';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 

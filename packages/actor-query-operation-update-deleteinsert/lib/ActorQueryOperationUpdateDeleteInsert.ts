@@ -1,5 +1,4 @@
 import { BindingsToQuadsIterator } from '@comunica/actor-query-operation-construct';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
@@ -10,6 +9,7 @@ import type { MediatorRdfUpdateQuads } from '@comunica/bus-rdf-update-quads';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import type { IQueryOperationResult, BindingsStream, IActionContext, ComunicaDataFactory } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';

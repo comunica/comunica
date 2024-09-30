@@ -1,6 +1,6 @@
 import { ActionContext, Bus } from '@comunica/core';
 import { ActorRdfMetadataExtractRequestTime } from '../lib/ActorRdfMetadataExtractRequestTime';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 describe('ActorRdfMetadataExtractRequestTime', () => {
   let bus: any;

@@ -1,7 +1,7 @@
 import { KeysInitQuery, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { ActorContextPreprocessSourceToDestination } from '../lib/ActorContextPreprocessSourceToDestination';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 describe('ActorContextPreprocessSourceToDestination', () => {
   let bus: any;

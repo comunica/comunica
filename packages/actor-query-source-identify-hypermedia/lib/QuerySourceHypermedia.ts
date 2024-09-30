@@ -1,5 +1,4 @@
 import { QuerySourceRdfJs } from '@comunica/actor-query-source-identify-rdfjs';
-import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActorDereferenceRdfOutput, MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
 import type { MediatorQuerySourceIdentifyHypermedia } from '@comunica/bus-query-source-identify-hypermedia';
 import type { IActorRdfMetadataOutput, MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
@@ -19,6 +18,7 @@ import type {
   MetadataBindings,
   ILink,
 } from '@comunica/types';
+import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator } from 'asynciterator';

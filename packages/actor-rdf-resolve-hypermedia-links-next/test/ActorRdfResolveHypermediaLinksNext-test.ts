@@ -2,7 +2,7 @@ import { ActorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hyperm
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorRdfResolveHypermediaLinksNext } from '../lib/ActorRdfResolveHypermediaLinksNext';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 describe('ActorRdfResolveHypermediaLinksNext', () => {
   let bus: any;

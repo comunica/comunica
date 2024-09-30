@@ -2,7 +2,7 @@ import { KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { ActorRdfUpdateHypermediaPutLdp } from '../lib/ActorRdfUpdateHypermediaPutLdp';
 import { QuadDestinationPutLdp } from '../lib/QuadDestinationPutLdp';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 describe('ActorRdfUpdateHypermediaPutLdp', () => {
   let bus: any;

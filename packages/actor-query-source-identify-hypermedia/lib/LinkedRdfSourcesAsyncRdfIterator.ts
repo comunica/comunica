@@ -1,6 +1,5 @@
 import type { ILinkQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import { KeysStatistics } from '@comunica/context-entries';
-import { MetadataValidationState } from '@comunica/metadata';
 import type {
   ILink,
   IQuerySource,
@@ -9,6 +8,7 @@ import type {
   IQueryBindingsOptions,
   IStatisticBase,
 } from '@comunica/types';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator, BufferedIteratorOptions } from 'asynciterator';
 import { BufferedIterator } from 'asynciterator';

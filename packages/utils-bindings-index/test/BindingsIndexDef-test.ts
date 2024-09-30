@@ -1,4 +1,4 @@
-import { BindingsFactory, bindingsToCompactString } from '@comunica/bindings-factory';
+import { BindingsFactory, bindingsToCompactString } from '@comunica/utils-bindings-factory';
 import { DataFactory } from 'rdf-data-factory';
 import { BindingsIndexDef } from '../lib/BindingsIndexDef';
 

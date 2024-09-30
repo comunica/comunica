@@ -2,7 +2,7 @@ import { KeysCore, KeysQuerySourceIdentify, KeysInitQuery } from '@comunica/cont
 import { ActionContext, Bus } from '@comunica/core';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorContextPreprocessSetDefaults } from '../lib/ActorContextPreprocessSetDefaults';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 describe('ActorContextPreprocessSetDefaults', () => {
   let bus: any;

@@ -1,14 +1,14 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import { BlankNodeScoped } from '@comunica/data-factory';
-import { MetadataValidationState } from '@comunica/metadata';
 import type { IQuerySource } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { BlankNodeScoped } from '@comunica/utils-data-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { QuerySourceSkolemized } from '../lib/QuerySourceSkolemized';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 import 'jest-rdf';
 
 const DF = new DataFactory();

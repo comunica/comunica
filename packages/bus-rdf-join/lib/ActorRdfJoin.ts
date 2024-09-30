@@ -6,7 +6,6 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IAction, IActorArgs, Mediate, TestResult } from '@comunica/core';
 import { passTest, failTest, Actor } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import { cachifyMetadata, MetadataValidationState } from '@comunica/metadata';
 import type {
   IQueryOperationResultBindings,
   MetadataBindings,
@@ -18,6 +17,7 @@ import type {
   ComunicaDataFactory,
   MetadataVariable,
 } from '@comunica/types';
+import { cachifyMetadata, MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import { instrumentIterator } from './instrumentIterator';
 

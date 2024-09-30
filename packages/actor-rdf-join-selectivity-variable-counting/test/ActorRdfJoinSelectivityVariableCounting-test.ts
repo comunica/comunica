@@ -4,7 +4,7 @@ import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorRdfJoinSelectivityVariableCounting, JoinTypes } from '../lib/ActorRdfJoinSelectivityVariableCounting';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const F = new Factory();
 const DF = new DataFactory();

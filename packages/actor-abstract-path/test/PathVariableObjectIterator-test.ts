@@ -1,7 +1,7 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext } from '@comunica/core';
 import type { BindingsStream } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator, BufferedIterator } from 'asynciterator';

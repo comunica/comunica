@@ -5,7 +5,7 @@ import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorOptimizeQueryOperationRewriteMove } from '../lib/ActorOptimizeQueryOperationRewriteMove';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory<RDF.BaseQuad>();
 const AF = new Factory();

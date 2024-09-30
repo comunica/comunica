@@ -1,6 +1,6 @@
 # Comunica Metadata
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Fmetadata.svg)](https://www.npmjs.com/package/@comunica/metadata)
+[![npm version](https://badge.fury.io/js/%40comunica%2Futils-metadata.svg)](https://www.npmjs.com/package/@comunica/utils-metadata)
 
 A collection of metadata helpers for Comunica.
 
@@ -12,5 +12,5 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/metadata
+$ yarn add @comunica/utils-metadata
 ```

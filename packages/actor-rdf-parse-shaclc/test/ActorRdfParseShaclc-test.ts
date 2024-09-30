@@ -5,7 +5,7 @@ import 'jest-rdf';
 import type { IActionContext } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
 import { ActorRdfParseShaclc } from '../lib/ActorRdfParseShaclc';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
 

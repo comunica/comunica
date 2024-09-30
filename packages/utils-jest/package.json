@@ -1,5 +1,5 @@
 {
-  "name": "@comunica/jest",
+  "name": "@comunica/utils-jest",
   "version": "3.2.1",
   "description": "Jest utilities for Comunica",
   "license": "MIT",
@@ -11,7 +11,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/jest"
+    "directory": "packages/utils-jest"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"
@@ -42,9 +42,9 @@
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\""
   },
   "dependencies": {
-    "@comunica/bindings-factory": "^3.2.1",
     "@comunica/core": "^3.2.1",
     "@comunica/types": "^3.2.1",
+    "@comunica/utils-bindings-factory": "^3.2.1",
     "@jest/expect-utils": "^29.7.0",
     "@rdfjs/types": "*",
     "@types/object-inspect": "^1.13.0",

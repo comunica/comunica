@@ -5,7 +5,7 @@ import { KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorRdfUpdateQuadsHypermedia } from '../lib/ActorRdfUpdateQuadsHypermedia';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 describe('ActorRdfUpdateQuadsHypermedia', () => {
   let bus: any;

@@ -3,12 +3,12 @@ import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTest } from '@comunica/core';
-import { getMetadataBindings, getMetadataQuads } from '@comunica/metadata';
 import type {
   IPhysicalQueryPlanLogger,
   IQueryOperationResult,
   IQuerySourceWrapper,
 } from '@comunica/types';
+import { getMetadataBindings, getMetadataQuads } from '@comunica/utils-metadata';
 import { Algebra, Util } from 'sparqlalgebrajs';
 
 /**

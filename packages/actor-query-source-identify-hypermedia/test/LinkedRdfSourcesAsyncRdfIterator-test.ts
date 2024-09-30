@@ -1,12 +1,12 @@
 import { Readable } from 'node:stream';
 import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { ILinkQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import { KeysStatistics } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import { MetadataValidationState } from '@comunica/metadata';
 import { StatisticLinkDereference } from '@comunica/statistic-link-dereference';
 import type { ILink, IActionContext, IQueryBindingsOptions, MetadataBindings } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -14,7 +14,7 @@ import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
 import type { ISourceState, SourceStateGetter } from '../lib/LinkedRdfSourcesAsyncRdfIterator';
 import { LinkedRdfSourcesAsyncRdfIterator } from '../lib/LinkedRdfSourcesAsyncRdfIterator';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 // Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
 const EventEmitter = require('node:events');

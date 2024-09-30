@@ -1,12 +1,12 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import { BlankNodeBindingsScoped, BlankNodeScoped } from '@comunica/data-factory';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { BlankNodeBindingsScoped, BlankNodeScoped } from '@comunica/utils-data-factory';
 import { ArrayIterator, SingletonIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationProject } from '../lib/ActorQueryOperationProject';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);

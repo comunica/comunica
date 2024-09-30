@@ -4,7 +4,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
 import { MemoryPhysicalQueryPlanLogger } from '../lib';
 import { ActorQueryProcessExplainPhysical } from '../lib/ActorQueryProcessExplainPhysical';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 describe('ActorQueryProcessExplainPhysical', () => {
   let bus: any;

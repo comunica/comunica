@@ -1,8 +1,8 @@
-import type { BindingsFactory } from '@comunica/bindings-factory';
-import { bindingsToCompactString } from '@comunica/bindings-factory';
 import type { IAsyncEvaluatorContext } from '@comunica/expression-evaluator';
 import { AsyncAggregateEvaluator } from '@comunica/expression-evaluator';
 import type { Bindings } from '@comunica/types';
+import { bindingsToCompactString } from '@comunica/utils-bindings-factory';
+import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 

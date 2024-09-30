@@ -1,7 +1,7 @@
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorRdfMetadataAccumulatePageSize } from '../lib/ActorRdfMetadataAccumulatePageSize';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 describe('ActorRdfMetadataAccumulatePageSize', () => {
   let bus: any;

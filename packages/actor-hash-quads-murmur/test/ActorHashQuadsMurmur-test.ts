@@ -4,7 +4,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { Quad } from 'rdf-data-factory';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorHashQuadsMurmur } from '../lib/ActorHashQuadsMurmur';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 

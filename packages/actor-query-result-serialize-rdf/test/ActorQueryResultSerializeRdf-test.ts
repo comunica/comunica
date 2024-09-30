@@ -2,7 +2,7 @@ import { ActorQueryResultSerialize } from '@comunica/bus-query-result-serialize'
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorQueryResultSerializeRdf } from '../lib/ActorQueryResultSerializeRdf';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 describe('ActorQueryResultSerializeRdf', () => {
   let bus: any;

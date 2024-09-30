@@ -9,7 +9,7 @@ import { Algebra, Factory } from 'sparqlalgebrajs';
 import {
   ActorOptimizeQueryOperationPruneEmptySourceOperations,
 } from '../lib/ActorOptimizeQueryOperationPruneEmptySourceOperations';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const AF = new Factory();
 const DF = new DataFactory();

@@ -2,7 +2,7 @@ import { ActorQueryParse } from '@comunica/bus-query-parse';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorQueryParseGraphql } from '..';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 describe('ActorQueryParseGraphql', () => {
   let bus: any;

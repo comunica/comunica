@@ -1,5 +1,5 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
-import { MetadataValidationState } from '@comunica/metadata';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
@@ -14,7 +14,7 @@ import {
   quadsOrderToBindingsOrder,
   quadsToBindings,
 } from '../lib';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 import 'jest-rdf';
 
 const quad = require('rdf-quad');

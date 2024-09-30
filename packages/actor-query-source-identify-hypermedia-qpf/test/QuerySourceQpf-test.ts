@@ -1,11 +1,11 @@
 import 'jest-rdf';
 import { Readable } from 'node:stream';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActorDereferenceRdfOutput } from '@comunica/bus-dereference-rdf';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
@@ -13,7 +13,7 @@ import { DataFactory } from 'rdf-data-factory';
 import { PassThrough } from 'readable-stream';
 import { Factory } from 'sparqlalgebrajs';
 import { QuerySourceQpf } from '../lib/QuerySourceQpf';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
 const streamifyArray = require('streamify-array');

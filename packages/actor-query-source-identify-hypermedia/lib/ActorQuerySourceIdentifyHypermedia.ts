@@ -1,4 +1,3 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import { ActorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
@@ -17,6 +16,7 @@ import { KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entrie
 import { ActionContext, failTest, passTestVoid } from '@comunica/core';
 import type { IActorTest, TestResult } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { QuerySourceHypermedia } from './QuerySourceHypermedia';
 
 /**

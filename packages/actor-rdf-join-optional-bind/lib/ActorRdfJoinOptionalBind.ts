@@ -1,6 +1,5 @@
 import type { BindOrder } from '@comunica/actor-rdf-join-inner-multi-bind';
 import { ActorRdfJoinMultiBind } from '@comunica/actor-rdf-join-inner-multi-bind';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
@@ -16,6 +15,7 @@ import type { TestResult } from '@comunica/core';
 import { passTestWithSideData, failTest } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { Bindings, BindingsStream, ComunicaDataFactory } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 
 /**

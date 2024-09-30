@@ -1,17 +1,18 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import '../../lib';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
 
-describe('toEqualBindingsArray', () => {
-  it('should succeed for equal empty bindings', () => {
-    expect([]).toEqualBindingsArray([]);
+describe('toEqualBindingsStream', () => {
+  it('should succeed for equal empty bindings', async() => {
+    await expect(new ArrayIterator([], { autoStart: false })).toEqualBindingsStream([]);
   });
 
-  it('should succeed for equal non-empty bindings', () => {
-    expect([
+  it('should succeed for equal non-empty bindings', async() => {
+    await expect(new ArrayIterator([
       BF.bindings([
         [ DF.variable('a'), DF.namedNode('a1') ],
         [ DF.variable('b'), DF.namedNode('b1') ],
@@ -20,7 +21,7 @@ describe('toEqualBindingsArray', () => {
         [ DF.variable('b'), DF.namedNode('b1') ],
         [ DF.variable('c'), DF.namedNode('c1') ],
       ]),
-    ]).toEqualBindingsArray([
+    ], { autoStart: false })).toEqualBindingsStream([
       BF.bindings([
         [ DF.variable('a'), DF.namedNode('a1') ],
         [ DF.variable('b'), DF.namedNode('b1') ],
@@ -32,8 +33,8 @@ describe('toEqualBindingsArray', () => {
     ]);
   });
 
-  it('should not succeed for non-equal bindings', () => {
-    expect([
+  it('should not succeed for non-equal bindings', async() => {
+    await expect(new ArrayIterator([
       BF.bindings([
         [ DF.variable('a'), DF.namedNode('a1') ],
         [ DF.variable('b'), DF.namedNode('b1') ],
@@ -42,7 +43,7 @@ describe('toEqualBindingsArray', () => {
         [ DF.variable('b'), DF.namedNode('b1') ],
         [ DF.variable('c'), DF.namedNode('c1') ],
       ]),
-    ]).not.toEqualBindingsArray([
+    ], { autoStart: false })).not.toEqualBindingsStream([
       BF.bindings([
         [ DF.variable('a'), DF.namedNode('a1') ],
         [ DF.variable('b'), DF.namedNode('b1') ],
@@ -54,8 +55,8 @@ describe('toEqualBindingsArray', () => {
     ]);
   });
 
-  it('should not succeed for non-equal bindings due to different length', () => {
-    expect([
+  it('should not succeed for non-equal bindings due to different length', async() => {
+    await expect(new ArrayIterator([
       BF.bindings([
         [ DF.variable('a'), DF.namedNode('a1') ],
         [ DF.variable('b'), DF.namedNode('b1') ],
@@ -64,7 +65,7 @@ describe('toEqualBindingsArray', () => {
         [ DF.variable('b'), DF.namedNode('b1') ],
         [ DF.variable('c'), DF.namedNode('c1') ],
       ]),
-    ]).not.toEqualBindingsArray([
+    ], { autoStart: false })).not.toEqualBindingsStream([
       BF.bindings([
         [ DF.variable('a'), DF.namedNode('a1') ],
         [ DF.variable('b'), DF.namedNode('b1') ],
@@ -72,13 +73,13 @@ describe('toEqualBindingsArray', () => {
     ]);
   });
 
-  it('should not fail for equal empty bindings', () => {
-    expect(() => expect([]).not.toEqualBindingsArray([]))
-      .toThrow(`expected [  ] not to equal [  ]`);
+  it('should not fail for equal empty bindings', async() => {
+    await expect(() => expect(new ArrayIterator([], { autoStart: false })).not.toEqualBindingsStream([]))
+      .rejects.toThrow(`expected [  ] not to equal [  ]`);
   });
 
-  it('should not fail for equal non-empty bindings', () => {
-    expect(() => expect([
+  it('should not fail for equal non-empty bindings', async() => {
+    await expect(() => expect(new ArrayIterator([
       BF.bindings([
         [ DF.variable('a'), DF.namedNode('a1') ],
         [ DF.variable('b'), DF.namedNode('b1') ],
@@ -87,7 +88,7 @@ describe('toEqualBindingsArray', () => {
         [ DF.variable('b'), DF.namedNode('b1') ],
         [ DF.variable('c'), DF.namedNode('c1') ],
       ]),
-    ]).not.toEqualBindingsArray([
+    ], { autoStart: false })).not.toEqualBindingsStream([
       BF.bindings([
         [ DF.variable('a'), DF.namedNode('a1') ],
         [ DF.variable('b'), DF.namedNode('b1') ],
@@ -97,7 +98,7 @@ describe('toEqualBindingsArray', () => {
         [ DF.variable('c'), DF.namedNode('c1') ],
       ]),
     ]))
-      .toThrow(`expected [ {
+      .rejects.toThrow(`expected [ {
   "a": "a1",
   "b": "b1"
 }, {
@@ -112,8 +113,8 @@ describe('toEqualBindingsArray', () => {
 } ]`);
   });
 
-  it('should fail for non-equal non-empty bindings', () => {
-    expect(() => expect([
+  it('should fail for non-equal non-empty bindings', async() => {
+    await expect(() => expect(new ArrayIterator([
       BF.bindings([
         [ DF.variable('a'), DF.namedNode('a1') ],
         [ DF.variable('b'), DF.namedNode('b1') ],
@@ -122,7 +123,7 @@ describe('toEqualBindingsArray', () => {
         [ DF.variable('b'), DF.namedNode('b1') ],
         [ DF.variable('c'), DF.namedNode('c1') ],
       ]),
-    ]).toEqualBindingsArray([
+    ], { autoStart: false })).toEqualBindingsStream([
       BF.bindings([
         [ DF.variable('a'), DF.namedNode('a2') ],
         [ DF.variable('b'), DF.namedNode('b2') ],
@@ -132,7 +133,7 @@ describe('toEqualBindingsArray', () => {
         [ DF.variable('c'), DF.namedNode('c1') ],
       ]),
     ]))
-      .toThrow(`expected [ {
+      .rejects.toThrow(`expected [ {
   "a": "a1",
   "b": "b1"
 }, {
@@ -148,8 +149,8 @@ describe('toEqualBindingsArray', () => {
 Index 0 is different.`);
   });
 
-  it('should fail for non-equal non-empty bindings due to different length', () => {
-    expect(() => expect([
+  it('should fail for non-equal non-empty bindings due to different length', async() => {
+    await expect(() => expect(new ArrayIterator([
       BF.bindings([
         [ DF.variable('a'), DF.namedNode('a1') ],
         [ DF.variable('b'), DF.namedNode('b1') ],
@@ -158,13 +159,13 @@ Index 0 is different.`);
         [ DF.variable('b'), DF.namedNode('b1') ],
         [ DF.variable('c'), DF.namedNode('c1') ],
       ]),
-    ]).toEqualBindingsArray([
+    ], { autoStart: false })).toEqualBindingsStream([
       BF.bindings([
         [ DF.variable('a'), DF.namedNode('a2') ],
         [ DF.variable('b'), DF.namedNode('b2') ],
       ]),
     ]))
-      .toThrow(`expected [ {
+      .rejects.toThrow(`expected [ {
   "a": "a1",
   "b": "b1"
 }, {

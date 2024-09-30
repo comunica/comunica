@@ -44,8 +44,8 @@
     "@comunica/bus-query-operation": "^3.2.2",
     "@comunica/bus-rdf-metadata-accumulate": "^3.2.1",
     "@comunica/core": "^3.2.1",
-    "@comunica/metadata": "^3.2.1",
     "@comunica/types": "^3.2.1",
+    "@comunica/utils-metadata": "^3.2.1",
     "asynciterator": "^3.9.0",
     "sparqlalgebrajs": "^4.3.8"
   }

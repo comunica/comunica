@@ -7,7 +7,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { stringify as streamToString } from '@jeswr/stream-to-string';
 import { ActorDereferenceFile } from '../lib/ActorDereferenceFile';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 function fileUrl(str: string): string {
   let pathName = path.resolve(str).replaceAll('\\', '/');

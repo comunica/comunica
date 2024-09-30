@@ -4,7 +4,7 @@ import { empty, TransformIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { QuerySourceQpf } from '../lib';
 import { ActorQuerySourceIdentifyHypermediaQpf } from '../lib/ActorQuerySourceIdentifyHypermediaQpf';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const v1 = DF.variable('v1');

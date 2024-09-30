@@ -5,7 +5,7 @@ import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQuerySourceIdentifyHypermediaSparql } from '../lib/ActorQuerySourceIdentifyHypermediaSparql';
 import { QuerySourceSparql } from '../lib/QuerySourceSparql';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const mediatorMergeBindingsContext: any = {
   mediate: () => ({}),

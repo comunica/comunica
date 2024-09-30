@@ -9,7 +9,7 @@ import { StatisticLinkDereference } from '@comunica/statistic-link-dereference';
 import type { IActionContext, IQuerySourceWrapper } from '@comunica/types';
 import { RdfStore } from 'rdf-stores';
 import { ActorContextPreprocessQuerySourceIdentify } from '../lib/ActorContextPreprocessQuerySourceIdentify';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 describe('ActorContextPreprocessQuerySourceIdentify', () => {
   let bus: any;

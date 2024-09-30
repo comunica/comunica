@@ -1,20 +1,20 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type {
   IActionRdfMetadataAccumulate,
   MediatorRdfMetadataAccumulate,
 } from '@comunica/bus-rdf-metadata-accumulate';
 import { ActionContext, Bus } from '@comunica/core';
-import { MetadataValidationState } from '@comunica/metadata';
 import type {
   IActionContext,
   IQueryOperationResultBindings,
   MetadataQuads,
 } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationUnion } from '../lib/ActorQueryOperationUnion';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 import 'jest-rdf';
 
 const DF = new DataFactory();
