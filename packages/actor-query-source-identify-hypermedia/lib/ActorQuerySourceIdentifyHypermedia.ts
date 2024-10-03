@@ -1,4 +1,3 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import { ActorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
@@ -14,9 +13,10 @@ import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extr
 import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import { KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
-import { ActionContext } from '@comunica/core';
-import type { IActorTest } from '@comunica/core';
+import { ActionContext, failTest, passTestVoid } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { QuerySourceHypermedia } from './QuerySourceHypermedia';
 
 /**
@@ -39,11 +39,11 @@ export class ActorQuerySourceIdentifyHypermedia extends ActorQuerySourceIdentify
     super(args);
   }
 
-  public async test(action: IActionQuerySourceIdentify): Promise<IActorTest> {
+  public async test(action: IActionQuerySourceIdentify): Promise<TestResult<IActorTest>> {
     if (typeof action.querySourceUnidentified.value !== 'string') {
-      throw new TypeError(`${this.name} requires a single query source with a URL value to be present in the context.`);
+      return failTest(`${this.name} requires a single query source with a URL value to be present in the context.`);
     }
-    return true;
+    return passTestVoid();
   }
 
   public async run(action: IActionQuerySourceIdentify): Promise<IActorQuerySourceIdentifyOutput> {

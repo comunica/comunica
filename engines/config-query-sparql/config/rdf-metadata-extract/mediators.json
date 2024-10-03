@@ -7,5 +7,5 @@
   "@type": "MediatorCombineUnion",
   "bus": { "@id": "ActorRdfMetadataExtract:_default_bus" },
   "field": "metadata",
-  "filterErrors": true
+  "filterFailures": true
 }

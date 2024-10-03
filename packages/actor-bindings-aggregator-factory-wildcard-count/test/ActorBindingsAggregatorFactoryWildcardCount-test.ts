@@ -1,13 +1,13 @@
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import {
   BF,
   DF,
   getMockEEActionContext,
   getMockMediatorExpressionEvaluatorFactory,
   makeAggregate,
-} from '@comunica/jest';
-import type { IActionContext } from '@comunica/types';
+} from '@comunica/utils-jest';
 import { ArrayIterator } from 'asynciterator';
 import { ActorBindingsAggregatorFactoryWildcardCount } from '../lib';
 
@@ -56,35 +56,35 @@ describe('ActorBindingsAggregatorFactoryWildcardCount', () => {
         await expect(actor.test({
           context,
           expr: makeAggregate('count', false),
-        })).rejects.toThrow(exception);
+        })).resolves.toFailTest(exception);
       });
 
       it('rejects count 2', async() => {
         await expect(actor.test({
           context,
           expr: makeAggregate('count', true),
-        })).rejects.toThrow(exception);
+        })).resolves.toFailTest(exception);
       });
 
       it('accepts wildcard count 1', async() => {
         await expect(actor.test({
           context,
           expr: makeAggregate('count', false, undefined, true),
-        })).resolves.toEqual({});
+        })).resolves.toPassTestVoid();
       });
 
       it('accepts wildcard count 2', async() => {
         await expect(actor.test({
           context: getMockEEActionContext(),
           expr: makeAggregate('count', true, undefined, true),
-        })).resolves.toEqual({});
+        })).resolves.toPassTestVoid();
       });
 
       it('rejects sum', async() => {
         await expect(actor.test({
           context,
           expr: makeAggregate('sum', false),
-        })).rejects.toThrow(exception);
+        })).resolves.toFailTest(exception);
       });
     });
 

@@ -1,0 +1,49 @@
+{
+  "name": "@comunica/utils-metadata",
+  "version": "3.2.1",
+  "description": "Metadata helpers for Comunica",
+  "lsd:module": true,
+  "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
+  "homepage": "https://comunica.dev/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/utils-metadata"
+  },
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
+  "keywords": [
+    "comunica",
+    "metadata"
+  ],
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "bin/**/*.d.ts",
+    "bin/**/*.js",
+    "bin/**/*.js.map",
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.js.map"
+  ],
+  "scripts": {
+    "build": "yarn run build:ts && yarn run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
+  },
+  "dependencies": {
+    "@comunica/types": "^3.2.1",
+    "@rdfjs/types": "*",
+    "asynciterator": "^3.9.0"
+  }
+}

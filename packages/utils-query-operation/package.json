@@ -1,0 +1,52 @@
+{
+  "name": "@comunica/utils-query-operation",
+  "version": "3.2.1",
+  "description": "Query operation utilities",
+  "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
+  "homepage": "https://comunica.dev/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/utils-query-operation"
+  },
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
+  "keywords": [
+    "semantic",
+    "actor",
+    "framework",
+    "events",
+    "messages",
+    "query",
+    "operation"
+  ],
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.js.map"
+  ],
+  "scripts": {
+    "build": "node \"../../node_modules/typescript/bin/tsc\""
+  },
+  "dependencies": {
+    "@comunica/context-entries": "^3.2.1",
+    "@comunica/core": "^3.2.1",
+    "@comunica/types": "^3.2.1",
+    "@comunica/utils-bindings-factory": "^3.2.1",
+    "@rdfjs/types": "*",
+    "rdf-string": "^1.6.1",
+    "rdf-terms": "^1.11.0",
+    "sparqlalgebrajs": "^4.3.8"
+  }
+}

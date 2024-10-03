@@ -1,6 +1,7 @@
 import type { MediateMediaTyped, MediateMediaTypes } from '@comunica/actor-abstract-mediatyped';
 import type { IActionParse, IActorParseOutput, IParseMetadata } from '@comunica/actor-abstract-parse';
-import type { IActorArgs, IActorTest } from '@comunica/core';
+import type { IActorArgs, IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import type { Readable } from 'readable-stream';
 import { PassThrough } from 'readable-stream';
 import type { IActionDereference, IActorDereferenceOutput, MediatorDereference } from './ActorDereference';
@@ -59,8 +60,8 @@ export abstract class ActorDereferenceParse<
     super(args);
   }
 
-  public async test(_action: IActionDereference): Promise<IActorTest> {
-    return true;
+  public async test(_action: IActionDereference): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   /**

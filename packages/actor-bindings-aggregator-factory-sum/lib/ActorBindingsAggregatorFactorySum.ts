@@ -8,7 +8,8 @@ import {
 } from '@comunica/bus-bindings-aggregator-factory';
 import type { MediatorFunctionFactory, MediatorFunctionFactoryUnsafe } from '@comunica/bus-function-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import { SparqlOperator } from '@comunica/expression-evaluator';
 import { SumAggregator } from './SumAggregator';
 
@@ -27,11 +28,11 @@ export class ActorBindingsAggregatorFactorySum extends ActorBindingsAggregatorFa
     this.mediatorFunctionFactory = <MediatorFunctionFactory> args.mediatorFunctionFactory;
   }
 
-  public async test(action: IActionBindingsAggregatorFactory): Promise<IActorTest> {
+  public async test(action: IActionBindingsAggregatorFactory): Promise<TestResult<IActorTest>> {
     if (action.expr.aggregator !== 'sum') {
-      throw new Error('This actor only supports the \'sum\' aggregator.');
+      return failTest('This actor only supports the \'sum\' aggregator.');
     }
-    return {};
+    return passTestVoid();
   }
 
   public async run({ expr, context }: IActionBindingsAggregatorFactory):

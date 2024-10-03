@@ -1,19 +1,19 @@
 import { ActorRdfJoinNestedLoop } from '@comunica/actor-rdf-join-inner-nestedloop';
-import { BindingsFactory } from '@comunica/bindings-factory';
-import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { MediatorRdfJoin, IActionRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinEntriesSort, MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
 import type { MediatorRdfJoinSelectivity } from '@comunica/bus-rdf-join-selectivity';
 import { KeysInitQuery, KeysRdfJoin } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext, IQuerySourceWrapper, IJoinEntryWithMetadata } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
+import { assignOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, AsyncIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorRdfJoinMultiSmallestFilterBindings } from '../lib/ActorRdfJoinMultiSmallestFilterBindings';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const AF = new Factory();
 const DF = new DataFactory();
@@ -33,10 +33,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
     let mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort;
     let mediatorJoin: MediatorRdfJoin;
     let actor: ActorRdfJoinMultiSmallestFilterBindings;
-    let logSpy: jest.SpyInstance;
     let source1: IQuerySourceWrapper;
-    let source2: IQuerySourceWrapper;
-    let source3TriplePattern: IQuerySourceWrapper;
     let source4: IQuerySourceWrapper;
     let source5Context: IQuerySourceWrapper;
 
@@ -63,9 +60,9 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
             a.entries[1].operation.called = invocationCounter;
             invocationCounter++;
             return new ActorRdfJoinNestedLoop({ name: 'actor', bus, mediatorJoinSelectivity })
-              .run(a);
+              .run(a, undefined!);
           }
-          return actor.run(a);
+          return actor.run(a, undefined!);
         },
       };
       actor = new ActorRdfJoinMultiSmallestFilterBindings({
@@ -77,13 +74,13 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
         mediatorJoinSelectivity,
         mediatorJoinEntriesSort,
       });
-      logSpy = jest.spyOn((<any> actor), 'logDebug').mockImplementation();
+      jest.spyOn((<any> actor), 'logDebug').mockImplementation();
       source1 = <IQuerySourceWrapper> <any> {
         source: {
           getSelectorShape() {
             return {
               type: 'operation',
-              operation: { operationType: 'type', type: Algebra.types.PROJECT },
+              operation: { operationType: 'wildcard' },
               filterBindings: true,
             };
           },
@@ -97,28 +94,6 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
               autoStart: false,
             });
           }),
-        },
-      };
-      source2 = <IQuerySourceWrapper> <any> {
-        source: {
-          getSelectorShape() {
-            return {
-              type: 'operation',
-              operation: { operationType: 'type', type: Algebra.types.PROJECT },
-              filterBindings: true,
-            };
-          },
-        },
-      };
-      source3TriplePattern = <IQuerySourceWrapper> <any> {
-        source: {
-          getSelectorShape() {
-            return {
-              type: 'operation',
-              operation: { operationType: 'type', type: Algebra.types.PATTERN },
-              filterBindings: true,
-            };
-          },
         },
       };
       source4 = <IQuerySourceWrapper> <any> {
@@ -169,41 +144,44 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
       it('should handle 3 entries', async() => {
         const e1: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 3 },
             pageSize: 100,
             requestTime: 10,
-            canContainUndefs: false,
-            variables: [ DF.variable('a') ],
+            variables: [
+              { variable: DF.variable('a'), canBeUndef: false },
+            ],
           },
         };
         const e2: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 5 },
             pageSize: 100,
             requestTime: 10,
-            canContainUndefs: false,
-            variables: [ DF.variable('a') ],
+            variables: [
+              { variable: DF.variable('a'), canBeUndef: false },
+            ],
           },
         };
         const e3: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 1 },
             pageSize: 100,
             requestTime: 10,
-            canContainUndefs: false,
-            variables: [ DF.variable('a') ],
+            variables: [
+              { variable: DF.variable('a'), canBeUndef: false },
+            ],
           },
         };
-        await expect(actor.sortJoinEntries([ e1, e2, e3 ], context)).resolves.toEqual({
+        await expect(actor.sortJoinEntries([ e1, e2, e3 ], context)).resolves.toPassTest({
           first: e3,
           second: e1,
           remaining: [ e2 ],
@@ -213,42 +191,45 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
       it('should prioritize modified operations', async() => {
         const e1: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 3 },
             pageSize: 100,
             requestTime: 10,
-            canContainUndefs: false,
-            variables: [ DF.variable('a') ],
+            variables: [
+              { variable: DF.variable('a'), canBeUndef: false },
+            ],
           },
         };
         const e2: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 5 },
             pageSize: 100,
             requestTime: 10,
-            canContainUndefs: false,
-            variables: [ DF.variable('a') ],
+            variables: [
+              { variable: DF.variable('a'), canBeUndef: false },
+            ],
           },
           operationModified: true,
         };
         const e3: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 1 },
             pageSize: 100,
             requestTime: 10,
-            canContainUndefs: false,
-            variables: [ DF.variable('a') ],
+            variables: [
+              { variable: DF.variable('a'), canBeUndef: false },
+            ],
           },
         };
-        await expect(actor.sortJoinEntries([ e1, e2, e3 ], context)).resolves.toEqual({
+        await expect(actor.sortJoinEntries([ e1, e2, e3 ], context)).resolves.toPassTest({
           first: e2,
           second: e3,
           remaining: [ e1 ],
@@ -258,41 +239,44 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
       it('should prioritize shared variables for the second entry', async() => {
         const e1: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 5 },
             pageSize: 100,
             requestTime: 10,
-            canContainUndefs: false,
-            variables: [ DF.variable('a') ],
+            variables: [
+              { variable: DF.variable('a'), canBeUndef: false },
+            ],
           },
         };
         const e2: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 3 },
             pageSize: 100,
             requestTime: 10,
-            canContainUndefs: false,
-            variables: [ DF.variable('b') ],
+            variables: [
+              { variable: DF.variable('b'), canBeUndef: false },
+            ],
           },
         };
         const e3: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 1 },
             pageSize: 100,
             requestTime: 10,
-            canContainUndefs: false,
-            variables: [ DF.variable('a') ],
+            variables: [
+              { variable: DF.variable('a'), canBeUndef: false },
+            ],
           },
         };
-        await expect(actor.sortJoinEntries([ e1, e2, e3 ], context)).resolves.toEqual({
+        await expect(actor.sortJoinEntries([ e1, e2, e3 ], context)).resolves.toPassTest({
           first: e3,
           second: e1,
           remaining: [ e2 ],
@@ -302,41 +286,45 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
       it('should prioritize fewest variables for the second entry', async() => {
         const e1: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 3 },
             pageSize: 100,
             requestTime: 10,
-            canContainUndefs: false,
-            variables: [ DF.variable('a') ],
+            variables: [
+              { variable: DF.variable('a'), canBeUndef: false },
+            ],
           },
         };
         const e2: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 3 },
             pageSize: 100,
             requestTime: 10,
-            canContainUndefs: false,
-            variables: [ DF.variable('a'), DF.variable('b') ],
+            variables: [
+              { variable: DF.variable('a'), canBeUndef: false },
+              { variable: DF.variable('b'), canBeUndef: false },
+            ],
           },
         };
         const e3: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 1 },
             pageSize: 100,
             requestTime: 10,
-            canContainUndefs: false,
-            variables: [ DF.variable('a') ],
+            variables: [
+              { variable: DF.variable('a'), canBeUndef: false },
+            ],
           },
         };
-        await expect(actor.sortJoinEntries([ e1, e2, e3 ], context)).resolves.toEqual({
+        await expect(actor.sortJoinEntries([ e1, e2, e3 ], context)).resolves.toPassTest({
           first: e3,
           second: e1,
           remaining: [ e2 ],
@@ -346,41 +334,50 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
       it('should prioritize shared variables over fewest variables for the second entry', async() => {
         const e1: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 3 },
             pageSize: 100,
             requestTime: 10,
-            canContainUndefs: false,
-            variables: [ DF.variable('a'), DF.variable('b'), DF.variable('c') ],
+            variables: [
+              { variable: DF.variable('a'), canBeUndef: false },
+              { variable: DF.variable('b'), canBeUndef: false },
+              { variable: DF.variable('c'), canBeUndef: false },
+            ],
           },
         };
         const e2: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 3 },
             pageSize: 100,
             requestTime: 10,
-            canContainUndefs: false,
-            variables: [ DF.variable('a'), DF.variable('b'), DF.variable('c'), DF.variable('d') ],
+            variables: [
+              { variable: DF.variable('a'), canBeUndef: false },
+              { variable: DF.variable('b'), canBeUndef: false },
+              { variable: DF.variable('c'), canBeUndef: false },
+              { variable: DF.variable('d'), canBeUndef: false },
+            ],
           },
         };
         const e3: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 1 },
             pageSize: 100,
             requestTime: 10,
-            canContainUndefs: false,
-            variables: [ DF.variable('a'), DF.variable('b') ],
+            variables: [
+              { variable: DF.variable('a'), canBeUndef: false },
+              { variable: DF.variable('b'), canBeUndef: false },
+            ],
           },
         };
-        await expect(actor.sortJoinEntries([ e1, e2, e3 ], context)).resolves.toEqual({
+        await expect(actor.sortJoinEntries([ e1, e2, e3 ], context)).resolves.toPassTest({
           first: e3,
           second: e1,
           remaining: [ e2 ],
@@ -390,42 +387,46 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
       it('should throw for no shared variables for the second entry', async() => {
         const e1: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 3 },
             pageSize: 100,
             requestTime: 10,
-            canContainUndefs: false,
-            variables: [ DF.variable('c') ],
+            variables: [
+              { variable: DF.variable('c'), canBeUndef: false },
+            ],
           },
         };
         const e2: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 3 },
             pageSize: 100,
             requestTime: 10,
-            canContainUndefs: false,
-            variables: [ DF.variable('d') ],
+            variables: [
+              { variable: DF.variable('d'), canBeUndef: false },
+            ],
           },
         };
         const e3: IJoinEntryWithMetadata = {
           output: <any>{},
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+          operation: assignOperationSource(AF.createNop(), source1),
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 1 },
             pageSize: 100,
             requestTime: 10,
-            canContainUndefs: false,
-            variables: [ DF.variable('a'), DF.variable('b') ],
+            variables: [
+              { variable: DF.variable('a'), canBeUndef: false },
+              { variable: DF.variable('b'), canBeUndef: false },
+            ],
           },
         };
-        await expect(actor.sortJoinEntries([ e1, e2, e3 ], context)).rejects
-          .toThrow(`Actor actor can only join with common variables`);
+        await expect(actor.sortJoinEntries([ e1, e2, e3 ], context)).resolves
+          .toFailTest(`Actor actor can only join with common variables`);
       });
     });
 
@@ -448,12 +449,14 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 2 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('b') ],
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
-              operation: ActorQueryOperation.assignOperationSource(
+              operation: assignOperationSource(
                 AF.createPattern(DF.variable('a'), DF.namedNode('ex:p1'), DF.variable('b')),
                 source1,
               ),
@@ -468,8 +471,9 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 1 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a') ],
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -490,8 +494,10 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
         await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: 1.6 },
-          canContainUndefs: false,
-          variables: [ DF.variable('a'), DF.variable('b') ],
+          variables: [
+            { variable: DF.variable('a'), canBeUndef: false },
+            { variable: DF.variable('b'), canBeUndef: false },
+          ],
         });
 
         // Validate physicalPlanMetadata
@@ -533,12 +539,14 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 2 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('b') ],
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
-              operation: ActorQueryOperation.assignOperationSource(
+              operation: assignOperationSource(
                 AF.createPattern(DF.variable('a'), DF.namedNode('ex:p1'), DF.variable('b')),
                 source5Context,
               ),
@@ -553,8 +561,9 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 1 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a') ],
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -575,8 +584,10 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
         await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: 1.6 },
-          canContainUndefs: false,
-          variables: [ DF.variable('a'), DF.variable('b') ],
+          variables: [
+            { variable: DF.variable('a'), canBeUndef: false },
+            { variable: DF.variable('b'), canBeUndef: false },
+          ],
         });
 
         // Validate physicalPlanMetadata
@@ -609,7 +620,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
             entries: [
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+                operation: assignOperationSource(AF.createNop(), source1),
               },
               {
                 output: <any>{},
@@ -617,38 +628,43 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
               },
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+                operation: assignOperationSource(AF.createNop(), source1),
               },
             ],
             context: new ActionContext(),
           },
-          [
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 3 },
-              pageSize: 100,
-              requestTime: 10,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 2 },
-              pageSize: 100,
-              requestTime: 20,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 5 },
-              pageSize: 100,
-              requestTime: 30,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
-            },
-          ],
-        )).resolves.toEqual({
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                pageSize: 100,
+                requestTime: 10,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 20,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 5 },
+                pageSize: 100,
+                requestTime: 30,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+            ],
+          },
+        )).resolves.toPassTest({
           iterations: 1.200_000_000_000_000_2e-7,
           persistedItems: 2,
           blockingItems: 2,
@@ -663,7 +679,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
             entries: [
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+                operation: assignOperationSource(AF.createNop(), source1),
               },
               {
                 output: <any>{},
@@ -671,39 +687,44 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
               },
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+                operation: assignOperationSource(AF.createNop(), source1),
               },
             ],
             context: new ActionContext()
               .set(KeysRdfJoin.lastPhysicalJoin, 'multi-smallest-filter-bindings'),
           },
-          [
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 3 },
-              pageSize: 100,
-              requestTime: 10,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 2 },
-              pageSize: 100,
-              requestTime: 20,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 5 },
-              pageSize: 100,
-              requestTime: 30,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
-            },
-          ],
-        )).rejects.toThrow(`Actor actor can not be called recursively`);
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                pageSize: 100,
+                requestTime: 10,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 20,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 5 },
+                pageSize: 100,
+                requestTime: 30,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+            ],
+          },
+        )).resolves.toFailTest(`Actor actor can not be called recursively`);
       });
 
       it('throws if entries[1] has no source', async() => {
@@ -721,38 +742,43 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
               },
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+                operation: assignOperationSource(AF.createNop(), source1),
               },
             ],
             context: new ActionContext(),
           },
-          [
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 3 },
-              pageSize: 100,
-              requestTime: 10,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 2 },
-              pageSize: 100,
-              requestTime: 20,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 5 },
-              pageSize: 100,
-              requestTime: 30,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
-            },
-          ],
-        )).rejects.toThrow(`Actor actor can only process if entries[1] has a source`);
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                pageSize: 100,
+                requestTime: 10,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 20,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 5 },
+                pageSize: 100,
+                requestTime: 30,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+            ],
+          },
+        )).resolves.toFailTest(`Actor actor can only process if entries[1] has a source`);
       });
 
       it('throws if the entries[1] source accepts no filterBindings', async() => {
@@ -762,7 +788,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
             entries: [
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source4),
+                operation: assignOperationSource(AF.createNop(), source4),
               },
               {
                 output: <any>{},
@@ -770,38 +796,43 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
               },
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+                operation: assignOperationSource(AF.createNop(), source1),
               },
             ],
             context: new ActionContext(),
           },
-          [
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 3 },
-              pageSize: 100,
-              requestTime: 10,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 2 },
-              pageSize: 100,
-              requestTime: 20,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 5 },
-              pageSize: 100,
-              requestTime: 30,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
-            },
-          ],
-        )).rejects.toThrow(`Actor actor can only process if entries[1] accept filterBindings`);
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                pageSize: 100,
+                requestTime: 10,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 20,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 5 },
+                pageSize: 100,
+                requestTime: 30,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+            ],
+          },
+        )).resolves.toFailTest(`Actor actor can only process if entries[1] accept filterBindings`);
       });
     });
   });

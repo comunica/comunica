@@ -14,11 +14,16 @@ import type { AsyncIterator } from 'asynciterator';
  * @see IActionRdfUpdateQuads
  * @see IActorRdfUpdateQuadsOutput
  */
-export abstract class ActorRdfUpdateQuads extends Actor<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput> {
+export abstract class ActorRdfUpdateQuads<TS = undefined>
+  extends Actor<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput, TS> {
+  /* eslint-disable max-len */
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {RDF updating failed: none of the configured actors were able to handle an update} busFailMessage
    */
-  public constructor(args: IActorRdfUpdateQuadsArgs) {
+  /* eslint-enable max-len */
+  public constructor(args: IActorRdfUpdateQuadsArgs<TS>) {
     super(args);
   }
 }
@@ -79,6 +84,7 @@ export interface IActorRdfUpdateQuadsOutput extends IActorOutput {
   execute: () => Promise<void>;
 }
 
-export type IActorRdfUpdateQuadsArgs = IActorArgs<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>;
+export type IActorRdfUpdateQuadsArgs<TS = undefined> =
+  IActorArgs<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput, TS>;
 
 export type MediatorRdfUpdateQuads = Mediate<IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput>;

@@ -3,6 +3,10 @@
   "version": "3.1.0",
   "description": "A tool for packaging Comunica modules in a single NPM package",
   "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
@@ -35,7 +39,7 @@
   },
   "dependencies": {
     "@types/minimist": "^1.2.2",
-    "componentsjs": "^6.0.1",
+    "componentsjs": "^6.2.0",
     "minimist": "^1.2.7",
     "process": "^0.11.10"
   }

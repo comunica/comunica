@@ -7,6 +7,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { stringify as streamToString } from '@jeswr/stream-to-string';
 import { ActorDereferenceFile } from '../lib/ActorDereferenceFile';
+import '@comunica/utils-jest';
 
 function fileUrl(str: string): string {
   let pathName = path.resolve(str).replaceAll('\\', '/');
@@ -52,15 +53,16 @@ describe('ActorDereferenceFile', () => {
     });
 
     it('should test', async() => {
-      await expect(actor.test({ url: fileUrl(path.join(__dirname, 'dummy.ttl')), context })).resolves.toBe(true);
+      await expect(actor.test({ url: fileUrl(path.join(__dirname, 'dummy.ttl')), context })).resolves.toPassTestVoid();
     });
 
     it('should test non-file URIs', async() => {
-      await expect(actor.test({ url: path.join(__dirname, 'dummy.ttl'), context })).resolves.toBeTruthy();
+      await expect(actor.test({ url: path.join(__dirname, 'dummy.ttl'), context })).resolves.toPassTestVoid();
     });
 
     it('should not test for non-existing files', async() => {
-      await expect(actor.test({ url: 'fake.ttl', context })).rejects.toBeTruthy();
+      await expect(actor.test({ url: 'fake.ttl', context })).resolves
+        .toFailTest(`This actor only works on existing local files.`);
     });
 
     it('should run', async() => {

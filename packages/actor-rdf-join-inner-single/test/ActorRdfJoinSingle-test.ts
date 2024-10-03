@@ -3,6 +3,7 @@ import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorRdfJoinSingle } from '../lib/ActorRdfJoinSingle';
+import '@comunica/utils-jest';
 
 describe('ActorRdfJoinSingle', () => {
   let bus: any;
@@ -35,7 +36,7 @@ IActorRdfJoinSelectivityOutput
           type: 'inner',
           entries: [],
           context,
-        })).rejects.toThrow('Actor actor can only join a single entry');
+        })).resolves.toFailTest('Actor actor can only join a single entry');
       });
 
       it('should not test on entries with length two', async() => {
@@ -58,7 +59,7 @@ IActorRdfJoinSelectivityOutput
             },
           ],
           context,
-        })).rejects.toThrow('Actor actor can only join a single entry');
+        })).resolves.toFailTest('Actor actor can only join a single entry');
       });
 
       it('should test on one entry', async() => {
@@ -74,7 +75,7 @@ IActorRdfJoinSelectivityOutput
             },
           ],
           context,
-        })).resolves.toEqual({
+        })).resolves.toPassTest({
           iterations: 0,
           persistedItems: 0,
           blockingItems: 0,
@@ -98,7 +99,7 @@ IActorRdfJoinSelectivityOutput
             },
           ],
           context,
-        });
+        }, undefined!);
         expect(output).toBe(entryOutput);
         await expect(output.metadata()).resolves.toEqual({ cardinality: 10 });
       });

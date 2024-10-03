@@ -12,10 +12,11 @@ import type { Bus } from './Bus';
  *
  * @template I The input type of an actor.
  * @template O The output type of an actor.
+ * @template TS The test side data type.
  */
-export abstract class ActionObserver<I extends IAction, O extends IActorOutput> {
+export abstract class ActionObserver<I extends IAction, O extends IActorOutput, TS = undefined> {
   public readonly name: string;
-  public readonly bus: Bus<Actor<I, IActorTest, O>, I, IActorTest, O>;
+  public readonly bus: Bus<Actor<I, IActorTest, O, TS>, I, IActorTest, O, TS>;
 
   /**
    * All enumerable properties from the `args` object are inherited to this observer.
@@ -36,10 +37,10 @@ export abstract class ActionObserver<I extends IAction, O extends IActorOutput> 
    * @param {I}          action The original action input.
    * @param {Promise<O>} output A promise resolving to the final action output.
    */
-  public abstract onRun(actor: Actor<I, IActorTest, O>, action: I, output: Promise<O>): void;
+  public abstract onRun(actor: Actor<I, IActorTest, O, TS>, action: I, output: Promise<O>): void;
 }
 
-export interface IActionObserverArgs<I extends IAction, O extends IActorOutput> {
+export interface IActionObserverArgs<I extends IAction, O extends IActorOutput, TS = undefined> {
 
   /**
    * The name for this observer.
@@ -50,5 +51,5 @@ export interface IActionObserverArgs<I extends IAction, O extends IActorOutput> 
   /**
    * The bus this observer can subscribe to.
    */
-  bus: Bus<Actor<I, IActorTest, O>, I, IActorTest, O>;
+  bus: Bus<Actor<I, IActorTest, O, TS>, I, IActorTest, O, TS>;
 }

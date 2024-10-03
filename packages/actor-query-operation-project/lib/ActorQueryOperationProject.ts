@@ -1,8 +1,8 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
+import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
-import { BlankNodeBindingsScoped } from '@comunica/data-factory';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import type {
   Bindings,
   BindingsStream,
@@ -10,7 +10,10 @@ import type {
   IActionContext,
   IQueryOperationResult,
   IQueryOperationResultBindings,
+  MetadataVariable,
 } from '@comunica/types';
+import { BlankNodeBindingsScoped } from '@comunica/utils-data-factory';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -22,8 +25,8 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
     super(args, 'project');
   }
 
-  public async testOperation(_operation: Algebra.Project, _context: IActionContext): Promise<IActorTest> {
-    return true;
+  public async testOperation(_operation: Algebra.Project, _context: IActionContext): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async runOperation(operation: Algebra.Project, context: IActionContext):
@@ -31,29 +34,35 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
 
     // Resolve the input
-    const output: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(
+    const output: IQueryOperationResultBindings = getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: operation.input, context }),
     );
 
-    // Find all variables that should be deleted from the input stream.
+    // Index variables
     const outputMetadata = await output.metadata();
-    const variables = operation.variables;
-    const deleteVariables = outputMetadata.variables
-      .filter(variable => !variables.some(subVariable => variable.value === subVariable.value));
+    const variablesOutputIndexed: Record<string, MetadataVariable> = Object
+      .fromEntries(outputMetadata.variables.map(entry => [ entry.variable.value, entry ]));
+    const variablesOperation: MetadataVariable[] = operation.variables.map(v => ({ variable: v, canBeUndef: false }));
+    const variablesOperationIndexed: Record<string, MetadataVariable> = Object
+      .fromEntries(variablesOperation.map(entry => [ entry.variable.value, entry ]));
 
-    // Error if there are variables that are not bound in the input stream.
-    const missingVariables = variables
-      .filter(variable => !outputMetadata.variables.some(subVariable => variable.value === subVariable.value));
-    if (missingVariables.length > 0) {
-      outputMetadata.canContainUndefs = true;
-    }
+    // Find all variables that should be deleted from the input stream.
+    const deleteVariables = outputMetadata.variables
+      .filter(variable => !(variable.variable.value in variablesOperationIndexed));
+
+    // Determine if variables can be undef
+    const variablesOutput: MetadataVariable[] = variablesOperation.map(variable => ({
+      variable: variable.variable,
+      canBeUndef: !(variable.variable.value in variablesOutputIndexed) ||
+        variablesOutputIndexed[variable.variable.value].canBeUndef,
+    }));
 
     // Make sure the project variables are the only variables that are present in the bindings.
     let bindingsStream: BindingsStream = deleteVariables.length === 0 ?
       output.bindingsStream :
       output.bindingsStream.map((bindings: Bindings) => {
         for (const deleteVariable of deleteVariables) {
-          bindings = bindings.delete(deleteVariable);
+          bindings = bindings.delete(deleteVariable.variable);
         }
         return bindings;
       });
@@ -81,7 +90,7 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
     return {
       type: 'bindings',
       bindingsStream,
-      metadata: async() => ({ ...outputMetadata, variables }),
+      metadata: async() => ({ ...outputMetadata, variables: variablesOutput }),
     };
   }
 }

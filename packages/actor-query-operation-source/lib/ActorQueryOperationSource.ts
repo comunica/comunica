@@ -1,13 +1,15 @@
 import type { IActionQueryOperation, IActorQueryOperationArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
-import { getMetadataBindings, getMetadataQuads } from '@comunica/metadata';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTest } from '@comunica/core';
 import type {
   IPhysicalQueryPlanLogger,
   IQueryOperationResult,
   IQuerySourceWrapper,
 } from '@comunica/types';
+import { getMetadataBindings, getMetadataQuads } from '@comunica/utils-metadata';
+import { getOperationSource } from '@comunica/utils-query-operation';
 import { Algebra, Util } from 'sparqlalgebrajs';
 
 /**
@@ -18,11 +20,11 @@ export class ActorQueryOperationSource extends ActorQueryOperation {
     super(args);
   }
 
-  public async test(action: IActionQueryOperation): Promise<IActorTest> {
-    if (!ActorQueryOperation.getOperationSource(action.operation)) {
-      throw new Error(`Actor ${this.name} requires an operation with source annotation.`);
+  public async test(action: IActionQueryOperation): Promise<TestResult<IActorTest>> {
+    if (!getOperationSource(action.operation)) {
+      return failTest(`Actor ${this.name} requires an operation with source annotation.`);
     }
-    return { httpRequests: 1 };
+    return passTest({ httpRequests: 1 });
   }
 
   public async run(action: IActionQueryOperation): Promise<IQueryOperationResult> {
@@ -41,7 +43,7 @@ export class ActorQueryOperationSource extends ActorQueryOperation {
       action.context = action.context.set(KeysInitQuery.physicalQueryPlanNode, action.operation);
     }
 
-    const sourceWrapper: IQuerySourceWrapper = ActorQueryOperation.getOperationSource(action.operation)!;
+    const sourceWrapper: IQuerySourceWrapper = getOperationSource(action.operation)!;
     const mergedContext = sourceWrapper.context ? action.context.merge(sourceWrapper.context) : action.context;
 
     // Check if the operation is a CONSTRUCT query

@@ -3,7 +3,8 @@ import {
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import { KeysQueryOperation } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import type {
   IQueryOperationResult,
   IQueryOperationResultBindings,
@@ -23,8 +24,8 @@ export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<A
     super(args, 'slice');
   }
 
-  public async testOperation(_operation: Algebra.Slice, _context: IActionContext): Promise<IActorTest> {
-    return true;
+  public async testOperation(_operation: Algebra.Slice, _context: IActionContext): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async runOperation(operation: Algebra.Slice, context: IActionContext):

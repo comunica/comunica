@@ -102,6 +102,7 @@ export class ActionContextKey<V> implements IActionContextKey<V> {
    * A unique context key name.
    */
   public readonly name: string;
+  public readonly dummy: V | undefined;
 
   public constructor(name: string) {
     this.name = name;

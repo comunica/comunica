@@ -1,6 +1,7 @@
 import type { IActionRdfJoinEntriesSort, IActorRdfJoinEntriesSortOutput } from '@comunica/bus-rdf-join-entries-sort';
 import { ActorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
-import type { IActorArgs, IActorTest } from '@comunica/core';
+import type { IActorArgs, IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 
 /**
  * An actor that sorts join entries by increasing cardinality.
@@ -12,8 +13,8 @@ export class ActorRdfJoinEntriesSortCardinality extends ActorRdfJoinEntriesSort 
     super(args);
   }
 
-  public async test(_action: IActionRdfJoinEntriesSort): Promise<IActorTest> {
-    return true;
+  public async test(_action: IActionRdfJoinEntriesSort): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async run(action: IActionRdfJoinEntriesSort): Promise<IActorRdfJoinEntriesSortOutput> {

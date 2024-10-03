@@ -13,12 +13,14 @@ import type { IActionContext } from '@comunica/types';
  * @see IActionContextPreprocess
  * @see IActorContextPreprocessOutput
  */
-export abstract class ActorContextPreprocess
-  extends Actor<IActionContextPreprocess, IActorTest, IActorContextPreprocessOutput> {
+export abstract class ActorContextPreprocess<TS = undefined>
+  extends Actor<IActionContextPreprocess, IActorTest, IActorContextPreprocessOutput, TS> {
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {Context preprocessing failed} busFailMessage
    */
-  public constructor(args: IActorContextPreprocessArgs) {
+  public constructor(args: IActorContextPreprocessArgs<TS>) {
     super(args);
   }
 }
@@ -40,10 +42,11 @@ export interface IActorContextPreprocessOutput extends IActorOutput {
   context: IActionContext;
 }
 
-export type IActorContextPreprocessArgs = IActorArgs<
+export type IActorContextPreprocessArgs<TS = undefined> = IActorArgs<
 IActionContextPreprocess,
 IActorTest,
-IActorContextPreprocessOutput
+IActorContextPreprocessOutput,
+TS
 >;
 
 export type MediatorContextPreprocess = Mediate<IActionContextPreprocess, IActorContextPreprocessOutput>;

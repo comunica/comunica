@@ -6,6 +6,7 @@ import type { IActionContext } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfParseJsonLd } from '../lib/ActorRdfParseJsonLd';
+import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
 
@@ -178,7 +179,7 @@ describe('ActorRdfParseJsonLd', () => {
             handleMediaType: 'application/json',
             context,
           }))
-          .resolves.toBeTruthy();
+          .resolves.toPassTest({ handle: true });
       });
 
       it('should test on application/ld+json', async() => {
@@ -188,25 +189,25 @@ describe('ActorRdfParseJsonLd', () => {
             handleMediaType: 'application/ld+json',
             context,
           }))
-          .resolves.toBeTruthy();
+          .resolves.toPassTest({ handle: true });
         await expect(actor
           .test({
             handle: { data: input, metadata: { baseIRI: '' }, context },
             handleMediaType: 'application/ld+json',
             context,
           }))
-          .resolves.toBeTruthy();
+          .resolves.toPassTest({ handle: true });
       });
 
       it('should test on bla+json', async() => {
         await expect(actor.test({ handle: { data: input, context }, handleMediaType: 'bla+json', context }))
-          .resolves.toBeTruthy();
+          .resolves.toPassTest({ handle: true });
         await expect(actor.test({
           handle: { data: input, metadata: { baseIRI: '' }, context },
           handleMediaType: 'bla+json',
           context,
         }))
-          .resolves.toBeTruthy();
+          .resolves.toPassTest({ handle: true });
       });
 
       it('should not test on bla+json when processing html', async() => {
@@ -214,7 +215,7 @@ describe('ActorRdfParseJsonLd', () => {
           handle: { data: input, metadata: { baseIRI: '' }, context },
           handleMediaType: 'bla+json',
           context: new ActionContext({ [KeysRdfParseHtmlScript.processingHtmlScript.name]: true }),
-        })).rejects.toBeTruthy();
+        })).resolves.toFailTest(`JSON-LD in script tags can only have media type 'application/ld+json'`);
       });
 
       it('should test on application/ld+json when processing html', async() => {
@@ -222,38 +223,38 @@ describe('ActorRdfParseJsonLd', () => {
           handle: { data: input, context },
           handleMediaType: 'application/ld+json',
           context: new ActionContext({ [KeysRdfParseHtmlScript.processingHtmlScript.name]: true }),
-        })).resolves.toBeTruthy();
+        })).resolves.toPassTest({ handle: true });
         await expect(actor.test({
           handle: { data: input, metadata: { baseIRI: '' }, context },
           handleMediaType: 'application/ld+json',
           context: new ActionContext({ [KeysRdfParseHtmlScript.processingHtmlScript.name]: true }),
-        })).resolves.toBeTruthy();
+        })).resolves.toPassTest({ handle: true });
       });
 
       it('should not test on N-Triples', async() => {
         await expect(actor
           .test({ handle: { data: input, context }, handleMediaType: 'application/n-triples', context }))
-          .rejects.toThrow(new Error('Unrecognized media type: application/n-triples'));
+          .resolves.toFailTest('Unrecognized media type: application/n-triples');
         await expect(actor
           .test({
             handle: { data: input, metadata: { baseIRI: '' }, context },
             handleMediaType: 'application/n-triples',
             context,
           }))
-          .rejects.toThrow(new Error('Unrecognized media type: application/n-triples'));
+          .resolves.toFailTest('Unrecognized media type: application/n-triples');
       });
 
       it('should not test on undefined', async() => {
         await expect(actor
           .test({ handle: { data: input, context }, handleMediaType: undefined, context }))
-          .rejects.toThrow(new Error('Unrecognized media type: undefined'));
+          .resolves.toFailTest('Unrecognized media type: undefined');
         await expect(actor
           .test({
             handle: { data: input, metadata: { baseIRI: '' }, context },
             handleMediaType: undefined,
             context,
           }))
-          .rejects.toThrow(new Error('Unrecognized media type: undefined'));
+          .resolves.toFailTest('Unrecognized media type: undefined');
       });
 
       it('should run', async() => {
@@ -419,7 +420,7 @@ describe('ActorRdfParseJsonLd', () => {
 
     describe('for getting media types', () => {
       it('should test', async() => {
-        await expect(actor.test({ mediaTypes: true, context })).resolves.toBeTruthy();
+        await expect(actor.test({ mediaTypes: true, context })).resolves.toPassTest({ mediaTypes: true });
       });
 
       it('should run', async() => {

@@ -6,7 +6,8 @@ import type {
 } from '@comunica/bus-query-source-identify';
 import { ActorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
 import type { IActionRdfParseHandle, MediatorRdfParseHandle } from '@comunica/bus-rdf-parse';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import type {
   IQuerySourceSerialized,
   QuerySourceUnidentifiedExpanded,
@@ -27,11 +28,11 @@ export class ActorQuerySourceIdentifySerialized extends ActorQuerySourceIdentify
     super(args);
   }
 
-  public async test(action: IActionQuerySourceIdentify): Promise<IActorTest> {
+  public async test(action: IActionQuerySourceIdentify): Promise<TestResult<IActorTest>> {
     if (!this.isStringSource(action.querySourceUnidentified)) {
-      throw new Error(`${this.name} requires a single query source with serialized type to be present in the context.`);
+      return failTest(`${this.name} requires a single query source with serialized type to be present in the context.`);
     }
-    return true;
+    return passTestVoid();
   }
 
   public async run(action: IActionQuerySourceIdentify): Promise<IActorQuerySourceIdentifyOutput> {

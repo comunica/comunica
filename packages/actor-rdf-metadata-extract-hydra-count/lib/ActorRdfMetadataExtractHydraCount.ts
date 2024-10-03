@@ -4,7 +4,8 @@ import type {
   IActorRdfMetadataExtractArgs,
 } from '@comunica/bus-rdf-metadata-extract';
 import { ActorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 
 /**
  * An RDF Metadata Extract Actor that extracts total items counts from a metadata stream based on the given predicates.
@@ -17,8 +18,8 @@ export class ActorRdfMetadataExtractHydraCount extends ActorRdfMetadataExtract
     super(args);
   }
 
-  public async test(_action: IActionRdfMetadataExtract): Promise<IActorTest> {
-    return true;
+  public async test(_action: IActionRdfMetadataExtract): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public run(action: IActionRdfMetadataExtract): Promise<IActorRdfMetadataExtractOutput> {

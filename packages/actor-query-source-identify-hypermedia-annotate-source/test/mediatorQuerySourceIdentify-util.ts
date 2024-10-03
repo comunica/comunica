@@ -1,15 +1,13 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionQuerySourceIdentifyHypermedia, MediatorQuerySourceIdentifyHypermedia }
   from '@comunica/bus-query-source-identify-hypermedia';
-import { MetadataValidationState } from '@comunica/metadata';
 import type { IQuerySource } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import { wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { Factory } from 'sparqlalgebrajs';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
-const AF = new Factory();
 
 // @ts-expect-error
 export const mediatorQuerySourceIdentifyHypermedia: MediatorQuerySourceIdentifyHypermedia = {

@@ -2,6 +2,7 @@ import { KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { ActorRdfUpdateHypermediaPutLdp } from '../lib/ActorRdfUpdateHypermediaPutLdp';
 import { QuadDestinationPutLdp } from '../lib/QuadDestinationPutLdp';
+import '@comunica/utils-jest';
 
 describe('ActorRdfUpdateHypermediaPutLdp', () => {
   let bus: any;
@@ -46,7 +47,7 @@ describe('ActorRdfUpdateHypermediaPutLdp', () => {
       const url = 'abc';
       const metadata = { allowHttpMethods: [ 'OTHER', 'PUT' ]};
       const exists = false;
-      await expect(actor.test({ context, url, metadata, exists })).resolves.toBeTruthy();
+      await expect(actor.test({ context, url, metadata, exists })).resolves.toPassTestVoid();
     });
 
     it('should not test on missing allowHttpMethods PUT in metadata', async() => {
@@ -54,8 +55,8 @@ describe('ActorRdfUpdateHypermediaPutLdp', () => {
       const url = 'abc';
       const metadata = { allowHttpMethods: [ 'OTHER' ]};
       const exists = false;
-      await expect(actor.test({ context, url, metadata, exists })).rejects
-        .toThrow(`Actor actor could not detect a destination with 'Allow: PUT' header.`);
+      await expect(actor.test({ context, url, metadata, exists })).resolves
+        .toFailTest(`Actor actor could not detect a destination with 'Allow: PUT' header.`);
     });
 
     it('should not test on an existing destination', async() => {
@@ -63,8 +64,8 @@ describe('ActorRdfUpdateHypermediaPutLdp', () => {
       const url = 'abc';
       const metadata = { allowHttpMethods: [ 'PUT' ]};
       const exists = true;
-      await expect(actor.test({ context, url, metadata, exists })).rejects
-        .toThrow(`Actor actor can only put on a destination that does not already exists.`);
+      await expect(actor.test({ context, url, metadata, exists })).resolves
+        .toFailTest(`Actor actor can only put on a destination that does not already exists.`);
     });
 
     it('should test on invalid metadata with forced destination type', async() => {
@@ -73,7 +74,7 @@ describe('ActorRdfUpdateHypermediaPutLdp', () => {
       const metadata = { somethingElse: true };
       const exists = false;
       await expect(actor.test({ context, url, metadata, exists, forceDestinationType: 'putLdp' }))
-        .resolves.toBeTruthy();
+        .resolves.toPassTestVoid();
     });
 
     it('should test on invalid metadata with forced destination type on an existing destination', async() => {
@@ -82,7 +83,7 @@ describe('ActorRdfUpdateHypermediaPutLdp', () => {
       const metadata = { somethingElse: true };
       const exists = true;
       await expect(actor.test({ context, url, metadata, exists, forceDestinationType: 'putLdp' }))
-        .resolves.toBeTruthy();
+        .resolves.toPassTestVoid();
     });
 
     it('should not test on invalid metadata with forced destination type for different destination type', async() => {
@@ -91,7 +92,7 @@ describe('ActorRdfUpdateHypermediaPutLdp', () => {
       const metadata = { somethingElse: true };
       const exists = true;
       await expect(actor.test({ context, url, metadata, exists, forceDestinationType: 'different' }))
-        .rejects.toThrow('Actor actor is not able to handle destination type different.');
+        .resolves.toFailTest('Actor actor is not able to handle destination type different.');
     });
 
     it('should run', async() => {

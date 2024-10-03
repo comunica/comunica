@@ -164,6 +164,11 @@ export type FragmentSelectorShape = {
   } | {
     operationType: 'pattern';
     pattern: Algebra.Operation;
+  } | {
+    /**
+     * All possible operations are accepted by this shape.
+     */
+    operationType: 'wildcard';
   };
   /**
    * Variables that are in-scope in this operation and its children.

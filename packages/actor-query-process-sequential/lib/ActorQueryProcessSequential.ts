@@ -1,9 +1,7 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorContextPreprocess } from '@comunica/bus-context-preprocess';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { MediatorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
-import { materializeOperation } from '@comunica/bus-query-operation';
 import type { MediatorQueryParse } from '@comunica/bus-query-parse';
 import type {
   IActionQueryProcess,
@@ -16,14 +14,16 @@ import {
   ActorQueryProcess,
 } from '@comunica/bus-query-process';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
-import { ActionContextKey } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid, ActionContextKey } from '@comunica/core';
 import type {
   ComunicaDataFactory,
   IActionContext,
   IQueryOperationResult,
   QueryFormatType,
 } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { materializeOperation } from '@comunica/utils-query-operation';
 
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -43,11 +43,11 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
     super(args);
   }
 
-  public async test(action: IActionQueryProcess): Promise<IActorTest> {
-    if (action.context.get(KeysInitQuery.explain) || action.context.get(new ActionContextKey('explain'))) {
-      throw new Error(`${this.name} is not able to explain queries.`);
+  public async test(action: IActionQueryProcess): Promise<TestResult<IActorTest>> {
+    if (action.context.get(KeysInitQuery.explain) ?? action.context.get(new ActionContextKey('explain'))) {
+      return failTest(`${this.name} is not able to explain queries.`);
     }
-    return true;
+    return passTestVoid();
   }
 
   public async run(action: IActionQueryProcess): Promise<IActorQueryProcessOutput> {

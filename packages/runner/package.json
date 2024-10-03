@@ -4,6 +4,10 @@
   "description": "Utility module for Comunica runner modules",
   "lsd:module": true,
   "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
@@ -43,7 +47,7 @@
   "dependencies": {
     "@comunica/bus-init": "^3.2.1",
     "@comunica/core": "^3.2.1",
-    "componentsjs": "^6.0.1",
+    "componentsjs": "^6.2.0",
     "process": "^0.11.10"
   }
 }

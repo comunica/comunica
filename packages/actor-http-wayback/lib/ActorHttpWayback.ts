@@ -1,7 +1,8 @@
 import type { IActionHttp, IActorHttpArgs, IActorHttpOutput, MediatorHttp } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
 import { KeysHttpWayback, KeysHttpProxy } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import type { IActionContext, IProxyHandler, IRequest } from '@comunica/types';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 
@@ -32,8 +33,8 @@ export class ActorHttpWayback extends ActorHttp {
     super(args);
   }
 
-  public async test(_action: IActionHttp): Promise<IActorTest> {
-    return true;
+  public async test(_action: IActionHttp): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async run(action: IActionHttp): Promise<IActorHttpOutput> {

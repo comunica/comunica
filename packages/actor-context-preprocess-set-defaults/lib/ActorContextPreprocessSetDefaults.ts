@@ -5,7 +5,8 @@ import type {
 } from '@comunica/bus-context-preprocess';
 import { ActorContextPreprocess } from '@comunica/bus-context-preprocess';
 import { KeysCore, KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
-import type { IAction, IActorTest } from '@comunica/core';
+import type { IAction, IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import type { FunctionArgumentsCache, Logger } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -22,8 +23,8 @@ export class ActorContextPreprocessSetDefaults extends ActorContextPreprocess {
     this.defaultFunctionArgumentsCache = {};
   }
 
-  public async test(_action: IAction): Promise<IActorTest> {
-    return true;
+  public async test(_action: IAction): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async run(action: IActionContextPreprocess): Promise<IActorContextPreprocessOutput> {
@@ -33,6 +34,7 @@ export class ActorContextPreprocessSetDefaults extends ActorContextPreprocess {
       // Set default values
       context = context
         .setDefault(KeysInitQuery.queryTimestamp, new Date())
+        .setDefault(KeysInitQuery.queryTimestampHighResolution, performance.now())
         .setDefault(KeysQuerySourceIdentify.sourceIds, new Map())
         .setDefault(KeysCore.log, this.logger)
         .setDefault(KeysInitQuery.functionArgumentsCache, this.defaultFunctionArgumentsCache)

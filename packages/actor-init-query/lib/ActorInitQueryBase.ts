@@ -7,7 +7,8 @@ import type {
   MediatorQueryResultSerializeMediaTypes,
   MediatorQueryResultSerializeMediaTypeFormats,
 } from '@comunica/bus-query-result-serialize';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 
 /**
  * A browser-safe comunica Query Init Actor.
@@ -24,8 +25,8 @@ export class ActorInitQueryBase extends ActorInit implements IActorInitQueryBase
   public readonly allowNoSources?: boolean;
   public readonly context?: string;
 
-  public async test(_action: IActionInit): Promise<IActorTest> {
-    return true;
+  public async test(_action: IActionInit): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async run(_action: IActionInit): Promise<IActorOutputInit> {

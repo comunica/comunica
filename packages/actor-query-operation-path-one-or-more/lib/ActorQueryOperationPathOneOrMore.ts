@@ -1,8 +1,6 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type {
   IQueryOperationResultBindings,
@@ -11,6 +9,8 @@ import type {
   IActionContext,
   ComunicaDataFactory,
 } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import { BufferedIterator, MultiTransformIterator, TransformIterator } from 'asynciterator';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 
@@ -54,7 +54,8 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
         algebraFactory,
         bindingsFactory,
       );
-      const variables = operation.graph.termType === 'Variable' ? [ objectVar, operation.graph ] : [ objectVar ];
+      const variables = (operation.graph.termType === 'Variable' ? [ objectVar, operation.graph ] : [ objectVar ])
+        .map(variable => ({ variable, canBeUndef: false }));
       return {
         type: 'bindings',
         bindingsStream: starEval.bindingsStream,
@@ -66,7 +67,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
       const single = algebraFactory.createDistinct(
         algebraFactory.createPath(operation.subject, operation.predicate.path, operation.object, operation.graph),
       );
-      const results = ActorQueryOperation.getSafeBindings(
+      const results = getSafeBindings(
         await this.mediatorQueryOperation.mediate({ context, operation: single }),
       );
       const subjectVar = operation.subject;
@@ -115,9 +116,10 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
           autoStart: false,
         },
       );
-      const variables = operation.graph.termType === 'Variable' ?
+      const variables = (operation.graph.termType === 'Variable' ?
           [ subjectVar, objectVar, operation.graph ] :
-          [ subjectVar, objectVar ];
+          [ subjectVar, objectVar ])
+        .map(variable => ({ variable, canBeUndef: false }));
       return {
         type: 'bindings',
         bindingsStream,
@@ -137,7 +139,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
     }
     // If (!sVar && !oVar)
     const variable = this.generateVariable(dataFactory);
-    const results = ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
+    const results = getSafeBindings(await this.mediatorQueryOperation.mediate({
       context,
       operation: algebraFactory.createPath(operation.subject, predicate, variable, operation.graph),
     }));
@@ -156,7 +158,8 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
       bindingsStream,
       metadata: async() => ({
         ...await results.metadata(),
-        variables: operation.graph.termType === 'Variable' ? [ operation.graph ] : [],
+        variables: (operation.graph.termType === 'Variable' ? [ operation.graph ] : [])
+          .map(variable => ({ variable, canBeUndef: false })),
       }),
     };
   }

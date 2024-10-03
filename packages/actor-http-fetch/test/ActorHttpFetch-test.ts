@@ -7,9 +7,10 @@ import { LoggerVoid } from '@comunica/logger-void';
 import type { IActionContext } from '@comunica/types';
 import { Readable } from 'readable-stream';
 import { ActorHttpFetch } from '../lib/ActorHttpFetch';
+import '@comunica/utils-jest';
 
 // Mock fetch
-jest.spyOn(globalThis, 'fetch').mockImplementation((input: any, init?: any) => Promise.resolve(<Response> <unknown>{
+jest.spyOn(globalThis, 'fetch').mockImplementation((input: any) => Promise.resolve(<Response> <unknown>{
   status: input.url === 'https://www.google.com/' ? 200 : 404,
   ...input.url === 'NOBODY' ? {} : { body: { destroy: jest.fn(), on: jest.fn() }},
 }));
@@ -64,7 +65,7 @@ describe('ActorHttpFetch', () => {
 
     it('should test', async() => {
       await expect(actor.test({ input: <Request> { url: 'https://www.google.com/' }, context })).resolves
-        .toEqual({ time: Number.POSITIVE_INFINITY });
+        .toPassTest({ time: Number.POSITIVE_INFINITY });
     });
 
     it('should run on an existing URI', async() => {
@@ -124,7 +125,7 @@ describe('ActorHttpFetch', () => {
         input: <Request> { url: 'https://www.google.com/' },
         context: new ActionContext({}),
       });
-      expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' }, { headers: new Headers({ 'user-agent': (<any> actor).userAgent }), agent: expect.anything(), keepalive: true });
+      expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' }, { headers: new Headers({ 'user-agent': (<any> actor).userAgent, 'Accept-Encoding': 'br,gzip,deflate' }), agent: expect.anything(), keepalive: true });
     });
 
     it('should run with KeysHttp.includeCredentials', async() => {
@@ -137,7 +138,7 @@ describe('ActorHttpFetch', () => {
       });
       expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' }, {
         credentials: 'include',
-        headers: new Headers({ 'user-agent': (<any> actor).userAgent }),
+        headers: new Headers({ 'user-agent': (<any> actor).userAgent, 'Accept-Encoding': 'br,gzip,deflate' }),
         agent: expect.anything(),
         keepalive: true,
       });
@@ -157,6 +158,7 @@ describe('ActorHttpFetch', () => {
           headers: new Headers({
             Authorization: `Basic ${Buffer.from('user:password').toString('base64')}`,
             'user-agent': (<any> actor).userAgent,
+            'Accept-Encoding': 'br,gzip,deflate',
           }),
           agent: expect.anything(),
           keepalive: true,
@@ -179,6 +181,7 @@ describe('ActorHttpFetch', () => {
           headers: new Headers({
             Authorization: `Basic ${Buffer.from('user:password').toString('base64')}`,
             'user-agent': (<any> actor).userAgent,
+            'Accept-Encoding': 'br,gzip,deflate',
           }),
           agent: expect.anything(),
           keepalive: true,
@@ -203,6 +206,7 @@ describe('ActorHttpFetch', () => {
             Authorization: `Basic ${Buffer.from('user:password').toString('base64')}`,
             'Content-Type': 'image/jpeg',
             'user-agent': (<any> actor).userAgent,
+            'Accept-Encoding': 'br,gzip,deflate',
           }),
           agent: expect.anything(),
           keepalive: true,
@@ -261,7 +265,7 @@ describe('ActorHttpFetch', () => {
         init: { headers: new Headers({ 'user-agent': 'b' }) },
         context,
       });
-      expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' }, { headers: new Headers({ 'user-agent': 'b' }), agent: expect.anything(), keepalive: true });
+      expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' }, { headers: new Headers({ 'user-agent': 'b', 'Accept-Encoding': 'br,gzip,deflate' }), agent: expect.anything(), keepalive: true });
     });
 
     it('should set a user agent if none has been set', async() => {
@@ -271,7 +275,7 @@ describe('ActorHttpFetch', () => {
         init: { headers: new Headers({}) },
         context,
       });
-      expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' }, { headers: new Headers({ 'user-agent': (<any> actor).userAgent }), agent: expect.anything(), keepalive: true });
+      expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' }, { headers: new Headers({ 'user-agent': (<any> actor).userAgent, 'Accept-Encoding': 'br,gzip,deflate' }), agent: expect.anything(), keepalive: true });
     });
 
     it('should run and expose body.cancel', async() => {
@@ -403,7 +407,7 @@ describe('ActorHttpFetch', () => {
         }),
       });
       const body = <Readable><any> response.body;
-      for await (const chunk of body) {
+      for await (const _ of body) {
         // We just want to consume everything
       }
       expect(clearTimeout).toHaveBeenCalledTimes(1);

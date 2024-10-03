@@ -14,12 +14,14 @@ import type { IJoinEntryWithMetadata } from '@comunica/types';
  * @see IActorTest
  * @see IActorRdfJoinEntriesSortOutput
  */
-export abstract class ActorRdfJoinEntriesSort
-  extends Actor<IActionRdfJoinEntriesSort, IActorTest, IActorRdfJoinEntriesSortOutput> {
+export abstract class ActorRdfJoinEntriesSort<TS = undefined>
+  extends Actor<IActionRdfJoinEntriesSort, IActorTest, IActorRdfJoinEntriesSortOutput, TS> {
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {Sorting join entries failed: none of the configured actors were able to sort} busFailMessage
    */
-  public constructor(args: IActorRdfJoinEntriesSortArgs) {
+  public constructor(args: IActorRdfJoinEntriesSortArgs<TS>) {
     super(args);
   }
 }
@@ -38,10 +40,11 @@ export interface IActorRdfJoinEntriesSortOutput extends IActorOutput {
   entries: IJoinEntryWithMetadata[];
 }
 
-export type IActorRdfJoinEntriesSortArgs = IActorArgs<
+export type IActorRdfJoinEntriesSortArgs<TS = undefined> = IActorArgs<
 IActionRdfJoinEntriesSort,
 IActorTest,
-IActorRdfJoinEntriesSortOutput
+IActorRdfJoinEntriesSortOutput,
+TS
 >;
 
 export type MediatorRdfJoinEntriesSort = Mediate<

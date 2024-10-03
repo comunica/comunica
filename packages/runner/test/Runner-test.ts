@@ -54,8 +54,8 @@ describe('Runner', () => {
 
   describe('A Runner instance', () => {
     let runner: Runner;
-    let actor1: Actor<IAction, IActorTest, IActorOutput>;
-    let actor2: Actor<IAction, IActorTest, IActorOutput>;
+    let actor1: Actor<IAction, IActorTest, IActorOutput, any>;
+    let actor2: Actor<IAction, IActorTest, IActorOutput, any>;
 
     const actorTest = async(action: any) => {
       return new Promise((resolve) => {
@@ -103,18 +103,8 @@ describe('Runner', () => {
       expect(actor1.run).toHaveBeenCalledTimes(1);
       expect(actor2.run).toHaveBeenCalledTimes(1);
 
-      expect(actor1.run).toHaveBeenCalledWith({ context, argv: [ 'a', 'b' ], env: { c: 'd' }});
-      expect(actor2.run).toHaveBeenCalledWith({ context, argv: [ 'a', 'b' ], env: { c: 'd' }});
-    });
-
-    it('should be initializable', async() => {
-      (<any> runner).actors = [ actor1, actor2 ];
-      await expect(runner.initialize()).resolves.toBeTruthy();
-    });
-
-    it('should be deinitializable', async() => {
-      (<any> runner).actors = [ actor1, actor2 ];
-      await expect(runner.deinitialize()).resolves.toBeTruthy();
+      expect(actor1.run).toHaveBeenCalledWith({ context, argv: [ 'a', 'b' ], env: { c: 'd' }}, undefined);
+      expect(actor2.run).toHaveBeenCalledWith({ context, argv: [ 'a', 'b' ], env: { c: 'd' }}, undefined);
     });
 
     describe('collectActors', () => {

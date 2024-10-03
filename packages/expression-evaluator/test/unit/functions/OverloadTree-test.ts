@@ -3,8 +3,8 @@ import { TermFunctionAddition } from '@comunica/actor-function-factory-term-func
 import { TermFunctionSubStr } from '@comunica/actor-function-factory-term-function-sub-str/lib/TermFunctionSubStr';
 import type { TermFunctionBase } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
-import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
 import type { ISuperTypeProvider } from '@comunica/types';
+import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-jest';
 import { TypeURL, OverloadTree } from '../../../lib';
 import type { FunctionArgumentsCache, KnownLiteralTypes } from '../../../lib';
 import {
@@ -26,6 +26,7 @@ describe('OverloadTree', () => {
     emptyTree = new OverloadTree(emptyID);
     expressionEvaluator = <ExpressionEvaluator> await getMockEEFactory().run(
       { algExpr: getMockExpression('true'), context: getMockEEActionContext() },
+      undefined,
     );
     superTypeProvider = expressionEvaluator.context.getSafe(KeysExpressionEvaluator.superTypeProvider);
     functionArgumentsCache = expressionEvaluator.context.getSafe(KeysInitQuery.functionArgumentsCache);

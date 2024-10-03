@@ -4,6 +4,10 @@
   "description": "A optional-hash rdf-join actor",
   "lsd:module": true,
   "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
@@ -37,11 +41,13 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-query-operation": "^3.2.2",
     "@comunica/bus-rdf-join": "^3.2.1",
+    "@comunica/core": "^3.2.1",
     "@comunica/mediatortype-join-coefficients": "^3.2.1",
     "@comunica/types": "^3.2.1",
-    "@rdfjs/types": "*",
+    "@comunica/utils-bindings-factory": "^3.2.1",
+    "@comunica/utils-bindings-index": "^3.2.2",
+    "@comunica/utils-iterator": "^3.2.1",
     "asynciterator": "^3.9.0",
     "rdf-string": "^1.6.3"
   }

@@ -1,24 +1,27 @@
-import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorHttp } from '@comunica/bus-http';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { Actor } from '@comunica/core';
 import type {
-  IQuerySource,
-  BindingsStream,
-  IActionContext,
-  FragmentSelectorShape,
   Bindings,
-  MetadataBindings,
-  IQueryBindingsOptions,
+  BindingsStream,
   ComunicaDataFactory,
+  FragmentSelectorShape,
+  IActionContext,
+  IQueryBindingsOptions,
+  IQuerySource,
+  MetadataBindings,
+  MetadataVariable,
 } from '@comunica/types';
+import type { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import { wrap, TransformIterator } from 'asynciterator';
+import { TransformIterator, wrap } from 'asynciterator';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import { LRUCache } from 'lru-cache';
-import type { Factory } from 'sparqlalgebrajs';
-import { Algebra, toSparql, Util } from 'sparqlalgebrajs';
+import { uniqTerms } from 'rdf-terms';
+import type { Factory, Algebra } from 'sparqlalgebrajs';
+import { toSparql, Util } from 'sparqlalgebrajs';
 import type { BindMethod } from './ActorQuerySourceIdentifyHypermediaSparql';
 
 const COUNT_INFINITY: RDF.QueryResultCardinality = { type: 'estimate', value: Number.POSITIVE_INFINITY };
@@ -29,24 +32,8 @@ export class QuerySourceSparql implements IQuerySource {
     children: [
       {
         type: 'operation',
-        operation: { operationType: 'type', type: Algebra.types.PROJECT },
+        operation: { operationType: 'wildcard' },
         joinBindings: true,
-      },
-      {
-        type: 'operation',
-        operation: { operationType: 'type', type: Algebra.types.CONSTRUCT },
-      },
-      {
-        type: 'operation',
-        operation: { operationType: 'type', type: Algebra.types.DESCRIBE },
-      },
-      {
-        type: 'operation',
-        operation: { operationType: 'type', type: Algebra.types.ASK },
-      },
-      {
-        type: 'operation',
-        operation: { operationType: 'type', type: Algebra.types.COMPOSITE_UPDATE },
       },
     ],
   };
@@ -130,9 +117,9 @@ export class QuerySourceSparql implements IQuerySource {
       const selectQuery: string = !options?.joinBindings && queryString ?
         queryString :
         QuerySourceSparql.operationToSelectQuery(this.algebraFactory, operation, variables);
-      const canContainUndefs = QuerySourceSparql.operationCanContainUndefs(operation);
+      const undefVariables = QuerySourceSparql.getOperationUndefs(operation);
 
-      return this.queryBindingsRemote(this.url, selectQuery, variables, context, canContainUndefs);
+      return this.queryBindingsRemote(this.url, selectQuery, variables, context, undefVariables);
     }, { autoStart: false });
     this.attachMetadata(bindings, context, operationPromise);
 
@@ -177,17 +164,20 @@ export class QuerySourceSparql implements IQuerySource {
     operationPromise: Promise<Algebra.Operation>,
   ): void {
     // Emit metadata containing the estimated count
-    let variablesCount: RDF.Variable[] = [];
-    let canContainUndefs = false;
+    let variablesCount: MetadataVariable[] = [];
     // eslint-disable-next-line no-async-promise-executor,ts/no-misused-promises
     new Promise<RDF.QueryResultCardinality>(async(resolve, reject) => {
       // Prepare queries
       let countQuery: string;
       try {
         const operation = await operationPromise;
-        variablesCount = Util.inScopeVariables(operation);
+        const variablesScoped = Util.inScopeVariables(operation);
         countQuery = QuerySourceSparql.operationToCountQuery(this.dataFactory, this.algebraFactory, operation);
-        canContainUndefs = QuerySourceSparql.operationCanContainUndefs(operation);
+        const undefVariables = QuerySourceSparql.getOperationUndefs(operation);
+        variablesCount = variablesScoped.map(variable => ({
+          variable,
+          canBeUndef: undefVariables.some(undefVariable => undefVariable.equals(variable)),
+        }));
 
         const cachedCardinality = this.cache?.get(countQuery);
         if (cachedCardinality !== undefined) {
@@ -197,7 +187,7 @@ export class QuerySourceSparql implements IQuerySource {
         const timeoutHandler = setTimeout(() => resolve(COUNT_INFINITY), this.countTimeout);
         const varCount = this.dataFactory.variable('count');
         const bindingsStream: BindingsStream = await this
-          .queryBindingsRemote(this.url, countQuery, [ varCount ], context, false);
+          .queryBindingsRemote(this.url, countQuery, [ varCount ], context, []);
         bindingsStream.on('data', (bindings: Bindings) => {
           clearTimeout(timeoutHandler);
           const count = bindings.get(varCount);
@@ -224,14 +214,16 @@ export class QuerySourceSparql implements IQuerySource {
         return reject(error);
       }
     })
-      .then(cardinality => target.setProperty('metadata', {
-        cardinality,
-        canContainUndefs,
-        variables: variablesCount,
-      }))
+      .then((cardinality) => {
+        target.setProperty('metadata', {
+          state: new MetadataValidationState(),
+          cardinality,
+          variables: variablesCount,
+        });
+      })
       .catch(() => target.setProperty('metadata', {
+        state: new MetadataValidationState(),
         cardinality: COUNT_INFINITY,
-        canContainUndefs,
         variables: variablesCount,
       }));
   }
@@ -257,7 +249,7 @@ export class QuerySourceSparql implements IQuerySource {
       case 'values':
         return algebraFactory.createJoin([
           algebraFactory.createValues(
-            addBindings.metadata.variables,
+            addBindings.metadata.variables.map(v => v.variable),
             bindings.map(binding => Object.fromEntries([ ...binding ]
               .map(([ key, value ]) => [ `?${key.value}`, <RDF.Literal | RDF.NamedNode> value ]))),
           ),
@@ -327,35 +319,40 @@ export class QuerySourceSparql implements IQuerySource {
    * Check if the given operation may produce undefined values.
    * @param operation
    */
-  public static operationCanContainUndefs(operation: Algebra.Operation): boolean {
-    let canContainUndefs = false;
+  public static getOperationUndefs(operation: Algebra.Operation): RDF.Variable[] {
+    const variables: RDF.Variable[] = [];
     Util.recurseOperation(operation, {
-      leftjoin(): boolean {
-        canContainUndefs = true;
+      leftjoin(subOperation): boolean {
+        const left = Util.inScopeVariables(subOperation.input[0]);
+        const right = Util.inScopeVariables(subOperation.input[1]);
+        for (const varRight of right) {
+          if (!left.some(varLeft => varLeft.equals(varRight))) {
+            variables.push(varRight);
+          }
+        }
         return false;
       },
       values(values: Algebra.Values): boolean {
-        canContainUndefs = values.bindings.some(bindings => values.variables.some(variable => !(`?${variable.value}` in bindings)));
+        for (const variable of values.variables) {
+          if (values.bindings.some(bindings => !(`?${variable.value}` in bindings))) {
+            variables.push(variable);
+          }
+        }
         return false;
       },
       union(union: Algebra.Union): boolean {
-        // Determine variables in scope of the union branches
-        const scopedVariables = union.input
-          .map(Util.inScopeVariables)
-          .map(variables => variables.map(v => v.value))
-          .map(variables => variables.sort((a, b) => a.localeCompare(b)))
-          .map(variables => variables.join(','));
-
-        // If not all scoped variables in union branches are equal, then we definitely can have undefs
-        if (!scopedVariables.every(val => val === scopedVariables[0])) {
-          canContainUndefs = true;
-          return false;
+        // Determine variables in scope of the union branches that are not occurring in every branch
+        const scopedVariables = union.input.map(Util.inScopeVariables);
+        for (const variable of uniqTerms(scopedVariables.flat())) {
+          if (!scopedVariables.every(input => input.some(inputVar => inputVar.equals(variable)))) {
+            variables.push(variable);
+          }
         }
 
         return true;
       },
     });
-    return canContainUndefs;
+    return uniqTerms(variables);
   }
 
   /**
@@ -364,7 +361,7 @@ export class QuerySourceSparql implements IQuerySource {
    * @param {string} query A SPARQL query string.
    * @param {RDF.Variable[]} variables The expected variables.
    * @param {IActionContext} context The source context.
-   * @param canContainUndefs If the operation may contain undefined variables.
+   * @param undefVariables Variables that may have undefs.
    * @return {BindingsStream} A stream of bindings.
    */
   public async queryBindingsRemote(
@@ -372,23 +369,28 @@ export class QuerySourceSparql implements IQuerySource {
     query: string,
     variables: RDF.Variable[],
     context: IActionContext,
-    canContainUndefs: boolean,
+    undefVariables: RDF.Variable[],
   ): Promise<BindingsStream> {
+    // Index undef variables
+    const undefVariablesIndex: Set<string> = new Set();
+    for (const undefVariable of undefVariables) {
+      undefVariablesIndex.add(undefVariable.value);
+    }
+
     this.lastSourceContext = this.context.merge(context);
     const rawStream = await this.endpointFetcher.fetchBindings(endpoint, query);
     this.lastSourceContext = undefined;
 
-    const it = wrap<any>(rawStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY })
+    return wrap<any>(rawStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY })
       .map<RDF.Bindings>((rawData: Record<string, RDF.Term>) => this.bindingsFactory.bindings(variables
         .map((variable) => {
           const value = rawData[`?${variable.value}`];
-          if (!canContainUndefs && !value) {
+          if (!undefVariablesIndex.has(variable.value) && !value) {
             Actor.getContextLogger(this.context)?.warn(`The endpoint ${endpoint} failed to provide a binding for ${variable.value}.`);
           }
-          return <[RDF.Variable, RDF.Term]> [ variable, value ];
+          return <[RDF.Variable, RDF.Term]>[ variable, value ];
         })
         .filter(([ _, v ]) => Boolean(v))));
-    return it;
   }
 
   public toString(): string {

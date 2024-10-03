@@ -1,8 +1,8 @@
 import type { IBindingsAggregator } from '@comunica/bus-bindings-aggregator-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
-import { BF, DF, getMockEEActionContext, getMockEEFactory, int, makeAggregate } from '@comunica/jest';
 import type { IActionContext } from '@comunica/types';
+import { BF, DF, getMockEEActionContext, getMockEEFactory, int, makeAggregate } from '@comunica/utils-jest';
 import type * as RDF from '@rdfjs/types';
 import { GroupConcatAggregator } from '../lib/GroupConcatAggregator';
 
@@ -23,7 +23,7 @@ async function createAggregator({ expressionEvaluatorFactory, context, distinct,
     await expressionEvaluatorFactory.run({
       algExpr: makeAggregate('group_concat', distinct, separator).expression,
       context,
-    }),
+    }, undefined),
     distinct,
     context.getSafe(KeysInitQuery.dataFactory),
     separator,

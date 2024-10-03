@@ -1,11 +1,10 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
-  ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
-import type { IActorTest } from '@comunica/core';
-import { MetadataValidationState } from '@comunica/metadata';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import type {
   BindingsStream,
   IQueryOperationResultBindings,
@@ -14,10 +13,12 @@ import type {
   MetadataBindings,
   MetadataQuads,
   IQueryOperationResultQuads,
+  MetadataVariable,
 } from '@comunica/types';
+import { MetadataValidationState } from '@comunica/utils-metadata';
+import { getSafeBindings, getSafeQuads } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { UnionIterator } from 'asynciterator';
-import { uniqTerms } from 'rdf-terms';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -36,8 +37,26 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
    * @param {string[][]} variables Double array of variables to take the union of.
    * @return {string[]} The union of the given variables.
    */
-  public static unionVariables(variables: RDF.Variable[][]): RDF.Variable[] {
-    return uniqTerms(variables.flat());
+  public static unionVariables(variables: MetadataVariable[][]): MetadataVariable[] {
+    const variablesIndexed: Record<string, { variable: RDF.Variable; canBeUndef: boolean; occurrences: number }> = {};
+    for (const variablesA of variables) {
+      for (const variable of variablesA) {
+        if (!variablesIndexed[variable.variable.value]) {
+          variablesIndexed[variable.variable.value] = {
+            variable: variable.variable,
+            canBeUndef: variable.canBeUndef,
+            occurrences: 0,
+          };
+        }
+        const entry = variablesIndexed[variable.variable.value];
+        entry.canBeUndef = entry.canBeUndef || variable.canBeUndef;
+        entry.occurrences++;
+      }
+    }
+    return Object.values(variablesIndexed)
+      .map(entry => entry.occurrences === variables.length ?
+          { variable: entry.variable, canBeUndef: entry.canBeUndef } :
+          { variable: entry.variable, canBeUndef: true });
   }
 
   /**
@@ -87,15 +106,15 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
 
     // Union variables
     if (bindings) {
-      accumulatedMetadata.variables = ActorQueryOperationUnion
-        .unionVariables(metadatas.map(metadata => metadata.variables));
+      const variables: MetadataVariable[][] = metadatas.map(metadata => metadata.variables);
+      accumulatedMetadata.variables = ActorQueryOperationUnion.unionVariables(variables);
     }
 
     return accumulatedMetadata;
   }
 
-  public async testOperation(_operation: Algebra.Union, _context: IActionContext): Promise<IActorTest> {
-    return true;
+  public async testOperation(_operation: Algebra.Union, _context: IActionContext): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async runOperation(operation: Algebra.Union, context: IActionContext):
@@ -114,7 +133,7 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
 
     // Handle bindings
     if (outputType === 'bindings' || operation.input.length === 0) {
-      const outputs: IQueryOperationResultBindings[] = outputsRaw.map(ActorQueryOperation.getSafeBindings);
+      const outputs: IQueryOperationResultBindings[] = outputsRaw.map(getSafeBindings);
 
       const bindingsStream: BindingsStream = new UnionIterator(outputs.map(
         (output: IQueryOperationResultBindings) => output.bindingsStream,
@@ -128,7 +147,7 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
 
     // Handle quads
     if (outputType === 'quads') {
-      const outputs: IQueryOperationResultQuads[] = outputsRaw.map(ActorQueryOperation.getSafeQuads);
+      const outputs: IQueryOperationResultQuads[] = outputsRaw.map(getSafeQuads);
 
       const quadStream = new UnionIterator(outputs.map(
         (output: IQueryOperationResultQuads) => output.quadStream,

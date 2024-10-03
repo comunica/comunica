@@ -4,6 +4,10 @@
   "description": "A JSON-LD RDF Parse actor",
   "lsd:module": true,
   "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
@@ -42,6 +46,6 @@
     "@comunica/types": "^3.2.1",
     "@jeswr/stream-to-string": "^2.0.0",
     "jsonld-context-parser": "^2.2.2",
-    "jsonld-streaming-parser": "^3.0.1"
+    "jsonld-streaming-parser": "^4.0.1"
   }
 }

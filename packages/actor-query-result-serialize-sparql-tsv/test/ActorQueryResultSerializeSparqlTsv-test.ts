@@ -1,12 +1,13 @@
 import { PassThrough } from 'node:stream';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActionContext, Bus } from '@comunica/core';
 import type { BindingsStream, IActionContext, MetadataBindings } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryResultSerializeSparqlTsv } from '..';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -166,12 +167,15 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
           [ DF.variable('k2'), DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')) ],
         ]),
       ], { autoStart: false });
-      metadata = <any> { variables: [ DF.variable('k1'), DF.variable('k2') ]};
+      metadata = <any> { variables: [
+        { variable: DF.variable('k1'), canBeUndef: false },
+        { variable: DF.variable('k2'), canBeUndef: false },
+      ]};
     });
 
     describe('for getting media types', () => {
       it('should test', async() => {
-        await expect(actor.test({ mediaTypes: true, context })).resolves.toBeTruthy();
+        await expect(actor.test({ mediaTypes: true, context })).resolves.toPassTest({ mediaTypes: true });
       });
 
       it('should run', async() => {
@@ -188,7 +192,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
           handleMediaType: 'text/tab-separated-values',
           context,
         }))
-          .rejects.toBeTruthy();
+          .resolves.toFailTest(`This actor can only handle bindings streams.`);
       });
 
       it('should test on text/tab-separated-values bindings', async() => {
@@ -198,7 +202,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
           handleMediaType: 'text/tab-separated-values',
           context,
         }))
-          .resolves.toBeTruthy();
+          .resolves.toPassTest({ handle: true });
 
         stream.destroy();
       });
@@ -209,7 +213,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
           handleMediaType: 'text/tab-separated-values',
           context,
         }))
-          .rejects.toBeTruthy();
+          .resolves.toFailTest(`This actor can only handle bindings streams.`);
       });
 
       it('should not test on N-Triples', async() => {
@@ -219,7 +223,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
           handleMediaType: 'application/n-triples',
           context,
         }))
-          .rejects.toBeTruthy();
+          .resolves.toFailTest(`Unrecognized media type: application/n-triples`);
 
         stream.destroy();
       });
@@ -261,7 +265,9 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
           { handle: <any> {
             bindingsStream: bindingsStreamPartial(),
             type: 'bindings',
-            metadata: async() => ({ variables: [ DF.variable('k3') ]}),
+            metadata: async() => ({ variables: [
+              { variable: DF.variable('k3'), canBeUndef: true },
+            ]}),
             context,
           }, handleMediaType: 'text/tab-separated-values', context },
         ))).handle.data)).resolves.toBe(

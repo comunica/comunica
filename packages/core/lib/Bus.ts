@@ -1,5 +1,6 @@
 import type { ActionObserver } from './ActionObserver';
 import type { Actor, IAction, IActorOutput, IActorTest } from './Actor';
+import type { TestResult } from './TestResult';
 
 /**
  * A publish-subscribe bus for sending actions to actors
@@ -15,14 +16,22 @@ import type { Actor, IAction, IActorOutput, IActorTest } from './Actor';
  * @template I The input type of an actor.
  * @template T The test type of an actor.
  * @template O The output type of an actor.
+ * @template TS The test side data type.
  */
-export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTest, O extends IActorOutput> implements
-    IBusArgs {
+export class Bus<
+  A extends Actor<I, T, O, TS>,
+I extends IAction,
+T extends IActorTest,
+O extends IActorOutput,
+TS = undefined,
+>
+implements IBusArgs {
   public readonly name: string;
   protected readonly actors: A[] = [];
-  protected readonly observers: ActionObserver<I, O>[] = [];
+  protected readonly observers: ActionObserver<I, O, TS>[] = [];
   // Mapping from dependency (after) to dependents (before)
   protected readonly dependencyLinks: Map<A, A[]> = new Map();
+  public failMessage: string;
 
   /**
    * All enumerable properties from the `args` object are inherited to this bus.
@@ -33,6 +42,7 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
    */
   public constructor(args: IBusArgs) {
     Object.assign(this, args);
+    this.failMessage = `All actors over bus ${this.name} failed to handle an action`;
   }
 
   /**
@@ -56,7 +66,7 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
    *
    * @param {ActionObserver<I, O>} observer The observer to subscribe.
    */
-  public subscribeObserver(observer: ActionObserver<I, O>): void {
+  public subscribeObserver(observer: ActionObserver<I, O, TS>): void {
     this.observers.push(observer);
   }
 
@@ -87,7 +97,7 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
    * @return {boolean} If the given observer was successfully unsubscribed,
    *         otherwise it was not subscribed before.
    */
-  public unsubscribeObserver(observer: ActionObserver<I, O>): boolean {
+  public unsubscribeObserver(observer: ActionObserver<I, O, TS>): boolean {
     const index: number = this.observers.indexOf(observer);
     if (index >= 0) {
       this.observers.splice(index, 1);
@@ -105,8 +115,8 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
    *         An array of reply objects. Each object contains a reference to the actor,
    *         and a promise to its {@link Actor#test} result.
    */
-  public publish(action: I): IActorReply<A, I, T, O>[] {
-    return this.actors.map((actor: A): IActorReply<A, I, T, O> => ({ actor, reply: actor.test(action) }));
+  public publish(action: I): IActorReply<A, I, T, O, TS>[] {
+    return this.actors.map((actor: A): IActorReply<A, I, T, O, TS> => ({ actor, reply: actor.test(action) }));
   }
 
   /**
@@ -116,7 +126,7 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
    * @param {I}          action The original action input.
    * @param {Promise<O>} output A promise resolving to the final action output.
    */
-  public onRun(actor: Actor<I, T, O>, action: I, output: Promise<O>): void {
+  public onRun(actor: Actor<I, T, O, TS>, action: I, output: Promise<O>): void {
     for (const observer of this.observers) {
       observer.onRun(actor, action, output);
     }
@@ -202,20 +212,27 @@ export interface IBusArgs {
  * Data interface for holding an actor and a promise to a reply from that actor.
  */
 export interface IActorReply<
-  A extends Actor<I, T, O>,
+  A extends Actor<I, T, O, TS>,
 I extends IAction,
 T extends IActorTest,
 O extends IActorOutput,
+TS = undefined,
 > {
   actor: A;
-  reply: Promise<T>;
+  reply: Promise<TestResult<T, TS>>;
 }
 
 export type IReply<
   I extends IAction = IAction,
   O extends IActorOutput = IActorOutput,
   T extends IActorTest = IActorTest,
-> = IActorReply<Actor<I, T, O>, I, T, O>;
+  TS = undefined,
+> = IActorReply<Actor<I, T, O, TS>, I, T, O, TS>;
 
-export type IBus<I extends IAction = IAction, O extends IActorOutput = IActorOutput, T extends IActorTest = IActorTest>
-= Bus<Actor<I, T, O>, I, T, O>;
+export type IBus<
+  I extends IAction = IAction,
+O extends IActorOutput = IActorOutput,
+T extends IActorTest = IActorTest,
+TS = undefined,
+>
+= Bus<Actor<I, T, O, TS>, I, T, O, TS>;

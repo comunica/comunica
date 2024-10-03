@@ -1,11 +1,13 @@
-import { bindingsToString } from '@comunica/bindings-factory';
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
-import type { IActorTest } from '@comunica/core';
+import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import type { ExpressionError } from '@comunica/expression-evaluator';
 import { isExpressionError } from '@comunica/expression-evaluator';
 import type { Bindings, IActionContext, IQueryOperationResult, IQueryOperationResultBindings } from '@comunica/types';
+import { bindingsToString } from '@comunica/utils-bindings-factory';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -21,24 +23,29 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
     this.mediatorExpressionEvaluatorFactory = args.mediatorExpressionEvaluatorFactory;
   }
 
-  public async testOperation(operation: Algebra.Extend, context: IActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Extend, context: IActionContext): Promise<TestResult<IActorTest>> {
     // Will throw error for unsupported operations
-    const _ = Boolean(
-      await this.mediatorExpressionEvaluatorFactory.mediate({ algExpr: operation.expression, context }),
-    );
-    return true;
+    try {
+      const _ = Boolean(
+        await this.mediatorExpressionEvaluatorFactory.mediate({ algExpr: operation.expression, context }),
+      );
+    } catch (error: unknown) {
+      // TODO: return TestResult in ActorQueryOperation.getAsyncExpressionContext
+      return failTest((<Error> error).message);
+    }
+    return passTestVoid();
   }
 
   public async runOperation(operation: Algebra.Extend, context: IActionContext):
   Promise<IQueryOperationResult> {
     const { expression, input, variable } = operation;
 
-    const output: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(
+    const output: IQueryOperationResultBindings = getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: input, context }),
     );
 
     // Throw if the variable has already been bound
-    if ((await output.metadata()).variables.some(innerVariable => innerVariable.equals(variable))) {
+    if ((await output.metadata()).variables.some(innerVariable => innerVariable.variable.equals(variable))) {
       throw new Error(`Illegal binding to variable '${variable.value}' that has already been bound`);
     }
 
@@ -74,7 +81,7 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
       bindingsStream,
       async metadata() {
         const outputMetadata = await output.metadata();
-        return { ...outputMetadata, variables: [ ...outputMetadata.variables, variable ]};
+        return { ...outputMetadata, variables: [ ...outputMetadata.variables, { variable, canBeUndef: false }]};
       },
     };
   }

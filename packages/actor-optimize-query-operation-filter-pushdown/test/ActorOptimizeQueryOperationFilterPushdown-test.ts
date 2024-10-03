@@ -1,9 +1,10 @@
-import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import { assignOperationSource } from '@comunica/utils-query-operation';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorOptimizeQueryOperationFilterPushdown } from '../lib/ActorOptimizeQueryOperationFilterPushdown';
+import '@comunica/utils-jest';
 
 const AF = new Factory();
 const DF = new DataFactory();
@@ -32,7 +33,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
     });
 
     it('should test', async() => {
-      await expect(actor.test({ context: new ActionContext(), operation: AF.createNop() })).resolves.toBeTruthy();
+      await expect(actor.test({ context: new ActionContext(), operation: AF.createNop() })).resolves.toPassTestVoid();
     });
 
     describe('run', () => {
@@ -276,11 +277,11 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
         const src2 = <any> {};
         const op = AF.createFilter(
           AF.createJoin([
-            ActorQueryOperation.assignOperationSource(
+            assignOperationSource(
               AF.createPattern(DF.variable('s1'), DF.namedNode('p'), DF.namedNode('o')),
               src1,
             ),
-            ActorQueryOperation.assignOperationSource(
+            assignOperationSource(
               AF.createPattern(DF.variable('s1'), DF.namedNode('p'), DF.namedNode('o')),
               src2,
             ),
@@ -296,11 +297,30 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           },
         });
         shapes.set(src2, {
-          type: 'operation',
-          operation: {
-            operationType: 'type',
-            type: Algebra.types.FILTER,
-          },
+          type: 'disjunction',
+          children: [
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.FILTER,
+              },
+            },
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.JOIN,
+              },
+            },
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.PATTERN,
+              },
+            },
+          ],
         });
         expect(actor.shouldAttemptPushDown(op, [ src1, src2 ], shapes)).toBeTruthy();
       });
@@ -310,11 +330,11 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
         const src2 = <any> {};
         const op = AF.createFilter(
           AF.createJoin([
-            ActorQueryOperation.assignOperationSource(
+            assignOperationSource(
               AF.createPattern(DF.variable('s1'), DF.namedNode('p'), DF.namedNode('o')),
               src1,
             ),
-            ActorQueryOperation.assignOperationSource(
+            assignOperationSource(
               AF.createPattern(DF.variable('s1'), DF.namedNode('p'), DF.namedNode('o')),
               src2,
             ),
@@ -343,11 +363,11 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
         const src1 = <any> {};
         const op = AF.createFilter(
           AF.createJoin([
-            ActorQueryOperation.assignOperationSource(
+            assignOperationSource(
               AF.createPattern(DF.variable('s1'), DF.namedNode('p'), DF.namedNode('o')),
               src1,
             ),
-            ActorQueryOperation.assignOperationSource(
+            assignOperationSource(
               AF.createPattern(DF.variable('s2'), DF.namedNode('p'), DF.namedNode('o')),
               src1,
             ),
@@ -974,12 +994,10 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
                 AF.createTermExpression(DF.variable('s')),
                 AF.createTermExpression(DF.namedNode('s')),
               ]),
-              ActorQueryOperation
-                .assignOperationSource(AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')), src1),
+              assignOperationSource(AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')), src1),
             )).toEqual([ true, AF.createJoin([
-              ActorQueryOperation
-                .assignOperationSource(AF
-                  .createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o1')), src1),
+              assignOperationSource(AF
+                .createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o1')), src1),
               AF.createValues(
                 [ DF.variable('s') ],
                 [{ '?s': DF.namedNode('s') }],

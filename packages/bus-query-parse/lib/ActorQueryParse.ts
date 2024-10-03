@@ -14,11 +14,16 @@ import type { Algebra } from 'sparqlalgebrajs';
  * @see IActionQueryParse
  * @see IActorQueryParseOutput
  */
-export abstract class ActorQueryParse extends Actor<IActionQueryParse, IActorTest, IActorQueryParseOutput> {
+export abstract class ActorQueryParse<TS = undefined>
+  extends Actor<IActionQueryParse, IActorTest, IActorQueryParseOutput, TS> {
+  /* eslint-disable max-len */
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {Query parsing failed: none of the configured parsers were able to the query "${action.query}"} busFailMessage
    */
-  public constructor(args: IActorQueryParseArgs) {
+  /* eslint-enable max-len */
+  public constructor(args: IActorQueryParseArgs<TS>) {
     super(args);
   }
 }
@@ -49,6 +54,7 @@ export interface IActorQueryParseOutput extends IActorOutput {
   baseIRI?: string;
 }
 
-export type IActorQueryParseArgs = IActorArgs<IActionQueryParse, IActorTest, IActorQueryParseOutput>;
+export type IActorQueryParseArgs<TS = undefined> =
+  IActorArgs<IActionQueryParse, IActorTest, IActorQueryParseOutput, TS>;
 
 export type MediatorQueryParse = Mediate<IActionQueryParse, IActorQueryParseOutput>;

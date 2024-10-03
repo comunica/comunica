@@ -1,10 +1,12 @@
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
+import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { MediatorRdfJoin } from '@comunica/bus-rdf-join';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import { isExpressionError } from '@comunica/expression-evaluator';
 import type { Bindings, IActionContext, IJoinEntry, IQueryOperationResult } from '@comunica/types';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -19,8 +21,8 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
     this.mediatorExpressionEvaluatorFactory = args.mediatorExpressionEvaluatorFactory;
   }
 
-  public async testOperation(_operation: Algebra.LeftJoin, _context: IActionContext): Promise<IActorTest> {
-    return true;
+  public async testOperation(_operation: Algebra.LeftJoin, _context: IActionContext): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async runOperation(operationOriginal: Algebra.LeftJoin, context: IActionContext):
@@ -32,7 +34,7 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
         operation: subOperation,
       }))))
       .map(({ output, operation }) => ({
-        output: ActorQueryOperation.getSafeBindings(output),
+        output: getSafeBindings(output),
         operation,
       }));
     const joined = await this.mediatorJoin.mediate({ type: 'optional', entries, context });
@@ -49,7 +51,7 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
           // eslint-disable-next-line ts/no-misused-promises
           transform: async(bindings: Bindings, done: () => void, push: (item: Bindings) => void) => {
             // If variables of the right-hand entry are missing, we skip expression evaluation
-            if (!expressionVariables.every(variable => bindings.has(variable.value))) {
+            if (!expressionVariables.every(variable => bindings.has(variable.variable.value))) {
               push(bindings);
               return done();
             }

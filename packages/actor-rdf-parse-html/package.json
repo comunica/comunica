@@ -4,6 +4,10 @@
   "description": "A html rdf-parse actor",
   "lsd:module": true,
   "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
@@ -43,6 +47,6 @@
     "@comunica/types": "^3.2.1",
     "@rdfjs/types": "*",
     "htmlparser2": "^9.0.0",
-    "readable-stream": "^4.4.2"
+    "readable-stream": "^4.5.2"
   }
 }

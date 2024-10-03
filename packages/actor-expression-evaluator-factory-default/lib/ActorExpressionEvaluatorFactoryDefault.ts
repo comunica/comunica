@@ -1,15 +1,14 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type {
   IActionExpressionEvaluatorFactory,
   IActorExpressionEvaluatorFactoryArgs,
   IActorExpressionEvaluatorFactoryOutput,
 } from '@comunica/bus-expression-evaluator-factory';
 import { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
-
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
-
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import { prepareEvaluatorActionContext } from '@comunica/expression-evaluator';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { AlgebraTransformer } from './AlgebraTransformer';
 import { ExpressionEvaluator } from './ExpressionEvaluator';
 
@@ -21,8 +20,8 @@ export class ActorExpressionEvaluatorFactoryDefault extends ActorExpressionEvalu
     super(args);
   }
 
-  public async test(_action: IActionExpressionEvaluatorFactory): Promise<IActorTest> {
-    return true;
+  public async test(_action: IActionExpressionEvaluatorFactory): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async run(action: IActionExpressionEvaluatorFactory): Promise<IActorExpressionEvaluatorFactoryOutput> {

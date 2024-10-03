@@ -1,6 +1,7 @@
 import type { IActionRdfMetadata, IActorRdfMetadataArgs, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
 import { ActorRdfMetadata } from '@comunica/bus-rdf-metadata';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 import { Readable } from 'readable-stream';
 
@@ -16,11 +17,11 @@ export class ActorRdfMetadataPrimaryTopic extends ActorRdfMetadata {
     super(args);
   }
 
-  public async test(action: IActionRdfMetadata): Promise<IActorTest> {
+  public async test(action: IActionRdfMetadata): Promise<TestResult<IActorTest>> {
     if (action.triples) {
-      throw new Error('This actor only supports non-triple quad streams.');
+      return failTest('This actor only supports non-triple quad streams.');
     }
-    return true;
+    return passTestVoid();
   }
 
   public async run(action: IActionRdfMetadata): Promise<IActorRdfMetadataOutput> {

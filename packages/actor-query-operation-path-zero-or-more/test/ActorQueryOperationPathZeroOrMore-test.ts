@@ -1,9 +1,10 @@
-import type { Bindings } from '@comunica/bindings-factory';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import type { Bindings } from '@comunica/utils-bindings-factory';
+import { assignOperationSource, getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -11,7 +12,7 @@ import { termToString } from 'rdf-string';
 import { QUAD_TERM_NAMES } from 'rdf-terms';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationPathZeroOrMore } from '../lib/ActorQueryOperationPathZeroOrMore';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -28,9 +29,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorMergeBindingsContext = {
-      mediate(arg: any) {
-        return {};
-      },
+      mediate: () => ({}),
     };
 
     mediatorQueryOperation = {
@@ -84,8 +83,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
           bindingsStream: new ArrayIterator(distinct ? [ bindings[0] ] : bindings),
           metadata: () => Promise.resolve({
             cardinality: { value: distinct ? 1 : 3 },
-            canContainUndefs: false,
-            variables: vars,
+            variables: vars.map(variable => ({ variable, canBeUndef: false })),
           }),
           operated: arg,
           type: 'bindings',
@@ -132,7 +130,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
         operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.ZERO_OR_MORE_PATH }},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should test on different paths', async() => {
@@ -140,7 +138,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
         operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`This Actor only supports ZeroOrMorePath Path operations.`);
     });
 
     it('should mediate with distinct if not in context', async() => {
@@ -149,9 +147,11 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
         factory.createZeroOrMorePath(factory.createLink(DF.namedNode('p'))),
         DF.variable('x'),
       ), context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }) };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: { value: 1 }, canContainUndefs: false, variables: [ DF.variable('x') ]});
+        .toEqual({ cardinality: { value: 1 }, variables: [
+          { variable: DF.variable('x'), canBeUndef: false },
+        ]});
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('x'), DF.namedNode('1') ]]),
       ]);
@@ -166,9 +166,11 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
         [KeysInitQuery.dataFactory.name]: DF,
         [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: false,
       }) };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: { value: 1 }, canContainUndefs: false, variables: [ DF.variable('x') ]});
+        .toEqual({ cardinality: { value: 1 }, variables: [
+          { variable: DF.variable('x'), canBeUndef: false },
+        ]});
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('x'), DF.namedNode('1') ]]),
       ]);
@@ -178,16 +180,18 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
       const op: any = { operation: factory.createPath(
         DF.namedNode('s'),
         factory.createZeroOrMorePath(
-          ActorQueryOperation.assignOperationSource(factory.createLink(DF.namedNode('p')), source1),
+          assignOperationSource(factory.createLink(DF.namedNode('p')), source1),
         ),
         DF.variable('x'),
       ), context: new ActionContext({
         [KeysInitQuery.dataFactory.name]: DF,
         [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
       }) };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: { value: 4 }, canContainUndefs: false, variables: [ DF.variable('x') ]});
+        .toEqual({ cardinality: { value: 4 }, variables: [
+          { variable: DF.variable('x'), canBeUndef: false },
+        ]});
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('x'), DF.namedNode('s') ]]),
         BF.bindings([[ DF.variable('x'), DF.namedNode('1') ]]),
@@ -200,16 +204,18 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
       const op: any = { operation: factory.createPath(
         DF.variable('x'),
         factory.createZeroOrMorePath(
-          ActorQueryOperation.assignOperationSource(factory.createLink(DF.namedNode('p')), source1),
+          assignOperationSource(factory.createLink(DF.namedNode('p')), source1),
         ),
         DF.namedNode('o'),
       ), context: new ActionContext({
         [KeysInitQuery.dataFactory.name]: DF,
         [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
       }) };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: { value: 4 }, canContainUndefs: false, variables: [ DF.variable('x') ]});
+        .toEqual({ cardinality: { value: 4 }, variables: [
+          { variable: DF.variable('x'), canBeUndef: false },
+        ]});
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('x'), DF.namedNode('o') ]]),
         BF.bindings([[ DF.variable('x'), DF.namedNode('1') ]]),
@@ -222,16 +228,16 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
       const op: any = { operation: factory.createPath(
         DF.namedNode('s'),
         factory.createZeroOrMorePath(
-          ActorQueryOperation.assignOperationSource(factory.createLink(DF.namedNode('p')), source1),
+          assignOperationSource(factory.createLink(DF.namedNode('p')), source1),
         ),
         DF.namedNode('1'),
       ), context: new ActionContext({
         [KeysInitQuery.dataFactory.name]: DF,
         [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
       }) };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: { value: 4 }, canContainUndefs: false, variables: []});
+        .toEqual({ cardinality: { value: 4 }, variables: []});
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings(),
       ]);
@@ -241,7 +247,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
       const op: any = { operation: factory.createPath(
         DF.namedNode('s'),
         factory.createZeroOrMorePath(
-          ActorQueryOperation.assignOperationSource(factory.createLink(DF.namedNode('p')), source1),
+          assignOperationSource(factory.createLink(DF.namedNode('p')), source1),
         ),
         DF.namedNode('1'),
         DF.variable('g'),
@@ -249,9 +255,11 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
         [KeysInitQuery.dataFactory.name]: DF,
         [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
       }) };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: { value: 3 }, canContainUndefs: false, variables: [ DF.variable('g') ]});
+        .toEqual({ cardinality: { value: 3 }, variables: [
+          { variable: DF.variable('g'), canBeUndef: false },
+        ]});
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('g'), DF.namedNode('6') ]]),
         BF.bindings([[ DF.variable('g'), DF.namedNode('7') ]]),
@@ -263,7 +271,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
       const op: any = { operation: factory.createPath(
         DF.namedNode('s'),
         factory.createZeroOrMorePath(
-          ActorQueryOperation.assignOperationSource(factory.createLink(DF.namedNode('p')), source1),
+          assignOperationSource(factory.createLink(DF.namedNode('p')), source1),
         ),
         DF.variable('x'),
         DF.variable('g'),
@@ -271,11 +279,13 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
         [KeysInitQuery.dataFactory.name]: DF,
         [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
       }) };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { value: 3 },
-        canContainUndefs: false,
-        variables: [ DF.variable('x'), DF.variable('g') ],
+        variables: [
+          { variable: DF.variable('x'), canBeUndef: false },
+          { variable: DF.variable('g'), canBeUndef: false },
+        ],
       });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
@@ -333,18 +343,20 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
       const op: any = { operation: factory.createPath(
         DF.variable('x'),
         factory.createZeroOrMorePath(
-          ActorQueryOperation.assignOperationSource(factory.createLink(DF.namedNode('p')), source1),
+          assignOperationSource(factory.createLink(DF.namedNode('p')), source1),
         ),
         DF.variable('y'),
       ), context: new ActionContext({
         [KeysInitQuery.dataFactory.name]: DF,
         [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
       }) };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { value: 3 },
-        canContainUndefs: false,
-        variables: [ DF.variable('x'), DF.variable('y') ],
+        variables: [
+          { variable: DF.variable('x'), canBeUndef: false },
+          { variable: DF.variable('y'), canBeUndef: false },
+        ],
       });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
@@ -422,7 +434,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
       const op: any = { operation: factory.createPath(
         DF.variable('x'),
         factory.createZeroOrMorePath(
-          ActorQueryOperation.assignOperationSource(factory.createLink(DF.namedNode('p')), source1),
+          assignOperationSource(factory.createLink(DF.namedNode('p')), source1),
         ),
         DF.variable('y'),
         DF.variable('g'),
@@ -430,11 +442,14 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
         [KeysInitQuery.dataFactory.name]: DF,
         [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
       }) };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { value: 3 },
-        canContainUndefs: false,
-        variables: [ DF.variable('x'), DF.variable('y'), DF.variable('g') ],
+        variables: [
+          { variable: DF.variable('x'), canBeUndef: false },
+          { variable: DF.variable('y'), canBeUndef: false },
+          { variable: DF.variable('g'), canBeUndef: false },
+        ],
       });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
@@ -544,30 +559,32 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
       const op: any = { operation: factory.createPath(
         DF.variable('x'),
         factory.createZeroOrMorePath(factory.createAlt([
-          ActorQueryOperation.assignOperationSource(factory.createLink(DF.namedNode('p')), source1),
-          ActorQueryOperation.assignOperationSource(factory.createLink(DF.namedNode('p')), source2),
+          assignOperationSource(factory.createLink(DF.namedNode('p')), source1),
+          assignOperationSource(factory.createLink(DF.namedNode('p')), source2),
         ])),
         DF.variable('y'),
       ), context: new ActionContext({
         [KeysInitQuery.dataFactory.name]: DF,
         [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
       }) };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { value: 3 },
-        canContainUndefs: false,
-        variables: [ DF.variable('x'), DF.variable('y') ],
+        variables: [
+          { variable: DF.variable('x'), canBeUndef: false },
+          { variable: DF.variable('y'), canBeUndef: false },
+        ],
       });
       await expect(output.bindingsStream.toArray()).resolves.toHaveLength(22);
 
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
         context: expect.any(ActionContext),
         operation: AF.createUnion([
-          ActorQueryOperation.assignOperationSource(
+          assignOperationSource(
             AF.createPattern(DF.variable('x'), DF.variable('b'), DF.variable('y')),
             source1,
           ),
-          ActorQueryOperation.assignOperationSource(
+          assignOperationSource(
             AF.createPattern(DF.variable('x'), DF.variable('b'), DF.variable('y')),
             source2,
           ),

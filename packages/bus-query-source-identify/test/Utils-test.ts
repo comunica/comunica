@@ -1,5 +1,5 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
-import { MetadataValidationState } from '@comunica/metadata';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
@@ -14,7 +14,7 @@ import {
   quadsOrderToBindingsOrder,
   quadsToBindings,
 } from '../lib';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 import 'jest-rdf';
 
 const quad = require('rdf-quad');
@@ -64,12 +64,14 @@ describe('Utils', () => {
       // Check metadata
       const metadata = await new Promise(resolve => bindingsStream.getProperty('metadata', resolve));
       expect(metadata).toEqual({
-        canContainUndefs: false,
+
         cardinality: { type: 'exact', value: 3 },
         order: [
           { term: DF.variable('p'), direction: 'asc' },
         ],
-        variables: [ DF.variable('p') ],
+        variables: [
+          { variable: DF.variable('p'), canBeUndef: false },
+        ],
       });
     });
 
@@ -106,9 +108,11 @@ describe('Utils', () => {
       // Check metadata
       const metadata = await new Promise(resolve => bindingsStream.getProperty('metadata', resolve));
       expect(metadata).toEqual({
-        canContainUndefs: false,
+
         cardinality: { type: 'exact', value: 3 },
-        variables: [ DF.variable('p') ],
+        variables: [
+          { variable: DF.variable('p'), canBeUndef: false },
+        ],
       });
     });
 
@@ -173,9 +177,11 @@ describe('Utils', () => {
       // Check metadata
       const metadata = await new Promise(resolve => bindingsStream.getProperty('metadata', resolve));
       expect(metadata).toEqual({
-        canContainUndefs: false,
+
         cardinality: { type: 'exact', value: 3 },
-        variables: [ DF.variable('p') ],
+        variables: [
+          { variable: DF.variable('p'), canBeUndef: false },
+        ],
         availableOrders: [
           {
             cost: {
@@ -254,13 +260,16 @@ describe('Utils', () => {
       // Check metadata
       const metadata = await new Promise(resolve => bindingsStream.getProperty('metadata', resolve));
       expect(metadata).toEqual({
-        canContainUndefs: false,
+
         cardinality: { type: 'estimate', value: 3 },
         order: [
           { term: DF.variable('p'), direction: 'asc' },
           { term: DF.variable('g'), direction: 'asc' },
         ],
-        variables: [ DF.variable('p'), DF.variable('g') ],
+        variables: [
+          { variable: DF.variable('p'), canBeUndef: false },
+          { variable: DF.variable('g'), canBeUndef: false },
+        ],
       });
     });
 
@@ -307,13 +316,16 @@ describe('Utils', () => {
       // Check metadata
       const metadata = await new Promise(resolve => bindingsStream.getProperty('metadata', resolve));
       expect(metadata).toEqual({
-        canContainUndefs: false,
+
         cardinality: { type: 'exact', value: 3 },
         order: [
           { term: DF.variable('p'), direction: 'asc' },
           { term: DF.variable('g'), direction: 'asc' },
         ],
-        variables: [ DF.variable('p'), DF.variable('g') ],
+        variables: [
+          { variable: DF.variable('p'), canBeUndef: false },
+          { variable: DF.variable('g'), canBeUndef: false },
+        ],
       });
     });
 
@@ -350,12 +362,14 @@ describe('Utils', () => {
       // Check metadata
       const metadata = await new Promise(resolve => bindingsStream.getProperty('metadata', resolve));
       expect(metadata).toEqual({
-        canContainUndefs: false,
+
         cardinality: { type: 'estimate', value: 3 },
         order: [
           { term: DF.variable('x'), direction: 'asc' },
         ],
-        variables: [ DF.variable('x') ],
+        variables: [
+          { variable: DF.variable('x'), canBeUndef: false },
+        ],
       });
     });
 
@@ -389,9 +403,14 @@ describe('Utils', () => {
       // Check metadata
       const metadata = await new Promise(resolve => bindingsStream.getProperty('metadata', resolve));
       expect(metadata).toEqual({
-        canContainUndefs: false,
+
         cardinality: { type: 'estimate', value: 3 },
-        variables: [ DF.variable('x'), DF.variable('p'), DF.variable('os'), DF.variable('op') ],
+        variables: [
+          { variable: DF.variable('x'), canBeUndef: false },
+          { variable: DF.variable('p'), canBeUndef: false },
+          { variable: DF.variable('os'), canBeUndef: false },
+          { variable: DF.variable('op'), canBeUndef: false },
+        ],
       });
     });
   });
@@ -558,10 +577,10 @@ describe('Utils', () => {
         ],
       )).toEqual({
         state: expect.any(MetadataValidationState),
-        canContainUndefs: false,
+
         cardinality: { type: 'estimate', value: 10 },
         variables: [
-          DF.variable('a'),
+          { variable: DF.variable('a'), canBeUndef: false },
         ],
       });
     });
@@ -595,11 +614,11 @@ describe('Utils', () => {
         ],
       )).toEqual({
         state: expect.any(MetadataValidationState),
-        canContainUndefs: false,
+
         cardinality: { type: 'estimate', value: 10 },
         variables: [
-          DF.variable('a'),
-          DF.variable('b'),
+          { variable: DF.variable('a'), canBeUndef: false },
+          { variable: DF.variable('b'), canBeUndef: false },
         ],
         order: [{ term: DF.variable('a'), direction: 'asc' }],
         availableOrders: [

@@ -1,5 +1,5 @@
-import type { IAction, IActorOutput, IActorTest } from '@comunica/core';
-import { ActionContext, Actor, Bus, Mediator } from '@comunica/core';
+import type { IAction, IActorOutput, IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTest, ActionContext, Actor, Bus, Mediator } from '@comunica/core';
 import { MediatorCombineUnion } from '..';
 
 describe('MediatorCombineUnion', () => {
@@ -55,11 +55,11 @@ describe('MediatorCombineUnion', () => {
     });
   });
 
-  describe('An MediatorCombineUnion instance with erroring actors', () => {
+  describe('An MediatorCombineUnion instance with failing actors', () => {
     let mediator: MediatorCombineUnion<DummyActor, IAction, IDummyTest, IDummyTest>;
 
     beforeEach(() => {
-      mediator = new MediatorCombineUnion({ name: 'mediator', bus, field: 'field', filterErrors: true });
+      mediator = new MediatorCombineUnion({ name: 'mediator', bus, field: 'field', filterFailures: true });
     });
 
     it('should throw an error when mediateWith is called', () => {
@@ -98,11 +98,11 @@ class DummyActor extends Actor<IAction, IDummyTest, IDummyTest> {
     this.data = data;
   }
 
-  public async test(action: IAction): Promise<IDummyTest> {
-    return { field: this.data, otherField: 'ignored' };
+  public async test(): Promise<TestResult<IDummyTest>> {
+    return passTest({ field: this.data, otherField: 'ignored' });
   }
 
-  public async run(action: IAction): Promise<IDummyTest> {
+  public async run(): Promise<IDummyTest> {
     return { field: this.data, otherField: 'ignored' };
   }
 }
@@ -116,8 +116,8 @@ class DummyThrowActor extends DummyActor {
     super(id, data, bus);
   }
 
-  public override async test(action: IAction): Promise<IDummyTest> {
-    throw new Error('Dummy Error');
+  public override async test(): Promise<TestResult<IDummyTest>> {
+    return failTest('Dummy Error');
   }
 }
 

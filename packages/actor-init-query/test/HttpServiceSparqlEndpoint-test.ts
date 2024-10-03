@@ -92,7 +92,6 @@ describe('HttpServiceSparqlEndpoint', () => {
       expect(instance.context).toEqual({ test: 'test' });
       expect(instance.timeout).toBe(4_321);
       expect(instance.port).toBe(24_321);
-      expect(instance.invalidateCacheBeforeQuery).toBeTruthy();
     });
 
     it('should set default field values for fields that aren\'t in args', () => {
@@ -102,7 +101,6 @@ describe('HttpServiceSparqlEndpoint', () => {
       expect(instance.context).toEqual({});
       expect(instance.timeout).toBe(60_000);
       expect(instance.port).toBe(3_000);
-      expect(instance.invalidateCacheBeforeQuery).toBeFalsy();
     });
   });
 
@@ -423,33 +421,6 @@ describe('HttpServiceSparqlEndpoint', () => {
           [],
         ))
         .port).toBe(4_321);
-    });
-
-    it('should read cache invalidation from the commandline options or use correct default', async() => {
-      expect((await HttpServiceSparqlEndpoint
-        .generateConstructorArguments(
-          testCommandlineArguments,
-          moduleRootPath,
-          env,
-          defaultConfigPath,
-          stderr,
-          exit,
-          [],
-        ))
-        .invalidateCacheBeforeQuery).toBeFalsy();
-
-      testCommandlineArguments.push('-i');
-      expect((await HttpServiceSparqlEndpoint
-        .generateConstructorArguments(
-          testCommandlineArguments,
-          moduleRootPath,
-          env,
-          defaultConfigPath,
-          stderr,
-          exit,
-          [],
-        ))
-        .invalidateCacheBeforeQuery).toBe(true);
     });
 
     it('should try to get context by parsing the commandline argument if it\'s not an existing file', async() => {
@@ -1024,6 +995,16 @@ describe('HttpServiceSparqlEndpoint', () => {
         );
       });
 
+      it('should return a 405 for DELETE', async() => {
+        request.method = 'DELETE';
+        await instance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+        expect(response.writeHead).toHaveBeenCalledWith(
+          405,
+          { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*' },
+        );
+      });
+
       it('should call writeQueryResult with correct arguments if request method equals POST', async() => {
         (<any> instance).parseBody = jest.fn(() => Promise.resolve({ type: 'query', value: 'test_parseBody_result' }));
         request.method = 'POST';
@@ -1215,20 +1196,6 @@ describe('HttpServiceSparqlEndpoint', () => {
           false,
           0,
         );
-      });
-
-      it('should only invalidate cache if invalidateCacheBeforeQuery is set to true', async() => {
-        (<any> instance).invalidateCacheBeforeQuery = false;
-        await instance.handleRequest(engine, variants, stdout, stderr, request, response);
-
-        expect(engine.invalidateHttpCache).not.toHaveBeenCalled();
-      });
-
-      it('should invalidate cache if invalidateCacheBeforeQuery is set to true', async() => {
-        (<any> instance).invalidateCacheBeforeQuery = true;
-        await instance.handleRequest(engine, variants, stdout, stderr, request, response);
-
-        expect(engine.invalidateHttpCache).toHaveBeenCalledTimes(1);
       });
 
       it('should respond with 404 when not sparql url or root url', async() => {

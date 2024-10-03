@@ -11,7 +11,6 @@
       "@id": "urn:comunica:default:query-operation/actors#group",
       "@type": "ActorQueryOperationGroup",
       "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
-      "mediatorHashBindings": { "@id": "urn:comunica:default:hash-bindings/mediators#main" },
       "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" },
       "mediatorBindingsAggregatorFactory": { "@id": "urn:comunica:default:bindings-aggregator-factory/mediators#main" }
     }

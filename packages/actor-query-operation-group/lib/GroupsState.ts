@@ -1,11 +1,8 @@
-import type { BindingsFactory } from '@comunica/bindings-factory';
-import type {
-  IBindingsAggregator,
-  MediatorBindingsAggregatorFactory,
-} from '@comunica/bus-bindings-aggregator-factory';
-import type { HashFunction } from '@comunica/bus-hash-bindings';
+import type { IBindingsAggregator, MediatorBindingsAggregatorFactory } from '@comunica/bus-bindings-aggregator-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { Bindings, ComunicaDataFactory, IActionContext } from '@comunica/types';
+import type { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { bindingsToCompactString } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -40,11 +37,11 @@ export class GroupsState {
   private resultHasBeenCalled: boolean;
 
   public constructor(
-    private readonly hashFunction: HashFunction,
     private readonly pattern: Algebra.Group,
     private readonly mediatorBindingsAggregatorFactory: MediatorBindingsAggregatorFactory,
     private readonly context: IActionContext,
     private readonly bindingsFactory: BindingsFactory,
+    private readonly variables: RDF.Variable[],
   ) {
     this.groups = new Map();
     this.groupsInitializer = new Map();
@@ -187,6 +184,6 @@ export class GroupsState {
    * @param {Bindings} bindings - Bindings to hash
    */
   private hashBindings(bindings: Bindings): BindingsHash {
-    return this.hashFunction(bindings);
+    return bindingsToCompactString(bindings, this.variables);
   }
 }

@@ -9,7 +9,6 @@ import { WildcardCountAggregator } from '@comunica/actor-bindings-aggregator-fac
 import { ActorFunctionFactoryTermFunctionAddition } from '@comunica/actor-function-factory-term-function-addition';
 import { ActorFunctionFactoryTermFunctionDivision } from '@comunica/actor-function-factory-term-function-division';
 import { createTermCompMediator } from '@comunica/actor-term-comparator-factory-expression-evaluator/test/util';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type {
   IActionBindingsAggregatorFactory,
   IActorBindingsAggregatorFactoryOutput,
@@ -22,10 +21,11 @@ import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
-import { Bus } from '@comunica/core';
+import { Bus, ActionContext } from '@comunica/core';
 import { SparqlOperator } from '@comunica/expression-evaluator';
-import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
 import type { Bindings, IActionContext } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-jest';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -36,9 +36,7 @@ import { GroupsState } from '../lib/GroupsState';
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF, {});
 const mediatorMergeBindingsContext: any = {
-  mediate(arg: any) {
-    return {};
-  },
+  mediate: () => ({}),
 };
 
 const simpleXYZinput = {
@@ -88,8 +86,6 @@ const sumZ: Algebra.BoundAggregate = {
   variable: DF.variable('sum'),
 };
 
-const hashFunction = (bindings: any) => JSON.stringify(bindings);
-
 const mediatorFunctionFactory: MediatorFunctionFactory = createFuncMediator([
   args => new ActorFunctionFactoryTermFunctionAddition(args),
   args => new ActorFunctionFactoryTermFunctionDivision(args),
@@ -103,7 +99,7 @@ function getDefaultMediatorQueryOperation() {
         BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
         BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
       ], { autoStart: false }),
-      metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false }),
+      metadata: () => Promise.resolve({ cardinality: 3 }),
       operated: arg,
       type: 'bindings',
       variables: [ DF.variable('a') ],
@@ -134,7 +130,7 @@ IActionBindingsAggregatorFactory):
   const evaluator = await factory.run({
     algExpr: expr.expression,
     context,
-  });
+  }, undefined);
   if (expr.aggregator === 'count') {
     if (expr.expression.wildcard) {
       return new WildcardCountAggregator(evaluator, expr.distinct);
@@ -211,17 +207,13 @@ function constructCase(
           bindingsStream: new ArrayIterator(inputBindings, { autoStart: false }),
           metadata: () => Promise.resolve({
             cardinality: inputBindings.length,
-            canContainUndefs: false,
-            variables: inputVariables.map(name => DF.variable(name)),
+            variables: inputVariables.map(name => ({ variable: DF.variable(name), canBeUndef: false })),
           }),
           operated: arg,
           type: 'bindings',
         }),
       };
 
-  const mediatorHashBindings: any = {
-    mediate: () => Promise.resolve({ hashFunction }),
-  };
   const expressionEvaluatorFactory = getMockEEFactory({
     mediatorQueryOperation,
     mediatorFunctionFactory,
@@ -244,7 +236,6 @@ function constructCase(
     name: 'actor',
     bus,
     mediatorQueryOperation,
-    mediatorHashBindings,
     mediatorMergeBindingsContext,
     mediatorBindingsAggregatorFactory,
   });
@@ -266,16 +257,12 @@ function decimal(value: string) {
 describe('ActorQueryOperationGroup', () => {
   let bus: any;
   let mediatorQueryOperation: any;
-  let mediatorHashBindings: any;
   let mediatorBindingsAggregatorFactory: MediatorBindingsAggregatorFactory;
   let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = getDefaultMediatorQueryOperation();
-    mediatorHashBindings = {
-      mediate: () => Promise.resolve({ hashFunction }),
-    };
     const expressionEvaluatorFactory = getMockEEFactory({
       mediatorQueryOperation,
       mediatorFunctionFactory,
@@ -310,26 +297,26 @@ describe('ActorQueryOperationGroup', () => {
 
   describe('A GroupState instance', () => {
     it('should throw an error if collectResults is called multiple times', async() => {
-      const { actor, op } = constructCase({});
+      const { op } = constructCase({});
       const temp = new GroupsState(
-        hashFunction,
           <Algebra.Group> op.operation,
           mediatorBindingsAggregatorFactory,
           context,
           BF,
+          [ DF.variable('x') ],
       );
       await expect(temp.collectResults()).resolves.toBeTruthy();
       await expect(temp.collectResults()).rejects.toThrow('collectResult');
     });
 
     it('should throw an error if consumeBindings is called after collectResults', async() => {
-      const { actor, op } = constructCase({});
+      const { op } = constructCase({});
       const temp = new GroupsState(
-        hashFunction,
           <Algebra.Group> op.operation,
           mediatorBindingsAggregatorFactory,
           context,
           BF,
+          [ DF.variable('x') ],
       );
       await expect(temp.collectResults()).resolves.toBeTruthy();
       await expect(temp.consumeBindings(BF.bindings([[ DF.variable('x'), DF.literal('aaa') ]])))
@@ -340,13 +327,33 @@ describe('ActorQueryOperationGroup', () => {
   describe('An ActorQueryOperationGroup instance', () => {
     it('should test on group', async() => {
       const { actor, op } = constructCase({});
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should not test on non-group', async() => {
       const op: any = { operation: { type: 'some-other-type' }};
       const { actor } = constructCase({});
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports group operations, but got some-other-type`);
+    });
+
+    it('should not test on unsupported operators', async() => {
+      const op: any = {
+        operation: {
+          type: Algebra.types.GROUP,
+          input: undefined,
+          variables: undefined,
+          aggregates: [{ expression: {
+            args: [],
+            expressionType: 'operator',
+            operator: 'DUMMY',
+          }}],
+        },
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
+      const { actor } = constructCase({});
+      await expect(actor.test(op)).resolves.toFailTest(
+        `No actors are able to reply to a message`,
+      );
     });
 
     it('should test on distinct aggregate', async() => {
@@ -357,7 +364,7 @@ describe('ActorQueryOperationGroup', () => {
         inputOp: simpleXYZinput,
         aggregates: [{ ...countY, distinct: true }],
       });
-      await expect(actor.test(op)).resolves.toBe(true);
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should group on a single var', async() => {
@@ -375,13 +382,15 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('x'), DF.literal('aaa') ]]),
         BF.bindings([[ DF.variable('x'), DF.literal('bbb') ]]),
         BF.bindings([[ DF.variable('x'), DF.literal('ccc') ]]),
       ]);
-      await expect(output.metadata()).resolves.toMatchObject({ variables: [ DF.variable('x') ]});
+      await expect(output.metadata()).resolves.toMatchObject({ variables: [
+        { variable: DF.variable('x'), canBeUndef: false },
+      ]});
     });
 
     it('should group on multiple vars', async() => {
@@ -414,7 +423,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('x'), DF.literal('aaa') ],
@@ -433,7 +442,10 @@ describe('ActorQueryOperationGroup', () => {
           [ DF.variable('y'), DF.literal('aaa') ],
         ]),
       ]);
-      await expect(output.metadata()).resolves.toMatchObject({ variables: [ DF.variable('x'), DF.variable('y') ]});
+      await expect(output.metadata()).resolves.toMatchObject({ variables: [
+        { variable: DF.variable('x'), canBeUndef: false },
+        { variable: DF.variable('y'), canBeUndef: false },
+      ]});
     });
 
     it('should aggregate single vars', async() => {
@@ -466,7 +478,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ countY ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('x'), DF.literal('aaa') ],
@@ -481,7 +493,10 @@ describe('ActorQueryOperationGroup', () => {
           [ DF.variable('count'), int('1') ],
         ]),
       ]);
-      await expect(output.metadata()).resolves.toMatchObject({ variables: [ DF.variable('x'), DF.variable('count') ]});
+      await expect(output.metadata()).resolves.toMatchObject({ variables: [
+        { variable: DF.variable('x'), canBeUndef: false },
+        { variable: DF.variable('count'), canBeUndef: false },
+      ]});
     });
 
     it('should aggregate multiple vars', async() => {
@@ -519,7 +534,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ countY, sumZ ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('x'), DF.literal('aaa') ],
@@ -538,9 +553,9 @@ describe('ActorQueryOperationGroup', () => {
         ]),
       ]);
       await expect(output.metadata()).resolves.toMatchObject({ variables: [
-        DF.variable('x'),
-        DF.variable('count'),
-        DF.variable('sum'),
+        { variable: DF.variable('x'), canBeUndef: false },
+        { variable: DF.variable('count'), canBeUndef: false },
+        { variable: DF.variable('sum'), canBeUndef: false },
       ]});
     });
 
@@ -589,7 +604,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [{ ...countY, distinct: true }, sumZ ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('x'), DF.literal('aaa') ],
@@ -639,14 +654,14 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ countY ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('count'), int('5') ],
         ]),
       ]);
       await expect(output.metadata()).resolves.toMatchObject({ variables: [
-        DF.variable('count'),
+        { variable: DF.variable('count'), canBeUndef: false },
       ]});
     });
 
@@ -694,7 +709,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ sumY ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('x'), DF.literal('aaa') ]]),
         BF.bindings([[ DF.variable('x'), DF.literal('bbb') ]]),
@@ -704,8 +719,8 @@ describe('ActorQueryOperationGroup', () => {
         ]),
       ]);
       await expect(output.metadata()).resolves.toMatchObject({ variables: [
-        DF.variable('x'),
-        DF.variable('sum'),
+        { variable: DF.variable('x'), canBeUndef: false },
+        { variable: DF.variable('sum'), canBeUndef: false },
       ]});
     });
 
@@ -735,7 +750,7 @@ describe('ActorQueryOperationGroup', () => {
       const myMediatorQueryOperation = {
         mediate: (arg: any) => Promise.resolve({
           bindingsStream,
-          metadata: () => Promise.resolve({ cardinality: inputBindings.length, canContainUndefs: false }),
+          metadata: () => Promise.resolve({ cardinality: inputBindings.length }),
           operated: arg,
           type: 'bindings',
           variables: [ 'x', 'y' ],
@@ -752,13 +767,12 @@ describe('ActorQueryOperationGroup', () => {
       const actor = new ActorQueryOperationGroup({
         name: 'actor',
         bus,
-        mediatorHashBindings,
         mediatorQueryOperation: <any> myMediatorQueryOperation,
         mediatorMergeBindingsContext,
         mediatorBindingsAggregatorFactory,
       });
 
-      await expect(async() => arrayifyStream((<any> await actor.run(op)).bindingsStream))
+      await expect(async() => arrayifyStream((<any> await actor.run(op, undefined)).bindingsStream))
         .rejects
         .toBeTruthy();
     });
@@ -777,7 +791,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ countY ],
       });
       try {
-        await arrayifyStream((<any> await actor.run(op)).bindingsStream);
+        await arrayifyStream((<any> await actor.run(op, undefined)).bindingsStream);
         // eslint-disable-next-line jest/no-jasmine-globals
         fail();
       } catch (error: unknown) {
@@ -803,7 +817,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ countY ],
       });
       try {
-        await arrayifyStream((<any> await actor.run(op)).bindingsStream);
+        await arrayifyStream((<any> await actor.run(op, undefined)).bindingsStream);
         // eslint-disable-next-line jest/no-jasmine-globals
         fail('BindingStream did not error when it should');
       } catch (error: unknown) {
@@ -844,7 +858,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('count', 'x', 'c') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('c'), int('4') ],
@@ -852,8 +866,9 @@ describe('ActorQueryOperationGroup', () => {
       ]);
       await expect(output.metadata()).resolves.toEqual({
         cardinality: 4,
-        canContainUndefs: false,
-        variables: [ DF.variable('c') ],
+        variables: [
+          { variable: DF.variable('c'), canBeUndef: false },
+        ],
       });
     });
     it('should be able to count distinct', async() => {
@@ -872,7 +887,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregate ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('c'), int('1') ],
@@ -880,8 +895,9 @@ describe('ActorQueryOperationGroup', () => {
       ]);
       await expect(output.metadata()).resolves.toEqual({
         cardinality: 4,
-        canContainUndefs: false,
-        variables: [ DF.variable('c') ],
+        variables: [
+          { variable: DF.variable('c'), canBeUndef: false },
+        ],
       });
     });
 
@@ -894,12 +910,14 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('count', 'x', 'c') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([]);
       await expect(output.metadata()).resolves.toEqual({
         cardinality: 0,
-        canContainUndefs: false,
-        variables: [ DF.variable('g'), DF.variable('c') ],
+        variables: [
+          { variable: DF.variable('g'), canBeUndef: false },
+          { variable: DF.variable('c'), canBeUndef: false },
+        ],
       });
     });
 
@@ -912,14 +930,16 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('count', 'x', 'c') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('c'), int('0') ],
         ]),
       ]);
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 0, canContainUndefs: false, variables: [ DF.variable('c') ]});
+        .toEqual({ cardinality: 0, variables: [
+          { variable: DF.variable('c'), canBeUndef: false },
+        ]});
     });
 
     it('should be able to sum', async() => {
@@ -936,14 +956,16 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('sum', 'x', 's') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('s'), int('10') ],
         ]),
       ]);
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 4, canContainUndefs: false, variables: [ DF.variable('s') ]});
+        .toEqual({ cardinality: 4, variables: [
+          { variable: DF.variable('s'), canBeUndef: false },
+        ]});
     });
 
     it('should be able to sum with respect to empty input', async() => {
@@ -955,14 +977,16 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('sum', 'x', 's') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('s'), int('0') ],
         ]),
       ]);
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 0, canContainUndefs: false, variables: [ DF.variable('s') ]});
+        .toEqual({ cardinality: 0, variables: [
+          { variable: DF.variable('s'), canBeUndef: false },
+        ]});
     });
 
     it('should sum with regard to type promotion', async() => {
@@ -985,14 +1009,16 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('sum', 'x', 's') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('s'), float('10') ],
         ]),
       ]);
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 4, canContainUndefs: false, variables: [ DF.variable('s') ]});
+        .toEqual({ cardinality: 4, variables: [
+          { variable: DF.variable('s'), canBeUndef: false },
+        ]});
     });
 
     it('should be able to min', async() => {
@@ -1009,14 +1035,16 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('min', 'x', 'm') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('m'), int('1') ],
         ]),
       ]);
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 4, canContainUndefs: false, variables: [ DF.variable('m') ]});
+        .toEqual({ cardinality: 4, variables: [
+          { variable: DF.variable('m'), canBeUndef: false },
+        ]});
     });
 
     it('should be able to min with respect to the empty set', async() => {
@@ -1028,12 +1056,14 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('min', 'x', 'm') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings(),
       ]);
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 0, canContainUndefs: false, variables: [ DF.variable('m') ]});
+        .toEqual({ cardinality: 0, variables: [
+          { variable: DF.variable('m'), canBeUndef: false },
+        ]});
     });
 
     it('should be able to max', async() => {
@@ -1050,12 +1080,14 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('max', 'x', 'm') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('m'), int('4') ]]),
       ]);
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 4, canContainUndefs: false, variables: [ DF.variable('m') ]});
+        .toEqual({ cardinality: 4, variables: [
+          { variable: DF.variable('m'), canBeUndef: false },
+        ]});
     });
 
     it('should be able to max with respect to the empty set', async() => {
@@ -1067,12 +1099,14 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('max', 'x', 'm') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings(),
       ]);
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 0, canContainUndefs: false, variables: [ DF.variable('m') ]});
+        .toEqual({ cardinality: 0, variables: [
+          { variable: DF.variable('m'), canBeUndef: false },
+        ]});
     });
 
     it('should be able to avg', async() => {
@@ -1097,12 +1131,14 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('avg', 'x', 'a') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('a'), float('2.5') ]]),
       ]);
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 4, canContainUndefs: false, variables: [ DF.variable('a') ]});
+        .toEqual({ cardinality: 4, variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+        ]});
     });
 
     it('should be able to avg with respect to type preservation', async() => {
@@ -1127,14 +1163,16 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('avg', 'x', 'a') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('a'), decimal('2.5') ],
         ]),
       ]);
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 4, canContainUndefs: false, variables: [ DF.variable('a') ]});
+        .toEqual({ cardinality: 4, variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+        ]});
     });
 
     it('should be able to avg with respect to empty input', async() => {
@@ -1146,14 +1184,16 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('avg', 'x', 'a') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('a'), int('0') ],
         ]),
       ]);
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 0, canContainUndefs: false, variables: [ DF.variable('a') ]});
+        .toEqual({ cardinality: 0, variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+        ]});
     });
 
     it('should be able to sample', async() => {
@@ -1170,10 +1210,12 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('sample', 'x', 's') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       expect((await arrayifyStream(output.bindingsStream))[0]).toBeTruthy();
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 4, canContainUndefs: false, variables: [ DF.variable('s') ]});
+        .toEqual({ cardinality: 4, variables: [
+          { variable: DF.variable('s'), canBeUndef: false },
+        ]});
     });
 
     it('should be able to sample with respect to the empty input', async() => {
@@ -1185,12 +1227,14 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('sample', 'x', 's') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings(),
       ]);
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 0, canContainUndefs: false, variables: [ DF.variable('s') ]});
+        .toEqual({ cardinality: 0, variables: [
+          { variable: DF.variable('s'), canBeUndef: false },
+        ]});
     });
 
     it('should be able to group_concat', async() => {
@@ -1207,14 +1251,16 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('group_concat', 'x', 'g') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('g'), DF.literal('1 2 3 4') ],
         ]),
       ]);
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 4, canContainUndefs: false, variables: [ DF.variable('g') ]});
+        .toEqual({ cardinality: 4, variables: [
+          { variable: DF.variable('g'), canBeUndef: false },
+        ]});
     });
 
     it('should be able to group_concat with respect to the empty input', async() => {
@@ -1226,14 +1272,16 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [ aggregateOn('group_concat', 'x', 'g') ],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('g'), DF.literal('') ],
         ]),
       ]);
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 0, canContainUndefs: false, variables: [ DF.variable('g') ]});
+        .toEqual({ cardinality: 0, variables: [
+          { variable: DF.variable('g'), canBeUndef: false },
+        ]});
     });
 
     it('should be able to group_concat with respect to a custom separator', async() => {
@@ -1251,14 +1299,16 @@ describe('ActorQueryOperationGroup', () => {
       });
       op.operation.aggregates[0].separator = ';';
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('g'), DF.literal('1;2;3;4') ],
         ]),
       ]);
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 4, canContainUndefs: false, variables: [ DF.variable('g') ]});
+        .toEqual({ cardinality: 4, variables: [
+          { variable: DF.variable('g'), canBeUndef: false },
+        ]});
     });
 
     it('should return before executing the grouping', async() => {
@@ -1278,7 +1328,7 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [],
       });
 
-      const output = <any> await actor.run(op);
+      const output = <any> await actor.run(op, undefined);
       expect(spy).not.toHaveBeenCalled();
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('x'), DF.literal('aaa') ]]),
@@ -1286,7 +1336,9 @@ describe('ActorQueryOperationGroup', () => {
         BF.bindings([[ DF.variable('x'), DF.literal('ccc') ]]),
       ]);
       expect(spy).toHaveBeenCalledTimes(1);
-      await expect(output.metadata()).resolves.toMatchObject({ variables: [ DF.variable('x') ]});
+      await expect(output.metadata()).resolves.toMatchObject({ variables: [
+        { variable: DF.variable('x'), canBeUndef: false },
+      ]});
     });
   });
 });

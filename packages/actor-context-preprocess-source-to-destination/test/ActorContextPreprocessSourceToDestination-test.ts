@@ -1,6 +1,7 @@
 import { KeysInitQuery, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { ActorContextPreprocessSourceToDestination } from '../lib/ActorContextPreprocessSourceToDestination';
+import '@comunica/utils-jest';
 
 describe('ActorContextPreprocessSourceToDestination', () => {
   let bus: any;
@@ -17,7 +18,7 @@ describe('ActorContextPreprocessSourceToDestination', () => {
     });
 
     it('should test', async() => {
-      await expect(actor.test({ context: new ActionContext() })).resolves.toBe(true);
+      await expect(actor.test({ context: new ActionContext() })).resolves.toPassTestVoid();
     });
 
     it('should run on no context', async() => {

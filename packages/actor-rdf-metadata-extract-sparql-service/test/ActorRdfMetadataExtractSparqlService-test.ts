@@ -3,6 +3,7 @@ import { ActorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorRdfMetadataExtractSparqlService } from '../lib/ActorRdfMetadataExtractSparqlService';
+import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
 const stream = require('streamify-array');
@@ -98,7 +99,7 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
 
     it('should test', async() => {
       await expect(actor
-        .test({ url: 'http://example.org/', metadata: input, requestTime: 0, context })).resolves.toBeTruthy();
+        .test({ url: 'http://example.org/', metadata: input, requestTime: 0, context })).resolves.toPassTestVoid();
     });
 
     it('should run on a stream where an endpoint is defined', async() => {

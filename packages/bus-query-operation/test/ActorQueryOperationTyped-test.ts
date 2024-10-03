@@ -1,7 +1,8 @@
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
-import { ActionContext, Bus } from '@comunica/core';
+import { ActionContext, Bus, passTest } from '@comunica/core';
 import type { IPhysicalQueryPlanLogger } from '@comunica/types';
 import { ActorQueryOperationTyped } from '..';
+import '@comunica/utils-jest';
 
 describe('ActorQueryOperationTyped', () => {
   const bus = new Bus({ name: 'bus' });
@@ -31,19 +32,20 @@ describe('ActorQueryOperationTyped', () => {
 
   describe('An ActorQueryOperationTyped instance', () => {
     const actor = new (<any> ActorQueryOperationTyped)({ name: 'actor', bus }, 'op');
-    actor.testOperation = () => Promise.resolve({ metadata: {}});
+    actor.testOperation = () => Promise.resolve(passTest({ metadata: {}}));
     actor.runOperation = () => Promise.resolve({ metadata: {}});
 
     it('should not test without operation', async() => {
-      await expect(actor.test({ context: new ActionContext() })).rejects.toBeTruthy();
+      await expect(actor.test({ context: new ActionContext() })).resolves.toFailTest(`Missing field 'operation' in a query operation action.`);
     });
 
     it('should not test with an invalid operation', async() => {
-      await expect(actor.test({ operation: { type: 'other-op' }, context: new ActionContext() })).rejects.toBeTruthy();
+      await expect(actor.test({ operation: { type: 'other-op' }, context: new ActionContext() })).resolves.toFailTest(`Actor actor only supports op operations, but got other-op`);
     });
 
     it('should test with a valid operation', async() => {
-      await expect(actor.test({ operation: { type: 'op' }, context: new ActionContext() })).resolves.toBeTruthy();
+      await expect(actor.test({ operation: { type: 'op' }, context: new ActionContext() }))
+        .resolves.toPassTest({ metadata: {}});
     });
 
     it('should run', async() => {
@@ -81,7 +83,7 @@ describe('ActorQueryOperationTyped', () => {
         [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
         [KeysInitQuery.physicalQueryPlanNode.name]: operation,
         [KeysQueryOperation.operation.name]: operation,
-      }));
+      }), undefined);
     });
   });
 });

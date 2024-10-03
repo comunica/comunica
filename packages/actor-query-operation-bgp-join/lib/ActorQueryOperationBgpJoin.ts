@@ -1,7 +1,8 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
 import { Factory } from 'sparqlalgebrajs';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -15,8 +16,8 @@ export class ActorQueryOperationBgpJoin extends ActorQueryOperationTypedMediated
     super(args, 'bgp');
   }
 
-  public async testOperation(_operation: Algebra.Bgp, _context: IActionContext): Promise<IActorTest> {
-    return true;
+  public async testOperation(_operation: Algebra.Bgp, _context: IActionContext): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async runOperation(operation: Algebra.Bgp, context: IActionContext):

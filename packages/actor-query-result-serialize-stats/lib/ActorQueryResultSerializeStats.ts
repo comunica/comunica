@@ -4,6 +4,9 @@ import type {
   IActorQueryResultSerializeOutput,
 } from '@comunica/bus-query-result-serialize';
 import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-result-serialize';
+import { KeysInitQuery } from '@comunica/context-entries';
+import type { TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import type {
   IActionContext,
   IQueryOperationResultBindings,
@@ -12,8 +15,6 @@ import type {
 import { wrap } from 'asynciterator';
 import { Readable } from 'readable-stream';
 import type { ActionObserverHttp } from './ActionObserverHttp';
-
-const process: NodeJS.Process = require('process/');
 
 /**
  * Serializes SPARQL results for testing and debugging.
@@ -33,11 +34,14 @@ export class ActorQueryResultSerializeStats extends ActorQueryResultSerializeFix
   }
   /* eslint-enable max-len */
 
-  public override async testHandleChecked(action: IActionSparqlSerialize, _context: IActionContext): Promise<boolean> {
+  public override async testHandleChecked(
+    action: IActionSparqlSerialize,
+    _context: IActionContext,
+  ): Promise<TestResult<boolean>> {
     if (![ 'bindings', 'quads' ].includes(action.type)) {
-      throw new Error('This actor can only handle bindings streams or quad streams.');
+      return failTest('This actor can only handle bindings streams or quad streams.');
     }
-    return true;
+    return passTestVoid();
   }
 
   public pushHeader(data: Readable): void {
@@ -52,10 +56,10 @@ export class ActorQueryResultSerializeStats extends ActorQueryResultSerializeFix
     return `${row}\n`;
   }
 
-  public createFooter(startTime: number): string {
-    const footer: string = [ 'TOTAL', this.delay(startTime), this.httpObserver.requests,
+  public createSpecialLine(label: string, startTime: number): string {
+    const line: string = [ label, this.delay(startTime), this.httpObserver.requests,
     ].join(',');
-    return `${footer}\n`;
+    return `${line}\n`;
   }
 
   public async runHandle(action: IActionSparqlSerialize, _mediaType: string, _context: IActionContext):
@@ -66,7 +70,7 @@ export class ActorQueryResultSerializeStats extends ActorQueryResultSerializeFix
         (<IQueryOperationResultBindings> action).bindingsStream :
         (<IQueryOperationResultQuads> action).quadStream;
 
-    const startTime = this.now();
+    const startTime: number = action.context.getSafe(KeysInitQuery.queryTimestampHighResolution);
     let result = 1;
 
     function* end(cb: () => string): Generator<string> {
@@ -74,7 +78,8 @@ export class ActorQueryResultSerializeStats extends ActorQueryResultSerializeFix
     }
     const stream = wrap(resultStream)
       .map(() => this.createStat(startTime, result++))
-      .append(wrap(end(() => this.createFooter(startTime))));
+      .prepend([ this.createSpecialLine('PLANNING', startTime) ])
+      .append(wrap(end(() => this.createSpecialLine('TOTAL', startTime))));
 
     this.pushHeader(data);
     data.wrap(<any> stream);
@@ -82,13 +87,7 @@ export class ActorQueryResultSerializeStats extends ActorQueryResultSerializeFix
     return { data };
   }
 
-  /* istanbul ignore next */
   public now(): number {
-    // TODO: remove when we will drop support of Node 14
-    if (typeof performance === 'undefined') {
-      const time: [number, number] = process.hrtime();
-      return time[0] * 1_000 + (time[1] / 1_000_000);
-    }
     return performance.now();
   }
 

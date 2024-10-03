@@ -1,15 +1,15 @@
 import { Readable } from 'node:stream';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import { MetadataValidationState } from '@comunica/metadata';
 import type { BindingsStream, IActionContext } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import {
   ActorQuerySourceIdentifyHypermediaNone,
 } from '../lib/ActorQuerySourceIdentifyHypermediaNone';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
 const streamifyArray = require('streamify-array');
@@ -22,9 +22,7 @@ const v2 = DF.variable('v2');
 const v3 = DF.variable('v3');
 
 const mediatorMergeBindingsContext: any = {
-  mediate(arg: any) {
-    return {};
-  },
+  mediate: () => ({}),
 };
 
 describe('ActorQuerySourceIdentifyHypermediaNone', () => {
@@ -45,7 +43,7 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
 
     it('should test', async() => {
       await expect(actor.test({ metadata: <any> null, quads: <any> null, url: '', context }))
-        .resolves.toEqual({ filterFactor: 0 });
+        .resolves.toPassTest({ filterFactor: 0 });
     });
 
     it('should run', async() => {
@@ -63,10 +61,13 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
       })).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'exact', value: 2 },
-        canContainUndefs: false,
         availableOrders: undefined,
         order: undefined,
-        variables: [ v1, v2, v3 ],
+        variables: [
+          { variable: v1, canBeUndef: false },
+          { variable: v2, canBeUndef: false },
+          { variable: v3, canBeUndef: false },
+        ],
       });
       await expect(stream).toEqualBindingsStream([
         BF.fromRecord({
@@ -96,10 +97,12 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
       })).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 2 },
-        canContainUndefs: false,
         availableOrders: undefined,
         order: undefined,
-        variables: [ v1, v2 ],
+        variables: [
+          { variable: v1, canBeUndef: false },
+          { variable: v2, canBeUndef: false },
+        ],
       });
       await expect(stream).toEqualBindingsStream([
         BF.fromRecord({

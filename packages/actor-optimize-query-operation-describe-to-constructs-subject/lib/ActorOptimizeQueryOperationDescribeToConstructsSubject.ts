@@ -5,7 +5,8 @@ import type {
 } from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTest } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { Algebra, Factory } from 'sparqlalgebrajs';
@@ -18,11 +19,11 @@ export class ActorOptimizeQueryOperationDescribeToConstructsSubject extends Acto
     super(args);
   }
 
-  public async test(action: IActionOptimizeQueryOperation): Promise<IActorTest> {
+  public async test(action: IActionOptimizeQueryOperation): Promise<TestResult<IActorTest>> {
     if (action.operation.type !== Algebra.types.DESCRIBE) {
-      throw new Error(`Actor ${this.name} only supports describe operations, but got ${action.operation.type}`);
+      return failTest(`Actor ${this.name} only supports describe operations, but got ${action.operation.type}`);
     }
-    return true;
+    return passTest(true);
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {

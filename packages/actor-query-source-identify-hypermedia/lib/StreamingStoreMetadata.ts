@@ -1,8 +1,8 @@
 // eslint-disable-next-line import/no-nodejs-modules
 import type { EventEmitter } from 'node:events';
-import { ClosableTransformIterator } from '@comunica/bus-query-operation';
-import { MetadataValidationState } from '@comunica/metadata';
 import type { MetadataQuads, IAggregatedStore, MetadataBindings } from '@comunica/types';
+import { ClosableTransformIterator } from '@comunica/utils-iterator';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { StreamingStore } from 'rdf-streaming-store';
@@ -21,7 +21,6 @@ export class StreamingStoreMetadata extends StreamingStore implements IAggregate
   protected baseMetadata: MetadataBindings = {
     state: new MetadataValidationState(),
     cardinality: { type: 'exact', value: 0 },
-    canContainUndefs: false,
     variables: [],
   };
 
@@ -72,7 +71,6 @@ export class StreamingStoreMetadata extends StreamingStore implements IAggregate
         type: 'estimate',
         value: count,
       },
-      canContainUndefs: false,
     };
     iterator.setProperty('metadata', metadata);
     iterator.setProperty('lastCount', count);
@@ -114,7 +112,6 @@ export class StreamingStoreMetadata extends StreamingStore implements IAggregate
         type: 'estimate',
         value: count,
       },
-      canContainUndefs: false,
       variables: [],
     };
 

@@ -1,6 +1,6 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
-import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-jest';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -43,7 +43,7 @@ describe('MaterializedEvaluatorContext', () => {
       const evaluator = await expressionEvaluatorFactory.run({
         algExpr: expr,
         context: getMockEEActionContext(),
-      });
+      }, undefined);
       const result = evaluator.evaluateAsEBV(BF.bindings());
       await expect(result).resolves.toBe(true);
     });
@@ -63,7 +63,7 @@ describe('MaterializedEvaluatorContext', () => {
       const evaluator = await expressionEvaluatorFactory.run({
         algExpr: expr,
         context: getMockEEActionContext(),
-      });
+      }, undefined);
       const result = evaluator.evaluateAsEBV(BF.bindings());
       await expect(result).resolves.toBe(false);
     });
@@ -83,7 +83,7 @@ describe('MaterializedEvaluatorContext', () => {
       const evaluator = await expressionEvaluatorFactory.run({
         algExpr: expr,
         context: getMockEEActionContext(),
-      });
+      }, undefined);
       const result = evaluator.evaluateAsEBV(BF.bindings());
       await expect(result).resolves.toBe(true);
     });
@@ -111,7 +111,7 @@ describe('MaterializedEvaluatorContext', () => {
       const evaluator = await expressionEvaluatorFactory.run({
         algExpr: expr,
         context: getMockEEActionContext(),
-      });
+      }, undefined);
       await expect(evaluator.evaluateAsEBV(BF.bindings())).rejects.toBeTruthy();
     });
   });

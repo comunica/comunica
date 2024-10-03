@@ -8,7 +8,8 @@ import {
   ActorFunctionFactory,
 } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import type { AsyncExtensionFunctionCreator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -22,14 +23,14 @@ export class ActorFunctionFactoryExpressionFunctionExtensions extends ActorFunct
     super(args);
   }
 
-  public async test({ context, functionName }: IActionFunctionFactory): Promise<IActorTest> {
+  public async test({ context, functionName }: IActionFunctionFactory): Promise<TestResult<IActorTest>> {
     const extensionFinder: AsyncExtensionFunctionCreator =
       context.getSafe(KeysExpressionEvaluator.extensionFunctionCreator);
     const definition = await extensionFinder(new DataFactory<RDF.Quad>().namedNode(functionName));
     if (definition) {
-      return true;
+      return passTestVoid();
     }
-    throw new Error(
+    return failTest(
       `Actor ${this.name} can only provide non-termExpression implementations for functions that are provided through config entries like: ${KeysInitQuery.extensionFunctionCreator.name} or ${KeysInitQuery.extensionFunctions.name}`,
     );
   }

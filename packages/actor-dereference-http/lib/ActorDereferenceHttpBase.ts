@@ -2,7 +2,8 @@ import type { IActionDereference, IActorDereferenceArgs, IActorDereferenceOutput
 import { ActorDereference, emptyReadable } from '@comunica/bus-dereference';
 import type { IActorHttpOutput, MediatorHttp } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import { resolve as resolveRelative } from 'relative-to-absolute-iri';
 
@@ -49,11 +50,11 @@ export abstract class ActorDereferenceHttpBase extends ActorDereference implemen
     super(args);
   }
 
-  public async test({ url }: IActionDereference): Promise<IActorTest> {
+  public async test({ url }: IActionDereference): Promise<TestResult<IActorTest>> {
     if (!/^https?:/u.test(url)) {
-      throw new Error(`Cannot retrieve ${url} because it is not an HTTP(S) URL.`);
+      return failTest(`Cannot retrieve ${url} because it is not an HTTP(S) URL.`);
     }
-    return true;
+    return passTestVoid();
   }
 
   public async run(action: IActionDereference): Promise<IActorDereferenceOutput> {

@@ -1,5 +1,6 @@
 import { ActionContext, Bus } from '@comunica/core';
 import { ActorContextPreprocessConvertShortcuts } from '../lib/ActorContextPreprocessConvertShortcuts';
+import '@comunica/utils-jest';
 
 describe('ActorContextPreprocessConvertShortcuts', () => {
   let bus: any;
@@ -24,7 +25,7 @@ describe('ActorContextPreprocessConvertShortcuts', () => {
     });
 
     it('should test', async() => {
-      await expect(actor.test({ context: new ActionContext() })).resolves.toBeTruthy();
+      await expect(actor.test({ context: new ActionContext() })).resolves.toPassTestVoid();
     });
 
     describe('run', () => {

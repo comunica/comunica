@@ -1,15 +1,12 @@
-import type {
-  MediatorExpressionEvaluatorFactory,
-} from '@comunica/bus-expression-evaluator-factory';
+import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import {
-  ActorQueryOperation,
-  ActorQueryOperationTypedMediated,
-} from '@comunica/bus-query-operation';
+import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import { isExpressionError } from '@comunica/expression-evaluator';
 import type { Bindings, IActionContext, IQueryOperationResult } from '@comunica/types';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import type { Term } from '@rdfjs/types';
 import { Algebra } from 'sparqlalgebrajs';
 import { SortIterator } from './SortIterator';
@@ -29,20 +26,25 @@ export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated
     this.mediatorTermComparatorFactory = args.mediatorTermComparatorFactory;
   }
 
-  public async testOperation(operation: Algebra.OrderBy, context: IActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.OrderBy, context: IActionContext): Promise<TestResult<IActorTest>> {
     // Will throw error for unsupported operators
     for (let expr of operation.expressions) {
-      expr = this.extractSortExpression(expr);
-      const _ = await this.mediatorExpressionEvaluatorFactory
-        .mediate({ algExpr: expr, context });
+      try {
+        expr = this.extractSortExpression(expr);
+        const _ = await this.mediatorExpressionEvaluatorFactory
+          .mediate({ algExpr: expr, context });
+      } catch (error: unknown) {
+        // TODO: return TestResult in ActorQueryOperation.getAsyncExpressionContext
+        return failTest((<Error> error).message);
+      }
     }
-    return true;
+    return passTestVoid();
   }
 
   public async runOperation(operation: Algebra.OrderBy, context: IActionContext):
   Promise<IQueryOperationResult> {
     const outputRaw = await this.mediatorQueryOperation.mediate({ operation: operation.input, context });
-    const output = ActorQueryOperation.getSafeBindings(outputRaw);
+    const output = getSafeBindings(outputRaw);
 
     const options = { window: this.window };
     let { bindingsStream } = output;

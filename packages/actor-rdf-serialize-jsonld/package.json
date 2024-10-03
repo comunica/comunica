@@ -4,6 +4,10 @@
   "description": "A jsonld rdf-serialize actor",
   "lsd:module": true,
   "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
@@ -39,6 +43,6 @@
   "dependencies": {
     "@comunica/bus-rdf-serialize": "^3.2.1",
     "@comunica/types": "^3.2.1",
-    "jsonld-streaming-serializer": "^2.1.0"
+    "jsonld-streaming-serializer": "^3.0.1"
   }
 }

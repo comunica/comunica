@@ -16,8 +16,8 @@ export class Runner {
    * @param actors - The list of all actors that are part of the comunica workflow.
    */
   public constructor(
-    public readonly busInit: Bus<Actor<IAction, IActorTest, IActorOutput>, IAction, IActorTest, IActorOutput>,
-    public readonly actors: Actor<IAction, IActorTest, IActorOutput>[],
+    public readonly busInit: Bus<Actor<IAction, IActorTest, IActorOutput, any>, IAction, IActorTest, IActorOutput, any>,
+    public readonly actors: Actor<IAction, IActorTest, IActorOutput, any>[],
   ) {
     if (!this.busInit) {
       throw new Error('A valid "busInit" argument must be provided.');
@@ -35,31 +35,10 @@ export class Runner {
    * @return {Promise<void>}     A promise that resolves when the init actors are triggered.
    */
   public async run(action: IActionInit): Promise<IActorOutputInit[]> {
-    const replies: IActorReply<ActorInit, IActionInit, IActorTest, IActorOutputInit>[] =
+    const replies: IActorReply<ActorInit, IActionInit, IActorTest, IActorOutputInit, any>[] =
       await Promise.all(this.busInit.publish(action));
-    return Promise.all(replies.map(reply => reply.actor.runObservable(action)));
-  }
-
-  /**
-   * Initialize the actors.
-   * This should be used for doing things that take a while,
-   * such as opening files.
-   *
-   * @return {Promise<void>} A promise that resolves when the actors have been initialized.
-   */
-  public initialize(): Promise<any> {
-    return Promise.all(this.actors.map(actor => actor.initialize())).then(() => true);
-  }
-
-  /**
-   * Deinitialize the actors.
-   * This should be used for cleaning up things when the application is shut down,
-   * such as closing files and removing temporary files.
-   *
-   * @return {Promise<void>} A promise that resolves when the actors have been deinitialized.
-   */
-  public async deinitialize(): Promise<any> {
-    return Promise.all(this.actors.map(actor => actor.deinitialize())).then(() => true);
+    // eslint-disable-next-line unicorn/no-useless-undefined
+    return Promise.all(replies.map(reply => reply.actor.runObservable(action, undefined)));
   }
 
   /**
@@ -77,8 +56,8 @@ export class Runner {
    * @return A mapping of keys to actor instances.
    */
   public collectActors(actorIdentifiers: Record<string, string>):
-  Record<string, Actor<IAction, IActorTest, IActorOutput>> {
-    const actors: Record<string, Actor<IAction, IActorTest, IActorOutput>> = {};
+  Record<string, Actor<IAction, IActorTest, IActorOutput, any>> {
+    const actors: Record<string, Actor<IAction, IActorTest, IActorOutput, any>> = {};
 
     // Collect all required actors
     for (const key in actorIdentifiers) {

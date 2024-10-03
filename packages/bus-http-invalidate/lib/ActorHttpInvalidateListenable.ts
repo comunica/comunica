@@ -1,4 +1,5 @@
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import type {
   IActionHttpInvalidate,
   IActorHttpInvalidateOutput,
@@ -23,8 +24,8 @@ export class ActorHttpInvalidateListenable extends ActorHttpInvalidate {
     this.invalidateListeners.push(listener);
   }
 
-  public async test(_action: IActionHttpInvalidate): Promise<IActorTest> {
-    return true;
+  public async test(_action: IActionHttpInvalidate): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async run(action: IActionHttpInvalidate): Promise<IActorHttpInvalidateOutput> {

@@ -5,7 +5,8 @@ import type {
   IBindingsContextMergeHandler,
 } from '@comunica/bus-merge-bindings-context';
 import { ActorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import { SetUnionBindingsContextMergeHandler } from './SetUnionBindingsContextMergeHandler';
 
 /**
@@ -18,8 +19,8 @@ export class ActorMergeBindingsContextUnion extends ActorMergeBindingsContext {
     this.contextKey = args.contextKey;
   }
 
-  public async test(_action: IActionMergeBindingsContext): Promise<IActorTest> {
-    return true;
+  public async test(_action: IActionMergeBindingsContext): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async run(_action: IActionMergeBindingsContext): Promise<IActorMergeBindingsContextOutput> {

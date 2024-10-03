@@ -6,6 +6,7 @@ import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import type { AsyncIterator } from 'asynciterator';
 import { ActorRdfSerializeN3 } from '../lib/ActorRdfSerializeN3';
+import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
 const streamifyArray = require('streamify-array');
@@ -82,7 +83,7 @@ describe('ActorRdfSerializeN3', () => {
             handleMediaType: 'application/trig',
             context,
           }))
-            .resolves.toBeTruthy();
+            .resolves.toPassTest({ handle: true });
         });
 
         it('should test on text/turtle', async() => {
@@ -91,7 +92,7 @@ describe('ActorRdfSerializeN3', () => {
             handleMediaType: 'text/turtle',
             context,
           }))
-            .resolves.toBeTruthy();
+            .resolves.toPassTest({ handle: true });
         });
 
         it('should not test on application/json', async() => {
@@ -100,7 +101,7 @@ describe('ActorRdfSerializeN3', () => {
             handleMediaType: 'application/json',
             context,
           }))
-            .rejects.toBeTruthy();
+            .resolves.toFailTest(`Unrecognized media type: application/json`);
         });
       });
 
@@ -171,7 +172,7 @@ describe('ActorRdfSerializeN3', () => {
 
     describe('for getting media types', () => {
       it('should test', async() => {
-        await expect(actor.test({ mediaTypes: true, context })).resolves.toBeTruthy();
+        await expect(actor.test({ mediaTypes: true, context })).resolves.toPassTest({ mediaTypes: true });
       });
 
       it('should run', async() => {

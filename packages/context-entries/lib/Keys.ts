@@ -16,6 +16,10 @@ import type {
   QueryExplainMode,
   QuerySourceReference,
   QuerySourceUnidentified,
+  ComunicaDataFactory,
+  IStatisticBase,
+  IDiscoverEventData,
+  ILink,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { IDocumentLoader } from 'jsonld-context-parser';
@@ -69,7 +73,7 @@ export const KeysHttp = {
   /**
    * Retry fetch, if server replies with a 5xx error response. Requires httpRetryCount to be set.
    */
-  httpRetryOnServerError: new ActionContextKey<number>('@comunica/bus-http:http-retry-on-server-error'),
+  httpRetryOnServerError: new ActionContextKey<boolean>('@comunica/bus-http:http-retry-on-server-error'),
 };
 
 export const KeysHttpWayback = {
@@ -139,9 +143,16 @@ export const KeysInitQuery = {
   ),
   /**
    * A timestamp representing the current time.
-   *                 This is required for certain SPARQL operations such as NOW().
+   * This is required for certain SPARQL operations such as NOW().
    */
   queryTimestamp: new ActionContextKey<Date>('@comunica/actor-init-query:queryTimestamp'),
+  /**
+   * A high resolution timestamp representing the time elapsed since Performance.timeOrigin`.
+   * It can be used to precisely measure durations from the start of query execution.
+   */
+  queryTimestampHighResolution: new ActionContextKey<DOMHighResTimeStamp>(
+    '@comunica/actor-init-query:queryTimestampHighResolution',
+  ),
   /**
    * @range {functionNamedNode: RDF.NamedNode) => ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined}
    * Extension function creator for a given function IRI.
@@ -188,11 +199,11 @@ export const KeysInitQuery = {
   /**
    * A boolean value denoting whether caching is disabled or not.
    */
-  noCache: new ActionContextKey<boolean>('@comunica/actor-init-query:noCache'),
+  invalidateCache: new ActionContextKey<boolean>('@comunica/actor-init-query:invalidateCache'),
   /**
    * The data factory for creating terms and quads.
    */
-  dataFactory: new ActionContextKey<RDF.DataFactory>('@comunica/actor-init-query:dataFactory'),
+  dataFactory: new ActionContextKey<ComunicaDataFactory>('@comunica/actor-init-query:dataFactory'),
   /**
    * A boolean value denoting whether results should be deduplicated or not.
    */
@@ -212,7 +223,7 @@ export const KeysQueryOperation = {
   /**
    * Context entry for the current query operation.
    */
-  operation: new ActionContextKey<string>('@comunica/bus-query-operation:operation'),
+  operation: new ActionContextKey<Algebra.Operation>('@comunica/bus-query-operation:operation'),
   /**
    * @type {any} The metadata from the left streams within a join operation.
    */
@@ -314,4 +325,19 @@ export const KeysRdfJoin = {
    * The last physical join actor that was executed.
    */
   lastPhysicalJoin: new ActionContextKey<string>('@comunica/bus-rdf-join:lastPhysicalJoin'),
+};
+
+export const KeysStatistics = {
+  /**
+   * All discovered links during query execution. Not all of them will necessarily be dereferenced.
+   */
+  discoveredLinks: new ActionContextKey<IStatisticBase<IDiscoverEventData>>(
+    '@comunica/bus-context-preprocess:discoveredLinks',
+  ),
+  /**
+   * Information about what links are dereferenced and when
+   */
+  dereferencedLinks: new ActionContextKey<IStatisticBase<ILink>>(
+    '@comunica/bus-context-preprocess:dereferencedLinks',
+  ),
 };

@@ -4,6 +4,10 @@
   "description": "A primary-topic rdf-metadata actor",
   "lsd:module": true,
   "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
@@ -40,6 +44,6 @@
     "@comunica/bus-rdf-metadata": "^3.2.1",
     "@comunica/core": "^3.2.1",
     "@rdfjs/types": "*",
-    "readable-stream": "^4.4.2"
+    "readable-stream": "^4.5.2"
   }
 }

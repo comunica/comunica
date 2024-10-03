@@ -19,7 +19,7 @@ describe('ActorDereferenceFallback', () => {
 
     it('should test', async() => {
       // @ts-expect-error
-      await expect(actor.test({})).resolves.toBeTruthy();
+      await expect(actor.test({})).resolves.toPassTestVoid();
     });
 
     it('should run and throw', async() => {

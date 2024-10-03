@@ -1,3 +1,5 @@
+import type { TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type { IActorArgsMediaTyped } from './ActorAbstractMediaTyped';
 import { ActorAbstractMediaTyped } from './ActorAbstractMediaTyped';
@@ -19,9 +21,9 @@ export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbst
     this.mediaTypeFormats = Object.freeze(this.mediaTypeFormats);
   }
 
-  public async testHandle(action: HI, mediaType: string | undefined, context: IActionContext): Promise<HT> {
+  public async testHandle(action: HI, mediaType: string | undefined, context: IActionContext): Promise<TestResult<HT>> {
     if (!mediaType || !(mediaType in this.mediaTypePriorities)) {
-      throw new Error(`Unrecognized media type: ${mediaType}`);
+      return failTest(`Unrecognized media type: ${mediaType}`);
     }
     return await this.testHandleChecked(action, context);
   }
@@ -33,18 +35,18 @@ export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbst
    * @param {ActionContext} context An optional context.
    * @param {HI} action The action to test.
    */
-  public abstract testHandleChecked(action: HI, context: IActionContext): Promise<HT>;
+  public abstract testHandleChecked(action: HI, context: IActionContext): Promise<TestResult<HT>>;
 
-  public async testMediaType(_context: IActionContext): Promise<boolean> {
-    return true;
+  public async testMediaType(_context: IActionContext): Promise<TestResult<boolean>> {
+    return passTestVoid();
   }
 
   public async getMediaTypes(_context: IActionContext): Promise<Record<string, number>> {
     return this.mediaTypePriorities;
   }
 
-  public async testMediaTypeFormats(_context: IActionContext): Promise<boolean> {
-    return true;
+  public async testMediaTypeFormats(_context: IActionContext): Promise<TestResult<boolean>> {
+    return passTestVoid();
   }
 
   public async getMediaTypeFormats(_context: IActionContext): Promise<Record<string, string>> {

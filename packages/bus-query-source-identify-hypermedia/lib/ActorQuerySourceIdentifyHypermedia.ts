@@ -1,5 +1,5 @@
-import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
-import { Actor } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate, TestResult } from '@comunica/core';
+import { failTest, Actor } from '@comunica/core';
 import type { IQuerySource } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 
@@ -14,33 +14,40 @@ import type * as RDF from '@rdfjs/types';
  * @see IActionQuerySourceIdentifyHypermedia
  * @see IActorQuerySourceIdentifyHypermediaOutput
  */
-export abstract class ActorQuerySourceIdentifyHypermedia
+export abstract class ActorQuerySourceIdentifyHypermedia<TS = undefined>
   extends Actor<
     IActionQuerySourceIdentifyHypermedia,
 IActorQuerySourceIdentifyHypermediaTest,
-IActorQuerySourceIdentifyHypermediaOutput
+IActorQuerySourceIdentifyHypermediaOutput,
+TS
 > {
   protected readonly sourceType: string;
 
+  /* eslint-disable max-len */
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {Query source hypermedia identification failed: none of the configured actors were able to identify ${action.url}} busFailMessage
    * @param sourceType The source type.
    */
-  public constructor(args: IActorQuerySourceIdentifyHypermediaArgs, sourceType: string) {
+  /* eslint-enable max-len */
+  public constructor(args: IActorQuerySourceIdentifyHypermediaArgs<TS>, sourceType: string) {
     super(args);
     this.sourceType = sourceType;
   }
 
-  public async test(action: IActionQuerySourceIdentifyHypermedia): Promise<IActorQuerySourceIdentifyHypermediaTest> {
+  public async test(
+    action: IActionQuerySourceIdentifyHypermedia,
+  ): Promise<TestResult<IActorQuerySourceIdentifyHypermediaTest, TS>> {
     if (action.forceSourceType && this.sourceType !== action.forceSourceType) {
-      throw new Error(`Actor ${this.name} is not able to handle source type ${action.forceSourceType}.`);
+      return failTest(`Actor ${this.name} is not able to handle source type ${action.forceSourceType}.`);
     }
     return this.testMetadata(action);
   }
 
   public abstract testMetadata(
     action: IActionQuerySourceIdentifyHypermedia,
-  ): Promise<IActorQuerySourceIdentifyHypermediaTest>;
+  ): Promise<TestResult<IActorQuerySourceIdentifyHypermediaTest, TS>>;
 }
 
 export interface IActionQuerySourceIdentifyHypermedia extends IAction {
@@ -88,10 +95,11 @@ export interface IActorQuerySourceIdentifyHypermediaOutput extends IActorOutput 
   dataset?: string;
 }
 
-export type IActorQuerySourceIdentifyHypermediaArgs = IActorArgs<
+export type IActorQuerySourceIdentifyHypermediaArgs<TS = undefined> = IActorArgs<
 IActionQuerySourceIdentifyHypermedia,
 IActorQuerySourceIdentifyHypermediaTest,
-IActorQuerySourceIdentifyHypermediaOutput
+IActorQuerySourceIdentifyHypermediaOutput,
+TS
 >;
 
 export type MediatorQuerySourceIdentifyHypermedia = Mediate<

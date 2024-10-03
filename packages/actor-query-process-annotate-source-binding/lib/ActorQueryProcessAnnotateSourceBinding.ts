@@ -1,4 +1,3 @@
-import { Bindings } from '@comunica/bindings-factory';
 import type {
   IActionQueryProcess,
   IActorQueryProcessOutput,
@@ -7,9 +6,10 @@ import type {
 } from '@comunica/bus-query-process';
 import { ActorQueryProcess } from '@comunica/bus-query-process';
 import { KeysMergeBindingsContext } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
-import { ActionContextKey } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid, ActionContextKey } from '@comunica/core';
 import type { BindingsStream } from '@comunica/types';
+import { Bindings } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 
@@ -25,11 +25,11 @@ export class ActorQueryProcessAnnotateSourceBinding extends ActorQueryProcess {
     this.dataFactory = new DataFactory();
   }
 
-  public async test(action: IActionQueryProcess): Promise<IActorTest> {
+  public async test(action: IActionQueryProcess): Promise<TestResult<IActorTest>> {
     if (action.context.get(KEY_CONTEXT_WRAPPED)) {
-      throw new Error('Unable to query process multiple times');
+      return failTest('Unable to query process multiple times');
     }
-    return true;
+    return passTestVoid();
   }
 
   public async run(action: IActionQueryProcess): Promise<IActorQueryProcessOutput> {

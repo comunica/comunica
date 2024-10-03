@@ -5,7 +5,8 @@ import type {
   IActorRdfParseHtmlArgs,
 } from '@comunica/bus-rdf-parse-html';
 import { ActorRdfParseHtml } from '@comunica/bus-rdf-parse-html';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import { HtmlScriptListener } from './HtmlScriptListener';
 
 /**
@@ -22,8 +23,8 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseHtml {
     super(args);
   }
 
-  public async test(_action: IActionRdfParseHtml): Promise<IActorTest> {
-    return true;
+  public async test(_action: IActionRdfParseHtml): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async run(action: IActionRdfParseHtml): Promise<IActorRdfParseHtmlOutput> {

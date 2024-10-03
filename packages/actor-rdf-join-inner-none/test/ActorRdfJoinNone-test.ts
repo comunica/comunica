@@ -1,19 +1,17 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinNone } from '../lib/ActorRdfJoinNone';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
 const mediatorMergeBindingsContext: any = {
-  mediate(arg: any) {
-    return {};
-  },
+  mediate: () => ({}),
 };
 
 describe('ActorRdfJoinNone', () => {
@@ -55,7 +53,7 @@ IActorRdfJoinSelectivityOutput
             },
           ],
           context,
-        })).rejects.toThrow('Actor actor can only join zero entries');
+        })).resolves.toFailTest('Actor actor can only join zero entries');
       });
 
       it('should test on zero entries', async() => {
@@ -63,7 +61,7 @@ IActorRdfJoinSelectivityOutput
           type: 'inner',
           entries: [],
           context,
-        })).resolves.toEqual({
+        })).resolves.toPassTest({
           iterations: 0,
           persistedItems: 0,
           blockingItems: 0,
@@ -77,10 +75,10 @@ IActorRdfJoinSelectivityOutput
         const output = await actor.run(<any> {
           entries: [],
           context,
-        });
+        }, undefined!);
         await expect(output.bindingsStream).toEqualBindingsStream([ BF.bindings() ]);
         await expect(output.metadata()).resolves
-          .toMatchObject({ cardinality: { type: 'exact', value: 1 }, canContainUndefs: false, variables: []});
+          .toMatchObject({ cardinality: { type: 'exact', value: 1 }, variables: []});
       });
     });
   });

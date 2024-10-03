@@ -1,5 +1,4 @@
 import { ActorRdfJoinNestedLoop } from '@comunica/actor-rdf-join-inner-nestedloop';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinEntriesSort, MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
@@ -7,13 +6,15 @@ import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
-import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import type { IActorRdfJoinMultiSmallestTestSideData } from '../lib/ActorRdfJoinMultiSmallest';
 import { ActorRdfJoinMultiSmallest } from '../lib/ActorRdfJoinMultiSmallest';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -73,15 +74,15 @@ IActorRdfJoinSelectivityOutput
       };
       invocationCounter = 0;
       mediatorJoin = {
-        mediate(a: any) {
+        async mediate(a: any) {
           if (a.entries.length === 2) {
             a.entries[0].operation.called = invocationCounter;
             a.entries[1].operation.called = invocationCounter;
             invocationCounter++;
             return new ActorRdfJoinNestedLoop({ name: 'actor', bus, mediatorJoinSelectivity })
-              .run(a);
+              .run(a, undefined!);
           }
-          return actor.run(a);
+          return actor.run(a, await getSideData(a));
         },
       };
       actor = new ActorRdfJoinMultiSmallest(
@@ -108,8 +109,11 @@ IActorRdfJoinSelectivityOutput
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('b') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 },
               ),
               type: 'bindings',
@@ -134,8 +138,11 @@ IActorRdfJoinSelectivityOutput
                   cardinality: { type: 'estimate', value: 5 },
                   pageSize: 100,
                   requestTime: 20,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('c') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('c'), canBeUndef: false },
+                  ],
                 },
               ),
               type: 'bindings',
@@ -160,8 +167,11 @@ IActorRdfJoinSelectivityOutput
                   cardinality: { type: 'estimate', value: 2 },
                   pageSize: 100,
                   requestTime: 30,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('b') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 },
               ),
               type: 'bindings',
@@ -192,8 +202,11 @@ IActorRdfJoinSelectivityOutput
                   cardinality: { type: 'estimate', value: 4 },
                   pageSize: 100,
                   requestTime: 10,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('b') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 },
               ),
               type: 'bindings',
@@ -218,8 +231,11 @@ IActorRdfJoinSelectivityOutput
                   cardinality: { type: 'estimate', value: 5 },
                   pageSize: 100,
                   requestTime: 20,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('c') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('c'), canBeUndef: false },
+                  ],
                 },
               ),
               type: 'bindings',
@@ -244,8 +260,11 @@ IActorRdfJoinSelectivityOutput
                   cardinality: { type: 'estimate', value: 2 },
                   pageSize: 100,
                   requestTime: 30,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('b') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 },
               ),
               type: 'bindings',
@@ -270,8 +289,11 @@ IActorRdfJoinSelectivityOutput
                   cardinality: { type: 'estimate', value: 2 },
                   pageSize: 100,
                   requestTime: 40,
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('d') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('d'), canBeUndef: false },
+                  ],
                 },
               ),
               type: 'bindings',
@@ -283,24 +305,28 @@ IActorRdfJoinSelectivityOutput
       });
     });
 
+    async function getSideData(action: IActionRdfJoin): Promise<IActorRdfJoinMultiSmallestTestSideData> {
+      return (await actor.test(action)).getSideData();
+    }
+
     it('should not test on 0 streams', async() => {
-      await expect(actor.test({ type: 'inner', entries: [], context })).rejects
-        .toThrow(new Error('actor requires at least two join entries.'));
+      await expect(actor.test({ type: 'inner', entries: [], context })).resolves
+        .toFailTest('actor requires at least two join entries.');
     });
 
     it('should not test on 1 stream', async() => {
-      await expect(actor.test({ type: 'inner', entries: [ <any> null ], context })).rejects
-        .toThrow(new Error('actor requires at least two join entries.'));
+      await expect(actor.test({ type: 'inner', entries: [ <any> null ], context })).resolves
+        .toFailTest('actor requires at least two join entries.');
     });
 
     it('should not test on 2 streams', async() => {
-      await expect(actor.test({ type: 'inner', entries: [ <any> null, <any> null ], context })).rejects
-        .toThrow(new Error('actor requires 3 join entries at least. The input contained 2.'));
+      await expect(actor.test({ type: 'inner', entries: [ <any> null, <any> null ], context })).resolves
+        .toFailTest('actor requires 3 join entries at least. The input contained 2.');
     });
 
     it('should test on 3 streams', async() => {
       const action = action3();
-      await expect(actor.test(action)).resolves.toEqual({
+      await expect(actor.test(action)).resolves.toPassTest({
         iterations: 40,
         persistedItems: 0,
         blockingItems: 0,
@@ -313,7 +339,7 @@ IActorRdfJoinSelectivityOutput
 
     it('should test on 4 streams', async() => {
       const action = action4();
-      await expect(actor.test(action)).resolves.toEqual({
+      await expect(actor.test(action)).resolves.toPassTest({
         iterations: 80,
         persistedItems: 0,
         blockingItems: 0,
@@ -326,13 +352,17 @@ IActorRdfJoinSelectivityOutput
 
     it('should run on 3 streams', async() => {
       const action = action3();
-      const output = await actor.run(action);
+      const output = await actor.run(action, await getSideData(action));
       expect(output.type).toBe('bindings');
       await expect((<any> output).metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 40 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a'), DF.variable('c'), DF.variable('b') ],
+
+        variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+          { variable: DF.variable('c'), canBeUndef: false },
+          { variable: DF.variable('b'), canBeUndef: false },
+        ],
       });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
@@ -355,13 +385,18 @@ IActorRdfJoinSelectivityOutput
 
     it('should run on 4 streams', async() => {
       const action = action4();
-      const output = await actor.run(action);
+      const output = await actor.run(action, await getSideData(action));
       expect(output.type).toBe('bindings');
       await expect((<any> output).metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 80 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a'), DF.variable('c'), DF.variable('b'), DF.variable('d') ],
+
+        variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+          { variable: DF.variable('c'), canBeUndef: false },
+          { variable: DF.variable('b'), canBeUndef: false },
+          { variable: DF.variable('d'), canBeUndef: false },
+        ],
       });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([

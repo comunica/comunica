@@ -13,12 +13,16 @@ import type * as RDF from '@rdfjs/types';
  * @see IActionDereferenceRdf
  * @see IActorDereferenceRdfOutput
  */
-export abstract class ActorRdfMetadataExtract
-  extends Actor<IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput> {
+export abstract class ActorRdfMetadataExtract<TS = undefined>
+  extends Actor<IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput, TS> {
+  /* eslint-disable max-len */
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {Metadata extraction failed: none of the configured actors were able to extract metadata from ${action.url}} busFailMessage
    */
-  public constructor(args: IActorRdfMetadataExtractArgs) {
+  /* eslint-enable max-len */
+  public constructor(args: IActorRdfMetadataExtractArgs<TS>) {
     super(args);
   }
 }
@@ -50,10 +54,11 @@ export interface IActorRdfMetadataExtractOutput extends IActorOutput {
   metadata: Record<string, any>;
 }
 
-export type IActorRdfMetadataExtractArgs = IActorArgs<
+export type IActorRdfMetadataExtractArgs<TS = undefined> = IActorArgs<
 IActionRdfMetadataExtract,
 IActorTest,
-IActorRdfMetadataExtractOutput
+IActorRdfMetadataExtractOutput,
+TS
 >;
 
 export type MediatorRdfMetadataExtract = Mediate<IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput>;

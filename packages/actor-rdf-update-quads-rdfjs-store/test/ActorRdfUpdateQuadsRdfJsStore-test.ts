@@ -9,6 +9,7 @@ import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfUpdateQuadsRdfJsStore } from '../lib/ActorRdfUpdateQuadsRdfJsStore';
 import { RdfJsQuadDestination } from '../lib/RdfJsQuadDestination';
 import 'jest-rdf';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 
@@ -40,7 +41,7 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
         context: new ActionContext(
           { '@comunica/bus-rdf-update-quads:destination': { type: 'rdfjsStore', value: store }},
         ),
-      })).resolves.toBeTruthy();
+      })).resolves.toPassTestVoid();
     });
 
     it('should test on raw store form', async() => {
@@ -50,7 +51,7 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
         context: new ActionContext(
           { '@comunica/bus-rdf-update-quads:destination': store },
         ),
-      })).resolves.toBeTruthy();
+      })).resolves.toPassTestVoid();
     });
 
     it('should not test without a destination', async() => {
@@ -58,7 +59,7 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
         quadStreamInsert: <any> null,
         quadStreamDelete: <any> null,
         context: new ActionContext({}),
-      })).rejects.toBeTruthy();
+      })).resolves.toFailTest(`actor received an invalid rdfjsStore.`);
     });
 
     it('should not test on an invalid destination', async() => {
@@ -68,7 +69,7 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
         context: new ActionContext(
           { '@comunica/bus-rdf-update-quads:destination': { type: 'rdfjsStore', value: undefined }},
         ),
-      })).rejects.toBeTruthy();
+      })).resolves.toFailTest(`actor received an invalid rdfjsStore.`);
     });
 
     it('should not test on an invalid destination type', async() => {
@@ -78,7 +79,7 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
         context: new ActionContext(
           { '@comunica/bus-rdf-update-quads:destination': { type: 'rdfjsStore', value: {}}},
         ),
-      })).rejects.toBeTruthy();
+      })).resolves.toFailTest(`actor received an invalid rdfjsStore.`);
     });
 
     it('should not test on no destination', async() => {
@@ -88,7 +89,7 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
         context: new ActionContext(
           { '@comunica/bus-rdf-update-quads:destination': { type: 'entrypoint', value: null }},
         ),
-      })).rejects.toBeTruthy();
+      })).resolves.toFailTest(`actor received an invalid rdfjsStore.`);
     });
 
     it('should get the destination', async() => {

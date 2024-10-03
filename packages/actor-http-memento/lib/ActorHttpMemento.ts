@@ -1,7 +1,8 @@
 import type { IActionHttp, IActorHttpArgs, IActorHttpOutput, MediatorHttp } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
 import { KeysHttpMemento } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import { parse } from 'http-link-header';
 
 /**
@@ -14,15 +15,15 @@ export class ActorHttpMemento extends ActorHttp {
     super(args);
   }
 
-  public async test(action: IActionHttp): Promise<IActorTest> {
+  public async test(action: IActionHttp): Promise<TestResult<IActorTest>> {
     if (!(action.context.has(KeysHttpMemento.datetime) &&
           action.context.get(KeysHttpMemento.datetime) instanceof Date)) {
-      throw new Error('This actor only handles request with a set valid datetime.');
+      return failTest('This actor only handles request with a set valid datetime.');
     }
     if (action.init && new Headers(action.init.headers).has('accept-datetime')) {
-      throw new Error('The request already has a set datetime.');
+      return failTest('The request already has a set datetime.');
     }
-    return true;
+    return passTestVoid();
   }
 
   public async run(action: IActionHttp): Promise<IActorHttpOutput> {

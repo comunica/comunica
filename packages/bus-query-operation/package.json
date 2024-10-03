@@ -4,6 +4,10 @@
   "description": "A comunica bus for query-operation events.",
   "lsd:module": true,
   "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
@@ -36,15 +40,11 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bindings-factory": "^3.2.1",
     "@comunica/context-entries": "^3.2.1",
     "@comunica/core": "^3.2.1",
-    "@comunica/metadata": "^3.2.1",
     "@comunica/types": "^3.2.1",
+    "@comunica/utils-metadata": "^3.2.1",
     "@rdfjs/types": "*",
-    "asynciterator": "^3.9.0",
-    "rdf-string": "^1.6.1",
-    "rdf-terms": "^1.11.0",
-    "sparqlalgebrajs": "^4.3.7"
+    "sparqlalgebrajs": "^4.3.8"
   }
 }

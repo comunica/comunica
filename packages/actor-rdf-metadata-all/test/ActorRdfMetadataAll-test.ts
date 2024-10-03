@@ -5,6 +5,7 @@ import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { ActorRdfMetadataAll } from '../lib/ActorRdfMetadataAll';
+import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
 const stream = require('streamify-array');
@@ -61,11 +62,11 @@ describe('ActorRdfMetadataAll', () => {
     });
 
     it('should test on a triple stream', async() => {
-      await expect(actor.test({ url: '', quads: input, triples: true, context })).resolves.toBeTruthy();
+      await expect(actor.test({ url: '', quads: input, triples: true, context })).resolves.toPassTestVoid();
     });
 
     it('should test on a quad stream', async() => {
-      await expect(actor.test({ url: '', quads: input, context })).resolves.toBeTruthy();
+      await expect(actor.test({ url: '', quads: input, context })).resolves.toPassTestVoid();
     });
 
     it('should run', async() => {
@@ -97,9 +98,9 @@ describe('ActorRdfMetadataAll', () => {
           output.data.on('data', () => {
             // Do nothing
           });
-          return Promise.all([ new Promise((resolve, reject) => {
+          return Promise.all([ new Promise((resolve) => {
             output.data.on('error', resolve);
-          }), new Promise((resolve, reject) => {
+          }), new Promise((resolve) => {
             output.metadata.on('error', resolve);
           }) ]).then((errors) => {
             expect(errors).toHaveLength(2);
@@ -111,9 +112,9 @@ describe('ActorRdfMetadataAll', () => {
       await actor.run({ url: '', quads: input, context })
         .then((output) => {
           setImmediate(() => input.emit('error', new Error('RDF Meta Primary Topic error')));
-          return Promise.all([ new Promise((resolve, reject) => {
+          return Promise.all([ new Promise((resolve) => {
             output.data.on('error', resolve);
-          }), new Promise((resolve, reject) => {
+          }), new Promise((resolve) => {
             output.metadata.on('error', resolve);
           }) ]).then((errors) => {
             expect(errors).toHaveLength(2);

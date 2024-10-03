@@ -1,7 +1,7 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
-import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
 import type { IActionContext } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-jest';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
@@ -40,7 +40,7 @@ describe('should be able to handle EXIST filters', () => {
       false,
       factory.createBgp([]),
     );
-    const evaluator = await evaluatorFactory.run({ context, algExpr: expr });
+    const evaluator = await evaluatorFactory.run({ context, algExpr: expr }, undefined);
     await expect(evaluator.evaluateAsEBV(BF.bindings())).resolves.toBe(true);
   });
 
@@ -56,7 +56,7 @@ describe('should be able to handle EXIST filters', () => {
       false,
       factory.createBgp([]),
     );
-    const evaluator = await evaluatorFactory.run({ context, algExpr: expr });
+    const evaluator = await evaluatorFactory.run({ context, algExpr: expr }, undefined);
     await expect(evaluator.evaluateAsEBV(BF.bindings())).resolves.toBe(false);
   });
 
@@ -72,7 +72,7 @@ describe('should be able to handle EXIST filters', () => {
       true,
       factory.createBgp([]),
     );
-    const evaluator = await evaluatorFactory.run({ context, algExpr: expr });
+    const evaluator = await evaluatorFactory.run({ context, algExpr: expr }, undefined);
     await expect(evaluator.evaluateAsEBV(BF.bindings())).resolves.toBe(true);
   });
 
@@ -96,7 +96,7 @@ describe('should be able to handle EXIST filters', () => {
       false,
       factory.createBgp([]),
     );
-    const evaluator = await evaluatorFactory.run({ context, algExpr: expr });
+    const evaluator = await evaluatorFactory.run({ context, algExpr: expr }, undefined);
     await expect(evaluator.evaluateAsEBV(BF.bindings())).rejects.toBeTruthy();
   });
 });

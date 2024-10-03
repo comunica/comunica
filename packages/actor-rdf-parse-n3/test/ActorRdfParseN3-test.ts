@@ -6,6 +6,7 @@ import type { IActionContext } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfParseN3 } from '../lib/ActorRdfParseN3';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 
@@ -125,7 +126,7 @@ describe('ActorRdfParseN3', () => {
             handleMediaType: 'text/n3',
             context,
           }))
-          .resolves.toBeTruthy();
+          .resolves.toPassTest({ handle: true });
       });
 
       it('should parse N3', async() => {
@@ -152,66 +153,66 @@ describe('ActorRdfParseN3', () => {
       it('should test on TriG', async() => {
         await expect(actor
           .test({ handle: { data: input, context }, handleMediaType: 'application/trig', context }))
-          .resolves.toBeTruthy();
+          .resolves.toPassTest({ handle: true });
         await expect(actor
           .test({
             handle: { data: input, metadata: { baseIRI: '' }, context },
             handleMediaType: 'application/trig',
             context,
           }))
-          .resolves.toBeTruthy();
+          .resolves.toPassTest({ handle: true });
       });
 
       it('should test on N-Quads', async() => {
         await expect(actor
           .test({ handle: { data: input, context }, handleMediaType: 'application/n-quads', context }))
-          .resolves.toBeTruthy();
+          .resolves.toPassTest({ handle: true });
         await expect(actor
           .test({
             handle: { data: input, metadata: { baseIRI: '' }, context },
             handleMediaType: 'application/n-quads',
             context,
           }))
-          .resolves.toBeTruthy();
+          .resolves.toPassTest({ handle: true });
       });
 
       it('should test on Turtle', async() => {
         await expect(actor
           .test({ handle: { data: input, context }, handleMediaType: 'text/turtle', context }))
-          .resolves.toBeTruthy();
+          .resolves.toPassTest({ handle: true });
         await expect(actor
           .test({
             handle: { data: input, metadata: { baseIRI: '' }, context },
             handleMediaType: 'text/turtle',
             context,
           }))
-          .resolves.toBeTruthy();
+          .resolves.toPassTest({ handle: true });
       });
 
       it('should test on Turtle with quoted triples', async() => {
         await expect(actor
           .test({ handle: { data: inputQuoted, context }, handleMediaType: 'text/turtle', context }))
-          .resolves.toBeTruthy();
+          .resolves.toPassTest({ handle: true });
         await expect(actor
           .test({
             handle: { data: input, metadata: { baseIRI: '' }, context },
             handleMediaType: 'text/turtle',
             context,
           }))
-          .resolves.toBeTruthy();
+          .resolves.toPassTest({ handle: true });
       });
 
       it('should test on N-Triples', async() => {
         await expect(actor
           .test({ handle: { data: input, context }, handleMediaType: 'application/n-triples', context }))
-          .resolves.toBeTruthy();
+          .resolves.toPassTest({ handle: true });
         await expect(actor
           .test({
             handle: { data: input, metadata: { baseIRI: '' }, context },
             handleMediaType: 'application/n-triples',
             context,
           }))
-          .resolves.toBeTruthy();
+          .resolves.toPassTest({ handle: true });
       });
 
       it('should not test on JSON-LD', async() => {
@@ -221,14 +222,14 @@ describe('ActorRdfParseN3', () => {
             handleMediaType: 'application/ld+json',
             context,
           }))
-          .rejects.toBeTruthy();
+          .resolves.toFailTest(`Unrecognized media type: application/ld+json`);
         await expect(actor
           .test({
             handle: { data: input, metadata: { baseIRI: '' }, context },
             handleMediaType: 'application/ld+json',
             context,
           }))
-          .rejects.toBeTruthy();
+          .resolves.toFailTest(`Unrecognized media type: application/ld+json`);
       });
 
       it('should run on text/turtle', async() => {
@@ -322,14 +323,14 @@ describe('ActorRdfParseN3', () => {
             handleMediaType: 'application/ld+json',
             context,
           }))
-          .rejects.toBeTruthy();
+          .resolves.toFailTest(`Unrecognized media type: application/ld+json`);
         await expect(actor
           .test({
             handle: { data: input, metadata: { baseIRI: '' }, context },
             handleMediaType: 'application/ld+json',
             context,
           }))
-          .rejects.toBeTruthy();
+          .resolves.toFailTest(`Unrecognized media type: application/ld+json`);
       });
 
       it('should forward stream errors', async() => {
@@ -351,7 +352,7 @@ describe('ActorRdfParseN3', () => {
 
     describe('for getting media types', () => {
       it('should test', async() => {
-        await expect(actor.test({ mediaTypes: true, context })).resolves.toBeTruthy();
+        await expect(actor.test({ mediaTypes: true, context })).resolves.toPassTest({ mediaTypes: true });
       });
 
       it('should run', async() => {

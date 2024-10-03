@@ -1,10 +1,7 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
-import { MetadataValidationState } from '@comunica/metadata';
 import type {
   Bindings,
   IQueryOperationResult,
@@ -12,6 +9,9 @@ import type {
   BindingsStream,
   ComunicaDataFactory,
 } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import {
   SingletonIterator,
@@ -51,7 +51,6 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
         metadata: () => Promise.resolve({
           state: new MetadataValidationState(),
           cardinality: { type: 'exact', value: 1 },
-          canContainUndefs: false,
           variables: [],
         }),
       };
@@ -65,7 +64,7 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
     context = distinct.context;
 
     // Create an operator that resolve to the "One" part
-    const bindingsOne = ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
+    const bindingsOne = getSafeBindings(await this.mediatorQueryOperation.mediate({
       context,
       operation: algebraFactory.createPath(operation.subject, predicate.path, operation.object, operation.graph),
     }));
@@ -77,7 +76,7 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
       // To determine the "Zero" part, we
       // query ?s ?p ?o. FILTER ?s = ?0, to get all possible namedNodes in de the db
       const varP = this.generateVariable(dataFactory, operation);
-      const bindingsZero = ActorQueryOperation.getSafeBindings(
+      const bindingsZero = getSafeBindings(
         await this.mediatorQueryOperation.mediate({
           context,
           operation: algebraFactory.createFilter(

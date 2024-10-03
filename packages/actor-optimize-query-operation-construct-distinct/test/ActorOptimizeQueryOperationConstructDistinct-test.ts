@@ -4,6 +4,7 @@ import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorOptimizeQueryOperationConstructDistinct } from '../lib/ActorOptimizeQueryOperationConstructDistinct';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const factory = new Factory();
@@ -27,11 +28,11 @@ describe('ActorOptimizeQueryOperationConstructDistinct', () => {
     it('should throw when distinctConstruct key is not present', async() => {
       context = context.delete(KeysInitQuery.distinctConstruct);
       await expect(actor.test({ operation: <any> undefined, context }))
-        .rejects.toThrow('actor was not enabled by the query.');
+        .resolves.toFailTest('actor was not enabled by the query.');
     });
 
     it('should test when distinctConstruct key is present', async() => {
-      await expect(actor.test({ operation: <any> undefined, context })).resolves.toBe(true);
+      await expect(actor.test({ operation: <any> undefined, context })).resolves.toPassTestVoid();
     });
 
     it('should run', async() => {

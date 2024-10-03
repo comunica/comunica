@@ -4,6 +4,10 @@
   "description": "A annotate-source-binding query-process actor",
   "lsd:module": true,
   "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
@@ -37,11 +41,11 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bindings-factory": "^3.2.1",
     "@comunica/bus-query-process": "^3.2.1",
     "@comunica/context-entries": "^3.2.1",
     "@comunica/core": "^3.2.1",
     "@comunica/types": "^3.2.1",
+    "@comunica/utils-bindings-factory": "^3.2.1",
     "rdf-data-factory": "^1.1.2"
   }
 }

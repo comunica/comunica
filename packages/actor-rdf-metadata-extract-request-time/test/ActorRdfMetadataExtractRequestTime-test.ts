@@ -1,5 +1,6 @@
 import { ActionContext, Bus } from '@comunica/core';
 import { ActorRdfMetadataExtractRequestTime } from '../lib/ActorRdfMetadataExtractRequestTime';
+import '@comunica/utils-jest';
 
 describe('ActorRdfMetadataExtractRequestTime', () => {
   let bus: any;
@@ -17,7 +18,7 @@ describe('ActorRdfMetadataExtractRequestTime', () => {
 
     it('should test', async() => {
       await expect(actor.test({ url: '', metadata: <any> undefined, requestTime: 0, context: new ActionContext() }))
-        .resolves.toBeTruthy();
+        .resolves.toPassTestVoid();
     });
 
     it('should run and return the requestTime', async() => {

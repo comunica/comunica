@@ -1,10 +1,10 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
-  ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import type {
   IQueryOperationResultBindings,
   IActionContext,
@@ -12,6 +12,7 @@ import type {
   MetadataQuads,
   ComunicaDataFactory,
 } from '@comunica/types';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { getTermsNested, getVariables, uniqTerms } from 'rdf-terms';
@@ -36,8 +37,8 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
       .apply([], patterns.map(pattern => getVariables(getTermsNested(pattern)))));
   }
 
-  public async testOperation(_operation: Algebra.Construct, _context: IActionContext): Promise<IActorTest> {
-    return true;
+  public async testOperation(_operation: Algebra.Construct, _context: IActionContext): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async runOperation(operationOriginal: Algebra.Construct, context: IActionContext):
@@ -49,7 +50,7 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
     const operation: Algebra.Operation = { type: Algebra.types.PROJECT, input: operationOriginal.input, variables };
 
     // Evaluate the input query
-    const output: IQueryOperationResultBindings = ActorQueryOperation.getSafeBindings(
+    const output: IQueryOperationResultBindings = getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation, context }),
     );
 
@@ -69,7 +70,6 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
         type: meta.cardinality.type,
         value: meta.cardinality.value * operationOriginal.template.length,
       },
-      canContainUndefs: false,
       availableOrders: undefined,
     }));
 

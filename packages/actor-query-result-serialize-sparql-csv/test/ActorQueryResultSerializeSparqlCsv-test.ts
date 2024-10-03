@@ -1,12 +1,13 @@
 import { PassThrough } from 'node:stream';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActionContext, Bus } from '@comunica/core';
 import type { BindingsStream, IActionContext, MetadataBindings } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryResultSerializeSparqlCsv } from '..';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -179,12 +180,15 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
           [ DF.variable('k2'), DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')) ],
         ]),
       ], { autoStart: false });
-      metadata = <any> { variables: [ DF.variable('k1'), DF.variable('k2') ]};
+      metadata = <any> { variables: [
+        { variable: DF.variable('k1'), canBeUndef: false },
+        { variable: DF.variable('k2'), canBeUndef: false },
+      ]};
     });
 
     describe('for getting media types', () => {
       it('should test', async() => {
-        await expect(actor.test({ context, mediaTypes: true })).resolves.toBeTruthy();
+        await expect(actor.test({ context, mediaTypes: true })).resolves.toPassTest({ mediaTypes: true });
       });
 
       it('should run', async() => {
@@ -197,7 +201,7 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
     describe('for serializing', () => {
       it('should not test on quad streams', async() => {
         await expect(actor.test({ context, handle: <any> { type: 'quads' }, handleMediaType: 'text/csv' }))
-          .rejects.toBeTruthy();
+          .resolves.toFailTest(`This actor can only handle bindings streams.`);
       });
 
       it('should test on text/csv bindings', async() => {
@@ -217,7 +221,7 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
           handle: <any> { booleanResult: Promise.resolve(true), type: 'boolean' },
           handleMediaType: 'text/csv',
         }))
-          .rejects.toBeTruthy();
+          .resolves.toFailTest(`This actor can only handle bindings streams.`);
       });
 
       it('should not test on N-Triples', async() => {
@@ -227,7 +231,7 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
           handle: <any> { bindingsStream: stream, type: 'bindings' },
           handleMediaType: 'application/n-triples',
         }))
-          .rejects.toBeTruthy();
+          .resolves.toFailTest(`Unrecognized media type: application/n-triples`);
         stream.destroy();
       });
 
@@ -266,7 +270,9 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
           { context, handle: <any> {
             bindingsStream: bindingsStreamPartial(),
             type: 'bindings',
-            metadata: async() => ({ variables: [ DF.variable('k3') ]}),
+            metadata: async() => ({ variables: [
+              { variable: DF.variable('k3'), canBeUndef: true },
+            ]}),
           }, handleMediaType: 'text/csv' },
         ))).handle.data)).resolves.toBe(
           `k3\r

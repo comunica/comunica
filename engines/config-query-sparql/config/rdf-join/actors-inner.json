@@ -36,7 +36,15 @@
       "@id": "urn:comunica:default:rdf-join/actors#inner-multi-bind-source",
       "@type": "ActorRdfJoinMultiBindSource",
       "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
-      "mediatorJoinEntriesSort": { "@id": "urn:comunica:default:rdf-join-entries-sort/mediators#main" }
+      "mediatorJoinEntriesSort": { "@id": "urn:comunica:default:rdf-join-entries-sort/mediators#main" },
+      "beforeActors": [
+        { "@id": "urn:comunica:default:rdf-join/actors#inner-multi-smallest" },
+        { "@id": "urn:comunica:default:rdf-join/actors#inner-multi-bind" },
+        { "@id": "urn:comunica:default:rdf-join/actors#inner-hash-def" },
+        { "@id": "urn:comunica:default:rdf-join/actors#inner-hash-undef" },
+        { "@id": "urn:comunica:default:rdf-join/actors#inner-symmetric-hash" },
+        { "@id": "urn:comunica:default:rdf-join/actors#inner-nested-loop" }
+      ]
     },
     {
       "@id": "urn:comunica:default:rdf-join/actors#inner-multi-bind",
@@ -44,17 +52,34 @@
       "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
       "mediatorJoinEntriesSort": { "@id": "urn:comunica:default:rdf-join-entries-sort/mediators#main" },
       "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
-      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" }
+      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" },
+      "beforeActors": [
+        { "@id": "urn:comunica:default:rdf-join/actors#inner-multi-smallest" },
+        { "@id": "urn:comunica:default:rdf-join/actors#inner-hash-def" },
+        { "@id": "urn:comunica:default:rdf-join/actors#inner-hash-undef" },
+        { "@id": "urn:comunica:default:rdf-join/actors#inner-symmetric-hash" },
+        { "@id": "urn:comunica:default:rdf-join/actors#inner-nested-loop" }
+      ]
     },
     {
-      "@id": "urn:comunica:default:rdf-join/actors#inner-hash",
+      "@id": "urn:comunica:default:rdf-join/actors#inner-hash-def",
       "@type": "ActorRdfJoinHash",
-      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" }
+      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
+      "mediatorHashBindings": { "@id": "urn:comunica:default:hash-bindings/mediators#main" },
+      "canHandleUndefs": false
+    },
+    {
+      "@id": "urn:comunica:default:rdf-join/actors#inner-hash-undef",
+      "@type": "ActorRdfJoinHash",
+      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
+      "mediatorHashBindings": { "@id": "urn:comunica:default:hash-bindings/mediators#main" },
+      "canHandleUndefs": true
     },
     {
       "@id": "urn:comunica:default:rdf-join/actors#inner-symmetric-hash",
       "@type": "ActorRdfJoinSymmetricHash",
-      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" }
+      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
+      "mediatorHashBindings": { "@id": "urn:comunica:default:hash-bindings/mediators#main" }
     },
     {
       "@id": "urn:comunica:default:rdf-join/actors#inner-nested-loop",
@@ -73,7 +98,14 @@
       "@type": "ActorRdfJoinMultiSmallestFilterBindings",
       "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
       "mediatorJoinEntriesSort": { "@id": "urn:comunica:default:rdf-join-entries-sort/mediators#main" },
-      "mediatorJoin": { "@id": "urn:comunica:default:rdf-join/mediators#main" }
+      "mediatorJoin": { "@id": "urn:comunica:default:rdf-join/mediators#main" },
+      "beforeActors": [
+        { "@id": "urn:comunica:default:rdf-join/actors#inner-multi-smallest" },
+        { "@id": "urn:comunica:default:rdf-join/actors#inner-hash-def" },
+        { "@id": "urn:comunica:default:rdf-join/actors#inner-hash-undef" },
+        { "@id": "urn:comunica:default:rdf-join/actors#inner-symmetric-hash" },
+        { "@id": "urn:comunica:default:rdf-join/actors#inner-nested-loop" }
+      ]
     }
   ]
 }

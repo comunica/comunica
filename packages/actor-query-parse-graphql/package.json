@@ -4,6 +4,10 @@
   "description": "A graphql sparql-parse actor",
   "lsd:module": true,
   "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
@@ -40,6 +44,6 @@
     "@comunica/bus-query-parse": "^3.2.1",
     "@comunica/context-entries": "^3.2.1",
     "@comunica/core": "^3.2.1",
-    "graphql-to-sparql": "^3.0.1"
+    "graphql-to-sparql": "^4.0.0"
   }
 }

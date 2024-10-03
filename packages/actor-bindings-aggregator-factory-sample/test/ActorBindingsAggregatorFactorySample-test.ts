@@ -1,13 +1,13 @@
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import {
   BF,
   DF,
   getMockEEActionContext,
   getMockMediatorExpressionEvaluatorFactory,
   makeAggregate,
-} from '@comunica/jest';
-import type { IActionContext } from '@comunica/types';
+} from '@comunica/utils-jest';
 import { ArrayIterator } from 'asynciterator';
 import { ActorBindingsAggregatorFactorySample } from '../lib';
 
@@ -56,21 +56,21 @@ describe('ActorBindingsAggregatorFactorySample', () => {
         await expect(actor.test({
           context,
           expr: makeAggregate('sample', false),
-        })).resolves.toEqual({});
+        })).resolves.toPassTestVoid();
       });
 
       it('accepts sample 2', async() => {
         await expect(actor.test({
           context,
           expr: makeAggregate('sample', true),
-        })).resolves.toEqual({});
+        })).resolves.toPassTestVoid();
       });
 
       it('rejects sum', async() => {
         await expect(actor.test({
           context,
           expr: makeAggregate('sum', false),
-        })).rejects.toThrow(exception);
+        })).resolves.toFailTest(exception);
       });
     });
 

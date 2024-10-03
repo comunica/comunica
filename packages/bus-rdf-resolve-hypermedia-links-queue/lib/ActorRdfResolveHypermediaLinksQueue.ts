@@ -13,12 +13,16 @@ import type { ILinkQueue } from './ILinkQueue';
  * @see IActionRdfResolveHypermediaLinksQueue
  * @see IActorRdfResolveHypermediaLinksQueueOutput
  */
-export abstract class ActorRdfResolveHypermediaLinksQueue extends
-  Actor<IActionRdfResolveHypermediaLinksQueue, IActorTest, IActorRdfResolveHypermediaLinksQueueOutput> {
+export abstract class ActorRdfResolveHypermediaLinksQueue<TS = undefined> extends
+  Actor<IActionRdfResolveHypermediaLinksQueue, IActorTest, IActorRdfResolveHypermediaLinksQueueOutput, TS> {
+  /* eslint-disable max-len */
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {Link queue creation failed: none of the configured actors were able to create a link queue starting from ${action.firstUrl}} busFailMessage
    */
-  public constructor(args: IActorRdfResolveHypermediaLinksQueueArgs) {
+  /* eslint-enable max-len */
+  public constructor(args: IActorRdfResolveHypermediaLinksQueueArgs<TS>) {
     super(args);
   }
 }
@@ -31,10 +35,11 @@ export interface IActorRdfResolveHypermediaLinksQueueOutput extends IActorOutput
   linkQueue: ILinkQueue;
 }
 
-export type IActorRdfResolveHypermediaLinksQueueArgs = IActorArgs<
+export type IActorRdfResolveHypermediaLinksQueueArgs<TS = undefined> = IActorArgs<
 IActionRdfResolveHypermediaLinksQueue,
 IActorTest,
-IActorRdfResolveHypermediaLinksQueueOutput
+IActorRdfResolveHypermediaLinksQueueOutput,
+TS
 >;
 
 export type MediatorRdfResolveHypermediaLinksQueue = Mediate<

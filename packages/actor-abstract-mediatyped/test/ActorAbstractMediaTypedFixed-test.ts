@@ -1,6 +1,7 @@
-import { Actor, Bus } from '@comunica/core';
+import { Actor, Bus, passTestVoid } from '@comunica/core';
 import { ActorAbstractMediaTyped } from '../lib/ActorAbstractMediaTyped';
 import { ActorAbstractMediaTypedFixed } from '../lib/ActorAbstractMediaTypedFixed';
+import '@comunica/utils-jest';
 
 describe('ActorAbstractMediaTypedFixed', () => {
   const bus = new Bus({ name: 'bus' });
@@ -43,7 +44,7 @@ describe('ActorAbstractMediaTypedFixed', () => {
       name: 'actor',
       priorityScale: 0.5,
     });
-    actor.testHandleChecked = () => Promise.resolve(true);
+    actor.testHandleChecked = () => Promise.resolve(passTestVoid());
 
     it('should have a \'priorityScale\' field', () => {
       expect(actor.priorityScale).toBe(0.5);
@@ -54,15 +55,15 @@ describe('ActorAbstractMediaTypedFixed', () => {
     });
 
     it('should testHandle for a valid media type', async() => {
-      await expect(actor.testHandle(null, 'a')).resolves.toBeTruthy();
+      await expect(actor.testHandle(null, 'a')).resolves.toPassTestVoid();
     });
 
     it('should not testHandle for an invalid media type', async() => {
-      await expect(actor.testHandle(null, 'b')).rejects.toBeTruthy();
+      await expect(actor.testHandle(null, 'b')).resolves.toFailTest(`Unrecognized media type: b`);
     });
 
     it('should not testHandle for an undefined media type', async() => {
-      await expect(actor.testHandle(null)).rejects.toBeTruthy();
+      await expect(actor.testHandle(null)).resolves.toFailTest(`Unrecognized media type: undefined`);
     });
 
     it('should always testMediaType', async() => {

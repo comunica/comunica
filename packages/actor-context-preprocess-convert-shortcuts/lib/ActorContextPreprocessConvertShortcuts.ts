@@ -1,7 +1,7 @@
 import type { IActorContextPreprocessOutput, IActorContextPreprocessArgs } from '@comunica/bus-context-preprocess';
 import { ActorContextPreprocess } from '@comunica/bus-context-preprocess';
-import type { IAction, IActorTest } from '@comunica/core';
-import { ActionContextKey } from '@comunica/core';
+import type { IAction, IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid, ActionContextKey } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 
 /**
@@ -14,8 +14,8 @@ export class ActorContextPreprocessConvertShortcuts extends ActorContextPreproce
     super(args);
   }
 
-  public async test(_action: IAction): Promise<IActorTest> {
-    return true;
+  public async test(_action: IAction): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async run(action: IAction): Promise<IActorContextPreprocessOutput> {
@@ -49,6 +49,7 @@ export interface IActorContextPreprocessConvertShortcutsArgs extends IActorConte
    *   "log": "@comunica/core:log",
    *   "datetime": "@comunica/actor-http-memento:datetime",
    *   "queryTimestamp": "@comunica/actor-init-query:queryTimestamp",
+   *   "queryTimestampHighResolution": "@comunica/actor-init-query:queryTimestampHighResolution",
    *   "httpProxyHandler": "@comunica/actor-http-proxy:httpProxyHandler",
    *   "lenient": "@comunica/actor-init-query:lenient",
    *   "httpIncludeCredentials": "@comunica/bus-http:include-credentials",
@@ -67,7 +68,7 @@ export interface IActorContextPreprocessConvertShortcutsArgs extends IActorConte
    *   "explain": "@comunica/actor-init-query:explain",
    *   "unionDefaultGraph": "@comunica/bus-query-operation:unionDefaultGraph",
    *   "traverse": "@comunica/bus-query-source-identify:traverse",
-   *   "noCache": "@comunica/actor-init-query:noCache",
+   *   "invalidateCache": "@comunica/actor-init-query:invalidateCache",
    *   "dataFactory": "@comunica/actor-init-query:dataFactory",
    *   "distinctConstruct": "@comunica/actor-init-query:distinctConstruct"
    * }}

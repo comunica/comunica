@@ -6,7 +6,8 @@ import type {
 import {
   ActorBindingsAggregatorFactory,
 } from '@comunica/bus-bindings-aggregator-factory';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import { SampleAggregator } from './SampleAggregator';
 
 /**
@@ -17,11 +18,11 @@ export class ActorBindingsAggregatorFactorySample extends ActorBindingsAggregato
     super(args);
   }
 
-  public async test(action: IActionBindingsAggregatorFactory): Promise<IActorTest> {
+  public async test(action: IActionBindingsAggregatorFactory): Promise<TestResult<IActorTest>> {
     if (action.expr.aggregator !== 'sample') {
-      throw new Error('This actor only supports the \'sample\' aggregator.');
+      return failTest('This actor only supports the \'sample\' aggregator.');
     }
-    return {};
+    return passTestVoid();
   }
 
   public async run({ context, expr }: IActionBindingsAggregatorFactory):

@@ -1,16 +1,17 @@
-import {
-  ActorQueryOperation,
-} from '@comunica/bus-query-operation';
 import type {
   IActionRdfJoin,
   IActorRdfJoinOutputInner,
   IActorRdfJoinArgs,
   MediatorRdfJoin,
+  IActorRdfJoinTestSideData,
 } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import { KeysInitQuery } from '@comunica/context-entries';
+import type { TestResult } from '@comunica/core';
+import { passTestWithSideData } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { MetadataBindings, IJoinEntry, ComunicaDataFactory } from '@comunica/types';
+import type { IJoinEntry, ComunicaDataFactory } from '@comunica/types';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import { Factory } from 'sparqlalgebrajs';
 
 /**
@@ -37,7 +38,7 @@ export class ActorRdfJoinMultiSequential extends ActorRdfJoin {
 
     // Join the two first streams, and then join the result with the remaining streams
     const firstEntry: IJoinEntry = {
-      output: ActorQueryOperation.getSafeBindings(await this.mediatorJoin
+      output: getSafeBindings(await this.mediatorJoin
         .mediate({ type: action.type, entries: [ action.entries[0], action.entries[1] ], context: action.context })),
       operation: algebraFactory
         .createJoin([ action.entries[0].operation, action.entries[1].operation ], false),
@@ -55,11 +56,12 @@ export class ActorRdfJoinMultiSequential extends ActorRdfJoin {
 
   protected async getJoinCoefficients(
     action: IActionRdfJoin,
-    metadatas: MetadataBindings[],
-  ): Promise<IMediatorTypeJoinCoefficients> {
+    sideData: IActorRdfJoinTestSideData,
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients, IActorRdfJoinTestSideData>> {
+    const { metadatas } = sideData;
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
-    return {
+    return passTestWithSideData({
       iterations: metadatas[0].cardinality.value * metadatas[1].cardinality.value *
         metadatas.slice(2).reduce((acc, metadata) => acc * metadata.cardinality.value, 1),
       persistedItems: 0,
@@ -69,7 +71,7 @@ export class ActorRdfJoinMultiSequential extends ActorRdfJoin {
         metadatas.slice(2)
           .reduce((sum, metadata, i) => sum + requestInitialTimes[i] +
             metadata.cardinality.value * requestItemTimes[i], 0),
-    };
+    }, sideData);
   }
 }
 

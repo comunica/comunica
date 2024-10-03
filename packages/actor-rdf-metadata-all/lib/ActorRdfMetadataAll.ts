@@ -1,6 +1,7 @@
 import type { IActionRdfMetadata, IActorRdfMetadataArgs, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
 import { ActorRdfMetadata } from '@comunica/bus-rdf-metadata';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import { Readable } from 'readable-stream';
 
 /**
@@ -11,8 +12,8 @@ export class ActorRdfMetadataAll extends ActorRdfMetadata {
     super(args);
   }
 
-  public async test(_action: IActionRdfMetadata): Promise<IActorTest> {
-    return true;
+  public async test(_action: IActionRdfMetadata): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async run(action: IActionRdfMetadata): Promise<IActorRdfMetadataOutput> {

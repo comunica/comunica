@@ -1,10 +1,10 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
-import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationReducedHash } from '..';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -46,16 +46,16 @@ describe('ActorQueryOperationReducedHash', () => {
       );
     });
     it('should create a filter', async() => {
-      await expect(actor.newHashFilter(new ActionContext())).resolves.toBeInstanceOf(Function);
+      await expect(actor.newHashFilter(new ActionContext(), [ DF.variable('a') ])).resolves.toBeInstanceOf(Function);
     });
 
     it('should create a filter that is a predicate', async() => {
-      const filter = await actor.newHashFilter(new ActionContext());
+      const filter = await actor.newHashFilter(new ActionContext(), [ DF.variable('a') ]);
       expect(filter(BF.bindings([[ DF.variable('a'), DF.literal('a') ]]))).toBe(true);
     });
 
     it('should create a filter that only returns true once for equal objects', async() => {
-      const filter = await actor.newHashFilter(new ActionContext());
+      const filter = await actor.newHashFilter(new ActionContext(), [ DF.variable('a') ]);
       expect(filter(BF.bindings([[ DF.variable('a'), DF.literal('a') ]]))).toBe(true);
       expect(filter(BF.bindings([[ DF.variable('a'), DF.literal('a') ]]))).toBe(false);
       expect(filter(BF.bindings([[ DF.variable('a'), DF.literal('a') ]]))).toBe(false);
@@ -68,9 +68,9 @@ describe('ActorQueryOperationReducedHash', () => {
     });
 
     it('should create a filters that are independent', async() => {
-      const filter1 = await actor.newHashFilter(new ActionContext());
-      const filter2 = await actor.newHashFilter(new ActionContext());
-      const filter3 = await actor.newHashFilter(new ActionContext());
+      const filter1 = await actor.newHashFilter(new ActionContext(), [ DF.variable('a') ]);
+      const filter2 = await actor.newHashFilter(new ActionContext(), [ DF.variable('a') ]);
+      const filter3 = await actor.newHashFilter(new ActionContext(), [ DF.variable('a') ]);
       expect(filter1(BF.bindings([[ DF.variable('a'), DF.literal('b') ]]))).toBe(true);
       expect(filter1(BF.bindings([[ DF.variable('a'), DF.literal('b') ]]))).toBe(false);
 
@@ -93,17 +93,17 @@ describe('ActorQueryOperationReducedHash', () => {
 
     it('should test on reduced', async() => {
       const op: any = { operation: { type: 'reduced' }};
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should not test on non-reduced', async() => {
       const op: any = { operation: { type: 'some-other-type' }};
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports reduced operations, but got some-other-type`);
     });
 
     it('should run', async() => {
       const op: any = { operation: { type: 'reduced' }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({ cardinality: 5, variables: [ DF.variable('a') ]});
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -150,7 +150,7 @@ describe('Smaller cache than number of queries', () => {
   });
   it('should run', async() => {
     const op: any = { operation: { type: 'reduced' }, context: new ActionContext() };
-    const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+    const output = getSafeBindings(await actor.run(op, undefined));
     await expect(output.metadata()).resolves.toEqual({ cardinality: 7, variables: [ DF.variable('a') ]});
     expect(output.type).toBe('bindings');
     await expect(output.bindingsStream).toEqualBindingsStream([

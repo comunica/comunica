@@ -4,11 +4,12 @@ import type {
   IActorOptimizeQueryOperationArgs,
 } from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
-import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { getDataDestinationValue } from '@comunica/bus-rdf-update-quads';
 import { KeysInitQuery, KeysQueryOperation, KeysRdfUpdateQuads } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, IDataDestination, IQuerySourceWrapper } from '@comunica/types';
+import { assignOperationSource, doesShapeAcceptOperation } from '@comunica/utils-query-operation';
 import { Algebra, Factory, Util } from 'sparqlalgebrajs';
 
 /**
@@ -19,8 +20,8 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
     super(args);
   }
 
-  public async test(_action: IActionOptimizeQueryOperation): Promise<IActorTest> {
-    return true;
+  public async test(_action: IActionOptimizeQueryOperation): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
@@ -37,9 +38,9 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
       if (!destination || sourceWrapper.source.referenceValue === getDataDestinationValue(destination)) {
         try {
           const shape = await sourceWrapper.source.getSelectorShape(action.context);
-          if (ActorQueryOperation.doesShapeAcceptOperation(shape, action.operation)) {
+          if (doesShapeAcceptOperation(shape, action.operation)) {
             return {
-              operation: ActorQueryOperation.assignOperationSource(action.operation, sourceWrapper),
+              operation: assignOperationSource(action.operation, sourceWrapper),
               context: action.context,
             };
           }
@@ -77,39 +78,39 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
       [Algebra.types.PATTERN](subOperation, factory) {
         if (sources.length === 1) {
           return {
-            result: ActorQueryOperation.assignOperationSource(subOperation, sources[0]),
+            result: assignOperationSource(subOperation, sources[0]),
             recurse: false,
           };
         }
         return {
           result: factory.createUnion(sources
-            .map(source => ActorQueryOperation.assignOperationSource(subOperation, source))),
+            .map(source => assignOperationSource(subOperation, source))),
           recurse: false,
         };
       },
       [Algebra.types.LINK](subOperation, factory) {
         if (sources.length === 1) {
           return {
-            result: ActorQueryOperation.assignOperationSource(subOperation, sources[0]),
+            result: assignOperationSource(subOperation, sources[0]),
             recurse: false,
           };
         }
         return {
           result: factory.createAlt(sources
-            .map(source => ActorQueryOperation.assignOperationSource(subOperation, source))),
+            .map(source => assignOperationSource(subOperation, source))),
           recurse: false,
         };
       },
       [Algebra.types.NPS](subOperation, factory) {
         if (sources.length === 1) {
           return {
-            result: ActorQueryOperation.assignOperationSource(subOperation, sources[0]),
+            result: assignOperationSource(subOperation, sources[0]),
             recurse: false,
           };
         }
         return {
           result: factory.createAlt(sources
-            .map(source => ActorQueryOperation.assignOperationSource(subOperation, source))),
+            .map(source => assignOperationSource(subOperation, source))),
           recurse: false,
         };
       },

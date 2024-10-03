@@ -1,0 +1,44 @@
+{
+  "name": "@comunica/statistic-base",
+  "version": "3.2.1",
+  "description": "Comunica package that defines the base class for statistic trackers in Comunica",
+  "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
+  "homepage": "https://comunica.dev/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/statistic-base"
+  },
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
+  "keywords": [
+    "comunica",
+    "statistic",
+    "base"
+  ],
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "bin/**/*.d.ts",
+    "bin/**/*.js",
+    "bin/**/*.js.map",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.js.map"
+  ],
+  "scripts": {
+    "build": "node \"../../node_modules/typescript/bin/tsc\""
+  },
+  "dependencies": {
+    "@comunica/types": "^3.2.1"
+  }
+}

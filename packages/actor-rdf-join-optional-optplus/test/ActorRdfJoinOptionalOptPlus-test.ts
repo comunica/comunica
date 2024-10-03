@@ -1,17 +1,17 @@
 import { ActorRdfJoinNestedLoop } from '@comunica/actor-rdf-join-inner-nestedloop';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionRdfJoin, MediatorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
-import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinOptionalOptPlus } from '../lib/ActorRdfJoinOptionalOptPlus';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -42,7 +42,7 @@ IActorRdfJoinSelectivityOutput
       mediatorJoin = <any> {
         mediate: async(action: IActionRdfJoin) => {
           const actor = new ActorRdfJoinNestedLoop({ name: 'actor', bus, mediatorJoinSelectivity });
-          return actor.run(action);
+          return actor.run(action, undefined!);
         },
       };
       actor = new ActorRdfJoinOptionalOptPlus({ name: 'actor', bus, mediatorJoinSelectivity, mediatorJoin });
@@ -54,7 +54,7 @@ IActorRdfJoinSelectivityOutput
           type: 'optional',
           entries: [],
           context,
-        })).rejects.toThrow('actor requires at least two join entries.');
+        })).resolves.toFailTest('actor requires at least two join entries.');
       });
 
       it('should not test on one entry', async() => {
@@ -62,7 +62,7 @@ IActorRdfJoinSelectivityOutput
           type: 'optional',
           entries: <any> [{}],
           context,
-        })).rejects.toThrow('actor requires at least two join entries.');
+        })).resolves.toFailTest('actor requires at least two join entries.');
       });
 
       it('should not test on three entries', async() => {
@@ -70,7 +70,7 @@ IActorRdfJoinSelectivityOutput
           type: 'optional',
           entries: <any> [{}, {}, {}],
           context,
-        })).rejects.toThrow('actor requires 2 join entries at most. The input contained 3.');
+        })).resolves.toFailTest('actor requires 2 join entries at most. The input contained 3.');
       });
 
       it('should not test on a non-optional operation', async() => {
@@ -78,7 +78,7 @@ IActorRdfJoinSelectivityOutput
           type: 'inner',
           entries: <any> [{}, {}],
           context,
-        })).rejects.toThrow(`actor can only handle logical joins of type 'optional', while 'inner' was given.`);
+        })).resolves.toFailTest(`actor can only handle logical joins of type 'optional', while 'inner' was given.`);
       });
 
       it('should test on two entries', async() => {
@@ -107,7 +107,7 @@ IActorRdfJoinSelectivityOutput
             },
           ],
           context,
-        })).resolves.toEqual({
+        })).resolves.toPassTest({
           iterations: 8,
           blockingItems: 0,
           persistedItems: 0,
@@ -131,8 +131,8 @@ IActorRdfJoinSelectivityOutput
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 3 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a') ],
+
+                  variables: [{ variable: DF.variable('a'), canBeUndef: false }],
                 }),
                 type: 'bindings',
               },
@@ -157,8 +157,11 @@ IActorRdfJoinSelectivityOutput
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 3 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('b') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -167,16 +170,18 @@ IActorRdfJoinSelectivityOutput
           ],
           context,
         };
-        const result = await actor.run(action);
+        const result = await actor.run(action, undefined!);
 
         // Validate output
         expect(result.type).toBe('bindings');
         await expect(result.metadata()).resolves
           .toEqual({
             state: expect.any(MetadataValidationState),
-            cardinality: { type: 'estimate', value: 12 },
-            canContainUndefs: true,
-            variables: [ DF.variable('a'), DF.variable('b') ],
+            cardinality: { type: 'estimate', value: 9 },
+            variables: [
+              { variable: DF.variable('a'), canBeUndef: false },
+              { variable: DF.variable('b'), canBeUndef: true },
+            ],
           });
         await expect(result.bindingsStream).toEqualBindingsStream([
           BF.bindings([

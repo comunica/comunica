@@ -24,8 +24,8 @@
     "publish": "yarn run build",
     "publish-release": "lerna publish",
     "publish-bare": "lerna exec -- npm publish --silent",
-    "publish-canary": "yarn run build && lerna version prerelease --preid alpha.$(.github/get-next-alpha-version.sh) --exact --ignore-scripts --force-publish --no-push --no-git-tag-version --yes && git update-index --assume-unchanged $(git ls-files | tr '\\n' ' ') && lerna publish from-package --no-git-reset --pre-dist-tag next --force-publish --no-push --no-git-tag-version --yes && git update-index --no-assume-unchanged $(git ls-files | tr '\\n' ' ') && git checkout .",
-    "doc": "./.github/typedoc-json.sh create && typedoc && ./.github/typedoc-json.sh remove",
+    "publish-canary": "yarn run build && lerna version prerelease --preid alpha.$(packages/utils-monorepo/sh/get-next-alpha-version.sh @comunica/core) --exact --ignore-scripts --force-publish --no-push --no-git-tag-version --yes && git update-index --assume-unchanged $(git ls-files | tr '\\n' ' ') && lerna publish from-package --no-git-reset --pre-dist-tag next --force-publish --no-push --no-git-tag-version --yes && git update-index --no-assume-unchanged $(git ls-files | tr '\\n' ' ') && git checkout .",
+    "doc": "packages/utils-monorepo/sh/typedoc-json.sh create && typedoc && packages/utils-monorepo/sh/typedoc-json.sh remove",
     "preinstall": "node -e \"if (!fs.existsSync('packages/runner-cli/bin/run.js')) { var os = fs.createWriteStream('packages/runner-cli/bin/run.js'); os.write('#!/usr/bin/env node\\nconsole.error(\\'Temporary runner script during lerna installation. If you see this, please run yarn install again.\\');\\nprocess.exit(1);'); os.end(); }\" && node -e \"if (!fs.existsSync('packages/runner/bin/compile-config.js')) { var os = fs.createWriteStream('packages/runner/bin/compile-config.js'); os.write('#!/usr/bin/env node\\nconsole.error(\\'Temporary compile-config script during lerna installation. If you see this, please run yarn install again.\\');\\nprocess.exit(1);'); os.end(); }\"",
     "postinstall": "yarn run build && lerna run prepare",
     "prepare": "yarn husky",
@@ -57,7 +57,7 @@
     "asynciterator": "^3.9.0",
     "babel-loader": "^9.1.0",
     "benchmark": "^2.1.4",
-    "componentsjs-generator": "^4.0.1",
+    "componentsjs-generator": "^4.2.0",
     "depcheck": "^1.4.3",
     "eslint": "^8.57.0",
     "husky": "^9.0.0",
@@ -75,7 +75,7 @@
     "lerna-script": "^1.4.0",
     "manual-git-changelog": "^1.0.2",
     "md5": "^2.3.0",
-    "node-polyfill-webpack-plugin": "^3.0.0",
+    "node-polyfill-webpack-plugin": "^4.0.0",
     "nodemon": "^3.0.0",
     "npm-check-updates": "^17.0.0",
     "rdf-data-factory": "^1.1.1",
@@ -94,6 +94,6 @@
     "webpack-cli": "^5.0.0"
   },
   "resolutions": {
-    "@rdfjs/types": "1.1.0"
+    "@rdfjs/types": "1.1.2"
   }
 }

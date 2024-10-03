@@ -1,8 +1,8 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { ITermFunction, MediatorFunctionFactory } from '@comunica/bus-function-factory';
-import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
 import type { IActionContext } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-jest';
 import { DataFactory } from 'rdf-data-factory';
 import { IntegerLiteral } from '../../../lib/expressions';
 import { TypeURL as DT } from '../../../lib/util/Consts';
@@ -43,7 +43,7 @@ describe('evaluators', () => {
       const evaluator = await factory.run({
         algExpr: getMockExpression('1 + 1'),
         context: actionContext,
-      });
+      }, undefined);
 
       expect(mediate.mock.calls).toHaveLength(1);
       await expect(evaluator.evaluate(BF.bindings())).resolves.toEqual(two);
@@ -54,7 +54,7 @@ describe('evaluators', () => {
       const evaluator = await factory.run({
         algExpr: getMockExpression('1 + "1"^^<http://example.com>'),
         context: actionContext,
-      });
+      }, undefined);
       await expect(evaluator.evaluate(BF.bindings())).rejects.toThrow(Err.InvalidArgumentTypes);
     });
   });
@@ -64,7 +64,7 @@ describe('evaluators', () => {
       const evaluator = await factory.run({
         algExpr: getMockExpression('1 + 1'),
         context: actionContext,
-      });
+      }, undefined);
       expect(mediate.mock.calls).toHaveLength(1);
       await expect(evaluator.evaluateAsEBV(BF.bindings())).resolves.toBe(true);
     });
@@ -73,7 +73,7 @@ describe('evaluators', () => {
       const evaluator = await factory.run({
         algExpr: getMockExpression('0'),
         context: actionContext,
-      });
+      }, undefined);
       await expect(evaluator.evaluateAsEBV(BF.bindings())).resolves.toBe(false);
     });
   });
@@ -83,7 +83,7 @@ describe('evaluators', () => {
       const evaluator = await factory.run({
         algExpr: getMockExpression('1 + 1'),
         context: actionContext,
-      });
+      }, undefined);
       expect(mediate.mock.calls).toHaveLength(1);
       await expect(evaluator.evaluateAsEvaluatorExpression(BF.bindings())).resolves.toEqual(new IntegerLiteral(2));
     });

@@ -1,10 +1,9 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import {
-  ActorQueryOperation,
-} from '@comunica/bus-query-operation';
+
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 
 /**
@@ -24,7 +23,7 @@ export class ActorQueryOperationPathNps extends ActorAbstractPath {
 
     const pattern = Object.assign(algebraFactory
       .createPattern(operation.subject, blank, operation.object, operation.graph), { metadata: predicate.metadata });
-    const output = ActorQueryOperation.getSafeBindings(
+    const output = getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: pattern, context }),
     );
 

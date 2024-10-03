@@ -1,4 +1,4 @@
-import { getMockSuperTypeProvider } from '@comunica/jest';
+import { getMockSuperTypeProvider } from '@comunica/utils-jest';
 import type * as RDF from '@rdfjs/types';
 import { TermTransformer, TypeURL } from '../../../lib';
 

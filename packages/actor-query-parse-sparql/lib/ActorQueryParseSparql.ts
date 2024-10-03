@@ -1,7 +1,8 @@
 import type { IActionQueryParse, IActorQueryParseArgs, IActorQueryParseOutput } from '@comunica/bus-query-parse';
 import { ActorQueryParse } from '@comunica/bus-query-parse';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
 import { translate } from 'sparqlalgebrajs';
 import { Parser as SparqlParser } from 'sparqljs';
@@ -17,11 +18,11 @@ export class ActorQueryParseSparql extends ActorQueryParse {
     this.prefixes = Object.freeze(this.prefixes);
   }
 
-  public async test(action: IActionQueryParse): Promise<IActorTest> {
+  public async test(action: IActionQueryParse): Promise<TestResult<IActorTest>> {
     if (action.queryFormat && action.queryFormat.language !== 'sparql') {
-      throw new Error('This actor can only parse SPARQL queries');
+      return failTest('This actor can only parse SPARQL queries');
     }
-    return true;
+    return passTestVoid();
   }
 
   public async run(action: IActionQueryParse): Promise<IActorQueryParseOutput> {

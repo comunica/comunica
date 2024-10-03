@@ -23,9 +23,13 @@ import type * as RDF from '@rdfjs/types';
  */
 export abstract class ActorDereferenceRdf extends
   ActorDereferenceParse<RDF.Stream, IActionRdfParseMetadata, IActorRdfParseOutputMetadata> {
+  /* eslint-disable max-len */
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {RDF dereferencing failed: none of the configured parsers were able to handle the media type ${action.handle.mediaType} for ${action.handle.url}} busFailMessage
    */
+  /* eslint-enable max-len */
   public constructor(args: IActorDereferenceRdfArgs) {
     super(args);
   }

@@ -1,16 +1,19 @@
 import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
-import type { ILink, MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
+import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type {
   ILinkQueue,
   MediatorRdfResolveHypermediaLinksQueue,
 } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
-import { KeysQueryOperation } from '@comunica/context-entries';
+import { KeysQueryOperation, KeysStatistics } from '@comunica/context-entries';
 import type {
   ComunicaDataFactory,
   IActionContext,
   IAggregatedStore,
   IQueryBindingsOptions,
   MetadataBindings,
+  ILink,
+  IStatisticBase,
+  IDiscoverEventData,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra, Factory } from 'sparqlalgebrajs';
@@ -151,9 +154,17 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     return this.linkQueue;
   }
 
-  protected async getSourceLinks(metadata: Record<string, any>): Promise<ILink[]> {
+  protected async getSourceLinks(metadata: Record<string, any>, startSource: ISourceState): Promise<ILink[]> {
     try {
       const { links } = await this.mediatorRdfResolveHypermediaLinks.mediate({ context: this.context, metadata });
+      // Update discovery event statistic if available
+      const traversalTracker: IStatisticBase<IDiscoverEventData> | undefined =
+        this.context.get(KeysStatistics.discoveredLinks);
+      if (traversalTracker) {
+        for (const link of links) {
+          traversalTracker.updateStatistic({ url: link.url, metadata: { ...link.metadata }}, startSource.link);
+        }
+      }
 
       // Filter URLs to avoid cyclic next-page loops
       return links.filter((link) => {

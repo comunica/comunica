@@ -1,5 +1,4 @@
 import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type {
   IActionDereferenceRdf,
   IActorDereferenceRdfOutput,
@@ -19,6 +18,7 @@ import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extr
 import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import type { IQuerySource } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { wrap } from 'asynciterator';
 import 'jest-rdf';
 import { DataFactory } from 'rdf-data-factory';

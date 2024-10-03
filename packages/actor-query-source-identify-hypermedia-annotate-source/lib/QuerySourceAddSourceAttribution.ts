@@ -1,4 +1,3 @@
-import { Bindings } from '@comunica/bindings-factory';
 import { KeysMergeBindingsContext } from '@comunica/context-entries';
 import type {
   BindingsStream,
@@ -8,6 +7,7 @@ import type {
   IQuerySource,
   MetadataBindings,
 } from '@comunica/types';
+import { Bindings } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';

@@ -1,17 +1,19 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
+import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { MediatorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
-import { MetadataValidationState } from '@comunica/metadata';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import type {
   ComunicaDataFactory,
   IActionContext,
   IQueryOperationResult,
   IQueryOperationResultBindings,
 } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
+import { assignOperationSource, getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { SingletonIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -29,11 +31,11 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
     super(args, 'service');
   }
 
-  public async testOperation(operation: Algebra.Service, _context: IActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Service, _context: IActionContext): Promise<TestResult<IActorTest>> {
     if (operation.name.termType !== 'NamedNode') {
-      throw new Error(`${this.name} can only query services by IRI, while a ${operation.name.termType} was given.`);
+      return failTest(`${this.name} can only query services by IRI, while a ${operation.name.termType} was given.`);
     }
-    return true;
+    return passTestVoid();
   }
 
   public async runOperation(operation: Algebra.Service, context: IActionContext):
@@ -50,8 +52,8 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
     // Attach the source to the operation, and execute
     let output: IQueryOperationResultBindings;
     try {
-      output = ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
-        operation: ActorQueryOperation.assignOperationSource(operation.input, querySource),
+      output = getSafeBindings(await this.mediatorQueryOperation.mediate({
+        operation: assignOperationSource(operation.input, querySource),
         context,
       }));
     } catch (error: unknown) {
@@ -69,7 +71,6 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
           metadata: async() => ({
             state: new MetadataValidationState(),
             cardinality: { type: 'exact', value: 1 },
-            canContainUndefs: false,
             variables: [],
           }),
         };

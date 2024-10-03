@@ -2,6 +2,7 @@ import { ActorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hyperm
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorRdfResolveHypermediaLinksNext } from '../lib/ActorRdfResolveHypermediaLinksNext';
+import '@comunica/utils-jest';
 
 describe('ActorRdfResolveHypermediaLinksNext', () => {
   let bus: any;
@@ -39,12 +40,12 @@ describe('ActorRdfResolveHypermediaLinksNext', () => {
     });
 
     it('should test on next metadata', async() => {
-      await expect(actor.test({ metadata: { next: 'NEXT' }, context })).resolves.toBeTruthy();
+      await expect(actor.test({ metadata: { next: 'NEXT' }, context })).resolves.toPassTestVoid();
     });
 
     it('should not test without next metadata', async() => {
-      await expect(actor.test({ metadata: {}, context })).rejects
-        .toThrow(new Error('Actor actor requires a \'next\' metadata entry.'));
+      await expect(actor.test({ metadata: {}, context })).resolves
+        .toFailTest('Actor actor requires a \'next\' metadata entry.');
     });
 
     it('should run', async() => {

@@ -1,12 +1,19 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorBindingsAggregatorFactory } from '@comunica/bus-bindings-aggregator-factory';
-import type { MediatorHashBindings } from '@comunica/bus-hash-bindings';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
+import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
-import type { BindingsStream, ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
+import type {
+  BindingsStream,
+  ComunicaDataFactory,
+  IActionContext,
+  IQueryOperationResult,
+  MetadataVariable,
+} from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import { ArrayIterator, TransformIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 import { GroupsState } from './GroupsState';
@@ -15,7 +22,6 @@ import { GroupsState } from './GroupsState';
  * A comunica Group Query Operation Actor.
  */
 export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<Algebra.Group> {
-  public readonly mediatorHashBindings: MediatorHashBindings;
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
   private readonly mediatorBindingsAggregatorFactory: MediatorBindingsAggregatorFactory;
 
@@ -24,42 +30,47 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
     this.mediatorBindingsAggregatorFactory = args.mediatorBindingsAggregatorFactory;
   }
 
-  public async testOperation(operation: Algebra.Group, context: IActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Group, context: IActionContext): Promise<TestResult<IActorTest>> {
     for (const aggregate of operation.aggregates) {
-      // Will throw for unsupported expressions
-      const _ = await this.mediatorBindingsAggregatorFactory.mediate({ expr: aggregate, context });
+      try {
+        // Will throw for unsupported expressions
+        const _ = await this.mediatorBindingsAggregatorFactory.mediate({ expr: aggregate, context });
+      } catch (error: unknown) {
+        // TODO: return TestResult in ActorQueryOperation.getAsyncExpressionContext
+        return failTest((<Error> error).message);
+      }
     }
-    return true;
+    return passTestVoid();
   }
 
   public async runOperation(operation: Algebra.Group, context: IActionContext):
   Promise<IQueryOperationResult> {
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
     const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context, dataFactory);
-    // Create a hash function
-    const { hashFunction } = await this.mediatorHashBindings.mediate({ allowHashCollisions: true, context });
 
     // Get result stream for the input query
     const { input, aggregates } = operation;
     const outputRaw = await this.mediatorQueryOperation.mediate({ operation: input, context });
-    const output = ActorQueryOperation.getSafeBindings(outputRaw);
+    const output = getSafeBindings(outputRaw);
 
     // The variables in scope are the variables on which we group, i.e. pattern.variables.
     // For 'GROUP BY ?x, ?z', this is [?x, ?z], for 'GROUP by expr(?x) as ?e' this is [?e].
     // But also in scope are the variables defined by the aggregations, since GROUP has to handle this.
-    const variables = [
+    const variables: MetadataVariable[] = [
       ...operation.variables,
       ...aggregates.map(agg => agg.variable),
-    ];
+    ].map(variable => ({ variable, canBeUndef: false }));
+
+    const variablesInner = (await output.metadata()).variables.map(v => v.variable);
 
     // Wrap a new promise inside an iterator that completes when the stream has ended or when an error occurs
     const bindingsStream = new TransformIterator(() => new Promise<BindingsStream>((resolve, reject) => {
       const groups = new GroupsState(
-        hashFunction,
         operation,
         this.mediatorBindingsAggregatorFactory,
         context,
         bindingsFactory,
+        variablesInner,
       );
 
       // Phase 2: Collect aggregator results
@@ -96,7 +107,6 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
 }
 
 export interface IActorQueryOperationGroupArgs extends IActorQueryOperationTypedMediatedArgs {
-  mediatorHashBindings: MediatorHashBindings;
   /**
    * A mediator for creating binding context merge handlers
    */

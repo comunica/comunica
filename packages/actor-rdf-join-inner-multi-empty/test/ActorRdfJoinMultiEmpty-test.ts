@@ -6,7 +6,7 @@ import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinMultiEmpty } from '../lib/ActorRdfJoinMultiEmpty';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 
@@ -56,7 +56,7 @@ IActorRdfJoinSelectivityOutput
             },
           ],
           context,
-        })).rejects.toThrow('Actor actor can only join entries where at least one is empty');
+        })).resolves.toFailTest('Actor actor can only join entries where at least one is empty');
       });
 
       it('should test on a 0 cardinality', async() => {
@@ -79,7 +79,7 @@ IActorRdfJoinSelectivityOutput
             },
           ],
           context,
-        })).resolves.toEqual({
+        })).resolves.toPassTest({
           iterations: 0,
           persistedItems: 0,
           blockingItems: 0,
@@ -110,10 +110,10 @@ IActorRdfJoinSelectivityOutput
             },
           ],
           context,
-        });
+        }, undefined!);
         await expect(output.bindingsStream).toEqualBindingsStream([]);
         await expect(output.metadata()).resolves
-          .toMatchObject({ cardinality: { type: 'exact', value: 0 }, canContainUndefs: false, variables: []});
+          .toMatchObject({ cardinality: { type: 'exact', value: 0 }, variables: []});
       });
     });
   });

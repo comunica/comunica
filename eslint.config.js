@@ -40,6 +40,7 @@ module.exports = config([
     // Specific rules for NodeJS-specific files
     files: [
       '**/test/**/*.ts',
+      '**/__mocks__/*.js',
       'packages/actor-dereference-file/**/*.ts',
       'packages/actor-http-native/**/*.ts',
       'packages/logger-bunyan/**/*.ts',
@@ -47,9 +48,19 @@ module.exports = config([
     ],
     rules: {
       'import/no-nodejs-modules': 'off',
-      'unused-imports/no-unused-vars': 'off',
       'ts/no-require-imports': 'off',
       'ts/no-var-requires': 'off',
+    },
+  },
+  {
+    files: [
+      // Browser versions of files cannot follow the camelCase naming scheme
+      '**/*-browser.ts',
+      // The funding YAML file needs the specific uppercase name
+      '.github/FUNDING.yml',
+    ],
+    rules: {
+      'unicorn/filename-case': 'off',
     },
   },
   {
@@ -94,27 +105,83 @@ module.exports = config([
     },
   },
   {
-    // Files that do not require linting
-    ignores: [
-      'setup-jest.js',
-      '**/engine-default.js',
-      '**/engine-browser.js',
-      '**/comunica-browser.js',
-      '.github/**',
-      '**/performance/*/combinations/**',
-      '**/bintest/**',
-      // TODO: Remove this once solid-client-authn supports node 18.
-      '**/QuerySparql-solid-test.ts',
+    // Spec test engines
+    files: [
+      '**/spec/*.js',
     ],
+    rules: {
+      'import/extensions': 'off',
+      'ts/no-var-requires': 'off',
+      'ts/no-require-imports': 'off',
+      'import/no-extraneous-dependencies': 'off',
+    },
   },
   {
-    files: [ '**/*.js' ],
+    // Webpack configurations
+    files: [
+      '**/webpack.config.js',
+    ],
     rules: {
-      'ts/no-require-imports': 'off',
       'ts/no-var-requires': 'off',
+      'ts/no-require-imports': 'off',
       'import/no-nodejs-modules': 'off',
       'import/no-extraneous-dependencies': 'off',
-      'import/extensions': 'off',
     },
+  },
+  {
+    // Karma config and Lerna custom script because they have identical rules
+    files: [
+      'karma.config.js',
+      'lerna-custom-script.js',
+    ],
+    rules: {
+      'ts/no-var-requires': 'off',
+      'ts/no-require-imports': 'off',
+      'import/no-nodejs-modules': 'off',
+    },
+  },
+  {
+    // Karma setup script
+    files: [
+      'karma-setup.js',
+    ],
+    rules: {
+      'import/no-nodejs-modules': 'off',
+      'import/no-extraneous-dependencies': 'off',
+    },
+  },
+  {
+    // Jest setup script
+    files: [
+      'setup-jest.js',
+    ],
+    rules: {
+      'ts/no-require-imports': 'off',
+      'import/no-extraneous-dependencies': 'off',
+    },
+  },
+  {
+    files: [
+      'eslint.config.js',
+    ],
+    rules: {
+      'ts/no-var-requires': 'off',
+      'ts/no-require-imports': 'off',
+    },
+  },
+  {
+    ignores: [
+      // The engine bundles are auto-generated code
+      'engines/*/engine-default.js',
+      'engines/*/engine-browser.js',
+      'engines/*/comunica-browser.js',
+      // The performance combination files are auto-generated
+      'performance/*/combinations/**',
+      // TODO: Remove this once solid-client-authn supports node 18.
+      'engines/query-sparql/test/QuerySparql-solid-test.ts',
+      // Dev-only files that are not checked in
+      '**/bintest/**',
+      '**/componentsjs-error-state.json',
+    ],
   },
 ]);

@@ -7,7 +7,8 @@ import { ActorBindingsAggregatorFactory } from '@comunica/bus-bindings-aggregato
 
 import type { MediatorFunctionFactory, MediatorFunctionFactoryUnsafe } from '@comunica/bus-function-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import { SparqlOperator } from '@comunica/expression-evaluator';
 import { AverageAggregator } from './AverageAggregator';
 
@@ -26,11 +27,11 @@ export class ActorBindingsAggregatorFactoryAverage extends ActorBindingsAggregat
     this.mediatorFunctionFactory = <MediatorFunctionFactory>args.mediatorFunctionFactory;
   }
 
-  public async test(action: IActionBindingsAggregatorFactory): Promise<IActorTest> {
+  public async test(action: IActionBindingsAggregatorFactory): Promise<TestResult<IActorTest>> {
     if (action.expr.aggregator !== 'avg') {
-      throw new Error('This actor only supports the \'avg\' aggregator.');
+      return failTest('This actor only supports the \'avg\' aggregator.');
     }
-    return {};
+    return passTestVoid();
   }
 
   public async run({ context, expr }: IActionBindingsAggregatorFactory):

@@ -2,6 +2,7 @@ import { ActorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorRdfMetadataExtractHydraControls } from '../lib/ActorRdfMetadataExtractHydraControls';
+import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
 const stream = require('streamify-array');
@@ -395,7 +396,7 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
     });
 
     it('should test', async() => {
-      await expect(actor.test({ url: '', metadata: stream([]), requestTime: 0, context })).resolves.toBeTruthy();
+      await expect(actor.test({ url: '', metadata: stream([]), requestTime: 0, context })).resolves.toPassTestVoid();
     });
 
     it('should run on valid controls', async() => {

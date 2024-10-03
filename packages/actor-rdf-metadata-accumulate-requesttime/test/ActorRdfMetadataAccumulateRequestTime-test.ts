@@ -1,6 +1,7 @@
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorRdfMetadataAccumulateRequestTime } from '../lib/ActorRdfMetadataAccumulateRequestTime';
+import '@comunica/utils-jest';
 
 describe('ActorRdfMetadataAccumulateRequestTime', () => {
   let bus: any;
@@ -20,7 +21,7 @@ describe('ActorRdfMetadataAccumulateRequestTime', () => {
 
     describe('test', () => {
       it('should always pass', async() => {
-        await expect(actor.test({ context, mode: 'initialize' })).resolves.toBeTruthy();
+        await expect(actor.test({ context, mode: 'initialize' })).resolves.toPassTestVoid();
       });
     });
 

@@ -1,6 +1,7 @@
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import { ActorRdfJoinSelectivity } from '@comunica/bus-rdf-join-selectivity';
-import type { IActorArgs } from '@comunica/core';
+import type { IActorArgs, TestResult } from '@comunica/core';
+import { passTest } from '@comunica/core';
 import type { IMediatorTypeAccuracy } from '@comunica/mediatortype-accuracy';
 import { Algebra, Util } from 'sparqlalgebrajs';
 
@@ -19,8 +20,8 @@ export class ActorRdfJoinSelectivityVariableCounting extends ActorRdfJoinSelecti
     super(args);
   }
 
-  public async test(_action: IActionRdfJoinSelectivity): Promise<IMediatorTypeAccuracy> {
-    return { accuracy: 0.5 };
+  public async test(_action: IActionRdfJoinSelectivity): Promise<TestResult<IMediatorTypeAccuracy>> {
+    return passTest({ accuracy: 0.5 });
   }
 
   public static getPatternCost(pattern: Algebra.Pattern | Algebra.Path): number {

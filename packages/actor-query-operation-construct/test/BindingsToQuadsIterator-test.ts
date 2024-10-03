@@ -1,5 +1,5 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
-import { BlankNodeBindingsScoped } from '@comunica/data-factory';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { BlankNodeBindingsScoped } from '@comunica/utils-data-factory';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';

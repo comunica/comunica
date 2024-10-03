@@ -93,7 +93,6 @@ export class CliArgsHandlerQuery implements ICliArgsHandler {
           alias: 'r',
           type: 'boolean',
           describe: 'Use the WayBack machine to recover broken links',
-          default: false,
         },
       })
       .check((args) => {

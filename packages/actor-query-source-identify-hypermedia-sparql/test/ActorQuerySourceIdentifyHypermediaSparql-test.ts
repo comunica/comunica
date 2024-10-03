@@ -5,11 +5,10 @@ import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQuerySourceIdentifyHypermediaSparql } from '../lib/ActorQuerySourceIdentifyHypermediaSparql';
 import { QuerySourceSparql } from '../lib/QuerySourceSparql';
+import '@comunica/utils-jest';
 
 const mediatorMergeBindingsContext: any = {
-  mediate(arg: any) {
-    return {};
-  },
+  mediate: () => ({}),
 };
 
 const DF = new DataFactory();
@@ -68,7 +67,7 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           forceSourceType: 'sparql',
           context,
         })).resolves
-          .toEqual({ filterFactor: 1 });
+          .toPassTest({ filterFactor: 1 });
       });
 
       it('should not test with a forced unknown source type', async() => {
@@ -79,7 +78,7 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           forceSourceType: 'unknown',
           context,
         }))
-          .rejects.toThrow(new Error('Actor actor is not able to handle source type unknown.'));
+          .resolves.toFailTest('Actor actor is not able to handle source type unknown.');
       });
 
       it('should test with a sparql service metadata', async() => {
@@ -89,17 +88,17 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           quads: <any> null,
           context,
         })).resolves
-          .toEqual({ filterFactor: 1 });
+          .toPassTest({ filterFactor: 1 });
       });
 
       it('should not test without a sparql service metadata', async() => {
-        await expect(actor.test({ url: 'URL', metadata: {}, quads: <any> null, context })).rejects
-          .toThrow(new Error('Actor actor could not detect a SPARQL service description or URL ending on /sparql.'));
+        await expect(actor.test({ url: 'URL', metadata: {}, quads: <any> null, context })).resolves
+          .toFailTest('Actor actor could not detect a SPARQL service description or URL ending on /sparql.');
       });
 
       it('should test with an URL ending with /sparql', async() => {
         await expect(actor.test({ url: 'URL/sparql', metadata: {}, quads: <any> null, context })).resolves
-          .toEqual({ filterFactor: 1 });
+          .toPassTest({ filterFactor: 1 });
       });
 
       it('should not test with an URL ending with /sparql if checkUrlSuffix is false', async() => {
@@ -113,8 +112,8 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           countTimeout: 3_000,
           mediatorMergeBindingsContext,
         });
-        await expect(actor.test({ url: 'URL/sparql', metadata: {}, quads: <any> null, context })).rejects
-          .toThrow(new Error('Actor actor could not detect a SPARQL service description or URL ending on /sparql.'));
+        await expect(actor.test({ url: 'URL/sparql', metadata: {}, quads: <any> null, context })).resolves
+          .toFailTest('Actor actor could not detect a SPARQL service description or URL ending on /sparql.');
       });
 
       it('should not test with an URL ending with /sparql if the type is forced to something else', async() => {
@@ -130,7 +129,7 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
         });
         await expect(actor
           .test({ url: 'URL/sparql', metadata: {}, quads: <any> null, forceSourceType: 'file', context }))
-          .rejects.toThrow(new Error('Actor actor is not able to handle source type file.'));
+          .resolves.toFailTest('Actor actor is not able to handle source type file.');
       });
     });
 

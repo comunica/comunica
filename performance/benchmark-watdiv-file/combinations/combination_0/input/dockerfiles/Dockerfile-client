@@ -16,4 +16,4 @@ ENV LOG_LEVEL=$LOG_LEVEL
 EXPOSE 3000
 
 ENTRYPOINT []
-CMD [ "/bin/sh", "-c", "node --max-old-space-size=$MAX_MEMORY ./bin/http.js -c /tmp/context.json -p 3000 -t $QUERY_TIMEOUT -l $LOG_LEVEL -i" ]
+CMD [ "/bin/sh", "-c", "node --max-old-space-size=$MAX_MEMORY ./bin/http.js -c /tmp/context.json -p 3000 -t $QUERY_TIMEOUT -l $LOG_LEVEL" ]

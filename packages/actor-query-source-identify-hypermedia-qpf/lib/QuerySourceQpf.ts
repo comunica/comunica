@@ -1,5 +1,4 @@
 import type { ISearchForm } from '@comunica/actor-rdf-metadata-extract-hydra-controls';
-import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
 import { filterMatchingQuotedQuads, quadsToBindings } from '@comunica/bus-query-source-identify';
 import type { MediatorRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
@@ -14,6 +13,8 @@ import type {
   MetadataBindings,
   ComunicaDataFactory,
 } from '@comunica/types';
+import type { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, TransformIterator, wrap } from 'asynciterator';
@@ -78,17 +79,14 @@ export class QuerySourceQpf implements IQuerySource {
     this.url = url;
     this.bindingsRestricted = bindingsRestricted;
     this.cachedQuads = {};
-    const searchForm = this.getSearchForm(metadata);
-    if (!searchForm) {
-      throw new Error('Illegal state: found no TPF/QPF search form anymore in metadata.');
-    }
-    this.searchForm = searchForm;
+    this.searchForm = this.getSearchForm(metadata)!;
     this.defaultGraph = metadata.defaultGraph ? this.dataFactory.namedNode(metadata.defaultGraph) : undefined;
     if (initialQuads) {
       let wrappedQuads: AsyncIterator<RDF.Quad> = wrap<RDF.Quad>(initialQuads);
       if (this.defaultGraph) {
         wrappedQuads = this.reverseMapQuadsToDefaultGraph(wrappedQuads);
       }
+      metadata = { ...metadata, state: new MetadataValidationState() };
       wrappedQuads.setProperty('metadata', metadata);
       this.cacheQuads(
         wrappedQuads,
@@ -258,12 +256,12 @@ export class QuerySourceQpf implements IQuerySource {
           // Without union-default-graph, the default graph must be empty.
           const quads = new ArrayIterator<RDF.Quad>([], { autoStart: false });
           quads.setProperty('metadata', {
+            state: new MetadataValidationState(),
             requestTime: 0,
             cardinality: { type: 'exact', value: 0 },
             first: null,
             next: null,
             last: null,
-            canContainUndefs: false,
           });
           return quads;
         }
@@ -316,7 +314,10 @@ export class QuerySourceQpf implements IQuerySource {
           metadata: rdfMetadataOuput.metadata,
           requestTime: dereferenceRdfOutput.requestTime,
         });
-      quads!.setProperty('metadata', { ...metadata, canContainUndefs: false, subsetOf: self.url });
+      quads!.setProperty(
+        'metadata',
+        { ...metadata, state: new MetadataValidationState(), subsetOf: self.url },
+      );
 
       // While we could resolve this before metadata extraction, we do it afterwards to ensure metadata emission
       // before the end event is emitted.
@@ -384,7 +385,7 @@ export class QuerySourceQpf implements IQuerySource {
     for (const binding of await filterBindings.bindings.toArray()) {
       const value: string[] = [ '(' ];
       for (const variable of filterBindings.metadata.variables) {
-        const term = binding.get(variable);
+        const term = binding.get(variable.variable);
         value.push(term ? termToStringTtl(term) : 'UNDEF');
         value.push(' ');
       }
@@ -399,7 +400,7 @@ export class QuerySourceQpf implements IQuerySource {
     }
 
     // Append to URL (brTPF uses the SPARQL VALUES syntax, without the VALUES prefix)
-    const valuesUrl = encodeURIComponent(`(${filterBindings.metadata.variables.map(variable => `?${variable.value}`).join(' ')}) { ${values.join(' ')} }`);
+    const valuesUrl = encodeURIComponent(`(${filterBindings.metadata.variables.map(variable => `?${variable.variable.value}`).join(' ')}) { ${values.join(' ')} }`);
     return `${url}&values=${valuesUrl}`;
   }
 

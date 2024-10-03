@@ -1,6 +1,6 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IExpressionEvaluator } from '@comunica/expression-evaluator';
-import { getMockEEActionContext, getMockEEFactory, int, makeAggregate } from '@comunica/jest';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getMockEEActionContext, getMockEEFactory, int, makeAggregate } from '@comunica/utils-jest';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { AggregateEvaluator } from '../lib';
@@ -27,7 +27,7 @@ describe('aggregate evaluator', () => {
     const temp = await getMockEEFactory().run({
       algExpr: makeAggregate('sum').expression,
       context: getMockEEActionContext(),
-    });
+    }, undefined);
     let first = true;
     temp.evaluate = async() => {
       if (first) {

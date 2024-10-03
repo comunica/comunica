@@ -14,9 +14,13 @@ import { ActorDereferenceBase } from './ActorDereferenceBase';
  */
 export abstract class ActorDereference extends
   ActorDereferenceBase<IActionDereference, IActorTest, IActorDereferenceOutput> {
+  /* eslint-disable max-len */
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {Dereferencing failed: none of the configured actors were able to handle ${action.url}} busFailMessage
    */
+  /* eslint-enable max-len */
   public constructor(args: IActorDereferenceArgs) {
     super(args);
   }

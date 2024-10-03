@@ -1,19 +1,24 @@
-import { ClosableTransformIterator } from '@comunica/bus-query-operation';
-import { ActorRdfJoin } from '@comunica/bus-rdf-join';
+import {
+  ActorRdfJoin,
+} from '@comunica/bus-rdf-join';
 import type {
   IActionRdfJoin,
   IActorRdfJoinArgs,
   IActorRdfJoinOutputInner,
+  IActorRdfJoinTestSideData,
 } from '@comunica/bus-rdf-join';
+import type { TestResult } from '@comunica/core';
+import { passTestWithSideData } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { BindingsStream, MetadataBindings } from '@comunica/types';
+import type { BindingsStream, MetadataVariable } from '@comunica/types';
+import { bindingsToCompactString } from '@comunica/utils-bindings-factory';
+import type { IBindingsIndex } from '@comunica/utils-bindings-index';
+import { BindingsIndexDef, BindingsIndexUndef } from '@comunica/utils-bindings-index';
+import { ClosableTransformIterator } from '@comunica/utils-iterator';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { UnionIterator, ArrayIterator, MultiTransformIterator, BufferedIterator } from 'asynciterator';
 import { termToString } from 'rdf-string';
-import { BindingsIndexDef } from './BindingsIndexDef';
-import { BindingsIndexUndef } from './BindingsIndexUndef';
-import type { IBindingsIndex } from './IBindingsIndex';
 
 /**
  * A comunica Optional Hash RDF Join Actor.
@@ -31,13 +36,14 @@ export class ActorRdfJoinOptionalHash extends ActorRdfJoin {
     });
   }
 
-  public static constructIndex<V>(undef: boolean, commonVariables: RDF.Variable[]): IBindingsIndex<V> {
+  public static constructIndex<V>(undef: boolean, commonVariables: MetadataVariable[]): IBindingsIndex<V> {
     return undef ?
       new BindingsIndexUndef(
         commonVariables,
         (term: RDF.Term | undefined) => term && term.termType !== 'Variable' ? termToString(term) : '',
+        true,
       ) :
-      new BindingsIndexDef(commonVariables, ActorRdfJoin.hashNonClashing);
+      new BindingsIndexDef(commonVariables, bindingsToCompactString);
   }
 
   public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
@@ -45,7 +51,7 @@ export class ActorRdfJoinOptionalHash extends ActorRdfJoin {
     const output = action.entries[0].output;
 
     const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
-    const commonVariables: RDF.Variable[] = ActorRdfJoin.overlappingVariables(metadatas);
+    const commonVariables = ActorRdfJoin.overlappingVariables(metadatas);
 
     let bindingsStream: BindingsStream;
     if (this.blocking) {
@@ -57,7 +63,7 @@ export class ActorRdfJoinOptionalHash extends ActorRdfJoin {
           .constructIndex(this.canHandleUndefs, commonVariables);
         await new Promise((resolve) => {
           buffer.bindingsStream.on('data', (bindings) => {
-            const iterator = index.getFirst(bindings) ?? index.put(bindings, []);
+            const iterator = index.getFirst(bindings, true) ?? index.put(bindings, []);
             iterator.push(bindings);
           });
           buffer.bindingsStream.on('end', resolve);
@@ -98,7 +104,7 @@ export class ActorRdfJoinOptionalHash extends ActorRdfJoin {
           .constructIndex(this.canHandleUndefs, commonVariables);
         let indexActive = true;
         buffer.bindingsStream.on('data', (bindings) => {
-          const iterator = index.getFirst(bindings) ??
+          const iterator = index.getFirst(bindings, true) ??
             index.put(bindings, new BufferedIterator<RDF.Bindings>({ autoStart: false }));
           (<any> iterator)._push(bindings);
         });
@@ -154,9 +160,9 @@ export class ActorRdfJoinOptionalHash extends ActorRdfJoin {
         bindingsStream,
         metadata: async() => await this.constructResultMetadata(
           action.entries,
-          await ActorRdfJoin.getMetadatas(action.entries),
+          metadatas,
           action.context,
-          { canContainUndefs: true },
+          {},
           true,
         ),
       },
@@ -165,8 +171,9 @@ export class ActorRdfJoinOptionalHash extends ActorRdfJoin {
 
   protected async getJoinCoefficients(
     action: IActionRdfJoin,
-    metadatas: MetadataBindings[],
-  ): Promise<IMediatorTypeJoinCoefficients> {
+    sideData: IActorRdfJoinTestSideData,
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients, IActorRdfJoinTestSideData>> {
+    const { metadatas } = sideData;
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
     let iterations = metadatas[0].cardinality.value + metadatas[1].cardinality.value;
@@ -178,13 +185,13 @@ export class ActorRdfJoinOptionalHash extends ActorRdfJoin {
       // Our blocking implementation is slightly more performant.
       iterations *= 0.9;
     }
-    return {
+    return passTestWithSideData({
       iterations,
       persistedItems: metadatas[0].cardinality.value,
       blockingItems: this.blocking ? metadatas[0].cardinality.value : 0,
       requestTime: requestInitialTimes[0] + metadatas[0].cardinality.value * requestItemTimes[0] +
         requestInitialTimes[1] + metadatas[1].cardinality.value * requestItemTimes[1],
-    };
+    }, sideData);
   }
 }
 

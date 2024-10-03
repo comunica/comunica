@@ -3,10 +3,9 @@ import type {
   MediatorRdfJoinSelectivity,
 } from '@comunica/bus-rdf-join-selectivity';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IAction, IActorArgs, Mediate } from '@comunica/core';
-import { Actor } from '@comunica/core';
+import type { IAction, IActorArgs, Mediate, TestResult } from '@comunica/core';
+import { passTest, failTest, Actor } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import { cachifyMetadata, MetadataValidationState } from '@comunica/metadata';
 import type {
   IQueryOperationResultBindings,
   MetadataBindings,
@@ -16,10 +15,11 @@ import type {
   IJoinEntry,
   IJoinEntryWithMetadata,
   ComunicaDataFactory,
+  MetadataVariable,
 } from '@comunica/types';
+import { instrumentIterator } from '@comunica/utils-iterator';
+import { cachifyMetadata, MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
-import { termToString } from 'rdf-string';
-import { instrumentIterator } from './instrumentIterator';
 
 /**
  * A comunica actor for joining 2 binding streams.
@@ -32,8 +32,12 @@ import { instrumentIterator } from './instrumentIterator';
  * @see IActionRdfJoin
  * @see IActorQueryOperationOutput
  */
-export abstract class ActorRdfJoin
-  extends Actor<IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryOperationResultBindings> {
+export abstract class ActorRdfJoin<TS extends IActorRdfJoinTestSideData = IActorRdfJoinTestSideData> extends Actor<
+  IActionRdfJoin,
+IMediatorTypeJoinCoefficients,
+IQueryOperationResultBindings,
+TS
+> {
   public readonly mediatorJoinSelectivity: MediatorRdfJoinSelectivity;
 
   /**
@@ -54,7 +58,7 @@ export abstract class ActorRdfJoin
    */
   protected readonly limitEntriesMin: boolean;
   /**
-   * If this actor can handle undefs in the bindings.
+   * If this actor can handle undefs overlapping variable bindings.
    */
   protected readonly canHandleUndefs: boolean;
   /**
@@ -67,11 +71,15 @@ export abstract class ActorRdfJoin
    */
   protected readonly requiresVariableOverlap?: boolean;
 
+  /* eslint-disable max-len */
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {RDF joining failed: none of the configured actors were able to handle the join type ${action.type}} busFailMessage
    * @param options - Actor-specific join options.
    */
-  public constructor(args: IActorRdfJoinArgs, options: IActorRdfJoinInternalOptions) {
+  /* eslint-enable max-len */
+  public constructor(args: IActorRdfJoinArgs<TS>, options: IActorRdfJoinInternalOptions) {
     super(args);
     this.logicalType = options.logicalType;
     this.physicalName = options.physicalName;
@@ -83,68 +91,54 @@ export abstract class ActorRdfJoin
   }
 
   /**
-   * Creates a hash of the given bindings by concatenating the results of the given variables.
-   * This can cause clashes for equal terms.
-   * This function will not sort the variables and expects them to be in the same order for every call.
-   * @param {Bindings} bindings
-   * @param {string[]} variables
-   * @returns {string} A hash string.
-   */
-  public static hash(bindings: Bindings, variables: RDF.Variable[]): string {
-    return variables
-      .map((variable) => {
-        const term = bindings.get(variable);
-        if (term) {
-          return term.value;
-        }
-        return '';
-      })
-      .join('');
-  }
-
-  /**
-   * Creates a hash of the given bindings by concatenating the results of the given variables.
-   * This is guaranteed to not produce clashing bindings for unequal terms.
-   * This function will not sort the variables and expects them to be in the same order for every call.
-   * @param {Bindings} bindings
-   * @param {string[]} variables
-   * @returns {string} A hash string.
-   */
-  public static hashNonClashing(bindings: RDF.Bindings, variables: RDF.Variable[]): string {
-    return variables
-      .map((variable) => {
-        const term = bindings.get(variable);
-        if (term) {
-          return termToString(term);
-        }
-        return '';
-      })
-      .join('');
-  }
-
-  /**
    * Returns an array containing all the variable names that occur in all bindings streams.
    * @param {MetadataBindings[]} metadatas An array of optional metadata objects for the entries.
    * @returns {RDF.Variable[]} An array of variables.
    */
-  public static overlappingVariables(metadatas: MetadataBindings[]): RDF.Variable[] {
-    const variables = metadatas.map(metadata => metadata.variables);
-    let baseArray = variables[0];
-    for (const array of variables.slice(1)) {
-      baseArray = baseArray.filter(el => array.some(value => value.value === el.value));
+  public static overlappingVariables(metadatas: MetadataBindings[]): MetadataVariable[] {
+    const variablesIndexed: Record<string, { variable: RDF.Variable; canBeUndef: boolean; occurrences: number }> = {};
+    for (const metadata of metadatas) {
+      for (const variable of metadata.variables) {
+        if (!variablesIndexed[variable.variable.value]) {
+          variablesIndexed[variable.variable.value] = {
+            variable: variable.variable,
+            canBeUndef: variable.canBeUndef,
+            occurrences: 0,
+          };
+        }
+        const entry = variablesIndexed[variable.variable.value];
+        entry.canBeUndef = entry.canBeUndef || variable.canBeUndef;
+        entry.occurrences++;
+      }
     }
-    return baseArray;
+    return Object.values(variablesIndexed)
+      .filter(entry => entry.occurrences === metadatas.length)
+      .map(entry => ({ variable: entry.variable, canBeUndef: entry.canBeUndef }));
   }
 
   /**
    * Returns the variables that will occur in the joined bindings.
    * @param dataFactory The data factory.
    * @param {MetadataBindings[]} metadatas An array of metadata objects for the entries.
+   * @param optional If an optional join is being performed.
    * @returns {RDF.Variable[]} An array of joined variables.
    */
-  public static joinVariables(dataFactory: ComunicaDataFactory, metadatas: MetadataBindings[]): RDF.Variable[] {
-    return [ ...new Set(metadatas.flatMap(metadata => metadata.variables.map(variable => variable.value))) ]
-      .map(variable => dataFactory.variable(variable));
+  public static joinVariables(
+    dataFactory: ComunicaDataFactory,
+    metadatas: MetadataBindings[],
+    optional = false,
+  ): MetadataVariable[] {
+    const variablesIndexed: Record<string, boolean> = {};
+    let first = true;
+    for (const metadata of metadatas) {
+      for (const variable of metadata.variables) {
+        variablesIndexed[variable.variable.value] = variablesIndexed[variable.variable.value] || variable.canBeUndef ||
+          (!first && optional && !(variable.variable.value in variablesIndexed));
+      }
+      first = false;
+    }
+    return Object.entries(variablesIndexed)
+      .map(([ variableLabel, canBeUndef ]) => ({ variable: dataFactory.variable(variableLabel), canBeUndef }));
   }
 
   /**
@@ -267,8 +261,7 @@ export abstract class ActorRdfJoin
         type: cardinalityJoined.type,
         value: cardinalityJoined.value,
       },
-      canContainUndefs: partialMetadata.canContainUndefs ?? metadatas.some(metadata => metadata.canContainUndefs),
-      variables: ActorRdfJoin.joinVariables(context.getSafe(KeysInitQuery.dataFactory), metadatas),
+      variables: ActorRdfJoin.joinVariables(context.getSafe(KeysInitQuery.dataFactory), metadatas, optional),
     };
   }
 
@@ -283,22 +276,22 @@ export abstract class ActorRdfJoin
     mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort,
     entries: IJoinEntryWithMetadata[],
     context: IActionContext,
-  ): Promise<IJoinEntryWithMetadata[]> {
+  ): Promise<TestResult<IJoinEntryWithMetadata[]>> {
     // If there is a stream that can contain undefs, we don't modify the join order.
-    const canContainUndefs = entries.some(entry => entry.metadata.canContainUndefs);
-    if (canContainUndefs) {
-      return entries;
+    const hasUndefVars = entries.some(entry => entry.metadata.variables.some(variable => variable.canBeUndef));
+    if (hasUndefVars) {
+      return passTest(entries);
     }
 
     // Calculate number of occurrences of each variable
     const variableOccurrences: Record<string, number> = {};
     for (const entry of entries) {
       for (const variable of entry.metadata.variables) {
-        let counter = variableOccurrences[variable.value];
+        let counter = variableOccurrences[variable.variable.value];
         if (!counter) {
           counter = 0;
         }
-        variableOccurrences[variable.value] = ++counter;
+        variableOccurrences[variable.variable.value] = ++counter;
       }
     }
 
@@ -312,7 +305,7 @@ export abstract class ActorRdfJoin
 
     // Reject if no entries have common variables
     if (multiOccurrenceVariables.length === 0) {
-      throw new Error(`Bind join can only join entries with at least one common variable`);
+      return failTest(`Bind join can only join entries with at least one common variable`);
     }
 
     // Determine entries without common variables
@@ -321,7 +314,7 @@ export abstract class ActorRdfJoin
     for (const entry of entries) {
       let hasCommon = false;
       for (const variable of entry.metadata.variables) {
-        if (multiOccurrenceVariables.includes(variable.value)) {
+        if (multiOccurrenceVariables.includes(variable.variable.value)) {
           hasCommon = true;
           break;
         }
@@ -331,7 +324,7 @@ export abstract class ActorRdfJoin
       }
     }
 
-    return (await mediatorJoinEntriesSort.mediate({ entries, context })).entries
+    return passTest((await mediatorJoinEntriesSort.mediate({ entries, context })).entries
       .sort((entryLeft, entryRight) => {
         // Sort to make sure that entries without common variables come last in the array.
         // For all other entries, the original order is kept.
@@ -343,7 +336,7 @@ export abstract class ActorRdfJoin
         return leftWithoutCommonVariables ?
           1 :
             -1;
-      });
+      }));
   }
 
   /**
@@ -353,20 +346,22 @@ export abstract class ActorRdfJoin
    * @param {IActionRdfJoin} action The input action containing the relevant iterators
    * @returns {Promise<IMediatorTypeJoinCoefficients>} The join coefficients.
    */
-  public async test(action: IActionRdfJoin): Promise<IMediatorTypeJoinCoefficients> {
+  public async test(
+    action: IActionRdfJoin,
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients, TS>> {
     // Validate logical join type
     if (action.type !== this.logicalType) {
-      throw new Error(`${this.name} can only handle logical joins of type '${this.logicalType}', while '${action.type}' was given.`);
+      return failTest(`${this.name} can only handle logical joins of type '${this.logicalType}', while '${action.type}' was given.`);
     }
 
     // Don't allow joining of one or zero streams
     if (action.entries.length <= 1) {
-      throw new Error(`${this.name} requires at least two join entries.`);
+      return failTest(`${this.name} requires at least two join entries.`);
     }
 
     // Check if this actor can handle the given number of streams
     if (this.limitEntriesMin ? action.entries.length < this.limitEntries : action.entries.length > this.limitEntries) {
-      throw new Error(`${this.name} requires ${this.limitEntries
+      return failTest(`${this.name} requires ${this.limitEntries
       } join entries at ${this.limitEntriesMin ? 'least' : 'most'
       }. The input contained ${action.entries.length}.`);
     }
@@ -375,35 +370,40 @@ export abstract class ActorRdfJoin
     for (const entry of action.entries) {
       if (entry.output.type !== 'bindings') {
         // eslint-disable-next-line ts/restrict-template-expressions
-        throw new Error(`Invalid type of a join entry: Expected 'bindings' but got '${entry.output.type}'`);
+        return failTest(`Invalid type of a join entry: Expected 'bindings' but got '${entry.output.type}'`);
       }
     }
 
     const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
 
-    // Check if this actor can handle undefs
+    // Check if this actor can handle undefs (for overlapping variables)
+    let overlappingVariables: MetadataVariable[] | undefined;
     if (!this.canHandleUndefs) {
-      for (const metadata of metadatas) {
-        if (metadata.canContainUndefs) {
-          throw new Error(`Actor ${this.name} can not join streams containing undefs`);
-        }
+      overlappingVariables = ActorRdfJoin.overlappingVariables(metadatas);
+      if (overlappingVariables.some(variable => variable.canBeUndef)) {
+        return failTest(`Actor ${this.name} can not join streams containing undefs`);
       }
     }
 
     // This actor only works with common variables
-    if (this.requiresVariableOverlap && ActorRdfJoin.overlappingVariables(metadatas).length === 0) {
-      throw new Error(`Actor ${this.name} can only join entries with at least one common variable`);
+    if (this.requiresVariableOverlap &&
+      (overlappingVariables ?? ActorRdfJoin.overlappingVariables(metadatas)).length === 0) {
+      return failTest(`Actor ${this.name} can only join entries with at least one common variable`);
     }
 
-    return await this.getJoinCoefficients(action, metadatas);
+    return await this.getJoinCoefficients(action, { metadatas });
   }
 
   /**
    * Returns default input for 0 or 1 entries. Calls the getOutput function otherwise
    * @param {IActionRdfJoin} action
+   * @param sideData Side data from the test method
    * @returns {Promise<IQueryOperationResultBindings>} A bindings result.
    */
-  public async run(action: IActionRdfJoin): Promise<IQueryOperationResultBindings> {
+  public async run(
+    action: IActionRdfJoin,
+    sideData: IActorRdfJoinTestSideData,
+  ): Promise<IQueryOperationResultBindings> {
     // Prepare logging to physical plan
     // This must be called before getOutput, because we need to override the plan node in the context
     let parentPhysicalQueryPlanNode;
@@ -434,8 +434,7 @@ export abstract class ActorRdfJoin
     }
 
     // Get action output
-    const { result, physicalPlanMetadata } = await this.getOutput(action);
-    const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
+    const { result, physicalPlanMetadata } = await this.getOutput(action, sideData);
 
     // Fill in the physical plan metadata after determining action output
     if (planMetadata) {
@@ -450,9 +449,9 @@ export abstract class ActorRdfJoin
         });
 
       Object.assign(planMetadata, physicalPlanMetadata);
-      const cardinalities = metadatas.map(ActorRdfJoin.getCardinality);
+      const cardinalities = sideData.metadatas.map(ActorRdfJoin.getCardinality);
       planMetadata.cardinalities = cardinalities;
-      planMetadata.joinCoefficients = await this.getJoinCoefficients(action, metadatas);
+      planMetadata.joinCoefficients = (await this.getJoinCoefficients(action, sideData)).getOrThrow();
 
       // If this is a leaf operation, include join entries in plan metadata.
       if (this.isLeaf) {
@@ -477,24 +476,32 @@ export abstract class ActorRdfJoin
    * Returns the resulting output for joining the given entries.
    * This is called after removing the trivial cases in run.
    * @param {IActionRdfJoin} action
+   * @param sideData Side data from the test method
    * @returns {Promise<IActorRdfJoinOutputInner>}
    */
-  protected abstract getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner>;
+  protected abstract getOutput(
+    action: IActionRdfJoin,
+    sideData: IActorRdfJoinTestSideData,
+  ): Promise<IActorRdfJoinOutputInner>;
 
   /**
    * Calculate the join coefficients.
    * @param {IActionRdfJoin} action Join action
-   * @param metadatas Array of resolved metadata objects.
+   * @param sideData The test side data.
    * @returns {IMediatorTypeJoinCoefficients} The join coefficient estimates.
    */
   protected abstract getJoinCoefficients(
     action: IActionRdfJoin,
-    metadatas: MetadataBindings[],
-  ): Promise<IMediatorTypeJoinCoefficients>;
+    sideData: IActorRdfJoinTestSideData,
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients, TS>>;
 }
 
-export interface IActorRdfJoinArgs
-  extends IActorArgs<IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryOperationResultBindings> {
+export interface IActorRdfJoinArgs<TS extends IActorRdfJoinTestSideData = IActorRdfJoinTestSideData> extends IActorArgs<
+  IActionRdfJoin,
+  IMediatorTypeJoinCoefficients,
+  IQueryOperationResultBindings,
+  TS
+> {
   mediatorJoinSelectivity: MediatorRdfJoinSelectivity;
 }
 
@@ -521,7 +528,7 @@ export interface IActorRdfJoinInternalOptions {
    */
   limitEntriesMin?: boolean;
   /**
-   * If this actor can handle undefs in the bindings.
+   * If this actor can handle undefs overlapping variable bindings.
    * Defaults to false.
    */
   canHandleUndefs?: boolean;
@@ -562,6 +569,10 @@ export interface IActorRdfJoinOutputInner {
    * Optional metadata that will be included as metadata within the physical query plan output.
    */
   physicalPlanMetadata?: any;
+}
+
+export interface IActorRdfJoinTestSideData {
+  metadatas: MetadataBindings[];
 }
 
 export type MediatorRdfJoin = Mediate<IActionRdfJoin, IQueryOperationResultBindings, IMediatorTypeJoinCoefficients>;

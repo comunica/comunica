@@ -5,7 +5,8 @@ import type {
   IActorRdfUpdateHypermediaOutput,
 } from '@comunica/bus-rdf-update-hypermedia';
 import { ActorRdfUpdateHypermedia } from '@comunica/bus-rdf-update-hypermedia';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import { QuadDestinationPatchSparqlUpdate } from './QuadDestinationPatchSparqlUpdate';
 
 /**
@@ -18,14 +19,14 @@ export class ActorRdfUpdateHypermediaPatchSparqlUpdate extends ActorRdfUpdateHyp
     super(args, 'patchSparqlUpdate');
   }
 
-  public async testMetadata(action: IActionRdfUpdateHypermedia): Promise<IActorTest> {
+  public async testMetadata(action: IActionRdfUpdateHypermedia): Promise<TestResult<IActorTest>> {
     if (!action.forceDestinationType && !action.metadata.patchSparqlUpdate) {
-      throw new Error(`Actor ${this.name} could not detect a destination with 'application/sparql-update' as 'Accept-Patch' header.`);
+      return failTest(`Actor ${this.name} could not detect a destination with 'application/sparql-update' as 'Accept-Patch' header.`);
     }
     if (!action.forceDestinationType && !action.exists) {
-      throw new Error(`Actor ${this.name} can only patch a destination that already exists.`);
+      return failTest(`Actor ${this.name} can only patch a destination that already exists.`);
     }
-    return true;
+    return passTestVoid();
   }
 
   public async run(action: IActionRdfUpdateHypermedia): Promise<IActorRdfUpdateHypermediaOutput> {

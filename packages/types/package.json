@@ -4,6 +4,10 @@
   "description": "Typings module for Comunica",
   "lsd:module": true,
   "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
@@ -42,6 +46,6 @@
     "@types/yargs": "^17.0.24",
     "asynciterator": "^3.9.0",
     "lru-cache": "^10.0.1",
-    "sparqlalgebrajs": "^4.3.7"
+    "sparqlalgebrajs": "^4.3.8"
   }
 }

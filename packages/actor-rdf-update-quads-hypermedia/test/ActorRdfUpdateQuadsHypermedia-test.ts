@@ -5,6 +5,7 @@ import { KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorRdfUpdateQuadsHypermedia } from '../lib/ActorRdfUpdateQuadsHypermedia';
+import '@comunica/utils-jest';
 
 describe('ActorRdfUpdateQuadsHypermedia', () => {
   let bus: any;
@@ -75,25 +76,26 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
         await expect(actor.test({ context: new ActionContext(
           { [KeysRdfUpdateQuads.destination.name]: { value: 'abc' }},
         ) }))
-          .resolves.toBeTruthy();
+          .resolves.toPassTestVoid();
       });
 
       it('should test on raw destination form', async() => {
         await expect(actor.test({ context: new ActionContext(
           { [KeysRdfUpdateQuads.destination.name]: 'abc' },
         ) }))
-          .resolves.toBeTruthy();
+          .resolves.toPassTestVoid();
       });
 
       it('should not test without a destination', async() => {
-        await expect(actor.test({ context: new ActionContext({}) })).rejects.toBeTruthy();
+        await expect(actor.test({ context: new ActionContext({}) }))
+          .resolves.toFailTest(`Actor actor can only update quads against a single destination URL.`);
       });
 
       it('should not test on an invalid destination value', async() => {
         await expect(actor.test({ context: new ActionContext(
           { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: null }},
         ) }))
-          .rejects.toBeTruthy();
+          .resolves.toFailTest(`Actor actor can only update quads against a single destination URL.`);
       });
     });
 

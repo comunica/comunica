@@ -5,7 +5,8 @@ import type {
 } from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries/lib/Keys';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import type { Algebra, Factory } from 'sparqlalgebrajs';
 import { Util } from 'sparqlalgebrajs';
 
@@ -17,11 +18,11 @@ export class ActorOptimizeQueryOperationConstructDistinct extends ActorOptimizeQ
     super(args);
   }
 
-  public async test(action: IActionOptimizeQueryOperation): Promise<IActorTest> {
+  public async test(action: IActionOptimizeQueryOperation): Promise<TestResult<IActorTest>> {
     if (!action.context.has(KeysInitQuery.distinctConstruct)) {
-      throw new Error(`${this.name} was not enabled by the query.`);
+      return failTest(`${this.name} was not enabled by the query.`);
     }
-    return true;
+    return passTestVoid();
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {

@@ -4,6 +4,7 @@ import { KeysHttpMemento } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorHttpMemento } from '../lib/ActorHttpMemento';
+import '@comunica/utils-jest';
 
 describe('ActorHttpMemento', () => {
   let bus: any;
@@ -121,7 +122,7 @@ describe('ActorHttpMemento', () => {
         context: new ActionContext({ [KeysHttpMemento.datetime.name]: new Date() }),
         input: new Request('https://www.google.com/'),
       };
-      await expect(actor.test(action)).resolves.toBe(true);
+      await expect(actor.test(action)).resolves.toPassTestVoid();
     });
 
     it('should test with empty headers', async() => {
@@ -130,12 +131,12 @@ describe('ActorHttpMemento', () => {
         init: { headers: new Headers() },
         input: new Request('https://www.google.com/'),
       };
-      await expect(actor.test(action)).resolves.toBeTruthy();
+      await expect(actor.test(action)).resolves.toPassTestVoid();
     });
 
     it('should not test without datetime', async() => {
       const action: IActionHttp = { input: new Request('https://www.google.com/'), context };
-      await expect(actor.test(action)).rejects.toBeTruthy();
+      await expect(actor.test(action)).resolves.toFailTest(`This actor only handles request with a set valid datetime.`);
     });
 
     it('should test without init', async() => {
@@ -144,7 +145,7 @@ describe('ActorHttpMemento', () => {
         init: {},
         input: new Request('https://www.google.com/'),
       };
-      await expect(actor.test(action)).resolves.toBeTruthy();
+      await expect(actor.test(action)).resolves.toPassTestVoid();
     });
 
     it('should not test with Accept-Datetime header', async() => {
@@ -153,7 +154,7 @@ describe('ActorHttpMemento', () => {
         init: { headers: new Headers({ 'Accept-Datetime': new Date().toUTCString() }) },
         input: new Request('https://www.google.com/'),
       };
-      await expect(actor.test(action)).rejects.toMatchObject(new Error('The request already has a set datetime.'));
+      await expect(actor.test(action)).resolves.toFailTest(`The request already has a set datetime.`);
     });
 
     it('should run with new memento', async() => {

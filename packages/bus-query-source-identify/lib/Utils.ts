@@ -1,7 +1,7 @@
-import type { BindingsFactory } from '@comunica/bindings-factory';
-import { ClosableIterator } from '@comunica/bus-query-operation';
-import { validateMetadataQuads } from '@comunica/metadata';
 import type { BindingsStream, ComunicaDataFactory, MetadataBindings, MetadataQuads, TermsOrder } from '@comunica/types';
+import type { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { ClosableIterator } from '@comunica/utils-iterator';
+import { validateMetadataQuads } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { termToString } from 'rdf-string';
@@ -195,9 +195,6 @@ export function setMetadata(
   forceEstimateCardinality: boolean,
 ): void {
   const getMetadataCb = (metadataRaw: Record<string, any>): void => {
-    if (!('canContainUndefs' in metadataRaw)) {
-      metadataRaw.canContainUndefs = false;
-    }
     if (forceEstimateCardinality) {
       metadataRaw.cardinality.type = 'estimate';
     }
@@ -239,7 +236,6 @@ export function quadsMetadataToBindingsMetadata(
 ): MetadataBindings {
   return {
     ...metadataQuads,
-    canContainUndefs: false,
     order: metadataQuads.order ?
       quadsOrderToBindingsOrder(dataFactory, metadataQuads.order, elementVariables) :
       undefined,
@@ -249,7 +245,7 @@ export function quadsMetadataToBindingsMetadata(
         terms: quadsOrderToBindingsOrder(dataFactory, orderDef.terms, elementVariables),
       })) :
       undefined,
-    variables,
+    variables: variables.map(variable => ({ variable, canBeUndef: false })),
   };
 }
 

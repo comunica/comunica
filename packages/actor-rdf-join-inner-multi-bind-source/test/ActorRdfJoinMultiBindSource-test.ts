@@ -1,18 +1,23 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
-import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinEntriesSort, MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
 import type { MediatorRdfJoinSelectivity } from '@comunica/bus-rdf-join-selectivity';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import { MetadataValidationState } from '@comunica/metadata';
 import type { IQuerySourceWrapper, IActionContext } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
+import { assignOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, AsyncIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra, Factory } from 'sparqlalgebrajs';
-import { ActorRdfJoinMultiBindSource } from '../lib/ActorRdfJoinMultiBindSource';
-import '@comunica/jest';
+import type {
+  IActorRdfJoinMultiBindSourceTestSideData,
+} from '../lib/ActorRdfJoinMultiBindSource';
+import {
+  ActorRdfJoinMultiBindSource,
+} from '../lib/ActorRdfJoinMultiBindSource';
+import '@comunica/utils-jest';
 
 const AF = new Factory();
 const DF = new DataFactory();
@@ -62,7 +67,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
           getSelectorShape() {
             return {
               type: 'operation',
-              operation: { operationType: 'type', type: Algebra.types.PROJECT },
+              operation: { operationType: 'wildcard' },
               joinBindings: true,
             };
           },
@@ -83,7 +88,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
           getSelectorShape() {
             return {
               type: 'operation',
-              operation: { operationType: 'type', type: Algebra.types.PROJECT },
+              operation: { operationType: 'wildcard' },
               joinBindings: true,
             };
           },
@@ -105,7 +110,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
           getSelectorShape() {
             return {
               type: 'operation',
-              operation: { operationType: 'type', type: Algebra.types.PROJECT },
+              operation: { operationType: 'wildcard' },
               joinBindings: true,
             };
           },
@@ -123,6 +128,10 @@ describe('ActorRdfJoinMultiBindSource', () => {
         context: new ActionContext({ x: 'y' }),
       };
     });
+
+    async function getSideData(action: IActionRdfJoin): Promise<IActorRdfJoinMultiBindSourceTestSideData> {
+      return (await actor.test(action)).getSideData();
+    }
 
     describe('getOutput', () => {
       it('should handle two entries', async() => {
@@ -149,12 +158,14 @@ describe('ActorRdfJoinMultiBindSource', () => {
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 4 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('b') ],
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
-              operation: ActorQueryOperation.assignOperationSource(
+              operation: assignOperationSource(
                 AF.createPattern(DF.variable('a'), DF.namedNode('ex:p1'), DF.variable('b')),
                 source1,
               ),
@@ -175,8 +186,9 @@ describe('ActorRdfJoinMultiBindSource', () => {
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 3 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a') ],
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -184,7 +196,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
             },
           ],
         };
-        const { result, physicalPlanMetadata } = await actor.getOutput(action);
+        const { result, physicalPlanMetadata } = await actor.getOutput(action, await getSideData(action));
 
         // Validate output
         expect(result.type).toBe('bindings');
@@ -205,8 +217,10 @@ describe('ActorRdfJoinMultiBindSource', () => {
         await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: 9.600_000_000_000_001 },
-          canContainUndefs: false,
-          variables: [ DF.variable('a'), DF.variable('b') ],
+          variables: [
+            { variable: DF.variable('a'), canBeUndef: false },
+            { variable: DF.variable('b'), canBeUndef: false },
+          ],
         });
 
         // Validate physicalPlanMetadata
@@ -221,8 +235,10 @@ describe('ActorRdfJoinMultiBindSource', () => {
           metadata: {
             state: expect.any(MetadataValidationState),
             cardinality: { type: 'estimate', value: 3 },
-            canContainUndefs: false,
-            variables: [ DF.variable('a') ],
+
+            variables: [
+              { variable: DF.variable('a'), canBeUndef: false },
+            ],
           },
         });
         expect(source1.source.queryBindings).toHaveBeenCalledTimes(2);
@@ -263,12 +279,15 @@ describe('ActorRdfJoinMultiBindSource', () => {
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 4 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a'), DF.variable('b') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
-              operation: ActorQueryOperation.assignOperationSource(
+              operation: assignOperationSource(
                 AF.createPattern(DF.variable('a'), DF.namedNode('ex:p1'), DF.variable('b')),
                 source4Context,
               ),
@@ -289,8 +308,10 @@ describe('ActorRdfJoinMultiBindSource', () => {
                 metadata: () => Promise.resolve({
                   state: new MetadataValidationState(),
                   cardinality: { type: 'estimate', value: 3 },
-                  canContainUndefs: false,
-                  variables: [ DF.variable('a') ],
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                  ],
                 }),
                 type: 'bindings',
               },
@@ -298,7 +319,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
             },
           ],
         };
-        const { result, physicalPlanMetadata } = await actor.getOutput(action);
+        const { result, physicalPlanMetadata } = await actor.getOutput(action, await getSideData(action));
 
         // Validate output
         expect(result.type).toBe('bindings');
@@ -319,8 +340,11 @@ describe('ActorRdfJoinMultiBindSource', () => {
         await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: 9.600_000_000_000_001 },
-          canContainUndefs: false,
-          variables: [ DF.variable('a'), DF.variable('b') ],
+
+          variables: [
+            { variable: DF.variable('a'), canBeUndef: false },
+            { variable: DF.variable('b'), canBeUndef: false },
+          ],
         });
 
         // Validate physicalPlanMetadata
@@ -335,8 +359,10 @@ describe('ActorRdfJoinMultiBindSource', () => {
           metadata: {
             state: expect.any(MetadataValidationState),
             cardinality: { type: 'estimate', value: 3 },
-            canContainUndefs: false,
-            variables: [ DF.variable('a') ],
+
+            variables: [
+              { variable: DF.variable('a'), canBeUndef: false },
+            ],
           },
         });
         expect(source4Context.source.queryBindings).toHaveBeenCalledTimes(2);
@@ -362,7 +388,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
             entries: [
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+                operation: assignOperationSource(AF.createNop(), source1),
               },
               {
                 output: <any>{},
@@ -370,38 +396,46 @@ describe('ActorRdfJoinMultiBindSource', () => {
               },
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+                operation: assignOperationSource(AF.createNop(), source1),
               },
             ],
             context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
           },
-          [
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 3 },
-              pageSize: 100,
-              requestTime: 10,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 2 },
-              pageSize: 100,
-              requestTime: 20,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 5 },
-              pageSize: 100,
-              requestTime: 30,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
-            },
-          ],
-        )).resolves.toEqual({
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                pageSize: 100,
+                requestTime: 10,
+
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 20,
+
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 5 },
+                pageSize: 100,
+                requestTime: 30,
+
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+            ],
+          },
+        )).resolves.toPassTest({
           iterations: 1,
           persistedItems: 2,
           blockingItems: 2,
@@ -416,48 +450,56 @@ describe('ActorRdfJoinMultiBindSource', () => {
             entries: [
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+                operation: assignOperationSource(AF.createNop(), source1),
                 operationModified: true,
               },
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+                operation: assignOperationSource(AF.createNop(), source1),
               },
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+                operation: assignOperationSource(AF.createNop(), source1),
                 operationModified: true,
               },
             ],
             context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
           },
-          [
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 3 },
-              pageSize: 100,
-              requestTime: 10,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 2 },
-              pageSize: 100,
-              requestTime: 20,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 5 },
-              pageSize: 100,
-              requestTime: 30,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
-            },
-          ],
-        )).resolves.toEqual({
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                pageSize: 100,
+                requestTime: 10,
+
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 20,
+
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 5 },
+                pageSize: 100,
+                requestTime: 30,
+
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+            ],
+          },
+        )).resolves.toPassTest({
           iterations: 1,
           persistedItems: 3,
           blockingItems: 3,
@@ -472,7 +514,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
             entries: [
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+                operation: assignOperationSource(AF.createNop(), source1),
               },
               {
                 output: <any>{},
@@ -485,33 +527,41 @@ describe('ActorRdfJoinMultiBindSource', () => {
             ],
             context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
           },
-          [
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 3 },
-              pageSize: 100,
-              requestTime: 10,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 2 },
-              pageSize: 100,
-              requestTime: 20,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 5 },
-              pageSize: 100,
-              requestTime: 30,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
-            },
-          ],
-        )).rejects.toThrow('Actor actor can not bind on remaining operations without source annotation');
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                pageSize: 100,
+                requestTime: 10,
+
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 20,
+
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 5 },
+                pageSize: 100,
+                requestTime: 30,
+
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+            ],
+          },
+        )).resolves.toFailTest('Actor actor can not bind on remaining operations without source annotation');
       });
 
       it('should reject when remaining entries have unequal sources', async() => {
@@ -521,7 +571,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
             entries: [
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
+                operation: assignOperationSource(AF.createNop(), source1),
               },
               {
                 output: <any>{},
@@ -529,38 +579,46 @@ describe('ActorRdfJoinMultiBindSource', () => {
               },
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source2),
+                operation: assignOperationSource(AF.createNop(), source2),
               },
             ],
             context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
           },
-          [
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 3 },
-              pageSize: 100,
-              requestTime: 10,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 2 },
-              pageSize: 100,
-              requestTime: 20,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 5 },
-              pageSize: 100,
-              requestTime: 30,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
-            },
-          ],
-        )).rejects.toThrow('Actor actor can not bind on remaining operations with non-equal source annotation');
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                pageSize: 100,
+                requestTime: 10,
+
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 20,
+
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 5 },
+                pageSize: 100,
+                requestTime: 30,
+
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+            ],
+          },
+        )).resolves.toFailTest('Actor actor can not bind on remaining operations with non-equal source annotation');
       });
 
       it('should reject when remaining entries do not accept the operation', async() => {
@@ -570,7 +628,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
             entries: [
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source3TriplePattern),
+                operation: assignOperationSource(AF.createNop(), source3TriplePattern),
               },
               {
                 output: <any>{},
@@ -578,38 +636,46 @@ describe('ActorRdfJoinMultiBindSource', () => {
               },
               {
                 output: <any>{},
-                operation: ActorQueryOperation.assignOperationSource(AF.createNop(), source3TriplePattern),
+                operation: assignOperationSource(AF.createNop(), source3TriplePattern),
               },
             ],
             context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
           },
-          [
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 3 },
-              pageSize: 100,
-              requestTime: 10,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 2 },
-              pageSize: 100,
-              requestTime: 20,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
-            },
-            {
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 5 },
-              pageSize: 100,
-              requestTime: 30,
-              canContainUndefs: false,
-              variables: [ DF.variable('a') ],
-            },
-          ],
-        )).rejects.toThrow('Actor actor detected a source that can not handle passing down join bindings');
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                pageSize: 100,
+                requestTime: 10,
+
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 20,
+
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 5 },
+                pageSize: 100,
+                requestTime: 30,
+
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+            ],
+          },
+        )).resolves.toFailTest('Actor actor detected a source that can not handle passing down join bindings');
       });
     });
 

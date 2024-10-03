@@ -1,9 +1,11 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
-import { ArrayIterator, BufferedIterator, range } from 'asynciterator';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getSafeBoolean } from '@comunica/utils-query-operation';
+import { ArrayIterator, BufferedIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationAsk } from '../lib/ActorQueryOperationAsk';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -13,7 +15,6 @@ describe('ActorQueryOperationAsk', () => {
   let mediatorQueryOperation: any;
   let mediatorQueryOperationEmpty: any;
   let mediatorQueryOperationError: any;
-  let mediatorQueryOperationInf: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -40,7 +41,7 @@ describe('ActorQueryOperationAsk', () => {
       }),
     };
     mediatorQueryOperationError = {
-      mediate: (arg: any) => new Promise((resolve, reject) => {
+      mediate: (arg: any) => new Promise((resolve) => {
         const bindingsStream = new BufferedIterator();
         setImmediate(() => bindingsStream.emit('error', new Error('Error!')));
         resolve({
@@ -50,15 +51,6 @@ describe('ActorQueryOperationAsk', () => {
           type: 'bindings',
           variables: [ DF.variable('a') ],
         });
-      }),
-    };
-    mediatorQueryOperationInf = {
-      mediate: (arg: any) => Promise.resolve({
-        bindingsStream: range(0, Number.POSITIVE_INFINITY),
-        metadata: () => Promise.resolve({ cardinality: 0 }),
-        operated: arg,
-        type: 'bindings',
-        variables: [ DF.variable('a') ],
       }),
     };
   });
@@ -91,17 +83,17 @@ describe('ActorQueryOperationAsk', () => {
 
     it('should test on ask', async() => {
       const op: any = { operation: { type: 'ask' }, context: new ActionContext() };
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should not test on non-ask', async() => {
       const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports ask operations, but got some-other-type`);
     });
 
     it('should run on a non-empty stream', async() => {
       const op: any = { operation: { type: 'ask' }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBoolean(await actor.run(op));
+      const output = getSafeBoolean(await actor.run(op, undefined));
       expect(output.type).toBe('boolean');
       await expect(output.execute()).resolves.toBeTruthy();
     });
@@ -111,7 +103,7 @@ describe('ActorQueryOperationAsk', () => {
       const actorEmpty = new ActorQueryOperationAsk(
         { name: 'actor', bus, mediatorQueryOperation: mediatorQueryOperationEmpty },
       );
-      const output = ActorQueryOperation.getSafeBoolean(await actorEmpty.run(op));
+      const output = getSafeBoolean(await actorEmpty.run(op, undefined));
       expect(output.type).toBe('boolean');
       await expect(output.execute()).resolves.toBeFalsy();
     });
@@ -121,7 +113,7 @@ describe('ActorQueryOperationAsk', () => {
       const actorError = new ActorQueryOperationAsk(
         { name: 'actor', bus, mediatorQueryOperation: mediatorQueryOperationError },
       );
-      const output = ActorQueryOperation.getSafeBoolean(await actorError.run(op));
+      const output = getSafeBoolean(await actorError.run(op, undefined));
       expect(output.type).toBe('boolean');
       await expect(output.execute()).rejects.toBeTruthy();
     });

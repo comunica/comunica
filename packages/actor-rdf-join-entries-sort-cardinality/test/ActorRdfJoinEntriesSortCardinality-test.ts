@@ -1,6 +1,7 @@
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorRdfJoinEntriesSortCardinality } from '../lib/ActorRdfJoinEntriesSortCardinality';
+import '@comunica/utils-jest';
 
 describe('ActorRdfJoinEntriesSortCardinality', () => {
   let bus: any;
@@ -20,7 +21,7 @@ describe('ActorRdfJoinEntriesSortCardinality', () => {
 
     describe('test', () => {
       it('should return true', async() => {
-        await expect(actor.test(<any> {})).resolves.toBeTruthy();
+        await expect(actor.test(<any> {})).resolves.toPassTestVoid();
       });
     });
 

@@ -1,5 +1,5 @@
-import type { IAction, IActorOutput, IActorTest } from '@comunica/core';
-import { ActionContext, Actor, Bus, Mediator } from '@comunica/core';
+import type { IAction, IActorOutput, IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTest, ActionContext, Actor, Bus, Mediator } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { MediatorNumber } from '..';
 
@@ -52,8 +52,8 @@ describe('MediatorNumber', () => {
   });
 
   describe('An MediatorNumber instance', () => {
-    let mediatorMin: MediatorNumber<DummyActor, IAction, IDummyTest, IDummyTest>;
-    let mediatorMax: MediatorNumber<DummyActor, IAction, IDummyTest, IDummyTest>;
+    let mediatorMin: MediatorNumber<DummyActor, IAction, IDummyTest, IDummyTest, undefined>;
+    let mediatorMax: MediatorNumber<DummyActor, IAction, IDummyTest, IDummyTest, undefined>;
 
     beforeEach(() => {
       mediatorMin = new MediatorNumber({ name: 'mediatorMin', bus, field: 'field', type: 'min' });
@@ -139,19 +139,19 @@ describe('MediatorNumber', () => {
       });
     });
 
-    describe('with actors throwing errors', () => {
+    describe('with actors failing', () => {
       beforeEach(() => {
         mediatorMin = new MediatorNumber({
           bus,
           field: 'field',
-          ignoreErrors: true,
+          ignoreFailures: true,
           name: 'mediatorMin',
           type: 'min',
         });
         mediatorMax = new MediatorNumber({
           bus,
           field: 'field',
-          ignoreErrors: true,
+          ignoreFailures: true,
           name: 'mediatorMax',
           type: 'max',
         });
@@ -169,19 +169,19 @@ describe('MediatorNumber', () => {
       });
     });
 
-    describe('with only an actor throwing errors, where errors are ignored', () => {
+    describe('with only an actor failing, where failures are ignored', () => {
       beforeEach(() => {
         mediatorMin = new MediatorNumber({
           bus,
           field: 'field',
-          ignoreErrors: true,
+          ignoreFailures: true,
           name: 'mediatorMin',
           type: 'min',
         });
         mediatorMax = new MediatorNumber({
           bus,
           field: 'field',
-          ignoreErrors: true,
+          ignoreFailures: true,
           name: 'mediatorMax',
           type: 'max',
         });
@@ -189,35 +189,33 @@ describe('MediatorNumber', () => {
       });
 
       it('should not mediate to the minimum value for type MIN', async() => {
-        await expect(mediatorMin.mediate({ context })).rejects.toThrow(new Error(
-          'All actors rejected their test in mediatorMin\n' +
-          'abc\n' +
-          'abc',
-        ));
+        await expect(mediatorMin.mediate({ context })).rejects.toThrow(`BUS FAIL MESSAGE
+    Error messages of failing actors:
+        abc
+        abc`);
       });
 
       it('should not mediate to the maximum value for type MAX', async() => {
-        await expect(mediatorMax.mediate({ context })).rejects.toThrow(new Error(
-          'All actors rejected their test in mediatorMax\n' +
-          'abc\n' +
-          'abc',
-        ));
+        await expect(mediatorMax.mediate({ context })).rejects.toThrow(`BUS FAIL MESSAGE
+    Error messages of failing actors:
+        abc
+        abc`);
       });
     });
 
-    describe('with only an actor throwing errors, where errors are not ignored', () => {
+    describe('with only an actor failing, where failures are not ignored', () => {
       beforeEach(() => {
         mediatorMin = new MediatorNumber({
           bus,
           field: 'field',
-          ignoreErrors: false,
+          ignoreFailures: false,
           name: 'mediatorMin',
           type: 'min',
         });
         mediatorMax = new MediatorNumber({
           bus,
           field: 'field',
-          ignoreErrors: false,
+          ignoreFailures: false,
           name: 'mediatorMax',
           type: 'max',
         });
@@ -239,15 +237,15 @@ class DummyActor extends Actor<IAction, IDummyTest, IDummyTest> {
   public readonly id: number | undefined;
 
   public constructor(id: number | undefined, bus: Bus<DummyActor, IAction, IDummyTest, IDummyTest>) {
-    super({ name: `dummy${id}`, bus });
+    super({ name: `dummy${id}`, bus, busFailMessage: 'BUS FAIL MESSAGE' });
     this.id = id;
   }
 
-  public async test(action: IAction): Promise<IDummyTest> {
-    return { field: this.id };
+  public async test(): Promise<TestResult<IDummyTest>> {
+    return passTest({ field: this.id });
   }
 
-  public async run(action: IAction): Promise<IDummyTest> {
+  public async run(): Promise<IDummyTest> {
     return { field: this.id };
   }
 }
@@ -256,22 +254,22 @@ class DummyActorInvalid extends Actor<IAction, IDummyTest, IDummyTest> {
   public readonly id: number;
 
   public constructor(id: number, bus: Bus<DummyActor, IAction, IDummyTest, IDummyTest>) {
-    super({ name: `dummy${id}`, bus });
+    super({ name: `dummy${id}`, bus, busFailMessage: 'BUS FAIL MESSAGE' });
     this.id = id;
   }
 
-  public async test(action: IAction): Promise<IDummyTest> {
-    return <any> {};
+  public async test(): Promise<TestResult<IDummyTest>> {
+    return passTest(<any> {});
   }
 
-  public async run(action: IAction): Promise<IDummyTest> {
+  public async run(): Promise<IDummyTest> {
     return { field: this.id };
   }
 }
 
 class ErrorDummyActor extends DummyActor {
-  public override async test(action: IAction): Promise<IDummyTest> {
-    throw new Error('abc');
+  public override async test(): Promise<TestResult<IDummyTest>> {
+    return failTest('abc');
   }
 }
 

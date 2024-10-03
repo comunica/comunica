@@ -59,7 +59,7 @@ describe('ActorRdfUpdateQuadsDestination', () => {
     });
 
     it('should have a default test implementation', async() => {
-      await expect(actor.test(null)).resolves.toBeTruthy();
+      await expect(actor.test(null)).resolves.toPassTestVoid();
     });
 
     it('should run without streams', async() => {

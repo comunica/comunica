@@ -1,8 +1,6 @@
 import { Readable, Transform } from 'node:stream';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
-import { MetadataValidationState } from '@comunica/metadata';
 import type {
   IActionContext,
   QueryStringContext,
@@ -15,6 +13,8 @@ import type {
   IQueryOperationResultVoid,
   IQueryEngine,
 } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
@@ -23,7 +23,7 @@ import { translate } from 'sparqlalgebrajs';
 import { QueryEngineBase } from '../lib';
 import { ActorInitQuery } from '../lib/ActorInitQuery';
 import { ActorInitQueryBase } from '../lib/ActorInitQueryBase';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 import 'jest-rdf';
 
 const DF = new DataFactory();
@@ -83,7 +83,7 @@ describe('QueryEngineBase', () => {
           }),
     };
     mediatorHttpInvalidate = {
-      mediate: (arg: any) => Promise.resolve(true),
+      mediate: () => Promise.resolve(true),
     };
     context = new ActionContext();
   });
@@ -202,7 +202,7 @@ describe('QueryEngineBase', () => {
       it('should return a rejected promise on an invalid request', async() => {
         const ctx: QueryStringContext = { sources: [ 'abc' ]};
         // Make it reject instead of reading input
-        mediatorQueryProcess.mediate = (action: any) => Promise.reject(new Error('a'));
+        mediatorQueryProcess.mediate = () => Promise.reject(new Error('a'));
         await expect(queryEngine.query('INVALID QUERY', ctx)).rejects.toBeTruthy();
       });
 
@@ -296,7 +296,7 @@ describe('QueryEngineBase', () => {
     describe('getResultMediaTypeFormats', () => {
       it('should return the media type formats', async() => {
         const med: any = {
-          mediate: (arg: any) => Promise.resolve({ mediaTypeFormats: { data: 'DATA' }}),
+          mediate: () => Promise.resolve({ mediaTypeFormats: { data: 'DATA' }}),
         };
         actor = new ActorInitQuery({
           bus,
@@ -339,7 +339,7 @@ describe('QueryEngineBase', () => {
 
     it('should return a rejected promise on an invalid request', async() => {
       // Make it reject instead of reading input
-      mediatorQueryProcess.mediate = (action: any) => Promise.reject(new Error('a'));
+      mediatorQueryProcess.mediate = () => Promise.reject(new Error('a'));
       await expect(queryEngine.query('INVALID QUERY', { sources: [ 'abc' ]})).rejects.toBeTruthy();
     });
   });
@@ -356,8 +356,8 @@ describe('QueryEngineBase', () => {
         metadata: async() => ({
           state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 1 },
-          canContainUndefs: false,
-          variables: [ DF.variable('a') ],
+
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
         }),
         context: new ActionContext({ c: 'd' }),
       });
@@ -371,7 +371,7 @@ describe('QueryEngineBase', () => {
       await expect(final.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 1 },
-        canContainUndefs: false,
+
         variables: [ DF.variable('a') ],
       });
       expect(final.context).toEqual(new ActionContext({ c: 'd' }));
@@ -386,8 +386,8 @@ describe('QueryEngineBase', () => {
         metadata: async() => ({
           state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 1 },
-          canContainUndefs: false,
-          variables: [ DF.variable('a') ],
+
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
         }),
         context: new ActionContext({ c: 'd' }),
       });
@@ -399,8 +399,8 @@ describe('QueryEngineBase', () => {
       await expect(final.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 1 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       expect(final.context).toEqual(new ActionContext({ c: 'd' }));
     });
@@ -441,7 +441,7 @@ describe('QueryEngineBase', () => {
         ]),
         metadata: async() => (<any>{
           cardinality: { type: 'estimate', value: 1 },
-          canContainUndefs: false,
+
           variables: [ DF.variable('a') ],
         }),
       });
@@ -454,8 +454,8 @@ describe('QueryEngineBase', () => {
       ]);
       await expect(internal.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 1 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
     });
 
@@ -465,7 +465,7 @@ describe('QueryEngineBase', () => {
         execute: async() => new ArrayIterator([
           DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
         ]),
-        metadata: async() => (<any>{ cardinality: 1, canContainUndefs: false }),
+        metadata: async() => (<any>{ cardinality: 1 }),
       });
 
       expect(internal.type).toBe('quads');
@@ -474,7 +474,7 @@ describe('QueryEngineBase', () => {
       ]);
       await expect(internal.metadata()).resolves.toEqual({
         cardinality: 1,
-        canContainUndefs: false,
+
       });
     });
 

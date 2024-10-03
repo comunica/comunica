@@ -1,0 +1,45 @@
+{
+  "name": "@comunica/utils-bindings-index",
+  "version": "3.2.2",
+  "description": "Utilities related to a bindings index",
+  "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
+  "homepage": "https://comunica.dev/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/utils-bindings-index"
+  },
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
+  "keywords": [
+    "comunica",
+    "utils",
+    "bindings-index"
+  ],
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.js.map"
+  ],
+  "scripts": {
+    "build": "yarn run build:ts && yarn run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
+  },
+  "dependencies": {
+    "@comunica/types": "^3.2.1",
+    "@rdfjs/types": "*"
+  }
+}

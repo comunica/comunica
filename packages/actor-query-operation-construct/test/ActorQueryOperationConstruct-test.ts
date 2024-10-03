@@ -1,11 +1,13 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getSafeQuads } from '@comunica/utils-query-operation';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationConstruct } from '../lib/ActorQueryOperationConstruct';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -24,16 +26,16 @@ describe('ActorQueryOperationConstruct', () => {
             BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
             BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
           ], { autoStart: false }),
-          metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 3 }, canContainUndefs: false }),
+          metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 3 }}),
           operated: arg,
           type: 'bindings',
-          variables: [ DF.variable('a') ],
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
         }) :
         Promise.resolve({
           bindingsStream: new ArrayIterator([
             BF.bindings(),
           ], { autoStart: false }),
-          metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 1 }, canContainUndefs: false }),
+          metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 1 }}),
           operated: arg,
           type: 'bindings',
           variables: [],
@@ -110,7 +112,7 @@ describe('ActorQueryOperationConstruct', () => {
         operation: { type: 'construct', template: []},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should not test on non-construct', async() => {
@@ -118,7 +120,7 @@ describe('ActorQueryOperationConstruct', () => {
         operation: { type: 'some-other-type', template: []},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports construct operations, but got some-other-type`);
     });
 
     it('should run on an empty template', async() => {
@@ -126,9 +128,9 @@ describe('ActorQueryOperationConstruct', () => {
         operation: { type: 'construct', template: []},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = ActorQueryOperation.getSafeQuads(await actor.run(op));
+      const output = getSafeQuads(await actor.run(op, undefined));
       await expect((<any> output).metadata()).resolves
-        .toEqual({ cardinality: { type: 'estimate', value: 0 }, canContainUndefs: false });
+        .toEqual({ cardinality: { type: 'estimate', value: 0 }});
       expect(output.type).toBe('quads');
       await expect(arrayifyStream(output.quadStream)).resolves.toEqual([]);
     });
@@ -138,9 +140,9 @@ describe('ActorQueryOperationConstruct', () => {
         DF.quad(DF.blankNode('s1'), DF.namedNode('p1'), DF.literal('o1')),
         DF.quad(DF.blankNode('s2'), DF.namedNode('p2'), DF.literal('o2')),
       ], type: 'construct' }, context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }) };
-      const output = ActorQueryOperation.getSafeQuads(await actor.run(op));
+      const output = getSafeQuads(await actor.run(op, undefined));
       await expect((<any> output).metadata()).resolves
-        .toEqual({ cardinality: { type: 'estimate', value: 2 }, canContainUndefs: false });
+        .toEqual({ cardinality: { type: 'estimate', value: 2 }});
       expect(output.type).toBe('quads');
       await expect(arrayifyStream(output.quadStream)).resolves.toEqual([
         DF.quad(DF.blankNode('s10'), DF.namedNode('p1'), DF.literal('o1')),
@@ -153,9 +155,9 @@ describe('ActorQueryOperationConstruct', () => {
         DF.quad(DF.blankNode('s1'), DF.variable('a'), DF.literal('o1')),
         DF.quad(DF.blankNode('s2'), DF.namedNode('p2'), DF.variable('a'), DF.variable('a')),
       ], type: 'construct' }, context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }) };
-      const output = ActorQueryOperation.getSafeQuads(await actor.run(op));
+      const output = getSafeQuads(await actor.run(op, undefined));
       await expect((<any> output).metadata()).resolves
-        .toEqual({ cardinality: { type: 'estimate', value: 6 }, canContainUndefs: false });
+        .toEqual({ cardinality: { type: 'estimate', value: 6 }});
       expect(output.type).toBe('quads');
       await expect(arrayifyStream(output.quadStream)).resolves.toEqual([
         DF.quad(DF.blankNode('s10'), <any>DF.literal('1'), DF.literal('o1')),

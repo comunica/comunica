@@ -4,7 +4,8 @@ import type {
 } from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Util, Factory } from 'sparqlalgebrajs';
@@ -13,8 +14,8 @@ import { Util, Factory } from 'sparqlalgebrajs';
  * A comunica Join Connected Optimize Query Operation Actor.
  */
 export class ActorOptimizeQueryOperationJoinConnected extends ActorOptimizeQueryOperation {
-  public async test(_action: IActionOptimizeQueryOperation): Promise<IActorTest> {
-    return true;
+  public async test(_action: IActionOptimizeQueryOperation): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {

@@ -27,6 +27,13 @@ export class FetchInitPreprocessor implements IFetchInitPreprocessor {
       halfDuplex = true;
     }
 
+    // Add 'Accept-Encoding' headers
+    const headers = new Headers(init.headers);
+    if (!headers.has('Accept-Encoding')) {
+      headers.set('Accept-Encoding', 'br,gzip,deflate');
+      init = { ...init, headers };
+    }
+
     return <any> {
       ...init,
       agent: this.agent,

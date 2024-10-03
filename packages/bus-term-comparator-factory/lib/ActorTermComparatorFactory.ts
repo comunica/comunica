@@ -16,8 +16,8 @@ import type * as RDF from '@rdfjs/types';
  * @see IActionTermComparatorFactory
  * @see IActorTermComparatorFactoryOutput
  */
-export abstract class ActorTermComparatorFactory extends
-  Actor<IActionTermComparatorFactory, IActorTest, IActorTermComparatorFactoryOutput> {
+export abstract class ActorTermComparatorFactory<TS = undefined> extends
+  Actor<IActionTermComparatorFactory, IActorTest, IActorTermComparatorFactoryOutput, TS> {
   protected readonly mediatorQueryOperation: MediatorQueryOperation;
   protected readonly mediatorFunctionFactory: MediatorFunctionFactory;
   protected readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
@@ -25,7 +25,7 @@ export abstract class ActorTermComparatorFactory extends
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
-  public constructor(args: IActorTermComparatorFactoryArgs) {
+  public constructor(args: IActorTermComparatorFactoryArgs<TS>) {
     super(args);
     this.mediatorQueryOperation = args.mediatorQueryOperation;
     this.mediatorFunctionFactory = <MediatorFunctionFactory> args.mediatorFunctionFactory;
@@ -48,10 +48,11 @@ export interface ITermComparator {
 
 export interface IActorTermComparatorFactoryOutput extends IActorOutput, ITermComparator {}
 
-export interface IActorTermComparatorFactoryArgs extends IActorArgs<
+export interface IActorTermComparatorFactoryArgs<TS = undefined> extends IActorArgs<
 IActionTermComparatorFactory,
 IActorTest,
-IActorTermComparatorFactoryOutput
+IActorTermComparatorFactoryOutput,
+TS
 > {
   mediatorQueryOperation: MediatorQueryOperation;
   mediatorFunctionFactory: MediatorFunctionFactoryUnsafe;

@@ -118,7 +118,7 @@ export class UnaryTable extends Table<[string, string]> {
 
   public test(): void {
     for (const row of this.parser.table) {
-      const [ arg, result ] = row;
+      const [ _, result ] = row;
       const { operation } = this.def;
       const aliases = this.def.aliases ?? {};
       test(`${this.format(operation, row)} should return ${result}`, async() => {

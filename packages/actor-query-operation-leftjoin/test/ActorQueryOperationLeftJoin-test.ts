@@ -1,13 +1,14 @@
 import { ActorFunctionFactoryTermFunctionAddition } from '@comunica/actor-function-factory-term-function-addition';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
 import * as sparqlee from '@comunica/expression-evaluator';
 import { isExpressionError } from '@comunica/expression-evaluator';
-import { getMockEEActionContext, getMockMediatorExpressionEvaluatorFactory } from '@comunica/jest';
 import type { Bindings, IActionContext, IJoinEntry, IQueryOperationResultBindings } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getMockEEActionContext, getMockMediatorExpressionEvaluatorFactory } from '@comunica/utils-jest';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import { ArrayIterator, UnionIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationLeftJoin } from '../lib';
@@ -30,7 +31,9 @@ describe('ActorQueryOperationLeftJoin', () => {
           BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
           BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
         ], { autoStart: false }),
-        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: true, variables: [ DF.variable('a') ]}),
+        metadata: () => Promise.resolve({ cardinality: 3, variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+        ]}),
         operated: arg,
         type: 'bindings',
       }),
@@ -46,8 +49,10 @@ describe('ActorQueryOperationLeftJoin', () => {
         bindingsStream: new UnionIterator(arg.entries.map((entry: IJoinEntry) => entry.output.bindingsStream)),
         metadata: () => Promise.resolve({
           cardinality: 100,
-          canContainUndefs: true,
-          variables: [ DF.variable('a'), DF.variable('b') ],
+          variables: [
+            { variable: DF.variable('a'), canBeUndef: false },
+            { variable: DF.variable('b'), canBeUndef: true },
+          ],
         }),
         operated: arg,
         type: 'bindings',
@@ -92,22 +97,24 @@ describe('ActorQueryOperationLeftJoin', () => {
 
     it('should test on leftjoin', async() => {
       const op: any = { operation: { type: 'leftjoin' }};
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should not test on non-leftjoin', async() => {
       const op: any = { operation: { type: 'some-other-type' }};
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports leftjoin operations, but got some-other-type`);
     });
 
     it('should run', async() => {
       const op: any = { operation: { type: 'leftjoin', input: [{}, {}]}, context };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       expect(output.type).toBe('bindings');
       await expect(output.metadata()).resolves.toEqual({
         cardinality: 100,
-        canContainUndefs: true,
-        variables: [ DF.variable('a'), DF.variable('b') ],
+        variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+          { variable: DF.variable('b'), canBeUndef: true },
+        ],
       });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
@@ -126,7 +133,7 @@ describe('ActorQueryOperationLeftJoin', () => {
         type: 'expression',
       };
       const op: any = { operation: { type: 'leftjoin', input: [{}, {}], expression }, context };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
@@ -137,8 +144,10 @@ describe('ActorQueryOperationLeftJoin', () => {
       ]);
       await expect(output.metadata()).resolves.toMatchObject({
         cardinality: 100,
-        canContainUndefs: true,
-        variables: [ DF.variable('a'), DF.variable('b') ],
+        variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+          { variable: DF.variable('b'), canBeUndef: true },
+        ],
       });
       expect(output.type).toBe('bindings');
     });
@@ -157,8 +166,9 @@ describe('ActorQueryOperationLeftJoin', () => {
               ], { autoStart: false }),
           metadata: () => Promise.resolve({
             cardinality: 1,
-            canContainUndefs: true,
-            variables: side === 'left' ? [ DF.variable('a') ] : [ DF.variable('c') ],
+            variables: side === 'left' ?
+                [{ variable: DF.variable('a'), canBeUndef: false }] :
+                [{ variable: DF.variable('c'), canBeUndef: false }],
           }),
           operated: arg,
           type: 'bindings',
@@ -169,7 +179,7 @@ describe('ActorQueryOperationLeftJoin', () => {
         operation: { type: 'leftjoin', input: [{ side: 'left' }, { side: 'right' }]},
         context,
       };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
         BF.bindings([[ DF.variable('c'), DF.literal('1') ]]),
@@ -183,12 +193,14 @@ describe('ActorQueryOperationLeftJoin', () => {
         type: 'expression',
       };
       const op: any = { operation: { type: 'leftjoin', input: [{}, {}], expression }, context };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.bindingsStream).toEqualBindingsStream([]);
       await expect(output.metadata()).resolves.toMatchObject({
         cardinality: 100,
-        canContainUndefs: true,
-        variables: [ DF.variable('a'), DF.variable('b') ],
+        variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+          { variable: DF.variable('b'), canBeUndef: true },
+        ],
       });
       expect(output.type).toBe('bindings');
     });
@@ -213,12 +225,14 @@ describe('ActorQueryOperationLeftJoin', () => {
         ],
       };
       const op: any = { operation: { type: 'leftjoin', input: [{}, {}], expression }, context };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.bindingsStream).toEqualBindingsStream([]);
       await expect(output.metadata()).resolves.toMatchObject({
         cardinality: 100,
-        canContainUndefs: true,
-        variables: [ DF.variable('a'), DF.variable('b') ],
+        variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+          { variable: DF.variable('b'), canBeUndef: true },
+        ],
       });
       expect(output.type).toBe('bindings');
 
@@ -259,7 +273,7 @@ describe('ActorQueryOperationLeftJoin', () => {
         ],
       };
       const op: any = { operation: { type: 'leftjoin', input: [{}, {}], expression }, context };
-      const output: IQueryOperationResultBindings = <IQueryOperationResultBindings> await actor.run(op);
+      const output: IQueryOperationResultBindings = <IQueryOperationResultBindings> await actor.run(op, undefined);
       await new Promise<void>((resolve) => {
         output.bindingsStream.on('error', () => resolve());
         output.bindingsStream.on('data', () => {

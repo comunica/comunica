@@ -10,7 +10,8 @@ import {
   getDataDestinationType,
 } from '@comunica/bus-rdf-update-quads';
 import type { IActionRdfUpdateQuads, IQuadDestination, IActorRdfUpdateQuadsArgs } from '@comunica/bus-rdf-update-quads';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import type { IActionContext, IDataDestination } from '@comunica/types';
 import { LRUCache } from 'lru-cache';
 
@@ -37,12 +38,12 @@ export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestinatio
     }
   }
 
-  public override async test(action: IActionRdfUpdateQuads): Promise<IActorTest> {
+  public override async test(action: IActionRdfUpdateQuads): Promise<TestResult<IActorTest>> {
     const url = getContextDestinationUrl(getContextDestination(action.context));
     if (!url) {
-      throw new Error(`Actor ${this.name} can only update quads against a single destination URL.`);
+      return failTest(`Actor ${this.name} can only update quads against a single destination URL.`);
     }
-    return true;
+    return passTestVoid();
   }
 
   public getDestination(context: IActionContext): Promise<IQuadDestination> {

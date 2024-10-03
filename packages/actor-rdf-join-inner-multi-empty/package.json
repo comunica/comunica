@@ -4,6 +4,10 @@
   "description": "A multi-empty rdf-join actor",
   "lsd:module": true,
   "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
@@ -39,9 +43,10 @@
   "dependencies": {
     "@comunica/bus-rdf-join": "^3.2.1",
     "@comunica/context-entries": "^3.1.0",
+    "@comunica/core": "^3.2.1",
     "@comunica/mediatortype-join-coefficients": "^3.2.1",
-    "@comunica/metadata": "^3.2.1",
     "@comunica/types": "^3.2.1",
+    "@comunica/utils-metadata": "^3.2.1",
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0"
   }

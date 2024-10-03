@@ -2,6 +2,7 @@ import { ActorQueryParse } from '@comunica/bus-query-parse';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorQueryParseGraphql } from '..';
+import '@comunica/utils-jest';
 
 describe('ActorQueryParseGraphql', () => {
   let bus: any;
@@ -38,16 +39,16 @@ describe('ActorQueryParseGraphql', () => {
 
     it('should not test on the sparql format', async() => {
       await expect(actor.test({ query: 'a', queryFormat: { language: 'sparql', version: '1.1' }, context }))
-        .rejects.toBeTruthy();
+        .resolves.toFailTest(`This actor can only parse GraphQL queries`);
     });
 
     it('should not test on no format', async() => {
-      await expect(actor.test({ query: 'a', context })).rejects.toBeTruthy();
+      await expect(actor.test({ query: 'a', context })).resolves.toFailTest(`This actor can only parse GraphQL queries`);
     });
 
     it('should test on the graphql format', async() => {
       await expect(actor.test({ query: 'a', queryFormat: { language: 'graphql', version: '1.1' }, context }))
-        .resolves.toBeTruthy();
+        .resolves.toPassTestVoid();
     });
 
     it('should run', async() => {

@@ -4,6 +4,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
 import { MemoryPhysicalQueryPlanLogger } from '../lib';
 import { ActorQueryProcessExplainPhysical } from '../lib/ActorQueryProcessExplainPhysical';
+import '@comunica/utils-jest';
 
 describe('ActorQueryProcessExplainPhysical', () => {
   let bus: any;
@@ -24,7 +25,7 @@ describe('ActorQueryProcessExplainPhysical', () => {
         async optimize(query: string, context: any) {
           return { operation: `${query}OPT`, context };
         },
-        evaluate: jest.fn(async(query: string, context: any) => {
+        evaluate: jest.fn(async() => {
           return {
             type: 'bindings',
             bindingsStream: new ArrayIterator([], { autoStart: false }),
@@ -37,12 +38,12 @@ describe('ActorQueryProcessExplainPhysical', () => {
     describe('test', () => {
       it('rejects on no explain in context', async() => {
         await expect(actor.test({ query: 'q', context: new ActionContext() }))
-          .rejects.toThrow(`actor can only explain in 'physical' or 'physical-json' mode.`);
+          .resolves.toFailTest(`actor can only explain in 'physical' or 'physical-json' mode.`);
       });
 
       it('rejects on wrong explain in context', async() => {
         await expect(actor.test({ query: 'q', context: new ActionContext().set(KeysInitQuery.explain, 'parsed') }))
-          .rejects.toThrow(`actor can only explain in 'physical' or 'physical-json' mode.`);
+          .resolves.toFailTest(`actor can only explain in 'physical' or 'physical-json' mode.`);
       });
 
       it('handles physical explain in context', async() => {
@@ -50,12 +51,12 @@ describe('ActorQueryProcessExplainPhysical', () => {
           query: 'q',
           context: new ActionContext().set(KeysInitQuery.explain, 'physical'),
         })).resolves
-          .toBeTruthy();
+          .toPassTestVoid();
       });
 
       it('handles physical explain in raw context', async() => {
         await expect(actor.test({ query: 'q', context: new ActionContext().setRaw('explain', 'physical') })).resolves
-          .toBeTruthy();
+          .toPassTestVoid();
       });
     });
 
@@ -95,7 +96,7 @@ describe('ActorQueryProcessExplainPhysical', () => {
       });
 
       it('handles physical explain in context for quad outputs', async() => {
-        (<any> queryProcessor).evaluate = async(query: string, context: any) => {
+        (<any> queryProcessor).evaluate = async() => {
           return {
             type: 'quads',
             quadStream: new ArrayIterator([], { autoStart: false }),
@@ -116,7 +117,7 @@ describe('ActorQueryProcessExplainPhysical', () => {
       });
 
       it('handles physical explain in context for boolean outputs', async() => {
-        (<any> queryProcessor).evaluate = async(query: string, context: any) => {
+        (<any> queryProcessor).evaluate = async() => {
           return {
             type: 'boolean',
             execute: jest.fn(),
@@ -137,7 +138,7 @@ describe('ActorQueryProcessExplainPhysical', () => {
       });
 
       it('handles physical explain in context for void outputs', async() => {
-        (<any> queryProcessor).evaluate = async(query: string, context: any) => {
+        (<any> queryProcessor).evaluate = async() => {
           return {
             type: 'void',
             execute: jest.fn(),
