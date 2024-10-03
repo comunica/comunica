@@ -72,7 +72,7 @@ describe('ActorInitQuery', () => {
       },
     };
     mediatorHttpInvalidate = {
-      mediate: (arg: any) => Promise.resolve(true),
+      mediate: () => Promise.resolve(true),
     };
     context = new ActionContext();
     input = new Readable({ objectMode: true });
@@ -144,7 +144,7 @@ describe('ActorInitQuery', () => {
 
     describe('test', () => {
       it('should be true', async() => {
-        await expect(actor.test(<any> {})).resolves.toBeTruthy();
+        await expect(actor.test(<any> {})).resolves.toPassTestVoid();
       });
     });
 
@@ -716,9 +716,9 @@ LIMIT 100
         });
       });
 
-      it('handles the --noCache flag', async() => {
+      it('handles the --invalidateCache flag', async() => {
         const stdout = await stringifyStream(<any> (await actor.run({
-          argv: [ sourceHypermedia, '-q', queryString, '--noCache' ],
+          argv: [ sourceHypermedia, '-q', queryString, '--invalidateCache' ],
           env: {},
           stdin: <Readable><any> new PassThrough(),
           context,
@@ -728,7 +728,7 @@ LIMIT 100
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
           sources: [{ value: sourceHypermedia }],
           log: expect.any(LoggerPretty),
-          [KeysInitQuery.noCache.name]: true,
+          [KeysInitQuery.invalidateCache.name]: true,
         });
       });
 
@@ -797,19 +797,16 @@ LIMIT 100
 
       describe('output format', () => {
         it('defaults to application/json for bindingsStream', async() => {
-          const m1: any = {
-            mediate: (arg: any) => Promise.resolve({ type: 'bindings', bindingsStream: true, metadata: () => ({}) }),
-          };
-          const m2: any = {
+          const m: any = {
             mediate: (arg: any) => Promise.resolve({ handle: { data: arg.handleMediaType }}),
           };
           const actorThis = new ActorInitQuery({
             bus,
             mediatorQueryProcess,
             mediatorHttpInvalidate,
-            mediatorQueryResultSerialize: m2,
-            mediatorQueryResultSerializeMediaTypeCombiner: m2,
-            mediatorQueryResultSerializeMediaTypeFormatCombiner: m2,
+            mediatorQueryResultSerialize: m,
+            mediatorQueryResultSerializeMediaTypeCombiner: m,
+            mediatorQueryResultSerializeMediaTypeFormatCombiner: m,
             name: 'actor',
             queryString,
           });
@@ -824,7 +821,7 @@ LIMIT 100
 
         it('defaults to application/trig for quadStream', async() => {
           const m1: any = {
-            mediate: (arg: any) => Promise.resolve({ result: { type: 'quads', quadStream: true }}),
+            mediate: () => Promise.resolve({ result: { type: 'quads', quadStream: true }}),
           };
           const m2: any = {
             mediate: (arg: any) => Promise.resolve({ handle: { data: arg.handleMediaType }}),
@@ -850,7 +847,7 @@ LIMIT 100
 
         it('defaults to simple for boolean', async() => {
           const m1: any = {
-            mediate: (arg: any) => Promise.resolve({
+            mediate: () => Promise.resolve({
               result: { type: 'boolean', booleanResult: Promise.resolve(true) },
             }),
           };

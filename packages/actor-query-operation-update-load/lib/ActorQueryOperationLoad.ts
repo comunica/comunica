@@ -1,10 +1,11 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
+import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { MediatorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
 import type { MediatorRdfUpdateQuads } from '@comunica/bus-rdf-update-quads';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
+import { assignOperationSource, getSafeQuads, testReadOnly } from '@comunica/utils-query-operation';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
 
@@ -20,9 +21,8 @@ export class ActorQueryOperationLoad extends ActorQueryOperationTypedMediated<Al
     super(args, 'load');
   }
 
-  public async testOperation(operation: Algebra.Load, context: IActionContext): Promise<IActorTest> {
-    ActorQueryOperation.throwOnReadOnly(context);
-    return true;
+  public async testOperation(operation: Algebra.Load, context: IActionContext): Promise<TestResult<IActorTest>> {
+    return testReadOnly(context);
   }
 
   public async runOperation(operation: Algebra.Load, context: IActionContext):
@@ -41,9 +41,9 @@ export class ActorQueryOperationLoad extends ActorQueryOperationTypedMediated<Al
     });
 
     // Create CONSTRUCT query on the given source
-    const output = ActorQueryOperationLoad.getSafeQuads(await this.mediatorQueryOperation.mediate({
+    const output = getSafeQuads(await this.mediatorQueryOperation.mediate({
       operation: algebraFactory.createConstruct(
-        ActorQueryOperation.assignOperationSource(
+        assignOperationSource(
           algebraFactory.createPattern(dataFactory.variable('s'), dataFactory.variable('p'), dataFactory.variable('o')),
           querySource,
         ),

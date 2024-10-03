@@ -17,7 +17,6 @@ describe('ActorInitQuery', () => {
   let input: Readable;
 
   const defaultQueryInputFormat = 'sparql';
-  const sourceHypermedia = 'http://example.org/';
   const queryString = 'SELECT * WHERE { ?s ?p ?o } LIMIT 100';
 
   beforeEach(() => {
@@ -55,7 +54,7 @@ describe('ActorInitQuery', () => {
       },
     };
     mediatorHttpInvalidate = {
-      mediate: (arg: any) => Promise.resolve(true),
+      mediate: () => Promise.resolve(true),
     };
     context = new ActionContext();
     input = new Readable({ objectMode: true });
@@ -69,7 +68,6 @@ describe('ActorInitQuery', () => {
 
   describe('An ActorInitQuery instance', () => {
     let actorAllowNoSources: ActorInitQuery;
-    let spyResultToString: any;
     let spyQueryOrExplain: any;
     beforeEach(() => {
       actorAllowNoSources = new ActorInitQuery({
@@ -84,7 +82,6 @@ describe('ActorInitQuery', () => {
         allowNoSources: true,
       });
 
-      spyResultToString = jest.spyOn(QueryEngineBase.prototype, 'resultToString');
       spyQueryOrExplain = jest.spyOn(QueryEngineBase.prototype, 'queryOrExplain');
     });
 

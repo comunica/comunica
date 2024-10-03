@@ -60,7 +60,6 @@ if (args.e) {
 
 const dependencyRegex = /require\('([^']*)'\)/ug;
 
-const referencePackageJson = require(Path.join(__dirname, '..', 'package.json'));
 compileConfig(mainModulePath, configPath, 'urn:comunica:default:Runner', exportVariableName, false, true)
   .then((document: string) => {
     // Find dependency package names

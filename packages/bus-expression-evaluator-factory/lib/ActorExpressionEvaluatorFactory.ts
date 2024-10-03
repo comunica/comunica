@@ -17,8 +17,8 @@ import type { Algebra as Alg } from 'sparqlalgebrajs';
  * @see IActionExpressionEvaluatorFactory
  * @see IActorExpressionEvaluatorFactoryOutput
  */
-export abstract class ActorExpressionEvaluatorFactory extends
-  Actor<IActionExpressionEvaluatorFactory, IActorTest, IActorExpressionEvaluatorFactoryOutput> {
+export abstract class ActorExpressionEvaluatorFactory<TS = undefined> extends
+  Actor<IActionExpressionEvaluatorFactory, IActorTest, IActorExpressionEvaluatorFactoryOutput, TS> {
   protected mediatorQueryOperation: MediatorQueryOperation;
   protected mediatorFunctionFactory: MediatorFunctionFactory;
   protected mediatorMergeBindingsContext: MediatorMergeBindingsContext;
@@ -26,7 +26,7 @@ export abstract class ActorExpressionEvaluatorFactory extends
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
-  public constructor(args: IActorExpressionEvaluatorFactoryArgs) {
+  public constructor(args: IActorExpressionEvaluatorFactoryArgs<TS>) {
     super(args);
     this.mediatorQueryOperation = args.mediatorQueryOperation;
     this.mediatorFunctionFactory = <MediatorFunctionFactory> args.mediatorFunctionFactory;
@@ -40,10 +40,11 @@ export interface IActionExpressionEvaluatorFactory extends IAction {
 
 export interface IActorExpressionEvaluatorFactoryOutput extends IActorOutput, IExpressionEvaluator {}
 
-export interface IActorExpressionEvaluatorFactoryArgs extends IActorArgs<
+export interface IActorExpressionEvaluatorFactoryArgs<TS = undefined> extends IActorArgs<
 IActionExpressionEvaluatorFactory,
 IActorTest,
-IActorExpressionEvaluatorFactoryOutput
+IActorExpressionEvaluatorFactoryOutput,
+TS
 > {
   mediatorQueryOperation: MediatorQueryOperation;
   mediatorFunctionFactory: MediatorFunctionFactoryUnsafe;

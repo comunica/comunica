@@ -1,13 +1,16 @@
 /** @jest-environment setup-polly-jest/jest-environment-node */
 
 import { QuerySourceSkolemized } from '@comunica/actor-context-preprocess-query-source-skolemize';
-import { KeysHttpWayback, KeysQuerySourceIdentify } from '@comunica/context-entries';
-import { BlankNodeScoped } from '@comunica/data-factory';
+import { KeysHttpWayback, KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import type { QueryBindings, QueryStringContext } from '@comunica/types';
+import type { Bindings } from '@comunica/utils-bindings-factory';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { BlankNodeScoped } from '@comunica/utils-data-factory';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import 'jest-rdf';
+import '@comunica/utils-jest';
 import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
@@ -15,6 +18,7 @@ import { QueryEngine } from '../lib/QueryEngine';
 import { fetch as cachedFetch } from './util';
 
 const DF = new DataFactory();
+const BF = new BindingsFactory(DF);
 const factory = new Factory();
 
 globalThis.fetch = cachedFetch;
@@ -188,15 +192,18 @@ describe('System test: QuerySparql', () => {
         });
 
         it('should have stats that are strictly increasing', async() => {
-          const context: QueryStringContext = { sources: [
-            { type: 'serialized', value, mediaType: 'application/ld+json', baseIRI: 'http://example.org/' },
-          ]};
+          const context: QueryStringContext = {
+            sources: [
+              { type: 'serialized', value, mediaType: 'application/ld+json', baseIRI: 'http://example.org/' },
+            ],
+            [KeysInitQuery.queryTimestampHighResolution.name]: performance.now(),
+          };
 
           const resultString: string = await stringifyStream(
-            (await engine.resultToString(await engine.query(query, context), 'stats')).data,
+            (await engine.resultToString(await engine.query(query, context), 'stats', context)).data,
           );
           const times = resultString.split('\n').slice(1, -1).map(line => Number.parseFloat(line.split(',')[1]));
-          expect(times).toHaveLength(3);
+          expect(times).toHaveLength(4);
           for (let i = 0; i < 2; i++) {
             expect(times[i]).toBeLessThanOrEqual(times[i + 1]);
           }
@@ -346,10 +353,9 @@ describe('System test: QuerySparql', () => {
           integerType = DF.namedNode('http://www.w3.org/2001/XMLSchema#integer');
           funcAllow = 'allowAll';
           baseFunctions = {
-            'http://example.org/functions#allowAll': async(args: RDF.Term[]) => DF.literal('true', booleanType),
+            'http://example.org/functions#allowAll': async() => DF.literal('true', booleanType),
           };
-          baseFunctionCreator = (functionName: RDF.NamedNode) =>
-            async(args: RDF.Term[]) => DF.literal('true', booleanType);
+          baseFunctionCreator = () => async() => DF.literal('true', booleanType);
           store = new Store();
           quads = [
             DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:p1'), DF.literal('apple', stringType)),
@@ -654,24 +660,22 @@ describe('System test: QuerySparql', () => {
             FILTER(lang(?name) = 'nl')
           }
         }`, { sources: [ store ]});
-        const results = await arrayifyStream(await result.execute());
 
-        const expectedResult = [
-          [
+        const expectedResult: Bindings[] = [
+          BF.bindings([
             [ DF.variable('s'), DF.namedNode('http://ex.org/Pluto') ],
             [ DF.variable('p'), DF.namedNode('http://ex.org/type') ],
             [ DF.variable('o'), DF.namedNode('http://ex.org/Dog') ],
-          ],
-          [
+          ]),
+          BF.bindings([
             [ DF.variable('name'), DF.literal('Lorem ipsum', 'nl') ],
             [ DF.variable('s'), DF.namedNode('http://ex.org/Mickey') ],
             [ DF.variable('p'), DF.namedNode('http://ex.org/name') ],
             [ DF.variable('o'), DF.literal('Lorem ipsum', 'nl') ],
-          ],
+          ]),
         ];
 
-        const bindings = results.map(binding => [ ...binding ]);
-        expect(bindings).toMatchObject(expectedResult);
+        await expect(result.execute()).resolves.toEqualBindingsStream(expectedResult);
       });
 
       it('should handle join with empty estimate cardinality', async() => {

@@ -5,6 +5,7 @@ import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorOptimizeQueryOperationRewriteAdd } from '../lib/ActorOptimizeQueryOperationRewriteAdd';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory<RDF.BaseQuad>();
 const AF = new Factory();
@@ -26,7 +27,7 @@ describe('ActorOptimizeQueryOperationRewriteAdd', () => {
     });
 
     it('should always test', async() => {
-      await expect(actor.test({ operation: <any> null, context })).resolves.toBeTruthy();
+      await expect(actor.test({ operation: <any> null, context })).resolves.toPassTestVoid();
     });
 
     it('should run with named source and named destination', async() => {

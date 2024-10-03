@@ -1,10 +1,9 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTyped } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActorArgs, IActorTest } from '@comunica/core';
-import { MetadataValidationState } from '@comunica/metadata';
+import type { IActorArgs, IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import type {
   IQueryOperationResult,
   BindingsStream,
@@ -13,6 +12,8 @@ import type {
   MetadataBindings,
   ComunicaDataFactory,
 } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import { ArrayIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -26,8 +27,8 @@ export class ActorQueryOperationValues extends ActorQueryOperationTyped<Algebra.
     super(args, 'values');
   }
 
-  public async testOperation(_operation: Algebra.Values, _context: IActionContext): Promise<IActorTest> {
-    return true;
+  public async testOperation(_operation: Algebra.Values, _context: IActionContext): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async runOperation(operation: Algebra.Values, context: IActionContext):
@@ -38,12 +39,13 @@ export class ActorQueryOperationValues extends ActorQueryOperationTyped<Algebra.
     const bindingsStream: BindingsStream = new ArrayIterator<Bindings>(operation.bindings
       .map(x => bindingsFactory.bindings(Object.entries(x)
         .map(([ key, value ]) => [ dataFactory.variable(key.slice(1)), value ]))));
-    const variables = operation.variables;
     const metadata = (): Promise<MetadataBindings> => Promise.resolve({
       state: new MetadataValidationState(),
       cardinality: { type: 'exact', value: operation.bindings.length },
-      canContainUndefs: operation.bindings.some(bindings => variables.some(variable => !(`?${variable.value}` in bindings))),
-      variables,
+      variables: operation.variables.map(variable => ({
+        variable,
+        canBeUndef: operation.bindings.some(bindings => !(`?${variable.value}` in bindings)),
+      })),
     });
     return { type: 'bindings', bindingsStream, metadata };
   }

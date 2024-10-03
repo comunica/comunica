@@ -1,15 +1,15 @@
-import type { Bindings } from '@comunica/bindings-factory';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import { KeysMergeBindingsContext } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext, IQueryOperationResultBindings } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import type { Bindings } from '@comunica/utils-bindings-factory';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import {
   ActorQueryProcessAnnotateSourceBinding,
   KEY_CONTEXT_WRAPPED,
 } from '../lib/ActorQueryProcessAnnotateSourceBinding';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -39,21 +39,21 @@ describe('ActorQueryProcessAnnotateSourceBinding', () => {
 
     it('should wrap once', async() => {
       await expect(actor.test({ query: 'aQuery', context }))
-        .resolves.toBe(true);
+        .resolves.toPassTestVoid();
     });
 
     it('should run only once', async() => {
       context = context.set(KEY_CONTEXT_WRAPPED, true);
       await expect(actor.test({ query: 'aQuery', context }))
-        .rejects
-        .toThrow('Unable to query process multiple times');
+        .resolves
+        .toFailTest('Unable to query process multiple times');
     });
 
     it('should add single source in context to binding', async() => {
       bindings = bindings.setContextEntry(KeysMergeBindingsContext.sourcesBinding, [ 'S1' ]);
 
       mediatorQueryProcess = {
-        async mediate(arg: any) {
+        async mediate() {
           return { result: { type: 'bindings', bindingsStream: new ArrayIterator([ bindings ]) }};
         },
       };
@@ -75,7 +75,7 @@ describe('ActorQueryProcessAnnotateSourceBinding', () => {
       bindings = bindings.setContextEntry(KeysMergeBindingsContext.sourcesBinding, [ 'S1', 'S2' ]);
 
       mediatorQueryProcess = {
-        async mediate(arg: any) {
+        async mediate() {
           return { result: { type: 'bindings', bindingsStream: new ArrayIterator([ bindings ]) }};
         },
       };
@@ -95,7 +95,7 @@ describe('ActorQueryProcessAnnotateSourceBinding', () => {
 
     it('should fail gracefully when binding does not have context', async() => {
       mediatorQueryProcess = {
-        async mediate(arg: any) {
+        async mediate() {
           return { result: { type: 'bindings', bindingsStream: new ArrayIterator([ bindings ]) }};
         },
       };
@@ -117,7 +117,7 @@ describe('ActorQueryProcessAnnotateSourceBinding', () => {
       bindings = bindings.setContextEntry(KeysMergeBindingsContext.sourcesBinding, []);
 
       mediatorQueryProcess = {
-        async mediate(arg: any) {
+        async mediate() {
           return { result: { type: 'bindings', bindingsStream: new ArrayIterator([ bindings ]) }};
         },
       };

@@ -9,7 +9,8 @@ import type {
   MediatorRdfSerializeMediaTypeFormats,
   MediatorRdfSerializeMediaTypes,
 } from '@comunica/bus-rdf-serialize';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import type { IActionContext, IQueryOperationResultQuads } from '@comunica/types';
 
 /**
@@ -29,10 +30,10 @@ export class ActorQueryResultSerializeRdf extends ActorQueryResultSerialize
   }
 
   public async testHandle(action: IActionSparqlSerialize, mediaType: string, context: IActionContext):
-  Promise<IActorTest> {
+  Promise<TestResult<IActorTest>> {
     // Check if we are provided with a quad stream
     if (action.type !== 'quads') {
-      throw new Error(`Actor ${this.name} can only handle quad streams`);
+      return failTest(`Actor ${this.name} can only handle quad streams`);
     }
 
     // Check if the given media type can be handled
@@ -40,11 +41,11 @@ export class ActorQueryResultSerializeRdf extends ActorQueryResultSerialize
       { context, mediaTypes: true },
     );
     if (!(mediaType in mediaTypes)) {
-      throw new Error(`Actor ${this.name} can not handle media type ${mediaType}. All available types: ${
+      return failTest(`Actor ${this.name} can not handle media type ${mediaType}. All available types: ${
         // eslint-disable-next-line ts/restrict-template-expressions
         Object.keys(mediaTypes)}`);
     }
-    return true;
+    return passTestVoid();
   }
 
   public async runHandle(action: IActionSparqlSerialize, mediaType: string, context: IActionContext):
@@ -60,16 +61,16 @@ export class ActorQueryResultSerializeRdf extends ActorQueryResultSerialize
     })).handle;
   }
 
-  public async testMediaType(_context: IActionContext): Promise<boolean> {
-    return true;
+  public async testMediaType(_context: IActionContext): Promise<TestResult<boolean>> {
+    return passTestVoid();
   }
 
   public async getMediaTypes(context: IActionContext): Promise<Record<string, number>> {
     return (await this.mediatorMediaTypeCombiner.mediate({ context, mediaTypes: true })).mediaTypes;
   }
 
-  public async testMediaTypeFormats(_context: IActionContext): Promise<boolean> {
-    return true;
+  public async testMediaTypeFormats(_context: IActionContext): Promise<TestResult<boolean>> {
+    return passTestVoid();
   }
 
   public async getMediaTypeFormats(context: IActionContext): Promise<Record<string, string>> {

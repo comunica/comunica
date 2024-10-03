@@ -3,11 +3,10 @@ import type {
   IActorBindingsAggregatorFactoryArgs,
   IActorBindingsAggregatorFactoryOutput,
 } from '@comunica/bus-bindings-aggregator-factory';
-import {
-  ActorBindingsAggregatorFactory,
-} from '@comunica/bus-bindings-aggregator-factory';
+import { ActorBindingsAggregatorFactory } from '@comunica/bus-bindings-aggregator-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import { GroupConcatAggregator } from './GroupConcatAggregator';
 
 /**
@@ -18,11 +17,11 @@ export class ActorBindingsAggregatorFactoryGroupConcat extends ActorBindingsAggr
     super(args);
   }
 
-  public async test(action: IActionBindingsAggregatorFactory): Promise<IActorTest> {
+  public async test(action: IActionBindingsAggregatorFactory): Promise<TestResult<IActorTest>> {
     if (action.expr.aggregator !== 'group_concat') {
-      throw new Error('This actor only supports the \'group_concat\' aggregator.');
+      return failTest('This actor only supports the \'group_concat\' aggregator.');
     }
-    return {};
+    return passTestVoid();
   }
 
   public async run({ context, expr }: IActionBindingsAggregatorFactory):

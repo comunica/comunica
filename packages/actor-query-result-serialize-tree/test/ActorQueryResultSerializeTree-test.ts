@@ -1,14 +1,15 @@
 import { Readable } from 'node:stream';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { BindingsStream, IActionContext } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryResultSerializeTree, bindingsStreamToGraphQl } from '..';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -73,7 +74,7 @@ describe('ActorQueryResultSerializeTree', () => {
 
     describe('for getting media types', () => {
       it('should test', async() => {
-        await expect(actor.test({ mediaTypes: true, context })).resolves.toBeTruthy();
+        await expect(actor.test({ mediaTypes: true, context })).resolves.toPassTest({ mediaTypes: true });
       });
 
       it('should run', async() => {
@@ -88,7 +89,7 @@ describe('ActorQueryResultSerializeTree', () => {
           handle: <any> { type: 'bindings', bindingsStream: stream, context },
           handleMediaType: 'tree',
           context,
-        })).resolves.toBeTruthy();
+        })).resolves.toPassTest({ handle: true });
 
         stream.destroy();
       });
@@ -100,7 +101,7 @@ describe('ActorQueryResultSerializeTree', () => {
           handleMediaType: 'tree',
           context,
         }))
-          .rejects.toBeTruthy();
+          .resolves.toFailTest(`This actor can only handle bindings streams.`);
 
         stream.destroy();
       });
@@ -112,7 +113,7 @@ describe('ActorQueryResultSerializeTree', () => {
           handleMediaType: 'application/n-triples',
           context,
         }))
-          .rejects.toBeTruthy();
+          .resolves.toFailTest(`Unrecognized media type: application/n-triples`);
 
         stream.destroy();
       });
@@ -121,7 +122,7 @@ describe('ActorQueryResultSerializeTree', () => {
         await expect(actor.test(
           { handle: <any> { type: 'unknown' }, handleMediaType: 'tree', context },
         ))
-          .rejects.toBeTruthy();
+          .resolves.toFailTest(`This actor can only handle bindings streams.`);
       });
 
       it('should run on a bindings stream', async() => {

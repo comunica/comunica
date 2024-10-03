@@ -1,6 +1,7 @@
 import { ActionContext, Bus } from '@comunica/core';
 import { LinkQueueFifo } from '..';
 import { ActorRdfResolveHypermediaLinksQueueFifo } from '../lib/ActorRdfResolveHypermediaLinksQueueFifo';
+import '@comunica/utils-jest';
 
 describe('ActorRdfResolveHypermediaLinksQueueFifo', () => {
   let bus: any;
@@ -18,7 +19,7 @@ describe('ActorRdfResolveHypermediaLinksQueueFifo', () => {
 
     it('should test', async() => {
       await expect(actor.test({ firstUrl: 'A', context: new ActionContext() }))
-        .resolves.toBe(true);
+        .resolves.toPassTestVoid();
     });
 
     it('should run', async() => {

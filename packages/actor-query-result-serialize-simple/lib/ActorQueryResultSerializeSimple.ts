@@ -4,6 +4,8 @@ import type {
   IActorQueryResultSerializeOutput,
 } from '@comunica/bus-query-result-serialize';
 import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-result-serialize';
+import type { TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import type {
   IActionContext,
   IQueryOperationResultBindings,
@@ -29,11 +31,14 @@ export class ActorQueryResultSerializeSimple extends ActorQueryResultSerializeFi
     super(args);
   }
 
-  public override async testHandleChecked(action: IActionSparqlSerialize, _context: IActionContext): Promise<boolean> {
+  public override async testHandleChecked(
+    action: IActionSparqlSerialize,
+    _context: IActionContext,
+  ): Promise<TestResult<boolean>> {
     if (![ 'bindings', 'quads', 'boolean', 'void' ].includes(action.type)) {
-      throw new Error('This actor can only handle bindings streams, quad streams, booleans, or updates.');
+      return failTest('This actor can only handle bindings streams, quad streams, booleans, or updates.');
     }
-    return true;
+    return passTestVoid();
   }
 
   protected static termToString(term: RDF.Term): string {

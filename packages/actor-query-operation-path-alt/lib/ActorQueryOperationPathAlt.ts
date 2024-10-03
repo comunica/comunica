@@ -1,7 +1,6 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import { ActorQueryOperationUnion } from '@comunica/actor-query-operation-union';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type {
@@ -11,6 +10,7 @@ import type {
   MetadataBindings,
   ComunicaDataFactory,
 } from '@comunica/types';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import { UnionIterator } from 'asynciterator';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 
@@ -35,7 +35,7 @@ export class ActorQueryOperationPathAlt extends ActorAbstractPath {
         context,
         operation: algebraFactory.createPath(operation.subject, subPredicate, operation.object, operation.graph),
       }))))
-      .map(ActorQueryOperation.getSafeBindings);
+      .map(getSafeBindings);
 
     const bindingsStream = new UnionIterator(subOperations.map(op => op.bindingsStream), { autoStart: false });
     const metadata: (() => Promise<MetadataBindings>) = () =>

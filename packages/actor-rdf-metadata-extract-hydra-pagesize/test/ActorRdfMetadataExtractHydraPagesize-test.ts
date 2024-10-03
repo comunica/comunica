@@ -2,6 +2,7 @@ import type { Readable } from 'node:stream';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorRdfMetadataExtractHydraPagesize } from '../lib/ActorRdfMetadataExtractHydraPagesize';
+import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
 const stream = require('streamify-array');
@@ -34,7 +35,7 @@ describe('ActorRdfMetadataExtractHydraPagesize', () => {
     });
 
     it('should test', async() => {
-      await expect(actor.test({ url: '', metadata: input, requestTime: 0, context })).resolves.toBeTruthy();
+      await expect(actor.test({ url: '', metadata: input, requestTime: 0, context })).resolves.toPassTestVoid();
     });
 
     it('should run on a stream where pageSize is given', async() => {

@@ -6,5 +6,5 @@
   "@id": "urn:comunica:default:optimize-query-operation/mediators#main",
   "@type": "MediatorCombinePipeline",
   "bus": { "@id": "ActorOptimizeQueryOperation:_default_bus" },
-  "filterErrors": true
+  "filterFailures": true
 }

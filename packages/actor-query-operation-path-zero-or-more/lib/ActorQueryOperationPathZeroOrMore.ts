@@ -1,10 +1,16 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { Bindings, IQueryOperationResult, IActionContext, ComunicaDataFactory } from '@comunica/types';
+import type {
+  Bindings,
+  IQueryOperationResult,
+  IActionContext,
+  ComunicaDataFactory,
+  MetadataVariable,
+} from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { MultiTransformIterator, TransformIterator, EmptyIterator, BufferedIterator } from 'asynciterator';
 import { termToString } from 'rdf-string';
@@ -43,7 +49,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
       const predVar = this.generateVariable(dataFactory, operation);
       const single = this.assignPatternSources(algebraFactory, algebraFactory
         .createPattern(operation.subject, predVar, operation.object, operation.graph), sources);
-      const results = ActorQueryOperation.getSafeBindings(
+      const results = getSafeBindings(
         await this.mediatorQueryOperation.mediate({ context, operation: single }),
       );
       const subjectVar = operation.subject;
@@ -129,9 +135,10 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
           },
         },
       );
-      const variables: RDF.Variable[] = operation.graph.termType === 'Variable' ?
+      const variables: MetadataVariable[] = (operation.graph.termType === 'Variable' ?
           [ subjectVar, operation.object, operation.graph ] :
-          [ subjectVar, operation.object ];
+          [ subjectVar, operation.object ])
+        .map(variable => ({ variable, canBeUndef: false }));
       return {
         type: 'bindings',
         bindingsStream,
@@ -167,7 +174,8 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
         bindingsStream,
         metadata: async() => ({
           ...await starEval.metadata(),
-          variables: operation.graph.termType === 'Variable' ? [ operation.graph ] : [],
+          variables: (operation.graph.termType === 'Variable' ? [ operation.graph ] : [])
+            .map(variable => ({ variable, canBeUndef: false })),
         }),
       };
     }
@@ -185,7 +193,8 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
       algebraFactory,
       bindingsFactory,
     );
-    const variables: RDF.Variable[] = operation.graph.termType === 'Variable' ? [ value, operation.graph ] : [ value ];
+    const variables = (operation.graph.termType === 'Variable' ? [ value, operation.graph ] : [ value ])
+      .map(variable => ({ variable, canBeUndef: false }));
     return {
       type: 'bindings',
       bindingsStream: starEval.bindingsStream,

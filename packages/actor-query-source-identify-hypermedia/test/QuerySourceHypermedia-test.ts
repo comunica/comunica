@@ -1,4 +1,3 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type {
   MediatorDereferenceRdf,
   IActionDereferenceRdf,
@@ -7,8 +6,9 @@ import type {
 import type { IActionQuerySourceIdentifyHypermedia } from '@comunica/bus-query-source-identify-hypermedia';
 import { KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext, MetadataQuads } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
@@ -22,7 +22,7 @@ import type { ISourceState } from '../lib/LinkedRdfSourcesAsyncRdfIterator';
 import { MediatedLinkedRdfSourcesAsyncRdfIterator } from '../lib/MediatedLinkedRdfSourcesAsyncRdfIterator';
 import { QuerySourceHypermedia } from '../lib/QuerySourceHypermedia';
 import { mediators as utilMediators } from './MediatorDereferenceRdf-util';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const AF = new Factory();
@@ -30,16 +30,12 @@ const BF = new BindingsFactory(DF);
 const quad = require('rdf-quad');
 const streamifyArray = require('streamify-array');
 
-const v = DF.variable('v');
-
 describe('QuerySourceHypermedia', () => {
   let context: IActionContext;
   let mediatorDereferenceRdf: MediatorDereferenceRdf;
   let mediatorMetadata: any;
   let mediatorMetadataExtract: any;
   let mediatorQuerySourceIdentifyHypermedia: any;
-  let mediatorRdfResolveHypermediaLinks: any;
-  let mediatorRdfResolveHypermediaLinksQueue: any;
   let mediators: any;
   let logWarning: (warningMessage: string) => void;
   let operation: Algebra.Operation;
@@ -54,8 +50,6 @@ describe('QuerySourceHypermedia', () => {
     mediatorMetadata = utilMediators.mediatorMetadata;
     mediatorMetadataExtract = utilMediators.mediatorMetadataExtract;
     mediatorQuerySourceIdentifyHypermedia = utilMediators.mediatorQuerySourceIdentifyHypermedia;
-    mediatorRdfResolveHypermediaLinks = utilMediators.mediatorRdfResolveHypermediaLinks;
-    mediatorRdfResolveHypermediaLinksQueue = utilMediators.mediatorRdfResolveHypermediaLinksQueue;
     mediators = utilMediators;
     logWarning = jest.fn();
     operation = AF.createPattern(
@@ -192,7 +186,7 @@ describe('QuerySourceHypermedia', () => {
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'exact', value: 0 },
-            canContainUndefs: false,
+
             a: 2,
           },
           source: {
@@ -248,7 +242,7 @@ describe('QuerySourceHypermedia', () => {
           metadata: {
             state: new MetadataValidationState(),
             cardinality: { type: 'exact', value: 1 },
-            canContainUndefs: false,
+
             a: 2,
           },
           source: {
@@ -300,7 +294,7 @@ describe('QuerySourceHypermedia', () => {
           a: 2,
           state: expect.any(MetadataValidationState),
           cardinality: { type: 'exact', value: 2 },
-          canContainUndefs: false,
+
           firstMeta: true,
         });
       });
@@ -312,7 +306,7 @@ describe('QuerySourceHypermedia', () => {
           mediate: () => Promise.resolve({ links: i < 3 ? [{ url: `next${i}` }] : []}),
         };
         mediatorsThis.mediatorQuerySourceIdentifyHypermedia = {
-          mediate(args: any) {
+          mediate() {
             if (i < 3) {
               i++;
             }
@@ -660,8 +654,11 @@ describe('QuerySourceHypermedia', () => {
             type: 'estimate',
             value: 0,
           },
-          canContainUndefs: false,
-          variables: [ DF.variable('s'), DF.variable('p'), DF.variable('o') ],
+          variables: [
+            { variable: DF.variable('s'), canBeUndef: false },
+            { variable: DF.variable('p'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+          ],
         });
         expect(it3.getProperty('metadata')).toEqual({
           state: expect.any(MetadataValidationState),
@@ -669,8 +666,10 @@ describe('QuerySourceHypermedia', () => {
             type: 'estimate',
             value: 0,
           },
-          canContainUndefs: false,
-          variables: [ DF.variable('p'), DF.variable('o') ],
+          variables: [
+            { variable: DF.variable('p'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+          ],
         });
 
         // Expect the metadata to be modified for every page
@@ -770,54 +769,79 @@ describe('QuerySourceHypermedia', () => {
         expect(it2Meta).toHaveBeenCalledTimes(8);
         expect(it2Meta).toHaveBeenNthCalledWith(1, {
           state: expect.any(MetadataValidationState),
-          canContainUndefs: false,
+
           cardinality: { type: 'estimate', value: 0 },
-          variables: [ DF.variable('s'), DF.variable('p'), DF.variable('o') ],
+          variables: [
+            { variable: DF.variable('s'), canBeUndef: false },
+            { variable: DF.variable('p'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+          ],
         });
         expect(it2Meta).toHaveBeenNthCalledWith(2, {
           state: expect.any(MetadataValidationState),
           a: 1,
           firstMeta: true,
           cardinality: { type: 'estimate', value: 0 },
-          canContainUndefs: false,
-          variables: [ DF.variable('s'), DF.variable('p'), DF.variable('o') ],
+
+          variables: [
+            { variable: DF.variable('s'), canBeUndef: false },
+            { variable: DF.variable('p'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+          ],
         });
         expect(it2Meta).toHaveBeenNthCalledWith(4, {
           state: expect.any(MetadataValidationState),
           a: 1,
           cardinality: { type: 'estimate', value: 2 },
-          canContainUndefs: false,
-          variables: [ DF.variable('s'), DF.variable('p'), DF.variable('o') ],
+
+          variables: [
+            { variable: DF.variable('s'), canBeUndef: false },
+            { variable: DF.variable('p'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+          ],
         });
         expect(it2Meta).toHaveBeenNthCalledWith(6, {
           state: expect.any(MetadataValidationState),
           a: 1,
           cardinality: { type: 'estimate', value: 3 },
-          canContainUndefs: false,
-          variables: [ DF.variable('s'), DF.variable('p'), DF.variable('o') ],
+
+          variables: [
+            { variable: DF.variable('s'), canBeUndef: false },
+            { variable: DF.variable('p'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+          ],
         });
         expect(it3Meta).toHaveBeenCalledTimes(4);
         expect(it3Meta).toHaveBeenNthCalledWith(1, {
           state: expect.any(MetadataValidationState),
-          canContainUndefs: false,
+
           cardinality: { type: 'estimate', value: 0 },
-          variables: [ DF.variable('p'), DF.variable('o') ],
+          variables: [
+            { variable: DF.variable('p'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+          ],
         });
         expect(it3Meta).toHaveBeenNthCalledWith(2, {
           state: expect.any(MetadataValidationState),
           a: 1,
           cardinality: { type: 'estimate', value: 0 },
           firstMeta: true,
-          canContainUndefs: false,
-          variables: [ DF.variable('p'), DF.variable('o') ],
+
+          variables: [
+            { variable: DF.variable('p'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+          ],
         });
         expect(it3Meta).toHaveBeenNthCalledWith(4, {
           state: expect.any(MetadataValidationState),
           a: 1,
           cardinality: { type: 'estimate', value: 0 },
           firstMeta: true,
-          canContainUndefs: false,
-          variables: [ DF.variable('p'), DF.variable('o') ],
+
+          variables: [
+            { variable: DF.variable('p'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+          ],
         });
 
         expect(spy).toHaveBeenCalledTimes(2);
@@ -830,7 +854,7 @@ describe('QuerySourceHypermedia', () => {
           mediate: () => Promise.resolve({ links: i < 3 ? [{ url: `next${i}` }] : []}),
         };
         mediatorsThis.mediatorQuerySourceIdentifyHypermedia = {
-          mediate: jest.fn((args: any) => {
+          mediate: jest.fn(() => {
             if (i < 3) {
               i++;
             }
@@ -943,7 +967,7 @@ describe('QuerySourceHypermedia', () => {
           mediate: () => Promise.resolve({ links: i < 3 ? [{ url: `next${i}` }] : []}),
         };
         mediatorsThis.mediatorQuerySourceIdentifyHypermedia = {
-          mediate: jest.fn((args: any) => {
+          mediate: jest.fn(() => {
             if (i < 3) {
               i++;
             }

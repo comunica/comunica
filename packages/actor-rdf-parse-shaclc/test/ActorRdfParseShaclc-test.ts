@@ -5,12 +5,12 @@ import 'jest-rdf';
 import type { IActionContext } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
 import { ActorRdfParseShaclc } from '../lib/ActorRdfParseShaclc';
+import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
 
 describe('ActorRdfParseShaclc', () => {
   let bus: any;
-  let mediatorHttp: any;
   let context: IActionContext;
 
   beforeEach(() => {
@@ -77,9 +77,6 @@ describe('ActorRdfParseShaclc', () => {
   describe('An ActorRdfParseShaclc instance', () => {
     let actor: ActorRdfParseShaclc;
     let input: Readable;
-    // Let inputGraphs: Readable;
-    let inputLinkHeader: Readable;
-    let inputSkipped: Readable;
 
     beforeEach(() => {
       actor = new ActorRdfParseShaclc({ bus, mediaTypePriorities: {
@@ -94,28 +91,17 @@ describe('ActorRdfParseShaclc', () => {
     });
 
     describe('for parsing', () => {
-      beforeEach(() => {
-        inputLinkHeader = Readable.from([ `{
-          "@id": "http://www.example.org/",
-          "term": "value"
-        }` ]);
-        inputSkipped = Readable.from([ `{
-          "@id": "http://www.example.org/",
-          "skipped": "value"
-        }` ]);
-      });
-
       it('should test on text/shaclc', async() => {
         await expect(actor
           .test({ handle: { data: input, context }, handleMediaType: 'text/shaclc', context }))
-          .resolves.toBeTruthy();
+          .resolves.toPassTest({ handle: true });
         await expect(actor
           .test({
             handle: { data: input, metadata: { baseIRI: '' }, context },
             handleMediaType: 'text/shaclc',
             context,
           }))
-          .resolves.toBeTruthy();
+          .resolves.toPassTest({ handle: true });
       });
 
       it('should not test on bla+json when processing html', async() => {
@@ -123,7 +109,7 @@ describe('ActorRdfParseShaclc', () => {
           handle: { data: input, metadata: { baseIRI: '' }, context },
           handleMediaType: 'bla+json',
           context: new ActionContext({ [KeysRdfParseHtmlScript.processingHtmlScript.name]: true }),
-        })).rejects.toBeTruthy();
+        })).resolves.toFailTest(`Unrecognized media type: bla+json`);
       });
 
       it('should test on text/shaclc when processing html', async() => {
@@ -131,25 +117,25 @@ describe('ActorRdfParseShaclc', () => {
           handle: { data: input, context },
           handleMediaType: 'text/shaclc',
           context: new ActionContext({ [KeysRdfParseHtmlScript.processingHtmlScript.name]: true }),
-        })).resolves.toBeTruthy();
+        })).resolves.toPassTest({ handle: true });
         await expect(actor.test({
           handle: { data: input, metadata: { baseIRI: '' }, context },
           handleMediaType: 'text/shaclc',
           context: new ActionContext({ [KeysRdfParseHtmlScript.processingHtmlScript.name]: true }),
-        })).resolves.toBeTruthy();
+        })).resolves.toPassTest({ handle: true });
       });
 
       it('should not test on N-Triples', async() => {
         await expect(actor
           .test({ handle: { data: input, context }, handleMediaType: 'application/n-triples', context }))
-          .rejects.toBeTruthy();
+          .resolves.toFailTest(`Unrecognized media type: application/n-triples`);
         await expect(actor
           .test({
             handle: { data: input, metadata: { baseIRI: '' }, context },
             handleMediaType: 'application/n-triples',
             context,
           }))
-          .rejects.toBeTruthy();
+          .resolves.toFailTest(`Unrecognized media type: application/n-triples`);
       });
 
       it('should run', async() => {
@@ -219,7 +205,7 @@ describe('ActorRdfParseShaclc', () => {
 
     describe('for getting media types', () => {
       it('should test', async() => {
-        await expect(actor.test({ mediaTypes: true, context })).resolves.toBeTruthy();
+        await expect(actor.test({ mediaTypes: true, context })).resolves.toPassTest({ mediaTypes: true });
       });
 
       it('should run', async() => {

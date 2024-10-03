@@ -4,6 +4,10 @@
   "description": "A optional-nestedloop rdf-join actor",
   "lsd:module": true,
   "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
@@ -38,8 +42,8 @@
   },
   "dependencies": {
     "@comunica/bus-rdf-join": "^3.2.1",
+    "@comunica/core": "^3.2.1",
     "@comunica/mediatortype-join-coefficients": "^3.2.1",
-    "@comunica/types": "^3.2.1",
-    "asyncjoin": "^1.2.3"
+    "asyncjoin": "^1.2.4"
   }
 }

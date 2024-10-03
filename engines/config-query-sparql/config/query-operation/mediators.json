@@ -7,6 +7,6 @@
   "@type": "MediatorNumber",
   "type": "min",
   "field": "httpRequests",
-  "ignoreErrors": true,
+  "ignoreFailures": true,
   "bus": { "@id": "ActorQueryOperation:_default_bus" }
 }

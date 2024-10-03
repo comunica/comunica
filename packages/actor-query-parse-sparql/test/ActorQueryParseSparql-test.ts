@@ -4,6 +4,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryParseSparql } from '..';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 
@@ -46,14 +47,14 @@ describe('ActorQueryParseSparql', () => {
         queryFormat: { language: 'graphql', version: '1.0' },
         context,
       }))
-        .rejects.toBeTruthy();
+        .resolves.toFailTest(`This actor can only parse SPARQL queries`);
     });
 
     it('should test on no format', async() => {
       await expect(actor.test({
         query: 'a',
         context,
-      })).resolves.toBeTruthy();
+      })).resolves.toPassTestVoid();
     });
 
     it('should test on the sparql format', async() => {
@@ -62,7 +63,7 @@ describe('ActorQueryParseSparql', () => {
         queryFormat: { language: 'sparql', version: '1.1' },
         context,
       }))
-        .resolves.toBeTruthy();
+        .resolves.toPassTestVoid();
     });
 
     it('should run', async() => {

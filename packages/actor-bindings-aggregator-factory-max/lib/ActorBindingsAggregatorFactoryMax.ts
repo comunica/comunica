@@ -7,7 +7,8 @@ import {
   ActorBindingsAggregatorFactory,
 } from '@comunica/bus-bindings-aggregator-factory';
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import { MaxAggregator } from './MaxAggregator';
 
 export interface IActorBindingsAggregatorFactoryMaxArgs extends IActorBindingsAggregatorFactoryArgs {
@@ -25,11 +26,11 @@ export class ActorBindingsAggregatorFactoryMax extends ActorBindingsAggregatorFa
     this.mediatorTermComparatorFactory = args.mediatorTermComparatorFactory;
   }
 
-  public async test(action: IActionBindingsAggregatorFactory): Promise<IActorTest> {
+  public async test(action: IActionBindingsAggregatorFactory): Promise<TestResult<IActorTest>> {
     if (action.expr.aggregator !== 'max') {
-      throw new Error('This actor only supports the \'max\' aggregator.');
+      return failTest('This actor only supports the \'max\' aggregator.');
     }
-    return {};
+    return passTestVoid();
   }
 
   public async run({ expr, context }: IActionBindingsAggregatorFactory):

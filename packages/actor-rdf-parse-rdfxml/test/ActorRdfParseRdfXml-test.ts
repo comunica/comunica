@@ -8,6 +8,7 @@ import type { IActionContext } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfParseRdfXml } from '..';
+import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
 
@@ -154,7 +155,7 @@ describe('ActorRdfParseRdfXml', () => {
 
     describe('for getting media types', () => {
       it('should test', async() => {
-        await expect(actor.test({ mediaTypes: true, context })).resolves.toBeTruthy();
+        await expect(actor.test({ mediaTypes: true, context })).resolves.toPassTest({ mediaTypes: true });
       });
 
       it('should run', async() => {

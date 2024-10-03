@@ -1,11 +1,10 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import {
-  ActorQueryOperation,
-} from '@comunica/bus-query-operation';
+
 import type { MediatorRdfJoin } from '@comunica/bus-rdf-join';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { Bindings, IActionContext, IQueryOperationResult, IJoinEntry, ComunicaDataFactory } from '@comunica/types';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 
@@ -47,11 +46,11 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
         return { output, operation };
       })
       .map(async({ output, operation }) => ({
-        output: ActorQueryOperation.getSafeBindings(await output),
+        output: getSafeBindings(await output),
         operation,
       })));
 
-    const join = ActorQueryOperation.getSafeBindings(await this.mediatorJoin
+    const join = getSafeBindings(await this.mediatorJoin
       .mediate({ type: 'inner', entries, context }));
     // Remove the generated variable from the bindings
     const bindingsStream = join.bindingsStream.transform<Bindings>({
@@ -71,7 +70,7 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
       async metadata() {
         const joinMetadata = await join.metadata();
         const variables = joinMetadata.variables.filter(variable => !generatedVariableNames
-          .some(generatedVariableName => generatedVariableName.value === variable.value));
+          .some(generatedVariableName => generatedVariableName.value === variable.variable.value));
         return { ...joinMetadata, variables };
       },
     };

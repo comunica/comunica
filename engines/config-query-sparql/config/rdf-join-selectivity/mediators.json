@@ -7,6 +7,6 @@
   "@type": "MediatorNumber",
   "type": "max",
   "field": "accuracy",
-  "ignoreErrors": true,
+  "ignoreFailures": true,
   "bus": { "@id": "ActorRdfJoinSelectivity:_default_bus" }
 }

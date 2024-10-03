@@ -1,4 +1,3 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type {
@@ -13,7 +12,10 @@ import {
 import type { MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import { KeysInitQuery } from '@comunica/context-entries';
+import type { TestResult } from '@comunica/core';
+import { failTest, passTest } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import { Factory } from 'sparqlalgebrajs';
 import { QuerySourceQpf } from './QuerySourceQpf';
@@ -37,26 +39,29 @@ export class ActorQuerySourceIdentifyHypermediaQpf extends ActorQuerySourceIdent
 
   public override async test(
     action: IActionQuerySourceIdentifyHypermedia,
-  ): Promise<IActorQuerySourceIdentifyHypermediaTest> {
+  ): Promise<TestResult<IActorQuerySourceIdentifyHypermediaTest>> {
     if (action.forceSourceType && (action.forceSourceType !== 'qpf' && action.forceSourceType !== 'brtpf')) {
-      throw new Error(`Actor ${this.name} is not able to handle source type ${action.forceSourceType}.`);
+      return failTest(`Actor ${this.name} is not able to handle source type ${action.forceSourceType}.`);
     }
     return this.testMetadata(action);
   }
 
   public async testMetadata(
     action: IActionQuerySourceIdentifyHypermedia,
-  ): Promise<IActorQuerySourceIdentifyHypermediaTest> {
+  ): Promise<TestResult<IActorQuerySourceIdentifyHypermediaTest>> {
     const { searchForm } = await this.createSource(
       action.url,
       action.metadata,
       action.context,
       action.forceSourceType === 'brtpf',
     );
-    if (action.handledDatasets && action.handledDatasets[searchForm.dataset]) {
-      throw new Error(`Actor ${this.name} can only be applied for the first page of a QPF dataset.`);
+    if (!searchForm) {
+      return failTest('Illegal state: found no TPF/QPF search form anymore in metadata.');
     }
-    return { filterFactor: 1 };
+    if (action.handledDatasets && action.handledDatasets[searchForm.dataset]) {
+      return failTest(`Actor ${this.name} can only be applied for the first page of a QPF dataset.`);
+    }
+    return passTest({ filterFactor: 1 });
   }
 
   /**

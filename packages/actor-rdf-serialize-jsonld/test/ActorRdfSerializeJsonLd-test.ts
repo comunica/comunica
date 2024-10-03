@@ -4,6 +4,7 @@ import type { IActionContext } from '@comunica/types';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import { ArrayIterator } from 'asynciterator';
 import { ActorRdfSerializeJsonLd } from '../lib/ActorRdfSerializeJsonLd';
+import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
 const streamifyArray = require('streamify-array');
@@ -222,7 +223,7 @@ describe('ActorRdfSerializeJsonLd', () => {
 
         it('should test on application/json', async() => {
           await expect(actor.test({ handle: { quadStream, context }, handleMediaType: 'application/json', context }))
-            .resolves.toBeTruthy();
+            .resolves.toPassTest({ handle: true });
         });
 
         it('should test on application/ld+json', async() => {
@@ -231,7 +232,7 @@ describe('ActorRdfSerializeJsonLd', () => {
             handleMediaType: 'application/ld+json',
             context,
           }))
-            .resolves.toBeTruthy();
+            .resolves.toPassTest({ handle: true });
         });
 
         it('should not test on N-Triples', async() => {
@@ -240,7 +241,7 @@ describe('ActorRdfSerializeJsonLd', () => {
             handleMediaType: 'application/n-triples',
             context,
           }))
-            .rejects.toBeTruthy();
+            .resolves.toFailTest(`Unrecognized media type: application/n-triples`);
         });
       });
 
@@ -264,7 +265,7 @@ describe('ActorRdfSerializeJsonLd', () => {
 
     describe('for getting media types', () => {
       it('should test', async() => {
-        await expect(actor.test({ mediaTypes: true, context })).resolves.toBeTruthy();
+        await expect(actor.test({ mediaTypes: true, context })).resolves.toPassTest({ mediaTypes: true });
       });
 
       it('should run', async() => {

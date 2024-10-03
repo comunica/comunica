@@ -1,7 +1,8 @@
 import type { IActorContextPreprocessOutput, IActorContextPreprocessArgs } from '@comunica/bus-context-preprocess';
 import { ActorContextPreprocess } from '@comunica/bus-context-preprocess';
 import { KeysInitQuery, KeysRdfUpdateQuads } from '@comunica/context-entries';
-import type { IActorTest, IAction } from '@comunica/core';
+import type { IActorTest, IAction, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import type { QuerySourceUnidentified } from '@comunica/types';
 
 /**
@@ -12,8 +13,8 @@ export class ActorContextPreprocessSourceToDestination extends ActorContextPrepr
     super(args);
   }
 
-  public async test(_action: IAction): Promise<IActorTest> {
-    return true;
+  public async test(_action: IAction): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async run(action: IAction): Promise<IActorContextPreprocessOutput> {

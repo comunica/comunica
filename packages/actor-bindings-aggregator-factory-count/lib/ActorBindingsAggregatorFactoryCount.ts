@@ -7,7 +7,8 @@ import {
   ActorBindingsAggregatorFactory,
 } from '@comunica/bus-bindings-aggregator-factory';
 
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import { Algebra } from 'sparqlalgebrajs';
 import { CountAggregator } from './CountAggregator';
 
@@ -19,12 +20,12 @@ export class ActorBindingsAggregatorFactoryCount extends ActorBindingsAggregator
     super(args);
   }
 
-  public async test(action: IActionBindingsAggregatorFactory): Promise<IActorTest> {
+  public async test(action: IActionBindingsAggregatorFactory): Promise<TestResult<IActorTest>> {
     if (action.expr.aggregator !== 'count' ||
       action.expr.expression.expressionType === Algebra.expressionTypes.WILDCARD) {
-      throw new Error('This actor only supports the \'count\' aggregator without wildcard.');
+      return failTest('This actor only supports the \'count\' aggregator without wildcard.');
     }
-    return {};
+    return passTestVoid();
   }
 
   public async run({ context, expr }: IActionBindingsAggregatorFactory):

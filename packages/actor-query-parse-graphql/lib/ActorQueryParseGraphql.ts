@@ -1,7 +1,8 @@
 import type { IActionQueryParse, IActorQueryParseArgs, IActorQueryParseOutput } from '@comunica/bus-query-parse';
 import { ActorQueryParse } from '@comunica/bus-query-parse';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import { Converter } from 'graphql-to-sparql';
 
 /**
@@ -15,11 +16,11 @@ export class ActorQueryParseGraphql extends ActorQueryParse {
     this.graphqlToSparql = new Converter({ requireContext: true });
   }
 
-  public async test(action: IActionQueryParse): Promise<IActorTest> {
+  public async test(action: IActionQueryParse): Promise<TestResult<IActorTest>> {
     if (action.queryFormat?.language !== 'graphql') {
-      throw new Error('This actor can only parse GraphQL queries');
+      return failTest('This actor can only parse GraphQL queries');
     }
-    return true;
+    return passTestVoid();
   }
 
   public async run(action: IActionQueryParse): Promise<IActorQueryParseOutput> {

@@ -1,10 +1,11 @@
 import 'jest-rdf';
 import { Readable } from 'node:stream';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActorDereferenceRdfOutput } from '@comunica/bus-dereference-rdf';
 import { KeysQueryOperation } from '@comunica/context-entries';
-import { ActionContext, Bus } from '@comunica/core';
+import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
@@ -12,7 +13,7 @@ import { DataFactory } from 'rdf-data-factory';
 import { PassThrough } from 'readable-stream';
 import { Factory } from 'sparqlalgebrajs';
 import { QuerySourceQpf } from '../lib/QuerySourceQpf';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
 const streamifyArray = require('streamify-array');
@@ -28,7 +29,6 @@ const pAllQuad = AF.createPattern(v1, v2, v3, v4);
 const pAllTriple = AF.createPattern(v1, v2, v3);
 
 describe('QuerySourceQpf', () => {
-  let bus: any;
   let metadata: any;
   let mediatorMetadata: any;
   let mediatorMetadataExtract: any;
@@ -41,8 +41,6 @@ describe('QuerySourceQpf', () => {
   let G: RDF.Term;
 
   beforeEach(() => {
-    bus = new Bus({ name: 'bus' });
-
     mediatorMetadata = {
       async mediate(args: any) {
         const data = new PassThrough({ objectMode: true });
@@ -339,7 +337,6 @@ describe('QuerySourceQpf', () => {
         await expect(metadataPromise).resolves.toEqual({
           availableOrders: undefined,
           order: undefined,
-          canContainUndefs: false,
           searchForms: {
             values: [
               {
@@ -353,12 +350,13 @@ describe('QuerySourceQpf', () => {
               },
             ],
           },
+          state: expect.any(MetadataValidationState),
           cardinality: { type: 'exact', value: 2 },
           variables: [
-            DF.variable('v1'),
-            DF.variable('v2'),
-            DF.variable('v3'),
-            DF.variable('v4'),
+            { variable: DF.variable('v1'), canBeUndef: false },
+            { variable: DF.variable('v2'), canBeUndef: false },
+            { variable: DF.variable('v3'), canBeUndef: false },
+            { variable: DF.variable('v4'), canBeUndef: false },
           ],
         });
       });
@@ -369,7 +367,6 @@ describe('QuerySourceQpf', () => {
         await expect(metadataPromise).resolves.toEqual({
           availableOrders: undefined,
           order: undefined,
-          canContainUndefs: false,
           searchForms: {
             values: [
               {
@@ -383,12 +380,13 @@ describe('QuerySourceQpf', () => {
               },
             ],
           },
+          state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: 2 },
           variables: [
-            DF.variable('v1'),
-            DF.variable('v2'),
-            DF.variable('v3'),
-            DF.variable('v4'),
+            { variable: DF.variable('v1'), canBeUndef: false },
+            { variable: DF.variable('v2'), canBeUndef: false },
+            { variable: DF.variable('v3'), canBeUndef: false },
+            { variable: DF.variable('v4'), canBeUndef: false },
           ],
         });
       });
@@ -400,7 +398,6 @@ describe('QuerySourceQpf', () => {
         await expect(metadataPromise).resolves.toEqual({
           availableOrders: undefined,
           order: undefined,
-          canContainUndefs: false,
           searchForms: {
             values: [
               {
@@ -414,11 +411,12 @@ describe('QuerySourceQpf', () => {
               },
             ],
           },
+          state: expect.any(MetadataValidationState),
           cardinality: { type: 'exact', value: 2 },
           variables: [
-            DF.variable('v1'),
-            DF.variable('v2'),
-            DF.variable('v3'),
+            { variable: DF.variable('v1'), canBeUndef: false },
+            { variable: DF.variable('v2'), canBeUndef: false },
+            { variable: DF.variable('v3'), canBeUndef: false },
           ],
         });
       });
@@ -429,17 +427,17 @@ describe('QuerySourceQpf', () => {
         await expect(metadataPromise).resolves.toEqual({
           availableOrders: undefined,
           order: undefined,
-          canContainUndefs: false,
           first: null,
           next: null,
           last: null,
           requestTime: 0,
           cardinality: { type: 'exact', value: 0 },
           variables: [
-            DF.variable('v1'),
-            DF.variable('v2'),
-            DF.variable('v3'),
+            { variable: DF.variable('v1'), canBeUndef: false },
+            { variable: DF.variable('v2'), canBeUndef: false },
+            { variable: DF.variable('v3'), canBeUndef: false },
           ],
+          state: expect.any(MetadataValidationState),
         });
       });
 
@@ -583,11 +581,11 @@ describe('QuerySourceQpf', () => {
         await expect(metadataPromise).resolves.toEqual({
           availableOrders: undefined,
           next: 'NEXT',
-          canContainUndefs: false,
           subsetOf: 'url',
           cardinality: { type: 'exact', value: 2 },
           order: undefined,
-          variables: [ v1, v2 ],
+          state: expect.any(MetadataValidationState),
+          variables: [{ variable: v1, canBeUndef: false }, { variable: v2, canBeUndef: false }],
         });
       });
 
@@ -597,11 +595,11 @@ describe('QuerySourceQpf', () => {
         await expect(metadataPromise).resolves.toEqual({
           availableOrders: undefined,
           next: 'NEXT',
-          canContainUndefs: false,
           subsetOf: 'url',
           cardinality: { type: 'estimate', value: 2 },
           order: undefined,
-          variables: [ v1, v2 ],
+          state: expect.any(MetadataValidationState),
+          variables: [{ variable: v1, canBeUndef: false }, { variable: v2, canBeUndef: false }],
         });
       });
 
@@ -798,7 +796,10 @@ describe('QuerySourceQpf', () => {
           'url',
           {
             bindings: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
-            metadata: <any> { variables: [ DF.variable('f1'), DF.variable('f2') ]},
+            metadata: <any> { variables: [
+              { variable: DF.variable('f1'), canBeUndef: false },
+              { variable: DF.variable('f2'), canBeUndef: false },
+            ]},
           },
         )).resolves.toBe(`url&values=(%3Ff1%20%3Ff2)%20%7B%20(%3Cex%3Acomunica%3Aunknown%3E)%20%7D`);
       });
@@ -819,7 +820,10 @@ describe('QuerySourceQpf', () => {
                 f2: DF.namedNode('a2'),
               }),
             ], { autoStart: false }),
-            metadata: <any> { variables: [ DF.variable('f1'), DF.variable('f2') ]},
+            metadata: <any> { variables: [
+              { variable: DF.variable('f1'), canBeUndef: false },
+              { variable: DF.variable('f2'), canBeUndef: false },
+            ]},
           },
         )).resolves.toBe(`url&values=(%3Ff1%20%3Ff2)%20%7B%20(%3Ca1%3E%20UNDEF%20)%20(UNDEF%20%3Ca2%3E%20)%20%7D`);
       });
@@ -946,7 +950,10 @@ describe('QuerySourceQpf', () => {
         ctx = ctx.set(KeysQueryOperation.unionDefaultGraph, true);
         const filterBindings: any = {
           bindings: new ArrayIterator([], { autoStart: false }),
-          metadata: { variables: [ DF.variable('f1'), DF.variable('f2') ]},
+          metadata: { variables: [
+            { variable: DF.variable('f1'), canBeUndef: false },
+            { variable: DF.variable('f2'), canBeUndef: false },
+          ]},
         };
         await expect(source.queryBindings(pAllQuad, ctx, { filterBindings })).toEqualBindingsStream([
           BF.fromRecord({

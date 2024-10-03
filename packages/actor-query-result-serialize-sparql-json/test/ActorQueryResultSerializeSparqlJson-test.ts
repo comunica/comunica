@@ -1,14 +1,15 @@
 import { PassThrough } from 'node:stream';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { ActorHttpInvalidateListenable, IInvalidateListener } from '@comunica/bus-http-invalidate';
 import { ActionContext, Bus } from '@comunica/core';
 import type { BindingsStream, IActionContext, MetadataBindings } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActionObserverHttp, ActorQueryResultSerializeSparqlJson } from '..';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -166,12 +167,15 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
         quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
       ]);
-      metadata = <any> { variables: [ DF.variable('k1'), DF.variable('k2') ]};
+      metadata = <any> { variables: [
+        { variable: DF.variable('k1'), canBeUndef: false },
+        { variable: DF.variable('k2'), canBeUndef: false },
+      ]};
     });
 
     describe('for getting media types', () => {
       it('should test', async() => {
-        await expect(actor.test({ context, mediaTypes: true })).resolves.toBeTruthy();
+        await expect(actor.test({ context, mediaTypes: true })).resolves.toPassTest({ mediaTypes: true });
       });
 
       it('should run', async() => {
@@ -188,7 +192,7 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
           handle: <any> { quadStream, type: 'quads' },
           handleMediaType: 'sparql-results+json',
         }))
-          .rejects.toBeTruthy();
+          .resolves.toFailTest(`This actor can only handle bindings streams or booleans.`);
       });
 
       it('should test on sparql-results+json bindings', async() => {
@@ -197,7 +201,7 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
           handle: <any> { bindingsStream, type: 'bindings' },
           handleMediaType: 'sparql-results+json',
         }))
-          .resolves.toBeTruthy();
+          .resolves.toPassTest({ handle: true });
       });
 
       it('should test on sparql-results+json booleans', async() => {
@@ -206,7 +210,7 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
           handle: <any> { execute: () => Promise.resolve(true), type: 'boolean' },
           handleMediaType: 'sparql-results+json',
         }))
-          .resolves.toBeTruthy();
+          .resolves.toPassTest({ handle: true });
       });
 
       it('should not test on N-Triples', async() => {
@@ -216,7 +220,7 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
           handle: <any> { bindingsStream: stream, type: 'bindings' },
           handleMediaType: 'application/n-triples',
         }))
-          .rejects.toBeTruthy();
+          .resolves.toFailTest(`Unrecognized media type: application/n-triples`);
 
         stream.destroy();
       });

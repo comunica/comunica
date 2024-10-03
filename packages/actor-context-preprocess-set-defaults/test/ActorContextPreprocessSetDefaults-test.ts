@@ -1,7 +1,8 @@
-import { KeysCore, KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
+import { KeysCore, KeysQuerySourceIdentify, KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorContextPreprocessSetDefaults } from '../lib/ActorContextPreprocessSetDefaults';
+import '@comunica/utils-jest';
 
 describe('ActorContextPreprocessSetDefaults', () => {
   let bus: any;
@@ -18,7 +19,7 @@ describe('ActorContextPreprocessSetDefaults', () => {
     });
 
     it('should test', async() => {
-      await expect(actor.test({ context: new ActionContext() })).resolves.toBeTruthy();
+      await expect(actor.test({ context: new ActionContext() })).resolves.toPassTestVoid();
     });
 
     describe('run', () => {
@@ -34,6 +35,7 @@ describe('ActorContextPreprocessSetDefaults', () => {
         expect(contextOut).toEqual(new ActionContext({
           [KeysInitQuery.dataFactory.name]: expect.any(DataFactory),
           [KeysInitQuery.queryTimestamp.name]: expect.any(Date),
+          [KeysInitQuery.queryTimestampHighResolution.name]: expect.anything(),
           [KeysQuerySourceIdentify.sourceIds.name]: new Map(),
           [KeysCore.log.name]: 'L',
           [KeysInitQuery.functionArgumentsCache.name]: {},
@@ -50,6 +52,7 @@ describe('ActorContextPreprocessSetDefaults', () => {
         expect(contextOut).toEqual(new ActionContext({
           [KeysInitQuery.dataFactory.name]: expect.any(DataFactory),
           [KeysInitQuery.queryTimestamp.name]: expect.any(Date),
+          [KeysInitQuery.queryTimestampHighResolution.name]: expect.anything(),
           [KeysQuerySourceIdentify.sourceIds.name]: new Map(),
           [KeysCore.log.name]: 'L',
           [KeysInitQuery.functionArgumentsCache.name]: {},

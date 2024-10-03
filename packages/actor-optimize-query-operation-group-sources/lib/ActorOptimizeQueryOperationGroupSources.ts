@@ -4,10 +4,16 @@ import type {
   IActorOptimizeQueryOperationArgs,
 } from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
-import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext, IQuerySourceWrapper } from '@comunica/types';
+import {
+  assignOperationSource,
+  doesShapeAcceptOperation,
+  getOperationSource,
+  removeOperationSource,
+} from '@comunica/utils-query-operation';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 
 /**
@@ -18,11 +24,11 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
     super(args);
   }
 
-  public async test(action: IActionOptimizeQueryOperation): Promise<IActorTest> {
-    if (ActorQueryOperation.getOperationSource(action.operation)) {
-      throw new Error(`Actor ${this.name} does not work with top-level operation sources.`);
+  public async test(action: IActionOptimizeQueryOperation): Promise<TestResult<IActorTest>> {
+    if (getOperationSource(action.operation)) {
+      return failTest(`Actor ${this.name} does not work with top-level operation sources.`);
     }
-    return true;
+    return passTestVoid();
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
@@ -41,7 +47,7 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
     const algebraFactory = new Factory(dataFactory);
 
     // Return operation as-is if the operation already has a single source, or if the operation has no children.
-    if (ActorQueryOperation.getOperationSource(operation) ?? !('input' in operation)) {
+    if (getOperationSource(operation) ?? !('input' in operation)) {
       return operation;
     }
 
@@ -49,12 +55,11 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
     if (!Array.isArray(operation.input)) {
       const groupedInput = await this.groupOperation(operation.input, context);
       if (groupedInput.metadata?.scopedSource) {
-        const source: IQuerySourceWrapper = ActorQueryOperation.getOperationSource(groupedInput)!;
-        if (ActorQueryOperation
-          .doesShapeAcceptOperation(await source.source.getSelectorShape(context), operation)) {
+        const source: IQuerySourceWrapper = <IQuerySourceWrapper> getOperationSource(groupedInput);
+        if (doesShapeAcceptOperation(await source.source.getSelectorShape(context), operation)) {
           this.logDebug(context, `Hoist 1 source-specific operation into a single ${operation.type} operation for ${source.source.toString()}`);
-          ActorQueryOperation.removeOperationSource(groupedInput);
-          operation = ActorQueryOperation.assignOperationSource(operation, source);
+          removeOperationSource(groupedInput);
+          operation = assignOperationSource(operation, source);
         }
       }
       return <Algebra.Operation> { ...operation, input: groupedInput };
@@ -68,7 +73,7 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
     // If we just have a single cluster, move the source annotation upwards
     if (clusters.length === 1) {
       const newInputs = clusters[0];
-      const source = ActorQueryOperation.getOperationSource(clusters[0][0])!;
+      const source = getOperationSource(clusters[0][0])!;
       return <Algebra.Operation> {
         ...await this.moveSourceAnnotationUpwardsIfPossible(operation, newInputs, source, context),
         input: newInputs,
@@ -114,10 +119,10 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
   ): Promise<Algebra.Operation> {
     let flatten = true;
     const nestedMerges = await Promise.all(clusters.map(async(cluster) => {
-      const source = ActorQueryOperation.getOperationSource(cluster[0])!;
+      const source = getOperationSource(cluster[0])!;
       const merged = await this
         .moveSourceAnnotationUpwardsIfPossible(factoryMethod(cluster, true), cluster, source, context);
-      if (ActorQueryOperation.getOperationSource(merged)) {
+      if (getOperationSource(merged)) {
         flatten = false;
       }
       return merged;
@@ -136,7 +141,7 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
 
     // Cluster by source
     for (const operation of operationsIn) {
-      const source: IQuerySourceWrapper = ActorQueryOperation.getOperationSource(operation)!;
+      const source = getOperationSource(operation);
       if (source) {
         if (!sourceOperations.has(source)) {
           sourceOperations.set(source, []);
@@ -154,7 +159,7 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
     }
     for (const [ source, operations ] of sourceOperations.entries()) {
       clusters.push(operations
-        .map(operation => ActorQueryOperation.assignOperationSource(operation, source)));
+        .map(operation => assignOperationSource(operation, source)));
     }
     return clusters;
   }
@@ -174,12 +179,11 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
     source: IQuerySourceWrapper | undefined,
     context: IActionContext,
   ): Promise<O> {
-    if (source && ActorQueryOperation
-      .doesShapeAcceptOperation(await source.source.getSelectorShape(context), operation)) {
+    if (source && doesShapeAcceptOperation(await source.source.getSelectorShape(context), operation)) {
       this.logDebug(context, `Hoist ${inputs.length} source-specific operations into a single ${operation.type} operation for ${source.source.toString()}`);
-      operation = ActorQueryOperation.assignOperationSource(operation, source);
+      operation = assignOperationSource(operation, source);
       for (const input of inputs) {
-        ActorQueryOperation.removeOperationSource(input);
+        removeOperationSource(input);
       }
     }
     return operation;

@@ -4,7 +4,8 @@ import type {
   IActorRdfResolveHypermediaLinksQueueOutput,
 } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import { ActorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import { LinkQueueFifo } from './LinkQueueFifo';
 
 /**
@@ -15,8 +16,8 @@ export class ActorRdfResolveHypermediaLinksQueueFifo extends ActorRdfResolveHype
     super(args);
   }
 
-  public async test(_action: IActionRdfResolveHypermediaLinksQueue): Promise<IActorTest> {
-    return true;
+  public async test(_action: IActionRdfResolveHypermediaLinksQueue): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async run(

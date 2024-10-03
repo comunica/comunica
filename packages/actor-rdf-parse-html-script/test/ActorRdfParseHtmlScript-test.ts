@@ -7,6 +7,7 @@ import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfParseHtmlScript } from '../lib/ActorRdfParseHtmlScript';
 import { HtmlScriptListener } from '../lib/HtmlScriptListener';
+import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
 
@@ -91,7 +92,7 @@ describe('ActorRdfParseHtml', () => {
 
     describe('test', () => {
       it('should return true', async() => {
-        await expect(actor.test(<any> {})).resolves.toBeTruthy();
+        await expect(actor.test(<any> {})).resolves.toPassTestVoid();
       });
     });
 

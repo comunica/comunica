@@ -1,11 +1,12 @@
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActionContext, IActionContextKey } from '@comunica/types';
+import { DataFactory } from 'rdf-data-factory';
 import { ActionContext, ActionContextKey } from '../lib';
 
 describe('ActionContext', () => {
   const key1: IActionContextKey<string> = new ActionContextKey<string>('key1');
   const key2: IActionContextKey<number> = new ActionContextKey<number>('key2');
   const key3: IActionContextKey<boolean[]> = new ActionContextKey<boolean[]>('key3');
-  const key4: IActionContextKey<boolean[]> = new ActionContextKey<boolean[]>('key4');
 
   describe('for an empty instance', () => {
     let context: IActionContext;
@@ -22,6 +23,7 @@ describe('ActionContext', () => {
 
         expect(context.get(key1)).toBe('abc');
         expect(context.get(key2)).toBe(123);
+        context.getSafe(key3).slice(1, 2);
         expect(context.get(key3)).toEqual([ true, false ]);
       });
 
@@ -44,7 +46,7 @@ describe('ActionContext', () => {
 
       it('should fail during compilation for an incorrect key value', () => {
         // @ts-expect-error
-        const a: number = context.get(key1);
+        const _a: number = context.get(key1);
       });
     });
 
@@ -61,14 +63,23 @@ describe('ActionContext', () => {
         expect(context.getSafe(key3)).toEqual([ true, false ]);
       });
 
+      it('should get a complex object', () => {
+        context = context
+          .set(KeysInitQuery.dataFactory, new DataFactory());
+
+        const df = context.getSafe(KeysInitQuery.dataFactory);
+        expect(df).toBeInstanceOf(DataFactory);
+        expect(df.literal('abc').termType).toBe('Literal');
+      });
+
       it('should fail during compilation for an incorrect key value', () => {
         // @ts-expect-error
-        const a: number = context.getSafe(key1);
+        const _a: number = context.getSafe(key1);
       });
 
       it('should fail during compilation for an undefined casting', () => {
         // @ts-expect-error
-        const a: undefined = context.getSafe(key1);
+        const _a: undefined = context.getSafe(key1);
       });
     });
 

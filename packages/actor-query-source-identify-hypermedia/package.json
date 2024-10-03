@@ -4,6 +4,10 @@
   "description": "A hypermedia query-source-identify actor",
   "lsd:module": true,
   "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
@@ -38,10 +42,8 @@
   },
   "dependencies": {
     "@comunica/actor-query-source-identify-rdfjs": "^3.2.2",
-    "@comunica/bindings-factory": "^3.2.1",
     "@comunica/bus-dereference-rdf": "^3.2.1",
     "@comunica/bus-merge-bindings-context": "^3.2.1",
-    "@comunica/bus-query-operation": "^3.2.2",
     "@comunica/bus-query-source-identify": "^3.2.2",
     "@comunica/bus-query-source-identify-hypermedia": "^3.2.1",
     "@comunica/bus-rdf-metadata": "^3.2.1",
@@ -51,13 +53,15 @@
     "@comunica/bus-rdf-resolve-hypermedia-links-queue": "^3.2.1",
     "@comunica/context-entries": "^3.2.1",
     "@comunica/core": "^3.2.1",
-    "@comunica/metadata": "^3.2.1",
     "@comunica/types": "^3.2.1",
+    "@comunica/utils-bindings-factory": "^3.2.1",
+    "@comunica/utils-iterator": "^3.2.1",
+    "@comunica/utils-metadata": "^3.2.1",
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0",
     "lru-cache": "^10.0.0",
     "rdf-streaming-store": "^1.1.4",
-    "readable-stream": "^4.4.2",
-    "sparqlalgebrajs": "^4.3.7"
+    "readable-stream": "^4.5.2",
+    "sparqlalgebrajs": "^4.3.8"
   }
 }

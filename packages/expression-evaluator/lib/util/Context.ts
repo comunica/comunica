@@ -1,5 +1,5 @@
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
-import type { AsyncExtensionFunction, IActionContext } from '@comunica/types';
+import type { AsyncExtensionFunction, GeneralSuperTypeDict, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
 import { extractTimeZone } from './DateTimeHelpers';
@@ -35,7 +35,7 @@ export function prepareEvaluatorActionContext(orgContext: IActionContext): IActi
   );
 
   context = context.setDefault(KeysExpressionEvaluator.superTypeProvider, {
-    cache: new LRUCache({ max: 1_000 }),
+    cache: new LRUCache<string, GeneralSuperTypeDict>({ max: 1_000 }),
     discoverer: () => 'term',
   });
 

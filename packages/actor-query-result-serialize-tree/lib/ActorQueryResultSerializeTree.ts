@@ -5,7 +5,8 @@ import type {
 } from '@comunica/bus-query-result-serialize';
 import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-result-serialize';
 import { KeysInitQuery } from '@comunica/context-entries';
-import { ActionContext } from '@comunica/core';
+import type { TestResult } from '@comunica/core';
+import { ActionContext, failTest, passTestVoid } from '@comunica/core';
 import type { IQueryOperationResultBindings, BindingsStream, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { Readable } from 'readable-stream';
@@ -49,11 +50,11 @@ export class ActorQueryResultSerializeTree extends ActorQueryResultSerializeFixe
         .map(([ key, value ]) => [ key.value, value ]))).toArray(), schema);
   }
 
-  public override async testHandleChecked(action: IActionSparqlSerialize): Promise<boolean> {
+  public override async testHandleChecked(action: IActionSparqlSerialize): Promise<TestResult<boolean>> {
     if (action.type !== 'bindings') {
-      throw new Error('This actor can only handle bindings streams.');
+      return failTest('This actor can only handle bindings streams.');
     }
-    return true;
+    return passTestVoid();
   }
 
   public async runHandle(

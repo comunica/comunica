@@ -3,6 +3,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultVoid } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationDrop } from '../lib/ActorQueryOperationDrop';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 
@@ -29,7 +30,7 @@ describe('ActorQueryOperationDrop', () => {
 
     it('should test on clear', async() => {
       const op: any = { operation: { type: 'drop' }, context: new ActionContext() };
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should not test on readOnly', async() => {
@@ -37,12 +38,12 @@ describe('ActorQueryOperationDrop', () => {
         operation: { type: 'drop' },
         context: new ActionContext({ [KeysQueryOperation.readOnly.name]: true }),
       };
-      await expect(actor.test(op)).rejects.toThrow(`Attempted a write operation in read-only mode`);
+      await expect(actor.test(op)).resolves.toFailTest(`Attempted a write operation in read-only mode`);
     });
 
     it('should not test on non-clear', async() => {
       const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports drop operations, but got some-other-type`);
     });
 
     it('should run for default graph', async() => {
@@ -53,7 +54,7 @@ describe('ActorQueryOperationDrop', () => {
         },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = <IQueryOperationResultVoid> await actor.run(op);
+      const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
       expect(output.type).toBe('void');
       await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].deleteGraphs).toEqual({
@@ -72,7 +73,7 @@ describe('ActorQueryOperationDrop', () => {
         },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = <IQueryOperationResultVoid> await actor.run(op);
+      const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
       expect(output.type).toBe('void');
       await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].deleteGraphs).toEqual({
@@ -90,7 +91,7 @@ describe('ActorQueryOperationDrop', () => {
         },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = <IQueryOperationResultVoid> await actor.run(op);
+      const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
       expect(output.type).toBe('void');
       await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].deleteGraphs).toEqual({
@@ -108,7 +109,7 @@ describe('ActorQueryOperationDrop', () => {
         },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = <IQueryOperationResultVoid> await actor.run(op);
+      const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
       expect(output.type).toBe('void');
       await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].deleteGraphs).toEqual({
@@ -126,7 +127,7 @@ describe('ActorQueryOperationDrop', () => {
         },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = <IQueryOperationResultVoid> await actor.run(op);
+      const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
       expect(output.type).toBe('void');
       await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].deleteGraphs).toEqual({

@@ -1,5 +1,4 @@
 import { QuerySourceRdfJs } from '@comunica/actor-query-source-identify-rdfjs';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type {
   IActionQuerySourceIdentifyHypermedia,
@@ -9,7 +8,10 @@ import type {
 } from '@comunica/bus-query-source-identify-hypermedia';
 import { ActorQuerySourceIdentifyHypermedia } from '@comunica/bus-query-source-identify-hypermedia';
 import { KeysInitQuery } from '@comunica/context-entries';
+import type { TestResult } from '@comunica/core';
+import { passTest } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { storeStream } from 'rdf-store-stream';
 
 /**
@@ -24,8 +26,8 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
 
   public async testMetadata(
     _action: IActionQuerySourceIdentifyHypermedia,
-  ): Promise<IActorQuerySourceIdentifyHypermediaTest> {
-    return { filterFactor: 0 };
+  ): Promise<TestResult<IActorQuerySourceIdentifyHypermediaTest>> {
+    return passTest({ filterFactor: 0 });
   }
 
   public async run(action: IActionQuerySourceIdentifyHypermedia): Promise<IActorQuerySourceIdentifyHypermediaOutput> {

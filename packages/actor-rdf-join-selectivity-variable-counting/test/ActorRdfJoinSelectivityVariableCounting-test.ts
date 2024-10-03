@@ -4,6 +4,7 @@ import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorRdfJoinSelectivityVariableCounting, JoinTypes } from '../lib/ActorRdfJoinSelectivityVariableCounting';
+import '@comunica/utils-jest';
 
 const F = new Factory();
 const DF = new DataFactory();
@@ -26,7 +27,7 @@ describe('ActorRdfJoinSelectivityVariableCounting', () => {
 
     describe('test', () => {
       it('should return 0.5', async() => {
-        await expect(actor.test(<any> {})).resolves.toEqual({ accuracy: 0.5 });
+        await expect(actor.test(<any> {})).resolves.toPassTest({ accuracy: 0.5 });
       });
     });
 

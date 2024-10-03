@@ -7,12 +7,19 @@
     "packages/actor-init-sparql",
     "packages/actor-init-sparql-file",
     "packages/actor-init-sparql-rdfjs",
-    "packages/bindings-factory",
     "packages/context-entries",
-    "packages/data-factory",
-    "packages/jest",
     "packages/packager",
-    "packages/runner-cli"
+    "packages/runner-cli",
+    "packages/statistic-base",
+    "packages/statistic-link-dereference",
+    "packages/statistic-link-discovery",
+    "packages/utils-bindings-factory",
+    "packages/utils-bindings-index",
+    "packages/utils-data-factory",
+    "packages/utils-iterator",
+    "packages/utils-jest",
+    "packages/utils-monorepo",
+    "packages/utils-query-operation"
   ],
   "ignoreComponents": [
     "Error",
@@ -44,6 +51,11 @@
     "Response",
     "RequestInfo",
     "RequestInit",
+
+    "IStatistic",
+    "ILink",
+    "StatisticLinkDiscovery",
+    "StatisticLinkDereference",
 
     "IQueryableResultStream",
     "IQueryableResultBindings",

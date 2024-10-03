@@ -6,11 +6,7 @@ import { LoggerVoid } from '@comunica/logger-void';
 import { MediatorRace } from '@comunica/mediator-race';
 import type { IActionContext } from '@comunica/types';
 import { ActorDereferenceHttp } from '../lib/ActorDereferenceHttp';
-
-// TODO: Remove when targeting NodeJS 18+
-if (!globalThis.ReadableStream) {
-  globalThis.ReadableStream = require('web-streams-ponyfill').ReadableStream;
-}
+import '@comunica/utils-jest';
 
 describe('ActorDereferenceHttp', () => {
   let bus: any;
@@ -125,15 +121,16 @@ describe('ActorDereferenceHttp', () => {
     });
 
     it('should test on https', async() => {
-      await expect(actor.test({ url: 'https://www.google.com/', context })).resolves.toBeTruthy();
+      await expect(actor.test({ url: 'https://www.google.com/', context })).resolves.toPassTestVoid();
     });
 
     it('should test on http', async() => {
-      await expect(actor.test({ url: 'http://www.google.com/', context })).resolves.toBeTruthy();
+      await expect(actor.test({ url: 'http://www.google.com/', context })).resolves.toPassTestVoid();
     });
 
     it('should not test on ftp', async() => {
-      await expect(actor.test({ url: 'ftp://www.google.com/', context })).rejects.toBeTruthy();
+      await expect(actor.test({ url: 'ftp://www.google.com/', context })).resolves
+        .toFailTest(`Cannot retrieve ftp://www.google.com/ because it is not an HTTP(S) URL.`);
     });
 
     it('should run with a web stream', async() => {
@@ -166,7 +163,6 @@ describe('ActorDereferenceHttp', () => {
     });
 
     it('should run with an text/plain content type', async() => {
-      const headers = new Headers({});
       const output = await actor.run({ url: 'https://www.google.com/plaincontenttype', context });
       expect(output.url).toBe('https://www.google.com/index.html');
       expect(output.headers).toEqual(new Headers({ 'content-type': 'text/plain' }));

@@ -1,18 +1,16 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
-import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationNop } from '../lib/ActorQueryOperationNop';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
 const mediatorMergeBindingsContext: any = {
-  mediate(arg: any) {
-    return {};
-  },
+  mediate: () => ({}),
 };
 
 describe('ActorQueryOperationNop', () => {
@@ -31,8 +29,7 @@ describe('ActorQueryOperationNop', () => {
         metadata: () => Promise.resolve({ cardinality: 3 }),
         operated: arg,
         type: 'bindings',
-        variables: [ DF.variable('a') ],
-        canContainUndefs: false,
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       }),
     };
   });
@@ -46,12 +43,12 @@ describe('ActorQueryOperationNop', () => {
 
     it('should test on nop', async() => {
       const op: any = { operation: { type: 'nop' }, context: new ActionContext() };
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should not test on non-nop', async() => {
       const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports nop operations, but got some-other-type`);
     });
 
     it('should run', async() => {
@@ -59,10 +56,10 @@ describe('ActorQueryOperationNop', () => {
         operation: { type: 'nop' },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.bindingsStream).toEqualBindingsStream([ BF.bindings() ]);
       await expect(output.metadata()).resolves
-        .toMatchObject({ cardinality: { type: 'exact', value: 1 }, canContainUndefs: false, variables: []});
+        .toMatchObject({ cardinality: { type: 'exact', value: 1 }, variables: []});
     });
   });
 });

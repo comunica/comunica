@@ -1,13 +1,14 @@
 import { Readable } from 'node:stream';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActionContext, Bus } from '@comunica/core';
 import type { BindingsStream, IActionContext } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryResultSerializeJson } from '..';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -83,7 +84,7 @@ describe('ActorQueryResultSerializeJson', () => {
 
     describe('for getting media types', () => {
       it('should test', async() => {
-        await expect(actor.test({ mediaTypes: true, context })).resolves.toBeTruthy();
+        await expect(actor.test({ mediaTypes: true, context })).resolves.toPassTest({ mediaTypes: true });
       });
 
       it('should run', async() => {
@@ -102,7 +103,7 @@ describe('ActorQueryResultSerializeJson', () => {
             handleMediaType: 'application/json',
             context,
           }))
-          .resolves.toBeTruthy();
+          .resolves.toPassTest({ handle: true });
 
         stream.destroy();
       });
@@ -114,7 +115,7 @@ describe('ActorQueryResultSerializeJson', () => {
           handleMediaType: 'application/json',
           context,
         }))
-          .resolves.toBeTruthy();
+          .resolves.toPassTest({ handle: true });
         stream.destroy();
       });
 
@@ -124,7 +125,7 @@ describe('ActorQueryResultSerializeJson', () => {
           handleMediaType: 'application/json',
           context,
         }))
-          .resolves.toBeTruthy();
+          .resolves.toPassTest({ handle: true });
       });
 
       it('should not test on N-Triples', async() => {
@@ -136,7 +137,7 @@ describe('ActorQueryResultSerializeJson', () => {
             context,
           },
         ))
-          .rejects.toBeTruthy();
+          .resolves.toFailTest(`Unrecognized media type: application/n-triples`);
 
         stream.destroy();
       });
@@ -149,7 +150,7 @@ describe('ActorQueryResultSerializeJson', () => {
             context,
           },
         ))
-          .rejects.toBeTruthy();
+          .resolves.toFailTest(`This actor can only handle bindings or quad streams.`);
       });
 
       it('should run on a bindings stream', async() => {

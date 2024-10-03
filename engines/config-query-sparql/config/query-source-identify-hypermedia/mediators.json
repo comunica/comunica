@@ -7,6 +7,6 @@
   "@type": "MediatorNumber",
   "type": "max",
   "field": "filterFactor",
-  "ignoreErrors": true,
+  "ignoreFailures": true,
   "bus": { "@id": "ActorQuerySourceIdentifyHypermedia:_default_bus" }
 }

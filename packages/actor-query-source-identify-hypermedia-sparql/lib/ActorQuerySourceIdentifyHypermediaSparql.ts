@@ -1,4 +1,3 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorHttp } from '@comunica/bus-http';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type {
@@ -11,7 +10,10 @@ import {
   ActorQuerySourceIdentifyHypermedia,
 } from '@comunica/bus-query-source-identify-hypermedia';
 import { KeysInitQuery } from '@comunica/context-entries';
+import type { TestResult } from '@comunica/core';
+import { failTest, passTest } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { QuerySourceSparql } from './QuerySourceSparql';
 
@@ -33,12 +35,12 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
 
   public async testMetadata(
     action: IActionQuerySourceIdentifyHypermedia,
-  ): Promise<IActorQuerySourceIdentifyHypermediaTest> {
+  ): Promise<TestResult<IActorQuerySourceIdentifyHypermediaTest>> {
     if (!action.forceSourceType && !action.metadata.sparqlService &&
       !(this.checkUrlSuffix && action.url.endsWith('/sparql'))) {
-      throw new Error(`Actor ${this.name} could not detect a SPARQL service description or URL ending on /sparql.`);
+      return failTest(`Actor ${this.name} could not detect a SPARQL service description or URL ending on /sparql.`);
     }
-    return { filterFactor: 1 };
+    return passTest({ filterFactor: 1 });
   }
 
   public async run(action: IActionQuerySourceIdentifyHypermedia): Promise<IActorQuerySourceIdentifyHypermediaOutput> {

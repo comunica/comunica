@@ -5,6 +5,8 @@ import type {
 } from '@comunica/bus-query-result-serialize';
 import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-result-serialize';
 import { KeysInitQuery } from '@comunica/context-entries';
+import type { TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import type {
   Bindings,
   ComunicaDataFactory,
@@ -39,11 +41,14 @@ export class ActorQueryResultSerializeTable extends ActorQueryResultSerializeFix
     return str.repeat(count);
   }
 
-  public override async testHandleChecked(action: IActionSparqlSerialize, _context: IActionContext): Promise<boolean> {
+  public override async testHandleChecked(
+    action: IActionSparqlSerialize,
+    _context: IActionContext,
+  ): Promise<TestResult<boolean>> {
     if (![ 'bindings', 'quads' ].includes(action.type)) {
-      throw new Error('This actor can only handle bindings or quad streams.');
+      return failTest('This actor can only handle bindings or quad streams.');
     }
-    return true;
+    return passTestVoid();
   }
 
   public termToString(term: RDF.Term): string {
@@ -78,7 +83,7 @@ export class ActorQueryResultSerializeTable extends ActorQueryResultSerializeFix
       resultStream = (<IQueryOperationResultBindings>action).bindingsStream.map(
         bindings => this.createRow(labels, bindings),
       );
-      const labels = (await (<IQueryOperationResultBindings>action).metadata()).variables;
+      const labels = (await (<IQueryOperationResultBindings>action).metadata()).variables.map(v => v.variable);
       this.pushHeader(data, labels);
     } else {
       resultStream = (<IQueryOperationResultQuads>action).quadStream.map(quad => `${getTerms(quad).map(term => this.pad(this.termToString(term))).join(' ')}\n`);

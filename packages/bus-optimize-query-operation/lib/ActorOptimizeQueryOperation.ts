@@ -14,12 +14,14 @@ import type { Algebra } from 'sparqlalgebrajs';
  * @see IActionOptimizeQueryOperation
  * @see IActorOptimizeQueryOperationOutput
  */
-export abstract class ActorOptimizeQueryOperation
-  extends Actor<IActionOptimizeQueryOperation, IActorTest, IActorOptimizeQueryOperationOutput> {
+export abstract class ActorOptimizeQueryOperation<TS = undefined>
+  extends Actor<IActionOptimizeQueryOperation, IActorTest, IActorOptimizeQueryOperationOutput, TS> {
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {Query optimization failed: none of the configured actors were able to optimize} busFailMessage
    */
-  public constructor(args: IActorOptimizeQueryOperationArgs) {
+  public constructor(args: IActorOptimizeQueryOperationArgs<TS>) {
     super(args);
   }
 }
@@ -33,10 +35,11 @@ export interface IActorOptimizeQueryOperationOutput extends IActorOutput {
   context: IActionContext;
 }
 
-export type IActorOptimizeQueryOperationArgs = IActorArgs<
+export type IActorOptimizeQueryOperationArgs<TS = undefined> = IActorArgs<
 IActionOptimizeQueryOperation,
 IActorTest,
-IActorOptimizeQueryOperationOutput
+IActorOptimizeQueryOperationOutput,
+TS
 >;
 
 export type MediatorOptimizeQueryOperation = Mediate<

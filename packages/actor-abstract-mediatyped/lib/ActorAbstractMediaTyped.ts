@@ -1,5 +1,5 @@
-import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
-import { Actor } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate, TestResult } from '@comunica/core';
+import { failTest, Actor } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 
 /**
@@ -13,8 +13,12 @@ import type { IActionContext } from '@comunica/types';
  *
  * @see ActorAbstractMediaTypedFixed
  */
-export abstract class ActorAbstractMediaTyped<HI, HT, HO>
-  extends Actor<IActionAbstractMediaTyped<HI>, IActorTestAbstractMediaTyped<HT>, IActorOutputAbstractMediaTyped<HO>> {
+export abstract class ActorAbstractMediaTyped<HI, HT, HO> extends Actor<
+  IActionAbstractMediaTyped<HI>,
+IActorTestAbstractMediaTyped<HT>,
+IActorOutputAbstractMediaTyped<HO>,
+undefined
+> {
   public constructor(args: IActorArgsMediaTyped<HI, HT, HO>) {
     super(args);
   }
@@ -33,18 +37,21 @@ export abstract class ActorAbstractMediaTyped<HI, HT, HO>
     throw new Error('Either a handle, mediaTypes or mediaTypeFormats action needs to be provided');
   }
 
-  public async test(action: IActionAbstractMediaTyped<HI>): Promise<IActorTestAbstractMediaTyped<HT>> {
+  public async test(action: IActionAbstractMediaTyped<HI>): Promise<TestResult<IActorTestAbstractMediaTyped<HT>>> {
     if ('handle' in action) {
       const typedAction: IActionAbstractMediaTypedHandle<HI> = action;
-      return { handle: await this.testHandle(typedAction.handle, typedAction.handleMediaType, action.context) };
+      return (await this.testHandle(typedAction.handle, typedAction.handleMediaType, action.context))
+        .map(handle => ({ handle }));
     }
     if ('mediaTypes' in action) {
-      return { mediaTypes: await this.testMediaType(action.context) };
+      return (await this.testMediaType(action.context))
+        .map(mediaTypes => ({ mediaTypes }));
     }
     if ('mediaTypeFormats' in action) {
-      return { mediaTypeFormats: await this.testMediaTypeFormats(action.context) };
+      return (await this.testMediaTypeFormats(action.context))
+        .map(mediaTypeFormats => ({ mediaTypeFormats }));
     }
-    throw new Error('Either a handle, mediaTypes or mediaTypeFormats action needs to be provided');
+    return failTest('Either a handle, mediaTypes or mediaTypeFormats action needs to be provided');
   }
 
   /**
@@ -56,7 +63,8 @@ export abstract class ActorAbstractMediaTyped<HI, HT, HO>
    * @param {ActionContext} context An optional context.
    * @return {Promise<T>} A promise that resolves to the handle test result.
    */
-  public abstract testHandle(action: HI, mediaType: string | undefined, context: IActionContext): Promise<HT>;
+  public abstract testHandle(
+    action: HI, mediaType: string | undefined, context: IActionContext): Promise<TestResult<HT>>;
 
   /**
    * Run the given handle action on this actor.
@@ -74,7 +82,7 @@ export abstract class ActorAbstractMediaTyped<HI, HT, HO>
    * @param {ActionContext} context An optional context.
    * @return {Promise<boolean>} A promise that resolves to the media type run result.
    */
-  public abstract testMediaType(context: IActionContext): Promise<boolean>;
+  public abstract testMediaType(context: IActionContext): Promise<TestResult<boolean>>;
 
   /**
    * Get the media type of this given actor.
@@ -90,7 +98,7 @@ export abstract class ActorAbstractMediaTyped<HI, HT, HO>
    * @param {ActionContext} context An optional context.
    * @return {Promise<boolean>} A promise that resolves to the media type run result.
    */
-  public abstract testMediaTypeFormats(context: IActionContext): Promise<boolean>;
+  public abstract testMediaTypeFormats(context: IActionContext): Promise<TestResult<boolean>>;
 
   /**
    * Get the media type formats of this given actor.

@@ -1,7 +1,14 @@
-import type { ILink } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { ILinkQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
-import { MetadataValidationState } from '@comunica/metadata';
-import type { IQuerySource, IActionContext, MetadataBindings, IQueryBindingsOptions } from '@comunica/types';
+import { KeysStatistics } from '@comunica/context-entries';
+import type {
+  ILink,
+  IQuerySource,
+  IActionContext,
+  MetadataBindings,
+  IQueryBindingsOptions,
+  IStatisticBase,
+} from '@comunica/types';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator, BufferedIteratorOptions } from 'asynciterator';
 import { BufferedIterator } from 'asynciterator';
@@ -117,7 +124,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
    * Determine the links to be followed from the current source given its metadata.
    * @param metadata The metadata of a source.
    */
-  protected abstract getSourceLinks(metadata: Record<string, any>): Promise<ILink[]>;
+  protected abstract getSourceLinks(metadata: Record<string, any>, startSource: ISourceState): Promise<ILink[]>;
 
   public override _read(count: number, done: () => void): void {
     if (this.started) {
@@ -253,7 +260,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
               }
 
               // Determine next urls, which will eventually become a next-next source.
-              this.getSourceLinks(returnMetadata)
+              this.getSourceLinks(returnMetadata, startSource)
                 .then((nextUrls: ILink[]) => Promise.all(nextUrls))
                 .then(async(nextUrls: ILink[]) => {
                   // Append all next URLs to our queue
@@ -308,6 +315,20 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
             this.iteratorsPendingCreation++;
             this.sourceStateGetter(nextLink, handledDatasets)
               .then((nextSourceState) => {
+                // If we find a statistic tracking dereference events we emit the relevant data
+                const statisticDereferenceLinks: IStatisticBase<ILink> | undefined = this.context.get(
+                  KeysStatistics.dereferencedLinks,
+                );
+                if (statisticDereferenceLinks) {
+                  statisticDereferenceLinks.updateStatistic(
+                    {
+                      url: nextSourceState.link.url,
+                      metadata: { ...nextSourceState.metadata, ...nextSourceState.link.metadata },
+                    },
+                    nextSourceState.source,
+                  );
+                }
+
                 this.iteratorsPendingCreation--;
                 this.startIterator(nextSourceState);
               })

@@ -1,6 +1,5 @@
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
-
 import * as ExprEval from '@comunica/expression-evaluator';
 import type { IActionContext } from '@comunica/types';
 import { Algebra as Alg } from 'sparqlalgebrajs';

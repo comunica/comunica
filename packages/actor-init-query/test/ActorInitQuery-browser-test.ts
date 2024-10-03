@@ -1,6 +1,5 @@
 import { Transform } from 'node:stream';
-import { ActionContext, Bus } from '@comunica/core';
-import type { IActionContext } from '@comunica/types';
+import { Bus } from '@comunica/core';
 import type { IActorInitQueryBaseArgs } from '../lib';
 import { ActorInitQuery } from '../lib/ActorInitQuery-browser';
 
@@ -9,15 +8,12 @@ describe('ActorInitQuery', () => {
   let mediatorQueryProcess: any;
   let mediatorSparqlSerialize: any;
   let mediatorHttpInvalidate: any;
-  let context: IActionContext;
   const defaultQueryInputFormat = 'sparql';
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryProcess = <any>{
-      mediate: jest.fn((action: any) => {
-        return Promise.reject(new Error('Invalid query'));
-      }),
+      mediate: jest.fn().mockRejectedValue(new Error('Invalid query')),
     };
     mediatorSparqlSerialize = {
       mediate: (arg: any) => Promise.resolve(arg.mediaTypes ?
@@ -33,9 +29,8 @@ describe('ActorInitQuery', () => {
           }),
     };
     mediatorHttpInvalidate = {
-      mediate: (arg: any) => Promise.resolve(true),
+      mediate: () => Promise.resolve(true),
     };
-    context = new ActionContext();
   });
 
   describe('An ActorInitQuery instance', () => {
@@ -55,7 +50,7 @@ describe('ActorInitQuery', () => {
 
     describe('test', () => {
       it('should be true', async() => {
-        await expect(actor.test(<any> {})).resolves.toBeTruthy();
+        await expect(actor.test(<any> {})).resolves.toPassTestVoid();
       });
     });
 

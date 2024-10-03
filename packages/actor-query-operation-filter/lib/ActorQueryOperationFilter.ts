@@ -1,10 +1,12 @@
-import { bindingsToString } from '@comunica/bindings-factory';
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
-import type { IActorTest } from '@comunica/core';
+import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import { isExpressionError } from '@comunica/expression-evaluator';
 import type { Bindings, IActionContext, IQueryOperationResult } from '@comunica/types';
+import { bindingsToString } from '@comunica/utils-bindings-factory';
+import { getSafeBindings, validateQueryOutput } from '@comunica/utils-query-operation';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -18,17 +20,22 @@ export class ActorQueryOperationFilter extends ActorQueryOperationTypedMediated<
     this.mediatorExpressionEvaluatorFactory = args.mediatorExpressionEvaluatorFactory;
   }
 
-  public async testOperation(operation: Algebra.Filter, context: IActionContext): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Filter, context: IActionContext): Promise<TestResult<IActorTest>> {
     // Will throw error for unsupported operators
-    const _ = await this.mediatorExpressionEvaluatorFactory.mediate({ algExpr: operation.expression, context });
-    return true;
+    try {
+      const _ = await this.mediatorExpressionEvaluatorFactory.mediate({ algExpr: operation.expression, context });
+    } catch (error: unknown) {
+      // TODO: return TestResult in ActorQueryOperation.getAsyncExpressionContext
+      return failTest((<Error> error).message);
+    }
+    return passTestVoid();
   }
 
   public async runOperation(operation: Algebra.Filter, context: IActionContext):
   Promise<IQueryOperationResult> {
     const outputRaw = await this.mediatorQueryOperation.mediate({ operation: operation.input, context });
-    const output = ActorQueryOperation.getSafeBindings(outputRaw);
-    ActorQueryOperation.validateQueryOutput(output, 'bindings');
+    const output = getSafeBindings(outputRaw);
+    validateQueryOutput(output, 'bindings');
 
     const evaluator = await this.mediatorExpressionEvaluatorFactory
       .mediate({ algExpr: operation.expression, context });

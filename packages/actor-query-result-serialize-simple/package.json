@@ -4,6 +4,10 @@
   "description": "A simple query-result-serialize actor",
   "lsd:module": true,
   "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
@@ -38,10 +42,11 @@
   },
   "dependencies": {
     "@comunica/bus-query-result-serialize": "^3.2.1",
+    "@comunica/core": "^3.2.1",
     "@comunica/types": "^3.2.1",
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0",
     "rdf-string": "^1.6.3",
-    "readable-stream": "^4.4.2"
+    "readable-stream": "^4.5.2"
   }
 }

@@ -1,5 +1,5 @@
-import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { IQuerySource } from '@comunica/types';
+import { assignOperationSource } from '@comunica/utils-query-operation';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { MemoryPhysicalQueryPlanLogger } from '../lib/MemoryPhysicalQueryPlanLogger';
@@ -273,7 +273,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
       logger.logOperation(
         'pattern',
         undefined,
-        ActorQueryOperation.assignOperationSource(
+        assignOperationSource(
           factory.createPattern(
             DF.namedNode('ex:s1'),
             DF.namedNode('ex:p1'),
@@ -847,7 +847,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
       logger.logOperation(
         'pattern',
         undefined,
-        ActorQueryOperation.assignOperationSource(
+        assignOperationSource(
           factory.createPattern(
             DF.namedNode('ex:s1'),
             DF.namedNode('ex:p1'),

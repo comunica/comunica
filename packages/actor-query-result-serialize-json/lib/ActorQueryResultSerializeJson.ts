@@ -4,6 +4,8 @@ import type {
   IActorQueryResultSerializeOutput,
 } from '@comunica/bus-query-result-serialize';
 import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-result-serialize';
+import type { TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import type {
   IActionContext,
   IQueryOperationResultBindings,
@@ -31,11 +33,14 @@ export class ActorQueryResultSerializeJson extends ActorQueryResultSerializeFixe
     super(args);
   }
 
-  public override async testHandleChecked(action: IActionSparqlSerialize, _context: IActionContext): Promise<boolean> {
+  public override async testHandleChecked(
+    action: IActionSparqlSerialize,
+    _context: IActionContext,
+  ): Promise<TestResult<boolean>> {
     if (![ 'bindings', 'quads', 'boolean' ].includes(action.type)) {
-      throw new Error('This actor can only handle bindings or quad streams.');
+      return failTest('This actor can only handle bindings or quad streams.');
     }
-    return true;
+    return passTestVoid();
   }
 
   public async runHandle(action: IActionSparqlSerialize, _mediaType: string, _context: IActionContext):

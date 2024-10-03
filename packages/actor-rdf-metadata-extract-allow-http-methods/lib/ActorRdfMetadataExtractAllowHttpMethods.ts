@@ -4,7 +4,8 @@ import type {
   IActorRdfMetadataExtractOutput,
 } from '@comunica/bus-rdf-metadata-extract';
 import { ActorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 
 /**
  * A comunica Allow HTTP Methods RDF Metadata Extract Actor.
@@ -14,8 +15,8 @@ export class ActorRdfMetadataExtractAllowHttpMethods extends ActorRdfMetadataExt
     super(args);
   }
 
-  public async test(_action: IActionRdfMetadataExtract): Promise<IActorTest> {
-    return true;
+  public async test(_action: IActionRdfMetadataExtract): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async run(action: IActionRdfMetadataExtract): Promise<IActorRdfMetadataExtractOutput> {

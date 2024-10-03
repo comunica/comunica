@@ -2,7 +2,8 @@ import type { MediatorHttp } from '@comunica/bus-http';
 import type { IActionRdfParse, IActorRdfParseFixedMediaTypesArgs, IActorRdfParseOutput } from '@comunica/bus-rdf-parse';
 import { ActorRdfParseFixedMediaTypes } from '@comunica/bus-rdf-parse';
 import { KeysInitQuery, KeysRdfParseHtmlScript, KeysRdfParseJsonLd } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext } from '@comunica/types';
 import { JsonLdParser } from 'jsonld-streaming-parser';
 import type { Readable } from 'readable-stream';
@@ -32,12 +33,12 @@ export class ActorRdfParseJsonLd extends ActorRdfParseFixedMediaTypes {
   }
 
   public override async testHandle(action: IActionRdfParse, mediaType: string | undefined, context: IActionContext):
-  Promise<IActorTest> {
+  Promise<TestResult<IActorTest>> {
     if (context.has(KeysRdfParseHtmlScript.processingHtmlScript) && mediaType !== 'application/ld+json') {
-      throw new Error(`JSON-LD in script tags can only have media type 'application/ld+json'`);
+      return failTest(`JSON-LD in script tags can only have media type 'application/ld+json'`);
     }
     if (!mediaType || !(mediaType in this.mediaTypePriorities || mediaType.endsWith('+json'))) {
-      throw new Error(`Unrecognized media type: ${mediaType}`);
+      return failTest(`Unrecognized media type: ${mediaType}`);
     }
     return await this.testHandleChecked(action);
   }

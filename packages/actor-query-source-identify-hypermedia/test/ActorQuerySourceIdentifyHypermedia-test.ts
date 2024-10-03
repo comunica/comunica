@@ -1,4 +1,3 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
 import type { MediatorQuerySourceIdentifyHypermedia } from '@comunica/bus-query-source-identify-hypermedia';
 import type { MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
@@ -8,24 +7,23 @@ import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolv
 import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import { KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext, QuerySourceUnidentifiedExpanded } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorQuerySourceIdentifyHypermedia } from '../lib/ActorQuerySourceIdentifyHypermedia';
 import { mediators as utilMediators } from './MediatorDereferenceRdf-util';
 import 'jest-rdf';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const AF = new Factory();
 const BF = new BindingsFactory(DF);
 
 const mediatorMergeBindingsContext: any = {
-  mediate(arg: any) {
-    return {};
-  },
+  mediate: () => ({}),
 };
 
 describe('ActorQuerySourceIdentifyHypermedia', () => {
@@ -99,21 +97,21 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
           await expect(actor.test({
             querySourceUnidentified: { value: 'abc' },
             context,
-          })).resolves.toBeTruthy();
+          })).resolves.toPassTestVoid();
         });
 
         it('should not test on a null value', async() => {
           await expect(actor.test({
             querySourceUnidentified: { value: <any> null },
             context,
-          })).rejects.toThrow(`actor requires a single query source with a URL value to be present in the context.`);
+          })).resolves.toFailTest(`actor requires a single query source with a URL value to be present in the context.`);
         });
 
         it('should not test on an invalid value', async() => {
           await expect(actor.test({
             querySourceUnidentified: { value: <any> { bla: true }},
             context,
-          })).rejects.toThrow(`actor requires a single query source with a URL value to be present in the context.`);
+          })).resolves.toFailTest(`actor requires a single query source with a URL value to be present in the context.`);
         });
       });
 
@@ -648,8 +646,7 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
           ]);
           expect(mediatorQuerySourceIdentifyHypermedia.mediate).toHaveBeenCalledTimes(2);
 
-          // TODO: remove the limit once https://github.com/comunica/rdf-streaming-store.js/issues/6 is fixed
-          await expect(it2.toArray({ limit: 4 })).resolves.toEqualBindingsArray([
+          await expect(it2.toArray()).resolves.toEqualBindingsArray([
             BF.fromRecord({
               s: DF.namedNode('s1'),
               p: DF.namedNode('p1'),

@@ -5,7 +5,8 @@ import type {
 } from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -21,8 +22,8 @@ export class ActorOptimizeQueryOperationRewriteAdd extends ActorOptimizeQueryOpe
     super(args);
   }
 
-  public async test(_action: IActionOptimizeQueryOperation): Promise<IActorTest> {
-    return true;
+  public async test(_action: IActionOptimizeQueryOperation): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {

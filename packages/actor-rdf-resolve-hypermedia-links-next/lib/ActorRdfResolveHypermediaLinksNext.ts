@@ -4,7 +4,8 @@ import type {
   IActorRdfResolveHypermediaLinksOutput,
 } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import { ActorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 
 /**
  * A comunica Next RDF Resolve Hypermedia Links Actor.
@@ -14,11 +15,11 @@ export class ActorRdfResolveHypermediaLinksNext extends ActorRdfResolveHypermedi
     super(args);
   }
 
-  public async test(action: IActionRdfResolveHypermediaLinks): Promise<IActorTest> {
+  public async test(action: IActionRdfResolveHypermediaLinks): Promise<TestResult<IActorTest>> {
     if (!action.metadata.next || action.metadata.next.length === 0) {
-      throw new Error(`Actor ${this.name} requires a 'next' metadata entry.`);
+      return failTest(`Actor ${this.name} requires a 'next' metadata entry.`);
     }
-    return true;
+    return passTestVoid();
   }
 
   public async run(action: IActionRdfResolveHypermediaLinks): Promise<IActorRdfResolveHypermediaLinksOutput> {

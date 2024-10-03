@@ -12,6 +12,7 @@ import type { IActionContext } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfParseHtml } from '../lib/ActorRdfParseHtml';
+import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
 
@@ -108,7 +109,7 @@ describe('ActorRdfParseHtml', () => {
           handle: { data: input, metadata: { baseIRI: '' }, context },
           handleMediaType: 'text/html',
           context,
-        })).resolves.toBeTruthy();
+        })).resolves.toPassTest({ handle: true });
       });
 
       it('should reject on application/json', async() => {
@@ -116,7 +117,7 @@ describe('ActorRdfParseHtml', () => {
           handle: { data: input, metadata: { baseIRI: '' }, context },
           handleMediaType: 'application/json',
           context,
-        })).rejects.toEqual(new Error('Unrecognized media type: application/json'));
+        })).resolves.toFailTest('Unrecognized media type: application/json');
       });
 
       it('should reject on application/ld+json', async() => {
@@ -124,7 +125,7 @@ describe('ActorRdfParseHtml', () => {
           handle: { data: input, metadata: { baseIRI: '' }, context },
           handleMediaType: 'application/ld+json',
           context,
-        })).rejects.toEqual(new Error('Unrecognized media type: application/ld+json'));
+        })).resolves.toFailTest('Unrecognized media type: application/ld+json');
       });
     });
 

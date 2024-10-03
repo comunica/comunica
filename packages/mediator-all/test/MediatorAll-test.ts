@@ -1,5 +1,5 @@
-import type { IAction, IActorOutput, IActorTest } from '@comunica/core';
-import { Actor, Bus, Mediator } from '@comunica/core';
+import type { IAction, IActorOutput, IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTest, Actor, Bus, Mediator } from '@comunica/core';
 import { MediatorAll } from '../lib/MediatorAll';
 
 describe('MediatorAll', () => {
@@ -42,7 +42,7 @@ describe('MediatorAll', () => {
       });
     });
 
-    describe('with resolving actors', () => {
+    describe('with passing actors', () => {
       let busm: Bus<DummyActor, IAction, IDummyTest, IDummyTest>;
       let mediator: MediatorAll<DummyActor, IAction, IDummyTest, IDummyTest>;
       let a0: DummyActor;
@@ -62,13 +62,13 @@ describe('MediatorAll', () => {
 
       it('should mediate to all resolving actors', async() => {
         await expect(mediator.mediate(<any> { a: 'b' })).resolves.toEqual({ field: 10 });
-        expect(a0.runObservable).toHaveBeenCalledWith({ a: 'b' });
-        expect(a1.runObservable).toHaveBeenCalledWith({ a: 'b' });
-        expect(a2.runObservable).toHaveBeenCalledWith({ a: 'b' });
+        expect(a0.runObservable).toHaveBeenCalledWith({ a: 'b' }, undefined);
+        expect(a1.runObservable).toHaveBeenCalledWith({ a: 'b' }, undefined);
+        expect(a2.runObservable).toHaveBeenCalledWith({ a: 'b' }, undefined);
       });
     });
 
-    describe('with rejecting actors', () => {
+    describe('with failing actors', () => {
       let busm: Bus<DummyActor, IAction, IDummyTest, IDummyTest>;
       let mediator: MediatorAll<DummyActor, IAction, IDummyTest, IDummyTest>;
       let a0: DummyActor;
@@ -94,7 +94,7 @@ describe('MediatorAll', () => {
       });
     });
 
-    describe('with resolving and rejecting actors', () => {
+    describe('with passing and failing actors', () => {
       let busm: Bus<DummyActor, IAction, IDummyTest, IDummyTest>;
       let mediator: MediatorAll<DummyActor, IAction, IDummyTest, IDummyTest>;
       let a0: DummyActor;
@@ -114,9 +114,9 @@ describe('MediatorAll', () => {
 
       it('should mediate over the non-rejecting actors', async() => {
         await expect(mediator.mediate(<any> { a: 'b' })).resolves.toEqual({ field: 10 });
-        expect(a0.runObservable).toHaveBeenCalledWith({ a: 'b' });
+        expect(a0.runObservable).toHaveBeenCalledWith({ a: 'b' }, undefined);
         expect(a1.runObservable).not.toHaveBeenCalled();
-        expect(a2.runObservable).toHaveBeenCalledWith({ a: 'b' });
+        expect(a2.runObservable).toHaveBeenCalledWith({ a: 'b' }, undefined);
       });
     });
   });
@@ -125,31 +125,31 @@ describe('MediatorAll', () => {
 class DummyActor extends Actor<IAction, IDummyTest, IDummyTest> {
   public readonly id: number;
   public readonly delay: number;
-  public readonly reject: boolean;
+  public readonly fail: boolean;
 
   public constructor(
     id: number,
     delay: number,
     bus: Bus<DummyActor, IAction, IDummyTest, IDummyTest>,
-    reject: boolean,
+    fail: boolean,
   ) {
     super({ name: `dummy${id}`, bus });
     this.id = id;
     this.delay = delay;
-    this.reject = reject;
+    this.fail = fail;
   }
 
-  public test(action: IAction): Promise<IDummyTest> {
-    if (this.reject) {
-      return new Promise((resolve, reject) => {
-        setTimeout(() => reject(new Error(`${this.id}`)), 10);
+  public test(): Promise<TestResult<IDummyTest>> {
+    if (this.fail) {
+      return new Promise((resolve) => {
+        setTimeout(() => resolve(failTest(`${this.id}`)), 10);
       });
     }
-    return new Promise((resolve, reject) => setTimeout(() => resolve({ field: this.id }), this.delay));
+    return new Promise(resolve => setTimeout(() => resolve(passTest({ field: this.id })), this.delay));
   }
 
-  public run(action: IAction): Promise<IDummyTest> {
-    return new Promise((resolve, reject) => setTimeout(() => resolve({ field: this.id }), this.delay));
+  public run(): Promise<IDummyTest> {
+    return new Promise(resolve => setTimeout(() => resolve({ field: this.id }), this.delay));
   }
 }
 

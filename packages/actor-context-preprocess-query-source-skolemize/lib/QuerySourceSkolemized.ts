@@ -1,5 +1,4 @@
 import { KeysInitQuery } from '@comunica/context-entries';
-import { MetadataValidationState } from '@comunica/metadata';
 import type {
   BindingsStream,
   ComunicaDataFactory,
@@ -8,6 +7,7 @@ import type {
   IQueryBindingsOptions,
   IQuerySource,
 } from '@comunica/types';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
@@ -48,7 +48,6 @@ export class QuerySourceSkolemized implements IQuerySource {
       it.setProperty('metadata', {
         state: new MetadataValidationState(),
         cardinality: { type: 'exact', value: 0 },
-        canContainUndefs: false,
         variables: [],
       });
       return it;

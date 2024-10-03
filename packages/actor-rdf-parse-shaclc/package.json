@@ -4,6 +4,10 @@
   "description": "A shaclc rdf-parse actor",
   "lsd:module": true,
   "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
@@ -42,7 +46,7 @@
     "@jeswr/stream-to-string": "^2.0.0",
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0",
-    "readable-stream": "^4.4.2",
+    "readable-stream": "^4.5.2",
     "shaclc-parse": "^1.4.0"
   }
 }

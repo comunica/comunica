@@ -4,6 +4,10 @@
   "description": "A sparql-json query-result-serialize actor",
   "lsd:module": true,
   "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
@@ -44,6 +48,6 @@
     "@comunica/types": "^3.2.1",
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0",
-    "readable-stream": "^4.4.2"
+    "readable-stream": "^4.5.2"
   }
 }

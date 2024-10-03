@@ -7,7 +7,8 @@ import type {
   MediatorQuerySourceIdentifyHypermedia,
 } from '@comunica/bus-query-source-identify-hypermedia';
 import { ActorQuerySourceIdentifyHypermedia } from '@comunica/bus-query-source-identify-hypermedia';
-import { ActionContextKey } from '@comunica/core';
+import type { TestResult } from '@comunica/core';
+import { ActionContextKey, passTest } from '@comunica/core';
 import { QuerySourceAddSourceAttribution } from './QuerySourceAddSourceAttribution';
 
 /**
@@ -23,11 +24,11 @@ export class ActorQuerySourceIdentifyHypermediaAnnotateSource extends ActorQuery
 
   public async testMetadata(
     action: IActionQuerySourceIdentifyHypermedia,
-  ): Promise<IActorQuerySourceIdentifyHypermediaTest> {
+  ): Promise<TestResult<IActorQuerySourceIdentifyHypermediaTest>> {
     if (action.context.get(KEY_CONTEXT_WRAPPED)) {
       throw new Error('Unable to wrap query source multiple times');
     }
-    return { filterFactor: 0 };
+    return passTest({ filterFactor: Number.POSITIVE_INFINITY });
   }
 
   public async run(action: IActionQuerySourceIdentifyHypermedia): Promise<IActorQuerySourceIdentifyHypermediaOutput> {

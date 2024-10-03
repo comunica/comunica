@@ -1,30 +1,33 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
-import { ActorQueryOperation, materializeOperation } from '@comunica/bus-query-operation';
 import type {
   IActionRdfJoin,
   IActorRdfJoinOutputInner,
   IActorRdfJoinArgs,
+  IActorRdfJoinTestSideData,
 } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
+import type { TestResult } from '@comunica/core';
+import { passTestWithSideData, failTest } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type {
   Bindings,
   BindingsStream,
   ComunicaDataFactory,
+  IJoinEntryWithMetadata,
   IQueryOperationResultBindings,
-  MetadataBindings,
 } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getSafeBindings, materializeOperation } from '@comunica/utils-query-operation';
 import { MultiTransformIterator, TransformIterator, UnionIterator } from 'asynciterator';
 import { Factory, Algebra, Util } from 'sparqlalgebrajs';
 
 /**
  * A comunica Multi-way Bind RDF Join Actor.
  */
-export class ActorRdfJoinMultiBind extends ActorRdfJoin {
+export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTestSideData> {
   public readonly bindOrder: BindOrder;
   public readonly selectivityModifier: number;
   public readonly minMaxCardinalityRatio: number;
@@ -33,10 +36,6 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   public constructor(args: IActorRdfJoinMultiBindArgs) {
-    // TODO: remove this fallback in the next major update
-    if (args.minMaxCardinalityRatio === undefined) {
-      args.minMaxCardinalityRatio = 60;
-    }
     super(args, {
       logicalType: 'inner',
       physicalName: 'bind',
@@ -100,7 +99,10 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
     }
   }
 
-  public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
+  public async getOutput(
+    action: IActionRdfJoin,
+    sideData: IActorRdfJoinMultiBindTestSideData,
+  ): Promise<IActorRdfJoinOutputInner> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const algebraFactory = new Factory(dataFactory);
     const bindingsFactory = await BindingsFactory.create(
@@ -109,10 +111,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
       dataFactory,
     );
 
-    // Order the entries so we can pick the first one (usually the one with the lowest cardinality)
-    const entriesUnsorted = await ActorRdfJoin.getEntriesWithMetadatas(action.entries);
-    const entries = await ActorRdfJoin.sortJoinEntries(this.mediatorJoinEntriesSort, entriesUnsorted, action.context);
-
+    const entries = sideData.entriesSorted;
     this.logDebug(
       action.context,
       'First entry for Bind Join: ',
@@ -144,7 +143,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
         const operation = operations.length === 1 ?
           operations[0] :
           algebraFactory.createJoin(operations);
-        const output = ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate(
+        const output = getSafeBindings(await this.mediatorQueryOperation.mediate(
           { operation, context: subContext?.set(KeysQueryOperation.joinBindings, operationBindings) },
         ));
         return output.bindingsStream;
@@ -161,7 +160,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
         metadata: () => this.constructResultMetadata(entries, entries.map(entry => entry.metadata), action.context),
       },
       physicalPlanMetadata: {
-        bindIndex: entriesUnsorted.indexOf(entries[0]),
+        bindIndex: sideData.entriesUnsorted.indexOf(entries[0]),
         bindOperation: entries[0].operation,
         bindOperationCardinality: entries[0].metadata.cardinality,
         bindOrder: this.bindOrder,
@@ -187,18 +186,26 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
 
   public async getJoinCoefficients(
     action: IActionRdfJoin,
-    metadatas: MetadataBindings[],
-  ): Promise<IMediatorTypeJoinCoefficients> {
+    sideData: IActorRdfJoinTestSideData,
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients, IActorRdfJoinMultiBindTestSideData>> {
+    let { metadatas } = sideData;
+
     // Order the entries so we can pick the first one (usually the one with the lowest cardinality)
-    const entries = await ActorRdfJoin.sortJoinEntries(this.mediatorJoinEntriesSort, action.entries
-      .map((entry, i) => ({ ...entry, metadata: metadatas[i] })), action.context);
-    metadatas = entries.map(entry => entry.metadata);
+    const entriesUnsorted = action.entries
+      .map((entry, i) => ({ ...entry, metadata: metadatas[i] }));
+    const entriesTest = await ActorRdfJoin
+      .sortJoinEntries(this.mediatorJoinEntriesSort, entriesUnsorted, action.context);
+    if (entriesTest.isFailed()) {
+      return entriesTest;
+    }
+    const entriesSorted = entriesTest.get();
+    metadatas = entriesSorted.map(entry => entry.metadata);
 
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
 
     // Determine first stream and remaining ones
-    const remainingEntries = [ ...entries ];
+    const remainingEntries = [ ...entriesSorted ];
     const remainingRequestInitialTimes = [ ...requestInitialTimes ];
     const remainingRequestItemTimes = [ ...requestItemTimes ];
     remainingEntries.splice(0, 1);
@@ -208,25 +215,25 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
     // Reject binding on some operation types
     if (remainingEntries
       .some(entry => !this.canBindWithOperation(entry.operation))) {
-      throw new Error(`Actor ${this.name} can not bind on Extend and Group operations`);
+      return failTest(`Actor ${this.name} can not bind on Extend and Group operations`);
     }
 
     // Reject binding on modified operations, since using the output directly would be significantly more efficient.
     if (remainingEntries.some(entry => entry.operationModified)) {
-      throw new Error(`Actor ${this.name} can not be used over remaining entries with modified operations`);
+      return failTest(`Actor ${this.name} can not be used over remaining entries with modified operations`);
     }
 
     // Only run this actor if the smallest stream is significantly smaller than the largest stream.
     // We must use Math.max, because the last metadata is not necessarily the biggest, but it's the least preferred.
     if (metadatas[0].cardinality.value * this.minMaxCardinalityRatio >
       Math.max(...metadatas.map(metadata => metadata.cardinality.value))) {
-      throw new Error(`Actor ${this.name} can only run if the smallest stream is much smaller than largest stream`);
+      return failTest(`Actor ${this.name} can only run if the smallest stream is much smaller than largest stream`);
     }
 
     // Determine selectivities of smallest entry with all other entries
     const selectivities = await Promise.all(remainingEntries
       .map(async entry => (await this.mediatorJoinSelectivity.mediate({
-        entries: [ entries[0], entry ],
+        entries: [ entriesSorted[0], entry ],
         context: action.context,
       })).selectivity * this.selectivityModifier));
 
@@ -239,7 +246,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
     const receiveItemCostRemaining = remainingRequestItemTimes
       .reduce((sum, element) => sum + element, 0);
 
-    return {
+    return passTestWithSideData({
       iterations: metadatas[0].cardinality.value * cardinalityRemaining,
       persistedItems: 0,
       blockingItems: 0,
@@ -249,11 +256,11 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin {
           receiveInitialCostRemaining +
           cardinalityRemaining * receiveItemCostRemaining
         ),
-    };
+    }, { ...sideData, entriesUnsorted, entriesSorted });
   }
 }
 
-export interface IActorRdfJoinMultiBindArgs extends IActorRdfJoinArgs {
+export interface IActorRdfJoinMultiBindArgs extends IActorRdfJoinArgs<IActorRdfJoinMultiBindTestSideData> {
   /**
    * The order in which elements should be bound
    * @default {depth-first}
@@ -270,7 +277,7 @@ export interface IActorRdfJoinMultiBindArgs extends IActorRdfJoinArgs {
    * @range {double}
    * @default {60}
    */
-  minMaxCardinalityRatio?: number;
+  minMaxCardinalityRatio: number;
   /**
    * The join entries sort mediator
    */
@@ -286,3 +293,8 @@ export interface IActorRdfJoinMultiBindArgs extends IActorRdfJoinArgs {
 }
 
 export type BindOrder = 'depth-first' | 'breadth-first';
+
+export interface IActorRdfJoinMultiBindTestSideData extends IActorRdfJoinTestSideData {
+  entriesUnsorted: IJoinEntryWithMetadata[];
+  entriesSorted: IJoinEntryWithMetadata[];
+}

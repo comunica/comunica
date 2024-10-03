@@ -7,6 +7,7 @@ import { LoggerVoid } from '@comunica/logger-void';
 import type { IActionContext } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
 import { ActorHttpNative } from '../lib/ActorHttpNative';
+import '@comunica/utils-jest';
 
 // eslint-disable-next-line jest/no-mocks-import
 const mockSetup = require('./__mocks__/follow-redirects').mockSetup;
@@ -60,7 +61,7 @@ describe('ActorHttpNative', () => {
 
     it('should test', async() => {
       await expect(actor.test({ context, input: new Request('https://www.google.com/') }))
-        .resolves.toEqual({ time: Number.POSITIVE_INFINITY });
+        .resolves.toPassTest({ time: Number.POSITIVE_INFINITY });
     });
 
     it('should test if headers is iterable', async() => {

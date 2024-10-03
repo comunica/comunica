@@ -1,9 +1,16 @@
-import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
+import type {
+  IActionRdfJoin,
+  IActorRdfJoinOutputInner,
+  IActorRdfJoinArgs,
+  IActorRdfJoinTestSideData,
+} from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import { KeysInitQuery } from '@comunica/context-entries';
+import type { TestResult } from '@comunica/core';
+import { passTestWithSideData, failTest } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import { MetadataValidationState } from '@comunica/metadata';
-import type { ComunicaDataFactory, MetadataBindings } from '@comunica/types';
+import type { ComunicaDataFactory } from '@comunica/types';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 
@@ -19,10 +26,12 @@ export class ActorRdfJoinMultiEmpty extends ActorRdfJoin {
     });
   }
 
-  public override async test(action: IActionRdfJoin): Promise<IMediatorTypeJoinCoefficients> {
+  public override async test(
+    action: IActionRdfJoin,
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients, IActorRdfJoinTestSideData>> {
     if ((await ActorRdfJoin.getMetadatas(action.entries))
       .every(metadata => ActorRdfJoin.getCardinality(metadata).value > 0)) {
-      throw new Error(`Actor ${this.name} can only join entries where at least one is empty`);
+      return failTest(`Actor ${this.name} can only join entries where at least one is empty`);
     }
     return super.test(action);
   }
@@ -40,7 +49,6 @@ export class ActorRdfJoinMultiEmpty extends ActorRdfJoin {
         metadata: async() => ({
           state: new MetadataValidationState(),
           cardinality: { type: 'exact', value: 0 },
-          canContainUndefs: false,
           variables: ActorRdfJoin.joinVariables(dataFactory, await ActorRdfJoin.getMetadatas(action.entries)),
         }),
         type: 'bindings',
@@ -49,14 +57,14 @@ export class ActorRdfJoinMultiEmpty extends ActorRdfJoin {
   }
 
   protected async getJoinCoefficients(
-    _action: IActionRdfJoin,
-    _metadatas: MetadataBindings[],
-  ): Promise<IMediatorTypeJoinCoefficients> {
-    return {
+    action: IActionRdfJoin,
+    sideData: IActorRdfJoinTestSideData,
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients, IActorRdfJoinTestSideData>> {
+    return passTestWithSideData({
       iterations: 0,
       persistedItems: 0,
       blockingItems: 0,
       requestTime: 0,
-    };
+    }, sideData);
   }
 }

@@ -4,6 +4,7 @@ import { KeysHttpWayback, KeysHttpProxy } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext, IProxyHandler, IRequest } from '@comunica/types';
 import { ActorHttpWayback } from '../lib';
+import '@comunica/utils-jest';
 
 describe('ActorHttpInterceptWayback', () => {
   let bus: any;
@@ -55,17 +56,17 @@ describe('ActorHttpInterceptWayback', () => {
         await expect(actor.test({
           context,
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
-        })).resolves.toBe(true);
+        })).resolves.toPassTestVoid();
 
         await expect(actor.test({
           context: context.delete(KeysHttpWayback.recoverBrokenLinks),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
-        })).resolves.toBe(true);
+        })).resolves.toPassTestVoid();
 
         await expect(actor.test({
           context: context.set(KeysHttpWayback.recoverBrokenLinks, false),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
-        })).resolves.toBe(true);
+        })).resolves.toPassTestVoid();
       });
 
       it('should return 200 on foaf when wayback machine is already the url', async() => {
@@ -140,17 +141,17 @@ describe('ActorHttpInterceptWayback', () => {
         await expect(actor.test({
           context,
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
-        })).resolves.toBe(true);
+        })).resolves.toPassTestVoid();
 
         await expect(actor.test({
           context: context.delete(KeysHttpWayback.recoverBrokenLinks),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
-        })).resolves.toBe(true);
+        })).resolves.toPassTestVoid();
 
         await expect(actor.test({
           context: context.set(KeysHttpWayback.recoverBrokenLinks, false),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
-        })).resolves.toBe(true);
+        })).resolves.toPassTestVoid();
       });
 
       it('should return 200 on foaf when wayback machine is already the url', async() => {
@@ -224,17 +225,17 @@ describe('ActorHttpInterceptWayback', () => {
         await expect(actor.test({
           context,
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
-        })).resolves.toBe(true);
+        })).resolves.toPassTestVoid();
 
         await expect(actor.test({
           context: context.delete(KeysHttpWayback.recoverBrokenLinks),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
-        })).resolves.toBe(true);
+        })).resolves.toPassTestVoid();
 
         await expect(actor.test({
           context: context.set(KeysHttpWayback.recoverBrokenLinks, false),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
-        })).resolves.toBe(true);
+        })).resolves.toPassTestVoid();
       });
 
       it('should return foaf url when foaf is 200', async() => {
@@ -288,17 +289,17 @@ describe('ActorHttpInterceptWayback', () => {
         await expect(actor.test({
           context,
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
-        })).resolves.toBe(true);
+        })).resolves.toPassTestVoid();
 
         await expect(actor.test({
           context: context.delete(KeysHttpWayback.recoverBrokenLinks),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
-        })).resolves.toBe(true);
+        })).resolves.toPassTestVoid();
 
         await expect(actor.test({
           context: context.set(KeysHttpWayback.recoverBrokenLinks, false),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
-        })).resolves.toBe(true);
+        })).resolves.toPassTestVoid();
       });
 
       it('should return foaf url when foaf is 200', async() => {
@@ -352,17 +353,17 @@ describe('ActorHttpInterceptWayback', () => {
         await expect(actor.test({
           context,
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
-        })).resolves.toBe(true);
+        })).resolves.toPassTestVoid();
 
         await expect(actor.test({
           context: context.delete(KeysHttpWayback.recoverBrokenLinks),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
-        })).resolves.toBe(true);
+        })).resolves.toPassTestVoid();
 
         await expect(actor.test({
           context: context.set(KeysHttpWayback.recoverBrokenLinks, false),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
-        })).resolves.toBe(true);
+        })).resolves.toPassTestVoid();
       });
 
       it('should return foaf url when wayback gives a 404', async() => {

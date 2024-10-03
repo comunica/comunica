@@ -1,4 +1,3 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type {
   IActionRdfMetadataAccumulate,
@@ -6,12 +5,14 @@ import type {
 } from '@comunica/bus-rdf-metadata-accumulate';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import { MetadataValidationState } from '@comunica/metadata';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationPathAlt } from '../lib/ActorQueryOperationPathAlt';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -34,8 +35,7 @@ describe('ActorQueryOperationPathAlt', () => {
         metadata: () => Promise.resolve({
           state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 3 },
-          canContainUndefs: false,
-          variables: [ DF.variable('a') ],
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
         }),
         operated: arg,
         type: 'bindings',
@@ -44,7 +44,7 @@ describe('ActorQueryOperationPathAlt', () => {
     mediatorRdfMetadataAccumulate = <any> {
       async mediate(action: IActionRdfMetadataAccumulate) {
         if (action.mode === 'initialize') {
-          return { metadata: { cardinality: { type: 'exact', value: 0 }, canContainUndefs: false }};
+          return { metadata: { cardinality: { type: 'exact', value: 0 }}};
         }
 
         const metadata = { ...action.accumulatedMetadata };
@@ -68,9 +68,6 @@ describe('ActorQueryOperationPathAlt', () => {
           metadata.pageSize = metadata.pageSize ?? 0;
           subMetadata.pageSize = subMetadata.pageSize ?? 0;
           metadata.pageSize += subMetadata.pageSize;
-        }
-        if (subMetadata.canContainUndefs) {
-          metadata.canContainUndefs = true;
         }
 
         return { metadata };
@@ -111,7 +108,7 @@ describe('ActorQueryOperationPathAlt', () => {
         operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.ALT }},
         context: new ActionContext(),
       };
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should test on different paths', async() => {
@@ -119,12 +116,12 @@ describe('ActorQueryOperationPathAlt', () => {
         operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }},
         context: new ActionContext(),
       };
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`This Actor only supports alt Path operations.`);
     });
 
     it('should not test on non-leftjoin', async() => {
       const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports path operations, but got some-other-type`);
     });
 
     it('should support Alt paths', async() => {
@@ -136,12 +133,11 @@ describe('ActorQueryOperationPathAlt', () => {
         ]),
         DF.variable('x'),
       ), context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }) };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 6 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),

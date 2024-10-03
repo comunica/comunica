@@ -1,4 +1,3 @@
-import { BlankNodeScoped } from '@comunica/data-factory';
 import type {
   BindingsStream,
   ComunicaDataFactory,
@@ -7,6 +6,7 @@ import type {
   MetadataQuads,
   QuerySourceReference,
 } from '@comunica/types';
+import { BlankNodeScoped } from '@comunica/utils-data-factory';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { mapTermsNested } from 'rdf-terms';

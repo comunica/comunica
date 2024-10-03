@@ -4,6 +4,7 @@ import type { IActionContext } from '@comunica/types';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import { union, fromArray } from 'asynciterator';
 import { ActorRdfSerializeShaclc } from '../lib/ActorRdfSerializeShaclc';
+import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
 
@@ -69,27 +70,27 @@ describe('ActorRdfSerializeShaclc', () => {
 
         it('should test on text/shaclc', async() => {
           await expect(actor.test({ handle: { quadStream, context }, handleMediaType: 'text/shaclc', context }))
-            .resolves.toBeTruthy();
+            .resolves.toPassTest({ handle: true });
         });
 
         it('should test on text/shaclc-ext', async() => {
           await expect(actor.test({ handle: { quadStream, context }, handleMediaType: 'text/shaclc-ext', context }))
-            .resolves.toBeTruthy();
+            .resolves.toPassTest({ handle: true });
         });
 
         it('should not test on application/trig', async() => {
           await expect(actor.test({ handle: { quadStream, context }, handleMediaType: 'application/trig', context }))
-            .rejects.toBeTruthy();
+            .resolves.toFailTest(`Unrecognized media type: application/trig`);
         });
 
         it('should not test on text/turtle', async() => {
           await expect(actor.test({ handle: { quadStream, context }, handleMediaType: 'text/turtle', context }))
-            .rejects.toBeTruthy();
+            .resolves.toFailTest(`Unrecognized media type: text/turtle`);
         });
 
         it('should not test on application/json', async() => {
           await expect(actor.test({ handle: { quadStream, context }, handleMediaType: 'application/json', context }))
-            .rejects.toBeTruthy();
+            .resolves.toFailTest(`Unrecognized media type: application/json`);
         });
       });
 
@@ -183,7 +184,7 @@ describe('ActorRdfSerializeShaclc', () => {
 
     describe('for getting media types', () => {
       it('should test', async() => {
-        await expect(actor.test({ mediaTypes: true, context })).resolves.toBeTruthy();
+        await expect(actor.test({ mediaTypes: true, context })).resolves.toPassTest({ mediaTypes: true });
       });
 
       it('should run', async() => {

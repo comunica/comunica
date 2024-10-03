@@ -4,7 +4,8 @@ import type {
   IActorRdfMetadataAccumulateArgs,
 } from '@comunica/bus-rdf-metadata-accumulate';
 import { ActorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import type { QueryResultCardinality } from '@comunica/types';
 
 /**
@@ -15,8 +16,8 @@ export class ActorRdfMetadataAccumulateCardinality extends ActorRdfMetadataAccum
     super(args);
   }
 
-  public async test(_action: IActionRdfMetadataAccumulate): Promise<IActorTest> {
-    return true;
+  public async test(_action: IActionRdfMetadataAccumulate): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   public async run(action: IActionRdfMetadataAccumulate): Promise<IActorRdfMetadataAccumulateOutput> {
@@ -29,6 +30,13 @@ export class ActorRdfMetadataAccumulateCardinality extends ActorRdfMetadataAccum
     const cardinality: QueryResultCardinality = { ...action.accumulatedMetadata.cardinality };
 
     if (cardinality.dataset) {
+      // If the accumulated cardinality refers to that of the full default graph (applicable for SPARQL endpoints)
+      if (action.accumulatedMetadata.defaultGraph === cardinality.dataset &&
+        cardinality.dataset !== action.appendingMetadata.cardinality.dataset) {
+        // Use the cardinality of the appending metadata.
+        return { metadata: { cardinality: action.appendingMetadata.cardinality }};
+      }
+
       if (action.appendingMetadata.cardinality.dataset) {
         // If the accumulated cardinality is dataset-wide
         if (cardinality.dataset !== action.appendingMetadata.cardinality.dataset &&

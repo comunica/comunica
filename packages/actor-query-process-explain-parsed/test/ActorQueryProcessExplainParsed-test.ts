@@ -2,6 +2,7 @@ import type { IQueryProcessSequential } from '@comunica/bus-query-process';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { ActorQueryProcessExplainParsed } from '../lib/ActorQueryProcessExplainParsed';
+import '@comunica/utils-jest';
 
 describe('ActorQueryProcessExplainParsed', () => {
   let bus: any;
@@ -16,7 +17,7 @@ describe('ActorQueryProcessExplainParsed', () => {
 
     beforeEach(() => {
       queryProcessor = <any>{
-        async parse(query: string, context: any) {
+        async parse(query: string) {
           return { operation: `${query}OP` };
         },
       };
@@ -26,12 +27,12 @@ describe('ActorQueryProcessExplainParsed', () => {
     describe('test', () => {
       it('rejects on no explain in context', async() => {
         await expect(actor.test({ query: 'q', context: new ActionContext() }))
-          .rejects.toThrow(`actor can only explain in 'parsed' mode.`);
+          .resolves.toFailTest(`actor can only explain in 'parsed' mode.`);
       });
 
       it('rejects on wrong explain in context', async() => {
         await expect(actor.test({ query: 'q', context: new ActionContext().set(KeysInitQuery.explain, 'logical') }))
-          .rejects.toThrow(`actor can only explain in 'parsed' mode.`);
+          .resolves.toFailTest(`actor can only explain in 'parsed' mode.`);
       });
 
       it('handles parsed explain in context', async() => {
@@ -39,12 +40,12 @@ describe('ActorQueryProcessExplainParsed', () => {
           query: 'q',
           context: new ActionContext().set(KeysInitQuery.explain, 'parsed'),
         })).resolves
-          .toBeTruthy();
+          .toPassTestVoid();
       });
 
       it('handles parsed explain in raw context', async() => {
         await expect(actor.test({ query: 'q', context: new ActionContext().setRaw('explain', 'parsed') })).resolves
-          .toBeTruthy();
+          .toPassTestVoid();
       });
     });
 

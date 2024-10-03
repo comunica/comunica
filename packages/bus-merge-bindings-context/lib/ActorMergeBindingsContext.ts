@@ -14,12 +14,16 @@ import type { IActionContext } from '@comunica/types';
  * @see IActorMergeBindingsContextOutput
  */
 
-export abstract class ActorMergeBindingsContext
-  extends Actor<IActionMergeBindingsContext, IActorTest, IActorMergeBindingsContextOutput> {
+export abstract class ActorMergeBindingsContext<TS = undefined>
+  extends Actor<IActionMergeBindingsContext, IActorTest, IActorMergeBindingsContextOutput, TS> {
+  /* eslint-disable max-len */
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {Merging of bindings contexts failed: none of the configured actors were able to handle the merging} busFailMessage
    */
-  public constructor(args: IActorMergeBindingsContextArgs) {
+  /* eslint-enable max-len */
+  public constructor(args: IActorMergeBindingsContextArgs<TS>) {
     super(args);
   }
 }
@@ -37,10 +41,11 @@ export interface IActorMergeBindingsContextOutput extends IActorOutput {
   mergeHandlers: Record<string, IBindingsContextMergeHandler<any>>;
 }
 
-export type IActorMergeBindingsContextArgs = IActorArgs<
+export type IActorMergeBindingsContextArgs<TS = undefined> = IActorArgs<
 IActionMergeBindingsContext,
 IActorTest,
-IActorMergeBindingsContextOutput
+IActorMergeBindingsContextOutput,
+TS
 >;
 
 export type MediatorMergeBindingsContext = Mediate<

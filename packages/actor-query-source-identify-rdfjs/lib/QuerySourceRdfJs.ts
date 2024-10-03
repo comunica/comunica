@@ -1,7 +1,5 @@
-import type { BindingsFactory } from '@comunica/bindings-factory';
 import { filterMatchingQuotedQuads, quadsToBindings } from '@comunica/bus-query-source-identify';
 import { KeysQueryOperation } from '@comunica/context-entries';
-import { MetadataValidationState } from '@comunica/metadata';
 import type {
   IQuerySource,
   BindingsStream,
@@ -9,6 +7,8 @@ import type {
   FragmentSelectorShape,
   ComunicaDataFactory,
 } from '@comunica/types';
+import type { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import { AsyncIterator, wrap as wrapAsyncIterator } from 'asynciterator';
 import { someTermsNested, filterTermsNested, someTerms, uniqTerms } from 'rdf-terms';
@@ -144,7 +144,6 @@ export class QuerySourceRdfJs implements IQuerySource {
     it.setProperty('metadata', {
       state: new MetadataValidationState(),
       cardinality: { type: wouldRequirePostFiltering ? 'estimate' : 'exact', value: cardinality },
-      canContainUndefs: false,
     });
   }
 
@@ -152,21 +151,21 @@ export class QuerySourceRdfJs implements IQuerySource {
     _operation: Algebra.Operation,
     _context: IActionContext,
   ): AsyncIterator<RDF.Quad> {
-    throw new Error('queryQuads is not implemented in QuerySourceQpf');
+    throw new Error('queryQuads is not implemented in QuerySourceRdfJs');
   }
 
   public queryBoolean(
     _operation: Algebra.Ask,
     _context: IActionContext,
   ): Promise<boolean> {
-    throw new Error('queryBoolean is not implemented in QuerySourceQpf');
+    throw new Error('queryBoolean is not implemented in QuerySourceRdfJs');
   }
 
   public queryVoid(
     _operation: Algebra.Update,
     _context: IActionContext,
   ): Promise<void> {
-    throw new Error('queryVoid is not implemented in QuerySourceQpf');
+    throw new Error('queryVoid is not implemented in QuerySourceRdfJs');
   }
 
   public toString(): string {

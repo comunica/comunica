@@ -1,13 +1,13 @@
 import { QuerySourceRdfJs } from '@comunica/actor-query-source-identify-rdfjs';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { IActionQuerySourceIdentify, MediatorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
 import type { IActionRdfParseHandle, MediatorRdfParseHandle } from '@comunica/bus-rdf-parse';
 import { ActionContext, Bus } from '@comunica/core';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorQuerySourceIdentifySerialized } from '../lib/ActorQuerySourceIdentifySerialized';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const streamifyArray = require('streamify-array');
 
@@ -70,7 +70,7 @@ describe('ActorQuerySourceIdentifySerialized', () => {
             baseIRI: sourceBaseIri,
           },
           context: new ActionContext(),
-        })).resolves.toBeTruthy();
+        })).resolves.toPassTestVoid();
       });
 
       it('should test without type and baseIRI', async() => {
@@ -80,7 +80,7 @@ describe('ActorQuerySourceIdentifySerialized', () => {
             mediaType: sourceMediaType,
           },
           context: new ActionContext(),
-        })).resolves.toBeTruthy();
+        })).resolves.toPassTestVoid();
       });
 
       it('should not test on no media type', async() => {
@@ -90,7 +90,7 @@ describe('ActorQuerySourceIdentifySerialized', () => {
             baseIRI: sourceBaseIri,
           },
           context: new ActionContext(),
-        })).rejects.toThrow(`actor requires a single query source with serialized type to be present in the context.`);
+        })).resolves.toFailTest(`actor requires a single query source with serialized type to be present in the context.`);
       });
 
       it('should not test on non-string', async() => {
@@ -100,7 +100,7 @@ describe('ActorQuerySourceIdentifySerialized', () => {
             mediaType: sourceMediaType,
           },
           context: new ActionContext(),
-        })).rejects.toThrow(`actor requires a single query source with serialized type to be present in the context.`);
+        })).resolves.toFailTest(`actor requires a single query source with serialized type to be present in the context.`);
       });
 
       it('should not test on the sparql type', async() => {
@@ -110,7 +110,7 @@ describe('ActorQuerySourceIdentifySerialized', () => {
             value: sourceValue,
           },
           context: new ActionContext(),
-        })).rejects.toThrow(`actor requires a single query source with serialized type to be present in the context.`);
+        })).resolves.toFailTest(`actor requires a single query source with serialized type to be present in the context.`);
       });
     });
 

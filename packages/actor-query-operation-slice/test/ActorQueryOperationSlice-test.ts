@@ -1,12 +1,13 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getSafeBindings, getSafeBoolean, getSafeQuads } from '@comunica/utils-query-operation';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationSlice } from '../lib/ActorQueryOperationSlice';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -30,8 +31,8 @@ describe('ActorQueryOperationSlice', () => {
         ], { autoStart: false }),
         metadata: () => Promise.resolve({
           cardinality: { type: 'estimate', value: 3 },
-          canContainUndefs: false,
-          variables: [ DF.variable('a') ],
+
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
         }),
         operated: arg,
         type: 'bindings',
@@ -46,8 +47,8 @@ describe('ActorQueryOperationSlice', () => {
         ], { autoStart: false }),
         metadata: () => Promise.resolve({
           cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
-          canContainUndefs: false,
-          variables: [ DF.variable('a') ],
+
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
         }),
         operated: arg,
         type: 'bindings',
@@ -62,8 +63,7 @@ describe('ActorQueryOperationSlice', () => {
         ], { autoStart: false }),
         metadata: () => Promise.resolve({
           cardinality: { type: 'estimate', value: 3 },
-          canContainUndefs: true,
-          variables: [ DF.variable('a') ],
+          variables: [{ variable: DF.variable('a'), canBeUndef: true }],
         }),
         operated: arg,
         type: 'bindings',
@@ -76,13 +76,13 @@ describe('ActorQueryOperationSlice', () => {
           DF.quad(DF.namedNode('http://example.com/s'), DF.namedNode('http://example.com/p'), DF.literal('2')),
           DF.quad(DF.namedNode('http://example.com/s'), DF.namedNode('http://example.com/p'), DF.literal('3')),
         ], { autoStart: false }),
-        metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 3 }, canContainUndefs: false }),
+        metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 3 }}),
         operated: arg,
         type: 'quads',
       }),
     };
     mediatorQueryOperationBoolean = {
-      mediate: (arg: any) => Promise.resolve({
+      mediate: () => Promise.resolve({
         execute: async() => true,
         type: 'boolean',
       }),
@@ -115,21 +115,21 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should test on slices', async() => {
       const op: any = { operation: { type: 'slice', start: 0, length: 100 }, context: new ActionContext() };
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should not test on non-slices', async() => {
       const op: any = { operation: { type: 'no-slice' }};
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports slice operations, but got no-slice`);
     });
 
     it('should run on a stream for start 0 and length 100', async() => {
       const op: any = { operation: { type: 'project', start: 0, length: 100 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 3 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       expect(output.type).toBe('bindings');
       expect(mediatorQueryOperation.mediate.mock.calls[0][0].context.get(KeysQueryOperation.limitIndicator))
@@ -143,11 +143,11 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 1 and length 100', async() => {
       const op: any = { operation: { type: 'project', start: 1, length: 100 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 2 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -158,11 +158,11 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 3 and length 100', async() => {
       const op: any = { operation: { type: 'project', start: 3, length: 100 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 0 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([]);
@@ -170,11 +170,11 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 0 and length 3', async() => {
       const op: any = { operation: { type: 'project', start: 0, length: 3 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 3 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -186,11 +186,11 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 0 and length 2', async() => {
       const op: any = { operation: { type: 'project', start: 0, length: 2 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 2 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -201,11 +201,11 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 0 and length 0', async() => {
       const op: any = { operation: { type: 'project', start: 0, length: 0 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 0 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       expect(mediatorQueryOperation.mediate.mock.calls[0][0].context.get(KeysQueryOperation.limitIndicator))
         .toBeUndefined();
@@ -215,11 +215,11 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 1 and length 3', async() => {
       const op: any = { operation: { type: 'project', start: 1, length: 3 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 2 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -230,11 +230,11 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 1 and length 1', async() => {
       const op: any = { operation: { type: 'project', start: 1, length: 1 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 1 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -244,11 +244,11 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 2 and length 1', async() => {
       const op: any = { operation: { type: 'project', start: 2, length: 1 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 1 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -258,11 +258,11 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 2 and length 0', async() => {
       const op: any = { operation: { type: 'project', start: 2, length: 0 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 0 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([]);
@@ -270,22 +270,22 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 3 and length 1', async() => {
       const op: any = { operation: { type: 'project', start: 3, length: 1 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 0 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       await expect(output.bindingsStream).toEqualBindingsStream([]);
     });
 
     it('should run on a stream for start 3 and length 0', async() => {
       const op: any = { operation: { type: 'project', start: 3, length: 1 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 0 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([]);
@@ -293,11 +293,11 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 4 and length 1', async() => {
       const op: any = { operation: { type: 'project', start: 4, length: 1 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 0 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([]);
@@ -305,11 +305,11 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 4 and length 0', async() => {
       const op: any = { operation: { type: 'project', start: 4, length: 1 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 0 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([]);
@@ -322,11 +322,11 @@ describe('ActorQueryOperationSlice', () => {
         name: 'actor',
       });
       const op: any = { operation: { type: 'project', start: 0, length: 100 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -343,11 +343,10 @@ describe('ActorQueryOperationSlice', () => {
         name: 'actor',
       });
       const op: any = { operation: { type: 'project', start: 0, length: 100 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 3 },
-        canContainUndefs: true,
-        variables: [ DF.variable('a') ],
+        variables: [{ variable: DF.variable('a'), canBeUndef: true }],
       });
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -359,11 +358,11 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream for start 0 and no length', async() => {
       const op: any = { operation: { type: 'project', start: 0 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 3 },
-        canContainUndefs: false,
-        variables: [ DF.variable('a') ],
+
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
       expect(output.type).toBe('bindings');
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -376,9 +375,9 @@ describe('ActorQueryOperationSlice', () => {
     it('should run on a stream of quads for start 0 and length 2', async() => {
       actor = new ActorQueryOperationSlice({ bus, mediatorQueryOperation: mediatorQueryOperationQuads, name: 'actor' });
       const op: any = { operation: { type: 'project', start: 0, length: 2 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeQuads(await actor.run(op));
+      const output = getSafeQuads(await actor.run(op, undefined));
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: { type: 'estimate', value: 2 }, canContainUndefs: false });
+        .toEqual({ cardinality: { type: 'estimate', value: 2 }});
       expect(output.type).toBe('quads');
       await expect(arrayifyStream(output.quadStream)).resolves.toEqual([
         DF.quad(DF.namedNode('http://example.com/s'), DF.namedNode('http://example.com/p'), DF.literal('1')),
@@ -393,7 +392,7 @@ describe('ActorQueryOperationSlice', () => {
         name: 'actor',
       });
       const op: any = { operation: { type: 'project', start: 0 }, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBoolean(await actor.run(op));
+      const output = getSafeBoolean(await actor.run(op, undefined));
       expect(output.type).toBe('boolean');
       await expect(output.execute()).resolves.toBe(true);
     });

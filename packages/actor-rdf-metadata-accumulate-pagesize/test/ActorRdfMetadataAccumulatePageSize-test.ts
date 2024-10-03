@@ -1,6 +1,7 @@
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorRdfMetadataAccumulatePageSize } from '../lib/ActorRdfMetadataAccumulatePageSize';
+import '@comunica/utils-jest';
 
 describe('ActorRdfMetadataAccumulatePageSize', () => {
   let bus: any;
@@ -20,7 +21,7 @@ describe('ActorRdfMetadataAccumulatePageSize', () => {
 
     describe('test', () => {
       it('should always pass', async() => {
-        await expect(actor.test({ context, mode: 'initialize' })).resolves.toBeTruthy();
+        await expect(actor.test({ context, mode: 'initialize' })).resolves.toPassTestVoid();
       });
     });
 

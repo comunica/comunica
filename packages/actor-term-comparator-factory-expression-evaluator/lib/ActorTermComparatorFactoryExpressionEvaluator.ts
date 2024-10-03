@@ -1,21 +1,22 @@
 import { InternalEvaluator } from '@comunica/actor-expression-evaluator-factory-default/lib/InternalEvaluator';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type {
   IActionTermComparatorFactory,
   IActorTermComparatorFactoryOutput,
 } from '@comunica/bus-term-comparator-factory';
 import { ActorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import * as Eval from '@comunica/expression-evaluator';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { TermComparatorExpressionEvaluator } from './TermComparatorExpressionEvaluator';
 
 /**
  * A comunica Expression Evaluator Based Term Comparator Factory Actor.
  */
 export class ActorTermComparatorFactoryExpressionEvaluator extends ActorTermComparatorFactory {
-  public async test(_action: IActionTermComparatorFactory): Promise<IActorTest> {
-    return true;
+  public async test(_action: IActionTermComparatorFactory): Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 
   /**

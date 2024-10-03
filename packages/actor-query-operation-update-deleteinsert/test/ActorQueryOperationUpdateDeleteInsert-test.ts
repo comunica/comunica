@@ -1,23 +1,22 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultVoid } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationUpdateDeleteInsert } from '../lib/ActorQueryOperationUpdateDeleteInsert';
 import 'jest-rdf';
+import '@comunica/utils-jest';
 
 const factory = new Factory();
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
 
 const mediatorMergeBindingsContext: any = {
-  mediate(arg: any) {
-    return {};
-  },
+  mediate: () => ({}),
 };
 
 describe('ActorQueryOperationUpdateDeleteInsert', () => {
@@ -84,7 +83,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
         operation: { type: 'deleteinsert' },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should not test on readOnly', async() => {
@@ -92,7 +91,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
         operation: { type: 'deleteinsert' },
         context: new ActionContext({ [KeysQueryOperation.readOnly.name]: true }),
       };
-      await expect(actor.test(op)).rejects.toThrow(`Attempted a write operation in read-only mode`);
+      await expect(actor.test(op)).resolves.toFailTest(`Attempted a write operation in read-only mode`);
     });
 
     it('should not test on non-deleteinsert', async() => {
@@ -100,7 +99,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
         operation: { type: 'some-other-type' },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports deleteinsert operations, but got some-other-type`);
     });
 
     it('should run without operation input', async() => {
@@ -108,7 +107,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
         operation: { type: 'deleteinsert' },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = <IQueryOperationResultVoid> await actor.run(op);
+      const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
       expect(output.type).toBe('void');
       await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert).toBeUndefined();
@@ -125,7 +124,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
         },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = <IQueryOperationResultVoid> await actor.run(op);
+      const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
       expect(output.type).toBe('void');
       await expect(output.execute()).resolves.toBeUndefined();
       await expect(arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).resolves.toEqual([
@@ -144,7 +143,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
         },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = <IQueryOperationResultVoid> await actor.run(op);
+      const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
       expect(output.type).toBe('void');
       await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert).toBeUndefined();
@@ -166,7 +165,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
         },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = <IQueryOperationResultVoid> await actor.run(op);
+      const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
       expect(output.type).toBe('void');
       await expect(output.execute()).resolves.toBeUndefined();
       await expect(arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).resolves.toEqual([
@@ -188,7 +187,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
         },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = <IQueryOperationResultVoid> await actor.run(op);
+      const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
       expect(output.type).toBe('void');
       await expect(output.execute()).resolves.toBeUndefined();
       await expect(arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert))
@@ -211,7 +210,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
         },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = <IQueryOperationResultVoid> await actor.run(op);
+      const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
       expect(output.type).toBe('void');
       await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert).toBeUndefined();
@@ -237,7 +236,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
         },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = <IQueryOperationResultVoid> await actor.run(op);
+      const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
       expect(output.type).toBe('void');
       await expect(output.execute()).resolves.toBeUndefined();
       await expect(arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert))
@@ -266,7 +265,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
         },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = <IQueryOperationResultVoid> await actor.run(op);
+      const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
       expect(output.type).toBe('void');
       await expect(output.execute()).rejects.toBe(error);
     });
@@ -290,7 +289,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
         },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = <IQueryOperationResultVoid> await actor.run(op);
+      const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
       expect(output.type).toBe('void');
       await expect(output.execute()).resolves.toBeUndefined();
       await expect(arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).resolves.toEqual([]);
@@ -316,7 +315,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
         },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = <IQueryOperationResultVoid> await actor.run(op);
+      const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
       expect(output.type).toBe('void');
       await expect(output.execute()).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert).toBeUndefined();
@@ -345,7 +344,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
         },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = <IQueryOperationResultVoid> await actor.run(op);
+      const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
       expect(output.type).toBe('void');
       await expect(output.execute()).resolves.toBeUndefined();
       await expect(arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).resolves.toEqual([]);

@@ -5,7 +5,6 @@ import { ActorFunctionFactoryTermFunctionAddition } from '@comunica/actor-functi
 import { ActorFunctionFactoryTermFunctionEquality } from '@comunica/actor-function-factory-term-function-equality';
 import { ActorFunctionFactoryTermFunctionIri } from '@comunica/actor-function-factory-term-function-iri';
 import { ActorFunctionFactoryTermFunctionStr } from '@comunica/actor-function-factory-term-function-str';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
@@ -15,11 +14,14 @@ import * as sparqlee from '@comunica/expression-evaluator';
 import { isExpressionError } from '@comunica/expression-evaluator';
 import { getMockEEActionContext, getMockMediatorExpressionEvaluatorFactory } from '@comunica/jest';
 import type { IQueryOperationResultBindings, Bindings, IActionContext } from '@comunica/types';
+import type { IQueryOperationResultBindings, Bindings } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory, translate } from 'sparqlalgebrajs';
 import { ActorQueryOperationFilter } from '../lib';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF, {});
@@ -45,12 +47,6 @@ describe('ActorQueryOperationFilter', () => {
   let bus: any;
   let mediatorQueryOperation: any;
   let context: IActionContext;
-
-  const simpleSPOInput = new Factory().createBgp([ new Factory().createPattern(
-    DF.variable('s'),
-    DF.variable('p'),
-    DF.variable('o'),
-  ) ]);
   const truthyExpression = parse('"nonemptystring"');
   const falsyExpression = parse('""');
   const erroringExpression = parse('?a + ?a');
@@ -69,7 +65,10 @@ describe('ActorQueryOperationFilter', () => {
           BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
           BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
         ], { autoStart: false }),
-        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]}),
+        metadata: () => Promise.resolve({
+          cardinality: 3,
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+        }),
         operated: arg,
         type: 'bindings',
       }),
@@ -123,17 +122,17 @@ describe('ActorQueryOperationFilter', () => {
 
     it('should test on filter', async() => {
       const op: any = { operation: { type: 'filter', expression: truthyExpression }, context };
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should fail on unsupported operators', async() => {
       const op: any = { operation: { type: 'filter', expression: unknownExpression }, context };
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Unknown operator: '"DUMMY"`);
     });
 
     it('should not test on non-filter', async() => {
       const op: any = { operation: { type: 'some-other-type' }};
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports filter operations, but got some-other-type`);
     });
 
     it('should return the full stream for a truthy filter', async() => {
@@ -141,7 +140,7 @@ describe('ActorQueryOperationFilter', () => {
         operation: { type: 'filter', input: {}, expression: truthyExpression },
         context,
       };
-      const output: IQueryOperationResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
         BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
@@ -149,7 +148,7 @@ describe('ActorQueryOperationFilter', () => {
       ]);
       expect(output.type).toBe('bindings');
       await expect(output.metadata()).resolves
-        .toMatchObject({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]});
+        .toMatchObject({ cardinality: 3, variables: [{ variable: DF.variable('a'), canBeUndef: false }]});
     });
 
     it('should return an empty stream for a falsy filter', async() => {
@@ -157,10 +156,10 @@ describe('ActorQueryOperationFilter', () => {
         operation: { type: 'filter', input: {}, expression: falsyExpression },
         context,
       };
-      const output: IQueryOperationResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([]);
       await expect(output.metadata()).resolves
-        .toMatchObject({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]});
+        .toMatchObject({ cardinality: 3, variables: [{ variable: DF.variable('a'), canBeUndef: false }]});
       expect(output.type).toBe('bindings');
     });
 
@@ -169,10 +168,10 @@ describe('ActorQueryOperationFilter', () => {
         operation: { type: 'filter', input: {}, expression: erroringExpression },
         context,
       };
-      const output: IQueryOperationResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([]);
       await expect(output.metadata()).resolves
-        .toMatchObject({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]});
+        .toMatchObject({ cardinality: 3, variables: [{ variable: DF.variable('a'), canBeUndef: false }]});
       expect(output.type).toBe('bindings');
     });
 
@@ -183,7 +182,7 @@ describe('ActorQueryOperationFilter', () => {
         operation: { type: 'filter', input: {}, expression: erroringExpression },
         context,
       };
-      const output: IQueryOperationResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op, undefined);
       output.bindingsStream.on('data', () => {
         // This is here to force the stream to start.
       });
@@ -211,7 +210,7 @@ describe('ActorQueryOperationFilter', () => {
         operation: { type: 'filter', input: {}, expression: erroringExpression },
         context,
       };
-      const output: IQueryOperationResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op, undefined);
       output.bindingsStream.on('data', () => {
         // This is here to force the stream to start.
       });
@@ -224,7 +223,7 @@ describe('ActorQueryOperationFilter', () => {
         operation: { type: 'filter', input: {}, expression },
         context: getMockEEActionContext(new ActionContext({ [KeysInitQuery.baseIRI.name]: 'http://example.com' })),
       };
-      const output: IQueryOperationResultBindings = <any> await actor.run(op);
+      const output: IQueryOperationResultBindings = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
         BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
@@ -232,7 +231,7 @@ describe('ActorQueryOperationFilter', () => {
       ]);
       expect(output.type).toBe('bindings');
       await expect(output.metadata()).resolves
-        .toMatchObject({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]});
+        .toMatchObject({ cardinality: 3, variables: [{ variable: DF.variable('a'), canBeUndef: false }]});
     });
   });
 });

@@ -6,7 +6,8 @@ import type {
   IActorRdfUpdateHypermediaArgs,
 } from '@comunica/bus-rdf-update-hypermedia';
 import { ActorRdfUpdateHypermedia } from '@comunica/bus-rdf-update-hypermedia';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import { QuadDestinationPutLdp } from './QuadDestinationPutLdp';
 
 /**
@@ -21,16 +22,16 @@ export class ActorRdfUpdateHypermediaPutLdp extends ActorRdfUpdateHypermedia {
     super(args, 'putLdp');
   }
 
-  public async testMetadata(action: IActionRdfUpdateHypermedia): Promise<IActorTest> {
+  public async testMetadata(action: IActionRdfUpdateHypermedia): Promise<TestResult<IActorTest>> {
     if (!action.forceDestinationType) {
       if (!action.metadata.allowHttpMethods || !action.metadata.allowHttpMethods.includes('PUT')) {
-        throw new Error(`Actor ${this.name} could not detect a destination with 'Allow: PUT' header.`);
+        return failTest(`Actor ${this.name} could not detect a destination with 'Allow: PUT' header.`);
       }
       if (action.exists) {
-        throw new Error(`Actor ${this.name} can only put on a destination that does not already exists.`);
+        return failTest(`Actor ${this.name} can only put on a destination that does not already exists.`);
       }
     }
-    return true;
+    return passTestVoid();
   }
 
   public async run(action: IActionRdfUpdateHypermedia): Promise<IActorRdfUpdateHypermediaOutput> {

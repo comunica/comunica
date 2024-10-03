@@ -5,6 +5,7 @@ import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { ActorRdfMetadataPrimaryTopic } from '../lib/ActorRdfMetadataPrimaryTopic';
+import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
 const stream = require('streamify-array');
@@ -77,11 +78,12 @@ describe('ActorRdfMetadataPrimaryTopic', () => {
     });
 
     it('should not test on a triple stream', async() => {
-      await expect(actor.test({ context, url: '', quads: input, triples: true })).rejects.toBeTruthy();
+      await expect(actor.test({ context, url: '', quads: input, triples: true }))
+        .resolves.toFailTest(`This actor only supports non-triple quad streams.`);
     });
 
     it('should test on a quad stream', async() => {
-      await expect(actor.test({ context, url: '', quads: input })).resolves.toBeTruthy();
+      await expect(actor.test({ context, url: '', quads: input })).resolves.toPassTestVoid();
     });
 
     it('should run', async() => {
@@ -204,9 +206,9 @@ describe('ActorRdfMetadataPrimaryTopic', () => {
           output.data.on('data', () => {
             // Do nothing
           });
-          return Promise.all([ new Promise((resolve, reject) => {
+          return Promise.all([ new Promise((resolve) => {
             output.data.on('error', resolve);
-          }), new Promise((resolve, reject) => {
+          }), new Promise((resolve) => {
             output.metadata.on('error', resolve);
           }) ]).then((errors) => {
             expect(errors).toHaveLength(2);

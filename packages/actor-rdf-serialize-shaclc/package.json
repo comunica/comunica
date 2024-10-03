@@ -4,6 +4,10 @@
   "description": "A shaclc rdf-serialize actor",
   "lsd:module": true,
   "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
@@ -39,7 +43,7 @@
   "dependencies": {
     "@comunica/bus-rdf-serialize": "^3.2.1",
     "arrayify-stream": "^2.0.1",
-    "readable-stream": "^4.4.2",
+    "readable-stream": "^4.5.2",
     "shaclc-write": "^1.4.2"
   }
 }

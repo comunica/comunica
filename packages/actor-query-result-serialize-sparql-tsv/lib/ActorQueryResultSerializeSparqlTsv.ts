@@ -6,6 +6,8 @@ import type {
 import {
   ActorQueryResultSerializeFixedMediaTypes,
 } from '@comunica/bus-query-result-serialize';
+import type { TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import type { IActionContext, IQueryOperationResultBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { termToString } from 'rdf-string-ttl';
@@ -45,11 +47,14 @@ export class ActorQueryResultSerializeSparqlTsv extends ActorQueryResultSerializ
       .replaceAll('\r', '\\r');
   }
 
-  public override async testHandleChecked(action: IActionSparqlSerialize, _context: IActionContext): Promise<boolean> {
+  public override async testHandleChecked(
+    action: IActionSparqlSerialize,
+    _context: IActionContext,
+  ): Promise<TestResult<boolean>> {
     if (action.type !== 'bindings') {
-      throw new Error('This actor can only handle bindings streams.');
+      return failTest('This actor can only handle bindings streams.');
     }
-    return true;
+    return passTestVoid();
   }
 
   public async runHandle(action: IActionSparqlSerialize, _mediaType: string | undefined, _context: IActionContext):
@@ -59,12 +64,12 @@ export class ActorQueryResultSerializeSparqlTsv extends ActorQueryResultSerializ
     const data = new Readable();
     // Write head
     const metadata = await bindingsAction.metadata();
-    data.push(`${metadata.variables.map((variable: RDF.Variable) => variable.value).join('\t')}\n`);
+    data.push(`${metadata.variables.map(variable => variable.variable.value).join('\t')}\n`);
 
     // Write Bindings
     data.wrap(<any> bindingsAction.bindingsStream.map((bindings: RDF.Bindings) => `${metadata.variables
-      .map((key: RDF.Variable) => ActorQueryResultSerializeSparqlTsv
-        .bindingToTsvBindings(bindings.get(key)))
+      .map(key => ActorQueryResultSerializeSparqlTsv
+        .bindingToTsvBindings(bindings.get(key.variable)))
       .join('\t')}\n`));
 
     return { data };

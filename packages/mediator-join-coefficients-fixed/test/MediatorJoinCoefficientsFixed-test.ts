@@ -1,9 +1,8 @@
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import { KeysCore, KeysQueryOperation } from '@comunica/context-entries';
-import type { IAction, IActorOutput } from '@comunica/core';
-import { ActionContext, Actor, Bus } from '@comunica/core';
+import type { IAction, IActorOutput, TestResult } from '@comunica/core';
+import { failTest, passTest, ActionContext, Actor, Bus } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { MediatorJoinCoefficientsFixed } from '../lib/MediatorJoinCoefficientsFixed';
 
@@ -12,14 +11,12 @@ const DF = new DataFactory();
 describe('MediatorJoinCoefficientsFixed', () => {
   describe('An MediatorJoinCoefficientsFixed instance', () => {
     let bus: any;
-    let context: IActionContext;
     let mediator: MediatorJoinCoefficientsFixed;
     let debugLog: any;
     let action: IActionRdfJoin;
 
     beforeEach(() => {
       bus = new Bus({ name: 'bus' });
-      context = new ActionContext();
       mediator = new MediatorJoinCoefficientsFixed({
         name: 'mediator',
         bus,
@@ -36,7 +33,9 @@ describe('MediatorJoinCoefficientsFixed', () => {
               type: 'bindings',
               metadata: () => Promise.resolve({
                 cardinality: { type: 'estimate', value: 10 },
-                variables: [ DF.variable('V') ],
+                variables: [
+                  { variable: DF.variable('V'), canBeUndef: false },
+                ],
               }),
             },
             operation: <any> {},
@@ -61,10 +60,11 @@ describe('MediatorJoinCoefficientsFixed', () => {
       new DummyActor(3, <any>{}, bus, true);
 
       await expect(mediator.mediate(action))
-        .rejects.toThrow(`All actors rejected their test in mediator
-Actor 1 rejects
-Actor 2 rejects
-Actor 3 rejects`);
+        .rejects.toThrow(`BUS FAIL MESSAGE
+    Error messages of failing actors:
+        Actor 1 fails
+        Actor 2 fails
+        Actor 3 fails`);
     });
 
     it('should handle a single actor', async() => {
@@ -167,7 +167,7 @@ Actor 3 rejects`);
       );
     });
 
-    it('should handle multiple single actors with one rejecting', async() => {
+    it('should handle multiple single actors with one failing', async() => {
       new DummyActor(1, {
         iterations: 10,
         persistedItems: 20,
@@ -468,21 +468,21 @@ class DummyActor extends Actor<IAction, IMediatorTypeJoinCoefficients, IDummyOut
     bus: Bus<DummyActor, IAction, IMediatorTypeJoinCoefficients, IDummyOutput>,
     reject = false,
   ) {
-    super({ name: `dummy${id}`, bus });
+    super({ name: `dummy${id}`, bus, busFailMessage: 'BUS FAIL MESSAGE' });
     this.physicalName = `PHYSICAL${id}`;
     this.id = id;
     this.coeffs = coeffs;
     this.reject = reject;
   }
 
-  public async test(action: IAction): Promise<IMediatorTypeJoinCoefficients> {
+  public async test(): Promise<TestResult<IMediatorTypeJoinCoefficients>> {
     if (this.reject) {
-      throw new Error(`Actor ${this.id} rejects`);
+      return failTest(`Actor ${this.id} fails`);
     }
-    return this.coeffs;
+    return passTest(this.coeffs);
   }
 
-  public async run(action: IAction): Promise<IDummyOutput> {
+  public async run(): Promise<IDummyOutput> {
     return { id: this.id };
   }
 }

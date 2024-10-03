@@ -4,6 +4,7 @@ import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorOptimizeQueryOperationJoinConnected } from '../lib/ActorOptimizeQueryOperationJoinConnected';
+import '@comunica/utils-jest';
 
 const factory = new Factory();
 const DF = new DataFactory();
@@ -25,7 +26,7 @@ describe('ActorOptimizeQueryOperationJoinConnected', () => {
     });
 
     it('should test', async() => {
-      await expect(actor.test({ operation: <any> undefined, context })).resolves.toBeTruthy();
+      await expect(actor.test({ operation: <any> undefined, context })).resolves.toPassTestVoid();
     });
 
     it('should run', async() => {

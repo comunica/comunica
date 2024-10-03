@@ -1,5 +1,13 @@
-import type { Actor, IAction, IActorOutput, IActorReply, IActorTest, IMediatorArgs } from '@comunica/core';
-import { Mediator } from '@comunica/core';
+import type {
+  Actor,
+  IAction,
+  IActorOutput,
+  IActorReply,
+  IActorTest,
+  IMediatorArgs,
+  TestResult,
+} from '@comunica/core';
+import { passTestWithSideData, failTest, Mediator } from '@comunica/core';
 
 /**
  * A mediator that can mediate over a single number field.
@@ -8,14 +16,20 @@ import { Mediator } from '@comunica/core';
  * The 'field' parameter represents the field name of the test result field over which must be mediated.
  * The 'type' parameter
  */
-export class MediatorNumber<A extends Actor<I, T, O>, I extends IAction, T extends IActorTest, O extends IActorOutput>
-  extends Mediator<A, I, T, O> implements IMediatorNumberArgs<A, I, T, O> {
+export class MediatorNumber<
+  A extends Actor<I, T, O, TS>,
+I extends IAction,
+T extends IActorTest,
+O extends IActorOutput,
+TS,
+>
+  extends Mediator<A, I, T, O, TS> implements IMediatorNumberArgs<A, I, T, O, TS> {
   public readonly field: string;
   public readonly type: 'min' | 'max';
-  public readonly ignoreErrors: boolean;
+  public readonly ignoreFailures: boolean;
   public readonly indexPicker: (tests: T[]) => number;
 
-  public constructor(args: IMediatorNumberArgs<A, I, T, O>) {
+  public constructor(args: IMediatorNumberArgs<A, I, T, O, TS>) {
     super(args);
     this.indexPicker = this.createIndexPicker();
   }
@@ -47,35 +61,48 @@ export class MediatorNumber<A extends Actor<I, T, O>, I extends IAction, T exten
     return value === undefined ? defaultValue : value;
   }
 
-  protected async mediateWith(action: I, testResults: IActorReply<A, I, T, O>[]): Promise<A> {
-    let promises = testResults.map(({ reply }) => reply);
-    const errors: Error[] = [];
-    if (this.ignoreErrors) {
+  protected async mediateWith(action: I, testResults: IActorReply<A, I, T, O, TS>[]): Promise<TestResult<A, TS>> {
+    let wrappedResults = await Promise.all(testResults.map(({ reply }) => reply));
+
+    // Collect failures if we want to ignore them
+    const failures: string[] = [];
+    if (this.ignoreFailures) {
       const dummy: any = {};
       dummy[this.field] = null;
-      // eslint-disable-next-line ts/no-floating-promises
-      promises = promises.map(promise => promise.catch((error) => {
-        errors.push(error);
-        return dummy;
-      }));
+      wrappedResults = wrappedResults.map((result) => {
+        if (result.isFailed()) {
+          failures.push(result.getFailMessage());
+          return passTestWithSideData<T, TS>(dummy, undefined!);
+        }
+        return result;
+      });
     }
-    const results = await Promise.all(promises);
+
+    // Resolve values
+    const sideDatas: (TS | undefined)[] = [];
+    const results = wrappedResults.map((result, i) => {
+      const value = result.getOrThrow();
+      sideDatas[i] = result.getSideData();
+      return value;
+    });
+
+    // Determine one value
     const index = this.indexPicker(results);
     if (index < 0) {
-      throw new Error(`All actors rejected their test in ${this.name}\n${
-        errors.map(error => error.message).join('\n')}`);
+      return failTest(this.constructFailureMessage(action, failures));
     }
-    return testResults[index].actor;
+    return passTestWithSideData(testResults[index].actor, sideDatas[index]!);
   }
 }
 
 export interface IMediatorNumberArgs<
-  A extends Actor<I, T, O>,
+  A extends Actor<I, T, O, TS>,
 I extends IAction,
 T extends IActorTest,
 O extends IActorOutput,
+TS,
 >
-  extends IMediatorArgs<A, I, T, O> {
+  extends IMediatorArgs<A, I, T, O, TS> {
   /**
    * The field name of the test result field over which must be mediated.
    */
@@ -88,7 +115,7 @@ O extends IActorOutput,
   type: 'min' | 'max';
 
   /**
-   * If actors that throw test errors should be ignored
+   * If actors that throw fail tests should be ignored
    */
-  ignoreErrors?: boolean;
+  ignoreFailures?: boolean;
 }

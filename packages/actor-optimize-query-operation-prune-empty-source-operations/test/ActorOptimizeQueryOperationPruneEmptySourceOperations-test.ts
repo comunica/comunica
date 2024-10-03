@@ -1,7 +1,7 @@
-import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
+import { assignOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -9,6 +9,7 @@ import { Algebra, Factory } from 'sparqlalgebrajs';
 import {
   ActorOptimizeQueryOperationPruneEmptySourceOperations,
 } from '../lib/ActorOptimizeQueryOperationPruneEmptySourceOperations';
+import '@comunica/utils-jest';
 
 const AF = new Factory();
 const DF = new DataFactory();
@@ -74,11 +75,23 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
       source: {
         referenceValue: 'source1',
         getSelectorShape: () => ({
-          type: 'operation',
-          operation: {
-            operationType: 'type',
-            type: Algebra.types.ASK,
-          },
+          type: 'disjunction',
+          children: [
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.ASK,
+              },
+            },
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.NOP,
+              },
+            },
+          ],
         }),
         async queryBoolean() {
           return true;
@@ -106,8 +119,8 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
       it('should not handle operations with top-level source', async() => {
         await expect(actor.test({
           context: new ActionContext(),
-          operation: ActorQueryOperation.assignOperationSource(AF.createNop(), <any>{}),
-        })).rejects.toThrow(`Actor actor does not work with top-level operation sources.`);
+          operation: assignOperationSource(AF.createNop(), <any>{}),
+        })).resolves.toFailTest(`Actor actor does not work with top-level operation sources.`);
       });
     });
 
@@ -127,85 +140,85 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
 
         it('should prune empty children', async() => {
           const opIn = AF.createUnion([
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('p1'), DF.namedNode('o')), source1),
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.namedNode('o')), source1),
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('p2'), DF.namedNode('o')), source1),
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.namedNode('o')), source1),
           ]);
           const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
           expect(opOut).toEqual(AF.createUnion([
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('p1'), DF.namedNode('o')), source1),
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('p2'), DF.namedNode('o')), source1),
           ]));
         });
 
         it('should not prune non-patterns', async() => {
           const opIn = AF.createUnion([
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('p1'), DF.namedNode('o')), source1),
-            ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF.createNop(), source1),
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('p2'), DF.namedNode('o')), source1),
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.namedNode('o')), source1),
           ]);
           const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
           expect(opOut).toEqual(AF.createUnion([
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('p1'), DF.namedNode('o')), source1),
-            ActorQueryOperation.assignOperationSource(AF.createNop(), source1),
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF.createNop(), source1),
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('p2'), DF.namedNode('o')), source1),
           ]));
         });
 
         it('should not prune patterns without source', async() => {
           const opIn = AF.createUnion([
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('p1'), DF.namedNode('o')), source1),
             AF.createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.namedNode('o')),
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('p2'), DF.namedNode('o')), source1),
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.namedNode('o')), source1),
           ]);
           const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
           expect(opOut).toEqual(AF.createUnion([
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('p1'), DF.namedNode('o')), source1),
             AF.createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.namedNode('o')),
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('p2'), DF.namedNode('o')), source1),
           ]));
         });
 
         it('should not prune for no empty children', async() => {
           const opIn = AF.createUnion([
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('p1'), DF.namedNode('o')), source1),
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('p2'), DF.namedNode('o')), source1),
           ]);
           const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
           expect(opOut).toEqual(AF.createUnion([
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('p1'), DF.namedNode('o')), source1),
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('p2'), DF.namedNode('o')), source1),
           ]));
         });
 
         it('should prune all empty children', async() => {
           const opIn = AF.createUnion([
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.namedNode('o')), source1),
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.namedNode('o')), source1),
           ]);
           const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
@@ -214,51 +227,51 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
 
         it('should push up a single non-empty child', async() => {
           const opIn = AF.createUnion([
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('p1'), DF.namedNode('o')), source1),
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.namedNode('o')), source1),
           ]);
           const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
           expect(opOut).toEqual(
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('p1'), DF.namedNode('o')), source1),
           );
         });
 
         it('should prune nested children', async() => {
           const opIn = AF.createUnion([
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('p1'), DF.namedNode('o')), source1),
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.namedNode('o')), source1),
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('p2'), DF.namedNode('o')), source1),
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.namedNode('o')), source1),
             AF.createUnion([
-              ActorQueryOperation.assignOperationSource(AF
+              assignOperationSource(AF
                 .createPattern(DF.namedNode('s'), DF.namedNode('p1.1'), DF.namedNode('o')), source1),
               AF.createUnion([
-                ActorQueryOperation.assignOperationSource(AF
+                assignOperationSource(AF
                   .createPattern(DF.namedNode('s'), DF.namedNode('p1.1.1'), DF.namedNode('o')), source1),
-                ActorQueryOperation.assignOperationSource(AF
+                assignOperationSource(AF
                   .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.namedNode('o')), source1),
               ]),
-              ActorQueryOperation.assignOperationSource(AF
+              assignOperationSource(AF
                 .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.namedNode('o')), source1),
             ]),
           ]);
           const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
           expect(opOut).toEqual(AF.createUnion([
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('p1'), DF.namedNode('o')), source1),
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('p2'), DF.namedNode('o')), source1),
             AF.createUnion([
-              ActorQueryOperation.assignOperationSource(AF
+              assignOperationSource(AF
                 .createPattern(DF.namedNode('s'), DF.namedNode('p1.1'), DF.namedNode('o')), source1),
-              ActorQueryOperation.assignOperationSource(AF
+              assignOperationSource(AF
                 .createPattern(DF.namedNode('s'), DF.namedNode('p1.1.1'), DF.namedNode('o')), source1),
             ]),
           ]));
@@ -274,64 +287,64 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
 
         it('should prune empty children', async() => {
           const opIn = AF.createAlt([
-            ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
-            ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
-            ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p2')), source1),
-            ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('p2')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
           ]);
           const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
           expect(opOut).toEqual(AF.createAlt([
-            ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
-            ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p2')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('p2')), source1),
           ]));
         });
 
         it('should not prune non-links', async() => {
           const opIn = AF.createAlt([
-            ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
-            ActorQueryOperation.assignOperationSource(AF.createSeq([]), source1),
-            ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p2')), source1),
-            ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
+            assignOperationSource(AF.createSeq([]), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('p2')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
           ]);
           const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
           expect(opOut).toEqual(AF.createAlt([
-            ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
-            ActorQueryOperation.assignOperationSource(AF.createSeq([]), source1),
-            ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p2')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
+            assignOperationSource(AF.createSeq([]), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('p2')), source1),
           ]));
         });
 
         it('should not prune links without source', async() => {
           const opIn = AF.createAlt([
-            ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
             AF.createLink(DF.namedNode('empty')),
-            ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p2')), source1),
-            ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('p2')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
           ]);
           const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
           expect(opOut).toEqual(AF.createAlt([
-            ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
             AF.createLink(DF.namedNode('empty')),
-            ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p2')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('p2')), source1),
           ]));
         });
 
         it('should not prune for no empty children', async() => {
           const opIn = AF.createAlt([
-            ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
-            ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p2')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('p2')), source1),
           ]);
           const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
           expect(opOut).toEqual(AF.createAlt([
-            ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
-            ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p2')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('p2')), source1),
           ]));
         });
 
         it('should prune all empty children', async() => {
           const opIn = AF.createAlt([
-            ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
-            ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
           ]);
           const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
           expect(opOut).toEqual(AF.createAlt([]));
@@ -339,37 +352,37 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
 
         it('should push up a single non-empty child', async() => {
           const opIn = AF.createAlt([
-            ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
-            ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
           ]);
           const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
           expect(opOut).toEqual(
-            ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
           );
         });
 
         it('should prune nested children', async() => {
           const opIn = AF.createAlt([
-            ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
-            ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
-            ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p2')), source1),
-            ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('p2')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
             AF.createAlt([
-              ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p1.1')), source1),
-              ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+              assignOperationSource(AF.createLink(DF.namedNode('p1.1')), source1),
+              assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
               AF.createAlt([
-                ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p1.1.1')), source1),
-                ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+                assignOperationSource(AF.createLink(DF.namedNode('p1.1.1')), source1),
+                assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
               ]),
             ]),
           ]);
           const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
           expect(opOut).toEqual(AF.createAlt([
-            ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
-            ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p2')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('p2')), source1),
             AF.createAlt([
-              ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p1.1')), source1),
-              ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p1.1.1')), source1),
+              assignOperationSource(AF.createLink(DF.namedNode('p1.1')), source1),
+              assignOperationSource(AF.createLink(DF.namedNode('p1.1.1')), source1),
             ]),
           ]));
         });
@@ -378,30 +391,30 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
       describe('with mixed operations', () => {
         it('should prune alt in union', async() => {
           const opIn = AF.createUnion([
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('p1'), DF.namedNode('o')), source1),
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.namedNode('o')), source1),
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('p2'), DF.namedNode('o')), source1),
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.namedNode('o')), source1),
             AF.createAlt([
-              ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
-              ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
-              ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p2')), source1),
-              ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+              assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
+              assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+              assignOperationSource(AF.createLink(DF.namedNode('p2')), source1),
+              assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
             ]),
           ]);
           const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
           expect(opOut).toEqual(AF.createUnion([
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('p1'), DF.namedNode('o')), source1),
-            ActorQueryOperation.assignOperationSource(AF
+            assignOperationSource(AF
               .createPattern(DF.namedNode('s'), DF.namedNode('p2'), DF.namedNode('o')), source1),
             AF.createAlt([
-              ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
-              ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p2')), source1),
+              assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
+              assignOperationSource(AF.createLink(DF.namedNode('p2')), source1),
             ]),
           ]));
         });
@@ -411,23 +424,23 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
             AF.createNop(),
             AF.createJoin([
               AF.createUnion([
-                ActorQueryOperation.assignOperationSource(AF
+                assignOperationSource(AF
                   .createPattern(DF.namedNode('s'), DF.namedNode('p1'), DF.namedNode('o')), source1),
-                ActorQueryOperation.assignOperationSource(AF
+                assignOperationSource(AF
                   .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.namedNode('o')), source1),
-                ActorQueryOperation.assignOperationSource(AF
+                assignOperationSource(AF
                   .createPattern(DF.namedNode('s'), DF.namedNode('p2'), DF.namedNode('o')), source1),
-                ActorQueryOperation.assignOperationSource(AF
+                assignOperationSource(AF
                   .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.namedNode('o')), source1),
               ]),
               AF.createUnion([
-                ActorQueryOperation.assignOperationSource(AF
+                assignOperationSource(AF
                   .createPattern(DF.namedNode('s'), DF.namedNode('p1.2'), DF.namedNode('o')), source1),
-                ActorQueryOperation.assignOperationSource(AF
+                assignOperationSource(AF
                   .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.namedNode('o')), source1),
-                ActorQueryOperation.assignOperationSource(AF
+                assignOperationSource(AF
                   .createPattern(DF.namedNode('s'), DF.namedNode('p2.2'), DF.namedNode('o')), source1),
-                ActorQueryOperation.assignOperationSource(AF
+                assignOperationSource(AF
                   .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.namedNode('o')), source1),
               ]),
             ]),
@@ -437,15 +450,15 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
             AF.createNop(),
             AF.createJoin([
               AF.createUnion([
-                ActorQueryOperation.assignOperationSource(AF
+                assignOperationSource(AF
                   .createPattern(DF.namedNode('s'), DF.namedNode('p1'), DF.namedNode('o')), source1),
-                ActorQueryOperation.assignOperationSource(AF
+                assignOperationSource(AF
                   .createPattern(DF.namedNode('s'), DF.namedNode('p2'), DF.namedNode('o')), source1),
               ]),
               AF.createUnion([
-                ActorQueryOperation.assignOperationSource(AF
+                assignOperationSource(AF
                   .createPattern(DF.namedNode('s'), DF.namedNode('p1.2'), DF.namedNode('o')), source1),
-                ActorQueryOperation.assignOperationSource(AF
+                assignOperationSource(AF
                   .createPattern(DF.namedNode('s'), DF.namedNode('p2.2'), DF.namedNode('o')), source1),
               ]),
             ]),
@@ -457,19 +470,19 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
         it('should not modify children', async() => {
           const opIn = AF.createService(
             AF.createUnion([
-              ActorQueryOperation.assignOperationSource(AF
+              assignOperationSource(AF
                 .createPattern(DF.namedNode('s'), DF.namedNode('p1'), DF.namedNode('o')), source1),
-              ActorQueryOperation.assignOperationSource(AF
+              assignOperationSource(AF
                 .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.namedNode('o')), source1),
-              ActorQueryOperation.assignOperationSource(AF
+              assignOperationSource(AF
                 .createPattern(DF.namedNode('s'), DF.namedNode('p2'), DF.namedNode('o')), source1),
-              ActorQueryOperation.assignOperationSource(AF
+              assignOperationSource(AF
                 .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.namedNode('o')), source1),
               AF.createAlt([
-                ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
-                ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
-                ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p2')), source1),
-                ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+                assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
+                assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+                assignOperationSource(AF.createLink(DF.namedNode('p2')), source1),
+                assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
               ]),
             ]),
             DF.namedNode('source'),
@@ -477,19 +490,19 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
           const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
           expect(opOut).toEqual(AF.createService(
             AF.createUnion([
-              ActorQueryOperation.assignOperationSource(AF
+              assignOperationSource(AF
                 .createPattern(DF.namedNode('s'), DF.namedNode('p1'), DF.namedNode('o')), source1),
-              ActorQueryOperation.assignOperationSource(AF
+              assignOperationSource(AF
                 .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.namedNode('o')), source1),
-              ActorQueryOperation.assignOperationSource(AF
+              assignOperationSource(AF
                 .createPattern(DF.namedNode('s'), DF.namedNode('p2'), DF.namedNode('o')), source1),
-              ActorQueryOperation.assignOperationSource(AF
+              assignOperationSource(AF
                 .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.namedNode('o')), source1),
               AF.createAlt([
-                ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
-                ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
-                ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('p2')), source1),
-                ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+                assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
+                assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+                assignOperationSource(AF.createLink(DF.namedNode('p2')), source1),
+                assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
               ]),
             ]),
             DF.namedNode('source'),
@@ -501,9 +514,9 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
         it('should prune if the projection now has missing variables in union', async() => {
           const opIn = AF.createProject(
             AF.createUnion([
-              ActorQueryOperation.assignOperationSource(AF
+              assignOperationSource(AF
                 .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.variable('o')), source1),
-              ActorQueryOperation.assignOperationSource(AF
+              assignOperationSource(AF
                 .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.variable('o')), source1),
             ]),
             [
@@ -517,8 +530,8 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
         it('should prune if the projection now has missing variables in alt', async() => {
           const opIn = AF.createProject(
             AF.createAlt([
-              ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
-              ActorQueryOperation.assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+              assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+              assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
             ]),
             [
               DF.variable('o'),
@@ -531,11 +544,11 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
         it('should not prune if the projection has no missing variables', async() => {
           const opIn = AF.createProject(
             AF.createUnion([
-              ActorQueryOperation.assignOperationSource(AF
+              assignOperationSource(AF
                 .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.variable('o')), source1),
-              ActorQueryOperation.assignOperationSource(AF
+              assignOperationSource(AF
                 .createPattern(DF.namedNode('s'), DF.namedNode('nonEmpty'), DF.variable('o')), source1),
-              ActorQueryOperation.assignOperationSource(AF
+              assignOperationSource(AF
                 .createPattern(DF.namedNode('s'), DF.namedNode('nonEmpty'), DF.variable('o')), source1),
             ]),
             [
@@ -545,9 +558,9 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
           const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
           expect(opOut).toEqual(AF.createProject(
             AF.createUnion([
-              ActorQueryOperation.assignOperationSource(AF
+              assignOperationSource(AF
                 .createPattern(DF.namedNode('s'), DF.namedNode('nonEmpty'), DF.variable('o')), source1),
-              ActorQueryOperation.assignOperationSource(AF
+              assignOperationSource(AF
                 .createPattern(DF.namedNode('s'), DF.namedNode('nonEmpty'), DF.variable('o')), source1),
             ]),
             [
@@ -561,25 +574,25 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
             AF.createUnion([
               AF.createJoin([
                 AF.createUnion([
-                  ActorQueryOperation.assignOperationSource(AF
+                  assignOperationSource(AF
                     .createPattern(DF.namedNode('s'), DF.namedNode('nonEmpty'), DF.variable('o')), source1),
-                  ActorQueryOperation.assignOperationSource(AF
-                    .createPattern(DF.namedNode('s'), DF.namedNode('nonEmpty'), DF.variable('o')), source1),
-                ]),
-              ]),
-              AF.createJoin([
-                AF.createUnion([
-                  ActorQueryOperation.assignOperationSource(AF
-                    .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.variable('o')), source1),
-                  ActorQueryOperation.assignOperationSource(AF
+                  assignOperationSource(AF
                     .createPattern(DF.namedNode('s'), DF.namedNode('nonEmpty'), DF.variable('o')), source1),
                 ]),
               ]),
               AF.createJoin([
                 AF.createUnion([
-                  ActorQueryOperation.assignOperationSource(AF
+                  assignOperationSource(AF
                     .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.variable('o')), source1),
-                  ActorQueryOperation.assignOperationSource(AF
+                  assignOperationSource(AF
+                    .createPattern(DF.namedNode('s'), DF.namedNode('nonEmpty'), DF.variable('o')), source1),
+                ]),
+              ]),
+              AF.createJoin([
+                AF.createUnion([
+                  assignOperationSource(AF
+                    .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.variable('o')), source1),
+                  assignOperationSource(AF
                     .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.variable('o')), source1),
                 ]),
               ]),
@@ -593,14 +606,14 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
             AF.createUnion([
               AF.createJoin([
                 AF.createUnion([
-                  ActorQueryOperation.assignOperationSource(AF
+                  assignOperationSource(AF
                     .createPattern(DF.namedNode('s'), DF.namedNode('nonEmpty'), DF.variable('o')), source1),
-                  ActorQueryOperation.assignOperationSource(AF
+                  assignOperationSource(AF
                     .createPattern(DF.namedNode('s'), DF.namedNode('nonEmpty'), DF.variable('o')), source1),
                 ]),
               ]),
               AF.createJoin([
-                ActorQueryOperation.assignOperationSource(AF
+                assignOperationSource(AF
                   .createPattern(DF.namedNode('s'), DF.namedNode('nonEmpty'), DF.variable('o')), source1),
               ]),
               AF.createJoin([
@@ -618,25 +631,25 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
             AF.createUnion([
               AF.createJoin([
                 AF.createUnion([
-                  ActorQueryOperation.assignOperationSource(AF
+                  assignOperationSource(AF
                     .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.variable('o')), source1),
-                  ActorQueryOperation.assignOperationSource(AF
-                    .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.variable('o')), source1),
-                ]),
-              ]),
-              AF.createJoin([
-                AF.createUnion([
-                  ActorQueryOperation.assignOperationSource(AF
-                    .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.variable('o')), source1),
-                  ActorQueryOperation.assignOperationSource(AF
+                  assignOperationSource(AF
                     .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.variable('o')), source1),
                 ]),
               ]),
               AF.createJoin([
                 AF.createUnion([
-                  ActorQueryOperation.assignOperationSource(AF
+                  assignOperationSource(AF
                     .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.variable('o')), source1),
-                  ActorQueryOperation.assignOperationSource(AF
+                  assignOperationSource(AF
+                    .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.variable('o')), source1),
+                ]),
+              ]),
+              AF.createJoin([
+                AF.createUnion([
+                  assignOperationSource(AF
+                    .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.variable('o')), source1),
+                  assignOperationSource(AF
                     .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.variable('o')), source1),
                 ]),
               ]),
@@ -653,15 +666,15 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
           const opIn = AF.createProject(
             AF.createLeftJoin(
               AF.createUnion([
-                ActorQueryOperation.assignOperationSource(AF
+                assignOperationSource(AF
                   .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.variable('o')), source1),
-                ActorQueryOperation.assignOperationSource(AF
+                assignOperationSource(AF
                   .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.variable('o')), source1),
               ]),
               AF.createUnion([
-                ActorQueryOperation.assignOperationSource(AF
+                assignOperationSource(AF
                   .createPattern(DF.namedNode('s'), DF.namedNode('nonEmpty'), DF.variable('o')), source1),
-                ActorQueryOperation.assignOperationSource(AF
+                assignOperationSource(AF
                   .createPattern(DF.namedNode('s'), DF.namedNode('nonEmpty'), DF.variable('o')), source1),
               ]),
             ),
@@ -677,15 +690,15 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
           const opIn = AF.createProject(
             AF.createLeftJoin(
               AF.createUnion([
-                ActorQueryOperation.assignOperationSource(AF
+                assignOperationSource(AF
                   .createPattern(DF.namedNode('s'), DF.namedNode('nonEmpty'), DF.variable('o')), source1),
-                ActorQueryOperation.assignOperationSource(AF
+                assignOperationSource(AF
                   .createPattern(DF.namedNode('s'), DF.namedNode('nonEmpty'), DF.variable('o')), source1),
               ]),
               AF.createUnion([
-                ActorQueryOperation.assignOperationSource(AF
+                assignOperationSource(AF
                   .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.variable('o')), source1),
-                ActorQueryOperation.assignOperationSource(AF
+                assignOperationSource(AF
                   .createPattern(DF.namedNode('s'), DF.namedNode('nonEmpty'), DF.variable('o')), source1),
               ]),
             ),
@@ -697,12 +710,12 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
           expect(opOut).toEqual(AF.createProject(
             AF.createLeftJoin(
               AF.createUnion([
-                ActorQueryOperation.assignOperationSource(AF
+                assignOperationSource(AF
                   .createPattern(DF.namedNode('s'), DF.namedNode('nonEmpty'), DF.variable('o')), source1),
-                ActorQueryOperation.assignOperationSource(AF
+                assignOperationSource(AF
                   .createPattern(DF.namedNode('s'), DF.namedNode('nonEmpty'), DF.variable('o')), source1),
               ]),
-              ActorQueryOperation.assignOperationSource(AF
+              assignOperationSource(AF
                 .createPattern(DF.namedNode('s'), DF.namedNode('nonEmpty'), DF.variable('o')), source1),
             ),
             [
@@ -715,15 +728,15 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
           const opIn = AF.createProject(
             AF.createLeftJoin(
               AF.createUnion([
-                ActorQueryOperation.assignOperationSource(AF
+                assignOperationSource(AF
                   .createPattern(DF.namedNode('s'), DF.namedNode('nonEmpty'), DF.variable('o')), source1),
-                ActorQueryOperation.assignOperationSource(AF
+                assignOperationSource(AF
                   .createPattern(DF.namedNode('s'), DF.namedNode('nonEmpty'), DF.variable('o')), source1),
               ]),
               AF.createUnion([
-                ActorQueryOperation.assignOperationSource(AF
+                assignOperationSource(AF
                   .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.variable('o')), source1),
-                ActorQueryOperation.assignOperationSource(AF
+                assignOperationSource(AF
                   .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.variable('o')), source1),
               ]),
             ),
@@ -734,9 +747,9 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
           const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
           expect(opOut).toEqual(AF.createProject(
             AF.createUnion([
-              ActorQueryOperation.assignOperationSource(AF
+              assignOperationSource(AF
                 .createPattern(DF.namedNode('s'), DF.namedNode('nonEmpty'), DF.variable('o')), source1),
-              ActorQueryOperation.assignOperationSource(AF
+              assignOperationSource(AF
                 .createPattern(DF.namedNode('s'), DF.namedNode('nonEmpty'), DF.variable('o')), source1),
             ]),
             [

@@ -4,6 +4,10 @@
   "description": "A service query-operation actor",
   "lsd:module": true,
   "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
@@ -37,15 +41,16 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bindings-factory": "^3.2.1",
     "@comunica/bus-merge-bindings-context": "^3.2.1",
     "@comunica/bus-query-operation": "^3.2.2",
     "@comunica/bus-query-source-identify": "^3.2.2",
     "@comunica/context-entries": "^3.1.0",
     "@comunica/core": "^3.2.1",
-    "@comunica/metadata": "^3.2.1",
     "@comunica/types": "^3.2.1",
+    "@comunica/utils-bindings-factory": "^3.2.1",
+    "@comunica/utils-metadata": "^3.2.1",
+    "@comunica/utils-query-operation": "^3.2.1",
     "asynciterator": "^3.9.0",
-    "sparqlalgebrajs": "^4.3.7"
+    "sparqlalgebrajs": "^4.3.8"
   }
 }

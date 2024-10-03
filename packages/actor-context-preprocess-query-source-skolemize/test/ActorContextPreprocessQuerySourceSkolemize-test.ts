@@ -2,6 +2,7 @@ import { KeysQueryOperation, KeysQuerySourceIdentify } from '@comunica/context-e
 import { ActionContext, Bus } from '@comunica/core';
 import { ActorContextPreprocessQuerySourceSkolemize } from '../lib/ActorContextPreprocessQuerySourceSkolemize';
 import { QuerySourceSkolemized } from '../lib/QuerySourceSkolemized';
+import '@comunica/utils-jest';
 
 describe('ActorContextPreprocessQuerySourceSkolemize', () => {
   let bus: any;
@@ -18,7 +19,7 @@ describe('ActorContextPreprocessQuerySourceSkolemize', () => {
     });
 
     it('should test', async() => {
-      await expect(actor.test({ context: new ActionContext() })).resolves.toBeTruthy();
+      await expect(actor.test({ context: new ActionContext() })).resolves.toPassTestVoid();
     });
 
     describe('run', () => {

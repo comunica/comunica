@@ -1,10 +1,10 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
-import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getSafeBindings, getSafeQuads } from '@comunica/utils-query-operation';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationDistinctHash } from '..';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -73,16 +73,16 @@ describe('ActorQueryOperationDistinctHash', () => {
       );
     });
     it('should create a filter', async() => {
-      await expect(actor.newHashFilter(new ActionContext())).resolves.toBeInstanceOf(Function);
+      await expect(actor.newHashFilter(new ActionContext(), [ DF.variable('a') ])).resolves.toBeInstanceOf(Function);
     });
 
     it('should create a filter that is a predicate', async() => {
-      const filter = await actor.newHashFilter(new ActionContext());
+      const filter = await actor.newHashFilter(new ActionContext(), [ DF.variable('a') ]);
       expect(filter(BF.bindings([[ DF.variable('a'), DF.literal('a') ]]))).toBe(true);
     });
 
     it('should create a filter that only returns true once for equal objects', async() => {
-      const filter = await actor.newHashFilter(new ActionContext());
+      const filter = await actor.newHashFilter(new ActionContext(), [ DF.variable('a') ]);
       expect(filter(BF.bindings([[ DF.variable('a'), DF.literal('a') ]]))).toBe(true);
       expect(filter(BF.bindings([[ DF.variable('a'), DF.literal('a') ]]))).toBe(false);
       expect(filter(BF.bindings([[ DF.variable('a'), DF.literal('a') ]]))).toBe(false);
@@ -95,9 +95,9 @@ describe('ActorQueryOperationDistinctHash', () => {
     });
 
     it('should create a filters that are independent', async() => {
-      const filter1 = await actor.newHashFilter(new ActionContext());
-      const filter2 = await actor.newHashFilter(new ActionContext());
-      const filter3 = await actor.newHashFilter(new ActionContext());
+      const filter1 = await actor.newHashFilter(new ActionContext(), [ DF.variable('a') ]);
+      const filter2 = await actor.newHashFilter(new ActionContext(), [ DF.variable('a') ]);
+      const filter3 = await actor.newHashFilter(new ActionContext(), [ DF.variable('a') ]);
       expect(filter1(BF.bindings([[ DF.variable('a'), DF.literal('b') ]]))).toBe(true);
       expect(filter1(BF.bindings([[ DF.variable('a'), DF.literal('b') ]]))).toBe(false);
 
@@ -152,17 +152,6 @@ describe('ActorQueryOperationDistinctHash', () => {
       expect(filter3(DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')))).toBe(true);
       expect(filter3(DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')))).toBe(false);
     });
-
-    // TODO remove this test once mediatorHashQuads has become a required argument
-    it('should not filter when mediatorHashQuads is not defined', async() => {
-      actor = new ActorQueryOperationDistinctHash(
-        { name: 'actor', bus, mediatorQueryOperation: mediatorHashBindings, mediatorHashBindings },
-      );
-
-      const filter = await actor.newHashFilterQuads(new ActionContext());
-      expect(filter(DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')))).toBe(true);
-      expect(filter(DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')))).toBe(true);
-    });
   });
 
   describe('An ActorQueryOperationDistinctHash instance', () => {
@@ -176,12 +165,12 @@ describe('ActorQueryOperationDistinctHash', () => {
 
     it('should test on distinct', async() => {
       const op: any = { operation: { type: 'distinct' }, context: new ActionContext() };
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should not test on non-distinct', async() => {
       const op: any = { operation: { type: 'some-other-type' }, context: new ActionContext() };
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports distinct operations, but got some-other-type`);
     });
 
     describe('with bindings input', () => {
@@ -194,7 +183,7 @@ describe('ActorQueryOperationDistinctHash', () => {
 
       it('should handle bindings', async() => {
         const op: any = { operation: { type: 'distinct' }, context: new ActionContext() };
-        const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+        const output = getSafeBindings(await actor.run(op, undefined));
         await expect(output.metadata()).resolves.toEqual({ cardinality: 5, variables: [ DF.variable('a') ]});
         expect(output.type).toBe('bindings');
         await expect(output.bindingsStream).toEqualBindingsStream([
@@ -215,7 +204,7 @@ describe('ActorQueryOperationDistinctHash', () => {
 
       it('should filter duplicate quads', async() => {
         const op: any = { operation: { type: 'distinct' }, context: new ActionContext() };
-        const output = ActorQueryOperation.getSafeQuads(await actor.run(op));
+        const output = getSafeQuads(await actor.run(op, undefined));
         await expect(output.metadata()).resolves.toEqual({ cardinality: 3 });
         expect(output.type).toBe('quads');
         await expect(output.quadStream.toArray()).resolves.toEqual([

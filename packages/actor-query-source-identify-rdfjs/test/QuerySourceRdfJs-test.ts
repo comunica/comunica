@@ -1,16 +1,16 @@
 import { Readable } from 'node:stream';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import arrayifyStream from 'arrayify-stream';
 import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
 import { RdfStore } from 'rdf-stores';
 import { Factory } from 'sparqlalgebrajs';
 import { QuerySourceRdfJs } from '../lib';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const AF = new Factory();
@@ -80,9 +80,11 @@ describe('QuerySourceRdfJs', () => {
       await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
         .toEqual({
           cardinality: { type: 'exact', value: 2 },
-          canContainUndefs: false,
           state: expect.any(MetadataValidationState),
-          variables: [ DF.variable('s'), DF.variable('o') ],
+          variables: [
+            { variable: DF.variable('s'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+          ],
         });
     });
 
@@ -104,9 +106,11 @@ describe('QuerySourceRdfJs', () => {
       await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
         .toEqual({
           cardinality: { type: 'exact', value: 1 },
-          canContainUndefs: false,
           state: expect.any(MetadataValidationState),
-          variables: [ DF.variable('s'), DF.variable('o') ],
+          variables: [
+            { variable: DF.variable('s'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+          ],
         });
     });
 
@@ -129,9 +133,12 @@ describe('QuerySourceRdfJs', () => {
       await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
         .toEqual({
           cardinality: { type: 'estimate', value: 2 },
-          canContainUndefs: false,
           state: expect.any(MetadataValidationState),
-          variables: [ DF.variable('s'), DF.variable('o'), DF.variable('g') ],
+          variables: [
+            { variable: DF.variable('s'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+            { variable: DF.variable('g'), canBeUndef: false },
+          ],
         });
     });
 
@@ -161,9 +168,12 @@ describe('QuerySourceRdfJs', () => {
       await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
         .toEqual({
           cardinality: { type: 'exact', value: 2 },
-          canContainUndefs: false,
           state: expect.any(MetadataValidationState),
-          variables: [ DF.variable('s'), DF.variable('o'), DF.variable('g') ],
+          variables: [
+            { variable: DF.variable('s'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+            { variable: DF.variable('g'), canBeUndef: false },
+          ],
         });
     });
 
@@ -191,9 +201,11 @@ describe('QuerySourceRdfJs', () => {
       await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
         .toEqual({
           cardinality: { type: 'exact', value: 123 },
-          canContainUndefs: false,
           state: expect.any(MetadataValidationState),
-          variables: [ DF.variable('s'), DF.variable('o') ],
+          variables: [
+            { variable: DF.variable('s'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+          ],
         });
     });
 
@@ -223,9 +235,11 @@ describe('QuerySourceRdfJs', () => {
       await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
         .toEqual({
           cardinality: { type: 'exact', value: 2 },
-          canContainUndefs: false,
           state: expect.any(MetadataValidationState),
-          variables: [ DF.variable('s'), DF.variable('o') ],
+          variables: [
+            { variable: DF.variable('s'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+          ],
         });
     });
 
@@ -291,9 +305,11 @@ describe('QuerySourceRdfJs', () => {
           await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
             .toEqual({
               cardinality: { type: 'exact', value: 3 },
-              canContainUndefs: false,
               state: expect.any(MetadataValidationState),
-              variables: [ DF.variable('s'), DF.variable('o') ],
+              variables: [
+                { variable: DF.variable('s'), canBeUndef: false },
+                { variable: DF.variable('o'), canBeUndef: false },
+              ],
             });
         });
 
@@ -331,9 +347,13 @@ describe('QuerySourceRdfJs', () => {
           await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
             .toEqual({
               cardinality: { type: 'exact', value: 1 },
-              canContainUndefs: false,
               state: expect.any(MetadataValidationState),
-              variables: [ DF.variable('s'), DF.variable('s1'), DF.variable('p1'), DF.variable('o1') ],
+              variables: [
+                { variable: DF.variable('s'), canBeUndef: false },
+                { variable: DF.variable('s1'), canBeUndef: false },
+                { variable: DF.variable('p1'), canBeUndef: false },
+                { variable: DF.variable('o1'), canBeUndef: false },
+              ],
             });
         });
 
@@ -371,9 +391,13 @@ describe('QuerySourceRdfJs', () => {
           await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
             .toEqual({
               cardinality: { type: 'exact', value: 1 },
-              canContainUndefs: false,
               state: expect.any(MetadataValidationState),
-              variables: [ DF.variable('s'), DF.variable('p'), DF.variable('s1'), DF.variable('o1') ],
+              variables: [
+                { variable: DF.variable('s'), canBeUndef: false },
+                { variable: DF.variable('p'), canBeUndef: false },
+                { variable: DF.variable('s1'), canBeUndef: false },
+                { variable: DF.variable('o1'), canBeUndef: false },
+              ],
             });
         });
 
@@ -426,15 +450,14 @@ describe('QuerySourceRdfJs', () => {
           await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
             .toEqual({
               cardinality: { type: 'exact', value: 1 },
-              canContainUndefs: false,
               state: expect.any(MetadataValidationState),
               variables: [
-                DF.variable('s'),
-                DF.variable('p'),
-                DF.variable('s1'),
-                DF.variable('s2'),
-                DF.variable('pcx'),
-                DF.variable('o2'),
+                { variable: DF.variable('s'), canBeUndef: false },
+                { variable: DF.variable('p'), canBeUndef: false },
+                { variable: DF.variable('s1'), canBeUndef: false },
+                { variable: DF.variable('s2'), canBeUndef: false },
+                { variable: DF.variable('pcx'), canBeUndef: false },
+                { variable: DF.variable('o2'), canBeUndef: false },
               ],
             });
         });
@@ -486,9 +509,11 @@ describe('QuerySourceRdfJs', () => {
           await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
             .toEqual({
               cardinality: { type: 'exact', value: 3 },
-              canContainUndefs: false,
               state: expect.any(MetadataValidationState),
-              variables: [ DF.variable('s'), DF.variable('o') ],
+              variables: [
+                { variable: DF.variable('s'), canBeUndef: false },
+                { variable: DF.variable('o'), canBeUndef: false },
+              ],
             });
         });
 
@@ -526,9 +551,13 @@ describe('QuerySourceRdfJs', () => {
           await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
             .toEqual({
               cardinality: { type: 'estimate', value: 3 },
-              canContainUndefs: false,
               state: expect.any(MetadataValidationState),
-              variables: [ DF.variable('s'), DF.variable('s1'), DF.variable('p1'), DF.variable('o1') ],
+              variables: [
+                { variable: DF.variable('s'), canBeUndef: false },
+                { variable: DF.variable('s1'), canBeUndef: false },
+                { variable: DF.variable('p1'), canBeUndef: false },
+                { variable: DF.variable('o1'), canBeUndef: false },
+              ],
             });
         });
 
@@ -566,9 +595,13 @@ describe('QuerySourceRdfJs', () => {
           await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
             .toEqual({
               cardinality: { type: 'estimate', value: 5 },
-              canContainUndefs: false,
               state: expect.any(MetadataValidationState),
-              variables: [ DF.variable('s'), DF.variable('p'), DF.variable('s1'), DF.variable('o1') ],
+              variables: [
+                { variable: DF.variable('s'), canBeUndef: false },
+                { variable: DF.variable('p'), canBeUndef: false },
+                { variable: DF.variable('s1'), canBeUndef: false },
+                { variable: DF.variable('o1'), canBeUndef: false },
+              ],
             });
         });
       });
@@ -578,21 +611,21 @@ describe('QuerySourceRdfJs', () => {
   describe('queryQuads', () => {
     it('should throw', () => {
       expect(() => source.queryQuads(<any> undefined, ctx))
-        .toThrow(`queryQuads is not implemented in QuerySourceQpf`);
+        .toThrow(`queryQuads is not implemented in QuerySourceRdfJs`);
     });
   });
 
   describe('queryBoolean', () => {
     it('should throw', () => {
       expect(() => source.queryBoolean(<any> undefined, ctx))
-        .toThrow(`queryBoolean is not implemented in QuerySourceQpf`);
+        .toThrow(`queryBoolean is not implemented in QuerySourceRdfJs`);
     });
   });
 
   describe('queryVoid', () => {
     it('should throw', () => {
       expect(() => source.queryVoid(<any> undefined, ctx))
-        .toThrow(`queryVoid is not implemented in QuerySourceQpf`);
+        .toThrow(`queryVoid is not implemented in QuerySourceRdfJs`);
     });
   });
 });

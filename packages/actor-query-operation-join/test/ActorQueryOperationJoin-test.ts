@@ -1,11 +1,12 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IJoinEntry } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import { ArrayIterator, UnionIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationJoin } from '../lib/ActorQueryOperationJoin';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -24,7 +25,10 @@ describe('ActorQueryOperationJoin', () => {
           BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
           BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
         ], { autoStart: false }),
-        metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false, variables: [ DF.variable('a') ]}),
+        metadata: () => Promise.resolve({
+          cardinality: 3,
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+        }),
         operated: arg,
         type: 'bindings',
       }),
@@ -34,8 +38,10 @@ describe('ActorQueryOperationJoin', () => {
         bindingsStream: new UnionIterator(arg.entries.map((entry: IJoinEntry) => entry.output.bindingsStream)),
         metadata: () => Promise.resolve({
           cardinality: 100,
-          canContainUndefs: false,
-          variables: [ DF.variable('a'), DF.variable('b') ],
+          variables: [
+            { variable: DF.variable('a'), canBeUndef: false },
+            { variable: DF.variable('b'), canBeUndef: false },
+          ],
         }),
         operated: arg,
         type: 'bindings',
@@ -71,22 +77,24 @@ describe('ActorQueryOperationJoin', () => {
 
     it('should test on join', async() => {
       const op: any = { operation: { type: 'join' }};
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should not test on non-join', async() => {
       const op: any = { operation: { type: 'some-other-type' }};
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports join operations, but got some-other-type`);
     });
 
     it('should run', async() => {
       const op: any = { operation: { type: 'join', input: [{}, {}, {}]}, context: new ActionContext() };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       expect(output.type).toBe('bindings');
       await expect(output.metadata()).resolves.toEqual({
         cardinality: 100,
-        canContainUndefs: false,
-        variables: [ DF.variable('a'), DF.variable('b') ],
+        variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+          { variable: DF.variable('b'), canBeUndef: false },
+        ],
       });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),

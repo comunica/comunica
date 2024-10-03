@@ -1,13 +1,23 @@
-import type { IActionRdfJoin, IActorRdfJoinOutputInner, IActorRdfJoinArgs } from '@comunica/bus-rdf-join';
+import type { MediatorHashBindings } from '@comunica/bus-hash-bindings';
+import type {
+  IActionRdfJoin,
+  IActorRdfJoinOutputInner,
+  IActorRdfJoinArgs,
+  IActorRdfJoinTestSideData,
+} from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
+import type { TestResult } from '@comunica/core';
+import { passTestWithSideData } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { Bindings, MetadataBindings } from '@comunica/types';
+import type { Bindings } from '@comunica/types';
 import { SymmetricHashJoin } from 'asyncjoin';
 
 /**
  * A comunica Hash RDF Join Actor.
  */
 export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
+  public readonly mediatorHashBindings: MediatorHashBindings;
+
   public constructor(args: IActorRdfJoinSymmetricHashArgs) {
     super(args, {
       logicalType: 'inner',
@@ -20,10 +30,12 @@ export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
   public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
     const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
     const variables = ActorRdfJoin.overlappingVariables(metadatas);
-    const join = new SymmetricHashJoin<Bindings, string, Bindings>(
+    const { hashFunction } = await this.mediatorHashBindings.mediate({ context: action.context });
+    const variablesRaw = variables.map(v => v.variable);
+    const join = new SymmetricHashJoin<Bindings, number, Bindings>(
       action.entries[0].output.bindingsStream,
       action.entries[1].output.bindingsStream,
-      entry => ActorRdfJoinSymmetricHash.hash(entry, variables),
+      entry => hashFunction(entry, variablesRaw),
       <any> ActorRdfJoin.joinBindings,
     );
     return {
@@ -37,19 +49,24 @@ export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
 
   protected async getJoinCoefficients(
     action: IActionRdfJoin,
-    metadatas: MetadataBindings[],
-  ): Promise<IMediatorTypeJoinCoefficients> {
+    sideData: IActorRdfJoinTestSideData,
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients, IActorRdfJoinTestSideData>> {
+    const { metadatas } = sideData;
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
-    return {
+    return passTestWithSideData({
       iterations: metadatas[0].cardinality.value + metadatas[1].cardinality.value,
       persistedItems: metadatas[0].cardinality.value + metadatas[1].cardinality.value,
       blockingItems: 0,
       requestTime: requestInitialTimes[0] + metadatas[0].cardinality.value * requestItemTimes[0] +
         requestInitialTimes[1] + metadatas[1].cardinality.value * requestItemTimes[1],
-    };
+    }, sideData);
   }
 }
 
 export interface IActorRdfJoinSymmetricHashArgs extends IActorRdfJoinArgs {
+  /**
+   * The mediator for hashing bindings.
+   */
+  mediatorHashBindings: MediatorHashBindings;
 }

@@ -2,6 +2,7 @@ import type { Readable } from 'node:stream';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorRdfMetadataExtractAllowHttpMethods } from '../lib/ActorRdfMetadataExtractAllowHttpMethods';
+import '@comunica/utils-jest';
 
 describe('ActorRdfMetadataExtractAllowHttpMethods', () => {
   let bus: any;
@@ -23,7 +24,7 @@ describe('ActorRdfMetadataExtractAllowHttpMethods', () => {
 
     it('should test', async() => {
       await expect(actor.test({ url: 'http://example.org/', metadata: input, requestTime: 0, context }))
-        .resolves.toBeTruthy();
+        .resolves.toPassTestVoid();
     });
 
     it('should run without empty headers', async() => {

@@ -3,12 +3,14 @@ import type {
   IActorRdfJoinOutputInner,
   IActorRdfJoinArgs,
   MediatorRdfJoin,
+  IActorRdfJoinTestSideData,
 } from '@comunica/bus-rdf-join';
 import {
   ActorRdfJoin,
 } from '@comunica/bus-rdf-join';
+import type { TestResult } from '@comunica/core';
+import { passTestWithSideData } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { MetadataBindings } from '@comunica/types';
 import { UnionIterator } from 'asynciterator';
 
 /**
@@ -33,31 +35,26 @@ export class ActorRdfJoinOptionalOptPlus extends ActorRdfJoin {
     return { result: {
       type: 'bindings',
       bindingsStream: new UnionIterator([ clonedStream, joined.bindingsStream ], { autoStart: false }),
-      metadata: async(): Promise<MetadataBindings> => {
-        const [ leftMeta, joinedMeta ] = await Promise.all([ entries[0].output.metadata(), joined.metadata() ]);
-        return {
-          variables: joinedMeta.variables,
-          canContainUndefs: true,
-          cardinality: {
-            type: joinedMeta.cardinality.type,
-            value: leftMeta.cardinality.value + joinedMeta.cardinality.value,
-          },
-          state: this.constructState([ leftMeta, joinedMeta ]),
-        };
-      },
+      metadata: async() => await this.constructResultMetadata(
+        entries,
+        await ActorRdfJoin.getMetadatas(entries),
+        context,
+        {},
+        true,
+      ),
     }};
   }
 
   protected async getJoinCoefficients(
     action: IActionRdfJoin,
-    metadatas: MetadataBindings[],
-  ): Promise<IMediatorTypeJoinCoefficients> {
-    return {
-      iterations: metadatas[0].cardinality.value + metadatas[1].cardinality.value,
+    sideData: IActorRdfJoinTestSideData,
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients, IActorRdfJoinTestSideData>> {
+    return passTestWithSideData({
+      iterations: sideData.metadatas[0].cardinality.value + sideData.metadatas[1].cardinality.value,
       persistedItems: 0,
       blockingItems: 0,
       requestTime: 0,
-    };
+    }, sideData);
   }
 }
 

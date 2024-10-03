@@ -5,6 +5,7 @@ import { Factory } from 'sparqlalgebrajs';
 import {
   ActorOptimizeQueryOperationDescribeToConstructsSubject,
 } from '../lib/ActorOptimizeQueryOperationDescribeToConstructsSubject';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const AF = new Factory();
@@ -25,13 +26,13 @@ describe('ActorOptimizeQueryOperationDescribeToConstructsSubject', () => {
 
     it('should test on describe', async() => {
       const op: any = { operation: { type: 'describe' }};
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should not test on non-describe', async() => {
       const op: any = { operation: { type: 'some-other-type' }};
-      await expect(actor.test(op)).rejects
-        .toThrow(`Actor actor only supports describe operations, but got some-other-type`);
+      await expect(actor.test(op)).resolves
+        .toFailTest(`Actor actor only supports describe operations, but got some-other-type`);
     });
 
     it('should run without variable terms', async() => {

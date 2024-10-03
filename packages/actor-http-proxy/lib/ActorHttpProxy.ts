@@ -1,6 +1,8 @@
 import type { IActionHttp, IActorHttpOutput, MediatorHttp, IActorHttpArgs } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
 import { KeysHttpProxy } from '@comunica/context-entries';
+import type { TestResult } from '@comunica/core';
+import { failTest, passTest } from '@comunica/core';
 import type { IMediatorTypeTime } from '@comunica/mediatortype-time';
 import type { IProxyHandler } from '@comunica/types';
 
@@ -14,15 +16,15 @@ export class ActorHttpProxy extends ActorHttp {
     super(args);
   }
 
-  public async test(action: IActionHttp): Promise<IMediatorTypeTime> {
+  public async test(action: IActionHttp): Promise<TestResult<IMediatorTypeTime>> {
     const proxyHandler: IProxyHandler | undefined = action.context.get(KeysHttpProxy.httpProxyHandler);
     if (!proxyHandler) {
-      throw new Error(`Actor ${this.name} could not find a proxy handler in the context.`);
+      return failTest(`Actor ${this.name} could not find a proxy handler in the context.`);
     }
     if (!await proxyHandler.getProxy(action)) {
-      throw new Error(`Actor ${this.name} could not determine a proxy for the given request.`);
+      return failTest(`Actor ${this.name} could not determine a proxy for the given request.`);
     }
-    return { time: Number.POSITIVE_INFINITY };
+    return passTest({ time: Number.POSITIVE_INFINITY });
   }
 
   public async run(action: IActionHttp): Promise<IActorHttpOutput> {

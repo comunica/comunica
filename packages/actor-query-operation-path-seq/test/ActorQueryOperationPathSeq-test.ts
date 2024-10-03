@@ -1,10 +1,11 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { Bindings } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
@@ -12,7 +13,7 @@ import { DataFactory } from 'rdf-data-factory';
 import { QUAD_TERM_NAMES } from 'rdf-terms';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationPathSeq } from '../lib/ActorQueryOperationPathSeq';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -49,7 +50,10 @@ describe('ActorQueryOperationPathSeq', () => {
 
         return Promise.resolve({
           bindingsStream: new ArrayIterator(bindings),
-          metadata: () => Promise.resolve({ cardinality: 3, canContainUndefs: false, variables: vars }),
+          metadata: () => Promise.resolve({
+            cardinality: 3,
+            variables: vars.map(variable => ({ variable, canBeUndef: false })),
+          }),
           operated: arg,
           type: 'bindings',
         });
@@ -74,7 +78,6 @@ describe('ActorQueryOperationPathSeq', () => {
           bindingsStream: new ArrayIterator(bindings),
           metadata: async() => ({
             cardinality: 3,
-            canContainUndefs: false,
             variables: [
               ...(await arg.entries[0].output.metadata()).variables,
               ...(await arg.entries[1].output.metadata()).variables,
@@ -115,12 +118,12 @@ describe('ActorQueryOperationPathSeq', () => {
 
     it('should test on Seq paths', async() => {
       const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.SEQ }}};
-      await expect(actor.test(op)).resolves.toBeTruthy();
+      await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should test on different paths', async() => {
       const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }}};
-      await expect(actor.test(op)).rejects.toBeTruthy();
+      await expect(actor.test(op)).resolves.toFailTest(`This Actor only supports seq Path operations.`);
     });
 
     it('should support Seq paths', async() => {
@@ -132,11 +135,12 @@ describe('ActorQueryOperationPathSeq', () => {
         ]),
         DF.variable('x'),
       ), context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }) };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: 3,
-        canContainUndefs: false,
-        variables: [ DF.variable('x') ],
+        variables: [
+          { variable: DF.variable('x'), canBeUndef: false },
+        ],
       });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('x'), DF.namedNode('2') ]]),
@@ -174,11 +178,12 @@ describe('ActorQueryOperationPathSeq', () => {
         ),
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
-      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: 3,
-        canContainUndefs: false,
-        variables: [ DF.variable('x') ],
+        variables: [
+          { variable: DF.variable('x'), canBeUndef: false },
+        ],
       });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('x'), DF.namedNode('2') ]]),

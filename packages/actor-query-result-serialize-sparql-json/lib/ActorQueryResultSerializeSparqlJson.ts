@@ -4,6 +4,8 @@ import type {
   IActorQueryResultSerializeOutput,
 } from '@comunica/bus-query-result-serialize';
 import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-result-serialize';
+import type { TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import type {
   IActionContext,
   IQueryOperationResultBindings,
@@ -71,11 +73,14 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
     return { value: value.value, type: 'uri' };
   }
 
-  public override async testHandleChecked(action: IActionSparqlSerialize, _context: IActionContext): Promise<boolean> {
+  public override async testHandleChecked(
+    action: IActionSparqlSerialize,
+    _context: IActionContext,
+  ): Promise<TestResult<boolean>> {
     if (![ 'bindings', 'boolean' ].includes(action.type)) {
-      throw new Error('This actor can only handle bindings streams or booleans.');
+      return failTest('This actor can only handle bindings streams or booleans.');
     }
-    return true;
+    return passTestVoid();
   }
 
   public async runHandle(action: IActionSparqlSerialize, _mediaType: string | undefined, _context: IActionContext):
@@ -86,7 +91,7 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
     if (action.type === 'bindings') {
       const metadata = await (<IQueryOperationResultBindings> action).metadata();
       if (metadata.variables.length > 0) {
-        head.vars = metadata.variables.map(variable => variable.value);
+        head.vars = metadata.variables.map(variable => variable.variable.value);
       }
     }
     data.push(`{"head": ${JSON.stringify(head)},\n`);

@@ -4,6 +4,10 @@
   "description": "A sparql-csv query-result-serialize actor",
   "lsd:module": true,
   "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
@@ -38,8 +42,9 @@
   },
   "dependencies": {
     "@comunica/bus-query-result-serialize": "^3.2.1",
+    "@comunica/core": "^3.2.1",
     "@comunica/types": "^3.2.1",
     "@rdfjs/types": "*",
-    "readable-stream": "^4.4.2"
+    "readable-stream": "^4.5.2"
   }
 }

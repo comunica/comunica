@@ -1,6 +1,7 @@
 import type { IActorArgsMediaTypedFixed } from '@comunica/actor-abstract-mediatyped';
 import { ActorAbstractMediaTypedFixed } from '@comunica/actor-abstract-mediatyped';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type {
   IActionSparqlSerialize,
@@ -27,15 +28,20 @@ IActorQueryResultSerializeOutput
   /* eslint-disable max-len */
   /**
    * TODO: rm this (and eslint-disable) once we remove the abstract media typed actor
-   * @param args - @defaultNested {<cbqrs:components/ActorQueryResultSerialize.jsonld#ActorQueryResultSerialize_default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *   \ @defaultNested {<cbqrs:components/ActorQueryResultSerialize.jsonld#ActorQueryResultSerialize_default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {Query result serialization failed: none of the configured actors were able to serialize for type ${action.handle.type}} busFailMessage
    */
   public constructor(args: IActorQueryResultSerializeFixedMediaTypesArgs) {
     super(args);
   }
   /* eslint-enable max-len */
 
-  public async testHandleChecked(_action: IActionSparqlSerialize, _context: IActionContext): Promise<boolean> {
-    return true;
+  public async testHandleChecked(
+    _action: IActionSparqlSerialize,
+    _context: IActionContext,
+  ): Promise<TestResult<boolean>> {
+    return passTestVoid();
   }
 }
 

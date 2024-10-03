@@ -4,6 +4,7 @@ import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorOptimizeQueryOperationBgpToJoin } from '../lib/ActorOptimizeQueryOperationBgpToJoin';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 
@@ -26,7 +27,7 @@ describe('ActorOptimizeQueryOperationBgpToJoin', () => {
     });
 
     it('should test', async() => {
-      await expect(actor.test({ operation: <any> undefined, context })).resolves.toBeTruthy();
+      await expect(actor.test({ operation: <any> undefined, context })).resolves.toPassTestVoid();
     });
 
     it('should run for a bgp', async() => {

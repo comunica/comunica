@@ -4,6 +4,10 @@
   "description": "A comunica bus for rdf-resolve-hypermedia-links-queue events.",
   "lsd:module": true,
   "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
@@ -36,7 +40,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-rdf-resolve-hypermedia-links": "^3.2.1",
-    "@comunica/core": "^3.2.1"
+    "@comunica/core": "^3.2.1",
+    "@comunica/types": "^3.2.1"
   }
 }

@@ -1,6 +1,7 @@
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorRdfMetadataAccumulateCardinality } from '../lib/ActorRdfMetadataAccumulateCardinality';
+import '@comunica/utils-jest';
 
 describe('ActorRdfMetadataAccumulateCardinality', () => {
   let bus: any;
@@ -20,7 +21,7 @@ describe('ActorRdfMetadataAccumulateCardinality', () => {
 
     describe('test', () => {
       it('should always pass', async() => {
-        await expect(actor.test({ context, mode: 'initialize' })).resolves.toBeTruthy();
+        await expect(actor.test({ context, mode: 'initialize' })).resolves.toPassTestVoid();
       });
     });
 
@@ -115,6 +116,18 @@ describe('ActorRdfMetadataAccumulateCardinality', () => {
           accumulatedMetadata: <any> { cardinality: { type: 'estimate', value: 200, dataset: 'abc' }},
           appendingMetadata: <any> { cardinality: { type: 'estimate', value: 3, dataset: 'def' }, subsetOf: 'abc' },
         })).resolves.toEqual({ metadata: { cardinality: { type: 'estimate', value: 3, dataset: 'def' }}});
+      });
+
+      it('should handle appending to metadata with cardinalities covering the whole defaultGraph', async() => {
+        await expect(actor.run({
+          context,
+          mode: 'append',
+          accumulatedMetadata: <any> {
+            cardinality: { type: 'estimate', value: 20000, dataset: 'dg' },
+            defaultGraph: 'dg',
+          },
+          appendingMetadata: <any> { cardinality: { type: 'exact', value: 3 }},
+        })).resolves.toEqual({ metadata: { cardinality: { type: 'exact', value: 3 }}});
       });
     });
   });

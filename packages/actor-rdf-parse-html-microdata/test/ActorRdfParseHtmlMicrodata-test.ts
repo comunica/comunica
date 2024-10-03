@@ -5,6 +5,7 @@ import type { IActionContext } from '@comunica/types';
 import { MicrodataRdfParser } from 'microdata-rdf-streaming-parser';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfParseHtmlMicrodata } from '../lib/ActorRdfParseHtmlMicrodata';
+import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
 
@@ -45,7 +46,7 @@ describe('ActorRdfParseHtmlMicrodata', () => {
 
     describe('test', () => {
       it('should return true', async() => {
-        await expect(actor.test(<any> {})).resolves.toBeTruthy();
+        await expect(actor.test(<any> {})).resolves.toPassTestVoid();
       });
     });
 

@@ -142,9 +142,9 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
           type: 'boolean',
           describe: 'If the default graph should also contain the union of all named graphs',
         },
-        noCache: {
+        invalidateCache: {
           type: 'boolean',
-          describe: 'If the cache should be disabled',
+          describe: 'Enable cache invalidation before each query execution',
         },
         distinctConstruct: {
           type: 'boolean',
@@ -263,8 +263,8 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
     }
 
     // Define if cache should be disabled
-    if (args.noCache) {
-      context[KeysInitQuery.noCache.name] = true;
+    if (args.invalidateCache) {
+      context[KeysInitQuery.invalidateCache.name] = true;
     }
 
     // Define if results should be deduplicated

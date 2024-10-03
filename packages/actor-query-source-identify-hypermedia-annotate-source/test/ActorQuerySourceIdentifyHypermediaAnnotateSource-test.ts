@@ -1,15 +1,15 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import { MetadataValidationState } from '@comunica/metadata';
 import type { BindingsStream, IActionContext } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import {
   ActorQuerySourceIdentifyHypermediaAnnotateSource,
   KEY_CONTEXT_WRAPPED,
 } from '../lib/ActorQuerySourceIdentifyHypermediaAnnotateSource';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 import { mediatorQuerySourceIdentifyHypermedia } from './mediatorQuerySourceIdentify-util';
 
 const quad = require('rdf-quad');
@@ -23,9 +23,7 @@ const v2 = DF.variable('v2');
 const v3 = DF.variable('v3');
 
 const mediatorMergeBindingsContext: any = {
-  mediate(arg: any) {
-    return {};
-  },
+  mediate: () => ({}),
 };
 
 describe('ActorQuerySourceIdentifyHypermediaSourceAttribution', () => {
@@ -48,7 +46,7 @@ describe('ActorQuerySourceIdentifyHypermediaSourceAttribution', () => {
 
     it('should test', async() => {
       await expect(actor.test({ metadata: <any> null, quads: <any> null, url: '', context }))
-        .resolves.toEqual({ filterFactor: 0 });
+        .resolves.toPassTest({ filterFactor: Number.POSITIVE_INFINITY });
     });
 
     it('should run', async() => {

@@ -4,6 +4,10 @@
   "description": "A proxy http actor",
   "lsd:module": true,
   "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
@@ -39,6 +43,7 @@
   "dependencies": {
     "@comunica/bus-http": "^3.2.1",
     "@comunica/context-entries": "^3.2.1",
+    "@comunica/core": "^3.2.1",
     "@comunica/mediatortype-time": "^3.2.1",
     "@comunica/types": "^3.2.1"
   }

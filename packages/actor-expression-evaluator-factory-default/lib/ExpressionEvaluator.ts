@@ -1,9 +1,9 @@
-import type { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type * as Eval from '@comunica/expression-evaluator';
 import type { IActionContext } from '@comunica/types';
+import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import { InternalEvaluator } from './InternalEvaluator';
 

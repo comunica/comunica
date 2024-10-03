@@ -2,6 +2,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorMergeBindingsContextUnion } from '../lib/ActorMergeBindingsContextUnion';
 import { SetUnionBindingsContextMergeHandler } from '../lib/SetUnionBindingsContextMergeHandler';
+import '@comunica/utils-jest';
 
 describe('ActorMergeBindingFactoryContextUnion', () => {
   let bus: any;
@@ -22,7 +23,7 @@ describe('ActorMergeBindingFactoryContextUnion', () => {
     });
 
     it('should test', async() => {
-      await expect(actor.test({ context })).resolves.toBe(true);
+      await expect(actor.test({ context })).resolves.toPassTestVoid();
     });
 
     it('should run', async() => {

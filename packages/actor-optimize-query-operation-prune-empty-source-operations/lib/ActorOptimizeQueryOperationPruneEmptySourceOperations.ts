@@ -4,10 +4,11 @@ import type {
   IActorOptimizeQueryOperationArgs,
 } from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
-import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext, IQuerySourceWrapper, MetadataBindings } from '@comunica/types';
+import { doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-query-operation';
 import { Algebra, Factory, Util } from 'sparqlalgebrajs';
 
 /**
@@ -20,11 +21,11 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     super(args);
   }
 
-  public async test(action: IActionOptimizeQueryOperation): Promise<IActorTest> {
-    if (ActorQueryOperation.getOperationSource(action.operation)) {
-      throw new Error(`Actor ${this.name} does not work with top-level operation sources.`);
+  public async test(action: IActionOptimizeQueryOperation): Promise<TestResult<IActorTest>> {
+    if (getOperationSource(action.operation)) {
+      return failTest(`Actor ${this.name} does not work with top-level operation sources.`);
     }
-    return true;
+    return passTestVoid();
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
@@ -60,7 +61,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
         collectedOperation;
       if (!await this.hasSourceResults(
         algebraFactory,
-        ActorQueryOperation.getOperationSource(collectedOperation)!,
+        getOperationSource(collectedOperation)!,
         checkOperation,
         action.context,
       )) {
@@ -151,7 +152,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     inputType: (Algebra.Pattern | Algebra.Link)['type'],
   ): void {
     for (const input of inputs) {
-      if (ActorQueryOperation.getOperationSource(input) && input.type === inputType) {
+      if (getOperationSource(input) && input.type === inputType) {
         collectedOperations.push(input);
       }
     }
@@ -202,8 +203,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     // Send an ASK query
     if (this.useAskIfSupported) {
       const askOperation = algebraFactory.createAsk(input);
-      if (ActorQueryOperation
-        .doesShapeAcceptOperation(await source.source.getSelectorShape(context), askOperation)) {
+      if (doesShapeAcceptOperation(await source.source.getSelectorShape(context), askOperation)) {
         return source.source.queryBoolean(askOperation, context);
       }
     }

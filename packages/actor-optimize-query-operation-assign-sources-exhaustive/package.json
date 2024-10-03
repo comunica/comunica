@@ -4,6 +4,10 @@
   "description": "A assign-sources-exhaustive optimize-query-operation actor",
   "lsd:module": true,
   "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
@@ -38,11 +42,11 @@
   },
   "dependencies": {
     "@comunica/bus-optimize-query-operation": "^3.2.1",
-    "@comunica/bus-query-operation": "^3.2.2",
     "@comunica/bus-rdf-update-quads": "^3.2.1",
     "@comunica/context-entries": "^3.2.1",
     "@comunica/core": "^3.2.1",
     "@comunica/types": "^3.2.1",
-    "sparqlalgebrajs": "^4.3.7"
+    "@comunica/utils-query-operation": "^3.2.1",
+    "sparqlalgebrajs": "^4.3.8"
   }
 }

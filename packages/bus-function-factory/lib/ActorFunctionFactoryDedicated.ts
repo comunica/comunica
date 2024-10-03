@@ -1,4 +1,5 @@
-import type { IActorTest } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import type { IActionFunctionFactory, IActorFunctionFactoryArgs } from './ActorFunctionFactory';
 import { ActorFunctionFactory } from './ActorFunctionFactory';
 
@@ -15,12 +16,12 @@ export abstract class ActorFunctionFactoryDedicated extends ActorFunctionFactory
     super(args);
   }
 
-  public async test(action: IActionFunctionFactory): Promise<IActorTest> {
+  public async test(action: IActionFunctionFactory): Promise<TestResult<IActorTest>> {
     // Name must match, if this is a term function, all is fine, if not, look whether term-function is not requested.
     if (this.functionNames.includes(action.functionName) && (this.termFunction || !action.requireTermExpression)) {
-      return true;
+      return passTestVoid();
     }
-    throw new Error(`Actor ${this.name} can not provide implementation for "${action.functionName}", only for ${this.termFunction ? '' : 'non-termExpression '}${this.functionNames.join(' and ')}.`);
+    return failTest(`Actor ${this.name} can not provide implementation for "${action.functionName}", only for ${this.termFunction ? '' : 'non-termExpression '}${this.functionNames.join(' and ')}.`);
   }
 }
 
