@@ -12,16 +12,14 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import * as sparqlee from '@comunica/expression-evaluator';
 import { isExpressionError } from '@comunica/expression-evaluator';
-import { getMockEEActionContext, getMockMediatorExpressionEvaluatorFactory } from '@comunica/jest';
 import type { IQueryOperationResultBindings, Bindings, IActionContext } from '@comunica/types';
-import type { IQueryOperationResultBindings, Bindings } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getMockEEActionContext, getMockMediatorExpressionEvaluatorFactory } from '@comunica/utils-jest';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
-import { Factory, translate } from 'sparqlalgebrajs';
+import { translate } from 'sparqlalgebrajs';
 import { ActorQueryOperationFilter } from '../lib';
-import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF, {});
@@ -127,7 +125,9 @@ describe('ActorQueryOperationFilter', () => {
 
     it('should fail on unsupported operators', async() => {
       const op: any = { operation: { type: 'filter', expression: unknownExpression }, context };
-      await expect(actor.test(op)).resolves.toFailTest(`Unknown operator: '"DUMMY"`);
+      await expect(actor.test(op)).resolves.toFailTest(
+        `No actors are able to reply to a message`,
+      );
     });
 
     it('should not test on non-filter', async() => {

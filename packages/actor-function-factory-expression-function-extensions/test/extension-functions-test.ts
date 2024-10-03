@@ -98,7 +98,7 @@ describe('extension functions:', () => {
         notation: Notation.Function,
         operation: '<https://example.org/functions#equal>',
         aliases: numeric,
-        errorTable: errorTable('test-mediator-function-factory mediated over all rejecting actors'),
+        errorTable: errorTable('All actors over bus test-bus-function-factory failed to handle an action'),
       });
     });
 

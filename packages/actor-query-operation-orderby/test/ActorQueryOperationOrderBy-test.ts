@@ -6,16 +6,15 @@ import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import { Bus } from '@comunica/core';
 import * as sparqlee from '@comunica/expression-evaluator';
-import { getMockEEActionContext, getMockMediatorExpressionEvaluatorFactory } from '@comunica/jest';
 import type { IActionContext } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getMockEEActionContext, getMockMediatorExpressionEvaluatorFactory } from '@comunica/utils-jest';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra } from 'sparqlalgebrajs';
 import { ActorQueryOperationOrderBy } from '../lib/ActorQueryOperationOrderBy';
-import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -259,13 +258,15 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     it('should not test on unsupported operators', async() => {
       const op: any = {
         operation: { type: 'orderby', expressions: [{
-            args: [],
-            expressionType: 'operator',
-            operator: 'DUMMY',
-          }]},
+          args: [],
+          expressionType: 'operator',
+          operator: 'DUMMY',
+        }]},
         context,
       };
-      await expect(actor.test(op)).resolves.toFailTest(`Unknown operator: '"DUMMY"`);
+      await expect(actor.test(op)).resolves.toFailTest(
+        `No actors are able to reply to a message`,
+      );
     });
 
     it('should run', async() => {

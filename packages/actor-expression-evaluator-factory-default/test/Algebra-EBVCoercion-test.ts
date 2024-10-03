@@ -1,5 +1,5 @@
 import { getMockExpression } from '@comunica/expression-evaluator/test/util/utils';
-import { getMockEEActionContext, getMockMediatorFunctionFactory } from '@comunica/jest';
+import { getMockEEActionContext, getMockMediatorFunctionFactory } from '@comunica/utils-jest';
 import { DataFactory } from 'rdf-data-factory';
 import { AlgebraTransformer } from '../lib/AlgebraTransformer';
 

@@ -9,7 +9,6 @@ import { WildcardCountAggregator } from '@comunica/actor-bindings-aggregator-fac
 import { ActorFunctionFactoryTermFunctionAddition } from '@comunica/actor-function-factory-term-function-addition';
 import { ActorFunctionFactoryTermFunctionDivision } from '@comunica/actor-function-factory-term-function-division';
 import { createTermCompMediator } from '@comunica/actor-term-comparator-factory-expression-evaluator/test/util';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type {
   IActionBindingsAggregatorFactory,
   IActorBindingsAggregatorFactoryOutput,
@@ -22,20 +21,17 @@ import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
-import { Bus } from '@comunica/core';
+import { Bus, ActionContext } from '@comunica/core';
 import { SparqlOperator } from '@comunica/expression-evaluator';
-import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
 import type { Bindings, IActionContext } from '@comunica/types';
-import { ActionContext, Bus } from '@comunica/core';
-import type { Bindings } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-jest';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra } from 'sparqlalgebrajs';
 import { ActorQueryOperationGroup } from '../lib';
 import { GroupsState } from '../lib/GroupsState';
-import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF, {});
@@ -134,7 +130,7 @@ IActionBindingsAggregatorFactory):
   const evaluator = await factory.run({
     algExpr: expr.expression,
     context,
-  });
+  }, undefined);
   if (expr.aggregator === 'count') {
     if (expr.expression.wildcard) {
       return new WildcardCountAggregator(evaluator, expr.distinct);
@@ -307,7 +303,7 @@ describe('ActorQueryOperationGroup', () => {
           mediatorBindingsAggregatorFactory,
           context,
           BF,
-        [ DF.variable('x') ],
+          [ DF.variable('x') ],
       );
       await expect(temp.collectResults()).resolves.toBeTruthy();
       await expect(temp.collectResults()).rejects.toThrow('collectResult');
@@ -320,7 +316,7 @@ describe('ActorQueryOperationGroup', () => {
           mediatorBindingsAggregatorFactory,
           context,
           BF,
-        [ DF.variable('x') ],
+          [ DF.variable('x') ],
       );
       await expect(temp.collectResults()).resolves.toBeTruthy();
       await expect(temp.consumeBindings(BF.bindings([[ DF.variable('x'), DF.literal('aaa') ]])))
@@ -355,7 +351,9 @@ describe('ActorQueryOperationGroup', () => {
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const { actor } = constructCase({});
-      await expect(actor.test(op)).resolves.toFailTest(`Unknown operator: '"DUMMY"`);
+      await expect(actor.test(op)).resolves.toFailTest(
+        `No actors are able to reply to a message`,
+      );
     });
 
     it('should test on distinct aggregate', async() => {

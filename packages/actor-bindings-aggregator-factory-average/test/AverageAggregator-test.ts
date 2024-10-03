@@ -6,6 +6,7 @@ import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { SparqlOperator } from '@comunica/expression-evaluator';
+import type { IActionContext } from '@comunica/types';
 import {
   BF,
   decimal,
@@ -16,8 +17,7 @@ import {
   getMockEEFactory,
   int,
   makeAggregate,
-} from '@comunica/jest';
-import type { IActionContext } from '@comunica/types';
+} from '@comunica/utils-jest';
 import type * as RDF from '@rdfjs/types';
 import { AverageAggregator } from '../lib/AverageAggregator';
 
@@ -38,7 +38,7 @@ async function createAggregator({ expressionEvaluatorFactory, context, distinct,
     await expressionEvaluatorFactory.run({
       algExpr: makeAggregate('avg', distinct).expression,
       context,
-    }),
+    }, undefined),
     distinct,
     context.getSafe(KeysInitQuery.dataFactory),
     await mediatorFunctionFactory.mediate({

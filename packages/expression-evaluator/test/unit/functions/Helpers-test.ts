@@ -1,7 +1,7 @@
 import type { ExpressionEvaluator } from '@comunica/actor-expression-evaluator-factory-default/lib/ExpressionEvaluator';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
-import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
 import type { ISuperTypeProvider } from '@comunica/types';
+import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-jest';
 import { TypeURL, bool, declare } from '../../../lib';
 import type { FunctionArgumentsCache, Builder } from '../../../lib';
 import { getMockExpression } from '../../util/utils';
@@ -19,7 +19,7 @@ describe('The function helper file', () => {
       expressionEvaluator = <ExpressionEvaluator> await getMockEEFactory().run({
         algExpr: getMockExpression('true'),
         context: getMockEEActionContext(),
-      });
+      }, undefined);
       superTypeProvider = expressionEvaluator.context.getSafe(KeysExpressionEvaluator.superTypeProvider);
       functionArgumentsCache = expressionEvaluator.context.getSafe(KeysInitQuery.functionArgumentsCache);
     });

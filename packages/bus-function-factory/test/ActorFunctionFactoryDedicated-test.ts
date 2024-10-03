@@ -40,7 +40,8 @@ describe('ActorFunctionFactoryDedicated', () => {
         functionName: 'pear',
         context,
         requireTermExpression: false,
-      })).rejects.toThrow('Actor actor can not provide implementation for "pear", only for non-termExpression apple.');
+      })).resolves
+        .toFailTest('Actor actor can not provide implementation for "pear", only for non-termExpression apple.');
     });
 
     it('it throws on requireTermFunction on non-term-function', async() => {
@@ -48,7 +49,8 @@ describe('ActorFunctionFactoryDedicated', () => {
         functionName: 'apple',
         context,
         requireTermExpression: true,
-      })).rejects.toThrow('Actor actor can not provide implementation for "apple", only for non-termExpression apple.');
+      })).resolves
+        .toFailTest('Actor actor can not provide implementation for "apple", only for non-termExpression apple.');
     });
 
     it('passes if all match', async() => {
@@ -56,7 +58,7 @@ describe('ActorFunctionFactoryDedicated', () => {
         functionName: 'apple',
         context,
         requireTermExpression: false,
-      })).resolves.toBeTruthy();
+      })).resolves.toPassTestVoid();
     });
   });
 
@@ -78,7 +80,7 @@ describe('ActorFunctionFactoryDedicated', () => {
         functionName: 'pear',
         context,
         requireTermExpression: false,
-      })).rejects.toThrow('Actor actor can not provide implementation for "pear", only for apple.');
+      })).resolves.toFailTest('Actor actor can not provide implementation for "pear", only for apple.');
     });
 
     it('passes on requireTermFunction', async() => {
@@ -86,7 +88,7 @@ describe('ActorFunctionFactoryDedicated', () => {
         functionName: 'apple',
         context,
         requireTermExpression: true,
-      })).resolves.toBeTruthy();
+      })).resolves.toPassTestVoid();
     });
 
     it('passes on not requireTermFunction', async() => {
@@ -94,7 +96,7 @@ describe('ActorFunctionFactoryDedicated', () => {
         functionName: 'apple',
         context,
         requireTermExpression: false,
-      })).resolves.toBeTruthy();
+      })).resolves.toPassTestVoid();
     });
   });
 });

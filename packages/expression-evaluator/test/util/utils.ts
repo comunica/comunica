@@ -1,6 +1,6 @@
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
-import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
 import type { IActionContext } from '@comunica/types';
+import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-jest';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 import { translate } from 'sparqlalgebrajs';
 import { prepareEvaluatorActionContext } from '../../lib';

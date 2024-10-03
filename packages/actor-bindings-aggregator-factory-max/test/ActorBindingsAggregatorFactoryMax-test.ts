@@ -3,14 +3,14 @@ import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expressio
 
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import { Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import {
   BF,
   DF,
   getMockEEActionContext,
   getMockMediatorExpressionEvaluatorFactory,
   makeAggregate,
-} from '@comunica/jest';
-import type { IActionContext } from '@comunica/types';
+} from '@comunica/utils-jest';
 import { ArrayIterator } from 'asynciterator';
 import { ActorBindingsAggregatorFactoryMax } from '../lib';
 
@@ -62,21 +62,21 @@ describe('ActorBindingsAggregatorFactoryMax', () => {
         await expect(actor.test({
           context,
           expr: makeAggregate('max', false),
-        })).resolves.toEqual({});
+        })).resolves.toPassTestVoid();
       });
 
       it('accepts max 2', async() => {
         await expect(actor.test({
           context,
           expr: makeAggregate('max', true),
-        })).resolves.toEqual({});
+        })).resolves.toPassTestVoid();
       });
 
       it('rejects sum', async() => {
         await expect(actor.test({
           context,
           expr: makeAggregate('sum', false),
-        })).rejects.toThrow(exception);
+        })).resolves.toFailTest(exception);
       });
     });
 

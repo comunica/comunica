@@ -1,9 +1,9 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
 import type { IActionContext } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-jest';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { translate } from 'sparqlalgebrajs';
@@ -66,6 +66,6 @@ async function evaluateAsync(
   exprEvalFactory?: ActorExpressionEvaluatorFactory,
 ): Promise<RDF.Term> {
   const evaluator = await (exprEvalFactory ?? getMockEEFactory())
-    .run({ algExpr: parse(expr), context: actionContext });
+    .run({ algExpr: parse(expr), context: actionContext }, undefined);
   return evaluator.evaluate(bindings);
 }

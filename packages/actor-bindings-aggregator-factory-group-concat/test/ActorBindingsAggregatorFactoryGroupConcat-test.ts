@@ -1,13 +1,13 @@
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import {
   BF,
   DF,
   getMockEEActionContext,
   getMockMediatorExpressionEvaluatorFactory,
   makeAggregate,
-} from '@comunica/jest';
-import type { IActionContext } from '@comunica/types';
+} from '@comunica/utils-jest';
 import { ArrayIterator } from 'asynciterator';
 import { ActorBindingsAggregatorFactoryGroupConcat } from '../lib';
 
@@ -56,21 +56,21 @@ describe('ActorBindingsAggregatorFactoryGroupConcat', () => {
         await expect(actor.test({
           context,
           expr: makeAggregate('group_concat', false),
-        })).resolves.toEqual({});
+        })).resolves.toPassTestVoid();
       });
 
       it('accepts group_concat 2', async() => {
         await expect(actor.test({
           context,
           expr: makeAggregate('group_concat', true),
-        })).resolves.toEqual({});
+        })).resolves.toPassTestVoid();
       });
 
       it('rejects sum', async() => {
         await expect(actor.test({
           context,
           expr: makeAggregate('sum', false),
-        })).rejects.toThrow(exception);
+        })).resolves.toFailTest(exception);
       });
     });
 

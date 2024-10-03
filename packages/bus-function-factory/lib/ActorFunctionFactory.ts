@@ -15,12 +15,12 @@ import type { Algebra as Alg } from 'sparqlalgebrajs';
  * @see IActionFunctionFactory
  * @see IActorFunctionFactoryOutput
  */
-export abstract class ActorFunctionFactory extends
-  Actor<IActionFunctionFactory, IActorTest, IActorFunctionFactoryOutput> {
+export abstract class ActorFunctionFactory<TS = undefined> extends
+  Actor<IActionFunctionFactory, IActorTest, IActorFunctionFactoryOutput, TS> {
   /**
    * @param args - @defaultNested {<default_bus> a <cbff:components/BusFunctionFactory.jsonld#BusFunctionFactory>} bus
    */
-  public constructor(args: IActorFunctionFactoryArgs) {
+  public constructor(args: IActorFunctionFactoryArgs<TS>) {
     super(args);
   }
 
@@ -60,10 +60,11 @@ export interface IActorFunctionFactoryOutput extends IActorOutput, IExpressionFu
 
 export interface IActorFunctionFactoryOutputTerm extends IActorOutput, ITermFunction {}
 
-export type IActorFunctionFactoryArgs = IActorArgs<
+export type IActorFunctionFactoryArgs<TS = undefined> = IActorArgs<
 IActionFunctionFactory,
 IActorTest,
-IActorFunctionFactoryOutput
+IActorFunctionFactoryOutput,
+TS
 >;
 
 export type MediatorFunctionFactoryUnsafe = Mediate<IActionFunctionFactory, IActorFunctionFactoryOutput>;

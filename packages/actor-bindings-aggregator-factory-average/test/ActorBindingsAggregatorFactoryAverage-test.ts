@@ -1,17 +1,11 @@
 import { ActorFunctionFactoryTermFunctionAddition } from '@comunica/actor-function-factory-term-function-addition';
 import { ActorFunctionFactoryTermFunctionDivision } from '@comunica/actor-function-factory-term-function-division';
-import type {
-  MediatorExpressionEvaluatorFactory,
-} from '@comunica/bus-expression-evaluator-factory';
+import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { Bus } from '@comunica/core';
-import {
-  getMockEEActionContext,
-  getMockMediatorExpressionEvaluatorFactory,
-  makeAggregate,
-} from '@comunica/jest';
 import type { IActionContext } from '@comunica/types';
+import { getMockEEActionContext, getMockMediatorExpressionEvaluatorFactory, makeAggregate } from '@comunica/utils-jest';
 import { ActorBindingsAggregatorFactoryAverage } from '../lib';
 
 describe('ActorBindingsAggregatorFactoryAverage', () => {
@@ -50,21 +44,21 @@ describe('ActorBindingsAggregatorFactoryAverage', () => {
         await expect(actor.test({
           context,
           expr: makeAggregate('avg', false),
-        })).resolves.toEqual({});
+        })).resolves.toPassTestVoid();
       });
 
       it('accepts average 2', async() => {
         await expect(actor.test({
           context,
           expr: makeAggregate('avg', true),
-        })).resolves.toEqual({});
+        })).resolves.toPassTestVoid();
       });
 
       it('rejects sum', async() => {
         await expect(actor.test({
           context,
           expr: makeAggregate('sum', false),
-        })).rejects.toThrow(exception);
+        })).resolves.toFailTest(exception);
       });
     });
 

@@ -5,14 +5,14 @@ import type {
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { Bus } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import {
   BF,
   DF,
   getMockEEActionContext,
   getMockMediatorExpressionEvaluatorFactory,
   makeAggregate,
-} from '@comunica/jest';
-import type { IActionContext } from '@comunica/types';
+} from '@comunica/utils-jest';
 import { ArrayIterator } from 'asynciterator';
 import { ActorBindingsAggregatorFactorySum } from '../lib';
 
@@ -66,21 +66,21 @@ describe('ActorBindingsAggregatorFactorySum', () => {
         await expect(actor.test({
           context,
           expr: makeAggregate('sum', false),
-        })).resolves.toEqual({});
+        })).resolves.toPassTestVoid();
       });
 
       it('accepts sum 2', async() => {
         await expect(actor.test({
           context,
           expr: makeAggregate('sum', true),
-        })).resolves.toEqual({});
+        })).resolves.toPassTestVoid();
       });
 
       it('rejects count', async() => {
         await expect(actor.test({
           context,
           expr: makeAggregate('count', false),
-        })).rejects.toThrow(exception);
+        })).resolves.toFailTest(exception);
       });
     });
 

@@ -2,6 +2,7 @@ import { createTermCompMediator } from '@comunica/actor-term-comparator-factory-
 import type { IBindingsAggregator } from '@comunica/bus-bindings-aggregator-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
+import type { IActionContext } from '@comunica/types';
 import {
   BF,
   date,
@@ -14,8 +15,7 @@ import {
   makeAggregate,
   nonLiteral,
   string,
-} from '@comunica/jest';
-import type { IActionContext } from '@comunica/types';
+} from '@comunica/utils-jest';
 import type * as RDF from '@rdfjs/types';
 import { MaxAggregator } from '../lib';
 
@@ -43,7 +43,7 @@ async function createAggregator({
     await expressionEvaluatorFactory.run({
       algExpr: makeAggregate('max', distinct).expression,
       context,
-    }),
+    }, undefined),
     distinct,
     await mediatorTermComparatorFactory.mediate({ context }),
     throwError,

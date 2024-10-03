@@ -1,5 +1,5 @@
-import { getMockSuperTypeProvider } from '@comunica/jest';
 import type { ISuperTypeProvider } from '@comunica/types';
+import { getMockSuperTypeProvider } from '@comunica/utils-jest';
 import { DataFactory } from 'rdf-data-factory';
 import {
   TypeURL,

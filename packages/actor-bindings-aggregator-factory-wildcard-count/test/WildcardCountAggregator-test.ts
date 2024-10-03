@@ -1,7 +1,7 @@
 import type { IBindingsAggregator } from '@comunica/bus-bindings-aggregator-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
-import { BF, DF, getMockEEActionContext, getMockEEFactory, int, makeAggregate } from '@comunica/jest';
 import type { IActionContext } from '@comunica/types';
+import { BF, DF, getMockEEActionContext, getMockEEFactory, int, makeAggregate } from '@comunica/utils-jest';
 import type * as RDF from '@rdfjs/types';
 import { WildcardCountAggregator } from '../lib/WildcardCountAggregator';
 
@@ -21,7 +21,7 @@ async function createAggregator({ expressionEvaluatorFactory, context, distinct 
     await expressionEvaluatorFactory.run({
       algExpr: makeAggregate('count', distinct, undefined, true).expression,
       context,
-    }),
+    }, undefined),
     distinct,
   );
 }

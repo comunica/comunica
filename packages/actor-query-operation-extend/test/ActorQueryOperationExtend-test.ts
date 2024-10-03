@@ -7,14 +7,12 @@ import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Actor, Bus } from '@comunica/core';
 import * as sparqlee from '@comunica/expression-evaluator';
-import { getMockEEActionContext, getMockMediatorExpressionEvaluatorFactory } from '@comunica/jest';
 import type { IActionContext, IQueryOperationResultBindings } from '@comunica/types';
-import type { IQueryOperationResultBindings } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getMockEEActionContext, getMockMediatorExpressionEvaluatorFactory } from '@comunica/utils-jest';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import '@comunica/utils-jest';
 
 import { ActorQueryOperationExtend } from '../lib';
 
@@ -168,7 +166,9 @@ describe('ActorQueryOperationExtend', () => {
         },
         context,
       };
-      await expect(actor.test(op)).resolves.toFailTest(`Unknown operator: '"DUMMY"`);
+      await expect(actor.test(op)).resolves.toFailTest(
+        `No actors are able to reply to a message`,
+      );
     });
 
     it('should run', async() => {

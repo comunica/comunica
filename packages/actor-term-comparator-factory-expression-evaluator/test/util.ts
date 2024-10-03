@@ -3,7 +3,7 @@ import { ActorFunctionFactoryTermFunctionLesserThan } from '@comunica/actor-func
 import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import { Bus } from '@comunica/core';
-import { getMockMediatorMergeBindingsContext, getMockMediatorQueryOperation } from '@comunica/jest';
+import { getMockMediatorMergeBindingsContext, getMockMediatorQueryOperation } from '@comunica/utils-jest';
 import { ActorTermComparatorFactoryExpressionEvaluator } from '../lib';
 
 export function createTermCompMediator() {

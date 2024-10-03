@@ -3,7 +3,7 @@ import { TermFunctionEquality } from '@comunica/actor-function-factory-term-func
 import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import * as Eval from '@comunica/expression-evaluator';
 import { getMockExpression } from '@comunica/expression-evaluator/test/util/utils';
-import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
+import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-jest';
 import { TermFunctionLesserThan } from '../lib/TermFunctionLesserThan';
 
 describe('lesser than', () => {
@@ -33,7 +33,7 @@ describe('lesser than', () => {
         }).run({
           algExpr: getMockExpression(),
           context: getMockEEActionContext(),
-        }),
+        }, undefined),
       )).toEqual(new Eval.BooleanLiteral(true));
     });
   });

@@ -17,17 +17,18 @@ import type { Algebra } from 'sparqlalgebrajs';
  * @see IActionBindingsAggregatorFactory
  * @see IActorBindingsAggregatorFactoryOutput
  */
-export abstract class ActorBindingsAggregatorFactory extends Actor<
+export abstract class ActorBindingsAggregatorFactory<TS = undefined> extends Actor<
 IActionBindingsAggregatorFactory,
 IActorTest,
-IActorBindingsAggregatorFactoryOutput
+IActorBindingsAggregatorFactoryOutput,
+TS
 > {
   protected readonly mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
 
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
-  protected constructor(args: IActorBindingsAggregatorFactoryArgs) {
+  protected constructor(args: IActorBindingsAggregatorFactoryArgs<TS>) {
     super(args);
     this.mediatorExpressionEvaluatorFactory = args.mediatorExpressionEvaluatorFactory;
   }
@@ -56,10 +57,11 @@ export interface IBindingsAggregator {
 
 export interface IActorBindingsAggregatorFactoryOutput extends IActorOutput, IBindingsAggregator {}
 
-export interface IActorBindingsAggregatorFactoryArgs extends IActorArgs<
+export interface IActorBindingsAggregatorFactoryArgs<TS = undefined> extends IActorArgs<
 IActionBindingsAggregatorFactory,
 IActorTest,
-IActorBindingsAggregatorFactoryOutput
+IActorBindingsAggregatorFactoryOutput,
+TS
 > {
   mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
 }

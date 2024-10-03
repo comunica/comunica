@@ -6,7 +6,7 @@ import {
   getMockEEActionContext,
   getMockMediatorMergeBindingsContext,
   getMockMediatorQueryOperation,
-} from '@comunica/jest';
+} from '@comunica/utils-jest';
 import {
   ActorTermComparatorFactoryExpressionEvaluator,
 } from '../lib';
@@ -35,7 +35,7 @@ describe('ActorTermComparatorFactoryExpressionEvaluator', () => {
     });
 
     it('should test', async() => {
-      await expect(actor.test({ context: new ActionContext() })).resolves.toBe(true);
+      await expect(actor.test({ context: new ActionContext() })).resolves.toPassTestVoid();
     });
 
     it('should run', async() => {

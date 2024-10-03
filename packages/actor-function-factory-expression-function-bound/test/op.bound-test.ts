@@ -1,9 +1,9 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import * as Eval from '@comunica/expression-evaluator';
 import { generalEvaluate } from '@comunica/expression-evaluator/test/util/generalEvaluation';
-import { getMockEEActionContext, getMockEEFactory } from '@comunica/jest';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-jest';
 import { DataFactory } from 'rdf-data-factory';
 import { expressionTypes, types } from 'sparqlalgebrajs/lib/algebra';
 import { ActorFunctionFactoryExpressionFunctionBound } from '../lib';
@@ -58,7 +58,7 @@ describe('evaluation of \'bound\'', () => {
         }],
       },
       context: getMockEEActionContext(),
-    });
+    }, undefined);
     await expect(evaluator.evaluate(BF.bindings())).rejects.toThrow(Eval.InvalidArgumentTypes);
   });
 });
