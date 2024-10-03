@@ -376,15 +376,9 @@ jobs:
           body-path: ./commit-comment-body.txt
 
   documentation:
-    name: Documentation
+    name: Prepare documentation
     needs: precheck
     runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
@@ -409,9 +403,25 @@ jobs:
         with:
           path: documentation
           name: documentation
+
+  documentation-publish:
+    name: Publish documentation
+    needs:
+      - test
+      - spectest
+      - browsertest
+      - documentation
+    runs-on: ubuntu-latest
+    # The documentation is only published for master branch
+    if: startsWith(github.ref, 'refs/heads/master')
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Deploy to GitHub Pages
-        # The documentation is only published for master branch
-        if: startsWith(github.ref, 'refs/heads/master')
         id: deployment
         uses: actions/deploy-pages@v4
         with:
