@@ -1,4 +1,5 @@
 import { ActionContext, Bus } from '@comunica/core';
+import '@comunica/utils-jest';
 import type { IInvalidateListener } from '..';
 import { ActorHttpInvalidateListenable } from '..';
 
