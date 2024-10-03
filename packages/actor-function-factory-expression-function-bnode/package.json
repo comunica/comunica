@@ -39,7 +39,7 @@
   "dependencies": {
     "@comunica/bus-function-factory": "^3.2.1",
     "@comunica/context-entries": "^3.2.1",
-    "@comunica/data-factory": "^3.1.0",
-    "@comunica/expression-evaluator": "^3.2.1"
+    "@comunica/expression-evaluator": "^3.2.1",
+    "@comunica/utils-data-factory": "^3.1.0"
   }
 }

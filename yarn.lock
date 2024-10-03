@@ -1194,19 +1194,6 @@
     "@comunica/types" "^2.10.0"
     rdfa-streaming-parser "^2.0.1"
 
-"@comunica/bindings-factory@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@comunica/bindings-factory/-/bindings-factory-3.2.1.tgz#f41e2107b53c442cc85953062113235cb91a85af"
-  integrity sha512-IzHAXMFGOF5DevsmyW1SUWPIqqWcjMlG/J1tJkKEu4jxPqqEzNSo/rJRjBsfRxpQiFYnOCl1U6H8C48ERCPzCQ==
-  dependencies:
-    "@comunica/bus-merge-bindings-context" "^3.2.1"
-    "@comunica/core" "^3.2.1"
-    "@comunica/types" "^3.2.1"
-    "@rdfjs/types" "*"
-    immutable "^4.1.0"
-    rdf-data-factory "^1.1.1"
-    rdf-string "^1.6.1"
-
 "@comunica/bus-http@^2.0.1", "@comunica/bus-http@^2.10.2":
   version "2.10.2"
   resolved "https://registry.npmjs.org/@comunica/bus-http/-/bus-http-2.10.2.tgz"
@@ -1268,13 +1255,6 @@
     "@comunica/types" "^2.10.0"
     immutable "^4.1.0"
 
-"@comunica/data-factory@^3.1.0":
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/@comunica/data-factory/-/data-factory-3.1.0.tgz#64adef8ebabb28699b969d268c82e8f81ea3575c"
-  integrity sha512-kNEgK+3HPzej8m53//RkZTq9WPYrja9CjrkJqvdgawpMTbg+zEeCoQZ3BGD0LiWiphADpyvYfRFCVpgcHjKvLQ==
-  dependencies:
-    "@rdfjs/types" "*"
-
 "@comunica/mediator-combine-pipeline@^2.0.1":
   version "2.10.0"
   resolved "https://registry.npmjs.org/@comunica/mediator-combine-pipeline/-/mediator-combine-pipeline-2.10.0.tgz"
@@ -1310,15 +1290,6 @@
   integrity sha512-nBz1exxrja1Tj8KSlSevG4Hw2u09tTh6gtNfVjI76i/e7muu4RUWVhi9b8PcwBNAfuUqRl+5OgOSa2X4W+6QlA==
   dependencies:
     "@comunica/core" "^2.10.0"
-
-"@comunica/metadata@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@comunica/metadata/-/metadata-3.2.1.tgz#0745d5b0ec515d86661daefd4a7f5f728fd6af72"
-  integrity sha512-ymgfdbFb2Ldbkw2P149P2I6oH8+tE9bAwXXcWNQXYcnW9IeXMtxUIDPMFBL4Dy9uzHNFrzQ+m9OzOTYf5LcE5g==
-  dependencies:
-    "@comunica/types" "^3.2.1"
-    "@rdfjs/types" "*"
-    asynciterator "^3.9.0"
 
 "@comunica/types@^2.10.0":
   version "2.10.0"

@@ -375,7 +375,7 @@ describe('System test: QuerySparql', () => {
           const context = <any> { sources: [ store ]};
           context.extensionFunctions = baseFunctions;
           await expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow(
-            'Query operation processing failed: none of the configured actors were able to handle the operation type filter',
+            `Query operation processing failed: none of the configured actors were able to handle the operation type filter`,
           );
         });
 
@@ -383,7 +383,7 @@ describe('System test: QuerySparql', () => {
           const context = <any> { sources: [ store ]};
           context.extensionFunctionCreator = () => null;
           await expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow(
-            'Query operation processing failed: none of the configured actors were able to handle the operation type filter',
+            `Query operation processing failed: none of the configured actors were able to handle the operation type filter`,
           );
         });
 

@@ -24,7 +24,7 @@ describe('extension functions:', () => {
         };
       }
       if (functionNamedNode.value === 'https://example.org/functions#bad') {
-        return async(args: RDF.Term[]) => {
+        return async(_: RDF.Term[]) => {
           throw new Error('error');
         };
       }

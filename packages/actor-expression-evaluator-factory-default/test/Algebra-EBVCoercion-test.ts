@@ -1,9 +1,6 @@
 import { getMockExpression } from '@comunica/expression-evaluator/test/util/utils';
 import { getMockEEActionContext, getMockMediatorFunctionFactory } from '@comunica/utils-jest';
-import { DataFactory } from 'rdf-data-factory';
 import { AlgebraTransformer } from '../lib/AlgebraTransformer';
-
-const DF = new DataFactory();
 
 // https://www.w3.org/TR/sparql11-query/#ebv
 // Using && as utility to force EBV

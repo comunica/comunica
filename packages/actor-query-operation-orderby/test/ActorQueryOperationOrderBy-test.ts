@@ -68,12 +68,8 @@ describe('ActorQueryOperationOrderBy with mixed term types', () => {
     let actor: ActorQueryOperationOrderBy;
     let orderA: Algebra.TermExpression;
     let descOrderA: Algebra.OperatorExpression;
-    let mediatorMergeBindingsContext: any;
 
     beforeEach(() => {
-      mediatorMergeBindingsContext = {
-        mediate: () => ({}),
-      };
       actor = new ActorQueryOperationOrderBy({
         name: 'actor',
         bus,

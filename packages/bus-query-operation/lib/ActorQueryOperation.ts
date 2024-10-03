@@ -1,5 +1,3 @@
-import { KeysQueryOperation } from '@comunica/context-entries';
-import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorArgs, IActorTest, IAction, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type {
@@ -7,13 +5,7 @@ import type {
   Bindings,
   IActionContext,
   FunctionArgumentsCache,
-  IQuerySourceWrapper,
-  FragmentSelectorShape,
-  ComunicaDataFactory,
 } from '@comunica/types';
-import type { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { BlankNodeBindingsScoped } from '@comunica/utils-data-factory';
-import { getSafeBindings, materializeOperation } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 

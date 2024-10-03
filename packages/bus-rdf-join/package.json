@@ -48,6 +48,7 @@
     "@comunica/types": "^3.2.1",
     "@comunica/utils-iterator": "^3.2.1",
     "@comunica/utils-metadata": "^3.2.1",
-    "@rdfjs/types": "*"
+    "@rdfjs/types": "*",
+    "asynciterator": "^3.9.0"
   }
 }

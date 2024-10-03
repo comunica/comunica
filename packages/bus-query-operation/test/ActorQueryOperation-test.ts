@@ -1,10 +1,5 @@
 import { Bus } from '@comunica/core';
-import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperation } from '..';
-
-const DF = new DataFactory();
-const BF = new BindingsFactory(DF);
 
 describe('ActorQueryOperation', () => {
   const bus = new Bus({ name: 'bus' });
