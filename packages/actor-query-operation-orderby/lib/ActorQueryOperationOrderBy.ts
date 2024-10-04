@@ -3,7 +3,7 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import type { IActorTest, TestResult } from '@comunica/core';
-import { failTest, passTestVoid } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import { isExpressionError } from '@comunica/expression-evaluator';
 import type { Bindings, IActionContext, IQueryOperationResult } from '@comunica/types';
 import { getSafeBindings } from '@comunica/utils-query-operation';
@@ -12,7 +12,7 @@ import { Algebra } from 'sparqlalgebrajs';
 import { SortIterator } from './SortIterator';
 
 /**
- * A comunica OrderBy Sparqlee Query Operation Actor.
+ * A comunica OrderBy Query Operation Actor.
  */
 export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated<Algebra.OrderBy> {
   private readonly window: number;
@@ -26,18 +26,7 @@ export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated
     this.mediatorTermComparatorFactory = args.mediatorTermComparatorFactory;
   }
 
-  public async testOperation(operation: Algebra.OrderBy, context: IActionContext): Promise<TestResult<IActorTest>> {
-    // Will throw error for unsupported operators
-    for (let expr of operation.expressions) {
-      try {
-        expr = this.extractSortExpression(expr);
-        const _ = await this.mediatorExpressionEvaluatorFactory
-          .mediate({ algExpr: expr, context });
-      } catch (error: unknown) {
-        // TODO: return TestResult in ActorQueryOperation.getAsyncExpressionContext
-        return failTest((<Error> error).message);
-      }
-    }
+  public async testOperation(): Promise<TestResult<IActorTest>> {
     return passTestVoid();
   }
 

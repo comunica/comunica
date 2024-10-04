@@ -4,7 +4,7 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
-import { failTest, passTestVoid } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import type {
   BindingsStream,
   ComunicaDataFactory,
@@ -30,16 +30,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
     this.mediatorBindingsAggregatorFactory = args.mediatorBindingsAggregatorFactory;
   }
 
-  public async testOperation(operation: Algebra.Group, context: IActionContext): Promise<TestResult<IActorTest>> {
-    for (const aggregate of operation.aggregates) {
-      try {
-        // Will throw for unsupported expressions
-        const _ = await this.mediatorBindingsAggregatorFactory.mediate({ expr: aggregate, context });
-      } catch (error: unknown) {
-        // TODO: return TestResult in ActorQueryOperation.getAsyncExpressionContext
-        return failTest((<Error> error).message);
-      }
-    }
+  public async testOperation(): Promise<TestResult<IActorTest>> {
     return passTestVoid();
   }
 
