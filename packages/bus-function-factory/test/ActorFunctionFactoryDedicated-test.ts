@@ -1,5 +1,6 @@
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import '@comunica/utils-jest';
 import {
   ActorFunctionFactoryDedicated,
 } from '../lib';
