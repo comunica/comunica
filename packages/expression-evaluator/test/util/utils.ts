@@ -1,10 +1,14 @@
-import { LRUCache } from 'lru-cache';
-import { DataFactory } from 'rdf-data-factory';
-import type { ICompleteSharedContext } from '../../lib/evaluators/evaluatorHelpers/BaseExpressionEvaluator';
+import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
+import type { IActionContext } from '@comunica/types';
+import type { Algebra as Alg } from 'sparqlalgebrajs';
+import { translate } from 'sparqlalgebrajs';
 import type { AliasMap } from './Aliases';
-import type { GeneralEvaluationConfig } from './generalEvaluation';
 import type { Notation } from './TestTable';
 import { ArrayTable, BinaryTable, UnaryTable, VariableTable } from './TestTable';
+
+export function getMockExpression(expr = '1+1'): Alg.Expression {
+  return translate(`SELECT * WHERE { ?s ?p ?o FILTER (${expr})}`).input.expression;
+}
 
 export interface ITestTableConfigBase {
   /**
@@ -21,7 +25,7 @@ export interface ITestTableConfigBase {
    * Configuration that'll we provided to the Evaluator.
    * If the type is sync, the test will be preformed both sync and async.
    */
-  config?: GeneralEvaluationConfig;
+  config?: IActionContext;
   aliases?: AliasMap;
   /**
    * Additional prefixes can be provided if the defaultPrefixes in ./Aliases.ts are not enough.
@@ -42,6 +46,10 @@ export type TestTableConfig = ITestTableConfigBase & {
    * Result can be '' if the message doesn't need to be checked.
    */
   errorTable?: string;
+  /**
+   * The factory that will create the evaluator used for this evaluation.
+   */
+  exprEvalFactory?: ActorExpressionEvaluatorFactory;
   /**
    * Test array that will check if a given error is thrown.
    * Result can be '' if the message doesn't need to be checked.
@@ -67,17 +75,4 @@ export function runTestTable(arg: TestTableConfig): void {
   }
 
   testTable.test();
-}
-
-export function getDefaultSharedContext(): ICompleteSharedContext {
-  return {
-    now: new Date(),
-    superTypeProvider: {
-      cache: new LRUCache({ max: 1_000 }),
-      discoverer: () => 'term',
-    },
-    functionArgumentsCache: {},
-    defaultTimeZone: { zoneMinutes: 0, zoneHours: 0 },
-    dataFactory: new DataFactory(),
-  };
 }

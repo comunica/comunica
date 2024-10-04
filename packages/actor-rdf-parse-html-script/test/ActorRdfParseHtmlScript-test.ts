@@ -224,18 +224,27 @@ describe('ActorRdfParseHtml', () => {
           await onEnd;
 
           expect(emit).toHaveBeenCalledTimes(4);
-          expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"', '_:df_4_2'),
-          );
-          expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"', '_:df_4_2'),
-          );
-          expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/A', 'http://example.org/b', '"http://example.org/c"', '_:df_4_3'),
-          );
-          expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/A', 'http://example.org/d', '"http://example.org/e"', '_:df_4_3'),
-          );
+          // / Use fn calls
+          expect(emit.mock.calls[0][0].subject.value).toBe('http://example.org/a');
+          expect(emit.mock.calls[0][0].predicate.value).toBe('http://example.org/b');
+          expect(emit.mock.calls[0][0].object.value).toBe('http://example.org/c');
+
+          expect(emit.mock.calls[1][0].subject.value).toBe('http://example.org/a');
+          expect(emit.mock.calls[1][0].predicate.value).toBe('http://example.org/d');
+          expect(emit.mock.calls[1][0].object.value).toBe('http://example.org/e');
+          expect(emit.mock.calls[1][0].graph).toEqual(emit.mock.calls[0][0].graph);
+
+          expect(emit.mock.calls[2][0].subject.value).toBe('http://example.org/A');
+          expect(emit.mock.calls[2][0].predicate.value).toBe('http://example.org/b');
+          expect(emit.mock.calls[2][0].object.value).toBe('http://example.org/c');
+
+          expect(emit.mock.calls[3][0].subject.value).toBe('http://example.org/A');
+          expect(emit.mock.calls[3][0].predicate.value).toBe('http://example.org/d');
+          expect(emit.mock.calls[3][0].object.value).toBe('http://example.org/e');
+          expect(emit.mock.calls[3][0].graph).toEqual(emit.mock.calls[2][0].graph);
+
+          expect(emit.mock.calls[0][0].graph).not.toEqual(emit.mock.calls[2][0].graph);
+
           expect(error).not.toHaveBeenCalled();
           expect(end).toHaveBeenCalledTimes(1);
         });

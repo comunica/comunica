@@ -1,15 +1,17 @@
+import { ActorFunctionFactoryTermFunctionAddition } from '@comunica/actor-function-factory-term-function-addition';
+import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
+import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import { KeysInitQuery } from '@comunica/context-entries';
-import { ActionContext, Bus } from '@comunica/core';
+import { Bus } from '@comunica/core';
 import * as sparqlee from '@comunica/expression-evaluator';
 import { isExpressionError } from '@comunica/expression-evaluator';
-import type { IQueryOperationResultBindings, Bindings, IJoinEntry } from '@comunica/types';
+import type { Bindings, IActionContext, IJoinEntry, IQueryOperationResultBindings } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getMockEEActionContext, getMockMediatorExpressionEvaluatorFactory } from '@comunica/utils-jest';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import { ArrayIterator, UnionIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationLeftJoin } from '../lib';
-import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -18,11 +20,9 @@ describe('ActorQueryOperationLeftJoin', () => {
   let bus: any;
   let mediatorQueryOperation: any;
   let mediatorJoin: any;
-  let mediatorMergeBindingsContext: any;
+  let mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
+
   beforeEach(() => {
-    mediatorMergeBindingsContext = {
-      mediate: () => ({}),
-    };
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
@@ -38,6 +38,12 @@ describe('ActorQueryOperationLeftJoin', () => {
         type: 'bindings',
       }),
     };
+    mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
+      mediatorQueryOperation,
+      mediatorFunctionFactory: createFuncMediator([
+        args => new ActorFunctionFactoryTermFunctionAddition(args),
+      ], {}),
+    });
     mediatorJoin = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new UnionIterator(arg.entries.map((entry: IJoinEntry) => entry.output.bindingsStream)),
@@ -75,6 +81,7 @@ describe('ActorQueryOperationLeftJoin', () => {
 
   describe('An ActorQueryOperationLeftJoin instance', () => {
     let actor: ActorQueryOperationLeftJoin;
+    let context: IActionContext;
 
     beforeEach(() => {
       actor = new ActorQueryOperationLeftJoin({
@@ -82,8 +89,10 @@ describe('ActorQueryOperationLeftJoin', () => {
         bus,
         mediatorQueryOperation,
         mediatorJoin,
-        mediatorMergeBindingsContext,
+        mediatorExpressionEvaluatorFactory,
       });
+
+      context = getMockEEActionContext();
     });
 
     it('should test on leftjoin', async() => {
@@ -97,10 +106,7 @@ describe('ActorQueryOperationLeftJoin', () => {
     });
 
     it('should run', async() => {
-      const op: any = {
-        operation: { type: 'leftjoin', input: [{}, {}]},
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
-      };
+      const op: any = { operation: { type: 'leftjoin', input: [{}, {}]}, context };
       const output = getSafeBindings(await actor.run(op, undefined));
       expect(output.type).toBe('bindings');
       await expect(output.metadata()).resolves.toEqual({
@@ -126,10 +132,7 @@ describe('ActorQueryOperationLeftJoin', () => {
         term: DF.literal('nonemptystring'),
         type: 'expression',
       };
-      const op: any = {
-        operation: { type: 'leftjoin', input: [{}, {}], expression },
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
-      };
+      const op: any = { operation: { type: 'leftjoin', input: [{}, {}], expression }, context };
       const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
@@ -174,7 +177,7 @@ describe('ActorQueryOperationLeftJoin', () => {
 
       const op: any = {
         operation: { type: 'leftjoin', input: [{ side: 'left' }, { side: 'right' }]},
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+        context,
       };
       const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -189,10 +192,7 @@ describe('ActorQueryOperationLeftJoin', () => {
         term: DF.literal(''),
         type: 'expression',
       };
-      const op: any = {
-        operation: { type: 'leftjoin', input: [{}, {}], expression },
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
-      };
+      const op: any = { operation: { type: 'leftjoin', input: [{}, {}], expression }, context };
       const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.bindingsStream).toEqualBindingsStream([]);
       await expect(output.metadata()).resolves.toMatchObject({
@@ -224,10 +224,7 @@ describe('ActorQueryOperationLeftJoin', () => {
           },
         ],
       };
-      const op: any = {
-        operation: { type: 'leftjoin', input: [{}, {}], expression },
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
-      };
+      const op: any = { operation: { type: 'leftjoin', input: [{}, {}], expression }, context };
       const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.bindingsStream).toEqualBindingsStream([]);
       await expect(output.metadata()).resolves.toMatchObject({
@@ -275,10 +272,7 @@ describe('ActorQueryOperationLeftJoin', () => {
           },
         ],
       };
-      const op: any = {
-        operation: { type: 'leftjoin', input: [{}, {}], expression },
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
-      };
+      const op: any = { operation: { type: 'leftjoin', input: [{}, {}], expression }, context };
       const output: IQueryOperationResultBindings = <IQueryOperationResultBindings> await actor.run(op, undefined);
       await new Promise<void>((resolve) => {
         output.bindingsStream.on('error', () => resolve());

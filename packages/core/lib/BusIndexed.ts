@@ -36,28 +36,34 @@ export class BusIndexed<A extends Actor<I, T, O, any>, I extends IAction, T exte
   }
 
   public override subscribe(actor: A): void {
-    const actorId = this.getActorIdentifier(actor) || '_undefined_';
-    let actors = this.actorsIndex[actorId];
-    if (!actors) {
-      actors = this.actorsIndex[actorId] = [];
+    const actorIds = this.getActorIdentifiers(actor) ?? [ '_undefined_' ];
+    for (const actorId of actorIds) {
+      let actors = this.actorsIndex[actorId];
+      if (!actors) {
+        actors = this.actorsIndex[actorId] = [];
+      }
+      actors.push(actor);
+      super.subscribe(actor);
     }
-    actors.push(actor);
-    super.subscribe(actor);
   }
 
   public override unsubscribe(actor: A): boolean {
-    const actorId = this.getActorIdentifier(actor) || '_undefined_';
-    const actors = this.actorsIndex[actorId];
-    if (actors) {
-      const i = actors.indexOf(actor);
-      if (i >= 0) {
-        actors.splice(i, 1);
+    const actorIds = this.getActorIdentifiers(actor) ?? [ '_undefined_' ];
+    let unsubscribed = false;
+    for (const actorId of actorIds) {
+      const actors = this.actorsIndex[actorId];
+      if (actors) {
+        const i = actors.indexOf(actor);
+        if (i >= 0) {
+          actors.splice(i, 1);
+        }
+        if (actors.length === 0) {
+          delete this.actorsIndex[actorId];
+        }
       }
-      if (actors.length === 0) {
-        delete this.actorsIndex[actorId];
-      }
+      unsubscribed = unsubscribed || super.unsubscribe(actor);
     }
-    return super.unsubscribe(actor);
+    return unsubscribed;
   }
 
   public override publish(action: I): IActorReply<A, I, T, O>[] {
@@ -69,8 +75,13 @@ export class BusIndexed<A extends Actor<I, T, O, any>, I extends IAction, T exte
     return super.publish(action);
   }
 
-  protected getActorIdentifier(actor: A): string {
-    return this.actorIdentifierFields.reduce((object: any, field): A => object[field], actor);
+  protected getActorIdentifiers(actor: A): string[] | undefined {
+    const identifierValue = <string | string[] | undefined> this.actorIdentifierFields
+      .reduce((object: any, field): A => object[field], actor);
+    if (!identifierValue) {
+      return;
+    }
+    return Array.isArray(identifierValue) ? identifierValue : [ identifierValue ];
   }
 
   protected getActionIdentifier(action: I): string {
@@ -79,6 +90,15 @@ export class BusIndexed<A extends Actor<I, T, O, any>, I extends IAction, T exte
 }
 
 export interface IBusIndexedArgs extends IBusArgs {
+  /**
+   * Keys to follow down from the actor object.
+   * The value at the location following these keys should be a string, a string array, or undefined.
+   * If the value is a string array, all strings will be registered as keys that map to the actor.
+   */
   actorIdentifierFields: string[];
+  /**
+   * Keys to follow down from the action object.
+   * The value at the location following these keys should be a string or be undefined.
+   */
   actionIdentifierFields: string[];
 }

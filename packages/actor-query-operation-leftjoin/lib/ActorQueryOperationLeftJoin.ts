@@ -1,13 +1,11 @@
-import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
+import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
+import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { MediatorRdfJoin } from '@comunica/bus-rdf-join';
-import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
-import { AsyncEvaluator, isExpressionError } from '@comunica/expression-evaluator';
-import type { IQueryOperationResult, Bindings, IActionContext, IJoinEntry, ComunicaDataFactory } from '@comunica/types';
-import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { isExpressionError } from '@comunica/expression-evaluator';
+import type { Bindings, IActionContext, IJoinEntry, IQueryOperationResult } from '@comunica/types';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -16,10 +14,11 @@ import type { Algebra } from 'sparqlalgebrajs';
  */
 export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediated<Algebra.LeftJoin> {
   public readonly mediatorJoin: MediatorRdfJoin;
-  public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+  private readonly mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
 
   public constructor(args: IActorQueryOperationLeftJoinArgs) {
     super(args, 'leftjoin');
+    this.mediatorExpressionEvaluatorFactory = args.mediatorExpressionEvaluatorFactory;
   }
 
   public async testOperation(_operation: Algebra.LeftJoin, _context: IActionContext): Promise<TestResult<IActorTest>> {
@@ -44,15 +43,8 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
     if (operationOriginal.expression) {
       const rightMetadata = await entries[1].output.metadata();
       const expressionVariables = rightMetadata.variables;
-
-      const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
-      const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context, dataFactory);
-      const config = { ...ActorQueryOperation.getAsyncExpressionContext(
-        context,
-        this.mediatorQueryOperation,
-        bindingsFactory,
-      ) };
-      const evaluator = new AsyncEvaluator(config.dataFactory, operationOriginal.expression, config);
+      const evaluator = await this.mediatorExpressionEvaluatorFactory
+        .mediate({ algExpr: operationOriginal.expression, context });
       const bindingsStream = joined.bindingsStream
         .transform({
           autoStart: false,
@@ -97,8 +89,5 @@ export interface IActorQueryOperationLeftJoinArgs extends IActorQueryOperationTy
    * A mediator for joining Bindings streams
    */
   mediatorJoin: MediatorRdfJoin;
-  /**
-   * A mediator for creating binding context merge handlers
-   */
-  mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+  mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
 }

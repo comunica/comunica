@@ -4,7 +4,7 @@ import type {
   IDurationRepresentation,
   ITimeRepresentation,
   ITimeZoneRepresentation,
-} from './DateTimeHelpers';
+} from '@comunica/types';
 
 function numSerializer(num: number, min = 2): string {
   return num.toLocaleString(undefined, { minimumIntegerDigits: min, useGrouping: false });

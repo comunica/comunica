@@ -1,5 +1,4 @@
 import type * as RDF from '@rdfjs/types';
-import type { Algebra } from 'sparqlalgebrajs';
 import type * as E from '../expressions';
 import type * as C from './Consts';
 
@@ -98,17 +97,8 @@ export class InError extends ExpressionError {
  * Literals were passed to an operator that doesn't support their datatypes.
  */
 export class InvalidArgumentTypes extends ExpressionError {
-  public constructor(public args: E.Expression[], public op: C.Operator | C.NamedOperator) {
+  public constructor(public args: E.Expression[], public op: C.GeneralOperator) {
     super(`Argument types not valid for operator: '${pp(op)}' with '${pp(args)}`);
-  }
-}
-
-/**
- * Terms were being compared that are not supported.
- */
-export class InvalidCompareArgumentTypes extends ExpressionError {
-  public constructor(public arg0: RDF.Term, public arg1: RDF.Term) {
-    super(`Compared argument types are supported: '${arg0.termType}' and '${arg1.termType}'`);
   }
 }
 
@@ -141,7 +131,7 @@ export class EmptyAggregateError extends ExpressionError {
 
 export class ParseError extends ExpressionError {
   public constructor(str: string, type: string) {
-    super(`Failed to parse ${str} as ${type}.`);
+    super(`Failed to parse "${str}" as ${type}.`);
   }
 }
 
@@ -159,7 +149,7 @@ export class UnexpectedError<T> extends Error {
 }
 
 export class InvalidArity extends Error {
-  public constructor(public args: E.Expression[], public op: C.Operator) {
+  public constructor(public args: E.Expression[], public op: C.GeneralOperator) {
     super(`The number of args does not match the arity of the operator '${pp(op)}'.`);
   }
 }
@@ -167,30 +157,6 @@ export class InvalidArity extends Error {
 export class InvalidExpression<T> extends Error {
   public constructor(expr: T) {
     super(`Invalid SPARQL Expression '${pp(expr)}'`);
-  }
-}
-
-export class InvalidExpressionType<T> extends Error {
-  public constructor(public expr: T) {
-    super(`Invalid expression type for SPARQL Expression '${pp(expr)}'`);
-  }
-}
-
-export class InvalidTermType extends Error {
-  public constructor(public term: Algebra.TermExpression) {
-    super(`Invalid term type for term '${pp(term)}'`);
-  }
-}
-
-export class UnknownOperator extends Error {
-  public constructor(name: string) {
-    super(`Unknown operator: '${pp(name)}`);
-  }
-}
-
-export class UnknownNamedOperator extends Error {
-  public constructor(name: string) {
-    super(`Unknown named operator: '${pp(name)}'`);
   }
 }
 
@@ -207,12 +173,6 @@ export class ExtensionFunctionError extends Error {
 export class NoAggregator extends Error {
   public constructor(name?: string) {
     super(`Aggregate expression ${pp(name)} found, but no aggregate hook provided.`);
-  }
-}
-
-export class NoExistenceHook extends Error {
-  public constructor() {
-    super('EXISTS found, but no existence hook provided.');
   }
 }
 

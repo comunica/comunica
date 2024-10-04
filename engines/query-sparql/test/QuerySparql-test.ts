@@ -374,13 +374,17 @@ describe('System test: QuerySparql', () => {
         it('rejects when record does not match', async() => {
           const context = <any> { sources: [ store ]};
           context.extensionFunctions = baseFunctions;
-          await expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow('Unknown named operator');
+          await expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow(
+            `Query operation processing failed: none of the configured actors were able to handle the operation type filter`,
+          );
         });
 
         it('rejects when creator returns null', async() => {
           const context = <any> { sources: [ store ]};
           context.extensionFunctionCreator = () => null;
-          await expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow('Unknown named operator');
+          await expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow(
+            `Query operation processing failed: none of the configured actors were able to handle the operation type filter`,
+          );
         });
 
         it('with results and pointless custom filter given by creator', async() => {
@@ -920,8 +924,8 @@ SELECT ?obsId {
 
         // Execute query
         const result = <RDF.QueryVoid> await engine.query(`INSERT DATA {
-      <ex:s> <ex:p> <ex:o>.
-    }`, {
+          <ex:s> <ex:p> <ex:o>.
+        }`, {
           sources: [ 'dummy' ],
           destination: store,
         });
@@ -939,8 +943,8 @@ SELECT ?obsId {
 
         // Execute query
         const result = <RDF.QueryVoid> await engine.query(`INSERT DATA {
-      <ex:s> <ex:p> <ex:o>.
-    }`, {
+          <ex:s> <ex:p> <ex:o>.
+        }`, {
           sources: [ store ],
         });
         await result.execute();

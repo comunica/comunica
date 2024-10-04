@@ -1,10 +1,10 @@
+import type { MediatorBindingsAggregatorFactory } from '@comunica/bus-bindings-aggregator-factory';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
+import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
-import { AsyncEvaluator } from '@comunica/expression-evaluator';
 import type {
   BindingsStream,
   ComunicaDataFactory,
@@ -23,26 +23,18 @@ import { GroupsState } from './GroupsState';
  */
 export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<Algebra.Group> {
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+  private readonly mediatorBindingsAggregatorFactory: MediatorBindingsAggregatorFactory;
 
   public constructor(args: IActorQueryOperationGroupArgs) {
     super(args, 'group');
+    this.mediatorBindingsAggregatorFactory = args.mediatorBindingsAggregatorFactory;
   }
 
   public async testOperation(operation: Algebra.Group, context: IActionContext): Promise<TestResult<IActorTest>> {
-    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
-    const bindingsFactory = await BindingsFactory.create(
-      this.mediatorMergeBindingsContext,
-      context,
-      dataFactory,
-    );
     for (const aggregate of operation.aggregates) {
-      // Will throw for unsupported expressions
       try {
-        const _ = new AsyncEvaluator(
-          dataFactory,
-          aggregate.expression,
-          ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation, bindingsFactory),
-        );
+        // Will throw for unsupported expressions
+        const _ = await this.mediatorBindingsAggregatorFactory.mediate({ expr: aggregate, context });
       } catch (error: unknown) {
         // TODO: return TestResult in ActorQueryOperation.getAsyncExpressionContext
         return failTest((<Error> error).message);
@@ -69,17 +61,17 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
       ...aggregates.map(agg => agg.variable),
     ].map(variable => ({ variable, canBeUndef: false }));
 
-    const sparqleeConfig = ActorQueryOperation.getAsyncExpressionContext(
-      context,
-      this.mediatorQueryOperation,
-      bindingsFactory,
-    );
-
     const variablesInner = (await output.metadata()).variables.map(v => v.variable);
 
     // Wrap a new promise inside an iterator that completes when the stream has ended or when an error occurs
     const bindingsStream = new TransformIterator(() => new Promise<BindingsStream>((resolve, reject) => {
-      const groups = new GroupsState(operation, sparqleeConfig, bindingsFactory, variablesInner);
+      const groups = new GroupsState(
+        operation,
+        this.mediatorBindingsAggregatorFactory,
+        context,
+        bindingsFactory,
+        variablesInner,
+      );
 
       // Phase 2: Collect aggregator results
       // We can only return when the binding stream ends, when that happens
@@ -119,4 +111,5 @@ export interface IActorQueryOperationGroupArgs extends IActorQueryOperationTyped
    * A mediator for creating binding context merge handlers
    */
   mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+  mediatorBindingsAggregatorFactory: MediatorBindingsAggregatorFactory;
 }

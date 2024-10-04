@@ -2,7 +2,7 @@
   "name": "@comunica/expression-evaluator",
   "version": "3.2.1",
   "description": "A simple SPARQL expression evaluator",
-  "lsd:module": false,
+  "lsd:module": true,
   "license": "MIT",
   "funding": {
     "type": "opencollective",
@@ -30,27 +30,23 @@
     "access": "public"
   },
   "files": [
+    "components",
     "lib/**/*.d.ts",
     "lib/**/*.js",
     "lib/**/*.js.map"
   ],
   "scripts": {
-    "build": "node \"../../node_modules/typescript/bin/tsc\"",
-    "bench": "node \"../../node_modules/typescript/bin/tsc\" && node benchmarks/*.js"
+    "build": "npm run build:ts && npm run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/types": "^3.1.0",
+    "@comunica/context-entries": "^3.2.1",
+    "@comunica/types": "^3.2.1",
     "@rdfjs/types": "*",
-    "@types/spark-md5": "^3.0.2",
-    "@types/uuid": "^9.0.0",
-    "bignumber.js": "^9.0.1",
-    "hash.js": "^1.1.7",
     "lru-cache": "^10.0.0",
     "rdf-data-factory": "^1.1.2",
     "rdf-string": "^1.6.3",
-    "relative-to-absolute-iri": "^1.0.6",
-    "spark-md5": "^3.0.1",
-    "sparqlalgebrajs": "^4.3.8",
-    "uuid": "^10.0.0"
+    "sparqlalgebrajs": "^4.3.8"
   }
 }

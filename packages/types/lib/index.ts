@@ -16,3 +16,4 @@ export * from './statistics/IStatisticBase';
 export * from './statistics/IDiscoverEventData';
 export * from './ILink';
 export * from './Logger';
+export * from './ExpressionEvaluator';

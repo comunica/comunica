@@ -1,3 +1,4 @@
+import type { GeneralSuperTypeDict, ISuperTypeProvider } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import * as RDFString from 'rdf-string';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
@@ -16,7 +17,6 @@ import {
 } from '../util/Parsing';
 import * as P from '../util/Parsing';
 import { getSuperTypeDict } from '../util/TypeHandling';
-import type { ISuperTypeProvider, GeneralSuperTypeDict } from '../util/TypeHandling';
 
 export interface ITermTransformer {
   transformRDFTermUnsafe: (term: RDF.Term) => E.Term;
@@ -55,9 +55,14 @@ export class TermTransformer implements ITermTransformer {
       case 'BlankNode':
         return new E.BlankNode(term.term.value);
       case 'Quad':
-        return new E.Quad(term.term, this.superTypeProvider);
-      default:
-        throw new Err.InvalidTermType(term);
+        return new E.Quad(
+          this.transformRDFTermUnsafe(term.term.subject),
+          this.transformRDFTermUnsafe(term.term.predicate),
+          this.transformRDFTermUnsafe(term.term.object),
+          this.transformRDFTermUnsafe(term.term.graph),
+        );
+      case 'DefaultGraph':
+        return new E.DefaultGraph();
     }
   }
 
@@ -136,9 +141,10 @@ export class TermTransformer implements ITermTransformer {
         }
         return new E.DoubleLiteral(doubleVal, dataType, lit.value);
       }
+
       return new E.Literal<string>(lit.value, dataType, lit.value);
     } catch (error: unknown) {
-      if (error instanceof Error && isExpressionError(error)) {
+      if (isExpressionError(<Error> error)) {
         return new E.NonLexicalLiteral(undefined, dataType, this.superTypeProvider, lit.value);
       }
       throw error;

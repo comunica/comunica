@@ -11,7 +11,7 @@
       "@id": "urn:comunica:default:query-operation/actors#extend",
       "@type": "ActorQueryOperationExtend",
       "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
-      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" }
+      "mediatorExpressionEvaluatorFactory": { "@id": "urn:comunica:default:expression-evaluator-factory/mediators#main" }
     }
   ]
 }

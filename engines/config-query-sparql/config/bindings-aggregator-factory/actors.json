@@ -1,0 +1,15 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/config-query-sparql/^3.0.0/components/context.jsonld"
+  ],
+  "import": [
+    "ccqs:config/bindings-aggregator-factory/actors/average.json",
+    "ccqs:config/bindings-aggregator-factory/actors/count.json",
+    "ccqs:config/bindings-aggregator-factory/actors/group-concat.json",
+    "ccqs:config/bindings-aggregator-factory/actors/max.json",
+    "ccqs:config/bindings-aggregator-factory/actors/min.json",
+    "ccqs:config/bindings-aggregator-factory/actors/sample.json",
+    "ccqs:config/bindings-aggregator-factory/actors/sum.json",
+    "ccqs:config/bindings-aggregator-factory/actors/wildcard-count.json"
+  ]
+}

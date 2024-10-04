@@ -1,22 +1,33 @@
+import { ActorFunctionFactoryTermFunctionStrLen } from '@comunica/actor-function-factory-term-function-str-len';
+import { createTermCompMediator } from '@comunica/actor-term-comparator-factory-expression-evaluator/test/util';
+import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
+import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import { KeysInitQuery } from '@comunica/context-entries';
-import { ActionContext, Bus } from '@comunica/core';
+import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
+import { Bus } from '@comunica/core';
 import * as sparqlee from '@comunica/expression-evaluator';
+import type { IActionContext } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getMockEEActionContext, getMockMediatorExpressionEvaluatorFactory } from '@comunica/utils-jest';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra } from 'sparqlalgebrajs';
 import { ActorQueryOperationOrderBy } from '../lib/ActorQueryOperationOrderBy';
-import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
+const mediatorFunctionFactory = createFuncMediator([
+  args => new ActorFunctionFactoryTermFunctionStrLen(args),
+], {});
 
 describe('ActorQueryOperationOrderBy with mixed term types', () => {
   let bus: any;
   let mediatorQueryOperation: any;
+  let mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
+  let mediatorTermComparatorFactory: MediatorTermComparatorFactory;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -46,22 +57,25 @@ describe('ActorQueryOperationOrderBy with mixed term types', () => {
         variables: [ DF.variable('a') ],
       }),
     };
+    mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
+      mediatorFunctionFactory: createFuncMediator([], {}),
+    });
+    mediatorTermComparatorFactory = createTermCompMediator();
+    context = getMockEEActionContext();
   });
 
   describe('An ActorQueryOperationOrderBy instance', () => {
     let actor: ActorQueryOperationOrderBy;
     let orderA: Algebra.TermExpression;
     let descOrderA: Algebra.OperatorExpression;
-    let mediatorMergeBindingsContext: any;
+
     beforeEach(() => {
-      mediatorMergeBindingsContext = {
-        mediate: () => ({}),
-      };
       actor = new ActorQueryOperationOrderBy({
         name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeBindingsContext,
+        mediatorExpressionEvaluatorFactory,
+        mediatorTermComparatorFactory,
       });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
@@ -75,7 +89,7 @@ describe('ActorQueryOperationOrderBy with mixed term types', () => {
     it('should sort as an ascending undefined < blank node < named node < literal', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+        context,
       };
       const output = await actor.run(op, undefined);
       const array = await arrayifyStream(getSafeBindings(output).bindingsStream);
@@ -102,7 +116,7 @@ describe('ActorQueryOperationOrderBy with mixed term types', () => {
     it('should sort as an descending undefined < blank node < named node < literal', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+        context,
       };
       const output = await actor.run(op, undefined);
       const array = await arrayifyStream(getSafeBindings(output).bindingsStream);
@@ -131,13 +145,12 @@ describe('ActorQueryOperationOrderBy with mixed term types', () => {
 describe('ActorQueryOperationOrderBySparqlee', () => {
   let bus: any;
   let mediatorQueryOperation: any;
-  let mediatorMergeBindingsContext: any;
+  let mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
+  let mediatorTermComparatorFactory: MediatorTermComparatorFactory;
+  let context: IActionContext;
+
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    mediatorMergeBindingsContext = {
-      mediate: () => ({}),
-    };
-
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
@@ -151,6 +164,12 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
         variables: [ DF.variable('a') ],
       }),
     };
+
+    mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
+      mediatorFunctionFactory,
+    });
+    mediatorTermComparatorFactory = createTermCompMediator();
+    context = getMockEEActionContext();
   });
 
   describe('The ActorQueryOperationOrderBy module', () => {
@@ -159,20 +178,21 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     });
 
     it('should be a ActorQueryOperationOrderBy constructor', () => {
-      expect(new (<any> ActorQueryOperationOrderBy)({ name: 'actor', bus, mediatorQueryOperation }))
-        .toBeInstanceOf(<any> ActorQueryOperationOrderBy);
+      expect(new (<any>ActorQueryOperationOrderBy)({ name: 'actor', bus, mediatorQueryOperation }))
+        .toBeInstanceOf(<any>ActorQueryOperationOrderBy);
       expect(new ActorQueryOperationOrderBy({
         name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeBindingsContext,
+        mediatorExpressionEvaluatorFactory,
+        mediatorTermComparatorFactory,
       }))
         .toBeInstanceOf(ActorQueryOperation);
     });
 
     it('should not be able to create new ActorQueryOperationOrderBy objects without \'new\'', () => {
       expect(() => {
-        (<any> ActorQueryOperationOrderBy)();
+        (<any>ActorQueryOperationOrderBy)();
       }).toThrow(`Class constructor ActorQueryOperationOrderBy cannot be invoked without 'new'`);
     });
   });
@@ -185,15 +205,12 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     let orderA1: Algebra.OperatorExpression;
 
     beforeEach(() => {
-      mediatorMergeBindingsContext = {
-        mediate: () => ({}),
-      };
-
       actor = new ActorQueryOperationOrderBy({
         name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeBindingsContext,
+        mediatorExpressionEvaluatorFactory,
+        mediatorTermComparatorFactory,
       });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       orderB = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('b') };
@@ -212,34 +229,25 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     });
 
     it('should test on orderby', async() => {
-      const op: any = {
-        operation: { type: 'orderby', expressions: []},
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
-      };
+      const op: any = { operation: { type: 'orderby', expressions: []}, context };
       await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should test on a descending orderby', async() => {
-      const op: any = {
-        operation: { type: 'orderby', expressions: [ descOrderA ]},
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
-      };
+      const op: any = { operation: { type: 'orderby', expressions: [ descOrderA ]}, context };
       await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should test on multiple expressions', async() => {
       const op: any = {
         operation: { type: 'orderby', expressions: [ orderA, descOrderA, orderA1 ]},
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+        context,
       };
       await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should not test on non-orderby', async() => {
-      const op: any = {
-        operation: { type: 'some-other-type' },
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
-      };
+      const op: any = { operation: { type: 'some-other-type' }, context };
       await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports orderby operations, but got some-other-type`);
     });
 
@@ -250,15 +258,17 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
           expressionType: 'operator',
           operator: 'DUMMY',
         }]},
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+        context,
       };
-      await expect(actor.test(op)).resolves.toFailTest(`Unknown operator: '"DUMMY"`);
+      await expect(actor.test(op)).resolves.toFailTest(
+        `No actors are able to reply to a message`,
+      );
     });
 
     it('should run', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+        context,
       };
       const output = await actor.run(op, undefined);
       await expect(getSafeBindings(output).metadata()).resolves
@@ -277,11 +287,12 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
         bus,
         mediatorQueryOperation,
         window: 1,
-        mediatorMergeBindingsContext,
+        mediatorTermComparatorFactory,
+        mediatorExpressionEvaluatorFactory,
       });
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+        context,
       };
       const output = await actor.run(op, undefined);
       await expect(getSafeBindings(output).metadata()).resolves
@@ -297,7 +308,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     it('should run operator expressions', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderA1 ]},
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+        context,
       };
       const output = await actor.run(op, undefined);
       await expect(getSafeBindings(output).metadata()).resolves
@@ -313,7 +324,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     it('should run descend', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+        context,
       };
       const output = await actor.run(op, undefined);
       await expect(getSafeBindings(output).metadata()).resolves
@@ -329,7 +340,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     it('should ignore undefined results', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderB ]},
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+        context,
       };
       const output = await actor.run(op, undefined);
       await expect(getSafeBindings(output).metadata()).resolves
@@ -347,10 +358,10 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
 
       Object.defineProperty(sparqlee, 'isExpressionError', { writable: true });
       // eslint-disable-next-line jest/prefer-spy-on
-      (<any> sparqlee).isExpressionError = jest.fn(() => false);
+      (<any>sparqlee).isExpressionError = jest.fn(() => false);
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderB ]},
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+        context,
       };
       const output = <any> await actor.run(op, undefined);
       await new Promise<void>(resolve => output.bindingsStream.on('error', () => resolve()));
@@ -361,6 +372,9 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
 describe('ActorQueryOperationOrderBy with multiple comparators', () => {
   let bus: any;
   let mediatorQueryOperation: any;
+  let mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
+  let mediatorTermComparatorFactory: MediatorTermComparatorFactory;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -386,6 +400,12 @@ describe('ActorQueryOperationOrderBy with multiple comparators', () => {
         variables: [ DF.variable('a'), DF.variable('b') ],
       }),
     };
+
+    mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
+      mediatorFunctionFactory,
+    });
+    mediatorTermComparatorFactory = createTermCompMediator();
+    context = getMockEEActionContext();
   });
 
   describe('An ActorQueryOperationOrderBy instance multiple comparators', () => {
@@ -396,18 +416,14 @@ describe('ActorQueryOperationOrderBy with multiple comparators', () => {
     let descOrderB: Algebra.OperatorExpression;
     let orderA1: Algebra.OperatorExpression;
     let orderB1: Algebra.OperatorExpression;
-    let mediatorMergeBindingsContext: any;
 
     beforeEach(() => {
-      mediatorMergeBindingsContext = {
-        mediate: () => ({}),
-      };
-
       actor = new ActorQueryOperationOrderBy({
         name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeBindingsContext,
+        mediatorTermComparatorFactory,
+        mediatorExpressionEvaluatorFactory,
       });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       orderB = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('b') };
@@ -440,7 +456,7 @@ describe('ActorQueryOperationOrderBy with multiple comparators', () => {
     it('should order A', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+        context,
       };
       const output = await actor.run(op, undefined);
       const array = await arrayifyStream(getSafeBindings(output).bindingsStream);
@@ -463,7 +479,7 @@ describe('ActorQueryOperationOrderBy with multiple comparators', () => {
     it('should order B', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderB ]},
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+        context,
       };
       const output = await actor.run(op, undefined);
       const array = await arrayifyStream(getSafeBindings(output).bindingsStream);
@@ -486,7 +502,7 @@ describe('ActorQueryOperationOrderBy with multiple comparators', () => {
     it('should order priority B and secondary A, ascending', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderB, orderA ]},
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+        context,
       };
       const output = await actor.run(op, undefined);
       const array = await arrayifyStream(getSafeBindings(output).bindingsStream);
@@ -509,7 +525,7 @@ describe('ActorQueryOperationOrderBy with multiple comparators', () => {
     it('descending order A multiple orderby', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+        context,
       };
       const output = await actor.run(op, undefined);
       const array = await arrayifyStream(getSafeBindings(output).bindingsStream);
@@ -532,7 +548,7 @@ describe('ActorQueryOperationOrderBy with multiple comparators', () => {
     it('descending order B multiple orderby', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ descOrderB ]},
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+        context,
       };
       const output = await actor.run(op, undefined);
       const array = await arrayifyStream(getSafeBindings(output).bindingsStream);
@@ -556,7 +572,7 @@ describe('ActorQueryOperationOrderBy with multiple comparators', () => {
       // Priority goes to orderB1 then we secondarily sort by orderA1
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderB1, orderA1 ]},
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+        context,
       };
       const output = await actor.run(op, undefined);
       const array = await arrayifyStream(getSafeBindings(output).bindingsStream);
@@ -581,6 +597,9 @@ describe('ActorQueryOperationOrderBy with multiple comparators', () => {
 describe('ActorQueryOperationOrderBy with integer type', () => {
   let bus: any;
   let mediatorQueryOperation: any;
+  let mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
+  let mediatorTermComparatorFactory: MediatorTermComparatorFactory;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -603,24 +622,26 @@ describe('ActorQueryOperationOrderBy with integer type', () => {
         variables: [ DF.variable('a') ],
       }),
     };
+
+    mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
+      mediatorFunctionFactory,
+    });
+    mediatorTermComparatorFactory = createTermCompMediator();
+    context = getMockEEActionContext();
   });
 
   describe('An ActorQueryOperationOrderBy instance', () => {
     let actor: ActorQueryOperationOrderBy;
     let orderA: Algebra.TermExpression;
     let descOrderA: Algebra.OperatorExpression;
-    let mediatorMergeBindingsContext: any;
 
     beforeEach(() => {
-      mediatorMergeBindingsContext = {
-        mediate: () => ({}),
-      };
-
       actor = new ActorQueryOperationOrderBy({
         name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeBindingsContext,
+        mediatorTermComparatorFactory,
+        mediatorExpressionEvaluatorFactory,
       });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
@@ -634,7 +655,7 @@ describe('ActorQueryOperationOrderBy with integer type', () => {
     it('should sort as an ascending integer', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+        context,
       };
       const output = await actor.run(op, undefined);
       const array = await arrayifyStream(getSafeBindings(output).bindingsStream);
@@ -654,7 +675,7 @@ describe('ActorQueryOperationOrderBy with integer type', () => {
     it('should sort as an descending integer', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+        context,
       };
       const output = await actor.run(op, undefined);
       const array = await arrayifyStream(getSafeBindings(output).bindingsStream);
@@ -676,6 +697,9 @@ describe('ActorQueryOperationOrderBy with integer type', () => {
 describe('ActorQueryOperationOrderBy with double type', () => {
   let bus: any;
   let mediatorQueryOperation: any;
+  let mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
+  let mediatorTermComparatorFactory: MediatorTermComparatorFactory;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -698,24 +722,26 @@ describe('ActorQueryOperationOrderBy with double type', () => {
         variables: [ '?a' ],
       }),
     };
+
+    mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
+      mediatorFunctionFactory,
+    });
+    mediatorTermComparatorFactory = createTermCompMediator();
+    context = getMockEEActionContext();
   });
 
   describe('An ActorQueryOperationOrderBy instance', () => {
     let actor: ActorQueryOperationOrderBy;
     let orderA: Algebra.TermExpression;
     let descOrderA: Algebra.OperatorExpression;
-    let mediatorMergeBindingsContext: any;
 
     beforeEach(() => {
-      mediatorMergeBindingsContext = {
-        mediate: () => ({}),
-      };
-
       actor = new ActorQueryOperationOrderBy({
         name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeBindingsContext,
+        mediatorTermComparatorFactory,
+        mediatorExpressionEvaluatorFactory,
       });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
@@ -729,7 +755,7 @@ describe('ActorQueryOperationOrderBy with double type', () => {
     it('should sort as an ascending double', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+        context,
       };
       const output = await actor.run(op, undefined);
       const array = await arrayifyStream(getSafeBindings(output).bindingsStream);
@@ -749,7 +775,7 @@ describe('ActorQueryOperationOrderBy with double type', () => {
     it('should sort as an descending double', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+        context,
       };
       const output = await actor.run(op, undefined);
       const array = await arrayifyStream(getSafeBindings(output).bindingsStream);
@@ -771,6 +797,9 @@ describe('ActorQueryOperationOrderBy with double type', () => {
 describe('ActorQueryOperationOrderBy with decimal type', () => {
   let bus: any;
   let mediatorQueryOperation: any;
+  let mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
+  let mediatorTermComparatorFactory: MediatorTermComparatorFactory;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -793,24 +822,26 @@ describe('ActorQueryOperationOrderBy with decimal type', () => {
         variables: [ DF.variable('a') ],
       }),
     };
+
+    mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
+      mediatorFunctionFactory,
+    });
+    mediatorTermComparatorFactory = createTermCompMediator();
+    context = getMockEEActionContext();
   });
 
   describe('An ActorQueryOperationOrderBy instance', () => {
     let actor: ActorQueryOperationOrderBy;
     let orderA: Algebra.TermExpression;
     let descOrderA: Algebra.OperatorExpression;
-    let mediatorMergeBindingsContext: any;
 
     beforeEach(() => {
-      mediatorMergeBindingsContext = {
-        mediate: () => ({}),
-      };
-
       actor = new ActorQueryOperationOrderBy({
         name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeBindingsContext,
+        mediatorTermComparatorFactory,
+        mediatorExpressionEvaluatorFactory,
       });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
@@ -824,7 +855,7 @@ describe('ActorQueryOperationOrderBy with decimal type', () => {
     it('should sort as an ascending decimal', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+        context,
       };
       const output = await actor.run(op, undefined);
       const array = await arrayifyStream(getSafeBindings(output).bindingsStream);
@@ -844,7 +875,7 @@ describe('ActorQueryOperationOrderBy with decimal type', () => {
     it('should sort as an descending decimal', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+        context,
       };
       const output = await actor.run(op, undefined);
       const array = await arrayifyStream(getSafeBindings(output).bindingsStream);
@@ -866,6 +897,9 @@ describe('ActorQueryOperationOrderBy with decimal type', () => {
 describe('ActorQueryOperationOrderBy with float type', () => {
   let bus: any;
   let mediatorQueryOperation: any;
+  let mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
+  let mediatorTermComparatorFactory: MediatorTermComparatorFactory;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -888,24 +922,25 @@ describe('ActorQueryOperationOrderBy with float type', () => {
         variables: [ DF.variable('a') ],
       }),
     };
+    mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
+      mediatorFunctionFactory,
+    });
+    mediatorTermComparatorFactory = createTermCompMediator();
+    context = getMockEEActionContext();
   });
 
   describe('An ActorQueryOperationOrderBy instance', () => {
     let actor: ActorQueryOperationOrderBy;
     let orderA: Algebra.TermExpression;
     let descOrderA: Algebra.OperatorExpression;
-    let mediatorMergeBindingsContext: any;
 
     beforeEach(() => {
-      mediatorMergeBindingsContext = {
-        mediate: () => ({}),
-      };
-
       actor = new ActorQueryOperationOrderBy({
         name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeBindingsContext,
+        mediatorTermComparatorFactory,
+        mediatorExpressionEvaluatorFactory,
       });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
@@ -919,7 +954,7 @@ describe('ActorQueryOperationOrderBy with float type', () => {
     it('should sort as an ascending float', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+        context,
       };
       const output = await actor.run(op, undefined);
       const array = await arrayifyStream(getSafeBindings(output).bindingsStream);
@@ -939,7 +974,7 @@ describe('ActorQueryOperationOrderBy with float type', () => {
     it('should sort as an descending float', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+        context,
       };
       const output = await actor.run(op, undefined);
       const array = await arrayifyStream(getSafeBindings(output).bindingsStream);
@@ -961,6 +996,9 @@ describe('ActorQueryOperationOrderBy with float type', () => {
 describe('ActorQueryOperationOrderBy with mixed literal types', () => {
   let bus: any;
   let mediatorQueryOperation: any;
+  let mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
+  let mediatorTermComparatorFactory: MediatorTermComparatorFactory;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -983,24 +1021,25 @@ describe('ActorQueryOperationOrderBy with mixed literal types', () => {
         variables: [ DF.variable('a') ],
       }),
     };
+    mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
+      mediatorFunctionFactory,
+    });
+    mediatorTermComparatorFactory = createTermCompMediator();
+    context = getMockEEActionContext();
   });
 
   describe('An ActorQueryOperationOrderBy instance', () => {
     let actor: ActorQueryOperationOrderBy;
     let orderA: Algebra.TermExpression;
     let descOrderA: Algebra.OperatorExpression;
-    let mediatorMergeBindingsContext: any;
 
     beforeEach(() => {
-      mediatorMergeBindingsContext = {
-        mediate: () => ({}),
-      };
-
       actor = new ActorQueryOperationOrderBy({
         name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeBindingsContext,
+        mediatorTermComparatorFactory,
+        mediatorExpressionEvaluatorFactory,
       });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
@@ -1014,7 +1053,7 @@ describe('ActorQueryOperationOrderBy with mixed literal types', () => {
     it('should sort as an ascending integer', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+        context,
       };
       const output = await actor.run(op, undefined);
       const array = await arrayifyStream(getSafeBindings(output).bindingsStream);
@@ -1034,7 +1073,7 @@ describe('ActorQueryOperationOrderBy with mixed literal types', () => {
     it('should sort as an descending integer', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+        context,
       };
       const output = await actor.run(op, undefined);
       const array = await arrayifyStream(getSafeBindings(output).bindingsStream);
@@ -1056,6 +1095,9 @@ describe('ActorQueryOperationOrderBy with mixed literal types', () => {
 describe('Another ActorQueryOperationOrderBy with mixed types', () => {
   let bus: any;
   let mediatorQueryOperation: any;
+  let mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
+  let mediatorTermComparatorFactory: MediatorTermComparatorFactory;
+  let context: IActionContext;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -1078,23 +1120,25 @@ describe('Another ActorQueryOperationOrderBy with mixed types', () => {
         variables: [ DF.variable('a') ],
       }),
     };
+
+    mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
+      mediatorFunctionFactory,
+    });
+    mediatorTermComparatorFactory = createTermCompMediator();
+    context = getMockEEActionContext();
   });
 
   describe('An ActorQueryOperationOrderBy instance', () => {
     let actor: ActorQueryOperationOrderBy;
     let orderA: Algebra.TermExpression;
-    let mediatorMergeBindingsContext: any;
 
     beforeEach(() => {
-      mediatorMergeBindingsContext = {
-        mediate: () => ({}),
-      };
-
       actor = new ActorQueryOperationOrderBy({
         name: 'actor',
         bus,
         mediatorQueryOperation,
-        mediatorMergeBindingsContext,
+        mediatorTermComparatorFactory,
+        mediatorExpressionEvaluatorFactory,
       });
       orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
     });
@@ -1103,7 +1147,7 @@ describe('Another ActorQueryOperationOrderBy with mixed types', () => {
       try {
         const op: any = {
           operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
-          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+          context,
         };
         const output = await actor.run(op, undefined);
         const array = await arrayifyStream(getSafeBindings(output).bindingsStream);

@@ -1,15 +1,20 @@
+import { ActorFunctionFactoryTermFunctionAddition } from '@comunica/actor-function-factory-term-function-addition';
+import { ActorFunctionFactoryTermFunctionStrLen } from '@comunica/actor-function-factory-term-function-str-len';
+import type {
+  MediatorExpressionEvaluatorFactory,
+} from '@comunica/bus-expression-evaluator-factory';
+import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import { KeysInitQuery } from '@comunica/context-entries';
-import { ActionContext, Actor, Bus } from '@comunica/core';
+import { Actor, Bus } from '@comunica/core';
 import * as sparqlee from '@comunica/expression-evaluator';
-import type { IQueryOperationResultBindings } from '@comunica/types';
+import type { IActionContext, IQueryOperationResultBindings } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { getMockEEActionContext, getMockMediatorExpressionEvaluatorFactory } from '@comunica/utils-jest';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import '@comunica/utils-jest';
 
-import { ActorQueryOperationExtend } from '../lib/ActorQueryOperationExtend';
+import { ActorQueryOperationExtend } from '../lib';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF, {});
@@ -17,6 +22,8 @@ const BF = new BindingsFactory(DF, {});
 describe('ActorQueryOperationExtend', () => {
   let bus: any;
   let mediatorQueryOperation: any;
+  let mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
+  let context: IActionContext;
 
   const example = (expression: any) => ({
     type: 'extend',
@@ -85,6 +92,15 @@ describe('ActorQueryOperationExtend', () => {
         type: 'bindings',
       }),
     };
+    mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
+      mediatorQueryOperation,
+      mediatorFunctionFactory: createFuncMediator([
+        args => new ActorFunctionFactoryTermFunctionStrLen(args),
+        args => new ActorFunctionFactoryTermFunctionAddition(args),
+      ], {}),
+    });
+
+    context = getMockEEActionContext();
   });
 
   describe('The ActorQueryOperationExtend module', () => {
@@ -108,30 +124,22 @@ describe('ActorQueryOperationExtend', () => {
 
   describe('An ActorQueryOperationExtend instance', () => {
     let actor: ActorQueryOperationExtend;
-    let mediatorMergeBindingsContext: any;
     beforeEach(() => {
-      mediatorMergeBindingsContext = {
-        mediate: () => ({}),
-      };
-
-      actor = new ActorQueryOperationExtend(
-        { name: 'actor', bus, mediatorQueryOperation, mediatorMergeBindingsContext },
-      );
+      actor = new ActorQueryOperationExtend({
+        name: 'actor',
+        bus,
+        mediatorQueryOperation,
+        mediatorExpressionEvaluatorFactory,
+      });
     });
 
     it('should test on extend', async() => {
-      const op: any = {
-        operation: example(defaultExpression),
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
-      };
+      const op: any = { operation: example(defaultExpression), context };
       await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should not test on non-extend', async() => {
-      const op: any = {
-        operation: { type: 'some-other-type' },
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
-      };
+      const op: any = { operation: { type: 'some-other-type' }, context };
       await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports extend operations, but got some-other-type`);
     });
 
@@ -156,16 +164,15 @@ describe('ActorQueryOperationExtend', () => {
             operator: 'DUMMY',
           },
         },
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+        context,
       };
-      await expect(actor.test(op)).resolves.toFailTest(`Unknown operator: '"DUMMY"`);
+      await expect(actor.test(op)).resolves.toFailTest(
+        `No actors are able to reply to a message`,
+      );
     });
 
     it('should run', async() => {
-      const op: any = {
-        operation: example(defaultExpression),
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
-      };
+      const op: any = { operation: example(defaultExpression), context };
       const output: IQueryOperationResultBindings = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
@@ -194,10 +201,7 @@ describe('ActorQueryOperationExtend', () => {
       const warn = jest.fn();
       jest.spyOn(Actor, 'getContextLogger').mockImplementation(() => (<any>{ warn }));
 
-      const op: any = {
-        operation: example(faultyExpression),
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
-      };
+      const op: any = { operation: example(faultyExpression), context };
       const output: IQueryOperationResultBindings = <any> await actor.run(op, undefined);
 
       await expect(arrayifyStream(output.bindingsStream)).resolves.toMatchObject(input);
@@ -218,10 +222,7 @@ describe('ActorQueryOperationExtend', () => {
       // eslint-disable-next-line jest/prefer-spy-on
       (<any> sparqlee).isExpressionError = jest.fn(() => false);
 
-      const op: any = {
-        operation: example(faultyExpression),
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
-      };
+      const op: any = { operation: example(faultyExpression), context };
       const output: IQueryOperationResultBindings = <any> await actor.run(op, undefined);
       await new Promise<void>((resolve, reject) => {
         output.bindingsStream.on('error', () => resolve());
@@ -247,7 +248,7 @@ describe('ActorQueryOperationExtend', () => {
           variable: { termType: 'Variable', value: 'a' },
           defaultExpression,
         },
-        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+        context,
       };
       await expect(actor.run(op, undefined)).rejects.toThrow(`Illegal binding to variable 'a' that has already been bound`);
     });

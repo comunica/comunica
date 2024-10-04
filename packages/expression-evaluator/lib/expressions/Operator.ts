@@ -1,4 +1,5 @@
-import type { Expression, OperatorExpression, SimpleApplication } from './Expressions';
+import type { FunctionApplication } from '../functions/OverloadTree';
+import type { Expression, OperatorExpression } from './Expressions';
 import {
   ExpressionType,
 } from './Expressions';
@@ -6,5 +7,5 @@ import {
 export class Operator implements OperatorExpression {
   public expressionType: ExpressionType.Operator = ExpressionType.Operator;
 
-  public constructor(public args: Expression[], public apply: SimpleApplication) {}
+  public constructor(public name: string, public args: Expression[], public apply: FunctionApplication) {}
 }

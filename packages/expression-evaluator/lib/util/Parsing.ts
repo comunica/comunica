@@ -8,8 +8,7 @@ import type {
   ITimeRepresentation,
   ITimeZoneRepresentation,
   IYearMonthDurationRepresentation,
-} from './DateTimeHelpers';
-
+} from '@comunica/types';
 import { simplifyDurationRepresentation } from './DateTimeHelpers';
 import { ParseError } from './Errors';
 import { maximumDayInMonthFor } from './SpecAlgos';
@@ -52,22 +51,12 @@ export function parseXSDDecimal(value: string): number | undefined {
   return Number.isNaN(numb) ? undefined : numb;
 }
 
-/**
- * Parses integer datatypes (decimal, int, byte, nonPositiveInteger, etc...).
- *
- * All other values, including NaN, INF, and floating point numbers all
- * return undefined;
- *
- * @param value the string to interpret as a number
- */
-export function parseXSDInteger(value: string): number | undefined {
-  const numb: number = Number.parseInt(value, 10);
-  return Number.isNaN(numb) ? undefined : numb;
-}
-
 export function parseDateTime(dateTimeStr: string): IDateTimeRepresentation {
   // https://www.w3.org/TR/xmlschema-2/#dateTime
   const [ date, time ] = dateTimeStr.split('T');
+  if (time === undefined) {
+    throw new ParseError(dateTimeStr, 'dateTime');
+  }
   return { ...parseDate(date), ...__parseTime(time) };
 }
 

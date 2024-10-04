@@ -1,8 +1,8 @@
-import type { IAsyncEvaluatorContext } from '@comunica/expression-evaluator';
-import { AsyncAggregateEvaluator } from '@comunica/expression-evaluator';
-import type { Bindings } from '@comunica/types';
-import { bindingsToCompactString } from '@comunica/utils-bindings-factory';
+import type { IBindingsAggregator, MediatorBindingsAggregatorFactory } from '@comunica/bus-bindings-aggregator-factory';
+import { KeysInitQuery } from '@comunica/context-entries';
+import type { Bindings, ComunicaDataFactory, IActionContext } from '@comunica/types';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { bindingsToCompactString } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -18,7 +18,7 @@ export type BindingsHash = string;
  */
 export interface IGroup {
   bindings: Bindings;
-  aggregators: Record<string, AsyncAggregateEvaluator>;
+  aggregators: Record<string, IBindingsAggregator>;
 }
 
 /**
@@ -38,7 +38,8 @@ export class GroupsState {
 
   public constructor(
     private readonly pattern: Algebra.Group,
-    private readonly sparqleeConfig: IAsyncEvaluatorContext,
+    private readonly mediatorBindingsAggregatorFactory: MediatorBindingsAggregatorFactory,
+    private readonly context: IActionContext,
     private readonly bindingsFactory: BindingsFactory,
     private readonly variables: RDF.Variable[],
   ) {
@@ -80,28 +81,25 @@ export class GroupsState {
         await Promise.all(this.pattern.aggregates.map(async(aggregate) => {
           // Distinct handling is done in the aggregator.
           const variable = aggregate.variable.value;
-          await group.aggregators[variable].put(bindings);
+          await group.aggregators[variable].putBindings(bindings);
         }));
       })().then(async() => {
-        this.subtractWaitCounterAndCollect();
+        await this.subtractWaitCounterAndCollect();
       });
     } else {
       // Initialize state for all aggregators for new group
       groupInitializer = (async() => {
-        const aggregators: Record<string, AsyncAggregateEvaluator> = {};
+        const aggregators: Record<string, IBindingsAggregator> = {};
         await Promise.all(this.pattern.aggregates.map(async(aggregate) => {
           const key = aggregate.variable.value;
-          aggregators[key] = new AsyncAggregateEvaluator(
-            aggregate,
-            this.sparqleeConfig.dataFactory,
-            this.sparqleeConfig,
-          );
-          await aggregators[key].put(bindings);
+          aggregators[key] = await this.mediatorBindingsAggregatorFactory
+            .mediate({ expr: aggregate, context: this.context });
+          await aggregators[key].putBindings(bindings);
         }));
 
         const group = { aggregators, bindings: grouper };
         this.groups.set(groupHash, group);
-        this.subtractWaitCounterAndCollect();
+        await this.subtractWaitCounterAndCollect();
         return group;
       })();
       this.groupsInitializer.set(groupHash, groupInitializer);
@@ -110,46 +108,50 @@ export class GroupsState {
     return res;
   }
 
-  private subtractWaitCounterAndCollect(): void {
+  private async subtractWaitCounterAndCollect(): Promise<void> {
     if (--this.waitCounter === 0) {
-      this.handleResultCollection();
+      await this.handleResultCollection();
     }
   }
 
-  private handleResultCollection(): void {
+  private async handleResultCollection(): Promise<void> {
+    const dataFactory: ComunicaDataFactory = this.context.getSafe(KeysInitQuery.dataFactory);
     // Collect groups
-    let rows: Bindings[] = [ ...this.groups ].map(([ _, group ]) => {
+    let rows: Bindings[] = await Promise.all([ ...this.groups ].map(async([ _, group ]) => {
       const { bindings: groupBindings, aggregators } = group;
 
       // Collect aggregator bindings
       // If the aggregate errorred, the result will be undefined
       let returnBindings = groupBindings;
       for (const variable in aggregators) {
-        const value = aggregators[variable].result();
+        const value = await aggregators[variable].result();
         if (value) {
           // Filter undefined
-          returnBindings = returnBindings.set(this.sparqleeConfig.dataFactory.variable(variable), value);
+          returnBindings = returnBindings.set(dataFactory.variable(variable), value);
         }
       }
 
       // Merge grouping bindings and aggregator bindings
       return returnBindings;
-    });
+    }));
 
     // Case: No Input
     // Some aggregators still define an output on the empty input
     // Result is a single Bindings
     if (rows.length === 0 && this.groupVariables.size === 0) {
       const single: [RDF.Variable, RDF.Term][] = [];
-      for (const aggregate of this.pattern.aggregates) {
+      await Promise.all(this.pattern.aggregates.map(async(aggregate) => {
         const key = aggregate.variable;
-        const value = AsyncAggregateEvaluator.emptyValue(this.sparqleeConfig.dataFactory, aggregate);
+        const aggregator = await this.mediatorBindingsAggregatorFactory
+          .mediate({ expr: aggregate, context: this.context });
+        const value = await aggregator.result();
         if (value !== undefined) {
           single.push([ key, value ]);
         }
-      }
+      }));
       rows = [ this.bindingsFactory.bindings(single) ];
     }
+
     this.waitResolver(rows);
   }
 
@@ -165,7 +167,7 @@ export class GroupsState {
    * You can only call this method once, after calling this method,
    * calling any function on this will result in an error being thrown.
    */
-  public collectResults(): Promise<Bindings[]> {
+  public async collectResults(): Promise<Bindings[]> {
     const check = this.resultCheck<Bindings[]>();
     if (check) {
       return check;
@@ -174,7 +176,7 @@ export class GroupsState {
     const res = new Promise<Bindings[]>((resolve) => {
       this.waitResolver = resolve;
     });
-    this.subtractWaitCounterAndCollect();
+    await this.subtractWaitCounterAndCollect();
     return res;
   }
 

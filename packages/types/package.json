@@ -45,6 +45,7 @@
     "@rdfjs/types": "*",
     "@types/yargs": "^17.0.24",
     "asynciterator": "^3.9.0",
+    "lru-cache": "^10.0.1",
     "sparqlalgebrajs": "^4.3.8"
   }
 }

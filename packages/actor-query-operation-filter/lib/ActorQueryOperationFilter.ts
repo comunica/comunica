@@ -1,15 +1,11 @@
-import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
+import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import {
-  ActorQueryOperation,
-  ActorQueryOperationTypedMediated,
-} from '@comunica/bus-query-operation';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
-import { AsyncEvaluator, isExpressionError } from '@comunica/expression-evaluator';
-import type { Bindings, ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
-import { BindingsFactory, bindingsToString } from '@comunica/utils-bindings-factory';
+import { isExpressionError } from '@comunica/expression-evaluator';
+import type { Bindings, IActionContext, IQueryOperationResult } from '@comunica/types';
+import { bindingsToString } from '@comunica/utils-bindings-factory';
 import { getSafeBindings, validateQueryOutput } from '@comunica/utils-query-operation';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -17,30 +13,22 @@ import type { Algebra } from 'sparqlalgebrajs';
  * A comunica Filter Sparqlee Query Operation Actor.
  */
 export class ActorQueryOperationFilter extends ActorQueryOperationTypedMediated<Algebra.Filter> {
-  public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+  private readonly mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
 
   public constructor(args: IActorQueryOperationFilterSparqleeArgs) {
     super(args, 'filter');
+    this.mediatorExpressionEvaluatorFactory = args.mediatorExpressionEvaluatorFactory;
   }
 
   public async testOperation(operation: Algebra.Filter, context: IActionContext): Promise<TestResult<IActorTest>> {
     // Will throw error for unsupported operators
-    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
-    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context, dataFactory);
     try {
-      const config = {
-        ...ActorQueryOperation.getAsyncExpressionContext(
-          context,
-          this.mediatorQueryOperation,
-          bindingsFactory,
-        ),
-      };
-      const _ = new AsyncEvaluator(dataFactory, operation.expression, config);
-      return passTestVoid();
+      const _ = await this.mediatorExpressionEvaluatorFactory.mediate({ algExpr: operation.expression, context });
     } catch (error: unknown) {
       // TODO: return TestResult in ActorQueryOperation.getAsyncExpressionContext
       return failTest((<Error> error).message);
     }
+    return passTestVoid();
   }
 
   public async runOperation(operation: Algebra.Filter, context: IActionContext):
@@ -49,18 +37,8 @@ export class ActorQueryOperationFilter extends ActorQueryOperationTypedMediated<
     const output = getSafeBindings(outputRaw);
     validateQueryOutput(output, 'bindings');
 
-    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
-    const bindingsFactory = await BindingsFactory.create(
-      this.mediatorMergeBindingsContext,
-      context,
-      dataFactory,
-    );
-    const config = { ...ActorQueryOperation.getAsyncExpressionContext(
-      context,
-      this.mediatorQueryOperation,
-      bindingsFactory,
-    ) };
-    const evaluator = new AsyncEvaluator(dataFactory, operation.expression, config);
+    const evaluator = await this.mediatorExpressionEvaluatorFactory
+      .mediate({ algExpr: operation.expression, context });
 
     const transform = async(item: Bindings, next: any, push: (bindings: Bindings) => void): Promise<void> => {
       try {
@@ -96,8 +74,5 @@ export class ActorQueryOperationFilter extends ActorQueryOperationTypedMediated<
 }
 
 export interface IActorQueryOperationFilterSparqleeArgs extends IActorQueryOperationTypedMediatedArgs {
-  /**
-   * A mediator for creating binding context merge handlers
-   */
-  mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+  mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
 }

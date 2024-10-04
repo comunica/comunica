@@ -1,15 +1,11 @@
-import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
+import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import {
-  ActorQueryOperation,
-  ActorQueryOperationTypedMediated,
-} from '@comunica/bus-query-operation';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
+import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
-import { AsyncEvaluator, isExpressionError, orderTypes } from '@comunica/expression-evaluator';
-import type { Bindings, ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
-import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { isExpressionError } from '@comunica/expression-evaluator';
+import type { Bindings, IActionContext, IQueryOperationResult } from '@comunica/types';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type { Term } from '@rdfjs/types';
 import { Algebra } from 'sparqlalgebrajs';
@@ -20,26 +16,23 @@ import { SortIterator } from './SortIterator';
  */
 export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated<Algebra.OrderBy> {
   private readonly window: number;
-  public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+  private readonly mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
+  private readonly mediatorTermComparatorFactory: MediatorTermComparatorFactory;
 
   public constructor(args: IActorQueryOperationOrderBySparqleeArgs) {
     super(args, 'orderby');
     this.window = args.window ?? Number.POSITIVE_INFINITY;
+    this.mediatorExpressionEvaluatorFactory = args.mediatorExpressionEvaluatorFactory;
+    this.mediatorTermComparatorFactory = args.mediatorTermComparatorFactory;
   }
 
   public async testOperation(operation: Algebra.OrderBy, context: IActionContext): Promise<TestResult<IActorTest>> {
-    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
-    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context, dataFactory);
-
     // Will throw error for unsupported operators
     for (let expr of operation.expressions) {
-      expr = this.extractSortExpression(expr);
       try {
-        const _ = new AsyncEvaluator(
-          dataFactory,
-          expr,
-          ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation, bindingsFactory),
-        );
+        expr = this.extractSortExpression(expr);
+        const _ = await this.mediatorExpressionEvaluatorFactory
+          .mediate({ algExpr: expr, context });
       } catch (error: unknown) {
         // TODO: return TestResult in ActorQueryOperation.getAsyncExpressionContext
         return failTest((<Error> error).message);
@@ -54,20 +47,18 @@ export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated
     const output = getSafeBindings(outputRaw);
 
     const options = { window: this.window };
-    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
-    const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context, dataFactory);
-    const sparqleeConfig = {
-      ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation, bindingsFactory),
-    };
     let { bindingsStream } = output;
 
     // Sorting backwards since the first one is the most important therefore should be ordered last.
+    const orderByEvaluator = await this.mediatorTermComparatorFactory.mediate({ context });
+
     for (let i = operation.expressions.length - 1; i >= 0; i--) {
       let expr = operation.expressions[i];
       const isAscending = this.isAscending(expr);
       expr = this.extractSortExpression(expr);
       // Transform the stream by annotating it with the expr result
-      const evaluator = new AsyncEvaluator(sparqleeConfig.dataFactory, expr, sparqleeConfig);
+      const evaluator = await this.mediatorExpressionEvaluatorFactory
+        .mediate({ algExpr: expr, context });
       interface IAnnotatedBinding {
         bindings: Bindings;
         result: Term | undefined;
@@ -94,7 +85,7 @@ export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated
 
       // Sort the annoted stream
       const sortedStream = new SortIterator(transformedStream, (left, right) => {
-        let compare = orderTypes(left.result, right.result, dataFactory);
+        let compare = orderByEvaluator.orderTypes(left.result, right.result);
         if (!isAscending) {
           compare *= -1;
         }
@@ -137,12 +128,10 @@ export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated
  */
 export interface IActorQueryOperationOrderBySparqleeArgs extends IActorQueryOperationTypedMediatedArgs {
   /**
-   * A mediator for creating binding context merge handlers
-   */
-  mediatorMergeBindingsContext: MediatorMergeBindingsContext;
-  /**
    * The size of the window for the sort iterator.
    * @range {integer}
    */
   window?: number;
+  mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
+  mediatorTermComparatorFactory: MediatorTermComparatorFactory;
 }

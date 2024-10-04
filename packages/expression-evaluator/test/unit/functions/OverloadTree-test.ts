@@ -1,19 +1,35 @@
-import type { ICompleteSharedContext } from '../../../lib/evaluators/evaluatorHelpers/BaseExpressionEvaluator';
+import type { ExpressionEvaluator } from '@comunica/actor-expression-evaluator-factory-default/lib/ExpressionEvaluator';
+import { TermFunctionAddition } from '@comunica/actor-function-factory-term-function-addition/lib/TermFunctionAddition';
+import { TermFunctionSubStr } from '@comunica/actor-function-factory-term-function-sub-str/lib/TermFunctionSubStr';
+import type { TermFunctionBase } from '@comunica/bus-function-factory';
+import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
+import type { ISuperTypeProvider } from '@comunica/types';
+import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-jest';
+import { TypeURL, OverloadTree } from '../../../lib';
+import type { FunctionArgumentsCache, KnownLiteralTypes } from '../../../lib';
+import {
+  IntegerLiteral,
+  isLiteralTermExpression,
+  Literal,
+  StringLiteral,
+} from '../../../lib/expressions';
 import type { ISerializable } from '../../../lib/expressions';
-import { IntegerLiteral, isLiteralTermExpression, Literal, StringLiteral } from '../../../lib/expressions';
-import { OverloadTree, regularFunctions } from '../../../lib/functions';
-import type { FunctionArgumentsCache } from '../../../lib/functions/OverloadTree';
-import type { KnownLiteralTypes } from '../../../lib/util/Consts';
-import { TypeURL } from '../../../lib/util/Consts';
-import { getDefaultSharedContext } from '../../util/utils';
+import { getMockExpression } from '../../util/utils';
 
 describe('OverloadTree', () => {
   let emptyTree: OverloadTree;
   const emptyID = 'Non cacheable';
-  let sharedContext: ICompleteSharedContext;
-  beforeEach(() => {
+  let expressionEvaluator: ExpressionEvaluator;
+  let superTypeProvider: ISuperTypeProvider;
+  let functionArgumentsCache: FunctionArgumentsCache;
+  beforeEach(async() => {
     emptyTree = new OverloadTree(emptyID);
-    sharedContext = { ...getDefaultSharedContext() };
+    expressionEvaluator = <ExpressionEvaluator> await getMockEEFactory().run(
+      { algExpr: getMockExpression('true'), context: getMockEEActionContext() },
+      undefined,
+    );
+    superTypeProvider = expressionEvaluator.context.getSafe(KeysExpressionEvaluator.superTypeProvider);
+    functionArgumentsCache = expressionEvaluator.context.getSafe(KeysInitQuery.functionArgumentsCache);
   });
 
   function typePromotionTest<T extends ISerializable>(
@@ -22,11 +38,13 @@ describe('OverloadTree', () => {
     promoteTo: KnownLiteralTypes,
     value: T,
     valueToEqual?: T,
-  ) {
+  ): void {
     tree.addOverload([ promoteTo ], () => ([ arg ]) => arg);
     const arg = new Literal<T>(value, promoteFrom);
     const res = isLiteralTermExpression(tree
-      .search([ arg ], sharedContext.superTypeProvider, sharedContext.functionArgumentsCache)!(sharedContext)([ arg ]));
+      .search([ arg ], superTypeProvider, functionArgumentsCache)!(
+      expressionEvaluator,
+    )([ arg ]));
     expect(res).toBeTruthy();
     expect(res!.dataType).toEqual(promoteTo);
     expect(res!.typedValue).toEqual(valueToEqual ?? value);
@@ -37,11 +55,13 @@ describe('OverloadTree', () => {
     argumentType: KnownLiteralTypes,
     expectedType: KnownLiteralTypes,
     value: T,
-  ) {
+  ): void {
     tree.addOverload([ expectedType ], () => ([ arg ]) => arg);
     const arg = new Literal<T>(value, argumentType);
     const res = isLiteralTermExpression(tree
-      .search([ arg ], sharedContext.superTypeProvider, sharedContext.functionArgumentsCache)!(sharedContext)([ arg ]));
+      .search([ arg ], superTypeProvider, functionArgumentsCache)!(
+      expressionEvaluator,
+    )([ arg ]));
     expect(res).toBeTruthy();
     expect(res!.dataType).toEqual(argumentType);
     expect(res!.typedValue).toEqual(value);
@@ -80,7 +100,9 @@ describe('OverloadTree', () => {
 
     const arg = new Literal<number>(0, TypeURL.XSD_SHORT);
     const res = isLiteralTermExpression(emptyTree
-      .search([ arg ], sharedContext.superTypeProvider, sharedContext.functionArgumentsCache)!(sharedContext)([ arg ]));
+      .search([ arg ], superTypeProvider, functionArgumentsCache)!(
+      expressionEvaluator,
+    )([ arg ]));
     expect(res).toBeTruthy();
     expect(res!.dataType).toEqual(TypeURL.XSD_DOUBLE);
     expect(res!.typedValue).toBe(0);
@@ -92,7 +114,9 @@ describe('OverloadTree', () => {
     const litValue = 'weird';
     const arg = new Literal<string>(litValue, dataType);
     const res = isLiteralTermExpression(emptyTree
-      .search([ arg ], sharedContext.superTypeProvider, sharedContext.functionArgumentsCache)!(sharedContext)([ arg ]));
+      .search([ arg ], superTypeProvider, functionArgumentsCache)!(
+      expressionEvaluator,
+    )([ arg ]));
     expect(res).toBeTruthy();
     expect(res!.dataType).toEqual(dataType);
     expect(res!.typedValue).toEqual(litValue);
@@ -101,17 +125,18 @@ describe('OverloadTree', () => {
   it('will cache addition function', () => {
     const one = new IntegerLiteral(1);
     const two = new IntegerLiteral(2);
-    expect(sharedContext.functionArgumentsCache['+']).toBeUndefined();
-    const res = regularFunctions['+'].apply([ one, two ], sharedContext);
+    const additionFunction = <TermFunctionBase> new TermFunctionAddition();
+    expect(functionArgumentsCache['+']).toBeUndefined();
+    const res = additionFunction.applyOnTerms([ one, two ], expressionEvaluator);
     expect(res.str()).toBe('3');
     // One time lookup + one time add
-    expect(sharedContext.functionArgumentsCache['+']).toBeDefined();
-    regularFunctions['+'].apply([ two, one ], sharedContext);
+    expect(functionArgumentsCache['+']).toBeDefined();
+    additionFunction.applyOnTerms([ two, one ], expressionEvaluator);
 
     const innerSpy = jest.fn();
     const spy = jest.fn(() => innerSpy);
-    sharedContext.functionArgumentsCache['+'].cache![TypeURL.XSD_INTEGER].cache![TypeURL.XSD_INTEGER].func = spy;
-    regularFunctions['+'].apply([ one, two ], sharedContext);
+    functionArgumentsCache['+'].cache![TypeURL.XSD_INTEGER].cache![TypeURL.XSD_INTEGER].func = spy;
+    additionFunction.applyOnTerms([ one, two ], expressionEvaluator);
     expect(spy).toHaveBeenCalledTimes(1);
     expect(innerSpy).toHaveBeenCalledTimes(1);
   });
@@ -120,17 +145,18 @@ describe('OverloadTree', () => {
     const apple = new StringLiteral('apple');
     const one = new IntegerLiteral(1);
     const two = new IntegerLiteral(2);
-    expect(sharedContext.functionArgumentsCache.substr).toBeUndefined();
-    expect(regularFunctions.substr.apply([ apple, one, two ], sharedContext).str()).toBe('ap');
+    const subtractFunction = new TermFunctionSubStr();
+    expect(functionArgumentsCache.substr).toBeUndefined();
+    expect(subtractFunction.applyOnTerms([ apple, one, two ], expressionEvaluator).str()).toBe('ap');
 
-    expect(sharedContext.functionArgumentsCache.substr).toBeDefined();
-    const interestCache = sharedContext.functionArgumentsCache.substr
+    expect(functionArgumentsCache.substr).toBeDefined();
+    const interestCache = functionArgumentsCache.substr
       .cache![TypeURL.XSD_STRING].cache![TypeURL.XSD_INTEGER];
     expect(interestCache.func).toBeUndefined();
     expect(interestCache.cache![TypeURL.XSD_INTEGER]).toBeDefined();
 
-    expect(regularFunctions.substr.apply([ apple, one ], sharedContext).str()).toBe(String('apple'));
-    const interestCacheNew = sharedContext.functionArgumentsCache.substr
+    expect(subtractFunction.applyOnTerms([ apple, one ], expressionEvaluator).str()).toBe(String('apple'));
+    const interestCacheNew = functionArgumentsCache.substr
       .cache![TypeURL.XSD_STRING].cache![TypeURL.XSD_INTEGER];
     expect(interestCacheNew).toBeDefined();
     expect(interestCacheNew.cache![TypeURL.XSD_INTEGER]).toBeDefined();
@@ -139,7 +165,7 @@ describe('OverloadTree', () => {
   it('will not cache an undefined function', () => {
     const cache: FunctionArgumentsCache = {};
     const args = [ new StringLiteral('some str') ];
-    emptyTree.search(args, sharedContext.superTypeProvider, cache);
+    emptyTree.search(args, superTypeProvider, cache);
     expect(cache[emptyID]).toBeUndefined();
   });
 });

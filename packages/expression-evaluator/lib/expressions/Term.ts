@@ -1,19 +1,18 @@
-import type { ComunicaDataFactory } from '@comunica/types';
-import type * as RDF from '@rdfjs/types';
-import { TermTransformer } from '../transformers/TermTransformer';
-import * as C from '../util/Consts';
-import { TypeAlias, TypeURL } from '../util/Consts';
-
 import type {
+  ComunicaDataFactory,
   IDateRepresentation,
   IDateTimeRepresentation,
   IDurationRepresentation,
+  ISuperTypeProvider,
   ITimeRepresentation,
   IYearMonthDurationRepresentation,
-} from '../util/DateTimeHelpers';
+} from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
+import * as C from '../util/Consts';
+import { TypeAlias, TypeURL } from '../util/Consts';
+
 import * as Err from '../util/Errors';
-import { serializeDateTime, serializeDuration, serializeTime, serializeDate } from '../util/Serialization';
-import type { ISuperTypeProvider } from '../util/TypeHandling';
+import { serializeDate, serializeDateTime, serializeDuration, serializeTime } from '../util/Serialization';
 import { isSubTypeOf } from '../util/TypeHandling';
 import type { TermExpression, TermType } from './Expressions';
 import { ExpressionType } from './Expressions';
@@ -25,7 +24,7 @@ export abstract class Term implements TermExpression {
   public abstract toRDF(dataFactory: ComunicaDataFactory): RDF.Term;
 
   public str(): string {
-    throw new Err.InvalidArgumentTypes([ this ], C.RegularOperator.STR);
+    throw new Err.InvalidArgumentTypes([ this ], C.SparqlOperator.STR);
   }
 
   public coerceEBV(): boolean {
@@ -68,41 +67,43 @@ export class BlankNode extends Term {
 // Quads -----------------------------------------------------------------
 export class Quad extends Term {
   public termType: TermType = 'quad';
-  private readonly transformer: TermTransformer;
-  private readonly valueTerm: RDF.BaseQuad;
 
-  public constructor(input: RDF.BaseQuad, superTypeProvider: ISuperTypeProvider) {
+  public constructor(
+    public readonly subject: Term,
+    public readonly predicate: Term,
+    public readonly object: Term,
+    public readonly graph: Term,
+  ) {
     super();
-    this.transformer = new TermTransformer(superTypeProvider);
-    this.valueTerm = input;
   }
 
-  public toRDF(): RDF.BaseQuad {
-    return this.valueTerm;
+  public toRDF(dataFactory: ComunicaDataFactory): RDF.BaseQuad {
+    return dataFactory.quad(
+      <RDF.Quad_Subject> this.subject.toRDF(dataFactory),
+      <RDF.Quad_Predicate> this.predicate.toRDF(dataFactory),
+      <RDF.Quad_Object> this.object.toRDF(dataFactory),
+      <RDF.Quad_Graph> this.graph.toRDF(dataFactory),
+    );
   }
 
-  public get subject(): Term {
-    return this.transformer.transformRDFTermUnsafe(this.RDFsubject);
+  public override str(): string {
+    return `Quad: [${this.subject.str()}, ${this.predicate.str()}, ${this.object.str()}, ${this.graph.str()}]`;
+  }
+}
+
+export class DefaultGraph extends Term {
+  public termType: TermType = 'defaultGraph';
+
+  public constructor() {
+    super();
   }
 
-  public get predicate(): Term {
-    return this.transformer.transformRDFTermUnsafe(this.RDFpredicate);
+  public toRDF(dataFactory: ComunicaDataFactory): RDF.DefaultGraph {
+    return dataFactory.defaultGraph();
   }
 
-  public get object(): Term {
-    return this.transformer.transformRDFTermUnsafe(this.RDFobject);
-  }
-
-  public get RDFsubject(): RDF.Term {
-    return this.toRDF().subject;
-  }
-
-  public get RDFpredicate(): RDF.Term {
-    return this.toRDF().predicate;
-  }
-
-  public get RDFobject(): RDF.Term {
-    return this.toRDF().object;
+  public override str(): string {
+    return 'DefaultGraph';
   }
 }
 

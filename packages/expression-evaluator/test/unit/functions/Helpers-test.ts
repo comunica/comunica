@@ -1,17 +1,27 @@
-import type { ICompleteSharedContext } from '../../../lib/evaluators/evaluatorHelpers/BaseExpressionEvaluator';
-import type { Builder } from '../../../lib/functions/Helpers';
-import { bool, declare } from '../../../lib/functions/Helpers';
-import { TypeURL } from '../../../lib/util/Consts';
-import { getDefaultSharedContext } from '../../util/utils';
+import type { ExpressionEvaluator } from '@comunica/actor-expression-evaluator-factory-default/lib/ExpressionEvaluator';
+import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
+import type { ISuperTypeProvider } from '@comunica/types';
+import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-jest';
+import { TypeURL, bool, declare } from '../../../lib';
+import type { FunctionArgumentsCache, Builder } from '../../../lib';
+import { getMockExpression } from '../../util/utils';
+
 import fn = jest.fn;
 
 describe('The function helper file', () => {
   describe('has a builder', () => {
     let builder: Builder;
-    let sharedContext: ICompleteSharedContext;
-    beforeEach(() => {
+    let expressionEvaluator: ExpressionEvaluator;
+    let superTypeProvider: ISuperTypeProvider;
+    let functionArgumentsCache: FunctionArgumentsCache;
+    beforeEach(async() => {
       builder = declare('non cacheable');
-      sharedContext = getDefaultSharedContext();
+      expressionEvaluator = <ExpressionEvaluator> await getMockEEFactory().run({
+        algExpr: getMockExpression('true'),
+        context: getMockEEActionContext(),
+      }, undefined);
+      superTypeProvider = expressionEvaluator.context.getSafe(KeysExpressionEvaluator.superTypeProvider);
+      functionArgumentsCache = expressionEvaluator.context.getSafe(KeysInitQuery.functionArgumentsCache);
     });
 
     it('can only be collected once', () => {
@@ -28,7 +38,9 @@ describe('The function helper file', () => {
       const func = fn();
       const args = [ bool(true) ];
       builder.onUnaryTyped(TypeURL.XSD_BOOLEAN, () => func).collect()
-        .search(args, sharedContext.superTypeProvider, sharedContext.functionArgumentsCache)!(sharedContext)(args);
+        .search(args, superTypeProvider, functionArgumentsCache)!(
+        expressionEvaluator,
+      )(args);
       expect(func).toHaveBeenCalledTimes(1);
     });
 
@@ -36,7 +48,9 @@ describe('The function helper file', () => {
       const func = fn();
       const args = [ bool(true) ];
       builder.onBoolean1(() => func).collect()
-        .search(args, sharedContext.superTypeProvider, sharedContext.functionArgumentsCache)!(sharedContext)(args);
+        .search(args, superTypeProvider, functionArgumentsCache)!(
+        expressionEvaluator,
+      )(args);
       expect(func).toHaveBeenCalledTimes(1);
     });
   });

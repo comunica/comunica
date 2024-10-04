@@ -1,5 +1,6 @@
-import type { KnownLiteralTypes } from '../../../lib/util/Consts';
-import { TypeAlias, TypeURL } from '../../../lib/util/Consts';
+import { getMockSuperTypeProvider } from '@comunica/utils-jest';
+import { TypeAlias, TypeURL } from '../../../lib';
+import type { KnownLiteralTypes } from '../../../lib/';
 import type { OverrideType } from '../../../lib/util/TypeHandling';
 import {
   asKnownLiteralType,
@@ -8,7 +9,6 @@ import {
   isInternalSubType,
   isSubTypeOf,
 } from '../../../lib/util/TypeHandling';
-import { getDefaultSharedContext } from '../../util/utils';
 
 describe('TypeHandling', () => {
   describe('has isTypeAlias function', () => {
@@ -94,7 +94,7 @@ describe('TypeHandling', () => {
         [ TypeURL.XSD_SHORT, TypeURL.XSD_INT ],
       ];
       expect(testArray.every(([ baseType, argumentType ]) =>
-        isSubTypeOf(baseType, argumentType, getDefaultSharedContext().superTypeProvider))).toBeTruthy();
+        isSubTypeOf(baseType, argumentType, getMockSuperTypeProvider()))).toBeTruthy();
     });
     it('can say no', () => {
       const testArray: [OverrideType, KnownLiteralTypes][] = [
@@ -104,7 +104,7 @@ describe('TypeHandling', () => {
         [ TypeURL.XSD_FLOAT, TypeURL.XSD_DOUBLE ],
       ];
       expect(testArray.every(([ baseType, argumentType ]) =>
-        !isSubTypeOf(baseType, argumentType, getDefaultSharedContext().superTypeProvider))).toBeTruthy();
+        !isSubTypeOf(baseType, argumentType, getMockSuperTypeProvider()))).toBeTruthy();
     });
   });
 });

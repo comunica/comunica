@@ -19,8 +19,8 @@ $ yarn add @comunica/expression-evaluator
 
 ## Exposed classes
 
-* [`AsyncEvaluator`](https://comunica.github.io/comunica/classes/_comunica_expression_evaluator.AsyncEvaluator.html): An evaluator for SPARQL expressions working with Promises.
-* [`IAsyncEvaluatorContext`](https://comunica.github.io/comunica/interfaces/_comunica_expression_evaluator.IAsyncEvaluatorContext.html): Context used to configure the `AsyncEvaluator`. See [Config](https://comunica.dev/docs/modify/advanced/expression-evaluator/#config).
+* [`ExpressionEvaluator`](https://comunica.github.io/comunica/classes/_comunica_expression_evaluator.AsyncEvaluator.html): An evaluator for SPARQL expressions working with Promises.
+* [`IAsyncEvaluatorContext`](https://comunica.github.io/comunica/classes/_comunica_expression_evaluator.IAsyncEvaluatorContext.html): Context used to configure the `ExpressionEvaluator`. See [Config](https://comunica.dev/docs/modify/advanced/expression-evaluator/#config).
 * [`SyncEvaluator`](https://comunica.github.io/comunica/classes/_comunica_expression_evaluator.SyncEvaluator.html): An evaluator for SPARQL expressions working without Promises.
 * [`ISyncEvaluatorContext`](https://comunica.github.io/comunica/interfaces/_comunica_expression_evaluator.ISyncEvaluatorContext.html): Context used to configure the `SyncEvaluator`. See [Config](https://comunica.dev/docs/modify/advanced/expression-evaluator/#config).
 * [`AggregateEvaluator`](https://comunica.github.io/comunica/classes/_comunica_expression_evaluator.AggregateEvaluator.html): An evaluator for SPARQL aggregate expressions working without promises. See [Aggregates](https://comunica.dev/docs/modify/advanced/expression-evaluator/#aggregates).
@@ -57,7 +57,7 @@ For regular functions, the sync and async evaluation is the same, to avoid overh
 ### Layout and control flow
 
 The only important external facing API is creating an Evaluator.
-When you create one, the SPARQL Algebra expression that is passed will be transformed to an internal representation (see [AlgebraTransformer.ts](./lib/transformers/AlgebraTransformer.ts)).
+When you create one, the SPARQL Algebra expression that is passed will be transformed to an internal representation (see [AlgebraTransformer.ts](../actor-expression-evaluator-factory-default/lib/AlgebraTransformer.ts)).
 This will build objects (see [expressions module](./lib/expressions)) that contain all the logic and data for evaluation,
 for example the implementations for SPARQL functions (see [functions module](./lib/functions)).
 After transformation, the evaluator will recursively evaluate all the expressions.

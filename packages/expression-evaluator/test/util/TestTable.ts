@@ -36,23 +36,23 @@ abstract class Table<RowType extends Row> {
   public abstract test(): void;
 
   protected async testExpression(expr: string, result: string) {
-    const { config, additionalPrefixes } = this.def;
+    const { config, additionalPrefixes, exprEvalFactory } = this.def;
     const aliases = this.def.aliases ?? {};
     result = aliases[result] || result;
     const evaluated = await generalEvaluate({
       expression: template(expr, additionalPrefixes),
-      expectEquality: true,
       generalEvaluationConfig: config,
+      exprEvalFactory,
     });
     expect(evaluated.asyncResult).toEqual(stringToTermPrefix(result, additionalPrefixes));
   }
 
   protected async testErrorExpression(expr: string, error: string) {
-    const { config, additionalPrefixes } = this.def;
+    const { config, additionalPrefixes, exprEvalFactory } = this.def;
     const result = await generalErrorEvaluation({
       expression: template(expr, additionalPrefixes),
-      expectEquality: false,
       generalEvaluationConfig: config,
+      exprEvalFactory,
     });
     expect(result).toBeDefined();
     expect(() => {
@@ -149,7 +149,6 @@ export class UnaryTable extends Table<[string, string]> {
   }
 }
 
-// TODO: Let tables only test function evaluation from the definitions, not the whole evaluator.
 export class BinaryTable extends Table<[string, string, string]> {
   protected readonly parser: TableParser<[string, string, string]>;
   protected readonly def: TestTableConfig;
