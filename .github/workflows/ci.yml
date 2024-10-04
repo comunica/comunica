@@ -25,15 +25,10 @@ jobs:
       - name: Use Node.js ${{ env.DEFAULT_NODE_VERSION }}
         uses: actions/setup-node@v4
         with:
+          cache: yarn
           node-version: ${{ env.DEFAULT_NODE_VERSION }}
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Load dependency cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            **/node_modules
-          key: ${{ runner.os }}-dependencies-${{ secrets.CACHE_VERSION }}-${{ hashFiles('yarn.lock') }}
       - name: Install dependencies
         run: yarn install --ignore-scripts --frozen-lockfile
       - name: Run linter
@@ -63,15 +58,10 @@ jobs:
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
+          cache: yarn
           node-version: ${{ matrix.node-version }}
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Load dependency cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            **/node_modules
-          key: ${{ runner.os }}-dependencies-${{ secrets.CACHE_VERSION }}-${{ hashFiles('yarn.lock') }}
       - name: Install dependencies and build
         run: yarn install --frozen-lockfile
       - name: Build project with esModuleInterop flag
@@ -105,15 +95,10 @@ jobs:
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
+          cache: yarn
           node-version: ${{ matrix.node-version }}
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Load dependency cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            **/node_modules
-          key: ${{ runner.os }}-dependencies-${{ secrets.CACHE_VERSION }}-${{ hashFiles('yarn.lock') }}
       - name: Install dependencies and build
         run: yarn install --frozen-lockfile
       - name: Load RDF test suite cache
@@ -144,15 +129,10 @@ jobs:
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
+          cache: yarn
           node-version: ${{ matrix.node-version }}
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Load dependency cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            **/node_modules
-          key: ${{ runner.os }}-dependencies-${{ secrets.CACHE_VERSION }}-${{ hashFiles('yarn.lock') }}
       - name: Install dependencies and build
         run: yarn install --frozen-lockfile
       - name: Install ${{ matrix.browser }} via Playwright
@@ -193,15 +173,10 @@ jobs:
       - name: Use Node.js ${{ env.DEFAULT_NODE_VERSION }}
         uses: actions/setup-node@v4
         with:
+          cache: yarn
           node-version: ${{ env.DEFAULT_NODE_VERSION }}
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Load dependency cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            **/node_modules
-          key: ${{ runner.os }}-dependencies-${{ secrets.CACHE_VERSION }}-${{ hashFiles('yarn.lock') }}
       - name: Install dependencies and build
         run: yarn install --frozen-lockfile
       - name: Build browser bundles
@@ -228,15 +203,10 @@ jobs:
       - name: Use Node.js ${{ env.DEFAULT_NODE_VERSION }}
         uses: actions/setup-node@v4
         with:
+          cache: yarn
           node-version: ${{ env.DEFAULT_NODE_VERSION }}
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Load dependency cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            **/node_modules
-          key: ${{ runner.os }}-dependencies-${{ secrets.CACHE_VERSION }}-${{ hashFiles('yarn.lock') }}
       - name: Install dependencies and build monorepo
         run: yarn install --frozen-lockfile
       - name: Install Lerna Docker
@@ -275,15 +245,10 @@ jobs:
       - name: Use Node.js ${{ env.DEFAULT_NODE_VERSION }}
         uses: actions/setup-node@v4
         with:
+          cache: yarn
           node-version: ${{ env.DEFAULT_NODE_VERSION }}
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Load dependency cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            **/node_modules
-          key: ${{ runner.os }}-dependencies-${{ secrets.CACHE_VERSION }}-${{ hashFiles('yarn.lock') }}
       - name: Install dependencies and build monorepo
         run: yarn install --frozen-lockfile
       - name: Run benchmarks
@@ -309,6 +274,7 @@ jobs:
       - name: Use Node.js ${{ env.DEFAULT_NODE_VERSION }}
         uses: actions/setup-node@v4
         with:
+          cache: yarn
           node-version: ${{ env.DEFAULT_NODE_VERSION }}
       - name: Check out repository
         uses: actions/checkout@v4
@@ -387,15 +353,10 @@ jobs:
       - name: Use Node.js ${{ env.DEFAULT_NODE_VERSION }}
         uses: actions/setup-node@v4
         with:
+          cache: yarn
           node-version: ${{ env.DEFAULT_NODE_VERSION }}
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Load dependency cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            **/node_modules
-          key: ${{ runner.os }}-dependencies-${{ secrets.CACHE_VERSION }}-${{ hashFiles('yarn.lock') }}
       - name: Install dependencies
         run: yarn install --ignore-scripts --frozen-lockfile
       - name: Build documentation
