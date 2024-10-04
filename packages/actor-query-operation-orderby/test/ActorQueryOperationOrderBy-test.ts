@@ -251,7 +251,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
       await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports orderby operations, but got some-other-type`);
     });
 
-    it('should not test on unsupported operators', async() => {
+    it('should test but not run on unsupported operators', async() => {
       const op: any = {
         operation: { type: 'orderby', expressions: [{
           args: [],
@@ -260,7 +260,8 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
         }]},
         context,
       };
-      await expect(actor.test(op)).resolves.toFailTest(
+      await expect(actor.test(op)).resolves.toPassTestVoid();
+      await expect(actor.run(op, undefined)).rejects.toThrow(
         `No actors are able to reply to a message`,
       );
     });

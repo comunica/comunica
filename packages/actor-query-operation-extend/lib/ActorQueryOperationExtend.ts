@@ -2,7 +2,7 @@ import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expressio
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { IActorTest, TestResult } from '@comunica/core';
-import { failTest, passTestVoid } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import type { ExpressionError } from '@comunica/expression-evaluator';
 import { isExpressionError } from '@comunica/expression-evaluator';
 import type { Bindings, IActionContext, IQueryOperationResult, IQueryOperationResultBindings } from '@comunica/types';
@@ -23,16 +23,7 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
     this.mediatorExpressionEvaluatorFactory = args.mediatorExpressionEvaluatorFactory;
   }
 
-  public async testOperation(operation: Algebra.Extend, context: IActionContext): Promise<TestResult<IActorTest>> {
-    // Will throw error for unsupported operations
-    try {
-      const _ = Boolean(
-        await this.mediatorExpressionEvaluatorFactory.mediate({ algExpr: operation.expression, context }),
-      );
-    } catch (error: unknown) {
-      // TODO: return TestResult in ActorQueryOperation.getAsyncExpressionContext
-      return failTest((<Error> error).message);
-    }
+  public async testOperation(): Promise<TestResult<IActorTest>> {
     return passTestVoid();
   }
 

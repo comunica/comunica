@@ -123,9 +123,10 @@ describe('ActorQueryOperationFilter', () => {
       await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
-    it('should fail on unsupported operators', async() => {
+    it('should pass test but not run on unsupported operators', async() => {
       const op: any = { operation: { type: 'filter', expression: unknownExpression }, context };
-      await expect(actor.test(op)).resolves.toFailTest(
+      await expect(actor.test(op)).resolves.toPassTestVoid();
+      await expect(actor.run(op, undefined)).rejects.toThrow(
         `No actors are able to reply to a message`,
       );
     });

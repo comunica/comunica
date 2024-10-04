@@ -336,7 +336,7 @@ describe('ActorQueryOperationGroup', () => {
       await expect(actor.test(op)).resolves.toFailTest(`Actor actor only supports group operations, but got some-other-type`);
     });
 
-    it('should not test on unsupported operators', async() => {
+    it('should test but not run on unsupported operators', async() => {
       const op: any = {
         operation: {
           type: Algebra.types.GROUP,
@@ -351,9 +351,8 @@ describe('ActorQueryOperationGroup', () => {
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const { actor } = constructCase({});
-      await expect(actor.test(op)).resolves.toFailTest(
-        `No actors are able to reply to a message`,
-      );
+      await expect(actor.test(op)).resolves.toPassTestVoid();
+      await expect(actor.run(op, undefined)).rejects.toThrow('operation.variables is not iterable');
     });
 
     it('should test on distinct aggregate', async() => {
