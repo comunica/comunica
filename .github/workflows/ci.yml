@@ -12,7 +12,13 @@ jobs:
 
   precheck:
     name: Preliminary checks
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-latest
+          - windows-latest
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
