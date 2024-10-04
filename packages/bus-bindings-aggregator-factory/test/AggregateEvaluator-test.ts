@@ -1,6 +1,11 @@
 import type { IExpressionEvaluator } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { getMockEEActionContext, getMockEEFactory, int, makeAggregate } from '@comunica/utils-expression-evaluator/test/util/helpers';
+import {
+  getMockEEActionContext,
+  getMockEEFactory,
+  int,
+  makeAggregate,
+} from '@comunica/utils-expression-evaluator/test/util/helpers';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { AggregateEvaluator } from '../lib';

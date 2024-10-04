@@ -1,9 +1,9 @@
 import type { IBindingsAggregator } from '@comunica/bus-bindings-aggregator-factory';
 import { AggregateEvaluator } from '@comunica/bus-bindings-aggregator-factory';
 import type { ITermFunction } from '@comunica/bus-function-factory';
-import * as Eval from '../../utils-expression-evaluator';
 import type { ComunicaDataFactory, IExpressionEvaluator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import * as Eval from '../../utils-expression-evaluator';
 
 interface IAverageState {
   sum: Eval.NumericLiteral;

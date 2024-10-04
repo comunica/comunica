@@ -1,4 +1,7 @@
-import { getMockEEActionContext, getMockMediatorFunctionFactory } from '@comunica/utils-expression-evaluator/test/util/helpers';
+import {
+  getMockEEActionContext,
+  getMockMediatorFunctionFactory,
+} from '@comunica/utils-expression-evaluator/test/util/helpers';
 import { getMockExpression } from '@comunica/utils-expression-evaluator/test/util/utils';
 import { AlgebraTransformer } from '../lib/AlgebraTransformer';
 

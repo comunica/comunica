@@ -3,7 +3,11 @@ import type {
 } from '@comunica/bus-expression-evaluator-factory';
 import { Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
-import { getMockEEActionContext, getMockMediatorExpressionEvaluatorFactory, makeAggregate } from '@comunica/utils-expression-evaluator/test/util/helpers';
+import {
+  getMockEEActionContext,
+  getMockMediatorExpressionEvaluatorFactory,
+  makeAggregate,
+} from '@comunica/utils-expression-evaluator/test/util/helpers';
 import { Algebra } from 'sparqlalgebrajs';
 import { Wildcard } from 'sparqljs';
 import { ActorBindingsAggregatorFactoryCount } from '../lib';

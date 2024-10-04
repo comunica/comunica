@@ -3,7 +3,12 @@ import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import * as Eval from '@comunica/utils-expression-evaluator';
-import { dateTimeTyped, dayTimeDurationTyped, int, numeric } from '@comunica/utils-expression-evaluator/test/util/Aliases';
+import {
+  dateTimeTyped,
+  dayTimeDurationTyped,
+  int,
+  numeric,
+} from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
 import { LRUCache } from 'lru-cache';
 import { ActorFunctionFactoryTermFunctionAddition } from '../lib';

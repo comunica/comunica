@@ -215,7 +215,9 @@ export const KeysExpressionEvaluator = {
     '@comunica/utils-expression-evaluator:extensionFunctionCreator',
   ),
   superTypeProvider: new ActionContextKey<ISuperTypeProvider>('@comunica/utils-expression-evaluator:superTypeProvider'),
-  defaultTimeZone: new ActionContextKey<ITimeZoneRepresentation>('@comunica/utils-expression-evaluator:defaultTimeZone'),
+  defaultTimeZone: new ActionContextKey<ITimeZoneRepresentation>(
+    '@comunica/utils-expression-evaluator:defaultTimeZone',
+  ),
   actionContext: new ActionContextKey<IActionContext>('@comunica/utils-expression-evaluator:actionContext'),
 };
 

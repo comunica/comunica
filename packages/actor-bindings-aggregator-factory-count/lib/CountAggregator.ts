@@ -1,8 +1,8 @@
 import type { IBindingsAggregator } from '@comunica/bus-bindings-aggregator-factory';
 import { AggregateEvaluator } from '@comunica/bus-bindings-aggregator-factory';
-import { typedLiteral, TypeURL } from '../../utils-expression-evaluator';
 import type { IExpressionEvaluator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import { typedLiteral, TypeURL } from '../../utils-expression-evaluator';
 
 export class CountAggregator extends AggregateEvaluator implements IBindingsAggregator {
   private state: number | undefined = undefined;

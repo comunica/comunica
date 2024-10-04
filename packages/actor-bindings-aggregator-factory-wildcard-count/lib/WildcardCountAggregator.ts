@@ -1,9 +1,9 @@
 import type { IBindingsAggregator } from '@comunica/bus-bindings-aggregator-factory';
 import { AggregateEvaluator } from '@comunica/bus-bindings-aggregator-factory';
-import { typedLiteral, TypeURL } from '../../utils-expression-evaluator';
 import type { IExpressionEvaluator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import * as RdfString from 'rdf-string';
+import { typedLiteral, TypeURL } from '../../utils-expression-evaluator';
 
 export class WildcardCountAggregator extends AggregateEvaluator implements IBindingsAggregator {
   private readonly bindingValues: Map<string, Set<string>> = new Map();
