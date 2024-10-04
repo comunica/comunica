@@ -33,6 +33,7 @@ const config: Config.InitialOptions = {
         '<rootDir>/packages/*/test/**/*-test.ts',
       ],
       testPathIgnorePatterns: [
+        // TODO: Remove this once solid-client-authn supports node 18.
         'QuerySparql-solid-test.ts',
       ],
       transform,
@@ -53,6 +54,7 @@ const config: Config.InitialOptions = {
         '<rootDir>/engines/*/test/**/*-test.ts',
       ],
       testPathIgnorePatterns: [
+        // TODO: Remove this once solid-client-authn supports node 18.
         'QuerySparql-solid-test.ts',
       ],
       transform,
