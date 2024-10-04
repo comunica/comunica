@@ -1,5 +1,5 @@
-import type { VariableExpression } from './Expressions';
-import { ExpressionType } from './Expressions';
+import type { VariableExpression } from '@comunica/types';
+import { ExpressionType } from '@comunica/types';
 
 export class Variable implements VariableExpression {
   public expressionType: ExpressionType.Variable = ExpressionType.Variable;

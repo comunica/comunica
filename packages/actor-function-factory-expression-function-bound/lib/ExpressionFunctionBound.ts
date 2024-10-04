@@ -2,16 +2,15 @@ import { ExpressionFunctionBase } from '@comunica/bus-function-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type {
   IEvalContext,
-  TermExpression,
-  VariableExpression,
 } from '@comunica/expression-evaluator';
 import {
   bool,
   expressionToVar,
-  ExpressionType,
   InvalidArgumentTypes,
   SparqlOperator,
 } from '@comunica/expression-evaluator';
+import type { TermExpression, VariableExpression } from '@comunica/types';
+import { ExpressionType } from '@comunica/types';
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-bound

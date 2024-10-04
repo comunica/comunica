@@ -4,7 +4,6 @@ import type {
   IEvalContext,
   Literal,
   OverloadTree,
-  TermExpression,
 } from '@comunica/expression-evaluator';
 import {
   declare,
@@ -13,6 +12,7 @@ import {
   SparqlOperator,
   string,
 } from '@comunica/expression-evaluator';
+import type { TermExpression } from '@comunica/types';
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-concat

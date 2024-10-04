@@ -1,7 +1,15 @@
-import type { GeneralSuperTypeDict, IActionContext, ISuperTypeProvider } from '@comunica/types';
+import type {
+  Expression,
+  GeneralSuperTypeDict,
+  IInternalEvaluator,
+  ISuperTypeProvider,
+  SimpleApplication,
+  SimpleApplicationTuple,
+  TermExpression,
+  TermType,
+} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { isLiteralTermExpression, TermExpression } from '../expressions';
-import type * as E from '../expressions';
+import { isLiteralTermExpression } from '../expressions';
 import type * as C from '../util/Consts';
 import type { OverrideType } from '../util/TypeHandling';
 import {
@@ -15,18 +23,12 @@ import {
 
 // Function and operator arguments are 'flattened' in the SPARQL spec.
 // If the argument is a literal, the datatype often also matters.
-export type ArgumentType = 'term' | E.TermType | C.TypeURL | C.TypeAlias;
+export type ArgumentType = 'term' | TermType | C.TypeURL | C.TypeAlias;
 
 export type SearchStack = OverloadTree[];
 
-export interface IInternalEvaluator {
-  evaluatorExpressionEvaluation: (expr: E.Expression, mapping: RDF.Bindings) => Promise<E.Term>;
-
-  context: IActionContext;
-}
-
-export type ImplementationFunction = (expressionEvaluator: IInternalEvaluator) => E.SimpleApplication;
-export type ImplementationFunctionTuple<T> = (expressionEvaluator: IInternalEvaluator) => E.SimpleApplicationTuple<T>;
+export type ImplementationFunction = (expressionEvaluator: IInternalEvaluator) => SimpleApplication;
+export type ImplementationFunctionTuple<T> = (expressionEvaluator: IInternalEvaluator) => SimpleApplicationTuple<T>;
 
 interface IFunctionArgumentsCacheObj {
   func?: ImplementationFunction;
@@ -42,7 +44,7 @@ export class OverloadTree {
   // We need this field. e.g. decimal decimal should be kept even when double double is added.
   // We use promotion count to check priority.
   private promotionCount?: number | undefined;
-  private readonly generalOverloads: Record<'term' | E.TermType, OverloadTree>;
+  private readonly generalOverloads: Record<'term' | TermType, OverloadTree>;
   private readonly literalOverLoads: [OverrideType, OverloadTree][];
   private readonly depth: number;
 
@@ -89,7 +91,7 @@ export class OverloadTree {
    * @param functionArgumentsCache
    */
   public search(
-    args: E.TermExpression[],
+    args: TermExpression[],
     superTypeProvider: ISuperTypeProvider,
     functionArgumentsCache: FunctionArgumentsCache,
   ):
@@ -136,7 +138,7 @@ export class OverloadTree {
 
   private addToCache(
     functionArgumentsCache: FunctionArgumentsCache,
-    args: E.TermExpression[],
+    args: TermExpression[],
     func?: ImplementationFunction | undefined,
   ): void {
     function getDefault(lruCache: FunctionArgumentsCache, key: string): IFunctionArgumentsCacheObj {
@@ -205,7 +207,7 @@ export class OverloadTree {
   private addPromotedOverload(
     typeToPromote: OverrideType,
     func: ImplementationFunction,
-    conversionFunction: (arg: E.TermExpression) => E.TermExpression,
+    conversionFunction: (arg: TermExpression) => TermExpression,
     argumentTypes: ArgumentType[],
     promotionCount: number,
   ): void {
@@ -227,7 +229,7 @@ export class OverloadTree {
    * @param openWorldType interface allowing to discover relations between types.
    * @returns SearchStack a stack with top element the next node that should be asked for implementation or overload.
    */
-  private getSubTreeWithArg(arg: E.TermExpression, openWorldType: ISuperTypeProvider): SearchStack {
+  private getSubTreeWithArg(arg: TermExpression, openWorldType: ISuperTypeProvider): SearchStack {
     const res: SearchStack = [];
     const literalExpression = isLiteralTermExpression(arg);
     // These types refer to Type exported by lib/util/Consts.ts
@@ -264,9 +266,7 @@ export class OverloadTree {
 }
 
 export interface IEvalContext {
-  args: E.Expression[];
+  args: Expression[];
   mapping: RDF.Bindings;
   exprEval: IInternalEvaluator;
 }
-
-export type FunctionApplication = (evalContext: IEvalContext) => Promise<E.TermExpression>;

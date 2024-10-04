@@ -2,7 +2,8 @@ import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import * as Eval from '@comunica/expression-evaluator';
-import type { ComunicaDataFactory, IActionContext } from '@comunica/types';
+import type { ComunicaDataFactory, Expression, IActionContext, TermExpression } from '@comunica/types';
+import { ExpressionType } from '@comunica/types';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getSafeBindings, materializeOperation } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
@@ -16,13 +17,13 @@ export class InternalEvaluator {
   public readonly transformer: AlgebraTransformer;
 
   private readonly subEvaluators:
-  Record<Eval.ExpressionType, (expr: Eval.Expression, mapping: RDF.Bindings) => Promise<Eval.Term> | Eval.Term> =
+  Record<ExpressionType, (expr: Expression, mapping: RDF.Bindings) => Promise<Eval.Term> | Eval.Term> =
       {
-        [Eval.ExpressionType.Term]: (expr, _mapping) => this.term(<Eval.Term> expr),
-        [Eval.ExpressionType.Variable]: (expr, mapping) => this.variable(<Eval.Variable> expr, mapping),
-        [Eval.ExpressionType.Operator]: (expr, mapping) => this.evalFunction(<Eval.Operator> expr, mapping),
-        [Eval.ExpressionType.Existence]: (expr, mapping) => this.evalExistence(<Eval.Existence> expr, mapping),
-        [Eval.ExpressionType.Aggregate]: (_expr, _mapping) => this.evalAggregate(),
+        [ExpressionType.Term]: (expr, _mapping) => this.term(<Eval.Term> expr),
+        [ExpressionType.Variable]: (expr, mapping) => this.variable(<Eval.Variable> expr, mapping),
+        [ExpressionType.Operator]: (expr, mapping) => this.evalFunction(<Eval.Operator> expr, mapping),
+        [ExpressionType.Existence]: (expr, mapping) => this.evalExistence(<Eval.Existence> expr, mapping),
+        [ExpressionType.Aggregate]: (_expr, _mapping) => this.evalAggregate(),
       };
 
   public constructor(
@@ -37,7 +38,7 @@ export class InternalEvaluator {
     );
   }
 
-  public async evaluatorExpressionEvaluation(expr: Eval.Expression, mapping: RDF.Bindings): Promise<Eval.Term> {
+  public async evaluatorExpressionEvaluation(expr: Expression, mapping: RDF.Bindings): Promise<TermExpression> {
     const evaluator = this.subEvaluators[expr.expressionType];
     return evaluator.bind(this)(expr, mapping);
   }

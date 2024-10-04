@@ -1,8 +1,5 @@
-import type { FunctionApplication } from '../functions/OverloadTree';
-import type { Expression, OperatorExpression } from './Expressions';
-import {
-  ExpressionType,
-} from './Expressions';
+import type { Expression, FunctionApplication, OperatorExpression } from '@comunica/types';
+import { ExpressionType } from '@comunica/types';
 
 export class Operator implements OperatorExpression {
   public expressionType: ExpressionType.Operator = ExpressionType.Operator;

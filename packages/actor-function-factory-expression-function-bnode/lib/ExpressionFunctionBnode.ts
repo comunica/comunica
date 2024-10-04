@@ -1,9 +1,7 @@
 import { ExpressionFunctionBase } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import type {
-  Expression,
   IEvalContext,
-  TermExpression,
 } from '@comunica/expression-evaluator';
 import {
   BlankNode,
@@ -11,6 +9,7 @@ import {
   InvalidArgumentTypes,
   SparqlOperator,
 } from '@comunica/expression-evaluator';
+import type { Expression, TermExpression } from '@comunica/types';
 import { BlankNodeBindingsScoped } from '@comunica/utils-data-factory';
 
 /**

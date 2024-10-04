@@ -1,7 +1,5 @@
 export { TermTransformer } from './transformers/TermTransformer';
 export {
-  IInternalEvaluator,
-  FunctionApplication,
   IEvalContext,
   OverloadTree,
   FunctionArgumentsCache,
@@ -81,20 +79,14 @@ export {
   DoubleLiteral,
   Aggregate,
   Existence,
-  ExpressionType,
   Literal,
   IntegerLiteral,
   FloatLiteral,
   NonLexicalLiteral,
   StringLiteral,
-  TermExpression,
-  VariableExpression,
-  Expression,
   isNonLexicalLiteral,
-  OperatorExpression,
 } from './expressions';
 export { addDurationToDateTime, elapsedDuration } from './util/SpecAlgos';
-export { IExpressionEvaluator } from './types';
 export {
   parseDateTime,
   parseDayTimeDuration,

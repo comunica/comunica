@@ -1,7 +1,6 @@
 import { TermFunctionBase } from '@comunica/bus-function-factory';
 import type {
   NumericLiteral,
-  TermExpression,
 } from '@comunica/expression-evaluator';
 import {
   bool,
@@ -9,6 +8,7 @@ import {
   declare,
   TypeURL,
 } from '@comunica/expression-evaluator';
+import type { TermExpression } from '@comunica/types';
 
 export class TermFunctionXsdToBoolean extends TermFunctionBase {
   public constructor() {

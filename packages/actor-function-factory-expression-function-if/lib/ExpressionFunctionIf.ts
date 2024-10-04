@@ -1,11 +1,11 @@
 import { ExpressionFunctionBase } from '@comunica/bus-function-factory';
 import type {
   IEvalContext,
-  TermExpression,
 } from '@comunica/expression-evaluator';
 import {
   SparqlOperator,
 } from '@comunica/expression-evaluator';
+import type { TermExpression } from '@comunica/types';
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-if

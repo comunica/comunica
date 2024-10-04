@@ -1,4 +1,4 @@
-import type { GeneralSuperTypeDict, ISuperTypeProvider } from '@comunica/types';
+import type { GeneralSuperTypeDict, ISuperTypeProvider, TermExpression, TermType } from '@comunica/types';
 import type * as E from '../expressions';
 import { asTermType } from '../expressions';
 import { double, float, string } from '../functions/Helpers';
@@ -167,9 +167,9 @@ export function asOverrideType(type: string): OverrideType | undefined {
   return undefined;
 }
 
-export function asGeneralType(type: string): 'term' | E.TermType | undefined {
+export function asGeneralType(type: string): 'term' | TermType | undefined {
   if (type === 'term' || asTermType(type)) {
-    return <'term' | E.TermType> type;
+    return <'term' | TermType> type;
   }
   return undefined;
 }
@@ -222,7 +222,7 @@ export function isSubTypeOf(
 // e.g. When a function takes a string, it can also accept a XSD_ANY_URI if it's cast first.
 export const typePromotion: Partial<Record<ArgumentType, {
   typeToPromote: KnownLiteralTypes;
-  conversionFunction: (arg: E.TermExpression) => E.TermExpression;
+  conversionFunction: (arg: TermExpression) => TermExpression;
 }[]>> = {
   [TypeURL.XSD_STRING]: [
     { typeToPromote: TypeURL.XSD_ANY_URI, conversionFunction: arg => string(arg.str()) },

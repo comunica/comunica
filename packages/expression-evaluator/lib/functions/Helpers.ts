@@ -3,9 +3,15 @@
  * definitions for the SPARQL functions.
  */
 import { KeysInitQuery } from '@comunica/context-entries';
-import type { ComunicaDataFactory, IDateTimeRepresentation } from '@comunica/types';
+import type {
+  ComunicaDataFactory,
+  IDateTimeRepresentation,
+  IInternalEvaluator,
+  TermExpression,
+  VariableExpression,
+} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import type { ISerializable, Literal, Quad, TermExpression } from '../expressions';
+import type { ISerializable, Literal, Quad } from '../expressions';
 import * as E from '../expressions';
 import { NonLexicalLiteral } from '../expressions';
 import * as C from '../util/Consts';
@@ -13,13 +19,12 @@ import { TypeURL } from '../util/Consts';
 import * as Err from '../util/Errors';
 import type {
   ArgumentType,
-  IInternalEvaluator,
   ImplementationFunction,
   ImplementationFunctionTuple,
 } from './OverloadTree';
 import { OverloadTree } from './OverloadTree';
 
-type Term = E.TermExpression;
+type Term = TermExpression;
 
 export function declare(identifier: string): Builder {
   return new Builder(identifier);
@@ -459,7 +464,7 @@ export function dateTime(date: IDateTimeRepresentation, str: string): E.DateTime
 
 export function expressionToVar(
   dataFactory: ComunicaDataFactory,
-  variableExpression: E.VariableExpression,
+  variableExpression: VariableExpression,
 ): RDF.Variable {
   return dataFactory.variable(variableExpression.name.slice(1));
 }

@@ -1,7 +1,5 @@
 import { TermFunctionBase } from '@comunica/bus-function-factory';
 import type {
-  TermExpression,
-
   DateLiteral,
 } from '@comunica/expression-evaluator';
 import {
@@ -11,6 +9,7 @@ import {
   parseDateTime,
   TypeURL,
 } from '@comunica/expression-evaluator';
+import type { TermExpression } from '@comunica/types';
 
 export class TermFunctionXsdToDatetime extends TermFunctionBase {
   public constructor() {

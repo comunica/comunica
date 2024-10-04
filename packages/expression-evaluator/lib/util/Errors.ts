@@ -1,3 +1,4 @@
+import type { Expression } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type * as E from '../expressions';
 import type * as C from './Consts';
@@ -66,7 +67,7 @@ export class EBVCoercionError extends ExpressionError {
  * See {@link https://www.w3.org/TR/sparql11-query/#func-RDFterm-equal | term equality spec}.
  */
 export class RDFEqualTypeError extends ExpressionError {
-  public constructor(public args: E.Expression[]) {
+  public constructor(public args: Expression[]) {
     super('Equality test for literals with unsupported datatypes');
   }
 }
@@ -97,7 +98,7 @@ export class InError extends ExpressionError {
  * Literals were passed to an operator that doesn't support their datatypes.
  */
 export class InvalidArgumentTypes extends ExpressionError {
-  public constructor(public args: E.Expression[], public op: C.GeneralOperator) {
+  public constructor(public args: Expression[], public op: C.GeneralOperator) {
     super(`Argument types not valid for operator: '${pp(op)}' with '${pp(args)}`);
   }
 }
@@ -149,7 +150,7 @@ export class UnexpectedError<T> extends Error {
 }
 
 export class InvalidArity extends Error {
-  public constructor(public args: E.Expression[], public op: C.GeneralOperator) {
+  public constructor(public args: Expression[], public op: C.GeneralOperator) {
     super(`The number of args does not match the arity of the operator '${pp(op)}'.`);
   }
 }

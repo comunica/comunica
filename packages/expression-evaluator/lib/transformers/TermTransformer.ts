@@ -1,4 +1,4 @@
-import type { GeneralSuperTypeDict, ISuperTypeProvider } from '@comunica/types';
+import type { Expression, GeneralSuperTypeDict, ISuperTypeProvider } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import * as RDFString from 'rdf-string';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
@@ -40,7 +40,7 @@ export class TermTransformer implements ITermTransformer {
     });
   }
 
-  protected transformTerm(term: Alg.TermExpression): E.Expression {
+  protected transformTerm(term: Alg.TermExpression): Expression {
     if (!term.term) {
       throw new Err.InvalidExpression(term);
     }

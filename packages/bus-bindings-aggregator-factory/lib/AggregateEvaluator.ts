@@ -1,6 +1,6 @@
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import * as Eval from '@comunica/expression-evaluator';
-import type { ISuperTypeProvider } from '@comunica/types';
+import type { IExpressionEvaluator, ISuperTypeProvider } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import * as RdfString from 'rdf-string';
 
@@ -17,7 +17,7 @@ export abstract class AggregateEvaluator {
   protected readonly termTransformer: Eval.TermTransformer;
 
   protected constructor(
-    protected readonly evaluator: Eval.IExpressionEvaluator,
+    protected readonly evaluator: IExpressionEvaluator,
     protected readonly distinct: boolean,
     private readonly throwError = false,
   ) {

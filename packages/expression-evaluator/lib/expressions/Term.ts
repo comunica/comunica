@@ -6,6 +6,10 @@ import type {
   ISuperTypeProvider,
   ITimeRepresentation,
   IYearMonthDurationRepresentation,
+  TermExpression,
+  TermType,
+} from '@comunica/types';
+import { ExpressionType,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import * as C from '../util/Consts';
@@ -14,8 +18,6 @@ import { TypeAlias, TypeURL } from '../util/Consts';
 import * as Err from '../util/Errors';
 import { serializeDate, serializeDateTime, serializeDuration, serializeTime } from '../util/Serialization';
 import { isSubTypeOf } from '../util/TypeHandling';
-import type { TermExpression, TermType } from './Expressions';
-import { ExpressionType } from './Expressions';
 
 export abstract class Term implements TermExpression {
   public expressionType: ExpressionType.Term = ExpressionType.Term;

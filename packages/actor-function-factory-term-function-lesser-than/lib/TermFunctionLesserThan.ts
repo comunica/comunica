@@ -3,9 +3,7 @@ import { TermFunctionBase } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import type {
   BooleanLiteral,
-  IInternalEvaluator,
   Term,
-
   DayTimeDurationLiteral,
   Quad,
   TimeLiteral,
@@ -23,6 +21,7 @@ import {
   TypeURL,
   yearMonthDurationsToMonths,
 } from '@comunica/expression-evaluator';
+import type { IInternalEvaluator } from '@comunica/types';
 
 export class TermFunctionLesserThan extends TermFunctionBase {
   public constructor(private readonly equalityFunction: ITermFunction) {

@@ -2,13 +2,12 @@ import { ExpressionFunctionBase } from '@comunica/bus-function-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type {
   IEvalContext,
-  TermExpression,
 } from '@comunica/expression-evaluator';
 import {
   bool,
   SparqlOperator,
 } from '@comunica/expression-evaluator';
-import type { ComunicaDataFactory } from '@comunica/types';
+import type { ComunicaDataFactory, TermExpression } from '@comunica/types';
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-sameTerm

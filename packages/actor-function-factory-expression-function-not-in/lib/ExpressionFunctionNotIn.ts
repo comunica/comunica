@@ -2,14 +2,13 @@ import type { IExpressionFunction } from '@comunica/bus-function-factory';
 import { ExpressionFunctionBase } from '@comunica/bus-function-factory';
 import type {
   BooleanLiteral,
-  Expression,
   IEvalContext,
-  TermExpression,
 } from '@comunica/expression-evaluator';
 import {
   bool,
   SparqlOperator,
 } from '@comunica/expression-evaluator';
+import type { Expression, TermExpression } from '@comunica/types';
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-not-in
