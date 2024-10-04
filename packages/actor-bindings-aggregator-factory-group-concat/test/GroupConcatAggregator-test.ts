@@ -2,7 +2,7 @@ import type { IBindingsAggregator } from '@comunica/bus-bindings-aggregator-fact
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActionContext } from '@comunica/types';
-import { BF, DF, getMockEEActionContext, getMockEEFactory, int, makeAggregate } from '@comunica/utils-jest';
+import { BF, DF, getMockEEActionContext, getMockEEFactory, int, makeAggregate } from '@comunica/utils-expression-evaluator/test/util/helpers';
 import type * as RDF from '@rdfjs/types';
 import { GroupConcatAggregator } from '../lib/GroupConcatAggregator';
 

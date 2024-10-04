@@ -14,7 +14,7 @@ import type { IQueryOperationResultBindings, Bindings, IActionContext } from '@c
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import * as sparqlee from '@comunica/utils-expression-evaluator';
 import { isExpressionError } from '@comunica/utils-expression-evaluator';
-import { getMockEEActionContext, getMockMediatorExpressionEvaluatorFactory } from '@comunica/utils-jest';
+import { getMockEEActionContext, getMockMediatorExpressionEvaluatorFactory } from '@comunica/utils-expression-evaluator/test/util/helpers';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';

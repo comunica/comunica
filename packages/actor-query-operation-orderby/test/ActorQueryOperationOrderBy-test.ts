@@ -8,7 +8,7 @@ import { Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import * as sparqlee from '@comunica/utils-expression-evaluator';
-import { getMockEEActionContext, getMockMediatorExpressionEvaluatorFactory } from '@comunica/utils-jest';
+import { getMockEEActionContext, getMockMediatorExpressionEvaluatorFactory } from '@comunica/utils-expression-evaluator/test/util/helpers';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';

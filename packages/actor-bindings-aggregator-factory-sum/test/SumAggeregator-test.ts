@@ -4,7 +4,6 @@ import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-e
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { KeysInitQuery } from '@comunica/context-entries';
-import { SparqlOperator } from '../../utils-expression-evaluator';
 import type { IActionContext } from '@comunica/types';
 import {
   BF,
@@ -16,8 +15,9 @@ import {
   int,
   makeAggregate,
   nonLiteral,
-} from '@comunica/utils-jest';
+} from '@comunica/utils-expression-evaluator/test/util/helpers';
 import type * as RDF from '@rdfjs/types';
+import { SparqlOperator } from '../../utils-expression-evaluator';
 import { SumAggregator } from '../lib';
 
 async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Bindings[]): Promise<RDF.Term | undefined> {

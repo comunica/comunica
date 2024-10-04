@@ -25,7 +25,7 @@ import { Bus, ActionContext } from '@comunica/core';
 import type { Bindings, IActionContext } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { SparqlOperator } from '@comunica/utils-expression-evaluator';
-import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-jest';
+import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-expression-evaluator/test/util/helpers';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';

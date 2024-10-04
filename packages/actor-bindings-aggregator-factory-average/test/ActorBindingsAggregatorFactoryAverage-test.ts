@@ -5,7 +5,7 @@ import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
-import { getMockEEActionContext, getMockMediatorExpressionEvaluatorFactory, makeAggregate } from '@comunica/utils-jest';
+import { getMockEEActionContext, getMockMediatorExpressionEvaluatorFactory, makeAggregate } from '@comunica/utils-expression-evaluator/test/util/helpers';
 import { ActorBindingsAggregatorFactoryAverage } from '../lib';
 
 describe('ActorBindingsAggregatorFactoryAverage', () => {

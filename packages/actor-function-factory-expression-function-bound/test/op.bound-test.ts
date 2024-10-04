@@ -3,7 +3,7 @@ import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import * as Eval from '@comunica/utils-expression-evaluator';
 import { generalEvaluate } from '@comunica/utils-expression-evaluator/test/util/generalEvaluation';
-import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-jest';
+import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-expression-evaluator/test/util/helpers';
 import { DataFactory } from 'rdf-data-factory';
 import { expressionTypes, types } from 'sparqlalgebrajs/lib/algebra';
 import { ActorFunctionFactoryExpressionFunctionBound } from '../lib';

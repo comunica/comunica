@@ -1,6 +1,6 @@
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-jest';
+import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-expression-evaluator/test/util/helpers';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';

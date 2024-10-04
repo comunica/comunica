@@ -1,5 +1,5 @@
 import type { ISuperTypeProvider } from '@comunica/types';
-import { getMockSuperTypeProvider } from '@comunica/utils-jest';
+import { getMockSuperTypeProvider } from '@comunica/utils-expression-evaluator/test/util/helpers';
 import { DataFactory } from 'rdf-data-factory';
 import {
   TypeURL,

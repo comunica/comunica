@@ -1,5 +1,5 @@
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { getMockInternalEvaluator } from '@comunica/utils-jest';
+import { getMockInternalEvaluator } from '@comunica/utils-expression-evaluator/test/util/helpers';
 import { DataFactory } from 'rdf-data-factory';
 import { expressionTypes, types } from 'sparqlalgebrajs/lib/algebra';
 import { Wildcard } from 'sparqljs';

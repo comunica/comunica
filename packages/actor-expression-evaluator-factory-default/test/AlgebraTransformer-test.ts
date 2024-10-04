@@ -9,7 +9,7 @@ import { ActorFunctionFactoryTermFunctionNot } from '@comunica/actor-function-fa
 import { ActorFunctionFactoryTermFunctionUnaryMinus } from '@comunica/actor-function-factory-term-function-unary-minus';
 import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import * as Eval from '@comunica/utils-expression-evaluator';
-import { getMockEEActionContext } from '@comunica/utils-jest';
+import { getMockEEActionContext } from '@comunica/utils-expression-evaluator/test/util/helpers';
 import { DataFactory } from 'rdf-data-factory';
 import { expressionTypes, types } from 'sparqlalgebrajs/lib/algebra';
 import { Wildcard } from 'sparqljs';

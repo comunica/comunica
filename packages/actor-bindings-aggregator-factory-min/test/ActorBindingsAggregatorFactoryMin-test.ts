@@ -9,7 +9,7 @@ import {
   getMockEEActionContext,
   getMockMediatorExpressionEvaluatorFactory,
   makeAggregate,
-} from '@comunica/utils-jest';
+} from '@comunica/utils-expression-evaluator/test/util/helpers';
 import { ArrayIterator } from 'asynciterator';
 import { ActorBindingsAggregatorFactoryMin } from '../lib';
 
