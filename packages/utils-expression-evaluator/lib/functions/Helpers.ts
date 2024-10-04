@@ -7,6 +7,8 @@ import type {
   ComunicaDataFactory,
   IDateTimeRepresentation,
   IInternalEvaluator,
+  ImplementationFunction,
+  ImplementationFunctionTuple,
   TermExpression,
   VariableExpression,
 } from '@comunica/types';
@@ -19,8 +21,6 @@ import { TypeURL } from '../util/Consts';
 import * as Err from '../util/Errors';
 import type {
   ArgumentType,
-  ImplementationFunction,
-  ImplementationFunctionTuple,
 } from './OverloadTree';
 import { OverloadTree } from './OverloadTree';
 

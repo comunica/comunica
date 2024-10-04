@@ -1,7 +1,5 @@
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import type * as RDF from '@rdfjs/types';
-import { Algebra } from 'sparqlalgebrajs';
-import { Wildcard } from 'sparqljs';
 import {
   date,
   decimal,
@@ -13,7 +11,9 @@ import {
   makeAggregate,
   nonLiteral,
   string,
-} from '../lib/expressions';
+} from 'packages/utils-expression-evaluator/test/util/expressions';
+import { Algebra } from 'sparqlalgebrajs';
+import { Wildcard } from 'sparqljs';
 
 describe('The Expression evaluator util function', () => {
   describe('makeAggregate', () => {

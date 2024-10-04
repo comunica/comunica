@@ -1,13 +1,13 @@
 import { TermFunctionBase } from '@comunica/bus-function-factory';
 
+import type { IDayTimeDurationRepresentation } from '@comunica/types';
 import {
   DayTimeDurationLiteral,
   declare,
   InvalidTimezoneCall,
   SparqlOperator,
   TypeURL,
-} from '@comunica/expression-evaluator';
-import type { IDayTimeDurationRepresentation } from '@comunica/types';
+} from '@comunica/utils-expression-evaluator';
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-timezone

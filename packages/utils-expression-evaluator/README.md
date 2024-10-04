@@ -14,7 +14,7 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/expression-evaluator
+$ yarn add @comunica/utils-expression-evaluator
 ```
 
 ## Exposed classes
@@ -37,29 +37,11 @@ $ yarn add @comunica/expression-evaluator
 2. Run `yarn install`.
 3. Use these evident commands (or check `package.json`):
     - building once: `yarn run build`
-    - benchmarking: `yarn run bench`
-
-### Adding or fixing functions
-
-Functions are defined in the [functions directory](lib/functions), and you can add or fix them there.
-All definitions are defined using a builder model defined in [Helpers.ts](lib/functions/Helpers.ts).
-
-Three kinds exists:
-
-- Regular functions: Functions with a uniform interface, that only need their arguments to calculate their result.
-- Special functions: whose behaviour deviates enough from the norm to warrant the implementations taking full control
-over type checking and evaluation (these are mostly the functional forms).
-They are seperated from the regular functions because they are able to take control over the evaluation.
-Since we have support both async and sync evaluations, each having a distinct context, special functions require an implementation for both.
-For regular functions, the sync and async evaluation is the same, to avoid overhead, we differentiate between these two.
-- Named functions: which correspond to the SPARQLAlgebra Named Expressions.
 
 ### Layout and control flow
 
-The only important external facing API is creating an Evaluator.
-When you create one, the SPARQL Algebra expression that is passed will be transformed to an internal representation (see [AlgebraTransformer.ts](../actor-expression-evaluator-factory-default/lib/AlgebraTransformer.ts)).
-This will build objects (see [expressions module](./lib/expressions)) that contain all the logic and data for evaluation,
-for example the implementations for SPARQL functions (see [functions module](./lib/functions)).
+SPARQL Algebra expression can be transformed to an internal representation (see [AlgebraTransformer.ts](../actor-expression-evaluator-factory-default/lib/AlgebraTransformer.ts)).
+This will build objects (see [expressions module](./lib/expressions)) that contain all the logic and data for evaluation.
 After transformation, the evaluator will recursively evaluate all the expressions.
 
 ### Testing

@@ -3,8 +3,8 @@ import {
 } from '@comunica/actor-function-factory-expression-function-not-in';
 import { ActorFunctionFactoryTermFunctionEquality } from '@comunica/actor-function-factory-term-function-equality';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { bool, merge, numeric } from '@comunica/expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { bool, merge, numeric } from '@comunica/utils-expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
 import { ActorFunctionFactoryExpressionFunctionIn } from '../lib';
 
 describe('evaluations of \'IN\'', () => {

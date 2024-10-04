@@ -7,8 +7,8 @@ import { ActorTermComparatorFactory } from '@comunica/bus-term-comparator-factor
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
-import * as Eval from '@comunica/expression-evaluator';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import * as Eval from '@comunica/utils-expression-evaluator';
 import { TermComparatorExpressionEvaluator } from './TermComparatorExpressionEvaluator';
 
 /**

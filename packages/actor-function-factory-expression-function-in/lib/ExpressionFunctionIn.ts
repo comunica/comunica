@@ -1,15 +1,14 @@
 import type { ITermFunction } from '@comunica/bus-function-factory';
 import { ExpressionFunctionBase } from '@comunica/bus-function-factory';
+import type { Expression, IEvalContext, TermExpression } from '@comunica/types';
 import type {
   BooleanLiteral,
-  IEvalContext,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 import {
   bool,
   InError,
   SparqlOperator,
-} from '@comunica/expression-evaluator';
-import type { Expression, TermExpression } from '@comunica/types';
+} from '@comunica/utils-expression-evaluator';
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-in

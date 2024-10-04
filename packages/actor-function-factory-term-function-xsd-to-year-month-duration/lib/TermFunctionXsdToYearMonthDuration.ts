@@ -1,15 +1,15 @@
 import { TermFunctionBase } from '@comunica/bus-function-factory';
+import type { TermExpression } from '@comunica/types';
 import type {
   DurationLiteral,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 import {
   declare,
   parseYearMonthDuration,
   trimToYearMonthDuration,
   TypeURL,
   YearMonthDurationLiteral,
-} from '@comunica/expression-evaluator';
-import type { TermExpression } from '@comunica/types';
+} from '@comunica/utils-expression-evaluator';
 
 export class TermFunctionXsdToYearMonthDuration extends TermFunctionBase {
   public constructor() {

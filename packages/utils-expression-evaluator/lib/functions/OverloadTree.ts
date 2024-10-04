@@ -1,14 +1,12 @@
 import type {
-  Expression,
+  FunctionArgumentsCache,
   GeneralSuperTypeDict,
-  IInternalEvaluator,
+  IFunctionArgumentsCacheObj,
+  ImplementationFunction,
   ISuperTypeProvider,
-  SimpleApplication,
-  SimpleApplicationTuple,
   TermExpression,
   TermType,
 } from '@comunica/types';
-import type * as RDF from '@rdfjs/types';
 import { isLiteralTermExpression } from '../expressions';
 import type * as C from '../util/Consts';
 import type { OverrideType } from '../util/TypeHandling';
@@ -27,14 +25,6 @@ export type ArgumentType = 'term' | TermType | C.TypeURL | C.TypeAlias;
 
 export type SearchStack = OverloadTree[];
 
-export type ImplementationFunction = (expressionEvaluator: IInternalEvaluator) => SimpleApplication;
-export type ImplementationFunctionTuple<T> = (expressionEvaluator: IInternalEvaluator) => SimpleApplicationTuple<T>;
-
-interface IFunctionArgumentsCacheObj {
-  func?: ImplementationFunction;
-  cache?: FunctionArgumentsCache;
-}
-export type FunctionArgumentsCache = Record<string, IFunctionArgumentsCacheObj>;
 /**
  * Maps argument types on their specific implementation in a tree like structure.
  * When adding any functionality to this class, make sure you add it to SpecialFunctions as well.
@@ -248,7 +238,7 @@ export class OverloadTree {
       const concreteType = asKnownLiteralType(literalExpression.dataType);
       let subExtensionTable: GeneralSuperTypeDict;
       if (concreteType) {
-        // Concrete dataType is known by expression-evaluator.
+        // Concrete dataType is known by utils-expression-evaluator.
         subExtensionTable = superTypeDictTable[concreteType];
       } else {
         // Datatype is a custom datatype
@@ -263,10 +253,4 @@ export class OverloadTree {
     }
     return res;
   }
-}
-
-export interface IEvalContext {
-  args: Expression[];
-  mapping: RDF.Bindings;
-  exprEval: IInternalEvaluator;
 }

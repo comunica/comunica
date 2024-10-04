@@ -2,14 +2,14 @@ import { TermFunctionBase } from '@comunica/bus-function-factory';
 import type {
   NumericLiteral,
   StringLiteral,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 import {
   CastError,
   declare,
   float,
   parseXSDFloat,
   TypeURL,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 
 export class TermFunctionXsdToFloat extends TermFunctionBase {
   public constructor() {

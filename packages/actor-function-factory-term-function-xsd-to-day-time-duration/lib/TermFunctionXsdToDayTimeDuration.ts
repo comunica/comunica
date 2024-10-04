@@ -1,15 +1,15 @@
 import { TermFunctionBase } from '@comunica/bus-function-factory';
+import type { TermExpression } from '@comunica/types';
 import type {
   DurationLiteral,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 import {
   DayTimeDurationLiteral,
   declare,
   parseDayTimeDuration,
   trimToDayTimeDuration,
   TypeURL,
-} from '@comunica/expression-evaluator';
-import type { TermExpression } from '@comunica/types';
+} from '@comunica/utils-expression-evaluator';
 
 export class TermFunctionXsdToDayTimeDuration extends TermFunctionBase {
   public constructor() {

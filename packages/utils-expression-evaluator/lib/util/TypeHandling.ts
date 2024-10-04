@@ -192,7 +192,7 @@ export function isInternalSubType(baseType: OverrideType, argumentType: KnownLit
 export function getSuperTypeDict(baseType: string, superTypeProvider: ISuperTypeProvider): GeneralSuperTypeDict {
   const concreteType: KnownLiteralTypes | undefined = asKnownLiteralType(baseType);
   if (concreteType) {
-    // Concrete dataType is known by expression-evaluator.
+    // Concrete dataType is known by utils-expression-evaluator.
     return superTypeDictTable[concreteType];
   }
   // Datatype is a custom datatype

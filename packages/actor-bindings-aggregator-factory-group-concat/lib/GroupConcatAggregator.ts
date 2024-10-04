@@ -1,7 +1,7 @@
 import type { IBindingsAggregator } from '@comunica/bus-bindings-aggregator-factory';
 import { AggregateEvaluator } from '@comunica/bus-bindings-aggregator-factory';
-import * as Eval from '@comunica/expression-evaluator';
 import type { ComunicaDataFactory, IExpressionEvaluator } from '@comunica/types';
+import * as Eval from '@comunica/utils-expression-evaluator';
 import type * as RDF from '@rdfjs/types';
 
 export class GroupConcatAggregator extends AggregateEvaluator implements IBindingsAggregator {

@@ -1,12 +1,11 @@
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
+import type { Expression, IEvalContext, IInternalEvaluator, TermExpression } from '@comunica/types';
 import type {
   GeneralOperator,
-  IEvalContext,
   OverloadTree,
-} from '@comunica/expression-evaluator';
+} from '../../../utils-expression-evaluator';
 import { InvalidArgumentTypes,
-} from '@comunica/expression-evaluator';
-import type { Expression, IInternalEvaluator, TermExpression } from '@comunica/types';
+} from '../../../utils-expression-evaluator';
 import type { IExpressionFunction, ITermFunction } from '../ActorFunctionFactory';
 
 // ----------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
-import * as Eval from '@comunica/expression-evaluator';
 import type { IExpressionEvaluator, ISuperTypeProvider } from '@comunica/types';
+import * as Eval from '@comunica/utils-expression-evaluator';
 import type * as RDF from '@rdfjs/types';
 import * as RdfString from 'rdf-string';
 

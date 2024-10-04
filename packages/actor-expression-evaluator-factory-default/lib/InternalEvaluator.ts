@@ -1,10 +1,10 @@
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
-import * as Eval from '@comunica/expression-evaluator';
 import type { ComunicaDataFactory, Expression, IActionContext, TermExpression } from '@comunica/types';
 import { ExpressionType } from '@comunica/types';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
+import * as Eval from '@comunica/utils-expression-evaluator';
 import { getSafeBindings, materializeOperation } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { Factory } from 'sparqlalgebrajs';

@@ -7,9 +7,9 @@ import {
   ActorFunctionFactoryTermFunctionLesserThanEqual,
 } from '@comunica/actor-function-factory-term-function-lesser-than-equal';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import * as Data from '@comunica/expression-evaluator/test/spec/_data';
-import { bool } from '@comunica/expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import * as Data from '@comunica/utils-expression-evaluator/test/spec/_data';
+import { bool } from '@comunica/utils-expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
 import { ActorFunctionFactoryTermFunctionAbs } from '../lib';
 
 /**

@@ -1,5 +1,5 @@
 {
-  "name": "@comunica/expression-evaluator",
+  "name": "@comunica/utils-expression-evaluator",
   "version": "3.2.1",
   "description": "A simple SPARQL expression evaluator",
   "lsd:module": true,
@@ -12,7 +12,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/expression-evaluator"
+    "directory": "packages/utils-expression-evaluator"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"
@@ -30,15 +30,12 @@
     "access": "public"
   },
   "files": [
-    "components",
     "lib/**/*.d.ts",
     "lib/**/*.js",
     "lib/**/*.js.map"
   ],
   "scripts": {
-    "build": "npm run build:ts && npm run build:components",
-    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
-    "build:components": "componentsjs-generator"
+    "build": "node \"../../node_modules/typescript/bin/tsc\""
   },
   "dependencies": {
     "@comunica/context-entries": "^3.2.1",

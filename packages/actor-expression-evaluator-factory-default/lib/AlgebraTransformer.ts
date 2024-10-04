@@ -1,7 +1,7 @@
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
-import * as ExprEval from '@comunica/expression-evaluator';
 import type { Expression, IActionContext, OperatorExpression } from '@comunica/types';
+import * as ExprEval from '@comunica/utils-expression-evaluator';
 import { Algebra as Alg } from 'sparqlalgebrajs';
 
 export class AlgebraTransformer extends ExprEval.TermTransformer {

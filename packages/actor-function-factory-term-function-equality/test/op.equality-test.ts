@@ -2,7 +2,7 @@ import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/ut
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import * as Eval from '@comunica/expression-evaluator';
+import * as Eval from '@comunica/utils-expression-evaluator';
 import {
   bool,
   dateTime,
@@ -11,8 +11,8 @@ import {
   numeric,
   str,
   timeTyped,
-} from '@comunica/expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+} from '@comunica/utils-expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
 import { LRUCache } from 'lru-cache';
 import { ActorFunctionFactoryTermFunctionEquality } from '../lib';
 

@@ -8,7 +8,7 @@ import { ActorFunctionFactoryExpressionFunctionIf } from '@comunica/actor-functi
 import { ActorFunctionFactoryTermFunctionNot } from '@comunica/actor-function-factory-term-function-not';
 import { ActorFunctionFactoryTermFunctionUnaryMinus } from '@comunica/actor-function-factory-term-function-unary-minus';
 import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
-import * as Eval from '@comunica/expression-evaluator';
+import * as Eval from '@comunica/utils-expression-evaluator';
 import { getMockEEActionContext } from '@comunica/utils-jest';
 import { DataFactory } from 'rdf-data-factory';
 import { expressionTypes, types } from 'sparqlalgebrajs/lib/algebra';

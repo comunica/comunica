@@ -9,7 +9,7 @@ import type { MediatorFunctionFactory, MediatorFunctionFactoryUnsafe } from '@co
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
-import { SparqlOperator } from '@comunica/expression-evaluator';
+import { SparqlOperator } from '../../utils-expression-evaluator';
 import { AverageAggregator } from './AverageAggregator';
 
 export interface IActorBindingsAggregatorFactoryAverageArgs extends IActorBindingsAggregatorFactoryArgs {

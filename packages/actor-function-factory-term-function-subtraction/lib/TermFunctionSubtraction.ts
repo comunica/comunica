@@ -14,7 +14,7 @@ import {
   SparqlOperator,
   TimeLiteral,
   TypeURL,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 import { BigNumber } from 'bignumber.js';
 
 export class TermFunctionSubtraction extends TermFunctionBase {

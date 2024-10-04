@@ -7,8 +7,8 @@ import { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evalua
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
-import { prepareEvaluatorActionContext } from '@comunica/expression-evaluator';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { prepareEvaluatorActionContext } from '@comunica/utils-expression-evaluator';
 import { AlgebraTransformer } from './AlgebraTransformer';
 import { ExpressionEvaluator } from './ExpressionEvaluator';
 

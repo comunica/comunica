@@ -2,7 +2,7 @@ import { TermFunctionBase } from '@comunica/bus-function-factory';
 import type {
 
   LangStringLiteral,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 import {
   bool,
   declare,
@@ -10,7 +10,7 @@ import {
   SparqlOperator,
   TypeAlias,
   TypeURL,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-strends

@@ -5,7 +5,7 @@ import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-e
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { KeysInitQuery } from '@comunica/context-entries';
-import { SparqlOperator } from '@comunica/expression-evaluator';
+import { SparqlOperator } from '../../utils-expression-evaluator';
 import type { IActionContext } from '@comunica/types';
 import {
   BF,

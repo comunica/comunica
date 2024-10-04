@@ -1,7 +1,6 @@
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor, Mediator } from '@comunica/core';
-import type * as Eval from '@comunica/expression-evaluator';
-import type { Expression, IInternalEvaluator, TermExpression } from '@comunica/types';
+import type { Expression, IEvalContext, IInternalEvaluator, TermExpression } from '@comunica/types';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 
 /**
@@ -30,7 +29,7 @@ export abstract class ActorFunctionFactory<TS = undefined> extends
 }
 
 export interface IExpressionFunction {
-  apply: (evalContext: Eval.IEvalContext) => Promise<TermExpression>;
+  apply: (evalContext: IEvalContext) => Promise<TermExpression>;
   /**
    * The arity of the function will be checked when parsing and preparing a function.
    * This allows us to check if the query is correct even before we process any bindings.

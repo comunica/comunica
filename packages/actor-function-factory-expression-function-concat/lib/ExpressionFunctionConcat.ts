@@ -1,18 +1,17 @@
 import { ExpressionFunctionBase } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
+import type { IEvalContext, TermExpression } from '@comunica/types';
 import type {
-  IEvalContext,
   Literal,
   OverloadTree,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 import {
   declare,
   InvalidArgumentTypes,
   langString,
   SparqlOperator,
   string,
-} from '@comunica/expression-evaluator';
-import type { TermExpression } from '@comunica/types';
+} from '@comunica/utils-expression-evaluator';
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-concat

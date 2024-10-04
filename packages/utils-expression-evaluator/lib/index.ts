@@ -1,8 +1,6 @@
 export { TermTransformer } from './transformers/TermTransformer';
 export {
-  IEvalContext,
   OverloadTree,
-  FunctionArgumentsCache,
 } from './functions/OverloadTree';
 export { prepareEvaluatorActionContext } from './util/Context';
 export {

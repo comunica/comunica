@@ -1,5 +1,5 @@
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
-import { getMockExpression } from '@comunica/expression-evaluator/test/util/utils';
+import { getMockExpression } from '@comunica/utils-expression-evaluator/test/util/utils';
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-jest';
 
 describe('ActorExpressionEvaluatorFactoryDefault', () => {

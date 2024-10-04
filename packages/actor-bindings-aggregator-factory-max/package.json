@@ -39,10 +39,10 @@
   "dependencies": {
     "@comunica/bus-bindings-aggregator-factory": "^3.2.1",
     "@comunica/core": "^3.2.1",
+    "@comunica/types": "^3.2.1",
     "@rdfjs/types": "*"
   },
   "devDependencies": {
-    "@comunica/bus-term-comparator-factory": "^3.2.1",
-    "@comunica/expression-evaluator": "^3.2.1"
+    "@comunica/bus-term-comparator-factory": "^3.2.1"
   }
 }

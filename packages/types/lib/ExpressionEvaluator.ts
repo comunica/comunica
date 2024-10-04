@@ -1,4 +1,3 @@
-import type { IEvalContext } from '@comunica/expression-evaluator';
 import type * as RDF from '@rdfjs/types';
 import type { LRUCache } from 'lru-cache';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -136,3 +135,18 @@ export type SimpleApplication = (args: TermExpression[]) => TermExpression;
 export type SimpleApplicationTuple<T> = (args: T) => TermExpression;
 
 export type FunctionApplication = (evalContext: IEvalContext) => Promise<TermExpression>;
+
+export type ImplementationFunction = (expressionEvaluator: IInternalEvaluator) => SimpleApplication;
+export type ImplementationFunctionTuple<T> = (expressionEvaluator: IInternalEvaluator) => SimpleApplicationTuple<T>;
+
+export interface IFunctionArgumentsCacheObj {
+  func?: ImplementationFunction;
+  cache?: FunctionArgumentsCache;
+}
+export type FunctionArgumentsCache = Record<string, IFunctionArgumentsCacheObj>;
+
+export interface IEvalContext {
+  args: Expression[];
+  mapping: RDF.Bindings;
+  exprEval: IInternalEvaluator;
+}

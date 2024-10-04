@@ -7,7 +7,7 @@ import type { IExpressionEvaluator } from '@comunica/types';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 
 /**
- * A comunica actor for expression-evaluator-factory events.
+ * A comunica actor for utils-expression-evaluator-factory events.
  *
  * Actor types:
  * * Input:  IActionExpressionEvaluatorFactory: The Query Operation and Function factory mediators.

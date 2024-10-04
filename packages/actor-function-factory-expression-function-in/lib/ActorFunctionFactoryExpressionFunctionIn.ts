@@ -11,7 +11,7 @@ import {
   ActorFunctionFactoryDedicated,
 } from '@comunica/bus-function-factory';
 
-import { SparqlOperator } from '@comunica/expression-evaluator';
+import { SparqlOperator } from '@comunica/utils-expression-evaluator';
 import { ExpressionFunctionIn } from './ExpressionFunctionIn';
 
 interface IActorFunctionFactoryExpressionFunctionInArgs extends IActorFunctionFactoryArgs {

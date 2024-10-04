@@ -1,16 +1,13 @@
 import { ExpressionFunctionBase } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
-import type {
-  IEvalContext,
-} from '@comunica/expression-evaluator';
+import type { Expression, IEvalContext, TermExpression } from '@comunica/types';
+import { BlankNodeBindingsScoped } from '@comunica/utils-data-factory';
 import {
   BlankNode,
   declare,
   InvalidArgumentTypes,
   SparqlOperator,
-} from '@comunica/expression-evaluator';
-import type { Expression, TermExpression } from '@comunica/types';
-import { BlankNodeBindingsScoped } from '@comunica/utils-data-factory';
+} from '@comunica/utils-expression-evaluator';
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-bnode

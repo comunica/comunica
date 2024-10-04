@@ -5,7 +5,7 @@ import {
   declare,
   SparqlOperator,
   TypeURL,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-langMatches

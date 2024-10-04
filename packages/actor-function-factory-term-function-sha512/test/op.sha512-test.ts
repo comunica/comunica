@@ -1,5 +1,5 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
 import { ActorFunctionFactoryTermFunctionSha512 } from '../lib';
 
 describe('evaluation of \'sha512\' like', () => {

@@ -1,9 +1,9 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import { bool, compactTermString, merge, numeric } from '@comunica/expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
 import type { AsyncExtensionFunctionCreator } from '@comunica/types';
+import { bool, compactTermString, merge, numeric } from '@comunica/utils-expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorFunctionFactoryExpressionFunctionExtensions } from '../lib';

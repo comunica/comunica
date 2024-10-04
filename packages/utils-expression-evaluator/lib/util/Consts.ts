@@ -9,7 +9,7 @@ export enum TypeAlias {
   /**
    * Stringly is everything defined in https://www.w3.org/TR/sparql11-query/#func-strings
    * In other words it is a simple literal, a plain literal with language tag, or a literal with datatype xsd:string
-   * In other words, since expression-evaluator transforms a simple literal to xsd_string.
+   * In other words, since utils-expression-evaluator transforms a simple literal to xsd_string.
    * It is RDF_LANG_STRING or XSD_STRING.
    * Reasons for this are mentioned here: w3c/sparql-12#112
    */

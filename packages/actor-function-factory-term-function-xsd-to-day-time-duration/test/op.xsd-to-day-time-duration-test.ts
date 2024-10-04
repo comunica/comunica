@@ -3,8 +3,8 @@ import {
   dayTimeDurationTyped,
   durationTyped,
   yearMonthDurationTyped,
-} from '@comunica/expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+} from '@comunica/utils-expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
 import { ActorFunctionFactoryTermFunctionXsdToDayTimeDuration } from '../lib';
 
 describe('to dayTimeDuration', () => {

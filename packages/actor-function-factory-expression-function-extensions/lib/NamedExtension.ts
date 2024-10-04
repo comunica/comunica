@@ -1,8 +1,7 @@
 import { ExpressionFunctionBase } from '@comunica/bus-function-factory/lib/implementation/Core';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
-import type { IEvalContext } from '@comunica/expression-evaluator';
-import { ExtensionFunctionError, TermTransformer } from '@comunica/expression-evaluator';
-import type { AsyncExtensionFunction, TermExpression } from '@comunica/types';
+import type { AsyncExtensionFunction, IEvalContext, TermExpression } from '@comunica/types';
+import { ExtensionFunctionError, TermTransformer } from '@comunica/utils-expression-evaluator';
 
 interface NamedExtensionArgs {
   operator: string;

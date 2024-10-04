@@ -4,8 +4,8 @@ import {
 } from '@comunica/actor-function-factory-term-function-lesser-than/lib/TermFunctionLesserThan';
 import type { ITermComparator } from '@comunica/bus-term-comparator-factory';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
-import * as Eval from '@comunica/expression-evaluator';
 import type { SuperTypeCallback } from '@comunica/types';
+import * as Eval from '@comunica/utils-expression-evaluator';
 import { getMockEEActionContext, getMockInternalEvaluator } from '@comunica/utils-jest';
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
