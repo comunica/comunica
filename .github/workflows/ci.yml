@@ -5,67 +5,173 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  DEFAULT_NODE_VERSION: 22.x
+
 jobs:
 
-  test:
-    runs-on: ${{ matrix.os }}
+  misc:
+    name: Tooling checks
     strategy:
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        node-version:
-          - 18.x
-          - 20.x
-          - 22.x
+        os:
+          - macos-latest
+          - ubuntu-latest
+          - windows-latest
+    runs-on: ${{ matrix.os }}
     steps:
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Load cache
+      - name: Use Node.js ${{ env.DEFAULT_NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.DEFAULT_NODE_VERSION }}
+      - name: Load dependency cache
         uses: actions/cache@v4
         with:
           path: |
             **/node_modules
-            .rdf-test-suite-cache
-            .rdf-test-suite-ldf-cache
-          key: ${{ runner.os }}-test-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
-      - name: Setup firefox
-        uses: browser-actions/setup-firefox@latest
-        with:
-          firefox-version: latest
+          key: ${{ runner.os }}-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('yarn.lock') }}
       - name: Install dependencies
         run: yarn install --frozen-lockfile
-      - name: Build project
-        run: yarn run build
-      - name: Build project -- esModuleInterop true
+      - name: Build TypeScript with esModuleInterop flag
         run: yarn run build:ts --esModuleInterop true
+      - name: Run linter
+        run: yarn run lint
       - name: Run depcheck
         run: yarn run depcheck
+      - name: Test clean script
+        run: yarn run clean
+
+  test:
+    name: Jest tests
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-latest
+          - windows-latest
+        node-version:
+          - 18.x
+          - 20.x
+          - 22.x
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Ensure line endings are consistent
+        run: git config --global core.autocrlf input
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Load dependency cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('yarn.lock') }}
+      - name: Install dependencies and build
+        run: yarn install --frozen-lockfile
       - name: Run tests
         run: yarn run test:ci
-      - name: Run browser tests
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        uses: nick-fields/retry@v3
-        with:
-          timeout_minutes: 2
-          max_attempts: 3
-          command: yarn run test:browser
       - name: Submit coverage results
         uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.github_token }}
           flag-name: run-${{ matrix.node-version }}
           parallel: true
-      - name: Run spec tests
-        run: npx lerna run spec --concurrency 1
+
+  spectest:
+    name: Specification tests
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-latest
+          - windows-latest
+        node-version:
+          - 18.x
+          - 20.x
+          - 22.x
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Ensure line endings are consistent
+        run: git config --global core.autocrlf input
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Load dependency cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('yarn.lock') }}
+      - name: Install dependencies and build
+        run: yarn install --frozen-lockfile
+      - name: Load RDF test suite cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .rdf-test-suite-cache
+            .rdf-test-suite-ldf-cache
+          key: ${{ runner.os }}-rdftestsuite-${{ secrets.CACHE_VERSION }}-${{ hashFiles('yarn.lock') }}
+      - name: Run specification tests
+        run: yarn run test:spec
       - name: Run integration tests
-        run: npx lerna run integration --concurrency 1
+        run: yarn run test:integration
+
+  browsertest:
+    name: Browser tests
+    strategy:
+      fail-fast: false
+      matrix:
+        browser:
+          - Chrome
+          - Firefox
+          - Webkit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ensure line endings are consistent
+        run: git config --global core.autocrlf input
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Load dependency cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('yarn.lock') }}
+      - name: Install dependencies and build
+        run: yarn install --frozen-lockfile
+      - name: Install ${{ matrix.browser }} via Playwright
+        if: startsWith(matrix.browser, 'Webkit')
+        # The @L will convert 'Webkit' into lowercase 'webkit' which is the name Playwright expects.
+        run: yarn playwright install --with-deps ${BROWSER_NAME@L}
+        env:
+          BROWSER_NAME: ${{ matrix.browser }}
+      - name: Run browser tests
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 2
+          max_attempts: 3
+          # The tests will run on 'WebkitHeadless', 'FirefoxHeadless' and 'ChromeHeadless'
+          command: yarn run test:browser --browsers ${{ matrix.browser }}Headless
 
   coveralls:
+    name: Coverage check
     needs: test
     runs-on: ubuntu-latest
     steps:
@@ -75,64 +181,66 @@ jobs:
           github-token: ${{ secrets.github_token }}
           parallel-finished: true
 
-  lint:
+  browserbuilds:
+    name: Browser builds
+    needs:
+      - misc
+      - test
+      - spectest
+      - browsertest
     runs-on: ubuntu-latest
     steps:
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18.x
+      - name: Ensure line endings are consistent
+        run: git config --global core.autocrlf input
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Load cache
-        uses: actions/cache@v4
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-lint-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-      - name: Run linter
-        run: yarn run lint
-
-  browser:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Use Node.js
+      - name: Use Node.js ${{ env.DEFAULT_NODE_VERSION }}
         uses: actions/setup-node@v4
         with:
-          node-version: 18.x
-      - name: Check out repository
-        uses: actions/checkout@v4
-      - name: Load cache
+          node-version: ${{ env.DEFAULT_NODE_VERSION }}
+      - name: Load dependency cache
         uses: actions/cache@v4
         with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-browser-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
-      - name: Install dependencies
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('yarn.lock') }}
+      - name: Install dependencies and build
         run: yarn install --frozen-lockfile
-      - name: Build for browser
-        run: npx lerna run browser --concurrency 1
-      - name: Deploy browser build
+      - name: Build browser bundles
+        run: yarn run build:browser
+      - name: Deploy browser builds
         if: startsWith(github.ref, 'refs/heads/master') || startsWith(github.ref, 'refs/tags/')
         run: ./.github/deploy_browser.sh
         env:
           GH_TOKEN: ${{ secrets.PAT }}
 
-  docker:
+  dockerimages:
+    name: Docker images
+    needs:
+      - misc
+      - test
+      - spectest
+      - browsertest
+    env:
+      # TODO: remove this override once lerna-docker works with Node 18+
+      DEFAULT_NODE_VERSION: 18.x
     runs-on: ubuntu-latest
     steps:
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18.x
+      - name: Ensure line endings are consistent
+        run: git config --global core.autocrlf input
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Load cache
+      - name: Use Node.js ${{ env.DEFAULT_NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.DEFAULT_NODE_VERSION }}
+      - name: Load dependency cache
         uses: actions/cache@v4
         with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-docker-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
-      - name: Install dependencies
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('yarn.lock') }}
+      - name: Install dependencies and build monorepo
         run: yarn install --frozen-lockfile
       - name: Install Lerna Docker
         run: sh -c "`curl -fsSl https://raw.githubusercontent.com/rubensworks/lerna-docker/master/install.sh`"
@@ -152,8 +260,11 @@ jobs:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
   performance:
+    name: Performance benchmarks
+    if: startsWith(github.ref, 'refs/heads/master') || startsWith(github.ref, 'refs/tags/') || startsWith(github.ref, 'refs/heads/feature') || startsWith(github.ref, 'refs/heads/next')
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         benchmark:
           - watdiv-file
@@ -161,16 +272,23 @@ jobs:
           - bsbm-file
           - bsbm-tpf
           - web
-    if: startsWith(github.ref, 'refs/heads/master') || startsWith(github.ref, 'refs/tags/') || startsWith(github.ref, 'refs/heads/feature') || startsWith(github.ref, 'refs/heads/next')
     steps:
+      - name: Ensure line endings are consistent
+        run: git config --global core.autocrlf input
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Use Node.js
+      - name: Use Node.js ${{ env.DEFAULT_NODE_VERSION }}
         uses: actions/setup-node@v4
         with:
-          node-version: 22.x
-      - name: Install dependencies
-        run: yarn install
+          node-version: ${{ env.DEFAULT_NODE_VERSION }}
+      - name: Load dependency cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('yarn.lock') }}
+      - name: Install dependencies and build monorepo
+        run: yarn install --frozen-lockfile
       - name: Run benchmarks
         run: cd performance/benchmark-${{ matrix.benchmark }}/ && yarn run performance:ci
       - uses: actions/upload-artifact@v4
@@ -181,19 +299,23 @@ jobs:
         run: cat performance/benchmark-${{ matrix.benchmark }}/combinations/combination_0/output/query-times.csv
 
   performance-consolidate:
+    name: Performance analysis
     needs:
+      - misc
       - test
-      - lint
+      - spectest
+      - browsertest
       - performance
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/heads/master') || startsWith(github.ref, 'refs/tags/') || startsWith(github.ref, 'refs/heads/feature') || startsWith(github.ref, 'refs/heads/next')
     steps:
+      - name: Ensure line endings are consistent
+        run: git config --global core.autocrlf input
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Use Node.js
+      - name: Use Node.js ${{ env.DEFAULT_NODE_VERSION }}
         uses: actions/setup-node@v4
         with:
-          node-version: 18.x
+          node-version: ${{ env.DEFAULT_NODE_VERSION }}
       - uses: actions/download-artifact@v4
         with:
           name: performance-benchmark-watdiv-file
@@ -259,28 +381,54 @@ jobs:
         with:
           body-path: ./commit-comment-body.txt
 
-  docs:
+  documentation:
+    name: Prepare documentation
     runs-on: ubuntu-latest
     steps:
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18.x
+      - name: Ensure line endings are consistent
+        run: git config --global core.autocrlf input
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Load cache
+      - name: Use Node.js ${{ env.DEFAULT_NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.DEFAULT_NODE_VERSION }}
+      - name: Load dependency cache
         uses: actions/cache@v4
         with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-docs-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('yarn.lock') }}
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
-      - name: Build docs
+        run: yarn install --ignore-scripts --frozen-lockfile
+      - name: Build documentation
         run: yarn run doc
-      - name: Deploy TSDoc to GitHub Pages
-        if: startsWith(github.ref, 'refs/heads/master')
-        uses: JamesIves/github-pages-deploy-action@v4.4.0
+      - name: Prepare artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          branch: gh-pages
-          folder: documentation
-          clean: true
+          path: documentation
+          name: documentation
+
+  documentation-publish:
+    name: Publish documentation
+    needs:
+      - misc
+      - test
+      - spectest
+      - browsertest
+      - documentation
+    runs-on: ubuntu-latest
+    # The documentation is only published for master branch
+    if: startsWith(github.ref, 'refs/heads/master')
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: documentation

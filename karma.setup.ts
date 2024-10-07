@@ -9,5 +9,5 @@ window.test.each = inputs => (testName, test) => {
   }
 };
 window.test.todo = function() {};
-window.jest = jest;
-window.expect = expect;
+(<any>window).jest = jest;
+(<any>window).expect = expect;

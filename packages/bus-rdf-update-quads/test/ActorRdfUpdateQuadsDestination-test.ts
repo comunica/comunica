@@ -7,6 +7,7 @@ import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory, Store } from 'n3';
 import { DataFactory as RdfDataFactory } from 'rdf-data-factory';
+import '@comunica/utils-jest';
 import type { IActorRdfUpdateQuadsOutput } from '../lib';
 import { ActorRdfUpdateQuadsDestination, getContextDestinationUrl } from '../lib';
 
