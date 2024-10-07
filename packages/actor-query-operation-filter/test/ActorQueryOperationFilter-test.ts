@@ -23,6 +23,7 @@ import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 import { translate } from 'sparqlalgebrajs';
 import { ActorQueryOperationFilter } from '../lib';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF, {});

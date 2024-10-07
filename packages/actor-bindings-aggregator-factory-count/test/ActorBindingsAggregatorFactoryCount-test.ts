@@ -11,6 +11,7 @@ import {
 import { Algebra } from 'sparqlalgebrajs';
 import { Wildcard } from 'sparqljs';
 import { ActorBindingsAggregatorFactoryCount } from '../lib';
+import '@comunica/utils-jest';
 
 describe('ActorExpressionEvaluatorAggregateCount', () => {
   let bus: any;

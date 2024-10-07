@@ -32,6 +32,7 @@ import { DataFactory } from 'rdf-data-factory';
 import { Algebra } from 'sparqlalgebrajs';
 import { ActorQueryOperationGroup } from '../lib';
 import { GroupsState } from '../lib/GroupsState';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF, {});

@@ -39,7 +39,7 @@ const config: Config.InitialOptions = {
       transform,
       coveragePathIgnorePatterns: [
         '<rootDir>/engines/query-sparql/test/util.ts',
-        '<rootDir>/packages/expression-evaluator/test/util/',
+        '<rootDir>/packages/utils-expression-evaluator/test/util/',
         'engine-default.js',
         'index.js',
         'node_modules',

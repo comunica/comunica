@@ -11,6 +11,7 @@ import {
   makeAggregate,
 } from '@comunica/utils-expression-evaluator/test/util/helpers';
 import { ActorBindingsAggregatorFactoryAverage } from '../lib';
+import '@comunica/utils-jest';
 
 describe('ActorBindingsAggregatorFactoryAverage', () => {
   let bus: any;

@@ -15,6 +15,7 @@ import {
 } from '@comunica/utils-expression-evaluator/test/util/helpers';
 import { ArrayIterator } from 'asynciterator';
 import { ActorBindingsAggregatorFactorySum } from '../lib';
+import '@comunica/utils-jest';
 
 describe('ActorBindingsAggregatorFactorySum', () => {
   let bus: any;

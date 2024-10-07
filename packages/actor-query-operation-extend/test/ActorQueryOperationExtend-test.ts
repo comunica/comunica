@@ -16,7 +16,7 @@ import {
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-
+import '@comunica/utils-jest';
 import { ActorQueryOperationExtend } from '../lib';
 
 const DF = new DataFactory();
