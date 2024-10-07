@@ -3,7 +3,7 @@ import { KeysHttp } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import { Bus, ActionContext } from '@comunica/core';
 import { ActorHttpRetry } from '../lib/ActorHttpRetry';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 describe('ActorHttpRetry', () => {
   let bus: Bus<ActorHttp, IActionHttp, IActorTest, IActorHttpOutput>;
