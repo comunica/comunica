@@ -13,6 +13,7 @@ jobs:
   misc:
     name: Tooling checks
     strategy:
+      fail-fast: false
       matrix:
         os:
           - macos-latest
@@ -48,6 +49,7 @@ jobs:
   test:
     name: Jest tests
     strategy:
+      fail-fast: false
       matrix:
         os:
           - macos-latest
@@ -87,6 +89,7 @@ jobs:
   spectest:
     name: Specification tests
     strategy:
+      fail-fast: false
       matrix:
         os:
           - macos-latest
@@ -129,6 +132,7 @@ jobs:
   browsertest:
     name: Browser tests
     strategy:
+      fail-fast: false
       matrix:
         browser:
           - Chrome
@@ -260,6 +264,7 @@ jobs:
     if: startsWith(github.ref, 'refs/heads/master') || startsWith(github.ref, 'refs/tags/') || startsWith(github.ref, 'refs/heads/feature') || startsWith(github.ref, 'refs/heads/next')
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         benchmark:
           - watdiv-file
