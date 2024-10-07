@@ -86,10 +86,23 @@ export class ActorHttpFetch extends ActorHttp {
 
     const authString = action.context.get(KeysHttp.auth);
     if (authString) {
-      headers.set('Authorization', `Basic ${Buffer.from(authString).toString('base64')}`);
+      headers.set('Authorization', `Basic ${ActorHttpFetch.stringToBase64(authString)}`);
     }
 
     return headers;
+  }
+
+  /**
+   * Converts a string, including ones with Unicode symbols, to Base64 encoding.
+   * This function was adapted from the MDN example function here:
+   * https://developer.mozilla.org/en-US/docs/Glossary/Base64#the_unicode_problem
+   * @param {string} value The string value to encode
+   * @returns {string} The Base64-encoded value
+   */
+  public static stringToBase64(value: string): string {
+    const bytes = new TextEncoder().encode(value);
+    const binString = Array.from(bytes, byte => String.fromCodePoint(byte)).join('');
+    return btoa(binString);
   }
 }
 

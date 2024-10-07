@@ -235,4 +235,13 @@ describe('ActorHttpFetch', () => {
       expect(actor.prepareRequestHeaders({ input, context: contextWithAuth }).has('authorization')).toBeFalsy();
     });
   });
+
+  describe('stringToBase64', () => {
+    it.each([
+      [ 'ASCII', 'abc' ],
+      [ 'Unicode', '☃' ],
+    ])('should encode %s strings properly', (_: string, value: string) => {
+      expect(ActorHttpFetch.stringToBase64(value)).toBe(Buffer.from(value).toString('base64'));
+    });
+  });
 });
