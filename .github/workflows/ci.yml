@@ -35,13 +35,11 @@ jobs:
             **/node_modules
           key: ${{ runner.os }}-modules-${{ secrets.CACHE_VERSION }}-${{ hashFiles('yarn.lock') }}
       - name: Install dependencies
-        run: yarn install --ignore-scripts --frozen-lockfile
-      - name: Run linter
-        run: yarn run lint
-      - name: Build TypeScript
-        run: yarn run build:ts
+        run: yarn install --frozen-lockfile
       - name: Build TypeScript with esModuleInterop flag
         run: yarn run build:ts --esModuleInterop true
+      - name: Run linter
+        run: yarn run lint
       - name: Run depcheck
         run: yarn run depcheck
       - name: Test clean script
