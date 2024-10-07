@@ -12,7 +12,7 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/actor-utils-expression-evaluator-factory-default
+$ yarn add @comunica/actor-expression-evaluator-factory-default
 ```
 
 ## Configure

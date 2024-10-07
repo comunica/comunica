@@ -3,9 +3,9 @@ import type { Expression, IEvalContext, IInternalEvaluator, TermExpression } fro
 import type {
   GeneralOperator,
   OverloadTree,
-} from '../../../utils-expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 import { InvalidArgumentTypes,
-} from '../../../utils-expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 import type { IExpressionFunction, ITermFunction } from '../ActorFunctionFactory';
 
 // ----------------------------------------------------------------------------
