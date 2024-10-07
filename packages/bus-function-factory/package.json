@@ -39,6 +39,7 @@
     "@comunica/context-entries": "^3.2.1",
     "@comunica/core": "^3.2.1",
     "@comunica/types": "^3.2.1",
+    "@comunica/utils-expression-evaluator":  "^3.2.1",
     "sparqlalgebrajs": "^4.2.0"
   }
 }
