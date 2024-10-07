@@ -25,7 +25,7 @@ export class ActorHttpRetry extends ActorHttp {
     if (action.context.has(ActorHttpRetry.keyWrapped)) {
       return failTest(`${this.name} can only wrap a request once`);
     }
-    const retryCount = action.context.get<number>(KeysHttp.httpRetryCount);
+    const retryCount = action.context.get(KeysHttp.httpRetryCount);
     if (!retryCount || retryCount < 1) {
       return failTest(`${this.name} requires a retry count greater than zero to function`);
     }
@@ -36,9 +36,9 @@ export class ActorHttpRetry extends ActorHttp {
     const url = ActorHttp.getInputUrl(action.input);
 
     // Attempt once + the number of retries specified by the user
-    const attemptLimit = action.context.getSafe<number>(KeysHttp.httpRetryCount) + 1;
-    const retryDelay = action.context.get<number>(KeysHttp.httpRetryDelay) ?? 0;
-    const retryStatusCodes = action.context.get<number[]>(KeysHttp.httpRetryStatusCodes);
+    const attemptLimit = action.context.getSafe(KeysHttp.httpRetryCount) + 1;
+    const retryDelay = action.context.get(KeysHttp.httpRetryDelay) ?? 0;
+    const retryStatusCodes = action.context.get(KeysHttp.httpRetryStatusCodes);
 
     // This is declared outside the loop so it can be used for the final error message
     for (let attempt = 1; attempt <= attemptLimit; attempt++) {

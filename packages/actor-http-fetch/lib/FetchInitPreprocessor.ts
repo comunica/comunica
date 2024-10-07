@@ -24,7 +24,7 @@ export class FetchInitPreprocessor implements IFetchInitPreprocessor {
       headers.set('Accept-Encoding', 'br,gzip,deflate');
       init = { ...init, headers };
     }
-  
+
     // The Fetch API requires specific options to be set when sending body streams:
     // - 'keepalive' can not be true
     // - 'duplex' must be set to 'half'

@@ -6,10 +6,12 @@ import type { IFetchInitPreprocessor } from '../lib/IFetchInitPreprocessor';
 describe('FetchInitPreprocessor', () => {
   let preprocessor: IFetchInitPreprocessor;
   let originalController: any;
+  let defaultHeaders: Headers;
 
   beforeEach(() => {
     preprocessor = new FetchInitPreprocessor({});
     originalController = globalThis.AbortController;
+    defaultHeaders = new Headers({ 'accept-encoding': 'br,gzip,deflate' });
   });
 
   afterEach(() => {
@@ -23,6 +25,7 @@ describe('FetchInitPreprocessor', () => {
     it('should handle init without body', async() => {
       await expect(preprocessor.handle({})).resolves.toStrictEqual({
         agent: expect.any(Function),
+        headers: defaultHeaders,
         keepalive: true,
       });
     });
@@ -38,7 +41,17 @@ describe('FetchInitPreprocessor', () => {
         agent: expect.any(Function),
         body: expect.any(ReadableStream),
         duplex: 'half',
+        headers: defaultHeaders,
         keepalive: false,
+      });
+    });
+
+    it('should not modify existing Accept-Encoding header', async() => {
+      const customHeaders = new Headers({ 'accept-encoding': 'br' });
+      await expect(preprocessor.handle({ headers: customHeaders })).resolves.toStrictEqual({
+        agent: expect.any(Function),
+        headers: customHeaders,
+        keepalive: true,
       });
     });
 

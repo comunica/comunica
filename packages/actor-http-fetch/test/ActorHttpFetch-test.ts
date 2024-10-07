@@ -5,7 +5,7 @@ import type { IActorTest } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ActorHttpFetch } from '../lib/ActorHttpFetch';
-import '@comunica/jest';
+import '@comunica/utils-jest';
 
 jest.mock('../lib/FetchInitPreprocessor');
 

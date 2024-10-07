@@ -11,8 +11,6 @@ import { version as actorVersion } from '../package.json';
 import { FetchInitPreprocessor } from './FetchInitPreprocessor';
 import type { IFetchInitPreprocessor } from './IFetchInitPreprocessor';
 
-type Fetch = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
-
 export class ActorHttpFetch extends ActorHttp {
   private readonly fetchInitPreprocessor: IFetchInitPreprocessor;
 
@@ -46,9 +44,9 @@ export class ActorHttpFetch extends ActorHttp {
       init.credentials = 'include';
     }
 
-    const httpTimeout = action.context.get<number>(KeysHttp.httpTimeout);
-    const httpBodyTimeout = action.context.get<boolean>(KeysHttp.httpBodyTimeout);
-    const fetchFunction = action.context.get<Fetch>(KeysHttp.fetch) ?? fetch;
+    const httpTimeout = action.context.get(KeysHttp.httpTimeout);
+    const httpBodyTimeout = action.context.get(KeysHttp.httpBodyTimeout);
+    const fetchFunction = action.context.get(KeysHttp.fetch) ?? fetch;
     const requestInit = await this.fetchInitPreprocessor.handle(init);
 
     let timeoutCallback: () => void;
@@ -86,7 +84,7 @@ export class ActorHttpFetch extends ActorHttp {
       headers.set('user-agent', ActorHttpFetch.userAgent!);
     }
 
-    const authString = action.context.get<string>(KeysHttp.auth);
+    const authString = action.context.get(KeysHttp.auth);
     if (authString) {
       headers.set('Authorization', `Basic ${Buffer.from(authString).toString('base64')}`);
     }
