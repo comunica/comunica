@@ -60,7 +60,7 @@ export class ActorContextPreprocessSetDefaults extends ActorContextPreprocess {
 export interface IActorContextPreprocessSetDefaultsArgs extends IActorContextPreprocessArgs {
   /**
    * The logger of this actor
-   * @default {a <npmd:@comunica/logger-void/^3.0.0/components/LoggerVoid.jsonld#LoggerVoid>}
+   * @default {a <npmd:@comunica/logger-void/^4.0.0/components/LoggerVoid.jsonld#LoggerVoid>}
    */
   logger: Logger;
 }

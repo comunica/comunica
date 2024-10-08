@@ -22,7 +22,7 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-function-factory-term-xsd-to-double/^3.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-function-factory-term-xsd-to-double/^4.0.0/components/context.jsonld"
   ],
   "actors": [
     ...

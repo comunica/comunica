@@ -1,6 +1,67 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v4.0.0"></a>
+## [v4.0.0](https://github.com/comunica/comunica/compare/v3.3.0...v4.0.0) - 2024-10-08
+
+### BREAKING CHANGES
+
+The following breaking changes will only impact users of Node.js < 18
+and users that develop custom components or engines with Comunica.
+
+* [Remove backwards-compat for Node.js < 18](https://github.com/comunica/comunica/commit/a66fa73d7e75613868141208e66fbdbb3bb6c7c1)
+  * [Remove cross-fetch and abort-controller polyfill as unnecessary](https://github.com/comunica/comunica/commit/43a278a093a5cb0f05842f90fe5549c022cd89ce)
+  * [Update fetch-sparql-endpoint to version 5](https://github.com/comunica/comunica/commit/5279e2893ece7de4c1d3027a10a45c72fc1057ef)
+  * [Remove Node 14 backwards-compat in stats writer](https://github.com/comunica/comunica/commit/450b14e13660e61377b75361983619cc8aa9146c)
+* API changes
+  * [Refactor Actor.test to not rely on Promise rejections](https://github.com/comunica/comunica/commit/80960e5befb58ab4b0290499af4f8400ec8f8b82)
+    * All `Actor.test` methods must be changed to use `passTest` or `failTest` instead of promise rejections, for better performance.
+  * [Use variable.canBeUndef in metadata instead of canContainUndefs](https://github.com/comunica/comunica/commit/3e362642f6c6b23aadd0fbfdb387ded1bb426930)
+  * [Remove Actor.initialize and .deinitalize](https://github.com/comunica/comunica/commit/524466179e1b141cb75052ca8c64a47529fd5ae2)
+  * [Rename noCache CLI argument to invalidateCache](https://github.com/comunica/comunica/commit/b5b90b93d8a2b7d07a845254812aecceeb934412)
+  * [Remove hash collisions flag from hash buses](https://github.com/comunica/comunica/commit/de4422a248a60eab278d2d7f23aa173eaf27d4e1)
+  * [Return 32-bit numbers in hash bus based on specific variables](https://github.com/comunica/comunica/commit/c1474e4167f1978e144bee9b7663fcb2bafc21bf)
+  * [Allow inserts and deletes to execute in a single request](https://github.com/comunica/comunica/commit/e172e16c2ad2b1207cd3981ffe9ae5aa97963436)
+* Renamed or changed actors
+  * [Split expression functions into separate actors on dedicated bus](https://github.com/comunica/comunica/commit/8d0ecd5c426fd7395ab1b890d38f96e6ff2811c7)
+  * [Split aggregators into separate actors on dedicated bus](https://github.com/comunica/comunica/commit/64a487aca943c2eea59cb484071172aa28c827bf)
+  * [Remove SHA1 hash quads actor in favor of Murmur3](https://github.com/comunica/comunica/commit/67a51bd71e632231ee9cd2778d918cf9203c96d0)
+  * [Remove SHA1 hash actor in favor of Murmur3](https://github.com/comunica/comunica/commit/331865c773882be7e061a690833fc841ece27339)
+  * [Abstract actor-rdf-join-minus-hash-undef into actor-rdf-join-minus-hash](https://github.com/comunica/comunica/commit/7507b24bdef6b655432aef89ba96c9e2524e6808)
+* Move utilities
+  * [Add utils-query-operation and utils-iterator](https://github.com/comunica/comunica/commit/ef29324c1d88a40ab8b40d2e6396939b5e9af194)
+    * These new packages contain helper functions that previously existed in bus-query-operation and bus-rdf-join.
+  * [Rename util packages to 'util-' scope](https://github.com/comunica/comunica/commit/37c8fe66b63c876324a58b0a428ebf08f0826087)
+    * data-factory -> utils-data-factory
+    * bindings-factory -> utils-bindings-factory
+    * jest -> utils-jest
+    * metadata -> utils-metadata
+  * [Move ActorRdfJoin.hashNonClashing to bindingsToCompactString](https://github.com/comunica/comunica/commit/003d587396edffc922a7ae7dcec209c6b61929c9)
+  * [Delegate all join hashing to hash bus](https://github.com/comunica/comunica/commit/b6429352523edab83616c561fff28d1a4361d6bb)
+  * [Move bindings index from optional join to utils package](https://github.com/comunica/comunica/commit/1ad8e7890a29071e9c10e31979b24f4d9f800ced)
+
+### Added
+* [Add default `Accept-Encoding` header with Brotli](https://github.com/comunica/comunica/commit/6e1a7dfad8340d89e2491ad474528b217594e4b0)
+* [Add undef support to inner hash join actor](https://github.com/comunica/comunica/commit/6027c7eda4dad6b557875eb63c27a43906998fa4)
+* [Forward side data from test to run in actors](https://github.com/comunica/comunica/commit/61f763994908b7f4a65b9ed3a9de006d6b85504f)
+* [Allow plugging in custom DataFactory through context, Closes #358](https://github.com/comunica/comunica/commit/782b522c8d42fb03960bbc61ec3d41b193d3cc07)
+
+### Changed
+* [Remove unneeded false default values on CLI boolean args](https://github.com/comunica/comunica/commit/8f9a925d2f301731bd54053749b7b9d18f36c080)
+* Improve fragment selector shape handling
+  * [Make doesShapeAcceptOperation recurse into operations](https://github.com/comunica/comunica/commit/fb08c9fc9951e683f5e96a8348bd27593e06d607)
+  * [Add dedicated wildcard operation type to FragmentSelectorShape](https://github.com/comunica/comunica/commit/d03c6bd62e1907624e65c53267070b089b57389b)
+* Improve performance
+  * [Bump asyncjoin with hash join performance improvement](https://github.com/comunica/comunica/commit/75c0890d3619d35fa59df216be8ef0f85e200ddb)
+  * [Only consider overlapping vars when testing undef in join actors](https://github.com/comunica/comunica/commit/5ddb64bb1df4b1179529f3e2ea0c05fb321dfce9)
+* [Improve type inference in IActionContext, Closes #933](https://github.com/comunica/comunica/commit/ce7844a26c55120ce858b606b8766013589c8de5)
+* [Emit planning time from stats writer](https://github.com/comunica/comunica/commit/c66e7ca5aa72387edade2d7d337488564e8a7380)
+* [Make stats writer measure time from actual query start](https://github.com/comunica/comunica/commit/213dc0ef66c330f262d3d629be07f8230a33841d)
+* [Improve error reporting when mediators fail](https://github.com/comunica/comunica/commit/4cb21fcc65d68fe0dc78bc7e3ddded7c9cdf85d8)
+
+### Fixed
+* [Fix union not setting canContainUndefs to true if child vars differ](https://github.com/comunica/comunica/commit/ef33b2c28835f0ca7b0b34ce58aa6fe0baddc7df)
+
 <a name="v3.3.0"></a>
 ## [v3.3.0](https://github.com/comunica/comunica/compare/v3.2.3...v3.3.0) - 2024-10-08
 

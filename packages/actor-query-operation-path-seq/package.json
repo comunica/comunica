@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-path-seq",
-  "version": "3.3.0",
+  "version": "4.0.0",
   "description": "A path-seq query-operation actor",
   "lsd:module": true,
   "license": "MIT",
@@ -41,12 +41,12 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/actor-abstract-path": "^3.2.2",
-    "@comunica/bus-query-operation": "^3.2.2",
-    "@comunica/bus-rdf-join": "^3.2.1",
-    "@comunica/context-entries": "^3.1.0",
-    "@comunica/types": "^3.2.1",
-    "@comunica/utils-query-operation": "^3.2.1",
+    "@comunica/actor-abstract-path": "^4.0.0",
+    "@comunica/bus-query-operation": "^4.0.0",
+    "@comunica/bus-rdf-join": "^4.0.0",
+    "@comunica/context-entries": "^4.0.0",
+    "@comunica/types": "^4.0.0",
+    "@comunica/utils-query-operation": "^4.0.0",
     "sparqlalgebrajs": "^4.3.8"
   }
 }
