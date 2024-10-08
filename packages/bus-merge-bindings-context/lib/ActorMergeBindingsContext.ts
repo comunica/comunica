@@ -55,11 +55,11 @@ IActorMergeBindingsContextOutput
 
 /**
  * The interface for a binding context merge handler. A merge handler is a function that accepts
- * two context entries (from different binding contexts) associated with the same key and
- * merges these two values. The merging strategy is dependent on the implementation of the
+ * context entries (from different binding contexts) associated with the same key and
+ * merges these values. The merging strategy is dependent on the implementation of the
  * interface.
  * @V denotes the type associated with the context key the merge handler operates on.
  */
 export interface IBindingsContextMergeHandler<V> {
-  run: (...args: V[]) => V[];
+  run: (...args: V[]) => V;
 }
