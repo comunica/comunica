@@ -7,9 +7,10 @@ import {
   getMockEEActionContext,
   getMockMediatorExpressionEvaluatorFactory,
   makeAggregate,
-} from '@comunica/utils-jest';
+} from '@comunica/utils-expression-evaluator/test/util/helpers';
 import { ArrayIterator } from 'asynciterator';
 import { ActorBindingsAggregatorFactorySample } from '../lib';
+import '@comunica/utils-jest';
 
 describe('ActorBindingsAggregatorFactorySample', () => {
   let bus: any;

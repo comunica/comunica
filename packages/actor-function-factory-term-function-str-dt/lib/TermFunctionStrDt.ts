@@ -1,17 +1,17 @@
 import { TermFunctionBase } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
+import type { ComunicaDataFactory } from '@comunica/types';
 import type {
   StringLiteral,
 
   NamedNode,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 import {
   declare,
   SparqlOperator,
   TermTransformer,
   TypeURL,
-} from '@comunica/expression-evaluator';
-import type { ComunicaDataFactory } from '@comunica/types';
+} from '@comunica/utils-expression-evaluator';
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-strdt

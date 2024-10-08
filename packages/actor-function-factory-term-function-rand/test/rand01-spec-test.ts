@@ -9,8 +9,8 @@ import {
 } from '@comunica/actor-function-factory-term-function-lesser-than-equal';
 import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { bool } from '@comunica/expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { bool } from '@comunica/utils-expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
 import { ActorFunctionFactoryTermFunctionRand } from '../lib';
 
 describe('We should respect the rand01 spec', () => {

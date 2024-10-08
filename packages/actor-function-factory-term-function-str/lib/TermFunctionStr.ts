@@ -4,7 +4,7 @@ import {
   declare,
   SparqlOperator,
   string,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-str

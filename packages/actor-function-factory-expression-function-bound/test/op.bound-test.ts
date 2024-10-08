@@ -1,9 +1,9 @@
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
-import * as Eval from '@comunica/expression-evaluator';
-import { generalEvaluate } from '@comunica/expression-evaluator/test/util/generalEvaluation';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-jest';
+import * as Eval from '@comunica/utils-expression-evaluator';
+import { generalEvaluate } from '@comunica/utils-expression-evaluator/test/util/generalEvaluation';
+import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-expression-evaluator/test/util/helpers';
 import { DataFactory } from 'rdf-data-factory';
 import { expressionTypes, types } from 'sparqlalgebrajs/lib/algebra';
 import { ActorFunctionFactoryExpressionFunctionBound } from '../lib';

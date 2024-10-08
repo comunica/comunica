@@ -1,6 +1,6 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { dateTyped, timeTyped } from '@comunica/expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { dateTyped, timeTyped } from '@comunica/utils-expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
 import { ActorFunctionFactoryTermFunctionTz } from '../lib';
 
 describe('evaluation of \'TZ\'', () => {

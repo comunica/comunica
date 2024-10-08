@@ -7,7 +7,7 @@ import type {
   LangStringLiteral,
   Quad,
   TimeLiteral,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 import {
   bool,
   dayTimeDurationsToSeconds,
@@ -21,7 +21,7 @@ import {
   TypeAlias,
   TypeURL,
   yearMonthDurationsToMonths,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-RDFterm-equal

@@ -1,6 +1,6 @@
 import { ActorFunctionFactoryTermFunctionDivision } from '@comunica/actor-function-factory-term-function-division';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
 import { ActorFunctionFactoryExpressionFunctionIf } from '../lib';
 
 /**

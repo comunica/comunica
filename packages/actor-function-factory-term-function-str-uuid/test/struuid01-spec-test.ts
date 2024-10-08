@@ -3,8 +3,8 @@ import { ActorFunctionFactoryTermFunctionRegex } from '@comunica/actor-function-
 import { ActorFunctionFactoryTermFunctionStrLen } from '@comunica/actor-function-factory-term-function-str-len';
 import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { bool, int } from '@comunica/expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { bool, int } from '@comunica/utils-expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
 import { ActorFunctionFactoryTermFunctionStrUuid } from '../lib';
 
 /**

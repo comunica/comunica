@@ -10,7 +10,7 @@ import {
   ActorFunctionFactoryDedicated,
 } from '@comunica/bus-function-factory';
 
-import { SparqlOperator } from '@comunica/expression-evaluator';
+import { SparqlOperator } from '@comunica/utils-expression-evaluator';
 import { TermFunctionGreaterThan } from './TermFunctionGreaterThan';
 
 interface IActorFunctionFactoryTermFunctionGreaterThanArgs extends IActorFunctionFactoryArgs {

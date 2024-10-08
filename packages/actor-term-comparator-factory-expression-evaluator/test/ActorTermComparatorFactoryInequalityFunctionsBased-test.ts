@@ -6,10 +6,11 @@ import {
   getMockEEActionContext,
   getMockMediatorMergeBindingsContext,
   getMockMediatorQueryOperation,
-} from '@comunica/utils-jest';
+} from '@comunica/utils-expression-evaluator/test/util/helpers';
 import {
   ActorTermComparatorFactoryExpressionEvaluator,
 } from '../lib';
+import '@comunica/utils-jest';
 
 describe('ActorTermComparatorFactoryExpressionEvaluator', () => {
   let bus: any;

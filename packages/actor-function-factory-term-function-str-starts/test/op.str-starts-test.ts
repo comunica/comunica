@@ -1,6 +1,6 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { bool } from '@comunica/expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { bool } from '@comunica/utils-expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
 import { ActorFunctionFactoryTermFunctionStrStarts } from '../lib';
 
 describe('evaluation of \'strstarts\' like', () => {

@@ -1,7 +1,14 @@
 import type { IBindingsAggregator } from '@comunica/bus-bindings-aggregator-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { IActionContext } from '@comunica/types';
-import { BF, DF, getMockEEActionContext, getMockEEFactory, int, makeAggregate } from '@comunica/utils-jest';
+import {
+  BF,
+  DF,
+  getMockEEActionContext,
+  getMockEEFactory,
+  int,
+  makeAggregate,
+} from '@comunica/utils-expression-evaluator/test/util/helpers';
 import type * as RDF from '@rdfjs/types';
 import { SampleAggregator } from '../lib';
 

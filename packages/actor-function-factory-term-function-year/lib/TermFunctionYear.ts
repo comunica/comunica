@@ -2,13 +2,13 @@ import { TermFunctionBase } from '@comunica/bus-function-factory';
 import type {
 
   DateLiteral,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 import {
   declare,
   integer,
   SparqlOperator,
   TypeURL,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-year

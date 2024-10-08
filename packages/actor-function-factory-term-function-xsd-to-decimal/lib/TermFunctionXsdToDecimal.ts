@@ -1,14 +1,14 @@
 import { TermFunctionBase } from '@comunica/bus-function-factory';
 import type {
   Term,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 import {
   CastError,
   decimal,
   declare,
   parseXSDDecimal,
   TypeURL,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 
 export class TermFunctionXsdToDecimal extends TermFunctionBase {
   public constructor() {

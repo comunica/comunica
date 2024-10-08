@@ -3,14 +3,14 @@ import type {
   NumericLiteral,
 
   LangStringLiteral,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 import {
   declare,
   langString,
   SparqlOperator,
   string,
   TypeURL,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-substr

@@ -1,17 +1,16 @@
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type * as Eval from '@comunica/expression-evaluator';
-import type { IActionContext } from '@comunica/types';
+import type { Expression, IActionContext, IExpressionEvaluator, TermExpression } from '@comunica/types';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import { InternalEvaluator } from './InternalEvaluator';
 
-export class ExpressionEvaluator implements Eval.IExpressionEvaluator {
+export class ExpressionEvaluator implements IExpressionEvaluator {
   private readonly internalEvaluator: InternalEvaluator;
   public constructor(
     public readonly context: IActionContext,
-    public readonly expr: Eval.Expression,
+    public readonly expr: Expression,
     public readonly mediatorFunctionFactory: MediatorFunctionFactory,
     public readonly mediatorQueryOperation: MediatorQueryOperation,
     public readonly bindingsFactory: BindingsFactory,
@@ -30,11 +29,11 @@ export class ExpressionEvaluator implements Eval.IExpressionEvaluator {
     return result.coerceEBV();
   }
 
-  public evaluateAsEvaluatorExpression(mapping: RDF.Bindings): Promise<Eval.Expression> {
+  public evaluateAsEvaluatorExpression(mapping: RDF.Bindings): Promise<Expression> {
     return this.evaluatorExpressionEvaluation(this.expr, mapping);
   }
 
-  public evaluatorExpressionEvaluation(expr: Eval.Expression, mapping: RDF.Bindings): Promise<Eval.Term> {
+  public evaluatorExpressionEvaluation(expr: Expression, mapping: RDF.Bindings): Promise<TermExpression> {
     return this.internalEvaluator.evaluatorExpressionEvaluation(expr, mapping);
   }
 }

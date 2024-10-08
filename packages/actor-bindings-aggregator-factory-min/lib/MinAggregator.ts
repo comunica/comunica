@@ -1,7 +1,7 @@
 import type { IBindingsAggregator } from '@comunica/bus-bindings-aggregator-factory';
 import { AggregateEvaluator } from '@comunica/bus-bindings-aggregator-factory';
 import type { ITermComparator } from '@comunica/bus-term-comparator-factory';
-import type { IExpressionEvaluator } from '@comunica/expression-evaluator';
+import type { IExpressionEvaluator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 
 export class MinAggregator extends AggregateEvaluator implements IBindingsAggregator {

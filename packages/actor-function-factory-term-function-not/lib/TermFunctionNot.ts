@@ -4,7 +4,7 @@ import {
   bool,
   declare,
   SparqlOperator,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 
 export class TermFunctionNot extends TermFunctionBase {
   public constructor() {

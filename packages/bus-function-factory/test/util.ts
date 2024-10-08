@@ -3,10 +3,10 @@ import type {
   MediatorFunctionFactory,
 } from '@comunica/bus-function-factory';
 import { BusFunctionFactory } from '@comunica/bus-function-factory';
-import type { TestTableConfig } from '@comunica/expression-evaluator/test/util/utils';
-import { runTestTable } from '@comunica/expression-evaluator/test/util/utils';
 import { MediatorRace } from '@comunica/mediator-race';
-import { getMockEEFactory } from '@comunica/utils-jest';
+import { getMockEEFactory } from '@comunica/utils-expression-evaluator/test/util/helpers';
+import type { TestTableConfig } from '@comunica/utils-expression-evaluator/test/util/utils';
+import { runTestTable } from '@comunica/utils-expression-evaluator/test/util/utils';
 import type { ActorFunctionFactory } from '../lib';
 
 interface RunFuncTestTableArgs extends IActorFunctionFactoryArgs {

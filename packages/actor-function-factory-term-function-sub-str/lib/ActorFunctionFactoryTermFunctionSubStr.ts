@@ -7,7 +7,7 @@ import type {
 import {
   ActorFunctionFactoryDedicated,
 } from '@comunica/bus-function-factory';
-import { SparqlOperator } from '@comunica/expression-evaluator';
+import { SparqlOperator } from '@comunica/utils-expression-evaluator';
 import { TermFunctionSubStr } from './TermFunctionSubStr';
 
 /**

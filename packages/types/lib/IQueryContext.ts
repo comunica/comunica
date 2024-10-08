@@ -1,4 +1,5 @@
 import type * as RDF from '@rdfjs/types';
+import type { FunctionArgumentsCache } from './ExpressionEvaluator';
 import type { IDataDestination } from './IDataDestination';
 import type { IProxyHandler } from './IProxyHandler';
 import type { SourceType } from './IQueryEngine';
@@ -13,8 +14,6 @@ export type QueryStringContext = RDF.QueryStringContext & RDF.QuerySourceContext
  * Query context when an algebra-based query was passed.
  */
 export type QueryAlgebraContext = RDF.QueryAlgebraContext & RDF.QuerySourceContext<SourceType> & IQueryContextCommon;
-
-export type FunctionArgumentsCache = Record<string, { func?: any; cache?: FunctionArgumentsCache }>;
 
 /**
  * Common query context interface

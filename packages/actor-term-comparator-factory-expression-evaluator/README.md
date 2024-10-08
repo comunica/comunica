@@ -13,7 +13,7 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/actor-term-comparator-factory-expression-evaluator
+$ yarn add @comunica/actor-term-comparator-factory-utils-expression-evaluator
 ```
 
 ## Configure

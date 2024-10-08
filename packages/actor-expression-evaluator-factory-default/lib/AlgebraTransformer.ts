@@ -1,7 +1,7 @@
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
-import * as ExprEval from '@comunica/expression-evaluator';
-import type { IActionContext } from '@comunica/types';
+import type { Expression, IActionContext, OperatorExpression } from '@comunica/types';
+import * as ExprEval from '@comunica/utils-expression-evaluator';
 import { Algebra as Alg } from 'sparqlalgebrajs';
 
 export class AlgebraTransformer extends ExprEval.TermTransformer {
@@ -12,7 +12,7 @@ export class AlgebraTransformer extends ExprEval.TermTransformer {
     super(context.getSafe(KeysExpressionEvaluator.superTypeProvider));
   }
 
-  public async transformAlgebra(expr: Alg.Expression): Promise<ExprEval.Expression> {
+  public async transformAlgebra(expr: Alg.Expression): Promise<Expression> {
     const types = Alg.expressionTypes;
 
     switch (expr.expressionType) {
@@ -31,12 +31,12 @@ export class AlgebraTransformer extends ExprEval.TermTransformer {
     }
   }
 
-  private static transformWildcard(term: Alg.WildcardExpression): ExprEval.Expression {
+  private static transformWildcard(term: Alg.WildcardExpression): Expression {
     return new ExprEval.NamedNode(term.wildcard.value);
   }
 
   private async getOperator(operator: string, expr: Alg.OperatorExpression | Alg.NamedExpression):
-  Promise<ExprEval.OperatorExpression> {
+  Promise<OperatorExpression> {
     const operatorFunc = await this.mediatorFunctionFactory.mediate({
       functionName: operator,
       arguments: expr.args,
@@ -49,11 +49,11 @@ export class AlgebraTransformer extends ExprEval.TermTransformer {
     return new ExprEval.Operator(operator, operatorArgs, operatorFunc.apply);
   }
 
-  private async transformOperator(expr: Alg.OperatorExpression): Promise<ExprEval.OperatorExpression> {
+  private async transformOperator(expr: Alg.OperatorExpression): Promise<OperatorExpression> {
     return this.getOperator(expr.operator.toLowerCase(), expr);
   }
 
-  private async transformNamed(expr: Alg.NamedExpression): Promise<ExprEval.OperatorExpression> {
+  private async transformNamed(expr: Alg.NamedExpression): Promise<OperatorExpression> {
     return this.getOperator(expr.name.value, expr);
   }
 
