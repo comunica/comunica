@@ -57,7 +57,10 @@ import type {
 } from '@comunica/bus-rdf-serialize';
 import type { IActionRdfUpdateHypermedia, IActorRdfUpdateHypermediaOutput } from '@comunica/bus-rdf-update-hypermedia';
 import type { IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput } from '@comunica/bus-rdf-update-quads';
-import type { IActionTermComparatorFactory, IActorTermComparatorFactoryOutput } from '@comunica/bus-term-comparator-factory';
+import type {
+  IActionTermComparatorFactory,
+  IActorTermComparatorFactoryOutput,
+} from '@comunica/bus-term-comparator-factory';
 import { ActionContext, failTest } from '@comunica/core';
 import type { Mediate, IAction, IActorOutput, IActorTest, Bus } from '@comunica/core';
 import type { IMediatorTypeAccuracy } from '@comunica/mediatortype-accuracy';
