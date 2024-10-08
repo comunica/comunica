@@ -23,7 +23,9 @@ export abstract class ActorTermComparatorFactory<TS = undefined> extends
   protected readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   *  \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *  \ @defaultNested {Creation of term comparator failed} busFailMessage
    */
   public constructor(args: IActorTermComparatorFactoryArgs<TS>) {
     super(args);

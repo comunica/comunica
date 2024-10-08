@@ -1,9 +1,18 @@
+import type {
+  IActionBindingsAggregatorFactory,
+  IActorBindingsAggregatorFactoryOutput,
+} from '@comunica/bus-bindings-aggregator-factory';
 import type { IActionContextPreprocess, IActorContextPreprocessOutput } from '@comunica/bus-context-preprocess';
 import type { IActionDereference, IActorDereferenceOutput } from '@comunica/bus-dereference';
 import type {
   IActionDereferenceRdf,
   IActorDereferenceRdfOutput,
 } from '@comunica/bus-dereference-rdf';
+import type {
+  IActionExpressionEvaluatorFactory,
+  IActorExpressionEvaluatorFactoryOutput,
+} from '@comunica/bus-expression-evaluator-factory';
+import type { IActionFunctionFactory, IActorFunctionFactoryOutput } from '@comunica/bus-function-factory';
 import type { IActionHashBindings, IActorHashBindingsOutput } from '@comunica/bus-hash-bindings';
 import type { IActionHashQuads, IActorHashQuadsOutput } from '@comunica/bus-hash-quads';
 import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
@@ -48,6 +57,7 @@ import type {
 } from '@comunica/bus-rdf-serialize';
 import type { IActionRdfUpdateHypermedia, IActorRdfUpdateHypermediaOutput } from '@comunica/bus-rdf-update-hypermedia';
 import type { IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput } from '@comunica/bus-rdf-update-quads';
+import type { IActionTermComparatorFactory, IActorTermComparatorFactoryOutput } from '@comunica/bus-term-comparator-factory';
 import { ActionContext, failTest } from '@comunica/core';
 import type { Mediate, IAction, IActorOutput, IActorTest, Bus } from '@comunica/core';
 import type { IMediatorTypeAccuracy } from '@comunica/mediatortype-accuracy';
@@ -55,9 +65,12 @@ import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-
 import type { Runner } from '@comunica/runner';
 import { instantiateComponent } from '@comunica/runner';
 import type { IActionContext, IQueryOperationResultBindings } from '@comunica/types';
+import { DataFactory } from 'rdf-data-factory';
+import { Algebra } from 'sparqlalgebrajs';
 import { QueryEngineFactory } from '../lib';
 
 const queryEngineFactory = new QueryEngineFactory();
+const DF = new DataFactory();
 
 describe('System test: mediators', () => {
   let runner: Runner;
@@ -70,6 +83,23 @@ describe('System test: mediators', () => {
   });
   const context: IActionContext = new ActionContext();
 
+  addTest<IActionBindingsAggregatorFactory, IActorBindingsAggregatorFactoryOutput>(
+    'bindings-aggregator-factory',
+    ':query-operation/actors#group',
+    'mediatorBindingsAggregatorFactory',
+    { expr: {
+      type: Algebra.types.EXPRESSION,
+      expressionType: Algebra.expressionTypes.AGGREGATE,
+      aggregator: 'avg',
+      distinct: false,
+      expression: {
+        type: Algebra.types.EXPRESSION,
+        expressionType: Algebra.expressionTypes.TERM,
+        term: DF.variable('x'),
+      },
+    }},
+      `Creation of Aggregator failed: none of the configured actors were able to handle avg`,
+  );
   addTest<IActionContextPreprocess, IActorContextPreprocessOutput>(
     'context-preprocess',
     ':context-preprocess/actors#query-source-identify',
@@ -90,6 +120,27 @@ describe('System test: mediators', () => {
     'mediatorDereferenceRdf',
     <any> { handle: <any> { data: <any> undefined, context, mediaType: 'text/css', url: 'http://example.org/' }},
     `RDF dereferencing failed: none of the configured parsers were able to handle the media type text/css for http://example.org/`,
+  );
+  addTest<IActionExpressionEvaluatorFactory, IActorExpressionEvaluatorFactoryOutput>(
+    'expression-evaluator-factory',
+    ':query-operation/actors#extend',
+    'mediatorExpressionEvaluatorFactory',
+    { algExpr: <any> {
+      type: Algebra.types.EXPRESSION,
+      expressionType: Algebra.expressionTypes.TERM,
+      term: DF.variable('x'),
+    }},
+      `Creation of Expression Evaluator failed`,
+  );
+  addTest<IActionFunctionFactory, IActorFunctionFactoryOutput>(
+    'function-factory',
+    ':expression-evaluator-factory/actors#default',
+    'mediatorFunctionFactory',
+    {
+      functionName: 'http://example.org/',
+      requireTermExpression: false,
+    },
+      `Creation of function evaluator failed: no configured actor was able to evaluate function http://example.org/`,
   );
   addTest<IActionHashBindings, IActorHashBindingsOutput>(
     'hash-bindings',
@@ -248,6 +299,13 @@ IMediatorTypeJoinCoefficients
     'mediatorUpdateQuads',
     {},
     `RDF updating failed: none of the configured actors were able to handle an update`,
+  );
+  addTest<IActionTermComparatorFactory, IActorTermComparatorFactoryOutput>(
+    'term-comparator-factory',
+    ':query-operation/actors#orderby',
+    'mediatorTermComparatorFactory',
+    {},
+      `Creation of term comparator failed`,
   );
 
   /**
