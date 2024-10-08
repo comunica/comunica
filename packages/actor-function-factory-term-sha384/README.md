@@ -28,7 +28,7 @@ After installing, this package can be added to your engine's configuration as fo
     ...
     {
       "@id": "urn:comunica:default:function-factory/actors#term-function-sha384",
-      "@type": "ActorFunctionFactoryTermFunctionSha384"
+      "@type": "ActorFunctionFactoryTermSha384"
     }
   ]
 }

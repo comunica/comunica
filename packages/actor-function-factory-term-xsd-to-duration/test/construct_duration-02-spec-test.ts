@@ -1,6 +1,6 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionXsdToDuration } from '../lib';
+import { ActorFunctionFactoryTermXsdToDuration } from '../lib';
 
 describe('Construct duration', () => {
   /**
@@ -21,7 +21,7 @@ describe('Construct duration', () => {
   describe('respect the construct_duration-02 spec', () => {
     runFuncTestTable({
       registeredActors: [
-        args => new ActorFunctionFactoryTermFunctionXsdToDuration(args),
+        args => new ActorFunctionFactoryTermXsdToDuration(args),
       ],
       operation: 'xsd:duration',
       arity: 1,

@@ -11,12 +11,12 @@ import {
 } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
 import { LRUCache } from 'lru-cache';
-import { ActorFunctionFactoryTermFunctionAddition } from '../lib';
+import { ActorFunctionFactoryTermAddition } from '../lib';
 
 describe('evaluation of \'+\' like', () => {
   const baseConfig: FuncTestTableConfig<object> = {
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionAddition(args),
+      args => new ActorFunctionFactoryTermAddition(args),
     ],
     arity: 2,
     operation: '+',

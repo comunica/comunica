@@ -1,13 +1,13 @@
-import { ActorFunctionFactoryTermFunctionDatatype } from '@comunica/actor-function-factory-term-function-datatype';
+import { ActorFunctionFactoryTermDatatype } from '@comunica/actor-function-factory-term-datatype';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionNow } from '../lib';
+import { ActorFunctionFactoryTermNow } from '../lib';
 
 describe('We should respect the now01 spec', () => {
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionNow(args),
-      args => new ActorFunctionFactoryTermFunctionDatatype(args),
+      args => new ActorFunctionFactoryTermNow(args),
+      args => new ActorFunctionFactoryTermDatatype(args),
     ],
     arity: 1,
     operation: 'DATATYPE',

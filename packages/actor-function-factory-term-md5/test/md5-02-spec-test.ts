@@ -1,7 +1,7 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import * as Data from '@comunica/utils-expression-evaluator/test/spec/_data';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionMd5 } from '../lib';
+import { ActorFunctionFactoryTermMd5 } from '../lib';
 
 /**
  * REQUEST: md5-02.rq
@@ -30,7 +30,7 @@ describe('We should respect the md5-02 spec', () => {
   const { s4 } = Data.data();
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionMd5(args),
+      args => new ActorFunctionFactoryTermMd5(args),
     ],
     operation: 'MD5',
     notation: Notation.Function,

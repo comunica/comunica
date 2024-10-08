@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionIri';
+export * from './ActorFunctionFactoryTermIri';

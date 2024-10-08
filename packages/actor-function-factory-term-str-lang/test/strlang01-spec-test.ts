@@ -1,7 +1,7 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import * as Data from '@comunica/utils-expression-evaluator/test/spec/_data';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionStrLang } from '../lib/ActorFunctionFactoryTermFunctionStrLang';
+import { ActorFunctionFactoryTermStrLang } from '../lib/ActorFunctionFactoryTermStrLang';
 
 /**
  * REQUEST: strlang01.rq
@@ -31,7 +31,7 @@ describe('We should respect the strlang01 spec', () => {
   const { s2 } = Data.data();
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionStrLang(args),
+      args => new ActorFunctionFactoryTermStrLang(args),
     ],
     arity: 2,
     operation: 'STRLANG',

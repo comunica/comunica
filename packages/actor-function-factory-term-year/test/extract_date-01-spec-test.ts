@@ -1,12 +1,12 @@
-import { ActorFunctionFactoryTermFunctionDay } from '@comunica/actor-function-factory-term-function-day';
-import { ActorFunctionFactoryTermFunctionMonth } from '@comunica/actor-function-factory-term-function-month';
+import { ActorFunctionFactoryTermDay } from '@comunica/actor-function-factory-term-day';
+import { ActorFunctionFactoryTermMonth } from '@comunica/actor-function-factory-term-month';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import {
   int,
   dateTyped,
 } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionYear } from '../lib';
+import { ActorFunctionFactoryTermYear } from '../lib';
 
 describe('Extract date', () => {
   /**
@@ -21,7 +21,7 @@ describe('Extract date', () => {
   describe('respect the extract_date-01 spec', () => {
     runFuncTestTable({
       registeredActors: [
-        args => new ActorFunctionFactoryTermFunctionYear(args),
+        args => new ActorFunctionFactoryTermYear(args),
       ],
       operation: 'YEAR',
       arity: 1,
@@ -33,7 +33,7 @@ describe('Extract date', () => {
 
     runFuncTestTable({
       registeredActors: [
-        args => new ActorFunctionFactoryTermFunctionMonth(args),
+        args => new ActorFunctionFactoryTermMonth(args),
       ],
       operation: 'MONTH',
       arity: 1,
@@ -45,7 +45,7 @@ describe('Extract date', () => {
 
     runFuncTestTable({
       registeredActors: [
-        args => new ActorFunctionFactoryTermFunctionDay(args),
+        args => new ActorFunctionFactoryTermDay(args),
       ],
       operation: 'DAY',
       arity: 1,

@@ -1,7 +1,7 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import * as Data from '@comunica/utils-expression-evaluator/test/spec/_data';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionStrDt } from '../lib';
+import { ActorFunctionFactoryTermStrDt } from '../lib';
 
 /**
  * REQUEST: strdt03.rq
@@ -30,7 +30,7 @@ describe('We should respect the strdt03 spec', () => {
   const { n1, n2, n3, n4, n5, s1, s2, s3, s4, s5, s6, s7, d1, d2, d3, d4 } = Data.data();
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionStrDt(args),
+      args => new ActorFunctionFactoryTermStrDt(args),
     ],
     arity: 2,
     notation: Notation.Function,

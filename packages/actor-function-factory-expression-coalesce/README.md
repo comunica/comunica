@@ -1,6 +1,6 @@
 # Comunica Expression Function Coalesce Function Factory Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-expression-function-coalesce.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-expression-function-coalesce)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-expression-function-coalesce.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-expression-coalesce)
 
 A comunica Expression Function Coalesce Function Factory Actor.
 
@@ -12,7 +12,7 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/actor-function-factory-expression-function-coalesce
+$ yarn add @comunica/actor-function-factory-expression-coalesce
 ```
 
 ## Configure
@@ -22,13 +22,13 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-function-factory-expression-function-coalesce/^3.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-function-factory-expression-coalesce/^3.0.0/components/context.jsonld"
   ],
   "actors": [
     ...
     {
       "@id": "urn:comunica:default:function-factory/actors#expression-function-coalesce",
-      "@type": "ActorFunctionFactoryExpressionFunctionCoalesce"
+      "@type": "ActorFunctionFactoryExpressionCoalesce"
     }
   ]
 }

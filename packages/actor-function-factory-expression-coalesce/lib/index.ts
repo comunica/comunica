@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryExpressionFunctionCoalesce';
+export * from './ActorFunctionFactoryExpressionCoalesce';

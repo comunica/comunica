@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionLcase';
+export * from './ActorFunctionFactoryTermLcase';

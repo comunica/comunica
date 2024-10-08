@@ -1,7 +1,7 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import * as Data from '@comunica/utils-expression-evaluator/test/spec/_data';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionSubStr } from '../lib';
+import { ActorFunctionFactoryTermSubStr } from '../lib';
 
 /**
  * REQUEST: substring02.rq
@@ -30,7 +30,7 @@ describe('We should respect the substring02 spec', () => {
   const { s1, s2, s3, s4, s5, s6, s7 } = Data.data();
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionSubStr(args),
+      args => new ActorFunctionFactoryTermSubStr(args),
     ],
     arity: 'vary',
     operation: 'SUBSTR',

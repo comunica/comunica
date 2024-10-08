@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryExpressionFunctionIf';
+export * from './ActorFunctionFactoryExpressionIf';

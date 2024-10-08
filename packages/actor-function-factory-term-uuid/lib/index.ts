@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionUuid';
+export * from './ActorFunctionFactoryTermUuid';

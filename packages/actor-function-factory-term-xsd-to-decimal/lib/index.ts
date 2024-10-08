@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionXsdToDecimal';
+export * from './ActorFunctionFactoryTermXsdToDecimal';

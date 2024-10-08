@@ -1,12 +1,12 @@
-import { ActorFunctionFactoryTermFunctionIsIri } from '@comunica/actor-function-factory-term-function-is-iri';
-import { ActorFunctionFactoryTermFunctionRegex } from '@comunica/actor-function-factory-term-function-regex';
-import { ActorFunctionFactoryTermFunctionStr } from '@comunica/actor-function-factory-term-function-str';
-import { ActorFunctionFactoryTermFunctionStrLen } from '@comunica/actor-function-factory-term-function-str-len';
+import { ActorFunctionFactoryTermIsIri } from '@comunica/actor-function-factory-term-is-iri';
+import { ActorFunctionFactoryTermRegex } from '@comunica/actor-function-factory-term-regex';
+import { ActorFunctionFactoryTermStr } from '@comunica/actor-function-factory-term-str';
+import { ActorFunctionFactoryTermStrLen } from '@comunica/actor-function-factory-term-str-len';
 import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { bool, int } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionUuid } from '../lib';
+import { ActorFunctionFactoryTermUuid } from '../lib';
 
 /**
  * REQUEST: uuid01.rq
@@ -39,11 +39,11 @@ import { ActorFunctionFactoryTermFunctionUuid } from '../lib';
 describe('We should respect the uuid01 spec', () => {
   const config: FuncTestTableConfig<object> = {
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionIsIri(args),
-      args => new ActorFunctionFactoryTermFunctionUuid(args),
-      args => new ActorFunctionFactoryTermFunctionRegex(args),
-      args => new ActorFunctionFactoryTermFunctionStrLen(args),
-      args => new ActorFunctionFactoryTermFunctionStr(args),
+      args => new ActorFunctionFactoryTermIsIri(args),
+      args => new ActorFunctionFactoryTermUuid(args),
+      args => new ActorFunctionFactoryTermRegex(args),
+      args => new ActorFunctionFactoryTermStrLen(args),
+      args => new ActorFunctionFactoryTermStr(args),
     ],
     aliases: bool,
     arity: 'vary',

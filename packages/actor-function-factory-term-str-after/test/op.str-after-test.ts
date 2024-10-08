@@ -1,13 +1,13 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { bool } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionStrAfter } from '../lib';
+import { ActorFunctionFactoryTermStrAfter } from '../lib';
 
 describe('evaluations of \'strafter\' like', () => {
   // Inspired on the specs: https://www.w3.org/TR/sparql11-query/#func-strafter
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionStrAfter(args),
+      args => new ActorFunctionFactoryTermStrAfter(args),
     ],
     arity: 2,
     aliases: bool,

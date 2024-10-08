@@ -1,13 +1,13 @@
-import { ActorFunctionFactoryTermFunctionAddition } from '@comunica/actor-function-factory-term-function-addition';
+import { ActorFunctionFactoryTermAddition } from '@comunica/actor-function-factory-term-addition';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionStr } from '../lib';
+import { ActorFunctionFactoryTermStr } from '../lib';
 
 describe('like \'str\' receiving', () => {
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionStr(args),
-      args => new ActorFunctionFactoryTermFunctionAddition(args),
+      args => new ActorFunctionFactoryTermStr(args),
+      args => new ActorFunctionFactoryTermAddition(args),
     ],
     arity: 1,
     notation: Notation.Function,
@@ -25,7 +25,7 @@ describe('like \'str\' receiving', () => {
 
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionStr(args),
+      args => new ActorFunctionFactoryTermStr(args),
     ],
     arity: 1,
     notation: Notation.Function,

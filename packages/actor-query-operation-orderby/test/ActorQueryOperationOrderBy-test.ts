@@ -1,4 +1,4 @@
-import { ActorFunctionFactoryTermFunctionStrLen } from '@comunica/actor-function-factory-term-function-str-len';
+import { ActorFunctionFactoryTermStrLen } from '@comunica/actor-function-factory-term-str-len';
 import { createTermCompMediator } from '@comunica/actor-term-comparator-factory-expression-evaluator/test/util';
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
@@ -23,7 +23,7 @@ import '@comunica/utils-jest';
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
 const mediatorFunctionFactory = createFuncMediator([
-  args => new ActorFunctionFactoryTermFunctionStrLen(args),
+  args => new ActorFunctionFactoryTermStrLen(args),
 ], {});
 
 describe('ActorQueryOperationOrderBy with mixed term types', () => {

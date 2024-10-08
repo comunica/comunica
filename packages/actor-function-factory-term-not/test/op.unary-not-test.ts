@@ -2,12 +2,12 @@ import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/ut
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { bool } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionNot } from '../lib';
+import { ActorFunctionFactoryTermNot } from '../lib';
 
 describe('evaluation of \'! (unary)\' like', () => {
   const config: FuncTestTableConfig<object> = {
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionNot(args),
+      args => new ActorFunctionFactoryTermNot(args),
     ],
     arity: 1,
     operation: '!',

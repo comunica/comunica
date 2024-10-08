@@ -1,9 +1,9 @@
-import { ActorFunctionFactoryTermFunctionEquality } from '@comunica/actor-function-factory-term-function-equality';
-import { ActorFunctionFactoryTermFunctionLesserThan } from '@comunica/actor-function-factory-term-function-lesser-than';
+import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-factory-term-equality';
+import { ActorFunctionFactoryTermLesserThan } from '@comunica/actor-function-factory-term-lesser-than';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { bool, timeTyped } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionGreaterThan } from '../lib';
+import { ActorFunctionFactoryTermGreaterThan } from '../lib';
 
 describe('compare date', () => {
   /**
@@ -25,7 +25,7 @@ describe('compare date', () => {
   describe('respect the op:time-equal xpath-functions spec', () => {
     runFuncTestTable({
       registeredActors: [
-        args => new ActorFunctionFactoryTermFunctionEquality(args),
+        args => new ActorFunctionFactoryTermEquality(args),
       ],
       operation: '=',
       arity: 2,
@@ -44,8 +44,8 @@ describe('compare date', () => {
   describe('respect the op:time-less-than xpath-functions spec', () => {
     runFuncTestTable({
       registeredActors: [
-        args => new ActorFunctionFactoryTermFunctionEquality(args),
-        args => new ActorFunctionFactoryTermFunctionLesserThan(args),
+        args => new ActorFunctionFactoryTermEquality(args),
+        args => new ActorFunctionFactoryTermLesserThan(args),
       ],
       operation: '<',
       arity: 2,
@@ -64,9 +64,9 @@ describe('compare date', () => {
   describe('respect the op:date-greater-than xpath-functions spec', () => {
     runFuncTestTable({
       registeredActors: [
-        args => new ActorFunctionFactoryTermFunctionEquality(args),
-        args => new ActorFunctionFactoryTermFunctionLesserThan(args),
-        args => new ActorFunctionFactoryTermFunctionGreaterThan(args),
+        args => new ActorFunctionFactoryTermEquality(args),
+        args => new ActorFunctionFactoryTermLesserThan(args),
+        args => new ActorFunctionFactoryTermGreaterThan(args),
       ],
       operation: '>',
       arity: 2,

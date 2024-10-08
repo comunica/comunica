@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionMinutes';
+export * from './ActorFunctionFactoryTermMinutes';

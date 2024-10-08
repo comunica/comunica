@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionUnaryPlus';
+export * from './ActorFunctionFactoryTermUnaryPlus';

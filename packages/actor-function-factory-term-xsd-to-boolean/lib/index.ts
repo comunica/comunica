@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionXsdToBoolean';
+export * from './ActorFunctionFactoryTermXsdToBoolean';

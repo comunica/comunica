@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionUcase';
+export * from './ActorFunctionFactoryTermUcase';

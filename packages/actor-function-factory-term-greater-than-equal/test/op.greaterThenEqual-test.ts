@@ -1,8 +1,8 @@
-import { ActorFunctionFactoryTermFunctionEquality } from '@comunica/actor-function-factory-term-function-equality';
-import { ActorFunctionFactoryTermFunctionLesserThan } from '@comunica/actor-function-factory-term-function-lesser-than';
+import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-factory-term-equality';
+import { ActorFunctionFactoryTermLesserThan } from '@comunica/actor-function-factory-term-lesser-than';
 import {
-  ActorFunctionFactoryTermFunctionLesserThanEqual,
-} from '@comunica/actor-function-factory-term-function-lesser-than-equal';
+  ActorFunctionFactoryTermLesserThanEqual,
+} from '@comunica/actor-function-factory-term-lesser-than-equal';
 import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import {
@@ -17,14 +17,14 @@ import {
   yearMonthDurationTyped,
 } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionGreaterThanEqual } from '../lib';
+import { ActorFunctionFactoryTermGreaterThanEqual } from '../lib';
 
 const config: FuncTestTableConfig<object> = {
   registeredActors: [
-    args => new ActorFunctionFactoryTermFunctionGreaterThanEqual(args),
-    args => new ActorFunctionFactoryTermFunctionLesserThanEqual(args),
-    args => new ActorFunctionFactoryTermFunctionLesserThan(args),
-    args => new ActorFunctionFactoryTermFunctionEquality(args),
+    args => new ActorFunctionFactoryTermGreaterThanEqual(args),
+    args => new ActorFunctionFactoryTermLesserThanEqual(args),
+    args => new ActorFunctionFactoryTermLesserThan(args),
+    args => new ActorFunctionFactoryTermEquality(args),
   ],
   arity: 2,
   operation: '>=',

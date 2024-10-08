@@ -6,12 +6,12 @@ import * as Eval from '@comunica/utils-expression-evaluator';
 import { decimal, numeric } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
 import { LRUCache } from 'lru-cache';
-import { ActorFunctionFactoryTermFunctionDivision } from '../lib';
+import { ActorFunctionFactoryTermDivision } from '../lib';
 
 describe('evaluation of \'/\' like', () => {
   const config: FuncTestTableConfig<object> = {
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionDivision(args),
+      args => new ActorFunctionFactoryTermDivision(args),
     ],
     arity: 2,
     operation: '/',

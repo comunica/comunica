@@ -5,12 +5,12 @@ import {
   yearMonthDurationTyped,
 } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionXsdToYearMonthDuration } from '../lib';
+import { ActorFunctionFactoryTermXsdToYearMonthDuration } from '../lib';
 
 describe('to yearMonthDuration', () => {
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionXsdToYearMonthDuration(args),
+      args => new ActorFunctionFactoryTermXsdToYearMonthDuration(args),
     ],
     arity: 1,
     notation: Notation.Function,

@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryExpressionFunctionBound';
+export * from './ActorFunctionFactoryExpressionBound';

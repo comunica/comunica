@@ -1,10 +1,10 @@
 import {
-  ActorFunctionFactoryExpressionFunctionConcat,
-} from '@comunica/actor-function-factory-expression-function-concat';
-import { ActorFunctionFactoryTermFunctionAddition } from '@comunica/actor-function-factory-term-function-addition';
-import { ActorFunctionFactoryTermFunctionEquality } from '@comunica/actor-function-factory-term-function-equality';
-import { ActorFunctionFactoryTermFunctionIri } from '@comunica/actor-function-factory-term-function-iri';
-import { ActorFunctionFactoryTermFunctionStr } from '@comunica/actor-function-factory-term-function-str';
+  ActorFunctionFactoryExpressionConcat,
+} from '@comunica/actor-function-factory-expression-concat';
+import { ActorFunctionFactoryTermAddition } from '@comunica/actor-function-factory-term-addition';
+import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-factory-term-equality';
+import { ActorFunctionFactoryTermIri } from '@comunica/actor-function-factory-term-iri';
+import { ActorFunctionFactoryTermStr } from '@comunica/actor-function-factory-term-str';
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
@@ -106,11 +106,11 @@ describe('ActorQueryOperationFilter', () => {
       mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
         mediatorQueryOperation,
         mediatorFunctionFactory: createFuncMediator([
-          args => new ActorFunctionFactoryTermFunctionAddition(args),
-          args => new ActorFunctionFactoryTermFunctionEquality(args),
-          args => new ActorFunctionFactoryTermFunctionStr(args),
-          args => new ActorFunctionFactoryExpressionFunctionConcat(args),
-          args => new ActorFunctionFactoryTermFunctionIri(args),
+          args => new ActorFunctionFactoryTermAddition(args),
+          args => new ActorFunctionFactoryTermEquality(args),
+          args => new ActorFunctionFactoryTermStr(args),
+          args => new ActorFunctionFactoryExpressionConcat(args),
+          args => new ActorFunctionFactoryTermIri(args),
         ], {}),
       });
 

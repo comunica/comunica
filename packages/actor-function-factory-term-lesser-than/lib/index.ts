@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionLesserThan';
+export * from './ActorFunctionFactoryTermLesserThan';

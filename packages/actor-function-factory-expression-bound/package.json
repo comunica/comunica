@@ -1,14 +1,14 @@
 {
-  "name": "@comunica/actor-function-factory-expression-function-bound",
+  "name": "@comunica/actor-function-factory-expression-bound",
   "version": "3.2.1",
-  "description": "A expression-function-bound function-factory actor",
+  "description": "A expression-bound function-factory actor",
   "lsd:module": true,
   "license": "MIT",
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-function-factory-expression-function-bound"
+    "directory": "packages/actor-function-factory-expression-bound"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"

@@ -1,14 +1,14 @@
 {
-  "name": "@comunica/actor-function-factory-term-function-regex",
+  "name": "@comunica/actor-function-factory-term-regex",
   "version": "3.2.1",
-  "description": "A term-function-regex function-factory actor",
+  "description": "A term-regex function-factory actor",
   "lsd:module": true,
   "license": "MIT",
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-function-factory-term-function-regex"
+    "directory": "packages/actor-function-factory-term-regex"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"

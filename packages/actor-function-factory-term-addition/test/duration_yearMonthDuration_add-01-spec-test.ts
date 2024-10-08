@@ -6,7 +6,7 @@ import {
   yearMonthDurationTyped,
 } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionAddition } from '../lib';
+import { ActorFunctionFactoryTermAddition } from '../lib';
 
 describe('Add duration and yearMonthDuration 01', () => {
   /**
@@ -23,7 +23,7 @@ describe('Add duration and yearMonthDuration 01', () => {
   describe('respect the duration_dayTimeDuration_add-01 spec', () => {
     runFuncTestTable({
       registeredActors: [
-        args => new ActorFunctionFactoryTermFunctionAddition(args),
+        args => new ActorFunctionFactoryTermAddition(args),
       ],
       operation: '+',
       arity: 2,

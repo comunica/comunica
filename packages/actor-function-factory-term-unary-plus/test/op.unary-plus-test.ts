@@ -1,11 +1,11 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionUnaryPlus } from '../lib';
+import { ActorFunctionFactoryTermUnaryPlus } from '../lib';
 
 describe('evaluation of \'+ (unary)\' like', () => {
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionUnaryPlus(args),
+      args => new ActorFunctionFactoryTermUnaryPlus(args),
     ],
     arity: 1,
     operation: '+',

@@ -8,11 +8,11 @@ import {
   yearMonthDurationTyped,
 } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionSubtraction } from '../lib';
+import { ActorFunctionFactoryTermSubtraction } from '../lib';
 
 const config: FuncTestTableConfig<object> = {
   registeredActors: [
-    args => new ActorFunctionFactoryTermFunctionSubtraction(args),
+    args => new ActorFunctionFactoryTermSubtraction(args),
   ],
   arity: 2,
   operation: '-',

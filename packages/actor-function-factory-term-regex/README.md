@@ -1,6 +1,6 @@
 # Comunica Term Function Regex Function Factory Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-function-regex.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-function-regex)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-function-regex.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-regex)
 
 A comunica Term Function Regex Function Factory Actor.
 
@@ -12,7 +12,7 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/actor-function-factory-term-function-regex
+$ yarn add @comunica/actor-function-factory-term-regex
 ```
 
 ## Configure
@@ -22,13 +22,13 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-function-factory-term-function-regex/^3.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-function-factory-term-regex/^3.0.0/components/context.jsonld"
   ],
   "actors": [
     ...
     {
       "@id": "urn:comunica:default:function-factory/actors#term-function-regex",
-      "@type": "ActorFunctionFactoryTermFunctionRegex"
+      "@type": "ActorFunctionFactoryTermRegex"
     }
   ]
 }

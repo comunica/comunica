@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionEquality';
+export * from './ActorFunctionFactoryTermEquality';

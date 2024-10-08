@@ -1,6 +1,6 @@
 # Comunica Expression Function If Function Factory Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-expression-function-if.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-expression-function-if)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-expression-function-if.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-expression-if)
 
 A comunica Expression Function If Function Factory Actor.
 
@@ -12,7 +12,7 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/actor-function-factory-expression-function-if
+$ yarn add @comunica/actor-function-factory-expression-if
 ```
 
 ## Configure
@@ -22,13 +22,13 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-function-factory-expression-function-if/^3.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-function-factory-expression-if/^3.0.0/components/context.jsonld"
   ],
   "actors": [
     ...
     {
       "@id": "urn:comunica:default:function-factory/actors#expression-function-if",
-      "@type": "ActorFunctionFactoryExpressionFunctionIf"
+      "@type": "ActorFunctionFactoryExpressionIf"
     }
   ]
 }

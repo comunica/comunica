@@ -3,12 +3,12 @@ import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionIri } from '../lib';
+import { ActorFunctionFactoryTermIri } from '../lib';
 
 describe('We should respect the iri01 spec', () => {
   const config: FuncTestTableConfig<object> = {
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionIri(args),
+      args => new ActorFunctionFactoryTermIri(args),
     ],
     config: new ActionContext().set(KeysInitQuery.baseIRI, 'http://example.org'),
     arity: 1,

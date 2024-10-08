@@ -1,7 +1,7 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import * as Data from '@comunica/utils-expression-evaluator/test/spec/_data';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionStrBefore } from '../lib';
+import { ActorFunctionFactoryTermStrBefore } from '../lib';
 
 /**
  * REQUEST: strbefore01.rq
@@ -31,7 +31,7 @@ describe('We should respect the strbefore01 spec', () => {
   const { s1, s2, s3, s4, s5, s6, s7 } = Data.data2();
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionStrBefore(args),
+      args => new ActorFunctionFactoryTermStrBefore(args),
     ],
     arity: 2,
     operation: 'STRBEFORE',

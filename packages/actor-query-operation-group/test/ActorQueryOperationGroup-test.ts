@@ -6,8 +6,8 @@ import { MinAggregator } from '@comunica/actor-bindings-aggregator-factory-min';
 import { SampleAggregator } from '@comunica/actor-bindings-aggregator-factory-sample';
 import { SumAggregator } from '@comunica/actor-bindings-aggregator-factory-sum';
 import { WildcardCountAggregator } from '@comunica/actor-bindings-aggregator-factory-wildcard-count';
-import { ActorFunctionFactoryTermFunctionAddition } from '@comunica/actor-function-factory-term-function-addition';
-import { ActorFunctionFactoryTermFunctionDivision } from '@comunica/actor-function-factory-term-function-division';
+import { ActorFunctionFactoryTermAddition } from '@comunica/actor-function-factory-term-addition';
+import { ActorFunctionFactoryTermDivision } from '@comunica/actor-function-factory-term-division';
 import { createTermCompMediator } from '@comunica/actor-term-comparator-factory-expression-evaluator/test/util';
 import type {
   IActionBindingsAggregatorFactory,
@@ -88,8 +88,8 @@ const sumZ: Algebra.BoundAggregate = {
 };
 
 const mediatorFunctionFactory: MediatorFunctionFactory = createFuncMediator([
-  args => new ActorFunctionFactoryTermFunctionAddition(args),
-  args => new ActorFunctionFactoryTermFunctionDivision(args),
+  args => new ActorFunctionFactoryTermAddition(args),
+  args => new ActorFunctionFactoryTermDivision(args),
 ], {});
 
 function getDefaultMediatorQueryOperation() {

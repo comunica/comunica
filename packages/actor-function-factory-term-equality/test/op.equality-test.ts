@@ -14,11 +14,11 @@ import {
 } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
 import { LRUCache } from 'lru-cache';
-import { ActorFunctionFactoryTermFunctionEquality } from '../lib';
+import { ActorFunctionFactoryTermEquality } from '../lib';
 
 const config: FuncTestTableConfig<object> = {
   registeredActors: [
-    args => new ActorFunctionFactoryTermFunctionEquality(args),
+    args => new ActorFunctionFactoryTermEquality(args),
   ],
   arity: 2,
   operation: '=',

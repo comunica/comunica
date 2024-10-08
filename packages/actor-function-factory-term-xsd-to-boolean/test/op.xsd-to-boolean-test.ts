@@ -1,11 +1,11 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionXsdToBoolean } from '../lib';
+import { ActorFunctionFactoryTermXsdToBoolean } from '../lib';
 
 describe('to boolean', () => {
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionXsdToBoolean(args),
+      args => new ActorFunctionFactoryTermXsdToBoolean(args),
     ],
     arity: 1,
     notation: Notation.Function,

@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionMd5';
+export * from './ActorFunctionFactoryTermMd5';

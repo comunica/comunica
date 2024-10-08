@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionGreaterThanEqual';
+export * from './ActorFunctionFactoryTermGreaterThanEqual';

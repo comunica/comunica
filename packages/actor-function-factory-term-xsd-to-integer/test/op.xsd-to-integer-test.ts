@@ -1,11 +1,11 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionXsdToInteger } from '../lib';
+import { ActorFunctionFactoryTermXsdToInteger } from '../lib';
 
 describe('to integer', () => {
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionXsdToInteger(args),
+      args => new ActorFunctionFactoryTermXsdToInteger(args),
     ],
     arity: 1,
     notation: Notation.Function,

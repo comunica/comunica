@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionIsNumeric';
+export * from './ActorFunctionFactoryTermIsNumeric';

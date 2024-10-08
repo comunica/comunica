@@ -1,14 +1,14 @@
 {
-  "name": "@comunica/actor-function-factory-term-function-greater-than",
+  "name": "@comunica/actor-function-factory-term-greater-than",
   "version": "3.2.1",
-  "description": "A term-function-greater-than function-factory actor",
+  "description": "A term-greater-than function-factory actor",
   "lsd:module": true,
   "license": "MIT",
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-function-factory-term-function-greater-than"
+    "directory": "packages/actor-function-factory-term-greater-than"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"

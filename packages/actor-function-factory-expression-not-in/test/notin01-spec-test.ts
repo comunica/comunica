@@ -1,9 +1,9 @@
-import { ActorFunctionFactoryExpressionFunctionIn } from '@comunica/actor-function-factory-expression-function-in';
-import { ActorFunctionFactoryTermFunctionEquality } from '@comunica/actor-function-factory-term-function-equality';
+import { ActorFunctionFactoryExpressionIn } from '@comunica/actor-function-factory-expression-in';
+import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-factory-term-equality';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { bool } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryExpressionFunctionNotIn } from '../lib';
+import { ActorFunctionFactoryExpressionNotIn } from '../lib';
 
 /**
  * REQUEST: notin01.rq
@@ -31,9 +31,9 @@ import { ActorFunctionFactoryExpressionFunctionNotIn } from '../lib';
 describe('We should respect the notin01 spec', () => {
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryExpressionFunctionNotIn(args),
-      args => new ActorFunctionFactoryExpressionFunctionIn(args),
-      args => new ActorFunctionFactoryTermFunctionEquality(args),
+      args => new ActorFunctionFactoryExpressionNotIn(args),
+      args => new ActorFunctionFactoryExpressionIn(args),
+      args => new ActorFunctionFactoryTermEquality(args),
     ],
     arity: 2,
     notation: Notation.Infix,

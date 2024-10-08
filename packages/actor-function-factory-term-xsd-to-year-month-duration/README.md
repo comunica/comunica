@@ -1,6 +1,6 @@
 # Comunica Term Function Xsd To Year Month Duration Function Factory Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-function-xsd-to-year-month-duration.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-function-xsd-to-year-month-duration)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-function-xsd-to-year-month-duration.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-xsd-to-year-month-duration)
 
 A comunica Term Function Xsd To Year Month Duration Function Factory Actor.
 
@@ -12,7 +12,7 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/actor-function-factory-term-function-xsd-to-year-month-duration
+$ yarn add @comunica/actor-function-factory-term-xsd-to-year-month-duration
 ```
 
 ## Configure
@@ -22,13 +22,13 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-function-factory-term-function-xsd-to-year-month-duration/^3.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-function-factory-term-xsd-to-year-month-duration/^3.0.0/components/context.jsonld"
   ],
   "actors": [
     ...
     {
       "@id": "urn:comunica:default:function-factory/actors#term-function-xsd-to-year-month-duration",
-      "@type": "ActorFunctionFactoryTermFunctionXsdToYearMonthDuration"
+      "@type": "ActorFunctionFactoryTermXsdToYearMonthDuration"
     }
   ]
 }

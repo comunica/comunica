@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionStrLang';
+export * from './ActorFunctionFactoryTermStrLang';

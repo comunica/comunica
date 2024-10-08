@@ -2,7 +2,7 @@ import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import * as Data from '@comunica/utils-expression-evaluator/test/spec/_data';
 import { bool } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionStrEnds } from '../lib';
+import { ActorFunctionFactoryTermStrEnds } from '../lib';
 
 /**
  * REQUEST: ends01.rq
@@ -33,7 +33,7 @@ describe('We should respect the ends01 spec', () => {
   const { s1, s2, s3, s4, s5, s6, s7 } = Data.data();
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionStrEnds(args),
+      args => new ActorFunctionFactoryTermStrEnds(args),
     ],
     notation: Notation.Function,
     arity: 2,

@@ -1,4 +1,4 @@
-import { ActorFunctionFactoryTermFunctionEquality } from '@comunica/actor-function-factory-term-function-equality';
+import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-factory-term-equality';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { bool, durationTyped } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
@@ -26,7 +26,7 @@ describe('compare duration 01', () => {
   describe('respect the compare_duration-01 spec', () => {
     runFuncTestTable({
       registeredActors: [
-        args => new ActorFunctionFactoryTermFunctionEquality(args),
+        args => new ActorFunctionFactoryTermEquality(args),
       ],
       operation: '=',
       arity: 2,

@@ -1,14 +1,14 @@
 {
-  "name": "@comunica/actor-function-factory-term-function-xsd-to-day-time-duration",
+  "name": "@comunica/actor-function-factory-term-xsd-to-day-time-duration",
   "version": "3.2.1",
-  "description": "A term-function-xsd-to-day-time-duration function-factory actor",
+  "description": "A term-xsd-to-day-time-duration function-factory actor",
   "lsd:module": true,
   "license": "MIT",
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-function-factory-term-function-xsd-to-day-time-duration"
+    "directory": "packages/actor-function-factory-term-xsd-to-day-time-duration"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"

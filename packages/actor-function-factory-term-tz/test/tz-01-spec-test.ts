@@ -1,7 +1,7 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import * as Data from '@comunica/utils-expression-evaluator/test/spec/_data';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionTz } from '../lib';
+import { ActorFunctionFactoryTermTz } from '../lib';
 
 /**
  * REQUEST: tz-01.rq
@@ -30,7 +30,7 @@ describe('We should respect the tz-01 spec', () => {
   const { d1, d2, d3, d4 } = Data.data();
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionTz(args),
+      args => new ActorFunctionFactoryTermTz(args),
     ],
     arity: 1,
     notation: Notation.Function,

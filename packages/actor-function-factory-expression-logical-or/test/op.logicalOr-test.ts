@@ -2,11 +2,11 @@ import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/ut
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { bool, error, merge } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryExpressionFunctionLogicalOr } from '../lib';
+import { ActorFunctionFactoryExpressionLogicalOr } from '../lib';
 
 const config: FuncTestTableConfig<object> = {
   registeredActors: [
-    args => new ActorFunctionFactoryExpressionFunctionLogicalOr(args),
+    args => new ActorFunctionFactoryExpressionLogicalOr(args),
   ],
   operation: '||',
   arity: 2,

@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryExpressionFunctionConcat';
+export * from './ActorFunctionFactoryExpressionConcat';

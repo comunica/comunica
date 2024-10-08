@@ -1,8 +1,8 @@
-import { ActorFunctionFactoryTermFunctionStr } from '@comunica/actor-function-factory-term-function-str';
+import { ActorFunctionFactoryTermStr } from '@comunica/actor-function-factory-term-str';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import * as Data from '@comunica/utils-expression-evaluator/test/spec/_data';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionStrLang } from '../lib/ActorFunctionFactoryTermFunctionStrLang';
+import { ActorFunctionFactoryTermStrLang } from '../lib/ActorFunctionFactoryTermStrLang';
 
 /**
  * REQUEST: strlang02.rq
@@ -32,8 +32,8 @@ describe('We should respect the strlang02 spec', () => {
   const { s2 } = Data.data();
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionStrLang(args),
-      args => new ActorFunctionFactoryTermFunctionStr(args),
+      args => new ActorFunctionFactoryTermStrLang(args),
+      args => new ActorFunctionFactoryTermStr(args),
     ],
     arity: 2,
     operation: 'STRLANG',

@@ -6,7 +6,7 @@ import { bool, compactTermString, merge, numeric } from '@comunica/utils-express
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
-import { ActorFunctionFactoryExpressionFunctionExtensions } from '../lib';
+import { ActorFunctionFactoryExpressionExtensions } from '../lib';
 
 const DF = new DataFactory();
 
@@ -33,7 +33,7 @@ describe('extension functions:', () => {
     describe('Can be evaluated', () => {
       runFuncTestTable({
         registeredActors: [
-          args => new ActorFunctionFactoryExpressionFunctionExtensions(args),
+          args => new ActorFunctionFactoryExpressionExtensions(args),
         ],
         arity: 2,
         notation: Notation.Function,
@@ -92,7 +92,7 @@ describe('extension functions:', () => {
         `;
       runFuncTestTable({
         registeredActors: [
-          args => new ActorFunctionFactoryExpressionFunctionExtensions(args),
+          args => new ActorFunctionFactoryExpressionExtensions(args),
         ],
         arity: 2,
         notation: Notation.Function,
@@ -105,7 +105,7 @@ describe('extension functions:', () => {
     describe('throws error when providing a failing implementation', () => {
       runFuncTestTable({
         registeredActors: [
-          args => new ActorFunctionFactoryExpressionFunctionExtensions(args),
+          args => new ActorFunctionFactoryExpressionExtensions(args),
         ],
         arity: 1,
         notation: Notation.Function,
@@ -124,7 +124,7 @@ describe('extension functions:', () => {
       const stringType = DF.namedNode('http://www.w3.org/2001/XMLSchema#string');
       runFuncTestTable({
         registeredActors: [
-          args => new ActorFunctionFactoryExpressionFunctionExtensions(args),
+          args => new ActorFunctionFactoryExpressionExtensions(args),
         ],
         arity: 1,
         notation: Notation.Function,

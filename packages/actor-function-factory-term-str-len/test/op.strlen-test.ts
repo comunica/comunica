@@ -6,12 +6,12 @@ import * as Eval from '@comunica/utils-expression-evaluator';
 import { compactTermString, int, merge, numeric, str } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
 import { LRUCache } from 'lru-cache';
-import { ActorFunctionFactoryTermFunctionStrLen } from '../lib';
+import { ActorFunctionFactoryTermStrLen } from '../lib';
 
 describe('evaluation of \'strlen\' like', () => {
   const baseConfig: FuncTestTableConfig<object> = {
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionStrLen(args),
+      args => new ActorFunctionFactoryTermStrLen(args),
     ],
     arity: 1,
     operation: 'strlen',

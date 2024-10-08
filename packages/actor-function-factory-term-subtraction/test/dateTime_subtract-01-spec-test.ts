@@ -7,7 +7,7 @@ import {
   timeTyped,
 } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionSubtraction } from '../lib';
+import { ActorFunctionFactoryTermSubtraction } from '../lib';
 
 describe('dateTime subtract', () => {
   /**
@@ -25,7 +25,7 @@ describe('dateTime subtract', () => {
   describe('respect the construct_time-02 spec', () => {
     runFuncTestTable({
       registeredActors: [
-        args => new ActorFunctionFactoryTermFunctionSubtraction(args),
+        args => new ActorFunctionFactoryTermSubtraction(args),
       ],
       operation: '-',
       arity: 2,

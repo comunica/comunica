@@ -1,13 +1,13 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { bool } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionRegex } from '../lib';
+import { ActorFunctionFactoryTermRegex } from '../lib';
 
 describe('evaluation of \'regex\' like', () => {
   // TODO: Test better
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionRegex(args),
+      args => new ActorFunctionFactoryTermRegex(args),
     ],
     arity: 'vary',
     operation: 'regex',

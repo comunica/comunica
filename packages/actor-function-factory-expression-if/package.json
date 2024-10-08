@@ -1,14 +1,14 @@
 {
-  "name": "@comunica/actor-function-factory-expression-function-if",
+  "name": "@comunica/actor-function-factory-expression-if",
   "version": "3.2.1",
-  "description": "A expression-function-if function-factory actor",
+  "description": "A expression-if function-factory actor",
   "lsd:module": true,
   "license": "MIT",
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-function-factory-expression-function-if"
+    "directory": "packages/actor-function-factory-expression-if"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"

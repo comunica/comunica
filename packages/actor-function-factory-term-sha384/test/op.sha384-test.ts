@@ -1,11 +1,11 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionSha384 } from '../lib';
+import { ActorFunctionFactoryTermSha384 } from '../lib';
 
 describe('evaluation of \'sha384\' like', () => {
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionSha384(args),
+      args => new ActorFunctionFactoryTermSha384(args),
     ],
     arity: 1,
     operation: 'sha384',

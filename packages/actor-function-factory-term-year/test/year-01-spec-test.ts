@@ -2,7 +2,7 @@ import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import * as Data from '@comunica/utils-expression-evaluator/test/spec/_data';
 import { int } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionYear } from '../lib';
+import { ActorFunctionFactoryTermYear } from '../lib';
 
 describe('Year', () => {
   /**
@@ -32,7 +32,7 @@ describe('Year', () => {
     const { d1, d2, d3, d4 } = Data.data();
     runFuncTestTable({
       registeredActors: [
-        args => new ActorFunctionFactoryTermFunctionYear(args),
+        args => new ActorFunctionFactoryTermYear(args),
       ],
       operation: 'YEAR',
       arity: 1,
@@ -80,7 +80,7 @@ describe('Year', () => {
     const { d1, d2, d3, d4 } = Data.data();
     runFuncTestTable({
       registeredActors: [
-        args => new ActorFunctionFactoryTermFunctionYear(args),
+        args => new ActorFunctionFactoryTermYear(args),
       ],
       operation: 'YEAR',
       arity: 1,

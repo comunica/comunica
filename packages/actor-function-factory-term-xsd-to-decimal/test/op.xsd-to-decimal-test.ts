@@ -1,11 +1,11 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionXsdToDecimal } from '../lib';
+import { ActorFunctionFactoryTermXsdToDecimal } from '../lib';
 
 describe('to decimal', () => {
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionXsdToDecimal(args),
+      args => new ActorFunctionFactoryTermXsdToDecimal(args),
     ],
     arity: 1,
     notation: Notation.Function,

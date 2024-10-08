@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionIsTriple';
+export * from './ActorFunctionFactoryTermIsTriple';

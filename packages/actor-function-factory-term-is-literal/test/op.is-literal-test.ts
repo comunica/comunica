@@ -1,16 +1,16 @@
 import {
-  ActorFunctionFactoryExpressionFunctionBnode,
-} from '@comunica/actor-function-factory-expression-function-bnode';
+  ActorFunctionFactoryExpressionBnode,
+} from '@comunica/actor-function-factory-expression-bnode';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { bool } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionIsLiteral } from '../lib';
+import { ActorFunctionFactoryTermIsLiteral } from '../lib';
 
 describe('like \'isLiteral\' receiving', () => {
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionIsLiteral(args),
-      args => new ActorFunctionFactoryExpressionFunctionBnode(args),
+      args => new ActorFunctionFactoryTermIsLiteral(args),
+      args => new ActorFunctionFactoryExpressionBnode(args),
     ],
     arity: 1,
     aliases: bool,

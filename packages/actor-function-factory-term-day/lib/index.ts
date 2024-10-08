@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionDay';
+export * from './ActorFunctionFactoryTermDay';

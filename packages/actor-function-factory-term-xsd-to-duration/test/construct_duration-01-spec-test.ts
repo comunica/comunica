@@ -5,7 +5,7 @@ import {
   compactTermString,
 } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionXsdToDuration } from '../lib';
+import { ActorFunctionFactoryTermXsdToDuration } from '../lib';
 
 describe('construct duration', () => {
   /**
@@ -30,7 +30,7 @@ describe('construct duration', () => {
   describe('respect the construct_duration-01 spec', () => {
     runFuncTestTable({
       registeredActors: [
-        args => new ActorFunctionFactoryTermFunctionXsdToDuration(args),
+        args => new ActorFunctionFactoryTermXsdToDuration(args),
       ],
       operation: 'xsd:duration',
       arity: 1,

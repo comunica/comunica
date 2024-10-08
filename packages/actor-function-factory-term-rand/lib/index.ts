@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionRand';
+export * from './ActorFunctionFactoryTermRand';

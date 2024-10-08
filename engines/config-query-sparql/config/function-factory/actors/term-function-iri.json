@@ -2,14 +2,14 @@
   "@context": [
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^3.0.0/components/context.jsonld",
 
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-function-factory-term-function-iri/^3.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-function-factory-term-iri/^3.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:default:Runner",
   "@type": "Runner",
   "actors": [
     {
       "@id": "urn:comunica:default:function-factory/actors#term-function-iri",
-      "@type": "ActorFunctionFactoryTermFunctionIri"
+      "@type": "ActorFunctionFactoryTermIri"
     }
   ]
 }

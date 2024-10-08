@@ -1,16 +1,16 @@
-import { ActorFunctionFactoryTermFunctionEquality } from '@comunica/actor-function-factory-term-function-equality';
+import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-factory-term-equality';
 import {
-  ActorFunctionFactoryTermFunctionGreaterThanEqual,
-} from '@comunica/actor-function-factory-term-function-greater-than-equal';
-import { ActorFunctionFactoryTermFunctionLesserThan } from '@comunica/actor-function-factory-term-function-lesser-than';
+  ActorFunctionFactoryTermGreaterThanEqual,
+} from '@comunica/actor-function-factory-term-greater-than-equal';
+import { ActorFunctionFactoryTermLesserThan } from '@comunica/actor-function-factory-term-lesser-than';
 import {
-  ActorFunctionFactoryTermFunctionLesserThanEqual,
-} from '@comunica/actor-function-factory-term-function-lesser-than-equal';
+  ActorFunctionFactoryTermLesserThanEqual,
+} from '@comunica/actor-function-factory-term-lesser-than-equal';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import * as Data from '@comunica/utils-expression-evaluator/test/spec/_data';
 import { bool } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionAbs } from '../lib';
+import { ActorFunctionFactoryTermAbs } from '../lib';
 
 /**
  * REQUEST: abs01.rq
@@ -40,11 +40,11 @@ describe('We should respect the abs01 spec', () => {
   const { n1, n2, n3, n4, n5 } = Data.data();
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionGreaterThanEqual(args),
-      args => new ActorFunctionFactoryTermFunctionLesserThanEqual(args),
-      args => new ActorFunctionFactoryTermFunctionLesserThan(args),
-      args => new ActorFunctionFactoryTermFunctionEquality(args),
-      args => new ActorFunctionFactoryTermFunctionAbs(args),
+      args => new ActorFunctionFactoryTermGreaterThanEqual(args),
+      args => new ActorFunctionFactoryTermLesserThanEqual(args),
+      args => new ActorFunctionFactoryTermLesserThan(args),
+      args => new ActorFunctionFactoryTermEquality(args),
+      args => new ActorFunctionFactoryTermAbs(args),
     ],
     arity: 2,
     notation: Notation.Infix,

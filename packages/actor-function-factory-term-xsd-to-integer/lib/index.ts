@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionXsdToInteger';
+export * from './ActorFunctionFactoryTermXsdToInteger';

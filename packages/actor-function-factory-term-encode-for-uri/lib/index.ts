@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionEncodeForUri';
+export * from './ActorFunctionFactoryTermEncodeForUri';

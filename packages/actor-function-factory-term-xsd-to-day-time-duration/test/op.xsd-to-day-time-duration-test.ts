@@ -5,12 +5,12 @@ import {
   yearMonthDurationTyped,
 } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionXsdToDayTimeDuration } from '../lib';
+import { ActorFunctionFactoryTermXsdToDayTimeDuration } from '../lib';
 
 describe('to dayTimeDuration', () => {
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionXsdToDayTimeDuration(args),
+      args => new ActorFunctionFactoryTermXsdToDayTimeDuration(args),
     ],
     arity: 1,
     notation: Notation.Function,

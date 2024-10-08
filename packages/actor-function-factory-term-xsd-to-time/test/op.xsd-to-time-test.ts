@@ -1,11 +1,11 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionXsdToTime } from '../lib';
+import { ActorFunctionFactoryTermXsdToTime } from '../lib';
 
 describe('to time', () => {
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionXsdToTime(args),
+      args => new ActorFunctionFactoryTermXsdToTime(args),
     ],
     arity: 1,
     notation: Notation.Function,

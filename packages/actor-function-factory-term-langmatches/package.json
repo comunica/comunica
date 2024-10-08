@@ -1,14 +1,14 @@
 {
-  "name": "@comunica/actor-function-factory-term-function-langmatches",
+  "name": "@comunica/actor-function-factory-term-langmatches",
   "version": "3.2.1",
-  "description": "A term-function-langmatches function-factory actor",
+  "description": "A term-langmatches function-factory actor",
   "lsd:module": true,
   "license": "MIT",
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-function-factory-term-function-langmatches"
+    "directory": "packages/actor-function-factory-term-langmatches"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"

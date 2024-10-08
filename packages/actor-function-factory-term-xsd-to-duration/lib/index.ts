@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionXsdToDuration';
+export * from './ActorFunctionFactoryTermXsdToDuration';

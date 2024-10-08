@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryExpressionFunctionBnode';
+export * from './ActorFunctionFactoryExpressionBnode';

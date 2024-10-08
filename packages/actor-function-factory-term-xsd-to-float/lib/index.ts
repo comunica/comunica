@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionXsdToFloat';
+export * from './ActorFunctionFactoryTermXsdToFloat';

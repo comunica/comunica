@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionIsBlank';
+export * from './ActorFunctionFactoryTermIsBlank';

@@ -1,12 +1,12 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { dateTyped, int } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionMonth } from '../lib';
+import { ActorFunctionFactoryTermMonth } from '../lib';
 
 describe('evaluation of \'MONTH\'', () => {
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionMonth(args),
+      args => new ActorFunctionFactoryTermMonth(args),
     ],
     arity: 1,
     notation: Notation.Function,

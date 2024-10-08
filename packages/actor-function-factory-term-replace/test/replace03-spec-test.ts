@@ -1,7 +1,7 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import * as Data from '@comunica/utils-expression-evaluator/test/spec/_data';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionReplace } from '../lib';
+import { ActorFunctionFactoryTermReplace } from '../lib';
 
 /**
  * REQUEST: replace03.rq
@@ -31,7 +31,7 @@ describe('We should respect the replace03 spec', () => {
   const { s9 } = Data.data3();
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionReplace(args),
+      args => new ActorFunctionFactoryTermReplace(args),
     ],
     operation: 'REPLACE',
     arity: 'vary',

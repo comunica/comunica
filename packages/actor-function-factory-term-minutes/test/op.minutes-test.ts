@@ -1,12 +1,12 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { int, timeTyped } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionMinutes } from '../lib';
+import { ActorFunctionFactoryTermMinutes } from '../lib';
 
 describe('evaluation of \'MINUTES\'', () => {
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionMinutes(args),
+      args => new ActorFunctionFactoryTermMinutes(args),
     ],
     arity: 1,
     notation: Notation.Function,

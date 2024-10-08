@@ -1,14 +1,14 @@
 {
-  "name": "@comunica/actor-function-factory-term-function-contains",
+  "name": "@comunica/actor-function-factory-term-contains",
   "version": "3.2.1",
-  "description": "A term-function-contains function-factory actor",
+  "description": "A term-contains function-factory actor",
   "lsd:module": true,
   "license": "MIT",
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-function-factory-term-function-contains"
+    "directory": "packages/actor-function-factory-term-contains"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"

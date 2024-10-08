@@ -1,11 +1,11 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionXsdToDouble } from '../lib';
+import { ActorFunctionFactoryTermXsdToDouble } from '../lib';
 
 describe('to double', () => {
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionXsdToDouble(args),
+      args => new ActorFunctionFactoryTermXsdToDouble(args),
     ],
     arity: 1,
     notation: Notation.Function,

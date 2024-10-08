@@ -1,6 +1,6 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionXsdToDate } from '../lib';
+import { ActorFunctionFactoryTermXsdToDate } from '../lib';
 
 describe('Construct date', () => {
   /**
@@ -18,7 +18,7 @@ describe('Construct date', () => {
   describe('respect the construct_date-02 spec', () => {
     runFuncTestTable({
       registeredActors: [
-        args => new ActorFunctionFactoryTermFunctionXsdToDate(args),
+        args => new ActorFunctionFactoryTermXsdToDate(args),
       ],
       operation: 'xsd:date',
       arity: 1,

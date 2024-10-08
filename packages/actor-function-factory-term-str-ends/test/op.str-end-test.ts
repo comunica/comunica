@@ -1,12 +1,12 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { bool } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionStrEnds } from '../lib';
+import { ActorFunctionFactoryTermStrEnds } from '../lib';
 
 describe('evaluation of \'strends\' like', () => {
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionStrEnds(args),
+      args => new ActorFunctionFactoryTermStrEnds(args),
     ],
     arity: 2,
     operation: 'strends',

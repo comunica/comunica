@@ -1,12 +1,12 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { bool } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionContains } from '../lib';
+import { ActorFunctionFactoryTermContains } from '../lib';
 
 describe('evaluation of \'contains\' like', () => {
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionContains(args),
+      args => new ActorFunctionFactoryTermContains(args),
     ],
     arity: 2,
     operation: 'contains',

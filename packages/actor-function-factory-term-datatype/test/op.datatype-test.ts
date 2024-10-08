@@ -1,11 +1,11 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionDatatype } from '../lib';
+import { ActorFunctionFactoryTermDatatype } from '../lib';
 
 describe('like \'datatype\' receiving', () => {
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionDatatype(args),
+      args => new ActorFunctionFactoryTermDatatype(args),
     ],
     arity: 1,
     notation: Notation.Function,

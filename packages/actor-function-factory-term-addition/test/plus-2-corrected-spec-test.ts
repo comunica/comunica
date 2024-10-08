@@ -1,12 +1,12 @@
 import {
-  ActorFunctionFactoryExpressionFunctionBnode,
-} from '@comunica/actor-function-factory-expression-function-bnode';
+  ActorFunctionFactoryExpressionBnode,
+} from '@comunica/actor-function-factory-expression-bnode';
 
-import { ActorFunctionFactoryTermFunctionStr } from '@comunica/actor-function-factory-term-function-str';
+import { ActorFunctionFactoryTermStr } from '@comunica/actor-function-factory-term-str';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import * as Data from '@comunica/utils-expression-evaluator/test/spec/_data';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionAddition } from '../lib';
+import { ActorFunctionFactoryTermAddition } from '../lib';
 
 /**
  * REQUEST: plus-2-corrected.rq
@@ -51,9 +51,9 @@ describe('We should respect the plus-2-corrected spec', () => {
   } = Data.dataBuiltin3();
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionAddition(args),
-      args => new ActorFunctionFactoryExpressionFunctionBnode(args),
-      args => new ActorFunctionFactoryTermFunctionStr(args),
+      args => new ActorFunctionFactoryTermAddition(args),
+      args => new ActorFunctionFactoryExpressionBnode(args),
+      args => new ActorFunctionFactoryTermStr(args),
     ],
     notation: Notation.Infix,
     operation: '+',

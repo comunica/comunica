@@ -1,6 +1,6 @@
 # Comunica Expression Function Bnode Function Factory Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-expression-function-bnode.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-expression-function-bnode)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-expression-function-bnode.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-expression-bnode)
 
 A comunica Expression Function Bnode Function Factory Actor.
 
@@ -12,7 +12,7 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/actor-function-factory-expression-function-bnode
+$ yarn add @comunica/actor-function-factory-expression-bnode
 ```
 
 ## Configure
@@ -22,13 +22,13 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-function-factory-expression-function-bnode/^3.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-function-factory-expression-bnode/^3.0.0/components/context.jsonld"
   ],
   "actors": [
     ...
     {
       "@id": "urn:comunica:default:function-factory/actors#expression-function-bnode",
-      "@type": "ActorFunctionFactoryExpressionFunctionBnode"
+      "@type": "ActorFunctionFactoryExpressionBnode"
     }
   ]
 }

@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionSha384';
+export * from './ActorFunctionFactoryTermSha384';

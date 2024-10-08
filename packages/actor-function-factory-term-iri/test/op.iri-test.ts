@@ -1,11 +1,11 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionIri } from '../lib';
+import { ActorFunctionFactoryTermIri } from '../lib';
 
 describe('like \'iri\' receiving', () => {
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionIri(args),
+      args => new ActorFunctionFactoryTermIri(args),
     ],
     arity: 1,
     notation: Notation.Function,
@@ -24,7 +24,7 @@ describe('like \'iri\' receiving', () => {
 describe('like \'uri\' receiving', () => {
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionIri(args),
+      args => new ActorFunctionFactoryTermIri(args),
     ],
     arity: 1,
     notation: Notation.Function,

@@ -1,14 +1,14 @@
 {
-  "name": "@comunica/actor-function-factory-term-function-lesser-than",
+  "name": "@comunica/actor-function-factory-term-lesser-than",
   "version": "3.2.1",
-  "description": "A term-function-lesser-than function-factory actor",
+  "description": "A term-lesser-than function-factory actor",
   "lsd:module": true,
   "license": "MIT",
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-function-factory-term-function-lesser-than"
+    "directory": "packages/actor-function-factory-term-lesser-than"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"

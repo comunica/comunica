@@ -1,9 +1,9 @@
-import { ActorFunctionFactoryTermFunctionEquality } from '@comunica/actor-function-factory-term-function-equality';
-import { ActorFunctionFactoryTermFunctionLesserThan } from '@comunica/actor-function-factory-term-function-lesser-than';
+import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-factory-term-equality';
+import { ActorFunctionFactoryTermLesserThan } from '@comunica/actor-function-factory-term-lesser-than';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { bool, dayTimeDurationTyped } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionGreaterThan } from '../lib';
+import { ActorFunctionFactoryTermGreaterThan } from '../lib';
 
 describe('compare dayTimeDuration 01', () => {
   /**
@@ -23,8 +23,8 @@ describe('compare dayTimeDuration 01', () => {
   describe('respect the lesserThan compare_dayTimeDuration-01 spec', () => {
     runFuncTestTable({
       registeredActors: [
-        args => new ActorFunctionFactoryTermFunctionLesserThan(args),
-        args => new ActorFunctionFactoryTermFunctionEquality(args),
+        args => new ActorFunctionFactoryTermLesserThan(args),
+        args => new ActorFunctionFactoryTermEquality(args),
       ],
       operation: '<',
       arity: 2,
@@ -42,9 +42,9 @@ describe('compare dayTimeDuration 01', () => {
   describe('respect the largerThan compare_dayTimeDuration-01 spec', () => {
     runFuncTestTable({
       registeredActors: [
-        args => new ActorFunctionFactoryTermFunctionGreaterThan(args),
-        args => new ActorFunctionFactoryTermFunctionLesserThan(args),
-        args => new ActorFunctionFactoryTermFunctionEquality(args),
+        args => new ActorFunctionFactoryTermGreaterThan(args),
+        args => new ActorFunctionFactoryTermLesserThan(args),
+        args => new ActorFunctionFactoryTermEquality(args),
       ],
       operation: '>',
       arity: 2,

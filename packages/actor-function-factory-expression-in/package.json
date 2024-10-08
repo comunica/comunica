@@ -1,14 +1,14 @@
 {
-  "name": "@comunica/actor-function-factory-expression-function-in",
+  "name": "@comunica/actor-function-factory-expression-in",
   "version": "3.2.1",
-  "description": "A expression-function-in function-factory actor",
+  "description": "A expression-in function-factory actor",
   "lsd:module": true,
   "license": "MIT",
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-function-factory-expression-function-in"
+    "directory": "packages/actor-function-factory-expression-in"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"

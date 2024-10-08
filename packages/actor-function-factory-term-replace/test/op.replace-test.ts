@@ -1,11 +1,11 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionReplace } from '../lib';
+import { ActorFunctionFactoryTermReplace } from '../lib';
 
 describe('evaluation of \'replace\' like', () => {
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionReplace(args),
+      args => new ActorFunctionFactoryTermReplace(args),
     ],
     arity: 'vary',
     operation: 'replace',

@@ -1,5 +1,5 @@
-import { ActorFunctionFactoryTermFunctionAddition } from '@comunica/actor-function-factory-term-function-addition';
-import { ActorFunctionFactoryTermFunctionStrLen } from '@comunica/actor-function-factory-term-function-str-len';
+import { ActorFunctionFactoryTermAddition } from '@comunica/actor-function-factory-term-addition';
+import { ActorFunctionFactoryTermStrLen } from '@comunica/actor-function-factory-term-str-len';
 import type {
   MediatorExpressionEvaluatorFactory,
 } from '@comunica/bus-expression-evaluator-factory';
@@ -98,8 +98,8 @@ describe('ActorQueryOperationExtend', () => {
     mediatorExpressionEvaluatorFactory = getMockMediatorExpressionEvaluatorFactory({
       mediatorQueryOperation,
       mediatorFunctionFactory: createFuncMediator([
-        args => new ActorFunctionFactoryTermFunctionStrLen(args),
-        args => new ActorFunctionFactoryTermFunctionAddition(args),
+        args => new ActorFunctionFactoryTermStrLen(args),
+        args => new ActorFunctionFactoryTermAddition(args),
       ], {}),
     });
 

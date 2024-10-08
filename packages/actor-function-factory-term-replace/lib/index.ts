@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionReplace';
+export * from './ActorFunctionFactoryTermReplace';

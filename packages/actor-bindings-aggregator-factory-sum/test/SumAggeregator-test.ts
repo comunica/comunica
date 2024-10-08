@@ -1,4 +1,4 @@
-import { ActorFunctionFactoryTermFunctionAddition } from '@comunica/actor-function-factory-term-function-addition';
+import { ActorFunctionFactoryTermAddition } from '@comunica/actor-function-factory-term-addition';
 import type { IBindingsAggregator } from '@comunica/bus-bindings-aggregator-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
@@ -56,7 +56,7 @@ describe('SumAggregator', () => {
   beforeEach(() => {
     expressionEvaluatorFactory = getMockEEFactory();
     mediatorFunctionFactory = createFuncMediator([
-      args => new ActorFunctionFactoryTermFunctionAddition(args),
+      args => new ActorFunctionFactoryTermAddition(args),
     ], {});
 
     context = getMockEEActionContext();

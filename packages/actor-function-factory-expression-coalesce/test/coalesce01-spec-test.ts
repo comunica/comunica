@@ -1,8 +1,8 @@
-import { ActorFunctionFactoryTermFunctionDivision } from '@comunica/actor-function-factory-term-function-division';
+import { ActorFunctionFactoryTermDivision } from '@comunica/actor-function-factory-term-division';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { int, decimal } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryExpressionFunctionCoalesce } from '../lib';
+import { ActorFunctionFactoryExpressionCoalesce } from '../lib';
 
 /**
  * REQUEST: coalesce01.rq
@@ -56,8 +56,8 @@ describe('We should respect the coalesce01 spec', () => {
 
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryExpressionFunctionCoalesce(args),
-      args => new ActorFunctionFactoryTermFunctionDivision(args),
+      args => new ActorFunctionFactoryExpressionCoalesce(args),
+      args => new ActorFunctionFactoryTermDivision(args),
     ],
     arity: 'vary',
     operation: 'COALESCE',

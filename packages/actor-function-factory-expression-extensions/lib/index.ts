@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryExpressionFunctionExtensions';
+export * from './ActorFunctionFactoryExpressionExtensions';

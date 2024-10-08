@@ -1,4 +1,4 @@
-import { ActorFunctionFactoryTermFunctionEquality } from '@comunica/actor-function-factory-term-function-equality';
+import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-factory-term-equality';
 import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import {
@@ -12,12 +12,12 @@ import {
   timeTyped,
 } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionInequality } from '../lib';
+import { ActorFunctionFactoryTermInequality } from '../lib';
 
 const config: FuncTestTableConfig<object> = {
   registeredActors: [
-    args => new ActorFunctionFactoryTermFunctionInequality(args),
-    args => new ActorFunctionFactoryTermFunctionEquality(args),
+    args => new ActorFunctionFactoryTermInequality(args),
+    args => new ActorFunctionFactoryTermEquality(args),
   ],
   arity: 2,
   operation: '!=',

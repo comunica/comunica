@@ -2,11 +2,11 @@ import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/ut
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { error, merge, numeric } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionMultiplication } from '../lib';
+import { ActorFunctionFactoryTermMultiplication } from '../lib';
 
 const config: FuncTestTableConfig<object> = {
   registeredActors: [
-    args => new ActorFunctionFactoryTermFunctionMultiplication(args),
+    args => new ActorFunctionFactoryTermMultiplication(args),
   ],
   arity: 2,
   operation: '*',

@@ -1,6 +1,6 @@
 # Comunica Term Function Encode For Uri Function Factory Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-function-encode-for-uri.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-function-encode-for-uri)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-function-encode-for-uri.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-encode-for-uri)
 
 A comunica Term Function Encode For Uri Function Factory Actor.
 
@@ -12,7 +12,7 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/actor-function-factory-term-function-encode-for-uri
+$ yarn add @comunica/actor-function-factory-term-encode-for-uri
 ```
 
 ## Configure
@@ -22,13 +22,13 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-function-factory-term-function-encode-for-uri/^3.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-function-factory-term-encode-for-uri/^3.0.0/components/context.jsonld"
   ],
   "actors": [
     ...
     {
       "@id": "urn:comunica:default:function-factory/actors#term-function-encode-for-uri",
-      "@type": "ActorFunctionFactoryTermFunctionEncodeForUri"
+      "@type": "ActorFunctionFactoryTermEncodeForUri"
     }
   ]
 }

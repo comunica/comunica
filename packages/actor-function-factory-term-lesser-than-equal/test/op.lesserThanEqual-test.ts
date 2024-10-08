@@ -1,5 +1,5 @@
-import { ActorFunctionFactoryTermFunctionEquality } from '@comunica/actor-function-factory-term-function-equality';
-import { ActorFunctionFactoryTermFunctionLesserThan } from '@comunica/actor-function-factory-term-function-lesser-than';
+import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-factory-term-equality';
+import { ActorFunctionFactoryTermLesserThan } from '@comunica/actor-function-factory-term-lesser-than';
 import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
@@ -16,13 +16,13 @@ import {
   yearMonthDurationTyped,
 } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionLesserThanEqual } from '../lib';
+import { ActorFunctionFactoryTermLesserThanEqual } from '../lib';
 
 const config: FuncTestTableConfig<object> = {
   registeredActors: [
-    args => new ActorFunctionFactoryTermFunctionLesserThanEqual(args),
-    args => new ActorFunctionFactoryTermFunctionEquality(args),
-    args => new ActorFunctionFactoryTermFunctionLesserThan(args),
+    args => new ActorFunctionFactoryTermLesserThanEqual(args),
+    args => new ActorFunctionFactoryTermEquality(args),
+    args => new ActorFunctionFactoryTermLesserThan(args),
   ],
   arity: 2,
   operation: '<=',

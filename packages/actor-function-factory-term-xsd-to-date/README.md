@@ -1,6 +1,6 @@
 # Comunica Term Function Xsd To Date Function Factory Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-function-xsd-to-date.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-function-xsd-to-date)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-function-xsd-to-date.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-xsd-to-date)
 
 A comunica Term Function Xsd To Date Function Factory Actor.
 
@@ -12,7 +12,7 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/actor-function-factory-term-function-xsd-to-date
+$ yarn add @comunica/actor-function-factory-term-xsd-to-date
 ```
 
 ## Configure
@@ -22,13 +22,13 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-function-factory-term-function-xsd-to-date/^3.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-function-factory-term-xsd-to-date/^3.0.0/components/context.jsonld"
   ],
   "actors": [
     ...
     {
       "@id": "urn:comunica:default:function-factory/actors#term-function-xsd-to-date",
-      "@type": "ActorFunctionFactoryTermFunctionXsdToDate"
+      "@type": "ActorFunctionFactoryTermXsdToDate"
     }
   ]
 }

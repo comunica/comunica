@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionRegex';
+export * from './ActorFunctionFactoryTermRegex';

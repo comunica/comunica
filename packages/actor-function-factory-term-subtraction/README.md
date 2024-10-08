@@ -1,6 +1,6 @@
 # Comunica Term Function Subtraction Function Factory Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-function-subtraction.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-function-subtraction)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-function-subtraction.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-subtraction)
 
 A comunica Term Function Subtraction Function Factory Actor.
 
@@ -12,7 +12,7 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/actor-function-factory-term-function-subtraction
+$ yarn add @comunica/actor-function-factory-term-subtraction
 ```
 
 ## Configure
@@ -22,13 +22,13 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-function-factory-term-function-subtraction/^3.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-function-factory-term-subtraction/^3.0.0/components/context.jsonld"
   ],
   "actors": [
     ...
     {
       "@id": "urn:comunica:default:function-factory/actors#term-function-subtraction",
-      "@type": "ActorFunctionFactoryTermFunctionSubtraction"
+      "@type": "ActorFunctionFactoryTermSubtraction"
     }
   ]
 }

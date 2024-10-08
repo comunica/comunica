@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryExpressionFunctionLogicalOr';
+export * from './ActorFunctionFactoryExpressionLogicalOr';

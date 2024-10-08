@@ -1,6 +1,6 @@
 # Comunica Expression Function Same Term Function Factory Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-expression-function-same-term.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-expression-function-same-term)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-expression-function-same-term.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-expression-same-term)
 
 A comunica Expression Function Same Term Function Factory Actor.
 
@@ -12,7 +12,7 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/actor-function-factory-expression-function-same-term
+$ yarn add @comunica/actor-function-factory-expression-same-term
 ```
 
 ## Configure
@@ -22,13 +22,13 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-function-factory-expression-function-same-term/^3.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-function-factory-expression-same-term/^3.0.0/components/context.jsonld"
   ],
   "actors": [
     ...
     {
       "@id": "urn:comunica:default:function-factory/actors#expression-function-same-term",
-      "@type": "ActorFunctionFactoryExpressionFunctionSameTerm"
+      "@type": "ActorFunctionFactoryExpressionSameTerm"
     }
   ]
 }

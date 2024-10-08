@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionSubtraction';
+export * from './ActorFunctionFactoryTermSubtraction';

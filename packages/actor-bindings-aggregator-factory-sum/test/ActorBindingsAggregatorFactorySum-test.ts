@@ -1,4 +1,4 @@
-import { ActorFunctionFactoryTermFunctionAddition } from '@comunica/actor-function-factory-term-function-addition';
+import { ActorFunctionFactoryTermAddition } from '@comunica/actor-function-factory-term-addition';
 import type {
   MediatorExpressionEvaluatorFactory,
 } from '@comunica/bus-expression-evaluator-factory';
@@ -43,7 +43,7 @@ describe('ActorBindingsAggregatorFactorySum', () => {
       mediatorQueryOperation,
     });
     mediatorFunctionFactory = createFuncMediator([
-      args => new ActorFunctionFactoryTermFunctionAddition(args),
+      args => new ActorFunctionFactoryTermAddition(args),
     ], {});
   });
 

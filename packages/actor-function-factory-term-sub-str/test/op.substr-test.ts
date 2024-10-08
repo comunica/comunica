@@ -4,13 +4,13 @@ import { ActionContext } from '@comunica/core';
 import * as Eval from '@comunica/utils-expression-evaluator';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
 import { LRUCache } from 'lru-cache';
-import { ActorFunctionFactoryTermFunctionSubStr } from '../lib';
+import { ActorFunctionFactoryTermSubStr } from '../lib';
 
 describe('evaluations of \'substr\' like', () => {
   // Last test is dedicated to type promotion
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionSubStr(args),
+      args => new ActorFunctionFactoryTermSubStr(args),
     ],
     arity: 'vary',
     operation: 'substr',

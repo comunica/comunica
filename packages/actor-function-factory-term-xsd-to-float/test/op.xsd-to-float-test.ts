@@ -1,11 +1,11 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionXsdToFloat } from '../lib';
+import { ActorFunctionFactoryTermXsdToFloat } from '../lib';
 
 describe('to float', () => {
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionXsdToFloat(args),
+      args => new ActorFunctionFactoryTermXsdToFloat(args),
     ],
     arity: 1,
     operation: 'xsd:float',

@@ -1,7 +1,7 @@
-import { ActorFunctionFactoryTermFunctionDivision } from '@comunica/actor-function-factory-term-function-division';
+import { ActorFunctionFactoryTermDivision } from '@comunica/actor-function-factory-term-division';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryExpressionFunctionIf } from '../lib';
+import { ActorFunctionFactoryExpressionIf } from '../lib';
 
 /**
  * REQUEST: if02.rq
@@ -26,8 +26,8 @@ import { ActorFunctionFactoryExpressionFunctionIf } from '../lib';
 describe('We should respect the if02 spec', () => {
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryExpressionFunctionIf(args),
-      args => new ActorFunctionFactoryTermFunctionDivision(args),
+      args => new ActorFunctionFactoryExpressionIf(args),
+      args => new ActorFunctionFactoryTermDivision(args),
     ],
     notation: Notation.Function,
     arity: 'vary',

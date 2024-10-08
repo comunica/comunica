@@ -1,6 +1,6 @@
 # Comunica Term Function Is Iri Function Factory Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-function-is-iri.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-function-is-iri)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-function-is-iri.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-is-iri)
 
 A comunica Term Function Is Iri Function Factory Actor.
 
@@ -12,7 +12,7 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/actor-function-factory-term-function-is-iri
+$ yarn add @comunica/actor-function-factory-term-is-iri
 ```
 
 ## Configure
@@ -22,13 +22,13 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-function-factory-term-function-is-iri/^3.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-function-factory-term-is-iri/^3.0.0/components/context.jsonld"
   ],
   "actors": [
     ...
     {
       "@id": "urn:comunica:default:function-factory/actors#term-function-is-iri",
-      "@type": "ActorFunctionFactoryTermFunctionIsIri"
+      "@type": "ActorFunctionFactoryTermIsIri"
     }
   ]
 }

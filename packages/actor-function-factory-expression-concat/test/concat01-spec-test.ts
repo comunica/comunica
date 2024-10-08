@@ -1,7 +1,7 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import * as Data from '@comunica/utils-expression-evaluator/test/spec/_data';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryExpressionFunctionConcat } from '../lib';
+import { ActorFunctionFactoryExpressionConcat } from '../lib';
 
 /**
  * REQUEST: concat01.rq
@@ -31,7 +31,7 @@ describe('We should respect the concat01 spec', () => {
   const { s6, s7 } = Data.data();
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryExpressionFunctionConcat(args),
+      args => new ActorFunctionFactoryExpressionConcat(args),
     ],
     arity: 2,
     notation: Notation.Function,

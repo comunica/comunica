@@ -1,7 +1,7 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import * as Data from '@comunica/utils-expression-evaluator/test/spec/_data';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionLcase } from '../lib';
+import { ActorFunctionFactoryTermLcase } from '../lib';
 
 /**
  * REQUEST: lcase01.rq
@@ -30,7 +30,7 @@ describe('We should respect the lcase01 spec', () => {
   const { s1, s2, s3, s4, s5, s6, s7 } = Data.data();
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionLcase(args),
+      args => new ActorFunctionFactoryTermLcase(args),
     ],
     arity: 1,
     notation: Notation.Function,

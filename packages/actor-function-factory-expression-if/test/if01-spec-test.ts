@@ -1,10 +1,10 @@
-import { ActorFunctionFactoryTermFunctionEquality } from '@comunica/actor-function-factory-term-function-equality';
-import { ActorFunctionFactoryTermFunctionLang } from '@comunica/actor-function-factory-term-function-lang';
+import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-factory-term-equality';
+import { ActorFunctionFactoryTermLang } from '@comunica/actor-function-factory-term-lang';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import * as Data from '@comunica/utils-expression-evaluator/test/spec/_data';
 import { bool } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryExpressionFunctionIf } from '../lib';
+import { ActorFunctionFactoryExpressionIf } from '../lib';
 
 /**
  * REQUEST: if01.rq
@@ -35,9 +35,9 @@ describe('We should respect the if01 spec', () => {
   const { s1, s2, s3, s4, s5, s6, s7 } = Data.data2();
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionLang(args),
-      args => new ActorFunctionFactoryExpressionFunctionIf(args),
-      args => new ActorFunctionFactoryTermFunctionEquality(args),
+      args => new ActorFunctionFactoryTermLang(args),
+      args => new ActorFunctionFactoryExpressionIf(args),
+      args => new ActorFunctionFactoryTermEquality(args),
     ],
     aliases: bool,
     operation: 'IF',

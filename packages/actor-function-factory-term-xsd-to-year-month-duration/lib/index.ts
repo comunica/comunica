@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionXsdToYearMonthDuration';
+export * from './ActorFunctionFactoryTermXsdToYearMonthDuration';

@@ -2,7 +2,7 @@ import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import * as Data from '@comunica/utils-expression-evaluator/test/spec/_data';
 import { int } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionDay } from '../lib';
+import { ActorFunctionFactoryTermDay } from '../lib';
 
 /**
  * REQUEST: day-01.rq
@@ -31,7 +31,7 @@ describe('We should respect the day-01 spec', () => {
   const { d1, d2, d3, d4 } = Data.data();
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionDay(args),
+      args => new ActorFunctionFactoryTermDay(args),
     ],
     arity: 1,
     notation: Notation.Function,

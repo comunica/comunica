@@ -1,5 +1,5 @@
-import { ActorFunctionFactoryTermFunctionAddition } from '@comunica/actor-function-factory-term-function-addition';
-import { TermFunctionEquality } from '@comunica/actor-function-factory-term-function-equality/lib/TermFunctionEquality';
+import { ActorFunctionFactoryTermAddition } from '@comunica/actor-function-factory-term-addition';
+import { TermFunctionEquality } from '@comunica/actor-function-factory-term-equality/lib/TermFunctionEquality';
 import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import * as Eval from '@comunica/utils-expression-evaluator';
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-expression-evaluator/test/util/helpers';
@@ -28,7 +28,7 @@ describe('lesser than', () => {
         ],
         await getMockEEFactory({
           mediatorFunctionFactory: createFuncMediator([
-            args => new ActorFunctionFactoryTermFunctionAddition(args),
+            args => new ActorFunctionFactoryTermAddition(args),
           ], {}),
         }).run({
           algExpr: getMockExpression(),

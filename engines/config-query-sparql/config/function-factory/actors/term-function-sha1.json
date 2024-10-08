@@ -9,7 +9,7 @@
   "actors": [
     {
       "@id": "urn:comunica:default:function-factory/actors#term-function-sha1",
-      "@type": "ActorFunctionFactoryTermFunctionSha1"
+      "@type": "ActorFunctionFactoryTermSha1"
     }
   ]
 }

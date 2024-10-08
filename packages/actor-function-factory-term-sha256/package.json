@@ -1,7 +1,7 @@
 {
   "name": "@comunica/actor-function-factory-term-function-sha256",
   "version": "3.2.1",
-  "description": "A term-function-sha256 function-factory actor",
+  "description": "A term-sha256 function-factory actor",
   "lsd:module": true,
   "license": "MIT",
   "homepage": "https://comunica.dev/",

@@ -1,17 +1,17 @@
 import {
-  ActorFunctionFactoryExpressionFunctionNotIn,
-} from '@comunica/actor-function-factory-expression-function-not-in';
-import { ActorFunctionFactoryTermFunctionEquality } from '@comunica/actor-function-factory-term-function-equality';
+  ActorFunctionFactoryExpressionNotIn,
+} from '@comunica/actor-function-factory-expression-not-in';
+import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-factory-term-equality';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { bool, merge, numeric } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryExpressionFunctionIn } from '../lib';
+import { ActorFunctionFactoryExpressionIn } from '../lib';
 
 describe('evaluations of \'IN\'', () => {
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryExpressionFunctionIn(args),
-      args => new ActorFunctionFactoryTermFunctionEquality(args),
+      args => new ActorFunctionFactoryExpressionIn(args),
+      args => new ActorFunctionFactoryTermEquality(args),
     ],
     operation: 'IN',
     arity: 2,
@@ -30,9 +30,9 @@ describe('evaluations of \'IN\'', () => {
 
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryExpressionFunctionIn(args),
-      args => new ActorFunctionFactoryTermFunctionEquality(args),
-      args => new ActorFunctionFactoryExpressionFunctionNotIn(args),
+      args => new ActorFunctionFactoryExpressionIn(args),
+      args => new ActorFunctionFactoryTermEquality(args),
+      args => new ActorFunctionFactoryExpressionNotIn(args),
     ],
     operation: 'NOT IN',
     arity: 2,

@@ -1,13 +1,13 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { bool } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionStrBefore } from '../lib';
+import { ActorFunctionFactoryTermStrBefore } from '../lib';
 
 describe('evaluations of \'strbefore\' like', () => {
   // Inspired on the specs: https://www.w3.org/TR/sparql11-query/#func-strbefore
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionStrBefore(args),
+      args => new ActorFunctionFactoryTermStrBefore(args),
     ],
     arity: 2,
     aliases: bool,

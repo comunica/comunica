@@ -1,12 +1,12 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionObject } from '../lib';
+import { ActorFunctionFactoryTermObject } from '../lib';
 
 describe('evaluation of \'OBJECT\'', () => {
   // Originates from: https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#object
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionObject(args),
+      args => new ActorFunctionFactoryTermObject(args),
     ],
     arity: 1,
     notation: Notation.Function,
@@ -18,7 +18,7 @@ describe('evaluation of \'OBJECT\'', () => {
   });
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionObject(args),
+      args => new ActorFunctionFactoryTermObject(args),
     ],
     arity: 1,
     notation: Notation.Function,

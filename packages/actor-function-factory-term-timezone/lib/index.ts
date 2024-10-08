@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionTimezone';
+export * from './ActorFunctionFactoryTermTimezone';

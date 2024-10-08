@@ -1,7 +1,7 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import * as Data from '@comunica/utils-expression-evaluator/test/spec/_data';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionSha256 } from '../lib';
+import { ActorFunctionFactoryTermSha256 } from '../lib';
 
 /**
  * REQUEST: sha256-01.rq
@@ -36,7 +36,7 @@ describe('We should respect the sha256-01 spec', () => {
   const { s1 } = Data.data();
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionSha256(args),
+      args => new ActorFunctionFactoryTermSha256(args),
     ],
     arity: 1,
     notation: Notation.Function,

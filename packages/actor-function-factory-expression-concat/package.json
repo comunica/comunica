@@ -1,14 +1,14 @@
 {
-  "name": "@comunica/actor-function-factory-expression-function-concat",
+  "name": "@comunica/actor-function-factory-expression-concat",
   "version": "3.2.1",
-  "description": "A expression-function-concat function-factory actor",
+  "description": "A expression-concat function-factory actor",
   "lsd:module": true,
   "license": "MIT",
   "homepage": "https://comunica.dev/",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-function-factory-expression-function-concat"
+    "directory": "packages/actor-function-factory-expression-concat"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"

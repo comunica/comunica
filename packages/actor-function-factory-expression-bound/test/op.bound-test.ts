@@ -6,7 +6,7 @@ import { generalEvaluate } from '@comunica/utils-expression-evaluator/test/util/
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-expression-evaluator/test/util/helpers';
 import { DataFactory } from 'rdf-data-factory';
 import { expressionTypes, types } from 'sparqlalgebrajs/lib/algebra';
-import { ActorFunctionFactoryExpressionFunctionBound } from '../lib';
+import { ActorFunctionFactoryExpressionBound } from '../lib';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -16,7 +16,7 @@ describe('evaluation of \'bound\'', () => {
 
   beforeEach(() => {
     mediatorFunctionFactory = createFuncMediator([
-      args => new ActorFunctionFactoryExpressionFunctionBound(args),
+      args => new ActorFunctionFactoryExpressionBound(args),
     ], {});
   });
 

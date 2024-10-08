@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionYear';
+export * from './ActorFunctionFactoryTermYear';

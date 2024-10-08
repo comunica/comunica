@@ -7,7 +7,7 @@ import {
   yearMonthDurationTyped,
 } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionSubtraction } from '../lib';
+import { ActorFunctionFactoryTermSubtraction } from '../lib';
 
 describe('subtract duration and dayTimeDuration 01', () => {
   /**
@@ -24,7 +24,7 @@ describe('subtract duration and dayTimeDuration 01', () => {
   describe('respect the duration_yearMonthDuration_subtract-01 spec', () => {
     runFuncTestTable({
       registeredActors: [
-        args => new ActorFunctionFactoryTermFunctionSubtraction(args),
+        args => new ActorFunctionFactoryTermSubtraction(args),
       ],
       operation: '-',
       arity: 2,

@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionIsLiteral';
+export * from './ActorFunctionFactoryTermIsLiteral';

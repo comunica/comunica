@@ -1,12 +1,12 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionPredicate } from '../lib';
+import { ActorFunctionFactoryTermPredicate } from '../lib';
 
 describe('evaluation of \'PREDICATE\'', () => {
   // Originates from: https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#predicate
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionPredicate(args),
+      args => new ActorFunctionFactoryTermPredicate(args),
     ],
     arity: 1,
     notation: Notation.Function,
@@ -18,7 +18,7 @@ describe('evaluation of \'PREDICATE\'', () => {
   });
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionPredicate(args),
+      args => new ActorFunctionFactoryTermPredicate(args),
     ],
     arity: 1,
     notation: Notation.Function,

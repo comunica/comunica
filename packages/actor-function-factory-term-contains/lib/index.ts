@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionContains';
+export * from './ActorFunctionFactoryTermContains';

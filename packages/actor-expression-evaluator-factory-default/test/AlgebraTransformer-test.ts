@@ -1,12 +1,12 @@
 import {
-  ActorFunctionFactoryExpressionFunctionBnode,
-} from '@comunica/actor-function-factory-expression-function-bnode';
+  ActorFunctionFactoryExpressionBnode,
+} from '@comunica/actor-function-factory-expression-bnode';
 import {
-  ActorFunctionFactoryExpressionFunctionCoalesce,
-} from '@comunica/actor-function-factory-expression-function-coalesce';
-import { ActorFunctionFactoryExpressionFunctionIf } from '@comunica/actor-function-factory-expression-function-if';
-import { ActorFunctionFactoryTermFunctionNot } from '@comunica/actor-function-factory-term-function-not';
-import { ActorFunctionFactoryTermFunctionUnaryMinus } from '@comunica/actor-function-factory-term-function-unary-minus';
+  ActorFunctionFactoryExpressionCoalesce,
+} from '@comunica/actor-function-factory-expression-coalesce';
+import { ActorFunctionFactoryExpressionIf } from '@comunica/actor-function-factory-expression-if';
+import { ActorFunctionFactoryTermNot } from '@comunica/actor-function-factory-term-not';
+import { ActorFunctionFactoryTermUnaryMinus } from '@comunica/actor-function-factory-term-unary-minus';
 import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import * as Eval from '@comunica/utils-expression-evaluator';
 import { getMockEEActionContext } from '@comunica/utils-expression-evaluator/test/util/helpers';
@@ -24,11 +24,11 @@ describe('AlgebraTransformer', () => {
       // This basically requires the function bus.
       Eval.prepareEvaluatorActionContext(getMockEEActionContext()),
       createFuncMediator([
-        args => new ActorFunctionFactoryExpressionFunctionBnode(args),
-        args => new ActorFunctionFactoryExpressionFunctionIf(args),
-        args => new ActorFunctionFactoryExpressionFunctionCoalesce(args),
-        args => new ActorFunctionFactoryTermFunctionUnaryMinus(args),
-        args => new ActorFunctionFactoryTermFunctionNot(args),
+        args => new ActorFunctionFactoryExpressionBnode(args),
+        args => new ActorFunctionFactoryExpressionIf(args),
+        args => new ActorFunctionFactoryExpressionCoalesce(args),
+        args => new ActorFunctionFactoryTermUnaryMinus(args),
+        args => new ActorFunctionFactoryTermNot(args),
       ], {}),
     );
   });

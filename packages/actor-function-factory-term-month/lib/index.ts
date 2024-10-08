@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionMonth';
+export * from './ActorFunctionFactoryTermMonth';

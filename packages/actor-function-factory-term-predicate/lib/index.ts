@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionPredicate';
+export * from './ActorFunctionFactoryTermPredicate';

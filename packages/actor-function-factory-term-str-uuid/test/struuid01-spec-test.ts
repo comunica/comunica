@@ -1,11 +1,11 @@
-import { ActorFunctionFactoryTermFunctionIsLiteral } from '@comunica/actor-function-factory-term-function-is-literal';
-import { ActorFunctionFactoryTermFunctionRegex } from '@comunica/actor-function-factory-term-function-regex';
-import { ActorFunctionFactoryTermFunctionStrLen } from '@comunica/actor-function-factory-term-function-str-len';
+import { ActorFunctionFactoryTermIsLiteral } from '@comunica/actor-function-factory-term-is-literal';
+import { ActorFunctionFactoryTermRegex } from '@comunica/actor-function-factory-term-regex';
+import { ActorFunctionFactoryTermStrLen } from '@comunica/actor-function-factory-term-str-len';
 import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { bool, int } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionStrUuid } from '../lib';
+import { ActorFunctionFactoryTermStrUuid } from '../lib';
 
 /**
  * REQUEST: struuid01.rq
@@ -36,10 +36,10 @@ import { ActorFunctionFactoryTermFunctionStrUuid } from '../lib';
 describe('We should respect the struuid01 spec', () => {
   const config: FuncTestTableConfig<object> = {
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionStrUuid(args),
-      args => new ActorFunctionFactoryTermFunctionIsLiteral(args),
-      args => new ActorFunctionFactoryTermFunctionRegex(args),
-      args => new ActorFunctionFactoryTermFunctionStrLen(args),
+      args => new ActorFunctionFactoryTermStrUuid(args),
+      args => new ActorFunctionFactoryTermIsLiteral(args),
+      args => new ActorFunctionFactoryTermRegex(args),
+      args => new ActorFunctionFactoryTermStrLen(args),
     ],
     aliases: bool,
     arity: 'vary',

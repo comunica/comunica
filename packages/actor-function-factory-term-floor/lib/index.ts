@@ -1,1 +1,1 @@
-export * from './ActorFunctionFactoryTermFunctionFloor';
+export * from './ActorFunctionFactoryTermFloor';

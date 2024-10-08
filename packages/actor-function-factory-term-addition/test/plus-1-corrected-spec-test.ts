@@ -1,11 +1,11 @@
 import {
-  ActorFunctionFactoryExpressionFunctionBnode,
-} from '@comunica/actor-function-factory-expression-function-bnode';
+  ActorFunctionFactoryExpressionBnode,
+} from '@comunica/actor-function-factory-expression-bnode';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import * as Data from '@comunica/utils-expression-evaluator/test/spec/_data';
 import { int, decimal } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
-import { ActorFunctionFactoryTermFunctionAddition } from '../lib';
+import { ActorFunctionFactoryTermAddition } from '../lib';
 
 /**
  * REQUEST: plus-1-corrected.rq
@@ -49,8 +49,8 @@ describe('We should respect the plus-1-corrected spec', () => {
   } = Data.dataBuiltin3();
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermFunctionAddition(args),
-      args => new ActorFunctionFactoryExpressionFunctionBnode(args),
+      args => new ActorFunctionFactoryTermAddition(args),
+      args => new ActorFunctionFactoryExpressionBnode(args),
     ],
     notation: Notation.Infix,
     operation: '+',
