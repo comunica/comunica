@@ -9,7 +9,7 @@
   "actors": [
     {
       "@id": "urn:comunica:default:function-factory/actors#term-function-md5",
-      "@type": "ActorFunctionFactoryTermFunctionMd5"
+      "@type": "ActorFunctionFactoryTermMd5"
     }
   ]
 }
