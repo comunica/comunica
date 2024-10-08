@@ -3,7 +3,7 @@ import type {
 
   DayTimeDurationLiteral,
   DurationLiteral,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 import {
   addDurationToDateTime,
   DateLiteral,
@@ -14,7 +14,7 @@ import {
   SparqlOperator,
   TimeLiteral,
   TypeURL,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 import { BigNumber } from 'bignumber.js';
 
 export class TermFunctionAddition extends TermFunctionBase {

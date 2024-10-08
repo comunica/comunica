@@ -5,11 +5,11 @@ import {
   declare,
   integer,
   TypeURL,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 import type {
   NumericLiteral,
   Term,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 
 export class TermFunctionXsdToInteger extends TermFunctionBase {
   public constructor() {

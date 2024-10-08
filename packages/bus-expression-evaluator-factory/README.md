@@ -12,7 +12,7 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/bus-expression-evaluator-factory
+$ yarn add @comunica/bus-utils-expression-evaluator-factory
 ```
 
 ## Usage

@@ -1,7 +1,7 @@
 import type { InternalEvaluator } from '@comunica/actor-expression-evaluator-factory-default/lib/InternalEvaluator';
 import type { ITermFunction } from '@comunica/bus-function-factory';
 import type { ITermComparator } from '@comunica/bus-term-comparator-factory';
-import type * as Eval from '@comunica/expression-evaluator';
+import type * as Eval from '@comunica/utils-expression-evaluator';
 import type * as RDF from '@rdfjs/types';
 
 export class TermComparatorExpressionEvaluator implements ITermComparator {

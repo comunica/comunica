@@ -1,10 +1,11 @@
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
-import * as Eval from '@comunica/expression-evaluator';
+import type { Expression, IEvalContext, IInternalEvaluator, TermExpression } from '@comunica/types';
 import type {
-  IEvalContext,
-  IInternalEvaluator,
+  GeneralOperator,
   OverloadTree,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
+import { InvalidArgumentTypes,
+} from '@comunica/utils-expression-evaluator';
 import type { IExpressionFunction, ITermFunction } from '../ActorFunctionFactory';
 
 // ----------------------------------------------------------------------------
@@ -13,14 +14,14 @@ import type { IExpressionFunction, ITermFunction } from '../ActorFunctionFactory
 
 interface BaseFunctionDefinitionArgs {
   arity: number | number[];
-  operator: Eval.GeneralOperator;
-  apply: (evalContext: IEvalContext) => Promise<Eval.TermExpression>;
+  operator: GeneralOperator;
+  apply: (evalContext: IEvalContext) => Promise<TermExpression>;
 }
 
 export class ExpressionFunctionBase implements IExpressionFunction {
   protected readonly arity: number | number[];
-  public readonly operator: Eval.GeneralOperator;
-  public readonly apply: (evalContext: IEvalContext) => Promise<Eval.TermExpression>;
+  public readonly operator: GeneralOperator;
+  public readonly apply: (evalContext: IEvalContext) => Promise<TermExpression>;
 
   public constructor({ arity, operator, apply }: BaseFunctionDefinitionArgs) {
     this.arity = arity;
@@ -28,7 +29,7 @@ export class ExpressionFunctionBase implements IExpressionFunction {
     this.apply = apply;
   }
 
-  public checkArity(args: Eval.Expression[]): boolean {
+  public checkArity(args: Expression[]): boolean {
     if (Array.isArray(this.arity)) {
       return this.arity.includes(args.length);
     }
@@ -43,7 +44,7 @@ export class ExpressionFunctionBase implements IExpressionFunction {
 
 interface TermSparqlFunctionArgs {
   arity: number | number[];
-  operator: Eval.GeneralOperator;
+  operator: GeneralOperator;
   overloads: OverloadTree;
 }
 
@@ -73,7 +74,7 @@ export class TermFunctionBase extends ExpressionFunctionBase implements ITermFun
     super({
       arity,
       operator,
-      apply: async({ args, exprEval, mapping }: IEvalContext): Promise<Eval.TermExpression> => this.applyOnTerms(
+      apply: async({ args, exprEval, mapping }: IEvalContext): Promise<TermExpression> => this.applyOnTerms(
         await Promise.all(args.map(arg => exprEval.evaluatorExpressionEvaluation(arg, mapping))),
         exprEval,
       ),
@@ -82,7 +83,7 @@ export class TermFunctionBase extends ExpressionFunctionBase implements ITermFun
     this.overloads = overloads;
   }
 
-  public applyOnTerms(args: Eval.TermExpression[], exprEval: IInternalEvaluator): Eval.TermExpression {
+  public applyOnTerms(args: TermExpression[], exprEval: IInternalEvaluator): TermExpression {
     const concreteFunction =
       this.overloads.search(
         args,
@@ -92,7 +93,7 @@ export class TermFunctionBase extends ExpressionFunctionBase implements ITermFun
     return concreteFunction(exprEval)(args);
   }
 
-  protected handleInvalidTypes(args: Eval.TermExpression[]): never {
-    throw new Eval.InvalidArgumentTypes(args, this.operator);
+  protected handleInvalidTypes(args: TermExpression[]): never {
+    throw new InvalidArgumentTypes(args, this.operator);
   }
 }

@@ -2,14 +2,14 @@ import { TermFunctionBase } from '@comunica/bus-function-factory';
 import type {
   NumericLiteral,
   StringLiteral,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 import {
   bool,
   declare,
   float,
   string,
   TypeURL,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 
 /**
  * https://www.w3.org/TR/xpath-functions/#casting-to-string

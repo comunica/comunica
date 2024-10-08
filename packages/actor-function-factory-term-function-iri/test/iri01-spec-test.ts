@@ -2,7 +2,7 @@ import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/ut
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
 import { ActorFunctionFactoryTermFunctionIri } from '../lib';
 
 describe('We should respect the iri01 spec', () => {

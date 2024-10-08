@@ -39,7 +39,8 @@
   "dependencies": {
     "@comunica/bus-bindings-aggregator-factory": "^3.2.1",
     "@comunica/core": "^3.2.1",
-    "@comunica/expression-evaluator": "^3.2.1",
+    "@comunica/types": "^3.2.1",
+    "@comunica/utils-expression-evaluator": "^3.2.1",
     "@rdfjs/types": "*",
     "sparqlalgebrajs": "^4.2.0"
   }

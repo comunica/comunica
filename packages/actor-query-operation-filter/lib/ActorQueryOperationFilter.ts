@@ -3,9 +3,9 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
-import { isExpressionError } from '@comunica/expression-evaluator';
 import type { Bindings, IActionContext, IQueryOperationResult } from '@comunica/types';
 import { bindingsToString } from '@comunica/utils-bindings-factory';
+import { isExpressionError } from '@comunica/utils-expression-evaluator';
 import { getSafeBindings, validateQueryOutput } from '@comunica/utils-query-operation';
 import type { Algebra } from 'sparqlalgebrajs';
 

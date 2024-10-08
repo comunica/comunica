@@ -1,8 +1,8 @@
 import { AggregateEvaluator } from '@comunica/bus-bindings-aggregator-factory';
 import type { ITermFunction } from '@comunica/bus-function-factory';
-import type { IExpressionEvaluator, NumericLiteral } from '@comunica/expression-evaluator';
-import { typedLiteral, TypeURL } from '@comunica/expression-evaluator';
-import type { ComunicaDataFactory } from '@comunica/types';
+import type { ComunicaDataFactory, IExpressionEvaluator } from '@comunica/types';
+import type { NumericLiteral } from '@comunica/utils-expression-evaluator';
+import { typedLiteral, TypeURL } from '@comunica/utils-expression-evaluator';
 import type * as RDF from '@rdfjs/types';
 
 type SumState = NumericLiteral;

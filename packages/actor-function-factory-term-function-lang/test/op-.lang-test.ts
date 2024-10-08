@@ -1,6 +1,6 @@
 import { ActorFunctionFactoryTermFunctionLang } from '@comunica/actor-function-factory-term-function-lang';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
 
 describe('like \'lang\' receiving', () => {
   runFuncTestTable({

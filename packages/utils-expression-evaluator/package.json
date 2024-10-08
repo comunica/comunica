@@ -1,0 +1,49 @@
+{
+  "name": "@comunica/utils-expression-evaluator",
+  "version": "3.2.1",
+  "description": "A simple SPARQL expression evaluator",
+  "lsd:module": true,
+  "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
+  "homepage": "https://comunica.dev/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/utils-expression-evaluator"
+  },
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
+  "keywords": [
+    "sparql",
+    "expression",
+    "rdf",
+    "evaluator"
+  ],
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.js.map"
+  ],
+  "scripts": {
+    "build": "node \"../../node_modules/typescript/bin/tsc\""
+  },
+  "dependencies": {
+    "@comunica/context-entries": "^3.2.1",
+    "@comunica/types": "^3.2.1",
+    "@rdfjs/types": "*",
+    "lru-cache": "^10.0.0",
+    "rdf-data-factory": "^1.1.2",
+    "rdf-string": "^1.6.3",
+    "sparqlalgebrajs": "^4.3.8"
+  }
+}

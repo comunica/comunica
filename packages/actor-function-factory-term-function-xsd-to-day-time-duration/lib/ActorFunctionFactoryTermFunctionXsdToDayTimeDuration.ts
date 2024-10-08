@@ -8,7 +8,7 @@ import {
   ActorFunctionFactoryDedicated,
 } from '@comunica/bus-function-factory';
 
-import { TypeURL } from '@comunica/expression-evaluator';
+import { TypeURL } from '@comunica/utils-expression-evaluator';
 import { TermFunctionXsdToDayTimeDuration } from './TermFunctionXsdToDayTimeDuration';
 
 /**

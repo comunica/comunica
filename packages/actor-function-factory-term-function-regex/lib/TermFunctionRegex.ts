@@ -1,14 +1,14 @@
 import { TermFunctionBase } from '@comunica/bus-function-factory';
 import type {
   BooleanLiteral,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 import {
   bool,
   declare,
   SparqlOperator,
   TypeAlias,
   TypeURL,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-regex

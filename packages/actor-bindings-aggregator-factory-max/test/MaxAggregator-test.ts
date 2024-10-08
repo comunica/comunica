@@ -15,7 +15,7 @@ import {
   makeAggregate,
   nonLiteral,
   string,
-} from '@comunica/utils-jest';
+} from '@comunica/utils-expression-evaluator/test/util/helpers';
 import type * as RDF from '@rdfjs/types';
 import { MaxAggregator } from '../lib';
 

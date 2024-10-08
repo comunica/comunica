@@ -1,13 +1,11 @@
 import { TermFunctionBase } from '@comunica/bus-function-factory';
-import type {
-  TermExpression,
-} from '@comunica/expression-evaluator';
+import type { TermExpression } from '@comunica/types';
 import {
   declare,
   DurationLiteral,
   parseDuration,
   TypeURL,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 
 export class TermFunctionXsdToDuration extends TermFunctionBase {
   public constructor() {

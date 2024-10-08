@@ -3,7 +3,7 @@ import { TermFunctionBase } from '@comunica/bus-function-factory';
 import {
   declare,
   SparqlOperator,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 import { BigNumber } from 'bignumber.js';
 
 export class TermFunctionMultiplication extends TermFunctionBase {

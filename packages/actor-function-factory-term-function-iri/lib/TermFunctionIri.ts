@@ -5,7 +5,7 @@ import {
   declare,
   NamedNode,
   SparqlOperator,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 import { resolve as resolveRelativeIri } from 'relative-to-absolute-iri';
 
 /**

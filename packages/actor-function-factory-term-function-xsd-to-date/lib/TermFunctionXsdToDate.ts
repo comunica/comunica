@@ -3,13 +3,13 @@ import type {
   Term,
 
   DateTimeLiteral,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 import {
   DateLiteral,
   declare,
   parseDate,
   TypeURL,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 
 export class TermFunctionXsdToDate extends TermFunctionBase {
   public constructor() {

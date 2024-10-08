@@ -3,7 +3,7 @@ import { TermFunctionBase } from '@comunica/bus-function-factory';
 import {
   declare,
   SparqlOperator,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-floor

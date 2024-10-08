@@ -4,7 +4,7 @@ import {
   declare,
   SparqlOperator,
   string,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 import { sha256 } from 'hash.js';
 
 /**

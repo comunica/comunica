@@ -4,7 +4,7 @@ import {
   declare,
   NamedNode,
   SparqlOperator,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 import * as uuid from 'uuid';
 
 /**

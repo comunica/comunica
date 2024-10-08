@@ -1,12 +1,9 @@
 import { ExpressionFunctionBase } from '@comunica/bus-function-factory';
-import type {
-  IEvalContext,
-  TermExpression,
-} from '@comunica/expression-evaluator';
+import type { IEvalContext, TermExpression } from '@comunica/types';
 import {
   CoalesceError,
   SparqlOperator,
-} from '@comunica/expression-evaluator';
+} from '@comunica/utils-expression-evaluator';
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-coalesce

@@ -11,8 +11,8 @@ import {
   numeric,
   str,
   timeTyped,
-} from '@comunica/expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/expression-evaluator/test/util/TestTable';
+} from '@comunica/utils-expression-evaluator/test/util/Aliases';
+import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
 import { ActorFunctionFactoryTermFunctionLesserThan } from '../lib';
 
 const config: FuncTestTableConfig<object> = {

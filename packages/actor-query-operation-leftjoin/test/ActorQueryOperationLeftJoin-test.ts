@@ -3,15 +3,19 @@ import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expressio
 import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
-import * as sparqlee from '@comunica/expression-evaluator';
-import { isExpressionError } from '@comunica/expression-evaluator';
 import type { Bindings, IActionContext, IJoinEntry, IQueryOperationResultBindings } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { getMockEEActionContext, getMockMediatorExpressionEvaluatorFactory } from '@comunica/utils-jest';
+import * as sparqlee from '@comunica/utils-expression-evaluator';
+import { isExpressionError } from '@comunica/utils-expression-evaluator';
+import {
+  getMockEEActionContext,
+  getMockMediatorExpressionEvaluatorFactory,
+} from '@comunica/utils-expression-evaluator/test/util/helpers';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import { ArrayIterator, UnionIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationLeftJoin } from '../lib';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
