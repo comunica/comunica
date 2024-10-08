@@ -55,7 +55,7 @@ export class ActorQueryOperationWrapStream extends ActorQueryOperation {
       case 'quads': {
         const iteratorTransformed = await this.mediatorIteratorTransform.mediate(
           {
-            type: 'quads',
+            type: 'quad',
             operation: action.operation.type,
             stream: output.quadStream,
             metadata: output.metadata,

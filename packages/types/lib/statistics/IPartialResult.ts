@@ -4,12 +4,7 @@ export type PartialResult = {
   type: 'bindings';
   data: RDF.Bindings;
   metadata: Record<string, any>;
-} | { type: 'quads';
+} | { type: 'quad';
   data: RDF.Quad;
   metadata: Record<string, any>;
  };
-
-//  export interface IPartialResult {
-//   data: RDF.Bindings | RDF.Quad;
-//   metadata: Record<string, any>;
-//  }
