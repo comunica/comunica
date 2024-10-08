@@ -130,9 +130,13 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
           type: 'number',
           describe: 'The number of retries to perform on failed fetch requests',
         },
-        httpRetryDelay: {
+        httpRetryDelayFallback: {
           type: 'number',
-          describe: 'The number of milliseconds to wait between fetch retries',
+          describe: 'The fallback delay in milliseconds between fetch retries',
+        },
+        httpRetryDelayLimit: {
+          type: 'number',
+          describe: 'The upper limit in milliseconds for the delay between fetch retries',
         },
         unionDefaultGraph: {
           type: 'boolean',
@@ -237,12 +241,20 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
       context[KeysHttp.httpRetryCount.name] = args.httpRetryCount;
     }
 
-    // Define HTTP delay between retries
-    if (args.httpRetryDelay) {
+    // Define fallback HTTP delay between retries
+    if (args.httpRetryDelayFallback) {
       if (!args.httpRetryCount) {
-        throw new Error('The --httpRetryDelay option requires the --httpRetryCount option to be set');
+        throw new Error('The --httpRetryDelayFallback option requires the --httpRetryCount option to be set');
       }
-      context[KeysHttp.httpRetryDelay.name] = args.httpRetryDelay;
+      context[KeysHttp.httpRetryDelayFallback.name] = args.httpRetryDelayFallback;
+    }
+
+    // Define limit to the delay between HTTP retries
+    if (args.httpRetryDelayLimit) {
+      if (!args.httpRetryCount) {
+        throw new Error('The --httpRetryDelayLimit option requires the --httpRetryCount option to be set');
+      }
+      context[KeysHttp.httpRetryDelayLimit.name] = args.httpRetryDelayLimit;
     }
 
     // Define union default graph

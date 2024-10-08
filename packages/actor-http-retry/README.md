@@ -36,4 +36,5 @@ After installing, this package can be added to your engine's configuration as fo
 ### Context Parameters
 
 * `KeysHttp.httpRetryCount`: The number of retries, added on top of the initial attempt.
-* `KeysHttp.httpRetryDelay`: The fallback retry delay, if the server does not send a `Retry-After` header.
+* `KeysHttp.httpRetryDelayFallback`: The fallback retry delay in milliseconds, if a server does not send a `Retry-After` header.
+* `KeysHttp.httpRetryDelayLimit`: The optional upper limit of the retry delay in milliseconds. If a server requests a delay larger than this, the engine will consider it unavailable.

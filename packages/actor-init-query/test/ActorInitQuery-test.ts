@@ -646,9 +646,9 @@ LIMIT 100
         });
       });
 
-      it('handles the --httpRetryDelay flag', async() => {
+      it('handles the --httpRetryDelayFallback flag', async() => {
         const stdout = await stringifyStream(<any> (await actor.run({
-          argv: [ sourceHypermedia, '-q', queryString, '--httpRetryCount=2', '--httpRetryDelay=500' ],
+          argv: [ sourceHypermedia, '-q', queryString, '--httpRetryCount=2', '--httpRetryDelayFallback=500' ],
           env: {},
           stdin: <Readable><any> new PassThrough(),
           context,
@@ -659,18 +659,45 @@ LIMIT 100
           sources: [{ value: sourceHypermedia }],
           log: expect.any(LoggerPretty),
           [KeysHttp.httpRetryCount.name]: 2,
-          [KeysHttp.httpRetryDelay.name]: 500,
+          [KeysHttp.httpRetryDelayFallback.name]: 500,
         });
       });
 
-      it('handles --httpRetryDelay flag requiring --httpRetryCount', async() => {
+      it('handles --httpRetryDelayFallback flag requiring --httpRetryCount', async() => {
         const stderr = await stringifyStream(<any> (await actor.run({
-          argv: [ sourceHypermedia, '-q', queryString, '--httpRetryDelay=500' ],
+          argv: [ sourceHypermedia, '-q', queryString, '--httpRetryDelayFallback=500' ],
           env: {},
           stdin: <Readable><any> new PassThrough(),
           context,
         })).stderr);
-        expect(stderr).toContain(`The --httpRetryDelay option requires the --httpRetryCount option to be set`);
+        expect(stderr).toContain(`The --httpRetryDelayFallback option requires the --httpRetryCount option to be set`);
+      });
+
+      it('handles the --httpRetryDelayLimit flag', async() => {
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-q', queryString, '--httpRetryCount=2', '--httpRetryDelayLimit=500' ],
+          env: {},
+          stdin: <Readable><any> new PassThrough(),
+          context,
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
+          sources: [{ value: sourceHypermedia }],
+          log: expect.any(LoggerPretty),
+          [KeysHttp.httpRetryCount.name]: 2,
+          [KeysHttp.httpRetryDelayLimit.name]: 500,
+        });
+      });
+
+      it('handles --httpRetryDelayLimit flag requiring --httpRetryCount', async() => {
+        const stderr = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-q', queryString, '--httpRetryDelayLimit=500' ],
+          env: {},
+          stdin: <Readable><any> new PassThrough(),
+          context,
+        })).stderr);
+        expect(stderr).toContain(`The --httpRetryDelayLimit option requires the --httpRetryCount option to be set`);
       });
 
       it('handles the --unionDefaultGraph flag', async() => {
