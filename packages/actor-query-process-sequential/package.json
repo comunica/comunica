@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-process-sequential",
-  "version": "3.2.2",
+  "version": "3.3.0",
   "description": "A sequential query-process actor",
   "lsd:module": true,
   "license": "MIT",

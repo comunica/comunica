@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-parse-graphql",
-  "version": "3.2.1",
+  "version": "3.3.0",
   "description": "A graphql sparql-parse actor",
   "lsd:module": true,
   "license": "MIT",

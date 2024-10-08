@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-process-annotate-source-binding",
-  "version": "3.2.1",
+  "version": "3.3.0",
   "description": "A annotate-source-binding query-process actor",
   "lsd:module": true,
   "license": "MIT",

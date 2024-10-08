@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-inner-multi-bind",
-  "version": "3.2.2",
+  "version": "3.3.0",
   "description": "A multi-bind rdf-join actor",
   "lsd:module": true,
   "license": "MIT",

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-selectivity-variable-counting",
-  "version": "3.2.1",
+  "version": "3.3.0",
   "description": "A variable-counting rdf-join-selectivity actor",
   "lsd:module": true,
   "license": "MIT",

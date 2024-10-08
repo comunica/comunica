@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-optional-hash",
-  "version": "3.2.2",
+  "version": "3.3.0",
   "description": "A optional-hash rdf-join actor",
   "lsd:module": true,
   "license": "MIT",

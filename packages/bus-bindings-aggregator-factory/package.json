@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-bindings-aggregator-factory",
-  "version": "3.2.1",
+  "version": "3.3.0",
   "description": "A comunica actor for creating Binding-Aggregators.",
   "lsd:module": true,
   "license": "MIT",

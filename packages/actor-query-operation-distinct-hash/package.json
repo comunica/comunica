@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-distinct-hash",
-  "version": "3.2.2",
+  "version": "3.3.0",
   "description": "A distinct-hash query-operation actor",
   "lsd:module": true,
   "license": "MIT",

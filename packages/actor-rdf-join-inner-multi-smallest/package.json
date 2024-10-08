@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-inner-multi-smallest",
-  "version": "3.2.2",
+  "version": "3.3.0",
   "description": "A multi-smallest rdf-join actor",
   "lsd:module": true,
   "license": "MIT",

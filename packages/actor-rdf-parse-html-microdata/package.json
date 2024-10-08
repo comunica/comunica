@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-parse-html-microdata",
-  "version": "3.2.1",
+  "version": "3.3.0",
   "description": "A microdata rdf-parse-html actor",
   "lsd:module": true,
   "license": "MIT",

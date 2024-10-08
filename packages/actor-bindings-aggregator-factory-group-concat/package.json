@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-bindings-aggregator-factory-group-concat",
-  "version": "3.2.1",
+  "version": "3.3.0",
   "description": "A group-concat bindings aggregator factory actor",
   "lsd:module": true,
   "license": "MIT",

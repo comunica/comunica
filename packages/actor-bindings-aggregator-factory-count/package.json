@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-bindings-aggregator-factory-count",
-  "version": "3.2.1",
+  "version": "3.3.0",
   "description": "A count bindings aggregator factory actor",
   "lsd:module": true,
   "license": "MIT",

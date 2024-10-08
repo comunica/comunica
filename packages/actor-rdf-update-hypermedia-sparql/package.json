@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-update-hypermedia-sparql",
-  "version": "3.2.1",
+  "version": "3.3.0",
   "description": "A sparql rdf-update-hypermedia actor",
   "lsd:module": true,
   "license": "MIT",

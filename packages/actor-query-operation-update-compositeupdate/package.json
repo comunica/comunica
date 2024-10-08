@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-update-compositeupdate",
-  "version": "3.2.2",
+  "version": "3.3.0",
   "description": "A update-compositeupdate query-operation actor",
   "lsd:module": true,
   "license": "MIT",

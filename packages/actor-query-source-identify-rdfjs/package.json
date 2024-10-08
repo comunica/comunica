@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-source-identify-rdfjs",
-  "version": "3.2.2",
+  "version": "3.3.0",
   "description": "A rdfjs query-source-identify actor",
   "lsd:module": true,
   "license": "MIT",

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-bgp-join",
-  "version": "3.2.2",
+  "version": "3.3.0",
   "description": "A bgp-join query-operation actor",
   "lsd:module": true,
   "license": "MIT",

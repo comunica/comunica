@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-result-serialize-sparql-xml",
-  "version": "3.2.1",
+  "version": "3.3.0",
   "description": "A sparql-xml query-result-serialize actor",
   "lsd:module": true,
   "license": "MIT",

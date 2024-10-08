@@ -1,6 +1,6 @@
 {
   "name": "@comunica/utils-expression-evaluator",
-  "version": "3.2.1",
+  "version": "3.3.0",
   "description": "A simple SPARQL expression evaluator",
   "lsd:module": true,
   "license": "MIT",

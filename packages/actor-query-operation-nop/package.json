@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-nop",
-  "version": "3.2.2",
+  "version": "3.3.0",
   "description": "A nop query-operation actor",
   "lsd:module": true,
   "license": "MIT",

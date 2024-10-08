@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-path-zero-or-more",
-  "version": "3.2.2",
+  "version": "3.3.0",
   "description": "A path-zero-or-more query-operation actor",
   "lsd:module": true,
   "license": "MIT",

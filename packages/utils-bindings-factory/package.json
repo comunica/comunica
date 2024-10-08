@@ -1,6 +1,6 @@
 {
   "name": "@comunica/utils-bindings-factory",
-  "version": "3.2.1",
+  "version": "3.3.0",
   "description": "Bindings factory module for Comunica",
   "license": "MIT",
   "funding": {
