@@ -170,15 +170,15 @@ describe('ActorQueryOperationWrapStream', () => {
       });
     });
 
-    it('should reject test if wrap context key is set', async() => {
-      actionBindings.context = actionBindings.context.set(KEY_CONTEXT_WRAPPED_QUERY_OPERATION, true);
+    it('should reject test if wrap context key is set to wrap actor', async() => {
+      actionBindings.context = actionBindings.context.set(KEY_CONTEXT_WRAPPED_QUERY_OPERATION, actorWrapStream);
       await expect(actorWrapStream.test(actionBindings))
         .rejects.toThrow('Unable to wrap query source multiple times');
     });
 
-    it('should set wrapped to true during run', async() => {
+    it('should set wrapped to wrap actor during run', async() => {
       await actorWrapStream.run(actionBindings);
-      expect(calledWithContext).toEqual(new ActionContext({ [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: true }));
+      expect(calledWithContext).toEqual(new ActionContext({ [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: actorWrapStream }));
     });
 
     describe('binding output', () => {
@@ -217,7 +217,7 @@ describe('ActorQueryOperationWrapStream', () => {
           operation: types.NOP,
           stream: bsOutput,
           streamMetadata: expect.any(Function),
-          context: new ActionContext({ [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: true }),
+          context: new ActionContext({ [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: actorWrapStream }),
           metadata: {
             type: 'bindings',
             a: 'value1',
@@ -244,7 +244,7 @@ describe('ActorQueryOperationWrapStream', () => {
           operation: types.NOP,
           stream: bsOutput,
           streamMetadata: expect.any(Function),
-          context: new ActionContext({ [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: true }),
+          context: new ActionContext({ [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: actorWrapStream }),
           metadata: {
             type: 'bindings',
             resultContext: undefined,
@@ -288,7 +288,7 @@ describe('ActorQueryOperationWrapStream', () => {
           operation: types.NOP,
           stream: quadOutput,
           streamMetadata: expect.any(Function),
-          context: new ActionContext({ [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: true }),
+          context: new ActionContext({ [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: actorWrapStream }),
           metadata: {
             type: 'quads',
             a: 'value1',
@@ -315,7 +315,7 @@ describe('ActorQueryOperationWrapStream', () => {
           operation: types.NOP,
           stream: quadOutput,
           streamMetadata: expect.any(Function),
-          context: new ActionContext({ [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: true }),
+          context: new ActionContext({ [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: actorWrapStream }),
           metadata: {
             type: 'quads',
             resultContext: undefined,

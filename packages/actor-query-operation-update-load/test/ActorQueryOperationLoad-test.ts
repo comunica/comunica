@@ -92,7 +92,7 @@ describe('ActorQueryOperationLoad', () => {
         ),
         context: new ActionContext({
           [KeysQueryOperation.operation.name]: expect.anything(),
-          [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: false,
+          [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: actor,
         }),
       });
     });
@@ -116,7 +116,7 @@ describe('ActorQueryOperationLoad', () => {
         operation: expect.anything(),
         context: new ActionContext({
           '@comunica/bus-query-operation:operation': expect.anything(),
-          [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: false,
+          [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: actor,
         }),
       });
     });
@@ -197,7 +197,7 @@ describe('ActorQueryOperationLoad', () => {
         context: new ActionContext({
           [KeysInitQuery.lenient.name]: true,
           [KeysQueryOperation.operation.name]: expect.anything(),
-          [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: false,
+          [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: actor,
         }),
       });
     });

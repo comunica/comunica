@@ -81,7 +81,7 @@ describe('ActorQueryOperationTyped', () => {
         [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
         [KeysInitQuery.physicalQueryPlanNode.name]: operation,
         [KeysQueryOperation.operation.name]: operation,
-        [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: false,
+        [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: actor,
       }));
     });
   });

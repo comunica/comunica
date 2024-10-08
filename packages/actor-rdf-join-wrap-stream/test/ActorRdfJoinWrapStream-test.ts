@@ -173,7 +173,7 @@ describe('ActorRdfJoinWrapStream', () => {
     });
 
     it('should reject test if wrap context key is set', async() => {
-      action2.context = action2.context.set(KEY_CONTEXT_WRAPPED_RDF_JOIN, true);
+      action2.context = action2.context.set(KEY_CONTEXT_WRAPPED_RDF_JOIN, actorWrapStream);
       await expect(actorWrapStream.test(action2))
         .rejects.toThrow('Unable to wrap join operation multiple times');
     });
@@ -181,7 +181,7 @@ describe('ActorRdfJoinWrapStream', () => {
     it('should set wrapped to true during run', async() => {
       await actorWrapStream.run(action2);
       expect(calledWithContext).toEqual(
-        new ActionContext({ [KEY_CONTEXT_WRAPPED_RDF_JOIN.name]: true }),
+        new ActionContext({ [KEY_CONTEXT_WRAPPED_RDF_JOIN.name]: actorWrapStream }),
       );
     });
 
@@ -246,7 +246,7 @@ describe('ActorRdfJoinWrapStream', () => {
             joinEntries: 2,
             resultContext: undefined,
           },
-          context: new ActionContext().set(KEY_CONTEXT_WRAPPED_RDF_JOIN, true),
+          context: new ActionContext().set(KEY_CONTEXT_WRAPPED_RDF_JOIN, actorWrapStream),
         },
       );
     });
@@ -303,7 +303,7 @@ describe('ActorRdfJoinWrapStream', () => {
             joinEntries: 2,
             resultContext: new ActionContext({ a: 'contextValue' }),
           },
-          context: new ActionContext().set(KEY_CONTEXT_WRAPPED_RDF_JOIN, true),
+          context: new ActionContext().set(KEY_CONTEXT_WRAPPED_RDF_JOIN, actorWrapStream),
         },
       );
     });
@@ -362,7 +362,7 @@ describe('ActorRdfJoinWrapStream', () => {
             b: 'value2',
             resultContext: new ActionContext(),
           },
-          context: new ActionContext().set(KEY_CONTEXT_WRAPPED_RDF_JOIN, true),
+          context: new ActionContext().set(KEY_CONTEXT_WRAPPED_RDF_JOIN, actorWrapStream),
         },
       );
     });

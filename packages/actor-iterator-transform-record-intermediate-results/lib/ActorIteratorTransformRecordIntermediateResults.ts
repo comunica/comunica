@@ -35,7 +35,6 @@ export class ActorIteratorTransformRecordIntermediateResults
   {
     const statisticIntermediateResults: StatisticIntermediateResults = action.context
     .getSafe(KeysStatistics.intermediateResults);
-    // TODO SEPERATE THE TWO CASES BY TYPE
     const output = <AsyncIterator<RDF.Bindings>> action.stream.map((data) => {
         statisticIntermediateResults.updateStatistic(
           { 

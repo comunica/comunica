@@ -433,7 +433,7 @@ IQueryOperationResultBindings
               variables: [ DF.variable('a'), DF.variable('b') ],
             }],
             [KeysQueryOperation.joinBindings.name]: BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
-            [KEY_CONTEXT_WRAPPED_RDF_JOIN.name]: false,
+            [KEY_CONTEXT_WRAPPED_RDF_JOIN.name]: actor,
           }),
         });
         expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(2, {
@@ -453,7 +453,7 @@ IQueryOperationResultBindings
               variables: [ DF.variable('a'), DF.variable('b') ],
             }],
             [KeysQueryOperation.joinBindings.name]: BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
-            [KEY_CONTEXT_WRAPPED_RDF_JOIN.name]: false,
+            [KEY_CONTEXT_WRAPPED_RDF_JOIN.name]: actor,
           }),
         });
         expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(3, {
@@ -473,7 +473,7 @@ IQueryOperationResultBindings
               variables: [ DF.variable('a'), DF.variable('b') ],
             }],
             [KeysQueryOperation.joinBindings.name]: BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
-            [KEY_CONTEXT_WRAPPED_RDF_JOIN.name]: false,
+            [KEY_CONTEXT_WRAPPED_RDF_JOIN.name]: actor,
           }),
         });
       });
