@@ -1,6 +1,20 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v3.3.0"></a>
+## [v3.3.0](https://github.com/comunica/comunica/compare/v3.2.3...v3.3.0) - 2024-10-08
+
+### Added
+* [Add statistics tracking](https://github.com/comunica/comunica/commit/b8f69dbf37eee85063bc96e93c780c74e9955555)
+
+### Changed
+* [Optimize Bindings merge logic](https://github.com/comunica/comunica/commit/20daf1761b1ec4c82357909a45fa4f84e2754080)
+
+### Fixed
+* [Fix source attribution for QPF and SPARQL endpoints (#1420)](https://github.com/comunica/comunica/commit/3165b9532ca38264ca66d4c8de592053e05e1e92)
+* [Fix internal cardinalities being wrong for SPARQL endpoints with VoID](https://github.com/comunica/comunica/commit/075f5dde03354f0516398235146d9a93883e8b66)
+* [Define inner join actor orders for NaN cardinalities](https://github.com/comunica/comunica/commit/78f9a68ea1111f40066fab3a22eae9b772ec2096)
+
 <a name="v3.2.3"></a>
 ## [v3.2.3](https://github.com/comunica/comunica/compare/v3.2.2...v3.2.3) - 2024-08-22
 

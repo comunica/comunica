@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-hash-quads",
-  "version": "3.2.1",
+  "version": "3.3.0",
   "description": "A comunica bus for hashing quads.",
   "lsd:module": true,
   "typings": "lib/index",
@@ -36,7 +36,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/core": "^3.2.1",
+    "@comunica/core": "^3.3.0",
     "rdf-data-factory": "^1.1.2"
   }
 }
