@@ -23,9 +23,9 @@ module.exports = function(engine) {
         baseIRI: options.baseIRI,
         sources,
         httpProxyHandler: proxyUrl ? new ProxyHandlerStatic(proxyUrl) : null,
-        httpRetryOnServerError: true,
         httpRetryCount: 3,
-        httpRetryDelay: 10,
+        httpRetryDelayFallback: 10,
+        httpRetryDelayLimit: 100,
       });
       if (result.resultType === 'boolean') {
         return new RdfTestSuite.QueryResultBoolean(await result.execute());

@@ -38,20 +38,6 @@ describe('ActorHttpNative', () => {
     });
   });
 
-  describe('#createUserAgent', () => {
-    it('should create a user agent in the browser', () => {
-      (<any> globalThis).navigator = { userAgent: 'Dummy' };
-      expect(ActorHttpNative.createUserAgent())
-        .toBe(`Comunica/actor-http-native (Browser-${globalThis.navigator.userAgent})`);
-    });
-
-    it('should create a user agent in Node.js', () => {
-      delete (<any> globalThis).navigator;
-      expect(ActorHttpNative.createUserAgent())
-        .toBe(`Comunica/actor-http-native (Node.js ${process.version}; ${process.platform})`);
-    });
-  });
-
   describe('An ActorHttpNative instance', () => {
     let actor: ActorHttpNative;
 
@@ -227,7 +213,7 @@ describe('ActorHttpNative', () => {
       });
       expect(spy).toHaveBeenCalledWith('Requesting http://example.com/', {
         actor: 'actor',
-        headers: { a: 'b', 'user-agent': (<any> actor).userAgent },
+        headers: { a: 'b', 'user-agent': (<any> ActorHttpNative).userAgent },
         method: 'GET',
       });
     });

@@ -1,7 +1,8 @@
 /* eslint-disable import/no-nodejs-modules */
 import { Agent as HttpAgent } from 'node:http';
 import { Agent as HttpsAgent } from 'node:https';
-import { ActorHttp } from '@comunica/bus-http';
+
+/* eslint-enable import/no-nodejs-modules */
 import type { IFetchInitPreprocessor } from './IFetchInitPreprocessor';
 
 /**
@@ -16,17 +17,7 @@ export class FetchInitPreprocessor implements IFetchInitPreprocessor {
     this.agent = (_parsedURL: URL): HttpAgent => _parsedURL.protocol === 'http:' ? httpAgent : httpsAgent;
   }
 
-  public async handle(init: RequestInit): Promise<RequestInit> {
-    // Convert body Web stream to Node stream, as node-fetch does not support Web streams
-    let halfDuplex = false;
-    if (init.body && typeof init.body !== 'string' && 'getReader' in <any> init.body) {
-      init.body = <any> ActorHttp.toNodeReadable(<any> init.body);
-      // The Fetch API requires specific options to be set when sending body streams:
-      // - 'keepalive' can not be true
-      // - 'duplex' must be set to 'half'
-      halfDuplex = true;
-    }
-
+  public async handle(init: RequestInit): Promise<RequestInit & { agent: (url: URL) => HttpAgent }> {
     // Add 'Accept-Encoding' headers
     const headers = new Headers(init.headers);
     if (!headers.has('Accept-Encoding')) {
@@ -34,12 +25,13 @@ export class FetchInitPreprocessor implements IFetchInitPreprocessor {
       init = { ...init, headers };
     }
 
-    return <any> {
+    // The Fetch API requires specific options to be set when sending body streams:
+    // - 'keepalive' can not be true
+    // - 'duplex' must be set to 'half'
+    return {
       ...init,
+      ...init.body ? { keepalive: false, duplex: 'half' } : { keepalive: true },
       agent: this.agent,
-      keepalive: halfDuplex ? undefined : true,
-      duplex: halfDuplex ? 'half' : undefined,
     };
   }
 }
-/* eslint-enable import/no-nodejs-modules */

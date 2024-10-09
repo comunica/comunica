@@ -9,6 +9,7 @@ This module is part of the [Comunica framework](https://github.com/comunica/comu
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
 
 When this actor is used, a custom fetch implementation may be provided via the context (`fetch`).
+If none is provided, the global `fetch` implementation from the runtime or a polyfill is used.
 
 [Click here if you just want to query with Comunica](https://comunica.dev/docs/query/).
 
@@ -21,14 +22,12 @@ $ yarn add @comunica/actor-http-fetch
 ## Configure
 
 After installing, this package can be added to your engine's configuration as follows:
-```text
+```json
 {
   "@context": [
-    ...
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-fetch/^4.0.0/components/context.jsonld"
   ],
   "actors": [
-    ...
     {
       "@id": "urn:comunica:default:http/actors#fetch",
       "@type": "ActorHttpFetch"
@@ -39,4 +38,4 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
-* `agentOptions`: The agent JSON options for the HTTP agent. _(optional)_
+* `agentOptions`: The agent JSON options for the HTTP agent in Node.js environments. _(optional)_

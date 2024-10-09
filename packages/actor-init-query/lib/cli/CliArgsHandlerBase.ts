@@ -130,13 +130,13 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
           type: 'number',
           describe: 'The number of retries to perform on failed fetch requests',
         },
-        httpRetryDelay: {
+        httpRetryDelayFallback: {
           type: 'number',
-          describe: 'The number of milliseconds to wait between fetch retries',
+          describe: 'The fallback delay in milliseconds between fetch retries',
         },
-        httpRetryOnServerError: {
-          type: 'boolean',
-          describe: 'If fetch should be retried on 5xx server error responses, instead of being resolved.',
+        httpRetryDelayLimit: {
+          type: 'number',
+          describe: 'The upper limit in milliseconds for the delay between fetch retries',
         },
         unionDefaultGraph: {
           type: 'boolean',
@@ -241,20 +241,20 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
       context[KeysHttp.httpRetryCount.name] = args.httpRetryCount;
     }
 
-    // Define HTTP delay between retries
-    if (args.httpRetryDelay) {
+    // Define fallback HTTP delay between retries
+    if (args.httpRetryDelayFallback) {
       if (!args.httpRetryCount) {
-        throw new Error('The --httpRetryDelay option requires the --httpRetryCount option to be set');
+        throw new Error('The --httpRetryDelayFallback option requires the --httpRetryCount option to be set');
       }
-      context[KeysHttp.httpRetryDelay.name] = args.httpRetryDelay;
+      context[KeysHttp.httpRetryDelayFallback.name] = args.httpRetryDelayFallback;
     }
 
-    // Define HTTP retry on server error response
-    if (args.httpRetryOnServerError) {
+    // Define limit to the delay between HTTP retries
+    if (args.httpRetryDelayLimit) {
       if (!args.httpRetryCount) {
-        throw new Error('The --httpRetryOnServerError option requires the --httpRetryCount option to be set');
+        throw new Error('The --httpRetryDelayLimit option requires the --httpRetryCount option to be set');
       }
-      context[KeysHttp.httpRetryOnServerError.name] = args.httpRetryOnServerError;
+      context[KeysHttp.httpRetryDelayLimit.name] = args.httpRetryDelayLimit;
     }
 
     // Define union default graph

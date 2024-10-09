@@ -67,13 +67,20 @@ export const KeysHttp = {
    */
   httpRetryCount: new ActionContextKey<number>('@comunica/bus-http:http-retry-count'),
   /**
-   * Delay in milliseconds to wait between fetch retries. Requires httpRetryCount to be set.
+   * The fallback retry delay in milliseconds. This value is used when a server does not
+   * send a delay value in the Retry-After header or if the header value is incorrectly formatted.
    */
-  httpRetryDelay: new ActionContextKey<number>('@comunica/bus-http:http-retry-delay'),
+  httpRetryDelayFallback: new ActionContextKey<number>('@comunica/bus-http:http-retry-delay-fallback'),
   /**
-   * Retry fetch, if server replies with a 5xx error response. Requires httpRetryCount to be set.
+   * The upper limit for the retry delay in milliseconds. When a server requests a delay larger than this,
+   * the engine will consider it unavailable until the specified timestamp is close enough.
    */
-  httpRetryOnServerError: new ActionContextKey<boolean>('@comunica/bus-http:http-retry-on-server-error'),
+  httpRetryDelayLimit: new ActionContextKey<number>('@comunica/bus-http:http-retry-delay-limit'),
+  /**
+   * HTTP status codes that should always trigger a retry, regardless of the default behaviour.
+   * This can be used to, for example, force retries on server-side errors in the 500 range.
+   */
+  httpRetryStatusCodes: new ActionContextKey<number[]>('@comunica/bus-http:http-retry-status-codes'),
 };
 
 export const KeysHttpWayback = {

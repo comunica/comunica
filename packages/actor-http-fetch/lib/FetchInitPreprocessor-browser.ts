@@ -1,4 +1,3 @@
-import { ActorHttp } from '@comunica/bus-http';
 import type { IFetchInitPreprocessor } from './IFetchInitPreprocessor';
 
 /**
@@ -6,20 +5,6 @@ import type { IFetchInitPreprocessor } from './IFetchInitPreprocessor';
  */
 export class FetchInitPreprocessor implements IFetchInitPreprocessor {
   public async handle(init: RequestInit): Promise<RequestInit> {
-    // Remove overridden user-agent header within browsers to avoid CORS issues
-    if (init.headers) {
-      const headers = new Headers(init.headers);
-      if (headers.has('user-agent')) {
-        headers.delete('user-agent');
-      }
-      init.headers = headers;
-    }
-
-    // TODO: remove this workaround once this has a fix: https://github.com/inrupt/solid-client-authn-js/issues/1708
-    if (init?.headers && 'append' in init.headers) {
-      init.headers = ActorHttp.headersToHash(init.headers);
-    }
-
     // Browsers don't yet support passing ReadableStream as body to requests, see
     // https://bugs.chromium.org/p/chromium/issues/detail?id=688906
     // https://bugzilla.mozilla.org/show_bug.cgi?id=1387483
@@ -40,6 +25,6 @@ export class FetchInitPreprocessor implements IFetchInitPreprocessor {
     }
 
     // Only enable keepalive functionality if we are not sending a body (some browsers seem to trip over this)
-    return { keepalive: !init.body, ...init };
+    return { ...init, keepalive: !init.body };
   }
 }

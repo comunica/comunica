@@ -2,11 +2,6 @@ import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@co
 import { Actor } from '@comunica/core';
 import { readableFromWeb } from 'readable-from-web';
 
-/* istanbul ignore next */
-if (!globalThis.ReadableStream) {
-  globalThis.ReadableStream = require('web-streams-ponyfill').ReadableStream;
-}
-
 const isStream = require('is-stream');
 const toWebReadableStream = require('readable-stream-node-to-web');
 
@@ -66,6 +61,65 @@ export abstract class ActorHttp<TS = undefined> extends Actor<IActionHttp, IActo
       hash[key] = value;
     });
     return hash;
+  }
+
+  /**
+   * Extract the requested URL from the action input.
+   * @param {RequestInfo | URL} input The request input.
+   * @returns {URL} The extracted URL.
+   */
+  public static getInputUrl(input: RequestInfo | URL): URL {
+    return new URL(input instanceof Request ? input.url : input);
+  }
+
+  /**
+   * Creates an appropriate User-Agent header string for Node.js or other environments.
+   * Within browsers, returns undefined, because the value should not be overridden due to potential CORS issues.
+   */
+  public static createUserAgent(actorName: string, actorVersion: string): string | undefined {
+    if (!ActorHttp.isBrowser()) {
+      const versions = [
+        `Comunica/${actorVersion.split('.')[0]}.0`,
+        `${actorName}/${actorVersion}`,
+      ];
+
+      if (typeof globalThis.navigator === 'object' && typeof globalThis.navigator.userAgent === 'string') {
+        // Most runtimes like Node.js 21+, Deno and Bun implement navigator.userAgent
+        versions.push(globalThis.navigator.userAgent);
+      } else if (
+        typeof globalThis.process === 'object' &&
+        typeof globalThis.process.versions === 'object' &&
+        typeof globalThis.process.versions.node === 'string'
+      ) {
+        // TODO: remove this entire 'else if' when support for Node.js 20 is dropped, this only exists for that one
+        versions.push(`Node.js/${globalThis.process.versions.node.split('.')[0]}`);
+      }
+
+      if (
+        typeof globalThis.process === 'object' &&
+        typeof globalThis.process.platform === 'string' &&
+        typeof globalThis.process.arch === 'string'
+      ) {
+        versions.splice(1, 0, `(${globalThis.process.platform}; ${globalThis.process.arch})`);
+      }
+
+      return versions.join(' ');
+    }
+  }
+
+  /**
+   * Attempts to determine whether the current environment is a browser or not.
+   * @returns {boolean} True for browsers and web workers, false for other runtimes.
+   */
+  public static isBrowser(): boolean {
+    return (
+      // The window global and the document are available in browsers, but not in web workers
+      // https://developer.mozilla.org/en-US/docs/Glossary/Global_object
+      (typeof globalThis.window === 'object' && typeof globalThis.window.document === 'object') ||
+      // The importScripts function is only available in Web Workers
+      // https://developer.mozilla.org/en-US/docs/Web/API/WorkerGlobalScope/importScripts
+      (typeof (<any>globalThis).importScripts === 'function')
+    );
   }
 }
 
