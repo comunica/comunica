@@ -17,9 +17,13 @@ import type { Algebra as Alg } from 'sparqlalgebrajs';
  */
 export abstract class ActorFunctionFactory<TS = undefined> extends
   Actor<IActionFunctionFactory, IActorTest, IActorFunctionFactoryOutput, TS> {
+  /* eslint-disable max-len */
   /**
-   * @param args - @defaultNested {<default_bus> a <cbff:components/BusFunctionFactory.jsonld#BusFunctionFactory>} bus
+   * @param args -
+   * \ @defaultNested {<default_bus> a <cbff:components/BusFunctionFactory.jsonld#BusFunctionFactory>} bus
+   * \ @defaultNested {Creation of function evaluator failed: no configured actor was able to evaluate function ${action.functionName}} busFailMessage
    */
+  /* eslint-enable max-len */
   public constructor(args: IActorFunctionFactoryArgs<TS>) {
     super(args);
   }

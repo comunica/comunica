@@ -24,7 +24,9 @@ export abstract class ActorExpressionEvaluatorFactory<TS = undefined> extends
   protected mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   /**
-   * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * @param args -
+   * \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   * \ @defaultNested {Creation of Expression Evaluator failed} busFailMessage
    */
   public constructor(args: IActorExpressionEvaluatorFactoryArgs<TS>) {
     super(args);

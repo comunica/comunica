@@ -29,7 +29,7 @@ export class ExpressionEvaluator implements IExpressionEvaluator {
     return result.coerceEBV();
   }
 
-  public evaluateAsEvaluatorExpression(mapping: RDF.Bindings): Promise<Expression> {
+  public evaluateAsEvaluatorExpression(mapping: RDF.Bindings): Promise<TermExpression> {
     return this.evaluatorExpressionEvaluation(this.expr, mapping);
   }
 
