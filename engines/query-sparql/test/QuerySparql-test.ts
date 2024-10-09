@@ -375,7 +375,7 @@ describe('System test: QuerySparql', () => {
           const context = <any> { sources: [ store ]};
           context.extensionFunctions = baseFunctions;
           await expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow(
-            `ActorFunctionFactory_default_bus failed to handle an action`,
+            `Creation of function evaluator failed: no configured actor was able to evaluate function http://example.org/functions#nonExist`,
           );
         });
 
@@ -383,7 +383,7 @@ describe('System test: QuerySparql', () => {
           const context = <any> { sources: [ store ]};
           context.extensionFunctionCreator = () => null;
           await expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow(
-            `ActorFunctionFactory_default_bus failed to handle an action`,
+            `Creation of function evaluator failed: no configured actor was able to evaluate function http://example.org/functions#nonExist`,
           );
         });
 
