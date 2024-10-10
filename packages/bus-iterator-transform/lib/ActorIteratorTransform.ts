@@ -34,29 +34,15 @@ M extends MetadataBindings | MetadataQuads,
 
   public async run(action: ActionIteratorTransform): 
     Promise<IActorIteratorTransformBindingsOutput | IActorIteratorTransformQuadOutput> {
-    if (action.type == 'bindings'){
-      const { stream, metadata } = await this.transformIterator(action);
-      return {
-        type: action.type,
-        operation: action.operation,
-        stream,
-        metadata,
-        originalAction: action.originalAction,
-        context: action.context,
-      };    
-    }
-    else{
-    // Other options is quad stream
-      const { stream, metadata } = await this.transformIterator(action);
-      return {
-        type: action.type,
-        operation: action.operation,
-        stream,
-        metadata,
-        originalAction: action.originalAction,
-        context: action.context,
-      };  
-    }     
+    const { stream, metadata } = await this.transformIterator(action);
+    return {
+      type: returnType,
+      operation: action.operation,
+      stream,
+      metadata,
+      originalAction: action.originalAction,
+      context: action.context,
+    };  
   }
 
   public async test(
@@ -67,12 +53,18 @@ M extends MetadataBindings | MetadataQuads,
     }
     return true;
   }
+  public abstract transformIteratorTest<T extends ActionIteratorTransform>(action: T):
+    Promise<T extends {'type':'bindings'} ? ITransformIteratorOutput<AsyncIterator<RDF.Bindings>, MetadataBindings> :
+    ITransformIteratorOutput<AsyncIterator<RDF.Quad>, MetadataQuads>>;
 
   public abstract transformIterator(action: IActionIteratorTransformBindings): 
     Promise<ITransformIteratorOutput<AsyncIterator<RDF.Bindings>, MetadataBindings>>;
 
   public abstract transformIterator(action: IActionIteratorTransformQuad): 
     Promise<ITransformIteratorOutput<AsyncIterator<RDF.Quad>, MetadataQuads>>;
+  
+  public abstract transformIterator(action: ActionIteratorTransform):
+    Promise<ITransformIteratorOutput<AsyncIterator<RDF.Quad>, MetadataQuads>|ITransformIteratorOutput<AsyncIterator<RDF.Bindings>, MetadataBindings>>
 }
 
 export interface IActionIteratorTransform<T extends 'bindings'|'quad', S, M> extends IAction {

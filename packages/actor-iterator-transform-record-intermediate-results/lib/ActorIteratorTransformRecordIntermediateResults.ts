@@ -1,9 +1,7 @@
 import type {
-  IActionIteratorTransform,
+  ActionIteratorTransform,
   IActionIteratorTransformBindings,
   IActionIteratorTransformQuad,
-  IActorIteratorTransformBindingsOutput,
-  IActorIteratorTransformQuadOutput,
   ITransformIteratorOutput }
   from '@comunica/bus-iterator-transform';
 import { ActorIteratorTransform } from '@comunica/bus-iterator-transform';
@@ -49,4 +47,42 @@ export class ActorIteratorTransformRecordIntermediateResults
       })
     return {stream: output, metadata: <() => Promise<MetadataBindings>> action.metadata}
   }
+
+  public override async transformIteratorTest<T extends ActionIteratorTransform>(action: T): 
+    Promise<T extends {type: 'bindings'} ? ITransformIteratorOutput<AsyncIterator<RDF.Bindings>, MetadataBindings> : 
+      ITransformIteratorOutput<AsyncIterator<RDF.Quad>, MetadataQuads>> {
+      const statisticIntermediateResults: StatisticIntermediateResults = action.context
+      .getSafe(KeysStatistics.intermediateResults);
+      if (action.type === 'bindings'){
+        const output = action.stream.map((data) => {
+          statisticIntermediateResults.updateStatistic(
+            { 
+              type: action.type, 
+              data: data, 
+              metadata: { 
+                operation: action.operation,
+                ...action.metadata 
+              }},
+          );
+          return data;  
+        })
+        return {stream: output, metadata: <() => Promise<MetadataBindings>> action.metadata}
+      }
+      else{
+        const output = action.stream.map((data) => {
+          statisticIntermediateResults.updateStatistic(
+            { 
+              type: action.type, 
+              data: data, 
+              metadata: { 
+                operation: action.operation,
+                ...action.metadata 
+              }},
+          );
+          return data;  
+        })
+      return {stream: output, metadata: <() => Promise<MetadataBindings>> action.metadata}
+    }
+  }
+
 }
