@@ -2,6 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-rdf-join-optional-hash.svg)](https://www.npmjs.com/package/@comunica/actor-rdf-join-optional-hash)
 
+An [RDF Join](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join) actor that uses hash joins and can handle optional patterns.
 A comunica Optional Hash RDF Join Actor.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),

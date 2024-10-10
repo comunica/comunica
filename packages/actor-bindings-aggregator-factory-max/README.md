@@ -2,7 +2,8 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-bindings-aggregator-factory-max.svg)](https://www.npmjs.com/package/@comunica/actor-bindings-aggregator-factory-max)
 
-A comunica bindings aggregator factory for the max aggregator.
+A [bindings aggregator factory](https://github.com/comunica/comunica/tree/master/packages/bus-bindings-aggregator-factory) actor
+that constructs a bindings aggregator capable of evaluating [max](https://www.w3.org/TR/sparql11-query/#defn_aggMax).
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).

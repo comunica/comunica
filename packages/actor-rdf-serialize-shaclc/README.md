@@ -2,7 +2,8 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-rdf-serialize-shaclc.svg)](https://www.npmjs.com/package/@comunica/actor-rdf-serialize-shaclc)
 
-A comunica [SHACL Compact Syntax](https://w3c.github.io/shacl/shacl-compact-syntax/) and [Extended SHACL Compact Syntax](https://github.com/jeswr/shaclcjs#extended-shacl-compact-syntax) RDF Serialize Actor.
+An [RDF Serialize](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-serialize) actor that handles
+[SHACL Compact Syntax](https://w3c.github.io/shacl/shacl-compact-syntax/) and [Extended SHACL Compact Syntax](https://github.com/jeswr/shaclcjs#extended-shacl-compact-syntax).
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).

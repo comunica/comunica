@@ -2,7 +2,9 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-function-is-triple.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-is-triple)
 
-A comunica Term Function Is Triple Function Factory Actor.
+A [function factory](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory) actor
+that constructs a [term function](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory/lib/ActorFunctionFactory.ts)
+capable of evaluating the [Is Triple](https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#istriple) function.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
