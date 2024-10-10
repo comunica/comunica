@@ -4,7 +4,7 @@
 
 A [function factory](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory) actor
 that constructs a [term function](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory/lib/ActorFunctionFactory.ts)
-capable of evaluating the [Str Dt](https://www.w3.org/TR/sparql11-query/#func-datatype) function.
+capable of evaluating the [Str Dt](https://www.w3.org/TR/sparql11-query/#func-strdt) function.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
