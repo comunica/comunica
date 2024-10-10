@@ -5,7 +5,6 @@
 An [Optimize Query Operation](https://github.com/comunica/comunica/tree/master/packages/bus-optimize-query-operation) actor
 that wraps the top-level Construct clause in Distinct if --distinct flag is on.
 
-
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
 
