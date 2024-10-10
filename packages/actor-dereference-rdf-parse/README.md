@@ -2,7 +2,8 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Fbus-dereference-rdf.svg)](https://www.npmjs.com/package/@comunica/actor-dereference-rdf-parse)
 
-A an for dereferencing a path or URL into a parsed stream of quads.
+An [dereference rdf](https://github.com/comunica/comunica/tree/master/packages/bus-dereference-rdf)
+actor for dereferencing a path or URL into a parsed stream of quads.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
