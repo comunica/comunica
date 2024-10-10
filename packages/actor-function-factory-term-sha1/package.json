@@ -1,5 +1,5 @@
 {
-  "name": "@comunica/actor-function-factory-term-function-sha1",
+  "name": "@comunica/actor-function-factory-term-sha1",
   "version": "4.0.0",
   "description": "A term-sha1 function-factory actor",
   "lsd:module": true,
@@ -8,7 +8,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-function-factory-term-function-sha1"
+    "directory": "packages/actor-function-factory-term-sha1"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"
