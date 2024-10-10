@@ -2,7 +2,8 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-rdf-update-hypermedia-sparql.svg)](https://www.npmjs.com/package/@comunica/actor-rdf-update-hypermedia-sparql)
 
-A comunica SPARQL RDF Update Hypermedia Actor.
+An [RDF Update Hypermedia](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-update-hypermedia) actor
+that handles RDF Update Hypermedia.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
