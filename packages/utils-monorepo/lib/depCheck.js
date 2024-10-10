@@ -3,6 +3,8 @@ const path = require('node:path');
 const checkDeps = require('depcheck');
 const { loadPackages, exec, iter } = require('lerna-script');
 
+const configPackage = process.argv[3];
+
 function ensureDependency({ checkedDeps, dependency, dependant }) {
   if (!checkedDeps.dependencies.includes(dependency)) {
     checkedDeps.missing[dependency] = [ dependant ];
@@ -52,7 +54,7 @@ async function depInfo({ location }, log) {
     }, log);
     ensureDependency({
       checkedDeps,
-      dependency: '@comunica/config-query-sparql',
+      dependency: configPackage,
       dependant: path.join(location, 'engine-default.js'),
     }, log);
   } else {
