@@ -2,7 +2,8 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-bindings-aggregator-factory-sum.svg)](https://www.npmjs.com/package/@comunica/actor-bindings-aggregator-factory-sum)
 
-A comunica bindings aggregator factory for the sum aggregator.
+A [bindings aggregator factory](https://github.com/comunica/comunica/tree/master/packages/bus-bindings-aggregator-factory) actor
+that constructs a bindings aggregator capable of evaluating sum.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).

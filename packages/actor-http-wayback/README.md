@@ -2,7 +2,8 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-http-wayback.svg)](https://www.npmjs.com/package/@comunica/actor-http-wayback)
 
-A Comunica actor to intercept HTTP requests to recover broken links using the WayBack Machine
+An [HTTP](https://github.com/comunica/comunica/tree/master/packages/bus-http) actor
+that intercepts HTTP requests to recover broken links using the [WayBack Machine](https://web.archive.org/).
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
