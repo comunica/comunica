@@ -30,7 +30,6 @@ export class ActorRdfJoinWrapStream extends ActorRdfJoin {
   }
 
   public override async test(action: IActionRdfJoin): Promise<IMediatorTypeJoinCoefficients> {
-    console.log(action.context.get(KEY_CONTEXT_WRAPPED_RDF_JOIN))
     if (action.context.get(KEY_CONTEXT_WRAPPED_RDF_JOIN) === this) {
       throw new Error('Unable to wrap join operation multiple times');
     }
@@ -52,7 +51,7 @@ export class ActorRdfJoinWrapStream extends ActorRdfJoin {
         stream: result.bindingsStream,
         metadata: result.metadata,
         context: action.context,
-        originalAction: action
+        originalAction: action,
       },
     ));
 

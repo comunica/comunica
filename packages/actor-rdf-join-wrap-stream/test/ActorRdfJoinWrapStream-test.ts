@@ -204,7 +204,7 @@ describe('ActorRdfJoinWrapStream', () => {
           stream: action2.bindingsStream,
           metadata: action2.metadata,
           context: new ActionContext(),
-          originalAction: action2
+          originalAction: action2,
         },
       );
       const mockedMediatorJoin = jest.spyOn(mediatorJoin, 'mediate').mockResolvedValue(
@@ -261,7 +261,7 @@ describe('ActorRdfJoinWrapStream', () => {
           stream: action2.bindingsStream,
           metadata: action2.metadata,
           context: new ActionContext(),
-          originalAction: action2
+          originalAction: action2,
         },
       );
       const mockedMediatorJoin = jest.spyOn(mediatorJoin, 'mediate').mockResolvedValue(
@@ -318,7 +318,7 @@ describe('ActorRdfJoinWrapStream', () => {
           stream: action2.bindingsStream,
           metadata: action2.metadata,
           context: new ActionContext(),
-          originalAction: action2
+          originalAction: action2,
         },
       );
       const mockedMediatorJoin = jest.spyOn(mediatorJoin, 'mediate').mockResolvedValue(

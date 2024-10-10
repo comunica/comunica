@@ -60,7 +60,7 @@ export class ActorQueryOperationWrapStream extends ActorQueryOperation {
             stream: output.quadStream,
             metadata: output.metadata,
             context: action.context,
-            originalAction: action
+            originalAction: action,
           },
         );
         output.quadStream = <AsyncIterator<RDF.Quad>> iteratorTransformed.stream;

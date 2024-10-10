@@ -1,5 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type {
+  ActionIteratorTransform,
   IActionIteratorTransform,
   ITransformIteratorOutput,
 } from '@comunica/bus-iterator-transform';
@@ -65,7 +66,7 @@ describe('ActorQueryOperationWrapStream', () => {
   let mediatorQueryOperation: any;
   let mediatorIteratorTransform: MediatorCombinePipeline<
    DummyTransform,
-   IActionIteratorTransform<AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>, MetadataBindings | MetadataQuads>,
+   ActionIteratorTransform,
    IActorTest
    >;
 
@@ -178,7 +179,9 @@ describe('ActorQueryOperationWrapStream', () => {
 
     it('should set wrapped to wrap actor during run', async() => {
       await actorWrapStream.run(actionBindings);
-      expect(calledWithContext).toEqual(new ActionContext({ [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: actorWrapStream }));
+      expect(calledWithContext).toEqual(
+        new ActionContext({ [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: actorWrapStream }),
+      );
     });
 
     describe('binding output', () => {
