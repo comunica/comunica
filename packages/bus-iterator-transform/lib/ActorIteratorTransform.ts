@@ -1,7 +1,6 @@
-import type { LogicalJoinType } from '@comunica/bus-rdf-join';
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
-import type { IActionContext, MetadataBindings, MetadataQuads } from '@comunica/types';
+import type { LogicalJoinType, IActionContext, MetadataBindings, MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { types } from 'sparqlalgebrajs/lib/algebra';
@@ -56,7 +55,7 @@ export abstract class ActorIteratorTransform
   public async test(
     action: ActionIteratorTransform,
   ): Promise<IActorTest> {
-    if (!(this.wraps === undefined) && !this.wraps.includes(<possibleOperationTypes> action.operation)) {
+    if (!(this.wraps === undefined) && !this.wraps.includes(action.operation)) {
       throw new Error(`Operation type not supported in configuration of ${this.name}`);
     }
     return true;
@@ -76,7 +75,7 @@ export interface IActionIteratorTransform<T extends 'bindings' | 'quad', S, M> e
   /**
    * The operation that produced the stream
    */
-  operation: string;
+  operation: possibleOperationTypes;
   /**
    * The stream to be transformed by the actor
    */
@@ -109,7 +108,7 @@ export interface IActorIteratorTransformOutput<T extends 'bindings' | 'quad', S,
   /**
    * The operation that produced the stream
    */
-  operation: string;
+  operation: possibleOperationTypes;
   /**
    * Transformed stream
    */

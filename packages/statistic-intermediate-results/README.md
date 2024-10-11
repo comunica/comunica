@@ -1,6 +1,6 @@
-# Comunica Statistic Link Dereference
+# Comunica Statistic Intermediate Results
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Fstatistic-link-dereference.svg)](https://www.npmjs.com/package/@comunica/statistic-link-dereference)
+[![npm version](https://badge.fury.io/js/%40comunica%2Fstatistic-intermediate-results.svg)](https://www.npmjs.com/package/@comunica/statistic-intermediate-results)
 
 A statistics tracker package for tracking intermediate results produced during query execution in Comunica.
 This class must be added to the context with the key defined in the class.
@@ -47,6 +47,14 @@ $ yarn add @comunica/statistic-intermediate-results
 ```
 
 ### Allowing Comunica to call the tracker
-Comunica does not call the `updateStatistic` function by default. To enable this users should first add the following actors to the config:
-`actor-query-operation-wrap-stream` and `actor-rdf-join-wrap-stream`. This will call the `bus-iterator-transform` for each intermediate iterator produced
-by Comunica. Users should then add `actor-iterator-transform-record-intermediate-results` to the config, which will call the `updateStatistic` method of `statistic-intermediate-result` for each produced intermediate result.
+
+Comunica does not call the `updateStatistic` function by default. To enable this functionality, users should add the following actors to their Comunica configuration:
+
+1. `actor-query-operation-wrap-stream`: This actor wraps query operation streams.
+2. `actor-rdf-join-wrap-stream`: This actor wraps RDF join streams.
+
+These actors ensure that the `bus-iterator-transform` is called for each intermediate iterator produced by Comunica.
+
+3. `actor-iterator-transform-record-intermediate-results`: This actor is responsible for calling the `updateStatistic` method of `statistic-intermediate-result` for each produced intermediate result.
+
+By adding these actors to your configuration, you enable Comunica to track and record intermediate results during query execution.

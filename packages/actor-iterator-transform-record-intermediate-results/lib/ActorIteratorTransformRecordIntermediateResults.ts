@@ -1,6 +1,7 @@
 import type {
   IActionIteratorTransformBindings,
   IActionIteratorTransformQuad,
+  IActorIteratorTransformArgs,
   ITransformIteratorOutput }
   from '@comunica/bus-iterator-transform';
 import { ActorIteratorTransform } from '@comunica/bus-iterator-transform';
@@ -12,9 +13,13 @@ import type { AsyncIterator } from 'asynciterator';
 
 /**
  * A comunica Record Intermediate Results Iterator Transform Actor.
- * This actor simply updates the intermediate result statistic when an intermediate result is produced.
+ * This actor updates the intermediate result statistic when an intermediate result is produced.
  */
 export class ActorIteratorTransformRecordIntermediateResults extends ActorIteratorTransform {
+  public constructor(args: IActorIteratorTransformArgs) {
+    super(args);
+  }
+
   public async transformIteratorBindings(action: IActionIteratorTransformBindings):
   Promise<ITransformIteratorOutput<AsyncIterator<RDF.Bindings>, MetadataBindings>> {
     const statisticIntermediateResults: StatisticIntermediateResults = action.context
@@ -22,7 +27,7 @@ export class ActorIteratorTransformRecordIntermediateResults extends ActorIterat
     const output = action.stream.map((data) => {
       statisticIntermediateResults.updateStatistic(
         {
-          type: <'bindings'> action.type,
+          type: action.type,
           data,
           metadata: {
             operation: action.operation,
@@ -32,7 +37,7 @@ export class ActorIteratorTransformRecordIntermediateResults extends ActorIterat
       );
       return data;
     });
-    return { stream: output, metadata: <() => Promise<MetadataBindings>> action.metadata };
+    return { stream: output, metadata: action.metadata };
   }
 
   public async transformIteratorQuad(action: IActionIteratorTransformQuad):
@@ -42,7 +47,7 @@ export class ActorIteratorTransformRecordIntermediateResults extends ActorIterat
     const output = action.stream.map((data) => {
       statisticIntermediateResults.updateStatistic(
         {
-          type: <'quad'> action.type,
+          type: action.type,
           data,
           metadata: {
             operation: action.operation,
@@ -52,6 +57,6 @@ export class ActorIteratorTransformRecordIntermediateResults extends ActorIterat
       );
       return data;
     });
-    return { stream: output, metadata: <() => Promise<MetadataQuads>> action.metadata };
+    return { stream: output, metadata: action.metadata };
   }
 }

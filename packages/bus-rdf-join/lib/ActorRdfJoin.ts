@@ -15,6 +15,7 @@ import type {
   IActionContext,
   IJoinEntry,
   IJoinEntryWithMetadata,
+  LogicalJoinType,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -542,11 +543,6 @@ export interface IActorRdfJoinInternalOptions {
    */
   requiresVariableOverlap?: boolean;
 }
-
-/**
- * Represents a logical join type.
- */
-export type LogicalJoinType = 'inner' | 'optional' | 'minus';
 
 export interface IActionRdfJoin extends IAction {
   /**
