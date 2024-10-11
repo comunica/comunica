@@ -4,7 +4,7 @@
 
 A comunica Count Intermediate Results Process Iterator Actor. This actor wraps (intermediate) iterators produced during query execution. This wrapper
 calls the `updateStatistic` function of `@comunica/statistic-intermediate-results` which should be present in the context. This statistic should be
-added to the context by the user.
+added to the context by the user. This is possible when using Comunica in a javascript [application](https://comunica.dev/docs/query/getting_started/query_app/)
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).

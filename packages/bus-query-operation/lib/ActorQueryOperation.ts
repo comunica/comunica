@@ -292,6 +292,6 @@ export interface IAsyncExpressionContext extends IBaseExpressionContext {
 /**
  * Key that shows if the query operation has already been wrapped by a process iterator call
  */
-export const KEY_CONTEXT_WRAPPED_QUERY_OPERATION = new ActionContextKey<boolean>(
+export const KEY_CONTEXT_WRAPPED_QUERY_OPERATION = new ActionContextKey<typeof Actor>(
   '@comunica/actor-query-operation:wrapped',
 );

@@ -569,7 +569,7 @@ export interface IActorRdfJoinOutputInner {
 /**
  * Key that shows if the query operation has already been wrapped by a process iterator call
  */
-export const KEY_CONTEXT_WRAPPED_RDF_JOIN = new ActionContextKey<boolean>(
+export const KEY_CONTEXT_WRAPPED_RDF_JOIN = new ActionContextKey<typeof Actor>(
   '@comunica/actor-rdf-join:wrapped',
 );
 
