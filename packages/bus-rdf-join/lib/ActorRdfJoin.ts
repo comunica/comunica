@@ -4,7 +4,7 @@ import type {
 } from '@comunica/bus-rdf-join-selectivity';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IAction, IActorArgs, Mediate } from '@comunica/core';
-import { Actor } from '@comunica/core';
+import { ActionContextKey, Actor } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import { cachifyMetadata, MetadataValidationState } from '@comunica/metadata';
 import type {
@@ -15,6 +15,7 @@ import type {
   IActionContext,
   IJoinEntry,
   IJoinEntryWithMetadata,
+  LogicalJoinType,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -37,7 +38,6 @@ const DF = new DataFactory();
 export abstract class ActorRdfJoin
   extends Actor<IActionRdfJoin, IMediatorTypeJoinCoefficients, IQueryOperationResultBindings> {
   public readonly mediatorJoinSelectivity: MediatorRdfJoinSelectivity;
-
   /**
    * If this actor will be logged in the debugger and physical query plan logger
    */
@@ -434,6 +434,8 @@ export abstract class ActorRdfJoin
       );
     }
 
+    action.context = this.setContextWrapped(action, action.context);
+
     // Get action output
     const { result, physicalPlanMetadata } = await this.getOutput(action);
     const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
@@ -472,6 +474,10 @@ export abstract class ActorRdfJoin
     result.metadata = cachifyMetadata(result.metadata);
 
     return result;
+  }
+
+  public setContextWrapped(action: IActionRdfJoin, context: IActionContext): IActionContext {
+    return context.set(KEY_CONTEXT_WRAPPED_RDF_JOIN, action.entries);
   }
 
   /**
@@ -538,11 +544,6 @@ export interface IActorRdfJoinInternalOptions {
   requiresVariableOverlap?: boolean;
 }
 
-/**
- * Represents a logical join type.
- */
-export type LogicalJoinType = 'inner' | 'optional' | 'minus';
-
 export interface IActionRdfJoin extends IAction {
   /**
    * The logical join type.
@@ -564,5 +565,12 @@ export interface IActorRdfJoinOutputInner {
    */
   physicalPlanMetadata?: any;
 }
+
+/**
+ * Key that shows if the query operation has already been wrapped by a process iterator call
+ */
+export const KEY_CONTEXT_WRAPPED_RDF_JOIN = new ActionContextKey<typeof Actor>(
+  '@comunica/actor-rdf-join:wrapped',
+);
 
 export type MediatorRdfJoin = Mediate<IActionRdfJoin, IQueryOperationResultBindings, IMediatorTypeJoinCoefficients>;
