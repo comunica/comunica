@@ -1,14 +1,16 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
-import type { IActionIteratorTransform } from '@comunica/bus-iterator-transform';
+import type {
+  IActionIteratorTransformBindings,
+  IActionIteratorTransformQuads,
+} from '@comunica/bus-iterator-transform';
 import { KeysStatistics } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { MetadataValidationState } from '@comunica/metadata';
 import { StatisticIntermediateResults } from '@comunica/statistic-intermediate-results';
-import type { MetadataBindings, MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, MappingIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import { types } from 'sparqlalgebrajs/lib/algebra';
 import { ActorIteratorTransformRecordIntermediateResults }
   from '../lib/ActorIteratorTransformRecordIntermediateResults';
 
@@ -27,8 +29,8 @@ describe('ActorProcessIteratorRecordIntermediateResults', () => {
   describe('An ActorProcessIteratorRecordIntermediateResults instance', () => {
     let actor: ActorIteratorTransformRecordIntermediateResults;
     const statisticIntermediateResults = new StatisticIntermediateResults();
-    let actionBindings: IActionIteratorTransform<AsyncIterator<RDF.Bindings>, MetadataBindings>;
-    let actionQuads: IActionIteratorTransform<AsyncIterator<RDF.Quad>, MetadataQuads>;
+    let actionBindings: IActionIteratorTransformBindings;
+    let actionQuads: IActionIteratorTransformQuads;
     let metadata: any;
 
     beforeEach(async() => {
@@ -43,6 +45,7 @@ describe('ActorProcessIteratorRecordIntermediateResults', () => {
         },
       );
       actionBindings = {
+        type: 'bindings',
         operation: 'inner',
         stream: new ArrayIterator<RDF.Bindings>([
           BF.bindings([
@@ -50,7 +53,7 @@ describe('ActorProcessIteratorRecordIntermediateResults', () => {
             [ DF.variable('c'), DF.literal('c1') ],
           ]),
         ]),
-        streamMetadata: () => Promise.resolve(
+        metadata: () => Promise.resolve(
           {
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: 5 },
@@ -61,20 +64,17 @@ describe('ActorProcessIteratorRecordIntermediateResults', () => {
           },
         ),
         context: new ActionContext(),
-        metadata: {
-          ...(await metadata()),
-        },
+        originalAction: { context: new ActionContext() },
       };
       actionQuads = {
-        operation: 'construct',
+        type: 'quads',
+        operation: types.CONSTRUCT,
         stream: new ArrayIterator<RDF.Quad>([
           DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'), DF.namedNode('g1')),
         ]),
-        streamMetadata: metadata,
+        metadata,
         context: new ActionContext(),
-        metadata: {
-          ...(await metadata()),
-        },
+        originalAction: { context: new ActionContext() },
       };
     });
     describe('with quad input', () => {
@@ -85,12 +85,12 @@ describe('ActorProcessIteratorRecordIntermediateResults', () => {
       });
       it('transform iterator should return mapped stream and unchanged metadata', async() => {
         actionQuads.context = actionQuads.context.set(KeysStatistics.intermediateResults, statisticIntermediateResults);
-        await expect(actor.transformIterator(actionQuads)).resolves.toEqual({
+        await expect(actor.transformIteratorQuads(actionQuads)).resolves.toEqual({
           stream: expect.any(MappingIterator),
-          streamMetadata: expect.any(Function),
+          metadata: expect.any(Function),
         });
       });
-      it('should apply transform to input bindings stream', async() => {
+      it('should apply transform to input quad stream', async() => {
         const statisticEmitSpy = jest.spyOn(statisticIntermediateResults, 'emit');
         actionQuads.context = actionQuads.context.set(KeysStatistics.intermediateResults, statisticIntermediateResults);
 
@@ -99,15 +99,12 @@ describe('ActorProcessIteratorRecordIntermediateResults', () => {
 
         expect(statisticEmitSpy).toHaveBeenCalledWith(
           {
+            type: 'quads',
             data: DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'), DF.namedNode('g1')),
             metadata: {
               operation: 'construct',
+              metadata: expect.any(Function),
               time: performance.now(),
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 5 },
-              pageSize: 100,
-              requestTime: 20,
-              canContainUndefs: false,
             },
           },
         );
@@ -124,10 +121,10 @@ describe('ActorProcessIteratorRecordIntermediateResults', () => {
           KeysStatistics.intermediateResults,
           statisticIntermediateResults,
         );
-        const output = await actor.transformIterator(actionBindings);
+        const output = await actor.transformIteratorBindings(actionBindings);
         expect(output).toEqual({
           stream: expect.any(MappingIterator),
-          streamMetadata: expect.any(Function),
+          metadata: expect.any(Function),
         });
       });
 
@@ -137,24 +134,20 @@ describe('ActorProcessIteratorRecordIntermediateResults', () => {
           KeysStatistics.intermediateResults,
           statisticIntermediateResults,
         );
-
         const output = await actor.run(actionBindings);
         await output.stream.toArray();
 
         expect(statisticEmitSpy).toHaveBeenCalledWith(
           {
+            type: 'bindings',
             data: BF.bindings([
               [ DF.variable('a'), DF.literal('a1') ],
               [ DF.variable('c'), DF.literal('c1') ],
             ]),
             metadata: {
               operation: 'inner',
+              metadata: expect.any(Function),
               time: performance.now(),
-              state: new MetadataValidationState(),
-              cardinality: { type: 'estimate', value: 5 },
-              pageSize: 100,
-              requestTime: 20,
-              canContainUndefs: false,
             },
           },
         );

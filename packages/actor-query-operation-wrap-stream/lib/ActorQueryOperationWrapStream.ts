@@ -22,7 +22,7 @@ export class ActorQueryOperationWrapStream extends ActorQueryOperation {
   }
 
   public async test(action: IActionQueryOperation): Promise<IActorTest> {
-    if (action.context.get(KEY_CONTEXT_WRAPPED_QUERY_OPERATION) === this) {
+    if (action.context.get(KEY_CONTEXT_WRAPPED_QUERY_OPERATION) === action.operation) {
       throw new Error('Unable to wrap query source multiple times');
     }
     // Ensure this is always run if not already wrapped
@@ -32,7 +32,7 @@ export class ActorQueryOperationWrapStream extends ActorQueryOperation {
   public async run(action: IActionQueryOperation): Promise<IQueryOperationResult> {
     // Prevent infinite recursion. In consequent query operation calls this key should be set to false
     // To allow the operation to wrap ALL query operation runs
-    action.context = this.setContextWrapped(action.context);
+    action.context = this.setContextWrapped(action, action.context);
     const output: IQueryOperationResult = await this.mediatorQueryOperation.mediate(action);
     switch (output.type) {
       case 'bindings': {
@@ -55,7 +55,7 @@ export class ActorQueryOperationWrapStream extends ActorQueryOperation {
       case 'quads': {
         const iteratorTransformed = await this.mediatorIteratorTransform.mediate(
           {
-            type: 'quad',
+            type: 'quads',
             operation: action.operation.type,
             stream: output.quadStream,
             metadata: output.metadata,

@@ -937,7 +937,7 @@ IActorRdfJoinSelectivityOutput
         ...action,
         context: new ActionContext({
           [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
-          [KEY_CONTEXT_WRAPPED_RDF_JOIN.name]: actor,
+          [KEY_CONTEXT_WRAPPED_RDF_JOIN.name]: action.entries,
           [KeysInitQuery.physicalQueryPlanNode.name]: action,
         }),
       });

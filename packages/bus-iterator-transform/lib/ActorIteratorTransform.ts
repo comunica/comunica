@@ -41,7 +41,7 @@ export abstract class ActorIteratorTransform
       };
     }
 
-    const { stream, metadata } = await this.transformIteratorQuad(action);
+    const { stream, metadata } = await this.transformIteratorQuads(action);
     return {
       type: action.type,
       operation: action.operation,
@@ -63,11 +63,11 @@ export abstract class ActorIteratorTransform
   public abstract transformIteratorBindings(action: IActionIteratorTransformBindings):
   Promise<ITransformIteratorOutput<AsyncIterator<RDF.Bindings>, MetadataBindings>>;
 
-  public abstract transformIteratorQuad(action: IActionIteratorTransformQuad):
+  public abstract transformIteratorQuads(action: IActionIteratorTransformQuads):
   Promise<ITransformIteratorOutput<AsyncIterator<RDF.Quad>, MetadataQuads>>;
 }
 
-export interface IActionIteratorTransform<T extends 'bindings' | 'quad', S, M> extends IAction {
+export interface IActionIteratorTransform<T extends 'bindings' | 'quads', S, M> extends IAction {
   /**
    * Whether the stream produces bindings or quads
    */
@@ -94,13 +94,13 @@ export interface IActionIteratorTransformBindings
   extends IActionIteratorTransform<'bindings', AsyncIterator<RDF.Bindings>, MetadataBindings> {
 }
 
-export interface IActionIteratorTransformQuad
-  extends IActionIteratorTransform<'quad', AsyncIterator<RDF.Quad>, MetadataQuads> {
+export interface IActionIteratorTransformQuads
+  extends IActionIteratorTransform<'quads', AsyncIterator<RDF.Quad>, MetadataQuads> {
 }
 
-export type ActionIteratorTransform = IActionIteratorTransformBindings | IActionIteratorTransformQuad;
+export type ActionIteratorTransform = IActionIteratorTransformBindings | IActionIteratorTransformQuads;
 
-export interface IActorIteratorTransformOutput<T extends 'bindings' | 'quad', S, M> extends IActorOutput {
+export interface IActorIteratorTransformOutput<T extends 'bindings' | 'quads', S, M> extends IActorOutput {
   /**
    * Whether the stream produces bindings or quads
    */
@@ -132,7 +132,7 @@ export interface IActorIteratorTransformBindingsOutput
 }
 
 export interface IActorIteratorTransformQuadOutput
-  extends IActorIteratorTransformOutput<'quad', AsyncIterator<RDF.Quad>, MetadataQuads> {
+  extends IActorIteratorTransformOutput<'quads', AsyncIterator<RDF.Quad>, MetadataQuads> {
 }
 
 export type ActorIteratorTransformOutput =

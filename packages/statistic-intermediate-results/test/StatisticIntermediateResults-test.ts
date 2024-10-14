@@ -1,6 +1,6 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import { Bus } from '@comunica/core';
-import type { ILink, IPartialResult } from '@comunica/types';
+import type { ILink, PartialResult } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { StatisticIntermediateResults } from '../lib/StatisticIntermediateResults';
 
@@ -21,7 +21,7 @@ describe('StatisticIntermediateResults', () => {
   describe('An StatisticIntermediateResults instance should', () => {
     let parent: ILink;
     let child: ILink;
-    let cb: (data: IPartialResult) => void;
+    let cb: (data: PartialResult) => void;
 
     beforeEach(() => {
       parent = {
@@ -36,7 +36,7 @@ describe('StatisticIntermediateResults', () => {
           childkey: 5,
         },
       };
-      cb = jest.fn((data: IPartialResult) => {});
+      cb = jest.fn((data: PartialResult) => {});
     });
 
     it('attach an event listener', () => {
@@ -48,18 +48,43 @@ describe('StatisticIntermediateResults', () => {
 
     it('update intermediate result count', () => {
       expect(statisticIntermediateResults.updateStatistic(
-        { data: BF.fromRecord({ v0: DF.namedNode('a') }), metadata: { key: 1 }},
+        { type: 'bindings', data: BF.fromRecord({ v0: DF.namedNode('a') }), metadata: { key: 1 }},
       )).toBeTruthy();
     });
 
-    it('emit event on update', () => {
+    it('emit event on bindings update', () => {
       // We first add parent to the statistic, as only child metadata is added on updateStatistic call
       statisticIntermediateResults.on(cb);
       statisticIntermediateResults.updateStatistic(
-        { data: BF.fromRecord({ v0: DF.namedNode('a') }), metadata: { key: 1, time: performance.now() }},
+        {
+          type: 'bindings',
+          data: BF.fromRecord({ v0: DF.namedNode('a') }),
+          metadata: { key: 1, time: performance.now() },
+        },
       );
       expect(cb).toHaveBeenCalledWith(
-        { data: BF.fromRecord({ v0: DF.namedNode('a') }), metadata: { key: 1, time: performance.now() }},
+        {
+          type: 'bindings',
+          data: BF.fromRecord({ v0: DF.namedNode('a') }),
+          metadata: { key: 1, time: performance.now() },
+        },
+      );
+    });
+    it('emit event on quad update', () => {
+      statisticIntermediateResults.on(cb);
+      statisticIntermediateResults.updateStatistic(
+        {
+          type: 'quads',
+          data: DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'), DF.namedNode('g1')),
+          metadata: { key: 1, time: performance.now() },
+        },
+      );
+      expect(cb).toHaveBeenCalledWith(
+        {
+          type: 'quads',
+          data: DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'), DF.namedNode('g1')),
+          metadata: { key: 1, time: performance.now() },
+        },
       );
     });
   });

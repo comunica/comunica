@@ -39,6 +39,7 @@
   "dependencies": {
     "@comunica/bus-iterator-transform": "^3.2.0",
     "@comunica/context-entries": "^3.2.0",
+    "@comunica/statistic-intermediate-results": "^3.2.1",
     "@comunica/types": "^3.2.1",
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0"

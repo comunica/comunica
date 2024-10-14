@@ -1,6 +1,6 @@
 import type {
   IActionIteratorTransformBindings,
-  IActionIteratorTransformQuad,
+  IActionIteratorTransformQuads,
   IActorIteratorTransformArgs,
   ITransformIteratorOutput }
   from '@comunica/bus-iterator-transform';
@@ -31,7 +31,7 @@ export class ActorIteratorTransformRecordIntermediateResults extends ActorIterat
           data,
           metadata: {
             operation: action.operation,
-            ...action.metadata,
+            metadata: action.metadata,
           },
         },
       );
@@ -40,7 +40,7 @@ export class ActorIteratorTransformRecordIntermediateResults extends ActorIterat
     return { stream: output, metadata: action.metadata };
   }
 
-  public async transformIteratorQuad(action: IActionIteratorTransformQuad):
+  public async transformIteratorQuads(action: IActionIteratorTransformQuads):
   Promise<ITransformIteratorOutput<AsyncIterator<RDF.Quad>, MetadataQuads>> {
     const statisticIntermediateResults: StatisticIntermediateResults = action.context
       .getSafe(KeysStatistics.intermediateResults);
@@ -51,7 +51,7 @@ export class ActorIteratorTransformRecordIntermediateResults extends ActorIterat
           data,
           metadata: {
             operation: action.operation,
-            ...action.metadata,
+            metadata: action.metadata,
           },
         },
       );

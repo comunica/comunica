@@ -43,7 +43,7 @@ export class ActorQueryOperationSource extends ActorQueryOperation {
 
     const sourceWrapper: IQuerySourceWrapper = ActorQueryOperation.getOperationSource(action.operation)!;
     let mergedContext = sourceWrapper.context ? action.context.merge(sourceWrapper.context) : action.context;
-    mergedContext = this.setContextWrapped(mergedContext);
+    mergedContext = this.setContextWrapped(action, mergedContext);
     // Check if the operation is a CONSTRUCT query
     // We recurse because it may be wrapped in other operations such as SLICE and FROM
     let construct = false;

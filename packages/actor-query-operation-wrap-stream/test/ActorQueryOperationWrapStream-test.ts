@@ -1,7 +1,8 @@
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type {
   ActionIteratorTransform,
-  IActionIteratorTransform,
+  IActionIteratorTransformBindings,
+  IActionIteratorTransformQuads,
   ITransformIteratorOutput,
 } from '@comunica/bus-iterator-transform';
 import {
@@ -33,22 +34,29 @@ import { ActorQueryOperationWrapStream } from '../lib/ActorQueryOperationWrapStr
 const DF = new DataFactory();
 const BF = new BindingsFactory();
 
-class DummyTransform extends ActorIteratorTransform<AsyncIterator<RDF.Bindings>
-| AsyncIterator<RDF.Quad>, MetadataBindings | MetadataQuads> {
+class DummyTransform extends ActorIteratorTransform {
   public transformCalls = 0;
 
-  public async transformIterator<
-  T extends AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>,
-  M extends MetadataBindings | MetadataQuads,
-  >(
-    action: IActionIteratorTransform<T, M>,
-  ): Promise<ITransformIteratorOutput<T, M>> {
+  public async transformIteratorBindings(
+    action: IActionIteratorTransformBindings,
+  ): Promise<ITransformIteratorOutput<AsyncIterator<RDF.Bindings>, MetadataBindings>> {
     // Return unchanged
-    const transformedStream = <T> action.stream.map((data: RDF.Bindings | RDF.Quad) => {
+    const transformedStream = action.stream.map((data: RDF.Bindings) => {
       this.transformCalls++;
       return data;
     });
-    return { stream: transformedStream, streamMetadata: action.streamMetadata };
+    return { stream: transformedStream, metadata: action.metadata };
+  }
+
+  public async transformIteratorQuads(
+    action: IActionIteratorTransformQuads,
+  ): Promise<ITransformIteratorOutput<AsyncIterator<RDF.Quad>, MetadataQuads>> {
+    // Return unchanged
+    const transformedStream = action.stream.map((data: RDF.Quad) => {
+      this.transformCalls++;
+      return data;
+    });
+    return { stream: transformedStream, metadata: action.metadata };
   }
 }
 
@@ -171,16 +179,19 @@ describe('ActorQueryOperationWrapStream', () => {
       });
     });
 
-    it('should reject test if wrap context key is set to wrap actor', async() => {
-      actionBindings.context = actionBindings.context.set(KEY_CONTEXT_WRAPPED_QUERY_OPERATION, actorWrapStream);
+    it('should reject test if wrap context key is set to wraped operation', async() => {
+      actionBindings.context = actionBindings.context.set(
+        KEY_CONTEXT_WRAPPED_QUERY_OPERATION,
+        actionBindings.operation,
+      );
       await expect(actorWrapStream.test(actionBindings))
         .rejects.toThrow('Unable to wrap query source multiple times');
     });
 
-    it('should set wrapped to wrap actor during run', async() => {
+    it('should set wrapped to wraped operation during run', async() => {
       await actorWrapStream.run(actionBindings);
       expect(calledWithContext).toEqual(
-        new ActionContext({ [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: actorWrapStream }),
+        new ActionContext({ [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: actionBindings.operation }),
       );
     });
 
@@ -217,16 +228,12 @@ describe('ActorQueryOperationWrapStream', () => {
         const output: IQueryOperationResultBindings =
           <IQueryOperationResultBindings> await actorWrapStream.run(actionBindings);
         expect(spyIteratorTransform).toHaveBeenCalledWith({
+          type: 'bindings',
           operation: types.NOP,
           stream: bsOutput,
-          streamMetadata: expect.any(Function),
-          context: new ActionContext({ [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: actorWrapStream }),
-          metadata: {
-            type: 'bindings',
-            a: 'value1',
-            b: 'value2',
-            resultContext: new ActionContext({ c: 'value3' }),
-          },
+          metadata: expect.any(Function),
+          context: new ActionContext({ [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: actionBindings.operation }),
+          originalAction: actionBindings,
         });
       });
       it('should record empty metadata and context', async() => {
@@ -244,14 +251,12 @@ describe('ActorQueryOperationWrapStream', () => {
         const output: IQueryOperationResultBindings =
           <IQueryOperationResultBindings> await actorWrapStream.run(actionBindings);
         expect(spyIteratorTransform).toHaveBeenCalledWith({
+          type: 'bindings',
           operation: types.NOP,
           stream: bsOutput,
-          streamMetadata: expect.any(Function),
-          context: new ActionContext({ [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: actorWrapStream }),
-          metadata: {
-            type: 'bindings',
-            resultContext: undefined,
-          },
+          metadata: expect.any(Function),
+          context: new ActionContext({ [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: actionBindings.operation }),
+          originalAction: actionBindings,
         });
       });
     });
@@ -288,16 +293,12 @@ describe('ActorQueryOperationWrapStream', () => {
         const output: IQueryOperationResultQuads =
           <IQueryOperationResultQuads> await actorWrapStream.run(actionQuads);
         expect(spyIteratorTransform).toHaveBeenCalledWith({
+          type: 'quads',
           operation: types.NOP,
           stream: quadOutput,
-          streamMetadata: expect.any(Function),
-          context: new ActionContext({ [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: actorWrapStream }),
-          metadata: {
-            type: 'quads',
-            a: 'value1',
-            b: 'value2',
-            resultContext: new ActionContext({ c: 'value3' }),
-          },
+          metadata: expect.any(Function),
+          context: new ActionContext({ [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: actionQuads.operation }),
+          originalAction: actionQuads,
         });
       });
       it('should record empty metadata and context', async() => {
@@ -315,14 +316,12 @@ describe('ActorQueryOperationWrapStream', () => {
         const output: IQueryOperationResultQuads =
           <IQueryOperationResultQuads> await actorWrapStream.run(actionQuads);
         expect(spyIteratorTransform).toHaveBeenCalledWith({
+          type: 'quads',
           operation: types.NOP,
           stream: quadOutput,
-          streamMetadata: expect.any(Function),
-          context: new ActionContext({ [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: actorWrapStream }),
-          metadata: {
-            type: 'quads',
-            resultContext: undefined,
-          },
+          metadata: expect.any(Function),
+          context: new ActionContext({ [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: actionQuads.operation }),
+          originalAction: actionQuads,
         });
       });
     });

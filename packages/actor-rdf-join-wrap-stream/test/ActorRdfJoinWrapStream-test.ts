@@ -1,7 +1,9 @@
 import { ActorRdfJoinNestedLoop } from '@comunica/actor-rdf-join-inner-nestedloop';
 import { BindingsFactory } from '@comunica/bindings-factory';
 import type {
-  IActionIteratorTransform,
+  ActionIteratorTransform,
+  IActionIteratorTransformBindings,
+  IActionIteratorTransformQuads,
   ITransformIteratorOutput,
 } from '@comunica/bus-iterator-transform';
 import {
@@ -26,18 +28,25 @@ import { ActorRdfJoinWrapStream } from '../lib/ActorRdfJoinWrapStream';
 const DF = new DataFactory();
 const BF = new BindingsFactory();
 
-class DummyTransform extends ActorIteratorTransform<AsyncIterator<RDF.Bindings>
-| AsyncIterator<RDF.Quad>, MetadataBindings | MetadataQuads> {
+class DummyTransform extends ActorIteratorTransform {
   public transformCalls = 0;
 
-  public async transformIterator<
-  T extends AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>,
-  M extends MetadataBindings | MetadataQuads,
-  >(
-    action: IActionIteratorTransform<T, M>,
-  ): Promise<ITransformIteratorOutput<T, M>> {
+  public async transformIteratorBindings(
+    action: IActionIteratorTransformBindings,
+  ): Promise<ITransformIteratorOutput<AsyncIterator<RDF.Bindings>, MetadataBindings>> {
     // Return unchanged
-    const transformedStream = <T> action.stream.map((data: RDF.Bindings | RDF.Quad) => {
+    const transformedStream = action.stream.map((data: RDF.Bindings) => {
+      this.transformCalls++;
+      return data;
+    });
+    return { stream: transformedStream, metadata: action.metadata };
+  }
+
+  public async transformIteratorQuads(
+    action: IActionIteratorTransformQuads,
+  ): Promise<ITransformIteratorOutput<AsyncIterator<RDF.Quad>, MetadataQuads>> {
+    // Return unchanged
+    const transformedStream = action.stream.map((data: RDF.Quad) => {
       this.transformCalls++;
       return data;
     });
@@ -59,10 +68,7 @@ describe('ActorRdfJoinWrapStream', () => {
   let mediatorJoin: any;
   let mediatorIteratorTransform: MediatorCombinePipeline<
   DummyTransform,
-  IActionIteratorTransform<
-    AsyncIterator<RDF.Bindings> | AsyncIterator<RDF.Quad>,
-    MetadataBindings | MetadataQuads
-  >,
+  ActionIteratorTransform,
   IActorTest
   >;
 
@@ -73,7 +79,7 @@ describe('ActorRdfJoinWrapStream', () => {
 
   describe('An ActorRdfJoinWrapStream instance', () => {
     let actorWrapStream: ActorRdfJoinWrapStream;
-    let action2: any;
+    let action: any;
     let context: IActionContext;
     let calledWithContext: IActionContext;
 
@@ -103,7 +109,7 @@ describe('ActorRdfJoinWrapStream', () => {
       );
 
       context = new ActionContext();
-      action2 = {
+      action = {
         type: 'inner',
         entries: [
           {
@@ -164,7 +170,7 @@ describe('ActorRdfJoinWrapStream', () => {
     });
 
     it('should return correct coefficients', async() => {
-      await expect(actorWrapStream.test(action2)).resolves.toEqual({
+      await expect(actorWrapStream.test(action)).resolves.toEqual({
         iterations: -1,
         persistedItems: -1,
         blockingItems: -1,
@@ -173,20 +179,20 @@ describe('ActorRdfJoinWrapStream', () => {
     });
 
     it('should reject test if wrap context key is set', async() => {
-      action2.context = action2.context.set(KEY_CONTEXT_WRAPPED_RDF_JOIN, actorWrapStream);
-      await expect(actorWrapStream.test(action2))
+      action.context = action.context.set(KEY_CONTEXT_WRAPPED_RDF_JOIN, action.entries);
+      await expect(actorWrapStream.test(action))
         .rejects.toThrow('Unable to wrap join operation multiple times');
     });
 
     it('should set wrapped to true during run', async() => {
-      await actorWrapStream.run(action2);
+      await actorWrapStream.run(action);
       expect(calledWithContext).toEqual(
-        new ActionContext({ [KEY_CONTEXT_WRAPPED_RDF_JOIN.name]: actorWrapStream }),
+        new ActionContext({ [KEY_CONTEXT_WRAPPED_RDF_JOIN.name]: action.entries }),
       );
     });
 
     it('should correctly invoke transform actors on join result', async() => {
-      const output = await actorWrapStream.run(action2);
+      const output = await actorWrapStream.run(action);
       await output.bindingsStream.toArray();
 
       expect(actorTransform1.transformCalls).toBe(2);
@@ -201,15 +207,15 @@ describe('ActorRdfJoinWrapStream', () => {
         {
           type: 'bindings',
           operation: 'inner',
-          stream: action2.bindingsStream,
-          metadata: action2.metadata,
+          stream: action.bindingsStream,
+          metadata: action.metadata,
           context: new ActionContext(),
-          originalAction: action2,
+          originalAction: action,
         },
       );
       const mockedMediatorJoin = jest.spyOn(mediatorJoin, 'mediate').mockResolvedValue(
         {
-          type: 'bindingsTest',
+          type: 'bindings',
           bindingsStream: new ArrayIterator<RDF.Bindings>([
             BF.bindings([
               [ DF.variable('a'), DF.literal('a1') ],
@@ -226,10 +232,11 @@ describe('ActorRdfJoinWrapStream', () => {
           context: undefined,
         },
       );
-      const output = await actorWrapStream.run(action2);
+      const output = await actorWrapStream.run(action);
       // Some problem because action gets modified, should probably make the action a shallow copy
       expect(mockedMediatorTransformIterator).toHaveBeenCalledWith(
         {
+          type: 'bindings',
           operation: 'inner',
           stream: new ArrayIterator<RDF.Bindings>([
             BF.bindings([
@@ -241,12 +248,9 @@ describe('ActorRdfJoinWrapStream', () => {
               [ DF.variable('c'), DF.literal('c2') ],
             ]),
           ]),
-          streamMetadata: expect.any(Function),
-          metadata: {
-            joinEntries: 2,
-            resultContext: undefined,
-          },
-          context: new ActionContext().set(KEY_CONTEXT_WRAPPED_RDF_JOIN, actorWrapStream),
+          metadata: expect.any(Function),
+          context: new ActionContext().set(KEY_CONTEXT_WRAPPED_RDF_JOIN, action.entries),
+          originalAction: action,
         },
       );
     });
@@ -258,15 +262,15 @@ describe('ActorRdfJoinWrapStream', () => {
         {
           type: 'bindings',
           operation: 'inner',
-          stream: action2.bindingsStream,
-          metadata: action2.metadata,
+          stream: action.bindingsStream,
+          metadata: action.metadata,
           context: new ActionContext(),
-          originalAction: action2,
+          originalAction: action,
         },
       );
       const mockedMediatorJoin = jest.spyOn(mediatorJoin, 'mediate').mockResolvedValue(
         {
-          type: 'bindingsTest',
+          type: 'bindings',
           bindingsStream: new ArrayIterator<RDF.Bindings>([
             BF.bindings([
               [ DF.variable('a'), DF.literal('a1') ],
@@ -283,10 +287,11 @@ describe('ActorRdfJoinWrapStream', () => {
           context: new ActionContext({ a: 'contextValue' }),
         },
       );
-      const output = await actorWrapStream.run(action2);
+      const output = await actorWrapStream.run(action);
       // Some problem because action gets modified, should probably make the action a shallow copy
       expect(mockedMediatorTransformIterator).toHaveBeenCalledWith(
         {
+          type: 'bindings',
           operation: 'inner',
           stream: new ArrayIterator<RDF.Bindings>([
             BF.bindings([
@@ -298,12 +303,9 @@ describe('ActorRdfJoinWrapStream', () => {
               [ DF.variable('c'), DF.literal('c2') ],
             ]),
           ]),
-          streamMetadata: expect.any(Function),
-          metadata: {
-            joinEntries: 2,
-            resultContext: new ActionContext({ a: 'contextValue' }),
-          },
-          context: new ActionContext().set(KEY_CONTEXT_WRAPPED_RDF_JOIN, actorWrapStream),
+          metadata: expect.any(Function),
+          context: new ActionContext().set(KEY_CONTEXT_WRAPPED_RDF_JOIN, action.entries),
+          originalAction: action,
         },
       );
     });
@@ -315,15 +317,15 @@ describe('ActorRdfJoinWrapStream', () => {
         {
           type: 'bindings',
           operation: 'inner',
-          stream: action2.bindingsStream,
-          metadata: action2.metadata,
+          stream: action.bindingsStream,
+          metadata: action.metadata,
           context: new ActionContext(),
-          originalAction: action2,
+          originalAction: action,
         },
       );
       const mockedMediatorJoin = jest.spyOn(mediatorJoin, 'mediate').mockResolvedValue(
         {
-          type: 'bindingsTest',
+          type: 'bindings',
           bindingsStream: new ArrayIterator<RDF.Bindings>([
             BF.bindings([
               [ DF.variable('a'), DF.literal('a1') ],
@@ -340,10 +342,11 @@ describe('ActorRdfJoinWrapStream', () => {
           context: new ActionContext(),
         },
       );
-      const output = await actorWrapStream.run(action2);
+      const output = await actorWrapStream.run(action);
       // Some problem because action gets modified, should probably make the action a shallow copy
       expect(mockedMediatorTransformIterator).toHaveBeenCalledWith(
         {
+          type: 'bindings',
           operation: 'inner',
           stream: new ArrayIterator<RDF.Bindings>([
             BF.bindings([
@@ -355,14 +358,9 @@ describe('ActorRdfJoinWrapStream', () => {
               [ DF.variable('c'), DF.literal('c2') ],
             ]),
           ]),
-          streamMetadata: expect.any(Function),
-          metadata: {
-            joinEntries: 2,
-            a: 'value1',
-            b: 'value2',
-            resultContext: new ActionContext(),
-          },
-          context: new ActionContext().set(KEY_CONTEXT_WRAPPED_RDF_JOIN, actorWrapStream),
+          metadata: expect.any(Function),
+          context: new ActionContext().set(KEY_CONTEXT_WRAPPED_RDF_JOIN, action.entries),
+          originalAction: action,
         },
       );
     });

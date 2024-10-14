@@ -53,7 +53,7 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
       action.context = action.context.set(KeysInitQuery.physicalQueryPlanNode, action.operation);
     }
     // Set wrapped to false to allow recursive calls to query operation to also be wrapped
-    action.context = this.setContextWrapped(action.context);
+    action.context = this.setContextWrapped(action, action.context);
 
     const operation: O = <O> action.operation;
     const subContext = action.context.set(KeysQueryOperation.operation, operation);

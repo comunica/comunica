@@ -67,7 +67,7 @@ describe('ActorQueryOperationBgpJoin', () => {
 
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
         context: context.set(KeysQueryOperation.operation, op.operation)
-          .set(KEY_CONTEXT_WRAPPED_QUERY_OPERATION, actor),
+          .set(KEY_CONTEXT_WRAPPED_QUERY_OPERATION, op.operation),
         operation: FACTORY.createJoin(patterns),
       });
     });
