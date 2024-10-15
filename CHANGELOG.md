@@ -1,8 +1,8 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-<a name="v4.0.0"></a>
-## [v4.0.0](https://github.com/comunica/comunica/compare/v3.3.0...v4.0.0) - 2024-10-08
+<a name="v4.0.1"></a>
+## [v4.0.1](https://github.com/comunica/comunica/compare/v3.3.0...v4.0.1) - 2024-10-15
 
 ### BREAKING CHANGES
 
@@ -25,6 +25,10 @@ and users that develop custom components or engines with Comunica.
 * Renamed or changed actors
   * [Split expression functions into separate actors on dedicated bus](https://github.com/comunica/comunica/commit/8d0ecd5c426fd7395ab1b890d38f96e6ff2811c7)
   * [Split aggregators into separate actors on dedicated bus](https://github.com/comunica/comunica/commit/64a487aca943c2eea59cb484071172aa28c827bf)
+  * [Refactor HTTP fetch and retry logic](https://github.com/comunica/comunica/commit/b37d7e008b77067f6c6249aadfc901baf42a6914)
+    * Retries of failed requests has been improved
+    * The `User-Agent` header has been improved
+    * A better approach to detect if Comunica is in a browser environment, compatible with Node.js, Deno, and Bun.
   * [Remove SHA1 hash quads actor in favor of Murmur3](https://github.com/comunica/comunica/commit/67a51bd71e632231ee9cd2778d918cf9203c96d0)
   * [Remove SHA1 hash actor in favor of Murmur3](https://github.com/comunica/comunica/commit/331865c773882be7e061a690833fc841ece27339)
   * [Abstract actor-rdf-join-minus-hash-undef into actor-rdf-join-minus-hash](https://github.com/comunica/comunica/commit/7507b24bdef6b655432aef89ba96c9e2524e6808)
