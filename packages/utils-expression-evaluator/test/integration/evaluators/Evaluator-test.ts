@@ -1,9 +1,11 @@
+import { ActorFunctionFactoryTermAddition } from '@comunica/actor-function-factory-term-addition';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { ITermFunction, MediatorFunctionFactory } from '@comunica/bus-function-factory';
+import { Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { DataFactory } from 'rdf-data-factory';
-import { IntegerLiteral } from '../../../lib';
+import { IntegerLiteral, SparqlOperator } from '../../../lib';
 import { TypeURL as DT } from '../../../lib/util/Consts';
 import * as Err from '../../../lib/util/Errors';
 import { getMockEEActionContext, getMockEEFactory } from '../../util/helpers';
@@ -18,16 +20,21 @@ describe('evaluators', () => {
   let actionContext: IActionContext;
   let mediate: jest.Mock<ITermFunction, []>;
 
-  beforeEach(() => {
+  beforeEach(async() => {
     actionContext = getMockEEActionContext();
 
+    const additionFunction = await (new ActorFunctionFactoryTermAddition({
+      bus: new Bus({ name: 'bus' }),
+      name: 'actor',
+    })
+      .run({
+        functionName: SparqlOperator.ADDITION,
+        context: actionContext,
+        requireTermExpression: true,
+      }));
+
     mediate = jest.fn((): ITermFunction => {
-      return {
-        apply: async() => new IntegerLiteral(2),
-        applyOnTerms: () => new IntegerLiteral(2),
-        checkArity: () => true,
-        supportsTermExpressions: true,
-      };
+      return additionFunction;
     });
     const resolveAsTwoFuncMediator = <MediatorFunctionFactory> {
       mediate: <any> mediate,
@@ -49,8 +56,7 @@ describe('evaluators', () => {
       await expect(evaluator.evaluate(BF.bindings())).resolves.toEqual(two);
     });
 
-    // eslint-disable-next-line jest/no-disabled-tests
-    it.skip('has proper extended XSD type support', async() => {
+    it('has proper extended XSD type support', async() => {
       const evaluator = await factory.run({
         algExpr: getMockExpression('1 + "1"^^<http://example.com>'),
         context: actionContext,

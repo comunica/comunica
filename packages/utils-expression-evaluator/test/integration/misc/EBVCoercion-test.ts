@@ -2,9 +2,8 @@ import { getMockSuperTypeProvider } from '@comunica/utils-expression-evaluator/t
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { TermTransformer, TypeURL } from '../../../lib';
-import { bool, error, merge, numeric, str } from '../../util/Aliases';
+import { bool } from '../../util/Aliases';
 import { Notation } from '../../util/TestTable';
-import type { ITestTableConfigBase } from '../../util/utils';
 import { runTestTable } from '../../util/utils';
 
 const DF = new DataFactory();
@@ -81,40 +80,6 @@ describe('the coercion of RDF terms to it\'s EBV like', () => {
         ?a true = ''
         <http://example.com> true = ''
      `,
-    });
-  });
-
-  // TODO: Can be removed in final version of this PR!
-  //  These tests are dublicates f the once above (I think), i keep them here in case I need tests for 100% coverage)
-  // eslint-disable-next-line jest/no-disabled-tests
-  describe.skip('using \'!\' like', () => {
-    const baseConfig: ITestTableConfigBase = {
-      arity: 1,
-      operation: '!',
-      aliases: merge(numeric, bool, error, str),
-      notation: Notation.Prefix,
-    };
-    // We use these tests to test the evaluation of EBV: https://www.w3.org/TR/sparql11-query/#ebv
-    runTestTable({
-      ...baseConfig,
-      testTable: `
-      true = false
-      false = true
-      
-      0i = true
-      NaN = true
-      1i = false
-      '-5i' = false
-      
-      empty = true
-      '""' = true
-      aaa = false
-      'aaa' = false
-      
-      invalidBool = true
-      invalidInt = true
-      invalidShort = true
-    `,
     });
   });
 });
