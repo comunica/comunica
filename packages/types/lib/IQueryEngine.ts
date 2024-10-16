@@ -26,6 +26,7 @@ export interface IQueryEngine<
   /**
    * Query the bindings results of a SELECT query.
    * @param query A query string or algebra object.
+   *              Algebra objects must not contain blank nodes. They should be converted to variables.
    * @param context A context.
    */
   queryBindings: <QueryFormatTypeInner extends QueryFormatType>(
@@ -36,6 +37,7 @@ export interface IQueryEngine<
   /**
    * Query the quad results of a CONSTRUCT or DESCRIBE query.
    * @param query A query string or algebra object.
+   *              Algebra objects must not contain blank nodes. They should be converted to variables.
    * @param context A context.
    */
   queryQuads: <QueryFormatTypeInner extends QueryFormatType>(
@@ -46,6 +48,7 @@ export interface IQueryEngine<
   /**
    * Query the boolean result of an ASK query.
    * @param query A query string or algebra object.
+   *              Algebra objects must not contain blank nodes. They should be converted to variables.
    * @param context A context.
    */
   queryBoolean: <QueryFormatTypeInner extends QueryFormatType>(
@@ -56,6 +59,7 @@ export interface IQueryEngine<
   /**
    * Execute an UPDATE query.
    * @param query A query string or algebra object.
+   *              Algebra objects must not contain blank nodes. They should be converted to variables.
    * @param context A context.
    */
   queryVoid: <QueryFormatTypeInner extends QueryFormatType>(
@@ -72,6 +76,7 @@ export interface IQueryEngine<
    * or if you require access to the metadata of the results.
    *
    * @param query A query string or algebra object.
+   *              Algebra objects must not contain blank nodes. They should be converted to variables.
    * @param context A context.
    */
   query: <QueryFormatTypeInner extends QueryFormatType>(
@@ -82,6 +87,8 @@ export interface IQueryEngine<
   /**
    * Explain the given query
    * @param {string | Algebra.Operation} query A query string or algebra.
+   *                                           Algebra objects must not contain blank nodes.
+   *                                           They should be converted to variables.
    * @param context A query context.
    * @param explainMode The explain mode.
    * @return {Promise<IQueryExplained>}
