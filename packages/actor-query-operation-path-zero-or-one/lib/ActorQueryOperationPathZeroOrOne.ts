@@ -8,6 +8,7 @@ import type {
   IActionContext,
   BindingsStream,
   ComunicaDataFactory,
+  MetadataBindings,
 } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
@@ -105,10 +106,22 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
       bindingsStream = bindingsOne.bindingsStream.prepend(extra);
     }
 
+    const metadata = async(): Promise<MetadataBindings> => {
+      const innerMetadata = await bindingsOne.metadata();
+      return {
+        ...innerMetadata,
+        cardinality: {
+          ...innerMetadata.cardinality,
+          // Add one to cardinality because we allow *ZERO* or more.
+          value: innerMetadata.cardinality.value + 1,
+        },
+      };
+    };
+
     return {
       type: 'bindings',
       bindingsStream,
-      metadata: bindingsOne.metadata,
+      metadata,
     };
   }
 }

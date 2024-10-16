@@ -197,7 +197,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
       const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
-        cardinality: { type: 'estimate', value: 3 },
+        cardinality: { type: 'estimate', value: 4 },
         variables: [
           { variable: DF.variable('x'), canBeUndef: false },
         ],
@@ -224,7 +224,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
       const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
-        cardinality: { type: 'estimate', value: 3 },
+        cardinality: { type: 'estimate', value: 4 },
         variables: [
           { variable: DF.variable('x'), canBeUndef: false },
         ],
@@ -251,7 +251,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
       const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
-        cardinality: { type: 'estimate', value: 3 },
+        cardinality: { type: 'estimate', value: 4 },
         variables: [],
       });
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -295,7 +295,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
       const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
-        cardinality: { type: 'estimate', value: 3 },
+        cardinality: { type: 'estimate', value: 4 },
         variables: [
           { variable: DF.variable('x'), canBeUndef: false },
           { variable: DF.variable('y'), canBeUndef: false },
@@ -338,7 +338,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
       const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
-        cardinality: { type: 'estimate', value: 3 },
+        cardinality: { type: 'estimate', value: 4 },
         variables: [
           { variable: DF.variable('x'), canBeUndef: false },
           { variable: DF.variable('y'), canBeUndef: false },
