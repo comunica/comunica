@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-bindings-aggregator-factory-count",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "A count bindings aggregator factory actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,10 +37,10 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-bindings-aggregator-factory": "^4.0.1",
-    "@comunica/core": "^4.0.1",
-    "@comunica/types": "^4.0.1",
-    "@comunica/utils-expression-evaluator": "^4.0.1",
+    "@comunica/bus-bindings-aggregator-factory": "^4.0.2",
+    "@comunica/core": "^4.0.2",
+    "@comunica/types": "^4.0.2",
+    "@comunica/utils-expression-evaluator": "^4.0.2",
     "@rdfjs/types": "*",
     "sparqlalgebrajs": "^4.2.0"
   }

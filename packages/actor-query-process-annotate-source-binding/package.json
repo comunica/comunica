@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-process-annotate-source-binding",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "A annotate-source-binding query-process actor",
   "lsd:module": true,
   "license": "MIT",
@@ -41,11 +41,11 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-query-process": "^4.0.1",
-    "@comunica/context-entries": "^4.0.1",
-    "@comunica/core": "^4.0.1",
-    "@comunica/types": "^4.0.1",
-    "@comunica/utils-bindings-factory": "^4.0.1",
+    "@comunica/bus-query-process": "^4.0.2",
+    "@comunica/context-entries": "^4.0.2",
+    "@comunica/core": "^4.0.2",
+    "@comunica/types": "^4.0.2",
+    "@comunica/utils-bindings-factory": "^4.0.2",
     "rdf-data-factory": "^1.1.2"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/utils-bindings-factory",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "Bindings factory module for Comunica",
   "license": "MIT",
   "funding": {
@@ -35,9 +35,9 @@
     "build": "node \"../../node_modules/typescript/bin/tsc\""
   },
   "dependencies": {
-    "@comunica/bus-merge-bindings-context": "^4.0.1",
-    "@comunica/core": "^4.0.1",
-    "@comunica/types": "^4.0.1",
+    "@comunica/bus-merge-bindings-context": "^4.0.2",
+    "@comunica/core": "^4.0.2",
+    "@comunica/types": "^4.0.2",
     "@rdfjs/types": "*",
     "immutable": "^4.1.0",
     "rdf-string": "^1.6.1"

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-bindings-aggregator-factory",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "A comunica actor for creating Binding-Aggregators.",
   "lsd:module": true,
   "license": "MIT",
@@ -36,11 +36,11 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-expression-evaluator-factory": "^4.0.1",
-    "@comunica/context-entries": "^4.0.1",
-    "@comunica/core": "^4.0.1",
-    "@comunica/types": "^4.0.1",
-    "@comunica/utils-expression-evaluator": "^4.0.1",
+    "@comunica/bus-expression-evaluator-factory": "^4.0.2",
+    "@comunica/context-entries": "^4.0.2",
+    "@comunica/core": "^4.0.2",
+    "@comunica/types": "^4.0.2",
+    "@comunica/utils-expression-evaluator": "^4.0.2",
     "@rdfjs/types": "*",
     "rdf-string": "^1.6.3",
     "sparqlalgebrajs": "^4.2.0"

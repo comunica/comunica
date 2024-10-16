@@ -1,6 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v4.0.2"></a>
+## [v4.0.2](https://github.com/comunica/comunica/compare/v4.0.1...v4.0.2) - 2024-10-16
+
+### Changed
+* [Document that algebra inputs should not contain blank nodes, Closes #1234](https://github.com/comunica/comunica/commit/c7b44cc35c5a86e02363b947bfd17bc181d57ad3)
+
+### Fixed
+* [Fix some zero-or-more path queries producing empty results, Closes #1449](https://github.com/comunica/comunica/commit/f7b2788b1111806436a6928bbd35f210b3c93d64)
+
 <a name="v4.0.1"></a>
 ## [v4.0.1](https://github.com/comunica/comunica/compare/v3.3.0...v4.0.1) - 2024-10-15
 

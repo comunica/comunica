@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-metadata-extract-request-time",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "A request-time rdf-metadata-extract actor",
   "lsd:module": true,
   "license": "MIT",
@@ -41,7 +41,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-rdf-metadata-extract": "^4.0.1",
-    "@comunica/core": "^4.0.1"
+    "@comunica/bus-rdf-metadata-extract": "^4.0.2",
+    "@comunica/core": "^4.0.2"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-optimize-query-operation-join-bgp",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "A join-bgp optimize-query-operation actor",
   "lsd:module": true,
   "license": "MIT",
@@ -41,10 +41,10 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-optimize-query-operation": "^4.0.1",
-    "@comunica/context-entries": "^4.0.1",
-    "@comunica/core": "^4.0.1",
-    "@comunica/types": "^4.0.1",
+    "@comunica/bus-optimize-query-operation": "^4.0.2",
+    "@comunica/context-entries": "^4.0.2",
+    "@comunica/core": "^4.0.2",
+    "@comunica/types": "^4.0.2",
     "sparqlalgebrajs": "^4.3.8"
   }
 }
