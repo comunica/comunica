@@ -19,7 +19,16 @@ export async function fetch(...args: Parameters<typeof fetchFn>): ReturnType<typ
   const json = JSON.stringify([
     // eslint-disable-next-line ts/no-base-to-string
     args[0].toString(),
-    Object.entries(options).sort(([ a ], [ b ]) => a.localeCompare(b)),
+    Object.entries(options)
+      .map(([ k, v ]: [ string, any ]) => {
+        // Omit user-agent header, as this can be different when running on different systems.
+        if (k === 'headers') {
+          v = { ...v };
+          delete v['user-agent'];
+        }
+        return [ k, v ];
+      })
+      .sort(([ a ], [ b ]) => a.localeCompare(b)),
   ]);
   const pth = path.join(__dirname, 'networkCache', md5(json));
   if (!fs.existsSync(pth)) {
