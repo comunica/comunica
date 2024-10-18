@@ -39,7 +39,9 @@ export interface IActionContext {
  */
 export interface IActionContextKey<V> {
   readonly name: string;
-  // A dummy field that we must define to make TypeScript bind the type `V`, otherwise it would always be `any`.
-  // This field will be undefined, so it will never exist in JavaScript.
+  /**
+   * A dummy field that we must define to make TypeScript bind the type `V`, otherwise it would always be `any`.
+   * This field will be undefined, so it will never exist in JavaScript.
+   */
   readonly dummy: V | undefined;
 }
