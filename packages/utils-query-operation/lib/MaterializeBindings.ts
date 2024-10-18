@@ -92,7 +92,7 @@ export function materializeOperation(
         ), { metadata: op.metadata }),
       };
     },
-    extend(op: Algebra.Extend) {
+    extend(op: Algebra.Extend, factory: Factory) {
       // Materialize an extend operation.
       // If strictTargetVariables is true, we throw if the extension target variable is attempted to be bound.
       // Otherwise, we remove the extend operation.
@@ -106,9 +106,11 @@ export function materializeOperation(
           };
         }
       }
+      const values: Algebra.Operation[] =
+      createValuesFromBindings(factory, <Bindings> options.originalBindings, op.variables);
       return {
         recurse: true,
-        result: op,
+        result: factory.createExtend(factory.createJoin([ ...values, op.input ]), op.variable, op.expression),
       };
     },
     group(op: Algebra.Group, factory: Factory) {
