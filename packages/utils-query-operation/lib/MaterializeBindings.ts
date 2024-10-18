@@ -107,10 +107,20 @@ export function materializeOperation(
         }
       }
       const values: Algebra.Operation[] =
-      createValuesFromBindings(factory, <Bindings> options.originalBindings, op.variables);
+        createValuesFromBindings(factory, <Bindings> options.originalBindings, op.variables);
+      
+      let recursionResult: Algebra.Operation = materializeOperation(
+        op.input,
+        bindings,
+        bindingsFactory,
+        options,
+      );
+      if (values.length > 0) {
+        recursionResult = factory.createJoin([ ...values, recursionResult ]);
+      }
       return {
         recurse: true,
-        result: factory.createExtend(factory.createJoin([ ...values, op.input ]), op.variable, op.expression),
+        result: factory.createExtend(recursionResult, op.variable, op.expression),
       };
     },
     group(op: Algebra.Group, factory: Factory) {
