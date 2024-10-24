@@ -1,20 +1,18 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type {
   IActionIteratorTransformBindings,
   IActionIteratorTransformQuads,
   ITransformIteratorOutput }
   from '@comunica/bus-iterator-transform';
 import { ActorIteratorTransform } from '@comunica/bus-iterator-transform';
-import { ActionContext, Bus } from '@comunica/core';
-import { MetadataValidationState } from '@comunica/metadata';
+import { ActionContext, Bus, failTest } from '@comunica/core';
 import type { MetadataBindings, MetadataQuads } from '@comunica/types';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import { AsyncIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { types } from 'sparqlalgebrajs/lib/algebra';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
 
 class DummyTransform extends ActorIteratorTransform {
   public transformCalls = 0;
@@ -55,7 +53,7 @@ describe('ActorIteratorTransform', () => {
       metadata = async() => {
         return {
           canContainUndefs: true,
-          variables: [ DF.variable('v0') ],
+          variables: [{ variable: DF.variable('v0'), canBeUndef: false }],
           state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 0 },
         };
@@ -82,7 +80,7 @@ describe('ActorIteratorTransform', () => {
         metadata,
         context: new ActionContext(),
         originalAction: { context: new ActionContext() },
-      })).rejects.toThrow('Operation type not supported in configuration of actor');
+      })).resolves.toEqual(failTest('Operation type not supported in configuration of actor'));
     });
 
     it('should test true when wraps is undefined', async() => {
@@ -98,7 +96,6 @@ describe('ActorIteratorTransform', () => {
     });
 
     it('should run transformIterator', async() => {
-      const context = new ActionContext();
       const spy = jest.spyOn(actor, 'transformIteratorBindings');
       await actor.run(
         {

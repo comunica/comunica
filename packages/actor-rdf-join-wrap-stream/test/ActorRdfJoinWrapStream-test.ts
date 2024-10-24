@@ -1,5 +1,4 @@
 import { ActorRdfJoinNestedLoop } from '@comunica/actor-rdf-join-inner-nestedloop';
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type {
   ActionIteratorTransform,
   IActionIteratorTransformBindings,
@@ -15,10 +14,11 @@ import type {
   IActorRdfJoinSelectivityOutput }
   from '@comunica/bus-rdf-join-selectivity';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
-import { ActionContext, Bus } from '@comunica/core';
+import { ActionContext, Bus, failTest } from '@comunica/core';
 import { MediatorCombinePipeline } from '@comunica/mediator-combine-pipeline';
-import { MetadataValidationState } from '@comunica/metadata';
 import type { IActionContext, MetadataBindings, MetadataQuads } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
@@ -26,7 +26,7 @@ import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinWrapStream } from '../lib/ActorRdfJoinWrapStream';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 
 class DummyTransform extends ActorIteratorTransform {
   public transformCalls = 0;
@@ -95,7 +95,7 @@ describe('ActorRdfJoinWrapStream', () => {
           calledWithContext = a.context;
           return await new ActorRdfJoinNestedLoop(
             { name: 'actor', bus: busJoin, mediatorJoinSelectivity },
-          ).run(a);
+          ).run(a, undefined!);
         },
       };
       mediatorIteratorTransform = new MediatorCombinePipeline(
@@ -171,28 +171,50 @@ describe('ActorRdfJoinWrapStream', () => {
 
     it('should return correct coefficients', async() => {
       await expect(actorWrapStream.test(action)).resolves.toEqual({
-        iterations: -1,
-        persistedItems: -1,
-        blockingItems: -1,
-        requestTime: -1,
+        sideData: {
+          metadatas: [
+            {
+              state: new MetadataValidationState(),
+              cardinality: { type: 'estimate', value: 4 },
+              pageSize: 100,
+              requestTime: 10,
+              canContainUndefs: false,
+              variables: [ DF.variable('a'), DF.variable('b') ],
+            },
+            {
+              state: new MetadataValidationState(),
+              cardinality: { type: 'estimate', value: 5 },
+              pageSize: 100,
+              requestTime: 20,
+              canContainUndefs: false,
+              variables: [ DF.variable('a'), DF.variable('c') ],
+            },
+          ],
+        },
+        value: {
+          iterations: -1,
+          persistedItems: -1,
+          blockingItems: -1,
+          requestTime: -1,
+        },
       });
     });
 
     it('should reject test if wrap context key is set', async() => {
       action.context = action.context.set(KEY_CONTEXT_WRAPPED_RDF_JOIN, action.entries);
       await expect(actorWrapStream.test(action))
-        .rejects.toThrow('Unable to wrap join operation multiple times');
+        .resolves.toEqual(failTest('Unable to wrap join operation multiple times'));
     });
 
     it('should set wrapped to true during run', async() => {
-      await actorWrapStream.run(action);
+      await actorWrapStream.run(action, undefined!);
       expect(calledWithContext).toEqual(
         new ActionContext({ [KEY_CONTEXT_WRAPPED_RDF_JOIN.name]: action.entries }),
       );
     });
 
     it('should correctly invoke transform actors on join result', async() => {
-      const output = await actorWrapStream.run(action);
+      const output = await actorWrapStream.run(action, undefined!);
       await output.bindingsStream.toArray();
 
       expect(actorTransform1.transformCalls).toBe(2);
@@ -213,7 +235,7 @@ describe('ActorRdfJoinWrapStream', () => {
           originalAction: action,
         },
       );
-      const mockedMediatorJoin = jest.spyOn(mediatorJoin, 'mediate').mockResolvedValue(
+      const _mockedMediatorJoin = jest.spyOn(mediatorJoin, 'mediate').mockResolvedValue(
         {
           type: 'bindings',
           bindingsStream: new ArrayIterator<RDF.Bindings>([
@@ -232,7 +254,7 @@ describe('ActorRdfJoinWrapStream', () => {
           context: undefined,
         },
       );
-      const output = await actorWrapStream.run(action);
+      const _output = await actorWrapStream.run(action, undefined!);
       // Some problem because action gets modified, should probably make the action a shallow copy
       expect(mockedMediatorTransformIterator).toHaveBeenCalledWith(
         {
@@ -268,7 +290,7 @@ describe('ActorRdfJoinWrapStream', () => {
           originalAction: action,
         },
       );
-      const mockedMediatorJoin = jest.spyOn(mediatorJoin, 'mediate').mockResolvedValue(
+      const _mockedMediatorJoin = jest.spyOn(mediatorJoin, 'mediate').mockResolvedValue(
         {
           type: 'bindings',
           bindingsStream: new ArrayIterator<RDF.Bindings>([
@@ -287,7 +309,7 @@ describe('ActorRdfJoinWrapStream', () => {
           context: new ActionContext({ a: 'contextValue' }),
         },
       );
-      const output = await actorWrapStream.run(action);
+      const _output = await actorWrapStream.run(action, undefined!);
       // Some problem because action gets modified, should probably make the action a shallow copy
       expect(mockedMediatorTransformIterator).toHaveBeenCalledWith(
         {
@@ -323,7 +345,7 @@ describe('ActorRdfJoinWrapStream', () => {
           originalAction: action,
         },
       );
-      const mockedMediatorJoin = jest.spyOn(mediatorJoin, 'mediate').mockResolvedValue(
+      const _mockedMediatorJoin = jest.spyOn(mediatorJoin, 'mediate').mockResolvedValue(
         {
           type: 'bindings',
           bindingsStream: new ArrayIterator<RDF.Bindings>([
@@ -342,7 +364,7 @@ describe('ActorRdfJoinWrapStream', () => {
           context: new ActionContext(),
         },
       );
-      const output = await actorWrapStream.run(action);
+      const _output = await actorWrapStream.run(action, undefined!);
       expect(mockedMediatorTransformIterator).toHaveBeenCalledWith(
         {
           type: 'bindings',

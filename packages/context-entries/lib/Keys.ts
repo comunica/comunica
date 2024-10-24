@@ -353,7 +353,7 @@ export const KeysStatistics = {
   /**
    * Intermediate results produced during query execution
    */
-  intermediateResults: new ActionContextKey<PartialResult>(
+  intermediateResults: new ActionContextKey<IStatisticBase<PartialResult>>(
     '@comunica/statistic:intermediateResults',
   ),
 };

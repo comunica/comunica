@@ -1,12 +1,12 @@
-import { BindingsFactory } from '@comunica/bindings-factory';
 import type {
   IActionIteratorTransformBindings,
   IActionIteratorTransformQuads,
 } from '@comunica/bus-iterator-transform';
 import { KeysStatistics } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import { MetadataValidationState } from '@comunica/metadata';
 import { StatisticIntermediateResults } from '@comunica/statistic-intermediate-results';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, MappingIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -15,7 +15,7 @@ import { ActorIteratorTransformRecordIntermediateResults }
   from '../lib/ActorIteratorTransformRecordIntermediateResults';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory();
+const BF = new BindingsFactory(DF);
 
 describe('ActorIteratorTransformRecordIntermediateResults', () => {
   let bus: any;

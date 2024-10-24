@@ -9,7 +9,7 @@ import type {
   IQuerySourceWrapper,
 } from '@comunica/types';
 import { getMetadataBindings, getMetadataQuads } from '@comunica/utils-metadata';
-import { getOperationSource } from '@comunica/utils-query-operation';
+import { getOperationSource, setContextWrapped } from '@comunica/utils-query-operation';
 import { Algebra, Util } from 'sparqlalgebrajs';
 
 /**
@@ -45,7 +45,7 @@ export class ActorQueryOperationSource extends ActorQueryOperation {
 
     const sourceWrapper: IQuerySourceWrapper = getOperationSource(action.operation)!;
     let mergedContext = sourceWrapper.context ? action.context.merge(sourceWrapper.context) : action.context;
-    mergedContext = this.setContextWrapped(action, mergedContext);
+    mergedContext = setContextWrapped(action.operation, mergedContext);
     // Check if the operation is a CONSTRUCT query
     // We recurse because it may be wrapped in other operations such as SLICE and FROM
     let construct = false;

@@ -1,5 +1,5 @@
-import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
-import { Actor } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate, TestResult } from '@comunica/core';
+import { Actor, failTest, passTestVoid } from '@comunica/core';
 import type { LogicalJoinType, IActionContext, MetadataBindings, MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -54,11 +54,11 @@ export abstract class ActorIteratorTransform
 
   public async test(
     action: ActionIteratorTransform,
-  ): Promise<IActorTest> {
+  ): Promise<TestResult<IActorTest>> {
     if (!(this.wraps === undefined) && !this.wraps.includes(action.operation)) {
-      throw new Error(`Operation type not supported in configuration of ${this.name}`);
+      return failTest(`Operation type not supported in configuration of ${this.name}`);
     }
-    return true;
+    return passTestVoid();
   }
 
   public abstract transformIteratorBindings(action: IActionIteratorTransformBindings):

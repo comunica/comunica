@@ -111,16 +111,15 @@ export function removeOperationSource(operation: Algebra.Operation): void {
   }
 }
 
-  /**
-   * Sets KEY_CONTEXT_WRAPPED_QUERY_OPERATION to the operation being executed.
-   * @param action The query operation action.
-   * @param context The current action context.
-   * @returns A new action context with the operation marked as wrapped.
-   */
-  export function setContextWrapped(action: IActionQueryOperation, context: IActionContext): IActionContext {
-    return context.set(KEY_CONTEXT_WRAPPED_QUERY_OPERATION, action.operation);
-  }
-
+/**
+ * Sets KEY_CONTEXT_WRAPPED_QUERY_OPERATION to the operation being executed.
+ * @param action The query operation action.
+ * @param context The current action context.
+ * @returns A new action context with the operation marked as wrapped.
+ */
+export function setContextWrapped(operation: Algebra.Operation, context: IActionContext): IActionContext {
+  return context.set(KEY_CONTEXT_WRAPPED_QUERY_OPERATION, operation);
+}
 
 /**
  * Key that that stores the last executed operation
@@ -128,4 +127,3 @@ export function removeOperationSource(operation: Algebra.Operation): void {
 export const KEY_CONTEXT_WRAPPED_QUERY_OPERATION = new ActionContextKey<Algebra.Operation>(
   '@comunica/actor-query-operation:wrapped',
 );
-

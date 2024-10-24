@@ -4,7 +4,7 @@ import type {
 } from '@comunica/bus-rdf-join-selectivity';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IAction, IActorArgs, Mediate, TestResult } from '@comunica/core';
-import {ActionContextKey, passTest, failTest, Actor } from '@comunica/core';
+import { ActionContextKey, passTest, failTest, Actor } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type {
   IQueryOperationResultBindings,

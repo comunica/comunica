@@ -43,7 +43,7 @@ describe('ActorQueryProcessAnnotateSourceBinding', () => {
     });
 
     it('should run only once', async() => {
-      context = context.set(KEY_CONTEXT_WRAPPED, actor);
+      context = context.set(KEY_CONTEXT_WRAPPED, true);
       await expect(actor.test({ query: 'aQuery', context }))
         .resolves
         .toFailTest('Unable to query process multiple times');

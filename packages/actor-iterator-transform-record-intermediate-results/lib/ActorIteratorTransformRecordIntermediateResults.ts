@@ -22,7 +22,7 @@ export class ActorIteratorTransformRecordIntermediateResults extends ActorIterat
 
   public async transformIteratorBindings(action: IActionIteratorTransformBindings):
   Promise<ITransformIteratorOutput<AsyncIterator<RDF.Bindings>, MetadataBindings>> {
-    const statisticIntermediateResults: StatisticIntermediateResults = action.context
+    const statisticIntermediateResults = <StatisticIntermediateResults> action.context
       .getSafe(KeysStatistics.intermediateResults);
     const output = action.stream.map((data) => {
       statisticIntermediateResults.updateStatistic(
@@ -42,7 +42,7 @@ export class ActorIteratorTransformRecordIntermediateResults extends ActorIterat
 
   public async transformIteratorQuads(action: IActionIteratorTransformQuads):
   Promise<ITransformIteratorOutput<AsyncIterator<RDF.Quad>, MetadataQuads>> {
-    const statisticIntermediateResults: StatisticIntermediateResults = action.context
+    const statisticIntermediateResults = <StatisticIntermediateResults> action.context
       .getSafe(KeysStatistics.intermediateResults);
     const output = action.stream.map((data) => {
       statisticIntermediateResults.updateStatistic(

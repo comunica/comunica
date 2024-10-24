@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-iterator-transform-record-intermediate-results",
-  "version": "3.2.1",
+  "version": "4.0.1",
   "description": "A record-intermediate-results iterator-transform actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,10 +37,9 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-iterator-transform": "^3.2.0",
-    "@comunica/context-entries": "^3.2.0",
-    "@comunica/statistic-intermediate-results": "^3.2.1",
-    "@comunica/types": "^3.2.1",
+    "@comunica/bus-iterator-transform": "^4.0.1",
+    "@comunica/context-entries": "^4.0.1",
+    "@comunica/types": "^4.0.1",
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0"
   }

@@ -4,9 +4,11 @@ import type {
   IActorQueryOperationArgs,
   MediatorQueryOperation,
 } from '@comunica/bus-query-operation';
-import { ActorQueryOperation, KEY_CONTEXT_WRAPPED_QUERY_OPERATION } from '@comunica/bus-query-operation';
-import type { IActorTest } from '@comunica/core';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import { failTest, passTest } from '@comunica/core';
+import type { TestResult, IActorTest } from '@comunica/core';
 import type { IQueryOperationResult, MetadataBindings, MetadataQuads } from '@comunica/types';
+import { KEY_CONTEXT_WRAPPED_QUERY_OPERATION, setContextWrapped } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 
@@ -21,18 +23,18 @@ export class ActorQueryOperationWrapStream extends ActorQueryOperation {
     super(args);
   }
 
-  public async test(action: IActionQueryOperation): Promise<IActorTest> {
+  public async test(action: IActionQueryOperation): Promise<TestResult<IActorTest>> {
     if (action.context.get(KEY_CONTEXT_WRAPPED_QUERY_OPERATION) === action.operation) {
-      throw new Error('Unable to wrap query source multiple times');
+      return failTest('Unable to wrap query source multiple times');
     }
     // Ensure this is always run if not already wrapped
-    return { httpRequests: Number.NEGATIVE_INFINITY };
+    return passTest({ httpRequests: Number.NEGATIVE_INFINITY });
   }
 
   public async run(action: IActionQueryOperation): Promise<IQueryOperationResult> {
     // Prevent infinite recursion. In consequent query operation calls this key should be set to false
     // To allow the operation to wrap ALL query operation runs
-    action.context = this.setContextWrapped(action, action.context);
+    action.context = setContextWrapped(action.operation, action.context);
     const output: IQueryOperationResult = await this.mediatorQueryOperation.mediate(action);
     switch (output.type) {
       case 'bindings': {

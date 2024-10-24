@@ -3,9 +3,12 @@ import type {
   IActionRdfJoin,
   IActorRdfJoinOutputInner,
   IActorRdfJoinArgs,
-  MediatorRdfJoin }
+  MediatorRdfJoin,
+  IActorRdfJoinTestSideData }
   from '@comunica/bus-rdf-join';
 import { ActorRdfJoin, KEY_CONTEXT_WRAPPED_RDF_JOIN } from '@comunica/bus-rdf-join';
+import type { TestResult } from '@comunica/core';
+import { failTest, passTestWithSideData } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { IQueryOperationResultBindings, MetadataBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -29,13 +32,14 @@ export class ActorRdfJoinWrapStream extends ActorRdfJoin {
     });
   }
 
-  public override async test(action: IActionRdfJoin): Promise<IMediatorTypeJoinCoefficients> {
+  public override async test(action: IActionRdfJoin):
+  Promise<TestResult<IMediatorTypeJoinCoefficients, IActorRdfJoinTestSideData>> {
     if (action.context.get(KEY_CONTEXT_WRAPPED_RDF_JOIN) === action.entries) {
-      throw new Error('Unable to wrap join operation multiple times');
+      return failTest('Unable to wrap join operation multiple times');
     }
 
     const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
-    return this.getJoinCoefficients(action, metadatas);
+    return await this.getJoinCoefficients(action, { metadatas });
   }
 
   public override async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
@@ -61,17 +65,16 @@ export class ActorRdfJoinWrapStream extends ActorRdfJoin {
     return { result };
   }
 
-  public override async getJoinCoefficients(
+  protected async getJoinCoefficients(
     _action: IActionRdfJoin,
-    _metadatas: MetadataBindings[],
-  ): Promise<IMediatorTypeJoinCoefficients> {
-    // By returning negative coefficients this actor always runs when test passes
-    return {
+    sideData: IActorRdfJoinTestSideData,
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients, IActorRdfJoinTestSideData>> {
+    return passTestWithSideData({
       iterations: -1,
       persistedItems: -1,
       blockingItems: -1,
       requestTime: -1,
-    };
+    }, sideData);
   }
 }
 
