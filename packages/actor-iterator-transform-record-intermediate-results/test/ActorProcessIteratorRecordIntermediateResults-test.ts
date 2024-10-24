@@ -3,7 +3,7 @@ import type {
   IActionIteratorTransformQuads,
 } from '@comunica/bus-iterator-transform';
 import { KeysStatistics } from '@comunica/context-entries';
-import { ActionContext, Bus } from '@comunica/core';
+import { ActionContext, Bus, passTestVoid } from '@comunica/core';
 import { StatisticIntermediateResults } from '@comunica/statistic-intermediate-results';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
@@ -68,6 +68,11 @@ describe('ActorIteratorTransformRecordIntermediateResults', () => {
         originalAction: { context: new ActionContext() },
       };
     });
+
+    it ('should test', async() => {
+      await expect(actor.test(actionBindings)).resolves.toEqual(passTestVoid());
+    });
+
     describe('with quad input', () => {
       it('should throw if no intermediate results statistic exists in context', async() => {
         await expect(actor.run(actionQuads)).rejects.toThrow(

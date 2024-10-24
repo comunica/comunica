@@ -1,10 +1,11 @@
 import type {
+  ActionIteratorTransform,
   IActionIteratorTransformBindings,
   IActionIteratorTransformQuads,
   ITransformIteratorOutput }
   from '@comunica/bus-iterator-transform';
 import { ActorIteratorTransform } from '@comunica/bus-iterator-transform';
-import { ActionContext, Bus, failTest } from '@comunica/core';
+import { ActionContext, Bus, failTest, passTestVoid } from '@comunica/core';
 import type { MetadataBindings, MetadataQuads } from '@comunica/types';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
@@ -37,6 +38,10 @@ class DummyTransform extends ActorIteratorTransform {
       return data;
     });
     return { stream: transformedStream, metadata: action.metadata };
+  }
+
+  public async testIteratorTransform(_action: ActionIteratorTransform) {
+    return passTestVoid();
   }
 }
 

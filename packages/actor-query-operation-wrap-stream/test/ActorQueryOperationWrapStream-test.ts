@@ -9,7 +9,7 @@ import {
 } from '@comunica/bus-iterator-transform';
 
 import type { IActorTest } from '@comunica/core';
-import { ActionContext, Bus, failTest } from '@comunica/core';
+import { ActionContext, Bus, failTest, passTestVoid } from '@comunica/core';
 import { MediatorCombinePipeline } from '@comunica/mediator-combine-pipeline';
 import type {
   IActionContext,
@@ -54,6 +54,10 @@ class DummyTransform extends ActorIteratorTransform {
       return data;
     });
     return { stream: transformedStream, metadata: action.metadata };
+  }
+
+  public async testIteratorTransform(_action: ActionIteratorTransform) {
+    return passTestVoid();
   }
 }
 

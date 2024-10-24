@@ -1,4 +1,5 @@
 import type {
+  ActionIteratorTransform,
   IActionIteratorTransformBindings,
   IActionIteratorTransformQuads,
   IActorIteratorTransformArgs,
@@ -6,6 +7,8 @@ import type {
   from '@comunica/bus-iterator-transform';
 import { ActorIteratorTransform } from '@comunica/bus-iterator-transform';
 import { KeysStatistics } from '@comunica/context-entries';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
 import type { StatisticIntermediateResults } from '@comunica/statistic-intermediate-results';
 import type { MetadataBindings, MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -58,5 +61,10 @@ export class ActorIteratorTransformRecordIntermediateResults extends ActorIterat
       return data;
     });
     return { stream: output, metadata: action.metadata };
+  }
+
+  public async testIteratorTransform(_action: ActionIteratorTransform):
+  Promise<TestResult<IActorTest>> {
+    return passTestVoid();
   }
 }

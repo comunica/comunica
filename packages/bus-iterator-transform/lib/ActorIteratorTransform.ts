@@ -1,5 +1,5 @@
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate, TestResult } from '@comunica/core';
-import { Actor, failTest, passTestVoid } from '@comunica/core';
+import { Actor, failTest } from '@comunica/core';
 import type { LogicalJoinType, IActionContext, MetadataBindings, MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -17,13 +17,13 @@ import type { types } from 'sparqlalgebrajs/lib/algebra';
  * @see IActionIteratorTransform
  * @see IActorIteratorTransformOutput
  */
-export abstract class ActorIteratorTransform
-  extends Actor<ActionIteratorTransform, IActorTest, ActorIteratorTransformOutput> {
+export abstract class ActorIteratorTransform<TS = undefined>
+  extends Actor<ActionIteratorTransform, IActorTest, ActorIteratorTransformOutput, TS> {
   public wraps: possibleOperationTypes[];
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
-  public constructor(args: IActorIteratorTransformArgs) {
+  public constructor(args: IActorIteratorTransformArgs<TS>) {
     super(args);
   }
 
@@ -54,12 +54,15 @@ export abstract class ActorIteratorTransform
 
   public async test(
     action: ActionIteratorTransform,
-  ): Promise<TestResult<IActorTest>> {
+  ): Promise<TestResult<IActorTest, TS>> {
     if (!(this.wraps === undefined) && !this.wraps.includes(action.operation)) {
       return failTest(`Operation type not supported in configuration of ${this.name}`);
     }
-    return passTestVoid();
+    return this.testIteratorTransform(action);
   }
+
+  protected abstract testIteratorTransform(action: ActionIteratorTransform):
+  Promise<TestResult<IActorTest, TS>>;
 
   public abstract transformIteratorBindings(action: IActionIteratorTransformBindings):
   Promise<ITransformIteratorOutput<AsyncIterator<RDF.Bindings>, MetadataBindings>>;
@@ -150,11 +153,11 @@ export interface ITransformIteratorOutput<S, M> {
   metadata: () => Promise<M>;
 }
 
-export interface IActorIteratorTransformArgs
-  extends IActorArgs<
+export interface IActorIteratorTransformArgs<TS = undefined> extends IActorArgs<
   ActionIteratorTransform,
   IActorTest,
-ActorIteratorTransformOutput
+ActorIteratorTransformOutput,
+TS
   > {
   /**
    * What types of operations the actor will wrap. If undefined the actor wraps every operation

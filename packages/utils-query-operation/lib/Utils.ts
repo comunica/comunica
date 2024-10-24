@@ -113,7 +113,7 @@ export function removeOperationSource(operation: Algebra.Operation): void {
 
 /**
  * Sets KEY_CONTEXT_WRAPPED_QUERY_OPERATION to the operation being executed.
- * @param action The query operation action.
+ * @param operation The query operation.
  * @param context The current action context.
  * @returns A new action context with the operation marked as wrapped.
  */
