@@ -310,7 +310,6 @@ describe('ActorRdfJoinWrapStream', () => {
         },
       );
       const _output = await actorWrapStream.run(action, undefined!);
-      // Some problem because action gets modified, should probably make the action a shallow copy
       expect(mockedMediatorTransformIterator).toHaveBeenCalledWith(
         {
           type: 'bindings',
