@@ -4,7 +4,8 @@ import type * as RDF from '@rdfjs/types';
 import type { Variable } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import { mapTermsNested, someTermsNested } from 'rdf-terms';
-import { Algebra, Factory } from 'sparqlalgebrajs';
+import { Algebra } from 'sparqlalgebrajs';
+import type { Factory } from 'sparqlalgebrajs';
 import { Util } from 'sparqlalgebrajs';
 
 /**
@@ -125,8 +126,15 @@ export function materializeOperation(
         recursionResult = factory.createJoin([ ...values, recursionResult ]);
       }
       return {
-        recurse: true,
-        result: factory.createExtend(recursionResult, op.variable, op.expression),
+        recurse: false,
+        result: factory.createExtend(recursionResult,
+          op.variable,
+          <Algebra.Expression> materializeOperation(
+            op.expression,
+            bindings,
+            bindingsFactory,
+            options
+          )),
       };
     },
     group(op: Algebra.Group, factory: Factory) {
