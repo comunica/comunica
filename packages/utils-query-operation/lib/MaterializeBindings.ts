@@ -106,8 +106,6 @@ export function materializeOperation(
           };
         }
       }
-      const values: Algebra.Operation[] =
-        createValuesFromBindings(factory, <Bindings> options.originalBindings, op.variables);
       
       let recursionResult: Algebra.Operation = materializeOperation(
         op.input,
@@ -115,9 +113,13 @@ export function materializeOperation(
         bindingsFactory,
         options,
       );
+      
+      const values: Algebra.Operation[] =
+        createValuesFromBindings(factory, <Bindings> options.originalBindings, Util.inScopeVariables(op));
       if (values.length > 0) {
         recursionResult = factory.createJoin([ ...values, recursionResult ]);
       }
+
       return {
         recurse: true,
         result: factory.createExtend(recursionResult, op.variable, op.expression),
