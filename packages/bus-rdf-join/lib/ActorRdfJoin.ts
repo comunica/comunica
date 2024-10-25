@@ -40,6 +40,7 @@ IQueryOperationResultBindings,
 TS
 > {
   public readonly mediatorJoinSelectivity: MediatorRdfJoinSelectivity;
+
   /**
    * If this actor will be logged in the debugger and physical query plan logger
    */
