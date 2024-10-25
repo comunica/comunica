@@ -1,8 +1,8 @@
-# Comunica Count Intermediate Results Process Iterator Actor
+# Comunica Record Intermediate Results Process Iterator Actor
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-process-iterator-record-intermediate-results.svg)](https://www.npmjs.com/package/@comunica/actor-process-iterator-record-intermediate-results)
 
-A comunica Count Intermediate Results Process Iterator Actor. This actor wraps (intermediate) iterators produced during query execution. This wrapper
+A comunica Record Intermediate Results Process Iterator Actor. This actor wraps (intermediate) iterators produced during query execution. This wrapper
 calls the `updateStatistic` function of `@comunica/statistic-intermediate-results` which should be present in the context. This statistic should be
 added to the context by the user. This is possible when using Comunica in a javascript [application](https://comunica.dev/docs/query/getting_started/query_app/)
 
@@ -30,7 +30,7 @@ After installing, this package can be added to your engine's configuration as fo
     ...
     {
       "@id": "urn:comunica:default:process-iterator/actors#record-intermediate-results",
-      "@type": "ActorProcessIteratorCountIntermediateResults"
+      "@type": "ActorProcessIteratorRecordIntermediateResults"
     }
   ]
 }
