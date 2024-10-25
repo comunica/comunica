@@ -8,7 +8,6 @@ import type {
   IMetadata,
 } from '@comunica/types';
 import { cachifyMetadata } from '@comunica/utils-metadata';
-import { setContextWrapped } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import type { IActionQueryOperation, IActorQueryOperationArgs } from './ActorQueryOperation';
@@ -57,8 +56,6 @@ TS = undefined,
       );
       action.context = action.context.set(KeysInitQuery.physicalQueryPlanNode, action.operation);
     }
-    // Set wrapped to false to allow recursive calls to query operation to also be wrapped
-    action.context = setContextWrapped(action.operation, action.context);
 
     const operation: O = <O> action.operation;
     const subContext = action.context.set(KeysQueryOperation.operation, operation);

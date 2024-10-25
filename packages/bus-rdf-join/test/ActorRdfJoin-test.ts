@@ -10,7 +10,7 @@ import { BufferedIterator, MultiTransformIterator, SingletonIterator } from 'asy
 import { DataFactory } from 'rdf-data-factory';
 import type { IActionRdfJoin, IActorRdfJoinTestSideData } from '../lib/ActorRdfJoin';
 import '@comunica/utils-jest';
-import { ActorRdfJoin, KEY_CONTEXT_WRAPPED_RDF_JOIN } from '../lib/ActorRdfJoin';
+import { ActorRdfJoin } from '../lib/ActorRdfJoin';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -1169,7 +1169,6 @@ IActorRdfJoinSelectivityOutput
         ...action,
         context: new ActionContext({
           [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
-          [KEY_CONTEXT_WRAPPED_RDF_JOIN.name]: action.entries,
           [KeysInitQuery.physicalQueryPlanNode.name]: action,
         }),
       }, sideData);

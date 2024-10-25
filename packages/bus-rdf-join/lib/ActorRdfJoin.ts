@@ -433,8 +433,6 @@ TS
       );
     }
 
-    action.context = this.setContextWrapped(action, action.context);
-
     // Get action output
     const { result, physicalPlanMetadata } = await this.getOutput(action, sideData);
 
@@ -589,3 +587,6 @@ export const KEY_CONTEXT_WRAPPED_RDF_JOIN = new ActionContextKey<IJoinEntry[]>(
 );
 
 export type MediatorRdfJoin = Mediate<IActionRdfJoin, IQueryOperationResultBindings, IMediatorTypeJoinCoefficients>;
+
+// TODO remove this in next major version
+export { LogicalJoinType } from '@comunica/types';

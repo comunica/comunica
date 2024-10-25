@@ -1,5 +1,5 @@
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
-import { KEY_CONTEXT_WRAPPED_RDF_JOIN, type IActionRdfJoin } from '@comunica/bus-rdf-join';
+import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
@@ -483,7 +483,6 @@ IQueryOperationResultBindings
               ],
             }],
             [KeysQueryOperation.joinBindings.name]: BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
-            [KEY_CONTEXT_WRAPPED_RDF_JOIN.name]: action.entries,
           }),
         });
         expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(2, {
@@ -509,7 +508,6 @@ IQueryOperationResultBindings
               ],
             }],
             [KeysQueryOperation.joinBindings.name]: BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
-            [KEY_CONTEXT_WRAPPED_RDF_JOIN.name]: action.entries,
           }),
         });
         expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(3, {
@@ -535,7 +533,6 @@ IQueryOperationResultBindings
               ],
             }],
             [KeysQueryOperation.joinBindings.name]: BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
-            [KEY_CONTEXT_WRAPPED_RDF_JOIN.name]: action.entries,
           }),
         });
       });

@@ -71,6 +71,7 @@
     "FragmentSelectorShape",
     "ChunkedIterator",
     "IQuerySource",
+    "LogicalJoinType",
 
     "RDF.Stream",
     "Omit",

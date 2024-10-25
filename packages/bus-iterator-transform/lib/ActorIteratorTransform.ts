@@ -55,7 +55,7 @@ export abstract class ActorIteratorTransform<TS = undefined>
   public async test(
     action: ActionIteratorTransform,
   ): Promise<TestResult<IActorTest, TS>> {
-    if (!(this.wraps === undefined) && !this.wraps.includes(action.operation)) {
+    if (this.wraps && !this.wraps.includes(action.operation)) {
       return failTest(`Operation type not supported in configuration of ${this.name}`);
     }
     return this.testIteratorTransform(action);

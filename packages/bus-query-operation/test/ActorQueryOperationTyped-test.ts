@@ -1,7 +1,6 @@
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus, passTest } from '@comunica/core';
 import type { IPhysicalQueryPlanLogger } from '@comunica/types';
-import { KEY_CONTEXT_WRAPPED_QUERY_OPERATION } from '@comunica/utils-query-operation';
 import { ActorQueryOperationTyped } from '..';
 import '@comunica/utils-jest';
 
@@ -84,7 +83,6 @@ describe('ActorQueryOperationTyped', () => {
         [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
         [KeysInitQuery.physicalQueryPlanNode.name]: operation,
         [KeysQueryOperation.operation.name]: operation,
-        [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: operation,
       }), undefined);
     });
   });
