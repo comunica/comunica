@@ -4,7 +4,7 @@ import type * as RDF from '@rdfjs/types';
 import type { Variable } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import { mapTermsNested, someTermsNested } from 'rdf-terms';
-import type { Algebra, Factory } from 'sparqlalgebrajs';
+import { Algebra, Factory } from 'sparqlalgebrajs';
 import { Util } from 'sparqlalgebrajs';
 
 /**
@@ -106,7 +106,6 @@ export function materializeOperation(
           };
         }
       }
-      
       let recursionResult: Algebra.Operation = materializeOperation(
         op.input,
         bindings,
@@ -114,12 +113,17 @@ export function materializeOperation(
         options,
       );
       
+      // Join op.input with a values clause containing the variables that are in InitialBindings and
+      // are used in the current extend operation.
+      let inScopeVariables = [op.variable];
+      if (op.expression.expressionType == Algebra.expressionTypes.TERM && op.expression.term.termType == 'Variable') {
+        inScopeVariables.push(op.expression.term);
+      }
       const values: Algebra.Operation[] =
-        createValuesFromBindings(factory, <Bindings> options.originalBindings, Util.inScopeVariables(op));
+        createValuesFromBindings(factory, <Bindings> options.originalBindings, inScopeVariables);
       if (values.length > 0) {
         recursionResult = factory.createJoin([ ...values, recursionResult ]);
       }
-
       return {
         recurse: true,
         result: factory.createExtend(recursionResult, op.variable, op.expression),
