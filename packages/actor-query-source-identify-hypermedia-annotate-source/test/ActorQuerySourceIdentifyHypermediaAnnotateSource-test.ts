@@ -1,5 +1,5 @@
 import { KeysInitQuery } from '@comunica/context-entries';
-import { ActionContext, Bus, failTest } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
 import type { BindingsStream, IActionContext } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
@@ -88,7 +88,7 @@ describe('ActorQuerySourceIdentifyHypermediaSourceAttribution', () => {
       context = context.set(KEY_CONTEXT_WRAPPED, true);
       await expect(actor.test({ metadata: <any> null, quads, url: 'URL', context }))
         .resolves
-        .toFailTest('Unable to wrap query source multiple times'); 
+        .toFailTest('Unable to wrap query source multiple times');
     });
   });
 });
