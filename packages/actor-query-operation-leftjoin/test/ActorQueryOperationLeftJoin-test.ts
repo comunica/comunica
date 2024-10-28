@@ -4,7 +4,7 @@ import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
 import type { Bindings, IActionContext, IJoinEntry, IQueryOperationResultBindings } from '@comunica/types';
-import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { BindingsFactory, bindingsToString } from '@comunica/utils-bindings-factory';
 import * as sparqlee from '@comunica/utils-expression-evaluator';
 import { isExpressionError } from '@comunica/utils-expression-evaluator';
 import {
@@ -245,10 +245,10 @@ describe('ActorQueryOperationLeftJoin', () => {
         const dataCB = <() => { error: any; bindings: Bindings }> call[2];
         const { error, bindings } = dataCB();
         expect(isExpressionError(error)).toBeTruthy();
-        expect(bindings).toEqual(BF.bindings([[
+        expect(bindings).toEqual(bindingsToString(BF.bindings([[
           DF.variable('a'),
           DF.literal(String(1 + Math.floor(index / 2)), DF.namedNode('http://www.w3.org/2001/XMLSchema#string')),
-        ]]));
+        ]])));
       }
     });
 

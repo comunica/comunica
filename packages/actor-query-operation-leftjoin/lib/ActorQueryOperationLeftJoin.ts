@@ -5,6 +5,7 @@ import type { MediatorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { Bindings, IActionContext, IJoinEntry, IQueryOperationResult } from '@comunica/types';
+import { bindingsToString } from '@comunica/utils-bindings-factory';
 import { isExpressionError } from '@comunica/utils-expression-evaluator';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -69,7 +70,11 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
               if (isExpressionError(<Error>error)) {
                 // In many cases, this is a user error, where the user should manually cast the variable to a string.
                 // In order to help users debug this, we should report these errors via the logger as warnings.
-                this.logWarn(context, 'Error occurred while filtering.', () => ({ error, bindings }));
+                this.logWarn(
+                  context,
+                  'Error occurred while filtering.',
+                  () => ({ error, bindings: bindingsToString(bindings) }),
+                );
               } else {
                 bindingsStream.emit('error', error);
               }
