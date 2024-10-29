@@ -87,8 +87,8 @@ describe('ActorQuerySourceIdentifyHypermediaSourceAttribution', () => {
       ]);
       context = context.set(KEY_CONTEXT_WRAPPED, true);
       await expect(actor.test({ metadata: <any> null, quads, url: 'URL', context }))
-        .rejects
-        .toThrow('Unable to wrap query source multiple times');
+        .resolves
+        .toFailTest('Unable to wrap query source multiple times');
     });
   });
 });
