@@ -49,7 +49,7 @@
     "@types/benchmark": "^2.0.0",
     "@types/jest": "^29.4.0",
     "@types/md5": "^2.3.5",
-    "@types/node": "^20.0.0",
+    "@types/node": "^22.0.0",
     "@types/object-inspect": "^1.8.1",
     "@types/readable-stream": "^4.0.0",
     "@types/setup-polly-jest": "^0.5.2",
