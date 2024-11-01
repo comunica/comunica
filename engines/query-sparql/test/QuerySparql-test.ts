@@ -894,6 +894,107 @@ SELECT ?obsId {
         expect(bindings2).toMatchObject(expectedResult);
       });
     });
+
+    describe('initialbindings', () => {
+      it('should handle bindings used in BIND (=extend) operator correctly', async() => {
+        const bindingsFactory = new BindingsFactory();
+        const initialBindings = bindingsFactory.bindings([
+          [DF.variable('this'), DF.namedNode('http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-004.test#InvalidResource')]
+        ]);
+        
+        
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: `
+              @prefix dash: <http://datashapes.org/dash#> .
+              @prefix ex: <http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-004.test#> .
+              @prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+              @prefix owl: <http://www.w3.org/2002/07/owl#> .
+              @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+              @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+              @prefix sh: <http://www.w3.org/ns/shacl#> .
+              @prefix sht: <http://www.w3.org/ns/shacl-test#> .
+              @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+              
+              ex:
+              \tsh:declare [
+              \t\tsh:prefix "ex" ;
+              \t\tsh:namespace "http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-004.test#"^^xsd:anyURI ;
+              \t] .
+              
+              ex:TestShape
+                rdf:type sh:NodeShape ;
+                rdfs:label "Test shape" ;
+                sh:sparql ex:TestShape-sparql ;
+                sh:targetNode ex:InvalidResource ;
+              .
+              ex:TestShape-sparql
+                sh:prefixes ex: ;
+                sh:select """
+                \tSELECT $this
+              \tWHERE {
+              \t\tBIND ($this AS ?that) .
+              \t\tFILTER (?that = ex:InvalidResource) .
+              \t}""" ;
+              .
+              ex:ValidResource1
+                rdf:type rdfs:Resource ;
+              .
+              <>
+                rdf:type mf:Manifest ;
+                mf:entries (
+                    <pre-binding-004>
+                  ) ;
+              .
+              <pre-binding-004>
+                rdf:type sht:Validate ;
+                rdfs:label "Test of pre-binding in BIND expressions" ;
+                mf:action [
+                    sht:dataGraph <> ;
+                    sht:shapesGraph <> ;
+                  ] ;
+                mf:result [
+                    rdf:type sh:ValidationReport ;
+                    sh:conforms "false"^^xsd:boolean ;
+                    sh:result [
+                        rdf:type sh:ValidationResult ;
+                        sh:focusNode ex:InvalidResource ;
+                        sh:resultSeverity sh:Violation ;
+                        sh:sourceConstraint ex:TestShape-sparql ;
+                        sh:sourceConstraintComponent sh:SPARQLConstraintComponent ;
+                        sh:sourceShape ex:TestShape ;
+                        sh:value ex:InvalidResource ;
+                      ] ;
+                  ] ;
+                mf:status sht:approved ;
+              .`,
+              mediaType: 'text/turtle',
+            },
+          ],
+          initialBindings: initialBindings,
+        };
+
+        const expectedResult = [
+          [
+            [ DF.variable('this'), DF.namedNode('http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-004.test#InvalidResource') ], //TODO example.org
+          ]
+        ];
+
+        const bindings = (await arrayifyStream(await engine.queryBindings(`
+          PREFIX ex: <http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-004.test#>
+            
+          SELECT $this
+          WHERE {
+            BIND ($this AS ?that) .
+            FILTER (?that = ex:InvalidResource) .
+          }
+        `, context))).map(binding => [ ...binding ].sort(([ var1, _c1 ], [ var2, _c2 ]) => var1.value.localeCompare(var2.value)));
+
+        expect(bindings).toMatchObject(expectedResult);
+      });
+    });
   });
 
   // We skip these tests in browsers due to CORS issues
