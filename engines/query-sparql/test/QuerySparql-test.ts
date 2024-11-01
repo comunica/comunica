@@ -994,6 +994,73 @@ SELECT ?obsId {
 
         expect(bindings).toMatchObject(expectedResult);
       });
+
+      it('should handle bindings used in BIND (=extend) operator correctly', async() => {
+        const bindingsFactory = new BindingsFactory();
+        const initialBindings = bindingsFactory.bindings([
+          [DF.variable('this'), DF.namedNode('http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-004.test#InvalidResource')]
+        ]);
+        
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: `
+              @prefix ex: <http://datashapes.org/sh/tests/sparql/pre-binding/unsupported-sparql-005.test#> .
+              @prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+              @prefix owl: <http://www.w3.org/2002/07/owl#> .
+              @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+              @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+              @prefix sh: <http://www.w3.org/ns/shacl#> .
+              @prefix sht: <http://www.w3.org/ns/shacl-test#> .
+              @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+              
+              <>
+              \trdf:type mf:Manifest ;
+              \tmf:entries ( <unsupported-sparql-005> ) .
+                  
+              <unsupported-sparql-005>
+              \trdf:type sht:Validate ;
+              \trdfs:label "Test of unsupported AS ?prebound" ;
+              \tmf:action [
+              \t\tsht:dataGraph <> ;
+              \t\tsht:shapesGraph <> ;
+              \t] ;
+              \tmf:result sht:Failure ;
+              \tmf:status sht:approved .
+              
+              ex:TestShape
+              \ta sh:NodeShape ;
+              \tsh:targetNode ex:InvalidResource ;
+              \tsh:sparql [
+              \t\tsh:select """
+              \t\t\tSELECT $this
+              \t\t\tWHERE {
+              \t\t\t\tBIND (true AS $this) .
+              \t\t\t}""" ;
+              \t] .`,
+              mediaType: 'text/turtle',
+            },
+          ],
+          initialBindings: initialBindings,
+        };
+
+        const expectedResult = [
+          [
+            [ DF.variable('this'), DF.namedNode('http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-004.test#InvalidResource') ], //TODO example.org
+          ]
+        ];
+
+        const bindings = (await arrayifyStream(await engine.queryBindings(`
+          SELECT $this
+          WHERE {
+            BIND (true AS $this) .
+          }`,
+          context))).map(binding => [ ...binding ].sort(([ var1, _c1 ], [ var2, _c2 ]) => var1.value.localeCompare(var2.value)));
+
+        expect(bindings).toMatchObject(expectedResult);
+      });
+
     });
   });
 
