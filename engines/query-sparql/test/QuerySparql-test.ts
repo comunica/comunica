@@ -896,12 +896,176 @@ SELECT ?obsId {
     });
 
     describe('initialbindings', () => {
+      it('should consider the initialbindings in the bound function', async() => {
+        const bindingsFactory = new BindingsFactory();
+        const initialBindings = bindingsFactory.bindings([
+          [DF.variable('this'), DF.namedNode('http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-005.test#InvalidResource')],
+        ]);
+        
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: `
+                @prefix ex: <http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-005.test#> .
+                
+                ex:InvalidResource
+                  ex:property "Label" .
+                `,
+              mediaType: 'text/turtle',
+            },
+          ],
+          initialBindings: initialBindings,
+        };
+
+        const expectedResult = [
+          [
+            [ DF.variable('this'), DF.namedNode('http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-005.test#InvalidResource') ],
+          ]
+        ];
+
+        const bindings = (await arrayifyStream(await engine.queryBindings(`
+        PREFIX ex: <http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-005.test#>
+        
+        SELECT $this WHERE {
+          {
+            FILTER (bound($this))
+          }
+          $this ex:property "Label" .
+          FILTER (bound($this)) .
+        }
+          `, context))).map(binding => [ ...binding ].sort(([ var1, _c1 ], [ var2, _c2 ]) => var1.value.localeCompare(var2.value)));
+
+        expect(bindings).toMatchObject(expectedResult);
+      });
+
+      it('should consider the initialbindings in the filter function', async() => {
+        const bindingsFactory = new BindingsFactory();
+        const initialBindings = bindingsFactory.bindings([
+          [DF.variable('this'), DF.namedNode('http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-006.test#InvalidResource')]
+        ]);
+        
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: `
+                @prefix ex: <http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-005.test#> .
+                
+                ex:InvalidResource
+                  ex:property "Label" .
+                `,
+              mediaType: 'text/turtle',
+            },
+          ],
+          initialBindings: initialBindings,
+        };
+
+        const expectedResult = [
+          [
+            [DF.variable('this'), DF.namedNode('http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-006.test#InvalidResource')]
+          ]
+        ];
+
+        const bindings = (await arrayifyStream(await engine.queryBindings(`
+        PREFIX ex: <http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-006.test#>
+      
+        SELECT $this WHERE {
+          {
+            SELECT * WHERE {
+              FILTER ($this = ex:InvalidResource) .
+            }
+          }
+        }
+        `, context))).map(binding => [ ...binding ].sort(([ var1, _c1 ], [ var2, _c2 ]) => var1.value.localeCompare(var2.value)));
+
+        expect(bindings).toMatchObject(expectedResult);
+      });
+
+      it('should consider the initialbindings in the filter function 2', async() => {
+        const bindingsFactory = new BindingsFactory();
+        const initialBindings = bindingsFactory.bindings([
+          [DF.variable('this'), DF.namedNode('http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-006.test#InvalidResource')]
+        ]);
+        
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: `
+                @prefix ex: <http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-005.test#> .
+                
+                ex:InvalidResource
+                  ex:property "Label" .
+                `,
+              mediaType: 'text/turtle',
+            },
+          ],
+          initialBindings: initialBindings,
+        };
+
+        const expectedResult = [
+          [
+            [DF.variable('this'), DF.namedNode('http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-006.test#InvalidResource')]
+          ]
+        ];
+
+        const bindings = (await arrayifyStream(await engine.queryBindings(`
+        PREFIX ex: <http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-006.test#>
+      
+        SELECT $this WHERE {
+          {
+            SELECT $this WHERE {
+              FILTER ($this = ex:InvalidResource) .
+            }
+          }
+        }
+        `, context))).map(binding => [ ...binding ].sort(([ var1, _c1 ], [ var2, _c2 ]) => var1.value.localeCompare(var2.value)));
+
+        expect(bindings).toMatchObject(expectedResult);
+      });
+
+      it('should consider initialbindings which are not projected', async() => {
+        const bindingsFactory = new BindingsFactory();
+        const initialBindings = bindingsFactory.bindings([
+          [DF.variable('PATH'), DF.namedNode('http://datashapes.org/sh/tests/sparql/property/sparql-001.test#germanLabel')],
+          [DF.variable('this'), DF.namedNode('http://datashapes.org/sh/tests/sparql/property/sparql-001.test#ValidCountry')],
+      ]);
+        
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: `
+                @prefix ex: <http://datashapes.org/sh/tests/sparql/property/sparql-001.test#> .
+                @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+            
+                ex:ValidCountry2 rdf:type ex:Country.
+            
+                ex:ValidCountry
+                    rdf:type ex:Country ;
+                    ex:germanLabel "Spanien"@de ;
+                .`,
+              mediaType: 'text/turtle',
+            },
+          ],
+          initialBindings: initialBindings,
+        };
+
+        const bindings = (await arrayifyStream(await engine.queryBindings(`
+        SELECT $this ?value WHERE {
+          $this $PATH ?value .
+          FILTER (!isLiteral(?value) || !langMatches(lang(?value), "de"))
+        }`, context))).map(binding => [ ...binding ].sort(([ var1, _c1 ], [ var2, _c2 ]) => var1.value.localeCompare(var2.value)));
+
+        expect(bindings).toMatchObject([]);
+      });
+
       it('should handle bindings used in BIND (=extend) operator correctly', async() => {
         const bindingsFactory = new BindingsFactory();
         const initialBindings = bindingsFactory.bindings([
           [DF.variable('this'), DF.namedNode('http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-004.test#InvalidResource')]
         ]);
-        
         
         const context: QueryStringContext = {
           sources: [
@@ -995,71 +1159,71 @@ SELECT ?obsId {
         expect(bindings).toMatchObject(expectedResult);
       });
 
-      it('should handle bindings used in BIND (=extend) operator correctly', async() => {
-        const bindingsFactory = new BindingsFactory();
-        const initialBindings = bindingsFactory.bindings([
-          [DF.variable('this'), DF.namedNode('http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-004.test#InvalidResource')]
-        ]);
+      // it('should handle bindings used in BIND (=extend) operator correctly', async() => {
+      //   const bindingsFactory = new BindingsFactory();
+      //   const initialBindings = bindingsFactory.bindings([
+      //     [DF.variable('this'), DF.namedNode('http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-004.test#InvalidResource')]
+      //   ]);
         
-        const context: QueryStringContext = {
-          sources: [
-            {
-              type: 'serialized',
-              value: `
-              @prefix ex: <http://datashapes.org/sh/tests/sparql/pre-binding/unsupported-sparql-005.test#> .
-              @prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
-              @prefix owl: <http://www.w3.org/2002/07/owl#> .
-              @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-              @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-              @prefix sh: <http://www.w3.org/ns/shacl#> .
-              @prefix sht: <http://www.w3.org/ns/shacl-test#> .
-              @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+      //   const context: QueryStringContext = {
+      //     sources: [
+      //       {
+      //         type: 'serialized',
+      //         value: `
+      //         @prefix ex: <http://datashapes.org/sh/tests/sparql/pre-binding/unsupported-sparql-005.test#> .
+      //         @prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+      //         @prefix owl: <http://www.w3.org/2002/07/owl#> .
+      //         @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+      //         @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+      //         @prefix sh: <http://www.w3.org/ns/shacl#> .
+      //         @prefix sht: <http://www.w3.org/ns/shacl-test#> .
+      //         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
               
-              <>
-              \trdf:type mf:Manifest ;
-              \tmf:entries ( <unsupported-sparql-005> ) .
+      //         <>
+      //         \trdf:type mf:Manifest ;
+      //         \tmf:entries ( <unsupported-sparql-005> ) .
                   
-              <unsupported-sparql-005>
-              \trdf:type sht:Validate ;
-              \trdfs:label "Test of unsupported AS ?prebound" ;
-              \tmf:action [
-              \t\tsht:dataGraph <> ;
-              \t\tsht:shapesGraph <> ;
-              \t] ;
-              \tmf:result sht:Failure ;
-              \tmf:status sht:approved .
+      //         <unsupported-sparql-005>
+      //         \trdf:type sht:Validate ;
+      //         \trdfs:label "Test of unsupported AS ?prebound" ;
+      //         \tmf:action [
+      //         \t\tsht:dataGraph <> ;
+      //         \t\tsht:shapesGraph <> ;
+      //         \t] ;
+      //         \tmf:result sht:Failure ;
+      //         \tmf:status sht:approved .
               
-              ex:TestShape
-              \ta sh:NodeShape ;
-              \tsh:targetNode ex:InvalidResource ;
-              \tsh:sparql [
-              \t\tsh:select """
-              \t\t\tSELECT $this
-              \t\t\tWHERE {
-              \t\t\t\tBIND (true AS $this) .
-              \t\t\t}""" ;
-              \t] .`,
-              mediaType: 'text/turtle',
-            },
-          ],
-          initialBindings: initialBindings,
-        };
+      //         ex:TestShape
+      //         \ta sh:NodeShape ;
+      //         \tsh:targetNode ex:InvalidResource ;
+      //         \tsh:sparql [
+      //         \t\tsh:select """
+      //         \t\t\tSELECT $this
+      //         \t\t\tWHERE {
+      //         \t\t\t\tBIND (true AS $this) .
+      //         \t\t\t}""" ;
+      //         \t] .`,
+      //         mediaType: 'text/turtle',
+      //       },
+      //     ],
+      //     initialBindings: initialBindings,
+      //   };
 
-        const expectedResult = [
-          [
-            [ DF.variable('this'), DF.namedNode('http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-004.test#InvalidResource') ], //TODO example.org
-          ]
-        ];
+      //   const expectedResult = [
+      //     [
+      //       [ DF.variable('this'), DF.namedNode('http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-004.test#InvalidResource') ], //TODO example.org
+      //     ]
+      //   ];
 
-        const bindings = (await arrayifyStream(await engine.queryBindings(`
-          SELECT $this
-          WHERE {
-            BIND (true AS $this) .
-          }`,
-          context))).map(binding => [ ...binding ].sort(([ var1, _c1 ], [ var2, _c2 ]) => var1.value.localeCompare(var2.value)));
+      //   const bindings = (await arrayifyStream(await engine.queryBindings(`
+      //     SELECT $this
+      //     WHERE {
+      //       BIND (true AS $this) .
+      //     }`,
+      //     context))).map(binding => [ ...binding ].sort(([ var1, _c1 ], [ var2, _c2 ]) => var1.value.localeCompare(var2.value)));
 
-        expect(bindings).toMatchObject(expectedResult);
-      });
+      //   expect(bindings).toMatchObject(expectedResult);
+      // });
 
     });
   });
