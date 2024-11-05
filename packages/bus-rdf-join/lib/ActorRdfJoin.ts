@@ -308,35 +308,7 @@ TS
       return failTest(`Bind join can only join entries with at least one common variable`);
     }
 
-    // Determine entries without common variables
-    // These will be placed in the back of the sorted array
-    const entriesWithoutCommonVariables: IJoinEntryWithMetadata[] = [];
-    for (const entry of entries) {
-      let hasCommon = false;
-      for (const variable of entry.metadata.variables) {
-        if (multiOccurrenceVariables.includes(variable.variable.value)) {
-          hasCommon = true;
-          break;
-        }
-      }
-      if (!hasCommon) {
-        entriesWithoutCommonVariables.push(entry);
-      }
-    }
-
-    return passTest((await mediatorJoinEntriesSort.mediate({ entries, context })).entries
-      .sort((entryLeft, entryRight) => {
-        // Sort to make sure that entries without common variables come last in the array.
-        // For all other entries, the original order is kept.
-        const leftWithoutCommonVariables = entriesWithoutCommonVariables.includes(entryLeft);
-        const rightWithoutCommonVariables = entriesWithoutCommonVariables.includes(entryRight);
-        if (leftWithoutCommonVariables === rightWithoutCommonVariables) {
-          return 0;
-        }
-        return leftWithoutCommonVariables ?
-          1 :
-            -1;
-      }));
+    return passTest((await mediatorJoinEntriesSort.mediate({ entries, context })).entries);
   }
 
   /**
