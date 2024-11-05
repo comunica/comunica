@@ -219,10 +219,14 @@ describe('ActorRdfJoinWrapStream', () => {
 
     it('should correctly invoke transform actors on join result', async() => {
       const output = await actorWrapStream.run(action, undefined!);
-      await output.bindingsStream.toArray();
+      const transformedData = await output.bindingsStream.toArray();
 
       expect(actorTransform1.transformCalls).toBe(2);
       expect(actorTransform2.transformCalls).toBe(2);
+
+      expect(transformedData).toHaveLength(2);
+      expect(transformedData[0].has(DF.variable('a'))).toBeTruthy();
+      expect(transformedData[0].has(DF.variable('c'))).toBeTruthy();
     });
 
     it('should handle undefined context from mediatorJoin', async() => {

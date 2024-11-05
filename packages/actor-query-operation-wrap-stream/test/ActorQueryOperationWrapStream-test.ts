@@ -206,7 +206,7 @@ describe('ActorQueryOperationWrapStream', () => {
       });
       it('should record query operation metadata and context', async() => {
         const _spyQueryOperation = jest.spyOn(mediatorQueryOperation, 'mediate')
-          .mockReturnValue({
+          .mockResolvedValue({
             type: 'bindings',
             bindingsStream: bsOutput,
             metadata: async() => {
@@ -229,7 +229,7 @@ describe('ActorQueryOperationWrapStream', () => {
       });
       it('should record empty metadata and context', async() => {
         const _spyQueryOperation = jest.spyOn(mediatorQueryOperation, 'mediate')
-          .mockReturnValue({
+          .mockResolvedValue({
             type: 'bindings',
             bindingsStream: bsOutput,
             metadata: async() => {
@@ -271,7 +271,7 @@ describe('ActorQueryOperationWrapStream', () => {
       });
       it('should record query operation metadata and context', async() => {
         const _spyQueryOperation = jest.spyOn(mediatorQueryOperation, 'mediate')
-          .mockReturnValue({
+          .mockResolvedValue({
             type: 'quads',
             quadStream: quadOutput,
             metadata: async() => {
@@ -294,7 +294,7 @@ describe('ActorQueryOperationWrapStream', () => {
       });
       it('should record empty metadata and context', async() => {
         const _spyQueryOperation = jest.spyOn(mediatorQueryOperation, 'mediate')
-          .mockReturnValue({
+          .mockResolvedValue({
             type: 'quads',
             quadStream: quadOutput,
             metadata: async() => {
@@ -318,7 +318,7 @@ describe('ActorQueryOperationWrapStream', () => {
     });
     it('should return input action when unsupported type is given', async() => {
       const _spyQueryOperation = jest.spyOn(mediatorQueryOperation, 'mediate')
-        .mockReturnValue({
+        .mockResolvedValue({
           type: 'boolean',
           quadStream: quadOutput,
           metadata: async() => {

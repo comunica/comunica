@@ -12,7 +12,7 @@ import type { types } from 'sparqlalgebrajs/lib/algebra';
  *  Input:  IActionIteratorTransform: Data that denotes what type of stream is being wrapped,
  *   what actor produced this stream, and the stream itself
  * * Test:   <none>
- * * Output: IActorIteratorTransformOutput: The wrapped stream with the
+ * * Output: IActorIteratorTransformOutput: The transformed stream and additional metadata.
  *
  * @see IActionIteratorTransform
  * @see IActorIteratorTransformOutput
