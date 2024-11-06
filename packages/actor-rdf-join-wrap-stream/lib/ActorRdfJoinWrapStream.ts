@@ -6,11 +6,11 @@ import type {
   MediatorRdfJoin,
   IActorRdfJoinTestSideData }
   from '@comunica/bus-rdf-join';
-import { ActorRdfJoin, KEY_CONTEXT_WRAPPED_RDF_JOIN } from '@comunica/bus-rdf-join';
+import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { TestResult } from '@comunica/core';
-import { failTest, passTestWithSideData } from '@comunica/core';
+import { ActionContextKey, failTest, passTestWithSideData } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { IQueryOperationResultBindings, MetadataBindings } from '@comunica/types';
+import type { IActionContext, IJoinEntry, IQueryOperationResultBindings, MetadataBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 
@@ -76,6 +76,16 @@ export class ActorRdfJoinWrapStream extends ActorRdfJoin {
       requestTime: -1,
     }, sideData);
   }
+
+  /**
+   * Sets KEY_CONTEXT_WRAPPED_RDF_JOIN key in the context to the entries being joined.
+   * @param action The join action being executed
+   * @param context The ActionContext
+   * @returns The updated ActionContext
+   */
+  public setContextWrapped(action: IActionRdfJoin, context: IActionContext): IActionContext {
+    return context.set(KEY_CONTEXT_WRAPPED_RDF_JOIN, action.entries);
+  }
 }
 
 export interface IActorRdfJoinWrapStreamArgs extends IActorRdfJoinArgs {
@@ -88,3 +98,10 @@ export interface IActorRdfJoinWrapStreamArgs extends IActorRdfJoinArgs {
    */
   mediatorJoin: MediatorRdfJoin;
 }
+
+/**
+ * Key that shows if the query operation has already been wrapped by a process iterator call
+ */
+export const KEY_CONTEXT_WRAPPED_RDF_JOIN = new ActionContextKey<IJoinEntry[]>(
+  '@comunica/actor-rdf-join:wrapped',
+);

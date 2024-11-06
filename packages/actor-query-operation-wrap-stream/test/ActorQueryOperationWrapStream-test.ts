@@ -20,13 +20,15 @@ import type {
 } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
-import { KEY_CONTEXT_WRAPPED_QUERY_OPERATION } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, MappingIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { types } from 'sparqlalgebrajs/lib/algebra';
-import { ActorQueryOperationWrapStream } from '../lib/ActorQueryOperationWrapStream';
+import {
+  KEY_CONTEXT_WRAPPED_QUERY_OPERATION,
+  ActorQueryOperationWrapStream,
+} from '../lib/ActorQueryOperationWrapStream';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);

@@ -5,12 +5,12 @@ import type {
   MediatorQueryOperation,
 } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import { failTest, passTest } from '@comunica/core';
+import { ActionContextKey, failTest, passTest } from '@comunica/core';
 import type { TestResult, IActorTest } from '@comunica/core';
-import type { IQueryOperationResult, MetadataBindings, MetadataQuads } from '@comunica/types';
-import { KEY_CONTEXT_WRAPPED_QUERY_OPERATION, setContextWrapped } from '@comunica/utils-query-operation';
+import type { IActionContext, IQueryOperationResult, MetadataBindings, MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
+import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Wrap Stream Query Operation Actor.
@@ -34,7 +34,7 @@ export class ActorQueryOperationWrapStream extends ActorQueryOperation {
   public async run(action: IActionQueryOperation): Promise<IQueryOperationResult> {
     // Prevent infinite recursion. In consequent query operation calls this key should be set to false
     // To allow the operation to wrap ALL query operation runs
-    action.context = setContextWrapped(action.operation, action.context);
+    action.context = this.setContextWrapped(action.operation, action.context);
     const output: IQueryOperationResult = await this.mediatorQueryOperation.mediate(action);
     switch (output.type) {
       case 'bindings': {
@@ -75,6 +75,16 @@ export class ActorQueryOperationWrapStream extends ActorQueryOperation {
     }
     return output;
   }
+
+  /**
+   * Sets KEY_CONTEXT_WRAPPED_QUERY_OPERATION to the operation being executed.
+   * @param operation The query operation.
+   * @param context The current action context.
+   * @returns A new action context with the operation marked as wrapped.
+   */
+  public setContextWrapped(operation: Algebra.Operation, context: IActionContext): IActionContext {
+    return context.set(KEY_CONTEXT_WRAPPED_QUERY_OPERATION, operation);
+  }
 }
 
 export interface IActorQueryOperationWrapStreamArgs extends IActorQueryOperationArgs {
@@ -87,3 +97,10 @@ export interface IActorQueryOperationWrapStreamArgs extends IActorQueryOperation
    */
   mediatorQueryOperation: MediatorQueryOperation;
 }
+
+/**
+ * Key that that stores the last executed operation
+ */
+export const KEY_CONTEXT_WRAPPED_QUERY_OPERATION = new ActionContextKey<Algebra.Operation>(
+  '@comunica/actor-query-operation:wrapped',
+);

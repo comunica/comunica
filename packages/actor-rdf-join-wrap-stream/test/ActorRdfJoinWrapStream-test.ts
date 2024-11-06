@@ -8,7 +8,7 @@ import type {
 import {
   ActorIteratorTransform,
 } from '@comunica/bus-iterator-transform';
-import { KEY_CONTEXT_WRAPPED_RDF_JOIN } from '@comunica/bus-rdf-join';
+import { KEY_CONTEXT_WRAPPED_RDF_JOIN } from '../lib/ActorRdfJoinWrapStream';
 import type {
   IActionRdfJoinSelectivity,
   IActorRdfJoinSelectivityOutput }

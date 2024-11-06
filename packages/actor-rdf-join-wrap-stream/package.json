@@ -44,6 +44,7 @@
     "@comunica/bus-iterator-transform": "^4.0.1",
     "@comunica/bus-rdf-join": "^4.0.1",
     "@comunica/core": "^4.0.1",
-    "@comunica/mediatortype-join-coefficients": "^4.0.1"
+    "@comunica/mediatortype-join-coefficients": "^4.0.1",
+    "@comunica/types": "^4.0.2"
   }
 }
