@@ -8,7 +8,6 @@ import type {
 import {
   ActorIteratorTransform,
 } from '@comunica/bus-iterator-transform';
-import { KEY_CONTEXT_WRAPPED_RDF_JOIN } from '../lib/ActorRdfJoinWrapStream';
 import type {
   IActionRdfJoinSelectivity,
   IActorRdfJoinSelectivityOutput }
@@ -23,7 +22,7 @@ import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { ActorRdfJoinWrapStream } from '../lib/ActorRdfJoinWrapStream';
+import { KEY_CONTEXT_WRAPPED_RDF_JOIN, ActorRdfJoinWrapStream } from '../lib/ActorRdfJoinWrapStream';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
