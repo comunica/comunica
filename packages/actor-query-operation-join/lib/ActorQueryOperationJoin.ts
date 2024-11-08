@@ -3,10 +3,15 @@ import {
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { MediatorRdfJoin } from '@comunica/bus-rdf-join';
+import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { IQueryOperationResult, IActionContext, IJoinEntry } from '@comunica/types';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import { getSafeBindings } from '@comunica/utils-query-operation';
+import type * as RDF from '@rdfjs/types';
+import { ArrayIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -36,6 +41,23 @@ export class ActorQueryOperationJoin extends ActorQueryOperationTypedMediated<Al
         output: getSafeBindings(output),
         operation,
       }));
+
+    // Return immediately if one of the join entries has cardinality zero, to avoid actor testing overhead.
+    if ((await Promise.all(entries.map(entry => entry.output.metadata())))
+      .some(entry => entry.cardinality.value === 0)) {
+      for (const entry of entries) {
+        entry.output.bindingsStream.close();
+      }
+      return {
+        bindingsStream: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
+        metadata: async() => ({
+          state: new MetadataValidationState(),
+          cardinality: { type: 'exact', value: 0 },
+          variables: ActorRdfJoin.joinVariables(new DataFactory(), await ActorRdfJoin.getMetadatas(entries)),
+        }),
+        type: 'bindings',
+      };
+    }
 
     return this.mediatorJoin.mediate({ type: 'inner', entries, context });
   }

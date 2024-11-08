@@ -2,6 +2,7 @@ import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IJoinEntry } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { MetadataValidationState } from '@comunica/utils-metadata';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import { ArrayIterator, UnionIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -26,7 +27,7 @@ describe('ActorQueryOperationJoin', () => {
           BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
         ], { autoStart: false }),
         metadata: () => Promise.resolve({
-          cardinality: 3,
+          cardinality: { type: 'exact', value: 3 },
           variables: [{ variable: DF.variable('a'), canBeUndef: false }],
         }),
         operated: arg,
@@ -37,7 +38,7 @@ describe('ActorQueryOperationJoin', () => {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new UnionIterator(arg.entries.map((entry: IJoinEntry) => entry.output.bindingsStream)),
         metadata: () => Promise.resolve({
-          cardinality: 100,
+          cardinality: { type: 'exact', value: 100 },
           variables: [
             { variable: DF.variable('a'), canBeUndef: false },
             { variable: DF.variable('b'), canBeUndef: false },
@@ -90,7 +91,7 @@ describe('ActorQueryOperationJoin', () => {
       const output = getSafeBindings(await actor.run(op, undefined));
       expect(output.type).toBe('bindings');
       await expect(output.metadata()).resolves.toEqual({
-        cardinality: 100,
+        cardinality: { type: 'exact', value: 100 },
         variables: [
           { variable: DF.variable('a'), canBeUndef: false },
           { variable: DF.variable('b'), canBeUndef: false },
@@ -107,6 +108,30 @@ describe('ActorQueryOperationJoin', () => {
         BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
         BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
       ]);
+    });
+
+    it('should run when one of the join entries is empty', async() => {
+      mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
+        bindingsStream: new ArrayIterator([], { autoStart: false }),
+        metadata: () => Promise.resolve({
+          cardinality: { type: 'exact', value: 0 },
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+        }),
+        operated: arg,
+        type: 'bindings',
+      });
+
+      const op: any = { operation: { type: 'join', input: [{}, {}, {}]}, context: new ActionContext() };
+      const output = getSafeBindings(await actor.run(op, undefined));
+      expect(output.type).toBe('bindings');
+      await expect(output.metadata()).resolves.toEqual({
+        state: expect.any(MetadataValidationState),
+        cardinality: { type: 'exact', value: 0 },
+        variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+        ],
+      });
+      await expect(output.bindingsStream).toEqualBindingsStream([]);
     });
   });
 });

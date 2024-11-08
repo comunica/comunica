@@ -521,6 +521,125 @@ IQueryOperationResultBindings
           },
         )).resolves.toFailTest(`Actor actor can only run if the smallest stream is much smaller than largest stream`);
       });
+
+      it('should reject if smallest is not significantly smaller than the largest for local access', async() => {
+        await expect(actor.getJoinCoefficients(
+          {
+            type: 'inner',
+            entries: [
+              {
+                output: <any>{},
+                operation: FACTORY.createNop(),
+              },
+              {
+                output: <any>{},
+                operation: FACTORY.createNop(),
+              },
+              {
+                output: <any>{},
+                operation: FACTORY.createNop(),
+              },
+            ],
+            context: new ActionContext(),
+          },
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                pageSize: 100,
+                requestTime: 0,
+
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 0,
+
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 5 },
+                pageSize: 100,
+                requestTime: 0,
+
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+            ],
+          },
+        )).resolves.toFailTest(`Actor actor can only run if the smallest stream is much smaller than largest stream`);
+      });
+
+      it('should not reject if smallest is significantly smaller than the largest for local access', async() => {
+        await expect(actor.getJoinCoefficients(
+          {
+            type: 'inner',
+            entries: [
+              {
+                output: <any>{},
+                operation: FACTORY.createNop(),
+              },
+              {
+                output: <any>{},
+                operation: FACTORY.createNop(),
+              },
+              {
+                output: <any>{},
+                operation: FACTORY.createNop(),
+              },
+            ],
+            context: new ActionContext(),
+          },
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                pageSize: 100,
+                requestTime: 0,
+
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 0,
+
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 201 }, // 2 * 100 / 1 > 201
+                pageSize: 100,
+                requestTime: 0,
+
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+            ],
+          },
+        )).resolves.toPassTest({
+          iterations: 32.64,
+          persistedItems: 0,
+          blockingItems: 0,
+          requestTime: 0,
+        });
+      });
     });
 
     describe('createBindStream', () => {
@@ -867,266 +986,6 @@ IQueryOperationResultBindings
           ],
           context,
         )).resolves.toFailTest('Bind join can only join entries with at least one common variable');
-      });
-
-      it('sorts entries without common variables in the back', async() => {
-        await expect(ActorRdfJoin.sortJoinEntries(
-          mediatorJoinEntriesSort,
-          [
-            {
-              output: <any> {},
-              operation: <any> {},
-              metadata: {
-                state: new MetadataValidationState(),
-                cardinality: { type: 'estimate', value: 1 },
-
-                variables: [
-                  { variable: DF.variable('b'), canBeUndef: false },
-                ],
-              },
-            },
-            {
-              output: <any> {},
-              operation: <any> {},
-              metadata: {
-                state: new MetadataValidationState(),
-                cardinality: { type: 'estimate', value: 3 },
-
-                variables: [
-                  { variable: DF.variable('a'), canBeUndef: false },
-                ],
-              },
-            },
-            {
-              output: <any> {},
-              operation: <any> {},
-              metadata: {
-                state: new MetadataValidationState(),
-                cardinality: { type: 'estimate', value: 2 },
-
-                variables: [
-                  { variable: DF.variable('a'), canBeUndef: false },
-                ],
-              },
-            },
-          ],
-          context,
-        )).resolves.toPassTest([
-          {
-            output: <any> {},
-            operation: <any> {},
-            metadata: {
-              state: expect.any(MetadataValidationState),
-              cardinality: { type: 'estimate', value: 2 },
-
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-          },
-          {
-            output: <any> {},
-            operation: <any> {},
-            metadata: {
-              state: expect.any(MetadataValidationState),
-              cardinality: { type: 'estimate', value: 3 },
-
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-          },
-          {
-            output: <any> {},
-            operation: <any> {},
-            metadata: {
-              state: expect.any(MetadataValidationState),
-              cardinality: { type: 'estimate', value: 1 },
-
-              variables: [
-                { variable: DF.variable('b'), canBeUndef: false },
-              ],
-            },
-          },
-        ]);
-      });
-
-      it('sorts several entries without variables in the back', async() => {
-        await expect(ActorRdfJoin.sortJoinEntries(
-          mediatorJoinEntriesSort,
-          [
-            {
-              output: <any> {},
-              operation: <any> {},
-              metadata: {
-                state: new MetadataValidationState(),
-                cardinality: { type: 'estimate', value: 3 },
-
-                variables: [
-                  { variable: DF.variable('a'), canBeUndef: false },
-                ],
-              },
-            },
-            {
-              output: <any> {},
-              operation: <any> {},
-              metadata: {
-                state: new MetadataValidationState(),
-                cardinality: { type: 'estimate', value: 1 },
-
-                variables: [
-                  { variable: DF.variable('b'), canBeUndef: false },
-                ],
-              },
-            },
-            {
-              output: <any> {},
-              operation: <any> {},
-              metadata: {
-                state: new MetadataValidationState(),
-                cardinality: { type: 'estimate', value: 20 },
-
-                variables: [
-                  { variable: DF.variable('a'), canBeUndef: false },
-                ],
-              },
-            },
-            {
-              output: <any> {},
-              operation: <any> {},
-              metadata: {
-                state: new MetadataValidationState(),
-                cardinality: { type: 'estimate', value: 20 },
-
-                variables: [
-                  { variable: DF.variable('c'), canBeUndef: false },
-                ],
-              },
-            },
-            {
-              output: <any> {},
-              operation: <any> {},
-              metadata: {
-                state: new MetadataValidationState(),
-                cardinality: { type: 'estimate', value: 2 },
-
-                variables: [
-                  { variable: DF.variable('a'), canBeUndef: false },
-                ],
-              },
-            },
-            {
-              output: <any> {},
-              operation: <any> {},
-              metadata: {
-                state: new MetadataValidationState(),
-                cardinality: { type: 'estimate', value: 10 },
-
-                variables: [
-                  { variable: DF.variable('d'), canBeUndef: false },
-                ],
-              },
-            },
-            {
-              output: <any> {},
-              operation: <any> {},
-              metadata: {
-                state: new MetadataValidationState(),
-                cardinality: { type: 'estimate', value: 10 },
-
-                variables: [
-                  { variable: DF.variable('a'), canBeUndef: false },
-                ],
-              },
-            },
-          ],
-          context,
-        )).resolves.toPassTest([
-          {
-            output: <any> {},
-            operation: <any> {},
-            metadata: {
-              state: expect.any(MetadataValidationState),
-              cardinality: { type: 'estimate', value: 2 },
-
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-          },
-          {
-            output: <any> {},
-            operation: <any> {},
-            metadata: {
-              state: expect.any(MetadataValidationState),
-              cardinality: { type: 'estimate', value: 3 },
-
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-          },
-          {
-            output: <any> {},
-            operation: <any> {},
-            metadata: {
-              state: expect.any(MetadataValidationState),
-              cardinality: { type: 'estimate', value: 10 },
-
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-          },
-          {
-            output: <any> {},
-            operation: <any> {},
-            metadata: {
-              state: expect.any(MetadataValidationState),
-              cardinality: { type: 'estimate', value: 20 },
-
-              variables: [
-                { variable: DF.variable('a'), canBeUndef: false },
-              ],
-            },
-          },
-          {
-            output: <any> {},
-            operation: <any> {},
-            metadata: {
-              state: expect.any(MetadataValidationState),
-              cardinality: { type: 'estimate', value: 1 },
-
-              variables: [
-                { variable: DF.variable('b'), canBeUndef: false },
-              ],
-            },
-          },
-          {
-            output: <any> {},
-            operation: <any> {},
-            metadata: {
-              state: expect.any(MetadataValidationState),
-              cardinality: { type: 'estimate', value: 10 },
-
-              variables: [
-                { variable: DF.variable('d'), canBeUndef: false },
-              ],
-            },
-          },
-          {
-            output: <any> {},
-            operation: <any> {},
-            metadata: {
-              state: expect.any(MetadataValidationState),
-              cardinality: { type: 'estimate', value: 20 },
-
-              variables: [
-                { variable: DF.variable('c'), canBeUndef: false },
-              ],
-            },
-          },
-        ]);
       });
     });
 
