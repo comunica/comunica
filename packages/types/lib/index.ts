@@ -4,6 +4,7 @@ export * from './IActionContext';
 export * from './IAggregatedStore';
 export * from './ICliArgsHandler';
 export * from './IDataDestination';
+export * from './IDataset';
 export * from './IJoinEntry';
 export * from './IMetadata';
 export * from './IPhysicalQueryPlanLogger';
