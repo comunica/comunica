@@ -52,6 +52,7 @@
     "Response",
     "RequestInfo",
     "RequestInit",
+    "AsyncIterator",
 
     "IStatistic",
     "ILink",
@@ -70,6 +71,7 @@
     "FragmentSelectorShape",
     "ChunkedIterator",
     "IQuerySource",
+    "LogicalJoinType",
 
     "RDF.Stream",
     "Omit",

@@ -14,6 +14,7 @@ export * from './IQueryOperationResult';
 export * from './IQuerySource';
 export * from './statistics/IStatisticBase';
 export * from './statistics/IDiscoverEventData';
+export * from './statistics/IPartialResult';
 export * from './ILink';
 export * from './Logger';
 export * from './ExpressionEvaluator';
