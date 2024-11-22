@@ -896,43 +896,48 @@ SELECT ?obsId {
     });
 
     describe('initialbindings', () => {
-      it('should consider the initialbindings in the bound function', async() => {
-        const bindingsFactory = new BindingsFactory();
-        const initialBindings = bindingsFactory.bindings([
-          [DF.variable('this'), DF.namedNode('http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-005.test#InvalidResource')],
+      let initialBindings: Bindings;
+      let sourcesValue1: string;
+
+      beforeEach(() => {
+        initialBindings = BF.bindings([
+          [ DF.variable('a'), DF.namedNode('http://example.org/test#testBinding') ],
         ]);
-        
+        sourcesValue1 = `
+          @prefix ex: <http://example.org/test#> .
+          
+          ex:testBinding
+            ex:property "testProperty" .
+          `;
+      });
+
+      it('should consider the initialbindings in the bound function', async() => {
         const context: QueryStringContext = {
           sources: [
             {
               type: 'serialized',
-              value: `
-                @prefix ex: <http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-005.test#> .
-                
-                ex:InvalidResource
-                  ex:property "Label" .
-                `,
+              value: sourcesValue1,
               mediaType: 'text/turtle',
             },
           ],
-          initialBindings: initialBindings,
+          initialBindings,
         };
 
         const expectedResult = [
           [
-            [ DF.variable('this'), DF.namedNode('http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-005.test#InvalidResource') ],
-          ]
+            [ DF.variable('a'), DF.namedNode('http://example.org/test#testBinding') ],
+          ],
         ];
 
         const bindings = (await arrayifyStream(await engine.queryBindings(`
-        PREFIX ex: <http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-005.test#>
+        PREFIX ex: <http://example.org/test#>
         
-        SELECT $this WHERE {
+        SELECT $a WHERE {
           {
-            FILTER (bound($this))
+            FILTER (bound($a))
           }
-          $this ex:property "Label" .
-          FILTER (bound($this)) .
+          $a ex:property "testProperty" .
+          FILTER (bound($a)) .
         }
           `, context))).map(binding => [ ...binding ].sort(([ var1, _c1 ], [ var2, _c2 ]) => var1.value.localeCompare(var2.value)));
 
@@ -940,40 +945,30 @@ SELECT ?obsId {
       });
 
       it('should consider the initialbindings in the filter function', async() => {
-        const bindingsFactory = new BindingsFactory();
-        const initialBindings = bindingsFactory.bindings([
-          [DF.variable('this'), DF.namedNode('http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-006.test#InvalidResource')]
-        ]);
-        
         const context: QueryStringContext = {
           sources: [
             {
               type: 'serialized',
-              value: `
-                @prefix ex: <http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-005.test#> .
-                
-                ex:InvalidResource
-                  ex:property "Label" .
-                `,
+              value: sourcesValue1,
               mediaType: 'text/turtle',
             },
           ],
-          initialBindings: initialBindings,
+          initialBindings,
         };
 
         const expectedResult = [
           [
-            [DF.variable('this'), DF.namedNode('http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-006.test#InvalidResource')]
-          ]
+            [ DF.variable('a'), DF.namedNode('http://example.org/test#testBinding') ],
+          ],
         ];
 
         const bindings = (await arrayifyStream(await engine.queryBindings(`
-        PREFIX ex: <http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-006.test#>
+        PREFIX ex: <http://example.org/test#>
       
-        SELECT $this WHERE {
+        SELECT $a WHERE {
           {
             SELECT * WHERE {
-              FILTER ($this = ex:InvalidResource) .
+              FILTER ($a = ex:testBinding) .
             }
           }
         }
@@ -983,40 +978,30 @@ SELECT ?obsId {
       });
 
       it('should consider the initialbindings in the filter function 2', async() => {
-        const bindingsFactory = new BindingsFactory();
-        const initialBindings = bindingsFactory.bindings([
-          [DF.variable('this'), DF.namedNode('http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-006.test#InvalidResource')]
-        ]);
-        
         const context: QueryStringContext = {
           sources: [
             {
               type: 'serialized',
-              value: `
-                @prefix ex: <http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-005.test#> .
-                
-                ex:InvalidResource
-                  ex:property "Label" .
-                `,
+              value: sourcesValue1,
               mediaType: 'text/turtle',
             },
           ],
-          initialBindings: initialBindings,
+          initialBindings,
         };
 
         const expectedResult = [
           [
-            [DF.variable('this'), DF.namedNode('http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-006.test#InvalidResource')]
-          ]
+            [ DF.variable('a'), DF.namedNode('http://example.org/test#testBinding') ],
+          ],
         ];
 
         const bindings = (await arrayifyStream(await engine.queryBindings(`
-        PREFIX ex: <http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-006.test#>
+        PREFIX ex: <http://example.org/test#>
       
-        SELECT $this WHERE {
+        SELECT $a WHERE {
           {
-            SELECT $this WHERE {
-              FILTER ($this = ex:InvalidResource) .
+            SELECT $a WHERE {
+              FILTER ($a = ex:testBinding) .
             }
           }
         }
@@ -1026,205 +1011,57 @@ SELECT ?obsId {
       });
 
       it('should consider initialbindings which are not projected', async() => {
-        const bindingsFactory = new BindingsFactory();
-        const initialBindings = bindingsFactory.bindings([
-          [DF.variable('PATH'), DF.namedNode('http://datashapes.org/sh/tests/sparql/property/sparql-001.test#germanLabel')],
-          [DF.variable('this'), DF.namedNode('http://datashapes.org/sh/tests/sparql/property/sparql-001.test#ValidCountry')],
-      ]);
-        
+        const initialBindings = BF.bindings([
+          [ DF.variable('predicate'), DF.namedNode('http://example.org/test#predicateEx') ],
+          [ DF.variable('subject'), DF.namedNode('http://example.org/test#subjectEx') ],
+        ]);
+
         const context: QueryStringContext = {
           sources: [
             {
               type: 'serialized',
               value: `
-                @prefix ex: <http://datashapes.org/sh/tests/sparql/property/sparql-001.test#> .
+                @prefix ex: <http://example.org/test#> .
                 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-            
-                ex:ValidCountry2 rdf:type ex:Country.
-            
-                ex:ValidCountry
-                    rdf:type ex:Country ;
-                    ex:germanLabel "Spanien"@de ;
+                        
+                ex:subjectEx
+                    rdf:type ex:Type ;
+                    ex:predicateEx "Predicate"@de ;
                 .`,
               mediaType: 'text/turtle',
             },
           ],
-          initialBindings: initialBindings,
+          initialBindings,
         };
 
         const bindings = (await arrayifyStream(await engine.queryBindings(`
-        SELECT $this ?value WHERE {
-          $this $PATH ?value .
+        SELECT $subject ?value WHERE {
+          $subject $predicate ?value .
           FILTER (!isLiteral(?value) || !langMatches(lang(?value), "de"))
         }`, context))).map(binding => [ ...binding ].sort(([ var1, _c1 ], [ var2, _c2 ]) => var1.value.localeCompare(var2.value)));
 
         expect(bindings).toMatchObject([]);
       });
 
-      it('should handle bindings used in BIND (=extend) operator correctly', async() => {
-        const bindingsFactory = new BindingsFactory();
-        const initialBindings = bindingsFactory.bindings([
-          [DF.variable('this'), DF.namedNode('http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-004.test#InvalidResource')]
-        ]);
-        
+      it('should not overwrite initialbindings', async() => {
         const context: QueryStringContext = {
           sources: [
             {
               type: 'serialized',
-              value: `
-              @prefix dash: <http://datashapes.org/dash#> .
-              @prefix ex: <http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-004.test#> .
-              @prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
-              @prefix owl: <http://www.w3.org/2002/07/owl#> .
-              @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-              @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-              @prefix sh: <http://www.w3.org/ns/shacl#> .
-              @prefix sht: <http://www.w3.org/ns/shacl-test#> .
-              @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-              
-              ex:
-              \tsh:declare [
-              \t\tsh:prefix "ex" ;
-              \t\tsh:namespace "http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-004.test#"^^xsd:anyURI ;
-              \t] .
-              
-              ex:TestShape
-                rdf:type sh:NodeShape ;
-                rdfs:label "Test shape" ;
-                sh:sparql ex:TestShape-sparql ;
-                sh:targetNode ex:InvalidResource ;
-              .
-              ex:TestShape-sparql
-                sh:prefixes ex: ;
-                sh:select """
-                \tSELECT $this
-              \tWHERE {
-              \t\tBIND ($this AS ?that) .
-              \t\tFILTER (?that = ex:InvalidResource) .
-              \t}""" ;
-              .
-              ex:ValidResource1
-                rdf:type rdfs:Resource ;
-              .
-              <>
-                rdf:type mf:Manifest ;
-                mf:entries (
-                    <pre-binding-004>
-                  ) ;
-              .
-              <pre-binding-004>
-                rdf:type sht:Validate ;
-                rdfs:label "Test of pre-binding in BIND expressions" ;
-                mf:action [
-                    sht:dataGraph <> ;
-                    sht:shapesGraph <> ;
-                  ] ;
-                mf:result [
-                    rdf:type sh:ValidationReport ;
-                    sh:conforms "false"^^xsd:boolean ;
-                    sh:result [
-                        rdf:type sh:ValidationResult ;
-                        sh:focusNode ex:InvalidResource ;
-                        sh:resultSeverity sh:Violation ;
-                        sh:sourceConstraint ex:TestShape-sparql ;
-                        sh:sourceConstraintComponent sh:SPARQLConstraintComponent ;
-                        sh:sourceShape ex:TestShape ;
-                        sh:value ex:InvalidResource ;
-                      ] ;
-                  ] ;
-                mf:status sht:approved ;
-              .`,
+              value: ``,
               mediaType: 'text/turtle',
             },
           ],
-          initialBindings: initialBindings,
+          initialBindings,
         };
 
-        const expectedResult = [
-          [
-            [ DF.variable('this'), DF.namedNode('http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-004.test#InvalidResource') ], //TODO example.org
-          ]
-        ];
-
-        const bindings = (await arrayifyStream(await engine.queryBindings(`
-          PREFIX ex: <http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-004.test#>
-            
-          SELECT $this
+        // Reject for existing graph
+        await expect(engine.queryBindings(`
+          SELECT $a
           WHERE {
-            BIND ($this AS ?that) .
-            FILTER (?that = ex:InvalidResource) .
-          }
-        `, context))).map(binding => [ ...binding ].sort(([ var1, _c1 ], [ var2, _c2 ]) => var1.value.localeCompare(var2.value)));
-
-        expect(bindings).toMatchObject(expectedResult);
+            BIND (true AS $a) .
+          }`, context)).rejects.toThrow('Illegal binding to variable \'a\' that has already been bound');
       });
-
-      // it('should handle bindings used in BIND (=extend) operator correctly', async() => {
-      //   const bindingsFactory = new BindingsFactory();
-      //   const initialBindings = bindingsFactory.bindings([
-      //     [DF.variable('this'), DF.namedNode('http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-004.test#InvalidResource')]
-      //   ]);
-        
-      //   const context: QueryStringContext = {
-      //     sources: [
-      //       {
-      //         type: 'serialized',
-      //         value: `
-      //         @prefix ex: <http://datashapes.org/sh/tests/sparql/pre-binding/unsupported-sparql-005.test#> .
-      //         @prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
-      //         @prefix owl: <http://www.w3.org/2002/07/owl#> .
-      //         @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-      //         @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-      //         @prefix sh: <http://www.w3.org/ns/shacl#> .
-      //         @prefix sht: <http://www.w3.org/ns/shacl-test#> .
-      //         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-              
-      //         <>
-      //         \trdf:type mf:Manifest ;
-      //         \tmf:entries ( <unsupported-sparql-005> ) .
-                  
-      //         <unsupported-sparql-005>
-      //         \trdf:type sht:Validate ;
-      //         \trdfs:label "Test of unsupported AS ?prebound" ;
-      //         \tmf:action [
-      //         \t\tsht:dataGraph <> ;
-      //         \t\tsht:shapesGraph <> ;
-      //         \t] ;
-      //         \tmf:result sht:Failure ;
-      //         \tmf:status sht:approved .
-              
-      //         ex:TestShape
-      //         \ta sh:NodeShape ;
-      //         \tsh:targetNode ex:InvalidResource ;
-      //         \tsh:sparql [
-      //         \t\tsh:select """
-      //         \t\t\tSELECT $this
-      //         \t\t\tWHERE {
-      //         \t\t\t\tBIND (true AS $this) .
-      //         \t\t\t}""" ;
-      //         \t] .`,
-      //         mediaType: 'text/turtle',
-      //       },
-      //     ],
-      //     initialBindings: initialBindings,
-      //   };
-
-      //   const expectedResult = [
-      //     [
-      //       [ DF.variable('this'), DF.namedNode('http://datashapes.org/sh/tests/sparql/pre-binding/pre-binding-004.test#InvalidResource') ], //TODO example.org
-      //     ]
-      //   ];
-
-      //   const bindings = (await arrayifyStream(await engine.queryBindings(`
-      //     SELECT $this
-      //     WHERE {
-      //       BIND (true AS $this) .
-      //     }`,
-      //     context))).map(binding => [ ...binding ].sort(([ var1, _c1 ], [ var2, _c2 ]) => var1.value.localeCompare(var2.value)));
-
-      //   expect(bindings).toMatchObject(expectedResult);
-      // });
-
     });
   });
 
