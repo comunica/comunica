@@ -110,6 +110,7 @@ export function materializeOperation(
       let recursionResult: Algebra.Operation = materializeOperation(
         op.input,
         bindings,
+        algebraFactory,
         bindingsFactory,
         options,
       );
@@ -132,6 +133,7 @@ export function materializeOperation(
           <Algebra.Expression> materializeOperation(
             op.expression,
             bindings,
+            algebraFactory,
             bindingsFactory,
             options
           )),
