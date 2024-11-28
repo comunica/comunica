@@ -251,7 +251,11 @@ TS
             value: acc.value * (optional ? Math.max(1, cardinalityThis.value) : cardinalityThis.value),
           };
         }, { type: 'exact', value: 1 });
-      cardinalityJoined.value *= (await this.mediatorJoinSelectivity.mediate({ entries, context })).selectivity;
+      if (cardinalityJoined.value > 1e-9) {
+        cardinalityJoined.value *= (await this.mediatorJoinSelectivity.mediate({ entries, context })).selectivity;
+      } else {
+        cardinalityJoined.value = 1e-9;
+      }
     }
 
     return {

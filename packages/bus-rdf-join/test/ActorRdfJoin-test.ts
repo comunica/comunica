@@ -855,6 +855,25 @@ IActorRdfJoinSelectivityOutput
       });
     });
 
+    it('should not decrease the cardinality too much', async() => {
+      await expect(instance.constructResultMetadata([], [
+        {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 1e-9 },
+          variables: [],
+        },
+        {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 1e-9 },
+          variables: [],
+        },
+      ], action.context, {})).resolves.toEqual({
+        state: expect.any(MetadataValidationState),
+        cardinality: { type: 'estimate', value: 1e-9 },
+        variables: [],
+      });
+    });
+
     it('should join variables', async() => {
       await expect(instance.constructResultMetadata([], [
         {
