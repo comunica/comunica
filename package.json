@@ -35,7 +35,7 @@
     "test:changed": "lerna run test --since HEAD",
     "test:ci": "yarn run test:node --ci --maxWorkers=4",
     "test:integration": "lerna run integration --concurrency 1",
-    "test:node": "jest --selectProjects combined",
+    "test:node": "jest",
     "test:spec": "lerna run spec --concurrency 1",
     "version": "manual-git-changelog onversion"
   },
