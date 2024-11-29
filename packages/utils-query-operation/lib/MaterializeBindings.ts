@@ -4,9 +4,8 @@ import type * as RDF from '@rdfjs/types';
 import type { Variable } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import { mapTermsNested, someTermsNested } from 'rdf-terms';
-import { Algebra } from 'sparqlalgebrajs';
 import type { Factory } from 'sparqlalgebrajs';
-import { Util } from 'sparqlalgebrajs';
+import { Algebra, Util } from 'sparqlalgebrajs';
 
 /**
  * Materialize a term with the given binding.
@@ -114,11 +113,11 @@ export function materializeOperation(
         bindingsFactory,
         options,
       );
-      
+
       // Join op.input with a values clause containing the variables that are in InitialBindings and
       // are used in the current extend operation.
-      let inScopeVariables = [op.variable];
-      if (op.expression.expressionType == Algebra.expressionTypes.TERM && op.expression.term.termType == 'Variable') {
+      const inScopeVariables = [ op.variable ];
+      if (op.expression.expressionType === Algebra.expressionTypes.TERM && op.expression.term.termType === 'Variable') {
         inScopeVariables.push(op.expression.term);
       }
       const values: Algebra.Operation[] =
@@ -128,15 +127,8 @@ export function materializeOperation(
       }
       return {
         recurse: false,
-        result: factory.createExtend(recursionResult,
-          op.variable,
-          <Algebra.Expression> materializeOperation(
-            op.expression,
-            bindings,
-            algebraFactory,
-            bindingsFactory,
-            options
-          )),
+        result: factory.createExtend(recursionResult, op.variable, <Algebra.Expression>
+          materializeOperation(op.expression, bindings, algebraFactory, bindingsFactory, options)),
       };
     },
     group(op: Algebra.Group, factory: Factory) {

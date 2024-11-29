@@ -301,8 +301,7 @@ describe('materializeOperation', () => {
         ]),
         termVariableB,
         AF.createTermExpression(valueA),
-      )
-    );
+      ));
   });
 
   it('should error on an extend operation with ' +
