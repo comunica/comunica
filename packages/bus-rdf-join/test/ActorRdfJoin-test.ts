@@ -855,23 +855,31 @@ IActorRdfJoinSelectivityOutput
       });
     });
 
-    it('should not decrease the cardinality too much', async() => {
-      await expect(instance.constructResultMetadata([], [
+    it('should only set the cardinality to 0 if an entry\'s cardinality is 0', async() => {
+      expect((await instance.constructResultMetadata([], [
         {
           state: new MetadataValidationState(),
-          cardinality: { type: 'estimate', value: 1e-9 },
+          cardinality: { type: 'estimate', value: Number.MIN_VALUE },
           variables: [],
         },
         {
           state: new MetadataValidationState(),
-          cardinality: { type: 'estimate', value: 1e-9 },
+          cardinality: { type: 'estimate', value: Number.MIN_VALUE },
           variables: [],
         },
-      ], action.context, {})).resolves.toEqual({
-        state: expect.any(MetadataValidationState),
-        cardinality: { type: 'estimate', value: 1e-9 },
-        variables: [],
-      });
+      ], action.context, {})).cardinality.value).not.toBe(0);
+      expect((await instance.constructResultMetadata([], [
+        {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: Number.MIN_VALUE },
+          variables: [],
+        },
+        {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 0 },
+          variables: [],
+        },
+      ], action.context, {})).cardinality.value).toBe(0);
     });
 
     it('should join variables', async() => {
