@@ -923,13 +923,13 @@ SELECT ?obsId {
           initialBindings,
         };
 
-        const expectedResult = [
-          [
+        const expectedResult: Bindings[] = [
+          BF.bindings([
             [ DF.variable('a'), DF.namedNode('http://example.org/test#testBinding') ],
-          ],
+          ]),
         ];
 
-        const bindings = (await arrayifyStream(await engine.queryBindings(`
+        const bindings = (await engine.queryBindings(`
         PREFIX ex: <http://example.org/test#>
         
         SELECT $a WHERE {
@@ -939,9 +939,9 @@ SELECT ?obsId {
           $a ex:property "testProperty" .
           FILTER (bound($a)) .
         }
-          `, context))).map(binding => [ ...binding ].sort(([ var1, _c1 ], [ var2, _c2 ]) => var1.value.localeCompare(var2.value)));
+          `, context));
 
-        expect(bindings).toMatchObject(expectedResult);
+        await expect(bindings).toEqualBindingsStream(expectedResult);
       });
 
       it('should consider the initialbindings in the filter function', async() => {
@@ -956,13 +956,13 @@ SELECT ?obsId {
           initialBindings,
         };
 
-        const expectedResult = [
-          [
+        const expectedResult: Bindings[] = [
+          BF.bindings([
             [ DF.variable('a'), DF.namedNode('http://example.org/test#testBinding') ],
-          ],
+          ]),
         ];
 
-        const bindings = (await arrayifyStream(await engine.queryBindings(`
+        const bindings = (await engine.queryBindings(`
         PREFIX ex: <http://example.org/test#>
       
         SELECT $a WHERE {
@@ -972,9 +972,9 @@ SELECT ?obsId {
             }
           }
         }
-        `, context))).map(binding => [ ...binding ].sort(([ var1, _c1 ], [ var2, _c2 ]) => var1.value.localeCompare(var2.value)));
+        `, context));
 
-        expect(bindings).toMatchObject(expectedResult);
+        await expect(bindings).toEqualBindingsStream(expectedResult);
       });
 
       it('should consider the initialbindings in the filter function 2', async() => {
@@ -989,13 +989,13 @@ SELECT ?obsId {
           initialBindings,
         };
 
-        const expectedResult = [
-          [
+        const expectedResult: Bindings[] = [
+          BF.bindings([
             [ DF.variable('a'), DF.namedNode('http://example.org/test#testBinding') ],
-          ],
+          ]),
         ];
 
-        const bindings = (await arrayifyStream(await engine.queryBindings(`
+        const bindings = (await engine.queryBindings(`
         PREFIX ex: <http://example.org/test#>
       
         SELECT $a WHERE {
@@ -1005,9 +1005,9 @@ SELECT ?obsId {
             }
           }
         }
-        `, context))).map(binding => [ ...binding ].sort(([ var1, _c1 ], [ var2, _c2 ]) => var1.value.localeCompare(var2.value)));
+        `, context));
 
-        expect(bindings).toMatchObject(expectedResult);
+        await expect(bindings).toEqualBindingsStream(expectedResult);
       });
 
       it('should consider initialbindings which are not projected', async() => {
@@ -1034,13 +1034,13 @@ SELECT ?obsId {
           initialBindings,
         };
 
-        const bindings = (await arrayifyStream(await engine.queryBindings(`
+        const bindings = (await engine.queryBindings(`
         SELECT $subject ?value WHERE {
           $subject $predicate ?value .
           FILTER (!isLiteral(?value) || !langMatches(lang(?value), "de"))
-        }`, context))).map(binding => [ ...binding ].sort(([ var1, _c1 ], [ var2, _c2 ]) => var1.value.localeCompare(var2.value)));
+        }`, context));
 
-        expect(bindings).toMatchObject([]);
+        await expect(bindings).toEqualBindingsStream([]);
       });
 
       it('should not overwrite initialbindings', async() => {
