@@ -895,7 +895,7 @@ SELECT ?obsId {
       });
     });
 
-    describe('initialbindings', () => {
+    describe('initialBindings', () => {
       let initialBindings: Bindings;
       let sourcesValue1: string;
 
