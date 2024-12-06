@@ -1043,6 +1043,40 @@ SELECT ?obsId {
         await expect(bindings).toEqualBindingsStream([]);
       });
 
+      it('should consider initialbindings in the extend operation', async() => {
+        const initialBindings = BF.bindings([
+          [ DF.variable('initialBindingsVariable'), DF.namedNode('http://example.org/test#InitialBindingsValue') ],
+        ]);
+
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: ``,
+              mediaType: 'text/turtle',
+            },
+          ],
+          initialBindings,
+        };
+
+        const bindings = (await engine.queryBindings(`
+        PREFIX ex: <http://example.org/test#>
+        
+        SELECT $initialBindingsVariable
+        \tWHERE {
+        \t\tBIND ($initialBindingsVariable AS ?b) .
+        \t\tFILTER (?b = ex:InitialBindingsValue) .
+        \t}`, context));
+
+        const expectedResult: Bindings[] = [
+          BF.bindings([
+            [ DF.variable('initialBindingsVariable'), DF.namedNode('http://example.org/test#InitialBindingsValue') ],
+          ]),
+        ];
+
+        await expect(bindings).toEqualBindingsStream(expectedResult);
+      });
+
       it('should not overwrite initialbindings', async() => {
         const context: QueryStringContext = {
           sources: [
