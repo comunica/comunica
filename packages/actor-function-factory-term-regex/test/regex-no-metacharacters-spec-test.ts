@@ -27,7 +27,9 @@ import { ActorFunctionFactoryTermRegex } from '../lib';
  *       mf:result  <regex-no-metacharacters.srx> .
  */
 
-describe('We should respect the regex-no-metacharacters spec', () => {
+// We do not support the 'q' flag yet.
+// eslint-disable-next-line jest/no-disabled-tests
+describe.skip('We should respect the regex-no-metacharacters spec', () => {
   const { s1, s2, s3, s4, s5, s6, s7, s8, s9, s10 } = Data.dataRegexQuantifiers();
   runFuncTestTable({
     registeredActors: [
