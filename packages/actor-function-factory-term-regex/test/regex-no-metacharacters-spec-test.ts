@@ -13,7 +13,7 @@ import { ActorFunctionFactoryTermRegex } from '../lib';
  * SELECT ?val
  * WHERE {
  *    ex:foo rdf:value ?val .
- *    FILTER regex(?val, "a?+*.{}()c", "q")
+ *    FILTER regex(?val, "a?+*.{}()[]c", "q")
  * }
  */
 
@@ -38,16 +38,16 @@ describe('We should respect the regex-no-metacharacters spec', () => {
     operation: 'regex',
     aliases: bool,
     testTable: `
-      '${s1}' '"a?+*.{}()c"' '"q"' = false
-      '${s2}' '"a?+*.{}()c"' '"q"' = false
-      '${s3}' '"a?+*.{}()c"' '"q"' = false
-      '${s4}' '"a?+*.{}()c"' '"q"' = false
-      '${s5}' '"a?+*.{}()c"' '"q"' = false
-      '${s6}' '"a?+*.{}()c"' '"q"' = false
-      '${s7}' '"a?+*.{}()c"' '"q"' = false
-      '${s8}' '"a?+*.{}()c"' '"q"' = false
-      '${s9}' '"a?+*.{}()c"' '"q"' = true
-      '${s10}' '"a?+*.{}()c"' '"q"' = false
+      '${s1}' '"a?+*.{}()[]c"' '"q"' = false
+      '${s2}' '"a?+*.{}()[]c"' '"q"' = false
+      '${s3}' '"a?+*.{}()[]c"' '"q"' = false
+      '${s4}' '"a?+*.{}()[]c"' '"q"' = false
+      '${s5}' '"a?+*.{}()[]c"' '"q"' = false
+      '${s6}' '"a?+*.{}()[]c"' '"q"' = false
+      '${s7}' '"a?+*.{}()[]c"' '"q"' = false
+      '${s8}' '"a?+*.{}()[]c"' '"q"' = false
+      '${s9}' '"a?+*.{}()[]c"' '"q"' = true
+      '${s10}' '"a?+*.{}()[]c"' '"q"' = false
     `,
   });
 });
@@ -63,7 +63,7 @@ describe('We should respect the regex-no-metacharacters spec', () => {
  *    <results>
  *        <result>
  *            <binding name="val">
- *                <literal>a?+*.{}()c</literal>
+ *                <literal>a?+*.{}()[]c</literal>
  *            </binding>
  *        </result>
  *    </results>

@@ -169,7 +169,7 @@ export function dataBuiltin3() {
 // @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 // @prefix ex: <http://example.com/#> .
 //
-// ex:foo rdf:value "ac" , "abc" , "abbc" , "abbbc" , "a\nc", "a\nb\nc" , "a.c" , "ABC" , "a?+*.{}()c" , "b" .
+// ex:foo rdf:value "ac" , "abc" , "abbc" , "abbbc" , "a\nc", "a\nb\nc" , "a.c" , "ABC" , "a?+*.{}()[]c" , "b" .
 
 // https://github.com/w3c/rdf-tests/sparql/sparql10/regex/regex-data-quantifiers.ttl
 
@@ -183,7 +183,7 @@ export function dataRegexQuantifiers() {
     s6: '"a\\nb\\nc"',
     s7: '"a.c"',
     s8: '"ABC"',
-    s9: '"a?+*.{}()c"',
+    s9: '"a?+*.{}()[]c"',
     s10: '"b"',
   };
 }

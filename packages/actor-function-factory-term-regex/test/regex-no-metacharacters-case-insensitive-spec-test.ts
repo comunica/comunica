@@ -13,7 +13,7 @@ import { ActorFunctionFactoryTermRegex } from '../lib';
  * SELECT ?val
  * WHERE {
  *    ex:foo rdf:value ?val .
- *    FILTER regex(?val, "a?+*.{}()C", "iq")
+ *    FILTER regex(?val, "a?+*.{}()[]C", "iq")
  * }
  */
 
@@ -38,24 +38,22 @@ describe('We should respect the regex-no-metacharacters-case-insensitive spec', 
     operation: 'regex',
     aliases: bool,
     testTable: `
-      '${s1}' '"a?+*.{}()C"' '"iq"' = false
-      '${s2}' '"a?+*.{}()C"' '"iq"' = false
-      '${s3}' '"a?+*.{}()C"' '"iq"' = false
-      '${s4}' '"a?+*.{}()C"' '"iq"' = false
-      '${s5}' '"a?+*.{}()C"' '"iq"' = false
-      '${s6}' '"a?+*.{}()C"' '"iq"' = false
-      '${s7}' '"a?+*.{}()C"' '"iq"' = false
-      '${s8}' '"a?+*.{}()C"' '"iq"' = false
-      '${s9}' '"a?+*.{}()C"' '"iq"' = false
-      '${s10}' '"a?+*.{}()C"' '"iq"' = false
+      '${s1}' '"a?+*.{}()[]C"' '"iq"' = false
+      '${s2}' '"a?+*.{}()[]C"' '"iq"' = false
+      '${s3}' '"a?+*.{}()[]C"' '"iq"' = false
+      '${s4}' '"a?+*.{}()[]C"' '"iq"' = false
+      '${s5}' '"a?+*.{}()[]C"' '"iq"' = false
+      '${s6}' '"a?+*.{}()[]C"' '"iq"' = false
+      '${s7}' '"a?+*.{}()[]C"' '"iq"' = false
+      '${s8}' '"a?+*.{}()[]C"' '"iq"' = false
+      '${s9}' '"a?+*.{}()[]C"' '"iq"' = true
+      '${s10}' '"a?+*.{}()[]C"' '"iq"' = false
     `,
   });
 });
 
-/// TODO: missing result-set??
-
 /**
- * RESULTS: regex-no-metacharacters-case-insensitive.srx
+ * RESULTS: regex-no-metacharacters.srx
  *
  * <?xml version="1.0"?>
  * <sparql>
@@ -65,13 +63,7 @@ describe('We should respect the regex-no-metacharacters-case-insensitive spec', 
  *    <results>
  *        <result>
  *            <binding name="val">
- *                <literal>a
- * c</literal>
- *            </binding>
- *        </result>
- *        <result>
- *            <binding name="val">
- *                <literal>a.c</literal>
+ *                <literal>a?+*.{}()[]c</literal>
  *            </binding>
  *        </result>
  *    </results>
