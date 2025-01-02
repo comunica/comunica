@@ -35,7 +35,7 @@
     "test:changed": "lerna run test --since HEAD",
     "test:ci": "yarn run test:node --ci --maxWorkers=4",
     "test:integration": "lerna run integration --concurrency 1",
-    "test:node": "jest --selectProjects combined",
+    "test:node": "jest",
     "test:spec": "lerna run spec --concurrency 1",
     "version": "manual-git-changelog onversion"
   },
@@ -89,10 +89,10 @@
     "ts-jest": "^29.0.5",
     "ts-loader": "^9.0.0",
     "ts-node": "^10.0.0",
-    "typedoc": "^0.26.0",
+    "typedoc": "^0.27.0",
     "typescript": "^5.3.3",
     "webpack": "^5.0.0",
-    "webpack-cli": "^5.0.0"
+    "webpack-cli": "^6.0.0"
   },
   "resolutions": {
     "@rdfjs/types": "1.1.2"
