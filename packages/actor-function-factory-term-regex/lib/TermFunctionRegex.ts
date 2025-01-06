@@ -33,14 +33,33 @@ export class TermFunctionRegex extends TermFunctionBase {
     //   m: multi-line mode: same as the 'm' flag in JavaScript
     //   s: dot-all mode: matches 's' flag in JavaScript very well.
     //   x: whitespace characters (#x9, #xA, #xD and #x20)
-    //      in the regular expression are removed prior to matching with one exception
+    //      in the regular expression are removed prior to matching with one exception:
+    //        whitespace characters within character class expressions.
     //   q: regex-no-metacharacters:
     //      all characters in the regular expression are treated as representing themselves, not as metacharacters
     //      If it is used together with the m, s, or x flag, that flag has no effect.
     flags = TermFunctionRegex.cleanFlags(flags);
 
-    if (flags?.includes('x')) {
+    if (flags?.includes('x') && pattern.length > 0) {
       // Remove all spaces in the pattern, excluding those in character classes
+      let prev = pattern[0];
+      while ([ '\u0009', '\u000A', '\u000D', '\u0020' ].includes(prev)) {
+        pattern = pattern.slice(1);
+        prev = pattern[0];
+      }
+      let inClass = prev === '[';
+      for (let i = 1; i < pattern.length; i++) {
+        const c = pattern[i];
+        if ([ '\u0009', '\u000A', '\u000D', '\u0020' ].includes(c) && !inClass) {
+          pattern = pattern.slice(0, i) + pattern.slice(i + 1);
+          i--;
+        } else if (c === '[' && prev !== '\\') {
+          inClass = true;
+        } else if (c === ']' && prev !== '\\') {
+          inClass = false;
+        }
+        prev = c;
+      }
     }
     if (flags?.includes('q')) {
       // Escape all metacharacters in the pattern
@@ -56,7 +75,7 @@ export class TermFunctionRegex extends TermFunctionBase {
 
   private static cleanFlags(flags: string): string {
     // Check flag validity
-    if (!/[imsxq]*/u.test(flags)) {
+    if (!/^[imsxq]*$/u.test(flags)) {
       throw new Error('Invalid flags');
     }
     const duplicateFlag = [ ...flags ]

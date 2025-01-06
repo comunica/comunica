@@ -23,6 +23,14 @@ describe('evaluation of \'regex\' like', () => {
       "a\\na" ".+" "s" = true
       "a\\nb\\nc" "^b$" = false
       "a\\nb\\nc" "^b$" "m" = true
+      '"helloworld"' '"hello world"' "x" = true
+      '"helloworld"' '"hello[ ]world"' "x" = false
+      '"hello world"' '"hello\\\\ sworld"' "x" = true
+      '"hello world"' '"hello world"' "x" = false
       `,
+    errorTable: `
+      '"Invalid flags'" '"a"' '"a"' = 'Invalid flags'
+      '"Duplicate flag"' '"a"' '"ii"' = 'Duplicate flag'
+    `,
   });
 });
