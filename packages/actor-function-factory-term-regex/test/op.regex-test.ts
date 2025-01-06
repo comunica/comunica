@@ -27,6 +27,7 @@ describe('evaluation of \'regex\' like', () => {
       '"helloworld"' '"hello[ ]world"' "x" = false
       '"hello world"' '"hello\\\\ sworld"' "x" = true
       '"hello world"' '"hello world"' "x" = false
+      '""' '""' "x" = true
       `,
     errorTable: `
       '"Invalid flags'" '"a"' '"a"' = 'Invalid flags'
