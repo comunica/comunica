@@ -57,7 +57,7 @@ export class TermFunctionRegex extends TermFunctionBase {
     return reg.test(text);
   }
 
-  private static cleanFlags(flags: string): string {
+  public static cleanFlags(flags: string): string {
     // Check flag validity
     if (!/^[imsxq]*$/u.test(flags)) {
       throw new Error('Invalid flags');
@@ -77,7 +77,7 @@ export class TermFunctionRegex extends TermFunctionBase {
     return `${flags}u`;
   }
 
-  private static flagX(pattern: string): string {
+  public static flagX(pattern: string): string {
     if (!pattern) {
       return pattern;
     }
@@ -103,7 +103,7 @@ export class TermFunctionRegex extends TermFunctionBase {
     return pattern;
   }
 
-  private static flagQ(pattern: string): string {
+  public static flagQ(pattern: string): string {
     // Escape all metacharacters in the pattern
     return pattern
       .replaceAll(/([?+*.{}()[\]\\|])/gu, '\\$1')
