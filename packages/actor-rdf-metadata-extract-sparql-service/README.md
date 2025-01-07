@@ -22,18 +22,22 @@ This actor adds the following entries to the metadata object.
 
 * `sparqlService`: Value of `http://www.w3.org/ns/sparql-service-description#endpoint`.
 * `defaultGraph`: Value of `http://www.w3.org/ns/sparql-service-description#defaultGraph`.
+* `defaultDataset`: Value of `http://www.w3.org/ns/sparql-service-description#defaultDataset`.
+* `unionDefaultGraph`: Boolean flag set when the service declares `http://www.w3.org/ns/sparql-service-description#UnionDefaultGraph` feature.
+* `basicFederatedQuery`: Boolean flag set when the service declares `http://www.w3.org/ns/sparql-service-description#BasicFederatedQuery` feature.
+* `inputFormats`: List of `http://www.w3.org/ns/sparql-service-description#inputFormat` when available.
+* `resultFormats`: List of `http://www.w3.org/ns/sparql-service-description#resultFormat` when available.
+* `supportedLanguages`: List of `http://www.w3.org/ns/sparql-service-description#supportedLanguage` when available.
 
 ## Configure
 
 After installing, this package can be added to your engine's configuration as follows:
-```text
+```json
 {
   "@context": [
-    ...
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-sparql-service/^4.0.0/components/context.jsonld"
   ],
   "actors": [
-    ...
     {
       "@id": "urn:comunica:default:rdf-metadata-extract/actors#sparql-service",
       "@type": "ActorRdfMetadataExtractSparqlService"
