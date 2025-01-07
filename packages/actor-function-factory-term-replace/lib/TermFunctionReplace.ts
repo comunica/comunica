@@ -1,3 +1,4 @@
+import { TermFunctionRegex } from '@comunica/actor-function-factory-term-regex';
 import { TermFunctionBase } from '@comunica/bus-function-factory';
 import type {
   StringLiteral,
@@ -55,14 +56,18 @@ export class TermFunctionReplace extends TermFunctionBase {
     });
   }
 
-  // TODO: Fix flags
   // https://www.w3.org/TR/xpath-functions/#func-replace
-  private static replace(arg: string, pattern: string, replacement: string, flags?: string): string {
-    let reg = new RegExp(pattern, flags);
-    if (!reg.global) {
-      const flags_ = flags ?? '';
-      reg = new RegExp(pattern, `${flags_}g`);
+  private static replace(arg: string, pattern: string, replacement: string, flags = ''): string {
+    flags = TermFunctionRegex.cleanFlags(flags);
+    if (flags.includes('x')) {
+      pattern = TermFunctionRegex.flagX(pattern);
     }
-    return arg.replace(reg, replacement);
+    if (flags.includes('q')) {
+      pattern = TermFunctionRegex.flagQ(pattern);
+    } else {
+      replacement = replacement.replaceAll('$0', () => '$&');
+    }
+    flags = `${flags.replaceAll(/[qx]/gu, '')}g`;
+    return arg.replaceAll(new RegExp(pattern, flags), replacement);
   }
 }

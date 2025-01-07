@@ -5,6 +5,11 @@
 A [function factory](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory) actor
 that constructs a [term function](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory/lib/ActorFunctionFactory.ts)
 capable of evaluating the [Regex](https://www.w3.org/TR/sparql11-query/#func-regex) function.
+The regex evaluation uses the JavaScript regex engine in 'unicode-mode'
+thereby eliminating [Annex B](https://262.ecma-international.org/6.0/#sec-regular-expressions-patterns) behavior.
+The `x` and `q` flag not present in the JS engine are implemented by preprocessing of the pattern.
+As a result of using the JS regex engine, the bundle size of this package is small, but some non-spec compliant edge cases are present.
+Examples are the skipped tests in [op.regex-test.ts](https://github.com/comunica/comunica/blob/master/packages/actor-function-factory-term-regex/test/op.regex-test.ts).
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
