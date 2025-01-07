@@ -37,8 +37,8 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-function-factory": "^4.0.2",
     "@comunica/actor-function-factory-term-regex": "^4.0.2",
+    "@comunica/bus-function-factory": "^4.0.2",
     "@comunica/utils-expression-evaluator": "^4.0.2"
   }
 }

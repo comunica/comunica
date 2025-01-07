@@ -67,6 +67,7 @@ export class TermFunctionReplace extends TermFunctionBase {
     } else {
       replacement = replacement.replaceAll('$0', () => '$&');
     }
-    return arg.replaceAll(new RegExp(pattern, `${flags.replaceAll(/[qx]/gu, '')}g`), replacement);
+    flags = `${flags.replaceAll(/[qx]/gu, '')}g`;
+    return arg.replaceAll(new RegExp(pattern, flags), replacement);
   }
 }
