@@ -64,6 +64,12 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
         .toBe('abc');
     });
 
+    it('should convert literals with a language and direction', () => {
+      expect(ActorQueryResultSerializeSparqlCsv.bindingToCsvBindings(DF
+        .literal('abc', { language: 'en-us', direction: 'rtl' })))
+        .toBe('abc');
+    });
+
     it('should convert literals with a datatype', () => {
       expect(ActorQueryResultSerializeSparqlCsv
         .bindingToCsvBindings(DF.literal('abc', DF.namedNode('http://ex'))))
@@ -95,31 +101,31 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
         .toBe('"a""b,\n\rc"');
     });
 
-    it('should convert quoted triples', () => {
+    it('should convert triple terms', () => {
       expect(ActorQueryResultSerializeSparqlCsv.bindingToCsvBindings(DF.quad(
         DF.namedNode('ex:s'),
         DF.namedNode('ex:p'),
         DF.namedNode('ex:o'),
       )))
-        .toBe('<< <ex:s> <ex:p> <ex:o> >>');
+        .toBe('<<( <ex:s> <ex:p> <ex:o> )>>');
     });
 
-    it('should convert quoted triples with a character that needs escaping', () => {
+    it('should convert triple terms with a character that needs escaping', () => {
       expect(ActorQueryResultSerializeSparqlCsv.bindingToCsvBindings(DF.quad(
         DF.namedNode('ex:s'),
         DF.namedNode('ex:p,'),
         DF.namedNode('ex:o'),
       )))
-        .toBe('"<< <ex:s> ""<ex:p,>"" <ex:o> >>"');
+        .toBe('"<<( <ex:s> ""<ex:p,>"" <ex:o> )>>"');
     });
 
-    it('should convert quoted triples with literals', () => {
+    it('should convert triple terms with literals', () => {
       expect(ActorQueryResultSerializeSparqlCsv.bindingToCsvBindings(DF.quad(
         DF.namedNode('ex:s'),
         DF.namedNode('ex:p'),
         DF.literal('abc'),
       )))
-        .toBe('"<< <ex:s> <ex:p> ""abc"" >>"');
+        .toBe('"<<( <ex:s> <ex:p> ""abc"" )>>"');
     });
   });
 
@@ -323,7 +329,7 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
       ))).handle.data)).rejects.toBeTruthy();
     });
 
-    it('should run on a bindings stream with quoted triples', async() => {
+    it('should run on a bindings stream with triple terms', async() => {
       await expect(stringifyStream((<any> (await actor.run(
         {
           context,
@@ -332,8 +338,8 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
         },
       ))).handle.data)).resolves.toBe(
         `k1,k2\r
-<< <s1> <p1> <o1> >>,\r
-,<< <s2> <p2> <o2> >>\r
+<<( <s1> <p1> <o1> )>>,\r
+,<<( <s2> <p2> <o2> )>>\r
 `,
       );
     });

@@ -67,6 +67,12 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
         .toEqual({ value: 'abc', type: 'literal', 'xml:lang': 'en-us' });
     });
 
+    it('should convert literals with a language and directon', () => {
+      expect(ActorQueryResultSerializeSparqlJson.bindingToJsonBindings(DF
+        .literal('abc', { language: 'en-us', direction: 'rtl' })))
+        .toEqual({ value: 'abc', type: 'literal', 'xml:lang': 'en-us', 'its:dir': 'rtl' });
+    });
+
     it('should convert literals with a datatype', () => {
       expect(ActorQueryResultSerializeSparqlJson
         .bindingToJsonBindings(DF.literal('abc', DF.namedNode('http://ex'))))

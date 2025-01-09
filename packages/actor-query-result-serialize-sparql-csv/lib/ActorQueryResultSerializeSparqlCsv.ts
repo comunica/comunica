@@ -52,7 +52,7 @@ export class ActorQueryResultSerializeSparqlCsv extends ActorQueryResultSerializ
         // If object is a literal, it must be put in quotes, and internal quotes must be escaped
         object = `"${object.replaceAll('"', '""')}"`;
       }
-      stringValue = `<< ${ActorQueryResultSerializeSparqlCsv.bindingToCsvBindings(value.subject)} ${ActorQueryResultSerializeSparqlCsv.bindingToCsvBindings(value.predicate)} ${object} >>`;
+      stringValue = `<<( ${ActorQueryResultSerializeSparqlCsv.bindingToCsvBindings(value.subject)} ${ActorQueryResultSerializeSparqlCsv.bindingToCsvBindings(value.predicate)} ${object} )>>`;
     } else {
       stringValue = `<${stringValue}>`;
     }

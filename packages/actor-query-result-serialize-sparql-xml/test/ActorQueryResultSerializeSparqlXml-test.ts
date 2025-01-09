@@ -89,6 +89,16 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
         });
     });
 
+    it('should convert literals with a language and direction', () => {
+      expect(ActorQueryResultSerializeSparqlXml
+        .bindingToXmlBindings(DF.literal('abc', { language: 'en-us', direction: 'rtl' }), DF.variable('k')))
+        .toEqual({
+          name: 'binding',
+          attributes: { name: 'k' },
+          children: [{ name: 'literal', attributes: { 'xml:lang': 'en-us', 'its:dir': 'rtl' }, children: 'abc' }],
+        });
+    });
+
     it('should convert literals with a datatype', () => {
       expect(ActorQueryResultSerializeSparqlXml
         .bindingToXmlBindings(DF.literal('abc', DF.namedNode('http://ex')), DF.variable('k')))
@@ -259,7 +269,7 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
         })))
           .handle.data)).resolves.toBe(
           `<?xml version="1.0" encoding="UTF-8"?>
-<sparql xmlns="http://www.w3.org/2005/sparql-results#">
+<sparql xmlns="http://www.w3.org/2005/sparql-results#" xmlns:its="http://www.w3.org/2005/11/its" its:version="2.0">
   <head>
     <variable name="k1"/>
     <variable name="k2"/>
@@ -289,7 +299,7 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
         })))
           .handle.data)).resolves.toBe(
           `<?xml version="1.0" encoding="UTF-8"?>
-<sparql xmlns="http://www.w3.org/2005/sparql-results#">
+<sparql xmlns="http://www.w3.org/2005/sparql-results#" xmlns:its="http://www.w3.org/2005/11/its" its:version="2.0">
   <head>
   </head>
   <results>
@@ -321,7 +331,7 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
         })))
           .handle.data)).resolves.toBe(
           `<?xml version="1.0" encoding="UTF-8"?>
-<sparql xmlns="http://www.w3.org/2005/sparql-results#">
+<sparql xmlns="http://www.w3.org/2005/sparql-results#" xmlns:its="http://www.w3.org/2005/11/its" its:version="2.0">
   <head>
   </head>
   <results>
@@ -361,7 +371,7 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
         })))
           .handle.data)).resolves.toBe(
           `<?xml version="1.0" encoding="UTF-8"?>
-<sparql xmlns="http://www.w3.org/2005/sparql-results#">
+<sparql xmlns="http://www.w3.org/2005/sparql-results#" xmlns:its="http://www.w3.org/2005/11/its" its:version="2.0">
   <head>
     <variable name="k1"/>
     <variable name="k2"/>
@@ -414,7 +424,7 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
           handleMediaType: 'simple',
         }))).handle.data)).resolves.toBe(
           `<?xml version="1.0" encoding="UTF-8"?>
-<sparql xmlns="http://www.w3.org/2005/sparql-results#">
+<sparql xmlns="http://www.w3.org/2005/sparql-results#" xmlns:its="http://www.w3.org/2005/11/its" its:version="2.0">
   <head>
   </head>
   <boolean>true</boolean>
@@ -434,7 +444,7 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
           handleMediaType: 'simple',
         }))).handle.data)).resolves.toBe(
           `<?xml version="1.0" encoding="UTF-8"?>
-<sparql xmlns="http://www.w3.org/2005/sparql-results#">
+<sparql xmlns="http://www.w3.org/2005/sparql-results#" xmlns:its="http://www.w3.org/2005/11/its" its:version="2.0">
   <head>
   </head>
   <boolean>false</boolean>

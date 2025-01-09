@@ -64,6 +64,12 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
         .toBe('"abc"@en-us');
     });
 
+    it('should convert literals with a language and direction', () => {
+      expect(ActorQueryResultSerializeSparqlTsv.bindingToTsvBindings(DF
+        .literal('abc', { language: 'en-us', direction: 'rtl' })))
+        .toBe('"abc"@en-us--rtl');
+    });
+
     it('should convert literals with a datatype', () => {
       expect(ActorQueryResultSerializeSparqlTsv
         .bindingToTsvBindings(DF.literal('abc', DF.namedNode('http://ex'))))

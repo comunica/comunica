@@ -54,8 +54,7 @@ export class XmlSerializer {
     attributes: Record<string, string> | undefined,
     state: 'open' | 'close' | 'self-closing',
   ): string {
-    // eslint-disable-next-line ts/restrict-template-expressions
-    return `<${state === 'close' ? '/' : ''}${name}${Object.entries(attributes ?? {}).map(attr => ` ${attr[0]}="${this.escape(attr[1])}"`)}${state === 'self-closing' ? '/' : ''}>`;
+    return `<${state === 'close' ? '/' : ''}${name}${Object.entries(attributes ?? {}).map(attr => ` ${attr[0]}="${this.escape(attr[1])}"`).join('')}${state === 'self-closing' ? '/' : ''}>`;
   }
 
   private escape(text: string): string {

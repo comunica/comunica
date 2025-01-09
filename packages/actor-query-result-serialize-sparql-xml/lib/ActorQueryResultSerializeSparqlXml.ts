@@ -48,7 +48,7 @@ export class ActorQueryResultSerializeSparqlXml extends ActorQueryResultSerializ
     switch (value.termType) {
       case 'Literal':
         if (value.language) {
-          attributes = { 'xml:lang': value.language };
+          attributes = { 'xml:lang': value.language, ...value.direction ? { 'its:dir': value.direction } : {}};
         } else if (value.datatype && value.datatype.value !== 'http://www.w3.org/2001/XMLSchema#string') {
           attributes = { datatype: value.datatype.value };
         } else {
@@ -92,7 +92,11 @@ export class ActorQueryResultSerializeSparqlXml extends ActorQueryResultSerializ
     const metadata = await (<IQueryOperationResultBindings> action).metadata();
 
     data.push(XmlSerializer.header);
-    data.push(serializer.open('sparql', { xmlns: 'http://www.w3.org/2005/sparql-results#' }));
+    data.push(serializer.open('sparql', {
+      xmlns: 'http://www.w3.org/2005/sparql-results#',
+      'xmlns:its': 'http://www.w3.org/2005/11/its',
+      'its:version': '2.0',
+    }));
     data.push(
       serializer.serializeNode({
         name: 'head',
