@@ -62,6 +62,6 @@
     "lru-cache": "^10.0.0",
     "rdf-streaming-store": "^1.1.4",
     "readable-stream": "^4.5.2",
-    "sparqlalgebrajs": "^4.3.8"
+    "sparqlalgebrajs": "^5.0.0"
   }
 }

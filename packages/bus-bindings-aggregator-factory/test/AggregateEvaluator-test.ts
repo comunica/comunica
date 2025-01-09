@@ -1,4 +1,4 @@
-import type { IExpressionEvaluator } from '@comunica/types';
+import type { ComunicaDataFactory, IExpressionEvaluator } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import {
   getMockEEActionContext,
@@ -10,7 +10,7 @@ import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { AggregateEvaluator } from '../lib';
 
-const DF = new DataFactory();
+const DF = <ComunicaDataFactory> new DataFactory();
 const BF = new BindingsFactory(DF);
 
 class EmptyEvaluator extends AggregateEvaluator {

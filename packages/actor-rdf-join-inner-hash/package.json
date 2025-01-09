@@ -50,6 +50,6 @@
     "@comunica/utils-iterator": "^4.0.1",
     "asynciterator": "^3.9.0",
     "asyncjoin": "^1.2.4",
-    "rdf-string": "^1.6.3"
+    "rdf-string": "^2.0.1"
   }
 }
