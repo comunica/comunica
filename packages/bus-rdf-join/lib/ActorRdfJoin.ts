@@ -16,6 +16,7 @@ import type {
   IJoinEntryWithMetadata,
   ComunicaDataFactory,
   MetadataVariable,
+  LogicalJoinType,
 } from '@comunica/types';
 import { instrumentIterator } from '@comunica/utils-iterator';
 import { cachifyMetadata, MetadataValidationState } from '@comunica/utils-metadata';
@@ -516,11 +517,6 @@ export interface IActorRdfJoinInternalOptions {
   requiresVariableOverlap?: boolean;
 }
 
-/**
- * Represents a logical join type.
- */
-export type LogicalJoinType = 'inner' | 'optional' | 'minus';
-
 export interface IActionRdfJoin extends IAction {
   /**
    * The logical join type.
@@ -548,3 +544,6 @@ export interface IActorRdfJoinTestSideData {
 }
 
 export type MediatorRdfJoin = Mediate<IActionRdfJoin, IQueryOperationResultBindings, IMediatorTypeJoinCoefficients>;
+
+// TODO remove this in next major version
+export { LogicalJoinType } from '@comunica/types';

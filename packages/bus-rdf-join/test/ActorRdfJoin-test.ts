@@ -8,9 +8,9 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { BufferedIterator, MultiTransformIterator, SingletonIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { ActorRdfJoin } from '../lib/ActorRdfJoin';
 import type { IActionRdfJoin, IActorRdfJoinTestSideData } from '../lib/ActorRdfJoin';
 import '@comunica/utils-jest';
+import { ActorRdfJoin } from '../lib/ActorRdfJoin';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
