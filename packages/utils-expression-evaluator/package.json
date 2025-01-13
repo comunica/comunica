@@ -42,7 +42,7 @@
     "@comunica/types": "^4.0.2",
     "@rdfjs/types": "*",
     "lru-cache": "^10.0.0",
-    "rdf-data-factory": "^1.1.2",
+    "rdf-data-factory": "^2.0.0",
     "rdf-string": "^1.6.3",
     "sparqlalgebrajs": "^4.3.8"
   }

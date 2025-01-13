@@ -49,7 +49,7 @@
     "@comunica/utils-query-operation": "^4.0.2",
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0",
-    "rdf-data-factory": "^1.1.2",
+    "rdf-data-factory": "^2.0.0",
     "sparqlalgebrajs": "^4.3.8"
   }
 }

@@ -78,7 +78,7 @@
     "node-polyfill-webpack-plugin": "^4.0.0",
     "nodemon": "^3.0.0",
     "npm-check-updates": "^17.0.0",
-    "rdf-data-factory": "^1.1.1",
+    "rdf-data-factory": "^2.0.0",
     "rdf-quad": "^1.5.0",
     "rdf-stores": "^1.0.0",
     "rdf-test-suite": "^1.25.0",
