@@ -26,6 +26,7 @@ export enum TypeURL {
   XSD_ANY_URI = 'http://www.w3.org/2001/XMLSchema#anyURI',
   XSD_STRING = 'http://www.w3.org/2001/XMLSchema#string',
   RDF_LANG_STRING = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#langString',
+  RDF_DIR_LANG_STRING = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#dirLangString',
 
   XSD_BOOLEAN = 'http://www.w3.org/2001/XMLSchema#boolean',
 

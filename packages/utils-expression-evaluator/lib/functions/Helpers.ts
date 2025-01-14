@@ -458,6 +458,10 @@ export function langString(str: string, lang: string): E.LangStringLiteral {
   return new E.LangStringLiteral(str, lang);
 }
 
+export function dirLangString(str: string, lang: string): E.LangStringLiteral {
+  return new E.LangStringLiteral(str, lang);
+}
+
 export function dateTime(date: IDateTimeRepresentation, str: string): E.DateTimeLiteral {
   return new E.DateTimeLiteral(date, str);
 }

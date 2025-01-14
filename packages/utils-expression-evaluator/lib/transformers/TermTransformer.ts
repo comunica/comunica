@@ -90,6 +90,9 @@ export class TermTransformer implements ITermTransformer {
       if (TypeURL.RDF_LANG_STRING in superTypeDict) {
         return new E.LangStringLiteral(lit.value, lit.language);
       }
+      if (TypeURL.RDF_DIR_LANG_STRING in superTypeDict) {
+        return new E.DirLangStringLiteral(lit.value, lit.language, <'ltr' | 'rtl'> lit.direction);
+      }
       if (TypeURL.XSD_YEAR_MONTH_DURATION in superTypeDict) {
         return new E.YearMonthDurationLiteral(parseYearMonthDuration(lit.value), lit.value, dataType);
       }

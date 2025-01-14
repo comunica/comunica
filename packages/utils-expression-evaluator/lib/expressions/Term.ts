@@ -128,12 +128,14 @@ export class Literal<T extends ISerializable> extends Term {
    * @param dataType a string representing the datatype. Can be of type @see LiteralTypes or any URI
    * @param strValue the string value of this literal. In other words, the string representing the RDF.literal value.
    * @param language the language, mainly for language enabled strings like RDF_LANG_STRING
+   * @param direction the base direction, mainly for directional language enabled strings like RDF_DIR_LANG_STRING
    */
   public constructor(
     public typedValue: T,
     public dataType: string,
     public strValue?: string,
     public language?: string,
+    public direction?: 'ltr' | 'rtl',
   ) {
     super();
   }
@@ -275,6 +277,21 @@ export class BooleanLiteral extends Literal<boolean> {
 export class LangStringLiteral extends Literal<string> {
   public constructor(public override typedValue: string, public override language: string, dataType?: string) {
     super(typedValue, dataType ?? TypeURL.RDF_LANG_STRING, typedValue, language);
+  }
+
+  public override coerceEBV(): boolean {
+    return this.str().length > 0;
+  }
+}
+
+export class DirLangStringLiteral extends Literal<string> {
+  public constructor(
+    public override typedValue: string,
+    public override language: string,
+    public override direction: 'ltr' | 'rtl',
+    dataType?: string,
+  ) {
+    super(typedValue, dataType ?? TypeURL.RDF_DIR_LANG_STRING, typedValue, language, direction);
   }
 
   public override coerceEBV(): boolean {

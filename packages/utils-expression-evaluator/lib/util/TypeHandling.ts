@@ -25,6 +25,7 @@ export const extensionTableInput: Record<KnownLiteralTypes, OverrideType> = {
 
   // Stringly types
   [TypeURL.RDF_LANG_STRING]: TypeAlias.SPARQL_STRINGLY,
+  [TypeURL.RDF_DIR_LANG_STRING]: TypeAlias.SPARQL_STRINGLY,
   [TypeURL.XSD_STRING]: TypeAlias.SPARQL_STRINGLY,
 
   // String types
