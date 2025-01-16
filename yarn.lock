@@ -1968,49 +1968,49 @@
   resolved "https://registry.npmjs.org/@tootallnate/once/-/once-2.0.0.tgz"
   integrity sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==
 
-"@traqula/core@^0.0.1-alpha.140+d75283c":
-  version "0.0.1-alpha.140"
-  resolved "https://registry.yarnpkg.com/@traqula/core/-/core-0.0.1-alpha.140.tgz#04e1d0dda34201625f17dca544d65aebb0925242"
-  integrity sha512-+ifnTk3ZLK4jAhARvZ9BBVpRsY3U+br0Um+7PPGl07GUI+bTjo+tPJIJGxyypEEs8SZIhtoehbkX7DQNSBUtlw==
+"@traqula/core@^0.0.1-alpha.143+7e8a4c4":
+  version "0.0.1-alpha.143"
+  resolved "https://registry.yarnpkg.com/@traqula/core/-/core-0.0.1-alpha.143.tgz#0dbd228fa999ce15811e6f5230842349c2996def"
+  integrity sha512-HktnYZDOMpgPIbWUhcM86FKvA43Tbr9d8dxX7qFRUYpY4aJafJxWK4KWT2gX0k5ch/fM1/Se1I+heAzs/fZWKA==
   dependencies:
     chevrotain "^11.0.3"
     rdf-data-factory "^2.0.1"
 
-"@traqula/engine-sparql-1-1@^0.0.1-alpha.140+d75283c":
-  version "0.0.1-alpha.140"
-  resolved "https://registry.yarnpkg.com/@traqula/engine-sparql-1-1/-/engine-sparql-1-1-0.0.1-alpha.140.tgz#884cbeb8f9ce50cb808f9f5600f2ea1686d1039c"
-  integrity sha512-x5wWetlsmUfDX1EkBNccABAjPpkzsyA3TUtFsfDd3hg3KyrAwylCKt3MKcsf4MV2Bao1ZW9Gop5TRgY8UYf/9w==
+"@traqula/engine-sparql-1-1@^0.0.1-alpha.143+7e8a4c4":
+  version "0.0.1-alpha.143"
+  resolved "https://registry.yarnpkg.com/@traqula/engine-sparql-1-1/-/engine-sparql-1-1-0.0.1-alpha.143.tgz#aafc31d1fa70e85902fcb3693cd5fd2ebf243d29"
+  integrity sha512-njY+UJ9lEoFx0jcTg/YASb2EOPgzf8Xa0x1+KnCgeNpKB7nkdYq5i8AzfsBK/6D99/ZX0d5jeoKmaSr/NKuZ6A==
   dependencies:
-    "@traqula/core" "^0.0.1-alpha.140+d75283c"
-    "@traqula/rules-sparql-1-1" "^0.0.1-alpha.140+d75283c"
+    "@traqula/core" "^0.0.1-alpha.143+7e8a4c4"
+    "@traqula/rules-sparql-1-1" "^0.0.1-alpha.143+7e8a4c4"
 
-"@traqula/engine-sparql-1-2@^0.0.1-alpha.140":
-  version "0.0.1-alpha.140"
-  resolved "https://registry.yarnpkg.com/@traqula/engine-sparql-1-2/-/engine-sparql-1-2-0.0.1-alpha.140.tgz#d6c72ef94b30b030f0a7fa906eda236b643ee507"
-  integrity sha512-4IiZTvz+uM8Sqc2396Y+KPqUPlmDeYOR802ep93wMs6I7LSxVzYSpV1kYedxT2FXMB6ENkmRbRQM/MhRBxoLpw==
+"@traqula/engine-sparql-1-2@^0.0.1-alpha.143":
+  version "0.0.1-alpha.143"
+  resolved "https://registry.yarnpkg.com/@traqula/engine-sparql-1-2/-/engine-sparql-1-2-0.0.1-alpha.143.tgz#2d52ddaeaa137fb9b1baccd5b9c8e46c49396525"
+  integrity sha512-0PnaTuO5Mn3Q6EBGTy1yPLRLeE4GjMq3nY1+RvV7oACJG2bvSOf2D1oZ5KFdIp7u6xmRCOPvnXN+fG1grUUoNA==
   dependencies:
-    "@traqula/core" "^0.0.1-alpha.140+d75283c"
-    "@traqula/engine-sparql-1-1" "^0.0.1-alpha.140+d75283c"
-    "@traqula/rules-sparql-1-1" "^0.0.1-alpha.140+d75283c"
-    "@traqula/rules-sparql-1-2" "^0.0.1-alpha.140+d75283c"
+    "@traqula/core" "^0.0.1-alpha.143+7e8a4c4"
+    "@traqula/engine-sparql-1-1" "^0.0.1-alpha.143+7e8a4c4"
+    "@traqula/rules-sparql-1-1" "^0.0.1-alpha.143+7e8a4c4"
+    "@traqula/rules-sparql-1-2" "^0.0.1-alpha.143+7e8a4c4"
     rdf-data-factory "^2.0.1"
 
-"@traqula/rules-sparql-1-1@^0.0.1-alpha.140+d75283c":
-  version "0.0.1-alpha.140"
-  resolved "https://registry.yarnpkg.com/@traqula/rules-sparql-1-1/-/rules-sparql-1-1-0.0.1-alpha.140.tgz#bd58bce3f6212fe1d9e48053705f56049ba62e0c"
-  integrity sha512-zc0CMdd/1qeiEZIkjhe0J5KBLotAVcLBJ0rc4ZUrW3Dd8WqOams/f7zYhrmtIKs4hKLRns67VmtprsjCzYtmow==
+"@traqula/rules-sparql-1-1@^0.0.1-alpha.143+7e8a4c4":
+  version "0.0.1-alpha.143"
+  resolved "https://registry.yarnpkg.com/@traqula/rules-sparql-1-1/-/rules-sparql-1-1-0.0.1-alpha.143.tgz#e43f0bce7d634c19cd20e11b6a5a10becc1ea210"
+  integrity sha512-RO+YVzN+lqbrkTpz9vLmUfrD0igqctjkx5t1iQrbXO6JvOrW1FTMVC5OTpUWbYIfjls1KhW2oqhiZYyIR3RX6w==
   dependencies:
-    "@traqula/core" "^0.0.1-alpha.140+d75283c"
+    "@traqula/core" "^0.0.1-alpha.143+7e8a4c4"
     chevrotain "^11.0.3"
     rdf-data-factory "^2.0.1"
 
-"@traqula/rules-sparql-1-2@^0.0.1-alpha.140+d75283c":
-  version "0.0.1-alpha.140"
-  resolved "https://registry.yarnpkg.com/@traqula/rules-sparql-1-2/-/rules-sparql-1-2-0.0.1-alpha.140.tgz#adb2fe4ed16e60ee28225b164c77c01157d4e9c8"
-  integrity sha512-h2U+zk/Sg/dAxxwfjcm42SGLlJCMrwN/4FZhi1TTGMWa431DPWAd3a6RMZC0oOVNVxUAf/48wGo7STr6tdcOAA==
+"@traqula/rules-sparql-1-2@^0.0.1-alpha.143+7e8a4c4":
+  version "0.0.1-alpha.143"
+  resolved "https://registry.yarnpkg.com/@traqula/rules-sparql-1-2/-/rules-sparql-1-2-0.0.1-alpha.143.tgz#698b921f700279763e0f43d1077ac28f40b6d448"
+  integrity sha512-3rm8OlbLgtiBpGZXZTf8ukxouDURqKumhVZHqN6u7S+15NWxJLhD4kEPw8Hza5oa9XKMWH98ZOAdF2eh+67TvA==
   dependencies:
-    "@traqula/core" "^0.0.1-alpha.140+d75283c"
-    "@traqula/rules-sparql-1-1" "^0.0.1-alpha.140+d75283c"
+    "@traqula/core" "^0.0.1-alpha.143+7e8a4c4"
+    "@traqula/rules-sparql-1-1" "^0.0.1-alpha.143+7e8a4c4"
 
 "@tsconfig/node10@^1.0.7":
   version "1.0.11"

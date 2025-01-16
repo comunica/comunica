@@ -5,7 +5,7 @@ import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { Sparql12Parser as SparqlParser } from '@traqula/engine-sparql-1-2';
+import { Parser as SparqlParser } from '@traqula/engine-sparql-1-2';
 import type { DataFactory } from 'rdf-data-factory';
 import { translate } from 'sparqlalgebrajs';
 
@@ -38,6 +38,7 @@ export class ActorQueryParseSparql extends ActorQueryParse {
     const baseIRI = ('type' in parsedSyntax && parsedSyntax.type === 'query') ? parsedSyntax.base : undefined;
     return {
       baseIRI,
+      // TODO: This any cast is required until sparqlAlgebra is incorporated within traqula
       operation: translate(<any> parsedSyntax, {
         quads: true,
         prefixes: this.prefixes,
