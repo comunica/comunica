@@ -48,6 +48,6 @@
     "@comunica/core": "^4.0.2",
     "@comunica/types": "^4.0.2",
     "@comunica/utils-bindings-factory": "^4.0.2",
-    "rdf-store-stream": "^2.0.0"
+    "rdf-store-stream": "^3.0.0"
   }
 }
