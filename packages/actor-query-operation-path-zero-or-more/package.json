@@ -49,7 +49,7 @@
     "@comunica/utils-bindings-factory": "^4.0.2",
     "@comunica/utils-query-operation": "^4.0.2",
     "asynciterator": "^3.9.0",
-    "rdf-string": "^1.6.1",
+    "rdf-string": "^2.0.0",
     "sparqlalgebrajs": "^4.3.8"
   }
 }

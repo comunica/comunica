@@ -46,7 +46,7 @@
     "@comunica/core": "^4.0.2",
     "@comunica/types": "^4.0.2",
     "@rdfjs/types": "*",
-    "rdf-string": "^1.6.3",
+    "rdf-string": "^2.0.0",
     "rdf-terms": "^1.11.0",
     "readable-stream": "^4.5.2"
   }
