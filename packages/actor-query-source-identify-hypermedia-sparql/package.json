@@ -53,7 +53,7 @@
     "asynciterator": "^3.9.0",
     "fetch-sparql-endpoint": "^5.1.0",
     "lru-cache": "^10.0.0",
-    "rdf-terms": "^1.11.0",
+    "rdf-terms": "^2.0.0",
     "sparqlalgebrajs": "^4.3.8"
   }
 }

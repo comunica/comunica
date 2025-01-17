@@ -10933,7 +10933,7 @@ rdf-string@^2.0.0:
   dependencies:
     rdf-data-factory "^2.0.0"
 
-rdf-terms@^1.10.0, rdf-terms@^1.11.0, rdf-terms@^1.7.0, rdf-terms@^1.9.1:
+rdf-terms@^1.10.0, rdf-terms@^1.7.0, rdf-terms@^1.9.1:
   version "1.11.0"
   resolved "https://registry.npmjs.org/rdf-terms/-/rdf-terms-1.11.0.tgz"
   integrity sha512-iKlVgnMopRKl9pHVNrQrax7PtZKRCT/uJIgYqvuw1VVQb88zDvurtDr1xp0rt7N9JtKtFwUXoIQoEsjyRo20qQ==
