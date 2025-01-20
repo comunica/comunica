@@ -369,6 +369,38 @@
   dependencies:
     buffer "^6.0.3"
 
+"@chevrotain/cst-dts-gen@11.0.3":
+  version "11.0.3"
+  resolved "https://registry.yarnpkg.com/@chevrotain/cst-dts-gen/-/cst-dts-gen-11.0.3.tgz#5e0863cc57dc45e204ccfee6303225d15d9d4783"
+  integrity sha512-BvIKpRLeS/8UbfxXxgC33xOumsacaeCKAjAeLyOn7Pcp95HiRbrpl14S+9vaZLolnbssPIUuiUd8IvgkRyt6NQ==
+  dependencies:
+    "@chevrotain/gast" "11.0.3"
+    "@chevrotain/types" "11.0.3"
+    lodash-es "4.17.21"
+
+"@chevrotain/gast@11.0.3":
+  version "11.0.3"
+  resolved "https://registry.yarnpkg.com/@chevrotain/gast/-/gast-11.0.3.tgz#e84d8880323fe8cbe792ef69ce3ffd43a936e818"
+  integrity sha512-+qNfcoNk70PyS/uxmj3li5NiECO+2YKZZQMbmjTqRI3Qchu8Hig/Q9vgkHpI3alNjr7M+a2St5pw5w5F6NL5/Q==
+  dependencies:
+    "@chevrotain/types" "11.0.3"
+    lodash-es "4.17.21"
+
+"@chevrotain/regexp-to-ast@11.0.3":
+  version "11.0.3"
+  resolved "https://registry.yarnpkg.com/@chevrotain/regexp-to-ast/-/regexp-to-ast-11.0.3.tgz#11429a81c74a8e6a829271ce02fc66166d56dcdb"
+  integrity sha512-1fMHaBZxLFvWI067AVbGJav1eRY7N8DDvYCTwGBiE/ytKBgP8azTdgyrKyWZ9Mfh09eHWb5PgTSO8wi7U824RA==
+
+"@chevrotain/types@11.0.3":
+  version "11.0.3"
+  resolved "https://registry.yarnpkg.com/@chevrotain/types/-/types-11.0.3.tgz#f8a03914f7b937f594f56eb89312b3b8f1c91848"
+  integrity sha512-gsiM3G8b58kZC2HaWR50gu6Y1440cHiJ+i3JUvcp/35JchYejb2+5MVeJK0iKThYpAa/P2PYFV4hoi44HD+aHQ==
+
+"@chevrotain/utils@11.0.3":
+  version "11.0.3"
+  resolved "https://registry.yarnpkg.com/@chevrotain/utils/-/utils-11.0.3.tgz#e39999307b102cff3645ec4f5b3665f5297a2224"
+  integrity sha512-YslZMgtJUyuMbZ+aKvfF3x1f5liK4mWNxghFRv7jqRR9C3R3fAOGTTKvxXDa2Y1s9zSbcpuO0cAxDYsc9SrXoQ==
+
 "@colors/colors@1.5.0":
   version "1.5.0"
   resolved "https://registry.npmjs.org/@colors/colors/-/colors-1.5.0.tgz"
@@ -1935,6 +1967,50 @@
   version "2.0.0"
   resolved "https://registry.npmjs.org/@tootallnate/once/-/once-2.0.0.tgz"
   integrity sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==
+
+"@traqula/core@^0.0.1-alpha.145+b7fd73e":
+  version "0.0.1-alpha.145"
+  resolved "https://registry.yarnpkg.com/@traqula/core/-/core-0.0.1-alpha.145.tgz#3b3965f3b3dccf1d820126d33436298d7f5264e6"
+  integrity sha512-HIw1ybJrzwgoXt++Cdp7WDZ1tlDGtxfDnJP0l11DKVaoSwlKe40cpMA59Tcjhj/bcVuuVuKU2iNERJYi9dfd/A==
+  dependencies:
+    chevrotain "^11.0.3"
+    rdf-data-factory "^2.0.1"
+
+"@traqula/engine-sparql-1-1@^0.0.1-alpha.145+b7fd73e":
+  version "0.0.1-alpha.145"
+  resolved "https://registry.yarnpkg.com/@traqula/engine-sparql-1-1/-/engine-sparql-1-1-0.0.1-alpha.145.tgz#38a1ba696d527d9547b3fb5a363387a900a65ae3"
+  integrity sha512-Do7TaApnuDlAg2uW5eQg6QRaQFTT/DkKK4zUXymIRgklWSPm8fyz6V8RQub3A3QNW3anLHVm87LQmXpXjwmB+A==
+  dependencies:
+    "@traqula/core" "^0.0.1-alpha.145+b7fd73e"
+    "@traqula/rules-sparql-1-1" "^0.0.1-alpha.145+b7fd73e"
+
+"@traqula/engine-sparql-1-2@^0.0.1-alpha.145":
+  version "0.0.1-alpha.145"
+  resolved "https://registry.yarnpkg.com/@traqula/engine-sparql-1-2/-/engine-sparql-1-2-0.0.1-alpha.145.tgz#be0317eb3d9c1e1f989099d5948dcb09f3ad043b"
+  integrity sha512-Z+/3Oa2PMkAu4kpCRfGMkvkw7AL52fs7qc//MyFJy+02hGjgGKQWibyYMGoh5BnafwG7B/ikOwG9JIwK86Em+Q==
+  dependencies:
+    "@traqula/core" "^0.0.1-alpha.145+b7fd73e"
+    "@traqula/engine-sparql-1-1" "^0.0.1-alpha.145+b7fd73e"
+    "@traqula/rules-sparql-1-1" "^0.0.1-alpha.145+b7fd73e"
+    "@traqula/rules-sparql-1-2" "^0.0.1-alpha.145+b7fd73e"
+    rdf-data-factory "^2.0.1"
+
+"@traqula/rules-sparql-1-1@^0.0.1-alpha.145+b7fd73e":
+  version "0.0.1-alpha.145"
+  resolved "https://registry.yarnpkg.com/@traqula/rules-sparql-1-1/-/rules-sparql-1-1-0.0.1-alpha.145.tgz#150f826c244ae2d6e88a92539afd47e68304136c"
+  integrity sha512-cdma122/aq6GzlIH2KH9erATVD6cW5m34fiA9YtuKPgmQ6FS+RKbe0fXUTDG7YFBmyf96AYXkhh/jPDdOutVmw==
+  dependencies:
+    "@traqula/core" "^0.0.1-alpha.145+b7fd73e"
+    chevrotain "^11.0.3"
+    rdf-data-factory "^2.0.1"
+
+"@traqula/rules-sparql-1-2@^0.0.1-alpha.145+b7fd73e":
+  version "0.0.1-alpha.145"
+  resolved "https://registry.yarnpkg.com/@traqula/rules-sparql-1-2/-/rules-sparql-1-2-0.0.1-alpha.145.tgz#cf62ea1ca8ff34de244001127b2709e05b8b7d69"
+  integrity sha512-rdQTlJ95tnEmrx/hAMC1mAait5/aNwAKkkL4xCowRNx9C67Ag9L4x5eXOYXtLyboQozEQCxmr3Rc7KczjPFqLQ==
+  dependencies:
+    "@traqula/core" "^0.0.1-alpha.145+b7fd73e"
+    "@traqula/rules-sparql-1-1" "^0.0.1-alpha.145+b7fd73e"
 
 "@tsconfig/node10@^1.0.7":
   version "1.0.11"
@@ -3835,6 +3911,18 @@ charenc@0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/charenc/-/charenc-0.0.2.tgz#c0a1d2f3a7092e03774bfa83f14c0fc5790a8667"
   integrity sha512-yrLQ/yVUFXkzg7EDQsPieE/53+0RlaWTs+wBrvW36cyilJ2SaDWfl4Yj7MtLTXleV9uEKefbAGUPv2/iWSooRA==
+
+chevrotain@^11.0.3:
+  version "11.0.3"
+  resolved "https://registry.yarnpkg.com/chevrotain/-/chevrotain-11.0.3.tgz#88ffc1fb4b5739c715807eaeedbbf200e202fc1b"
+  integrity sha512-ci2iJH6LeIkvP9eJW6gpueU8cnZhv85ELY8w8WiFtNjMHA5ad6pQLaJo9mEly/9qUyCpvqX8/POVUTf18/HFdw==
+  dependencies:
+    "@chevrotain/cst-dts-gen" "11.0.3"
+    "@chevrotain/gast" "11.0.3"
+    "@chevrotain/regexp-to-ast" "11.0.3"
+    "@chevrotain/types" "11.0.3"
+    "@chevrotain/utils" "11.0.3"
+    lodash-es "4.17.21"
 
 chokidar@^3.5.1, chokidar@^3.5.2:
   version "3.6.0"
@@ -8750,7 +8838,7 @@ locate-path@^7.2.0:
   dependencies:
     p-locate "^6.0.0"
 
-lodash-es@^4.17.21:
+lodash-es@4.17.21, lodash-es@^4.17.21:
   version "4.17.21"
   resolved "https://registry.npmjs.org/lodash-es/-/lodash-es-4.17.21.tgz"
   integrity sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==

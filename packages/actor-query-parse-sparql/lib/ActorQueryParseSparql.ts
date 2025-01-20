@@ -4,8 +4,10 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
+import { Parser as SparqlParser } from '@traqula/engine-sparql-1-2';
+import type { DataFactory } from 'rdf-data-factory';
 import { translate } from 'sparqlalgebrajs';
-import { Parser as SparqlParser } from 'sparqljs';
 
 /**
  * A comunica Algebra SPARQL Parse Actor.
@@ -30,14 +32,14 @@ export class ActorQueryParseSparql extends ActorQueryParse {
     const parser = new SparqlParser({
       prefixes: this.prefixes,
       baseIRI: action.baseIRI,
-      sparqlStar: true,
-      factory: dataFactory,
+      dataFactory: <DataFactory<RDF.BaseQuad>> dataFactory,
     });
     const parsedSyntax = parser.parse(action.query);
-    const baseIRI = parsedSyntax.type === 'query' ? parsedSyntax.base : undefined;
+    const baseIRI = ('type' in parsedSyntax && parsedSyntax.type === 'query') ? parsedSyntax.base : undefined;
     return {
       baseIRI,
-      operation: translate(parsedSyntax, {
+      // TODO: This any cast is required until sparqlAlgebra is incorporated within traqula
+      operation: translate(<any> parsedSyntax, {
         quads: true,
         prefixes: this.prefixes,
         blankToVariable: true,
