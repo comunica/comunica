@@ -2,6 +2,7 @@ import { TermFunctionBase } from '@comunica/bus-function-factory';
 
 import {
   declare,
+  ExpressionError,
   LangStringLiteral,
   SparqlOperator,
   TypeURL,
@@ -18,7 +19,12 @@ export class TermFunctionStrLang extends TermFunctionBase {
       overloads: declare(SparqlOperator.STRLANG)
         .onBinaryTyped(
           [ TypeURL.XSD_STRING, TypeURL.XSD_STRING ],
-          () => (val: string, language: string) => new LangStringLiteral(val, language.toLowerCase()),
+          () => (val: string, language: string) => {
+            if (!language) {
+              throw new ExpressionError(`Unable to create language string for empty languages`);
+            }
+            return new LangStringLiteral(val, language.toLowerCase());
+          },
         )
         .collect(),
     });

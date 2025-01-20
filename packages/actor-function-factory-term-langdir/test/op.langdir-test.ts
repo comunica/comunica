@@ -1,17 +1,19 @@
-import { ActorFunctionFactoryTermLang } from '@comunica/actor-function-factory-term-lang';
+import { ActorFunctionFactoryTermLangdir } from '@comunica/actor-function-factory-term-langdir';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
 
-describe('like \'lang\' receiving', () => {
+describe('like \'langdir\' receiving', () => {
   runFuncTestTable({
     registeredActors: [
-      args => new ActorFunctionFactoryTermLang(args),
+      args => new ActorFunctionFactoryTermLangdir(args),
     ],
     arity: 1,
     notation: Notation.Function,
-    operation: 'lang',
+    operation: 'langdir',
     testTable: `
-        "a"@fr = "fr"
+        "a"@fr = ""
+        "a"@fr--ltr = "ltr"
+        "a"@fr--rtl = "rtl"
         "a" = ""
       `,
     errorTable: `

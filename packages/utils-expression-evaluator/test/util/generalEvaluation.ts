@@ -5,6 +5,7 @@ import type { IActionContext } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-expression-evaluator/test/util/helpers';
 import type * as RDF from '@rdfjs/types';
+import { Parser as SparqlParser } from '@traqula/engine-sparql-1-2';
 import { DataFactory } from 'rdf-data-factory';
 import { translate } from 'sparqlalgebrajs';
 
@@ -54,7 +55,10 @@ Promise<{ asyncError: unknown; syncError?: unknown } | undefined> {
 }
 
 function parse(query: string) {
-  const sparqlQuery = translate(query, { sparqlStar: true });
+  // TODO: remove custom parsing once sparqlalgebrajs is ported to traqula
+  const parser = new SparqlParser();
+  const parsedSyntax = parser.parse(query);
+  const sparqlQuery = translate(<any> parsedSyntax, { sparqlStar: true });
   // Extract filter expression from complete query
   return sparqlQuery.input.expression;
 }

@@ -143,7 +143,9 @@ export class Literal<T extends ISerializable> extends Term {
   public toRDF(dataFactory: ComunicaDataFactory): RDF.Literal {
     return dataFactory.literal(
       this.strValue ?? this.str(),
-      this.language ?? dataFactory.namedNode(this.dataType),
+      this.direction && this.language ?
+          { language: this.language, direction: this.direction } :
+        this.language ?? dataFactory.namedNode(this.dataType),
     );
   }
 

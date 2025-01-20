@@ -1,5 +1,6 @@
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { IActionContext } from '@comunica/types';
+import { Parser as SparqlParser } from '@traqula/engine-sparql-1-2';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 import { translate } from 'sparqlalgebrajs';
 import type { AliasMap } from './Aliases';
@@ -7,7 +8,10 @@ import type { Notation } from './TestTable';
 import { ArrayTable, BinaryTable, UnaryTable, VariableTable } from './TestTable';
 
 export function getMockExpression(expr = '1+1'): Alg.Expression {
-  return translate(`SELECT * WHERE { ?s ?p ?o FILTER (${expr})}`).input.expression;
+  // TODO: remove custom parsing once sparqlalgebrajs is ported to traqula
+  const parser = new SparqlParser();
+  const parsedSyntax = parser.parse(`SELECT * WHERE { ?s ?p ?o FILTER (${expr})}`);
+  return translate(<any> parsedSyntax).input.expression;
 }
 
 export interface ITestTableConfigBase {
@@ -19,7 +23,7 @@ export interface ITestTableConfigBase {
    * How many arguments does the operation take. The vary option means you don't know. This can only be provided
    * when the notation is Notation.Function.
    */
-  arity: 1 | 2 | 'vary';
+  arity: 1 | 2 | 3 | 'vary';
   notation: Notation;
   /**
    * Configuration that'll we provided to the Evaluator.
