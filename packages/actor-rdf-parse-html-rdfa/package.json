@@ -45,6 +45,6 @@
     "@comunica/context-entries": "^4.0.2",
     "@comunica/core": "^4.0.2",
     "@comunica/types": "^4.0.2",
-    "rdfa-streaming-parser": "^2.0.1"
+    "rdfa-streaming-parser": "^3.0.0"
   }
 }

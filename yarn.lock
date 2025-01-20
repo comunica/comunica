@@ -11096,6 +11096,16 @@ rdfa-streaming-parser@^2.0.1:
     readable-stream "^4.0.0"
     relative-to-absolute-iri "^1.0.2"
 
+rdfa-streaming-parser@^3.0.0:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/rdfa-streaming-parser/-/rdfa-streaming-parser-3.0.1.tgz#b3eb4bbc58494c44b82acc9af8940bfd58e41b04"
+  integrity sha512-IP8Wgw/w6Mk3bqqiwkbxGvyirQPKqBJQst9GslWb3d4rTZSwLMyaB2yAKMdc+OMazpkfcaqndwQPrYaufRXbqw==
+  dependencies:
+    htmlparser2 "^9.0.0"
+    rdf-data-factory "^2.0.0"
+    readable-stream "^4.0.0"
+    relative-to-absolute-iri "^1.0.2"
+
 rdfxml-streaming-parser@^2.0.0, rdfxml-streaming-parser@^2.2.3:
   version "2.4.0"
   resolved "https://registry.npmjs.org/rdfxml-streaming-parser/-/rdfxml-streaming-parser-2.4.0.tgz"
