@@ -14,10 +14,12 @@ import { translate } from 'sparqlalgebrajs';
  */
 export class ActorQueryParseSparql extends ActorQueryParse {
   public readonly prefixes: Record<string, string>;
+  private readonly parser;
 
   public constructor(args: IActorQueryParseSparqlArgs) {
     super(args);
     this.prefixes = Object.freeze(this.prefixes);
+    this.parser = new SparqlParser();
   }
 
   public async test(action: IActionQueryParse): Promise<TestResult<IActorTest>> {
@@ -29,12 +31,11 @@ export class ActorQueryParseSparql extends ActorQueryParse {
 
   public async run(action: IActionQueryParse): Promise<IActorQueryParseOutput> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
-    const parser = new SparqlParser({
+    const parsedSyntax = this.parser.parse(action.query, {
       prefixes: this.prefixes,
       baseIRI: action.baseIRI,
       dataFactory: <DataFactory<RDF.BaseQuad>> dataFactory,
     });
-    const parsedSyntax = parser.parse(action.query);
     const baseIRI = ('type' in parsedSyntax && parsedSyntax.type === 'query') ? parsedSyntax.base : undefined;
     return {
       baseIRI,
