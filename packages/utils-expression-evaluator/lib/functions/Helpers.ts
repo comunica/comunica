@@ -273,6 +273,17 @@ addInvalidHandling = true,
     );
   }
 
+  public onDirLangString1(
+    op: (expressionEvaluator: IInternalEvaluator) => (lit: E.DirLangStringLiteral) => Term,
+    addInvalidHandling = true,
+  ): Builder {
+    return this.set(
+      [ C.TypeURL.RDF_DIR_LANG_STRING ],
+      expressionEvaluator => ([ lit ]: [E.DirLangStringLiteral]) => op(expressionEvaluator)(lit),
+      addInvalidHandling,
+    );
+  }
+
   public onStringly1(
     op: (expressionEvaluator: IInternalEvaluator) => (lit: E.Literal<string>) => Term,
 addInvalidHandling = true,
@@ -458,8 +469,8 @@ export function langString(str: string, lang: string): E.LangStringLiteral {
   return new E.LangStringLiteral(str, lang);
 }
 
-export function dirLangString(str: string, lang: string): E.LangStringLiteral {
-  return new E.LangStringLiteral(str, lang);
+export function dirLangString(str: string, lang: string, direction: 'ltr' | 'rtl'): E.DirLangStringLiteral {
+  return new E.DirLangStringLiteral(str, lang, direction);
 }
 
 export function dateTime(date: IDateTimeRepresentation, str: string): E.DateTimeLiteral {

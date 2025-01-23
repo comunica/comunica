@@ -37,6 +37,8 @@ describe('evaluation of \'replace\' like', () => {
       "bAAAb" "a+" "c" "i" = "bcb"
       "baaab"@en "a+" "c" = "bcb"@en
       "bAAAb"@en "a+" "c" "i" = "bcb"@en
+      "baaab"@en--ltr "a+" "c" = "bcb"@en--ltr
+      "bAAAb"@en--rtl "a+" "c" "i" = "bcb"@en--rtl
       
       "apple" "apple" '"$0 $0"' = '"apple apple"'
       "abcde" "(a)(b)(c)?(d)(e)" '"$1$2$3$4$5"' = '"abcde"'

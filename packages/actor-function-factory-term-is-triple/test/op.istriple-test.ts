@@ -12,7 +12,7 @@ describe('evaluation of \'ISTRIPLE\'', () => {
     notation: Notation.Function,
     operation: 'ISTRIPLE',
     testArray: [
-      [ '<< <ex:a> <ex:b> <ex:c> >>', '"true"^^xsd:boolean' ],
+      [ '<<( <ex:a> <ex:b> <ex:c> )>>', '"true"^^xsd:boolean' ],
       [ '"123"', '"false"^^xsd:boolean' ],
       [ '<ex:abc>', '"false"^^xsd:boolean' ],
     ],

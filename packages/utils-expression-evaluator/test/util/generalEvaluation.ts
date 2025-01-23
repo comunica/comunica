@@ -54,9 +54,9 @@ Promise<{ asyncError: unknown; syncError?: unknown } | undefined> {
   }
 }
 
+const parser = new SparqlParser();
 function parse(query: string) {
   // TODO: remove custom parsing once sparqlalgebrajs is ported to traqula
-  const parser = new SparqlParser();
   const parsedSyntax = parser.parse(query);
   const sparqlQuery = translate(<any> parsedSyntax, { sparqlStar: true });
   // Extract filter expression from complete query

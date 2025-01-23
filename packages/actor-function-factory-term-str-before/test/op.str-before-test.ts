@@ -16,15 +16,25 @@ describe('evaluations of \'strbefore\' like', () => {
     testTable: `
         "abc" "b" = "a"
         "abc"@en "bc" = "a"@en
+        "abc"@en--ltr "bc" = "a"@en--ltr
+        "abc"@en--ltr "bc"@en = "a"@en--ltr
         "abc"^^xsd:string "" = ""^^xsd:string
         "abc" "xyz" = ""
         "abc"@en "z"@en = ""
+        "abc"@en "z" = ""
+        "abc"@en--ltr "z"@en--ltr = ""
+        "abc"@en--ltr "z"@en = ""
+        "abc"@en--ltr "z" = ""
         "abc" "z" = ""
         "abc"@en ""@en = ""@en
+        "abc"@en--ltr ""@en--ltr = ""@en--ltr
         "abc"@en "" = ""@en
       `,
     errorTable: `
         "abc"@en "b"@cy = 'Operation on incompatible language literals'
+        "abc"@en--ltr "b"@nl--ltr = 'Operation on incompatible language literals'
+        "abc"@en--ltr "b"@en--rtl = 'Operation on incompatible directional language literals'
+        "abc"@en--ltr "b"@nl = 'Operation on incompatible language literals'
       `,
   });
 });

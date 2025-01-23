@@ -12,8 +12,8 @@ describe('evaluation of \'OBJECT\'', () => {
     notation: Notation.Function,
     operation: 'OBJECT',
     testArray: [
-      [ '<< <ex:a> <ex:b> <ex:c> >>', 'ex:c' ],
-      [ '<< <ex:a2> <ex:b2> "123" >>', '"123"' ],
+      [ '<<( <ex:a> <ex:b> <ex:c> )>>', 'ex:c' ],
+      [ '<<( <ex:a2> <ex:b2> "123" )>>', '"123"' ],
     ],
   });
   runFuncTestTable({

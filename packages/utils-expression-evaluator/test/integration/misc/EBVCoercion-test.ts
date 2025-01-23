@@ -49,10 +49,12 @@ describe('the coercion of RDF terms to it\'s EBV like', () => {
 
     testLiteralCoercesTo(DF.literal(''), false);
     testLiteralCoercesTo(DF.literal('', 'en'), false);
+    testLiteralCoercesTo(DF.literal('', { language: 'en', direction: 'ltr' }), false);
     testCoercesTo('', stringType, false);
 
     testLiteralCoercesTo(DF.literal('a'), true);
     testLiteralCoercesTo(DF.literal('a', 'en'), true);
+    testLiteralCoercesTo(DF.literal('a', { language: 'en', direction: 'ltr' }), true);
     testCoercesTo('a', stringType, true);
 
     testCoercesTo('0', integerType, false);

@@ -12,8 +12,8 @@ describe('evaluation of \'PREDICATE\'', () => {
     notation: Notation.Function,
     operation: 'PREDICATE',
     testArray: [
-      [ '<< <ex:a> <ex:b> <ex:c> >>', 'ex:b' ],
-      [ '<< <ex:a2> <ex:b2> "123" >>', 'ex:b2' ],
+      [ '<<( <ex:a> <ex:b> <ex:c> )>>', 'ex:b' ],
+      [ '<<( <ex:a2> <ex:b2> "123" )>>', 'ex:b2' ],
     ],
   });
   runFuncTestTable({

@@ -15,6 +15,7 @@ describe('like \'strlangdir\' receiving', () => {
       "abc" "fr" "rtl" = "abc"@fr--rtl
     `,
     errorTable: `
+    "abc" "" "LTR" = 'Unable to create directional language string for empty languages'
     "abc" "en-US" "LTR" = 'Unable to create directional language string for direction "LTR"'
     "abc" "en-US" "" = 'Unable to create directional language string for direction ""'
     "abc" "en-US" "rtll" = 'Unable to create directional language string for direction "rtll"'

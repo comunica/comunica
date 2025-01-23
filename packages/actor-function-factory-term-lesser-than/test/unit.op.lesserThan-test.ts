@@ -35,6 +35,31 @@ describe('lesser than', () => {
           context: getMockEEActionContext(),
         }, undefined),
       )).toEqual(new Eval.BooleanLiteral(true));
+
+      expect(op.applyOnTerms(
+        [
+          new Eval.Quad(
+            new Eval.IntegerLiteral(2),
+            new Eval.IntegerLiteral(2),
+            new Eval.IntegerLiteral(2),
+            dg,
+          ),
+          new Eval.Quad(
+            new Eval.IntegerLiteral(3),
+            new Eval.IntegerLiteral(2),
+            new Eval.IntegerLiteral(2),
+            dg,
+          ),
+        ],
+        await getMockEEFactory({
+          mediatorFunctionFactory: createFuncMediator([
+            args => new ActorFunctionFactoryTermAddition(args),
+          ], {}),
+        }).run({
+          algExpr: getMockExpression(),
+          context: getMockEEActionContext(),
+        }, undefined),
+      )).toEqual(new Eval.BooleanLiteral(true));
     });
   });
 });

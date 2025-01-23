@@ -124,6 +124,12 @@ export class IncompatibleLanguageOperation extends ExpressionError {
   }
 }
 
+export class IncompatibleDirectionalLanguageOperation extends ExpressionError {
+  public constructor(public arg1: E.DirLangStringLiteral, public arg2: E.DirLangStringLiteral) {
+    super(`Operation on incompatible directional language literals '${pp(arg1)}' and '${pp(arg2)}'`);
+  }
+}
+
 export class EmptyAggregateError extends ExpressionError {
   public constructor() {
     super('Empty aggregate expression');

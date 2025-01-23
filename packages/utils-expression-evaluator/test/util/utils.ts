@@ -7,9 +7,9 @@ import type { AliasMap } from './Aliases';
 import type { Notation } from './TestTable';
 import { ArrayTable, BinaryTable, UnaryTable, VariableTable } from './TestTable';
 
+const parser = new SparqlParser();
 export function getMockExpression(expr = '1+1'): Alg.Expression {
   // TODO: remove custom parsing once sparqlalgebrajs is ported to traqula
-  const parser = new SparqlParser();
   const parsedSyntax = parser.parse(`SELECT * WHERE { ?s ?p ?o FILTER (${expr})}`);
   return translate(<any> parsedSyntax).input.expression;
 }
