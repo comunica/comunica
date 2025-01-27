@@ -529,6 +529,9 @@ export class HttpServiceSparqlEndpoint {
     // Keep track of all open responses, to be able to terminate then when the worker is terminated
     const openResponses = new Set<ServerResponse>();
 
+    // Helper function to print errors into stderr
+    const printError = (error: Error): boolean => stderr.write(inspect(error));
+
     // Handle termination of this worker
     const terminateWorker = async(code = 15): Promise<void> => {
       stderr.write(`Terminating worker ${process.pid} with code ${code} and ${openResponses.size} open connections\n`);
@@ -550,20 +553,20 @@ export class HttpServiceSparqlEndpoint {
         // Remove the connection from the tracked open list, and kill the worker if we want fresh workers per query.
         // If the terminate function is called, in which case the worker has already been removed, then avoid recursion.
         if (openResponses.delete(response) && this.freshWorkerPerQuery && request.method !== 'HEAD') {
-          terminateWorker().then().catch(error => stderr.write(inspect(error)));
+          terminateWorker().then().catch(printError);
         }
       });
       // Inform the primary process that the worker has received a request to handle
       process.send!('start');
       this.handleRequest(stdout, stderr, request, response, engine, mediaTypeFormats, mediaTypeWeights)
-        .catch(error => stderr.write(inspect(error)));
+        .catch(printError);
     });
 
     // Subscribe to shutdown messages
     process.on('message', (message: string) => {
       switch (message) {
         case 'terminate':
-          terminateWorker().catch(error => stderr.write(inspect(error)));
+          terminateWorker().catch(printError);
           break;
         default:
           stderr.write(`Unknown message received by worker ${process.pid}: ${message}\n`);
@@ -574,7 +577,7 @@ export class HttpServiceSparqlEndpoint {
     // Catch global errors, and cleanly close open connections
     process.on('uncaughtException', (error: Error) => {
       stderr.write(inspect(error));
-      terminateWorker().then().catch(error => stderr.write(inspect(error)));
+      terminateWorker().then().catch(printError);
     });
 
     // Start listening on the assigned port
