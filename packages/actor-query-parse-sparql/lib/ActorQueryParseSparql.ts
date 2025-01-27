@@ -1,10 +1,10 @@
 import type { IActionQueryParse, IActorQueryParseArgs, IActorQueryParseOutput } from '@comunica/bus-query-parse';
 import { ActorQueryParse } from '@comunica/bus-query-parse';
 import { KeysInitQuery } from '@comunica/context-entries';
-import type * as RDF from '@rdfjs/types';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
 import { translate, Algebra } from 'sparqlalgebrajs';
 import { Parser as SparqlParser } from 'sparqljs';
 
