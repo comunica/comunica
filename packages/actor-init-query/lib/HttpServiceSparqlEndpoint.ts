@@ -479,6 +479,7 @@ export class HttpServiceSparqlEndpoint {
           } else {
             stderr.write(`Worker ${worker.process.pid} terminated with exit code ${code} signal ${signal}, starting a new one\n`);
             workerTimeouts.delete(worker);
+            workerTimeouts.set(cluster.fork(), undefined);
           }
         }
       });
@@ -534,7 +535,6 @@ export class HttpServiceSparqlEndpoint {
 
     // Handle termination of this worker
     const terminateWorker = async(code = 15): Promise<void> => {
-      stderr.write(`Terminating worker ${process.pid} with code ${code} and ${openResponses.size} open connections\n`);
       server.close();
       // Clear the responses set now, to avoid the response.on('close') handler triggering recursion
       const responses = [ ...openResponses.values() ];

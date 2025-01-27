@@ -721,15 +721,14 @@ describe('HttpServiceSparqlEndpoint', () => {
       expect(mockServer.close).not.toHaveBeenCalled();
       await expect(httpServiceSparqlEndpoint.runWorker(stdout, stderr)).resolves.toBeUndefined();
       expect(() => mockRequestHandler(mockRequest, mockResponse)).not.toThrow();
-      expect(stderr.write).not.toHaveBeenCalled();
+      expect(mockServer.close).not.toHaveBeenCalled();
       expect(() => messageHandler('terminate')).not.toThrow();
       // Workaround so the promises running in .then().catch() have time to finish
       expect(process.send).toHaveBeenCalledTimes(2);
       expect(process.send).toHaveBeenNthCalledWith(1, 'start');
       expect(process.send).toHaveBeenNthCalledWith(2, 'end');
       await new Promise(resolve => setTimeout(resolve, 10));
-      expect(stderr.write).toHaveBeenCalledTimes(1);
-      expect(stderr.write).toHaveBeenNthCalledWith(1, expect.stringContaining('Terminating worker'));
+      expect(mockServer.close).toHaveBeenCalledTimes(1);
     });
 
     it('should handle unknown messages', async() => {
