@@ -47,6 +47,6 @@
     "@comunica/types": "^4.0.2",
     "@rdfjs/types": "*",
     "rdf-data-factory": "^2.0.0",
-    "sparqlalgebrajs": "^5.0.0"
+    "sparqlalgebrajs": "^5.0.1"
   }
 }
