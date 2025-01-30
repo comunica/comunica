@@ -256,7 +256,7 @@ TS
           };
         }, { type: 'exact', value: 1 });
       // The cardinality should only be zero if one of the entries has zero cardinality, not due to float overflow
-      if (!hasZeroCardinality) {
+      if (!hasZeroCardinality || optional) {
         cardinalityJoined.value *= (await this.mediatorJoinSelectivity.mediate({ entries, context })).selectivity;
         if (cardinalityJoined.value === 0) {
           cardinalityJoined.value = Number.MIN_VALUE;

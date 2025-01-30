@@ -880,6 +880,18 @@ IActorRdfJoinSelectivityOutput
           variables: [],
         },
       ], action.context, {})).cardinality.value).toBe(0);
+      expect((await instance.constructResultMetadata([], [
+        {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: Number.MIN_VALUE },
+          variables: [],
+        },
+        {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 0 },
+          variables: [],
+        },
+      ], action.context, {}, true)).cardinality.value).toBe(1 * 0.8);
     });
 
     it('should join variables', async() => {
