@@ -41,6 +41,7 @@ module.exports = config([
       '**/__mocks__/*.js',
       'packages/actor-dereference-file/**/*.ts',
       'packages/actor-http-native/**/*.ts',
+      'packages/actor-init-query/lib/HttpServiceSparqlEndpoint.ts',
       'packages/logger-bunyan/**/*.ts',
       'packages/packager/**/*.ts',
     ],

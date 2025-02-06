@@ -1,73 +1,344 @@
-/* eslint-disable import/no-nodejs-modules,ts/no-require-imports,ts/no-var-requires */
-import type { Cluster } from 'node:cluster';
-import type { EventEmitter } from 'node:events';
-import * as http from 'node:http';
+import type { Worker, Cluster } from 'node:cluster';
+import { createServer } from 'node:http';
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import * as querystring from 'node:querystring';
 import type { Writable } from 'node:stream';
-import * as url from 'node:url';
+import { inspect } from 'node:util';
 import { KeysQueryOperation } from '@comunica/context-entries';
-import { ActionContext } from '@comunica/core';
-import type { ICliArgsHandler, QueryQuads, QueryType } from '@comunica/types';
-import type * as RDF from '@rdfjs/types';
+import type { ICliArgsHandler, QueryType, QueryStringContext, IQueryQuadsEnhanced } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
-
+import { DataFactory } from 'rdf-data-factory';
 import yargs from 'yargs';
-
-import type { IDynamicQueryEngineOptions } from '..';
-
-import { QueryEngineBase, QueryEngineFactoryBase } from '..';
-
+import type { ActorInitQuery } from './ActorInitQuery';
 import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase';
 import { CliArgsHandlerHttp } from './cli/CliArgsHandlerHttp';
+import { QueryEngineBase } from './QueryEngineBase';
+import { QueryEngineFactoryBase } from './QueryEngineFactoryBase';
+import type { IDynamicQueryEngineOptions } from './QueryEngineFactoryBase';
+
+// The cluster module seemingly breaks when imported in CommonJS
+const cluster: Cluster = require('node:cluster');
+
+// The HTTP content negotiation library is missing all types, hence this workaround
+const negotiate: {
+  choose: (variants: { type: string; q: number }[], request: IncomingMessage) => { type: string; qts: number }[];
+} = require('negotiate');
 
 // Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
-const clusterUntyped = require('node:cluster');
 const process: NodeJS.Process = require('process/');
-const quad = require('rdf-quad');
 
-// Force type on Cluster, because there are issues with the Node.js typings since v18
-const cluster: Cluster = clusterUntyped;
+const DF = new DataFactory();
 
 /**
  * An HTTP service that exposes a Comunica engine as a SPARQL endpoint.
  */
 export class HttpServiceSparqlEndpoint {
-  public static readonly MIME_PLAIN = 'text/plain';
-  public static readonly MIME_JSON = 'application/json';
-
-  public readonly engine: Promise<QueryEngineBase>;
-
-  public readonly context: any;
-  public readonly timeout: number;
-  public readonly port: number;
-  public readonly workers: number;
-
-  public readonly freshWorkerPerQuery: boolean;
-  public readonly contextOverride: boolean;
-
-  public lastQueryId = 0;
+  protected readonly port: number;
+  protected readonly timeout: number;
+  protected readonly workers: number;
+  protected readonly context: QueryStringContext;
+  protected readonly invalidateCacheBeforeQuery: boolean;
+  protected readonly freshWorkerPerQuery: boolean;
+  protected readonly allowContextOverride: boolean;
+  protected readonly endpointPath: string = '/sparql';
+  protected readonly engineFactory: QueryEngineFactoryBase<QueryEngineBase>;
+  protected readonly engineWrapper: (actorInitQuery: ActorInitQuery) => QueryEngineBase;
 
   public constructor(args: IHttpServiceSparqlEndpointArgs) {
     this.context = args.context || {};
     this.timeout = args.timeout ?? 60_000;
     this.port = args.port ?? 3_000;
     this.workers = args.workers ?? 1;
+    this.invalidateCacheBeforeQuery = Boolean(args.invalidateCacheBeforeQuery);
     this.freshWorkerPerQuery = Boolean(args.freshWorkerPerQuery);
-    this.contextOverride = Boolean(args.contextOverride);
-
-    this.engine = new QueryEngineFactoryBase(
+    this.allowContextOverride = Boolean(args.allowContextOverride);
+    this.engineWrapper = actorInitQuery => new QueryEngineBase(actorInitQuery);
+    this.engineFactory = new QueryEngineFactoryBase(
       args.moduleRootPath,
       args.defaultConfigPath,
-      actorInitQuery => new QueryEngineBase(actorInitQuery),
-    ).create(args);
+      this.engineWrapper,
+    );
+  }
+
+  /**
+   * Start the HTTP service.
+   * @param {Writable} stdout The output stream to log to.
+   * @param {Writable} stderr The error stream to log errors to.
+   */
+  public run(stdout: Writable, stderr: Writable): Promise<void> {
+    return cluster.isPrimary ? this.runPrimary(stdout, stderr) : this.runWorker(stdout, stderr);
+  }
+
+  public async handleRequest(
+    stdout: Writable,
+    stderr: Writable,
+    request: IncomingMessage,
+    response: ServerResponse,
+    engine: QueryEngineBase,
+    mediaTypeFormats: Record<string, string>,
+    mediaTypeWeights: Record<string, number>,
+  ): Promise<void> {
+    // Attempt to reconstruct the original full request URL with protocol and host
+    const requestProtocol = <string> request.headers['x-forwarded-proto'] ?? 'http';
+    const requestHost = <string> request.headers['x-forwarded-host'] ?? request.headers.host ?? 'localhost';
+    const requestUrl = new URL(request.url ?? '/', `${requestProtocol}://${requestHost}`);
+
+    // Headers that should always be sent and will not depend on the response
+    response.setHeader('Access-Control-Allow-Origin', '*');
+
+    try {
+      // Requests should only be accepted at the specificed endpoint path
+      if (requestUrl.pathname !== this.endpointPath) {
+        throw new HTTPError(404, 'Not Found');
+      }
+
+      // Attempt to parse the request, and throw an error in case of failure
+      const operation = await this.parseOperation(requestUrl, request);
+
+      // Cache only needs to be invalidated when the worker is not fresh
+      if (this.invalidateCacheBeforeQuery && !this.freshWorkerPerQuery) {
+        await engine.invalidateHttpCache();
+      }
+
+      // Execute the query, or generate the service description
+      const result: QueryType = operation.type === 'sd' ?
+        this.getServiceDescription(requestUrl, mediaTypeFormats) :
+        await engine.query(operation.queryString, operation.context);
+
+      // TODO: Fix media type negotiation to avoid serialization errors here
+      const mediaType = this.negotiateResultType(request, result, mediaTypeWeights);
+      const { data } = await engine.resultToString(result, mediaType, this.context);
+
+      // Everything is fine thus far, so assign the status code and set content-type header
+      response.statusCode = 200;
+      response.setHeader('Content-Type', mediaType);
+
+      await new Promise<void>((resolve, reject) => {
+        data.on('error', reject).on('end', resolve);
+        data.pipe(response);
+      });
+
+      stdout.write(`Worker ${process.pid} resolved to ${result.resultType} as ${mediaType}\n`);
+    } catch (error: unknown) {
+      if (error instanceof HTTPError) {
+        stderr.write(`Worker ${process.pid} failed with ${error.statusCode} ${error.message}\n`);
+        response.statusCode = error.statusCode;
+      } else {
+        stderr.write(`Worker ${process.pid} encountered internal error\n`);
+        stderr.write(inspect(error));
+        response.statusCode = 500;
+      }
+    }
+
+    if (!response.closed) {
+      // When an error is thrown, the response needs to be closed separately here,
+      // because the stream does not end on its own.
+      response.end();
+    }
+  }
+
+  /**
+   * Resolve the media type for result serialization via content negotiation.
+   *
+   * Bundling all the media types for different data (quads, bindings, statistics) into the same list is broken,
+   * and allows clients to request things like 'bindings serialized as application/n-quads', which then gets
+   * accepted by the engine, but fails at the serialization step. This negotiation function therefore cannot know
+   * if the serializers are able to handle the request.
+   *
+   * @param {IncomingMessage} request The incoming HTTP request.
+   * @param {QueryType} result The outgoing result.
+   * @param {Record<string, number>} mediaTypeWeights The supported media types and their weighs.
+   * @returns {string | undefined} The negotiated media type, or undefined if negotiation failed.
+   */
+  public negotiateResultType(
+    request: IncomingMessage,
+    result: QueryType,
+    mediaTypeWeights: Record<string, number>,
+  ): string {
+    // Convert the media type weights into format expected by the library
+    const variants = Object.entries(mediaTypeWeights).map(([ type, q ]) => ({ type, q })).sort(t => t.q);
+
+    // Attempt initial negotiation using the full pool of media types
+    const negotiatedVariant: { type: string; qts: number } | undefined = negotiate.choose(variants, request)
+      .sort((first: any, second: any) => second.qts - first.qts).at(0);
+
+    // TODO: Split the media types into pools based on response.resultType and do content negotiation over the
+    // appropriate pool only, then remove this code below, because it is a workaround to force default media types
+    // unless the HTTP client explicitly requests a specific one. The client can still request an incompatible format,
+    // but for cases like "Accept: */*" the code below will pick a media type that will work.
+    if (negotiatedVariant && negotiatedVariant.qts > 2) {
+      return negotiatedVariant.type;
+    }
+
+    switch (result.resultType) {
+      case 'bindings':
+        return 'application/sparql-results+json';
+      case 'quads':
+        return 'application/n-quads';
+      default:
+        return 'simple';
+    }
+  }
+
+  /**
+   * Extracts the SPARQL protocol operation from an incoming HTTP request.
+   * @param {URL} url The parsed request URL.
+   * @param {IncomingMessage} request The incoming HTTP request.
+   * @returns {ISparqlOperation} The parsed SPARQL protocol operation.
+   */
+  public async parseOperation(url: URL, request: IncomingMessage): Promise<ISparqlOperation> {
+    switch (request.method) {
+      case 'GET':
+      case 'HEAD':
+      case 'OPTIONS':
+        if (url.searchParams.has('query')) {
+          return {
+            type: 'query',
+            queryString: url.searchParams.get('query')!,
+            context: this.parseOperationParams(url.searchParams),
+          };
+        }
+        if (url.searchParams.has('update')) {
+          return {
+            type: 'update',
+            queryString: url.searchParams.get('update')!,
+            context: this.parseOperationParams(url.searchParams),
+          };
+        }
+        return {
+          type: 'sd',
+          queryString: '',
+          context: this.parseOperationParams(url.searchParams),
+        };
+      case 'POST':
+        // eslint-disable-next-line no-case-declarations
+        const requestBody = await this.readRequestBody(request);
+        if (requestBody.contentType.includes('application/sparql-query')) {
+          return {
+            type: 'query',
+            queryString: requestBody.content,
+            context: this.parseOperationParams(url.searchParams),
+          };
+        }
+        if (requestBody.contentType.includes('application/sparql-update')) {
+          return {
+            type: 'update',
+            queryString: requestBody.content,
+            context: this.parseOperationParams(url.searchParams),
+          };
+        }
+        if (requestBody.contentType.includes('application/x-www-form-urlencoded')) {
+          const requestBodyParams = new URLSearchParams(requestBody.content);
+          let requestBodyContext: QueryStringContext | undefined;
+          if (requestBodyParams.has('context')) {
+            try {
+              requestBodyContext = JSON.parse(requestBodyParams.get('context')!);
+            } catch {
+              break;
+            }
+          }
+          if (requestBodyParams.has('query')) {
+            return {
+              type: 'query',
+              queryString: requestBodyParams.get('query')!,
+              context: this.parseOperationParams(url.searchParams, requestBodyContext),
+            };
+          }
+          if (requestBodyParams.has('update')) {
+            return {
+              type: 'update',
+              queryString: requestBodyParams.get('update')!,
+              context: this.parseOperationParams(url.searchParams, requestBodyContext),
+            };
+          }
+        }
+        break;
+      default:
+        throw new HTTPError(405, 'Method Not Allowed');
+    }
+    // If no parsed operation has been returned from any of the branches,
+    // and the default switch block was not reached,
+    // it means that no SPARQL operation has been parsed, and the request is invalid.
+    throw new HTTPError(400, 'Bad Request');
+  }
+
+  /**
+   * Reads the incoming HTTP request body into a string, using the Content-Encoding header.
+   * @param {IncomingMessage} request The incoming client request.
+   * @returns {IParsedRequestBody} The request body.
+   */
+  public async readRequestBody(request: IncomingMessage): Promise<IParsedRequestBody> {
+    return new Promise((resolve, reject) => {
+      if (!request.headers['content-type']) {
+        throw new HTTPError(400, 'Bad Request');
+      }
+      const chunks: Uint8Array[] = [];
+      const encoding = <BufferEncoding>request.headers['content-encoding'] ?? 'utf-8';
+      request
+        .on('data', (chunk: Uint8Array) => chunks.push(chunk))
+        .on('error', reject)
+        .on('close', reject)
+        .on('end', () => resolve({
+          content: Buffer.concat(chunks).toString(encoding),
+          contentType: request.headers['content-type']!,
+          contentEncoding: encoding,
+        }));
+    });
+  }
+
+  /**
+   * Parses additional operation parameters from the URL search params into the context.
+   * @param {URLSearchParams} params The URL search parameters from user.
+   * @returns {QueryStringContext} The extended query string context.
+   */
+  public parseOperationParams(params: URLSearchParams, userContext?: QueryStringContext): QueryStringContext {
+    const context: QueryStringContext = { ...this.context, ...this.allowContextOverride ? userContext : {}};
+    if (params.has('default-graph-uri')) {
+      context.defaultGraphUris = params.getAll('default-graph-uri').map(uri => DF.namedNode(uri));
+    }
+    if (params.has('named-graph-uri')) {
+      context.namedGraphUris = params.getAll('named-graph-uri').map(uri => DF.namedNode(uri));
+    }
+    if (params.has('using-graph-uri')) {
+      context.usingGraphUris = params.getAll('using-graph-uri').map(uri => DF.namedNode(uri));
+    }
+    if (params.has('using-named-graph-uri')) {
+      context.usingNamedGraphUris = params.getAll('using-named-graph-uri').map(uri => DF.namedNode(uri));
+    }
+    return context;
+  }
+
+  /**
+   * Gets the SPARQL service description as a quad result format for serialization.
+   * @param {URL} serviceUri The URI at which this service is provided.
+   * @param {Record<string, string>} mediaTypeFormats The supported result format URIs.
+   * @returns {QueryQuads} The service description as query result quads.
+   */
+  public getServiceDescription(serviceUri: URL, mediaTypeFormats: Record<string, string>): IQueryQuadsEnhanced {
+    const sd = 'http://www.w3.org/ns/sparql-service-description#';
+    const rdf = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';
+    const endpoint = DF.namedNode(serviceUri.href);
+    const quads = [
+      // Basic metadata
+      DF.quad(endpoint, DF.namedNode(`${rdf}type`), DF.namedNode(`${sd}Service`)),
+      DF.quad(endpoint, DF.namedNode(`${sd}endpoint`), endpoint),
+      DF.quad(endpoint, DF.namedNode(`${sd}url`), endpoint),
+      // Features
+      DF.quad(endpoint, DF.namedNode(`${sd}feature`), DF.namedNode(`${sd}BasicFederatedQuery`)),
+      DF.quad(endpoint, DF.namedNode(`${sd}supportedLanguage`), DF.namedNode(`${sd}SPARQL10Query`)),
+      DF.quad(endpoint, DF.namedNode(`${sd}supportedLanguage`), DF.namedNode(`${sd}SPARQL11Query`)),
+      // Supported result formats
+      ...Object.values(mediaTypeFormats).map(uri => DF.quad(endpoint, DF.namedNode(`${sd}resultFormat`), DF.namedNode(uri))),
+    ];
+
+    // Return the service description as a fake query result for serialization
+    return { resultType: 'quads', execute: async() => new ArrayIterator(quads), metadata: <any>undefined };
   }
 
   /**
    * Starts the server
    * @param {string[]} argv The commandline arguments that the script was called with
-   * @param {module:stream.internal.Writable} stdout The output stream to log to.
-   * @param {module:stream.internal.Writable} stderr The error stream to log errors to.
+   * @param {Writable} stdout The output stream to log to.
+   * @param {Writable} stderr The error stream to log errors to.
    * @param {string} moduleRootPath The path to the invoking module.
    * @param {NodeJS.ProcessEnv} env The process env to get constants from.
    * @param {string} defaultConfigPath The path to get the config from if none is defined in the environment.
@@ -85,28 +356,35 @@ export class HttpServiceSparqlEndpoint {
     exit: (code: number) => void,
     cliArgsHandlers: ICliArgsHandler[] = [],
   ): Promise<void> {
-    const options = await HttpServiceSparqlEndpoint
-      .generateConstructorArguments(argv, moduleRootPath, env, defaultConfigPath, stderr, exit, cliArgsHandlers);
+    const options = await HttpServiceSparqlEndpoint.generateConstructorArguments(
+      argv,
+      moduleRootPath,
+      env,
+      defaultConfigPath,
+      stderr,
+      exit,
+      cliArgsHandlers,
+    );
+
+    const service = new HttpServiceSparqlEndpoint(options);
 
     return new Promise<void>((resolve) => {
-      new HttpServiceSparqlEndpoint(options || {}).run(stdout, stderr)
-        .then(resolve)
-        .catch((error) => {
-          stderr.write(error);
-          exit(1);
-          resolve();
-        });
+      service.run(stdout, stderr).then(resolve).catch((error) => {
+        stderr.write(inspect(error));
+        exit(1);
+        resolve();
+      });
     });
   }
 
   /**
    * Takes parsed commandline arguments and turns them into an object used in the HttpServiceSparqlEndpoint constructor
-   * @param {args: string[]} argv The commandline arguments that the script was called with
+   * @param {string[]} argv The commandline arguments that the script was called with
    * @param {string} moduleRootPath The path to the invoking module.
    * @param {NodeJS.ProcessEnv} env The process env to get constants from.
    * @param {string} defaultConfigPath The path to get the config from if none is defined in the environment.
-   * @param stderr The error stream.
-   * @param exit An exit process callback.
+   * @param {Writable} stderr The error stream.
+   * @param {Function} exit An exit process callback.
    * @param {ICliArgsHandler[]} cliArgsHandlers Enables manipulation of the CLI arguments and their processing.
    */
   public static async generateConstructorArguments(
@@ -135,7 +413,7 @@ export class HttpServiceSparqlEndpoint {
       args = await argumentsBuilder.parse(argv);
     } catch (error: unknown) {
       stderr.write(`${await argumentsBuilder.getHelp()}\n\n${(<Error> error).message}\n`);
-      return <any> exit(1);
+      return <any>exit(1);
     }
 
     // Invoke args handlers to process any remaining args
@@ -146,24 +424,26 @@ export class HttpServiceSparqlEndpoint {
       }
     } catch (error: unknown) {
       stderr.write(`${(<Error>error).message}/n`);
-      exit(1);
+      return <any>exit(1);
     }
 
+    const invalidateCacheBeforeQuery: boolean = args.invalidateCache;
     const freshWorkerPerQuery: boolean = args.freshWorker;
-    const contextOverride: boolean = args.contextOverride;
+    const allowContextOverride: boolean = args.allowContextOverride;
     const port = args.port;
     const timeout = args.timeout * 1_000;
     const workers = args.workers;
     context[KeysQueryOperation.readOnly.name] = !args.u;
 
-    const configPath = env.COMUNICA_CONFIG ? env.COMUNICA_CONFIG : defaultConfigPath;
+    const configPath = env.COMUNICA_CONFIG ?? defaultConfigPath;
 
     return {
       defaultConfigPath,
       configPath,
       context,
+      invalidateCacheBeforeQuery,
       freshWorkerPerQuery,
-      contextOverride,
+      allowContextOverride,
       moduleRootPath,
       mainModulePath: moduleRootPath,
       port,
@@ -173,506 +453,138 @@ export class HttpServiceSparqlEndpoint {
   }
 
   /**
-   * Start the HTTP service.
-   * @param {module:stream.internal.Writable} stdout The output stream to log to.
-   * @param {module:stream.internal.Writable} stderr The error stream to log errors to.
-   */
-  public run(stdout: Writable, stderr: Writable): Promise<void> {
-    if (cluster.isMaster) {
-      return this.runMaster(stdout, stderr);
-    }
-    return this.runWorker(stdout, stderr);
-  }
-
-  /**
    * Start the HTTP service as master.
-   * @param {module:stream.internal.Writable} stdout The output stream to log to.
-   * @param {module:stream.internal.Writable} stderr The error stream to log errors to.
+   * @param {Writable} stdout The output stream to log to.
+   * @param {Writable} stderr The error stream to log errors to.
    */
-  public async runMaster(stdout: Writable, stderr: Writable): Promise<void> {
-    stderr.write(`Server running on http://localhost:${this.port}/sparql\n`);
+  public async runPrimary(stdout: Writable, stderr: Writable): Promise<void> {
+    stdout.write(`Starting SPARQL endpoint service with ${this.workers} workers at <http://localhost:${this.port}${this.endpointPath}>\n`);
+
+    // The primary process is responsible for terminating workers when they reach their timeout
+    const workerTimeouts = new Map<Worker, NodeJS.Timeout | undefined>();
 
     // Create workers
     for (let i = 0; i < this.workers; i++) {
-      cluster.fork();
+      workerTimeouts.set(cluster.fork(), undefined);
     }
 
     // Attach listeners to each new worker
-    cluster.on('listening', (worker) => {
+    cluster.on('listening', (worker: Worker) => {
       // Respawn crashed workers
-      worker.once('exit', (code, signal) => {
+      worker.once('exit', (code: number, signal: string) => {
         if (!worker.exitedAfterDisconnect) {
           if (code === 9 || signal === 'SIGKILL') {
-            stderr.write(`Worker ${worker.process.pid} forcefully killed with ${code || signal}. Killing main process as well.\n`);
+            stderr.write(`Worker ${worker.process.pid} forcefully killed with exit code ${code} signal ${signal}, killing main process\n`);
             cluster.disconnect();
           } else {
-            stderr.write(`Worker ${worker.process.pid} died with ${code || signal}. Starting new worker.\n`);
-            cluster.fork();
+            stderr.write(`Worker ${worker.process.pid} terminated with exit code ${code} signal ${signal}, starting a new one\n`);
+            workerTimeouts.delete(worker);
+            workerTimeouts.set(cluster.fork(), undefined);
           }
         }
       });
-
-      // Handle worker timeouts
-      const workerTimeouts: Record<number, NodeJS.Timeout> = {};
-      worker.on('message', ({ type, queryId }) => {
-        if (type === 'start') {
-          stderr.write(`Worker ${worker.process.pid} got assigned a new query (${queryId}).\n`);
-          workerTimeouts[queryId] = setTimeout(() => {
-            try {
-              if (worker.isConnected()) {
-                stderr.write(`Worker ${worker.process.pid} timed out for query ${queryId}.\n`);
-                worker.send('shutdown');
+      worker.on('message', (message: string) => {
+        switch (message) {
+          case 'start':
+            stdout.write(`Worker ${worker.process.pid} received a new request\n`);
+            clearTimeout(workerTimeouts.get(worker));
+            workerTimeouts.set(worker, setTimeout(() => {
+              if (!worker.isDead()) {
+                stdout.write(`Worker ${worker.process.pid} timed out, terminating\n`);
+                worker.send('terminate');
               }
-            } catch (error: unknown) {
-              stderr.write(`Unable to timeout worker ${worker.process.pid}: ${(<Error> error).message}.\n`);
-            }
-            delete workerTimeouts[queryId];
-          }, this.timeout);
-        } else if (type === 'end' && workerTimeouts[queryId]) {
-          stderr.write(`Worker ${worker.process.pid} has completed query ${queryId}.\n`);
-          clearTimeout(workerTimeouts[queryId]);
-          delete workerTimeouts[queryId];
+            }, this.timeout));
+            break;
+          case 'end':
+            stdout.write(`Worker ${worker.process.pid} finished on time\n`);
+            clearTimeout(workerTimeouts.get(worker));
+            break;
+          default:
+            stdout.write(`Worker ${worker.process.pid} sent an unknown message: ${message}\n`);
+            break;
         }
       });
     });
 
     // Disconnect from cluster on SIGINT, so that the process can cleanly terminate
     process.once('SIGINT', () => {
+      stdout.write('Received SIGINT, terminating SPARQL endpoint\n');
       cluster.disconnect();
     });
   }
 
   /**
    * Start the HTTP service as worker.
-   * @param {module:stream.internal.Writable} stdout The output stream to log to.
-   * @param {module:stream.internal.Writable} stderr The error stream to log errors to.
+   * @param {Writable} stdout The output stream to log to.
+   * @param {Writable} stderr The error stream to log errors to.
    */
   public async runWorker(stdout: Writable, stderr: Writable): Promise<void> {
-    const engine: QueryEngineBase = await this.engine;
+    // Create the engine for this worker
+    const engine = await this.engineFactory.create();
 
-    // Determine the allowed media types for requests
-    const mediaTypes: Record<string, number> = await engine.getResultMediaTypes();
-    const variants: { type: string; quality: number }[] = [];
-    for (const type of Object.keys(mediaTypes)) {
-      variants.push({ type, quality: mediaTypes[type] });
-    }
+    // Determine the supported media types (keys) for use in HTTP content negotiation
+    // and their URIs (values) for use in SPARQL service description result format listing
+    const mediaTypeWeights = await engine.getResultMediaTypes();
+    const mediaTypeFormats = await engine.getResultMediaTypeFormats();
 
-    // Start the server
-    // eslint-disable-next-line ts/no-misused-promises
-    const server = http.createServer(this.handleRequest.bind(this, engine, variants, stdout, stderr));
-    server.listen(this.port);
-    stderr.write(`Server worker (${process.pid}) running on http://localhost:${this.port}/sparql\n`);
+    // Keep track of all open responses, to be able to terminate then when the worker is terminated
+    const openResponses = new Set<ServerResponse>();
 
-    // Keep track of all open connections
-    const openConnections: Set<ServerResponse> = new Set();
-    server.on('request', (request: IncomingMessage, response: ServerResponse) => {
-      openConnections.add(response);
+    // Helper function to print errors into stderr
+    const printError = (error: Error): boolean => stderr.write(inspect(error));
+
+    // Handle termination of this worker
+    const terminateWorker = async(code = 15): Promise<void> => {
+      server.close();
+      // Clear the responses set now, to avoid the response.on('close') handler triggering recursion
+      const responses = [ ...openResponses.values() ];
+      openResponses.clear();
+      await Promise.all(responses.map(connection => new Promise<void>(resolve => connection.end(resolve))));
+      // eslint-disable-next-line unicorn/no-process-exit
+      process.exit(code);
+    };
+
+    // Create the server with the request handler function, that has to be synchronous
+    const server = createServer((request: IncomingMessage, response: ServerResponse) => {
+      openResponses.add(response);
       response.on('close', () => {
-        openConnections.delete(response);
+        // Inform the primary process that the worker has finished
+        process.send!('end');
+        // Remove the connection from the tracked open list, and kill the worker if we want fresh workers per query.
+        // If the terminate function is called, in which case the worker has already been removed, then avoid recursion.
+        if (openResponses.delete(response) && this.freshWorkerPerQuery && request.method !== 'HEAD') {
+          terminateWorker().then().catch(printError);
+        }
       });
+      // Inform the primary process that the worker has received a request to handle
+      process.send!('start');
+      this.handleRequest(stdout, stderr, request, response, engine, mediaTypeFormats, mediaTypeWeights)
+        .catch(printError);
     });
 
     // Subscribe to shutdown messages
-    // eslint-disable-next-line ts/no-misused-promises
-    process.on('message', async(message: string): Promise<void> => {
-      if (message === 'shutdown') {
-        stderr.write(`Shutting down worker ${process.pid} with ${openConnections.size} open connections.\n`);
-
-        // Stop new connections from being accepted
-        server.close();
-
-        // Close all open connections
-        for (const connection of openConnections) {
-          await new Promise<void>(resolve => connection.end('!TIMEDOUT!', resolve));
-        }
-
-        // Kill the worker once the connections have been closed
-        process.exit(15);
+    process.on('message', (message: string) => {
+      switch (message) {
+        case 'terminate':
+          terminateWorker().catch(printError);
+          break;
+        default:
+          stderr.write(`Unknown message received by worker ${process.pid}: ${message}\n`);
+          break;
       }
     });
 
     // Catch global errors, and cleanly close open connections
-    // eslint-disable-next-line ts/no-misused-promises
-    process.on('uncaughtException', async(error) => {
-      stderr.write(`Terminating worker ${process.pid} with ${openConnections.size} open connections due to uncaught exception.\n`);
-      stderr.write(error.stack);
-
-      // Stop new connections from being accepted
-      server.close();
-
-      // Close all open connections
-      for (const connection of openConnections) {
-        await new Promise<void>(resolve => connection.end('!ERROR!', resolve));
-      }
-
-      // Kill the worker once the connections have been closed
-      process.exit(15);
-    });
-  }
-
-  /**
-   * Handles an HTTP request.
-   * @param {QueryEngineBase} engine A SPARQL engine.
-   * @param {{type: string; quality: number}[]} variants Allowed variants.
-   * @param {module:stream.internal.Writable} stdout Output stream.
-   * @param {module:stream.internal.Writable} stderr Error output stream.
-   * @param {module:http.IncomingMessage} request Request object.
-   * @param {module:http.ServerResponse} response Response object.
-   */
-  public async handleRequest(
-    engine: QueryEngineBase,
-    variants: { type: string; quality: number }[],
-    stdout: Writable,
-    stderr: Writable,
-    request: http.IncomingMessage,
-    response: http.ServerResponse,
-  ): Promise<void> {
-    const negotiated = require('negotiate').choose(variants, request)
-      .sort((first: any, second: any) => second.qts - first.qts);
-    const variant: any = request.headers.accept ? negotiated[0] : null;
-    // Require qts strictly larger than 2, as 1 and 2 respectively allow * and */* matching.
-    // For qts 0, 1, and 2, we fallback to our built-in media type defaults, for which we pass null.
-    const mediaType: string = variant && variant.qts > 2 ? variant.type : null;
-
-    // Verify the path
-    // eslint-disable-next-line node/no-deprecated-api
-    const requestUrl = url.parse(request.url ?? '', true);
-    if (requestUrl.pathname === '/' || request.url === '/') {
-      stdout.write('[301] Permanently moved. Redirected to /sparql.');
-      response.writeHead(301, { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*', Location: `http://localhost:${this.port}/sparql${requestUrl.search ?? ''}` });
-      response.end(JSON.stringify({ message: 'Queries are accepted on /sparql. Redirected.' }));
-      return;
-    }
-    if (requestUrl.pathname !== '/sparql') {
-      stdout.write('[404] Resource not found. Queries are accepted on /sparql.\n');
-      response.writeHead(
-        404,
-        { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*' },
-      );
-      response.end(JSON.stringify({ message: 'Resource not found. Queries are accepted on /sparql.' }));
-      return;
-    }
-
-    // Parse the query, depending on the HTTP method
-    let queryBody: IQueryBody | undefined;
-    switch (request.method) {
-      case 'POST':
-        queryBody = await this.parseBody(request);
-        await this.writeQueryResult(
-          engine,
-          stdout,
-          stderr,
-          request,
-          response,
-          queryBody,
-          mediaType,
-          false,
-          false,
-          this.lastQueryId++,
-        );
-        break;
-      case 'HEAD':
-      case 'GET':
-        // eslint-disable-next-line no-case-declarations
-        const queryValue = <string> requestUrl.query.query;
-        queryBody = queryValue ? { type: 'query', value: queryValue, context: undefined } : undefined;
-        // eslint-disable-next-line no-case-declarations
-        const headOnly = request.method === 'HEAD';
-        await this.writeQueryResult(
-          engine,
-          stdout,
-          stderr,
-          request,
-          response,
-          queryBody,
-          mediaType,
-          headOnly,
-          true,
-          this.lastQueryId++,
-        );
-        break;
-      default:
-        stdout.write(`[405] ${request.method} to ${request.url}\n`);
-        response.writeHead(
-          405,
-          { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*' },
-        );
-        response.end(JSON.stringify({ message: 'Incorrect HTTP method' }));
-    }
-  }
-
-  /**
-   * Writes the result of the given SPARQL query.
-   * @param {QueryEngineBase} engine A SPARQL engine.
-   * @param {module:stream.internal.Writable} stdout Output stream.
-   * @param {module:stream.internal.Writable} stderr Error output stream.
-   * @param {module:http.IncomingMessage} request Request object.
-   * @param {module:http.ServerResponse} response Response object.
-   * @param {IQueryBody | undefined} queryBody The query body.
-   * @param {string} mediaType The requested response media type.
-   * @param {boolean} headOnly If only the header should be written.
-   * @param {boolean} readOnly If only data can be read, but not updated. (i.e., if we're in a GET request)
-   * @param queryId The unique id of this query.
-   */
-  public async writeQueryResult(
-    engine: QueryEngineBase,
-    stdout: Writable,
-    stderr: Writable,
-    request: http.IncomingMessage,
-    response: http.ServerResponse,
-    queryBody: IQueryBody | undefined,
-    mediaType: string,
-    headOnly: boolean,
-    readOnly: boolean,
-    queryId: number,
-  ): Promise<void> {
-    if (!queryBody || !queryBody.value) {
-      return this.writeServiceDescription(engine, stdout, stderr, request, response, mediaType, headOnly);
-    }
-
-    // Log the start of the query execution
-    stdout.write(`[200] ${request.method} to ${request.url}\n`);
-    stdout.write(`      Requested media type: ${mediaType}\n`);
-    stdout.write(`      Received ${queryBody.type} query: ${queryBody.value}\n`);
-
-    // Send message to master process to indicate the start of an execution
-    process.send!({ type: 'start', queryId });
-
-    // Determine context
-    let context = {
-      ...this.context,
-      ...this.contextOverride ? queryBody.context : undefined,
-    };
-    if (readOnly) {
-      context = { ...context, [KeysQueryOperation.readOnly.name]: readOnly };
-    }
-
-    let result: QueryType;
-    try {
-      result = await engine.query(queryBody.value, context);
-
-      // For update queries, also await the result
-      if (result.resultType === 'void') {
-        await result.execute();
-      }
-    } catch (error: unknown) {
-      stdout.write('[400] Bad request\n');
-      response.writeHead(
-        400,
-        { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' },
-      );
-      response.end((<Error> error).message);
-      return;
-    }
-
-    // Default to SPARQL JSON for bindings and boolean
-    if (!mediaType) {
-      switch (result.resultType) {
-        case 'quads':
-          mediaType = 'application/trig';
-          break;
-        case 'void':
-          mediaType = 'simple';
-          break;
-        default:
-          mediaType = 'application/sparql-results+json';
-          break;
-      }
-    }
-
-    // Write header of response
-    response.writeHead(200, { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
-    stdout.write(`      Resolved to result media type: ${mediaType}\n`);
-
-    // Stop further processing for HEAD requests
-    if (headOnly) {
-      response.end();
-      return;
-    }
-
-    let eventEmitter: EventEmitter | undefined;
-    try {
-      const { data } = await engine.resultToString(result, mediaType);
-      data.on('error', (error: Error) => {
-        stdout.write(`[500] Server error in results: ${error.message} \n`);
-        if (!response.writableEnded) {
-          response.end('An internal server error occurred.\n');
-        }
-      });
-      data.pipe(response);
-      eventEmitter = data;
-    } catch {
-      stdout.write('[400] Bad request, invalid media type\n');
-      response.writeHead(
-        400,
-        { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' },
-      );
-      response.end('The response for the given query could not be serialized for the requested media type\n');
-    }
-
-    // Send message to master process to indicate the end of an execution
-    response.on('close', () => {
-      process.send!({ type: 'end', queryId });
+    process.on('uncaughtException', (error: Error) => {
+      stderr.write(inspect(error));
+      terminateWorker().then().catch(printError);
     });
 
-    this.stopResponse(response, queryId, process.stderr, eventEmitter);
-  }
-
-  public async writeServiceDescription(
-    engine: QueryEngineBase,
-    stdout: Writable,
-    stderr: Writable,
-    request: http.IncomingMessage,
-    response: http.ServerResponse,
-    mediaType: string,
-    headOnly: boolean,
-  ): Promise<void> {
-    stdout.write(`[200] ${request.method} to ${request.url}\n`);
-    stdout.write(`      Requested media type: ${mediaType}\n`);
-    stdout.write('      Received query for service description.\n');
-    response.writeHead(200, { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
-
-    if (headOnly) {
-      response.end();
-      return;
-    }
-
-    const s = request.url;
-    const sd = 'http://www.w3.org/ns/sparql-service-description#';
-    const quads: RDF.Quad[] = [
-      // Basic metadata
-      quad(s, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', `${sd}Service`),
-      quad(s, `${sd}endpoint`, '/sparql'),
-      quad(s, `${sd}url`, '/sparql'),
-
-      // Features
-      quad(s, `${sd}feature`, `${sd}BasicFederatedQuery`),
-      quad(s, `${sd}supportedLanguage`, `${sd}SPARQL10Query`),
-      quad(s, `${sd}supportedLanguage`, `${sd}SPARQL11Query`),
-    ];
-
-    let eventEmitter: EventEmitter;
-    try {
-      // Append result formats
-      const formats = await engine.getResultMediaTypeFormats(new ActionContext(this.context));
-      for (const format in formats) {
-        quads.push(quad(s, `${sd}resultFormat`, formats[format]));
-      }
-
-      // Flush results
-      const { data } = await engine.resultToString(<QueryQuads> {
-        resultType: 'quads',
-        execute: async() => new ArrayIterator(quads),
-        metadata: <any> undefined,
-      }, mediaType);
-      data.on('error', (error: Error) => {
-        stdout.write(`[500] Server error in results: ${error.message} \n`);
-        response.end('An internal server error occurred.\n');
-      });
-      data.pipe(response);
-      eventEmitter = data;
-    } catch {
-      stdout.write('[400] Bad request, invalid media type\n');
-      response.writeHead(
-        400,
-        { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' },
-      );
-      response.end('The response for the given query could not be serialized for the requested media type\n');
-      return;
-    }
-    this.stopResponse(response, 0, process.stderr, eventEmitter);
-  }
-
-  /**
-   * Stop after timeout or if the connection is terminated
-   * @param {module:http.ServerResponse} response Response object.
-   * @param queryId The unique query id.
-   * @param stderr Error stream to write to.
-   * @param {NodeJS.ReadableStream} eventEmitter Query result stream.
-   */
-  public stopResponse(
-    response: http.ServerResponse,
-    queryId: number,
-    stderr: Writable,
-    eventEmitter?: EventEmitter,
-  ): void {
-    response.on('close', killClient);
-    // eslint-disable-next-line ts/no-this-alias
-    const self = this;
-    function killClient(): void {
-      if (eventEmitter) {
-        // Remove all listeners so we are sure no more write calls are made
-        eventEmitter.removeAllListeners();
-        eventEmitter.on('error', () => {
-          // Void any errors that may still occur
-        });
-        eventEmitter.emit('end');
-      }
-      try {
-        response.end();
-      } catch {
-        // Do nothing
-      }
-
-      // Kill the worker if we want fresh workers per query
-      if (self.freshWorkerPerQuery) {
-        stderr.write(`Killing fresh worker ${process.pid} after query ${queryId}.\n`);
-        // eslint-disable-next-line unicorn/no-process-exit
-        process.exit(15);
-      }
-    }
-  }
-
-  /**
-   * Parses the body of a SPARQL POST request
-   * @param {module:http.IncomingMessage} request Request object.
-   * @return {Promise<IQueryBody>} A promise resolving to a query body object.
-   */
-  public parseBody(request: http.IncomingMessage): Promise<IQueryBody> {
-    return new Promise((resolve, reject) => {
-      let body = '';
-      request.setEncoding('utf8');
-      request.on('error', reject);
-      request.on('data', (chunk) => {
-        body += chunk;
-      });
-      request.on('end', () => {
-        const contentType: string | undefined = request.headers['content-type'];
-        if (contentType) {
-          if (contentType.includes('application/sparql-query')) {
-            return resolve({ type: 'query', value: body, context: undefined });
-          }
-          if (contentType.includes('application/sparql-update')) {
-            return resolve({ type: 'void', value: body, context: undefined });
-          }
-          if (contentType.includes('application/x-www-form-urlencoded')) {
-            const bodyStructure = querystring.parse(body);
-            let context: Record<string, any> | undefined;
-            if (bodyStructure.context) {
-              try {
-                context = JSON.parse(<string>bodyStructure.context);
-              } catch (error: unknown) {
-                reject(new Error(`Invalid POST body with context received ('${(<any> bodyStructure).context}'): ${(<Error> error).message}`));
-              }
-            }
-            if (bodyStructure.query) {
-              return resolve({ type: 'query', value: <string> bodyStructure.query, context });
-            }
-            if (bodyStructure.update) {
-              return resolve({ type: 'void', value: <string> bodyStructure.update, context });
-            }
-          }
-        }
-        reject(new Error(`Invalid POST body received, query type could not be determined`));
-      });
+    // Start listening on the assigned port
+    server.listen({ port: this.port }, () => {
+      stdout.write(`Worker ${process.pid} listening for requests\n`);
     });
   }
-}
-
-export interface IQueryBody {
-  type: 'query' | 'void';
-  value: string;
-  context: Record<string, any> | undefined;
 }
 
 export interface IHttpServiceSparqlEndpointArgs extends IDynamicQueryEngineOptions {
@@ -680,9 +592,29 @@ export interface IHttpServiceSparqlEndpointArgs extends IDynamicQueryEngineOptio
   timeout?: number;
   port?: number;
   workers?: number;
+  invalidateCacheBeforeQuery?: boolean;
   freshWorkerPerQuery?: boolean;
-  contextOverride?: boolean;
+  allowContextOverride?: boolean;
   moduleRootPath: string;
   defaultConfigPath: string;
 }
-/* eslint-enable import/no-nodejs-modules */
+
+class HTTPError extends Error {
+  public readonly statusCode: number;
+  public constructor(statusCode: number, message: string) {
+    super(message);
+    this.statusCode = statusCode;
+  }
+}
+
+interface ISparqlOperation {
+  type: 'query' | 'update' | 'sd';
+  queryString: string;
+  context: QueryStringContext;
+}
+
+interface IParsedRequestBody {
+  content: string;
+  contentType: string;
+  contentEncoding: string;
+}
