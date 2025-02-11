@@ -1,6 +1,6 @@
 {
   "name": "@comunica/utils-jest",
-  "version": "4.0.2",
+  "version": "4.1.0",
   "description": "Jest utilities for Comunica",
   "license": "MIT",
   "funding": {
@@ -41,9 +41,9 @@
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\""
   },
   "dependencies": {
-    "@comunica/core": "^4.0.2",
-    "@comunica/types": "^4.0.2",
-    "@comunica/utils-bindings-factory": "^4.0.2",
+    "@comunica/core": "^4.1.0",
+    "@comunica/types": "^4.1.0",
+    "@comunica/utils-bindings-factory": "^4.1.0",
     "@jest/expect-utils": "^29.7.0",
     "@rdfjs/types": "*",
     "@types/object-inspect": "^1.13.0",

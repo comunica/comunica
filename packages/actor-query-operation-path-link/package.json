@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-path-link",
-  "version": "4.0.2",
+  "version": "4.1.0",
   "description": "A path-link query-operation actor",
   "lsd:module": true,
   "license": "MIT",
@@ -41,10 +41,10 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/actor-abstract-path": "^4.0.2",
-    "@comunica/bus-query-operation": "^4.0.2",
-    "@comunica/context-entries": "^4.0.2",
-    "@comunica/types": "^4.0.2",
+    "@comunica/actor-abstract-path": "^4.1.0",
+    "@comunica/bus-query-operation": "^4.1.0",
+    "@comunica/context-entries": "^4.1.0",
+    "@comunica/types": "^4.1.0",
     "sparqlalgebrajs": "^4.3.8"
   }
 }

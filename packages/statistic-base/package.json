@@ -1,6 +1,6 @@
 {
   "name": "@comunica/statistic-base",
-  "version": "4.0.2",
+  "version": "4.1.0",
   "description": "Comunica package that defines the base class for statistic trackers in Comunica",
   "license": "MIT",
   "funding": {
@@ -39,6 +39,6 @@
     "build": "node \"../../node_modules/typescript/bin/tsc\""
   },
   "dependencies": {
-    "@comunica/types": "^4.0.2"
+    "@comunica/types": "^4.1.0"
   }
 }

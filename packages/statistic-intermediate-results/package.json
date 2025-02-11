@@ -1,6 +1,6 @@
 {
   "name": "@comunica/statistic-intermediate-results",
-  "version": "4.0.1",
+  "version": "4.1.0",
   "description": "Comunica package that defines the statistic tracking produced intermediate results",
   "license": "MIT",
   "homepage": "https://comunica.dev/",
@@ -35,9 +35,9 @@
     "build": "node \"../../node_modules/typescript/bin/tsc\""
   },
   "dependencies": {
-    "@comunica/context-entries": "^4.0.1",
-    "@comunica/core": "^4.0.1",
-    "@comunica/statistic-base": "^4.0.1",
-    "@comunica/types": "^4.0.1"
+    "@comunica/context-entries": "^4.1.0",
+    "@comunica/core": "^4.1.0",
+    "@comunica/statistic-base": "^4.1.0",
+    "@comunica/types": "^4.1.0"
   }
 }

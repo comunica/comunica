@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-abstract-parse",
-  "version": "4.0.2",
+  "version": "4.1.0",
   "description": "An abstract actor for applying parsers to dereferenced results",
   "lsd:module": true,
   "license": "MIT",
@@ -41,7 +41,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/core": "^4.0.2",
+    "@comunica/core": "^4.1.0",
     "readable-stream": "^4.5.2"
   }
 }

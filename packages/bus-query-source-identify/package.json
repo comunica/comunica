@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-query-source-identify",
-  "version": "4.0.2",
+  "version": "4.1.0",
   "description": "A comunica bus for query-source-identify events.",
   "lsd:module": true,
   "license": "MIT",
@@ -40,11 +40,11 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/core": "^4.0.2",
-    "@comunica/types": "^4.0.2",
-    "@comunica/utils-bindings-factory": "^4.0.2",
+    "@comunica/core": "^4.1.0",
+    "@comunica/types": "^4.1.0",
+    "@comunica/utils-bindings-factory": "^4.1.0",
     "@comunica/utils-iterator": "^4.0.1",
-    "@comunica/utils-metadata": "^4.0.2",
+    "@comunica/utils-metadata": "^4.1.0",
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0",
     "rdf-string": "^1.6.3",

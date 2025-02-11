@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-path-zero-or-one",
-  "version": "4.0.2",
+  "version": "4.1.0",
   "description": "A path-zero-or-one query-operation actor",
   "lsd:module": true,
   "license": "MIT",
@@ -41,14 +41,14 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/actor-abstract-path": "^4.0.2",
-    "@comunica/bus-merge-bindings-context": "^4.0.2",
-    "@comunica/bus-query-operation": "^4.0.2",
-    "@comunica/context-entries": "^4.0.2",
-    "@comunica/types": "^4.0.2",
-    "@comunica/utils-bindings-factory": "^4.0.2",
-    "@comunica/utils-metadata": "^4.0.2",
-    "@comunica/utils-query-operation": "^4.0.2",
+    "@comunica/actor-abstract-path": "^4.1.0",
+    "@comunica/bus-merge-bindings-context": "^4.1.0",
+    "@comunica/bus-query-operation": "^4.1.0",
+    "@comunica/context-entries": "^4.1.0",
+    "@comunica/types": "^4.1.0",
+    "@comunica/utils-bindings-factory": "^4.1.0",
+    "@comunica/utils-metadata": "^4.1.0",
+    "@comunica/utils-query-operation": "^4.1.0",
     "asynciterator": "^3.9.0",
     "sparqlalgebrajs": "^4.3.8"
   }

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-function-factory-term-datatype",
-  "version": "4.0.2",
+  "version": "4.1.0",
   "description": "A term-datatype function-factory actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,7 +37,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-function-factory": "^4.0.2",
-    "@comunica/utils-expression-evaluator": "^4.0.2"
+    "@comunica/bus-function-factory": "^4.1.0",
+    "@comunica/utils-expression-evaluator": "^4.1.0"
   }
 }

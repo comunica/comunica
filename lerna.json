@@ -21,7 +21,7 @@
     "packages/*",
     "performance/*"
   ],
-  "version": "4.0.2",
+  "version": "4.1.0",
   "loglevel": "success",
   "registry": "https://registry.npmjs.org/",
   "npmClient": "yarn",

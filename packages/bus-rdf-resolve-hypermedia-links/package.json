@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-rdf-resolve-hypermedia-links",
-  "version": "4.0.2",
+  "version": "4.1.0",
   "description": "A comunica bus for rdf-resolve-hypermedia-links events.",
   "lsd:module": true,
   "license": "MIT",
@@ -40,7 +40,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/core": "^4.0.2",
-    "@comunica/types": "^4.0.2"
+    "@comunica/core": "^4.1.0",
+    "@comunica/types": "^4.1.0"
   }
 }

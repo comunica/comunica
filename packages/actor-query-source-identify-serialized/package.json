@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-source-identify-serialized",
-  "version": "4.0.2",
+  "version": "4.1.0",
   "description": "A serialized query-source-identify actor",
   "lsd:module": true,
   "license": "MIT",
@@ -41,10 +41,10 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-query-source-identify": "^4.0.2",
-    "@comunica/bus-rdf-parse": "^4.0.2",
-    "@comunica/core": "^4.0.2",
-    "@comunica/types": "^4.0.2",
+    "@comunica/bus-query-source-identify": "^4.1.0",
+    "@comunica/bus-rdf-parse": "^4.1.0",
+    "@comunica/core": "^4.1.0",
+    "@comunica/types": "^4.1.0",
     "@rdfjs/types": "*",
     "rdf-store-stream": "^2.0.0",
     "readable-stream": "^4.2.0"

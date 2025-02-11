@@ -1,6 +1,34 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v4.1.0"></a>
+## [v4.1.0](https://github.com/comunica/comunica/compare/v4.0.2...v4.1.0) - 2025-02-11
+
+<a name="v4.1.0"></a>
+## [v4.1.0](https://github.com/comunica/comunica/compare/v4.0.2...v4.1.0) - 2025-02-11
+
+### Added
+* [Add support for x and q regex flags, Closes #1254](https://github.com/comunica/comunica/commit/76f174d8fc7ccd275a367a2043cbe6ee1ecbce12)
+* [Add ignoreOrder param to toEqualBindings jest helpers](https://github.com/comunica/comunica/commit/9e8a92b945cac6a87e85d7c70d3d945bcd382056)
+* [Add bus to transform intermediary streams](https://github.com/comunica/comunica/commit/d03d62fd21d940a3387a8f9497d1951c2103011b)
+* [Extend SPARQL Service Description parsing](https://github.com/comunica/comunica/commit/2c0af9eb76b7763afe39d07900f3320a061d94a4)
+
+### Changed
+* Performance improvements:
+  * [Allow Bind Join more for local data sources](https://github.com/comunica/comunica/commit/db38811ab069aefd5a055e5f192d83ab887527dd)
+  * [Shorten code path on empty join operations](https://github.com/comunica/comunica/commit/a7ae2e7ff44def29914347b53a73909e5858229d)
+  * [Remove uncommon variables handling in join entry sort](https://github.com/comunica/comunica/commit/24aa68239dde047201935c189736fb7313b9bec5)
+* [Improve warning message on expressions error in left join](https://github.com/comunica/comunica/commit/45975ad9d8cc2c17e6a3e4801a5b29ea671d145e)
+* [Update dependency htmlparser2 to v10 (#1472)](https://github.com/comunica/comunica/commit/22d63135de676e83745848ac78349a3647594fcd)
+* [Update dependency uuid to v11](https://github.com/comunica/comunica/commit/b19fe21e804944880290255204a898dd65a00112)
+
+### Fixed
+* [Fix link traversal with multiple sources not always working](https://github.com/comunica/comunica/commit/3bd4e0a3a6d7c607a594331bf3abfcb8a8f4cdd6)
+* [Fix floating point error for very low cardinalities](https://github.com/comunica/comunica/commit/748f4d46fab3843210c2b03f025fc4ed2d3dbce4)
+* [Fix sd:defaultGraph parsing with QPF endpoints](https://github.com/comunica/comunica/commit/c2fafd403e2f4bfe0e0ae62abec335b196b1e920)
+* [Fix query stopping when a triple pattern has estimated cardinality zero](https://github.com/comunica/comunica/commit/0f088b57d67d3bf104f5ff81d965050886ab74c8)
+* [Fix incorrect test method of ActorQuerySourceIdentifyHypermediaAnnotateSource](https://github.com/comunica/comunica/commit/8ee33a080f3955f0d254282909b1bf4204bd653b)
+
 <a name="v4.0.2"></a>
 ## [v4.0.2](https://github.com/comunica/comunica/compare/v4.0.1...v4.0.2) - 2024-10-16
 

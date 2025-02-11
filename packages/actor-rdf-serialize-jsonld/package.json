@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-serialize-jsonld",
-  "version": "4.0.2",
+  "version": "4.1.0",
   "description": "A jsonld rdf-serialize actor",
   "lsd:module": true,
   "license": "MIT",
@@ -41,8 +41,8 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-rdf-serialize": "^4.0.2",
-    "@comunica/types": "^4.0.2",
+    "@comunica/bus-rdf-serialize": "^4.1.0",
+    "@comunica/types": "^4.1.0",
     "jsonld-streaming-serializer": "^3.0.1"
   }
 }

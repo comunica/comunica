@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-parse-n3",
-  "version": "4.0.2",
+  "version": "4.1.0",
   "description": "A N3 RDF Parse actor",
   "lsd:module": true,
   "license": "MIT",
@@ -35,9 +35,9 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-rdf-parse": "^4.0.2",
-    "@comunica/context-entries": "^4.0.2",
-    "@comunica/types": "^4.0.2",
+    "@comunica/bus-rdf-parse": "^4.1.0",
+    "@comunica/context-entries": "^4.1.0",
+    "@comunica/types": "^4.1.0",
     "n3": "^1.17.0"
   }
 }

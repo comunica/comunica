@@ -1,6 +1,6 @@
 {
   "name": "@comunica/mediatortype-join-coefficients",
-  "version": "4.0.2",
+  "version": "4.1.0",
   "description": "A comunica mediator type for the 'join-coefficients' parameter.",
   "lsd:module": true,
   "license": "MIT",
@@ -37,7 +37,7 @@
     "build": "node \"../../node_modules/typescript/bin/tsc\""
   },
   "dependencies": {
-    "@comunica/core": "^4.0.2",
+    "@comunica/core": "^4.1.0",
     "@rdfjs/types": "*"
   }
 }
