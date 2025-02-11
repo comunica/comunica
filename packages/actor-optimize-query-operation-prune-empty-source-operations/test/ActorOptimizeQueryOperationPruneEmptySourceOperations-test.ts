@@ -790,7 +790,7 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
           expect(source1.source.queryBindings).toHaveBeenCalledWith(AF.createNop(), ctx);
         });
 
-        it('should be true for cardinality = 0 on a traversal source', async() => {
+        it('should be true for 0 cardinality on source with traversal enabled', async() => {
           source1.context = new ActionContext().set(KeysQuerySourceIdentify.traverse, true);
           source1.source.queryBindings = () => {
             const bindingsStream = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
@@ -798,6 +798,17 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
             return bindingsStream;
           };
           await expect(actor.hasSourceResults(AF, source1, AF.createNop(), ctx)).resolves.toBeTruthy();
+        });
+
+        it('should be true for 0 cardinality on source with traversal enabled via action context', async() => {
+          const actionContext = new ActionContext({ [KeysQuerySourceIdentify.traverse.name]: true });
+          source1.context = new ActionContext();
+          source1.source.queryBindings = () => {
+            const bindingsStream = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
+            bindingsStream.setProperty('metadata', { cardinality: { value: 0 }});
+            return bindingsStream;
+          };
+          await expect(actor.hasSourceResults(AF, source1, AF.createNop(), actionContext)).resolves.toBeTruthy();
         });
       });
 

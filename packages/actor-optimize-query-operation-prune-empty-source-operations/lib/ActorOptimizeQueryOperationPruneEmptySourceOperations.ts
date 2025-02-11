@@ -196,7 +196,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     context: IActionContext,
   ): Promise<boolean> {
     // Traversal sources should never be considered empty at optimization time.
-    if (source.context?.get(KeysQuerySourceIdentify.traverse)) {
+    if (source.context?.get(KeysQuerySourceIdentify.traverse) ?? context.get(KeysQuerySourceIdentify.traverse)) {
       return true;
     }
 
