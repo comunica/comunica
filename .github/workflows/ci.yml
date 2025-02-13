@@ -85,6 +85,7 @@ jobs:
           github-token: ${{ secrets.github_token }}
           flag-name: run-${{ matrix.node-version }}
           parallel: true
+          fail-on-error: false
 
   spectest:
     name: Specification tests
@@ -180,6 +181,7 @@ jobs:
         with:
           github-token: ${{ secrets.github_token }}
           parallel-finished: true
+          fail-on-error: false
 
   browserbuilds:
     name: Browser builds

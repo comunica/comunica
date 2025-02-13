@@ -10920,29 +10920,17 @@ rdf-store-stream@^1.1.0:
     "@rdfjs/types" "*"
     n3 "^1.11.1"
 
-rdf-store-stream@^2.0.0:
-  version "2.0.1"
-  resolved "https://registry.npmjs.org/rdf-store-stream/-/rdf-store-stream-2.0.1.tgz"
-  integrity sha512-znGaibHLvbRE0BrDcXHRleRcLKlHYP6ADr1RFJ3yA28QBmhOjxxgbBFTvCMzgsxvBIqdaFS8Vd2FG4NefJL4Mg==
+rdf-store-stream@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/rdf-store-stream/-/rdf-store-stream-3.0.0.tgz#79ec49161f6f76c429ef88065f26b1f3e1e5bd74"
+  integrity sha512-y30MHEyEnS1SjMzPhioZRvZ9yz4e6FL96TFq6YcMCUSDvT8zONotAfz28kMbOUAcKCncmrCJiukjP7Q1bJT4aw==
   dependencies:
-    "@rdfjs/types" "*"
-    rdf-stores "^1.0.0"
+    rdf-stores "^2.0.0"
 
-rdf-stores@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/rdf-stores/-/rdf-stores-1.0.0.tgz"
-  integrity sha512-wqp7M5409rbhpWQE0C1vyVysbz++aD2vEkZ6yueSxhDtyLvznS41R3cKiuUpm3ikc/yTpaCZwPo4iyKEaAwBIg==
-  dependencies:
-    "@rdfjs/types" "*"
-    asynciterator "^3.8.0"
-    rdf-data-factory "^1.1.1"
-    rdf-string "^1.6.2"
-    rdf-terms "^1.9.1"
-
-rdf-stores@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/rdf-stores/-/rdf-stores-2.0.0.tgz#3aae1a836d9ccbf530883210bcc1915c300452b9"
-  integrity sha512-jE69XM6EwL+bkXabcwHPH7pkXudBYoxw2PzQgNnbpyHBa9b4DGQGk4lcQJVHPaQDEeeq4msDGGq+c48HUnOdgg==
+rdf-stores@^2.0.0, rdf-stores@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/rdf-stores/-/rdf-stores-2.1.1.tgz#a95b173a90540f35a965ff5add9e386d8a715647"
+  integrity sha512-wYovM7q+12K+dV3AsPbBiAY63Dy1eoOBJ69XoL757Pqwimz2LLCrSwrjMyqc4AB+/wPgDwPeNiQA7IzD6zeAZg==
   dependencies:
     asynciterator "^3.8.0"
     rdf-data-factory "^2.0.1"

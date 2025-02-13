@@ -88,7 +88,65 @@ describe('QuerySourceRdfJs', () => {
         });
     });
 
+    it('should return triples in the default graph when matchBindings is unavailable', async() => {
+      (<any> store).matchBindings = undefined;
+      store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1')));
+      store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')));
+      store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('px'), DF.namedNode('o3')));
+
+      const data = source.queryBindings(
+        AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o')),
+        ctx,
+      );
+      await expect(data).toEqualBindingsStream([
+        BF.fromRecord({
+          s: DF.namedNode('s1'),
+          o: DF.namedNode('o1'),
+        }),
+        BF.fromRecord({
+          s: DF.namedNode('s2'),
+          o: DF.namedNode('o2'),
+        }),
+      ]);
+      await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
+        .toEqual({
+          cardinality: { type: 'exact', value: 2 },
+          state: expect.any(MetadataValidationState),
+          variables: [
+            { variable: DF.variable('s'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+          ],
+        });
+    });
+
     it('should return triples in a named graph', async() => {
+      store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1'), DF.namedNode('g1')));
+      store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2'), DF.namedNode('g2')));
+      store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('px'), DF.namedNode('o3'), DF.namedNode('g3')));
+
+      const data = source.queryBindings(
+        AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o'), DF.namedNode('g1')),
+        ctx,
+      );
+      await expect(data).toEqualBindingsStream([
+        BF.fromRecord({
+          s: DF.namedNode('s1'),
+          o: DF.namedNode('o1'),
+        }),
+      ]);
+      await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
+        .toEqual({
+          cardinality: { type: 'exact', value: 1 },
+          state: expect.any(MetadataValidationState),
+          variables: [
+            { variable: DF.variable('s'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+          ],
+        });
+    });
+
+    it('should return triples in a named graph when matchBindings is unavailable', async() => {
+      (<any> store).matchBindings = undefined;
       store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1'), DF.namedNode('g1')));
       store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2'), DF.namedNode('g2')));
       store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('px'), DF.namedNode('o3'), DF.namedNode('g3')));
@@ -142,9 +200,75 @@ describe('QuerySourceRdfJs', () => {
         });
     });
 
+    it('should return quads in named graphs when matchBindings is unavailable', async() => {
+      (<any> store).matchBindings = undefined;
+      store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1'), DF.namedNode('g1')));
+      store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')));
+      store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('px'), DF.namedNode('o3')));
+
+      const data = source.queryBindings(
+        AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o'), DF.variable('g')),
+        ctx,
+      );
+      await expect(data).toEqualBindingsStream([
+        BF.fromRecord({
+          s: DF.namedNode('s1'),
+          o: DF.namedNode('o1'),
+          g: DF.namedNode('g1'),
+        }),
+      ]);
+      await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
+        .toEqual({
+          cardinality: { type: 'estimate', value: 2 },
+          state: expect.any(MetadataValidationState),
+          variables: [
+            { variable: DF.variable('s'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+            { variable: DF.variable('g'), canBeUndef: false },
+          ],
+        });
+    });
+
     it('should return quads in named graphs and the default graph with union default graph', async() => {
       ctx = ctx.set(KeysQueryOperation.unionDefaultGraph, true);
 
+      store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1'), DF.namedNode('g1')));
+      store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')));
+      store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('px'), DF.namedNode('o3')));
+
+      const data = source.queryBindings(
+        AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o'), DF.variable('g')),
+        ctx,
+      );
+      await expect(data).toEqualBindingsStream([
+        BF.fromRecord({
+          s: DF.namedNode('s1'),
+          o: DF.namedNode('o1'),
+          g: DF.namedNode('g1'),
+        }),
+        BF.fromRecord({
+          s: DF.namedNode('s2'),
+          o: DF.namedNode('o2'),
+          g: DF.defaultGraph(),
+        }),
+      ]);
+      await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
+        .toEqual({
+          cardinality: { type: 'exact', value: 2 },
+          state: expect.any(MetadataValidationState),
+          variables: [
+            { variable: DF.variable('s'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+            { variable: DF.variable('g'), canBeUndef: false },
+          ],
+        });
+    });
+
+    // eslint-disable-next-line max-len
+    it('should return quads in named graphs and the default graph with union default graph when matchBindings is unavailable', async() => {
+      ctx = ctx.set(KeysQueryOperation.unionDefaultGraph, true);
+
+      (<any> store).matchBindings = undefined;
       store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1'), DF.namedNode('g1')));
       store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')));
       store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('px'), DF.namedNode('o3')));
@@ -244,6 +368,21 @@ describe('QuerySourceRdfJs', () => {
     });
 
     it('should delegate errors', async() => {
+      const it = new Readable();
+      it._read = () => {
+        it.emit('error', new Error('RdfJsSource error'));
+      };
+      store = <any> { matchBindings: () => it, match: () => it };
+      source = new QuerySourceRdfJs(store, DF, BF);
+
+      const data = source.queryBindings(
+        AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o')),
+        ctx,
+      );
+      await expect(arrayifyStream(data)).rejects.toThrow(new Error('RdfJsSource error'));
+    });
+
+    it('should delegate errors when matchBindings is unavailable', async() => {
       const it = new Readable();
       it._read = () => {
         it.emit('error', new Error('RdfJsSource error'));

@@ -1,4 +1,4 @@
-import { filterMatchingQuotedQuads, quadsToBindings } from '@comunica/bus-query-source-identify';
+import { filterMatchingQuotedQuads, getVariables, quadsToBindings } from '@comunica/bus-query-source-identify';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type {
   IQuerySource,
@@ -68,6 +68,40 @@ export class QuerySourceRdfJs implements IQuerySource {
       throw new Error(`Attempted to pass non-pattern operation '${operation.type}' to QuerySourceRdfJs`);
     }
 
+    // Get bindings directly if the source allows it
+    // This will be more efficient, as it avoids the intermediary quads translation and representation.
+    if (this.source.matchBindings) {
+      const rawStream = this.source.matchBindings(
+        this.bindingsFactory,
+        operation.subject,
+        operation.predicate,
+        operation.object,
+        operation.graph,
+      );
+      let it: AsyncIterator<RDF.Bindings> = rawStream instanceof AsyncIterator ?
+        rawStream :
+        wrapAsyncIterator<RDF.Bindings>(rawStream, { autoStart: false });
+
+      // Check if non-default-graph triples need to be filtered out.
+      // SPARQL query semantics allow graph variables to only match with named graphs, excluding the default graph
+      // But this is not the case when using union default graph semantics
+      let forceEstimateCardinality = false;
+      if (operation.graph.termType === 'Variable' && !context.get(KeysQueryOperation.unionDefaultGraph)) {
+        forceEstimateCardinality = true;
+        const variable = operation.graph;
+        it = it.filter(bindings => bindings.get(variable)!.termType !== 'DefaultGraph');
+      }
+
+      // Determine metadata
+      if (!it.getProperty('metadata')) {
+        const variables = getVariables(operation).map(variable => ({ variable, canBeUndef: false }));
+        this.setMetadata(it, operation, forceEstimateCardinality, { variables })
+          .catch(error => it.destroy(error));
+      }
+
+      return it;
+    }
+
     // Check if the source supports quoted triple filtering
     const quotedTripleFiltering = Boolean(this.source.features?.quotedTripleFiltering);
 
@@ -103,8 +137,10 @@ export class QuerySourceRdfJs implements IQuerySource {
   }
 
   protected async setMetadata(
-    it: AsyncIterator<RDF.Quad>,
+    it: AsyncIterator<any>,
     operation: Algebra.Pattern,
+    forceEstimateCardinality = false,
+    extraMetadata: Record<string, any> = {},
   ): Promise<void> {
     // Check if the source supports quoted triple filtering
     const quotedTripleFiltering = Boolean(this.source.features?.quotedTripleFiltering);
@@ -143,7 +179,11 @@ export class QuerySourceRdfJs implements IQuerySource {
 
     it.setProperty('metadata', {
       state: new MetadataValidationState(),
-      cardinality: { type: wouldRequirePostFiltering ? 'estimate' : 'exact', value: cardinality },
+      cardinality: {
+        type: wouldRequirePostFiltering || forceEstimateCardinality ? 'estimate' : 'exact',
+        value: cardinality,
+      },
+      ...extraMetadata,
     });
   }
 

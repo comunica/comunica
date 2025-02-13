@@ -1,3 +1,5 @@
+// eslint-disable-next-line import/no-nodejs-modules
+import type { EventEmitter } from 'node:events';
 import type * as RDF from '@rdfjs/types';
 
 export interface IRdfJsSourceExtended extends RDF.Source {
@@ -29,4 +31,20 @@ export interface IRdfJsSourceExtended extends RDF.Source {
     object?: RDF.Term,
     graph?: RDF.Term,
   ) => Promise<number> | number;
+
+  /**
+   * Returns a stream that produces all bindings matching the pattern.
+   * @param bindingsFactory The factory that will be used to create bindings.
+   * @param subject The subject, which can be a variable.
+   * @param predicate The predicate, which can be a variable.
+   * @param object The object, which can be a variable.
+   * @param graph The graph, which can be a variable.
+   */
+  matchBindings?: (
+    bindingsFactory: RDF.BindingsFactory,
+    subject: RDF.Term,
+    predicate: RDF.Term,
+    object: RDF.Term,
+    graph: RDF.Term,
+  ) => EventEmitter;
 }

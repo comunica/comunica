@@ -80,7 +80,7 @@
     "npm-check-updates": "^17.0.0",
     "rdf-data-factory": "^1.1.1",
     "rdf-quad": "^1.5.0",
-    "rdf-stores": "^2.0.0",
+    "rdf-stores": "^2.1.1",
     "rdf-test-suite": "^2.0.0",
     "rdf-test-suite-ldf": "^1.5.0",
     "setup-polly-jest": "^0.11.0",
