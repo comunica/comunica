@@ -19,17 +19,35 @@ export class TermFunctionLesserThanEqual extends TermFunctionBase {
       operator: SparqlOperator.LTE,
       overloads: declare(SparqlOperator.LTE)
         .set([ 'term', 'term' ], exprEval =>
-          ([ first, second ]) =>
-            // X <= Y -> X < Y || X = Y
-            // First check if the first is lesser than the second, then check if they are equal.
-            // Doing this, the correct error will be thrown,
-            // each type that has a lesserThanEqual has a matching lesserThan.
-            bool(
-              (<BooleanLiteral> this.lessThanFunction.applyOnTerms([ first, second ], exprEval))
-                .typedValue ||
-              (<BooleanLiteral> this.equalityFunction.applyOnTerms([ first, second ], exprEval))
-                .typedValue,
-            ))
+          ([ first, second ]) => {
+            // X <= Y -> X = Y || X < Y
+            // We must ensure correct handling of errors following logical-or semantics.
+
+            // First check if the first is lesser than the second.
+            let lessThanError: Error | undefined;
+            try {
+              if ((<BooleanLiteral> this.lessThanFunction.applyOnTerms([ first, second ], exprEval)).typedValue) {
+                return bool(true);
+              }
+            } catch (error) {
+              // If an error occurs, store it for later.
+              lessThanError = <Error> error;
+            }
+
+            // Then check if they are equal, and return if so.
+            if ((<BooleanLiteral> this.equalityFunction.applyOnTerms([ first, second ], exprEval))
+              .typedValue) {
+              return bool(true);
+            }
+
+            // If less than produced an error and equals was false, throw the error.
+            if (lessThanError) {
+              throw lessThanError;
+            }
+
+            // In all other cases, return false
+            return bool(false);
+          })
         .collect(),
     });
   }
