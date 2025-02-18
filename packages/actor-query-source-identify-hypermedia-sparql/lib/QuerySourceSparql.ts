@@ -7,10 +7,12 @@ import type {
   ComunicaDataFactory,
   FragmentSelectorShape,
   IActionContext,
+  IDataset,
   IQueryBindingsOptions,
   IQuerySource,
   MetadataBindings,
   MetadataVariable,
+  QueryResultCardinality,
 } from '@comunica/types';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
@@ -23,8 +25,6 @@ import { uniqTerms } from 'rdf-terms';
 import type { Factory, Algebra } from 'sparqlalgebrajs';
 import { toSparql, Util } from 'sparqlalgebrajs';
 import type { BindMethod } from './ActorQuerySourceIdentifyHypermediaSparql';
-
-const COUNT_INFINITY: RDF.QueryResultCardinality = { type: 'estimate', value: Number.POSITIVE_INFINITY };
 
 export class QuerySourceSparql implements IQuerySource {
   protected static readonly SELECTOR_SHAPE: FragmentSelectorShape = {
@@ -44,12 +44,15 @@ export class QuerySourceSparql implements IQuerySource {
   private readonly mediatorHttp: MediatorHttp;
   private readonly bindMethod: BindMethod;
   private readonly countTimeout: number;
+  private readonly defaultGraph?: string;
+  private readonly unionDefaultGraph: boolean;
+  private readonly datasets?: IDataset[];
   private readonly dataFactory: ComunicaDataFactory;
   private readonly algebraFactory: Factory;
   private readonly bindingsFactory: BindingsFactory;
 
   private readonly endpointFetcher: SparqlEndpointFetcher;
-  private readonly cache: LRUCache<string, RDF.QueryResultCardinality> | undefined;
+  private readonly cache: LRUCache<string, QueryResultCardinality> | undefined;
 
   private lastSourceContext: IActionContext | undefined;
 
@@ -64,6 +67,9 @@ export class QuerySourceSparql implements IQuerySource {
     forceHttpGet: boolean,
     cacheSize: number,
     countTimeout: number,
+    defaultGraph?: string,
+    unionDefaultGraph?: boolean,
+    datasets?: IDataset[],
   ) {
     this.referenceValue = url;
     this.url = url;
@@ -82,9 +88,12 @@ export class QuerySourceSparql implements IQuerySource {
       dataFactory,
     });
     this.cache = cacheSize > 0 ?
-      new LRUCache<string, RDF.QueryResultCardinality>({ max: cacheSize }) :
+      new LRUCache<string, QueryResultCardinality>({ max: cacheSize }) :
       undefined;
     this.countTimeout = countTimeout;
+    this.defaultGraph = defaultGraph;
+    this.unionDefaultGraph = unionDefaultGraph ?? false;
+    this.datasets = datasets;
   }
 
   public async getSelectorShape(): Promise<FragmentSelectorShape> {
@@ -166,7 +175,7 @@ export class QuerySourceSparql implements IQuerySource {
     // Emit metadata containing the estimated count
     let variablesCount: MetadataVariable[] = [];
     // eslint-disable-next-line no-async-promise-executor,ts/no-misused-promises
-    new Promise<RDF.QueryResultCardinality>(async(resolve, reject) => {
+    new Promise<QueryResultCardinality>(async(resolve, reject) => {
       // Prepare queries
       let countQuery: string;
       try {
@@ -180,18 +189,33 @@ export class QuerySourceSparql implements IQuerySource {
         }));
 
         const cachedCardinality = this.cache?.get(countQuery);
-        if (cachedCardinality !== undefined) {
+        if (cachedCardinality) {
           return resolve(cachedCardinality);
         }
 
-        const timeoutHandler = setTimeout(() => resolve(COUNT_INFINITY), this.countTimeout);
+        // Attempt to estimate locally prior to sending a COUNT request, as this should be much faster
+        const localEstimate = await this.estimateCardinality(operation);
+        if (localEstimate && Number.isFinite(localEstimate.value)) {
+          this.cache?.set(countQuery, localEstimate);
+          return resolve(localEstimate);
+        }
+
+        const timeoutHandler = setTimeout(() => resolve({
+          type: 'estimate',
+          value: Number.POSITIVE_INFINITY,
+          dataset: this.url,
+        }), this.countTimeout);
         const varCount = this.dataFactory.variable('count');
         const bindingsStream: BindingsStream = await this
           .queryBindingsRemote(this.url, countQuery, [ varCount ], context, []);
         bindingsStream.on('data', (bindings: Bindings) => {
           clearTimeout(timeoutHandler);
           const count = bindings.get(varCount);
-          const cardinality: RDF.QueryResultCardinality = { type: 'estimate', value: Number.POSITIVE_INFINITY };
+          const cardinality: QueryResultCardinality = {
+            type: 'estimate',
+            value: Number.POSITIVE_INFINITY,
+            dataset: this.url,
+          };
           if (count) {
             const cardinalityValue: number = Number.parseInt(count.value, 10);
             if (!Number.isNaN(cardinalityValue)) {
@@ -204,11 +228,11 @@ export class QuerySourceSparql implements IQuerySource {
         });
         bindingsStream.on('error', () => {
           clearTimeout(timeoutHandler);
-          resolve(COUNT_INFINITY);
+          resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url });
         });
         bindingsStream.on('end', () => {
           clearTimeout(timeoutHandler);
-          resolve(COUNT_INFINITY);
+          resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url });
         });
       } catch (error: unknown) {
         return reject(error);
@@ -223,9 +247,37 @@ export class QuerySourceSparql implements IQuerySource {
       })
       .catch(() => target.setProperty('metadata', {
         state: new MetadataValidationState(),
-        cardinality: COUNT_INFINITY,
+        cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url },
         variables: variablesCount,
       }));
+  }
+
+  /**
+   * Performs local cardinality estimation for the specified SPARQL algebra operation, which should
+   * result in better estimation performance at the expense of accuracy.
+   * @param {Algebra.Operation} operation A query operation.
+   */
+  public async estimateCardinality(operation: Algebra.Operation): Promise<QueryResultCardinality | undefined> {
+    if (this.datasets) {
+      // Try to estimate the cardinality on the default graph if possible.
+      if (this.defaultGraph) {
+        const defaultDataset = this.datasets.find(ds => ds.uri.endsWith(this.defaultGraph!));
+        if (defaultDataset) {
+          return defaultDataset.getCardinality(operation);
+        }
+      }
+
+      // When metadata for the default graph is not availble directly, sum up the other graphs
+      // when UnionDefaultGraph has been declared for the SPARQL endpoint.
+      if (this.unionDefaultGraph) {
+        const cardinalities = await Promise.all(this.datasets.map(ds => ds.getCardinality(operation)));
+        return {
+          type: cardinalities.some(card => card.type === 'estimate') ? 'estimate' : 'exact',
+          value: cardinalities.reduce((acc, card) => acc + card.value, 0),
+          dataset: this.url,
+        };
+      }
+    }
   }
 
   /**
