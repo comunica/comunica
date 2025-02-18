@@ -3,6 +3,7 @@ import type { ComunicaDataFactory, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { Map } from 'immutable';
 import { Bindings } from './Bindings';
+import { BindingsRaw } from './BindingsRaw';
 
 /**
  * A Bindings factory that provides Bindings backed by immutable.js.
@@ -31,10 +32,17 @@ export class BindingsFactory implements RDF.BindingsFactory {
   }
 
   public bindings(entries: [RDF.Variable, RDF.Term][] = []): Bindings {
+    if (true) {
+      return <any> new BindingsRaw(
+        this.dataFactory,
+        Object.fromEntries(entries.map(([ k, v ]) => [ k.value, v ])), // TODO: I guess this can be optimized... but is it needed?
+        this.contextMergeHandlers ? { contextMergeHandlers: this.contextMergeHandlers } : undefined,
+      );
+    }
     return new Bindings(
       this.dataFactory,
       Map(entries.map(([ key, value ]) => [ key.value, value ])),
-      this.contextMergeHandlers ? { contextMergeHandlers: this.contextMergeHandlers } : undefined,
+      this.contextMergeHandlers ? <any> { contextMergeHandlers: this.contextMergeHandlers } : undefined,
     );
   }
 
