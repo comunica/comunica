@@ -10927,17 +10927,6 @@ rdf-store-stream@^3.0.0:
   dependencies:
     rdf-stores "^2.0.0"
 
-rdf-stores@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/rdf-stores/-/rdf-stores-1.0.0.tgz#1689bd669853bda857620d0db32f3b59940db208"
-  integrity sha512-wqp7M5409rbhpWQE0C1vyVysbz++aD2vEkZ6yueSxhDtyLvznS41R3cKiuUpm3ikc/yTpaCZwPo4iyKEaAwBIg==
-  dependencies:
-    "@rdfjs/types" "*"
-    asynciterator "^3.8.0"
-    rdf-data-factory "^1.1.1"
-    rdf-string "^1.6.2"
-    rdf-terms "^1.9.1"
-
 rdf-stores@^2.0.0, rdf-stores@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/rdf-stores/-/rdf-stores-2.1.1.tgz#a95b173a90540f35a965ff5add9e386d8a715647"
