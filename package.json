@@ -37,6 +37,7 @@
     "test:integration": "lerna run integration --concurrency 1",
     "test:node": "jest",
     "test:spec": "lerna run spec --concurrency 1",
+    "test:docker": "lerna run test:docker --concurrency 1",
     "version": "manual-git-changelog onversion"
   },
   "devDependencies": {
