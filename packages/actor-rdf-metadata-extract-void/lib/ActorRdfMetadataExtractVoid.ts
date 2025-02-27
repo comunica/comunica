@@ -1,4 +1,3 @@
-import type { ActorInitQueryBase } from '@comunica/actor-init-query';
 import type {
   IActionRdfMetadataExtract,
   IActorRdfMetadataExtractOutput,
@@ -42,7 +41,7 @@ import type {
  * A comunica Void RDF Metadata Extract Actor.
  */
 export class ActorRdfMetadataExtractVoid extends ActorRdfMetadataExtract {
-  public constructor(args: IActorRdfMetadataExtractVoidArgs) {
+  public constructor(args: IActorRdfMetadataExtractArgs) {
     super(args);
   }
 
@@ -151,19 +150,14 @@ export class ActorRdfMetadataExtractVoid extends ActorRdfMetadataExtract {
           // Helper function to extract property partitions into a map
           const getPropertyPartitions = (uri: string): Record<string, IVoidPropertyPartition> => {
             const partitions: Record<string, IVoidPropertyPartition> = {};
-            if (propertyPartitions[uri]) {
-              for (const partitionUri of propertyPartitions[uri]) {
-                const propertyUri = propertyPartitionProperties[partitionUri];
-                const propertyObjects = distinctObjects[partitionUri];
-                const propertySubjects = distinctSubjects[partitionUri];
-                const propertyTriples = triples[partitionUri];
-                if (propertyUri && (propertyObjects || propertySubjects || propertyTriples)) {
-                  partitions[propertyUri] = {
-                    distinctObjects: propertyObjects,
-                    distinctSubjects: propertySubjects,
-                    triples: propertyTriples,
-                  };
-                }
+            for (const partitionUri of propertyPartitions[uri]) {
+              const propertyUri = propertyPartitionProperties[partitionUri];
+              if (propertyUri) {
+                partitions[propertyUri] = {
+                  distinctObjects: distinctObjects[partitionUri],
+                  distinctSubjects: distinctSubjects[partitionUri],
+                  triples: triples[partitionUri],
+                };
               }
             }
             return partitions;
@@ -172,17 +166,15 @@ export class ActorRdfMetadataExtractVoid extends ActorRdfMetadataExtract {
           // Helper function to extract class partitions into a map
           const getClassPartitions = (uri: string): Record<string, IVoidClassPartition> => {
             const partitions: Record<string, IVoidClassPartition> = {};
-            if (classPartitions[uri]) {
-              for (const partitionUri of classPartitions[uri]) {
-                const classUri = classPartitionClasses[partitionUri];
-                const classEntities = entities[partitionUri];
-                const classPropertyPartitions = propertyPartitions[partitionUri];
-                if (classUri && (classEntities || classPropertyPartitions)) {
-                  partitions[classUri] = {
-                    entities: classEntities,
-                    propertyPartitions: getPropertyPartitions(partitionUri),
-                  };
-                }
+            for (const partitionUri of classPartitions[uri]) {
+              const classUri = classPartitionClasses[partitionUri];
+              if (classUri) {
+                partitions[classUri] = {
+                  entities: entities[partitionUri],
+                  propertyPartitions: propertyPartitions[partitionUri] ?
+                    getPropertyPartitions(partitionUri) :
+                    undefined,
+                };
               }
             }
             return partitions;
@@ -203,15 +195,15 @@ export class ActorRdfMetadataExtractVoid extends ActorRdfMetadataExtract {
             // Only the VoID descriptions with triple counts and class or property partitions are actually useful,
             // and any other ones would contain insufficient information to use in estimation, as the formulae
             // would go to 0 for most estimations.
-            if (triples[uri] && (classPartitions[uri] || propertyPartitions[uri])) {
+            if (triples[uri]) {
               const dataset: IVoidDataset = {
                 entities: entities[uri],
                 identifier: uri,
                 classes: classes[uri] ?? classPartitions[uri]?.length ?? 0,
-                classPartitions: getClassPartitions(uri),
+                classPartitions: classPartitions[uri] ? getClassPartitions(uri) : undefined,
                 distinctObjects: distinctObjects[uri],
                 distinctSubjects: distinctSubjects[uri],
-                propertyPartitions: getPropertyPartitions(uri),
+                propertyPartitions: propertyPartitions[uri] ? getPropertyPartitions(uri) : undefined,
                 triples: triples[uri],
                 uriRegexPattern: uriRegexPatterns[uri],
                 vocabularies: vocabularies[uri],
@@ -231,12 +223,4 @@ export class ActorRdfMetadataExtractVoid extends ActorRdfMetadataExtract {
         });
     });
   }
-}
-
-export interface IActorRdfMetadataExtractVoidArgs extends IActorRdfMetadataExtractArgs {
-  /**
-   * An init query actor that is used to query shapes.
-   * @default {<urn:comunica:default:init/actors#query>}
-   */
-  actorInitQuery: ActorInitQueryBase;
 }

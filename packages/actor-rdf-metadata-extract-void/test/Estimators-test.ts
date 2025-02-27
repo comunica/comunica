@@ -253,11 +253,6 @@ describe('estimators', () => {
   });
 
   describe('getDistinctObjects', () => {
-    it('should return 0 with no data available', () => {
-      const dataset = {};
-      expect(getDistinctObjects(<any>dataset)).toBe(0);
-    });
-
     it('should return void:distinctSubjects when available', () => {
       const distinctObjects = 321;
       const dataset = { distinctObjects };
@@ -269,14 +264,14 @@ describe('estimators', () => {
       const dataset = { entities };
       expect(getDistinctObjects(<any>dataset)).toBe(entities);
     });
+
+    it('should return dataset triple count with no data available', () => {
+      const dataset = { triples: datasetTripleCount };
+      expect(getDistinctObjects(<any>dataset)).toBe(datasetTripleCount);
+    });
   });
 
   describe('getDistinctSubjects', () => {
-    it('should return 0 with no data available', () => {
-      const dataset = {};
-      expect(getDistinctSubjects(<any>dataset)).toBe(0);
-    });
-
     it('should return void:distinctSubjects when available', () => {
       const distinctSubjects = 321;
       const dataset = { distinctSubjects };
@@ -288,11 +283,21 @@ describe('estimators', () => {
       const dataset = { entities };
       expect(getDistinctSubjects(<any>dataset)).toBe(entities);
     });
+
+    it('should return dataset triple count with no data available', () => {
+      const dataset = { triples: datasetTripleCount };
+      expect(getDistinctSubjects(<any>dataset)).toBe(datasetTripleCount);
+    });
   });
 
   describe('getPredicateObjects', () => {
     const predicateUri = 'ex:p';
     const predicateTerm = DF.namedNode(predicateUri);
+
+    it('should return dataset triple count with no property partitions available', () => {
+      const dataset = { triples: datasetTripleCount };
+      expect(getPredicateObjects(<any>dataset, predicateTerm)).toBe(datasetTripleCount);
+    });
 
     it('should return 0 with no data available', () => {
       const dataset = { propertyPartitions: {}};
@@ -310,6 +315,11 @@ describe('estimators', () => {
     const predicateUri = 'ex:p';
     const predicateTerm = DF.namedNode(predicateUri);
 
+    it('should return dataset triple count with no property partitions available', () => {
+      const dataset = { triples: datasetTripleCount };
+      expect(getPredicateSubjects(<any>dataset, predicateTerm)).toBe(datasetTripleCount);
+    });
+
     it('should return 0 with no data available', () => {
       const dataset = { propertyPartitions: {}};
       expect(getPredicateSubjects(<any>dataset, predicateTerm)).toBe(0);
@@ -325,6 +335,11 @@ describe('estimators', () => {
   describe('getPredicateTriples', () => {
     const predicateUri = 'ex:p';
     const predicateTerm = DF.namedNode(predicateUri);
+
+    it('should return dataset triple count with no property partitions available', () => {
+      const dataset = { triples: datasetTripleCount };
+      expect(getPredicateTriples(<any>dataset, predicateTerm)).toBe(datasetTripleCount);
+    });
 
     it('should return 0 with no data available', () => {
       const dataset = { propertyPartitions: {}};
@@ -342,7 +357,12 @@ describe('estimators', () => {
     const classUri = 'ex:c';
     const classTerm = DF.namedNode(classUri);
 
-    it('should return 0 with no data available', () => {
+    it('should return dataset triple count with no class partitions available', () => {
+      const dataset = { triples: datasetTripleCount };
+      expect(getClassPartitionEntities(<any>dataset, classTerm)).toBe(datasetTripleCount);
+    });
+
+    it('should return 0 with class partition but no class data', () => {
       const dataset = { classPartitions: {}};
       expect(getClassPartitionEntities(<any>dataset, classTerm)).toBe(0);
     });
@@ -356,7 +376,7 @@ describe('estimators', () => {
     it('should fall back to void:entited and void:classes from dataset when available', () => {
       const datasetEntities = 200;
       const datasetClasses = 50;
-      const dataset = { entities: datasetEntities, classes: datasetClasses, classPartitions: {}};
+      const dataset = { entities: datasetEntities, classes: datasetClasses };
       expect(getClassPartitionEntities(<any>dataset, classTerm)).toBe(datasetEntities / datasetClasses);
     });
   });
@@ -374,30 +394,30 @@ describe('estimators', () => {
         let expected = datasetTripleCount;
         // * <p> * should return predicate triples value
         if (pattern.predicate.termType === 'NamedNode') {
-          dataset.propertyPartitions[pattern.predicate.value] = {
+          dataset.propertyPartitions![pattern.predicate.value] = {
             triples: 321,
             distinctObjects: 0,
             distinctSubjects: 0,
           };
-          expected = dataset.propertyPartitions[pattern.predicate.value].triples;
+          expected = dataset.propertyPartitions![pattern.predicate.value].triples!;
         }
         // ?s rdf:type <o> should return class partition entities count
         if (pattern.predicate.value === RDF_TYPE) {
-          dataset.classPartitions[pattern.object.value] = { entities: 987, propertyPartitions: {}};
-          expected = dataset.classPartitions[pattern.object.value].entities;
+          dataset.classPartitions![pattern.object.value] = { entities: 987, propertyPartitions: {}};
+          expected = dataset.classPartitions![pattern.object.value].entities!;
         }
         expect(getPatternCardinalityRaw(dataset, pattern)).toBe(expected);
       });
 
       it('should return a non-zero value when all the metrics are available', () => {
         if (pattern.predicate.termType === 'NamedNode') {
-          dataset.propertyPartitions[pattern.predicate.value] = {
+          dataset.propertyPartitions![pattern.predicate.value] = {
             distinctObjects: Math.random() * 20,
             distinctSubjects: Math.random() * 50,
             triples: 100 + Math.random() * 100,
           };
           if (pattern.predicate.value === RDF_TYPE) {
-            dataset.classPartitions[pattern.object.value] = {
+            dataset.classPartitions![pattern.object.value] = {
               entities: Math.random() * 200,
               propertyPartitions: {},
             };

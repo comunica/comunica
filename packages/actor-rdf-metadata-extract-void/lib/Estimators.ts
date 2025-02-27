@@ -174,7 +174,9 @@ export function getPatternCardinalityRaw(dataset: IVoidDataset, pattern: Algebra
     (pattern.object.termType === 'Variable' || pattern.object.termType === 'Literal')
   ) {
     const distinctSubjects = getDistinctSubjects(dataset);
-    return distinctSubjects > 0 ? dataset.triples / distinctSubjects : dataset.triples;
+    if (distinctSubjects > 0) {
+      return dataset.triples / distinctSubjects;
+    }
   }
   // ?s <p> ?o (from the original paper)
   // ?s <p> "o" (also accounted for)
@@ -198,7 +200,9 @@ export function getPatternCardinalityRaw(dataset: IVoidDataset, pattern: Algebra
     )
   ) {
     const distinctObjects = getDistinctObjects(dataset);
-    return distinctObjects > 0 ? dataset.triples / distinctObjects : dataset.triples;
+    if (distinctObjects > 0) {
+      return dataset.triples / distinctObjects;
+    }
   }
   // <s> <p> ?o (from the original paper)
   // _:s <p> ?o (also accounted for)
@@ -224,9 +228,9 @@ export function getPatternCardinalityRaw(dataset: IVoidDataset, pattern: Algebra
   ) {
     const distinctSubjects = getDistinctSubjects(dataset);
     const distinctObjects = getDistinctObjects(dataset);
-    return distinctSubjects > 0 && distinctObjects > 0 ?
-      dataset.triples / (distinctSubjects * distinctObjects) :
-      dataset.triples;
+    if (distinctSubjects > 0 && distinctObjects > 0) {
+      return dataset.triples / (distinctSubjects * distinctObjects);
+    }
   }
   // ?s <p> <o> (from the original paper)
   // ?s <p> _:o (also accounted for)
@@ -261,41 +265,71 @@ export function getPatternCardinalityRaw(dataset: IVoidDataset, pattern: Algebra
 }
 
 /**
- * Attempts to retrieve void:distinctObjects, falls back to void:entities
+ * Attempts to retrieve void:distinctObjects, falls back to void:entities.
+ * Returns the total triple count as fallback upper bound.
  */
 export function getDistinctObjects(dataset: IVoidDataset): number {
-  return dataset.distinctObjects ?? dataset.entities ?? 0;
+  return dataset.distinctObjects ?? dataset.entities ?? dataset.triples;
 }
 
 /**
- * Attempts to retrieve void:distinctSubjects, falls back to void:entities
+ * Attempts to retrieve void:distinctSubjects, falls back to void:entities.
+ * Returns the total triple count as fallback upper bound.
  */
 export function getDistinctSubjects(dataset: IVoidDataset): number {
-  return dataset.distinctSubjects ?? dataset.entities ?? 0;
-}
-
-export function getPredicateObjects(dataset: IVoidDataset, predicate: RDF.Term): number {
-  return dataset.propertyPartitions[predicate.value]?.distinctObjects ?? 0;
-}
-
-export function getPredicateSubjects(dataset: IVoidDataset, predicate: RDF.Term): number {
-  return dataset.propertyPartitions[predicate.value]?.distinctSubjects ?? 0;
-}
-
-export function getPredicateTriples(dataset: IVoidDataset, predicate: RDF.Term): number {
-  return dataset.propertyPartitions[predicate.value]?.triples ?? 0;
+  return dataset.distinctSubjects ?? dataset.entities ?? dataset.triples;
 }
 
 /**
- * Attempts to retrieve void:entities from class partition,
- * falls back to estimation based on total entities and classes.
+ * Attempts to retrieve void:distinctObjects from a void:propertyPartition.
+ * Returns 0 when property partitions are available but the specific property is not.
+ * Falls back to total triple count as upper bound without any property partitions.
  */
-export function getClassPartitionEntities(dataset: IVoidDataset, object: RDF.Term): number {
-  if (dataset.classPartitions[object.value]) {
-    return dataset.classPartitions[object.value].entities;
+export function getPredicateObjects(dataset: IVoidDataset, predicate: RDF.NamedNode): number {
+  if (dataset.propertyPartitions) {
+    const partition = dataset.propertyPartitions[predicate.value];
+    return partition?.distinctObjects ?? partition?.triples ?? 0;
   }
-  if (dataset.entities > 0 && dataset.classes > 0) {
+  return dataset.triples;
+}
+
+/**
+ * Attempts to retrieve void:distinctSubjects from a void:propertyPartition.
+ * Returns 0 when property partitions are available but the specific property is not.
+ * Falls back to total triple count as upper bound without any property partitions.
+ */
+export function getPredicateSubjects(dataset: IVoidDataset, predicate: RDF.NamedNode): number {
+  if (dataset.propertyPartitions) {
+    const partition = dataset.propertyPartitions[predicate.value];
+    return partition?.distinctSubjects ?? partition?.triples ?? 0;
+  }
+  return dataset.triples;
+}
+
+/**
+ * Attempts to retrieve void:triples from a void:propertyPartition.
+ * Returns 0 when property partitions are available but the specific property is not.
+ * Falls back to total triple count as upper bound without any property partitions.
+ */
+export function getPredicateTriples(dataset: IVoidDataset, predicate: RDF.NamedNode): number {
+  if (dataset.propertyPartitions) {
+    return dataset.propertyPartitions[predicate.value]?.triples ?? 0;
+  }
+  return dataset.triples;
+}
+
+/**
+ * Attempts to retrieve void:entities from a void:classPartition.
+ * Returns 0 when class partitions are available but the specified class is not.
+ * Falls back to estimation using void:entities and void:classes on the dataset,
+ * and finally total dataset triple count as upper bound.
+ */
+export function getClassPartitionEntities(dataset: IVoidDataset, object: RDF.NamedNode | RDF.BlankNode): number {
+  if (dataset.classPartitions) {
+    return dataset.classPartitions[object.value]?.entities ?? 0;
+  }
+  if (dataset.entities !== undefined && dataset.classes) {
     return dataset.entities / dataset.classes;
   }
-  return 0;
+  return dataset.triples;
 }
