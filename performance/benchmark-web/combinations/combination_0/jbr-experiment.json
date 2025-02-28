@@ -14,5 +14,5 @@
   "queryRunnerRequestDelay": 0,
   "queryRunnerEndpointAvailabilityCheckTimeout": 1000,
   "queryRunnerUrlParams": {},
-  "hookSparqlEndpoint": {"@id": "urn:jbr:benchmark-web:combination_0:hookSparqlEndpoint","@type": "HookCli","entrypoint": [  "node",  "../../engines/query-sparql-file/bin/http.js",  "http://localhost/dummy",  "-p",  "3001",  "-t",  "60", "--contextOverride", "-i"],"statsFilePath": "output/stats.csv"  }
+  "hookSparqlEndpoint": {"@id": "urn:jbr:benchmark-web:combination_0:hookSparqlEndpoint","@type": "HookCli","entrypoint": [  "node",  "../../engines/query-sparql/bin/http.js",  "http://localhost/dummy",  "-p",  "3001",  "-t",  "60", "--contextOverride", "-i"],"statsFilePath": "output/stats.csv"  }
 }
