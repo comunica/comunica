@@ -180,7 +180,7 @@ describe('QuerySourceHypermedia', () => {
 
       it('should allow a custom first source to be set', async() => {
         source.sourcesState = new LRUCache<string, Promise<ISourceState>>({ max: 10 });
-        source.sourcesState.set('firstUrl', Promise.resolve(<ISourceState><any>{
+        source.sourcesState.set('firstUrl', Promise.resolve(<ISourceState> <any> {
           link: { url: 'firstUrl' },
           handledDatasets: {},
           metadata: {
@@ -236,7 +236,7 @@ describe('QuerySourceHypermedia', () => {
 
       it('should allow a custom first source to be set and emit a metadata event', async() => {
         source.sourcesState = new LRUCache<string, Promise<ISourceState>>({ max: 10 });
-        source.sourcesState.set('firstUrl', Promise.resolve(<ISourceState><any>{
+        source.sourcesState.set('firstUrl', Promise.resolve(<ISourceState> <any> {
           link: { url: 'firstUrl' },
           handledDatasets: {},
           metadata: {
@@ -383,7 +383,7 @@ describe('QuerySourceHypermedia', () => {
 
     describe('queryQuads', () => {
       it('should throw', async() => {
-        await expect(source.queryQuads(<any>undefined, context).toArray()).resolves
+        await expect(source.queryQuads(<any> undefined, context).toArray()).resolves
           .toBeRdfIsomorphic([
             quad('s1', 'p1', 'o1'),
             quad('s2', 'p2', 'o2'),
@@ -393,14 +393,14 @@ describe('QuerySourceHypermedia', () => {
 
     describe('queryBoolean', () => {
       it('should throw', async() => {
-        await expect(source.queryBoolean(<any>undefined, context)).resolves
+        await expect(source.queryBoolean(<any> undefined, context)).resolves
           .toBe(true);
       });
     });
 
     describe('queryVoid', () => {
       it('should throw', async() => {
-        await source.queryVoid(<any>undefined, context);
+        await source.queryVoid(<any> undefined, context);
       });
     });
 
@@ -418,7 +418,7 @@ describe('QuerySourceHypermedia', () => {
         const mediatorsThis = { ...mediators };
         mediatorsThis.mediatorQuerySourceIdentifyHypermedia = {
           mediate: async({ quads }: IActionQuerySourceIdentifyHypermedia) => ({
-            source: { sourceContents: (await (<any>quads).toArray())[0].object.value },
+            source: { sourceContents: (await (<any> quads).toArray())[0].object.value },
           }),
         };
         source = new QuerySourceHypermedia(10, 'firstUrl', 'forcedType', 64, false, mediatorsThis, logWarning, DF, BF);
@@ -526,7 +526,7 @@ describe('QuerySourceHypermedia', () => {
           metadata: { cardinality: { type: 'exact', value: 0 }},
           source: { sourceContents: expect.any(Readable) },
         });
-        await expect(arrayifyStream((<any>ret.source).sourceContents)).rejects.toThrow(error);
+        await expect(arrayifyStream((<any> ret.source).sourceContents)).rejects.toThrow(error);
       });
 
       it('should ignore data errors', async() => {
@@ -638,7 +638,7 @@ describe('QuerySourceHypermedia', () => {
           BF,
         );
         const it1 = source.queryBindings(operation, context);
-        const spy = jest.spyOn((<any>it1), 'kickstart');
+        const spy = jest.spyOn((<any> it1), 'kickstart');
         const it2 = source.queryBindings(operation, context);
         const it3 = source.queryBindings(
           AF.createPattern(DF.namedNode('s11'), DF.variable('p'), DF.variable('o')),
