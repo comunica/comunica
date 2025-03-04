@@ -39,6 +39,18 @@ export interface IAggregatedStore<Q extends RDF.BaseQuad = RDF.Quad>
   end: () => void;
 
   /**
+   * Indicate whether or not an IAggregatedStore has ended.
+   * @returns {boolean} return true if the store has ended
+   */
+  hasEnded: () => boolean;
+
+  /**
+   * Register a listener that will be invoked when the store has ended.
+   * @param listener A listener.
+   */
+  addEndListener: (listener: () => void) => void;
+
+  /**
    * Update the metadata of the base iterator, from which the aggregated store is being populated.
    * @param metadata The metadata object.
    * @param updateState If the metadata state of derived iterators should be immediately updated.

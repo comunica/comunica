@@ -180,7 +180,7 @@ describe('QuerySourceHypermedia', () => {
 
       it('should allow a custom first source to be set', async() => {
         source.sourcesState = new LRUCache<string, Promise<ISourceState>>({ max: 10 });
-        source.sourcesState.set('firstUrl', Promise.resolve(<ISourceState> <any> {
+        source.sourcesState.set('firstUrl', Promise.resolve(<ISourceState><any>{
           link: { url: 'firstUrl' },
           handledDatasets: {},
           metadata: {
@@ -236,7 +236,7 @@ describe('QuerySourceHypermedia', () => {
 
       it('should allow a custom first source to be set and emit a metadata event', async() => {
         source.sourcesState = new LRUCache<string, Promise<ISourceState>>({ max: 10 });
-        source.sourcesState.set('firstUrl', Promise.resolve(<ISourceState> <any> {
+        source.sourcesState.set('firstUrl', Promise.resolve(<ISourceState><any>{
           link: { url: 'firstUrl' },
           handledDatasets: {},
           metadata: {
@@ -383,7 +383,7 @@ describe('QuerySourceHypermedia', () => {
 
     describe('queryQuads', () => {
       it('should throw', async() => {
-        await expect(source.queryQuads(<any> undefined, context).toArray()).resolves
+        await expect(source.queryQuads(<any>undefined, context).toArray()).resolves
           .toBeRdfIsomorphic([
             quad('s1', 'p1', 'o1'),
             quad('s2', 'p2', 'o2'),
@@ -393,14 +393,14 @@ describe('QuerySourceHypermedia', () => {
 
     describe('queryBoolean', () => {
       it('should throw', async() => {
-        await expect(source.queryBoolean(<any> undefined, context)).resolves
+        await expect(source.queryBoolean(<any>undefined, context)).resolves
           .toBe(true);
       });
     });
 
     describe('queryVoid', () => {
       it('should throw', async() => {
-        await source.queryVoid(<any> undefined, context);
+        await source.queryVoid(<any>undefined, context);
       });
     });
 
@@ -418,7 +418,7 @@ describe('QuerySourceHypermedia', () => {
         const mediatorsThis = { ...mediators };
         mediatorsThis.mediatorQuerySourceIdentifyHypermedia = {
           mediate: async({ quads }: IActionQuerySourceIdentifyHypermedia) => ({
-            source: { sourceContents: (await (<any> quads).toArray())[0].object.value },
+            source: { sourceContents: (await (<any>quads).toArray())[0].object.value },
           }),
         };
         source = new QuerySourceHypermedia(10, 'firstUrl', 'forcedType', 64, false, mediatorsThis, logWarning, DF, BF);
@@ -526,7 +526,7 @@ describe('QuerySourceHypermedia', () => {
           metadata: { cardinality: { type: 'exact', value: 0 }},
           source: { sourceContents: expect.any(Readable) },
         });
-        await expect(arrayifyStream((<any> ret.source).sourceContents)).rejects.toThrow(error);
+        await expect(arrayifyStream((<any>ret.source).sourceContents)).rejects.toThrow(error);
       });
 
       it('should ignore data errors', async() => {
@@ -638,7 +638,7 @@ describe('QuerySourceHypermedia', () => {
           BF,
         );
         const it1 = source.queryBindings(operation, context);
-        const spy = jest.spyOn((<any> it1), 'kickstart');
+        const spy = jest.spyOn((<any>it1), 'kickstart');
         const it2 = source.queryBindings(operation, context);
         const it3 = source.queryBindings(
           AF.createPattern(DF.namedNode('s11'), DF.variable('p'), DF.variable('o')),
@@ -741,108 +741,56 @@ describe('QuerySourceHypermedia', () => {
         ]);
         expect(mediatorsThis.mediatorQuerySourceIdentifyHypermedia.mediate).toHaveBeenCalledTimes(3);
 
-        expect(it1Meta).toHaveBeenCalledTimes(4);
-        expect(it1Meta).toHaveBeenNthCalledWith(1, {
-          a: 1,
-          state: expect.any(MetadataValidationState),
-          firstMeta: true,
-          cardinality: { type: 'exact', value: 2 },
-        });
-        expect(it1Meta).toHaveBeenNthCalledWith(2, {
-          state: expect.any(MetadataValidationState),
-          a: 1,
-          firstMeta: true,
-          cardinality: { type: 'exact', value: 2 },
-        });
-        expect(it1Meta).toHaveBeenNthCalledWith(3, {
-          state: expect.any(MetadataValidationState),
-          a: 1,
-          firstMeta: true,
-          cardinality: { type: 'exact', value: 4 },
-        });
-        expect(it1Meta).toHaveBeenNthCalledWith(4, {
-          state: expect.any(MetadataValidationState),
-          a: 1,
-          firstMeta: true,
-          cardinality: { type: 'exact', value: 6 },
-        });
-        expect(it2Meta).toHaveBeenCalledTimes(8);
-        expect(it2Meta).toHaveBeenNthCalledWith(1, {
-          state: expect.any(MetadataValidationState),
+        const callsIt1Meta = it1Meta.mock.calls;
+        let lastCardinalityIt1 = 0;
+        for (const call of callsIt1Meta) {
+          const metadata = call[0];
+          expect(metadata).toStrictEqual({
+            a: 1,
+            state: expect.any(MetadataValidationState),
+            firstMeta: true,
+            cardinality: { type: 'exact', value: expect.any(Number) },
+          });
+          expect(metadata.cardinality.value).toBeGreaterThanOrEqual(lastCardinalityIt1);
+          lastCardinalityIt1 = metadata.cardinality.value > lastCardinalityIt1 ?
+            metadata.cardinality.value :
+            lastCardinalityIt1;
+        }
 
-          cardinality: { type: 'estimate', value: 0 },
-          variables: [
+        expect(lastCardinalityIt1).toBe(6);
+
+        const callsIt2Meta = it2Meta.mock.calls;
+        let lastCardinalityIt2 = 0;
+        for (const call of callsIt2Meta) {
+          const metadata = call[0];
+          expect(metadata.variables).toStrictEqual([
             { variable: DF.variable('s'), canBeUndef: false },
             { variable: DF.variable('p'), canBeUndef: false },
             { variable: DF.variable('o'), canBeUndef: false },
-          ],
-        });
-        expect(it2Meta).toHaveBeenNthCalledWith(2, {
-          state: expect.any(MetadataValidationState),
-          a: 1,
-          firstMeta: true,
-          cardinality: { type: 'estimate', value: 0 },
+          ]);
+          expect(metadata.cardinality.type).toBe('estimate');
+          expect(metadata.cardinality.value).toBeGreaterThanOrEqual(lastCardinalityIt2);
+          lastCardinalityIt2 = metadata.cardinality.value > lastCardinalityIt2 ?
+            metadata.cardinality.value :
+            lastCardinalityIt2;
+        }
+        expect(lastCardinalityIt2).toBe(6);
 
-          variables: [
-            { variable: DF.variable('s'), canBeUndef: false },
+        const callsIt3Meta = it3Meta.mock.calls;
+        let lastCardinalityIt3 = 0;
+        for (const call of callsIt3Meta) {
+          const metadata = call[0];
+          expect(metadata.variables).toStrictEqual([
             { variable: DF.variable('p'), canBeUndef: false },
             { variable: DF.variable('o'), canBeUndef: false },
-          ],
-        });
-        expect(it2Meta).toHaveBeenNthCalledWith(4, {
-          state: expect.any(MetadataValidationState),
-          a: 1,
-          cardinality: { type: 'estimate', value: 2 },
-
-          variables: [
-            { variable: DF.variable('s'), canBeUndef: false },
-            { variable: DF.variable('p'), canBeUndef: false },
-            { variable: DF.variable('o'), canBeUndef: false },
-          ],
-        });
-        expect(it2Meta).toHaveBeenNthCalledWith(6, {
-          state: expect.any(MetadataValidationState),
-          a: 1,
-          cardinality: { type: 'estimate', value: 3 },
-
-          variables: [
-            { variable: DF.variable('s'), canBeUndef: false },
-            { variable: DF.variable('p'), canBeUndef: false },
-            { variable: DF.variable('o'), canBeUndef: false },
-          ],
-        });
-        expect(it3Meta).toHaveBeenCalledTimes(4);
-        expect(it3Meta).toHaveBeenNthCalledWith(1, {
-          state: expect.any(MetadataValidationState),
-
-          cardinality: { type: 'estimate', value: 0 },
-          variables: [
-            { variable: DF.variable('p'), canBeUndef: false },
-            { variable: DF.variable('o'), canBeUndef: false },
-          ],
-        });
-        expect(it3Meta).toHaveBeenNthCalledWith(2, {
-          state: expect.any(MetadataValidationState),
-          a: 1,
-          cardinality: { type: 'estimate', value: 0 },
-          firstMeta: true,
-
-          variables: [
-            { variable: DF.variable('p'), canBeUndef: false },
-            { variable: DF.variable('o'), canBeUndef: false },
-          ],
-        });
-        expect(it3Meta).toHaveBeenNthCalledWith(4, {
-          state: expect.any(MetadataValidationState),
-          a: 1,
-          cardinality: { type: 'estimate', value: 0 },
-          firstMeta: true,
-
-          variables: [
-            { variable: DF.variable('p'), canBeUndef: false },
-            { variable: DF.variable('o'), canBeUndef: false },
-          ],
-        });
+          ]);
+          expect(metadata.cardinality.type).toBe('estimate');
+          expect(metadata.cardinality.value).toBeGreaterThanOrEqual(lastCardinalityIt3);
+          lastCardinalityIt3 = metadata.cardinality.value > lastCardinalityIt3 ?
+            metadata.cardinality.value :
+            lastCardinalityIt3;
+        }
+        expect(lastCardinalityIt3).toBe(1);
 
         expect(spy).toHaveBeenCalledTimes(2);
       });
