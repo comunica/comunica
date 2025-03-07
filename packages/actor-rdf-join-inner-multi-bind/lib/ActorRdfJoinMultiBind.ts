@@ -115,7 +115,12 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     this.logDebug(
       action.context,
       'First entry for Bind Join: ',
-      () => ({ entry: entries[0].operation, metadata: entries[0].metadata }),
+      () => ({
+        entry: entries[0].operation,
+        cardinality: entries[0].metadata.cardinality,
+        order: entries[0].metadata.order,
+        availableOrders: entries[0].metadata.availableOrders,
+      }),
     );
 
     // Close the non-smallest streams
