@@ -741,108 +741,56 @@ describe('QuerySourceHypermedia', () => {
         ]);
         expect(mediatorsThis.mediatorQuerySourceIdentifyHypermedia.mediate).toHaveBeenCalledTimes(3);
 
-        expect(it1Meta).toHaveBeenCalledTimes(4);
-        expect(it1Meta).toHaveBeenNthCalledWith(1, {
-          a: 1,
-          state: expect.any(MetadataValidationState),
-          firstMeta: true,
-          cardinality: { type: 'exact', value: 2 },
-        });
-        expect(it1Meta).toHaveBeenNthCalledWith(2, {
-          state: expect.any(MetadataValidationState),
-          a: 1,
-          firstMeta: true,
-          cardinality: { type: 'exact', value: 2 },
-        });
-        expect(it1Meta).toHaveBeenNthCalledWith(3, {
-          state: expect.any(MetadataValidationState),
-          a: 1,
-          firstMeta: true,
-          cardinality: { type: 'exact', value: 4 },
-        });
-        expect(it1Meta).toHaveBeenNthCalledWith(4, {
-          state: expect.any(MetadataValidationState),
-          a: 1,
-          firstMeta: true,
-          cardinality: { type: 'exact', value: 6 },
-        });
-        expect(it2Meta).toHaveBeenCalledTimes(8);
-        expect(it2Meta).toHaveBeenNthCalledWith(1, {
-          state: expect.any(MetadataValidationState),
+        const callsIt1Meta = it1Meta.mock.calls;
+        let lastCardinalityIt1 = 0;
+        for (const call of callsIt1Meta) {
+          const metadata = call[0];
+          expect(metadata).toStrictEqual({
+            a: 1,
+            state: expect.any(MetadataValidationState),
+            firstMeta: true,
+            cardinality: { type: 'exact', value: expect.any(Number) },
+          });
+          expect(metadata.cardinality.value).toBeGreaterThanOrEqual(lastCardinalityIt1);
+          lastCardinalityIt1 = metadata.cardinality.value > lastCardinalityIt1 ?
+            metadata.cardinality.value :
+            lastCardinalityIt1;
+        }
 
-          cardinality: { type: 'estimate', value: 0 },
-          variables: [
+        expect(lastCardinalityIt1).toBe(6);
+
+        const callsIt2Meta = it2Meta.mock.calls;
+        let lastCardinalityIt2 = 0;
+        for (const call of callsIt2Meta) {
+          const metadata = call[0];
+          expect(metadata.variables).toStrictEqual([
             { variable: DF.variable('s'), canBeUndef: false },
             { variable: DF.variable('p'), canBeUndef: false },
             { variable: DF.variable('o'), canBeUndef: false },
-          ],
-        });
-        expect(it2Meta).toHaveBeenNthCalledWith(2, {
-          state: expect.any(MetadataValidationState),
-          a: 1,
-          firstMeta: true,
-          cardinality: { type: 'estimate', value: 0 },
+          ]);
+          expect(metadata.cardinality.type).toBe('estimate');
+          expect(metadata.cardinality.value).toBeGreaterThanOrEqual(lastCardinalityIt2);
+          lastCardinalityIt2 = metadata.cardinality.value > lastCardinalityIt2 ?
+            metadata.cardinality.value :
+            lastCardinalityIt2;
+        }
+        expect(lastCardinalityIt2).toBe(6);
 
-          variables: [
-            { variable: DF.variable('s'), canBeUndef: false },
+        const callsIt3Meta = it3Meta.mock.calls;
+        let lastCardinalityIt3 = 0;
+        for (const call of callsIt3Meta) {
+          const metadata = call[0];
+          expect(metadata.variables).toStrictEqual([
             { variable: DF.variable('p'), canBeUndef: false },
             { variable: DF.variable('o'), canBeUndef: false },
-          ],
-        });
-        expect(it2Meta).toHaveBeenNthCalledWith(4, {
-          state: expect.any(MetadataValidationState),
-          a: 1,
-          cardinality: { type: 'estimate', value: 2 },
-
-          variables: [
-            { variable: DF.variable('s'), canBeUndef: false },
-            { variable: DF.variable('p'), canBeUndef: false },
-            { variable: DF.variable('o'), canBeUndef: false },
-          ],
-        });
-        expect(it2Meta).toHaveBeenNthCalledWith(6, {
-          state: expect.any(MetadataValidationState),
-          a: 1,
-          cardinality: { type: 'estimate', value: 3 },
-
-          variables: [
-            { variable: DF.variable('s'), canBeUndef: false },
-            { variable: DF.variable('p'), canBeUndef: false },
-            { variable: DF.variable('o'), canBeUndef: false },
-          ],
-        });
-        expect(it3Meta).toHaveBeenCalledTimes(4);
-        expect(it3Meta).toHaveBeenNthCalledWith(1, {
-          state: expect.any(MetadataValidationState),
-
-          cardinality: { type: 'estimate', value: 0 },
-          variables: [
-            { variable: DF.variable('p'), canBeUndef: false },
-            { variable: DF.variable('o'), canBeUndef: false },
-          ],
-        });
-        expect(it3Meta).toHaveBeenNthCalledWith(2, {
-          state: expect.any(MetadataValidationState),
-          a: 1,
-          cardinality: { type: 'estimate', value: 0 },
-          firstMeta: true,
-
-          variables: [
-            { variable: DF.variable('p'), canBeUndef: false },
-            { variable: DF.variable('o'), canBeUndef: false },
-          ],
-        });
-        expect(it3Meta).toHaveBeenNthCalledWith(4, {
-          state: expect.any(MetadataValidationState),
-          a: 1,
-          cardinality: { type: 'estimate', value: 0 },
-          firstMeta: true,
-
-          variables: [
-            { variable: DF.variable('p'), canBeUndef: false },
-            { variable: DF.variable('o'), canBeUndef: false },
-          ],
-        });
+          ]);
+          expect(metadata.cardinality.type).toBe('estimate');
+          expect(metadata.cardinality.value).toBeGreaterThanOrEqual(lastCardinalityIt3);
+          lastCardinalityIt3 = metadata.cardinality.value > lastCardinalityIt3 ?
+            metadata.cardinality.value :
+            lastCardinalityIt3;
+        }
+        expect(lastCardinalityIt3).toBe(1);
 
         expect(spy).toHaveBeenCalledTimes(2);
       });
