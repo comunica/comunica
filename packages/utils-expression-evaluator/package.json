@@ -41,7 +41,7 @@
     "@comunica/context-entries": "^4.1.0",
     "@comunica/types": "^4.1.0",
     "@rdfjs/types": "*",
-    "lru-cache": "^10.0.0",
+    "lru-cache": "^11.0.0",
     "rdf-data-factory": "^1.1.2",
     "rdf-string": "^1.6.3",
     "sparqlalgebrajs": "^4.3.8"
