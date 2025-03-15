@@ -547,7 +547,7 @@ export class HttpServiceSparqlEndpoint {
     // Create the server with the request handler function, that has to be synchronous
     const server = createServer((request: IncomingMessage, response: ServerResponse) => {
       openResponses.add(response);
-      response.on('close', () => {
+      response.on('end', () => {
         // Inform the primary process that the worker has finished
         process.send!('end');
         // Remove the connection from the tracked open list, and kill the worker if we want fresh workers per query.
