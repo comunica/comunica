@@ -276,14 +276,16 @@ describe('ActorDereferenceHttp', () => {
     it('should run and ignore http rejects in lenient mode and log them', async() => {
       const logger = new LoggerVoid();
       const spy = jest.spyOn(logger, 'warn');
+      const url = 'https://www.google.com/';
       context = new ActionContext({
         httpReject: true,
         [KeysInitQuery.lenient.name]: true,
         [KeysCore.log.name]: logger,
       });
-      await actor.run({ url: 'https://www.google.com/', context });
+      await actor.run({ url, context });
       expect(spy).toHaveBeenCalledWith('Http reject error', {
         actor: 'actor',
+        url,
       });
     });
   });
