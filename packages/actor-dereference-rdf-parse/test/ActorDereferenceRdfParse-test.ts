@@ -76,7 +76,7 @@ describe('ActorAbstractDereferenceParse', () => {
     expect(actor.mediatorParse.mediate).toHaveBeenCalledWith({
       context,
       handle: expect.anything(),
-      handleMediaType: undefined,
+      handleMediaType: '',
     });
   });
 

@@ -103,9 +103,8 @@ export abstract class ActorDereferenceParse<
           context,
           handle: { context, ...dereference, metadata: await this.getMetadata(dereference) },
           // eslint-disable-next-line ts/prefer-nullish-coalescing
-          handleMediaType: (dereference.mediaType ||
-            getMediaTypeFromExtension(dereference.url, this.mediaMappings)) ||
-            action.mediaType,
+          handleMediaType: dereference.mediaType || action.mediaType ||
+            getMediaTypeFromExtension(dereference.url, this.mediaMappings),
         })).handle;
         result.data = this.handleDereferenceStreamErrors(action, result.data);
       } catch (error: unknown) {
