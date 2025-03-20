@@ -31,7 +31,7 @@ describe('ActorAbstractDereferenceParse', () => {
             data: emptyReadable(),
             url: `${action.url}${ext}`,
             requestTime: 0,
-            exists: true,
+            exists: !(<any>action.context).hasRaw('doesNotExist'),
             mediaType: (<any> action).mediaType,
           };
         }),
@@ -143,6 +143,13 @@ describe('ActorAbstractDereferenceParse', () => {
       actor: 'actor',
       url: 'https://www.google.com/',
     });
+  });
+
+  it('should run and ignore non-existing dereferenced urls', async() => {
+    context = new ActionContext({ doesNotExist: true });
+    const output = await actor.run({ url: 'https://www.google.com/', context });
+    expect(output.url).toBe('https://www.google.com/index.html');
+    await expect(arrayifyStream(output.data)).resolves.toEqual([]);
   });
 
   it('should not run on parse rejects', async() => {
