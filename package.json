@@ -33,7 +33,7 @@
     "test": "yarn run test:node",
     "test:browser": "karma start --single-run",
     "test:changed": "lerna run test --since HEAD",
-    "test:ci": "yarn run test:node --ci --maxWorkers=4",
+    "test:ci": "yarn run test:node --ci",
     "test:integration": "lerna run integration --concurrency 1",
     "test:node": "jest",
     "test:spec": "lerna run spec --concurrency 1",
