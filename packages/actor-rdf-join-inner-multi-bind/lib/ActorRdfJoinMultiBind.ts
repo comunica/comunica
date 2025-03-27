@@ -147,7 +147,8 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
         // Send the materialized patterns to the mediator for recursive join evaluation.
         const operation = operations.length === 1 ?
           operations[0] :
-          algebraFactory.createJoin(operations);
+          // Flattening should only take place if none of the input operations have associated metadata
+          algebraFactory.createJoin(operations, operations.every(op => !op.metadata));
         const output = getSafeBindings(await this.mediatorQueryOperation.mediate(
           { operation, context: subContext?.set(KeysQueryOperation.joinBindings, operationBindings) },
         ));

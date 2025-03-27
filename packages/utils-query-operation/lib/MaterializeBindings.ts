@@ -92,6 +92,20 @@ export function materializeOperation(
         ), { metadata: op.metadata }),
       };
     },
+    join(op: Algebra.Join, factory: Factory) {
+      // Materialize join operation, and ensure metadata is taken into account.
+      // Join entries with metadata should not be flattened.
+      return {
+        recurse: false,
+        result: factory.createJoin(op.input.map(input => materializeOperation(
+          input,
+          bindings,
+          algebraFactory,
+          bindingsFactory,
+          options,
+        )), op.input.every(input => !input.metadata)),
+      };
+    },
     extend(op: Algebra.Extend) {
       // Materialize an extend operation.
       // If strictTargetVariables is true, we throw if the extension target variable is attempted to be bound.
