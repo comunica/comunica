@@ -66,11 +66,10 @@ export class ActorHttpLimitRate extends ActorHttp {
     requestHostData.latestRequestTimestamp = currentTimestamp + (this.allowOverlap ? 0 : 1) * currentRequestDelay;
 
     if (currentRequestDelay > 0) {
-      this.logDebug(action.context, 'Delaying request to match host response intervals', () => ({
+      this.logDebug(action.context, 'Delaying request', () => ({
         url: requestUrl.href,
-        host: requestUrl.host,
-        hostIntervalMilliseconds: requestHostData.requestInterval,
-        requestDelayMilliseconds: currentRequestDelay,
+        requestInterval: requestHostData.requestInterval,
+        currentDelay: currentRequestDelay,
       }));
       await new Promise(resolve => setTimeout(resolve, currentRequestDelay));
     }
@@ -78,15 +77,18 @@ export class ActorHttpLimitRate extends ActorHttp {
     const registerCompletedRequest = (success: boolean): void => {
       const requestDuration = (success ? 1 : this.failureMultiplier) *
         (Date.now() - currentTimestamp - currentRequestDelay);
-      if (!success && !requestHostData.rateLimited) {
-        requestHostData.rateLimited = true;
-      }
       if (requestHostData.requestInterval < 0) {
-        requestHostData.requestInterval = requestDuration * this.correctionMultiplier;
+        requestHostData.requestInterval = Math.round(requestDuration * this.correctionMultiplier);
       } else {
         requestHostData.requestInterval += Math.round(this.correctionMultiplier * (
           requestDuration - requestHostData.requestInterval
         ));
+      }
+      if (!success && !requestHostData.rateLimited) {
+        this.logDebug(action.context, 'Marking host as rate-limited', () => ({
+          host: requestUrl.host,
+        }));
+        requestHostData.rateLimited = true;
       }
     };
 
