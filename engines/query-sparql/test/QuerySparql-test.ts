@@ -13,6 +13,7 @@ import 'jest-rdf';
 import '@comunica/utils-jest';
 import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
+import { RdfStore } from 'rdf-stores';
 import { Factory } from 'sparqlalgebrajs';
 import { QueryEngine } from '../lib/QueryEngine';
 import { fetch as cachedFetch } from './util';
@@ -892,6 +893,74 @@ SELECT ?obsId {
 
         expect(bindings1).toMatchObject(expectedResult);
         expect(bindings2).toMatchObject(expectedResult);
+      });
+    });
+
+    describe('with complex property paths', () => {
+      it('should correctly terminate for an n3.js store', async() => {
+        const store = new Store();
+        const A = DF.namedNode('http://example.org/a');
+        const B = DF.namedNode('http://example.org/b');
+        const C = DF.namedNode('http://example.org/c');
+        const P = DF.namedNode('http://example.org/p');
+
+        store.addQuad(A, P, B);
+        store.addQuad(A, P, C);
+        store.addQuad(B, P, A);
+        store.addQuad(B, P, C);
+        store.addQuad(C, P, A);
+        store.addQuad(C, P, B);
+
+        const result = <QueryBindings> await engine.query(`
+        PREFIX : <http://example.org/>
+        SELECT * WHERE {
+            ?a (:p/:p)* :b .
+        }`, { sources: [ store ]});
+
+        await expect(result.execute()).resolves.toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('a'), DF.namedNode('http://example.org/b') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('a'), DF.namedNode('http://example.org/c') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('a'), DF.namedNode('http://example.org/a') ],
+          ]),
+        ]);
+      });
+
+      it('should correctly terminate for an rdf-stores store', async() => {
+        const store = RdfStore.createDefault();
+        const A = DF.namedNode('http://example.org/a');
+        const B = DF.namedNode('http://example.org/b');
+        const C = DF.namedNode('http://example.org/c');
+        const P = DF.namedNode('http://example.org/p');
+
+        store.addQuad(DF.quad(A, P, B));
+        store.addQuad(DF.quad(A, P, C));
+        store.addQuad(DF.quad(B, P, A));
+        store.addQuad(DF.quad(B, P, C));
+        store.addQuad(DF.quad(C, P, A));
+        store.addQuad(DF.quad(C, P, B));
+
+        const result = <QueryBindings> await engine.query(`
+        PREFIX : <http://example.org/>
+        SELECT * WHERE {
+            ?a (:p/:p)* :b .
+        }`, { sources: [ store ]});
+
+        await expect(result.execute()).resolves.toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('a'), DF.namedNode('http://example.org/b') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('a'), DF.namedNode('http://example.org/a') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('a'), DF.namedNode('http://example.org/c') ],
+          ]),
+        ]);
       });
     });
   });

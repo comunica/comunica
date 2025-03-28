@@ -42,13 +42,13 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
     super._end(destroy);
   }
 
-  protected override _push(item: RDF.Term, pushAsResult = true): void {
+  protected override _push(item: RDF.Term, pushAsResult = true): boolean {
     let termString;
     if (pushAsResult) {
       // Don't push if this subject was already found
       termString = termToString(item);
       if (this.termHashes.has(termString)) {
-        return;
+        return false;
       }
     }
 
@@ -64,6 +64,7 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
       this.termHashes.set(termString, item);
       super._push(item);
     }
+    return true;
   }
 
   protected override _read(count: number, done: () => void): void {
@@ -80,25 +81,20 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
         const results = getSafeBindings(
           await self.mediatorQueryOperation.mediate({ operation: pendingOperation.operation, context: self.context }),
         );
-        const runningOperation = results.bindingsStream.transform<RDF.Term>({
-          autoStart: false,
-          transform(bindings, next, push) {
-            const newTerm: RDF.Term = <RDF.Term> bindings.get(pendingOperation.variable);
-            push(newTerm);
-            next();
-          },
-        });
+        const runningOperation = results.bindingsStream.map<RDF.Term>(
+          bindings => <RDF.Term> bindings.get(pendingOperation.variable),
+        );
+
         if (!runningOperation.done) {
           self.runningOperations.push(runningOperation);
           runningOperation.on('error', error => self.destroy(error));
           runningOperation.on('readable', () => {
-            self.readable = true;
-            self._fillBufferAsync();
+            self._fillBuffer();
           });
           runningOperation.on('end', () => {
             self.runningOperations.splice(self.runningOperations.indexOf(runningOperation), 1);
-            self.readable = true;
-            self._fillBufferAsync();
+            self._fillBuffer();
+            self.closeIfNeeded();
           });
         }
 
@@ -108,24 +104,33 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
       // Try to read `count` items (based on UnionIterator)
       let lastCount = 0;
       let item: RDF.Term | null;
+      let pushSucceeded = true;
       // eslint-disable-next-line no-cond-assign
-      while (lastCount !== (lastCount = count)) {
+      while (!pushSucceeded || lastCount !== (lastCount = count)) {
+        pushSucceeded = true;
         // Prioritize the operations that have been added first
         for (let i = 0; i < self.runningOperations.length && count > 0; i++) {
           // eslint-disable-next-line no-cond-assign
           if ((item = self.runningOperations[i].read()) !== null) {
-            count--;
-            self._push(item);
+            if (self._push(item)) {
+              count--;
+            } else {
+              pushSucceeded = false;
+            }
           }
         }
       }
 
       // Close if everything has been read
-      if (self.runningOperations.length === 0 && self.pendingOperations.length === 0) {
-        self.close();
-      }
+      self.closeIfNeeded();
     })().then(() => {
       done();
     }, error => this.destroy(error));
+  }
+
+  protected closeIfNeeded(): void {
+    if (this.runningOperations.length === 0 && this.pendingOperations.length === 0) {
+      this.close();
+    }
   }
 }
