@@ -192,30 +192,6 @@ export function materializeOperation(
     },
     project(op: Algebra.Project, factory: Factory) {
       // Materialize a project operation.
-      // If strictTargetVariables is true, we throw if the project target variable is attempted to be bound.
-      // Otherwise, we make a values clause out of the target variable and its value in InitialBindings.
-      if (options.strictTargetVariables) {
-        for (const variable of op.variables) {
-          if (bindings.has(variable)) {
-            throw new Error(`Tried to bind variable ${termToString(variable)} in a SELECT operator.`);
-          }
-        }
-        return {
-          recurse: true,
-          result: op,
-        };
-      }
-
-      // Only include non-projected variables in the bindings that will be passed down recursively.
-      // This will result in non-projected variables being replaced with their InitialBindings values.
-      for (const bindingKey of bindings.keys()) {
-        for (const curVariable of op.variables) {
-          if (curVariable.equals(bindingKey)) {
-            bindings = bindings.delete(bindingKey);
-            break;
-          }
-        }
-      }
 
       // Find projected variables which are present in the originalBindings.
       // This will result in projected variables being handled via a values clause.
