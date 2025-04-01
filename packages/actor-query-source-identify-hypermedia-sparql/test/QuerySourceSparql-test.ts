@@ -1081,7 +1081,7 @@ WHERE { undefined:s ?p undefined:o. }` }),
   });
 
   describe('queryBoolean', () => {
-    it('should return data', async() => {
+    it('should send ASK query without VoID metadata available', async() => {
       const thisMediator: any = {
         mediate: jest.fn(() => ({
           headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
@@ -1109,6 +1109,30 @@ WHERE { undefined:s ?p undefined:o. }` }),
         },
         input: url,
       });
+    });
+
+    it('should not send ASK query with VoID metadata available', async() => {
+      source = new QuerySourceSparql(url, ctx, <any>'mediator', 'values', DF, AF, BF, false, 64, 10);
+      jest.spyOn(source, 'estimateCardinality').mockResolvedValue({ type: 'exact', value: 1 });
+      await expect(source.queryBoolean(
+        AF.createAsk(AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'))),
+        ctx,
+      )).resolves.toBe(true);
+    });
+
+    it('should return cached result when available', async() => {
+      source = new QuerySourceSparql(url, ctx, <any>'mediator', 'values', DF, AF, BF, false, 64, 10);
+      jest.spyOn(source, 'estimateCardinality').mockResolvedValue({ type: 'exact', value: 1 });
+      await expect(source.queryBoolean(
+        AF.createAsk(AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'))),
+        ctx,
+      )).resolves.toBe(true);
+      expect(source.estimateCardinality).toHaveBeenCalledTimes(1);
+      await expect(source.queryBoolean(
+        AF.createAsk(AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'))),
+        ctx,
+      )).resolves.toBe(true);
+      expect(source.estimateCardinality).toHaveBeenCalledTimes(1);
     });
 
     it('should pass the original queryString if defined', async() => {
