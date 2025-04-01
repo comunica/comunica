@@ -14,6 +14,7 @@ export function getCardinality(dataset: IVoidDataset, operation: Algebra.Operati
     case Algebra.types.ORDER_BY:
     case Algebra.types.GROUP:
     case Algebra.types.CONSTRUCT:
+    case Algebra.types.ASK:
       return getCardinality(dataset, operation.input);
     case Algebra.types.PATTERN:
       return getPatternCardinality(dataset, operation);

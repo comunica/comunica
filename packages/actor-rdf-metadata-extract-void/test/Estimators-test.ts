@@ -103,6 +103,7 @@ describe('estimators', () => {
       Algebra.types.ORDER_BY,
       Algebra.types.GROUP,
       Algebra.types.CONSTRUCT,
+      Algebra.types.ASK,
     ])('should estimate cardinality for %s', (type) => {
       const operation = <Algebra.Operation>{ type, input: { type: 'fallback' }};
       expect(getCardinality(dataset, operation)).toEqual({
