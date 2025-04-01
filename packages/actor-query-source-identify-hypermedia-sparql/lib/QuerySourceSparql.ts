@@ -147,14 +147,33 @@ export class QuerySourceSparql implements IQuerySource {
     return quads;
   }
 
-  public queryBoolean(operation: Algebra.Ask, context: IActionContext): Promise<boolean> {
+  public async queryBoolean(operation: Algebra.Ask, context: IActionContext): Promise<boolean> {
+    // When the query string is defined in the context, that one should be used over the algebra serialization.
+    // This will ensure comments and other formatting is preserved, and will only happen with single-source queries.
+    const askQuery = context.get(KeysInitQuery.queryString) ?? QuerySourceSparql.operationToQuery(operation);
+
+    // First, check local cardinality cache
+    const cachedCardinality = this.cache?.get(askQuery);
+    if (cachedCardinality) {
+      return cachedCardinality.value > 0;
+    }
+
+    // If no cache is found, attempt local estimation for ASK input
+    const localEstimate = await this.estimateCardinality(operation);
+    if (localEstimate && Number.isFinite(localEstimate.value)) {
+      this.cache?.set(askQuery, localEstimate);
+      return localEstimate.value > 0;
+    }
+
+    // Finally, send an actual ASK query to the endpoint if needed
     this.lastSourceContext = this.context.merge(context);
-    const promise = this.endpointFetcher.fetchAsk(
-      this.url,
-      context.get(KeysInitQuery.queryString) ?? QuerySourceSparql.operationToQuery(operation),
-    );
+    const askResult = await this.endpointFetcher.fetchAsk(this.url, askQuery);
     this.lastSourceContext = undefined;
-    return promise;
+
+    // Cache the result as cardinality
+    this.cache?.set(askQuery, { type: 'estimate', value: Number(askResult) });
+
+    return askResult;
   }
 
   public queryVoid(operation: Algebra.Update, context: IActionContext): Promise<void> {
