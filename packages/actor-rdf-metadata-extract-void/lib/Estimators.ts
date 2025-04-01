@@ -19,9 +19,10 @@ export function getCardinality(dataset: IVoidDataset, operation: Algebra.Operati
     case Algebra.types.PATTERN:
       return getPatternCardinality(dataset, operation);
     case Algebra.types.BGP:
-      return getJoinCardinality(dataset, operation.patterns);
+      return getUnionCardinality(dataset, operation.patterns);
     case Algebra.types.JOIN:
-      return getJoinCardinality(dataset, operation.input);
+    case Algebra.types.UNION:
+      return getUnionCardinality(dataset, operation.input);
     case Algebra.types.GRAPH:
       return getGraphCardinality(dataset, operation);
     case Algebra.types.FROM:
@@ -101,14 +102,12 @@ export function getGraphCardinality(dataset: IVoidDataset, graph: Algebra.Graph)
 }
 
 /**
- * Estimate the cardinality of a join, using a sum of the individual input cardinalities.
- * This should result in a somewhat acceptable estimate that will likely be above the probable join plan,
- * but still below an unreasonably high and unlikely cartesian estimate.
+ * Estimate the cardinality of a union, using a sum of the individual input cardinalities.
  */
-export function getJoinCardinality(dataset: IVoidDataset, operations: Algebra.Operation[]): RDF.QueryResultCardinality {
+export function getUnionCardinality(dataset: IVoidDataset, input: Algebra.Operation[]): RDF.QueryResultCardinality {
   const estimate: RDF.QueryResultCardinality = { type: 'exact', value: 0 };
-  for (const input of operations) {
-    const cardinality = getCardinality(dataset, input);
+  for (const operation of input) {
+    const cardinality = getCardinality(dataset, operation);
     if (cardinality.value > 0) {
       estimate.type = 'estimate';
       estimate.value += cardinality.value;

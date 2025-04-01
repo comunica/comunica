@@ -12,7 +12,7 @@ import {
   getDistinctObjects,
   matchPatternVocabularies,
   matchPatternResourceUris,
-  getJoinCardinality,
+  getUnionCardinality,
   getGraphCardinality,
   getFromCardinality,
   getPatternCardinalityRaw,
@@ -200,14 +200,14 @@ describe('estimators', () => {
     });
   });
 
-  describe('getJoinCardinality', () => {
+  describe('getUnionCardinality', () => {
     it('should return 0 without any input', () => {
-      expect(getJoinCardinality(<any>'dataset', [])).toEqual({ type: 'exact', value: 0 });
+      expect(getUnionCardinality(<any>'dataset', [])).toEqual({ type: 'exact', value: 0 });
     });
 
     it('should return the sum of input', () => {
       const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
-      expect(getJoinCardinality(dataset, [ pattern ])).toEqual({ type: 'estimate', value: datasetTripleCount });
+      expect(getUnionCardinality(dataset, [ pattern ])).toEqual({ type: 'estimate', value: datasetTripleCount });
     });
   });
 
