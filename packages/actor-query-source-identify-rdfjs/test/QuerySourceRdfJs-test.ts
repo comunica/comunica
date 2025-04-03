@@ -85,6 +85,7 @@ describe('QuerySourceRdfJs', () => {
             { variable: DF.variable('s'), canBeUndef: false },
             { variable: DF.variable('o'), canBeUndef: false },
           ],
+          requestTime: 0,
         });
     });
 
@@ -116,6 +117,7 @@ describe('QuerySourceRdfJs', () => {
             { variable: DF.variable('s'), canBeUndef: false },
             { variable: DF.variable('o'), canBeUndef: false },
           ],
+          requestTime: 0,
         });
     });
 
@@ -142,6 +144,7 @@ describe('QuerySourceRdfJs', () => {
             { variable: DF.variable('s'), canBeUndef: false },
             { variable: DF.variable('o'), canBeUndef: false },
           ],
+          requestTime: 0,
         });
     });
 
@@ -169,6 +172,7 @@ describe('QuerySourceRdfJs', () => {
             { variable: DF.variable('s'), canBeUndef: false },
             { variable: DF.variable('o'), canBeUndef: false },
           ],
+          requestTime: 0,
         });
     });
 
@@ -197,6 +201,7 @@ describe('QuerySourceRdfJs', () => {
             { variable: DF.variable('o'), canBeUndef: false },
             { variable: DF.variable('g'), canBeUndef: false },
           ],
+          requestTime: 0,
         });
     });
 
@@ -226,6 +231,7 @@ describe('QuerySourceRdfJs', () => {
             { variable: DF.variable('o'), canBeUndef: false },
             { variable: DF.variable('g'), canBeUndef: false },
           ],
+          requestTime: 0,
         });
     });
 
@@ -261,6 +267,7 @@ describe('QuerySourceRdfJs', () => {
             { variable: DF.variable('o'), canBeUndef: false },
             { variable: DF.variable('g'), canBeUndef: false },
           ],
+          requestTime: 0,
         });
     });
 
@@ -298,6 +305,7 @@ describe('QuerySourceRdfJs', () => {
             { variable: DF.variable('o'), canBeUndef: false },
             { variable: DF.variable('g'), canBeUndef: false },
           ],
+          requestTime: 0,
         });
     });
 
@@ -330,6 +338,7 @@ describe('QuerySourceRdfJs', () => {
             { variable: DF.variable('s'), canBeUndef: false },
             { variable: DF.variable('o'), canBeUndef: false },
           ],
+          requestTime: 0,
         });
     });
 
@@ -364,6 +373,7 @@ describe('QuerySourceRdfJs', () => {
             { variable: DF.variable('s'), canBeUndef: false },
             { variable: DF.variable('o'), canBeUndef: false },
           ],
+          requestTime: 0,
         });
     });
 
@@ -449,6 +459,7 @@ describe('QuerySourceRdfJs', () => {
                 { variable: DF.variable('s'), canBeUndef: false },
                 { variable: DF.variable('o'), canBeUndef: false },
               ],
+              requestTime: 0,
             });
         });
 
@@ -493,6 +504,7 @@ describe('QuerySourceRdfJs', () => {
                 { variable: DF.variable('p1'), canBeUndef: false },
                 { variable: DF.variable('o1'), canBeUndef: false },
               ],
+              requestTime: 0,
             });
         });
 
@@ -537,6 +549,7 @@ describe('QuerySourceRdfJs', () => {
                 { variable: DF.variable('s1'), canBeUndef: false },
                 { variable: DF.variable('o1'), canBeUndef: false },
               ],
+              requestTime: 0,
             });
         });
 
@@ -598,6 +611,7 @@ describe('QuerySourceRdfJs', () => {
                 { variable: DF.variable('pcx'), canBeUndef: false },
                 { variable: DF.variable('o2'), canBeUndef: false },
               ],
+              requestTime: 0,
             });
         });
       });
@@ -653,6 +667,7 @@ describe('QuerySourceRdfJs', () => {
                 { variable: DF.variable('s'), canBeUndef: false },
                 { variable: DF.variable('o'), canBeUndef: false },
               ],
+              requestTime: 0,
             });
         });
 
@@ -697,6 +712,7 @@ describe('QuerySourceRdfJs', () => {
                 { variable: DF.variable('p1'), canBeUndef: false },
                 { variable: DF.variable('o1'), canBeUndef: false },
               ],
+              requestTime: 0,
             });
         });
 
@@ -741,6 +757,7 @@ describe('QuerySourceRdfJs', () => {
                 { variable: DF.variable('s1'), canBeUndef: false },
                 { variable: DF.variable('o1'), canBeUndef: false },
               ],
+              requestTime: 0,
             });
         });
       });

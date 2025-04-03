@@ -68,6 +68,7 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
           { variable: v2, canBeUndef: false },
           { variable: v3, canBeUndef: false },
         ],
+        requestTime: 0,
       });
       await expect(stream).toEqualBindingsStream([
         BF.fromRecord({
@@ -103,6 +104,7 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
           { variable: v1, canBeUndef: false },
           { variable: v2, canBeUndef: false },
         ],
+        requestTime: 0,
       });
       await expect(stream).toEqualBindingsStream([
         BF.fromRecord({

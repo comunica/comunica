@@ -183,6 +183,8 @@ export class QuerySourceRdfJs implements IQuerySource {
         type: wouldRequirePostFiltering || forceEstimateCardinality ? 'estimate' : 'exact',
         value: cardinality,
       },
+      // Force requestTime to zero, since this will be free for future calls, as we're fully indexed at this stage.
+      requestTime: 0,
       ...extraMetadata,
     });
   }
