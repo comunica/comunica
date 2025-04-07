@@ -774,7 +774,9 @@ WHERE {
         expect((await bindingsStream.toArray()).length > 0).toBeTruthy();
       });
 
-      it('with join over union', async() => {
+      // TODO: re-enable this test once https://api.community.hubl.world/skills/ is back up (also performance/benchmark-web/input/queries/hubl...)
+      // eslint-disable-next-line multiline-comment-style, style/spaced-comment, jest/no-commented-out-tests
+      /*it('with join over union', async() => {
         const bindingsStream = await engine.queryBindings(`
 SELECT * WHERE {
   <https://api.community.hubl.world/skills/> <http://www.w3.org/ns/ldp#contains> ?contains.
@@ -787,7 +789,7 @@ SELECT * WHERE {
           sources: [ 'https://api.community.hubl.world/skills/' ],
         });
         expect((await bindingsStream.toArray()).length > 0).toBeTruthy();
-      });
+      });*/
     });
 
     describe('property paths', () => {
