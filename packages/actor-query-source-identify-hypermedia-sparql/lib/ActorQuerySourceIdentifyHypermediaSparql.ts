@@ -26,6 +26,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
   public readonly checkUrlSuffix: boolean;
   public readonly forceHttpGet: boolean;
   public readonly cacheSize: number;
+  public readonly forceSourceType: boolean;
   public readonly bindMethod: BindMethod;
   public readonly countTimeout: number;
 
@@ -36,7 +37,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
   public async testMetadata(
     action: IActionQuerySourceIdentifyHypermedia,
   ): Promise<TestResult<IActorQuerySourceIdentifyHypermediaTest>> {
-    if (!action.forceSourceType && !action.metadata.sparqlService &&
+    if (!action.forceSourceType && !this.forceSourceType && !action.metadata.sparqlService &&
       !(this.checkUrlSuffix && action.url.endsWith('/sparql'))) {
       return failTest(`Actor ${this.name} could not detect a SPARQL service description or URL ending on /sparql.`);
     }
@@ -49,7 +50,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const algebraFactory = new Factory(dataFactory);
     const source = new QuerySourceSparql(
-      action.forceSourceType ? action.url : action.metadata.sparqlService || action.url,
+      (action.forceSourceType ?? this.forceSourceType) ? action.url : action.metadata.sparqlService || action.url,
       action.context,
       this.mediatorHttp,
       this.bindMethod,
@@ -92,6 +93,11 @@ export interface IActorQuerySourceIdentifyHypermediaSparqlArgs extends IActorQue
    * @default {1024}
    */
   cacheSize?: number;
+  /**
+   * If provided, forces the source type of a source
+   * @default {false}
+   */
+  forceSourceType?: boolean;
   /**
    * The query operation for communicating bindings.
    * @default {values}

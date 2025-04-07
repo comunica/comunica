@@ -131,6 +131,46 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           .test({ url: 'URL/sparql', metadata: {}, quads: <any> null, forceSourceType: 'file', context }))
           .resolves.toFailTest('Actor actor is not able to handle source type file.');
       });
+      it('should test with a forced sparql source type via actor parameter', async() => {
+        actor = new ActorQuerySourceIdentifyHypermediaSparql({
+          name: 'actor',
+          bus,
+          mediatorHttp: <any>'mediator',
+          checkUrlSuffix: false,
+          forceHttpGet: false,
+          forceSourceType: true,
+          bindMethod: 'values',
+          countTimeout: 3_000,
+          mediatorMergeBindingsContext,
+        });
+        await expect(actor.test({
+          url: 'URL',
+          metadata: {},
+          quads: <any> null,
+          context,
+        })).resolves
+          .toPassTest({ filterFactor: 1 });
+      });
+
+      it('should not test without a forced sparql source type via actor parameter', async() => {
+        actor = new ActorQuerySourceIdentifyHypermediaSparql({
+          name: 'actor',
+          bus,
+          mediatorHttp: <any>'mediator',
+          checkUrlSuffix: false,
+          forceHttpGet: false,
+          bindMethod: 'values',
+          countTimeout: 3_000,
+          mediatorMergeBindingsContext,
+        });
+        await expect(actor.test({
+          url: 'URL',
+          metadata: {},
+          quads: <any> null,
+          context,
+        })).resolves
+          .toFailTest('Actor actor could not detect a SPARQL service description or URL ending on /sparql.');
+      });
     });
 
     describe('#run', () => {
