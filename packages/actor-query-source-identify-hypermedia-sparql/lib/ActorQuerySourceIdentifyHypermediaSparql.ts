@@ -26,7 +26,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
   public readonly checkUrlSuffix: boolean;
   public readonly forceHttpGet: boolean;
   public readonly cacheSize: number;
-  public readonly forceSourceType: string;
+  public readonly forceSourceType: boolean;
   public readonly bindMethod: BindMethod;
   public readonly countTimeout: number;
 
