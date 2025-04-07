@@ -131,8 +131,6 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           .test({ url: 'URL/sparql', metadata: {}, quads: <any> null, forceSourceType: 'file', context }))
           .resolves.toFailTest('Actor actor is not able to handle source type file.');
       });
-
-      // Added tests
       it('should test with a forced sparql source type via actor parameter', async() => {
         actor = new ActorQuerySourceIdentifyHypermediaSparql({
           name: 'actor',
