@@ -4,7 +4,7 @@ import type {
   IActorDereferenceRdfOutput,
 } from '@comunica/bus-dereference-rdf';
 import type { IActionQuerySourceIdentifyHypermedia } from '@comunica/bus-query-source-identify-hypermedia';
-import { KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext, MetadataQuads } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
@@ -558,6 +558,23 @@ describe('QuerySourceHypermedia', () => {
 
         await source.getSource({ url: 'startUrl' }, {}, context, undefined);
         await new Promise(setImmediate);
+      });
+
+      it('should skip metadata extraction for single forced SPARQL endpoints', async() => {
+        const mediatorsThis = { ...mediators };
+        mediatorsThis.mediatorMetadata = {
+          mediate: jest.fn(),
+        };
+        source = new QuerySourceHypermedia(10, 'firstUrl', 'sparql', 64, false, mediatorsThis, logWarning, DF, BF);
+
+        await source.getSource(
+          { url: 'startUrl' },
+          {},
+          context.set(KeysQueryOperation.querySources, [ <any> 'a' ]),
+          undefined,
+        );
+        await new Promise(setImmediate);
+        expect(mediatorsThis.mediatorMetadata.mediate).not.toHaveBeenCalled();
       });
     });
   });
