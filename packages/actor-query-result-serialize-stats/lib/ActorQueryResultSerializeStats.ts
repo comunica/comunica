@@ -7,6 +7,7 @@ import { ActorQueryResultSerializeFixedMediaTypes } from '@comunica/bus-query-re
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
+import type { ActionObserverHttpRequests } from '@comunica/observer-http-requests';
 import type {
   IActionContext,
   IQueryOperationResultBindings,
@@ -14,25 +15,22 @@ import type {
 } from '@comunica/types';
 import { wrap } from 'asynciterator';
 import { Readable } from 'readable-stream';
-import type { ActionObserverHttp } from './ActionObserverHttp';
 
 /**
  * Serializes SPARQL results for testing and debugging.
  */
 export class ActorQueryResultSerializeStats extends ActorQueryResultSerializeFixedMediaTypes {
-  public readonly httpObserver: ActionObserverHttp;
+  private readonly httpRequestCountObserver: ActionObserverHttpRequests | undefined;
 
-  /* eslint-disable max-len */
   /**
    * @param args -
    *   \ @defaultNested {{ "stats": 0.5 }} mediaTypePriorities
    *   \ @defaultNested {{ "stats": "https://comunica.linkeddatafragments.org/#results_stats" }} mediaTypeFormats
-   *   \ @defaultNested {<default_observer> a <caqrsst:components/ActionObserverHttp.jsonld#ActionObserverHttp>} httpObserver
    */
   public constructor(args: IActorQueryResultSerializeStatsArgs) {
     super(args);
+    this.httpRequestCountObserver = args.httpRequestCountObserver;
   }
-  /* eslint-enable max-len */
 
   public override async testHandleChecked(
     action: IActionSparqlSerialize,
@@ -45,19 +43,28 @@ export class ActorQueryResultSerializeStats extends ActorQueryResultSerializeFix
   }
 
   public pushHeader(data: Readable): void {
-    const header: string = [ 'Result', 'Delay (ms)', 'HTTP requests',
+    const header: string = [
+      'Result',
+      'Delay (ms)',
+      ...this.httpRequestCountObserver ? [ 'HTTP requests' ] : [],
     ].join(',');
     data.push(`${header}\n`);
   }
 
   public createStat(startTime: number, result: number): string {
-    const row: string = [ result, this.delay(startTime), this.httpObserver.requests,
+    const row: string = [
+      result,
+      this.delay(startTime),
+      ...this.httpRequestCountObserver ? [ this.httpRequestCountObserver.requests ] : [],
     ].join(',');
     return `${row}\n`;
   }
 
   public createSpecialLine(label: string, startTime: number): string {
-    const line: string = [ label, this.delay(startTime), this.httpObserver.requests,
+    const line: string = [
+      label,
+      this.delay(startTime),
+      ...this.httpRequestCountObserver ? [ this.httpRequestCountObserver.requests ] : [],
     ].join(',');
     return `${line}\n`;
   }
@@ -97,5 +104,9 @@ export class ActorQueryResultSerializeStats extends ActorQueryResultSerializeFix
 }
 
 export interface IActorQueryResultSerializeStatsArgs extends IActorQueryResultSerializeFixedMediaTypesArgs {
-  httpObserver: ActionObserverHttp;
+  /**
+   * Optional observer on the HTTP bus that counts the number of HTTP requests done by the engine.
+   * This request count will then be reported in the results.
+   */
+  httpRequestCountObserver?: ActionObserverHttpRequests;
 }

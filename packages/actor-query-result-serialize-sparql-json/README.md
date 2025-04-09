@@ -18,14 +18,12 @@ $ yarn add @comunica/actor-query-result-serialize-sparql-json
 ## Configure
 
 After installing, this package can be added to your engine's configuration as follows:
-```text
+```json
 {
   "@context": [
-    ...
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-result-serialize-sparql-json/^4.0.0/components/context.jsonld"
   ],
   "actors": [
-    ...
     {
       "@id": "urn:comunica:default:query-result-serialize/actors#sparql-json",
       "@type": "ActorQueryResultSerializeSparqlJson"

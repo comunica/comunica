@@ -139,13 +139,10 @@ export interface IActorHttpLimitRateArgs extends IActorHttpArgs {
    * The HTTP mediator.
    */
   mediatorHttp: MediatorHttp;
-  /* eslint-disable max-len */
   /**
    * An actor that listens to HTTP invalidation events
-   * @default {<default_invalidator> a <npmd:@comunica/bus-http-invalidate/^4.0.0/components/ActorHttpInvalidateListenable.jsonld#ActorHttpInvalidateListenable>}
    */
   httpInvalidator: ActorHttpInvalidateListenable;
-  /* eslint-enable max-len */
   /**
    * Multiplier for how aggressively the delay should follow the latest response time, ideally in range ]0.0, 1.0].
    * @range {float}

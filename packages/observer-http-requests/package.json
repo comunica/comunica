@@ -1,7 +1,7 @@
 {
-  "name": "@comunica/actor-query-result-serialize-sparql-json",
+  "name": "@comunica/observer-http-requests",
   "version": "4.1.0",
-  "description": "A sparql-json query-result-serialize actor",
+  "description": "Comunica HTTP request observer",
   "lsd:module": true,
   "license": "MIT",
   "funding": {
@@ -12,16 +12,15 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-query-result-serialize-sparql-json"
+    "directory": "packages/observer-http-requests"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"
   },
   "keywords": [
     "comunica",
-    "actor",
-    "query-result-serialize",
-    "sparql-json"
+    "observer",
+    "http-requests"
   ],
   "sideEffects": false,
   "main": "lib/index.js",
@@ -41,12 +40,8 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-query-result-serialize": "^4.1.0",
-    "@comunica/core": "^4.1.0",
-    "@comunica/observer-http-requests": "^4.1.0",
-    "@comunica/types": "^4.1.0",
-    "@rdfjs/types": "*",
-    "asynciterator": "^3.9.0",
-    "readable-stream": "^4.5.2"
+    "@comunica/bus-http": "^4.1.0",
+    "@comunica/bus-http-invalidate": "^4.1.0",
+    "@comunica/core": "^4.1.0"
   }
 }

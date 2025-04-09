@@ -313,6 +313,7 @@
     "@comunica/mediator-join-coefficients-fixed": "^4.1.0",
     "@comunica/mediator-number": "^4.1.0",
     "@comunica/mediator-race": "^4.1.0",
+    "@comunica/observer-http-requests": "^4.1.0",
     "@comunica/runner": "^4.1.0",
     "@comunica/runner-cli": "^4.1.0",
     "@comunica/types": "^4.1.0",
