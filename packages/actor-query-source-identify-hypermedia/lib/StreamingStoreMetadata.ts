@@ -76,7 +76,7 @@ export class StreamingStoreMetadata extends StreamingStore implements IAggregate
     iterator.setProperty('lastCount', count);
 
     // Every time a new quad is pushed into the iterator, update the metadata
-    rawStream.on('data', () => {
+    rawStream.on('quad', () => {
       iterator.setProperty('lastCount', ++count);
       this.updateMetadataState(iterator, count);
     });

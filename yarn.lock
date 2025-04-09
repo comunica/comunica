@@ -2205,12 +2205,20 @@
   resolved "https://registry.npmjs.org/@types/minimist/-/minimist-1.2.5.tgz"
   integrity sha512-hov8bUuiLiyFPGyFPE1lwWhmzYbirOXQNNo40+y3zow8aFVTeyn3VWL0VFFfdNddA8S4Vf0Tc062rzyNr7Paag==
 
-"@types/n3@^1.0.0", "@types/n3@^1.10.3", "@types/n3@^1.10.4":
+"@types/n3@^1.0.0", "@types/n3@^1.10.3":
   version "1.16.4"
   resolved "https://registry.npmjs.org/@types/n3/-/n3-1.16.4.tgz"
   integrity sha512-6PmHRYCCdjbbBV2UVC/HjtL6/5Orx9ku2CQjuojucuHvNvPmnm6+02B18YGhHfvU25qmX2jPXyYPHsMNkn+w2w==
   dependencies:
     "@rdfjs/types" "^1.1.0"
+    "@types/node" "*"
+
+"@types/n3@^1.10.4":
+  version "1.24.2"
+  resolved "https://registry.yarnpkg.com/@types/n3/-/n3-1.24.2.tgz#50256811c95d8efbb649a370b1d23fb7e579e1b2"
+  integrity sha512-clurEPFqgx68kQxCBCrAUppsvZyyj/uVEgbhquYaawTZuDptrRrnFsHIWd4PubwWCfFgyrHBgaB2Tt09TTYLWw==
+  dependencies:
+    "@rdfjs/types" "*"
     "@types/node" "*"
 
 "@types/node-fetch@^2.5.0":
@@ -10937,10 +10945,10 @@ rdf-stores@^2.0.0, rdf-stores@^2.1.1:
     rdf-string "^2.0.0"
     rdf-terms "^2.0.0"
 
-rdf-streaming-store@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/rdf-streaming-store/-/rdf-streaming-store-2.1.0.tgz#d92968d782a7aee8e60b9dd450d66df2de8f7034"
-  integrity sha512-TS8SxYQKvKw5iqHSMWS7uEMybiYdy3xPN93kXYjaXsDZFxrY70HBcXVbApkjZhoTNUk3nGb8kKAC2bkdH1O/6w==
+rdf-streaming-store@2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/rdf-streaming-store/-/rdf-streaming-store-2.1.1.tgz#efa450533a96cadf80a49228ae092c7bb389d2c6"
+  integrity sha512-hw9n1WdsSI74d89EDGQv5dYb5PaFXjjm4BqdSwJ7JMa5Cx27pwtv5qbXZvSXZmle90/myI2At+TIpdLJQmujBg==
   dependencies:
     "@rdfjs/types" "*"
     "@types/n3" "^1.10.4"
