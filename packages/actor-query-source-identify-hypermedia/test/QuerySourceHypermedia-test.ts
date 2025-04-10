@@ -741,6 +741,7 @@ describe('QuerySourceHypermedia', () => {
         ]);
         expect(mediatorsThis.mediatorQuerySourceIdentifyHypermedia.mediate).toHaveBeenCalledTimes(3);
 
+        expect(it1Meta.mock.calls.length).toBeGreaterThan(1);
         expect(it1Meta).toHaveBeenLastCalledWith({
           state: expect.any(MetadataValidationState),
           a: 1,
@@ -748,6 +749,7 @@ describe('QuerySourceHypermedia', () => {
           cardinality: { type: 'exact', value: 6 },
         });
 
+        expect(it2Meta.mock.calls.length).toBeGreaterThan(1);
         expect(it2Meta).toHaveBeenLastCalledWith({
           state: expect.any(MetadataValidationState),
           a: 1,
@@ -762,6 +764,7 @@ describe('QuerySourceHypermedia', () => {
           ],
         });
 
+        expect(it3Meta.mock.calls.length).toBeGreaterThan(1);
         expect(it3Meta).toHaveBeenLastCalledWith({
           state: expect.any(MetadataValidationState),
           a: 1,
