@@ -37,8 +37,7 @@
     },
     {
       "@id": "urn:comunica:default:query-result-serialize/actors#sparql-json",
-      "@type": "ActorQueryResultSerializeSparqlJson",
-      "httpRequestCountObserver": { "@id": "urn:comunica:default:http/observers#http-requests" }
+      "@type": "ActorQueryResultSerializeSparqlJson"
     },
     {
       "@id": "urn:comunica:default:query-result-serialize/actors#sparql-tsv",
@@ -50,8 +49,7 @@
     },
     {
       "@id": "urn:comunica:default:query-result-serialize/actors#stats",
-      "@type": "ActorQueryResultSerializeStats",
-      "httpRequestCountObserver": { "@id": "urn:comunica:default:http/observers#http-requests" }
+      "@type": "ActorQueryResultSerializeStats"
     },
     {
       "@id": "urn:comunica:default:query-result-serialize/actors#table",

@@ -11,6 +11,7 @@
     {
       "@id": "urn:comunica:default:rdf-update-quads/actors#hypermedia",
       "@type": "ActorRdfUpdateQuadsHypermedia",
+      "httpInvalidator": { "@id": "urn:comunica:default:http-invalidate/actors#default" },
       "mediatorDereferenceRdf": { "@id": "urn:comunica:default:dereference-rdf/mediators#main" },
       "mediatorMetadata": { "@id": "urn:comunica:default:rdf-metadata/mediators#main" },
       "mediatorMetadataExtract": { "@id": "urn:comunica:default:rdf-metadata-extract/mediators#main" },

@@ -1,5 +1,4 @@
 import { Readable } from 'node:stream';
-import type { ActorHttpInvalidateListenable, IInvalidateListener } from '@comunica/bus-http-invalidate';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { BindingsStream, IActionContext } from '@comunica/types';
@@ -9,7 +8,7 @@ import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { ActionObserverHttp, ActorQueryResultSerializeStats } from '..';
+import { ActorQueryResultSerializeStats } from '../lib/ActorQueryResultSerializeStats';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
@@ -43,25 +42,12 @@ describe('ActorQueryResultSerializeStats', () => {
   });
 
   describe('An ActorQueryResultSerializeStats instance', () => {
-    let httpObserver: ActionObserverHttp;
     let actor: ActorQueryResultSerializeStats;
     let bindingsStream: () => BindingsStream;
     let quadStream: () => RDF.Stream & AsyncIterator<RDF.Quad>;
     let streamError: Readable;
-    let httpInvalidator: ActorHttpInvalidateListenable;
-    let lastListener: IInvalidateListener;
 
     beforeEach(() => {
-      httpInvalidator = <any> {
-        addInvalidateListener: jest.fn((listener: IInvalidateListener) => {
-          lastListener = listener;
-        }),
-      };
-      httpObserver = new ActionObserverHttp({
-        name: 'observer',
-        bus,
-        httpInvalidator,
-      });
       actor = new ActorQueryResultSerializeStats({
         bus,
         mediaTypePriorities: {
@@ -69,7 +55,6 @@ describe('ActorQueryResultSerializeStats', () => {
         },
         mediaTypeFormats: {},
         name: 'actor',
-        httpObserver,
       });
 
       bindingsStream = () => new ArrayIterator<RDF.Bindings>([
@@ -87,6 +72,7 @@ describe('ActorQueryResultSerializeStats', () => {
       streamError = new Readable();
       streamError._read = () => streamError.emit('error', new Error('SparqlSerializeStats'));
     });
+
     describe('for getting media types', () => {
       it('should test', async() => {
         await expect(actor.test({ mediaTypes: true, context })).resolves.toPassTest({ mediaTypes: true });
@@ -147,41 +133,17 @@ describe('ActorQueryResultSerializeStats', () => {
           },
         )
         )).handle.data)).resolves.toBe(
-          `Result,Delay (ms),HTTP requests
-PLANNING,3.14,0
-1,3.14,0
-2,3.14,0
-TOTAL,3.14,0
+          `Result,Delay (ms)
+PLANNING,3.14
+1,3.14
+2,3.14
+TOTAL,3.14
 `,
         );
       });
 
-      it('should run on a bindings stream with http requests', async() => {
-        (<any> httpObserver).onRun(null, null, null);
-        (<any> httpObserver).onRun(null, null, null);
-        await expect(stringifyStream((<any> (await actor.run(
-          {
-            handle: <any> { type: 'bindings', bindingsStream: bindingsStream(), context },
-            handleMediaType: 'debug',
-            context,
-          },
-        )
-        )).handle.data)).resolves.toBe(
-          `Result,Delay (ms),HTTP requests
-PLANNING,3.14,2
-1,3.14,2
-2,3.14,2
-TOTAL,3.14,2
-`,
-        );
-      });
-
-      it('should run on a bindings stream with http requests and cache invalidations', async() => {
-        (<any> httpObserver).onRun(null, null, null);
-        (<any> httpObserver).onRun(null, null, null);
-        lastListener(<any> {});
-        (<any> httpObserver).onRun(null, null, null);
-        (<any> httpObserver).onRun(null, null, null);
+      it('should run on a bindings stream with http request observer', async() => {
+        (<any>actor).httpRequestCountObserver = { requests: 2 };
         await expect(stringifyStream((<any> (await actor.run(
           {
             handle: <any> { type: 'bindings', bindingsStream: bindingsStream(), context },
@@ -203,11 +165,11 @@ TOTAL,3.14,2
         await expect(stringifyStream((<any> (await actor.run(
           { handle: <any> { type: 'quads', quadStream: quadStream(), context }, handleMediaType: 'debug', context },
         ))).handle.data)).resolves.toBe(
-          `Result,Delay (ms),HTTP requests
-PLANNING,3.14,0
-1,3.14,0
-2,3.14,0
-TOTAL,3.14,0
+          `Result,Delay (ms)
+PLANNING,3.14
+1,3.14
+2,3.14
+TOTAL,3.14
 `,
         );
       });

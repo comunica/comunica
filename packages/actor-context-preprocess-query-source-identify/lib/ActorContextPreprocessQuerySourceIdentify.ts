@@ -125,13 +125,10 @@ export interface IActorContextPreprocessQuerySourceIdentifyArgs extends IActorCo
    * @default {100}
    */
   cacheSize: number;
-  /* eslint-disable max-len */
   /**
    * An actor that listens to HTTP invalidation events
-   * @default {<default_invalidator> a <npmd:@comunica/bus-http-invalidate/^4.0.0/components/ActorHttpInvalidateListenable.jsonld#ActorHttpInvalidateListenable>}
    */
   httpInvalidator: ActorHttpInvalidateListenable;
-  /* eslint-enable max-len */
   /**
    * Mediator for identifying query sources.
    */

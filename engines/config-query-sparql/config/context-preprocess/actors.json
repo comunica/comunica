@@ -26,6 +26,7 @@
     {
       "@id": "urn:comunica:default:context-preprocess/actors#query-source-identify",
       "@type": "ActorContextPreprocessQuerySourceIdentify",
+      "httpInvalidator": { "@id": "urn:comunica:default:http-invalidate/actors#default" },
       "mediatorQuerySourceIdentify": { "@id": "urn:comunica:default:query-source-identify/mediators#main" },
       "mediatorContextPreprocess": { "@id": "urn:comunica:default:context-preprocess/mediators#main" },
       "beforeActors": { "@id": "urn:comunica:default:context-preprocess/actors#query-source-skolemize" }

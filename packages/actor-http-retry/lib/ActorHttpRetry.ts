@@ -21,7 +21,7 @@ export class ActorHttpRetry extends ActorHttp {
   // Context key to indicate that the actor has already wrapped the given request
   private static readonly keyWrapped = new ActionContextKey<boolean>('urn:comunica:actor-http-retry#wrapped');
 
-  public constructor(args: IActorHttpQueueArgs) {
+  public constructor(args: IActorHttpRetryArgs) {
     super(args);
     this.activeDelays = {};
     this.httpInvalidator = args.httpInvalidator;
@@ -222,16 +222,13 @@ export class ActorHttpRetry extends ActorHttp {
   }
 }
 
-export interface IActorHttpQueueArgs extends IActorHttpArgs {
+export interface IActorHttpRetryArgs extends IActorHttpArgs {
   /**
    * The HTTP mediator.
    */
   mediatorHttp: MediatorHttp;
-  /* eslint-disable max-len */
   /**
    * An actor that listens to HTTP invalidation events
-   * @default {<default_invalidator> a <npmd:@comunica/bus-http-invalidate/^4.0.0/components/ActorHttpInvalidateListenable.jsonld#ActorHttpInvalidateListenable>}
    */
   httpInvalidator: ActorHttpInvalidateListenable;
-  /* eslint-enable max-len */
 }
