@@ -60,7 +60,7 @@
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0",
     "lru-cache": "^10.0.0",
-    "rdf-streaming-store": "^1.1.4",
+    "rdf-streaming-store": "^2.1.1",
     "readable-stream": "^4.5.2",
     "sparqlalgebrajs": "^4.3.8"
   }
