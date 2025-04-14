@@ -15,7 +15,7 @@ import type { IJoinEntryWithMetadata } from '@comunica/types';
  * @see IActorRdfJoinEntriesSortOutput
  */
 export abstract class ActorRdfJoinEntriesSort<TS = undefined>
-  extends Actor<IActionRdfJoinEntriesSort, IActorTest, IActorRdfJoinEntriesSortOutput, TS> {
+  extends Actor<IActionRdfJoinEntriesSort, IActorRdfJoinEntriesSortTest, IActorRdfJoinEntriesSortOutput, TS> {
   /**
    * @param args -
    *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
@@ -33,6 +33,14 @@ export interface IActionRdfJoinEntriesSort extends IAction {
   entries: IJoinEntryWithMetadata[];
 }
 
+export interface IActorRdfJoinEntriesSortTest extends IActorTest {
+  /**
+   * A value between 0 and 1 (both inclusive) that defines the accuracy of this actor's sorting.
+   * A higher value means a higher accuracy.
+   */
+  accuracy: number;
+}
+
 export interface IActorRdfJoinEntriesSortOutput extends IActorOutput {
   /**
    * The array of sorted streams.
@@ -42,7 +50,7 @@ export interface IActorRdfJoinEntriesSortOutput extends IActorOutput {
 
 export type IActorRdfJoinEntriesSortArgs<TS = undefined> = IActorArgs<
 IActionRdfJoinEntriesSort,
-IActorTest,
+IActorRdfJoinEntriesSortTest,
 IActorRdfJoinEntriesSortOutput,
 TS
 >;

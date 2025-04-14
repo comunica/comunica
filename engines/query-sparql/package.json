@@ -252,6 +252,7 @@
     "@comunica/actor-query-source-identify-rdfjs": "^4.1.0",
     "@comunica/actor-query-source-identify-serialized": "^4.1.0",
     "@comunica/actor-rdf-join-entries-sort-cardinality": "^4.1.0",
+    "@comunica/actor-rdf-join-entries-sort-selectivity": "^4.1.0",
     "@comunica/actor-rdf-join-inner-hash": "^4.1.0",
     "@comunica/actor-rdf-join-inner-multi-bind": "^4.1.0",
     "@comunica/actor-rdf-join-inner-multi-bind-source": "^4.1.0",
