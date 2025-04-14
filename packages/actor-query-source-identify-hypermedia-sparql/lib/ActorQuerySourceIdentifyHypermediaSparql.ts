@@ -29,6 +29,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
   public readonly forceSourceType: boolean;
   public readonly bindMethod: BindMethod;
   public readonly countTimeout: number;
+  public readonly cardinalityCountQueries: boolean;
 
   public constructor(args: IActorQuerySourceIdentifyHypermediaSparqlArgs) {
     super(args, 'sparql');
@@ -60,6 +61,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
       this.forceHttpGet,
       this.cacheSize,
       this.countTimeout,
+      this.cardinalityCountQueries,
       action.metadata.defaultGraph,
       action.metadata.unionDefaultGraph,
       action.metadata.datasets,
@@ -94,7 +96,7 @@ export interface IActorQuerySourceIdentifyHypermediaSparqlArgs extends IActorQue
    */
   cacheSize?: number;
   /**
-   * If provided, forces the source type of a source
+   * If provided, forces the source type of a source.
    * @default {false}
    */
   forceSourceType?: boolean;
@@ -109,6 +111,12 @@ export interface IActorQuerySourceIdentifyHypermediaSparqlArgs extends IActorQue
    * @default {3000}
    */
   countTimeout: number;
+  /**
+   * If count queries should be sent to obtain the cardinality of (sub)queries.
+   * If set to false, resulting cardinalities will always be considered infinity.
+   * @default {true}
+   */
+  cardinalityCountQueries: boolean;
 }
 
 export type BindMethod = 'values' | 'union' | 'filter';
