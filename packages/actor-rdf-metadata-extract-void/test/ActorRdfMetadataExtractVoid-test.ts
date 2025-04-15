@@ -145,7 +145,7 @@ describe('ActorRdfMetadataExtractVoid', () => {
         }))?.metadata?.datasets.at(0);
         expect(dataset).toBeDefined();
         const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
-        await expect(dataset!.getCardinality(pattern)).resolves.toEqual({
+        expect(dataset!.getCardinality(pattern)).toEqual({
           type: 'estimate',
           value: tripleCount,
           dataset: sparqlEndpoint.value,

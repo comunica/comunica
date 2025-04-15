@@ -8,7 +8,7 @@ import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { IDataset, QueryResultCardinality } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra } from 'sparqlalgebrajs';
+import { Algebra } from 'sparqlalgebrajs';
 import {
   RDF_TYPE,
   SD_DEFAULT_DATASET,
@@ -30,7 +30,7 @@ import {
   VOID_URI_SPACE,
   VOID_VOCABULARY,
 } from './Definitions';
-import { getCardinality } from './Estimators';
+import { estimatePatternCardinality } from './Estimators';
 import type {
   IVoidClassPartition,
   IVoidDataset,
@@ -51,8 +51,9 @@ export class ActorRdfMetadataExtractVoid extends ActorRdfMetadataExtract {
 
   public async run(action: IActionRdfMetadataExtract): Promise<IActorRdfMetadataExtractOutput> {
     return new Promise<IActorRdfMetadataExtractOutput>((resolve, reject) => {
-      // Track the URIs of identified datasets to extract
+      // Track the URIs of identified datasets to extract or ignore
       const datasetUris = new Set<string>();
+      const ignoredUris = new Set<string>();
 
       // Track the other stats per-URI to allow arbitrary triple ordering in the stream
       const triples: Record<string, number> = {};
@@ -118,6 +119,7 @@ export class ActorRdfMetadataExtractVoid extends ActorRdfMetadataExtract {
               uriRegexPatterns[quad.subject.value] = new RegExp(quad.object.value, 'u');
               break;
             case VOID_PROPERTY_PARTITION:
+              ignoredUris.add(quad.object.value);
               if (propertyPartitions[quad.subject.value]) {
                 propertyPartitions[quad.subject.value].push(quad.object.value);
               } else {
@@ -125,6 +127,7 @@ export class ActorRdfMetadataExtractVoid extends ActorRdfMetadataExtract {
               }
               break;
             case VOID_CLASS_PARTITION:
+              ignoredUris.add(quad.object.value);
               if (classPartitions[quad.subject.value]) {
                 classPartitions[quad.subject.value].push(quad.object.value);
               } else {
@@ -180,15 +183,27 @@ export class ActorRdfMetadataExtractVoid extends ActorRdfMetadataExtract {
             return partitions;
           };
 
+          // Always ignore intermediate default dataset
           if (defaultDatasetUri) {
-            if (defaultGraphUri && vocabularies[defaultDatasetUri] && !vocabularies[defaultGraphUri]) {
-              vocabularies[defaultGraphUri] = vocabularies[defaultDatasetUri];
-            }
-            datasetUris.delete(defaultDatasetUri);
+            ignoredUris.add(defaultDatasetUri);
           }
 
+          // Ignore default graph URI when union default graph is set
           if (unionDefaultGraph && defaultGraphUri) {
-            datasetUris.delete(defaultGraphUri);
+            ignoredUris.add(defaultGraphUri);
+          }
+
+          // Propagate vocabularies from higher level datasets to lower-level
+          if (defaultDatasetUri && defaultGraphUri && vocabularies[defaultDatasetUri]) {
+            vocabularies[defaultGraphUri] = [
+              ...vocabularies[defaultGraphUri] ?? [],
+              ...vocabularies[defaultDatasetUri],
+            ];
+          }
+
+          // Delete all the to-be-ignored datasets, such as property and class partitions
+          for (const uri of ignoredUris) {
+            datasetUris.delete(uri);
           }
 
           for (const uri of datasetUris) {
@@ -209,12 +224,13 @@ export class ActorRdfMetadataExtractVoid extends ActorRdfMetadataExtract {
                 vocabularies: vocabularies[uri],
               };
               datasets.push({
-                getCardinality: async(operation: Algebra.Operation): Promise<QueryResultCardinality> => ({
-                  ...getCardinality(dataset, operation),
-                  dataset: action.url,
-                }),
-                source: action.url,
                 uri,
+                source: action.url,
+                getCardinality: (operation: Algebra.Operation): QueryResultCardinality | undefined => {
+                  if (operation.type === Algebra.types.PATTERN) {
+                    return { ...estimatePatternCardinality(dataset, operation), dataset: uri };
+                  }
+                },
               });
             }
           }

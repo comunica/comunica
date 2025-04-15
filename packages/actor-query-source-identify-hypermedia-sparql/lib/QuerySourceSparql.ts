@@ -16,14 +16,15 @@ import type {
 } from '@comunica/types';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
+import { estimateCardinality } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator, wrap } from 'asynciterator';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import { LRUCache } from 'lru-cache';
 import { uniqTerms } from 'rdf-terms';
-import type { Factory, Algebra } from 'sparqlalgebrajs';
-import { toSparql, Util } from 'sparqlalgebrajs';
+import type { Factory } from 'sparqlalgebrajs';
+import { toSparql, Algebra, Util } from 'sparqlalgebrajs';
 import type { BindMethod } from './ActorQuerySourceIdentifyHypermediaSparql';
 
 export class QuerySourceSparql implements IQuerySource {
@@ -45,6 +46,7 @@ export class QuerySourceSparql implements IQuerySource {
   private readonly bindMethod: BindMethod;
   private readonly countTimeout: number;
   private readonly cardinalityCountQueries: boolean;
+  private readonly cardinalityEstimateConstruction: boolean;
   private readonly defaultGraph?: string;
   private readonly unionDefaultGraph: boolean;
   private readonly datasets?: IDataset[];
@@ -69,6 +71,7 @@ export class QuerySourceSparql implements IQuerySource {
     cacheSize: number,
     countTimeout: number,
     cardinalityCountQueries: boolean,
+    cardinalityEstimateConstruction: boolean,
     defaultGraph?: string,
     unionDefaultGraph?: boolean,
     datasets?: IDataset[],
@@ -94,6 +97,7 @@ export class QuerySourceSparql implements IQuerySource {
       undefined;
     this.countTimeout = countTimeout;
     this.cardinalityCountQueries = cardinalityCountQueries;
+    this.cardinalityEstimateConstruction = cardinalityEstimateConstruction;
     this.defaultGraph = defaultGraph;
     this.unionDefaultGraph = unionDefaultGraph ?? false;
     this.datasets = datasets;
@@ -179,12 +183,10 @@ export class QuerySourceSparql implements IQuerySource {
     let variablesCount: MetadataVariable[] = [];
     // eslint-disable-next-line no-async-promise-executor,ts/no-misused-promises
     new Promise<QueryResultCardinality>(async(resolve, reject) => {
-      // Prepare queries
-      let countQuery: string;
       try {
         const operation = await operationPromise;
         const variablesScoped = Util.inScopeVariables(operation);
-        countQuery = QuerySourceSparql.operationToCountQuery(this.dataFactory, this.algebraFactory, operation);
+        const countQuery = this.operationToNormalizedCountQuery(operation);
         const undefVariables = QuerySourceSparql.getOperationUndefs(operation);
         variablesCount = variablesScoped.map(variable => ({
           variable,
@@ -196,11 +198,14 @@ export class QuerySourceSparql implements IQuerySource {
           return resolve(cachedCardinality);
         }
 
-        // Attempt to estimate locally prior to sending a COUNT request, as this should be much faster
-        const localEstimate = await this.estimateCardinality(operation);
-        if (localEstimate && Number.isFinite(localEstimate.value)) {
-          this.cache?.set(countQuery, localEstimate);
-          return resolve(localEstimate);
+        // Attempt to estimate locally prior to sending a COUNT request, as this should be much faster.
+        // The estimates may be off by varying amounts, so this is set behind a configuration flag.
+        if (this.cardinalityEstimateConstruction) {
+          const localEstimate = await this.estimateOperationCardinality(operation);
+          if (Number.isFinite(localEstimate.value)) {
+            this.cache?.set(countQuery, localEstimate);
+            return resolve(localEstimate);
+          }
         }
 
         // Don't send count queries if disabled.
@@ -261,31 +266,61 @@ export class QuerySourceSparql implements IQuerySource {
   }
 
   /**
+   * Convert an algebra operation into a query string, and if the operation is a simple triple pattern,
+   * then also replace any variables with s, p, and o to increase the chance of cache hits.
+   * @param {Algebra.Operation} operation The operation to convert into a query string.
+   * @returns {string} Query string for a COUNT query over the operation.
+   */
+  public operationToNormalizedCountQuery(operation: Algebra.Operation): string {
+    const normalizedOperation = operation.type === Algebra.types.PATTERN ?
+      this.algebraFactory.createPattern(
+        operation.subject.termType === 'Variable' ? this.dataFactory.variable('s') : operation.subject,
+        operation.predicate.termType === 'Variable' ? this.dataFactory.variable('p') : operation.predicate,
+        operation.object.termType === 'Variable' ? this.dataFactory.variable('o') : operation.object,
+      ) :
+      operation;
+    const operationString = QuerySourceSparql.operationToCountQuery(
+      this.dataFactory,
+      this.algebraFactory,
+      normalizedOperation,
+    );
+    return operationString;
+  }
+
+  /**
    * Performs local cardinality estimation for the specified SPARQL algebra operation, which should
    * result in better estimation performance at the expense of accuracy.
    * @param {Algebra.Operation} operation A query operation.
    */
-  public async estimateCardinality(operation: Algebra.Operation): Promise<QueryResultCardinality | undefined> {
-    if (this.datasets) {
-      // Try to estimate the cardinality on the default graph if possible.
-      if (this.defaultGraph) {
-        const defaultDataset = this.datasets.find(ds => ds.uri.endsWith(this.defaultGraph!));
-        if (defaultDataset) {
-          return defaultDataset.getCardinality(operation);
-        }
-      }
+  public async estimateOperationCardinality(operation: Algebra.Operation): Promise<QueryResultCardinality> {
+    const dataset: IDataset = {
+      getCardinality: (operation: Algebra.Operation): QueryResultCardinality | undefined => {
+        const queryString = this.operationToNormalizedCountQuery(operation);
 
-      // When metadata for the default graph is not availble directly, sum up the other graphs
-      // when UnionDefaultGraph has been declared for the SPARQL endpoint.
-      if (this.unionDefaultGraph) {
-        const cardinalities = await Promise.all(this.datasets.map(ds => ds.getCardinality(operation)));
-        return {
-          type: cardinalities.some(card => card.type === 'estimate') ? 'estimate' : 'exact',
-          value: cardinalities.reduce((acc, card) => acc + card.value, 0),
-          dataset: this.url,
-        };
-      }
-    }
+        const cachedCardinality = this.cache?.get(queryString);
+        if (cachedCardinality) {
+          return cachedCardinality;
+        }
+
+        if (this.datasets) {
+          const cardinalities = this.datasets
+            .filter(ds => this.unionDefaultGraph || (this.defaultGraph && ds.uri.endsWith(this.defaultGraph)))
+            .map(ds => estimateCardinality(operation, ds));
+
+          const cardinality: QueryResultCardinality = {
+            type: cardinalities.some(card => card.type === 'estimate') ? 'estimate' : 'exact',
+            value: cardinalities.length > 0 ? cardinalities.reduce((acc, card) => acc + card.value, 0) : 0,
+            dataset: this.url,
+          };
+
+          return cardinality;
+        }
+      },
+      source: this.url,
+      uri: this.url,
+    };
+
+    return estimateCardinality(operation, dataset);
   }
 
   /**

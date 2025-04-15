@@ -45,6 +45,7 @@
     "@comunica/types": "^4.1.0",
     "@comunica/utils-bindings-factory": "^4.1.0",
     "@rdfjs/types": "*",
+    "rdf-data-factory": "^1.1.2",
     "rdf-string": "^1.6.1",
     "rdf-terms": "^1.11.0",
     "sparqlalgebrajs": "^4.3.8"
