@@ -9,7 +9,7 @@ import type {
 import {
   ActorQuerySourceIdentifyHypermedia,
 } from '@comunica/bus-query-source-identify-hypermedia';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
 import { failTest, passTest } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
@@ -51,6 +51,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
 
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const algebraFactory = new Factory(dataFactory);
+    const isSingularSource = action.context.get(KeysQueryOperation.querySources)?.length === 1;
     const source = new QuerySourceSparql(
       (action.forceSourceType ?? this.forceSourceType) ? action.url : action.metadata.sparqlService || action.url,
       action.context,
@@ -62,7 +63,8 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
       this.forceHttpGet,
       this.cacheSize,
       this.countTimeout,
-      this.cardinalityCountQueries,
+      // Cardinalities can be infinity when we're querying just a single source.
+      this.cardinalityCountQueries && !isSingularSource,
       this.cardinalityEstimateConstruction,
       action.metadata.defaultGraph,
       action.metadata.unionDefaultGraph,

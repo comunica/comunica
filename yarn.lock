@@ -10921,7 +10921,7 @@ rdf-stores@^2.0.0, rdf-stores@^2.1.1:
     rdf-string "^2.0.0"
     rdf-terms "^2.0.0"
 
-rdf-streaming-store@2.1.1:
+rdf-streaming-store@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/rdf-streaming-store/-/rdf-streaming-store-2.1.1.tgz#efa450533a96cadf80a49228ae092c7bb389d2c6"
   integrity sha512-hw9n1WdsSI74d89EDGQv5dYb5PaFXjjm4BqdSwJ7JMa5Cx27pwtv5qbXZvSXZmle90/myI2At+TIpdLJQmujBg==
