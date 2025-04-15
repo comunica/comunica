@@ -44,6 +44,7 @@ export class QuerySourceSparql implements IQuerySource {
   private readonly mediatorHttp: MediatorHttp;
   private readonly bindMethod: BindMethod;
   private readonly countTimeout: number;
+  private readonly cardinalityCountQueries: boolean;
   private readonly defaultGraph?: string;
   private readonly unionDefaultGraph: boolean;
   private readonly datasets?: IDataset[];
@@ -67,6 +68,7 @@ export class QuerySourceSparql implements IQuerySource {
     forceHttpGet: boolean,
     cacheSize: number,
     countTimeout: number,
+    cardinalityCountQueries: boolean,
     defaultGraph?: string,
     unionDefaultGraph?: boolean,
     datasets?: IDataset[],
@@ -91,6 +93,7 @@ export class QuerySourceSparql implements IQuerySource {
       new LRUCache<string, QueryResultCardinality>({ max: cacheSize }) :
       undefined;
     this.countTimeout = countTimeout;
+    this.cardinalityCountQueries = cardinalityCountQueries;
     this.defaultGraph = defaultGraph;
     this.unionDefaultGraph = unionDefaultGraph ?? false;
     this.datasets = datasets;
@@ -198,6 +201,11 @@ export class QuerySourceSparql implements IQuerySource {
         if (localEstimate && Number.isFinite(localEstimate.value)) {
           this.cache?.set(countQuery, localEstimate);
           return resolve(localEstimate);
+        }
+
+        // Don't send count queries if disabled.
+        if (!this.cardinalityCountQueries) {
+          return resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url });
         }
 
         const timeoutHandler = setTimeout(() => resolve({

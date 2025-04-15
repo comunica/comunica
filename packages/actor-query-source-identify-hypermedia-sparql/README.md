@@ -45,3 +45,4 @@ After installing, this package can be added to your engine's configuration as fo
 * `cacheSize`: The cache size for COUNT queries, defaults to `1024`.
 * `bindMethod`: The query operation for communicating bindings, defaults to `'values'`, alt: `'union'` or `'filter'`.
 * `countTimeout`: Timeout in ms of how long count queries are allowed to take. If the timeout is reached, an infinity cardinality is returned. Defaults to `3000`.
+* `cardinalityCountQueries`: If count queries should be sent to obtain the cardinality of (sub)queries. If set to false, resulting cardinalities will always be considered infinity. Defaults to `true`
