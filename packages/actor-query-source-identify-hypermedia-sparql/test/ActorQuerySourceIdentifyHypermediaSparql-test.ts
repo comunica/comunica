@@ -103,6 +103,11 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           .toPassTest({ filterFactor: 1 });
       });
 
+      it('should test with an URL ending with /sparql/', async() => {
+        await expect(actor.test({ url: 'URL/sparql/', metadata: {}, quads: <any> null, context })).resolves
+          .toPassTest({ filterFactor: 1 });
+      });
+
       it('should not test with an URL ending with /sparql if checkUrlSuffix is false', async() => {
         actor = new ActorQuerySourceIdentifyHypermediaSparql({
           name: 'actor',

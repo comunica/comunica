@@ -40,7 +40,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
     action: IActionQuerySourceIdentifyHypermedia,
   ): Promise<TestResult<IActorQuerySourceIdentifyHypermediaTest>> {
     if (!action.forceSourceType && !this.forceSourceType && !action.metadata.sparqlService &&
-      !(this.checkUrlSuffix && action.url.endsWith('/sparql'))) {
+      !(this.checkUrlSuffix && (action.url.endsWith('/sparql') || action.url.endsWith('/sparql/')))) {
       return failTest(`Actor ${this.name} could not detect a SPARQL service description or URL ending on /sparql.`);
     }
     return passTest({ filterFactor: 1 });
