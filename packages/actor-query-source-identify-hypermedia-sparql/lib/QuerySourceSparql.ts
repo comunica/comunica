@@ -130,7 +130,8 @@ export class QuerySourceSparql implements IQuerySource {
       const operation = await operationPromise;
       const variables: RDF.Variable[] = Util.inScopeVariables(operation);
       const queryString = context.get<string>(KeysInitQuery.queryString);
-      const selectQuery: string = !options?.joinBindings && queryString ?
+      const queryFormat: RDF.QueryFormat = context.getSafe(KeysInitQuery.queryFormat);
+      const selectQuery: string = !options?.joinBindings && queryString && queryFormat.language === 'sparql' ?
         queryString :
         QuerySourceSparql.operationToSelectQuery(this.algebraFactory, operation, variables);
       const undefVariables = QuerySourceSparql.getOperationUndefs(operation);

@@ -71,6 +71,7 @@ describe('QuerySourceSparql', () => {
     logger = { warn: jest.fn() };
     ctx = new ActionContext({
       [KeysCore.log.name]: logger,
+      [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
     });
     source = new QuerySourceSparql(url, ctx, mediatorHttp, 'values', DF, AF, BF, false, 64, 10, true, true);
   });
@@ -995,6 +996,38 @@ describe('QuerySourceSparql', () => {
         context: ctx.set(KeysInitQuery.queryString, 'abc'),
         init: {
           body: new URLSearchParams({ query: 'abc' }),
+          headers: expect.anything(),
+          method: 'POST',
+        },
+        input: url,
+      });
+    });
+
+    it('should not pass the original queryString if queryFormat is not sparql', async() => {
+      await expect(source.queryBindings(
+        AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')),
+        ctx
+          .set(KeysInitQuery.queryString, 'abc')
+          .set(KeysInitQuery.queryFormat, { language: 'graphql', version: '1.0' }),
+      ))
+        .toEqualBindingsStream([
+          BF.fromRecord({
+            p: DF.namedNode('p1'),
+          }),
+          BF.fromRecord({
+            p: DF.namedNode('p2'),
+          }),
+          BF.fromRecord({
+            p: DF.namedNode('p3'),
+          }),
+        ]);
+
+      expect(mediatorHttp.mediate).toHaveBeenCalledWith({
+        context: ctx
+          .set(KeysInitQuery.queryString, 'abc')
+          .set(KeysInitQuery.queryFormat, { language: 'graphql', version: '1.0' }),
+        init: {
+          body: new URLSearchParams({ query: 'SELECT (COUNT(*) AS ?count) WHERE { undefined:s ?p undefined:o. }' }),
           headers: expect.anything(),
           method: 'POST',
         },
