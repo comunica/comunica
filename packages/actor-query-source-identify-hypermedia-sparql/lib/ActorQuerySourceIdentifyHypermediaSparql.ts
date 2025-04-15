@@ -30,6 +30,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
   public readonly bindMethod: BindMethod;
   public readonly countTimeout: number;
   public readonly cardinalityCountQueries: boolean;
+  public readonly cardinalityEstimateConstruction: boolean;
 
   public constructor(args: IActorQuerySourceIdentifyHypermediaSparqlArgs) {
     super(args, 'sparql');
@@ -62,6 +63,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
       this.cacheSize,
       this.countTimeout,
       this.cardinalityCountQueries,
+      this.cardinalityEstimateConstruction,
       action.metadata.defaultGraph,
       action.metadata.unionDefaultGraph,
       action.metadata.datasets,
@@ -117,6 +119,12 @@ export interface IActorQuerySourceIdentifyHypermediaSparqlArgs extends IActorQue
    * @default {true}
    */
   cardinalityCountQueries: boolean;
+  /**
+   * If estimates for queries should be constructed locally from sub-query cardinalities.
+   * If set to false, count queries will used for cardinality estimation at all levels.
+   * @default {false}
+   */
+  cardinalityEstimateConstruction: boolean;
 }
 
 export type BindMethod = 'values' | 'union' | 'filter';

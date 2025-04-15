@@ -1,116 +1,22 @@
 import type * as RDF from '@rdfjs/types';
-import { Algebra } from 'sparqlalgebrajs';
+import type { Algebra } from 'sparqlalgebrajs';
 import { RDF_TYPE } from './Definitions';
 import type { IVoidDataset } from './Types';
-
-/**
- * Estimate the cardinality of the provided operation using the specified dataset metadata.
- * This is the primary function that should be called to perform
- */
-export function getCardinality(dataset: IVoidDataset, operation: Algebra.Operation): RDF.QueryResultCardinality {
-  switch (operation.type) {
-    case Algebra.types.PROJECT:
-    case Algebra.types.FILTER:
-    case Algebra.types.ORDER_BY:
-    case Algebra.types.GROUP:
-    case Algebra.types.CONSTRUCT:
-    case Algebra.types.ASK:
-      return getCardinality(dataset, operation.input);
-    case Algebra.types.PATTERN:
-      return getPatternCardinality(dataset, operation);
-    case Algebra.types.BGP:
-      return getUnionCardinality(dataset, operation.patterns);
-    case Algebra.types.JOIN:
-    case Algebra.types.UNION:
-      return getUnionCardinality(dataset, operation.input);
-    case Algebra.types.GRAPH:
-      return getGraphCardinality(dataset, operation);
-    case Algebra.types.FROM:
-      return getFromCardinality(dataset, operation);
-    case Algebra.types.SLICE:
-      return getSliceCardinality(dataset, operation);
-    case Algebra.types.MINUS:
-      return getMinusCardinality(dataset, operation);
-    case Algebra.types.VALUES:
-      return { type: 'exact', value: operation.bindings.length };
-    default:
-      return { type: 'estimate', value: Number.POSITIVE_INFINITY };
-  }
-}
 
 /**
  * Estimate triple pattern cardinality, by first applying heuristics based on void:uriPatternRegex
  * and void:vocabulary data when available, before performing estimations using the formulae.
  */
-export function getPatternCardinality(dataset: IVoidDataset, pattern: Algebra.Pattern): RDF.QueryResultCardinality {
+export function estimatePatternCardinality(
+  dataset: IVoidDataset,
+  pattern: Algebra.Pattern,
+): RDF.QueryResultCardinality {
   const estimate: RDF.QueryResultCardinality = { type: 'exact', value: 0 };
   if (matchPatternVocabularies(dataset, pattern) && matchPatternResourceUris(dataset, pattern)) {
-    const value = getPatternCardinalityRaw(dataset, pattern);
+    const value = estimatePatternCardinalityRaw(dataset, pattern);
     if (value > 0) {
       estimate.value = value;
       estimate.type = 'estimate';
-    }
-  }
-  return estimate;
-}
-
-/**
- * Estimate the cardinality of a minus, by taking into account the input cardinalities.
- */
-export function getMinusCardinality(dataset: IVoidDataset, minus: Algebra.Minus): RDF.QueryResultCardinality {
-  const estimateFirst = getCardinality(dataset, minus.input[0]);
-  const estimateSecond = getCardinality(dataset, minus.input[1]);
-  return { type: 'estimate', value: Math.max(estimateFirst.value - estimateSecond.value, 0) };
-}
-
-/**
- * Estimate the cardinality of a slice operation, taking into account the input cardinality and the slice range.
- */
-export function getSliceCardinality(dataset: IVoidDataset, slice: Algebra.Slice): RDF.QueryResultCardinality {
-  const estimate = getCardinality(dataset, slice.input);
-  if (estimate.value > 0) {
-    estimate.value = Math.max(estimate.value - slice.start, 0);
-    if (slice.length !== undefined) {
-      estimate.value = Math.min(estimate.value, slice.length);
-    }
-  }
-  return estimate;
-}
-
-/**
- * Estimate the cardinality of a from statement, by checking if any of the declared graphs
- * match the current one, and then returning the appropriate estimate.
- */
-export function getFromCardinality(dataset: IVoidDataset, from: Algebra.From): RDF.QueryResultCardinality {
-  if (
-    from.default.some(nn => nn.value === dataset.identifier) ||
-    from.named.some(nn => nn.value === dataset.identifier)
-  ) {
-    return getCardinality(dataset, from.input);
-  }
-  return { type: 'exact', value: 0 };
-}
-
-/**
- * Estimate the cardinality of a statement wrapped under a graph, by also checking if the graph exists.
- */
-export function getGraphCardinality(dataset: IVoidDataset, graph: Algebra.Graph): RDF.QueryResultCardinality {
-  if (graph.name.termType === 'Variable' || graph.name.value === dataset.identifier) {
-    return getCardinality(dataset, graph.input);
-  }
-  return { type: 'exact', value: 0 };
-}
-
-/**
- * Estimate the cardinality of a union, using a sum of the individual input cardinalities.
- */
-export function getUnionCardinality(dataset: IVoidDataset, input: Algebra.Operation[]): RDF.QueryResultCardinality {
-  const estimate: RDF.QueryResultCardinality = { type: 'exact', value: 0 };
-  for (const operation of input) {
-    const cardinality = getCardinality(dataset, operation);
-    if (cardinality.value > 0) {
-      estimate.type = 'estimate';
-      estimate.value += cardinality.value;
     }
   }
   return estimate;
@@ -145,7 +51,7 @@ export function matchPatternVocabularies(dataset: IVoidDataset, pattern: Algebra
  * Estimate the triple pattern cardinality using the formulae from Hagedorn, Stefan, et al.
  * "Resource Planning for SPARQL Query Execution on Data Sharing Platforms." COLD 1264 (2014)
  */
-export function getPatternCardinalityRaw(dataset: IVoidDataset, pattern: Algebra.Pattern): number {
+export function estimatePatternCardinalityRaw(dataset: IVoidDataset, pattern: Algebra.Pattern): number {
   // ?s rdf:type <o> (from the original paper)
   // ?s rdf:type _:o (also accounted for)
   if (

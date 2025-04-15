@@ -49,6 +49,7 @@
     "@comunica/types": "^4.1.0",
     "@comunica/utils-bindings-factory": "^4.1.0",
     "@comunica/utils-metadata": "^4.1.0",
+    "@comunica/utils-query-operation": "^4.1.0",
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0",
     "fetch-sparql-endpoint": "^5.1.0",

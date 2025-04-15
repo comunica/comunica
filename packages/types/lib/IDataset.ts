@@ -19,5 +19,5 @@ export interface IDataset {
    * @param {Algebra.Operation} operation SPARQL algebra operation.
    * @returns {QueryResultCardinality} Upper bound for the cardinality.
    */
-  getCardinality: (operation: Algebra.Operation) => Promise<QueryResultCardinality>;
+  getCardinality: (operation: Algebra.Operation) => QueryResultCardinality | undefined;
 }

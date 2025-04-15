@@ -1,9 +1,9 @@
 import { DataFactory } from 'rdf-data-factory';
-import { Factory, Algebra } from 'sparqlalgebrajs';
+import { Factory } from 'sparqlalgebrajs';
 import { RDF_TYPE } from '../lib/Definitions';
 import {
-  getCardinality,
-  getPatternCardinality,
+  estimatePatternCardinality,
+  estimatePatternCardinalityRaw,
   getClassPartitionEntities,
   getPredicateObjects,
   getPredicateSubjects,
@@ -12,10 +12,6 @@ import {
   getDistinctObjects,
   matchPatternVocabularies,
   matchPatternResourceUris,
-  getUnionCardinality,
-  getGraphCardinality,
-  getFromCardinality,
-  getPatternCardinalityRaw,
 } from '../lib/Estimators';
 import type { IVoidDataset } from '../lib/Types';
 
@@ -71,7 +67,7 @@ const ignoredPatternExamples = {
   '"s" ?p "o"': AF.createPattern(subjectLiteral, predicateVariable, objectLiteral),
 };
 
-describe('estimators', () => {
+describe('Estimators', () => {
   let dataset: IVoidDataset;
 
   const datasetTripleCount = 4321;
@@ -93,121 +89,15 @@ describe('estimators', () => {
     };
   });
 
-  describe('cardinality', () => {
-    const pattern1 = AF.createPattern(DF.variable('s'), DF.variable('p1'), DF.variable('o1'));
-    const pattern2 = AF.createPattern(DF.variable('s'), DF.variable('p2'), DF.variable('o2'));
-
-    it.each([
-      Algebra.types.PROJECT,
-      Algebra.types.FILTER,
-      Algebra.types.ORDER_BY,
-      Algebra.types.GROUP,
-      Algebra.types.CONSTRUCT,
-      Algebra.types.ASK,
-    ])('should estimate cardinality for %s', (type) => {
-      const operation = <Algebra.Operation>{ type, input: { type: 'fallback' }};
-      expect(getCardinality(dataset, operation)).toEqual({
-        type: 'estimate',
-        value: Number.POSITIVE_INFINITY,
-      });
-    });
-
-    it.each([
-      Algebra.types.JOIN,
-      Algebra.types.BGP,
-    ])('should estimate cardinality for %s', (type) => {
-      const input = [ pattern1, pattern2 ];
-      const operation = <Algebra.Operation>{ type, input, patterns: input };
-      expect(getCardinality(dataset, operation)).toEqual({
-        type: 'estimate',
-        value: input.length * datasetTripleCount,
-      });
-    });
-
-    it('should estimate cardinality for graph', () => {
-      const operation = AF.createGraph(pattern1, DF.namedNode('ex:g'));
-      expect(getCardinality(dataset, operation)).toEqual({ type: 'estimate', value: datasetTripleCount });
-    });
-
-    it('should estimate cardinality for from', () => {
-      const operation = AF.createFrom(pattern1, [], []);
-      expect(getCardinality(dataset, operation)).toEqual({ type: 'exact', value: 0 });
-    });
-
-    it('should estimate cardinality for slice', () => {
-      const operation = AF.createSlice(pattern1, 12, 8);
-      expect(getCardinality(dataset, operation)).toEqual({ type: 'estimate', value: 8 });
-    });
-
-    it('should estimate cardinality for minus', () => {
-      const operation = AF.createMinus(pattern1, pattern2);
-      expect(getCardinality(dataset, operation)).toEqual({ type: 'estimate', value: 0 });
-    });
-
-    it('should estimate cardinality for pattern', () => {
-      const operation = pattern1;
-      expect(getCardinality(dataset, operation)).toEqual({ type: 'estimate', value: datasetTripleCount });
-    });
-
-    it.each([ 0, 1, 10 ])(`should estimate cardinality for ${Algebra.types.VALUES} with %d bindings`, (count) => {
-      const operation = <Algebra.Operation>{ type: Algebra.types.VALUES, bindings: { length: count }};
-      expect(getCardinality(dataset, operation)).toEqual({ type: 'exact', value: count });
-    });
-  });
-
-  describe('getPatternCardinality', () => {
+  describe('estimatePatternCardinality', () => {
     it('should return the estimated cardinality', () => {
       const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
-      expect(getPatternCardinality(dataset, pattern)).toEqual({ type: 'estimate', value: datasetTripleCount });
+      expect(estimatePatternCardinality(dataset, pattern)).toEqual({ type: 'estimate', value: datasetTripleCount });
     });
 
     it('should return 0 when resource URIs are not found in the dataset', () => {
       const pattern = AF.createPattern(DF.namedNode('ex2:s'), DF.variable('p'), DF.namedNode('ex2:o'));
-      expect(getPatternCardinality(dataset, pattern)).toEqual({ type: 'exact', value: 0 });
-    });
-  });
-
-  describe('getFromCardinality', () => {
-    const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
-
-    it('should return 0 when the graph URIs do not match', () => {
-      const from = AF.createFrom(pattern, [], [ DF.namedNode('ex:g2') ]);
-      expect(getFromCardinality(dataset, from)).toEqual({ type: 'exact', value: 0 });
-    });
-
-    it('should return the input estimate with matching graph URI', () => {
-      const from = AF.createFrom(pattern, [ DF.namedNode('ex:g') ], []);
-      expect(getFromCardinality(dataset, from)).toEqual({ type: 'estimate', value: datasetTripleCount });
-    });
-  });
-
-  describe('getGraphCardinality', () => {
-    const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
-
-    it('should return 0 when the graph URI does not match', () => {
-      const graph = AF.createGraph(pattern, DF.namedNode('ex:g2'));
-      expect(getGraphCardinality(dataset, graph)).toEqual({ type: 'exact', value: 0 });
-    });
-
-    it('should return the input estimate with matching graph URI', () => {
-      const graph = AF.createGraph(pattern, DF.namedNode('ex:g'));
-      expect(getGraphCardinality(dataset, graph)).toEqual({ type: 'estimate', value: datasetTripleCount });
-    });
-
-    it('should return the input estimate with variable graph URI', () => {
-      const graph = AF.createGraph(pattern, DF.variable('g'));
-      expect(getGraphCardinality(dataset, graph)).toEqual({ type: 'estimate', value: datasetTripleCount });
-    });
-  });
-
-  describe('getUnionCardinality', () => {
-    it('should return 0 without any input', () => {
-      expect(getUnionCardinality(<any>'dataset', [])).toEqual({ type: 'exact', value: 0 });
-    });
-
-    it('should return the sum of input', () => {
-      const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
-      expect(getUnionCardinality(dataset, [ pattern ])).toEqual({ type: 'estimate', value: datasetTripleCount });
+      expect(estimatePatternCardinality(dataset, pattern)).toEqual({ type: 'exact', value: 0 });
     });
   });
 
@@ -388,7 +278,7 @@ describe('estimators', () => {
         const expected = (pattern.predicate.termType !== 'Variable' || pattern.predicate.value === rdfType.value) ?
           0 :
           datasetTripleCount;
-        expect(getPatternCardinalityRaw(dataset, pattern)).toBe(expected);
+        expect(estimatePatternCardinalityRaw(dataset, pattern)).toBe(expected);
       });
 
       it('should handle cases where formulae divisor goes to zero', () => {
@@ -407,7 +297,7 @@ describe('estimators', () => {
           dataset.classPartitions![pattern.object.value] = { entities: 987, propertyPartitions: {}};
           expected = dataset.classPartitions![pattern.object.value].entities!;
         }
-        expect(getPatternCardinalityRaw(dataset, pattern)).toBe(expected);
+        expect(estimatePatternCardinalityRaw(dataset, pattern)).toBe(expected);
       });
 
       it('should return a non-zero value when all the metrics are available', () => {
@@ -426,13 +316,13 @@ describe('estimators', () => {
         }
         dataset.distinctObjects = 100 + Math.random() * 100;
         dataset.distinctSubjects = 200 + Math.random() * 50;
-        expect(getPatternCardinalityRaw(dataset, pattern)).toBeGreaterThanOrEqual(0);
+        expect(estimatePatternCardinalityRaw(dataset, pattern)).toBeGreaterThanOrEqual(0);
       });
     });
 
     describe.each(Object.entries(ignoredPatternExamples))('for patterns in the style of %s', (_, pattern) => {
       it('should return dataset triple count', () => {
-        expect(getPatternCardinalityRaw(dataset, pattern)).toBe(datasetTripleCount);
+        expect(estimatePatternCardinalityRaw(dataset, pattern)).toBe(datasetTripleCount);
       });
     });
   });
