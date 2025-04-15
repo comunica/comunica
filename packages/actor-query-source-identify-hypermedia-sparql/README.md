@@ -46,4 +46,4 @@ After installing, this package can be added to your engine's configuration as fo
 * `bindMethod`: The query operation for communicating bindings, defaults to `'values'`, alt: `'union'` or `'filter'`.
 * `countTimeout`: Timeout in ms of how long count queries are allowed to take. If the timeout is reached, an infinity cardinality is returned. Defaults to `3000`.
 * `cardinalityCountQueries`: If count queries should be sent to obtain the cardinality of (sub)queries. If set to false, resulting cardinalities will always be considered infinity. Defaults to `true`
-* `cardinalityEstimateConstruction`: If cardinality estimates for larger queries should be constructed locally from (sub)query cardinalities when possible. Defaults to `false`. If set to false, count queries will be sent for every operation.
+* `cardinalityEstimateConstruction`: If cardinality estimates for larger queries should be constructed locally from (sub)query cardinalities when possible. Defaults to `false`. If set to false, count queries will be sent for every operation at all levels.

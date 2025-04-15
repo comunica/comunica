@@ -199,7 +199,7 @@ export class QuerySourceSparql implements IQuerySource {
         }
 
         // Attempt to estimate locally prior to sending a COUNT request, as this should be much faster.
-        // The estimates may be off by varyind amounts, so this is set behind a configuration flag.
+        // The estimates may be off by varying amounts, so this is set behind a configuration flag.
         if (this.cardinalityEstimateConstruction) {
           const localEstimate = await this.estimateOperationCardinality(operation);
           if (Number.isFinite(localEstimate.value)) {
