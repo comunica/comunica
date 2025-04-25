@@ -57,7 +57,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     const emptyOperations: Set<Algebra.Operation> = new Set();
     await Promise.all(collectedOperations.map(async(collectedOperation) => {
       const checkOperation = collectedOperation.type === 'link' ?
-        algebraFactory.createPattern(dataFactory.variable('?s'), collectedOperation.iri, dataFactory.variable('?o')) :
+        algebraFactory.createPattern(dataFactory.variable('s'), collectedOperation.iri, dataFactory.variable('o')) :
         collectedOperation;
       if (!await this.hasSourceResults(
         algebraFactory,
