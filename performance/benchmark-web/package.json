@@ -1,6 +1,6 @@
 {
   "name": "benchmark-web",
-  "version": "4.0.1",
+  "version": "4.2.0",
   "private": true,
   "scripts": {
     "jbr": "cross-env NODE_OPTIONS=--max-old-space-size=8192 jbr",

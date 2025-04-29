@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-update-compositeupdate",
-  "version": "4.1.0",
+  "version": "4.2.0",
   "description": "A update-compositeupdate query-operation actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,10 +37,10 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-query-operation": "^4.1.0",
-    "@comunica/core": "^4.1.0",
-    "@comunica/types": "^4.1.0",
-    "@comunica/utils-query-operation": "^4.1.0",
+    "@comunica/bus-query-operation": "^4.2.0",
+    "@comunica/core": "^4.2.0",
+    "@comunica/types": "^4.2.0",
+    "@comunica/utils-query-operation": "^4.2.0",
     "sparqlalgebrajs": "^4.3.8"
   }
 }

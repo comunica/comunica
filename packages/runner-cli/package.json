@@ -1,6 +1,6 @@
 {
   "name": "@comunica/runner-cli",
-  "version": "4.1.0",
+  "version": "4.2.0",
   "description": "A comunica runner that sends an 'init' event from a commandline process.",
   "license": "MIT",
   "funding": {
@@ -40,9 +40,9 @@
     "build": "node \"../../node_modules/typescript/bin/tsc\""
   },
   "dependencies": {
-    "@comunica/core": "^4.1.0",
-    "@comunica/runner": "^4.1.0",
-    "@comunica/types": "^4.1.0",
+    "@comunica/core": "^4.2.0",
+    "@comunica/runner": "^4.2.0",
+    "@comunica/types": "^4.2.0",
     "process": "^0.11.10"
   }
 }

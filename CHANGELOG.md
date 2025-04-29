@@ -1,6 +1,41 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v4.2.0"></a>
+## [v4.2.0](https://github.com/comunica/comunica/compare/v4.1.0...v4.2.0) - 2025-04-29
+
+### Added
+* [Add HTTP rate limit actor](https://github.com/comunica/comunica/commit/fb5962c885938f47165f40c31187441bccfe2d56)
+* [Add workaround for DBPedia SPARQL HTTP status 405 with Retry-After](https://github.com/comunica/comunica/commit/8f58dd45a3ba72b72aa030242faebd6bb46fd370)
+* [Add VoID metadata extract actor and cardinality estimation for SPARQL sources](https://github.com/comunica/comunica/commit/2e259e739b6664a932bd3f5020509730b4d600e8)
+* [Allow SPARQL source actor to skip COUNTs for large queries](https://github.com/comunica/comunica/commit/9ddfa59b34561465aac4421f1d767af61b8d4325)
+* [Allow sending COUNT queries to be disabled for SPARQL endpoints](https://github.com/comunica/comunica/commit/1eef7d48c4100aaf261793aaceb299cc8877983b)
+* [Allow forcing SPARQL source type from config](https://github.com/comunica/comunica/commit/582dfcc6ea0c69d15d43f4e3847a75e5b04cad8e)
+* [Add join sorter based on join selectivities](https://github.com/comunica/comunica/commit/577fd93aa7d0f8288040d859b73133ceb8dac056)
+* [Report the url when a fetch fails](https://github.com/comunica/comunica/commit/a7f9285af770a7bad699af615939a1ea5f213636)
+* [Add distinctConstruct key to IQueryContextCommon](https://github.com/comunica/comunica/commit/932eb93f068bd8a7cf4f65f32cf5199d991f31f8)
+
+### Changed
+* [Detect SPARQL endpoints with trailing slashes, Closes #1529](https://github.com/comunica/comunica/commit/dad8bad0ef121cfe3142bf9725c15cdddb72fdfe)
+* [Skip COUNT queries to singular SPARQL source](https://github.com/comunica/comunica/commit/2dbe28b7c2275ad45e963f353df4e6ecaeb7582d)
+* [Skip unnecessary SPARQL SD requests for a single source](https://github.com/comunica/comunica/commit/c5529ac2e01addeb1b1a5afbdbf9e29983ce1a93)
+* [Update to rdf-streaming-store v2](https://github.com/comunica/comunica/commit/c1054e2ca2db1a5aebd06f1160a05ac1b94e30ba)
+* [Try action.mediaType before doing heuristics for media type](https://github.com/comunica/comunica/commit/35bd4bdbafd5ce0c1bae1ad6c31bf55682cfa4f7)
+* [Avoid unnecessary parse attempts after dereferencing fails](https://github.com/comunica/comunica/commit/883e2c913d2c57765162e5dc6c23ca13ac426299)
+* [Avoid printing all metadata in join logging (#1509)](https://github.com/comunica/comunica/commit/c2772816b281c40cd59cee080aa11814dc24e79e)
+* [Avoid creation of intermediary triple objects for in-memory stores](https://github.com/comunica/comunica/commit/513e55a61639902de3c0dceda0c3c4c29cb617bd)
+
+### Fixed
+* [Fix variable names in ActorOptimizeQueryOperationPruneEmptySourceOperations](https://github.com/comunica/comunica/commit/e1c41f5c29b60e40e7756da3bdc42e24819af470)
+* [Fix incorrect id of actor-query-source-hypermedia-identify-sparql](https://github.com/comunica/comunica/commit/278774283d3eabddbc6374acdcd5677ccc8fd465)
+* [Fix GraphQL queries being sent to SPARQL endpoints, Closes #1525](https://github.com/comunica/comunica/commit/c443e04bb7efafe15957e10fd165a9dcb7d3afba)
+* [Fix HTTP request count tracking, Closes #1526](https://github.com/comunica/comunica/commit/d75d966121c42ff755e6f32cd7897dd4b5a30699)
+* [Fix bad plans sometimes being chosen due to requestTime in files](https://github.com/comunica/comunica/commit/cdae8eed46848e6c84eba5d5e2b7144abce444fc)
+* [Fix regressions of initialBindings with BIND clauses](https://github.com/comunica/comunica/commit/0227f236be392992c77e872201623257e6080f60)
+* [Fix queries with complex property paths not terminating](https://github.com/comunica/comunica/commit/b3aa99882ff34809c2d7a24b575bc1764474a39d)
+* [Avoid flattening joins with input-specific metadata (#1522)](https://github.com/comunica/comunica/commit/dcd7862ac6c3e350372a4afdfb80468f3c13a7dd)
+* [Fix broken Dockerfile for query-sparql](https://github.com/comunica/comunica/commit/1e89df54431a6343845db1bf12b1c1ac26b0d93e)
+
 <a name="v4.1.0"></a>
 ## [v4.1.0](https://github.com/comunica/comunica/compare/v4.0.2...v4.1.0) - 2025-02-11
 
