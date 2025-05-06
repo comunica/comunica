@@ -165,13 +165,10 @@ describe('ActorQueryOperationDistinctIdentity', () => {
     });
 
     describe('with bindings input', () => {
-      beforeEach(() => {
+      it('should handle bindings', async() => {
         actor = new ActorQueryOperationDistinctIdentity(
           { name: 'actor', bus, mediatorQueryOperation: mediatorQueryOperationBindings },
         );
-      });
-
-      it('should handle bindings', async() => {
         const op: any = { operation: { type: 'distinct' }, context: new ActionContext() };
         const output = getSafeBindings(await actor.run(op, undefined));
         await expect(output.metadata()).resolves.toEqual({
@@ -188,13 +185,10 @@ describe('ActorQueryOperationDistinctIdentity', () => {
     });
 
     describe('with quad input', () => {
-      beforeEach(() => {
+      it('should filter duplicate quads', async() => {
         actor = new ActorQueryOperationDistinctIdentity(
           { name: 'actor', bus, mediatorQueryOperation: mediatorQueryOperationQuads },
         );
-      });
-
-      it('should filter duplicate quads', async() => {
         const op: any = { operation: { type: 'distinct' }, context: new ActionContext() };
         const output = getSafeQuads(await actor.run(op, undefined));
         await expect(output.metadata()).resolves.toEqual({ cardinality: 3 });

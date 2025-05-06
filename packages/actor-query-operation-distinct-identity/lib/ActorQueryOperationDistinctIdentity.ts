@@ -85,7 +85,7 @@ export class ActorQueryOperationDistinctIdentity extends ActorQueryOperationType
   public async newIdentityFilterQuads(): Promise<(quad: RDF.Quad) => boolean> {
     const identities: Record<string, boolean> = {};
     return (quad: RDF.Quad) => {
-      const identity = `${quad.subject.value}-${quad.predicate.value}-${quad.object.value}-${quad.graph.value}`;
+      const identity = Object.values(RdfString.quadToStringQuad(quad)).join(' ');
       return !(identity in identities) && (identities[identity] = true);
     };
   }
