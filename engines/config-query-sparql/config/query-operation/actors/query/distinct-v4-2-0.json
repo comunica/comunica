@@ -9,7 +9,7 @@
   "actors": [
     {
       "@id": "urn:comunica:default:query-operation/actors#distinct",
-      "@type": "ActorQueryOperationDistinctHash",
+      "@type": "ActorQueryOperationDistinctIdentity",
       "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" }
     }
   ]
