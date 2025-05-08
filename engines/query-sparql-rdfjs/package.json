@@ -168,7 +168,7 @@
     "@comunica/actor-query-operation-ask": "^4.2.0",
     "@comunica/actor-query-operation-bgp-join": "^4.2.0",
     "@comunica/actor-query-operation-construct": "^4.2.0",
-    "@comunica/actor-query-operation-distinct-hash": "^4.2.0",
+    "@comunica/actor-query-operation-distinct-identity": "^4.2.0",
     "@comunica/actor-query-operation-extend": "^4.2.0",
     "@comunica/actor-query-operation-filter": "^4.2.0",
     "@comunica/actor-query-operation-from-quad": "^4.2.0",
