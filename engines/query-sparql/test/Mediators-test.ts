@@ -14,7 +14,6 @@ import type {
 } from '@comunica/bus-expression-evaluator-factory';
 import type { IActionFunctionFactory, IActorFunctionFactoryOutput } from '@comunica/bus-function-factory';
 import type { IActionHashBindings, IActorHashBindingsOutput } from '@comunica/bus-hash-bindings';
-import type { IActionHashQuads, IActorHashQuadsOutput } from '@comunica/bus-hash-quads';
 import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
 import type {
   IActionOptimizeQueryOperation,
@@ -147,17 +146,10 @@ describe('System test: mediators', () => {
   );
   addTest<IActionHashBindings, IActorHashBindingsOutput>(
     'hash-bindings',
-    ':query-operation/actors#distinct',
+    ':rdf-join/actors#inner-hash-def',
     'mediatorHashBindings',
     { allowHashCollisions: false },
     `Failed to obtaining hash functions for bindings`,
-  );
-  addTest<IActionHashQuads, IActorHashQuadsOutput>(
-    'hash-quads',
-    ':query-operation/actors#distinct',
-    'mediatorHashQuads',
-    { allowHashCollisions: false },
-    `Failed to obtaining hash functions for quads`,
   );
   addTest<IActionHttp, IActorHttpOutput>(
     'http',
