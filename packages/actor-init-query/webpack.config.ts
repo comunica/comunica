@@ -1,4 +1,5 @@
 import { resolve } from 'node:path';
+import webpack from 'webpack';
 import type { Configuration } from 'webpack';
 
 function createConfig(packagePath: string): Configuration {
@@ -27,6 +28,9 @@ function createConfig(packagePath: string): Configuration {
       maxAssetSize: 2_000_000,
       maxEntrypointSize: 2_000_000,
     },
+    plugins: [
+      new webpack.ProgressPlugin(),
+    ],
   };
 }
 
