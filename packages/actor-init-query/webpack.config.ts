@@ -1,5 +1,4 @@
 import { resolve } from 'node:path';
-import { ProgressPlugin } from 'webpack';
 import type { Configuration } from 'webpack';
 
 function createConfig(packagePath: string): Configuration {
@@ -22,9 +21,6 @@ function createConfig(packagePath: string): Configuration {
       libraryTarget: 'var',
       library: 'Comunica',
     },
-    plugins: [
-      new ProgressPlugin(),
-    ],
     performance: {
       hints: 'error',
       // Bundle size limited to ~1.7 MB

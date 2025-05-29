@@ -1,3 +1,3 @@
-import { createConfig } from '../../webpack.config';
+import { createConfig } from '@comunica/actor-init-query/webpack.config.ts';
 
-export default createConfig(__dirname);
+export default createConfig(import.meta.dirname);

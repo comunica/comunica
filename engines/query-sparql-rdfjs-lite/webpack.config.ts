@@ -1,6 +1,6 @@
-import { createConfig } from '../../webpack.config';
+import { createConfig } from '@comunica/actor-init-query/webpack.config.ts';
 
-const liteConfig = createConfig(__dirname);
+const liteConfig = createConfig(import.meta.dirname);
 
 if (typeof liteConfig.performance === 'object') {
   liteConfig.performance.maxAssetSize = 915_000;
