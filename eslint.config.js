@@ -122,6 +122,7 @@ module.exports = config([
     rules: {
       'import/extensions': 'off',
       'import/no-nodejs-modules': 'off',
+      'import/no-extraneous-dependencies': 'off',
     },
   },
   {
