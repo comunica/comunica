@@ -1,8 +1,7 @@
 import { resolve } from 'node:path';
 import webpack from 'webpack';
-import type { Configuration } from 'webpack';
 
-function createConfig(packagePath: string): Configuration {
+function createConfig(packagePath) {
   return {
     devtool: 'source-map',
     entry: resolve(packagePath, 'lib', 'index-browser.ts'),

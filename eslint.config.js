@@ -117,7 +117,7 @@ module.exports = config([
   {
     // Webpack configurations
     files: [
-      '**/webpack.config.ts',
+      '**/webpack.config.js',
     ],
     rules: {
       'import/extensions': 'off',
