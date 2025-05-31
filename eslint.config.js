@@ -120,6 +120,8 @@ module.exports = config([
       '**/webpack.config.js',
     ],
     rules: {
+      'ts/no-var-requires': 'off',
+      'ts/no-require-imports': 'off',
       'import/extensions': 'off',
       'import/no-nodejs-modules': 'off',
       'import/no-extraneous-dependencies': 'off',

@@ -1,4 +1,4 @@
-import { createConfig } from '@comunica/actor-init-query/webpack.config';
+const createConfig = require('@comunica/actor-init-query/webpack.config').createConfig;
 
 const liteConfig = createConfig(__dirname);
 

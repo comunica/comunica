@@ -1,3 +1,3 @@
-import { createConfig } from '@comunica/actor-init-query/webpack.config';
+const createConfig = require('@comunica/actor-init-query/webpack.config').createConfig;
 
 export default createConfig(__dirname);

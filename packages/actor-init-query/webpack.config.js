@@ -1,10 +1,10 @@
-import { resolve } from 'node:path';
-import webpack from 'webpack';
+const path = require('node:path');
+const webpack = require('webpack');
 
-function createConfig(packagePath) {
+export function createConfig(packagePath) {
   return {
     devtool: 'source-map',
-    entry: resolve(packagePath, 'lib', 'index-browser.ts'),
+    entry: path.resolve(packagePath, 'lib', 'index-browser.ts'),
     mode: 'development',
     module: {
       rules: [
@@ -32,5 +32,3 @@ function createConfig(packagePath) {
     ],
   };
 }
-
-export { createConfig };
