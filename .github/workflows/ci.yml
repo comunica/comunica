@@ -6,7 +6,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  DEFAULT_NODE_VERSION: 18.x
+  NODE_VERSION_LOWEST: 18.x
+  NODE_VERSION_HIGHEST: 24.x
 
 jobs:
 
@@ -25,10 +26,10 @@ jobs:
         run: git config --global core.autocrlf input
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Use Node.js ${{ env.DEFAULT_NODE_VERSION }}
+      - name: Use Node.js ${{ env.NODE_VERSION_LOWEST }}
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.DEFAULT_NODE_VERSION }}
+          node-version: ${{ env.NODE_VERSION_LOWEST }}
           cache: yarn
       - name: Install dependencies
         run: yarn install --frozen-lockfile
@@ -132,10 +133,10 @@ jobs:
         run: git config --global core.autocrlf input
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Use Node.js ${{ env.DEFAULT_NODE_VERSION }}
+      - name: Use Node.js ${{ env.NODE_VERSION_LOWEST }}
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.DEFAULT_NODE_VERSION }}
+          node-version: ${{ env.NODE_VERSION_LOWEST }}
           cache: yarn
       - name: Install dependencies and build
         run: yarn install --frozen-lockfile
@@ -178,10 +179,10 @@ jobs:
         run: git config --global core.autocrlf input
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Use Node.js ${{ env.DEFAULT_NODE_VERSION }}
+      - name: Use Node.js ${{ env.NODE_VERSION_LOWEST }}
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.DEFAULT_NODE_VERSION }}
+          node-version: ${{ env.NODE_VERSION_LOWEST }}
           cache: yarn
       - name: Install dependencies and build
         run: yarn install --frozen-lockfile
@@ -200,19 +201,16 @@ jobs:
       - test
       - spectest
       - browsertest
-    env:
-      # TODO: remove this override once lerna-docker works with Node 18+
-      DEFAULT_NODE_VERSION: 18.x
     runs-on: ubuntu-latest
     steps:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Use Node.js ${{ env.DEFAULT_NODE_VERSION }}
+      - name: Use Node.js ${{ env.NODE_VERSION_LOWEST }}
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.DEFAULT_NODE_VERSION }}
+          node-version: ${{ env.NODE_VERSION_LOWEST }}
           cache: yarn
       - name: Install dependencies and build monorepo
         run: yarn install --frozen-lockfile
@@ -253,10 +251,10 @@ jobs:
         run: git config --global core.autocrlf input
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Use Node.js ${{ env.DEFAULT_NODE_VERSION }}
+      - name: Use Node.js ${{ env.NODE_VERSION_HIGHEST }}
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.DEFAULT_NODE_VERSION }}
+          node-version: ${{ env.NODE_VERSION_HIGHEST }}
           cache: yarn
       - name: Install dependencies and build monorepo
         run: yarn install --frozen-lockfile
@@ -283,10 +281,10 @@ jobs:
         run: git config --global core.autocrlf input
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Use Node.js ${{ env.DEFAULT_NODE_VERSION }}
+      - name: Use Node.js ${{ env.NODE_VERSION_HIGHEST }}
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.DEFAULT_NODE_VERSION }}
+          node-version: ${{ env.NODE_VERSION_HIGHEST }}
       - uses: actions/download-artifact@v4
         with:
           name: performance-benchmark-watdiv-file
@@ -360,10 +358,10 @@ jobs:
         run: git config --global core.autocrlf input
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Use Node.js ${{ env.DEFAULT_NODE_VERSION }}
+      - name: Use Node.js ${{ env.NODE_VERSION_LOWEST }}
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.DEFAULT_NODE_VERSION }}
+          node-version: ${{ env.NODE_VERSION_LOWEST }}
           cache: yarn
       - name: Install dependencies
         run: yarn install --ignore-scripts --frozen-lockfile
