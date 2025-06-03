@@ -1,11 +1,10 @@
-import { resolve } from 'node:path';
-import webpack from 'webpack';
-import type { Configuration } from 'webpack';
+const path = require('node:path');
+const webpack = require('webpack');
 
-function createConfig(packagePath: string): Configuration {
+module.exports = function createConfig(packagePath) {
   return {
     devtool: 'source-map',
-    entry: resolve(packagePath, 'lib', 'index-browser.ts'),
+    entry: path.resolve(packagePath, 'lib', 'index-browser.ts'),
     mode: 'development',
     module: {
       rules: [
@@ -24,7 +23,6 @@ function createConfig(packagePath: string): Configuration {
     },
     performance: {
       hints: 'error',
-      // Bundle size limited to ~1.7 MB
       maxAssetSize: 2_000_000,
       maxEntrypointSize: 2_000_000,
     },
@@ -32,6 +30,4 @@ function createConfig(packagePath: string): Configuration {
       new webpack.ProgressPlugin(),
     ],
   };
-}
-
-export { createConfig };
+};
