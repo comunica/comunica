@@ -117,12 +117,14 @@ module.exports = config([
   {
     // Webpack configurations
     files: [
-      '**/webpack.config.ts',
+      '**/webpack.config.js',
     ],
     rules: {
+      'ts/no-var-requires': 'off',
+      'ts/no-require-imports': 'off',
       'import/extensions': 'off',
-      'import/no-nodejs-modules': 'off',
       'import/no-extraneous-dependencies': 'off',
+      'import/no-nodejs-modules': 'off',
     },
   },
   {
