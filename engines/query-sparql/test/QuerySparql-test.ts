@@ -13,10 +13,13 @@ import 'jest-rdf';
 import '@comunica/utils-jest';
 import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
+import rdfParse from 'rdf-parse';
 import { RdfStore } from 'rdf-stores';
 import { Factory } from 'sparqlalgebrajs';
 import { QueryEngine } from '../lib/QueryEngine';
 import { fetch as cachedFetch } from './util';
+
+const stringToStream = require('streamify-string');
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -861,6 +864,149 @@ SELECT ?obsId {
 }
 `, context)))).resolves.toHaveLength(1);
       });
+
+      describe('should handle zero-or-more over links', () => {
+        it('should correctly terminate for an n3.js store', async() => {
+          const store = new Store();
+          const A = DF.namedNode('http://example.org/a');
+          const B = DF.namedNode('http://example.org/b');
+          const C = DF.namedNode('http://example.org/c');
+          const P = DF.namedNode('http://example.org/p');
+
+          store.addQuad(A, P, B);
+          store.addQuad(A, P, C);
+          store.addQuad(B, P, A);
+          store.addQuad(B, P, C);
+          store.addQuad(C, P, A);
+          store.addQuad(C, P, B);
+
+          const result = <QueryBindings> await engine.query(`
+        PREFIX : <http://example.org/>
+        SELECT * WHERE {
+            ?a (:p/:p)* :b .
+        }`, { sources: [ store ]});
+
+          await expect(result.execute()).resolves.toEqualBindingsStream([
+            BF.bindings([
+              [ DF.variable('a'), DF.namedNode('http://example.org/b') ],
+            ]),
+            BF.bindings([
+              [ DF.variable('a'), DF.namedNode('http://example.org/c') ],
+            ]),
+            BF.bindings([
+              [ DF.variable('a'), DF.namedNode('http://example.org/a') ],
+            ]),
+          ]);
+        });
+
+        it('should correctly terminate for an rdf-stores store', async() => {
+          const store = RdfStore.createDefault();
+          const A = DF.namedNode('http://example.org/a');
+          const B = DF.namedNode('http://example.org/b');
+          const C = DF.namedNode('http://example.org/c');
+          const P = DF.namedNode('http://example.org/p');
+
+          store.addQuad(DF.quad(A, P, B));
+          store.addQuad(DF.quad(A, P, C));
+          store.addQuad(DF.quad(B, P, A));
+          store.addQuad(DF.quad(B, P, C));
+          store.addQuad(DF.quad(C, P, A));
+          store.addQuad(DF.quad(C, P, B));
+
+          const result = <QueryBindings> await engine.query(`
+        PREFIX : <http://example.org/>
+        SELECT * WHERE {
+            ?a (:p/:p)* :b .
+        }`, { sources: [ store ]});
+
+          await expect(result.execute()).resolves.toEqualBindingsStream([
+            BF.bindings([
+              [ DF.variable('a'), DF.namedNode('http://example.org/b') ],
+            ]),
+            BF.bindings([
+              [ DF.variable('a'), DF.namedNode('http://example.org/a') ],
+            ]),
+            BF.bindings([
+              [ DF.variable('a'), DF.namedNode('http://example.org/c') ],
+            ]),
+          ]);
+        });
+      });
+
+      describe('should handle zero-or-more paths with lists after a link', () => {
+        it('for the built-in store and parser', async() => {
+          const context: QueryStringContext = {
+            sources: [
+              {
+                type: 'serialized',
+                value: `
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix ex: <https://example.org/> .
+ex:devShape a sh:NodeShape ;
+    sh:targetClass ex:Main ;
+    sh:property [
+        sh:path ex:foo ;
+        sh:in ( ex:bar1 ex:bar2 ex:bar3 ex:bar4 ex:bar5 ex:bar6 ex:bar7 ex:bar8 ex:bar9 ex:bar10 ) ;
+    ] .
+`,
+                mediaType: 'text/turtle',
+                baseIRI: 'http://example.org/',
+              },
+            ],
+          };
+
+          await expect((arrayifyStream(await engine.queryBindings(`
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT ?option WHERE {
+    ?nodeShape sh:property ?propertyShape .
+    ?propertyShape sh:in/rdf:rest*/rdf:first ?option .
+}
+`, context)))).resolves.toHaveLength(10);
+        });
+
+        it('for an rdf-stores store', async() => {
+          const store = RdfStore.createDefault();
+          await new Promise(resolve => store.import(rdfParse.parse(stringToStream(`@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix ex: <https://example.org/> .
+ex:devShape a sh:NodeShape ;
+    sh:targetClass ex:Main ;
+    sh:property [
+        sh:path ex:foo ;
+        sh:in ( ex:bar1 ex:bar2 ex:bar3 ex:bar4 ex:bar5 ex:bar6 ex:bar7 ex:bar8 ex:bar9 ex:bar10 ) ;
+    ] .`), { contentType: 'text/turtle' })).on('end', resolve));
+
+          await expect((arrayifyStream(await engine.queryBindings(`
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT ?option WHERE {
+    ?nodeShape sh:property ?propertyShape .
+    ?propertyShape sh:in/rdf:rest*/rdf:first ?option .
+}
+`, { sources: [ store ]})))).resolves.toHaveLength(10);
+        });
+
+        it('for an n3.js store', async() => {
+          const store = new Store();
+          await new Promise(resolve => store.import(rdfParse.parse(stringToStream(`@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix ex: <https://example.org/> .
+ex:devShape a sh:NodeShape ;
+    sh:targetClass ex:Main ;
+    sh:property [
+        sh:path ex:foo ;
+        sh:in ( ex:bar1 ex:bar2 ex:bar3 ex:bar4 ex:bar5 ex:bar6 ex:bar7 ex:bar8 ex:bar9 ex:bar10 ) ;
+    ] .`), { contentType: 'text/turtle' })).on('end', resolve));
+
+          await expect((arrayifyStream(await engine.queryBindings(`
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT ?option WHERE {
+    ?nodeShape sh:property ?propertyShape .
+    ?propertyShape sh:in/rdf:rest*/rdf:first ?option .
+}
+`, { sources: [ store ]})))).resolves.toHaveLength(10);
+        });
+      });
     });
 
     describe('commutative count', () => {
@@ -923,74 +1069,6 @@ SELECT ?obsId {
 
         expect(bindings1).toMatchObject(expectedResult);
         expect(bindings2).toMatchObject(expectedResult);
-      });
-    });
-
-    describe('with complex property paths', () => {
-      it('should correctly terminate for an n3.js store', async() => {
-        const store = new Store();
-        const A = DF.namedNode('http://example.org/a');
-        const B = DF.namedNode('http://example.org/b');
-        const C = DF.namedNode('http://example.org/c');
-        const P = DF.namedNode('http://example.org/p');
-
-        store.addQuad(A, P, B);
-        store.addQuad(A, P, C);
-        store.addQuad(B, P, A);
-        store.addQuad(B, P, C);
-        store.addQuad(C, P, A);
-        store.addQuad(C, P, B);
-
-        const result = <QueryBindings> await engine.query(`
-        PREFIX : <http://example.org/>
-        SELECT * WHERE {
-            ?a (:p/:p)* :b .
-        }`, { sources: [ store ]});
-
-        await expect(result.execute()).resolves.toEqualBindingsStream([
-          BF.bindings([
-            [ DF.variable('a'), DF.namedNode('http://example.org/b') ],
-          ]),
-          BF.bindings([
-            [ DF.variable('a'), DF.namedNode('http://example.org/c') ],
-          ]),
-          BF.bindings([
-            [ DF.variable('a'), DF.namedNode('http://example.org/a') ],
-          ]),
-        ]);
-      });
-
-      it('should correctly terminate for an rdf-stores store', async() => {
-        const store = RdfStore.createDefault();
-        const A = DF.namedNode('http://example.org/a');
-        const B = DF.namedNode('http://example.org/b');
-        const C = DF.namedNode('http://example.org/c');
-        const P = DF.namedNode('http://example.org/p');
-
-        store.addQuad(DF.quad(A, P, B));
-        store.addQuad(DF.quad(A, P, C));
-        store.addQuad(DF.quad(B, P, A));
-        store.addQuad(DF.quad(B, P, C));
-        store.addQuad(DF.quad(C, P, A));
-        store.addQuad(DF.quad(C, P, B));
-
-        const result = <QueryBindings> await engine.query(`
-        PREFIX : <http://example.org/>
-        SELECT * WHERE {
-            ?a (:p/:p)* :b .
-        }`, { sources: [ store ]});
-
-        await expect(result.execute()).resolves.toEqualBindingsStream([
-          BF.bindings([
-            [ DF.variable('a'), DF.namedNode('http://example.org/b') ],
-          ]),
-          BF.bindings([
-            [ DF.variable('a'), DF.namedNode('http://example.org/a') ],
-          ]),
-          BF.bindings([
-            [ DF.variable('a'), DF.namedNode('http://example.org/c') ],
-          ]),
-        ]);
       });
     });
 

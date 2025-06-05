@@ -90,11 +90,12 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
           runningOperation.on('error', error => self.destroy(error));
           runningOperation.on('readable', () => {
             self._fillBuffer();
+            self.readable = true;
           });
           runningOperation.on('end', () => {
             self.runningOperations.splice(self.runningOperations.indexOf(runningOperation), 1);
             self._fillBuffer();
-            self.closeIfNeeded();
+            self.readable = true;
           });
         }
 
