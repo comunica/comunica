@@ -235,6 +235,74 @@ describe('QuerySourceRdfJs', () => {
         });
     });
 
+    it('should return triples in named graphs and the default graph with union default graph', async() => {
+      ctx = ctx.set(KeysQueryOperation.unionDefaultGraph, true);
+
+      store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1'), DF.namedNode('g1')));
+      store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')));
+      store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('px'), DF.namedNode('o3')));
+
+      const data = source.queryBindings(
+        AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o')),
+        ctx,
+      );
+      await expect(data).toEqualBindingsStream([
+        BF.fromRecord({
+          s: DF.namedNode('s1'),
+          o: DF.namedNode('o1'),
+        }),
+        BF.fromRecord({
+          s: DF.namedNode('s2'),
+          o: DF.namedNode('o2'),
+        }),
+      ]);
+      await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
+        .toEqual({
+          cardinality: { type: 'exact', value: 2 },
+          state: expect.any(MetadataValidationState),
+          variables: [
+            { variable: DF.variable('s'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+          ],
+          requestTime: 0,
+        });
+    });
+
+    // eslint-disable-next-line max-len
+    it('should return triples in named graphs and the default graph with union default graph when matchBindings is unavailable', async() => {
+      ctx = ctx.set(KeysQueryOperation.unionDefaultGraph, true);
+
+      (<any> store).matchBindings = undefined;
+      store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1'), DF.namedNode('g1')));
+      store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')));
+      store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('px'), DF.namedNode('o3')));
+
+      const data = source.queryBindings(
+        AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o')),
+        ctx,
+      );
+      await expect(data).toEqualBindingsStream([
+        BF.fromRecord({
+          s: DF.namedNode('s1'),
+          o: DF.namedNode('o1'),
+        }),
+        BF.fromRecord({
+          s: DF.namedNode('s2'),
+          o: DF.namedNode('o2'),
+        }),
+      ]);
+      await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
+        .toEqual({
+          cardinality: { type: 'exact', value: 2 },
+          state: expect.any(MetadataValidationState),
+          variables: [
+            { variable: DF.variable('s'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+          ],
+          requestTime: 0,
+        });
+    });
+
     it('should return quads in named graphs and the default graph with union default graph', async() => {
       ctx = ctx.set(KeysQueryOperation.unionDefaultGraph, true);
 

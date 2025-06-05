@@ -1196,6 +1196,29 @@ SELECT ?obsId {
           }`, context)).rejects.toThrow('Tried to bind variable ?a in a BIND operator.');
       });
     });
+
+    describe('unionDefaultGraph', () => {
+      it('over an N3 Source', async() => {
+        const store = new Store([
+          DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'), DF.namedNode('g1')),
+          DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2'), DF.namedNode('g2')),
+        ]);
+        const result = <QueryBindings> await engine.query(`SELECT * WHERE {
+      ?s ?p ?o.
+    }`, { sources: [ store ], unionDefaultGraph: true });
+        await expect((arrayifyStream(await result.execute()))).resolves.toHaveLength(2);
+      });
+
+      it('over an rdf-stores Source', async() => {
+        const store = RdfStore.createDefault();
+        store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'), DF.namedNode('g1')));
+        store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2'), DF.namedNode('g2')));
+        const result = <QueryBindings> await engine.query(`SELECT * WHERE {
+      ?s ?p ?o.
+    }`, { sources: [ store ], unionDefaultGraph: true });
+        await expect((arrayifyStream(await result.execute()))).resolves.toHaveLength(2);
+      });
+    });
   });
 
   // We skip these tests in browsers due to CORS issues

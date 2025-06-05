@@ -22,6 +22,7 @@ export class QuerySourceRdfJs implements IQuerySource {
   protected readonly source: IRdfJsSourceExtended;
   private readonly dataFactory: ComunicaDataFactory;
   private readonly bindingsFactory: BindingsFactory;
+  private readonly dummyDefaultGraph: RDF.Variable;
 
   public constructor(source: RDF.Source, dataFactory: ComunicaDataFactory, bindingsFactory: BindingsFactory) {
     this.source = source;
@@ -45,6 +46,7 @@ export class QuerySourceRdfJs implements IQuerySource {
         this.dataFactory.variable('o'),
       ],
     };
+    this.dummyDefaultGraph = this.dataFactory.variable('__comunica:defaultGraph');
   }
 
   public static nullifyVariables(term: RDF.Term | undefined, quotedTripleFiltering: boolean): RDF.Term | undefined {
@@ -68,6 +70,12 @@ export class QuerySourceRdfJs implements IQuerySource {
       throw new Error(`Attempted to pass non-pattern operation '${operation.type}' to QuerySourceRdfJs`);
     }
 
+    // Check if we're running in union default graph mode
+    const unionDefaultGraph = Boolean(context.get(KeysQueryOperation.unionDefaultGraph));
+    if (operation.graph.termType === 'DefaultGraph' && unionDefaultGraph) {
+      operation.graph = this.dummyDefaultGraph;
+    }
+
     // Get bindings directly if the source allows it
     // This will be more efficient, as it avoids the intermediary quads translation and representation.
     if (this.source.matchBindings) {
@@ -86,16 +94,23 @@ export class QuerySourceRdfJs implements IQuerySource {
       // SPARQL query semantics allow graph variables to only match with named graphs, excluding the default graph
       // But this is not the case when using union default graph semantics
       let forceEstimateCardinality = false;
-      if (operation.graph.termType === 'Variable' && !context.get(KeysQueryOperation.unionDefaultGraph)) {
+      if (operation.graph.termType === 'Variable' && !unionDefaultGraph) {
         forceEstimateCardinality = true;
         const variable = operation.graph;
         it = it.filter(bindings => bindings.get(variable)!.termType !== 'DefaultGraph');
       }
 
+      // Remove bindings to the dummy __comunica:defaultGraph variable if needed
+      if (operation.graph.equals(this.dummyDefaultGraph)) {
+        it = it.map(bindings => bindings.delete(this.dummyDefaultGraph));
+        // Restore graph for determining variable metadata
+        operation.graph = this.dataFactory.defaultGraph();
+      }
+
       // Determine metadata
       if (!it.getProperty('metadata')) {
         const variables = getVariables(operation).map(variable => ({ variable, canBeUndef: false }));
-        this.setMetadata(it, operation, forceEstimateCardinality, { variables })
+        this.setMetadata(it, operation, context, forceEstimateCardinality, { variables })
           .catch(error => it.destroy(error));
       }
 
@@ -123,8 +138,13 @@ export class QuerySourceRdfJs implements IQuerySource {
 
     // Determine metadata
     if (!it.getProperty('metadata')) {
-      this.setMetadata(it, operation)
+      this.setMetadata(it, operation, context)
         .catch(error => it.destroy(error));
+    }
+
+    // Restore graph for determining variable metadata
+    if (operation.graph.equals(this.dummyDefaultGraph)) {
+      operation.graph = this.dataFactory.defaultGraph();
     }
 
     return quadsToBindings(
@@ -139,11 +159,18 @@ export class QuerySourceRdfJs implements IQuerySource {
   protected async setMetadata(
     it: AsyncIterator<any>,
     operation: Algebra.Pattern,
+    context: IActionContext,
     forceEstimateCardinality = false,
     extraMetadata: Record<string, any> = {},
   ): Promise<void> {
     // Check if the source supports quoted triple filtering
     const quotedTripleFiltering = Boolean(this.source.features?.quotedTripleFiltering);
+
+    // Check if we're running in union default graph mode
+    const unionDefaultGraph = Boolean(context.get(KeysQueryOperation.unionDefaultGraph));
+    if (operation.graph.termType === 'DefaultGraph' && unionDefaultGraph) {
+      operation.graph = this.dummyDefaultGraph;
+    }
 
     let cardinality: number;
     if (this.source.countQuads) {
