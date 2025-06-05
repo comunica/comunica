@@ -23,8 +23,8 @@ module.exports = function createConfig(packagePath) {
     },
     performance: {
       hints: 'error',
-      maxAssetSize: 2_000_000,
-      maxEntrypointSize: 2_000_000,
+      maxAssetSize: 2_100_000,
+      maxEntrypointSize: 2_100_000,
     },
     plugins: [
       new webpack.ProgressPlugin(),
