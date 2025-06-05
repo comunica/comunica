@@ -214,9 +214,12 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       jest.spyOn(<any> it, 'startIteratorsForNextUrls');
 
       const spy = jest.fn();
+      const spyError = jest.fn();
+      it.on('error', spyError);
       it.getProperty('metadata', spy);
       await new Promise(setImmediate);
       expect(spy).not.toHaveBeenCalled();
+      expect(spyError).toHaveBeenCalledWith(new Error(`sourceStateGetter error`));
 
       await expect(it).toEqualBindingsStream(data.flat());
     });

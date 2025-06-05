@@ -790,6 +790,34 @@ SELECT * WHERE {
         });
         expect((await bindingsStream.toArray()).length > 0).toBeTruthy();
       });*/
+
+      it('on the LOV SPARQL service description (no browser)', async() => {
+        await expect(engine.queryBindings(`
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT DISTINCT ?sq ?comment ?query
+WHERE {
+  ?sq a sh:SPARQLExecutable ;
+    rdfs:comment ?comment ;
+    sh:select ?query .
+} ORDER BY ?sq`, {
+          sources: [{ type: 'file', value: 'https://lov.linkeddata.es/dataset/lov/sparql' }],
+        })).rejects.toThrow('RDF parsing failed');
+      });
+
+      it('on the LOV SPARQL service description with property paths (2) (no browser)', async() => {
+        await expect(engine.queryBindings(`
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT DISTINCT ?sq ?comment ?query
+WHERE {
+  ?sq a sh:SPARQLExecutable ;
+    rdfs:comment ?comment ;
+    sh:select|sh:ask|sh:construct|sh:describe ?query .
+} ORDER BY ?sq`, {
+          sources: [{ type: 'file', value: 'https://lov.linkeddata.es/dataset/lov/sparql' }],
+        })).rejects.toThrow('RDF parsing failed');
+      });
     });
 
     describe('property paths', () => {
