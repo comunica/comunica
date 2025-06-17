@@ -985,6 +985,57 @@ SELECT * {
 `, context)))).resolves.toHaveLength(1);
       });
 
+      it('should handle one-or-more paths in EXISTS', async() => {
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: `
+@prefix ex: <http://example.org/>.
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+
+ex:class1 a owl:Class; rdfs:label "asdf".
+ex:qwer1 a owl:Class;
+    rdfs:label "qwer1".
+ex:qwer2 a owl:Class;
+    rdfs:label "qwer2".
+ex:class2 a owl:Class;
+    rdfs:label "class2".
+ex:qwer3 a owl:Class;
+    rdfs:label "qwer3";
+    a ex:qwer5.
+ex:qwer12 a owl:ObjectProperty;
+    rdfs:label "qwer12".
+ex:qwer13 a owl:Class.
+`,
+              mediaType: 'text/turtle',
+              baseIRI: 'http://example.org/',
+            },
+          ],
+        };
+
+        await expect((arrayifyStream(await engine.queryBindings(`
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ex: <http://example.org/>
+
+SELECT
+    ?class
+    ?label
+    ( EXISTS { ?class rdfs:subClassOf+ ex:class1 } AS ?class1 )
+    ( EXISTS { ?class rdfs:subClassOf+ ex:class2 } AS ?class2 )
+WHERE {
+    ?class rdf:type owl:Class ;
+           rdfs:label ?label .
+    FILTER ( STRSTARTS( STR(?class), STR(ex:) ) )
+    FILTER ( ?class NOT IN ( ex:class1, ex:class2 ) )
+}
+`, context)))).resolves.toHaveLength(3);
+      });
+
       describe('should handle zero-or-more over links', () => {
         it('should correctly terminate for an n3.js store', async() => {
           const store = new Store();
