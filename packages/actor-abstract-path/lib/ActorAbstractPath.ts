@@ -119,15 +119,10 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
               const it = new BufferedIterator<RDF.Term>();
               await this
                 .getObjectsPredicateStar(algebraFactory, subject, predicate, graphValue, context, {}, it, { count: 0 });
-              return it.transform<Bindings>({
-                transform(item, next, push) {
-                  push(bindingsFactory.bindings([
-                    [ object, item ],
-                    [ graph, graphValue ],
-                  ]));
-                  next();
-                },
-              });
+              return it.map<Bindings>(item => bindingsFactory.bindings([
+                [ object, item ],
+                [ graph, graphValue ],
+              ]));
             },
             { maxBufferSize: 128 },
           );
@@ -180,13 +175,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
       emitFirstSubject,
     );
 
-    const bindingsStream = it.transform<Bindings>({
-      autoStart: false,
-      transform(item, next, push) {
-        push(bindingsFactory.bindings([[ object, item ]]));
-        next();
-      },
-    });
+    const bindingsStream = it.map<Bindings>(item => bindingsFactory.bindings([[ object, item ]]));
 
     return {
       bindingsStream,
