@@ -131,8 +131,10 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
                   },
                 });
               },
+              { autoStart: false, maxBufferSize: 128 },
             );
           },
+          autoStart: false,
         },
       );
       const variables: MetadataVariable[] = (operation.graph.termType === 'Variable' ?

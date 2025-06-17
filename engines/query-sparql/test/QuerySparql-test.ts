@@ -865,6 +865,46 @@ SELECT ?obsId {
 `, context)))).resolves.toHaveLength(1);
       });
 
+      it('should handle zero-or-more paths for no data', async() => {
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: ``,
+              mediaType: 'text/turtle',
+              baseIRI: 'http://example.org/',
+            },
+          ],
+        };
+
+        await expect((arrayifyStream(await engine.queryBindings(`
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT * {
+  ?s rdf:rest* ?p.
+}
+`, context)))).resolves.toHaveLength(0);
+      });
+
+      it('should handle one-or-more paths for no data', async() => {
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: ``,
+              mediaType: 'text/turtle',
+              baseIRI: 'http://example.org/',
+            },
+          ],
+        };
+
+        await expect((arrayifyStream(await engine.queryBindings(`
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT * {
+  ?s rdf:rest+ ?p.
+}
+`, context)))).resolves.toHaveLength(0);
+      });
+
       describe('should handle zero-or-more over links', () => {
         it('should correctly terminate for an n3.js store', async() => {
           const store = new Store();

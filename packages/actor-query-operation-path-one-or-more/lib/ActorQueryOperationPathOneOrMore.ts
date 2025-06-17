@@ -110,7 +110,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
                   },
                 });
               },
-              { maxBufferSize: 128 },
+              { autoStart: false, maxBufferSize: 128 },
             );
           },
           autoStart: false,
