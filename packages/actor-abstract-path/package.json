@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-abstract-path",
-  "version": "4.2.0",
+  "version": "4.3.0",
   "description": "An abstract actor for handling mediatypes",
   "lsd:module": true,
   "license": "MIT",

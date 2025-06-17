@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-path-zero-or-one",
-  "version": "4.2.0",
+  "version": "4.3.0",
   "description": "A path-zero-or-one query-operation actor",
   "lsd:module": true,
   "license": "MIT",
@@ -41,7 +41,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/actor-abstract-path": "^4.2.0",
+    "@comunica/actor-abstract-path": "^4.3.0",
     "@comunica/bus-merge-bindings-context": "^4.2.0",
     "@comunica/bus-query-operation": "^4.2.0",
     "@comunica/context-entries": "^4.2.0",

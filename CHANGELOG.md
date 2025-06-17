@@ -1,6 +1,25 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v4.3.0"></a>
+## [v4.3.0](https://github.com/comunica/comunica/compare/v4.2.0...v4.3.0) - 2025-06-17
+
+### Added
+* [Add identity based distinct actor, Closes #52](https://github.com/comunica/comunica/commit/e6f67b1fc798bffc9f6f9050f32c3dbcad7cd5dc)
+
+### Changed
+* [Optimize property path iterators with sync mappings](https://github.com/comunica/comunica/commit/82b5a080bef2dbcbcd2abd41592c010201743f7a)
+* [Revert Webpack config files to JavaScript](https://github.com/comunica/comunica/commit/b858f0ff9c348db49cb8a416ddf9eb9f5007b659)
+* [Move primary Webpack config back to actor-init-query](https://github.com/comunica/comunica/commit/c64be854f9d5e9835b74d637622f8bbc7ab94c50)
+
+### Fixed
+* [Fix property paths without variables over empty dataset not terminating](https://github.com/comunica/comunica/commit/66d7d74360fde39e13164e4649cac0ef0308d917)
+* [Fix property paths with one variable over empty dataset not terminating](https://github.com/comunica/comunica/commit/c55623f82cf5fdf6c9a8b29d131a8eb4c2b42dd7)
+* [Fix zero-or-more property paths over empty dataset not terminating](https://github.com/comunica/comunica/commit/178858efda0101a28846eb2f753e041e4adbe861)
+* [Fix property paths not selecting all list elements, Closes #1562](https://github.com/comunica/comunica/commit/0f4c905facacb97f3e15ddc4e2f95a29d981a866)
+* [Fix unionDefaultGraph not working on RDFJS sources, Closes #1565](https://github.com/comunica/comunica/commit/be40294fb139d5b6b84fe5f5ea3b29e31580b4d7)
+* [Fix preflight metadata not getting propagated](https://github.com/comunica/comunica/commit/4285a4bc3badb13f127738578e0468314c40608f)
+
 <a name="v4.2.0"></a>
 ## [v4.2.0](https://github.com/comunica/comunica/compare/v4.1.0...v4.2.0) - 2025-04-29
 
