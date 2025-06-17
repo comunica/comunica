@@ -15,6 +15,7 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
   private readonly termHashes: Map<string, RDF.Term> = new Map();
   private readonly runningOperations: AsyncIterator<RDF.Term>[] = [];
   private readonly pendingOperations: { variable: RDF.Variable; operation: Algebra.Path }[] = [];
+  private started = false;
 
   public constructor(
     private readonly algebraFactory: Factory,
@@ -26,11 +27,19 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
     emitFirstSubject: boolean,
     private readonly maxRunningOperations = 16,
   ) {
-    // The autoStart flag must be true to kickstart metadata collection
-    super({ autoStart: true });
+    super({ autoStart: false });
 
     // Push the subject as starting point
     this._push(this.subject, emitFirstSubject);
+  }
+
+  public override getProperty<P>(propertyName: string, callback?: (value: P) => void): P | undefined {
+    // Kickstart iterator when metadata is requested
+    if (!this.started && propertyName === 'metadata') {
+      this.startNextOperation(false)
+        .catch(error => this.emit('error', error));
+    }
+    return super.getProperty(propertyName, callback);
   }
 
   protected override _end(destroy?: boolean): void {
@@ -67,6 +76,40 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
     return true;
   }
 
+  protected async startNextOperation(fillBuffer: boolean): Promise<void> {
+    this.started = true;
+
+    const pendingOperation = this.pendingOperations.pop()!;
+    const results = getSafeBindings(
+      await this.mediatorQueryOperation.mediate({ operation: pendingOperation.operation, context: this.context }),
+    );
+    const runningOperation = results.bindingsStream.map<RDF.Term>(
+      bindings => <RDF.Term> bindings.get(pendingOperation.variable),
+    );
+
+    if (!runningOperation.done) {
+      this.runningOperations.push(runningOperation);
+      runningOperation.on('error', error => this.destroy(error));
+      runningOperation.on('readable', () => {
+        if (fillBuffer) {
+          this._fillBufferAsync();
+        }
+        this.readable = true;
+      });
+      runningOperation.on('end', () => {
+        this.runningOperations.splice(this.runningOperations.indexOf(runningOperation), 1);
+        if (fillBuffer) {
+          this._fillBufferAsync();
+        }
+        this.readable = true;
+      });
+    }
+
+    if (!this.getProperty('metadata')) {
+      this.setProperty('metadata', results.metadata);
+    }
+  }
+
   protected override _read(count: number, done: () => void): void {
     // eslint-disable-next-line ts/no-this-alias
     const self = this;
@@ -76,30 +119,7 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
         if (self.pendingOperations.length === 0) {
           break;
         }
-
-        const pendingOperation = self.pendingOperations.pop()!;
-        const results = getSafeBindings(
-          await self.mediatorQueryOperation.mediate({ operation: pendingOperation.operation, context: self.context }),
-        );
-        const runningOperation = results.bindingsStream.map<RDF.Term>(
-          bindings => <RDF.Term> bindings.get(pendingOperation.variable),
-        );
-
-        if (!runningOperation.done) {
-          self.runningOperations.push(runningOperation);
-          runningOperation.on('error', error => self.destroy(error));
-          runningOperation.on('readable', () => {
-            self._fillBuffer();
-            self.readable = true;
-          });
-          runningOperation.on('end', () => {
-            self.runningOperations.splice(self.runningOperations.indexOf(runningOperation), 1);
-            self._fillBuffer();
-            self.readable = true;
-          });
-        }
-
-        self.setProperty('metadata', results.metadata);
+        await self.startNextOperation(true);
       }
 
       // Try to read `count` items (based on UnionIterator)
