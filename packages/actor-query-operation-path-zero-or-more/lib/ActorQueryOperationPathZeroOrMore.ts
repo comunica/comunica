@@ -170,6 +170,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
           push(binding);
           next();
         },
+        autoStart: false,
       });
       return {
         type: 'bindings',
