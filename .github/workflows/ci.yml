@@ -114,9 +114,19 @@ jobs:
             .rdf-test-suite-ldf-cache
           key: ${{ runner.os }}-rdftestsuite-${{ secrets.CACHE_VERSION }}-${{ hashFiles('yarn.lock') }}
       - name: Run specification tests
-        run: yarn run test:spec
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 5
+          max_attempts: 3
+          # Retry because of https://github.com/rubensworks/rdf-test-suite.js/issues/64
+          command: yarn run test:spec
       - name: Run integration tests
-        run: yarn run test:integration
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 5
+          max_attempts: 3
+          # Retry because of https://github.com/rubensworks/rdf-test-suite.js/issues/64
+          command: yarn run test:integration
 
   browsertest:
     name: Browser tests
