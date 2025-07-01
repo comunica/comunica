@@ -105,7 +105,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: yarn
       - name: Install dependencies and build
-        run: yarn install --frozen-lockfile
+        run: yarn install --frozen-lockfile --network-timeout 36000
       - name: Load RDF test suite cache
         uses: actions/cache@v4
         with:
