@@ -6,7 +6,7 @@ import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IActionContext } from '@comunica/types';
+import type { IActionContext, IJoinEntryWithMetadata } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
@@ -309,6 +309,36 @@ IActorRdfJoinSelectivityOutput
       return (await actor.test(action)).getSideData();
     }
 
+    it('should correctly identify the smallest streams with overlapping variables', () => {
+      const entries = [
+        createEntry([ 'a', 'b' ], 2), // Overlaps with 0 and 1
+        createEntry([ 'a' ], 5),
+        createEntry([ 'b' ], 10),
+      ];
+      const joinIndexes = actor.getJoinIndexes(entries);
+      expect(joinIndexes).toEqual([ 0, 1 ]); // First overlapping pair found
+    });
+
+    it('should correctly avoid cartesian join', () => {
+      const entries = [
+        createEntry([ 'a', 'b' ], 2), // Overlaps with 0 and 1
+        createEntry([ 'c' ], 5),
+        createEntry([ 'b' ], 10),
+      ];
+      const joinIndexes = actor.getJoinIndexes(entries);
+      expect(joinIndexes).toEqual([ 0, 2 ]); // First overlapping pair found
+    });
+
+    it('should correctly choose cartesian join when no variables overlap', () => {
+      const entries = [
+        createEntry([ 'a' ], 2), // Overlaps with 0 and 1
+        createEntry([ 'b' ], 5),
+        createEntry([ 'c' ], 10),
+      ];
+      const joinIndexes = actor.getJoinIndexes(entries);
+      expect(joinIndexes).toEqual([ 0, 1 ]); // First overlapping pair found
+    });
+
     it('should not test on 0 streams', async() => {
       await expect(actor.test({ type: 'inner', entries: [], context })).resolves
         .toFailTest('actor requires at least two join entries.');
@@ -364,6 +394,7 @@ IActorRdfJoinSelectivityOutput
           { variable: DF.variable('b'), canBeUndef: false },
         ],
       });
+
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('a'), DF.literal('a1') ],
@@ -421,3 +452,28 @@ IActorRdfJoinSelectivityOutput
     });
   });
 });
+
+// Helper to create an entry with specified variables and cardinality
+function createEntry(vars: string[], cardinality: number): IJoinEntryWithMetadata {
+  return {
+    output: {
+      bindingsStream: new ArrayIterator<RDF.Bindings>([]),
+      metadata: () => Promise.resolve({
+        state: new MetadataValidationState(),
+        cardinality: { type: 'estimate', value: cardinality },
+        pageSize: 100,
+        requestTime: 30,
+        variables: vars.map(v => ({ variable: DF.variable(v), canBeUndef: false })),
+      }),
+      type: 'bindings',
+    },
+    operation: <any>{},
+    metadata: {
+      state: new MetadataValidationState(),
+      cardinality: { type: 'estimate', value: cardinality },
+      pageSize: 100,
+      requestTime: 30,
+      variables: vars.map(v => ({ variable: DF.variable(v), canBeUndef: false })),
+    },
+  };
+}

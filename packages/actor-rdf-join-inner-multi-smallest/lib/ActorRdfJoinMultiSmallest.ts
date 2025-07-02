@@ -40,6 +40,30 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin<IActorRdfJoinMultiSm
   }
 
   /**
+   * Finds join indexes of lowest cardinality result sets, with priority on result sets that have common variables
+   * @param entries A sorted array of entries, sorted on cardinality
+   */
+  public getJoinIndexes(entries: IJoinEntryWithMetadata[]): [number, number] {
+    // Iterate over all combinations of join indexes,
+    // return the first combination that does not lead to a cartesian product
+    for (let i = 0; i < entries.length; i++) {
+      for (let j = i + 1; j < entries.length; j++) {
+        if (this.hasCommonVariables(entries[i], entries[j])) {
+          return [ i, j ];
+        }
+      }
+    }
+    // If all result sets are disjoint we just want the sets with lowest cardinality
+    return [ 0, 1 ];
+  }
+
+  public hasCommonVariables(entry1: IJoinEntryWithMetadata, entry2: IJoinEntryWithMetadata): boolean {
+    const variableNames1 = entry1.metadata.variables.map(x => x.variable.value);
+    const variableNames2 = new Set(entry2.metadata.variables.map(x => x.variable.value));
+    return variableNames1.some(v => variableNames2.has(v));
+  }
+
+  /**
    * Order the given join entries using the join-entries-sort bus.
    * @param {IJoinEntryWithMetadata[]} entries An array of join entries.
    * @param context The action context.
@@ -61,9 +85,13 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin<IActorRdfJoinMultiSm
 
     // Determine the two smallest streams by sorting (e.g. via cardinality)
     const entries: IJoinEntry[] = sideData.sortedEntries;
-    const smallestEntry1 = entries[0];
-    const smallestEntry2 = entries[1];
-    entries.splice(0, 2);
+    const entriesMetaData = await ActorRdfJoin.getEntriesWithMetadatas(entries);
+    const bestJoinIndexes: number[] = this.getJoinIndexes(entriesMetaData);
+
+    const smallestEntry1 = entries[bestJoinIndexes[0]];
+    const smallestEntry2 = entries[bestJoinIndexes[1]];
+    entries.splice(bestJoinIndexes[1], 1);
+    entries.splice(bestJoinIndexes[0], 1);
 
     // Join the two selected streams, and then join the result with the remaining streams
     const firstEntry: IJoinEntry = {
