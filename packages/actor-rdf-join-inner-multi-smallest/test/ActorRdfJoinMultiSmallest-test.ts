@@ -311,32 +311,32 @@ IActorRdfJoinSelectivityOutput
 
     it('should correctly identify the smallest streams with overlapping variables', () => {
       const entries = [
-        createEntry([ 'a', 'b' ], 2), // Overlaps with 0 and 1
+        createEntry([ 'a', 'b' ], 2),
         createEntry([ 'a' ], 5),
         createEntry([ 'b' ], 10),
       ];
       const joinIndexes = actor.getJoinIndexes(entries);
-      expect(joinIndexes).toEqual([ 0, 1 ]); // First overlapping pair found
+      expect(joinIndexes).toEqual([ 0, 1 ]);
     });
 
     it('should correctly avoid cartesian join', () => {
       const entries = [
-        createEntry([ 'a', 'b' ], 2), // Overlaps with 0 and 1
+        createEntry([ 'a', 'b' ], 2),
         createEntry([ 'c' ], 5),
         createEntry([ 'b' ], 10),
       ];
       const joinIndexes = actor.getJoinIndexes(entries);
-      expect(joinIndexes).toEqual([ 0, 2 ]); // First overlapping pair found
+      expect(joinIndexes).toEqual([ 0, 2 ]); 
     });
 
     it('should correctly choose cartesian join when no variables overlap', () => {
       const entries = [
-        createEntry([ 'a' ], 2), // Overlaps with 0 and 1
+        createEntry([ 'a' ], 2), 
         createEntry([ 'b' ], 5),
         createEntry([ 'c' ], 10),
       ];
       const joinIndexes = actor.getJoinIndexes(entries);
-      expect(joinIndexes).toEqual([ 0, 1 ]); // First overlapping pair found
+      expect(joinIndexes).toEqual([ 0, 1 ]);
     });
 
     it('should not test on 0 streams', async() => {
