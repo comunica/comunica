@@ -194,11 +194,22 @@ describe('evaluation of \'>=\'', () => {
         [ '<<( <ex:a> <ex:b> 9 )>>', '<<( <ex:a> <ex:b> 123 )>>', 'false' ],
       ],
     });
+  });
+
+  describe('with named nodes operands like', () => {
     runFuncTestTable({
       ...config,
+<<<<<<< HEAD
       errorArray: [
         // Named nodes cannot be compared.
         [ '<<( <ex:a> <ex:b> 123 )>>', '<<( <ex:c> <ex:d> 123 )>>', 'Argument types not valid for operator' ],
+=======
+      testArray: [
+        [ '<ex:ab>', '<ex:cd>', 'false' ],
+        [ '<ex:ad>', '<ex:bc>', 'false' ],
+        [ '<ex:ba>', '<ex:ab>', 'true' ],
+        [ '<ex:ab>', '<ex:ab>', 'true' ],
+>>>>>>> edfd6ea90a (#1501: added support for named nodes)
       ],
     });
   });
