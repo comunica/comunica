@@ -195,11 +195,16 @@ describe('evaluation of \'<=\'', () => {
         [ '<< <ex:a> <ex:b> 123 >>', '<< <ex:a> <ex:b> 9 >>', 'false' ],
       ],
     });
+  });
+
+  describe('with named nodes operands like', () => {
     runFuncTestTable({
       ...config,
-      errorArray: [
-        // Named nodes cannot be compared.
-        [ '<< <ex:a> <ex:b> 123 >>', '<< <ex:c> <ex:d> 123 >>', 'Argument types not valid for operator:' ],
+      testArray: [
+        [ '<ex:ab>', '<ex:cd>', 'true' ],
+        [ '<ex:ad>', '<ex:bc>', 'true' ],
+        [ '<ex:ba>', '<ex:ab>', 'false' ],
+        [ '<ex:ab>', '<ex:ab>', 'true' ],
       ],
     });
   });

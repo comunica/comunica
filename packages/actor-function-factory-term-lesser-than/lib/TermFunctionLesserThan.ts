@@ -7,6 +7,7 @@ import type {
   Term,
   DayTimeDurationLiteral,
   Quad,
+  NamedNode,
   TimeLiteral,
   YearMonthDurationLiteral,
 } from '@comunica/utils-expression-evaluator';
@@ -79,6 +80,13 @@ export class TermFunctionLesserThan extends TermFunctionBase {
               return bool(objectTest);
             }
             return bool(this.quadComponentTest(left.graph, right.graph, exprEval) ?? false);
+          },
+          false,
+        ).set(
+          [ 'namedNode', 'namedNode' ],
+          () => ([ left, right ]: [NamedNode, NamedNode]) => {
+            const simpleLiteralTest = left.str().localeCompare(right.str());
+            return bool(simpleLiteralTest === -1);
           },
           false,
         )
