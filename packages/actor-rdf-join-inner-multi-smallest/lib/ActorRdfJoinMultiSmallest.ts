@@ -123,21 +123,12 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin<IActorRdfJoinMultiSm
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
 
-    const bestJoinIndexes: number[] = this.getJoinIndexes(sortedEntries);
-    const slicedRequestInitialTimes = this.sliceIndexes(requestInitialTimes, bestJoinIndexes);
-    const slicedRequestItemTimes = this.sliceIndexes(requestItemTimes, bestJoinIndexes);
-
     return passTestWithSideData({
-      iterations: metadatas[bestJoinIndexes[0]].cardinality.value * metadatas[bestJoinIndexes[1]].cardinality.value *
-        this.sliceIndexes(metadatas, bestJoinIndexes).reduce((acc, metadata) => acc * metadata.cardinality.value, 1),
+      iterations: metadatas.reduce((acc, metadata) => acc * metadata.cardinality.value, 1),
       persistedItems: 0,
       blockingItems: 0,
-      requestTime: requestInitialTimes[bestJoinIndexes[0]] +
-        metadatas[bestJoinIndexes[0]].cardinality.value * requestItemTimes[bestJoinIndexes[0]] +
-        requestInitialTimes[bestJoinIndexes[1]] +
-        metadatas[bestJoinIndexes[1]].cardinality.value * requestItemTimes[bestJoinIndexes[1]] +
-        this.sliceIndexes(metadatas, bestJoinIndexes).reduce((sum, metadata, i) => sum + slicedRequestInitialTimes[i] +
-          metadata.cardinality.value * slicedRequestItemTimes[i], 0),
+      requestTime: metadatas.reduce((sum, metadata, i) => sum + requestInitialTimes[i] +
+          metadata.cardinality.value * requestItemTimes[i], 0),
     }, { ...sideData, sortedEntries });
   }
 
