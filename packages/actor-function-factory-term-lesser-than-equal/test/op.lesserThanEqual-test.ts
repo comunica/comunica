@@ -1,3 +1,4 @@
+import { ActorFunctionFactoryExpressionBnode } from '@comunica/actor-function-factory-expression-bnode';
 import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-factory-term-equality';
 import { ActorFunctionFactoryTermLesserThan } from '@comunica/actor-function-factory-term-lesser-than';
 import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
@@ -20,6 +21,7 @@ import { ActorFunctionFactoryTermLesserThanEqual } from '../lib';
 
 const config: FuncTestTableConfig<object> = {
   registeredActors: [
+    args => new ActorFunctionFactoryExpressionBnode(args),
     args => new ActorFunctionFactoryTermLesserThanEqual(args),
     args => new ActorFunctionFactoryTermEquality(args),
     args => new ActorFunctionFactoryTermLesserThan(args),
@@ -132,7 +134,7 @@ describe('evaluation of \'<=\'', () => {
     });
   });
 
-  describe('with date operants like', () => {
+  describe('with date operands like', () => {
     // Originates from: https://www.w3.org/TR/xpath-functions/#func-date-less-than
     runFuncTestTable({
       ...config,
@@ -147,7 +149,7 @@ describe('evaluation of \'<=\'', () => {
     });
   });
 
-  describe('with time operants like', () => {
+  describe('with time operands like', () => {
     // Originates from: https://www.w3.org/TR/xpath-functions/#func-time-less-than
     runFuncTestTable({
       ...config,
@@ -164,7 +166,7 @@ describe('evaluation of \'<=\'', () => {
     });
   });
 
-  describe('with dayTimeDuration operants like', () => {
+  describe('with dayTimeDuration operands like', () => {
     // Based on the spec tests of <
     runFuncTestTable({
       ...config,
@@ -210,6 +212,30 @@ describe('evaluation of \'<=\'', () => {
         [ '<ex:ba>', '<ex:ab>', 'false' ],
         [ '<ex:ab>', '<ex:ab>', 'true' ],
 >>>>>>> edfd6ea90a (#1501: added support for named nodes)
+      ],
+    });
+  });
+
+  describe('with blank nodes operands like', () => {
+    runFuncTestTable({
+      ...config,
+      testArray: [
+        [ 'BNODE("ab")', 'BNODE("cd")', 'true' ],
+        [ 'BNODE("ad")', 'BNODE("bc")', 'true' ],
+        [ 'BNODE("ba")', 'BNODE("ab")', 'false' ],
+        [ 'BNODE("ab")', 'BNODE("ab")', 'true' ],
+      ],
+    });
+  });
+
+  describe('with mixed terms operands like', () => {
+    runFuncTestTable({
+      ...config,
+      testArray: [
+        [ 'BNODE("ab")', '<ex:ab>', 'true' ],
+        [ '<< <ex:a> <ex:b> 123 >>', '123', 'false' ],
+        [ '<ex:ab>', '"ab"', 'true' ],
+        [ 'BNODE("ab")', '<< <ex:a> <ex:b> 123 >>', 'true' ],
       ],
     });
   });

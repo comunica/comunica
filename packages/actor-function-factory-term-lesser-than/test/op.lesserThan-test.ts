@@ -1,3 +1,4 @@
+import { ActorFunctionFactoryExpressionBnode } from '@comunica/actor-function-factory-expression-bnode';
 import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-factory-term-equality';
 import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
@@ -17,6 +18,7 @@ import { ActorFunctionFactoryTermLesserThan } from '../lib';
 
 const config: FuncTestTableConfig<object> = {
   registeredActors: [
+    args => new ActorFunctionFactoryExpressionBnode(args),
     args => new ActorFunctionFactoryTermLesserThan(args),
     args => new ActorFunctionFactoryTermEquality(args),
   ],
@@ -177,6 +179,30 @@ describe('evaluation of \'<\'', () => {
         [ '<ex:ba>', '<ex:ab>', 'false' ],
         [ '<ex:ab>', '<ex:ab>', 'false' ],
 >>>>>>> edfd6ea90a (#1501: added support for named nodes)
+      ],
+    });
+  });
+
+  describe('with blank nodes operands like', () => {
+    runFuncTestTable({
+      ...config,
+      testArray: [
+        [ 'BNODE("ab")', 'BNODE("cd")', 'true' ],
+        [ 'BNODE("ad")', 'BNODE("bc")', 'true' ],
+        [ 'BNODE("ba")', 'BNODE("ab")', 'false' ],
+        [ 'BNODE("ab")', 'BNODE("ab")', 'false' ],
+      ],
+    });
+  });
+
+  describe('with mixed terms operands like', () => {
+    runFuncTestTable({
+      ...config,
+      testArray: [
+        [ 'BNODE("ab")', '<ex:ab>', 'true' ],
+        [ '<< <ex:a> <ex:b> 123 >>', '123', 'false' ],
+        [ '<ex:ab>', '"ab"', 'true' ],
+        [ 'BNODE("ab")', '<< <ex:a> <ex:b> 123 >>', 'true' ],
       ],
     });
   });
