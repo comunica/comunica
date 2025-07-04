@@ -79,6 +79,9 @@ describe('evaluation of \'<\'', () => {
         aaa   aaa   = false
         aaa   bbb   = true
         bbb   aaa   = false
+        "a"@en "b"@de = true
+        "a"@en "a"@de = false
+        "a"@en "a"@en = false
       `,
     });
   });
