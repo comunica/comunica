@@ -33,6 +33,15 @@ export class TermFunctionLesserThan extends TermFunctionBase {
       overloads: declare(SparqlOperator.LT)
         .numberTest(() => (left, right) => left < right)
         .stringTest(() => (left, right) => left.localeCompare(right) === -1)
+        .set(
+          [ TypeURL.RDF_LANG_STRING, TypeURL.RDF_LANG_STRING ],
+          () => ([ left, right ]: LangStringLiteral[]) => {
+            if (left.str() !== right.str()) {
+              return bool(left.str() < right.str());
+            }
+            return bool(left.language < right.language);
+          },
+        )
         .booleanTest(() => (left, right) => left < right)
         .dateTimeTest(exprEval => (left, right) =>
           toUTCDate(left, exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone)).getTime() <
@@ -66,15 +75,6 @@ export class TermFunctionLesserThan extends TermFunctionBase {
               ).getTime(),
             ))
         .set(
-          [ TypeURL.RDF_LANG_STRING, TypeURL.RDF_LANG_STRING ],
-          () => ([ left, right ]: LangStringLiteral[]) => {
-            if (left.str() !== right.str()) {
-              return bool(left.str() < right.str());
-            }
-            return bool(left.language < right.language);
-          },
-        )
-        .set(
           [ 'quad', 'quad' ],
           exprEval => ([ left, right ]: [Quad, Quad]) => {
             const subjectTest = this.quadComponentTest(left.subject, right.subject, exprEval);
@@ -100,7 +100,6 @@ export class TermFunctionLesserThan extends TermFunctionBase {
 
             return bool(this.compareTerms(termA, termB) === -1);
           },
-          false,
         )
         .collect(),
     });
