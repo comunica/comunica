@@ -131,10 +131,6 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin<IActorRdfJoinMultiSm
           metadata.cardinality.value * requestItemTimes[i], 0),
     }, { ...sideData, sortedEntries });
   }
-
-  private sliceIndexes<T>(arr: T[], idxs: number[]): T[] {
-    return arr.filter((_, idx) => !idxs.includes(idx));
-  }
 }
 
 export interface IActorRdfJoinMultiSmallestArgs extends IActorRdfJoinArgs<IActorRdfJoinMultiSmallestTestSideData> {
