@@ -114,19 +114,6 @@ export class TermFunctionLesserThan extends TermFunctionBase {
   }
 
   private compareTerms(termA: RDF.Term, termB: RDF.Term): -1 | 0 | 1 {
-    // Check if terms are the same by reference
-    if (termA === termB) {
-      return 0;
-    }
-
-    // We handle undefined that is lower than everything else.
-    if (termA === undefined) {
-      return -1;
-    }
-    if (termB === undefined) {
-      return 1;
-    }
-
     // Order different types according to a priority mapping
     if (termA.termType !== termB.termType) {
       return this._TERM_ORDERING_PRIORITY[termA.termType] < this._TERM_ORDERING_PRIORITY[termB.termType] ? -1 : 1;
