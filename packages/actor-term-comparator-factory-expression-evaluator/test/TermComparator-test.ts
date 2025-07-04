@@ -133,8 +133,9 @@ describe('terms order', () => {
     await orderTestIsLower(dateTime('2000-01-01T00:00:00Z'), dateTime('2001-01-01T00:00:00Z'));
   });
   it('langString type comparison', async() => {
-    await orderTestIsEqual(DF.literal('a', 'de'), DF.literal('a', 'en'));
-    await orderTestIsLower(DF.literal('a', 'en'), DF.literal('b', 'en'));
+    await orderTestIsEqual(DF.literal('a', 'en'), DF.literal('a', 'en'));
+    await orderTestIsLower(DF.literal('a', 'de'), DF.literal('a', 'en'));
+    await orderTestIsLower(DF.literal('a', 'en'), DF.literal('b', 'de'));
   });
   it('boolean type comparison', async() => {
     const bool = DF.namedNode(Eval.TypeURL.XSD_BOOLEAN);
