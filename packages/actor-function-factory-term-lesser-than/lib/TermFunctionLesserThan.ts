@@ -2,6 +2,15 @@ import type { ITermFunction } from '@comunica/bus-function-factory';
 import { TermFunctionBase } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import type { IInternalEvaluator } from '@comunica/types';
+import type {
+  BooleanLiteral,
+  Term,
+  DayTimeDurationLiteral,
+  Quad,
+  TimeLiteral,
+  YearMonthDurationLiteral,
+  LangStringLiteral,
+} from '@comunica/utils-expression-evaluator';
 import {
   bool,
   dayTimeDurationsToSeconds,
@@ -13,14 +22,6 @@ import {
   toUTCDate,
   TypeURL,
   yearMonthDurationsToMonths,
-} from '@comunica/utils-expression-evaluator';
-import type {
-  BooleanLiteral,
-  Term,
-  DayTimeDurationLiteral,
-  Quad,
-  TimeLiteral,
-  YearMonthDurationLiteral,
 } from '@comunica/utils-expression-evaluator';
 import type * as RDF from '@rdfjs/types';
 
@@ -64,6 +65,15 @@ export class TermFunctionLesserThan extends TermFunctionBase {
                 exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone),
               ).getTime(),
             ))
+        .set(
+          [ TypeURL.RDF_LANG_STRING, TypeURL.RDF_LANG_STRING ],
+          () => ([ left, right ]: LangStringLiteral[]) => {
+            if (left.str() !== right.str()) {
+              return bool(left.str() < right.str());
+            }
+            return bool(left.language < right.language);
+          },
+        )
         .set(
           [ 'quad', 'quad' ],
           exprEval => ([ left, right ]: [Quad, Quad]) => {
