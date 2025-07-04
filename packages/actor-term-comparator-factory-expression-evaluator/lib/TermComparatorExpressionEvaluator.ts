@@ -27,7 +27,7 @@ export class TermComparatorExpressionEvaluator implements ITermComparator {
       return 1;
     }
 
-    //
+    // Order different types according to a priority mapping
     if (termA.termType !== termB.termType) {
       return this._TERM_ORDERING_PRIORITY[termA.termType] < this._TERM_ORDERING_PRIORITY[termB.termType] ? -1 : 1;
     }

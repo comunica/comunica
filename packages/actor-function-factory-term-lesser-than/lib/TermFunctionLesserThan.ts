@@ -2,15 +2,6 @@ import type { ITermFunction } from '@comunica/bus-function-factory';
 import { TermFunctionBase } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import type { IInternalEvaluator } from '@comunica/types';
-import type {
-  BooleanLiteral,
-  Term,
-  DayTimeDurationLiteral,
-  Quad,
-  NamedNode,
-  TimeLiteral,
-  YearMonthDurationLiteral,
-} from '@comunica/utils-expression-evaluator';
 import {
   bool,
   dayTimeDurationsToSeconds,
@@ -23,6 +14,16 @@ import {
   TypeURL,
   yearMonthDurationsToMonths,
 } from '@comunica/utils-expression-evaluator';
+import type {
+  BooleanLiteral,
+  Term,
+  DayTimeDurationLiteral,
+  Quad,
+  TimeLiteral,
+  YearMonthDurationLiteral,
+} from '@comunica/utils-expression-evaluator';
+import type * as RDF from '@rdfjs/types';
+import { DataFactory } from 'rdf-data-factory';
 
 export class TermFunctionLesserThan extends TermFunctionBase {
   public constructor(private readonly equalityFunction: ITermFunction) {
@@ -83,10 +84,15 @@ export class TermFunctionLesserThan extends TermFunctionBase {
           },
           false,
         ).set(
-          [ 'namedNode', 'namedNode' ],
-          () => ([ left, right ]: [NamedNode, NamedNode]) => {
-            const simpleLiteralTest = left.str().localeCompare(right.str());
-            return bool(simpleLiteralTest === -1);
+          [ 'term', 'term' ],
+          () => ([ left, right ]: [Term, Term]): BooleanLiteral => {
+            // Transform to RDF
+            const DF = new DataFactory();
+
+            const termA = left.toRDF(DF);
+            const termB = right.toRDF(DF);
+
+            return bool(this.compareTerms(termA, termB) === -1);
           },
           false,
         )
@@ -110,4 +116,45 @@ export class TermFunctionLesserThan extends TermFunctionBase {
     );
     return (<BooleanLiteral>componentLess).typedValue;
   }
+
+  private compareTerms(termA: RDF.Term, termB: RDF.Term): -1 | 0 | 1 {
+    // Check if terms are the same by reference
+    if (termA === termB) {
+      return 0;
+    }
+
+    // We handle undefined that is lower than everything else.
+    if (termA === undefined) {
+      return -1;
+    }
+    if (termB === undefined) {
+      return 1;
+    }
+
+    // Order different types according to a priority mapping
+    if (termA.termType !== termB.termType) {
+      return this._TERM_ORDERING_PRIORITY[termA.termType] < this._TERM_ORDERING_PRIORITY[termB.termType] ? -1 : 1;
+    }
+
+    // Check exact term equality
+    if (termA.equals(termB)) {
+      return 0;
+    }
+
+    return this.comparePrimitives(termA.value, termB.value);
+  }
+
+  private comparePrimitives(valueA: any, valueB: any): -1 | 0 | 1 {
+    return valueA === valueB ? 0 : (valueA < valueB ? -1 : 1);
+  }
+
+  // SPARQL specifies that blankNode < namedNode < literal. Sparql star expands with < quads and we say < defaultGraph
+  private readonly _TERM_ORDERING_PRIORITY = {
+    Variable: 0,
+    BlankNode: 1,
+    NamedNode: 2,
+    Literal: 3,
+    Quad: 4,
+    DefaultGraph: 5,
+  };
 }
