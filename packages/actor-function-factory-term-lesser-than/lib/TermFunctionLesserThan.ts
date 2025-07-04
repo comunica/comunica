@@ -1,6 +1,6 @@
 import type { ITermFunction } from '@comunica/bus-function-factory';
 import { TermFunctionBase } from '@comunica/bus-function-factory';
-import { KeysExpressionEvaluator } from '@comunica/context-entries';
+import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import type { IInternalEvaluator } from '@comunica/types';
 import {
   bool,
@@ -23,7 +23,6 @@ import type {
   YearMonthDurationLiteral,
 } from '@comunica/utils-expression-evaluator';
 import type * as RDF from '@rdfjs/types';
-import { DataFactory } from 'rdf-data-factory';
 
 export class TermFunctionLesserThan extends TermFunctionBase {
   public constructor(private readonly equalityFunction: ITermFunction) {
@@ -85,12 +84,9 @@ export class TermFunctionLesserThan extends TermFunctionBase {
           false,
         ).set(
           [ 'term', 'term' ],
-          () => ([ left, right ]: [Term, Term]): BooleanLiteral => {
-            // Transform to RDF
-            const DF = new DataFactory();
-
-            const termA = left.toRDF(DF);
-            const termB = right.toRDF(DF);
+          exprEval => ([ left, right ]: [Term, Term]): BooleanLiteral => {
+            const termA = left.toRDF(exprEval.context.getSafe(KeysInitQuery.dataFactory));
+            const termB = right.toRDF(exprEval.context.getSafe(KeysInitQuery.dataFactory));
 
             return bool(this.compareTerms(termA, termB) === -1);
           },
