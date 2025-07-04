@@ -63,14 +63,4 @@ export class TermComparatorExpressionEvaluator implements ITermComparator {
   private comparePrimitives(valueA: any, valueB: any): -1 | 0 | 1 {
     return valueA === valueB ? 0 : (valueA < valueB ? -1 : 1);
   }
-
-  // SPARQL specifies that blankNode < namedNode < literal. Sparql star expands with < quads and we say < defaultGraph
-  private readonly _TERM_ORDERING_PRIORITY = {
-    variable: 0,
-    blankNode: 1,
-    namedNode: 2,
-    literal: 3,
-    quad: 4,
-    defaultGraph: 5,
-  };
 }
