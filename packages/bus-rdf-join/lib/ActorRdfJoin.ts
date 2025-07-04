@@ -185,7 +185,7 @@ TS
   }
 
   /**
-   * Obtain the join entries witt metadata from all given join entries.
+   * Obtain the join entries with metadata from all given join entries.
    * @param entries Join entries.
    */
   public static async getEntriesWithMetadatas(entries: IJoinEntry[]): Promise<IJoinEntryWithMetadata[]> {
