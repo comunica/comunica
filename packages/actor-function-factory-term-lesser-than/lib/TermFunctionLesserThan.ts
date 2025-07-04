@@ -1,6 +1,6 @@
 import type { ITermFunction } from '@comunica/bus-function-factory';
 import { TermFunctionBase } from '@comunica/bus-function-factory';
-import { KeysExpressionEvaluator } from '@comunica/context-entries';
+import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import type { IInternalEvaluator } from '@comunica/types';
 import type {
   BooleanLiteral,
@@ -9,6 +9,7 @@ import type {
   Quad,
   TimeLiteral,
   YearMonthDurationLiteral,
+  LangStringLiteral,
 } from '@comunica/utils-expression-evaluator';
 import {
   bool,
@@ -22,6 +23,7 @@ import {
   TypeURL,
   yearMonthDurationsToMonths,
 } from '@comunica/utils-expression-evaluator';
+import type * as RDF from '@rdfjs/types';
 
 export class TermFunctionLesserThan extends TermFunctionBase {
   public constructor(private readonly equalityFunction: ITermFunction) {
@@ -31,6 +33,15 @@ export class TermFunctionLesserThan extends TermFunctionBase {
       overloads: declare(SparqlOperator.LT)
         .numberTest(() => (left, right) => left < right)
         .stringTest(() => (left, right) => left.localeCompare(right) === -1)
+        .set(
+          [ TypeURL.RDF_LANG_STRING, TypeURL.RDF_LANG_STRING ],
+          () => ([ left, right ]: LangStringLiteral[]) => {
+            if (left.str() !== right.str()) {
+              return bool(left.str() < right.str());
+            }
+            return bool(left.language < right.language);
+          },
+        )
         .booleanTest(() => (left, right) => left < right)
         .dateTimeTest(exprEval => (left, right) =>
           toUTCDate(left, exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone)).getTime() <
@@ -81,6 +92,14 @@ export class TermFunctionLesserThan extends TermFunctionBase {
             return bool(this.quadComponentTest(left.graph, right.graph, exprEval) ?? false);
           },
           false,
+        ).set(
+          [ 'term', 'term' ],
+          exprEval => ([ left, right ]: [Term, Term]): BooleanLiteral => {
+            const termA = left.toRDF(exprEval.context.getSafe(KeysInitQuery.dataFactory));
+            const termB = right.toRDF(exprEval.context.getSafe(KeysInitQuery.dataFactory));
+
+            return bool(this.compareTerms(termA, termB) === -1);
+          },
         )
         .collect(),
     });
@@ -102,4 +121,32 @@ export class TermFunctionLesserThan extends TermFunctionBase {
     );
     return (<BooleanLiteral>componentLess).typedValue;
   }
+
+  private compareTerms(termA: RDF.Term, termB: RDF.Term): -1 | 0 | 1 {
+    // Order different types according to a priority mapping
+    if (termA.termType !== termB.termType) {
+      return this._TERM_ORDERING_PRIORITY[termA.termType] < this._TERM_ORDERING_PRIORITY[termB.termType] ? -1 : 1;
+    }
+
+    // Check exact term equality
+    if (termA.equals(termB)) {
+      return 0;
+    }
+
+    return this.comparePrimitives(termA.value, termB.value);
+  }
+
+  private comparePrimitives(valueA: any, valueB: any): -1 | 0 | 1 {
+    return valueA === valueB ? 0 : (valueA < valueB ? -1 : 1);
+  }
+
+  // SPARQL specifies that blankNode < namedNode < literal. Sparql star expands with < quads and we say < defaultGraph
+  private readonly _TERM_ORDERING_PRIORITY = {
+    Variable: 0,
+    BlankNode: 1,
+    NamedNode: 2,
+    Literal: 3,
+    Quad: 4,
+    DefaultGraph: 5,
+  };
 }
