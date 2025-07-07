@@ -14,13 +14,13 @@ export interface IQuerySourceSerialized extends IQuerySourceUnidentifiedExpanded
 
 export interface IQuerySourceUnidentifiedExpanded {
   type?: string;
-  value: string | RDF.Source | RDF.Store;
+  value: string | RDF.Source | RDF.Store | RDF.DatasetCore;
   context?: IActionContext;
 }
 
 export interface IQuerySourceUnidentifiedExpandedRawContext {
   type?: string;
-  value: string | RDF.Source | RDF.Store;
+  value: string | RDF.Source | RDF.Store | RDF.DatasetCore;
   context?: Record<string, any>;
 }
 

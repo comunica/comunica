@@ -12,6 +12,7 @@ import type { ComunicaDataFactory } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import { QuerySourceRdfJs } from './QuerySourceRdfJs';
+import { RdfJsDatasetWrapper } from './RdfJsDatasetWrapper';
 
 /**
  * A comunica RDFJS Query Source Identify Actor.
@@ -36,10 +37,17 @@ export class ActorQuerySourceIdentifyRdfJs extends ActorQuerySourceIdentify {
 
   public async run(action: IActionQuerySourceIdentify): Promise<IActorQuerySourceIdentifyOutput> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
+
+    // Convert action.querySourceUnidentified.value to RDF.Source
+    const value = action.querySourceUnidentified.value;
+    const source: RDF.Source = typeof value === 'object' && 'add' in value ?
+      new RdfJsDatasetWrapper(value) :
+      <RDF.Source> value;
+
     return {
       querySource: {
         source: new QuerySourceRdfJs(
-          <RDF.Source> action.querySourceUnidentified.value,
+          source,
           dataFactory,
           await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context, dataFactory),
         ),
