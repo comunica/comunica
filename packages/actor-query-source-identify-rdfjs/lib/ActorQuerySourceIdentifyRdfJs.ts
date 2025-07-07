@@ -11,8 +11,8 @@ import { failTest, passTestVoid, ActionContext } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
-import { QuerySourceRdfJs } from './QuerySourceRdfJs';
 import { DatasetSourceWrapper } from './DatasetSourceWrapper';
+import { QuerySourceRdfJs } from './QuerySourceRdfJs';
 
 /**
  * A comunica RDFJS Query Source Identify Actor.

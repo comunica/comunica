@@ -25,8 +25,8 @@ export interface IQuerySourceUnidentifiedExpandedRawContext {
 }
 
 export type QuerySourceUnidentifiedExpanded = IQuerySourceUnidentifiedExpanded | IQuerySourceSerialized;
-export type QuerySourceUnidentified = string | RDF.Source | RDF.Store | QuerySourceUnidentifiedExpanded |
-IQuerySourceUnidentifiedExpandedRawContext;
+export type QuerySourceUnidentified = string | RDF.Source | RDF.Store | RDF.DatasetCore |
+QuerySourceUnidentifiedExpanded | IQuerySourceUnidentifiedExpandedRawContext;
 
 /**
  * Attaches a context to a query target.

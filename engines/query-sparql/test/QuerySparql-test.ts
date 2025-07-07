@@ -529,14 +529,21 @@ describe('System test: QuerySparql', () => {
       });
 
       it('RDFJS Source', async() => {
-        const store = new Store([
-          DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('s')),
-          DF.quad(DF.namedNode('l'), DF.namedNode('m'), DF.namedNode('n')),
-        ]);
-        const result = <QueryBindings> await engine.query(`SELECT * WHERE {
+        // Store
+        const store = RdfStore.createDefault();
+        store.addQuad(DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('s')));
+        store.addQuad(DF.quad(DF.namedNode('l'), DF.namedNode('m'), DF.namedNode('n')));
+        const storeResult = <QueryBindings> await engine.query(`SELECT * WHERE {
       ?s ?p ?s.
     }`, { sources: [ store ]});
-        await expect((arrayifyStream(await result.execute()))).resolves.toHaveLength(1);
+        await expect((arrayifyStream(await storeResult.execute()))).resolves.toHaveLength(1);
+
+        // Dataset
+        const dataset = store.asDataset();
+        const datasetResult = <QueryBindings> await engine.query(`SELECT * WHERE {
+      ?s ?p ?s.
+    }`, { sources: [ dataset ]});
+        await expect((arrayifyStream(await datasetResult.execute()))).resolves.toHaveLength(1);
       });
     });
 
