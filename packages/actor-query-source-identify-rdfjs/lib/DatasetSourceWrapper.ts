@@ -1,7 +1,7 @@
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 
-export class RdfJsDatasetWrapper implements RDF.Source {
+export class DatasetSourceWrapper implements RDF.Source {
   private readonly dataset: RDF.DatasetCore;
 
   public constructor(dataset: RDF.DatasetCore) {

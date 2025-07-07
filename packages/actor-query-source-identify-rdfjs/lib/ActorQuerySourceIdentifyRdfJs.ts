@@ -12,7 +12,7 @@ import type { ComunicaDataFactory } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import { QuerySourceRdfJs } from './QuerySourceRdfJs';
-import { RdfJsDatasetWrapper } from './RdfJsDatasetWrapper';
+import { DatasetSourceWrapper } from './DatasetSourceWrapper';
 
 /**
  * A comunica RDFJS Query Source Identify Actor.
@@ -43,7 +43,7 @@ export class ActorQuerySourceIdentifyRdfJs extends ActorQuerySourceIdentify {
     const value = action.querySourceUnidentified.value;
     const source: RDF.Source = typeof value === 'object' && this.isASource(value) ?
       <RDF.Source> value :
-      new RdfJsDatasetWrapper(<RDF.DatasetCore> value);
+      new DatasetSourceWrapper(<RDF.DatasetCore> value);
 
     return {
       querySource: {
@@ -60,7 +60,7 @@ export class ActorQuerySourceIdentifyRdfJs extends ActorQuerySourceIdentify {
   private isASource(obj: RDF.Source | RDF.Store | RDF.DatasetCore): obj is RDF.Source | RDF.Store {
     const result = obj.match();
 
-    // If match() returns something with [Symbol.asyncIterator], it's a Source
+    // If match() returns something with [Symbol.asyncIterator], that's a Stream, so it's a Source
     return result && typeof (<any>result)[Symbol.asyncIterator] === 'function';
   }
 }
