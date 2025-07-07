@@ -98,7 +98,7 @@ export class TermFunctionLesserThan extends TermFunctionBase {
             const termA = left.toRDF(exprEval.context.getSafe(KeysInitQuery.dataFactory));
             const termB = right.toRDF(exprEval.context.getSafe(KeysInitQuery.dataFactory));
 
-            return bool(this.compareTerms(termA, termB) === -1);
+            return bool(this.lesserThanTerms(termA, termB));
           },
         )
         .collect(),
@@ -122,22 +122,13 @@ export class TermFunctionLesserThan extends TermFunctionBase {
     return (<BooleanLiteral>componentLess).typedValue;
   }
 
-  private compareTerms(termA: RDF.Term, termB: RDF.Term): -1 | 0 | 1 {
+  private lesserThanTerms(termA: RDF.Term, termB: RDF.Term): boolean {
     // Order different types according to a priority mapping
     if (termA.termType !== termB.termType) {
-      return this._TERM_ORDERING_PRIORITY[termA.termType] < this._TERM_ORDERING_PRIORITY[termB.termType] ? -1 : 1;
+      return this._TERM_ORDERING_PRIORITY[termA.termType] < this._TERM_ORDERING_PRIORITY[termB.termType];
     }
 
-    // Check exact term equality
-    if (termA.equals(termB)) {
-      return 0;
-    }
-
-    return this.comparePrimitives(termA.value, termB.value);
-  }
-
-  private comparePrimitives(valueA: any, valueB: any): -1 | 0 | 1 {
-    return valueA === valueB ? 0 : (valueA < valueB ? -1 : 1);
+    return termA.value.localeCompare(termB.value) === -1;
   }
 
   // SPARQL specifies that blankNode < namedNode < literal. Sparql star expands with < quads and we say < defaultGraph

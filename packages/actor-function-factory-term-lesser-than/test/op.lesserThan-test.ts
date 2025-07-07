@@ -8,10 +8,12 @@ import {
   bool,
   dateTime,
   dateTyped,
+  dayTimeDurationTyped,
   merge,
   numeric,
   str,
   timeTyped,
+  yearMonthDurationTyped,
 } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
 import { ActorFunctionFactoryTermLesserThan } from '../lib';
@@ -125,13 +127,34 @@ describe('evaluation of \'<\'', () => {
     // Originates from: https://www.w3.org/TR/xpath-functions/#func-date-less-than
     runFuncTestTable({
       ...config,
-      operation: '<',
-      arity: 2,
-      notation: Notation.Infix,
-      aliases: bool,
       testTable: `
         '${dateTyped('2004-12-25Z')}' '${dateTyped('2004-12-25-05:00')}' = true
         '${dateTyped('2004-12-25-12:00')}' '${dateTyped('2004-12-26+12:00')}' = false
+      `,
+    });
+  });
+
+  describe('with yearMonthDuration operands like', () => {
+    runFuncTestTable({
+      ...config,
+      testTable: `
+        '${yearMonthDurationTyped('P1Y')}' '${yearMonthDurationTyped('P1Y')}' = false
+        '${yearMonthDurationTyped('P1Y')}' '${yearMonthDurationTyped('P12M')}' = false
+        '${yearMonthDurationTyped('P1Y1M')}' '${yearMonthDurationTyped('P12M')}' = false
+        '${yearMonthDurationTyped('P1M')}' '${yearMonthDurationTyped('-P2M')}' = false
+        '${yearMonthDurationTyped('-P1Y')}' '${yearMonthDurationTyped('P13M')}' = true
+      `,
+    });
+  });
+
+  describe('with dayTimeDuration operands like', () => {
+    runFuncTestTable({
+      ...config,
+      testTable: `
+        '${dayTimeDurationTyped('PT1H')}' '${dayTimeDurationTyped('PT63M')}' = true
+        '${dayTimeDurationTyped('PT3S')}' '${dayTimeDurationTyped('PT2M')}' = true
+        '${dayTimeDurationTyped('-PT1H1M')}' '${dayTimeDurationTyped('-PT62M')}' = false
+        '${dayTimeDurationTyped('PT0S')}' '${dayTimeDurationTyped('-PT0.1S')}' = false
       `,
     });
   });
@@ -158,12 +181,16 @@ describe('evaluation of \'<\'', () => {
     runFuncTestTable({
       ...config,
       testArray: [
-        [ '<<( <ex:a> <ex:b> 123 )>>', '<<( <ex:a> <ex:b> 123.0 )>>', 'false' ],
-        [ '<<( <ex:a> <ex:b> 123 )>>', '<<( <ex:a> <ex:b> 123 )>>', 'false' ],
-        [ '<<( <ex:a> <ex:b> 123 )>>', '<<( <ex:a> <ex:b> 123 )>>', 'false' ],
-        [ '<<( <ex:a> <ex:b> 123e0 )>>', '<<( <ex:a> <ex:b> 123 )>>', 'false' ],
-        [ '<<( <ex:a> <ex:b> 9 )>>', '<<( <ex:a> <ex:b> 123 )>>', 'true' ],
-        [ '<<( <ex:a> <ex:b> 123 )>>', '<<( <ex:a> <ex:b> 9 )>>', 'false' ],
+        [ '<< <ex:a> <ex:b> 123 >>', '<< <ex:a> <ex:b> 123.0 >>', 'false' ],
+        [ '<< <ex:a> <ex:b> 123 >>', '<< <ex:a> <ex:b> 123 >>', 'false' ],
+        [ '<< << <ex:a> <ex:b> 123 >> <ex:q> 999 >>', '<< << <ex:a> <ex:b> 123.0 >> <ex:q> 999 >>', 'false' ],
+        [ '<< << <ex:a> <ex:b> 9 >> <ex:q> 999 >>', '<< << <ex:a> <ex:b> 123.0 >> <ex:q> 999 >>', 'true' ],
+        // [ '<< <ex:q> << <ex:a> <ex:b> 9 >> 999 >>', '<< <ex:q> << <ex:a> <ex:b> 123.0 >> 999 >>', 'true' ],
+        [ '<< <ex:a> <ex:b> 123 >>', '<< <ex:a> <ex:b> 123 >>', 'false' ],
+        [ '<< <ex:a> <ex:b> 123e0 >>', '<< <ex:a> <ex:b> 123 >>', 'false' ],
+        [ '<< <ex:a> <ex:b> 9 >>', '<< <ex:a> <ex:b> 123 >>', 'true' ],
+        [ '<< <ex:a> <ex:b> 123 >>', '<< <ex:a> <ex:b> 9 >>', 'false' ],
+        [ '<< <ex:a> <ex:c> 123 >>', '<< <ex:a> <ex:b> 9 >>', 'false' ],
       ],
     });
   });
@@ -171,17 +198,11 @@ describe('evaluation of \'<\'', () => {
   describe('with named nodes operands like', () => {
     runFuncTestTable({
       ...config,
-<<<<<<< HEAD
-      errorArray: [
-        // Named nodes cannot be compared.
-        [ '<<( <ex:a> <ex:b> 123 )>>', '<<( <ex:c> <ex:d> 123 )>>', 'Argument types not valid for operator:' ],
-=======
       testArray: [
         [ '<ex:ab>', '<ex:cd>', 'true' ],
         [ '<ex:ad>', '<ex:bc>', 'true' ],
         [ '<ex:ba>', '<ex:ab>', 'false' ],
         [ '<ex:ab>', '<ex:ab>', 'false' ],
->>>>>>> edfd6ea90a (#1501: added support for named nodes)
       ],
     });
   });
