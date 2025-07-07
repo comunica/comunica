@@ -39,10 +39,11 @@ export class ActorQuerySourceIdentifyRdfJs extends ActorQuerySourceIdentify {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
 
     // Convert action.querySourceUnidentified.value to RDF.Source
+    // If it's an RDF.Source, always prefer that interface over RDF.DatasetCore
     const value = action.querySourceUnidentified.value;
-    const source: RDF.Source = typeof value === 'object' && 'add' in value ?
-      new RdfJsDatasetWrapper(value) :
-      <RDF.Source> value;
+    const source: RDF.Source = typeof value === 'object' && this.isASource(value) ?
+      <RDF.Source> value :
+      new RdfJsDatasetWrapper(<RDF.DatasetCore> value);
 
     return {
       querySource: {
@@ -54,6 +55,13 @@ export class ActorQuerySourceIdentifyRdfJs extends ActorQuerySourceIdentify {
         context: action.querySourceUnidentified.context ?? new ActionContext(),
       },
     };
+  }
+
+  private isASource(obj: RDF.Source | RDF.Store | RDF.DatasetCore): obj is RDF.Source | RDF.Store {
+    const result = obj.match();
+
+    // If match() returns something with [Symbol.asyncIterator], it's a Source
+    return result && typeof (<any>result)[Symbol.asyncIterator] === 'function';
   }
 }
 
