@@ -36,7 +36,7 @@ export interface IQuerySourceWrapper<Q extends IQuerySource = IQuerySource> {
   context?: IActionContext;
 }
 
-export type QuerySourceReference = string | RDF.Source;
+export type QuerySourceReference = string | RDF.Source | RDF.DatasetCore;
 
 /**
  * A lazy query source.

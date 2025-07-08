@@ -10,8 +10,6 @@ import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid, ActionContext } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import type * as RDF from '@rdfjs/types';
-import { DatasetSourceWrapper } from './DatasetSourceWrapper';
 import { QuerySourceRdfJs } from './QuerySourceRdfJs';
 
 /**
@@ -37,31 +35,16 @@ export class ActorQuerySourceIdentifyRdfJs extends ActorQuerySourceIdentify {
 
   public async run(action: IActionQuerySourceIdentify): Promise<IActorQuerySourceIdentifyOutput> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
-
-    // Convert action.querySourceUnidentified.value to RDF.Source
-    // If it's an RDF.Source, always prefer that interface over RDF.DatasetCore
-    const value = action.querySourceUnidentified.value;
-    const source: RDF.Source = typeof value === 'object' && this.isASource(value) ?
-      <RDF.Source> value :
-      new DatasetSourceWrapper(<RDF.DatasetCore> value);
-
     return {
       querySource: {
         source: new QuerySourceRdfJs(
-          source,
+          <any> action.querySourceUnidentified.value,
           dataFactory,
           await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context, dataFactory),
         ),
         context: action.querySourceUnidentified.context ?? new ActionContext(),
       },
     };
-  }
-
-  private isASource(obj: RDF.Source | RDF.Store | RDF.DatasetCore): obj is RDF.Source | RDF.Store {
-    const result = obj.match();
-
-    // If match() returns something with [Symbol.asyncIterator], that's a Stream, so it's a Source
-    return result && typeof (<any>result)[Symbol.asyncIterator] === 'function';
   }
 }
 

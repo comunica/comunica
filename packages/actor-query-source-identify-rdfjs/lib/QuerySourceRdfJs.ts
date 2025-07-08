@@ -6,25 +6,31 @@ import type {
   IActionContext,
   FragmentSelectorShape,
   ComunicaDataFactory,
+  QuerySourceReference,
 } from '@comunica/types';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
-import { AsyncIterator, wrap as wrapAsyncIterator } from 'asynciterator';
+import { ArrayIterator, AsyncIterator, wrap as wrapAsyncIterator } from 'asynciterator';
 import { someTermsNested, filterTermsNested, someTerms, uniqTerms } from 'rdf-terms';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
+import type { IRdfJsDatasetExtended } from './IRdfJsDatasetExtended';
 import type { IRdfJsSourceExtended } from './IRdfJsSourceExtended';
 
 export class QuerySourceRdfJs implements IQuerySource {
   protected readonly selectorShape: FragmentSelectorShape;
-  public referenceValue: string | RDF.Source;
-  protected readonly source: IRdfJsSourceExtended;
+  public referenceValue: QuerySourceReference;
+  protected readonly source: IRdfJsSourceExtended | IRdfJsDatasetExtended;
   private readonly dataFactory: ComunicaDataFactory;
   private readonly bindingsFactory: BindingsFactory;
   private readonly dummyDefaultGraph: RDF.Variable;
 
-  public constructor(source: RDF.Source, dataFactory: ComunicaDataFactory, bindingsFactory: BindingsFactory) {
+  public constructor(
+    source: RDF.Source | RDF.DatasetCore,
+    dataFactory: ComunicaDataFactory,
+    bindingsFactory: BindingsFactory,
+  ) {
     this.source = source;
     this.referenceValue = source;
     this.dataFactory = dataFactory;
@@ -187,15 +193,20 @@ export class QuerySourceRdfJs implements IQuerySource {
       // because we may lose data elements due to things happening async.
       let i = 0;
       cardinality = await new Promise((resolve, reject) => {
-        const matches = this.source.match(
+        let matches = this.source.match(
           QuerySourceRdfJs.nullifyVariables(operation.subject, quotedTripleFiltering),
           QuerySourceRdfJs.nullifyVariables(operation.predicate, quotedTripleFiltering),
           QuerySourceRdfJs.nullifyVariables(operation.object, quotedTripleFiltering),
           QuerySourceRdfJs.nullifyVariables(operation.graph, quotedTripleFiltering),
         );
-        matches.on('error', reject);
-        matches.on('end', () => resolve(i));
-        matches.on('data', () => i++);
+
+        if (typeof (<any>matches)[Symbol.asyncIterator] !== 'function') {
+          matches = <RDF.Stream>(new ArrayIterator(<RDF.DatasetCore> matches));
+        }
+
+        (<RDF.Stream>matches).on('error', reject);
+        (<RDF.Stream>matches).on('end', () => resolve(i));
+        (<RDF.Stream>matches).on('data', () => i++);
       });
     }
 
