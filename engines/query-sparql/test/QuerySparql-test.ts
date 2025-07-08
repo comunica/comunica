@@ -536,14 +536,19 @@ describe('System test: QuerySparql', () => {
         const storeResult = <QueryBindings> await engine.query(`SELECT * WHERE {
       ?s ?p ?s.
     }`, { sources: [ store ]});
-        await expect((arrayifyStream(await storeResult.execute()))).resolves.toHaveLength(1);
+        const storeBindings = await arrayifyStream(await storeResult.execute());
+        expect(storeBindings).toHaveLength(1);
 
         // Dataset
         const dataset = store.asDataset();
         const datasetResult = <QueryBindings> await engine.query(`SELECT * WHERE {
       ?s ?p ?s.
     }`, { sources: [ dataset ]});
-        await expect((arrayifyStream(await datasetResult.execute()))).resolves.toHaveLength(1);
+        const datasetBindings = await arrayifyStream(await datasetResult.execute());
+        expect(datasetBindings).toHaveLength(1);
+
+        // Compare both results
+        expect(storeBindings).toEqualBindingsArray(datasetBindings);
       });
     });
 

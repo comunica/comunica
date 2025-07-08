@@ -47,7 +47,7 @@ describe('ActorQuerySourceIdentifyRdfJs', () => {
       actor = new ActorQuerySourceIdentifyRdfJs({ name: 'actor', bus, mediatorMergeBindingsContext });
       source = { match: () => <any> null };
 
-      // Empty dataset creation
+      // Mock of empty dataset
       dataset = {
         [Symbol.iterator]() {
           return [][Symbol.iterator]();

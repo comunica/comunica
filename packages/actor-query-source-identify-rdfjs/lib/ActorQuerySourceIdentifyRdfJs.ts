@@ -10,6 +10,7 @@ import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid, ActionContext } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import type * as RDF from '@rdfjs/types';
 import { QuerySourceRdfJs } from './QuerySourceRdfJs';
 
 /**
@@ -38,7 +39,7 @@ export class ActorQuerySourceIdentifyRdfJs extends ActorQuerySourceIdentify {
     return {
       querySource: {
         source: new QuerySourceRdfJs(
-          <any> action.querySourceUnidentified.value,
+          <RDF.Source | RDF.DatasetCore> action.querySourceUnidentified.value,
           dataFactory,
           await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context, dataFactory),
         ),
