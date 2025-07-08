@@ -84,6 +84,7 @@ export class CliArgsHandlerQuery implements ICliArgsHandler {
           describe: 'Print the query plan',
           choices: [
             'parsed',
+            'federated',
             'logical',
             'physical',
             'physical-json',

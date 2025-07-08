@@ -231,6 +231,7 @@
     "@comunica/actor-query-operation-values": "^4.2.0",
     "@comunica/actor-query-parse-graphql": "^4.2.0",
     "@comunica/actor-query-parse-sparql": "^4.2.0",
+    "@comunica/actor-query-process-explain-federated": "^4.3.0",
     "@comunica/actor-query-process-explain-logical": "^4.2.0",
     "@comunica/actor-query-process-explain-parsed": "^4.2.0",
     "@comunica/actor-query-process-explain-physical": "^4.2.0",

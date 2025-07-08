@@ -10,6 +10,7 @@ import {
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid, ActionContextKey } from '@comunica/core';
+import type { QueryExplainMode } from '@comunica/types';
 import { MemoryPhysicalQueryPlanLogger } from './MemoryPhysicalQueryPlanLogger';
 
 /**
@@ -58,8 +59,9 @@ export class ActorQueryProcessExplainPhysical extends ActorQueryProcess {
         break;
     }
 
-    const mode: 'parsed' | 'logical' | 'physical' | 'physical-json' = (action.context.get(KeysInitQuery.explain) ??
-      action.context.getSafe(new ActionContextKey('explain')));
+    const mode = action.context.get(KeysInitQuery.explain) ??
+      action.context.getSafe<QueryExplainMode>(new ActionContextKey('explain'));
+
     return {
       result: {
         explain: true,

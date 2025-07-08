@@ -5,6 +5,7 @@
   ],
   "import": [
     "ccqs:config/query-process/actors/sequential.json",
+    "ccqs:config/query-process/actors/explain-federated.json",
     "ccqs:config/query-process/actors/explain-parsed.json",
     "ccqs:config/query-process/actors/explain-logical.json",
     "ccqs:config/query-process/actors/explain-physical.json"
