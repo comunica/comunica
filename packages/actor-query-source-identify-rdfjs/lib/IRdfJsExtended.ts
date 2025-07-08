@@ -2,13 +2,13 @@
 import type { EventEmitter } from 'node:events';
 import type * as RDF from '@rdfjs/types';
 
-export interface IRdfJsDatasetExtended extends RDF.DatasetCore {
+export interface IRdfJsCommon {
   /**
-   * A record indicating supported features of this dataset.
+   * A record indicating supported features of this source.
    */
   features?: {
     /**
-     * If true, this dataset supports passing quad patterns with quoted quad patterns in the `match` method.
+     * If true, this source supports passing quad patterns with quoted quad patterns in the `match` method.
      * If false (or if `features` is `undefined`), such quoted quad patterns can not be passed,
      * and must be replaced by `undefined` and filtered by the caller afterwards.
      */
@@ -48,3 +48,7 @@ export interface IRdfJsDatasetExtended extends RDF.DatasetCore {
     graph: RDF.Term,
   ) => EventEmitter;
 }
+
+export interface IRdfJsSourceExtended extends RDF.Source, IRdfJsCommon {}
+
+export interface IRdfJsDatasetExtended extends RDF.DatasetCore, IRdfJsCommon {}

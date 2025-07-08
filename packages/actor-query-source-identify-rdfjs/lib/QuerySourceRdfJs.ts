@@ -15,8 +15,7 @@ import { ArrayIterator, AsyncIterator, wrap as wrapAsyncIterator } from 'asyncit
 import { someTermsNested, filterTermsNested, someTerms, uniqTerms } from 'rdf-terms';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
-import type { IRdfJsDatasetExtended } from './IRdfJsDatasetExtended';
-import type { IRdfJsSourceExtended } from './IRdfJsSourceExtended';
+import type { IRdfJsDatasetExtended, IRdfJsSourceExtended } from './IRdfJsExtended';
 
 export class QuerySourceRdfJs implements IQuerySource {
   protected readonly selectorShape: FragmentSelectorShape;
@@ -200,6 +199,7 @@ export class QuerySourceRdfJs implements IQuerySource {
           QuerySourceRdfJs.nullifyVariables(operation.graph, quotedTripleFiltering),
         );
 
+        // If it's not a stream, turn it into one
         if (typeof (<any>matches)[Symbol.asyncIterator] !== 'function') {
           matches = <RDF.Stream>(new ArrayIterator(<RDF.DatasetCore> matches));
         }
