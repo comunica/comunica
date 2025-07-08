@@ -176,21 +176,29 @@ describe('evaluation of \'<\'', () => {
     });
   });
 
+  describe('with RDF literal operands like', () => {
+    runFuncTestTable({
+      ...config,
+      testTable: `    
+        "2"^^example:int "0"^^example:int = false
+        "abc"^^example:string "def"^^example:string = true
+        "2"^^example:int "abc"^^example:string = true
+        "2"^^example:int "2"^^example:string = false
+        "2"^^example:string "2"^^example:int = false
+      `,
+    });
+  });
+
   describe('with quoted triple operands like', () => {
     // Originates from: https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#sparql-compare
     runFuncTestTable({
       ...config,
       testArray: [
-        [ '<< <ex:a> <ex:b> 123 >>', '<< <ex:a> <ex:b> 123.0 >>', 'false' ],
-        [ '<< <ex:a> <ex:b> 123 >>', '<< <ex:a> <ex:b> 123 >>', 'false' ],
-        [ '<< << <ex:a> <ex:b> 123 >> <ex:q> 999 >>', '<< << <ex:a> <ex:b> 123.0 >> <ex:q> 999 >>', 'false' ],
-        [ '<< << <ex:a> <ex:b> 9 >> <ex:q> 999 >>', '<< << <ex:a> <ex:b> 123.0 >> <ex:q> 999 >>', 'true' ],
-        // [ '<< <ex:q> << <ex:a> <ex:b> 9 >> 999 >>', '<< <ex:q> << <ex:a> <ex:b> 123.0 >> 999 >>', 'true' ],
-        [ '<< <ex:a> <ex:b> 123 >>', '<< <ex:a> <ex:b> 123 >>', 'false' ],
-        [ '<< <ex:a> <ex:b> 123e0 >>', '<< <ex:a> <ex:b> 123 >>', 'false' ],
-        [ '<< <ex:a> <ex:b> 9 >>', '<< <ex:a> <ex:b> 123 >>', 'true' ],
-        [ '<< <ex:a> <ex:b> 123 >>', '<< <ex:a> <ex:b> 9 >>', 'false' ],
-        [ '<< <ex:a> <ex:c> 123 >>', '<< <ex:a> <ex:b> 9 >>', 'false' ],
+        [ '<<( <ex:a> <ex:b> 123)>>', '<<( <ex:a> <ex:b> 123)>>', 'false' ],
+        [ '<<( <ex:a> <ex:b> 123e0)>>', '<<( <ex:a> <ex:b> 123)>>', 'false' ],
+        [ '<<( <ex:a> <ex:b> 9)>>', '<<( <ex:a> <ex:b> 123)>>', 'true' ],
+        [ '<<( <ex:a> <ex:b> 123)>>', '<<( <ex:a> <ex:b> 9)>>', 'false' ],
+        [ '<<( <ex:a> <ex:c> 123)>>', '<<( <ex:a> <ex:b> 9)>>', 'false' ],
       ],
     });
   });
@@ -224,9 +232,9 @@ describe('evaluation of \'<\'', () => {
       ...config,
       testArray: [
         [ 'BNODE("ab")', '<ex:ab>', 'true' ],
-        [ '<< <ex:a> <ex:b> 123 >>', '123', 'false' ],
+        [ '<<( <ex:a> <ex:b> 123)>>', '123', 'false' ],
         [ '<ex:ab>', '"ab"', 'true' ],
-        [ 'BNODE("ab")', '<< <ex:a> <ex:b> 123 >>', 'true' ],
+        [ 'BNODE("ab")', '<<( <ex:a> <ex:b> 123)>>', 'true' ],
       ],
     });
   });

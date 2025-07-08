@@ -147,6 +147,19 @@ describe('evaluation of \'>\'', () => {
     });
   });
 
+  describe('with RDF literal operands like', () => {
+    runFuncTestTable({
+      ...config,
+      testTable: `    
+        "2"^^example:int "0"^^example:int = true
+        "abc"^^example:string "def"^^example:string = false
+        "2"^^example:int "abc"^^example:string = false
+        "2"^^example:int "2"^^example:string = false
+        "2"^^example:string "2"^^example:int = false
+      `,
+    });
+  });
+
   describe('with quoted triple operands like', () => {
     // Originates from: https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#sparql-compare
     runFuncTestTable({
@@ -165,17 +178,11 @@ describe('evaluation of \'>\'', () => {
   describe('with named nodes operands like', () => {
     runFuncTestTable({
       ...config,
-<<<<<<< HEAD
-      errorArray: [
-        // Named nodes cannot be compared.
-        [ '<<( <ex:a> <ex:b> 123 )>>', '<<( <ex:c> <ex:d> 123 )>>', 'Argument types not valid for operator' ],
-=======
       testArray: [
         [ '<ex:ab>', '<ex:cd>', 'false' ],
         [ '<ex:ad>', '<ex:bc>', 'false' ],
         [ '<ex:ba>', '<ex:ab>', 'true' ],
         [ '<ex:ab>', '<ex:ab>', 'false' ],
->>>>>>> edfd6ea90a (#1501: added support for named nodes)
       ],
     });
   });
@@ -197,9 +204,9 @@ describe('evaluation of \'>\'', () => {
       ...config,
       testArray: [
         [ 'BNODE("ab")', '<ex:ab>', 'false' ],
-        [ '<< <ex:a> <ex:b> 123 >>', '123', 'true' ],
+        [ '<<(<ex:a> <ex:b> 123)>>', '123', 'true' ],
         [ '<ex:ab>', '"ab"', 'false' ],
-        [ 'BNODE("ab")', '<< <ex:a> <ex:b> 123 >>', 'false' ],
+        [ 'BNODE("ab")', '<<(<ex:a> <ex:b> 123)>>', 'false' ],
       ],
     });
   });

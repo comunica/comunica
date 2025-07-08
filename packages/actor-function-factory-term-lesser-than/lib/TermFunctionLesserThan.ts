@@ -1,12 +1,13 @@
 import type { ITermFunction } from '@comunica/bus-function-factory';
 import { TermFunctionBase } from '@comunica/bus-function-factory';
-import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
+import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import type { IInternalEvaluator } from '@comunica/types';
 import type {
   BooleanLiteral,
   Term,
   DayTimeDurationLiteral,
   Quad,
+  BlankNode,
   TimeLiteral,
   YearMonthDurationLiteral,
   LangStringLiteral,
@@ -94,12 +95,7 @@ export class TermFunctionLesserThan extends TermFunctionBase {
           false,
         ).set(
           [ 'term', 'term' ],
-          exprEval => ([ left, right ]: [Term, Term]): BooleanLiteral => {
-            const termA = left.toRDF(exprEval.context.getSafe(KeysInitQuery.dataFactory));
-            const termB = right.toRDF(exprEval.context.getSafe(KeysInitQuery.dataFactory));
-
-            return bool(this.lesserThanTerms(termA, termB));
-          },
+          () => ([ left, right ]: [Term, Term]): BooleanLiteral => bool(this.lesserThanTerms(left, right)),
         )
         .collect(),
     });
@@ -122,22 +118,31 @@ export class TermFunctionLesserThan extends TermFunctionBase {
     return (<BooleanLiteral>componentLess).typedValue;
   }
 
-  private lesserThanTerms(termA: RDF.Term, termB: RDF.Term): boolean {
+  private lesserThanTerms(termA: Term, termB: Term): boolean {
     // Order different types according to a priority mapping
     if (termA.termType !== termB.termType) {
       return this._TERM_ORDERING_PRIORITY[termA.termType] < this._TERM_ORDERING_PRIORITY[termB.termType];
     }
 
-    return termA.value.localeCompare(termB.value) === -1;
+    return this.getValue(termA).localeCompare(this.getValue(termB)) === -1;
+  }
+
+  private getValue(term: Term): string {
+    if (term.termType === 'blankNode') {
+      if (typeof (<BlankNode> term).value === 'string') {
+        return <string> (<BlankNode> term).value;
+      }
+      return (<RDF.BlankNode> (<BlankNode> term).value).value;
+    }
+    return term.str();
   }
 
   // SPARQL specifies that blankNode < namedNode < literal. Sparql star expands with < quads and we say < defaultGraph
   private readonly _TERM_ORDERING_PRIORITY = {
-    Variable: 0,
-    BlankNode: 1,
-    NamedNode: 2,
-    Literal: 3,
-    Quad: 4,
-    DefaultGraph: 5,
+    blankNode: 0,
+    namedNode: 1,
+    literal: 2,
+    quad: 3,
+    defaultGraph: 4,
   };
 }
