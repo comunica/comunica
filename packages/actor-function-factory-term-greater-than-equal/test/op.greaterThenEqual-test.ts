@@ -186,14 +186,12 @@ describe('evaluation of \'>=\'', () => {
   describe('with RDF literal operands like', () => {
     runFuncTestTable({
       ...config,
-      testTable: `    
+      testTable: `
         "2"^^example:int "0"^^example:int = true
-      `,
-      errorTable: `
-        "abc"^^example:string "def"^^example:string = 'Equality test for literals with unsupported datatypes'
-        "2"^^example:int "abc"^^example:string = 'Equality test for literals with unsupported datatypes'
-        "2"^^example:int "2"^^example:string = 'Equality test for literals with unsupported datatypes'
-        "2"^^example:string "2"^^example:int = 'Equality test for literals with unsupported datatypes'
+        "abc"^^example:string "def"^^example:string = false
+        "2"^^example:int "abc"^^example:string = false
+        "2"^^example:int "2"^^example:string = true
+        "2"^^example:string "2"^^example:int = true
       `,
     });
   });

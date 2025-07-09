@@ -187,13 +187,11 @@ describe('evaluation of \'<=\'', () => {
     runFuncTestTable({
       ...config,
       testTable: `
+        "2"^^example:int "0"^^example:int = false
         "abc"^^example:string "def"^^example:string = true
         "2"^^example:int "abc"^^example:string = true
-      `,
-      errorTable: `
-        "2"^^example:int "0"^^example:int = 'Equality test for literals with unsupported datatypes'
-        "2"^^example:int "2"^^example:string = 'Equality test for literals with unsupported datatypes'
-        "2"^^example:string "2"^^example:int = 'Equality test for literals with unsupported datatypes'
+        "2"^^example:int "2"^^example:string = true
+        "2"^^example:string "2"^^example:int = true
       `,
     });
   });

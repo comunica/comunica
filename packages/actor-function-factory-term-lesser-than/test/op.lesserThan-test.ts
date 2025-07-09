@@ -179,7 +179,7 @@ describe('evaluation of \'<\'', () => {
   describe('with RDF literal operands like', () => {
     runFuncTestTable({
       ...config,
-      testTable: `    
+      testTable: `
         "2"^^example:int "0"^^example:int = false
         "abc"^^example:string "def"^^example:string = true
         "2"^^example:int "abc"^^example:string = true
