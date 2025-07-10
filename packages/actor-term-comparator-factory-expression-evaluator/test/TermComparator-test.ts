@@ -181,6 +181,7 @@ describe('terms order', () => {
 
   it('invalid literals comparison', async() => {
     await orderTestIsLower(dateTime('a'), dateTime('b'));
+    await orderTestIsEqual(dateTime('a'), dateTime('a'));
   });
 
   it('quoted triples comparison', async() => {
