@@ -50,6 +50,7 @@ export class QuerySourceSparql implements IQuerySource {
   private readonly defaultGraph?: string;
   private readonly unionDefaultGraph: boolean;
   private readonly datasets?: IDataset[];
+  private readonly maxUrlLengthForGet: number;
   private readonly dataFactory: ComunicaDataFactory;
   private readonly algebraFactory: Factory;
   private readonly bindingsFactory: BindingsFactory;
@@ -75,6 +76,7 @@ export class QuerySourceSparql implements IQuerySource {
     defaultGraph?: string,
     unionDefaultGraph?: boolean,
     datasets?: IDataset[],
+    maxUrlLengthForGet = 600,
   ) {
     this.referenceValue = url;
     this.url = url;
@@ -101,6 +103,7 @@ export class QuerySourceSparql implements IQuerySource {
     this.defaultGraph = defaultGraph;
     this.unionDefaultGraph = unionDefaultGraph ?? false;
     this.datasets = datasets;
+    this.maxUrlLengthForGet = maxUrlLengthForGet;
   }
 
   public async getSelectorShape(): Promise<FragmentSelectorShape> {
@@ -145,9 +148,12 @@ export class QuerySourceSparql implements IQuerySource {
 
   public queryQuads(operation: Algebra.Operation, context: IActionContext): AsyncIterator<RDF.Quad> {
     this.lastSourceContext = this.context.merge(context);
+    const query: string = context.get(KeysInitQuery.queryString) ?? QuerySourceSparql.operationToQuery(operation);
+    const forceHttpGet: boolean = `${this.url}?query=${encodeURIComponent(query)}`.length < this.maxUrlLengthForGet;
     const rawStream = this.endpointFetcher.fetchTriples(
       this.url,
-      context.get(KeysInitQuery.queryString) ?? QuerySourceSparql.operationToQuery(operation),
+      query,
+      forceHttpGet,
     );
     this.lastSourceContext = undefined;
     const quads = wrap<any>(rawStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY });
@@ -157,9 +163,12 @@ export class QuerySourceSparql implements IQuerySource {
 
   public queryBoolean(operation: Algebra.Ask, context: IActionContext): Promise<boolean> {
     this.lastSourceContext = this.context.merge(context);
+    const query: string = context.get(KeysInitQuery.queryString) ?? QuerySourceSparql.operationToQuery(operation);
+    const forceHttpGet: boolean = `${this.url}?query=${encodeURIComponent(query)}`.length < this.maxUrlLengthForGet;
     const promise = this.endpointFetcher.fetchAsk(
       this.url,
-      context.get(KeysInitQuery.queryString) ?? QuerySourceSparql.operationToQuery(operation),
+      query,
+      forceHttpGet,
     );
     this.lastSourceContext = undefined;
     return promise;
@@ -167,9 +176,12 @@ export class QuerySourceSparql implements IQuerySource {
 
   public queryVoid(operation: Algebra.Update, context: IActionContext): Promise<void> {
     this.lastSourceContext = this.context.merge(context);
+    const query: string = context.get(KeysInitQuery.queryString) ?? QuerySourceSparql.operationToQuery(operation);
+    const forceHttpGet: boolean = `${this.url}?query=${encodeURIComponent(query)}`.length < this.maxUrlLengthForGet;
     const promise = this.endpointFetcher.fetchUpdate(
       this.url,
-      context.get(KeysInitQuery.queryString) ?? QuerySourceSparql.operationToQuery(operation),
+      query,
+      forceHttpGet,
     );
     this.lastSourceContext = undefined;
     return promise;
@@ -474,7 +486,8 @@ export class QuerySourceSparql implements IQuerySource {
     }
 
     this.lastSourceContext = this.context.merge(context);
-    const rawStream = await this.endpointFetcher.fetchBindings(endpoint, query);
+    const forceHttpGet: boolean = `${endpoint}?query=${encodeURIComponent(query)}`.length < this.maxUrlLengthForGet;
+    const rawStream = await this.endpointFetcher.fetchBindings(endpoint, query, forceHttpGet);
     this.lastSourceContext = undefined;
 
     return wrap<any>(rawStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY })
