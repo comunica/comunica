@@ -538,6 +538,25 @@ describe('System test: QuerySparql', () => {
     }`, { sources: [ store ]});
         await expect((arrayifyStream(await result.execute()))).resolves.toHaveLength(1);
       });
+
+      it('RDFJS Dataset', async() => {
+        const store = RdfStore.createDefault();
+        store.addQuad(DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('s')));
+        store.addQuad(DF.quad(DF.namedNode('l'), DF.namedNode('m'), DF.namedNode('n')));
+        const dataset = store.asDataset();
+        let result = <QueryBindings> await engine.query(`SELECT * WHERE {
+      ?s ?p ?s.
+    }`, { sources: [ dataset ]});
+        const datasetBindings = await arrayifyStream(await result.execute());
+        expect(datasetBindings).toHaveLength(1);
+
+        // Compare with result of store
+        result = <QueryBindings> await engine.query(`SELECT * WHERE {
+      ?s ?p ?s.
+    }`, { sources: [ store ]});
+        const storeBindings = await arrayifyStream(await result.execute());
+        expect(storeBindings).toEqualBindingsArray(datasetBindings);
+      });
     });
 
     describe('two-pattern query on a raw RDF document', () => {

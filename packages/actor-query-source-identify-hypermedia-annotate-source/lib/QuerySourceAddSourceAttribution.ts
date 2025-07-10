@@ -6,6 +6,7 @@ import type {
   IQueryBindingsOptions,
   IQuerySource,
   MetadataBindings,
+  QuerySourceReference,
 } from '@comunica/types';
 import { Bindings } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
@@ -71,7 +72,7 @@ export class QuerySourceAddSourceAttribution implements IQuerySource {
     return this.innerSource.queryVoid(operation, context);
   }
 
-  public get referenceValue(): string | RDF.Source {
+  public get referenceValue(): QuerySourceReference {
     return this.innerSource.referenceValue;
   }
 
