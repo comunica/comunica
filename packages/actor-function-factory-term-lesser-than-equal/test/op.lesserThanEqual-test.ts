@@ -191,7 +191,8 @@ describe('evaluation of \'<=\'', () => {
         "abc"^^example:string "def"^^example:string = true
         "2"^^example:int "abc"^^example:string = true
         "2"^^example:int "2"^^example:string = true
-        "2"^^example:string "2"^^example:int = true
+        "2"^^example:string "2"^^example:int = false
+        "2"^^example:string "2"^^example:string = true
       `,
     });
   });

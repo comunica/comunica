@@ -7,7 +7,6 @@ import type * as RDF from '@rdfjs/types';
 export class TermComparatorExpressionEvaluator implements ITermComparator {
   public constructor(
     private readonly internalEvaluator: InternalEvaluator,
-    private readonly equalityFunction: ITermFunction,
     private readonly lessThanFunction: ITermFunction,
   ) {}
 
@@ -31,27 +30,17 @@ export class TermComparatorExpressionEvaluator implements ITermComparator {
     const myTermB: Eval.Term = this.internalEvaluator.transformer.transformRDFTermUnsafe(termB);
 
     try {
-      if ((<Eval.BooleanLiteral> this.equalityFunction.applyOnTerms([ myTermA, myTermB ], this.internalEvaluator))
-        .typedValue) {
-        return 0;
-      }
       if ((<Eval.BooleanLiteral> this.lessThanFunction.applyOnTerms([ myTermA, myTermB ], this.internalEvaluator))
         .typedValue) {
         return -1;
       }
-      return 1;
+      if ((<Eval.BooleanLiteral> this.lessThanFunction.applyOnTerms([ myTermB, myTermA ], this.internalEvaluator))
+        .typedValue) {
+        return 1;
+      }
+      return 0;
     } catch {
       // Fallback to string-based comparison
-
-      // If both are literals, try comparing dataType first
-      if (myTermA.termType === 'literal' && myTermB.termType === 'literal') {
-        const compareType =
-          this.comparePrimitives((<Eval.Literal<any>>myTermA).dataType, (<Eval.Literal<any>>myTermB).dataType);
-        if (compareType !== 0) {
-          return compareType;
-        }
-      }
-
       return this.comparePrimitives(myTermA.str(), myTermB.str());
     }
   }

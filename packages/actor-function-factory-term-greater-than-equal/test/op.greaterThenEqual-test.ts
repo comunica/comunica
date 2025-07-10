@@ -190,8 +190,9 @@ describe('evaluation of \'>=\'', () => {
         "2"^^example:int "0"^^example:int = true
         "abc"^^example:string "def"^^example:string = false
         "2"^^example:int "abc"^^example:string = false
-        "2"^^example:int "2"^^example:string = true
+        "2"^^example:int "2"^^example:string = false
         "2"^^example:string "2"^^example:int = true
+        "2"^^example:string "2"^^example:string = true
       `,
     });
   });

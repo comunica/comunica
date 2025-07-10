@@ -2,16 +2,6 @@ import type { ITermFunction } from '@comunica/bus-function-factory';
 import { TermFunctionBase } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import type { IInternalEvaluator } from '@comunica/types';
-import type {
-  BooleanLiteral,
-  Term,
-  DayTimeDurationLiteral,
-  Quad,
-  BlankNode,
-  TimeLiteral,
-  YearMonthDurationLiteral,
-  LangStringLiteral,
-} from '@comunica/utils-expression-evaluator';
 import {
   bool,
   dayTimeDurationsToSeconds,
@@ -23,6 +13,17 @@ import {
   toUTCDate,
   TypeURL,
   yearMonthDurationsToMonths,
+} from '@comunica/utils-expression-evaluator';
+import type {
+  BooleanLiteral,
+  Term,
+  DayTimeDurationLiteral,
+  Quad,
+  BlankNode,
+  Literal,
+  TimeLiteral,
+  YearMonthDurationLiteral,
+  LangStringLiteral,
 } from '@comunica/utils-expression-evaluator';
 import type * as RDF from '@rdfjs/types';
 
@@ -124,7 +125,16 @@ export class TermFunctionLesserThan extends TermFunctionBase {
       return this._TERM_ORDERING_PRIORITY[termA.termType] < this._TERM_ORDERING_PRIORITY[termB.termType];
     }
 
-    return this.getValue(termA).localeCompare(this.getValue(termB)) === -1;
+    // If both are literals, try compare data type first
+    if (termA.termType === 'literal' && termB.termType === 'literal') {
+      const compareType =
+        this.comparePrimitives((<Literal<any>> termA).dataType, (<Literal<any>> termB).dataType);
+      if (compareType !== 0) {
+        return compareType === -1;
+      }
+    }
+
+    return this.comparePrimitives(this.getValue(termA), this.getValue(termB)) === -1;
   }
 
   private getValue(term: Term): string {
@@ -135,6 +145,10 @@ export class TermFunctionLesserThan extends TermFunctionBase {
       return (<RDF.BlankNode> (<BlankNode> term).value).value;
     }
     return term.str();
+  }
+
+  private comparePrimitives(valueA: any, valueB: any): -1 | 0 | 1 {
+    return valueA === valueB ? 0 : (valueA < valueB ? -1 : 1);
   }
 
   // SPARQL specifies that blankNode < namedNode < literal. Sparql star expands with < quads and we say < defaultGraph:

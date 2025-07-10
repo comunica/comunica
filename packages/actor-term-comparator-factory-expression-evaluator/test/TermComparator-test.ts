@@ -48,11 +48,9 @@ function orderByFactory(typeDiscoveryCallback?: SuperTypeCallback): ITermCompara
       cache: new LRUCache<string, any>({ max: 1_000 }),
     }) :
     getMockEEActionContext();
-  const equalityFunc = new TermFunctionEquality();
   return new TermComparatorExpressionEvaluator(
     getMockInternalEvaluator(undefined, context),
-    equalityFunc,
-    new TermFunctionLesserThan(equalityFunc),
+    new TermFunctionLesserThan(new TermFunctionEquality()),
   );
 }
 
