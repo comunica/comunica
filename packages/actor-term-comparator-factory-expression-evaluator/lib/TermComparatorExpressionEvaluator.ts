@@ -41,6 +41,8 @@ export class TermComparatorExpressionEvaluator implements ITermComparator {
       return 0;
     } catch {
       // Fallback to string-based comparison
+      // The less than function itself won't throw errors, but before it's actually executed, errors could be thrown
+      // For example when comparing NonLexical operands, an error will be thrown in Builder.wrapInvalidLexicalProtected
       return this.comparePrimitives(myTermA.str(), myTermB.str());
     }
   }

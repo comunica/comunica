@@ -186,8 +186,11 @@ describe('evaluation of \'<\'', () => {
         discoverer: () => Eval.TypeURL.XSD_INTEGER,
       }),
       testTable: `
-         "2"^^example:int "2"^^example:int = false
-         "2"^^example:int "3"^^example:int = true
+        "2"^^example:int "2"^^example:int = false
+        "2"^^example:int "3"^^example:int = true
+        
+        "01"^^example:int "2"^^example:int = true
+        "100"^^example:int "25"^^example:int = false
       `,
     });
   });
@@ -202,6 +205,9 @@ describe('evaluation of \'<\'', () => {
         "2"^^example:int "2"^^example:string = true
         "2"^^example:string "2"^^example:int = false
         "2"^^example:string "2"^^example:string = false
+        
+        "01"^^example:int "2"^^example:int = true
+        "100"^^example:int "25"^^example:int = true
       `,
     });
   });

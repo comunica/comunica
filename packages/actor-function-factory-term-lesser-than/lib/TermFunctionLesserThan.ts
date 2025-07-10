@@ -25,7 +25,6 @@ import type {
   YearMonthDurationLiteral,
   LangStringLiteral,
 } from '@comunica/utils-expression-evaluator';
-import type * as RDF from '@rdfjs/types';
 
 export class TermFunctionLesserThan extends TermFunctionBase {
   public constructor(private readonly equalityFunction: ITermFunction) {
@@ -139,10 +138,11 @@ export class TermFunctionLesserThan extends TermFunctionBase {
 
   private getValue(term: Term): string {
     if (term.termType === 'blankNode') {
-      if (typeof (<BlankNode> term).value === 'string') {
-        return <string> (<BlankNode> term).value;
+      const blankNode = <BlankNode> term;
+      if (typeof blankNode.value === 'string') {
+        return blankNode.value;
       }
-      return (<RDF.BlankNode> (<BlankNode> term).value).value;
+      return blankNode.value.value;
     }
     return term.str();
   }
