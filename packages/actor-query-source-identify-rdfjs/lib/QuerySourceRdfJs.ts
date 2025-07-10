@@ -83,8 +83,8 @@ export class QuerySourceRdfJs implements IQuerySource {
 
     // Get bindings directly if the source allows it
     // This will be more efficient, as it avoids the intermediary quads translation and representation.
-    if ((<any> this.source).matchBindings) {
-      const rawStream = (<any> this.source).matchBindings(
+    if ('matchBindings' in this.source && this.source.matchBindings) {
+      const rawStream = this.source.matchBindings(
         this.bindingsFactory,
         operation.subject,
         operation.predicate,
@@ -123,7 +123,7 @@ export class QuerySourceRdfJs implements IQuerySource {
     }
 
     // Check if the source supports quoted triple filtering
-    const quotedTripleFiltering = Boolean((<any> this.source).features?.quotedTripleFiltering);
+    const quotedTripleFiltering = Boolean('features' in this.source && this.source.features?.quotedTripleFiltering);
 
     // Create an async iterator from the matched quad stream
     const rawStream = this.source.match(
@@ -169,7 +169,7 @@ export class QuerySourceRdfJs implements IQuerySource {
     extraMetadata: Record<string, any> = {},
   ): Promise<void> {
     // Check if the source supports quoted triple filtering
-    const quotedTripleFiltering = Boolean((<any> this.source).features?.quotedTripleFiltering);
+    const quotedTripleFiltering = Boolean('features' in this.source && this.source.features?.quotedTripleFiltering);
 
     // Check if we're running in union default graph mode
     const unionDefaultGraph = Boolean(context.get(KeysQueryOperation.unionDefaultGraph));
@@ -178,9 +178,9 @@ export class QuerySourceRdfJs implements IQuerySource {
     }
 
     let cardinality: number;
-    if ((<any> this.source).countQuads) {
+    if ('countQuads' in this.source && this.source.countQuads) {
       // If the source provides a dedicated method for determining cardinality, use that.
-      cardinality = await (<any> this.source).countQuads(
+      cardinality = await this.source.countQuads(
         QuerySourceRdfJs.nullifyVariables(operation.subject, quotedTripleFiltering),
         QuerySourceRdfJs.nullifyVariables(operation.predicate, quotedTripleFiltering),
         QuerySourceRdfJs.nullifyVariables(operation.object, quotedTripleFiltering),
