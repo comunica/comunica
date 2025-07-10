@@ -2,7 +2,7 @@
 import type { EventEmitter } from 'node:events';
 import type * as RDF from '@rdfjs/types';
 
-export interface IRdfJsCommon {
+export interface IRdfJsSourceExtended extends RDF.Source {
   /**
    * A record indicating supported features of this source.
    */
@@ -48,7 +48,3 @@ export interface IRdfJsCommon {
     graph: RDF.Term,
   ) => EventEmitter;
 }
-
-export interface IRdfJsSourceExtended extends RDF.Source, IRdfJsCommon {}
-
-export interface IRdfJsDatasetExtended extends RDF.DatasetCore, IRdfJsCommon {}

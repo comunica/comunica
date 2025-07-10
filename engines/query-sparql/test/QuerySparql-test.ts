@@ -529,25 +529,32 @@ describe('System test: QuerySparql', () => {
       });
 
       it('RDFJS Source', async() => {
-        // Store
+        const store = new Store([
+          DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('s')),
+          DF.quad(DF.namedNode('l'), DF.namedNode('m'), DF.namedNode('n')),
+        ]);
+        const result = <QueryBindings> await engine.query(`SELECT * WHERE {
+      ?s ?p ?s.
+    }`, { sources: [ store ]});
+        await expect((arrayifyStream(await result.execute()))).resolves.toHaveLength(1);
+      });
+
+      it('RDFJS Dataset', async() => {
         const store = RdfStore.createDefault();
         store.addQuad(DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('s')));
         store.addQuad(DF.quad(DF.namedNode('l'), DF.namedNode('m'), DF.namedNode('n')));
-        const storeResult = <QueryBindings> await engine.query(`SELECT * WHERE {
-      ?s ?p ?s.
-    }`, { sources: [ store ]});
-        const storeBindings = await arrayifyStream(await storeResult.execute());
-        expect(storeBindings).toHaveLength(1);
-
-        // Dataset
         const dataset = store.asDataset();
-        const datasetResult = <QueryBindings> await engine.query(`SELECT * WHERE {
+        let result = <QueryBindings> await engine.query(`SELECT * WHERE {
       ?s ?p ?s.
     }`, { sources: [ dataset ]});
-        const datasetBindings = await arrayifyStream(await datasetResult.execute());
+        const datasetBindings = await arrayifyStream(await result.execute());
         expect(datasetBindings).toHaveLength(1);
 
-        // Compare both results
+        // Compare with result of store
+        result = <QueryBindings> await engine.query(`SELECT * WHERE {
+      ?s ?p ?s.
+    }`, { sources: [ store ]});
+        const storeBindings = await arrayifyStream(await result.execute());
         expect(storeBindings).toEqualBindingsArray(datasetBindings);
       });
     });

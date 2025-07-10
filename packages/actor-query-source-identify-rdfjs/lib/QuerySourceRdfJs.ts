@@ -15,12 +15,12 @@ import { ArrayIterator, AsyncIterator, wrap as wrapAsyncIterator } from 'asyncit
 import { someTermsNested, filterTermsNested, someTerms, uniqTerms } from 'rdf-terms';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
-import type { IRdfJsDatasetExtended, IRdfJsSourceExtended } from './IRdfJsExtended';
+import type { IRdfJsSourceExtended } from './IRdfJsSourceExtended';
 
 export class QuerySourceRdfJs implements IQuerySource {
   protected readonly selectorShape: FragmentSelectorShape;
   public referenceValue: QuerySourceReference;
-  protected readonly source: IRdfJsSourceExtended | IRdfJsDatasetExtended;
+  protected readonly source: IRdfJsSourceExtended | RDF.DatasetCore;
   private readonly dataFactory: ComunicaDataFactory;
   private readonly bindingsFactory: BindingsFactory;
   private readonly dummyDefaultGraph: RDF.Variable;
@@ -83,8 +83,8 @@ export class QuerySourceRdfJs implements IQuerySource {
 
     // Get bindings directly if the source allows it
     // This will be more efficient, as it avoids the intermediary quads translation and representation.
-    if (this.source.matchBindings) {
-      const rawStream = this.source.matchBindings(
+    if ((<any> this.source).matchBindings) {
+      const rawStream = (<any> this.source).matchBindings(
         this.bindingsFactory,
         operation.subject,
         operation.predicate,
@@ -123,7 +123,7 @@ export class QuerySourceRdfJs implements IQuerySource {
     }
 
     // Check if the source supports quoted triple filtering
-    const quotedTripleFiltering = Boolean(this.source.features?.quotedTripleFiltering);
+    const quotedTripleFiltering = Boolean((<any> this.source).features?.quotedTripleFiltering);
 
     // Create an async iterator from the matched quad stream
     const rawStream = this.source.match(
@@ -169,7 +169,7 @@ export class QuerySourceRdfJs implements IQuerySource {
     extraMetadata: Record<string, any> = {},
   ): Promise<void> {
     // Check if the source supports quoted triple filtering
-    const quotedTripleFiltering = Boolean(this.source.features?.quotedTripleFiltering);
+    const quotedTripleFiltering = Boolean((<any> this.source).features?.quotedTripleFiltering);
 
     // Check if we're running in union default graph mode
     const unionDefaultGraph = Boolean(context.get(KeysQueryOperation.unionDefaultGraph));
@@ -178,9 +178,9 @@ export class QuerySourceRdfJs implements IQuerySource {
     }
 
     let cardinality: number;
-    if (this.source.countQuads) {
+    if ((<any> this.source).countQuads) {
       // If the source provides a dedicated method for determining cardinality, use that.
-      cardinality = await this.source.countQuads(
+      cardinality = await (<any> this.source).countQuads(
         QuerySourceRdfJs.nullifyVariables(operation.subject, quotedTripleFiltering),
         QuerySourceRdfJs.nullifyVariables(operation.predicate, quotedTripleFiltering),
         QuerySourceRdfJs.nullifyVariables(operation.object, quotedTripleFiltering),
@@ -200,7 +200,7 @@ export class QuerySourceRdfJs implements IQuerySource {
         );
 
         // If it's not a stream, turn it into one
-        if (typeof (<any>matches)[Symbol.asyncIterator] !== 'function') {
+        if (typeof (<any> matches).on !== 'function') {
           matches = <RDF.Stream>(new ArrayIterator(<RDF.DatasetCore> matches));
         }
 
