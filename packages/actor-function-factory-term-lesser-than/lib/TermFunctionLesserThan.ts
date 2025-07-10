@@ -137,7 +137,8 @@ export class TermFunctionLesserThan extends TermFunctionBase {
     return term.str();
   }
 
-  // SPARQL specifies that blankNode < namedNode < literal. Sparql star expands with < quads and we say < defaultGraph
+  // SPARQL specifies that blankNode < namedNode < literal. Sparql star expands with < quads and we say < defaultGraph:
+  // https://www.w3.org/TR/sparql11-query/#modOrderBy
   private readonly _TERM_ORDERING_PRIORITY = {
     blankNode: 0,
     namedNode: 1,

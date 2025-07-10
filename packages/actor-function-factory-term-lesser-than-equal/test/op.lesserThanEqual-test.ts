@@ -183,7 +183,7 @@ describe('evaluation of \'<=\'', () => {
     });
   });
 
-  describe('with RDF literal operands like', () => {
+  describe('with literals of unknown types like', () => {
     runFuncTestTable({
       ...config,
       testTable: `

@@ -4,6 +4,7 @@ import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/ut
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
+import * as Eval from '@comunica/utils-expression-evaluator';
 import {
   bool,
   dateTime,
@@ -16,6 +17,7 @@ import {
   yearMonthDurationTyped,
 } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+import { LRUCache } from 'lru-cache';
 import { ActorFunctionFactoryTermLesserThan } from '../lib';
 
 const config: FuncTestTableConfig<object> = {
@@ -176,7 +178,21 @@ describe('evaluation of \'<\'', () => {
     });
   });
 
-  describe('with RDF literal operands like', () => {
+  describe('with numeric and type discovery like', () => {
+    runFuncTestTable({
+      ...config,
+      config: new ActionContext().set(KeysExpressionEvaluator.superTypeProvider, {
+        cache: new LRUCache<string, any>({ max: 1_000 }),
+        discoverer: () => Eval.TypeURL.XSD_INTEGER,
+      }),
+      testTable: `
+         "2"^^example:int "2"^^example:int = false
+         "2"^^example:int "3"^^example:int = true
+      `,
+    });
+  });
+
+  describe('with literals of unknown types like', () => {
     runFuncTestTable({
       ...config,
       testTable: `
