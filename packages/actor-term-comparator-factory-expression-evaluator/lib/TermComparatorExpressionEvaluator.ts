@@ -41,8 +41,9 @@ export class TermComparatorExpressionEvaluator implements ITermComparator {
       return 0;
     } catch {
       // Fallback to string-based comparison
-      // The less than function itself won't throw errors, but before it's actually executed, errors could be thrown
-      // For example when comparing NonLexical operands, an error will be thrown in Builder.wrapInvalidLexicalProtected
+      // NonLexical operands could cause errors to be thrown
+      // when a datetime literal has a non-datetime string value for example
+      // Test example that covers this: invalid literals comparison on line 187 in TermComparator-test.ts
       return this.comparePrimitives(myTermA.str(), myTermB.str());
     }
   }

@@ -96,6 +96,7 @@ export class TermFunctionLesserThan extends TermFunctionBase {
         ).set(
           [ 'term', 'term' ],
           () => ([ left, right ]: [Term, Term]): BooleanLiteral => bool(this.lesserThanTerms(left, right)),
+          false,
         )
         .collect(),
     });

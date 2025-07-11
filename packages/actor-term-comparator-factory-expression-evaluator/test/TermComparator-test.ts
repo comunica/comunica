@@ -21,6 +21,10 @@ function int(value: string): RDF.Literal {
   return DF.literal(value, DF.namedNode(Eval.TypeURL.XSD_INTEGER));
 }
 
+function bool(value: string): RDF.Literal {
+  return DF.literal(value, DF.namedNode(Eval.TypeURL.XSD_BOOLEAN));
+}
+
 function float(value: string): RDF.Literal {
   return DF.literal(value, DF.namedNode(Eval.TypeURL.XSD_FLOAT));
 }
@@ -48,9 +52,10 @@ function orderByFactory(typeDiscoveryCallback?: SuperTypeCallback): ITermCompara
       cache: new LRUCache<string, any>({ max: 1_000 }),
     }) :
     getMockEEActionContext();
+  const equal = new TermFunctionEquality();
   return new TermComparatorExpressionEvaluator(
     getMockInternalEvaluator(undefined, context),
-    new TermFunctionLesserThan(new TermFunctionEquality()),
+    new TermFunctionLesserThan(equal),
   );
 }
 
@@ -151,7 +156,7 @@ describe('terms order', () => {
   });
 
   it('mixed unknown integer comparison', async() => {
-    // OrderTestIsLower(int('1'), decimal('011'));
+    await orderTestIsLower(int('1'), decimal('011'));
     await orderTestIsLower(DF.literal('011', DF.namedNode(Eval.TypeURL.XSD_ENTITY)), int('1'));
     await orderTestIsLower(DF.literal('011', DF.namedNode(Eval.TypeURL.XSD_ENTITY)), decimal('011'));
   });
@@ -182,6 +187,8 @@ describe('terms order', () => {
   it('invalid literals comparison', async() => {
     await orderTestIsLower(dateTime('a'), dateTime('b'));
     await orderTestIsEqual(dateTime('a'), dateTime('a'));
+    await orderTestIsLower(bool('a'), bool('b'));
+    await orderTestIsLower(bool('a'), dateTime('a'));
   });
 
   it('quoted triples comparison', async() => {
