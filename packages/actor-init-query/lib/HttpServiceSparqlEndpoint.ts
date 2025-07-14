@@ -586,6 +586,10 @@ export class HttpServiceSparqlEndpoint {
         }
       }
 
+      for (const value in actionContext.get(KeysInitQuery.extensionFunctions)) {
+        quads.push(quad(s, `${sd}extensionFunction`, value));
+      }
+
       // Flush results
       const { data } = await engine.resultToString(<QueryQuads>{
         resultType: 'quads',
