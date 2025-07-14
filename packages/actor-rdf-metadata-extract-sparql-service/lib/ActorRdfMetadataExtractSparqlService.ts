@@ -85,7 +85,7 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
                 metadata.basicFederatedQuery = true;
               }
               break;
-            case `${sd}extensionFunctions`:
+            case `${sd}extensionFunction`:
               extensionFunctions.add(quad.object.value);
               break;
           }

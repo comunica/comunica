@@ -38,6 +38,7 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
     const endpointService = DF.namedNode('http://localhost/endpoint');
     const endpointDefaultDataset = DF.namedNode('http://localhost/dataset');
     const endpointDefaultGraph = DF.namedNode('http://localhost/graph');
+    const endpointExtensionFunction = DF.namedNode('http://localhost/function');
 
     const sparqlResultsJson = DF.namedNode('http://www.w3.org/ns/formats/SPARQL_Results_JSON');
     const sparqlResultsXml = DF.namedNode('http://www.w3.org/ns/formats/SPARQL_Results_XML');
@@ -52,6 +53,7 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
     const serviceDescriptionDefaultGraph = DF.namedNode(`${sd}defaultGraph`);
     const serviceDescriptionBasicFederatedQuery = DF.namedNode(`${sd}BasicFederatedQuery`);
     const serviceDescriptionUnionDefaultGraph = DF.namedNode(`${sd}UnionDefaultGraph`);
+    const serviceDescriptionExtensionFunction = DF.namedNode(`${sd}extensionFunction`);
 
     beforeEach(() => {
       actor = new ActorRdfMetadataExtractSparqlService({ name: 'actor', bus, inferHttpsEndpoint: false });
@@ -70,6 +72,7 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
         DF.quad(serviceDescriptionIri, serviceDescriptionResultFormat, sparqlResultsXml),
         DF.quad(serviceDescriptionIri, serviceDescriptionDefaultDataset, endpointDefaultDataset),
         DF.quad(endpointDefaultDataset, serviceDescriptionDefaultGraph, endpointDefaultGraph),
+        DF.quad(endpointDefaultDataset, serviceDescriptionExtensionFunction, endpointExtensionFunction),
       ]);
       await expect(actor.run({ url: endpointIri.value, metadata: input, context, requestTime })).resolves.toEqual({
         metadata: {
@@ -81,6 +84,7 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
           inputFormats: [ sparqlResultsJson.value ],
           resultFormats: [ sparqlResultsXml.value ],
           supportedLanguages: [ sparql11Query.value ],
+          extensionFunctions: [ endpointExtensionFunction.value ],
         },
       });
     });
