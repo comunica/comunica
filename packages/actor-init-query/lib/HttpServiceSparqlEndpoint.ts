@@ -562,7 +562,8 @@ export class HttpServiceSparqlEndpoint {
       }
 
       // Append extension functions
-      for (const value in actionContext.get(KeysInitQuery.extensionFunctions)) {
+      const functions = actionContext.get(KeysInitQuery.extensionFunctions);
+      for (const value in functions) {
         quads.push(quad(s, `${sd}extensionFunction`, value));
       }
 

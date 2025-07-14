@@ -35,6 +35,7 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
       const inputFormats = new Set<string>();
       const resultFormats = new Set<string>();
       const supportedLanguages = new Set<string>();
+      const extensionFunctions = new Set<string>();
 
       action.metadata.on('data', (quad: RDF.Quad) => {
         if (quad.predicate.value === 'http://rdfs.org/ns/void#subset' && quad.object.value === action.url) {
@@ -48,8 +49,10 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
           quad.subject.termType === 'BlankNode' ||
           acceptSubjectUris.has(quad.subject.value)
         ) {
+          const sd = 'http://www.w3.org/ns/sparql-service-description#';
+
           switch (quad.predicate.value) {
-            case 'http://www.w3.org/ns/sparql-service-description#endpoint':
+            case `${sd}endpoint`:
               // The VoID specification defines this as IRI, but does not specify whether or not it can be a literal.
               // When the IRI is a literal, it can be relative, and needs to be resolved to absolute value.
               metadata.sparqlService = quad.object.termType === 'Literal' ?
@@ -60,27 +63,30 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
                 metadata.sparqlService = metadata.sparqlService.replace(/^http:/u, 'https:');
               }
               break;
-            case 'http://www.w3.org/ns/sparql-service-description#defaultDataset':
+            case `${sd}defaultDataset`:
               metadata.defaultDataset = quad.object.value;
               break;
-            case 'http://www.w3.org/ns/sparql-service-description#defaultGraph':
+            case `${sd}defaultGraph`:
               metadata.defaultGraph = quad.object.value;
               break;
-            case 'http://www.w3.org/ns/sparql-service-description#inputFormat':
+            case `${sd}inputFormat`:
               inputFormats.add(quad.object.value);
               break;
-            case 'http://www.w3.org/ns/sparql-service-description#resultFormat':
+            case `${sd}resultFormat`:
               resultFormats.add(quad.object.value);
               break;
-            case 'http://www.w3.org/ns/sparql-service-description#supportedLanguage':
+            case `${sd}supportedLanguage`:
               supportedLanguages.add(quad.object.value);
               break;
-            case 'http://www.w3.org/ns/sparql-service-description#feature':
-              if (quad.object.value === 'http://www.w3.org/ns/sparql-service-description#UnionDefaultGraph') {
+            case `${sd}feature`:
+              if (quad.object.value === `${sd}UnionDefaultGraph`) {
                 metadata.unionDefaultGraph = true;
-              } else if (quad.object.value === 'http://www.w3.org/ns/sparql-service-description#BasicFederatedQuery') {
+              } else if (quad.object.value === `${sd}BasicFederatedQuery`) {
                 metadata.basicFederatedQuery = true;
               }
+              break;
+            case `${sd}extensionFunctions`:
+              extensionFunctions.add(quad.object.value);
               break;
           }
         }
@@ -93,6 +99,7 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
           ...inputFormats.size > 0 ? { inputFormats: [ ...inputFormats.values() ]} : {},
           ...resultFormats.size > 0 ? { resultFormats: [ ...resultFormats.values() ]} : {},
           ...supportedLanguages.size > 0 ? { supportedLanguages: [ ...supportedLanguages.values() ]} : {},
+          ...extensionFunctions.size > 0 ? { extensionFunctions: [ ...extensionFunctions.values() ]} : {},
         }});
       });
     });
