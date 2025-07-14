@@ -575,8 +575,7 @@ export class HttpServiceSparqlEndpoint {
       }
 
       // Append extension functions
-      const functions = actionContext.get(KeysInitQuery.extensionFunctions);
-      for (const value in functions) {
+      for (const value in actionContext.get(KeysInitQuery.extensionFunctions)) {
         quads.push(quad(s, `${sd}extensionFunction`, value));
       }
 
@@ -584,10 +583,6 @@ export class HttpServiceSparqlEndpoint {
         for (const quad of await this.voidMetadataEmitter.getVoIDQuads(engine, stdout, request, response)) {
           quads.push(quad);
         }
-      }
-
-      for (const value in actionContext.get(KeysInitQuery.extensionFunctions)) {
-        quads.push(quad(s, `${sd}extensionFunction`, value));
       }
 
       // Flush results
