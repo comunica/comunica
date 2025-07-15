@@ -212,6 +212,18 @@ describe('evaluation of \'<\'', () => {
     });
   });
 
+  describe('with non lexical operands like', () => {
+    runFuncTestTable({
+      ...config,
+      errorTable: `
+        "a"^^xsd:dateTime "b"^^xsd:dateTime = Invalid lexical form
+        "a"^^xsd:dateTime "a"^^xsd:dateTime = Invalid lexical form
+        "a"^^xsd:boolean  "b"^^xsd:boolean  = Invalid lexical form
+        "a"^^xsd:boolean  "a"^^xsd:dateTime = Invalid lexical form
+      `,
+    });
+  });
+
   describe('with quoted triple operands like', () => {
     // Originates from: https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#sparql-compare
     runFuncTestTable({

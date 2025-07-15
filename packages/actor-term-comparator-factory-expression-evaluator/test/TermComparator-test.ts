@@ -184,11 +184,12 @@ describe('terms order', () => {
     await orderTestIsLower(DF.literal('b', dt1), DF.literal('a', dt2));
   });
 
+  // Should fallback to string comparison
   it('invalid literals comparison', async() => {
     await orderTestIsLower(dateTime('a'), dateTime('b'));
     await orderTestIsEqual(dateTime('a'), dateTime('a'));
     await orderTestIsLower(bool('a'), bool('b'));
-    await orderTestIsLower(bool('a'), dateTime('a'));
+    await orderTestIsEqual(bool('a'), dateTime('a'));
   });
 
   it('quoted triples comparison', async() => {
