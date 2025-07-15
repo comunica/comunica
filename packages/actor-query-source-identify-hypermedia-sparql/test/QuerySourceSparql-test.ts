@@ -27,13 +27,7 @@ describe('QuerySourceSparql', () => {
   let lastQuery: string;
   const mediatorHttp: any = {
     mediate: jest.fn((action: any) => {
-      let query: string;
-      if (action.init.method === 'GET') {
-        const encodedQuery = new URL(action.input).searchParams.get('query');
-        query = decodeURIComponent(encodedQuery!);
-      } else {
-        query = action.init.body.toString();
-      }
+      const query: string = action.init.method === 'GET' ? action.input : action.init.body.toString();
       lastQuery = query;
       return {
         headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
@@ -1050,6 +1044,50 @@ describe('QuerySourceSparql', () => {
             p: DF.namedNode('p3'),
           }),
         ]);
+    });
+
+    it('should perform HTTP GET request when url length is below forceGetIfUrlLengthBelow', async() => {
+      source = new QuerySourceSparql(
+        url,
+        ctx,
+        mediatorHttp,
+        'values',
+        DF,
+        AF,
+        BF,
+        false,
+        64,
+        10,
+        true,
+        true,
+        undefined,
+        undefined,
+        undefined,
+        300,
+      );
+
+      await expect(source.queryBindings(AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')), ctx))
+        .toEqualBindingsStream([
+          BF.fromRecord({
+            p: DF.namedNode('p1'),
+          }),
+          BF.fromRecord({
+            p: DF.namedNode('p2'),
+          }),
+          BF.fromRecord({
+            p: DF.namedNode('p3'),
+          }),
+        ]);
+
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
+      expect(mediatorHttp.mediate).toHaveBeenCalledWith({
+        context: ctx,
+        init: {
+          headers: expect.anything(),
+          method: 'GET',
+        },
+        input: `${url}?query=SELECT%20(COUNT(*)%20AS%20%3Fcount)%20WHERE%20%7B%20undefined%3As%20%3Fp%20undefined%3Ao.%20%7D`,
+      });
     });
 
     it('should return data when joining bindings', async() => {
