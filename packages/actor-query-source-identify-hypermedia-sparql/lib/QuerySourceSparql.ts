@@ -50,7 +50,6 @@ export class QuerySourceSparql implements IQuerySource {
   private readonly defaultGraph?: string;
   private readonly unionDefaultGraph: boolean;
   private readonly datasets?: IDataset[];
-  private readonly maxUrlLengthForGet: number;
   private readonly dataFactory: ComunicaDataFactory;
   private readonly algebraFactory: Factory;
   private readonly bindingsFactory: BindingsFactory;
@@ -76,7 +75,7 @@ export class QuerySourceSparql implements IQuerySource {
     defaultGraph?: string,
     unionDefaultGraph?: boolean,
     datasets?: IDataset[],
-    maxUrlLengthForGet = 600,
+    forceGetIfUrlLengthBelow = 600,
   ) {
     this.referenceValue = url;
     this.url = url;
@@ -93,6 +92,7 @@ export class QuerySourceSparql implements IQuerySource {
       ),
       prefixVariableQuestionMark: true,
       dataFactory,
+      forceGetIfUrlLengthBelow,
     });
     this.cache = cacheSize > 0 ?
       new LRUCache<string, QueryResultCardinality>({ max: cacheSize }) :
@@ -103,7 +103,6 @@ export class QuerySourceSparql implements IQuerySource {
     this.defaultGraph = defaultGraph;
     this.unionDefaultGraph = unionDefaultGraph ?? false;
     this.datasets = datasets;
-    this.maxUrlLengthForGet = maxUrlLengthForGet;
   }
 
   public async getSelectorShape(): Promise<FragmentSelectorShape> {
@@ -149,12 +148,7 @@ export class QuerySourceSparql implements IQuerySource {
   public queryQuads(operation: Algebra.Operation, context: IActionContext): AsyncIterator<RDF.Quad> {
     this.lastSourceContext = this.context.merge(context);
     const query: string = context.get(KeysInitQuery.queryString) ?? QuerySourceSparql.operationToQuery(operation);
-    const forceHttpGet: boolean = `${this.url}?query=${encodeURIComponent(query)}`.length < this.maxUrlLengthForGet;
-    const rawStream = this.endpointFetcher.fetchTriples(
-      this.url,
-      query,
-      forceHttpGet,
-    );
+    const rawStream = this.endpointFetcher.fetchTriples(this.url, query);
     this.lastSourceContext = undefined;
     const quads = wrap<any>(rawStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY });
     this.attachMetadata(quads, context, Promise.resolve(operation.input));
@@ -164,12 +158,7 @@ export class QuerySourceSparql implements IQuerySource {
   public queryBoolean(operation: Algebra.Ask, context: IActionContext): Promise<boolean> {
     this.lastSourceContext = this.context.merge(context);
     const query: string = context.get(KeysInitQuery.queryString) ?? QuerySourceSparql.operationToQuery(operation);
-    const forceHttpGet: boolean = `${this.url}?query=${encodeURIComponent(query)}`.length < this.maxUrlLengthForGet;
-    const promise = this.endpointFetcher.fetchAsk(
-      this.url,
-      query,
-      forceHttpGet,
-    );
+    const promise = this.endpointFetcher.fetchAsk(this.url, query);
     this.lastSourceContext = undefined;
     return promise;
   }
@@ -177,12 +166,7 @@ export class QuerySourceSparql implements IQuerySource {
   public queryVoid(operation: Algebra.Update, context: IActionContext): Promise<void> {
     this.lastSourceContext = this.context.merge(context);
     const query: string = context.get(KeysInitQuery.queryString) ?? QuerySourceSparql.operationToQuery(operation);
-    const forceHttpGet: boolean = `${this.url}?query=${encodeURIComponent(query)}`.length < this.maxUrlLengthForGet;
-    const promise = this.endpointFetcher.fetchUpdate(
-      this.url,
-      query,
-      forceHttpGet,
-    );
+    const promise = this.endpointFetcher.fetchUpdate(this.url, query);
     this.lastSourceContext = undefined;
     return promise;
   }
@@ -486,8 +470,7 @@ export class QuerySourceSparql implements IQuerySource {
     }
 
     this.lastSourceContext = this.context.merge(context);
-    const forceHttpGet: boolean = `${endpoint}?query=${encodeURIComponent(query)}`.length < this.maxUrlLengthForGet;
-    const rawStream = await this.endpointFetcher.fetchBindings(endpoint, query, forceHttpGet);
+    const rawStream = await this.endpointFetcher.fetchBindings(endpoint, query);
     this.lastSourceContext = undefined;
 
     return wrap<any>(rawStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY })
