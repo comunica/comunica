@@ -72,10 +72,10 @@ export class QuerySourceSparql implements IQuerySource {
     countTimeout: number,
     cardinalityCountQueries: boolean,
     cardinalityEstimateConstruction: boolean,
+    forceGetIfUrlLengthBelow: number,
     defaultGraph?: string,
     unionDefaultGraph?: boolean,
     datasets?: IDataset[],
-    forceGetIfUrlLengthBelow = 600,
   ) {
     this.referenceValue = url;
     this.url = url;
