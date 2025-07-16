@@ -585,6 +585,41 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             AF.createExistenceExpression(false, AF.createNop()),
           ) ]);
         });
+
+        describe('for extension functions', () => {
+          it('is not pushed down when comunica supports the function, but the endpoint doesnt', async() => {
+            const expression = AF.createNamedExpression(DF.namedNode('https://example.com/functions#mock'), [
+              AF.createTermExpression(DF.variable('a')),
+              AF.createTermExpression(DF.variable('b')),
+            ]);
+            const operation = AF.createNop();
+            const context = new ActionContext().set(KeysInitQuery.extensionFunctions, {
+              'https://example.com/functions#mock': async args => args[0],
+            });
+            expect(actor.filterPushdown(
+              expression,
+              actor.getExpressionVariables(expression),
+              operation,
+              AF,
+              context,
+            )).toEqual([ false, AF.createFilter(
+              operation,
+              expression,
+            ) ]);
+          });
+
+          it('is pushed down when comunica doesnt support', async() => {
+            const expression = AF.createNamedExpression(DF.namedNode('https://example.com/functions#mock'), [
+              AF.createTermExpression(DF.variable('a')),
+              AF.createTermExpression(DF.variable('b')),
+            ]);
+            const operation = AF.createNop();
+            expect(filterPushdown(
+              expression,
+              operation,
+            )).toEqual([ true, operation ]);
+          });
+        });
       });
 
       describe('for a join operation', () => {
