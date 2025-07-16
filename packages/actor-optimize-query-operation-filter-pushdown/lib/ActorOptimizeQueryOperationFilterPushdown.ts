@@ -271,9 +271,19 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     }
 
     // Don't push down (NOT) EXISTS
-    if (expression.type === Algebra.types.EXPRESSION &&
-      expression.expressionType === Algebra.expressionTypes.EXISTENCE) {
+    if (expression.expressionType === Algebra.expressionTypes.EXISTENCE) {
       return [ false, factory.createFilter(operation, expression) ];
+    }
+
+    // Don't push down extension functions comunica support, but the endpoint doesn't
+    if (expression.expressionType === Algebra.expressionTypes.NAMED && context.has(KeysInitQuery.extensionFunctions)) {
+      const comunicaFunctions = context.getSafe(KeysInitQuery.extensionFunctions);
+      // Empty mock, because I don't know how to access the metadata where these are stored
+      const endpointFunctions = {};
+      const functionName = expression.name.value;
+      if (functionName in comunicaFunctions && !(functionName in endpointFunctions)) {
+        return [ false, factory.createFilter(operation, expression) ];
+      }
     }
 
     switch (operation.type) {

@@ -1373,7 +1373,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       it('should write the service description when no query was defined', async() => {
-        // Override instance with a context that includes some extensionFunctions
+        // Overwrite instance with a context that includes some extensionFunctions
         instance = new HttpServiceSparqlEndpoint({
           ...argsDefault,
           workers: 4,
