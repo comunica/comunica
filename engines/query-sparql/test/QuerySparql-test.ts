@@ -1487,6 +1487,144 @@ SELECT ?option WHERE {
         await expect((arrayifyStream(await result.execute()))).resolves.toHaveLength(2);
       });
     });
+
+    describe('for a complex query', () => {
+      it('with VALUES and OPTIONAL', async() => {
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: `
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix wd: <http://www.wikidata.org/entity/> .
+
+wd:Q726 rdfs:label "horse"@en .
+wd:Q726 rdfs:label "Horse"@en-ca .
+wd:Q726 rdfs:label "cheval"@fr .
+`,
+              mediaType: 'text/turtle',
+              baseIRI: 'http://example.org/',
+            },
+          ],
+        };
+
+        await expect(engine.queryBindings(`
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?term WHERE {
+  VALUES ?term { wd:Q726 }
+  OPTIONAL {
+    ?term rdfs:label ?text
+    # Purposely choosing a language that is not in the data
+    FILTER(lang(?text) = "ab")
+  }
+}
+`, context)).resolves.toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('term'), DF.namedNode('http://www.wikidata.org/entity/Q726') ],
+          ]),
+        ]);
+      });
+
+      it('with VALUES and OPTIONAL with expression applying to both', async() => {
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: `
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix wd: <http://www.wikidata.org/entity/> .
+
+wd:Q726 rdfs:label "horse"@en .
+wd:Q726 rdfs:label "Horse"@en-ca .
+wd:Q726 rdfs:label "cheval"@fr .
+`,
+              mediaType: 'text/turtle',
+              baseIRI: 'http://example.org/',
+            },
+          ],
+        };
+
+        await expect(engine.queryBindings(`
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?term WHERE {
+  VALUES ?term { wd:Q726 }
+  OPTIONAL {
+    ?term rdfs:label ?text
+    # Purposely choosing a language that is not in the data
+    FILTER(lang(?text) = "ab" && STR(?term) = "http://www.wikidata.org/entity/Q726" )
+  }
+}
+`, context)).resolves.toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('term'), DF.namedNode('http://www.wikidata.org/entity/Q726') ],
+          ]),
+        ]);
+      });
+
+      it('with OPTIONALs and BIND COALESCE', async() => {
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: `
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix wd: <http://www.wikidata.org/entity/> .
+
+wd:Q726 rdfs:label "horse"@en .
+wd:Q726 rdfs:label "Horse"@en-ca .
+wd:Q726 rdfs:label "cheval"@fr .
+`,
+              mediaType: 'text/turtle',
+              baseIRI: 'http://example.org/',
+            },
+          ],
+        };
+
+        await expect(engine.queryBindings(`
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT DISTINCT ?term ?textEN ?textENX ?label
+WHERE {
+  {
+    SELECT ?term (MIN(?text) AS ?textEN)
+    WHERE {
+      VALUES ?term { wd:Q726 }
+      OPTIONAL {
+        ?term rdfs:label ?text
+        # Purposely choosing a language that is not in the data
+        FILTER(lang(?text) = "ab")
+      }
+    }
+    GROUP BY ?term
+  }
+  {
+    SELECT ?term (MIN(?text) AS ?textENX)
+    WHERE {
+      VALUES ?term { wd:Q726 }
+      OPTIONAL {
+        ?term rdfs:label ?text
+        FILTER(langMatches(lang(?text), "en"))
+      }
+    }
+    GROUP BY ?term
+  }
+  BIND(
+   COALESCE(
+      ?textEN, ?textENX, STR(?term)
+    )
+  AS ?label)
+}
+`, context)).resolves.toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('term'), DF.namedNode('http://www.wikidata.org/entity/Q726') ],
+            [ DF.variable('textENX'), DF.literal('Horse', 'en-ca') ],
+            [ DF.variable('label'), DF.literal('Horse', 'en-ca') ],
+          ]),
+        ]);
+      });
+    });
   });
 
   // We skip these tests in browsers due to CORS issues
