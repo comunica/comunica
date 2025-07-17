@@ -216,11 +216,13 @@ describe('evaluation of \'<\'', () => {
     runFuncTestTable({
       ...config,
       errorTable: `
-        "a"^^xsd:dateTime "b"^^xsd:dateTime = Invalid lexical form
-        "a"^^xsd:dateTime "a"^^xsd:dateTime = Invalid lexical form
-        "a"^^xsd:boolean  "b"^^xsd:boolean  = Invalid lexical form
-        "a"^^xsd:boolean  "a"^^xsd:dateTime = Invalid lexical form
-        "a"^^xsd:boolean  "true"^^xsd:boolean = Invalid lexical form
+        "a"^^xsd:dateTime    "b"^^xsd:dateTime   = Invalid lexical form
+        "a"^^xsd:dateTime    "a"^^xsd:dateTime   = Invalid lexical form
+        "a"^^xsd:boolean     "b"^^xsd:boolean    = Invalid lexical form
+        "a"^^xsd:boolean     "a"^^xsd:dateTime   = Invalid lexical form
+        "a"^^xsd:boolean     "true"^^xsd:boolean = Invalid lexical form
+        earlyN               "a"^^xsd:dateTime   = Invalid lexical form
+        "true"^^xsd:boolean  "a"^^xsd:dateTime   = Invalid lexical form
       `,
     });
   });
@@ -229,11 +231,13 @@ describe('evaluation of \'<\'', () => {
     runFuncTestTable({
       ...config,
       testTable: `
-        "a"^^xsd:dateTime "b"^^xsd:dateTime = true
-        "a"^^xsd:dateTime "a"^^xsd:dateTime = false
-        "a"^^xsd:boolean  "b"^^xsd:boolean  = true
-        "a"^^xsd:boolean  "a"^^xsd:dateTime = false
-        "a"^^xsd:boolean  "true"^^xsd:boolean = true
+        "a"^^xsd:dateTime    "b"^^xsd:dateTime   = true
+        "a"^^xsd:dateTime    "a"^^xsd:dateTime   = false
+        "a"^^xsd:boolean     "b"^^xsd:boolean    = true
+        "a"^^xsd:boolean     "a"^^xsd:dateTime   = false
+        "a"^^xsd:boolean     "true"^^xsd:boolean = true
+        earlyN               "a"^^xsd:dateTime   = true
+        "true"^^xsd:boolean  "a"^^xsd:dateTime   = false
       `,
       config: new ActionContext().set(KeysInitQuery.functionLesserThenNonLexicalBehaviour, 1),
     });
