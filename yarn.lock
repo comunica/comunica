@@ -760,10 +760,10 @@
   resolved "https://registry.npmjs.org/@istanbuljs/schema/-/schema-0.1.3.tgz"
   integrity sha512-ZXRY4jNvVgSVQ8DL3LTcakaAtXwTVUxE81hslsyD2AtoXW/wVob10HkOJ1X/pAlcI7D+2YoZKg5do8G/w6RYgA==
 
-"@jbr-experiment/bsbm@^5.2.3":
-  version "5.2.3"
-  resolved "https://registry.npmjs.org/@jbr-experiment/bsbm/-/bsbm-5.2.3.tgz"
-  integrity sha512-DhLUpAxdm6rlV/3qk+QkOpPyORwYTnPg8WaV228ihh1le9nIKfNqMNDyfyD+T2PS3aQHeAGIyCxXODmSG5Bh+A==
+"@jbr-experiment/bsbm@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@jbr-experiment/bsbm/-/bsbm-6.0.0.tgz#01d0d6eb393a601e63cb99fc5b98da02c47de2ce"
+  integrity sha512-fx/nbjvOFEJgNMaGE66BQGDIUbqf7qwjIdGKcuOGckcsZheYZLrE1MAMy0yTavlgw+OHmHdkOfRN/3JOkf2cBQ==
   dependencies:
     "@types/fs-extra" "^9.0.11"
     "@types/yargs" "^17.0.0"
