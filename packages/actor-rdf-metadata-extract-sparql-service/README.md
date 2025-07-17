@@ -28,6 +28,7 @@ This actor adds the following entries to the metadata object.
 * `inputFormats`: List of `http://www.w3.org/ns/sparql-service-description#inputFormat` when available.
 * `resultFormats`: List of `http://www.w3.org/ns/sparql-service-description#resultFormat` when available.
 * `supportedLanguages`: List of `http://www.w3.org/ns/sparql-service-description#supportedLanguage` when available.
+* `extensionFunctions`: List of `http://www.w3.org/ns/sparql-service-description#extensionFunction` when available.
 
 ## Configure
 
