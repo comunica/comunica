@@ -769,15 +769,15 @@
     "@types/yargs" "^17.0.0"
     fs-extra "^10.0.0"
 
-"@jbr-experiment/sparql-custom@^5.3.0":
-  version "5.3.0"
-  resolved "https://registry.npmjs.org/@jbr-experiment/sparql-custom/-/sparql-custom-5.3.0.tgz"
-  integrity sha512-HZRzCCEzz0ni3VCwzIdMko7+6EKxJ8mGXGbb3VuXuKb5DABMVERtVE0kOiCXuA30ebUt26TNrzI7g+2HYWOoaw==
+"@jbr-experiment/sparql-custom@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@jbr-experiment/sparql-custom/-/sparql-custom-6.0.0.tgz#814cd5c86a9ee2fcf2b059ce5d1e6c6a795b183c"
+  integrity sha512-FmzBwYu+AEuYdE9f1liQHQoNV7qXekKmxAflABVen+PvhUt04kCzKCTNnYdHH+nrXKQ6jqZ6dWS4AWiz4FpdIA==
   dependencies:
     "@types/fs-extra" "^9.0.11"
     "@types/yargs" "^17.0.0"
     fs-extra "^10.0.0"
-    sparql-benchmark-runner "^4.2.0"
+    sparql-benchmark-runner "^5.0.0"
 
 "@jbr-experiment/watdiv@^5.3.0":
   version "5.3.0"
@@ -12034,6 +12034,15 @@ sparql-benchmark-runner@^4.2.0:
   version "4.2.0"
   resolved "https://registry.npmjs.org/sparql-benchmark-runner/-/sparql-benchmark-runner-4.2.0.tgz"
   integrity sha512-HwLRV9qePW/4CVqsH8y22gfsVqIl9IIJB8CyfQdvhV1GkZsWdijJ9HHg4KEK9URZ7RInE6pwUOzvjLRdYnaFYA==
+  dependencies:
+    fetch-sparql-endpoint "^5.1.0"
+    rdf-string "^1.0.0"
+    yargs "^17.0.0"
+
+sparql-benchmark-runner@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/sparql-benchmark-runner/-/sparql-benchmark-runner-5.0.0.tgz#ac4bfdc58e65f03b9805809044d116c067b23f19"
+  integrity sha512-UdxG/pCLQqRgo2DMctLRY3nxXknSVR8ofW4VSx6CaynTpBV4hpXE+5MYgSjPYIJWNao7prrSOgGmKE2P3OSTxA==
   dependencies:
     fetch-sparql-endpoint "^5.1.0"
     rdf-string "^1.0.0"
