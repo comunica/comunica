@@ -1,11 +1,9 @@
 /* eslint-disable jest/prefer-spy-on,jest/no-mocks-import */
 import type { Cluster } from 'node:cluster';
 import { PassThrough } from 'node:stream';
-import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
-import { ActionContext } from '@comunica/core';
+import { KeysQueryOperation } from '@comunica/context-entries';
 import { LoggerPretty } from '@comunica/logger-pretty';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
-import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { Readable } from 'readable-stream';
 
@@ -1373,20 +1371,6 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       it('should write the service description when no query was defined', async() => {
-        // Overwrite instance with a context that includes some extensionFunctions
-        instance = new HttpServiceSparqlEndpoint({
-          ...argsDefault,
-          workers: 4,
-          context: new ActionContext().set(KeysInitQuery.extensionFunctions, {
-            'https://example.org/functions#args0': async(args: RDF.Term[]) => {
-              return args[0];
-            },
-            'https://example.org/functions#args1': async(args: RDF.Term[]) => {
-              return args[1];
-            },
-          }),
-        });
-
         // Create spies
         const engine = await new QueryEngineFactoryBase().create();
         const spyWriteServiceDescription = jest.spyOn(instance, 'writeServiceDescription');
@@ -1440,8 +1424,6 @@ describe('HttpServiceSparqlEndpoint', () => {
           quad(s, `${sd}resultFormat`, 'TWO'),
           quad(s, `${sd}resultFormat`, 'THREE'),
           quad(s, `${sd}resultFormat`, 'FOUR'),
-          quad(s, `${sd}extensionFunction`, 'https://example.org/functions#args0'),
-          quad(s, `${sd}extensionFunction`, 'https://example.org/functions#args1'),
         ]));
       });
 

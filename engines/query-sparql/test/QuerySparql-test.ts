@@ -538,6 +538,25 @@ describe('System test: QuerySparql', () => {
     }`, { sources: [ store ]});
         await expect((arrayifyStream(await result.execute()))).resolves.toHaveLength(1);
       });
+
+      it('RDFJS Dataset', async() => {
+        const store = RdfStore.createDefault();
+        store.addQuad(DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('s')));
+        store.addQuad(DF.quad(DF.namedNode('l'), DF.namedNode('m'), DF.namedNode('n')));
+        const dataset = store.asDataset();
+        let result = <QueryBindings> await engine.query(`SELECT * WHERE {
+      ?s ?p ?s.
+    }`, { sources: [ dataset ]});
+        const datasetBindings = await arrayifyStream(await result.execute());
+        expect(datasetBindings).toHaveLength(1);
+
+        // Compare with result of store
+        result = <QueryBindings> await engine.query(`SELECT * WHERE {
+      ?s ?p ?s.
+    }`, { sources: [ store ]});
+        const storeBindings = await arrayifyStream(await result.execute());
+        expect(storeBindings).toEqualBindingsArray(datasetBindings);
+      });
     });
 
     describe('two-pattern query on a raw RDF document', () => {
@@ -1466,6 +1485,144 @@ SELECT ?option WHERE {
       ?s ?p ?o.
     }`, { sources: [ store ], unionDefaultGraph: true });
         await expect((arrayifyStream(await result.execute()))).resolves.toHaveLength(2);
+      });
+    });
+
+    describe('for a complex query', () => {
+      it('with VALUES and OPTIONAL', async() => {
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: `
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix wd: <http://www.wikidata.org/entity/> .
+
+wd:Q726 rdfs:label "horse"@en .
+wd:Q726 rdfs:label "Horse"@en-ca .
+wd:Q726 rdfs:label "cheval"@fr .
+`,
+              mediaType: 'text/turtle',
+              baseIRI: 'http://example.org/',
+            },
+          ],
+        };
+
+        await expect(engine.queryBindings(`
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?term WHERE {
+  VALUES ?term { wd:Q726 }
+  OPTIONAL {
+    ?term rdfs:label ?text
+    # Purposely choosing a language that is not in the data
+    FILTER(lang(?text) = "ab")
+  }
+}
+`, context)).resolves.toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('term'), DF.namedNode('http://www.wikidata.org/entity/Q726') ],
+          ]),
+        ]);
+      });
+
+      it('with VALUES and OPTIONAL with expression applying to both', async() => {
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: `
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix wd: <http://www.wikidata.org/entity/> .
+
+wd:Q726 rdfs:label "horse"@en .
+wd:Q726 rdfs:label "Horse"@en-ca .
+wd:Q726 rdfs:label "cheval"@fr .
+`,
+              mediaType: 'text/turtle',
+              baseIRI: 'http://example.org/',
+            },
+          ],
+        };
+
+        await expect(engine.queryBindings(`
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?term WHERE {
+  VALUES ?term { wd:Q726 }
+  OPTIONAL {
+    ?term rdfs:label ?text
+    # Purposely choosing a language that is not in the data
+    FILTER(lang(?text) = "ab" && STR(?term) = "http://www.wikidata.org/entity/Q726" )
+  }
+}
+`, context)).resolves.toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('term'), DF.namedNode('http://www.wikidata.org/entity/Q726') ],
+          ]),
+        ]);
+      });
+
+      it('with OPTIONALs and BIND COALESCE', async() => {
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: `
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix wd: <http://www.wikidata.org/entity/> .
+
+wd:Q726 rdfs:label "horse"@en .
+wd:Q726 rdfs:label "Horse"@en-ca .
+wd:Q726 rdfs:label "cheval"@fr .
+`,
+              mediaType: 'text/turtle',
+              baseIRI: 'http://example.org/',
+            },
+          ],
+        };
+
+        await expect(engine.queryBindings(`
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT DISTINCT ?term ?textEN ?textENX ?label
+WHERE {
+  {
+    SELECT ?term (MIN(?text) AS ?textEN)
+    WHERE {
+      VALUES ?term { wd:Q726 }
+      OPTIONAL {
+        ?term rdfs:label ?text
+        # Purposely choosing a language that is not in the data
+        FILTER(lang(?text) = "ab")
+      }
+    }
+    GROUP BY ?term
+  }
+  {
+    SELECT ?term (MIN(?text) AS ?textENX)
+    WHERE {
+      VALUES ?term { wd:Q726 }
+      OPTIONAL {
+        ?term rdfs:label ?text
+        FILTER(langMatches(lang(?text), "en"))
+      }
+    }
+    GROUP BY ?term
+  }
+  BIND(
+   COALESCE(
+      ?textEN, ?textENX, STR(?term)
+    )
+  AS ?label)
+}
+`, context)).resolves.toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('term'), DF.namedNode('http://www.wikidata.org/entity/Q726') ],
+            [ DF.variable('textENX'), DF.literal('Horse', 'en-ca') ],
+            [ DF.variable('label'), DF.literal('Horse', 'en-ca') ],
+          ]),
+        ]);
       });
     });
   });

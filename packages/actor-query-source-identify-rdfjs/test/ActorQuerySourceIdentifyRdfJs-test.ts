@@ -41,10 +41,31 @@ describe('ActorQuerySourceIdentifyRdfJs', () => {
   describe('An ActorQuerySourceIdentifyRdfJs instance', () => {
     let actor: ActorQuerySourceIdentifyRdfJs;
     let source: RDF.Source;
+    let dataset: RDF.DatasetCore;
 
     beforeEach(() => {
       actor = new ActorQuerySourceIdentifyRdfJs({ name: 'actor', bus, mediatorMergeBindingsContext });
       source = { match: () => <any> null };
+
+      // Mock of empty dataset
+      dataset = {
+        [Symbol.iterator]() {
+          return [][Symbol.iterator]();
+        },
+        match(_subject?, _predicate?, _object?, _graph?) {
+          return this;
+        },
+        add(_quad: RDF.Quad): RDF.DatasetCore {
+          throw new Error('Add operation not supported');
+        },
+        delete(_quad: RDF.Quad): RDF.DatasetCore {
+          throw new Error('Delete operation not supported');
+        },
+        has(_quad: RDF.Quad): boolean {
+          return false;
+        },
+        size: 0,
+      };
     });
 
     describe('test', () => {
@@ -75,6 +96,13 @@ describe('ActorQuerySourceIdentifyRdfJs', () => {
           context: new ActionContext(),
         })).resolves.toFailTest(`actor received an invalid rdfjs query source.`);
       });
+
+      it('should test with dataset', async() => {
+        await expect(actor.test({
+          querySourceUnidentified: { type: 'rdfjs', value: dataset },
+          context: new ActionContext(),
+        })).resolves.toPassTestVoid();
+      });
     });
 
     describe('run', () => {
@@ -98,6 +126,16 @@ describe('ActorQuerySourceIdentifyRdfJs', () => {
         expect(ret.querySource.source).toBeInstanceOf(QuerySourceRdfJs);
         expect(ret.querySource.context).not.toBe(contextIn);
         expect(ret.querySource.context).toBe(contextSource);
+      });
+
+      it('should get the source in case of a dataset', async() => {
+        const contextIn = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
+        const ret = await actor.run({
+          querySourceUnidentified: { type: 'rdfjs', value: dataset },
+          context: contextIn,
+        });
+        expect(ret.querySource.source).toBeInstanceOf(QuerySourceRdfJs);
+        expect(ret.querySource.context).not.toBe(contextIn);
       });
     });
   });

@@ -8,9 +8,9 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, FragmentSelectorShape, IActionContext, IQuerySourceWrapper } from '@comunica/types';
-import { doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-query-operation';
+import { doesShapeAcceptOperation, getOperationSource, getExpressionVariables } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
-import { mapTermsNested, uniqTerms } from 'rdf-terms';
+import { mapTermsNested } from 'rdf-terms';
 import { Factory, Algebra, Util } from 'sparqlalgebrajs';
 
 /**
@@ -85,7 +85,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
 
           // For all filter expressions in the operation,
           // we attempt to push them down as deep as possible into the algebra.
-          const variables = self.getExpressionVariables(op.expression);
+          const variables = getExpressionVariables(op.expression);
           const [ isModified, result ] = self
             .filterPushdown(op.expression, variables, op.input, factory, action.context);
           if (isModified) {
@@ -190,30 +190,6 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
       [Algebra.types.SERVICE]: sourceAdder,
     });
     return [ ...sources ];
-  }
-
-  /**
-   * Get all variables inside the given expression.
-   * @param expression An expression.
-   * @return An array of variables, or undefined if the expression is unsupported for pushdown.
-   */
-  public getExpressionVariables(expression: Algebra.Expression): RDF.Variable[] {
-    switch (expression.expressionType) {
-      case Algebra.expressionTypes.AGGREGATE:
-      case Algebra.expressionTypes.WILDCARD:
-        throw new Error(`Getting expression variables is not supported for ${expression.expressionType}`);
-      case Algebra.expressionTypes.EXISTENCE:
-        return Util.inScopeVariables(expression.input);
-      case Algebra.expressionTypes.NAMED:
-        return [];
-      case Algebra.expressionTypes.OPERATOR:
-        return uniqTerms(expression.args.flatMap(arg => this.getExpressionVariables(arg)));
-      case Algebra.expressionTypes.TERM:
-        if (expression.term.termType === 'Variable') {
-          return [ expression.term ];
-        }
-        return [];
-    }
   }
 
   protected getOverlappingOperations(

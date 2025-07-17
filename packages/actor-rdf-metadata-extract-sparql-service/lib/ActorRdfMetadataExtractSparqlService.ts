@@ -13,6 +13,8 @@ import { resolve as resolveIri } from 'relative-to-absolute-iri';
  * Comunica RDF metadata extract actor for SPARQL Service Descriptions.
  */
 export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtract {
+  public static SD = 'http://www.w3.org/ns/sparql-service-description#';
+
   private readonly inferHttpsEndpoint: boolean;
 
   public constructor(args: IActorRdfMetadataExtractSparqlServiceArgs) {
@@ -49,10 +51,8 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
           quad.subject.termType === 'BlankNode' ||
           acceptSubjectUris.has(quad.subject.value)
         ) {
-          const sd = 'http://www.w3.org/ns/sparql-service-description#';
-
           switch (quad.predicate.value) {
-            case `${sd}endpoint`:
+            case `${ActorRdfMetadataExtractSparqlService.SD}endpoint`:
               // The VoID specification defines this as IRI, but does not specify whether or not it can be a literal.
               // When the IRI is a literal, it can be relative, and needs to be resolved to absolute value.
               metadata.sparqlService = quad.object.termType === 'Literal' ?
@@ -63,29 +63,29 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
                 metadata.sparqlService = metadata.sparqlService.replace(/^http:/u, 'https:');
               }
               break;
-            case `${sd}defaultDataset`:
+            case `${ActorRdfMetadataExtractSparqlService.SD}defaultDataset`:
               metadata.defaultDataset = quad.object.value;
               break;
-            case `${sd}defaultGraph`:
+            case `${ActorRdfMetadataExtractSparqlService.SD}defaultGraph`:
               metadata.defaultGraph = quad.object.value;
               break;
-            case `${sd}inputFormat`:
+            case `${ActorRdfMetadataExtractSparqlService.SD}inputFormat`:
               inputFormats.add(quad.object.value);
               break;
-            case `${sd}resultFormat`:
+            case `${ActorRdfMetadataExtractSparqlService.SD}resultFormat`:
               resultFormats.add(quad.object.value);
               break;
-            case `${sd}supportedLanguage`:
+            case `${ActorRdfMetadataExtractSparqlService.SD}supportedLanguage`:
               supportedLanguages.add(quad.object.value);
               break;
-            case `${sd}feature`:
-              if (quad.object.value === `${sd}UnionDefaultGraph`) {
+            case `${ActorRdfMetadataExtractSparqlService.SD}feature`:
+              if (quad.object.value === `${ActorRdfMetadataExtractSparqlService.SD}UnionDefaultGraph`) {
                 metadata.unionDefaultGraph = true;
-              } else if (quad.object.value === `${sd}BasicFederatedQuery`) {
+              } else if (quad.object.value === `${ActorRdfMetadataExtractSparqlService.SD}BasicFederatedQuery`) {
                 metadata.basicFederatedQuery = true;
               }
               break;
-            case `${sd}extensionFunction`:
+            case `${ActorRdfMetadataExtractSparqlService.SD}extensionFunction`:
               extensionFunctions.add(quad.object.value);
               break;
           }

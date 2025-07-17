@@ -72,6 +72,7 @@ export class QuerySourceSparql implements IQuerySource {
     countTimeout: number,
     cardinalityCountQueries: boolean,
     cardinalityEstimateConstruction: boolean,
+    forceGetIfUrlLengthBelow: number,
     defaultGraph?: string,
     unionDefaultGraph?: boolean,
     datasets?: IDataset[],
@@ -91,6 +92,7 @@ export class QuerySourceSparql implements IQuerySource {
       ),
       prefixVariableQuestionMark: true,
       dataFactory,
+      forceGetIfUrlLengthBelow,
     });
     this.cache = cacheSize > 0 ?
       new LRUCache<string, QueryResultCardinality>({ max: cacheSize }) :
@@ -145,10 +147,8 @@ export class QuerySourceSparql implements IQuerySource {
 
   public queryQuads(operation: Algebra.Operation, context: IActionContext): AsyncIterator<RDF.Quad> {
     this.lastSourceContext = this.context.merge(context);
-    const rawStream = this.endpointFetcher.fetchTriples(
-      this.url,
-      context.get(KeysInitQuery.queryString) ?? QuerySourceSparql.operationToQuery(operation),
-    );
+    const query: string = context.get(KeysInitQuery.queryString) ?? QuerySourceSparql.operationToQuery(operation);
+    const rawStream = this.endpointFetcher.fetchTriples(this.url, query);
     this.lastSourceContext = undefined;
     const quads = wrap<any>(rawStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY });
     this.attachMetadata(quads, context, Promise.resolve(operation.input));
@@ -157,20 +157,16 @@ export class QuerySourceSparql implements IQuerySource {
 
   public queryBoolean(operation: Algebra.Ask, context: IActionContext): Promise<boolean> {
     this.lastSourceContext = this.context.merge(context);
-    const promise = this.endpointFetcher.fetchAsk(
-      this.url,
-      context.get(KeysInitQuery.queryString) ?? QuerySourceSparql.operationToQuery(operation),
-    );
+    const query: string = context.get(KeysInitQuery.queryString) ?? QuerySourceSparql.operationToQuery(operation);
+    const promise = this.endpointFetcher.fetchAsk(this.url, query);
     this.lastSourceContext = undefined;
     return promise;
   }
 
   public queryVoid(operation: Algebra.Update, context: IActionContext): Promise<void> {
     this.lastSourceContext = this.context.merge(context);
-    const promise = this.endpointFetcher.fetchUpdate(
-      this.url,
-      context.get(KeysInitQuery.queryString) ?? QuerySourceSparql.operationToQuery(operation),
-    );
+    const query: string = context.get(KeysInitQuery.queryString) ?? QuerySourceSparql.operationToQuery(operation);
+    const promise = this.endpointFetcher.fetchUpdate(this.url, query);
     this.lastSourceContext = undefined;
     return promise;
   }

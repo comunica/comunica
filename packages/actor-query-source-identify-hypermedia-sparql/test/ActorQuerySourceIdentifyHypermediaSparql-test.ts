@@ -57,6 +57,7 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
         countTimeout: 3_000,
         cardinalityCountQueries: true,
         cardinalityEstimateConstruction: false,
+        forceGetIfUrlLengthBelow: 600,
       });
     });
 

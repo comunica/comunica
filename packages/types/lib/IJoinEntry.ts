@@ -22,6 +22,11 @@ export interface IJoinEntry {
    * This is for example set in bind-join-like actors.
    */
   operationModified?: true;
+  /**
+   * If pushing the join into the given operation must be preferred over using the output stream directly.
+   * This will for example prefer bind-join-like actors.
+   */
+  operationRequired?: true;
 }
 
 /**
