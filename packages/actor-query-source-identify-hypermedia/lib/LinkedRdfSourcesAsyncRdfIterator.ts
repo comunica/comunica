@@ -31,7 +31,6 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
   // eslint-disable-next-line unicorn/no-useless-undefined
   private accumulatedMetadata: Promise<MetadataBindings | undefined> = Promise.resolve(undefined);
   private preflightMetadata: Promise<MetadataBindings> | undefined;
-  protected wasForcefullyClosed = false;
 
   public constructor(
     cacheSize: number,
@@ -172,8 +171,10 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
   }
 
   protected canStartNewIterator(): boolean {
+    // Will this part not always be true?: (!this.canStartNewIteratorConsiderReadable() || !this.readable)
+    // Then this will always give back true at some point, as in this will never be the reason traversal terminates
     return (this.currentIterators.length + this.iteratorsPendingCreation + this.iteratorsPendingTermination) <
-      this.maxIterators && !this.wasForcefullyClosed &&(!this.canStartNewIteratorConsiderReadable() || !this.readable);
+      this.maxIterators && (!this.canStartNewIteratorConsiderReadable() || !this.readable);
   }
 
   protected canStartNewIteratorConsiderReadable(): boolean {
@@ -327,7 +328,6 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
                     nextSourceState.source,
                   );
                 }
-
                 this.iteratorsPendingCreation--;
                 this.startIterator(nextSourceState);
               })

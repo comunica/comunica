@@ -36,6 +36,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   private readonly dataFactory: ComunicaDataFactory;
   private readonly algebraFactory: Factory;
   private linkQueue: Promise<ILinkQueue> | undefined;
+  protected wasForcefullyClosed = false;
 
   public constructor(
     cacheSize: number,
@@ -130,8 +131,8 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     // Also allow sub-iterators to be started if the aggregated store has at least one running iterator.
     // We need this because there are cases where these running iterators will be consumed before this linked iterator.
     return (!this.wasForcefullyClosed &&
-      // eslint-disable-next-line ts/prefer-nullish-coalescing
-      (this.aggregatedStore && this.aggregatedStore.hasRunningIterators())) || super.canStartNewIterator();
+      (this.aggregatedStore !== undefined && this.aggregatedStore.hasRunningIterators())) &&
+      super.canStartNewIterator();
   }
 
   protected override canStartNewIteratorConsiderReadable(): boolean {
