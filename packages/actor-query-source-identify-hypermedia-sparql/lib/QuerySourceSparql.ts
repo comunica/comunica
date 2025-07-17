@@ -47,6 +47,7 @@ export class QuerySourceSparql implements IQuerySource {
   private readonly countTimeout: number;
   private readonly cardinalityCountQueries: boolean;
   private readonly cardinalityEstimateConstruction: boolean;
+  private readonly estimateAskResults: boolean;
   private readonly defaultGraph?: string;
   private readonly unionDefaultGraph: boolean;
   private readonly datasets?: IDataset[];
@@ -72,6 +73,7 @@ export class QuerySourceSparql implements IQuerySource {
     countTimeout: number,
     cardinalityCountQueries: boolean,
     cardinalityEstimateConstruction: boolean,
+    estimateAskResults: boolean,
     forceGetIfUrlLengthBelow: number,
     defaultGraph?: string,
     unionDefaultGraph?: boolean,
@@ -100,6 +102,7 @@ export class QuerySourceSparql implements IQuerySource {
     this.countTimeout = countTimeout;
     this.cardinalityCountQueries = cardinalityCountQueries;
     this.cardinalityEstimateConstruction = cardinalityEstimateConstruction;
+    this.estimateAskResults = estimateAskResults;
     this.defaultGraph = defaultGraph;
     this.unionDefaultGraph = unionDefaultGraph ?? false;
     this.datasets = datasets;
@@ -155,7 +158,11 @@ export class QuerySourceSparql implements IQuerySource {
     return quads;
   }
 
-  public queryBoolean(operation: Algebra.Ask, context: IActionContext): Promise<boolean> {
+  public async queryBoolean(operation: Algebra.Ask, context: IActionContext): Promise<boolean> {
+    if (this.estimateAskResults) {
+      const cardinalityEstimate = await this.estimateOperationCardinality(operation.input);
+      return cardinalityEstimate.value > 0;
+    }
     this.lastSourceContext = this.context.merge(context);
     const query: string = context.get(KeysInitQuery.queryString) ?? QuerySourceSparql.operationToQuery(operation);
     const promise = this.endpointFetcher.fetchAsk(this.url, query);

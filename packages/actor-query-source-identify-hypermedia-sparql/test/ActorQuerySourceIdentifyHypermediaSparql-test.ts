@@ -57,6 +57,7 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
         countTimeout: 3_000,
         cardinalityCountQueries: true,
         cardinalityEstimateConstruction: false,
+        estimateAskResults: false,
         forceGetIfUrlLengthBelow: 600,
       });
     });
@@ -121,6 +122,7 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           mediatorMergeBindingsContext,
           cardinalityCountQueries: true,
           cardinalityEstimateConstruction: false,
+          estimateAskResults: false,
         });
         await expect(actor.test({ url: 'URL/sparql', metadata: {}, quads: <any> null, context })).resolves
           .toFailTest('Actor actor could not detect a SPARQL service description or URL ending on /sparql.');
@@ -138,6 +140,7 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           mediatorMergeBindingsContext,
           cardinalityCountQueries: true,
           cardinalityEstimateConstruction: false,
+          estimateAskResults: false,
         });
         await expect(actor
           .test({ url: 'URL/sparql', metadata: {}, quads: <any> null, forceSourceType: 'file', context }))
@@ -156,6 +159,7 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           mediatorMergeBindingsContext,
           cardinalityCountQueries: true,
           cardinalityEstimateConstruction: false,
+          estimateAskResults: false,
         });
         await expect(actor.test({
           url: 'URL',
@@ -178,6 +182,7 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           mediatorMergeBindingsContext,
           cardinalityCountQueries: true,
           cardinalityEstimateConstruction: false,
+          estimateAskResults: false,
         });
         await expect(actor.test({
           url: 'URL',

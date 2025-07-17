@@ -31,6 +31,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
   public readonly countTimeout: number;
   public readonly cardinalityCountQueries: boolean;
   public readonly cardinalityEstimateConstruction: boolean;
+  public readonly estimateAskResults: boolean;
   public readonly forceGetIfUrlLengthBelow: number;
 
   public constructor(args: IActorQuerySourceIdentifyHypermediaSparqlArgs) {
@@ -67,6 +68,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
       // Cardinalities can be infinity when we're querying just a single source.
       this.cardinalityCountQueries && !isSingularSource,
       this.cardinalityEstimateConstruction,
+      this.estimateAskResults,
       this.forceGetIfUrlLengthBelow,
       action.metadata.defaultGraph,
       action.metadata.unionDefaultGraph,
@@ -129,6 +131,12 @@ export interface IActorQuerySourceIdentifyHypermediaSparqlArgs extends IActorQue
    * @default {false}
    */
   cardinalityEstimateConstruction: boolean;
+  /**
+   * If ask query results should be produced locally using cardinality estimates.
+   * This may result in inaccurate source assignment for query operations when using ask queries.
+   * @default {false}
+   */
+  estimateAskResults: boolean;
   /**
    * Force an HTTP GET instead of default POST (when forceHttpGet is false)
    * when the url length (including encoded query) is below this number.
