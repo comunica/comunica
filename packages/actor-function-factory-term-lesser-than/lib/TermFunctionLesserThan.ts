@@ -1,15 +1,7 @@
 import type { ITermFunction } from '@comunica/bus-function-factory';
 import { TermFunctionBase } from '@comunica/bus-function-factory';
-import { KeysExpressionEvaluator } from '@comunica/context-entries';
+import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import type { IInternalEvaluator } from '@comunica/types';
-import type {
-  BooleanLiteral,
-  Term,
-  DayTimeDurationLiteral,
-  Quad,
-  TimeLiteral,
-  YearMonthDurationLiteral,
-} from '@comunica/utils-expression-evaluator';
 import {
   bool,
   dayTimeDurationsToSeconds,
@@ -17,11 +9,26 @@ import {
   defaultedDateTimeRepresentation,
   defaultedDayTimeDurationRepresentation,
   defaultedYearMonthDurationRepresentation,
+  NonLexicalLiteral,
   SparqlOperator,
   toUTCDate,
   TypeURL,
   yearMonthDurationsToMonths,
 } from '@comunica/utils-expression-evaluator';
+import type {
+  BooleanLiteral,
+  Term,
+  DayTimeDurationLiteral,
+  Quad,
+  BlankNode,
+  Literal,
+  TimeLiteral,
+  YearMonthDurationLiteral,
+  LangStringLiteral,
+} from '@comunica/utils-expression-evaluator';
+import type * as E from '@comunica/utils-expression-evaluator/lib/expressions/index';
+import * as C from '@comunica/utils-expression-evaluator/lib/util/Consts';
+import * as Err from '@comunica/utils-expression-evaluator/lib/util/Errors';
 
 export class TermFunctionLesserThan extends TermFunctionBase {
   public constructor(private readonly equalityFunction: ITermFunction) {
@@ -31,11 +38,43 @@ export class TermFunctionLesserThan extends TermFunctionBase {
       overloads: declare(SparqlOperator.LT)
         .numberTest(() => (left, right) => left < right)
         .stringTest(() => (left, right) => left.localeCompare(right) === -1)
-        .booleanTest(() => (left, right) => left < right)
-        .dateTimeTest(exprEval => (left, right) =>
-          toUTCDate(left, exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone)).getTime() <
-          toUTCDate(right, exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone)).getTime())
-        .copy({
+        .set(
+          [ TypeURL.RDF_LANG_STRING, TypeURL.RDF_LANG_STRING ],
+          () => ([ left, right ]: LangStringLiteral[]) => {
+            if (left.str() !== right.str()) {
+              return bool(left.str() < right.str());
+            }
+            return bool(left.language < right.language);
+          },
+        )
+        .set(
+          [ C.TypeURL.XSD_BOOLEAN, C.TypeURL.XSD_BOOLEAN ],
+          exprEval => ([ left, right ]: E.BooleanLiteral[]) => {
+            const nonLexical = <Term>left instanceof NonLexicalLiteral ?
+              left :
+                (<Term>right instanceof NonLexicalLiteral ? right : undefined);
+            if (nonLexical) {
+              return this.handleNonLexical(left, right, nonLexical, exprEval);
+            }
+            return bool(left.typedValue < right.typedValue);
+          },
+          false,
+        ).set(
+          [ C.TypeURL.XSD_DATE_TIME, C.TypeURL.XSD_DATE_TIME ],
+          exprEval => ([ left, right ]: E.DateTimeLiteral[]) => {
+            const nonLexical = <Term>left instanceof NonLexicalLiteral ?
+              left :
+                (<Term>right instanceof NonLexicalLiteral ? right : undefined);
+            if (nonLexical) {
+              return this.handleNonLexical(left, right, nonLexical, exprEval);
+            }
+            return bool(
+              toUTCDate(left.typedValue, exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone)).getTime() <
+              toUTCDate(right.typedValue, exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone)).getTime(),
+            );
+          },
+          false,
+        ).copy({
           // https://www.w3.org/TR/xpath-functions/#func-date-less-than
           from: [ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DATE_TIME ],
           to: [ TypeURL.XSD_DATE, TypeURL.XSD_DATE ],
@@ -81,9 +120,31 @@ export class TermFunctionLesserThan extends TermFunctionBase {
             return bool(this.quadComponentTest(left.graph, right.graph, exprEval) ?? false);
           },
           false,
+        ).set(
+          [ 'term', 'term' ],
+          exprEval => ([ left, right ]: [Term, Term]): BooleanLiteral =>
+            bool(this.lesserThanTerms(left, right, exprEval)),
+          false,
         )
         .collect(),
     });
+  }
+
+  private handleNonLexical(left: Term, right: Term, nonLexical: Literal<any>, exprEval: IInternalEvaluator):
+  BooleanLiteral {
+    if (this.shouldThrowNonLexicalError(exprEval)) {
+      throw new Err.InvalidLexicalForm(
+        nonLexical.toRDF(exprEval.context.getSafe(KeysInitQuery.dataFactory)),
+      );
+    } else {
+      return bool(this.comparePrimitives(left.str(), right.str()) === -1);
+    }
+  }
+
+  private shouldThrowNonLexicalError(exprEval: IInternalEvaluator): boolean {
+    const context = exprEval.context;
+    return !context.has(KeysInitQuery.functionLesserThenNonLexicalBehaviour) ||
+      context.getSafe(KeysInitQuery.functionLesserThenNonLexicalBehaviour) === 0;
   }
 
   private quadComponentTest(left: Term, right: Term, exprEval: IInternalEvaluator): boolean | undefined {
@@ -102,4 +163,53 @@ export class TermFunctionLesserThan extends TermFunctionBase {
     );
     return (<BooleanLiteral>componentLess).typedValue;
   }
+
+  private lesserThanTerms(termA: Term, termB: Term, exprEval: IInternalEvaluator): boolean {
+    // Order different types according to a priority mapping
+    if (termA.termType !== termB.termType) {
+      return this._TERM_ORDERING_PRIORITY[termA.termType] < this._TERM_ORDERING_PRIORITY[termB.termType];
+    }
+
+    // If both are literals, try compare data type first (or handle non lexical behaviour in case of non lexicals)
+    if (termA.termType === 'literal' && termB.termType === 'literal') {
+      const nonLexical = termA instanceof NonLexicalLiteral ?
+        termA :
+          (termB instanceof NonLexicalLiteral ? termB : undefined);
+      if (nonLexical) {
+        return this.handleNonLexical(termA, termB, nonLexical, exprEval).typedValue;
+      }
+      const compareType =
+        this.comparePrimitives((<Literal<any>> termA).dataType, (<Literal<any>> termB).dataType);
+      if (compareType !== 0) {
+        return compareType === -1;
+      }
+    }
+
+    return this.comparePrimitives(this.getValue(termA), this.getValue(termB)) === -1;
+  }
+
+  private getValue(term: Term): string {
+    if (term.termType === 'blankNode') {
+      const blankNode = <BlankNode> term;
+      if (typeof blankNode.value === 'string') {
+        return blankNode.value;
+      }
+      return blankNode.value.value;
+    }
+    return term.str();
+  }
+
+  private comparePrimitives(valueA: any, valueB: any): -1 | 0 | 1 {
+    return valueA === valueB ? 0 : (valueA < valueB ? -1 : 1);
+  }
+
+  // SPARQL specifies that blankNode < namedNode < literal. Sparql star expands with < quads and we say < defaultGraph:
+  // https://www.w3.org/TR/sparql11-query/#modOrderBy
+  private readonly _TERM_ORDERING_PRIORITY = {
+    blankNode: 0,
+    namedNode: 1,
+    literal: 2,
+    quad: 3,
+    defaultGraph: 4,
+  };
 }

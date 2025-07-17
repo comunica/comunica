@@ -7,7 +7,6 @@ import type * as RDF from '@rdfjs/types';
 export class TermComparatorExpressionEvaluator implements ITermComparator {
   public constructor(
     private readonly internalEvaluator: InternalEvaluator,
-    private readonly equalityFunction: ITermFunction,
     private readonly lessThanFunction: ITermFunction,
   ) {}
 
@@ -27,88 +26,29 @@ export class TermComparatorExpressionEvaluator implements ITermComparator {
       return 1;
     }
 
-    //
-    if (termA.termType !== termB.termType) {
-      return this._TERM_ORDERING_PRIORITY[termA.termType] < this._TERM_ORDERING_PRIORITY[termB.termType] ? -1 : 1;
-    }
-
-    // Check exact term equality
-    if (termA.equals(termB)) {
-      return 0;
-    }
-
-    // Handle quoted triples
-    if (termA.termType === 'Quad' && termB.termType === 'Quad') {
-      const orderSubject = this.orderTypes(
-        termA.subject,
-        termB.subject,
-      );
-      if (orderSubject !== 0) {
-        return orderSubject;
-      }
-      const orderPredicate = this.orderTypes(
-        termA.predicate,
-        termB.predicate,
-      );
-      if (orderPredicate !== 0) {
-        return orderPredicate;
-      }
-      const orderObject = this.orderTypes(
-        termA.object,
-        termB.object,
-      );
-      if (orderObject !== 0) {
-        return orderObject;
-      }
-      return this.orderTypes(
-        termA.graph,
-        termB.graph,
-      );
-    }
-
-    // Handle literals
-    if (termA.termType === 'Literal') {
-      return this.orderLiteralTypes(termA, <RDF.Literal>termB);
-    }
-
-    return this.comparePrimitives(termA.value, termB.value);
-  }
-
-  private orderLiteralTypes(litA: RDF.Literal, litB: RDF.Literal): -1 | 0 | 1 {
-    const myLitA: Eval.Literal<any> = this.internalEvaluator.transformer.transformLiteral(litA);
-    const myLitB: Eval.Literal<any> = this.internalEvaluator.transformer.transformLiteral(litB);
+    const myTermA: Eval.Term = this.internalEvaluator.transformer.transformRDFTermUnsafe(termA);
+    const myTermB: Eval.Term = this.internalEvaluator.transformer.transformRDFTermUnsafe(termB);
 
     try {
-      if ((<Eval.BooleanLiteral> this.equalityFunction.applyOnTerms([ myLitA, myLitB ], this.internalEvaluator))
-        .typedValue) {
-        return 0;
-      }
-      if ((<Eval.BooleanLiteral> this.lessThanFunction.applyOnTerms([ myLitA, myLitB ], this.internalEvaluator))
+      if ((<Eval.BooleanLiteral> this.lessThanFunction.applyOnTerms([ myTermA, myTermB ], this.internalEvaluator))
         .typedValue) {
         return -1;
       }
-      return 1;
+      if ((<Eval.BooleanLiteral> this.lessThanFunction.applyOnTerms([ myTermB, myTermA ], this.internalEvaluator))
+        .typedValue) {
+        return 1;
+      }
+      return 0;
     } catch {
       // Fallback to string-based comparison
-      const compareType = this.comparePrimitives(myLitA.dataType, myLitB.dataType);
-      if (compareType !== 0) {
-        return compareType;
-      }
-      return this.comparePrimitives(myLitA.str(), myLitB.str());
+      // NonLexical operands could cause errors to be thrown
+      // when a datetime literal has a non-datetime string value for example
+      // Test example that covers this: invalid literals comparison on line 187 in TermComparator-test.ts
+      return this.comparePrimitives(myTermA.str(), myTermB.str());
     }
   }
 
   private comparePrimitives(valueA: any, valueB: any): -1 | 0 | 1 {
     return valueA === valueB ? 0 : (valueA < valueB ? -1 : 1);
   }
-
-  // SPARQL specifies that blankNode < namedNode < literal. Sparql star expands with < quads and we say < defaultGraph
-  private readonly _TERM_ORDERING_PRIORITY = {
-    Variable: 0,
-    BlankNode: 1,
-    NamedNode: 2,
-    Literal: 3,
-    Quad: 4,
-    DefaultGraph: 5,
-  };
 }

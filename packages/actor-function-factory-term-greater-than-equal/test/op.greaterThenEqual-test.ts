@@ -1,3 +1,4 @@
+import { ActorFunctionFactoryExpressionBnode } from '@comunica/actor-function-factory-expression-bnode';
 import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-factory-term-equality';
 import { ActorFunctionFactoryTermLesserThan } from '@comunica/actor-function-factory-term-lesser-than';
 import {
@@ -21,6 +22,7 @@ import { ActorFunctionFactoryTermGreaterThanEqual } from '../lib';
 
 const config: FuncTestTableConfig<object> = {
   registeredActors: [
+    args => new ActorFunctionFactoryExpressionBnode(args),
     args => new ActorFunctionFactoryTermGreaterThanEqual(args),
     args => new ActorFunctionFactoryTermLesserThanEqual(args),
     args => new ActorFunctionFactoryTermLesserThan(args),
@@ -134,7 +136,7 @@ describe('evaluation of \'>=\'', () => {
     });
   });
 
-  describe('with date operants like', () => {
+  describe('with date operands like', () => {
     // Originates from: https://www.w3.org/TR/xpath-functions/#func-date-less-than
     runFuncTestTable({
       ...config,
@@ -149,7 +151,7 @@ describe('evaluation of \'>=\'', () => {
     });
   });
 
-  describe('with time operants like', () => {
+  describe('with time operands like', () => {
     // Originates from: https://www.w3.org/TR/xpath-functions/#func-time-greater-than
     runFuncTestTable({
       ...config,
@@ -163,7 +165,7 @@ describe('evaluation of \'>=\'', () => {
     });
   });
 
-  describe('with dayTimeDuration operants like', () => {
+  describe('with dayTimeDuration operands like', () => {
     // Based on the spec tests of >
     runFuncTestTable({
       ...config,
@@ -181,6 +183,20 @@ describe('evaluation of \'>=\'', () => {
     });
   });
 
+  describe('with literals of unknown types like', () => {
+    runFuncTestTable({
+      ...config,
+      testTable: `
+        "2"^^example:int "0"^^example:int = true
+        "abc"^^example:string "def"^^example:string = false
+        "2"^^example:int "abc"^^example:string = false
+        "2"^^example:int "2"^^example:string = false
+        "2"^^example:string "2"^^example:int = true
+        "2"^^example:string "2"^^example:string = true
+      `,
+    });
+  });
+
   describe('with quoted triple operands like', () => {
     // Originates from: https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#sparql-compare
     runFuncTestTable({
@@ -194,11 +210,40 @@ describe('evaluation of \'>=\'', () => {
         [ '<<( <ex:a> <ex:b> 9 )>>', '<<( <ex:a> <ex:b> 123 )>>', 'false' ],
       ],
     });
+  });
+
+  describe('with named nodes operands like', () => {
     runFuncTestTable({
       ...config,
-      errorArray: [
-        // Named nodes cannot be compared.
-        [ '<<( <ex:a> <ex:b> 123 )>>', '<<( <ex:c> <ex:d> 123 )>>', 'Argument types not valid for operator' ],
+      testArray: [
+        [ '<ex:ab>', '<ex:cd>', 'false' ],
+        [ '<ex:ad>', '<ex:bc>', 'false' ],
+        [ '<ex:ba>', '<ex:ab>', 'true' ],
+        [ '<ex:ab>', '<ex:ab>', 'true' ],
+      ],
+    });
+  });
+
+  describe('with blank nodes operands like', () => {
+    runFuncTestTable({
+      ...config,
+      testArray: [
+        [ 'BNODE("ab")', 'BNODE("cd")', 'false' ],
+        [ 'BNODE("ad")', 'BNODE("bc")', 'false' ],
+        [ 'BNODE("ba")', 'BNODE("ab")', 'true' ],
+        [ 'BNODE("ab")', 'BNODE("ab")', 'true' ],
+      ],
+    });
+  });
+
+  describe('with mixed terms operands like', () => {
+    runFuncTestTable({
+      ...config,
+      testArray: [
+        [ 'BNODE("ab")', '<ex:ab>', 'false' ],
+        [ '<<(<ex:a> <ex:b> 123)>>', '123', 'true' ],
+        [ '<ex:ab>', '"ab"', 'false' ],
+        [ 'BNODE("ab")', '<<(<ex:a> <ex:b> 123)>>', 'false' ],
       ],
     });
   });
