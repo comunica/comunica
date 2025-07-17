@@ -36,7 +36,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   private readonly dataFactory: ComunicaDataFactory;
   private readonly algebraFactory: Factory;
   private linkQueue: Promise<ILinkQueue> | undefined;
-  protected wasForcefullyClosed = false;
+  private wasForcefullyClosed = false;
 
   public constructor(
     cacheSize: number,
