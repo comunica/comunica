@@ -1526,6 +1526,43 @@ SELECT ?term WHERE {
         ]);
       });
 
+      it('with VALUES and OPTIONAL with expression applying to both', async() => {
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: `
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix wd: <http://www.wikidata.org/entity/> .
+
+wd:Q726 rdfs:label "horse"@en .
+wd:Q726 rdfs:label "Horse"@en-ca .
+wd:Q726 rdfs:label "cheval"@fr .
+`,
+              mediaType: 'text/turtle',
+              baseIRI: 'http://example.org/',
+            },
+          ],
+        };
+
+        await expect(engine.queryBindings(`
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?term WHERE {
+  VALUES ?term { wd:Q726 }
+  OPTIONAL {
+    ?term rdfs:label ?text
+    # Purposely choosing a language that is not in the data
+    FILTER(lang(?text) = "ab" && STR(?term) = "http://www.wikidata.org/entity/Q726" )
+  }
+}
+`, context)).resolves.toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('term'), DF.namedNode('http://www.wikidata.org/entity/Q726') ],
+          ]),
+        ]);
+      });
+
       it('with OPTIONALs and BIND COALESCE', async() => {
         const context: QueryStringContext = {
           sources: [
