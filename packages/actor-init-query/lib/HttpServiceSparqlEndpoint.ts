@@ -553,7 +553,7 @@ export class HttpServiceSparqlEndpoint {
 
     let eventEmitter: EventEmitter;
     try {
-      const actionContext = ActionContext.ensureActionContext(this.context);
+      const actionContext = new ActionContext(this.context);
 
       // Append result formats
       const formats = await engine.getResultMediaTypeFormats(actionContext);
