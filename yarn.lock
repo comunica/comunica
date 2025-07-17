@@ -789,10 +789,10 @@
     fs-extra "^10.0.0"
     sparql-benchmark-runner "^4.2.0"
 
-"@jbr-hook/cli@^5.2.0":
-  version "5.2.0"
-  resolved "https://registry.npmjs.org/@jbr-hook/cli/-/cli-5.2.0.tgz"
-  integrity sha512-jhq8Fq3/EFi1+4IDULPFC33bPHyx02tTGppsMlsgDSGwHlADE4XfBQUdeOuuM5hUXU1MB3kocYXu7TVtE4Ppxg==
+"@jbr-hook/cli@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@jbr-hook/cli/-/cli-6.0.0.tgz#f5d29dd234e418d47d28302d3c3519d20054e82b"
+  integrity sha512-sF9UCuVvzJ7fjKRL+uJaQxcASGgy2XgxZOldhmaOLT9o8uYT21/D5jAFkkh6wOqjMNlwMFZlCDYGRdjXAeGZPQ==
   dependencies:
     "@types/fs-extra" "^9.0.11"
     fs-extra "^10.0.0"
