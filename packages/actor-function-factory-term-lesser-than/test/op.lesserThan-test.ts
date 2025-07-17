@@ -2,7 +2,7 @@ import { ActorFunctionFactoryExpressionBnode } from '@comunica/actor-function-fa
 import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-factory-term-equality';
 import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { KeysExpressionEvaluator } from '@comunica/context-entries';
+import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import * as Eval from '@comunica/utils-expression-evaluator';
 import {
@@ -212,7 +212,7 @@ describe('evaluation of \'<\'', () => {
     });
   });
 
-  describe('with non lexical operands like', () => {
+  describe('with non lexical operands like (1)', () => {
     runFuncTestTable({
       ...config,
       errorTable: `
@@ -220,7 +220,22 @@ describe('evaluation of \'<\'', () => {
         "a"^^xsd:dateTime "a"^^xsd:dateTime = Invalid lexical form
         "a"^^xsd:boolean  "b"^^xsd:boolean  = Invalid lexical form
         "a"^^xsd:boolean  "a"^^xsd:dateTime = Invalid lexical form
+        "a"^^xsd:boolean  "true"^^xsd:boolean = Invalid lexical form
       `,
+    });
+  });
+
+  describe('with non lexical operands like (2)', () => {
+    runFuncTestTable({
+      ...config,
+      testTable: `
+        "a"^^xsd:dateTime "b"^^xsd:dateTime = true
+        "a"^^xsd:dateTime "a"^^xsd:dateTime = false
+        "a"^^xsd:boolean  "b"^^xsd:boolean  = true
+        "a"^^xsd:boolean  "a"^^xsd:dateTime = false
+        "a"^^xsd:boolean  "true"^^xsd:boolean = true
+      `,
+      config: new ActionContext().set(KeysInitQuery.functionLesserThenNonLexicalBehaviour, 1),
     });
   });
 

@@ -1,6 +1,6 @@
 import type { ITermFunction } from '@comunica/bus-function-factory';
 import { TermFunctionBase } from '@comunica/bus-function-factory';
-import { KeysExpressionEvaluator } from '@comunica/context-entries';
+import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import type { IInternalEvaluator } from '@comunica/types';
 import {
   bool,
@@ -9,6 +9,7 @@ import {
   defaultedDateTimeRepresentation,
   defaultedDayTimeDurationRepresentation,
   defaultedYearMonthDurationRepresentation,
+  NonLexicalLiteral,
   SparqlOperator,
   toUTCDate,
   TypeURL,
@@ -25,6 +26,9 @@ import type {
   YearMonthDurationLiteral,
   LangStringLiteral,
 } from '@comunica/utils-expression-evaluator';
+import type * as E from '@comunica/utils-expression-evaluator/lib/expressions/index';
+import * as C from '@comunica/utils-expression-evaluator/lib/util/Consts';
+import * as Err from '@comunica/utils-expression-evaluator/lib/util/Errors';
 
 export class TermFunctionLesserThan extends TermFunctionBase {
   public constructor(private readonly equalityFunction: ITermFunction) {
@@ -43,11 +47,34 @@ export class TermFunctionLesserThan extends TermFunctionBase {
             return bool(left.language < right.language);
           },
         )
-        .booleanTest(() => (left, right) => left < right)
-        .dateTimeTest(exprEval => (left, right) =>
-          toUTCDate(left, exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone)).getTime() <
-          toUTCDate(right, exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone)).getTime())
-        .copy({
+        .set(
+          [ C.TypeURL.XSD_BOOLEAN, C.TypeURL.XSD_BOOLEAN ],
+          exprEval => ([ left, right ]: E.BooleanLiteral[]) => {
+            const nonLexical = <Term>left instanceof NonLexicalLiteral ?
+              left :
+                (<Term>right instanceof NonLexicalLiteral ? right : undefined);
+            if (nonLexical) {
+              return this.handleNonLexical(left, right, nonLexical, exprEval);
+            }
+            return bool(left.typedValue < right.typedValue);
+          },
+          false,
+        ).set(
+          [ C.TypeURL.XSD_DATE_TIME, C.TypeURL.XSD_DATE_TIME ],
+          exprEval => ([ left, right ]: E.DateTimeLiteral[]) => {
+            const nonLexical = <Term>left instanceof NonLexicalLiteral ?
+              left :
+                (<Term>right instanceof NonLexicalLiteral ? right : undefined);
+            if (nonLexical) {
+              return this.handleNonLexical(left, right, nonLexical, exprEval);
+            }
+            return bool(
+              toUTCDate(left.typedValue, exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone)).getTime() <
+              toUTCDate(right.typedValue, exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone)).getTime(),
+            );
+          },
+          false,
+        ).copy({
           // https://www.w3.org/TR/xpath-functions/#func-date-less-than
           from: [ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DATE_TIME ],
           to: [ TypeURL.XSD_DATE, TypeURL.XSD_DATE ],
@@ -95,10 +122,29 @@ export class TermFunctionLesserThan extends TermFunctionBase {
           false,
         ).set(
           [ 'term', 'term' ],
-          () => ([ left, right ]: [Term, Term]): BooleanLiteral => bool(this.lesserThanTerms(left, right)),
+          exprEval => ([ left, right ]: [Term, Term]): BooleanLiteral =>
+            bool(this.lesserThanTerms(left, right, exprEval)),
+          false,
         )
         .collect(),
     });
+  }
+
+  private handleNonLexical(left: Term, right: Term, nonLexical: Literal<any>, exprEval: IInternalEvaluator):
+  BooleanLiteral {
+    if (this.shouldThrowNonLexicalError(exprEval)) {
+      throw new Err.InvalidLexicalForm(
+        nonLexical.toRDF(exprEval.context.getSafe(KeysInitQuery.dataFactory)),
+      );
+    } else {
+      return bool(this.comparePrimitives(left.str(), right.str()) === -1);
+    }
+  }
+
+  private shouldThrowNonLexicalError(exprEval: IInternalEvaluator): boolean {
+    const context = exprEval.context;
+    return !context.has(KeysInitQuery.functionLesserThenNonLexicalBehaviour) ||
+      context.getSafe(KeysInitQuery.functionLesserThenNonLexicalBehaviour) === 0;
   }
 
   private quadComponentTest(left: Term, right: Term, exprEval: IInternalEvaluator): boolean | undefined {
@@ -118,14 +164,20 @@ export class TermFunctionLesserThan extends TermFunctionBase {
     return (<BooleanLiteral>componentLess).typedValue;
   }
 
-  private lesserThanTerms(termA: Term, termB: Term): boolean {
+  private lesserThanTerms(termA: Term, termB: Term, exprEval: IInternalEvaluator): boolean {
     // Order different types according to a priority mapping
     if (termA.termType !== termB.termType) {
       return this._TERM_ORDERING_PRIORITY[termA.termType] < this._TERM_ORDERING_PRIORITY[termB.termType];
     }
 
-    // If both are literals, try compare data type first
+    // If both are literals, try compare data type first (or handle non lexical behaviour in case of non lexicals)
     if (termA.termType === 'literal' && termB.termType === 'literal') {
+      const nonLexical = termA instanceof NonLexicalLiteral ?
+        termA :
+          (termB instanceof NonLexicalLiteral ? termB : undefined);
+      if (nonLexical) {
+        return this.handleNonLexical(termA, termB, nonLexical, exprEval).typedValue;
+      }
       const compareType =
         this.comparePrimitives((<Literal<any>> termA).dataType, (<Literal<any>> termB).dataType);
       if (compareType !== 0) {

@@ -215,6 +215,15 @@ export const KeysInitQuery = {
    * A boolean value denoting whether results should be deduplicated or not.
    */
   distinctConstruct: new ActionContextKey<boolean>('@comunica/actor-init-query:distinctConstruct'),
+  /**
+   * An enum denoting the behaviour of the lesser than function when used with non lexical operands.
+   *
+   * throwsError: throws an error (default).
+   * lexicalCompare: treats them as lexicals and compares their string values.
+   */
+  functionLesserThenNonLexicalBehaviour: new ActionContextKey<FunctionLesserThanNonLexicalBehaviour>(
+    '@comunica/actor-init-query:functionsInequalityNonLexicalBehaviour',
+  ),
 };
 
 export const KeysExpressionEvaluator = {
@@ -350,3 +359,7 @@ export const KeysStatistics = {
     '@comunica/bus-context-preprocess:dereferencedLinks',
   ),
 };
+
+export enum FunctionLesserThanNonLexicalBehaviour {
+  throwsError, lexicalCompare,
+}
