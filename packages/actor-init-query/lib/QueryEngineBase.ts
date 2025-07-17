@@ -154,7 +154,6 @@ implements IQueryEngine<QueryStringContextInner, QueryAlgebraContextInner> {
    * @return {Promise<{[p: string]: number}>} All available SPARQL result media type formats.
    */
   public async getResultMediaTypeFormats(context?: any): Promise<Record<string, string>> {
-    context = ActionContext.ensureActionContext(context);
     return (await this.actorInitQuery.mediatorQueryResultSerializeMediaTypeFormatCombiner
       .mediate({ context, mediaTypeFormats: true })).mediaTypeFormats;
   }

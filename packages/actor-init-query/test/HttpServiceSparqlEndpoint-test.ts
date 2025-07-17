@@ -1373,8 +1373,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       it('should write the service description when no query was defined', async() => {
-        // Override instance with a context that includes some extensionFunctions
-        instance = new HttpServiceSparqlEndpoint({
+        const localInstance = new HttpServiceSparqlEndpoint({
           ...argsDefault,
           workers: 4,
           context: new ActionContext().set(KeysInitQuery.extensionFunctions, {
@@ -1389,12 +1388,12 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         // Create spies
         const engine = await new QueryEngineFactoryBase().create();
-        const spyWriteServiceDescription = jest.spyOn(instance, 'writeServiceDescription');
+        const spyWriteServiceDescription = jest.spyOn(localInstance, 'writeServiceDescription');
         const spyGetResultMediaTypeFormats = jest.spyOn(engine, 'getResultMediaTypeFormats');
         const spyResultToString = jest.spyOn(engine, 'resultToString');
 
         // Invoke writeQueryResult
-        await instance.writeQueryResult(
+        await localInstance.writeQueryResult(
           engine,
           new PassThrough(),
           new PassThrough(),

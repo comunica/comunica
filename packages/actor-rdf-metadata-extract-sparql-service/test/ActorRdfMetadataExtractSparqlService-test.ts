@@ -1,3 +1,4 @@
+import { SD } from '@comunica/actor-rdf-metadata-extract-void/lib/Definitions';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -30,8 +31,6 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
   });
 
   describe('run', () => {
-    const sd = 'http://www.w3.org/ns/sparql-service-description#';
-
     const voidSubset = DF.namedNode('http://rdfs.org/ns/void#subset');
 
     const endpointIri = DF.namedNode('http://localhost/sparql');
@@ -42,18 +41,18 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
 
     const sparqlResultsJson = DF.namedNode('http://www.w3.org/ns/formats/SPARQL_Results_JSON');
     const sparqlResultsXml = DF.namedNode('http://www.w3.org/ns/formats/SPARQL_Results_XML');
-    const sparql11Query = DF.namedNode(`${sd}SPARQL11Query`);
+    const sparql11Query = DF.namedNode(`${SD}SPARQL11Query`);
 
-    const serviceDescriptionFeature = DF.namedNode(`${sd}feature`);
-    const serviceDescriptionEndpoint = DF.namedNode(`${sd}endpoint`);
-    const serviceDescriptionInputFormat = DF.namedNode(`${sd}inputFormat`);
-    const serviceDescriptionResultFormat = DF.namedNode(`${sd}resultFormat`);
-    const serviceDescriptionSupportedLanguage = DF.namedNode(`${sd}supportedLanguage`);
-    const serviceDescriptionDefaultDataset = DF.namedNode(`${sd}defaultDataset`);
-    const serviceDescriptionDefaultGraph = DF.namedNode(`${sd}defaultGraph`);
-    const serviceDescriptionBasicFederatedQuery = DF.namedNode(`${sd}BasicFederatedQuery`);
-    const serviceDescriptionUnionDefaultGraph = DF.namedNode(`${sd}UnionDefaultGraph`);
-    const serviceDescriptionExtensionFunction = DF.namedNode(`${sd}extensionFunction`);
+    const serviceDescriptionFeature = DF.namedNode(`${SD}feature`);
+    const serviceDescriptionEndpoint = DF.namedNode(`${SD}endpoint`);
+    const serviceDescriptionInputFormat = DF.namedNode(`${SD}inputFormat`);
+    const serviceDescriptionResultFormat = DF.namedNode(`${SD}resultFormat`);
+    const serviceDescriptionSupportedLanguage = DF.namedNode(`${SD}supportedLanguage`);
+    const serviceDescriptionDefaultDataset = DF.namedNode(`${SD}defaultDataset`);
+    const serviceDescriptionDefaultGraph = DF.namedNode(`${SD}defaultGraph`);
+    const serviceDescriptionBasicFederatedQuery = DF.namedNode(`${SD}BasicFederatedQuery`);
+    const serviceDescriptionUnionDefaultGraph = DF.namedNode(`${SD}UnionDefaultGraph`);
+    const serviceDescriptionExtensionFunction = DF.namedNode(`${SD}extensionFunction`);
 
     beforeEach(() => {
       actor = new ActorRdfMetadataExtractSparqlService({ name: 'actor', bus, inferHttpsEndpoint: false });
