@@ -797,10 +797,10 @@
     "@types/fs-extra" "^9.0.11"
     fs-extra "^10.0.0"
 
-"@jbr-hook/sparql-endpoint-comunica@^5.2.0":
-  version "5.2.0"
-  resolved "https://registry.npmjs.org/@jbr-hook/sparql-endpoint-comunica/-/sparql-endpoint-comunica-5.2.0.tgz"
-  integrity sha512-POWC6loMpqePtuVtJENwbkNburv6YccL0eFd8MinhSpion2k1dMNnShx5xVvdDa+qFLAEivOSHROPlkfMghjhA==
+"@jbr-hook/sparql-endpoint-comunica@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@jbr-hook/sparql-endpoint-comunica/-/sparql-endpoint-comunica-6.0.0.tgz#7968bc4c5ec63ed09e129b4deba506305cbb7b77"
+  integrity sha512-LUjFJFvI1azY7J8y0R2NO/vU7JLV9QjMKcYxSc2YVULLheb+qI+P83he+YZYy7DLU974cVbdPLbKjOoamMDaUg==
   dependencies:
     "@types/fs-extra" "^9.0.11"
     fs-extra "^10.0.0"
