@@ -4122,19 +4122,19 @@ componentsjs-generator@^4.2.0:
     rdf-object "^2.0.0"
     semver "^7.3.2"
 
-componentsjs@^6.0.1:
-  version "6.0.1"
-  resolved "https://registry.npmjs.org/componentsjs/-/componentsjs-6.0.1.tgz"
-  integrity sha512-8ylkwrS0WJCTkkp2dOamE4yLkkdFd9xZQQ8dGzaY22TdntLR9V/SH+dZ+GQ+im9/2KgrKtcEu0UHMY+cpE0LYw==
+componentsjs@^6.2.0:
+  version "6.2.0"
+  resolved "https://registry.npmjs.org/componentsjs/-/componentsjs-6.2.0.tgz"
+  integrity sha512-ieFKJNMduBYJSr48CzedDbM1Ao8lqFAf0m4z4I7x4XWqi5aW71CcLFSD7YkfNIiXVuL0L0gzx89wOXvvWFBJ7w==
   dependencies:
     "@rdfjs/types" "*"
     "@types/minimist" "^1.2.0"
     "@types/node" "^18.0.0"
     "@types/semver" "^7.3.4"
-    jsonld-context-parser "^2.1.1"
+    jsonld-context-parser "^3.0.0"
     minimist "^1.2.0"
     rdf-data-factory "^1.1.0"
-    rdf-object "^1.14.0"
+    rdf-object "^2.0.0"
     rdf-parse "^2.0.0"
     rdf-quad "^1.5.0"
     rdf-string "^1.6.0"
@@ -4142,10 +4142,10 @@ componentsjs@^6.0.1:
     semver "^7.3.2"
     winston "^3.3.3"
 
-componentsjs@^6.2.0:
-  version "6.2.0"
-  resolved "https://registry.npmjs.org/componentsjs/-/componentsjs-6.2.0.tgz"
-  integrity sha512-ieFKJNMduBYJSr48CzedDbM1Ao8lqFAf0m4z4I7x4XWqi5aW71CcLFSD7YkfNIiXVuL0L0gzx89wOXvvWFBJ7w==
+componentsjs@^6.3.0:
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/componentsjs/-/componentsjs-6.3.0.tgz#1a7b4c45404a6a013277bf60d998362ac673635c"
+  integrity sha512-psWOXR/jk21yy4RwSi6CnIHqOn17QoECF+D+5LQqF+aGdvH1ZOlSlC/sD5j9xJGPpQ0wG5zE26SO3/t7W5JTrQ==
   dependencies:
     "@rdfjs/types" "*"
     "@types/minimist" "^1.2.0"
@@ -7733,10 +7733,10 @@ jasmine-core@^4.1.0:
   resolved "https://registry.npmjs.org/jasmine-core/-/jasmine-core-4.6.0.tgz"
   integrity sha512-O236+gd0ZXS8YAjFx8xKaJ94/erqUliEkJTDedyE7iHvv4ZVqi+q+8acJxu05/WJDKm512EUNn809In37nWlAQ==
 
-jbr@^5.2.0:
-  version "5.2.0"
-  resolved "https://registry.npmjs.org/jbr/-/jbr-5.2.0.tgz"
-  integrity sha512-D/OXhw9Hu1rF1Eus/DwQi3SXZ6Ean2kZxSDUe7KjK6NbGjQsJe8J0qymiEAhyMQ0pkBIhIfLV8hUMv4hM9pLhA==
+jbr@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/jbr/-/jbr-6.0.0.tgz#14ba6c18eeba14d2e6638dc960d8d47c837fb1cf"
+  integrity sha512-D87ki7bLz6BjzrnqkGDk+kVS5MkSww+wqR6SjaRMQFN/nRUsPUukvwMEJhtbsKXDJa3BRqXjc45CZAlmLRAqyA==
   dependencies:
     "@types/cli-progress" "^3.9.1"
     "@types/cross-spawn" "^6.0.2"
@@ -7747,7 +7747,7 @@ jbr@^5.2.0:
     "@types/tar" "^6.1.13"
     "@types/yargs" "^17.0.0"
     cli-progress "^3.9.0"
-    componentsjs "^6.0.1"
+    componentsjs "^6.3.0"
     cross-fetch "^4.0.0"
     cross-spawn "^7.0.3"
     dockerode "^3.3.0"
@@ -8289,7 +8289,7 @@ jsonify@^0.0.1:
   resolved "https://registry.npmjs.org/jsonify/-/jsonify-0.0.1.tgz"
   integrity sha512-2/Ki0GcmuqSrgFyelQq9M05y7PS0mEwuIzrf3f1fPqkVDVRvZrPZtVSMHxdgo8Aq0sxAOb/cr2aqqA3LeWHVPg==
 
-jsonld-context-parser@^2.0.2, jsonld-context-parser@^2.1.1, jsonld-context-parser@^2.2.2, jsonld-context-parser@^2.4.0:
+jsonld-context-parser@^2.0.2, jsonld-context-parser@^2.2.2, jsonld-context-parser@^2.4.0:
   version "2.4.0"
   resolved "https://registry.npmjs.org/jsonld-context-parser/-/jsonld-context-parser-2.4.0.tgz"
   integrity sha512-ZYOfvh525SdPd9ReYY58dxB3E2RUEU4DJ6ZibO8AitcowPeBH4L5rCAitE2om5G1P+HMEgYEYEr4EZKbVN4tpA==
@@ -10842,7 +10842,7 @@ rdf-literal@^2.0.0:
   dependencies:
     rdf-data-factory "^2.0.0"
 
-rdf-object@^1.11.1, rdf-object@^1.14.0:
+rdf-object@^1.11.1:
   version "1.14.0"
   resolved "https://registry.npmjs.org/rdf-object/-/rdf-object-1.14.0.tgz"
   integrity sha512-/KSUWr7onDtL7d81kOpcUzJ2vHYOYJc2KU9WzBZRYydBhK0Sksh5Hg4VCQNaxUEvYEgdrrTuq9SLpOOCmag0rQ==
