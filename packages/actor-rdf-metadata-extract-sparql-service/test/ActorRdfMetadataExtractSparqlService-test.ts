@@ -1,9 +1,8 @@
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
+import { streamifyArray } from 'streamify-array';
 import { ActorRdfMetadataExtractSparqlService } from '../lib/ActorRdfMetadataExtractSparqlService';
-
-const streamifyArray = require('streamify-array');
 
 const DF = new DataFactory();
 

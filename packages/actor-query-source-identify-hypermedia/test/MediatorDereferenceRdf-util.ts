@@ -23,9 +23,9 @@ import { wrap } from 'asynciterator';
 import 'jest-rdf';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
+import { streamifyArray } from 'streamify-array';
 
 const quad = require('rdf-quad');
-const streamifyArray = require('streamify-array');
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -36,11 +36,11 @@ const mediatorDereferenceRdf: MediatorDereferenceRdf = {
   async mediate({ url }: IActionDereferenceRdf): Promise<IActorDereferenceRdfOutput> {
     return {
       data: url === 'firstUrl' ?
-        streamifyArray([
+        <any> streamifyArray([
           quad('s1', 'p1', 'o1'),
           quad('s2', 'p2', 'o2'),
         ]) :
-        streamifyArray([
+        <any> streamifyArray([
           quad('s3', 'p3', 'o3'),
           quad('s4', 'p4', 'o4'),
         ]),

@@ -1,11 +1,11 @@
 import { ActorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import { streamifyArray } from 'streamify-array';
 import { ActorRdfMetadataExtractHydraControls } from '../lib/ActorRdfMetadataExtractHydraControls';
 import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
-const stream = require('streamify-array');
 
 const HYDRA = 'http://www.w3.org/ns/hydra/core#';
 
@@ -367,7 +367,7 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
     });
 
     it('should get hydra properties from stream', async() => {
-      await expect(actor.getHydraProperties(stream([
+      await expect(actor.getHydraProperties(streamifyArray([
         quad('mypage', `${HYDRA}next`, 'next'),
         quad('mypage', `${HYDRA}previous`, 'previous'),
         quad('mypage2', `${HYDRA}previous`, 'previous2'),
@@ -396,11 +396,12 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
     });
 
     it('should test', async() => {
-      await expect(actor.test({ url: '', metadata: stream([]), requestTime: 0, context })).resolves.toPassTestVoid();
+      await expect(actor.test({ url: '', metadata: streamifyArray([]), requestTime: 0, context }))
+        .resolves.toPassTestVoid();
     });
 
     it('should run on valid controls', async() => {
-      await expect(actor.run({ metadata: stream([
+      await expect(actor.run({ metadata: streamifyArray([
         quad('mypage', `${HYDRA}next`, 'next'),
         quad('mypage', `${HYDRA}previous`, 'previous'),
         quad('mypage', `${HYDRA}first`, 'first'),

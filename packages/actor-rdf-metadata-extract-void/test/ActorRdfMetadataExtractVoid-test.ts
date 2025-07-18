@@ -2,6 +2,7 @@ import { Bus } from '@comunica/core';
 import type { IDataset } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
+import { streamifyArray } from 'streamify-array';
 import { ActorRdfMetadataExtractVoid } from '../lib/ActorRdfMetadataExtractVoid';
 import '@comunica/utils-jest';
 import {
@@ -25,8 +26,6 @@ import {
   VOID_URI_SPACE,
   VOID_VOCABULARY,
 } from '../lib/Definitions';
-
-const streamifyArray = require('streamify-array');
 
 jest.mock('@comunica/actor-init-query');
 jest.mock('@comunica/bus-rdf-metadata-extract');
