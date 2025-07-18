@@ -991,6 +991,12 @@ IActorRdfJoinSelectivityOutput
       await expect(instance.test(action)).resolves.toFailTest(`Invalid type of a join entry: Expected 'bindings' but got 'invalid'`);
     });
 
+    it('should throw an error if an entry has operationRequired', async() => {
+      action.entries[1].operationRequired = true;
+      instance = new Dummy(mediatorJoinSelectivity, 99);
+      await expect(instance.test(action)).resolves.toFailTest(`name does not work with operationRequired.`);
+    });
+
     it('should return a value if both metadata objects are present', async() => {
       action.entries[0].output.metadata = () => Promise.resolve({
         state: new MetadataValidationState(),

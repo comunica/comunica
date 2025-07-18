@@ -1,6 +1,6 @@
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import { assignOperationSource } from '@comunica/utils-query-operation';
+import { assignOperationSource, getExpressionVariables } from '@comunica/utils-query-operation';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorOptimizeQueryOperationFilterPushdown } from '../lib/ActorOptimizeQueryOperationFilterPushdown';
@@ -388,19 +388,19 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
 
     describe('getExpressionVariables', () => {
       it('returns undefined for aggregates', async() => {
-        expect(() => actor.getExpressionVariables(
+        expect(() => getExpressionVariables(
           AF.createAggregateExpression('sum', AF.createTermExpression(DF.namedNode('s')), true),
         )).toThrow(`Getting expression variables is not supported for aggregate`);
       });
 
       it('returns undefined for wildcard', async() => {
-        expect(() => actor.getExpressionVariables(
+        expect(() => getExpressionVariables(
           AF.createWildcardExpression(),
         )).toThrow(`Getting expression variables is not supported for wildcard`);
       });
 
       it('returns undefined for existence', async() => {
-        expect(actor.getExpressionVariables(
+        expect(getExpressionVariables(
           AF.createExistenceExpression(false, AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.variable('o'))),
         )).toEqual([
           DF.variable('p'),
@@ -409,25 +409,25 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
       });
 
       it('returns empty array for a named expression', async() => {
-        expect(actor.getExpressionVariables(
+        expect(getExpressionVariables(
           AF.createNamedExpression(DF.namedNode('s'), []),
         )).toEqual([]);
       });
 
       it('returns a variable for a term expression with a variable', async() => {
-        expect(actor.getExpressionVariables(
+        expect(getExpressionVariables(
           AF.createTermExpression(DF.variable('s')),
         )).toEqual([ DF.variable('s') ]);
       });
 
       it('returns an empty array for a term expression with a named node', async() => {
-        expect(actor.getExpressionVariables(
+        expect(getExpressionVariables(
           AF.createTermExpression(DF.namedNode('s')),
         )).toEqual([]);
       });
 
       it('returns for an operator expression with variables', async() => {
-        expect(actor.getExpressionVariables(
+        expect(getExpressionVariables(
           AF.createOperatorExpression('+', [
             AF.createTermExpression(DF.variable('a')),
             AF.createTermExpression(DF.variable('b')),
@@ -436,7 +436,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
       });
 
       it('returns for an operator expression with duplicate variables', async() => {
-        expect(actor.getExpressionVariables(
+        expect(getExpressionVariables(
           AF.createOperatorExpression('+', [
             AF.createTermExpression(DF.variable('a')),
             AF.createTermExpression(DF.variable('a')),
@@ -445,7 +445,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
       });
 
       it('returns for a nested operator expression with variables', async() => {
-        expect(actor.getExpressionVariables(
+        expect(getExpressionVariables(
           AF.createOperatorExpression('+', [
             AF.createTermExpression(DF.variable('a')),
             AF.createOperatorExpression('+', [
@@ -457,7 +457,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
       });
 
       it('returns for a nested operator expression with mixed terms', async() => {
-        expect(actor.getExpressionVariables(
+        expect(getExpressionVariables(
           AF.createOperatorExpression('+', [
             AF.createTermExpression(DF.blankNode('a')),
             AF.createOperatorExpression('+', [
@@ -476,7 +476,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
       ) {
         return actor.filterPushdown(
           expression,
-          actor.getExpressionVariables(expression),
+          getExpressionVariables(expression),
           operation,
           AF,
           new ActionContext(),

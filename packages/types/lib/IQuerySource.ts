@@ -14,19 +14,19 @@ export interface IQuerySourceSerialized extends IQuerySourceUnidentifiedExpanded
 
 export interface IQuerySourceUnidentifiedExpanded {
   type?: string;
-  value: string | RDF.Source | RDF.Store;
+  value: string | RDF.Source | RDF.Store | RDF.DatasetCore;
   context?: IActionContext;
 }
 
 export interface IQuerySourceUnidentifiedExpandedRawContext {
   type?: string;
-  value: string | RDF.Source | RDF.Store;
+  value: string | RDF.Source | RDF.Store | RDF.DatasetCore;
   context?: Record<string, any>;
 }
 
 export type QuerySourceUnidentifiedExpanded = IQuerySourceUnidentifiedExpanded | IQuerySourceSerialized;
-export type QuerySourceUnidentified = string | RDF.Source | RDF.Store | QuerySourceUnidentifiedExpanded |
-IQuerySourceUnidentifiedExpandedRawContext;
+export type QuerySourceUnidentified = string | RDF.Source | RDF.Store | RDF.DatasetCore |
+QuerySourceUnidentifiedExpanded | IQuerySourceUnidentifiedExpandedRawContext;
 
 /**
  * Attaches a context to a query target.
@@ -36,7 +36,7 @@ export interface IQuerySourceWrapper<Q extends IQuerySource = IQuerySource> {
   context?: IActionContext;
 }
 
-export type QuerySourceReference = string | RDF.Source;
+export type QuerySourceReference = string | RDF.Source | RDF.DatasetCore;
 
 /**
  * A lazy query source.

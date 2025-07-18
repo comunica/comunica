@@ -6,7 +6,7 @@ import type { IncomingMessage, ServerResponse } from 'node:http';
 import * as querystring from 'node:querystring';
 import type { Writable } from 'node:stream';
 import * as url from 'node:url';
-import { KeysQueryOperation } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { ICliArgsHandler, QueryQuads, QueryType } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -553,10 +553,18 @@ export class HttpServiceSparqlEndpoint {
 
     let eventEmitter: EventEmitter;
     try {
+      const actionContext = ActionContext.ensureActionContext(this.context);
+
       // Append result formats
-      const formats = await engine.getResultMediaTypeFormats(new ActionContext(this.context));
+      const formats = await engine.getResultMediaTypeFormats(actionContext);
       for (const format in formats) {
         quads.push(quad(s, `${sd}resultFormat`, formats[format]));
+      }
+
+      // Append extension functions
+      const functions = actionContext.get(KeysInitQuery.extensionFunctions);
+      for (const value in functions) {
+        quads.push(quad(s, `${sd}extensionFunction`, value));
       }
 
       // Flush results
