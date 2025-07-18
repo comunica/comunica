@@ -760,55 +760,55 @@
   resolved "https://registry.npmjs.org/@istanbuljs/schema/-/schema-0.1.3.tgz"
   integrity sha512-ZXRY4jNvVgSVQ8DL3LTcakaAtXwTVUxE81hslsyD2AtoXW/wVob10HkOJ1X/pAlcI7D+2YoZKg5do8G/w6RYgA==
 
-"@jbr-experiment/bsbm@^5.2.3":
-  version "5.2.3"
-  resolved "https://registry.npmjs.org/@jbr-experiment/bsbm/-/bsbm-5.2.3.tgz"
-  integrity sha512-DhLUpAxdm6rlV/3qk+QkOpPyORwYTnPg8WaV228ihh1le9nIKfNqMNDyfyD+T2PS3aQHeAGIyCxXODmSG5Bh+A==
+"@jbr-experiment/bsbm@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@jbr-experiment/bsbm/-/bsbm-6.0.0.tgz#01d0d6eb393a601e63cb99fc5b98da02c47de2ce"
+  integrity sha512-fx/nbjvOFEJgNMaGE66BQGDIUbqf7qwjIdGKcuOGckcsZheYZLrE1MAMy0yTavlgw+OHmHdkOfRN/3JOkf2cBQ==
   dependencies:
     "@types/fs-extra" "^9.0.11"
     "@types/yargs" "^17.0.0"
     fs-extra "^10.0.0"
 
-"@jbr-experiment/sparql-custom@^5.3.0":
-  version "5.3.0"
-  resolved "https://registry.npmjs.org/@jbr-experiment/sparql-custom/-/sparql-custom-5.3.0.tgz"
-  integrity sha512-HZRzCCEzz0ni3VCwzIdMko7+6EKxJ8mGXGbb3VuXuKb5DABMVERtVE0kOiCXuA30ebUt26TNrzI7g+2HYWOoaw==
+"@jbr-experiment/sparql-custom@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@jbr-experiment/sparql-custom/-/sparql-custom-6.0.0.tgz#814cd5c86a9ee2fcf2b059ce5d1e6c6a795b183c"
+  integrity sha512-FmzBwYu+AEuYdE9f1liQHQoNV7qXekKmxAflABVen+PvhUt04kCzKCTNnYdHH+nrXKQ6jqZ6dWS4AWiz4FpdIA==
   dependencies:
     "@types/fs-extra" "^9.0.11"
     "@types/yargs" "^17.0.0"
     fs-extra "^10.0.0"
-    sparql-benchmark-runner "^4.2.0"
+    sparql-benchmark-runner "^5.0.0"
 
-"@jbr-experiment/watdiv@^5.3.0":
-  version "5.3.0"
-  resolved "https://registry.npmjs.org/@jbr-experiment/watdiv/-/watdiv-5.3.0.tgz"
-  integrity sha512-4qW05hpc3pXyWEDeZCcR3vGC5FZdyqiAyxUxM/guJXAHmsec6bokwOZ6Mze7iS9w16IOo3UtWyiXo8BAGTV61g==
+"@jbr-experiment/watdiv@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@jbr-experiment/watdiv/-/watdiv-6.0.0.tgz#47794a42a8baaae3cae3da8d19d4ee7bc472cb12"
+  integrity sha512-AnRX29h2uiOCkOv5O6EANsYbj7euKAIh/gPrq1m+yHedcH48m5sjvBBrXbq8aBLMKrWxzLEXzO6P2yZVnsvvnA==
   dependencies:
     "@types/fs-extra" "^9.0.11"
     "@types/yargs" "^17.0.0"
     fs-extra "^10.0.0"
-    sparql-benchmark-runner "^4.2.0"
+    sparql-benchmark-runner "^5.0.0"
 
-"@jbr-hook/cli@^5.2.0":
-  version "5.2.0"
-  resolved "https://registry.npmjs.org/@jbr-hook/cli/-/cli-5.2.0.tgz"
-  integrity sha512-jhq8Fq3/EFi1+4IDULPFC33bPHyx02tTGppsMlsgDSGwHlADE4XfBQUdeOuuM5hUXU1MB3kocYXu7TVtE4Ppxg==
+"@jbr-hook/cli@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@jbr-hook/cli/-/cli-6.0.0.tgz#f5d29dd234e418d47d28302d3c3519d20054e82b"
+  integrity sha512-sF9UCuVvzJ7fjKRL+uJaQxcASGgy2XgxZOldhmaOLT9o8uYT21/D5jAFkkh6wOqjMNlwMFZlCDYGRdjXAeGZPQ==
   dependencies:
     "@types/fs-extra" "^9.0.11"
     fs-extra "^10.0.0"
 
-"@jbr-hook/sparql-endpoint-comunica@^5.2.0":
-  version "5.2.0"
-  resolved "https://registry.npmjs.org/@jbr-hook/sparql-endpoint-comunica/-/sparql-endpoint-comunica-5.2.0.tgz"
-  integrity sha512-POWC6loMpqePtuVtJENwbkNburv6YccL0eFd8MinhSpion2k1dMNnShx5xVvdDa+qFLAEivOSHROPlkfMghjhA==
+"@jbr-hook/sparql-endpoint-comunica@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@jbr-hook/sparql-endpoint-comunica/-/sparql-endpoint-comunica-6.0.0.tgz#7968bc4c5ec63ed09e129b4deba506305cbb7b77"
+  integrity sha512-LUjFJFvI1azY7J8y0R2NO/vU7JLV9QjMKcYxSc2YVULLheb+qI+P83he+YZYy7DLU974cVbdPLbKjOoamMDaUg==
   dependencies:
     "@types/fs-extra" "^9.0.11"
     fs-extra "^10.0.0"
 
-"@jbr-hook/sparql-endpoint-ldf@^5.2.0":
-  version "5.2.0"
-  resolved "https://registry.npmjs.org/@jbr-hook/sparql-endpoint-ldf/-/sparql-endpoint-ldf-5.2.0.tgz"
-  integrity sha512-PE2CmvnXatkxiKOD3QYEbCV/7woFu2q6nc1kfmjCP/r062j6bag6wNyYCoSnvcXXpj9f1ls8+18ePbUjn0ksHw==
+"@jbr-hook/sparql-endpoint-ldf@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@jbr-hook/sparql-endpoint-ldf/-/sparql-endpoint-ldf-6.0.0.tgz#f17d31c366243d296e4cabffde156461a43ee6c5"
+  integrity sha512-YuUNEQCyA+c9wsunzNUDRmN2q6EHSmrmKFEEZ+ddkMrxnmWgNoMTSTpaNrWyN6Xy00G03NfQEKYSaTG9xq2trg==
   dependencies:
     "@types/fs-extra" "^9.0.11"
     fs-extra "^10.0.0"
@@ -4122,19 +4122,19 @@ componentsjs-generator@^4.2.0:
     rdf-object "^2.0.0"
     semver "^7.3.2"
 
-componentsjs@^6.0.1:
-  version "6.0.1"
-  resolved "https://registry.npmjs.org/componentsjs/-/componentsjs-6.0.1.tgz"
-  integrity sha512-8ylkwrS0WJCTkkp2dOamE4yLkkdFd9xZQQ8dGzaY22TdntLR9V/SH+dZ+GQ+im9/2KgrKtcEu0UHMY+cpE0LYw==
+componentsjs@^6.2.0:
+  version "6.2.0"
+  resolved "https://registry.npmjs.org/componentsjs/-/componentsjs-6.2.0.tgz"
+  integrity sha512-ieFKJNMduBYJSr48CzedDbM1Ao8lqFAf0m4z4I7x4XWqi5aW71CcLFSD7YkfNIiXVuL0L0gzx89wOXvvWFBJ7w==
   dependencies:
     "@rdfjs/types" "*"
     "@types/minimist" "^1.2.0"
     "@types/node" "^18.0.0"
     "@types/semver" "^7.3.4"
-    jsonld-context-parser "^2.1.1"
+    jsonld-context-parser "^3.0.0"
     minimist "^1.2.0"
     rdf-data-factory "^1.1.0"
-    rdf-object "^1.14.0"
+    rdf-object "^2.0.0"
     rdf-parse "^2.0.0"
     rdf-quad "^1.5.0"
     rdf-string "^1.6.0"
@@ -4142,10 +4142,10 @@ componentsjs@^6.0.1:
     semver "^7.3.2"
     winston "^3.3.3"
 
-componentsjs@^6.2.0:
-  version "6.2.0"
-  resolved "https://registry.npmjs.org/componentsjs/-/componentsjs-6.2.0.tgz"
-  integrity sha512-ieFKJNMduBYJSr48CzedDbM1Ao8lqFAf0m4z4I7x4XWqi5aW71CcLFSD7YkfNIiXVuL0L0gzx89wOXvvWFBJ7w==
+componentsjs@^6.3.0:
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/componentsjs/-/componentsjs-6.3.0.tgz#1a7b4c45404a6a013277bf60d998362ac673635c"
+  integrity sha512-psWOXR/jk21yy4RwSi6CnIHqOn17QoECF+D+5LQqF+aGdvH1ZOlSlC/sD5j9xJGPpQ0wG5zE26SO3/t7W5JTrQ==
   dependencies:
     "@rdfjs/types" "*"
     "@types/minimist" "^1.2.0"
@@ -7733,10 +7733,10 @@ jasmine-core@^4.1.0:
   resolved "https://registry.npmjs.org/jasmine-core/-/jasmine-core-4.6.0.tgz"
   integrity sha512-O236+gd0ZXS8YAjFx8xKaJ94/erqUliEkJTDedyE7iHvv4ZVqi+q+8acJxu05/WJDKm512EUNn809In37nWlAQ==
 
-jbr@^5.2.0:
-  version "5.2.0"
-  resolved "https://registry.npmjs.org/jbr/-/jbr-5.2.0.tgz"
-  integrity sha512-D/OXhw9Hu1rF1Eus/DwQi3SXZ6Ean2kZxSDUe7KjK6NbGjQsJe8J0qymiEAhyMQ0pkBIhIfLV8hUMv4hM9pLhA==
+jbr@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/jbr/-/jbr-6.0.0.tgz#14ba6c18eeba14d2e6638dc960d8d47c837fb1cf"
+  integrity sha512-D87ki7bLz6BjzrnqkGDk+kVS5MkSww+wqR6SjaRMQFN/nRUsPUukvwMEJhtbsKXDJa3BRqXjc45CZAlmLRAqyA==
   dependencies:
     "@types/cli-progress" "^3.9.1"
     "@types/cross-spawn" "^6.0.2"
@@ -7747,7 +7747,7 @@ jbr@^5.2.0:
     "@types/tar" "^6.1.13"
     "@types/yargs" "^17.0.0"
     cli-progress "^3.9.0"
-    componentsjs "^6.0.1"
+    componentsjs "^6.3.0"
     cross-fetch "^4.0.0"
     cross-spawn "^7.0.3"
     dockerode "^3.3.0"
@@ -8289,7 +8289,7 @@ jsonify@^0.0.1:
   resolved "https://registry.npmjs.org/jsonify/-/jsonify-0.0.1.tgz"
   integrity sha512-2/Ki0GcmuqSrgFyelQq9M05y7PS0mEwuIzrf3f1fPqkVDVRvZrPZtVSMHxdgo8Aq0sxAOb/cr2aqqA3LeWHVPg==
 
-jsonld-context-parser@^2.0.2, jsonld-context-parser@^2.1.1, jsonld-context-parser@^2.2.2, jsonld-context-parser@^2.4.0:
+jsonld-context-parser@^2.0.2, jsonld-context-parser@^2.2.2, jsonld-context-parser@^2.4.0:
   version "2.4.0"
   resolved "https://registry.npmjs.org/jsonld-context-parser/-/jsonld-context-parser-2.4.0.tgz"
   integrity sha512-ZYOfvh525SdPd9ReYY58dxB3E2RUEU4DJ6ZibO8AitcowPeBH4L5rCAitE2om5G1P+HMEgYEYEr4EZKbVN4tpA==
@@ -10842,7 +10842,7 @@ rdf-literal@^2.0.0:
   dependencies:
     rdf-data-factory "^2.0.0"
 
-rdf-object@^1.11.1, rdf-object@^1.14.0:
+rdf-object@^1.11.1:
   version "1.14.0"
   resolved "https://registry.npmjs.org/rdf-object/-/rdf-object-1.14.0.tgz"
   integrity sha512-/KSUWr7onDtL7d81kOpcUzJ2vHYOYJc2KU9WzBZRYydBhK0Sksh5Hg4VCQNaxUEvYEgdrrTuq9SLpOOCmag0rQ==
@@ -12030,10 +12030,10 @@ spark-md5@^3.0.1:
   resolved "https://registry.npmjs.org/spark-md5/-/spark-md5-3.0.2.tgz"
   integrity sha512-wcFzz9cDfbuqe0FZzfi2or1sgyIrsDwmPwfZC4hiNidPdPINjeUwNfv5kldczoEAcjl9Y1L3SM7Uz2PUEQzxQw==
 
-sparql-benchmark-runner@^4.2.0:
-  version "4.2.0"
-  resolved "https://registry.npmjs.org/sparql-benchmark-runner/-/sparql-benchmark-runner-4.2.0.tgz"
-  integrity sha512-HwLRV9qePW/4CVqsH8y22gfsVqIl9IIJB8CyfQdvhV1GkZsWdijJ9HHg4KEK9URZ7RInE6pwUOzvjLRdYnaFYA==
+sparql-benchmark-runner@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/sparql-benchmark-runner/-/sparql-benchmark-runner-5.0.0.tgz#ac4bfdc58e65f03b9805809044d116c067b23f19"
+  integrity sha512-UdxG/pCLQqRgo2DMctLRY3nxXknSVR8ofW4VSx6CaynTpBV4hpXE+5MYgSjPYIJWNao7prrSOgGmKE2P3OSTxA==
   dependencies:
     fetch-sparql-endpoint "^5.1.0"
     rdf-string "^1.0.0"
