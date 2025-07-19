@@ -1,0 +1,12 @@
+# https://www.wikidata.org/wiki/Wikidata:SPARQL_query_service/WDQS_graph_split/Federated_Queries_Examples#Sitelinks_lookup
+# Datasource: https://query-main.wikidata.org/bigdata/namespace/wdq/sparql https://query-scholarly.wikidata.org/bigdata/namespace/wdq/sparql
+PREFIX schema: <http://schema.org/>
+PREFIX wd: <http://www.wikidata.org/entity/>
+SELECT * WHERE {
+  VALUES ?item { wd:Q330955 wd:Q42 }
+  ?wikimediaUrl schema:about ?item ;
+    schema:isPartOf ?partOf_ ;
+    schema:inLanguage ?inLanguage .
+  BIND(REPLACE(STR(?partOf_), "^https://[^.]+\\.([^.]+)\\.[^.]+/$", "$1") AS ?partOf)
+  BIND(REPLACE(STR(?wikimediaUrl), ".*/wiki/([^/]+)$", "$1") AS ?articleTitle)
+} ORDER BY ?partOf ?inLanguage
