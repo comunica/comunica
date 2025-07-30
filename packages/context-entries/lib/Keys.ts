@@ -357,3 +357,10 @@ export const KeysStatistics = {
     '@comunica/statistic:intermediateResults',
   ),
 };
+
+export const KeyRemoteCache = {
+  /**
+   * The url of a remote cache of results
+   */
+  url: new ActionContextKey<string>('@comunica/remote-cache:url')
+}

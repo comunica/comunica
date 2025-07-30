@@ -1,0 +1,51 @@
+{
+  "name": "@comunica/actor-query-process-remote-cache",
+  "version": "1.0.0",
+  "description": "A remote-cache query-process actor",
+  "lsd:module": true,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/actor-query-process-remote-cache"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false,
+  "keywords": [
+    "comunica",
+    "actor",
+    "query-process",
+    "remote-cache"
+  ],
+  "license": "MIT",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/comunica-association"
+  },
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
+  "homepage": "https://comunica.dev/",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.js.map"
+  ],
+  "dependencies": {
+    "@comunica/bus-query-process": "^4.2.0",
+    "@comunica/core": "^4.2.0",
+    "sparql-cache-client": "^0.0.8",
+    "result-interface":"^2.3.1",
+    "sparqljson-parse":"^3.1.0",
+    "rdf-stores": "^2.1.1"
+  },
+  "scripts": {
+    "build": "yarn run build:ts && yarn run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
+  }
+}
