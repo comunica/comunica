@@ -66,7 +66,7 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
   public async queryCachedResults(action: IActionQueryProcess): SafePromise<RDF.Store[] | BindingsStream> {
     const cacheUrl: string | undefined = action.context.get(KeyRemoteCache.url);
     if (cacheUrl === undefined) {
-      return error(new Error("chache URL does not exist"));
+      return error(new Error("cache URL does not exist"));
     }
     let simpleCacheHit: CacheHitFunction | undefined;
     switch (this.cacheHitAlgorithm) {

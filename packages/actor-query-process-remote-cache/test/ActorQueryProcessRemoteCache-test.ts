@@ -1,8 +1,13 @@
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
 import { ActorQueryProcessRemoteCache } from '../lib/ActorQueryProcessRemoteCache';
 import { translate } from 'sparqlalgebrajs';
 import '@comunica/utils-jest';
-import { result } from 'result-interface';
+import { error, result } from 'result-interface';
+import {
+  getCachedQuads,
+} from 'sparql-cache-client';
+
+jest.mock('sparql-cache-client');
 
 describe('ActorQueryProcessRemoteCache', () => {
   let bus: any;
@@ -40,7 +45,27 @@ describe('ActorQueryProcessRemoteCache', () => {
 
     });
 
-    describe("queryCachedResults", ()=>{
+    describe("queryCachedResults", () => {
+      let actor: ActorQueryProcessRemoteCache;
+
+      beforeEach(() => {
+        actor = new ActorQueryProcessRemoteCache({ name: 'actor', bus, fallBackQueryProcess: <any>{}, cacheHitAlgorithm: 'equality' });
+      });
+
+      it("should thrown an error when the cache URL does not exist", async () => {
+        const action = {
+          query: "SELECT * WHERE {?s ?p ?o}",
+          context: new ActionContext()
+        };
+
+        const resp = await actor.queryCachedResults(action);
+
+        expect(resp).toStrictEqual(error(new Error("cache URL does not exist")));
+      });
+
+      it("should ", ()=>{
+
+      });
 
     });
   });
