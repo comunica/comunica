@@ -5,6 +5,7 @@ import { Algebra, toSparql, translate, Util } from 'sparqlalgebrajs';
 import {
   CacheHitFunction,
   getCachedQuads,
+  type CacheLocation,
   IOptions,
   OutputOption,
 } from 'sparql-cache-client';
@@ -41,7 +42,7 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
     const resultOrError = await this.queryCachedResults(action);
     if (isResult(resultOrError)) {
       if (Array.isArray(resultOrError.value)) {
-        action.context.set(KeysInitQuery.querySourcesUnidentified, resultOrError.value);
+        action.context = action.context.set(KeysInitQuery.querySourcesUnidentified, resultOrError.value);
       } else {
         return {
           result: {
@@ -64,8 +65,8 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
   }
 
   public async queryCachedResults(action: IActionQueryProcess): SafePromise<RDF.Store[] | BindingsStream> {
-    const cacheUrl: string | undefined = action.context.get(KeyRemoteCache.url);
-    if (cacheUrl === undefined) {
+    const cacheLocation: CacheLocation | undefined = action.context.get(KeyRemoteCache.location);
+    if (cacheLocation === undefined) {
       return error(new Error("cache URL does not exist"));
     }
     let simpleCacheHit: CacheHitFunction | undefined;
@@ -74,7 +75,7 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
         simpleCacheHit = ActorQueryProcessRemoteCache.equalityCacheHit;
         break;
       default:
-        break;
+        return error(new Error(`algorithm ${this.cacheHitAlgorithm} not supported`));
     }
 
     const query: Algebra.Operation = typeof action.query === 'string' ? translate(action.query) : action.query;
@@ -94,7 +95,7 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
     }
 
     const input = {
-      cache: cacheUrl,
+      cache: cacheLocation,
       query,
       // Only includes non-SERVICE endpoint(s)
       endpoints,
@@ -118,12 +119,12 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
     }
 
     if (this.cacheHitAlgorithm === 'equality') {
-      const bindings = this.bindingConvertion(cacheResult.value.cache);
+      const bindings = ActorQueryProcessRemoteCache.bindingConvertion(cacheResult.value.cache);
       const it: BindingsStream = new ArrayIterator(bindings, { autoStart: false });
       return result(it);
     }
 
-    const store = this.bindingToQuadStore(this.bindingConvertion(cacheResult.value.cache), query);
+    const store = this.bindingToQuadStore(ActorQueryProcessRemoteCache.bindingConvertion(cacheResult.value.cache), query);
 
     return result([store, ...rdfStores]);
   }
@@ -136,7 +137,7 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
       ('match' in source))
   }
 
-  private bindingConvertion(bindings: IBindings[]): Bindings[] {
+  public static bindingConvertion(bindings: IBindings[]): Bindings[] {
     const resp: Bindings[] = [];
     for (const binding of bindings) {
       const current = BF.fromRecord(binding);

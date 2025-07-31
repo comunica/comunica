@@ -25,6 +25,9 @@ import type {
 import type * as RDF from '@rdfjs/types';
 import type { IDocumentLoader } from 'jsonld-context-parser';
 import type { Algebra } from 'sparqlalgebrajs';
+import {
+  CacheLocation,
+} from 'sparql-cache-client';
 
 /**
  * When adding entries to this file, also add a shortcut for them in the contextKeyShortcuts TSDoc comment in
@@ -362,5 +365,5 @@ export const KeyRemoteCache = {
   /**
    * The url of a remote cache of results
    */
-  url: new ActionContextKey<string>('@comunica/remote-cache:url')
+  location: new ActionContextKey<CacheLocation>('@comunica/remote-cache:location')
 }

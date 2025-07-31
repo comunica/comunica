@@ -12083,10 +12083,24 @@ sparql-benchmark-runner@^4.2.0:
     rdf-string "^1.0.0"
     yargs "^17.0.0"
 
-sparql-cache-client@^0.0.7:
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/sparql-cache-client/-/sparql-cache-client-0.0.7.tgz#16a96773c4698373b39306487ffde95c6a3e7a2c"
-  integrity sha512-4qVp/RC+L2T2vheUiQIvM9CkRASkHtaOpm6YWaBPoaryTnI903bNmrjT3OC2Ss1j9xLkfPjRFVrPKR+/Ivduvw==
+sparql-cache-client@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/sparql-cache-client/-/sparql-cache-client-0.1.0.tgz#ae4b9ee1fb8191a0d709036f1c264f58eb91db30"
+  integrity sha512-rRpmlnDdAirFjB/8GXj1hbB2t1ctcS880/ASfPur/3mw3tS/SInM/IREU29ArDG0h33jxmkxOEKHyG/Kbak9OQ==
+  dependencies:
+    "@rdfjs/types" "^2.0.1"
+    "@types/streamify-string" "^1.0.4"
+    p-limit "^6.2.0"
+    rdf-data-factory "^2.0.2"
+    rdf-dereference "^4.0.0"
+    result-interface "^1.0.5"
+    sparqlalgebrajs "^5.0.1"
+    sparqljson-parse "^3.0.0"
+
+sparql-cache-client@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/sparql-cache-client/-/sparql-cache-client-0.1.1.tgz#f7619fbd91a10c3dc30519654e7d20943fb64289"
+  integrity sha512-k+ZrwjuaN2XaIqdyqNcMk1v2fayXDN8tr6BmEQxhTzcnmP94yE4N94B77TChntdfofqDACZGjzjklPFkPXpkpA==
   dependencies:
     "@rdfjs/types" "^2.0.1"
     "@types/streamify-string" "^1.0.4"
