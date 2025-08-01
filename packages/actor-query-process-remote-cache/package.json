@@ -40,7 +40,7 @@
     "@comunica/core": "^4.2.0",
     "@rdfjs/types": "*",
     "sparql-cache-client": "^0.1.3",
-    "result-interface":"^2.3.1",
+    "result-interface":"^2.3.2",
     "sparqljson-parse":"^3.1.0",
     "rdf-data-factory": "^1.1.2",
     "rdf-stores": "^2.1.1"

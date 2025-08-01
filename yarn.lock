@@ -11518,10 +11518,10 @@ result-interface@^1.0.5:
   resolved "https://registry.yarnpkg.com/result-interface/-/result-interface-1.1.0.tgz#520caf1bcf528f51b400f114d3db2c7a8905ba92"
   integrity sha512-72kPA3A8zwWAgrK9LrE1Vpd0gQkBJxHCJjuA3O6gPMDz1vc7Jdo/jA3olxLO8gxcpI3eihwkJecZ+OUFs4ceYg==
 
-result-interface@^2.3.1:
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/result-interface/-/result-interface-2.3.1.tgz#bb51ab6438115aa3d80ed349457acec9b886e463"
-  integrity sha512-M4s1Z5mHbblJp2nt6pAco334BX66zhoRIPzhta1AwmjCUr/UF+pv48BLucPz5KZGqNMgShifbf13d9sua9JSJQ==
+result-interface@^2.3.2:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/result-interface/-/result-interface-2.3.2.tgz#3c73707b6624c3a6b6f4d1c93c4ca3e21ec7f443"
+  integrity sha512-v18TxTA5iyqo8G3usuqvTtyC3mbCMumS0If555Iw5OvY49lFl+5hEbdEwqt8RK1iHcF5TAlPEAQWqR0HvW/7UQ==
 
 ret@~0.1.10:
   version "0.1.15"
@@ -12097,10 +12097,10 @@ sparql-cache-client@^0.1.0:
     sparqlalgebrajs "^5.0.1"
     sparqljson-parse "^3.0.0"
 
-sparql-cache-client@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/sparql-cache-client/-/sparql-cache-client-0.1.1.tgz#f7619fbd91a10c3dc30519654e7d20943fb64289"
-  integrity sha512-k+ZrwjuaN2XaIqdyqNcMk1v2fayXDN8tr6BmEQxhTzcnmP94yE4N94B77TChntdfofqDACZGjzjklPFkPXpkpA==
+sparql-cache-client@^0.1.3:
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/sparql-cache-client/-/sparql-cache-client-0.1.3.tgz#1ac51785d162b6a3110aee3c1fc27e0bc3b0b767"
+  integrity sha512-cXFok5CYYmaUgojCZ1gf1w1mgbSWgj2BMSvRDJ6+hOFfeeUc1/a4VjkOnMTrTI8q3XEcwQzI/otEf6Zbdm7v2A==
   dependencies:
     "@rdfjs/types" "^2.0.1"
     "@types/streamify-string" "^1.0.4"
