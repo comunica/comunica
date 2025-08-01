@@ -1,0 +1,18 @@
+{
+    "@context": [
+      "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^4.0.0/components/context.jsonld",
+  
+      "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-process-remote-cache/^1.0.0/components/context.jsonld"
+    ],
+    "@id": "urn:comunica:default:Runner",
+    "@type": "Runner",
+    "actors": [
+      {
+        "@id": "urn:comunica:default:query-process/actors#remote-cache",
+        "@type": "ActorQueryProcessRemoteCache",
+        "fallBackQueryProcess": { "@id": "urn:comunica:default:query-process/actors#sequential" },
+        "cacheHitAlgorithm": "equality"
+      }
+    ]
+  }
+  
