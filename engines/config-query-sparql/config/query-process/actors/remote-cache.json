@@ -9,6 +9,7 @@
   "actors": [
     {
       "@id": "urn:comunica:default:query-process/actors#remote-cache",
+      "beforeActors": { "@id": "sequential_process" },
       "@type": "ActorQueryProcessRemoteCache",
       "fallBackQueryProcess": {
         "@id": "sequential_process",
