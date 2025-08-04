@@ -139,46 +139,37 @@ export class TermFunctionLesserThan extends TermFunctionBase {
 
   private handleLiterals(
     exprEval: IInternalEvaluator,
-    func: (args: Literal<any>[]) => BooleanLiteral =
+    func: ([ left, right ]: Literal<any>[]) => BooleanLiteral =
       ([ left, right ]: Literal<any>[]): BooleanLiteral => bool(left.typedValue < right.typedValue),
-  ):
-    (args: Literal<any>[]) => (BooleanLiteral) {
-    return (args: Literal<any>[]) => {
-      const nonLexical = this.getNonLexical(args);
+  ): ([ left, right ]: Literal<any>[]) => (BooleanLiteral) {
+    return ([ left, right ]: Literal<any>[]) => {
+      const args = [ left, right ];
+      const nonLexical = args.find(arg => arg instanceof NonLexicalLiteral);
       if (nonLexical) {
-        return this.handleNonLexical(args[0], args[1], nonLexical, exprEval);
+        return bool(this.handleNonLexicals(left, right, nonLexical, exprEval));
       }
       return func(args);
     };
   }
 
-  private getNonLexical(args: Literal<any>[]): NonLexicalLiteral | undefined {
-    for (const arg of args) {
-      if (arg instanceof NonLexicalLiteral) {
-        return arg;
-      }
-    }
-    return undefined;
-  }
-
-  private handleNonLexical(
+  private handleNonLexicals(
     left: Literal<any>,
     right: Literal<any>,
     nonLexical: Literal<any>,
     exprEval: IInternalEvaluator,
-  ): BooleanLiteral {
+  ): boolean {
     if (this.shouldThrowNonLexicalError(exprEval)) {
       throw new Err.InvalidLexicalForm(
         nonLexical.toRDF(exprEval.context.getSafe(KeysInitQuery.dataFactory)),
       );
     }
-    return bool(this.comparePrimitives(left.str(), right.str()) === -1);
+    return this.comparePrimitives(left.str(), right.str()) === -1;
   }
 
   private shouldThrowNonLexicalError(exprEval: IInternalEvaluator): boolean {
     const context = exprEval.context;
-    return !context.has(KeysInitQuery.functionLesserThenNonLexicalBehaviour) ||
-      context.getSafe(KeysInitQuery.functionLesserThenNonLexicalBehaviour) === 'throwsTypeError';
+    return !context.has(KeysInitQuery.functionLesserThanNonLexicalBehaviour) ||
+      context.getSafe(KeysInitQuery.functionLesserThanNonLexicalBehaviour) === 'throwsTypeError';
   }
 
   private quadComponentTest(left: Term, right: Term, exprEval: IInternalEvaluator): boolean | undefined {
@@ -209,9 +200,9 @@ export class TermFunctionLesserThan extends TermFunctionBase {
       const litA: Literal<any> = <Literal<any>> termA;
       const litB: Literal<any> = <Literal<any>> termB;
 
-      const nonLexical = this.getNonLexical([ litA, litB ]);
+      const nonLexical = [ litA, litB ].find(arg => arg instanceof NonLexicalLiteral);
       if (nonLexical) {
-        return this.handleNonLexical(litA, litB, nonLexical, exprEval).typedValue;
+        return this.handleNonLexicals(litA, litB, nonLexical, exprEval);
       }
 
       const compareType =

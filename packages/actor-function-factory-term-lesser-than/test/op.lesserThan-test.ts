@@ -249,7 +249,7 @@ describe('evaluation of \'<\'', () => {
         "a"^^xsd:dayTimeDuration   "b"^^xsd:dayTimeDuration   = true
         "a"^^xsd:time              "b"^^xsd:time              = true
       `,
-      config: new ActionContext().set(KeysInitQuery.functionLesserThenNonLexicalBehaviour, 'lexicalCompare'),
+      config: new ActionContext().set(KeysInitQuery.functionLesserThanNonLexicalBehaviour, 'lexicalCompare'),
     });
   });
 

@@ -221,8 +221,8 @@ export const KeysInitQuery = {
    * throwsError: throws an error (default).
    * lexicalCompare: treats them as lexicals and compares their string values.
    */
-  functionLesserThenNonLexicalBehaviour: new ActionContextKey<'throwsTypeError' | 'lexicalCompare'>(
-    '@comunica/actor-init-query:functionsInequalityNonLexicalBehaviour',
+  functionLesserThanNonLexicalBehaviour: new ActionContextKey<'throwsTypeError' | 'lexicalCompare'>(
+    '@comunica/actor-init-query:functionsLesserThanNonLexicalBehaviour',
   ),
 };
 
