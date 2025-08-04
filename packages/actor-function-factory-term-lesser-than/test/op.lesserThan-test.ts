@@ -224,8 +224,10 @@ describe('evaluation of \'<\'', () => {
         earlyN               "a"^^xsd:dateTime   = Invalid lexical form
         "true"^^xsd:boolean  "a"^^xsd:dateTime   = Invalid lexical form
         
-        "a"^^xsd:yearMonthDuration "b"^^xsd:yearMonthDuration = Invalid lexical form
         "abc"^^xsd:integer         "b"^^xsd:decimal           = Invalid lexical form
+        "a"^^xsd:yearMonthDuration "b"^^xsd:yearMonthDuration = Invalid lexical form
+        "a"^^xsd:dayTimeDuration   "b"^^xsd:dayTimeDuration   = Invalid lexical form
+        "a"^^xsd:time              "b"^^xsd:time              = Invalid lexical form
       `,
     });
   });
@@ -242,8 +244,10 @@ describe('evaluation of \'<\'', () => {
         earlyN               "a"^^xsd:dateTime   = true
         "true"^^xsd:boolean  "a"^^xsd:dateTime   = false
         
-        "a"^^xsd:yearMonthDuration "b"^^xsd:yearMonthDuration = true
         "a"^^xsd:integer           "b"^^xsd:decimal           = true
+        "a"^^xsd:yearMonthDuration "b"^^xsd:yearMonthDuration = true
+        "a"^^xsd:dayTimeDuration   "b"^^xsd:dayTimeDuration   = true
+        "a"^^xsd:time              "b"^^xsd:time              = true
       `,
       config: new ActionContext().set(KeysInitQuery.functionLesserThenNonLexicalBehaviour, 'lexicalCompare'),
     });
