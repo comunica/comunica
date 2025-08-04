@@ -8,9 +8,9 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, FragmentSelectorShape, IActionContext, IQuerySourceWrapper } from '@comunica/types';
-import { doesShapeAcceptOperation, getOperationSource, getExpressionVariables } from '@comunica/utils-query-operation';
+import { doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
-import { mapTermsNested } from 'rdf-terms';
+import { mapTermsNested, uniqTerms } from 'rdf-terms';
 import { Factory, Algebra, Util } from 'sparqlalgebrajs';
 
 /**
@@ -76,7 +76,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
       operation = Util.mapOperation(operation, {
         filter(op: Algebra.Filter, factory: Factory) {
           // Check if the filter must be pushed down
-          if (!self.shouldAttemptPushDown(op, sources, sourceShapes)) {
+          if (!self.shouldAttemptPushDown(op, sources, sourceShapes, action.context)) {
             return {
               recurse: true,
               result: op,
@@ -85,7 +85,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
 
           // For all filter expressions in the operation,
           // we attempt to push them down as deep as possible into the algebra.
-          const variables = getExpressionVariables(op.expression);
+          const variables = self.getExpressionVariables(op.expression);
           const [ isModified, result ] = self
             .filterPushdown(op.expression, variables, op.input, factory, action.context);
           if (isModified) {
@@ -135,15 +135,18 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
    * Check if the given filter operation must be attempted to push down, based on the following criteria:
    * - Always push down if aggressive mode is enabled
    * - Push down if the filter is extremely selective
+   * - Don't push down extension functions comunica support, but an endpoint doesn't
    * - Push down if federated and at least one accepts the filter
    * @param operation The filter operation
    * @param sources The query sources in the operation
    * @param sourceShapes A mapping of sources to selector shapes.
+   * @param context The action context.
    */
   public shouldAttemptPushDown(
     operation: Algebra.Filter,
     sources: IQuerySourceWrapper[],
     sourceShapes: Map<IQuerySourceWrapper, FragmentSelectorShape>,
+    context: IActionContext,
   ): boolean {
     // Always push down if aggressive mode is enabled
     if (this.aggressivePushdown) {
@@ -159,6 +162,19 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
         (expression.args[0].expressionType === 'term' && expression.args[0].term.termType === 'Variable' &&
           expression.args[1].expressionType === 'term' && expression.args[1].term.termType !== 'Variable'))) {
       return true;
+    }
+
+    // Don't push down extension functions comunica support, but an endpoint doesn't
+    if (expression.expressionType === Algebra.expressionTypes.NAMED && context.has(KeysInitQuery.extensionFunctions)) {
+      const comunicaFunctions = context.getSafe(KeysInitQuery.extensionFunctions);
+      const functionName = expression.name.value;
+      if (sources.some((_source) => {
+        // TODO: grab these functions from the source
+        const endpointFunctions = {};
+        return functionName in comunicaFunctions && !(functionName in endpointFunctions);
+      })) {
+        return false;
+      }
     }
 
     // Push down if federated and at least one accepts the filter
@@ -190,6 +206,30 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
       [Algebra.types.SERVICE]: sourceAdder,
     });
     return [ ...sources ];
+  }
+
+  /**
+   * Get all variables inside the given expression.
+   * @param expression An expression.
+   * @return An array of variables, or undefined if the expression is unsupported for pushdown.
+   */
+  public getExpressionVariables(expression: Algebra.Expression): RDF.Variable[] {
+    switch (expression.expressionType) {
+      case Algebra.expressionTypes.AGGREGATE:
+      case Algebra.expressionTypes.WILDCARD:
+        throw new Error(`Getting expression variables is not supported for ${expression.expressionType}`);
+      case Algebra.expressionTypes.EXISTENCE:
+        return Util.inScopeVariables(expression.input);
+      case Algebra.expressionTypes.NAMED:
+        return [];
+      case Algebra.expressionTypes.OPERATOR:
+        return uniqTerms(expression.args.flatMap(arg => this.getExpressionVariables(arg)));
+      case Algebra.expressionTypes.TERM:
+        if (expression.term.termType === 'Variable') {
+          return [ expression.term ];
+        }
+        return [];
+    }
   }
 
   protected getOverlappingOperations(
@@ -249,17 +289,6 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     // Don't push down (NOT) EXISTS
     if (expression.expressionType === Algebra.expressionTypes.EXISTENCE) {
       return [ false, factory.createFilter(operation, expression) ];
-    }
-
-    // Don't push down extension functions comunica support, but the endpoint doesn't
-    if (expression.expressionType === Algebra.expressionTypes.NAMED && context.has(KeysInitQuery.extensionFunctions)) {
-      const comunicaFunctions = context.getSafe(KeysInitQuery.extensionFunctions);
-      // Empty mock, because I don't know how to access the metadata where these are stored
-      const endpointFunctions = {};
-      const functionName = expression.name.value;
-      if (functionName in comunicaFunctions && !(functionName in endpointFunctions)) {
-        return [ false, factory.createFilter(operation, expression) ];
-      }
     }
 
     switch (operation.type) {

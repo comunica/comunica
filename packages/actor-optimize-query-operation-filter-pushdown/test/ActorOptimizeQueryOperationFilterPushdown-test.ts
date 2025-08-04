@@ -1,6 +1,6 @@
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import { assignOperationSource, getExpressionVariables } from '@comunica/utils-query-operation';
+import { assignOperationSource } from '@comunica/utils-query-operation';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorOptimizeQueryOperationFilterPushdown } from '../lib/ActorOptimizeQueryOperationFilterPushdown';
@@ -247,7 +247,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           pushEqualityIntoPatterns: true,
         });
         const op = AF.createFilter(null!, null!);
-        expect(actor.shouldAttemptPushDown(op, [], new Map())).toBeTruthy();
+        expect(actor.shouldAttemptPushDown(op, [], new Map(), new ActionContext())).toBeTruthy();
       });
 
       it('returns true if the filter is extremely selective (1)', () => {
@@ -258,7 +258,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             AF.createTermExpression(DF.namedNode('iri')),
           ],
         ));
-        expect(actor.shouldAttemptPushDown(op, [], new Map())).toBeTruthy();
+        expect(actor.shouldAttemptPushDown(op, [], new Map(), new ActionContext())).toBeTruthy();
       });
 
       it('returns true if the filter is extremely selective (2)', () => {
@@ -269,7 +269,45 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             AF.createTermExpression(DF.variable('s')),
           ],
         ));
-        expect(actor.shouldAttemptPushDown(op, [], new Map())).toBeTruthy();
+        expect(actor.shouldAttemptPushDown(op, [], new Map(), new ActionContext())).toBeTruthy();
+      });
+
+      it('returns false if comunica supports the extensionFunction, but a source doesnt', async() => {
+        const op = AF.createFilter(
+          AF.createNop(),
+          AF.createNamedExpression(DF.namedNode('https://example.com/functions#mock'), [
+            AF.createTermExpression(DF.variable('a')),
+            AF.createTermExpression(DF.variable('b')),
+          ]),
+        );
+        const src = <any> {};
+        const context = new ActionContext().set(KeysInitQuery.extensionFunctions, {
+          'https://example.com/functions#mock': async args => args[0],
+        });
+        expect(actor.shouldAttemptPushDown(op, [ src ], new Map(), context)).toBeFalsy();
+      });
+
+      it('returns true if both comunica and all sources support the extensionFunction', async() => {
+        const op = AF.createFilter(
+          AF.createNop(),
+          AF.createNamedExpression(DF.namedNode('https://example.com/functions#mock'), [
+            AF.createTermExpression(DF.variable('a')),
+            AF.createTermExpression(DF.variable('b')),
+          ]),
+        );
+        const src = <any> {};
+        const shapes = new Map();
+        shapes.set(src, {
+          type: 'operation',
+          operation: {
+            operationType: 'type',
+            type: Algebra.types.FILTER,
+          },
+        });
+        const context = new ActionContext().set(KeysInitQuery.extensionFunctions, {
+          'https://example.com/functions#mock': async args => args[0],
+        });
+        expect(actor.shouldAttemptPushDown(op, [ src ], shapes, context)).toBeTruthy();
       });
 
       it('returns true if federated with filter support for one', () => {
@@ -322,7 +360,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             },
           ],
         });
-        expect(actor.shouldAttemptPushDown(op, [ src1, src2 ], shapes)).toBeTruthy();
+        expect(actor.shouldAttemptPushDown(op, [ src1, src2 ], shapes, new ActionContext())).toBeTruthy();
       });
 
       it('returns false if federated with filter support for none', () => {
@@ -356,7 +394,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             type: Algebra.types.NOP,
           },
         });
-        expect(actor.shouldAttemptPushDown(op, [ src1, src2 ], shapes)).toBeFalsy();
+        expect(actor.shouldAttemptPushDown(op, [ src1, src2 ], shapes, new ActionContext())).toBeFalsy();
       });
 
       it('returns false otherwise', () => {
@@ -382,25 +420,25 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             type: Algebra.types.PATTERN,
           },
         });
-        expect(actor.shouldAttemptPushDown(op, [], shapes)).toBeFalsy();
+        expect(actor.shouldAttemptPushDown(op, [], shapes, new ActionContext())).toBeFalsy();
       });
     });
 
     describe('getExpressionVariables', () => {
       it('returns undefined for aggregates', async() => {
-        expect(() => getExpressionVariables(
+        expect(() => actor.getExpressionVariables(
           AF.createAggregateExpression('sum', AF.createTermExpression(DF.namedNode('s')), true),
         )).toThrow(`Getting expression variables is not supported for aggregate`);
       });
 
       it('returns undefined for wildcard', async() => {
-        expect(() => getExpressionVariables(
+        expect(() => actor.getExpressionVariables(
           AF.createWildcardExpression(),
         )).toThrow(`Getting expression variables is not supported for wildcard`);
       });
 
       it('returns undefined for existence', async() => {
-        expect(getExpressionVariables(
+        expect(actor.getExpressionVariables(
           AF.createExistenceExpression(false, AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.variable('o'))),
         )).toEqual([
           DF.variable('p'),
@@ -409,25 +447,25 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
       });
 
       it('returns empty array for a named expression', async() => {
-        expect(getExpressionVariables(
+        expect(actor.getExpressionVariables(
           AF.createNamedExpression(DF.namedNode('s'), []),
         )).toEqual([]);
       });
 
       it('returns a variable for a term expression with a variable', async() => {
-        expect(getExpressionVariables(
+        expect(actor.getExpressionVariables(
           AF.createTermExpression(DF.variable('s')),
         )).toEqual([ DF.variable('s') ]);
       });
 
       it('returns an empty array for a term expression with a named node', async() => {
-        expect(getExpressionVariables(
+        expect(actor.getExpressionVariables(
           AF.createTermExpression(DF.namedNode('s')),
         )).toEqual([]);
       });
 
       it('returns for an operator expression with variables', async() => {
-        expect(getExpressionVariables(
+        expect(actor.getExpressionVariables(
           AF.createOperatorExpression('+', [
             AF.createTermExpression(DF.variable('a')),
             AF.createTermExpression(DF.variable('b')),
@@ -436,7 +474,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
       });
 
       it('returns for an operator expression with duplicate variables', async() => {
-        expect(getExpressionVariables(
+        expect(actor.getExpressionVariables(
           AF.createOperatorExpression('+', [
             AF.createTermExpression(DF.variable('a')),
             AF.createTermExpression(DF.variable('a')),
@@ -445,7 +483,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
       });
 
       it('returns for a nested operator expression with variables', async() => {
-        expect(getExpressionVariables(
+        expect(actor.getExpressionVariables(
           AF.createOperatorExpression('+', [
             AF.createTermExpression(DF.variable('a')),
             AF.createOperatorExpression('+', [
@@ -457,7 +495,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
       });
 
       it('returns for a nested operator expression with mixed terms', async() => {
-        expect(getExpressionVariables(
+        expect(actor.getExpressionVariables(
           AF.createOperatorExpression('+', [
             AF.createTermExpression(DF.blankNode('a')),
             AF.createOperatorExpression('+', [
@@ -476,7 +514,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
       ) {
         return actor.filterPushdown(
           expression,
-          getExpressionVariables(expression),
+          actor.getExpressionVariables(expression),
           operation,
           AF,
           new ActionContext(),
@@ -584,41 +622,6 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             ]),
             AF.createExistenceExpression(false, AF.createNop()),
           ) ]);
-        });
-
-        describe('for extension functions', () => {
-          it('is not pushed down when comunica supports the function, but the endpoint doesnt', async() => {
-            const expression = AF.createNamedExpression(DF.namedNode('https://example.com/functions#mock'), [
-              AF.createTermExpression(DF.variable('a')),
-              AF.createTermExpression(DF.variable('b')),
-            ]);
-            const operation = AF.createNop();
-            const context = new ActionContext().set(KeysInitQuery.extensionFunctions, {
-              'https://example.com/functions#mock': async args => args[0],
-            });
-            expect(actor.filterPushdown(
-              expression,
-              actor.getExpressionVariables(expression),
-              operation,
-              AF,
-              context,
-            )).toEqual([ false, AF.createFilter(
-              operation,
-              expression,
-            ) ]);
-          });
-
-          it('is pushed down when comunica doesnt support', async() => {
-            const expression = AF.createNamedExpression(DF.namedNode('https://example.com/functions#mock'), [
-              AF.createTermExpression(DF.variable('a')),
-              AF.createTermExpression(DF.variable('b')),
-            ]);
-            const operation = AF.createNop();
-            expect(filterPushdown(
-              expression,
-              operation,
-            )).toEqual([ true, operation ]);
-          });
         });
       });
 
