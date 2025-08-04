@@ -41,10 +41,10 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
   public async run(action: IActionQueryProcess): Promise<IActorQueryProcessOutput> {
     const resultOrError = await this.queryCachedResults(action);
     if (isResult(resultOrError)) {
+      this.logDebug(action.context, `using the remote cache from: ${JSON.stringify(action.context.getSafe(KeyRemoteCache.location), null, 2)}`,)
       if (Array.isArray(resultOrError.value)) {
         action.context = action.context.set(KeysInitQuery.querySourcesUnidentified, resultOrError.value);
       } else {
-        console.log("using the cache")
         return {
           result: {
             type: 'bindings',
@@ -55,8 +55,9 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
           }
         }
       }
+    } else {
+      this.logDebug(action.context, "query not found in the cache performing the full execution")
     }
-    console.log("normal execution")
     return this.fallBackQueryProcess.run(action, undefined);
   }
 
