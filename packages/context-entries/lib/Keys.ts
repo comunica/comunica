@@ -221,7 +221,7 @@ export const KeysInitQuery = {
    * throwsError: throws an error (default).
    * lexicalCompare: treats them as lexicals and compares their string values.
    */
-  functionLesserThenNonLexicalBehaviour: new ActionContextKey<FunctionLesserThanNonLexicalBehaviour>(
+  functionLesserThenNonLexicalBehaviour: new ActionContextKey<'throwsTypeError' | 'lexicalCompare'>(
     '@comunica/actor-init-query:functionsInequalityNonLexicalBehaviour',
   ),
 };
@@ -359,7 +359,3 @@ export const KeysStatistics = {
     '@comunica/bus-context-preprocess:dereferencedLinks',
   ),
 };
-
-export enum FunctionLesserThanNonLexicalBehaviour {
-  throwsError, lexicalCompare,
-}

@@ -36,7 +36,19 @@ export class TermFunctionLesserThan extends TermFunctionBase {
       arity: 2,
       operator: SparqlOperator.LT,
       overloads: declare(SparqlOperator.LT)
-        .numberTest(() => (left, right) => left < right)
+        .set(
+          [ C.TypeAlias.SPARQL_NUMERIC, C.TypeAlias.SPARQL_NUMERIC ],
+          exprEval => ([ left, right ]: E.NumericLiteral[]) => {
+            const nonLexical = <Term>left instanceof NonLexicalLiteral ?
+              left :
+                (<Term>right instanceof NonLexicalLiteral ? right : undefined);
+            if (nonLexical) {
+              return this.handleNonLexical(left, right, nonLexical, exprEval);
+            }
+            return bool(left.typedValue < right.typedValue);
+          },
+          false,
+        )
         .stringTest(() => (left, right) => left.localeCompare(right) === -1)
         .set(
           [ TypeURL.RDF_LANG_STRING, TypeURL.RDF_LANG_STRING ],
@@ -144,7 +156,7 @@ export class TermFunctionLesserThan extends TermFunctionBase {
   private shouldThrowNonLexicalError(exprEval: IInternalEvaluator): boolean {
     const context = exprEval.context;
     return !context.has(KeysInitQuery.functionLesserThenNonLexicalBehaviour) ||
-      context.getSafe(KeysInitQuery.functionLesserThenNonLexicalBehaviour) === 0;
+      context.getSafe(KeysInitQuery.functionLesserThenNonLexicalBehaviour) === 'throwsTypeError';
   }
 
   private quadComponentTest(left: Term, right: Term, exprEval: IInternalEvaluator): boolean | undefined {

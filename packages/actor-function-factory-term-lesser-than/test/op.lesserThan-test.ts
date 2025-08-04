@@ -223,6 +223,9 @@ describe('evaluation of \'<\'', () => {
         "a"^^xsd:boolean     "true"^^xsd:boolean = Invalid lexical form
         earlyN               "a"^^xsd:dateTime   = Invalid lexical form
         "true"^^xsd:boolean  "a"^^xsd:dateTime   = Invalid lexical form
+        
+        "a"^^xsd:yearMonthDuration "b"^^xsd:yearMonthDuration = Invalid lexical form
+        "abc"^^xsd:integer         "b"^^xsd:decimal           = Invalid lexical form
       `,
     });
   });
@@ -238,8 +241,11 @@ describe('evaluation of \'<\'', () => {
         "a"^^xsd:boolean     "true"^^xsd:boolean = true
         earlyN               "a"^^xsd:dateTime   = true
         "true"^^xsd:boolean  "a"^^xsd:dateTime   = false
+        
+        "a"^^xsd:yearMonthDuration "b"^^xsd:yearMonthDuration = true
+        "a"^^xsd:integer           "b"^^xsd:decimal           = true
       `,
-      config: new ActionContext().set(KeysInitQuery.functionLesserThenNonLexicalBehaviour, 1),
+      config: new ActionContext().set(KeysInitQuery.functionLesserThenNonLexicalBehaviour, 'lexicalCompare'),
     });
   });
 
