@@ -2,6 +2,11 @@ import type * as RDF from '@rdfjs/types';
 import { uniqTerms } from 'rdf-terms';
 import { Algebra, Util } from 'sparqlalgebrajs';
 
+/**
+ * Get all variables inside the given expression.
+ * @param expression An expression.
+ * @return An array of variables, or undefined if the expression is unsupported for pushdown.
+ */
 export function getExpressionVariables(expression: Algebra.Expression): RDF.Variable[] {
   switch (expression.expressionType) {
     case Algebra.expressionTypes.AGGREGATE:
