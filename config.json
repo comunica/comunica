@@ -28,7 +28,6 @@
     "ccqs:config/query-operation/mediators.json",
     "ccqs:config/query-parse/actors.json",
     "ccqs:config/query-parse/mediators.json",
-    "ccqs:config/query-process/actors/sequential.json",
     "ccqs:config/query-process/actors/remote-cache.json",
     "ccqs:config/query-process/mediators.json",
     "ccqs:config/query-result-serialize/actors.json",

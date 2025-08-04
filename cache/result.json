@@ -1,0 +1,6 @@
+{"head": {"vars":["o","p","s"]},
+"results": { "bindings": [
+{"s":{"value":"https://ruben.verborgh.org/profile/","type":"uri"},"p":{"value":"http://www.w3.org/1999/02/22-rdf-syntax-ns#type","type":"uri"},"o":{"value":"http://xmlns.com/foaf/0.1/Document","type":"uri"}},
+{"s":{"value":"https://ruben.verborgh.org/profile/","type":"uri"},"p":{"value":"http://www.w3.org/1999/02/22-rdf-syntax-ns#type","type":"uri"},"o":{"value":"http://xmlns.com/foaf/0.1/PersonalProfileDocument","type":"uri"}}
+]},
+"metadata": { "httpRequests": 1 }}

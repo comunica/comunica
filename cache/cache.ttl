@@ -1,0 +1,8 @@
+<#Z8oK7S> a <http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryForm>, <http://www.w3.org/2001/sw/DataAccess/tests/test-query#QuerySelect>, <http://www.w3.org/ns/shacl#SPARQLExecutable>;
+    <http://www.w3.org/2001/sw/DataAccess/tests/test-query#query> <http://localhost:3000/test/querycache/Z8oK7S.rq>;
+    <http://www.w3.org/ns/shacl#select> "SELECT * WHERE {?s ?p ?o}";
+    <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#result> <http://127.0.0.1:9999/result.json>;
+    <http://www.w3.org/ns/sparql-service-description#endpoint> <#8ee310fc-c4af-42da-921b-b3042544ce83>;
+    <http://purl.org/dc/terms/created> "2025-03-27T16:17:07.669Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
+<#8ee310fc-c4af-42da-921b-b3042544ce83> <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <https://ruben.verborgh.org/profile/>;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>.

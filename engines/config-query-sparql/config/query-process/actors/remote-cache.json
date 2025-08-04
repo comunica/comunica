@@ -1,18 +1,35 @@
 {
-    "@context": [
-      "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^4.0.0/components/context.jsonld",
-  
-      "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-process-remote-cache/^1.0.0/components/context.jsonld"
-    ],
-    "@id": "urn:comunica:default:Runner",
-    "@type": "Runner",
-    "actors": [
-      {
-        "@id": "urn:comunica:default:query-process/actors#remote-cache",
-        "@type": "ActorQueryProcessRemoteCache",
-        "fallBackQueryProcess": { "@id": "urn:comunica:default:query-process/actors#sequential" },
-        "cacheHitAlgorithm": "equality"
-      }
-    ]
-  }
-  
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^4.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-process-remote-cache/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-process-sequential/^4.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:default:Runner",
+  "@type": "Runner",
+  "actors": [
+    {
+      "@id": "urn:comunica:default:query-process/actors#remote-cache",
+      "@type": "ActorQueryProcessRemoteCache",
+      "fallBackQueryProcess": {
+        "@id": "sequential_process",
+        "@type": "ActorQueryProcessSequential",
+        "mediatorContextPreprocess": {
+          "@id": "urn:comunica:default:context-preprocess/mediators#main"
+        },
+        "mediatorQueryParse": {
+          "@id": "urn:comunica:default:query-parse/mediators#main"
+        },
+        "mediatorOptimizeQueryOperation": {
+          "@id": "urn:comunica:default:optimize-query-operation/mediators#main"
+        },
+        "mediatorQueryOperation": {
+          "@id": "urn:comunica:default:query-operation/mediators#main"
+        },
+        "mediatorMergeBindingsContext": {
+          "@id": "urn:comunica:default:merge-bindings-context/mediators#main"
+        }
+      },
+      "cacheHitAlgorithm": "equality"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 import { ActorQueryProcess, IActionQueryProcess, IActorQueryProcessOutput, IActorQueryProcessArgs } from '@comunica/bus-query-process';
-import { TestResult, IActorTest, passTestVoid } from '@comunica/core';
+import { TestResult, IActorTest, passTestVoid, ActionContextKey } from '@comunica/core';
 import { KeyRemoteCache, KeysInitQuery } from '@comunica/context-entries';
 import { Algebra, toSparql, translate, Util } from 'sparqlalgebrajs';
 import {
@@ -44,6 +44,7 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
       if (Array.isArray(resultOrError.value)) {
         action.context = action.context.set(KeysInitQuery.querySourcesUnidentified, resultOrError.value);
       } else {
+        console.log("using the cache")
         return {
           result: {
             type: 'bindings',
@@ -55,6 +56,7 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
         }
       }
     }
+    console.log("normal execution")
     return this.fallBackQueryProcess.run(action, undefined);
   }
 
@@ -80,7 +82,7 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
 
     const query: Algebra.Operation = typeof action.query === 'string' ? translate(action.query) : action.query;
 
-    const sources: QuerySourceUnidentified[] = action.context.get(KeysInitQuery.querySourcesUnidentified) ?? [];
+    const sources: any[] = action.context.get(new ActionContextKey("sources")) ?? [];
     const endpoints: string[] = [];
     const rdfStores: RDF.Store[] = [];
 
@@ -93,7 +95,6 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
         rdfStores.push(source);
       }
     }
-
     const input = {
       cache: cacheLocation,
       query,
