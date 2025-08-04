@@ -45,6 +45,7 @@ export class HttpServiceSparqlEndpoint {
 
   public readonly freshWorkerPerQuery: boolean;
   public readonly contextOverride: boolean;
+  public readonly includeVoID: boolean;
 
   public lastQueryId = 0;
 
@@ -55,6 +56,7 @@ export class HttpServiceSparqlEndpoint {
     this.workers = args.workers ?? 1;
     this.freshWorkerPerQuery = Boolean(args.freshWorkerPerQuery);
     this.contextOverride = Boolean(args.contextOverride);
+    this.includeVoID = Boolean(args.includeVoID);
 
     this.engine = new QueryEngineFactoryBase(
       args.moduleRootPath,
@@ -151,6 +153,7 @@ export class HttpServiceSparqlEndpoint {
 
     const freshWorkerPerQuery: boolean = args.freshWorker;
     const contextOverride: boolean = args.contextOverride;
+    const includeVoID: boolean = args.includeVoID;
     const port = args.port;
     const timeout = args.timeout * 1_000;
     const workers = args.workers;
@@ -164,6 +167,7 @@ export class HttpServiceSparqlEndpoint {
       context,
       freshWorkerPerQuery,
       contextOverride,
+      includeVoID,
       moduleRootPath,
       mainModulePath: moduleRootPath,
       port,
@@ -591,6 +595,9 @@ export class HttpServiceSparqlEndpoint {
     this.stopResponse(response, 0, process.stderr, eventEmitter);
   }
 
+  // TODO
+  public async writeVoIDDescription(): Promise<void> {}
+
   /**
    * Stop after timeout or if the connection is terminated
    * @param {module:http.ServerResponse} response Response object.
@@ -690,6 +697,7 @@ export interface IHttpServiceSparqlEndpointArgs extends IDynamicQueryEngineOptio
   workers?: number;
   freshWorkerPerQuery?: boolean;
   contextOverride?: boolean;
+  includeVoID?: boolean;
   moduleRootPath: string;
   defaultConfigPath: string;
 }
