@@ -1,3 +1,4 @@
+import { QuerySourceSparql } from '@comunica/actor-query-source-identify-hypermedia-sparql';
 import type {
   IActionOptimizeQueryOperation,
   IActorOptimizeQueryOperationArgs,
@@ -164,17 +165,14 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
       return true;
     }
 
-    // Don't push down extension functions comunica support, but an endpoint doesn't
+    // Don't push down extension functions comunica support, but no endpoint does
     if (expression.expressionType === Algebra.expressionTypes.NAMED && context.has(KeysInitQuery.extensionFunctions)) {
       const comunicaFunctions = context.getSafe(KeysInitQuery.extensionFunctions);
       const functionName = expression.name.value;
-      if (sources.every((source) => {
-        let endpointFunctions: string[] = [];
-        if ('source' in source && 'extensionFunctions' in source.source) {
-          endpointFunctions = <any> source.source.extensionFunctions;
-        }
-        return functionName in comunicaFunctions && !(endpointFunctions.includes(functionName));
-      })) {
+      if (functionName in comunicaFunctions &&
+        // Checks if there's no source that supports the extension function
+        !(sources.some(source => 'source' in source && source.source instanceof QuerySourceSparql &&
+          source.source.extensionFunctions && source.source.extensionFunctions.includes(functionName)))) {
         return false;
       }
     }

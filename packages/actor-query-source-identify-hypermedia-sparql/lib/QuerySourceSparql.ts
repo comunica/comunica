@@ -50,7 +50,7 @@ export class QuerySourceSparql implements IQuerySource {
   private readonly defaultGraph?: string;
   private readonly unionDefaultGraph: boolean;
   private readonly datasets?: IDataset[];
-  private readonly extensionFunctions?: string[];
+  public readonly extensionFunctions?: string[];
   private readonly dataFactory: ComunicaDataFactory;
   private readonly algebraFactory: Factory;
   private readonly bindingsFactory: BindingsFactory;
