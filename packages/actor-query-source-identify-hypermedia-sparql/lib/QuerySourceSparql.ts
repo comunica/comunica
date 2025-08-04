@@ -50,6 +50,7 @@ export class QuerySourceSparql implements IQuerySource {
   private readonly defaultGraph?: string;
   private readonly unionDefaultGraph: boolean;
   private readonly datasets?: IDataset[];
+  private readonly extensionFunctions?: string[];
   private readonly dataFactory: ComunicaDataFactory;
   private readonly algebraFactory: Factory;
   private readonly bindingsFactory: BindingsFactory;
@@ -76,6 +77,7 @@ export class QuerySourceSparql implements IQuerySource {
     defaultGraph?: string,
     unionDefaultGraph?: boolean,
     datasets?: IDataset[],
+    extensionFunctions?: string[],
   ) {
     this.referenceValue = url;
     this.url = url;
@@ -103,6 +105,7 @@ export class QuerySourceSparql implements IQuerySource {
     this.defaultGraph = defaultGraph;
     this.unionDefaultGraph = unionDefaultGraph ?? false;
     this.datasets = datasets;
+    this.extensionFunctions = extensionFunctions;
   }
 
   public async getSelectorShape(): Promise<FragmentSelectorShape> {

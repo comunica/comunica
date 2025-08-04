@@ -1,5 +1,7 @@
+import { QuerySourceSparql } from '@comunica/actor-query-source-identify-hypermedia-sparql';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import type { IQuerySourceWrapper } from '@comunica/types';
 import { assignOperationSource } from '@comunica/utils-query-operation';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra, Factory } from 'sparqlalgebrajs';
@@ -295,14 +297,46 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             AF.createTermExpression(DF.variable('b')),
           ]),
         );
-        const src = <any> {};
+        const src: IQuerySourceWrapper = {
+          source: new QuerySourceSparql(
+            'https://example.com/src',
+            new ActionContext(),
+            <any> {},
+            'values',
+            <any> {},
+            <any> {},
+            <any> {},
+            false,
+            64,
+            10,
+            true,
+            true,
+            0,
+            undefined,
+            undefined,
+            undefined,
+            [ 'https://example.com/functions#mock' ],
+          ),
+        };
         const shapes = new Map();
         shapes.set(src, {
-          type: 'operation',
-          operation: {
-            operationType: 'type',
-            type: Algebra.types.FILTER,
-          },
+          type: 'disjunction',
+          children: [
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.FILTER,
+              },
+            },
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.NOP,
+              },
+            },
+          ],
         });
         const context = new ActionContext().set(KeysInitQuery.extensionFunctions, {
           'https://example.com/functions#mock': async args => args[0],

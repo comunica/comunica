@@ -168,10 +168,12 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     if (expression.expressionType === Algebra.expressionTypes.NAMED && context.has(KeysInitQuery.extensionFunctions)) {
       const comunicaFunctions = context.getSafe(KeysInitQuery.extensionFunctions);
       const functionName = expression.name.value;
-      if (sources.some((_source) => {
-        // TODO: grab these functions from the source
-        const endpointFunctions = {};
-        return functionName in comunicaFunctions && !(functionName in endpointFunctions);
+      if (sources.every((source) => {
+        let endpointFunctions: string[] = [];
+        if ('source' in source && 'extensionFunctions' in source.source) {
+          endpointFunctions = <any> source.source.extensionFunctions;
+        }
+        return functionName in comunicaFunctions && !(endpointFunctions.includes(functionName));
       })) {
         return false;
       }

@@ -386,8 +386,8 @@ describe('System test: QuerySparql', () => {
         it('rejects when creator returns null', async() => {
           const context = <any> { sources: [ store ]};
           context.extensionFunctionCreator = () => null;
-          await expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow(
-            `Creation of function evaluator failed: no configured actor was able to evaluate function http://example.org/functions#nonExist`,
+          await expect(engine.query(baseQuery(funcAllow), context)).rejects.toThrow(
+            `Creation of function evaluator failed: no configured actor was able to evaluate function http://example.org/functions#${funcAllow}`,
           );
         });
 
