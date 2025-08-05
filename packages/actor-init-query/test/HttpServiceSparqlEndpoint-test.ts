@@ -1485,6 +1485,9 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       it('should handle errors in service description stringification', async() => {
+        // Create spies
+        const spyWriteServiceDescription = jest.spyOn(instance, 'writeServiceDescription');
+
         mediaType = 'mediatype_queryresultstreamerror';
         await instance.writeQueryResult(
           await new QueryEngineFactoryBase().create(),
@@ -1499,6 +1502,9 @@ describe('HttpServiceSparqlEndpoint', () => {
           0,
         );
 
+        // Check if the SD logic has been called
+        expect(spyWriteServiceDescription).toHaveBeenCalledTimes(1);
+
         await expect(endCalledPromise).resolves.toBe('An internal server error occurred.\n');
         expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(
@@ -1508,6 +1514,9 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       it('should handle an invalid media type in service description', async() => {
+        // Create spies
+        const spyWriteServiceDescription = jest.spyOn(instance, 'writeServiceDescription');
+
         mediaType = 'mediatype_queryresultstreamerror';
         await instance.writeQueryResult(
           await new QueryEngineFactoryBase().create(),
@@ -1521,6 +1530,180 @@ describe('HttpServiceSparqlEndpoint', () => {
           true,
           0,
         );
+
+        // Check if the SD logic has been called
+        expect(spyWriteServiceDescription).toHaveBeenCalledTimes(1);
+
+        await expect(endCalledPromise).resolves.toBe(
+          'The response for the given query could not be serialized for the requested media type\n',
+        );
+        expect(response.writeHead)
+          .toHaveBeenLastCalledWith(400, { 'content-type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
+      });
+
+      // eslint-disable-next-line max-len
+      it('should write the VoID description when includeVoid is true, no query is defined and the request url contains \'void\'', async() => {
+        const localInstance = new HttpServiceSparqlEndpoint({
+          ...argsDefault,
+          includeVoID: true,
+        });
+
+        request.url = 'http://example.org/void.ttl';
+
+        // Create spies
+        const engine = await new QueryEngineFactoryBase().create();
+        const spyWriteVoIDDescription = jest.spyOn(localInstance, 'writeVoIDDescription');
+        const spyResultToString = jest.spyOn(engine, 'resultToString');
+
+        // Invoke writeQueryResult
+        await localInstance.writeQueryResult(
+          engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          { type: 'query', value: '', context: undefined },
+          mediaType,
+          false,
+          true,
+          0,
+        );
+
+        // Check output
+        await expect(endCalledPromise).resolves.toBeFalsy();
+        expect(response.writeHead).toHaveBeenCalledTimes(1);
+        expect(response.writeHead).toHaveBeenLastCalledWith(
+          200,
+          { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' },
+        );
+        response.push(null);
+        const responseString = await stringifyStream(response);
+        expect(responseString).toBe('test_query_result');
+
+        // Check if the VD logic has been called
+        expect(spyWriteVoIDDescription).toHaveBeenCalledTimes(1);
+
+        // Check if result to string has been called with the correct arguments
+        expect(spyResultToString).toHaveBeenCalledTimes(1);
+        expect(spyResultToString.mock.calls[0][1]).toEqual(mediaType);
+        const s = request.url;
+        const vd = 'http://rdfs.org/ns/void#';
+        const ds = `${vd}Dataset`;
+        await expect((spyResultToString.mock.calls[0][0]).execute()).resolves.toEqual(new ArrayIterator([
+          quad(s, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', ds),
+        ]));
+      });
+
+      // eslint-disable-next-line max-len
+      it('should write the VoID description when includeVoid is true, no query is defined and the request url contains \'void\' for HEAD', async() => {
+        const localInstance = new HttpServiceSparqlEndpoint({
+          ...argsDefault,
+          includeVoID: true,
+        });
+
+        request.url = 'http://example.org/void.ttl';
+
+        // Create spies
+        const engine = await new QueryEngineFactoryBase().create();
+        const spyWriteVoIDDescription = jest.spyOn(localInstance, 'writeVoIDDescription');
+        const spyGetResultMediaTypeFormats = jest.spyOn(engine, 'getResultMediaTypeFormats');
+        const spyResultToString = jest.spyOn(engine, 'resultToString');
+
+        // Invoke writeQueryResult
+        await localInstance.writeQueryResult(
+          engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          { type: 'query', value: '', context: undefined },
+          mediaType,
+          true,
+          true,
+          0,
+        );
+
+        // Check output
+        await expect(endCalledPromise).resolves.toBeFalsy();
+        expect(response.writeHead).toHaveBeenCalledTimes(1);
+        expect(response.writeHead).toHaveBeenLastCalledWith(
+          200,
+          { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' },
+        );
+        response.push(null);
+        const responseString = await stringifyStream(response);
+        expect(responseString).toBe('');
+
+        // Check if the VD logic has been called
+        expect(spyWriteVoIDDescription).toHaveBeenCalledTimes(1);
+
+        // Check if further processing is not done
+        expect(spyGetResultMediaTypeFormats).toHaveBeenCalledTimes(0);
+        expect(spyResultToString).toHaveBeenCalledTimes(0);
+      });
+
+      it('should handle errors in VoID description stringification', async() => {
+        const localInstance = new HttpServiceSparqlEndpoint({
+          ...argsDefault,
+          includeVoID: true,
+        });
+
+        request.url = 'http://example.org/void.ttl';
+
+        // Create spies
+        const spyWriteVoIDDescription = jest.spyOn(localInstance, 'writeVoIDDescription');
+
+        mediaType = 'mediatype_queryresultstreamerror';
+        await localInstance.writeQueryResult(
+          await new QueryEngineFactoryBase().create(),
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          { type: 'query', value: '', context: undefined },
+          mediaType,
+          false,
+          true,
+          0,
+        );
+
+        // Check if the VD logic has been called
+        expect(spyWriteVoIDDescription).toHaveBeenCalledTimes(1);
+
+        await expect(endCalledPromise).resolves.toBe('An internal server error occurred.\n');
+        expect(response.writeHead).toHaveBeenCalledTimes(1);
+        expect(response.writeHead).toHaveBeenLastCalledWith(
+          200,
+          { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' },
+        );
+      });
+
+      it('should handle an invalid media type in VoID description', async() => {
+        const localInstance = new HttpServiceSparqlEndpoint({
+          ...argsDefault,
+          includeVoID: true,
+        });
+
+        request.url = 'http://example.org/void.ttl';
+
+        // Create spies
+        const spyWriteVoIDDescription = jest.spyOn(localInstance, 'writeVoIDDescription');
+
+        await localInstance.writeQueryResult(
+          await new QueryEngineFactoryBase().create(),
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          { type: 'query', value: '', context: undefined },
+          'mediatype_throwerror',
+          false,
+          true,
+          0,
+        );
+
+        // Check if the VD logic has been called
+        expect(spyWriteVoIDDescription).toHaveBeenCalledTimes(1);
 
         await expect(endCalledPromise).resolves.toBe(
           'The response for the given query could not be serialized for the requested media type\n',

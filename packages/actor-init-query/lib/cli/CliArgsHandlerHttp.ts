@@ -55,7 +55,6 @@ export class CliArgsHandlerHttp implements ICliArgsHandler {
           describe: 'If the query context can be overridden through POST requests',
         },
         includeVoID: {
-          alias: 'v',
           type: 'boolean',
           describe: 'Include VoID descriptions',
         },
