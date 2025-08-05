@@ -41,6 +41,7 @@ export class TermFunctionLesserThan extends TermFunctionBase {
           exprEval => this.handleLiterals(exprEval),
           false,
         )
+        // No non-lexical handling for strings, since they can't have invalid lexicals
         .stringTest(() => (left, right) => left.localeCompare(right) === -1)
         .set(
           [ TypeURL.RDF_LANG_STRING, TypeURL.RDF_LANG_STRING ],
@@ -200,6 +201,7 @@ export class TermFunctionLesserThan extends TermFunctionBase {
       const litA: Literal<any> = <Literal<any>> termA;
       const litB: Literal<any> = <Literal<any>> termB;
 
+      // Doesn't use handleLiterals since there's no real function to pass on.
       const nonLexical = [ litA, litB ].find(arg => arg instanceof NonLexicalLiteral);
       if (nonLexical) {
         return this.handleNonLexicals(litA, litB, nonLexical, exprEval);
