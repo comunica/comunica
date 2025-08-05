@@ -18,6 +18,8 @@ import { bindTemplateWithProjection } from './bindTemplateWithProjection';
 import { IBindings } from 'sparqljson-parse';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { ArrayIterator } from 'asynciterator';
+import { isContained, ISolverOption, SEMANTIC } from 'sparql-federated-query-containment';
+import * as Z3_SOLVER from "z3-solver";
 
 const RDF_FACTORY: ComunicaDataFactory = new DataFactory();
 const BF = new BindingsFactory(RDF_FACTORY);
@@ -42,13 +44,13 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
     const resultOrError = await this.queryCachedResults(action);
     if (isResult(resultOrError)) {
       this.logDebug(action.context, `using the remote cache from: ${JSON.stringify(action.context.getSafe(KeyRemoteCache.location), null, 2)}`,)
-      if (Array.isArray(resultOrError.value)) {
-        action.context = action.context.set(KeysInitQuery.querySourcesUnidentified, resultOrError.value);
+      if ("stores" in resultOrError.value) {
+        action.context = action.context.set(KeysInitQuery.querySourcesUnidentified, resultOrError.value.stores);
       } else {
         return {
           result: {
             type: 'bindings',
-            bindingsStream: resultOrError.value,
+            bindingsStream: resultOrError.value.bindings,
             metadata: () => {
               return new Promise((resolve) => { resolve(<any>"cached bindings") })
             }
@@ -67,19 +69,47 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
     return result(toSparql(q1) === toSparql(q2))
   }
 
-  public async queryCachedResults(action: IActionQueryProcess): SafePromise<RDF.Store[] | BindingsStream> {
+  public async generateQueryContainmentCacheHitFunction(): Promise<CacheHitFunction> {
+    const Z3 = await Z3_SOLVER.init();
+
+    return async (q1: Readonly<Algebra.Operation>, q2: Readonly<Algebra.Operation>, options?: IOptions): SafePromise<boolean> => {
+      const option: ISolverOption = options === undefined ? {
+        sources: [],
+        semantic: SEMANTIC.BAG_SET,
+        z3: Z3
+      } : {
+        ...options,
+        semantic: SEMANTIC.BAG_SET,
+        z3: Z3
+      }
+        ;
+      const resp = await isContained(q1, q2, option);
+      if (isError(resp)) {
+        return error(new Error(resp.error));
+      }
+      return result(resp.value.result);
+    }
+
+  }
+
+  private async getCacheHitAlgorithm(): SafePromise<CacheHitFunction> {
+    switch (this.cacheHitAlgorithm) {
+      case 'equality':
+        return result(ActorQueryProcessRemoteCache.equalityCacheHit);
+      case 'containment':
+        return result(await this.generateQueryContainmentCacheHitFunction());
+      default:
+        return error(new Error(`algorithm ${this.cacheHitAlgorithm} not supported`));
+    }
+
+  }
+
+  public async queryCachedResults(action: IActionQueryProcess): SafePromise<CachingResult> {
     const cacheLocation: CacheLocation | undefined = action.context.get(KeyRemoteCache.location);
     if (cacheLocation === undefined) {
       return error(new Error("cache URL does not exist"));
     }
-    let simpleCacheHit: CacheHitFunction | undefined;
-    switch (this.cacheHitAlgorithm) {
-      case 'equality':
-        simpleCacheHit = ActorQueryProcessRemoteCache.equalityCacheHit;
-        break;
-      default:
-        return error(new Error(`algorithm ${this.cacheHitAlgorithm} not supported`));
-    }
+
 
     const query: Algebra.Operation = typeof action.query === 'string' ? translate(action.query) : action.query;
 
@@ -96,6 +126,13 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
         rdfStores.push(source);
       }
     }
+
+    const cacheHitAlgorithm = await this.getCacheHitAlgorithm();
+
+    if (isError(cacheHitAlgorithm)) {
+      return cacheHitAlgorithm;
+    }
+
     const input = {
       cache: cacheLocation,
       query,
@@ -103,7 +140,7 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
       endpoints,
       cacheHitAlgorithms: [
         {
-          algorithm: simpleCacheHit!,
+          algorithm: cacheHitAlgorithm.value,
           time_limit: 1_000 // 1 second
         }
       ],
@@ -123,12 +160,12 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
     if (this.cacheHitAlgorithm === 'equality') {
       const bindings = ActorQueryProcessRemoteCache.bindingConvertion(cacheResult.value.cache);
       const it: BindingsStream = new ArrayIterator(bindings, { autoStart: false });
-      return result(it);
+      return result({bindings:it});
     }
 
     const store = this.bindingToQuadStore(ActorQueryProcessRemoteCache.bindingConvertion(cacheResult.value.cache), query);
 
-    return result([store, ...rdfStores]);
+    return result({stores: [store, ...rdfStores]});
   }
 
   private isRdfStore(source: QuerySourceUnidentified): source is RDF.Store {
@@ -217,6 +254,11 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
   }
 }
 
+export type CachingResult = {
+  bindings: BindingsStream
+} | {
+  stores: RDF.Store[]
+};
 
 export interface IActorQueryProcessRemoteCacheArgs extends IActorQueryProcessArgs {
   fallBackQueryProcess: ActorQueryProcess;
