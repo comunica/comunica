@@ -8,7 +8,13 @@ import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operat
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
-import type { ComunicaDataFactory, FragmentSelectorShape, IActionContext, IQuerySourceWrapper } from '@comunica/types';
+import type {
+  ComunicaDataFactory,
+  FragmentSelectorShape,
+  IActionContext,
+  IQuerySource,
+  IQuerySourceWrapper,
+} from '@comunica/types';
 import { doesShapeAcceptOperation, getExpressionVariables, getOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { mapTermsNested } from 'rdf-terms';
@@ -165,13 +171,14 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
       return true;
     }
 
-    // Don't push down extension functions comunica support, but no endpoint does
+    // Don't push down extension functions comunica support, but an endpoint doesn't
     if (expression.expressionType === Algebra.expressionTypes.NAMED && context.has(KeysInitQuery.extensionFunctions)) {
       const comunicaFunctions = context.getSafe(KeysInitQuery.extensionFunctions);
       const functionName = expression.name.value;
       if (functionName in comunicaFunctions &&
-        // Checks if there's no source that supports the extension function
-        !(sources.some(source => 'source' in source && source.source instanceof QuerySourceSparql &&
+        // Checks if there's a source that does not support the extension function
+        // Which means that not every source supports it, which is the logic I used here
+        !(sources.every((source: { source: IQuerySource }) => source.source instanceof QuerySourceSparql &&
           source.source.extensionFunctions && source.source.extensionFunctions.includes(functionName)))) {
         return false;
       }

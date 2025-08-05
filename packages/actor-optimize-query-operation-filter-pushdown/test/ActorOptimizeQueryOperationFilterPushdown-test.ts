@@ -1,7 +1,7 @@
 import { QuerySourceSparql } from '@comunica/actor-query-source-identify-hypermedia-sparql';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IQuerySourceWrapper } from '@comunica/types';
+import type { FragmentSelectorShape, IQuerySourceWrapper } from '@comunica/types';
 import { assignOperationSource, getExpressionVariables } from '@comunica/utils-query-operation';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra, Factory } from 'sparqlalgebrajs';
@@ -337,11 +337,69 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               },
             },
           ],
-        });
+        } satisfies FragmentSelectorShape);
         const context = new ActionContext().set(KeysInitQuery.extensionFunctions, {
           'https://example.com/functions#mock': async args => args[0],
         });
         expect(actor.shouldAttemptPushDown(op, [ src ], shapes, context)).toBeTruthy();
+      });
+
+      it('returns false if comunica and some sources support the extensionFunction, but not all sources', async() => {
+        const op = AF.createFilter(
+          AF.createNop(),
+          AF.createNamedExpression(DF.namedNode('https://example.com/functions#mock'), [
+            AF.createTermExpression(DF.variable('a')),
+            AF.createTermExpression(DF.variable('b')),
+          ]),
+        );
+        const src1: IQuerySourceWrapper = {
+          source: new QuerySourceSparql(
+            'https://example.com/src',
+            new ActionContext(),
+            <any> {},
+            'values',
+            <any> {},
+            <any> {},
+            <any> {},
+            false,
+            64,
+            10,
+            true,
+            true,
+            0,
+            undefined,
+            undefined,
+            undefined,
+            [ 'https://example.com/functions#mock' ],
+          ),
+        };
+        const src2 = <any> {};
+        const shape = {
+          type: 'disjunction',
+          children: [
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.FILTER,
+              },
+            },
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.NOP,
+              },
+            },
+          ],
+        } satisfies FragmentSelectorShape;
+        const shapes = new Map();
+        shapes.set(src1, shape);
+        shapes.set(src2, shape);
+        const context = new ActionContext().set(KeysInitQuery.extensionFunctions, {
+          'https://example.com/functions#mock': async args => args[0],
+        });
+        expect(actor.shouldAttemptPushDown(op, [ src1, src2 ], shapes, context)).toBeFalsy();
       });
 
       it('returns true if federated with filter support for one', () => {
