@@ -4,9 +4,12 @@ import { PassThrough } from 'node:stream';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
+import type { BindingsStream } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import { Readable } from 'readable-stream';
 
 // @ts-expect-error
@@ -60,6 +63,9 @@ const argsDefault = {
   moduleRootPath: 'moduleRootPath',
   defaultConfigPath: 'defaultConfigPath',
 };
+
+const DF = new DataFactory();
+const BF = new BindingsFactory(DF);
 
 describe('HttpServiceSparqlEndpoint', () => {
   let originalCluster: typeof cluster;
@@ -1552,6 +1558,21 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         // Create spies
         const engine = await new QueryEngineFactoryBase().create();
+        engine.queryBindings = (): BindingsStream => {
+          const bindingsArray = [
+            BF.bindings([
+              [ DF.variable('s'), DF.namedNode('http://example.org/s1') ],
+              [ DF.variable('p'), DF.namedNode('http://example.org/p1') ],
+              [ DF.variable('o'), DF.literal('o1') ],
+            ]),
+            BF.bindings([
+              [ DF.variable('s'), DF.namedNode('http://example.org/s2') ],
+              [ DF.variable('p'), DF.namedNode('http://example.org/p2') ],
+              [ DF.variable('o'), DF.literal('o2') ],
+            ]),
+          ];
+          return <BindingsStream>(new ArrayIterator<RDF.Bindings>(bindingsArray));
+        };
         const spyWriteVoIDDescription = jest.spyOn(localInstance, 'writeVoIDDescription');
         const spyResultToString = jest.spyOn(engine, 'resultToString');
 
@@ -1596,20 +1617,18 @@ describe('HttpServiceSparqlEndpoint', () => {
           quad(s, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', `${vd}Dataset`),
           quad(s, `${vd}sparqlEndpoint`, '/sparql'),
           quad(s, vocabulary, dcterms),
-          quad(s, `${dcterms}title`, 'HTTP service SPARQL endpoint dataset'),
-          quad(s, `${dcterms}creator`, 'https://comunica.dev/'),
+          quad(s, `${dcterms}title`, '?'),
+          quad(s, `${dcterms}creator`, '?'),
           quad(s, vocabulary, formats),
           quad(s, feature, `${formats}N3`),
           quad(s, feature, `${formats}N-Triples`),
           quad(s, feature, `${formats}RDF_XML`),
           quad(s, feature, `${formats}RDFa`),
           quad(s, feature, `${formats}Turtle`),
-          quad(s, `${vd}triples`, '?'),
-          quad(s, `${vd}entities`, '?'),
-          quad(s, `${vd}classes`, '?'),
-          quad(s, `${vd}properties`, '?'),
-          quad(s, `${vd}distinctSubjects`, '?'),
-          quad(s, `${vd}distinctObjects`, '?'),
+          quad(s, `${vd}triples`, '"2"^^xsd:integer'),
+          quad(s, `${vd}properties`, '"2"^^xsd:integer'),
+          quad(s, `${vd}distinctSubjects`, '"2"^^xsd:integer'),
+          quad(s, `${vd}distinctObjects`, '"2"^^xsd:integer'),
         ]));
       });
 
@@ -1624,6 +1643,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         // Create spies
         const engine = await new QueryEngineFactoryBase().create();
+        engine.queryBindings = (): BindingsStream => <any> { on: () => {} };
         const spyWriteVoIDDescription = jest.spyOn(localInstance, 'writeVoIDDescription');
         const spyGetResultMediaTypeFormats = jest.spyOn(engine, 'getResultMediaTypeFormats');
         const spyResultToString = jest.spyOn(engine, 'resultToString');
@@ -1672,9 +1692,11 @@ describe('HttpServiceSparqlEndpoint', () => {
         // Create spies
         const spyWriteVoIDDescription = jest.spyOn(localInstance, 'writeVoIDDescription');
 
+        const engine = await new QueryEngineFactoryBase().create();
+        engine.queryBindings = (): BindingsStream => <any> { on: () => {} };
         mediaType = 'mediatype_queryresultstreamerror';
         await localInstance.writeQueryResult(
-          await new QueryEngineFactoryBase().create(),
+          engine,
           new PassThrough(),
           new PassThrough(),
           request,
@@ -1708,8 +1730,10 @@ describe('HttpServiceSparqlEndpoint', () => {
         // Create spies
         const spyWriteVoIDDescription = jest.spyOn(localInstance, 'writeVoIDDescription');
 
+        const engine = await new QueryEngineFactoryBase().create();
+        engine.queryBindings = (): BindingsStream => <any> { on: () => {} };
         await localInstance.writeQueryResult(
-          await new QueryEngineFactoryBase().create(),
+          engine,
           new PassThrough(),
           new PassThrough(),
           request,

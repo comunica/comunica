@@ -621,8 +621,9 @@ export class HttpServiceSparqlEndpoint {
 
       // Dublin Core Metadata Terms
       quad(s, vocabulary, dcterms),
-      quad(s, `${dcterms}title`, 'HTTP service SPARQL endpoint dataset'),
-      quad(s, `${dcterms}creator`, 'https://comunica.dev/'),
+      quad(s, `${dcterms}title`, '?'),
+      quad(s, `${dcterms}creator`, '?'),
+      // ...
 
       // Formats
       quad(s, vocabulary, formats),
@@ -631,18 +632,41 @@ export class HttpServiceSparqlEndpoint {
       quad(s, feature, `${formats}RDF_XML`),
       quad(s, feature, `${formats}RDFa`),
       quad(s, feature, `${formats}Turtle`),
-
-      // Statistics
-      quad(s, `${vd}triples`, '?'),
-      quad(s, `${vd}entities`, '?'),
-      quad(s, `${vd}classes`, '?'),
-      quad(s, `${vd}properties`, '?'),
-      quad(s, `${vd}distinctSubjects`, '?'),
-      quad(s, `${vd}distinctObjects`, '?'),
     ];
 
     let eventEmitter: EventEmitter;
     try {
+      // Statistics
+      const triples: string[] = [];
+      const properties: string[] = [];
+      const distinctSubjects: Set<string> = new Set<string>();
+      const distinctObjects: Set<string> = new Set<string>();
+      const bindings = await engine.queryBindings(
+        `
+          SELECT * WHERE {
+            ?s ?p ?o
+          }
+        `,
+      );
+
+      bindings.on('data', (binding) => {
+        triples.push(binding.toString());
+        properties.push(binding.get('p').value);
+        distinctSubjects.add(binding.get('s').value);
+        distinctObjects.add(binding.get('o').value);
+      });
+      bindings.on('error', (error: Error) => {
+        stdout.write(`[500] Server error in results: ${error.message} \n`);
+        response.end('An internal server error occurred.\n');
+      });
+      bindings.on('end', () => {
+        const xsdInteger = (n: number): string => `"${n}"^^xsd:integer`;
+        quads.push(quad(s, `${vd}triples`, xsdInteger(triples.length)));
+        quads.push(quad(s, `${vd}properties`, xsdInteger(properties.length)));
+        quads.push(quad(s, `${vd}distinctSubjects`, xsdInteger(distinctSubjects.size)));
+        quads.push(quad(s, `${vd}distinctObjects`, xsdInteger(distinctObjects.size)));
+      });
+
       // Flush results
       eventEmitter = await this.flushResults(engine, stdout, response, mediaType, quads);
     } catch {
