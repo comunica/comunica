@@ -1,3 +1,4 @@
+import { QuerySourceSkolemized } from '@comunica/actor-context-preprocess-query-source-skolemize';
 import { QuerySourceSparql } from '@comunica/actor-query-source-identify-hypermedia-sparql';
 import type {
   IActionOptimizeQueryOperation,
@@ -19,6 +20,7 @@ import { doesShapeAcceptOperation, getExpressionVariables, getOperationSource } 
 import type * as RDF from '@rdfjs/types';
 import { mapTermsNested } from 'rdf-terms';
 import { Factory, Algebra, Util } from 'sparqlalgebrajs';
+import {QuerySourceHypermedia} from "@comunica/actor-query-source-identify-hypermedia";
 
 /**
  * A comunica Filter Pushdown Optimize Query Operation Actor.
@@ -175,11 +177,12 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     if (expression.expressionType === Algebra.expressionTypes.NAMED && context.has(KeysInitQuery.extensionFunctions)) {
       const comunicaFunctions = context.getSafe(KeysInitQuery.extensionFunctions);
       const functionName = expression.name.value;
-      if (functionName in comunicaFunctions &&
+      if (
+        functionName in comunicaFunctions &&
         // Checks if there's a source that does not support the extension function
-        // Which means that not every source supports it, which is the logic I used here
-        !(sources.every((source: { source: IQuerySource }) => source.source instanceof QuerySourceSparql &&
-          source.source.extensionFunctions && source.source.extensionFunctions.includes(functionName)))) {
+        sources.some((source: { source: IQuerySource }) =>
+          !this.sourceSupportsExtensionFunction(source.source, functionName))
+      ) {
         return false;
       }
     }
@@ -190,6 +193,19 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     }
 
     // Don't push down in all other cases
+    return false;
+  }
+
+  private sourceSupportsExtensionFunction(source: IQuerySource, functionName: string): boolean | undefined {
+    if (source instanceof QuerySourceSkolemized) {
+      return this.sourceSupportsExtensionFunction(source.innerSource, functionName);
+    }
+    if (source instanceof QuerySourceSparql) {
+      return source.extensionFunctions && source.extensionFunctions.includes(functionName);
+    }
+    if (source instanceof QuerySourceHypermedia) {
+      // TODO
+    }
     return false;
   }
 
