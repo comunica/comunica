@@ -421,6 +421,71 @@ describe('System test: QuerySparql', () => {
             .toThrow('Illegal simultaneous usage of extensionFunctionCreator and extensionFunctions in context');
         });
 
+        describe('filter pushdown behaviour with extension functions', () => {
+          const endpoint1 = 'http://example.com/1/sparql';
+          const endpoint2 = 'http://example.com/2/sparql';
+          const createContext = (endpoint1SupportsFunction: boolean, endpoint2SupportsFunction: boolean) => <any> {
+            sources: [ endpoint1, endpoint2 ],
+            extensionFunctions: baseFunctions,
+            fetch: (input: string) => {
+              const serviceDescriptionWithFunction = `
+                  @prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
+                  <${endpoint1}> sd:extensionFunction "allowAll" .
+                `;
+              if (input.includes(endpoint1)) {
+                if (input === endpoint1) {
+                  // Service description fetch on endpoint1
+                  return Promise.resolve(new Response(
+                    endpoint1SupportsFunction ? serviceDescriptionWithFunction : ``,
+                    { status: 200, headers: { 'Content-Type': 'text/turtle' }},
+                  ));
+                }
+                // Query fetch on endpoint1
+                return Promise.resolve(new Response(
+                  ``,
+                  { status: 200, headers: { 'Content-Type': 'application/n-quads' }},
+                ));
+              }
+              if (input === endpoint2) {
+                // Service description fetch on endpoint2
+                return Promise.resolve(new Response(
+                  endpoint2SupportsFunction ? serviceDescriptionWithFunction : ``,
+                  { status: 200, headers: { 'Content-Type': 'text/turtle' }},
+                ));
+              }
+              // Query fetch on endpoint2
+              return Promise.resolve(new Response(
+                ``,
+                { status: 200, headers: { 'Content-Type': 'application/n-quads' }},
+              ));
+            },
+          };
+
+          it('do filter pushdown if both endpoints supports the extension function', async() => {
+            const context = createContext(true, true);
+            const spyFetch = jest.spyOn(context, 'fetch');
+            await engine.query(baseQuery(funcAllow), context);
+
+            expect(spyFetch.mock.calls.at(-1)?.[0]).toContain('FILTER');
+          });
+
+          it('don\'t filter pushdown if one endpoint doesn\'t support the extension function', async() => {
+            const context = createContext(true, false);
+            const spyFetch = jest.spyOn(context, 'fetch');
+            await engine.query(baseQuery(funcAllow), context);
+
+            expect(spyFetch.mock.calls.at(-1)?.[0]).not.toContain('FILTER');
+          });
+
+          it('don\'t filter pushdown if both endpoints don\'t support the extension function', async() => {
+            const context = createContext(false, false);
+            const spyFetch = jest.spyOn(context, 'fetch');
+            await engine.query(baseQuery(funcAllow), context);
+
+            expect(spyFetch.mock.calls.at(-1)?.[0]).not.toContain('FILTER');
+          });
+        });
+
         it('handles complex queries with BIND to', async() => {
           const context = <any> { sources: [ store ]};
           const complexQuery = `PREFIX func: <http://example.org/functions#>
