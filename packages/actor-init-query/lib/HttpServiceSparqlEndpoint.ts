@@ -576,17 +576,7 @@ export class HttpServiceSparqlEndpoint {
       }
 
       // Flush results
-      const { data } = await engine.resultToString(<QueryQuads> {
-        resultType: 'quads',
-        execute: async() => new ArrayIterator(quads),
-        metadata: <any> undefined,
-      }, mediaType);
-      data.on('error', (error: Error) => {
-        stdout.write(`[500] Server error in results: ${error.message} \n`);
-        response.end('An internal server error occurred.\n');
-      });
-      data.pipe(response);
-      eventEmitter = data;
+      eventEmitter = await this.flushResults(engine, stdout, response, mediaType, quads);
     } catch {
       stdout.write('[400] Bad request, invalid media type\n');
       response.writeHead(
@@ -654,17 +644,7 @@ export class HttpServiceSparqlEndpoint {
     let eventEmitter: EventEmitter;
     try {
       // Flush results
-      const { data } = await engine.resultToString(<QueryQuads> {
-        resultType: 'quads',
-        execute: async() => new ArrayIterator(quads),
-        metadata: <any> undefined,
-      }, mediaType);
-      data.on('error', (error: Error) => {
-        stdout.write(`[500] Server error in results: ${error.message} \n`);
-        response.end('An internal server error occurred.\n');
-      });
-      data.pipe(response);
-      eventEmitter = data;
+      eventEmitter = await this.flushResults(engine, stdout, response, mediaType, quads);
     } catch {
       stdout.write('[400] Bad request, invalid media type\n');
       response.writeHead(
@@ -675,6 +655,26 @@ export class HttpServiceSparqlEndpoint {
       return;
     }
     this.stopResponse(response, 0, process.stderr, eventEmitter);
+  }
+
+  private async flushResults(
+    engine: QueryEngineBase,
+    stdout: Writable,
+    response: http.ServerResponse,
+    mediaType: string,
+    quads: RDF.Quad[],
+  ): Promise<EventEmitter> {
+    const { data } = await engine.resultToString(<QueryQuads>{
+      resultType: 'quads',
+      execute: async() => new ArrayIterator(quads),
+      metadata: <any>undefined,
+    }, mediaType);
+    data.on('error', (error: Error) => {
+      stdout.write(`[500] Server error in results: ${error.message} \n`);
+      response.end('An internal server error occurred.\n');
+    });
+    data.pipe(response);
+    return data;
   }
 
   /**
