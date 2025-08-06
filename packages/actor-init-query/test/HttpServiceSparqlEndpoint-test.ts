@@ -1542,7 +1542,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       // eslint-disable-next-line max-len
-      it('should write the VoID description when includeVoid is true, no query is defined and the request url contains \'void\'', async() => {
+      it('should write the VoID description when includeVoid is true and the request url contains \'void\'', async() => {
         const localInstance = new HttpServiceSparqlEndpoint({
           ...argsDefault,
           includeVoID: true,
@@ -1588,14 +1588,33 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(spyResultToString.mock.calls[0][1]).toEqual(mediaType);
         const s = request.url;
         const vd = 'http://rdfs.org/ns/void#';
-        const ds = `${vd}Dataset`;
+        const dcterms = 'http://purl.org/dc/terms/';
+        const feature = `${vd}feature`;
+        const formats = 'http://www.w3.org/ns/formats/';
+        const vocabulary = `${vd}vocabulary`;
         await expect((spyResultToString.mock.calls[0][0]).execute()).resolves.toEqual(new ArrayIterator([
-          quad(s, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', ds),
+          quad(s, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', `${vd}Dataset`),
+          quad(s, `${vd}sparqlEndpoint`, '/sparql'),
+          quad(s, vocabulary, dcterms),
+          quad(s, `${dcterms}title`, 'HTTP service SPARQL endpoint dataset'),
+          quad(s, `${dcterms}creator`, 'https://comunica.dev/'),
+          quad(s, vocabulary, formats),
+          quad(s, feature, `${formats}N3`),
+          quad(s, feature, `${formats}N-Triples`),
+          quad(s, feature, `${formats}RDF_XML`),
+          quad(s, feature, `${formats}RDFa`),
+          quad(s, feature, `${formats}Turtle`),
+          quad(s, `${vd}triples`, '?'),
+          quad(s, `${vd}entities`, '?'),
+          quad(s, `${vd}classes`, '?'),
+          quad(s, `${vd}properties`, '?'),
+          quad(s, `${vd}distinctSubjects`, '?'),
+          quad(s, `${vd}distinctObjects`, '?'),
         ]));
       });
 
       // eslint-disable-next-line max-len
-      it('should write the VoID description when includeVoid is true, no query is defined and the request url contains \'void\' for HEAD', async() => {
+      it('should write the VoID description when includeVoid is true and the request url contains \'void\' for HEAD', async() => {
         const localInstance = new HttpServiceSparqlEndpoint({
           ...argsDefault,
           includeVoID: true,

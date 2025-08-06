@@ -430,10 +430,11 @@ export class HttpServiceSparqlEndpoint {
     readOnly: boolean,
     queryId: number,
   ): Promise<void> {
+    if (this.includeVoID && request.url?.toLowerCase().includes('void')) {
+      return this.writeVoIDDescription(engine, stdout, stderr, request, response, mediaType, headOnly);
+    }
+
     if (!queryBody || !queryBody.value) {
-      if (this.includeVoID && request.url?.toLowerCase().includes('void')) {
-        return this.writeVoIDDescription(engine, stdout, stderr, request, response, mediaType, headOnly);
-      }
       return this.writeServiceDescription(engine, stdout, stderr, request, response, mediaType, headOnly);
     }
 
@@ -525,58 +526,6 @@ export class HttpServiceSparqlEndpoint {
     this.stopResponse(response, queryId, process.stderr, eventEmitter);
   }
 
-  public async writeVoIDDescription(
-    engine: QueryEngineBase,
-    stdout: Writable,
-    stderr: Writable,
-    request: http.IncomingMessage,
-    response: http.ServerResponse,
-    mediaType: string,
-    headOnly: boolean,
-  ): Promise<void> {
-    stdout.write(`[200] ${request.method} to ${request.url}\n`);
-    stdout.write(`      Requested media type: ${mediaType}\n`);
-    stdout.write('      Received query for service description.\n');
-    response.writeHead(200, { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
-
-    if (headOnly) {
-      response.end();
-      return;
-    }
-
-    const s = request.url;
-    const vd = 'http://rdfs.org/ns/void#';
-    const ds = `${vd}Dataset`;
-    const quads: RDF.Quad[] = [
-      quad(s, `http://www.w3.org/1999/02/22-rdf-syntax-ns#type`, ds),
-    ];
-
-    let eventEmitter: EventEmitter;
-    try {
-      // Flush results
-      const { data } = await engine.resultToString(<QueryQuads> {
-        resultType: 'quads',
-        execute: async() => new ArrayIterator(quads),
-        metadata: <any> undefined,
-      }, mediaType);
-      data.on('error', (error: Error) => {
-        stdout.write(`[500] Server error in results: ${error.message} \n`);
-        response.end('An internal server error occurred.\n');
-      });
-      data.pipe(response);
-      eventEmitter = data;
-    } catch {
-      stdout.write('[400] Bad request, invalid media type\n');
-      response.writeHead(
-        400,
-        { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' },
-      );
-      response.end('The response for the given query could not be serialized for the requested media type\n');
-      return;
-    }
-    this.stopResponse(response, 0, process.stderr, eventEmitter);
-  }
-
   public async writeServiceDescription(
     engine: QueryEngineBase,
     stdout: Writable,
@@ -626,6 +575,84 @@ export class HttpServiceSparqlEndpoint {
         quads.push(quad(s, `${sd}extensionFunction`, value));
       }
 
+      // Flush results
+      const { data } = await engine.resultToString(<QueryQuads> {
+        resultType: 'quads',
+        execute: async() => new ArrayIterator(quads),
+        metadata: <any> undefined,
+      }, mediaType);
+      data.on('error', (error: Error) => {
+        stdout.write(`[500] Server error in results: ${error.message} \n`);
+        response.end('An internal server error occurred.\n');
+      });
+      data.pipe(response);
+      eventEmitter = data;
+    } catch {
+      stdout.write('[400] Bad request, invalid media type\n');
+      response.writeHead(
+        400,
+        { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' },
+      );
+      response.end('The response for the given query could not be serialized for the requested media type\n');
+      return;
+    }
+    this.stopResponse(response, 0, process.stderr, eventEmitter);
+  }
+
+  public async writeVoIDDescription(
+    engine: QueryEngineBase,
+    stdout: Writable,
+    stderr: Writable,
+    request: http.IncomingMessage,
+    response: http.ServerResponse,
+    mediaType: string,
+    headOnly: boolean,
+  ): Promise<void> {
+    stdout.write(`[200] ${request.method} to ${request.url}\n`);
+    stdout.write(`      Requested media type: ${mediaType}\n`);
+    stdout.write('      Received query for service description.\n');
+    response.writeHead(200, { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
+
+    if (headOnly) {
+      response.end();
+      return;
+    }
+
+    const s = request.url;
+    const vd = 'http://rdfs.org/ns/void#';
+    const dcterms = 'http://purl.org/dc/terms/';
+    const feature = `${vd}feature`;
+    const formats = 'http://www.w3.org/ns/formats/';
+    const vocabulary = `${vd}vocabulary`;
+    const quads: RDF.Quad[] = [
+      // Basic metadata
+      quad(s, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', `${vd}Dataset`),
+      quad(s, `${vd}sparqlEndpoint`, '/sparql'),
+
+      // Dublin Core Metadata Terms
+      quad(s, vocabulary, dcterms),
+      quad(s, `${dcterms}title`, 'HTTP service SPARQL endpoint dataset'),
+      quad(s, `${dcterms}creator`, 'https://comunica.dev/'),
+
+      // Formats
+      quad(s, vocabulary, formats),
+      quad(s, feature, `${formats}N3`),
+      quad(s, feature, `${formats}N-Triples`),
+      quad(s, feature, `${formats}RDF_XML`),
+      quad(s, feature, `${formats}RDFa`),
+      quad(s, feature, `${formats}Turtle`),
+
+      // Statistics
+      quad(s, `${vd}triples`, '?'),
+      quad(s, `${vd}entities`, '?'),
+      quad(s, `${vd}classes`, '?'),
+      quad(s, `${vd}properties`, '?'),
+      quad(s, `${vd}distinctSubjects`, '?'),
+      quad(s, `${vd}distinctObjects`, '?'),
+    ];
+
+    let eventEmitter: EventEmitter;
+    try {
       // Flush results
       const { data } = await engine.resultToString(<QueryQuads> {
         resultType: 'quads',
