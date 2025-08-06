@@ -92,12 +92,17 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
 
   }
 
-  private async getCacheHitAlgorithm(): SafePromise<CacheHitFunction> {
+  private async getCacheHitAlgorithm(): SafePromise<{algorithm: CacheHitFunction, time_limit:number}[]> {
     switch (this.cacheHitAlgorithm) {
       case 'equality':
-        return result(ActorQueryProcessRemoteCache.equalityCacheHit);
+        return result([{algorithm: ActorQueryProcessRemoteCache.equalityCacheHit, time_limit:1_000}]);
       case 'containment':
-        return result(await this.generateQueryContainmentCacheHitFunction());
+        return result([{algorithm: await this.generateQueryContainmentCacheHitFunction(), time_limit:1_000}]);
+      case 'all':
+        return result([
+          {algorithm: await this.generateQueryContainmentCacheHitFunction(), time_limit:1_000},
+          {algorithm: ActorQueryProcessRemoteCache.equalityCacheHit, time_limit:1_000}
+        ]);
       default:
         return error(new Error(`algorithm ${this.cacheHitAlgorithm} not supported`));
     }
@@ -127,10 +132,10 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
       }
     }
 
-    const cacheHitAlgorithm = await this.getCacheHitAlgorithm();
+    const cacheHitAlgorithmOrError = await this.getCacheHitAlgorithm();
 
-    if (isError(cacheHitAlgorithm)) {
-      return cacheHitAlgorithm;
+    if (isError(cacheHitAlgorithmOrError)) {
+      return cacheHitAlgorithmOrError;
     }
 
     const input = {
@@ -138,12 +143,7 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
       query,
       // Only includes non-SERVICE endpoint(s)
       endpoints,
-      cacheHitAlgorithms: [
-        {
-          algorithm: cacheHitAlgorithm.value,
-          time_limit: 1_000 // 1 second
-        }
-      ],
+      cacheHitAlgorithms: cacheHitAlgorithmOrError.value,
       maxConcurentExecCacheHitAlgorithm: undefined,
 
       outputOption: OutputOption.BINDING_BAG
@@ -265,4 +265,4 @@ export interface IActorQueryProcessRemoteCacheArgs extends IActorQueryProcessArg
   cacheHitAlgorithm: Algorithm;
 }
 
-type Algorithm = 'equality' | 'containment';
+type Algorithm = 'equality' | 'containment' | 'all';

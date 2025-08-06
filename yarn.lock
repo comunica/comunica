@@ -3160,6 +3160,11 @@ arrayify-stream@^2.0.0, arrayify-stream@^2.0.1:
   resolved "https://registry.npmjs.org/arrayify-stream/-/arrayify-stream-2.0.1.tgz"
   integrity sha512-z8fB6PtmnewQpFB53piS2d1KlUi3BPMICH2h7leCOUXpQcwvZ4GbHHSpdKoUrgLMR6b4Qan/uDe1St3Ao3yIHg==
 
+arrayify-stream@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/arrayify-stream/-/arrayify-stream-3.0.0.tgz#b65eef30ab1d34d45b23d4897d310d1431a82d44"
+  integrity sha512-h2/Pb4+zcBZkRvzlhSVQf+Vo2oDaPCPYp6nyYlabAtP7YudhmUtOMROdCKFGbVQX+Bpwfdrm7fP4vqBGT6qrDA==
+
 arrify@^1.0.1:
   version "1.0.1"
   resolved "https://registry.npmjs.org/arrify/-/arrify-1.0.1.tgz"

@@ -6,6 +6,7 @@ import '@comunica/utils-jest';
 import { error, isResult, result } from 'result-interface';
 import {
   getCachedQuads,
+  OutputOption,
 } from 'sparql-cache-client';
 import { KeyRemoteCache, KeysInitQuery } from '@comunica/context-entries';
 import { SparqlJsonParser } from "sparqljson-parse";
@@ -14,7 +15,7 @@ import { DataFactory } from 'rdf-data-factory';
 import { ArrayIterator } from 'asynciterator';
 import { RdfStore } from 'rdf-stores';
 import type * as RDF from '@rdfjs/types';
-import arrayifyStream from 'arrayify-stream';
+import { arrayifyStream } from 'arrayify-stream';
 
 const RDF_FACTORY: ComunicaDataFactory = new DataFactory();
 
@@ -151,6 +152,7 @@ describe('ActorQueryProcessRemoteCache', () => {
 
       beforeEach(() => {
         actor = new ActorQueryProcessRemoteCache({ name: 'actor', bus, fallBackQueryProcess: <any>{}, cacheHitAlgorithm: 'equality' });
+        jest.clearAllMocks();
       });
 
       it("should thrown an error when the cache URL does not exist", async () => {
@@ -331,7 +333,7 @@ describe('ActorQueryProcessRemoteCache', () => {
         const stores: RDF.Store[] = (<any>resp).value.stores;
         expect(stores.length).toBe(1);
 
-        expect(await arrayifyStream(stores[0].match())).toBeRdfIsomorphic(expectedQuads)
+        expect(await arrayifyStream(stores[0].match())).toBeRdfIsomorphic(expectedQuads);
 
       });
 
@@ -409,14 +411,14 @@ describe('ActorQueryProcessRemoteCache', () => {
         ];
 
         const store1 = RdfStore.createDefault();
-        for(const triple of quadsFromStore1){
+        for (const triple of quadsFromStore1) {
           store1.addQuad(triple);
         }
         const store2 = RdfStore.createDefault();
-        for(const triple of quadsFromStore2){
+        for (const triple of quadsFromStore2) {
           store2.addQuad(triple);
         }
-        
+
         const action = {
           query: `
           PREFIX ex: <http://example.org/>
@@ -440,6 +442,50 @@ describe('ActorQueryProcessRemoteCache', () => {
         expect(await arrayifyStream(stores[0].match())).toBeRdfIsomorphic(expectedQuads);
         expect(await arrayifyStream(stores[1].match())).toBeRdfIsomorphic(quadsFromStore1);
         expect(await arrayifyStream(stores[2].match())).toBeRdfIsomorphic(quadsFromStore2);
+      });
+
+      it('should use all the algoritms when the actor is defined with all algorithms', async () => {
+        actor = new ActorQueryProcessRemoteCache({ name: 'actor', bus, fallBackQueryProcess: <any>{}, cacheHitAlgorithm: 'all' });
+
+        mockGetCachedQuads.mockResolvedValue(result({ cache: [], algorithmIndex: 0 }));
+
+        const action = {
+          query: `
+          PREFIX ex: <http://example.org/>
+
+          SELECT ?book ?title WHERE {
+            ?book  ?p ?o.
+            ?book ex:title ?title .
+          }`,
+          context: new ActionContext({
+            [KeyRemoteCache.location.name]: { path: "path" }
+          })
+        };
+
+        const expectedInput: any = {
+          cache: { path: "path" },
+          query: translate(action.query),
+          // Only includes non-SERVICE endpoint(s)
+          endpoints: [],
+          cacheHitAlgorithms: [
+            { algorithm: await actor.generateQueryContainmentCacheHitFunction(), time_limit: 1_000 },
+            { algorithm: ActorQueryProcessRemoteCache.equalityCacheHit, time_limit: 1_000 }
+          ],
+          maxConcurentExecCacheHitAlgorithm: undefined,
+
+          outputOption: OutputOption.BINDING_BAG
+        };
+
+        await actor.queryCachedResults(action);
+
+        expect(mockGetCachedQuads).toHaveBeenCalledTimes(1);
+        expect(mockGetCachedQuads).toHaveBeenCalledWith({
+          ...expectedInput,
+          cacheHitAlgorithms:[
+            {algorithm: expect.any(Function), time_limit:1_000},
+            {algorithm: ActorQueryProcessRemoteCache.equalityCacheHit, time_limit:1_000}
+          ]
+        });
       });
     });
 
@@ -469,7 +515,7 @@ describe('ActorQueryProcessRemoteCache', () => {
 
         expect(fallBackQueryProcess.run).toHaveBeenCalledTimes(1);
         expect(fallBackQueryProcess.run).toHaveBeenCalledWith(action, undefined);
-        expect(resp).toBe("done");
+        expect(resp).toBe(<any>"done");
       });
 
       it("should execute return the cache binding given cached bindings are available", async () => {

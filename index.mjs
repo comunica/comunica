@@ -20,7 +20,7 @@ const bindingsStream = await myEngine.queryBindings(query, {
 });
 
 let i = 0;
-bindingsStream.on('data', (binding) => {
+bindingsStream.on('data', (_binding) => {
   i += 1;
 });
 bindingsStream.on('end', () => {

@@ -30,7 +30,7 @@
           "@id": "urn:comunica:default:merge-bindings-context/mediators#main"
         }
       },
-      "cacheHitAlgorithm": "equality"
+      "cacheHitAlgorithm": "all"
     }
   ]
 }
