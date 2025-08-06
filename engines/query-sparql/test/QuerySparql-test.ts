@@ -422,12 +422,16 @@ describe('System test: QuerySparql', () => {
         });
 
         describe('filter pushdown behaviour with extension functions', () => {
+          let containsFilter: boolean;
           const endpoint1 = 'http://example.com/1/sparql';
           const endpoint2 = 'http://example.com/2/sparql';
           const createContext = (endpoint1SupportsFunction: boolean, endpoint2SupportsFunction: boolean) => <any> {
             sources: [ endpoint1, endpoint2 ],
             extensionFunctions: baseFunctions,
             fetch: (input: string) => {
+              if (input.includes('FILTER')) {
+                containsFilter = true;
+              }
               const serviceDescriptionWithFunction = `
                   @prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
                   <${endpoint1}> sd:extensionFunction "allowAll" .
@@ -461,28 +465,26 @@ describe('System test: QuerySparql', () => {
             },
           };
 
-          it('do filter pushdown if both endpoints supports the extension function', async() => {
-            const context = createContext(true, true);
-            const spyFetch = jest.spyOn(context, 'fetch');
-            await engine.query(baseQuery(funcAllow), context);
+          beforeEach(() => {
+            containsFilter = false;
+          });
 
-            expect(spyFetch.mock.calls.at(-1)?.[0]).toContain('FILTER');
+          it('do filter pushdown if both endpoints supports the extension function', async() => {
+            await engine.query(baseQuery(funcAllow), createContext(true, true));
+
+            expect(containsFilter).toBeTruthy();
           });
 
           it('don\'t filter pushdown if one endpoint doesn\'t support the extension function', async() => {
-            const context = createContext(true, false);
-            const spyFetch = jest.spyOn(context, 'fetch');
-            await engine.query(baseQuery(funcAllow), context);
+            await engine.query(baseQuery(funcAllow), createContext(true, false));
 
-            expect(spyFetch.mock.calls.at(-1)?.[0]).not.toContain('FILTER');
+            expect(containsFilter).toBeFalsy();
           });
 
           it('don\'t filter pushdown if both endpoints don\'t support the extension function', async() => {
-            const context = createContext(false, false);
-            const spyFetch = jest.spyOn(context, 'fetch');
-            await engine.query(baseQuery(funcAllow), context);
+            await engine.query(baseQuery(funcAllow), createContext(false, false));
 
-            expect(spyFetch.mock.calls.at(-1)?.[0]).not.toContain('FILTER');
+            expect(containsFilter).toBeFalsy();
           });
         });
 
