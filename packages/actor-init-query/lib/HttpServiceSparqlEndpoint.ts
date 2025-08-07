@@ -342,12 +342,12 @@ export class HttpServiceSparqlEndpoint {
     // eslint-disable-next-line node/no-deprecated-api
     const requestUrl = url.parse(request.url ?? '', true);
     if (requestUrl.pathname === '/' || request.url === '/') {
-      stdout.write('[301] Permanently moved. Redirected to /sparql.');
+      stdout.write('[301] Permanently moved. Redirected to /sparql.\n');
       response.writeHead(301, { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*', Location: `http://localhost:${this.port}/sparql${requestUrl.search ?? ''}` });
       response.end(JSON.stringify({ message: 'Queries are accepted on /sparql. Redirected.' }));
       return;
     }
-    if (requestUrl.pathname !== '/sparql') {
+    if (!(requestUrl.pathname === '/sparql' || requestUrl.pathname?.startsWith('/void'))) {
       stdout.write('[404] Resource not found. Queries are accepted on /sparql.\n');
       response.writeHead(
         404,
@@ -430,7 +430,7 @@ export class HttpServiceSparqlEndpoint {
     readOnly: boolean,
     queryId: number,
   ): Promise<void> {
-    if (this.includeVoID && request.url?.toLowerCase().includes('void')) {
+    if (this.includeVoID && request.url?.split('/').at(-1)?.startsWith('void')) {
       return this.writeVoIDDescription(engine, stdout, stderr, request, response, mediaType, headOnly);
     }
 
@@ -600,7 +600,7 @@ export class HttpServiceSparqlEndpoint {
   ): Promise<void> {
     stdout.write(`[200] ${request.method} to ${request.url}\n`);
     stdout.write(`      Requested media type: ${mediaType}\n`);
-    stdout.write('      Received query for service description.\n');
+    stdout.write('      Received query for VoID description.\n');
     response.writeHead(200, { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
 
     if (headOnly) {
@@ -639,8 +639,8 @@ export class HttpServiceSparqlEndpoint {
       }
 
       // Statistics
-      const triples: string[] = [];
-      const properties: string[] = [];
+      let triples = 0;
+      let properties = 0;
       const distinctSubjects: Set<string> = new Set<string>();
       const distinctObjects: Set<string> = new Set<string>();
       const bindings = await engine.queryBindings(
@@ -649,24 +649,31 @@ export class HttpServiceSparqlEndpoint {
             ?s ?p ?o
           }
         `,
+        this.context,
       );
 
-      bindings.on('data', (binding) => {
-        triples.push(binding.toString());
-        properties.push(binding.get('p').value);
-        distinctSubjects.add(binding.get('s').value);
-        distinctObjects.add(binding.get('o').value);
-      });
-      bindings.on('error', (error: Error) => {
-        stdout.write(`[500] Server error in results: ${error.message} \n`);
-        response.end('An internal server error occurred.\n');
-      });
-      bindings.on('end', () => {
-        const xsdInteger = (n: number): string => `"${n}"^^xsd:integer`;
-        quads.push(quad(s, `${vd}triples`, xsdInteger(triples.length)));
-        quads.push(quad(s, `${vd}properties`, xsdInteger(properties.length)));
-        quads.push(quad(s, `${vd}distinctSubjects`, xsdInteger(distinctSubjects.size)));
-        quads.push(quad(s, `${vd}distinctObjects`, xsdInteger(distinctObjects.size)));
+      await new Promise<void>((resolve, reject) => {
+        bindings.on('data', (binding) => {
+          triples++;
+          properties++;
+          distinctSubjects.add(binding.get('s').value);
+          distinctObjects.add(binding.get('o').value);
+        });
+
+        bindings.on('error', (error: Error) => {
+          stdout.write(`[500] Server error in results: ${error.message} \n`);
+          response.end('An internal server error occurred.\n');
+          reject(error);
+        });
+
+        bindings.on('end', () => {
+          const xsdInteger = (n: number): string => `"${n}"^^xsd:integer`;
+          quads.push(quad(s, `${vd}triples`, xsdInteger(triples)));
+          quads.push(quad(s, `${vd}properties`, xsdInteger(properties)));
+          quads.push(quad(s, `${vd}distinctSubjects`, xsdInteger(distinctSubjects.size)));
+          quads.push(quad(s, `${vd}distinctObjects`, xsdInteger(distinctObjects.size)));
+          resolve();
+        });
       });
 
       // Flush results

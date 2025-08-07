@@ -1548,7 +1548,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       // eslint-disable-next-line max-len
-      it('should write the VoID description when includeVoid is true and the request url contains \'void\'', async() => {
+      it('should write the VoID description when includeVoid is true and the request url starts with \'/void\'', async() => {
         const localInstance = new HttpServiceSparqlEndpoint({
           ...argsDefault,
           includeVoID: true,
