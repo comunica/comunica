@@ -432,15 +432,18 @@ describe('System test: QuerySparql', () => {
               if (input.includes('FILTER')) {
                 containsFilter = true;
               }
-              const serviceDescriptionWithFunction = `
-                @prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
-                <${endpoint1}> sd:extensionFunction "http://example.org/functions#allowAll" .
-              `;
+              const createServiceDescription = (supportsFunction: boolean, endpoint: string): string =>
+                supportsFunction ?
+                  `
+                    @prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
+                    <${endpoint}> sd:extensionFunction "http://example.org/functions#allowAll" .
+                  ` :
+                  ``;
               if (input.includes(endpoint1)) {
                 if (input === endpoint1) {
                   // Service description fetch on endpoint1
                   return Promise.resolve(new Response(
-                    endpoint1SupportsFunction ? serviceDescriptionWithFunction : ``,
+                    createServiceDescription(endpoint1SupportsFunction, endpoint1),
                     { status: 200, headers: { 'Content-Type': 'text/turtle' }},
                   ));
                 }
@@ -453,7 +456,7 @@ describe('System test: QuerySparql', () => {
               if (input === endpoint2) {
                 // Service description fetch on endpoint2
                 return Promise.resolve(new Response(
-                  endpoint2SupportsFunction ? serviceDescriptionWithFunction : ``,
+                  createServiceDescription(endpoint2SupportsFunction, endpoint2),
                   { status: 200, headers: { 'Content-Type': 'text/turtle' }},
                 ));
               }
