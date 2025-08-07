@@ -619,12 +619,6 @@ export class HttpServiceSparqlEndpoint {
       quad(s, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', `${vd}Dataset`),
       quad(s, `${vd}sparqlEndpoint`, '/sparql'),
 
-      // Dublin Core Metadata Terms
-      quad(s, vocabulary, dcterms),
-      quad(s, `${dcterms}title`, '?'),
-      quad(s, `${dcterms}creator`, '?'),
-      // ...
-
       // Formats
       quad(s, vocabulary, formats),
       quad(s, feature, `${formats}N3`),
@@ -636,6 +630,14 @@ export class HttpServiceSparqlEndpoint {
 
     let eventEmitter: EventEmitter;
     try {
+      // Dublin Core Metadata Terms
+      if (this.context.dcterms) {
+        quads.push(quad(s, vocabulary, dcterms));
+        for (const key in this.context.dcterms) {
+          quads.push(quad(s, `${dcterms}${key}`, this.context.dcterms[key]));
+        }
+      }
+
       // Statistics
       const triples: string[] = [];
       const properties: string[] = [];

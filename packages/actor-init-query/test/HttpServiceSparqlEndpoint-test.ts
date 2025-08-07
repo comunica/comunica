@@ -1552,6 +1552,14 @@ describe('HttpServiceSparqlEndpoint', () => {
         const localInstance = new HttpServiceSparqlEndpoint({
           ...argsDefault,
           includeVoID: true,
+          context: {
+            dcterms: {
+              title: 'title',
+              description: 'description',
+              creator: 'creator',
+              created: '"2025/08/07"^^xsd:date',
+            },
+          },
         });
 
         request.url = 'http://example.org/void.ttl';
@@ -1616,15 +1624,17 @@ describe('HttpServiceSparqlEndpoint', () => {
         await expect((spyResultToString.mock.calls[0][0]).execute()).resolves.toEqual(new ArrayIterator([
           quad(s, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', `${vd}Dataset`),
           quad(s, `${vd}sparqlEndpoint`, '/sparql'),
-          quad(s, vocabulary, dcterms),
-          quad(s, `${dcterms}title`, '?'),
-          quad(s, `${dcterms}creator`, '?'),
           quad(s, vocabulary, formats),
           quad(s, feature, `${formats}N3`),
           quad(s, feature, `${formats}N-Triples`),
           quad(s, feature, `${formats}RDF_XML`),
           quad(s, feature, `${formats}RDFa`),
           quad(s, feature, `${formats}Turtle`),
+          quad(s, vocabulary, dcterms),
+          quad(s, `${dcterms}title`, 'title'),
+          quad(s, `${dcterms}description`, 'description'),
+          quad(s, `${dcterms}creator`, 'creator'),
+          quad(s, `${dcterms}created`, '"2025/08/07"^^xsd:date'),
           quad(s, `${vd}triples`, '"2"^^xsd:integer'),
           quad(s, `${vd}properties`, '"2"^^xsd:integer'),
           quad(s, `${vd}distinctSubjects`, '"2"^^xsd:integer'),
