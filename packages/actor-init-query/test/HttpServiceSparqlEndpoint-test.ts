@@ -1549,6 +1549,8 @@ describe('HttpServiceSparqlEndpoint', () => {
 
       // eslint-disable-next-line max-len
       it('should write the VoID description when includeVoid is true and the request url starts with \'/void\'', async() => {
+        const xsd = 'http://www.w3.org/2001/XMLSchema#';
+
         const localInstance = new HttpServiceSparqlEndpoint({
           ...argsDefault,
           includeVoID: true,
@@ -1557,7 +1559,7 @@ describe('HttpServiceSparqlEndpoint', () => {
               title: 'title',
               description: 'description',
               creator: 'creator',
-              created: '"2025/08/07"^^xsd:date',
+              created: `"2025/08/07"^^${xsd}date`,
             },
           },
         });
@@ -1569,14 +1571,9 @@ describe('HttpServiceSparqlEndpoint', () => {
         engine.queryBindings = (): BindingsStream => {
           const bindingsArray = [
             BF.bindings([
-              [ DF.variable('s'), DF.namedNode('http://example.org/s1') ],
-              [ DF.variable('p'), DF.namedNode('http://example.org/p1') ],
-              [ DF.variable('o'), DF.literal('o1') ],
-            ]),
-            BF.bindings([
-              [ DF.variable('s'), DF.namedNode('http://example.org/s2') ],
-              [ DF.variable('p'), DF.namedNode('http://example.org/p2') ],
-              [ DF.variable('o'), DF.literal('o2') ],
+              [ DF.variable('triples'), DF.literal('2', DF.namedNode(`${xsd}integer`)) ],
+              [ DF.variable('distinctSubjects'), DF.literal('1', DF.namedNode(`${xsd}integer`)) ],
+              [ DF.variable('distinctObjects'), DF.literal('2', DF.namedNode(`${xsd}integer`)) ],
             ]),
           ];
           return <BindingsStream>(new ArrayIterator<RDF.Bindings>(bindingsArray));
@@ -1634,11 +1631,11 @@ describe('HttpServiceSparqlEndpoint', () => {
           quad(s, `${dcterms}title`, 'title'),
           quad(s, `${dcterms}description`, 'description'),
           quad(s, `${dcterms}creator`, 'creator'),
-          quad(s, `${dcterms}created`, '"2025/08/07"^^xsd:date'),
-          quad(s, `${vd}triples`, '"2"^^xsd:integer'),
-          quad(s, `${vd}properties`, '"2"^^xsd:integer'),
-          quad(s, `${vd}distinctSubjects`, '"2"^^xsd:integer'),
-          quad(s, `${vd}distinctObjects`, '"2"^^xsd:integer'),
+          quad(s, `${dcterms}created`, `"2025/08/07"^^${xsd}date`),
+          quad(s, `${vd}triples`, `"2"^^${xsd}integer`),
+          quad(s, `${vd}properties`, `"2"^^${xsd}integer`),
+          quad(s, `${vd}distinctSubjects`, `"1"^^${xsd}integer`),
+          quad(s, `${vd}distinctObjects`, `"2"^^${xsd}integer`),
         ]));
       });
 

@@ -639,25 +639,28 @@ export class HttpServiceSparqlEndpoint {
       }
 
       // Statistics
-      let triples = 0;
-      let properties = 0;
-      const distinctSubjects: Set<string> = new Set<string>();
-      const distinctObjects: Set<string> = new Set<string>();
       const bindings = await engine.queryBindings(
         `
-          SELECT * WHERE {
-            ?s ?p ?o
-          }
+SELECT 
+  (COUNT(?s) AS ?triples)
+  (COUNT(DISTINCT ?s) AS ?distinctSubjects)
+  (COUNT(DISTINCT ?o) AS ?distinctObjects)
+WHERE { 
+  ?s ?p ?o 
+}
         `,
         this.context,
       );
 
       await new Promise<void>((resolve, reject) => {
-        bindings.on('data', (binding) => {
-          triples++;
-          properties++;
-          distinctSubjects.add(binding.get('s').value);
-          distinctObjects.add(binding.get('o').value);
+        bindings.on('data', (binding): void => {
+          const xsdInteger = (n: number): string =>
+            `"${n}"^^http://www.w3.org/2001/XMLSchema#integer`;
+          const triples = binding.get('triples').value;
+          quads.push(quad(s, `${vd}triples`, xsdInteger(triples)));
+          quads.push(quad(s, `${vd}properties`, xsdInteger(triples)));
+          quads.push(quad(s, `${vd}distinctSubjects`, xsdInteger(binding.get('distinctSubjects').value)));
+          quads.push(quad(s, `${vd}distinctObjects`, xsdInteger(binding.get('distinctObjects').value)));
         });
 
         bindings.on('error', (error: Error) => {
@@ -666,14 +669,7 @@ export class HttpServiceSparqlEndpoint {
           reject(error);
         });
 
-        bindings.on('end', () => {
-          const xsdInteger = (n: number): string => `"${n}"^^xsd:integer`;
-          quads.push(quad(s, `${vd}triples`, xsdInteger(triples)));
-          quads.push(quad(s, `${vd}properties`, xsdInteger(properties)));
-          quads.push(quad(s, `${vd}distinctSubjects`, xsdInteger(distinctSubjects.size)));
-          quads.push(quad(s, `${vd}distinctObjects`, xsdInteger(distinctObjects.size)));
-          resolve();
-        });
+        bindings.on('end', resolve);
       });
 
       // Flush results
