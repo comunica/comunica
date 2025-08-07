@@ -102,6 +102,8 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   }
 
   public override destroy(cause?: Error): void {
+    console.log("Destroy called")
+    console.trace()
     if (!this.aggregatedStore) {
       super.destroy(cause);
       return;
@@ -130,9 +132,12 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   protected override canStartNewIterator(): boolean {
     // Also allow sub-iterators to be started if the aggregated store has at least one running iterator.
     // We need this because there are cases where these running iterators will be consumed before this linked iterator.
-    return (!this.wasForcefullyClosed &&
+    return (!this.wasForcefullyClosed ||
       (this.aggregatedStore !== undefined && this.aggregatedStore.hasRunningIterators())) &&
       super.canStartNewIterator();
+    // return (!this.wasForcefullyClosed &&
+    // // eslint-disable-next-line ts/prefer-nullish-coalescing
+    // (this.aggregatedStore && this.aggregatedStore.hasRunningIterators())) || super.canStartNewIterator();
   }
 
   protected override canStartNewIteratorConsiderReadable(): boolean {
