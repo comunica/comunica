@@ -433,9 +433,9 @@ describe('System test: QuerySparql', () => {
                 containsFilter = true;
               }
               const serviceDescriptionWithFunction = `
-                  @prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
-                  <${endpoint1}> sd:extensionFunction "allowAll" .
-                `;
+                @prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
+                <${endpoint1}> sd:extensionFunction "http://example.org/functions#allowAll" .
+              `;
               if (input.includes(endpoint1)) {
                 if (input === endpoint1) {
                   // Service description fetch on endpoint1
