@@ -1,4 +1,5 @@
 import { QuerySourceSkolemized } from '@comunica/actor-context-preprocess-query-source-skolemize';
+import { QuerySourceHypermedia } from '@comunica/actor-query-source-identify-hypermedia';
 import { QuerySourceSparql } from '@comunica/actor-query-source-identify-hypermedia-sparql';
 import type {
   IActionOptimizeQueryOperation,
@@ -20,7 +21,6 @@ import { doesShapeAcceptOperation, getExpressionVariables, getOperationSource } 
 import type * as RDF from '@rdfjs/types';
 import { mapTermsNested } from 'rdf-terms';
 import { Factory, Algebra, Util } from 'sparqlalgebrajs';
-import {QuerySourceHypermedia} from "@comunica/actor-query-source-identify-hypermedia";
 
 /**
  * A comunica Filter Pushdown Optimize Query Operation Actor.
@@ -200,11 +200,8 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     if (source instanceof QuerySourceSkolemized) {
       return this.sourceSupportsExtensionFunction(source.innerSource, functionName);
     }
-    if (source instanceof QuerySourceSparql) {
-      return source.extensionFunctions && source.extensionFunctions.includes(functionName);
-    }
-    if (source instanceof QuerySourceHypermedia) {
-      // TODO
+    if (source instanceof QuerySourceSparql || source instanceof QuerySourceHypermedia) {
+      return source.extensionFunctions.includes(functionName);
     }
     return false;
   }
