@@ -1731,6 +1731,51 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(spyQueryBindings).toHaveBeenCalledTimes(1);
       });
 
+      it('should handle errors in VoID description statistics query', async() => {
+        const localInstance = new HttpServiceSparqlEndpoint({
+          ...argsDefault,
+          includeVoID: true,
+        });
+
+        request.url = 'http://example.org/void.ttl';
+
+        // Create spies
+        const engine = await new QueryEngineFactoryBase().create();
+        engine.queryBindings = (): BindingsStream => <any> {
+          on: (event: string, func: any) => {
+            if (event === 'error') {
+              func(new Error('error'));
+            }
+          },
+        };
+        const spyWriteVoIDDescription = jest.spyOn(localInstance, 'writeVoIDDescription');
+        const spyQueryBindings = jest.spyOn(engine, 'queryBindings');
+
+        await localInstance.writeQueryResult(
+          engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          { type: 'query', value: '', context: undefined },
+          mediaType,
+          false,
+          true,
+          0,
+        );
+
+        // Check if the VD logic has been called
+        expect(spyWriteVoIDDescription).toHaveBeenCalledTimes(1);
+        expect(spyQueryBindings).toHaveBeenCalledTimes(1);
+
+        await expect(endCalledPromise).resolves.toBe('An internal server error occurred.\n');
+        expect(response.writeHead).toHaveBeenCalledTimes(1);
+        expect(response.writeHead).toHaveBeenLastCalledWith(
+          200,
+          { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' },
+        );
+      });
+
       it('should handle errors in VoID description stringification', async() => {
         const localInstance = new HttpServiceSparqlEndpoint({
           ...argsDefault,
@@ -1740,9 +1785,10 @@ describe('HttpServiceSparqlEndpoint', () => {
         request.url = 'http://example.org/void.ttl';
 
         // Create spies
-        const spyWriteVoIDDescription = jest.spyOn(localInstance, 'writeVoIDDescription');
-
         const engine = await new QueryEngineFactoryBase().create();
+        const spyWriteVoIDDescription = jest.spyOn(localInstance, 'writeVoIDDescription');
+        const spyResultToString = jest.spyOn(engine, 'resultToString');
+
         mediaType = 'mediatype_queryresultstreamerror';
         await localInstance.writeQueryResult(
           engine,
@@ -1759,6 +1805,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         // Check if the VD logic has been called
         expect(spyWriteVoIDDescription).toHaveBeenCalledTimes(1);
+        expect(spyResultToString).toHaveBeenCalledTimes(1);
 
         await expect(endCalledPromise).resolves.toBe('An internal server error occurred.\n');
         expect(response.writeHead).toHaveBeenCalledTimes(1);

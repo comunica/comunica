@@ -49,7 +49,7 @@ export class HttpServiceSparqlEndpoint {
 
   public lastQueryId = 0;
 
-  public statisticsQuads: RDF.Quad[] = [];
+  public cachedStatistics: RDF.Quad[] = [];
 
   public constructor(args: IHttpServiceSparqlEndpointArgs) {
     this.context = args.context || {};
@@ -641,7 +641,7 @@ export class HttpServiceSparqlEndpoint {
       }
 
       // Statistics
-      if (this.statisticsQuads.length === 0) {
+      if (this.cachedStatistics.length === 0) {
         const bindings = await engine.queryBindings(
           `
 SELECT 
@@ -655,28 +655,30 @@ WHERE {
           this.context,
         );
 
-        await new Promise<void>((resolve, reject) => {
-          bindings.on('data', (binding): void => {
-            const xsdInteger = (n: number): string =>
-              `"${n}"^^http://www.w3.org/2001/XMLSchema#integer`;
-            const triples = binding.get('triples').value;
-            this.statisticsQuads.push(quad(s, `${vd}triples`, xsdInteger(triples)));
-            this.statisticsQuads.push(quad(s, `${vd}properties`, xsdInteger(triples)));
-            this.statisticsQuads.push(quad(s, `${vd}distinctSubjects`, xsdInteger(binding.get('distinctSubjects').value)));
-            this.statisticsQuads.push(quad(s, `${vd}distinctObjects`, xsdInteger(binding.get('distinctObjects').value)));
-          });
+        try {
+          await new Promise<void>((resolve, reject) => {
+            bindings.on('data', (binding): void => {
+              const xsdInteger = (n: number): string =>
+                `"${n}"^^http://www.w3.org/2001/XMLSchema#integer`;
+              const triples = binding.get('triples').value;
+              this.cachedStatistics.push(quad(s, `${vd}triples`, xsdInteger(triples)));
+              this.cachedStatistics.push(quad(s, `${vd}properties`, xsdInteger(triples)));
+              this.cachedStatistics.push(quad(s, `${vd}distinctSubjects`, xsdInteger(binding.get('distinctSubjects').value)));
+              this.cachedStatistics.push(quad(s, `${vd}distinctObjects`, xsdInteger(binding.get('distinctObjects').value)));
+            });
 
-          bindings.on('error', (error: Error) => {
-            stdout.write(`[500] Server error in results: ${error.message} \n`);
-            response.end('An internal server error occurred.\n');
-            reject(error);
-          });
+            bindings.on('error', reject);
 
-          bindings.on('end', resolve);
-        });
+            bindings.on('end', resolve);
+          });
+        } catch (error: any) {
+          stdout.write(`[500] Server error in results: ${error.message} \n`);
+          response.end('An internal server error occurred.\n');
+          return;
+        }
       }
 
-      for (const q of this.statisticsQuads) {
+      for (const q of this.cachedStatistics) {
         quads.push(q);
       }
 
