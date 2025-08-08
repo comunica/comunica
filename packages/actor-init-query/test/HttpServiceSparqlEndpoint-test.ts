@@ -278,6 +278,24 @@ describe('HttpServiceSparqlEndpoint', () => {
       expect(err).toContain('exposes a SPARQL endpoint');
       expect(err).toContain('At least one source must be provided');
     });
+
+    it('handles a source being passed outside the context when a context is passed', async() => {
+      await HttpServiceSparqlEndpoint.runArgsInProcess(
+        [ source, '-c', context ],
+        stdout,
+        stderr,
+        moduleRootPath,
+        env,
+        defaultConfigPath,
+        exit,
+      );
+
+      expect(exit).toHaveBeenCalledWith(1);
+      stderr.end();
+      const err = await stringifyStream(stderr);
+      expect(err).toContain('exposes a SPARQL endpoint');
+      expect(err).toContain('When a context is provided, the sources should be contained within said context');
+    });
   });
 
   describe('generateConstructorArguments', () => {
