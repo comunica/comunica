@@ -85,7 +85,7 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
         ;
       const resp = await isContained(q1, q2, option);
       if (isError(resp)) {
-        return error(new Error(resp.error));
+        return error(new Error(resp.error.error));
       }
       return result(resp.value.result);
     }

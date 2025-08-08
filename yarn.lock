@@ -12132,10 +12132,24 @@ sparql-cache-client@^0.1.4:
     sparqlalgebrajs "^5.0.1"
     sparqljson-parse "^3.0.0"
 
-sparql-federated-query-containment@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/sparql-federated-query-containment/-/sparql-federated-query-containment-0.0.1.tgz#b2c125dc02666ab8f36d45d375d1e73d3c3d5701"
-  integrity sha512-tQDzbPJoAGvj0CC9Q0vppRrFsAICJ0fTn86sxYeB1mw5x01RooPJdcM1G77PI12oe7SoAIaMKgM4+DJylPVJBw==
+sparql-cache-client@^0.1.5:
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/sparql-cache-client/-/sparql-cache-client-0.1.5.tgz#8a096be314e584992636aaf8aa70fe46521f3bdb"
+  integrity sha512-4q/25zNlaVmOEyRL3QBODdVAIE0pPBRtc3RD65iw2f3BLRgls0+wu6jbw9B1JL+ipWMnKbvpJ/25lVyzWDKktw==
+  dependencies:
+    "@rdfjs/types" "^2.0.1"
+    "@types/streamify-string" "^1.0.4"
+    p-limit "^6.2.0"
+    rdf-data-factory "^2.0.2"
+    rdf-dereference "^4.0.0"
+    result-interface "^2.3.3"
+    sparqlalgebrajs "^5.0.1"
+    sparqljson-parse "^3.0.0"
+
+sparql-federated-query-containment@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/sparql-federated-query-containment/-/sparql-federated-query-containment-0.0.2.tgz#9260a19e40605d4502ac41b8dcf4b86eddbd592d"
+  integrity sha512-EK9IkPgYjEc4QVq3/zZH572UWdWVioVOIYK3azPBt0x3Ua5662wIcl6i1Muac3X0OBQ7nt9j4WO4BmJexZePUg==
   dependencies:
     rdf-data-factory "^2.0.2"
     rdf-isomorphic "^2.0.1"
