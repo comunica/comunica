@@ -1640,7 +1640,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       // eslint-disable-next-line max-len
-      it('should write the VoID description when includeVoid is true and the request url contains \'void\' for HEAD', async() => {
+      it('should write the VoID description when includeVoid is true and the request url starts with \'void\' for HEAD', async() => {
         const localInstance = new HttpServiceSparqlEndpoint({
           ...argsDefault,
           includeVoID: true,
@@ -1650,7 +1650,6 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         // Create spies
         const engine = await new QueryEngineFactoryBase().create();
-        engine.queryBindings = (): BindingsStream => <any> { on: () => {} };
         const spyWriteVoIDDescription = jest.spyOn(localInstance, 'writeVoIDDescription');
         const spyGetResultMediaTypeFormats = jest.spyOn(engine, 'getResultMediaTypeFormats');
         const spyResultToString = jest.spyOn(engine, 'resultToString');
@@ -1688,6 +1687,50 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(spyResultToString).toHaveBeenCalledTimes(0);
       });
 
+      it('should only query statistics once when doing multiple VoID description requests', async() => {
+        const xsd = 'http://www.w3.org/2001/XMLSchema#';
+
+        const localInstance = new HttpServiceSparqlEndpoint({
+          ...argsDefault,
+          includeVoID: true,
+        });
+
+        request.url = 'http://example.org/void.ttl';
+
+        // Create spies
+        const engine = await new QueryEngineFactoryBase().create();
+        engine.queryBindings = (): BindingsStream => {
+          const bindingsArray = [
+            BF.bindings([
+              [ DF.variable('triples'), DF.literal('2', DF.namedNode(`${xsd}integer`)) ],
+              [ DF.variable('distinctSubjects'), DF.literal('1', DF.namedNode(`${xsd}integer`)) ],
+              [ DF.variable('distinctObjects'), DF.literal('2', DF.namedNode(`${xsd}integer`)) ],
+            ]),
+          ];
+          return <BindingsStream>(new ArrayIterator<RDF.Bindings>(bindingsArray));
+        };
+        const spyQueryBindings = jest.spyOn(engine, 'queryBindings');
+
+        const requestVoID = () => localInstance.writeQueryResult(
+          engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          { type: 'query', value: '', context: undefined },
+          mediaType,
+          false,
+          true,
+          0,
+        );
+
+        // Request VoID description twice
+        await requestVoID();
+        await requestVoID();
+
+        expect(spyQueryBindings).toHaveBeenCalledTimes(1);
+      });
+
       it('should handle errors in VoID description stringification', async() => {
         const localInstance = new HttpServiceSparqlEndpoint({
           ...argsDefault,
@@ -1700,7 +1743,6 @@ describe('HttpServiceSparqlEndpoint', () => {
         const spyWriteVoIDDescription = jest.spyOn(localInstance, 'writeVoIDDescription');
 
         const engine = await new QueryEngineFactoryBase().create();
-        engine.queryBindings = (): BindingsStream => <any> { on: () => {} };
         mediaType = 'mediatype_queryresultstreamerror';
         await localInstance.writeQueryResult(
           engine,
@@ -1738,7 +1780,6 @@ describe('HttpServiceSparqlEndpoint', () => {
         const spyWriteVoIDDescription = jest.spyOn(localInstance, 'writeVoIDDescription');
 
         const engine = await new QueryEngineFactoryBase().create();
-        engine.queryBindings = (): BindingsStream => <any> { on: () => {} };
         await localInstance.writeQueryResult(
           engine,
           new PassThrough(),

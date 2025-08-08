@@ -49,6 +49,8 @@ export class HttpServiceSparqlEndpoint {
 
   public lastQueryId = 0;
 
+  public statisticsQuads: RDF.Quad[] = [];
+
   public constructor(args: IHttpServiceSparqlEndpointArgs) {
     this.context = args.context || {};
     this.timeout = args.timeout ?? 60_000;
@@ -639,8 +641,9 @@ export class HttpServiceSparqlEndpoint {
       }
 
       // Statistics
-      const bindings = await engine.queryBindings(
-        `
+      if (this.statisticsQuads.length === 0) {
+        const bindings = await engine.queryBindings(
+          `
 SELECT 
   (COUNT(?s) AS ?triples)
   (COUNT(DISTINCT ?s) AS ?distinctSubjects)
@@ -648,29 +651,34 @@ SELECT
 WHERE { 
   ?s ?p ?o 
 }
-        `,
-        this.context,
-      );
+          `,
+          this.context,
+        );
 
-      await new Promise<void>((resolve, reject) => {
-        bindings.on('data', (binding): void => {
-          const xsdInteger = (n: number): string =>
-            `"${n}"^^http://www.w3.org/2001/XMLSchema#integer`;
-          const triples = binding.get('triples').value;
-          quads.push(quad(s, `${vd}triples`, xsdInteger(triples)));
-          quads.push(quad(s, `${vd}properties`, xsdInteger(triples)));
-          quads.push(quad(s, `${vd}distinctSubjects`, xsdInteger(binding.get('distinctSubjects').value)));
-          quads.push(quad(s, `${vd}distinctObjects`, xsdInteger(binding.get('distinctObjects').value)));
+        await new Promise<void>((resolve, reject) => {
+          bindings.on('data', (binding): void => {
+            const xsdInteger = (n: number): string =>
+              `"${n}"^^http://www.w3.org/2001/XMLSchema#integer`;
+            const triples = binding.get('triples').value;
+            this.statisticsQuads.push(quad(s, `${vd}triples`, xsdInteger(triples)));
+            this.statisticsQuads.push(quad(s, `${vd}properties`, xsdInteger(triples)));
+            this.statisticsQuads.push(quad(s, `${vd}distinctSubjects`, xsdInteger(binding.get('distinctSubjects').value)));
+            this.statisticsQuads.push(quad(s, `${vd}distinctObjects`, xsdInteger(binding.get('distinctObjects').value)));
+          });
+
+          bindings.on('error', (error: Error) => {
+            stdout.write(`[500] Server error in results: ${error.message} \n`);
+            response.end('An internal server error occurred.\n');
+            reject(error);
+          });
+
+          bindings.on('end', resolve);
         });
+      }
 
-        bindings.on('error', (error: Error) => {
-          stdout.write(`[500] Server error in results: ${error.message} \n`);
-          response.end('An internal server error occurred.\n');
-          reject(error);
-        });
-
-        bindings.on('end', resolve);
-      });
+      for (const q of this.statisticsQuads) {
+        quads.push(q);
+      }
 
       // Flush results
       eventEmitter = await this.flushResults(engine, stdout, response, mediaType, quads);
