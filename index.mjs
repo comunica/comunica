@@ -1,12 +1,19 @@
 import { QueryEngineFactory } from '@comunica/query-sparql';
 import { KeyRemoteCache } from '@comunica/context-entries';
 
+/**
+ * Sour assignation assignOperationSource
+ * with MediatorOptimizeQueryOperation
+ * and ActorQueryProcessSequential
+ */
 const configPath = './engines/config-query-sparql/config/config-remote-cache.json';
 const myEngine = await new QueryEngineFactory().create({ configPath });
 
 const query = `
 SELECT * WHERE {
   ?s ?p ?o.
+  ?s2 ?p2 ?o2.
+  ?s3 ?p3 ? ?o3.
 }
 `;
 
