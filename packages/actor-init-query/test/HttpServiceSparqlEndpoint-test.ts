@@ -1633,32 +1633,31 @@ describe('HttpServiceSparqlEndpoint', () => {
         // Check if result to string has been called with the correct arguments
         expect(spyResultToString).toHaveBeenCalledTimes(1);
         expect(spyResultToString.mock.calls[0][1]).toEqual(mediaType);
-        const dataset = '_:defaultDataset';
+        const sd = 'http://www.w3.org/ns/sparql-service-description#';
         const vd = 'http://rdfs.org/ns/void#';
-        const dcterms = 'http://purl.org/dc/terms/';
-        const feature = `${vd}feature`;
-        const formats = 'http://www.w3.org/ns/formats/';
+        const rdf = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';
+        const rdfType = `${rdf}type`;
+        const dataset = '_:defaultDataset';
+        const graph = '_:defaultGraph';
         const vocabulary = `${vd}vocabulary`;
+        const dcterms = 'http://purl.org/dc/terms/';
         const voIDDescriptionQuads = [
-          quad(s, `${sd}defaultDatasetDescription`, dataset),
-          quad(dataset, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', `${sd}Dataset`),
-          quad(dataset, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', `${vd}Dataset`),
+          quad(s, `${sd}defaultDataset`, dataset),
+          quad(dataset, rdfType, `${sd}Dataset`),
+          quad(dataset, rdfType, `${vd}Dataset`),
           quad(dataset, `${vd}sparqlEndpoint`, '/sparql'),
-          quad(dataset, vocabulary, formats),
-          quad(dataset, feature, `${formats}N3`),
-          quad(dataset, feature, `${formats}N-Triples`),
-          quad(dataset, feature, `${formats}RDF_XML`),
-          quad(dataset, feature, `${formats}RDFa`),
-          quad(dataset, feature, `${formats}Turtle`),
           quad(dataset, vocabulary, dcterms),
           quad(dataset, `${dcterms}title`, 'title'),
           quad(dataset, `${dcterms}description`, 'description'),
           quad(dataset, `${dcterms}creator`, 'creator'),
           quad(dataset, `${dcterms}created`, `"2025/08/07"^^${xsd}date`),
-          quad(dataset, `${vd}triples`, `"2"^^${xsd}integer`),
-          quad(dataset, `${vd}properties`, `"2"^^${xsd}integer`),
-          quad(dataset, `${vd}distinctSubjects`, `"1"^^${xsd}integer`),
-          quad(dataset, `${vd}distinctObjects`, `"2"^^${xsd}integer`),
+
+          quad(dataset, `${sd}defaultGraph`, graph),
+          quad(graph, rdfType, `${sd}Graph`),
+          quad(graph, `${vd}triples`, `"2"^^${xsd}integer`),
+          quad(graph, `${vd}properties`, `"2"^^${xsd}integer`),
+          quad(graph, `${vd}distinctSubjects`, `"1"^^${xsd}integer`),
+          quad(graph, `${vd}distinctObjects`, `"2"^^${xsd}integer`),
         ];
         for (const quad of voIDDescriptionQuads) {
           serviceDescriptionQuads.push(quad);

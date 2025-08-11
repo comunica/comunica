@@ -574,10 +574,7 @@ export class HttpServiceSparqlEndpoint {
       }
 
       if (this.includeVoID) {
-        const dataset = '_:defaultDataset';
-        quads.push(quad(s, `${sd}defaultDatasetDescription`, dataset));
-        quads.push(quad(dataset, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', `${sd}Dataset`));
-        for (const quad of await this.getVoIDQuads(engine, stdout, response)) {
+        for (const quad of await this.getVoIDQuads(engine, stdout, request, response)) {
           quads.push(quad);
         }
       }
@@ -609,26 +606,25 @@ export class HttpServiceSparqlEndpoint {
   public async getVoIDQuads(
     engine: QueryEngineBase,
     stdout: Writable,
+    request: http.IncomingMessage,
     response: http.ServerResponse,
   ): Promise<RDF.Quad[]> {
-    const dataset = '_:defaultDataset';
+    const s = request.url;
+    const sd = 'http://www.w3.org/ns/sparql-service-description#';
     const vd = 'http://rdfs.org/ns/void#';
-    const dcterms = 'http://purl.org/dc/terms/';
-    const feature = `${vd}feature`;
-    const formats = 'http://www.w3.org/ns/formats/';
+    const rdf = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';
+    const rdfType = `${rdf}type`;
+    const dataset = '_:defaultDataset';
+    const graph = '_:defaultGraph';
     const vocabulary = `${vd}vocabulary`;
+    const dcterms = 'http://purl.org/dc/terms/';
     const quads: RDF.Quad[] = [
-      // Basic metadata
-      quad(dataset, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', `${vd}Dataset`),
-      quad(dataset, `${vd}sparqlEndpoint`, '/sparql'),
+      quad(s, `${sd}defaultDataset`, dataset),
+      quad(dataset, rdfType, `${sd}Dataset`),
 
-      // Formats
-      quad(dataset, vocabulary, formats),
-      quad(dataset, feature, `${formats}N3`),
-      quad(dataset, feature, `${formats}N-Triples`),
-      quad(dataset, feature, `${formats}RDF_XML`),
-      quad(dataset, feature, `${formats}RDFa`),
-      quad(dataset, feature, `${formats}Turtle`),
+      // Basic VoID metadata
+      quad(dataset, rdfType, `${vd}Dataset`),
+      quad(dataset, `${vd}sparqlEndpoint`, '/sparql'),
     ];
 
     // Dublin Core Metadata Terms
@@ -640,6 +636,11 @@ export class HttpServiceSparqlEndpoint {
     }
 
     // Statistics
+
+    // Default graph for statistics
+    quads.push(quad(dataset, `${sd}defaultGraph`, graph));
+    quads.push(quad(graph, rdfType, `${sd}Graph`));
+
     if (this.cachedStatistics.length === 0) {
       const bindingsStream = await engine.queryBindings(
         `
@@ -659,10 +660,10 @@ WHERE {
           const xsdInteger = (n: string): string =>
             `"${n}"^^http://www.w3.org/2001/XMLSchema#integer`;
           const triples = bindings.get('triples')!.value;
-          this.cachedStatistics.push(quad(dataset, `${vd}triples`, xsdInteger(triples)));
-          this.cachedStatistics.push(quad(dataset, `${vd}properties`, xsdInteger(triples)));
-          this.cachedStatistics.push(quad(dataset, `${vd}distinctSubjects`, xsdInteger(bindings.get('distinctSubjects')!.value)));
-          this.cachedStatistics.push(quad(dataset, `${vd}distinctObjects`, xsdInteger(bindings.get('distinctObjects')!.value)));
+          this.cachedStatistics.push(quad(graph, `${vd}triples`, xsdInteger(triples)));
+          this.cachedStatistics.push(quad(graph, `${vd}properties`, xsdInteger(triples)));
+          this.cachedStatistics.push(quad(graph, `${vd}distinctSubjects`, xsdInteger(bindings.get('distinctSubjects')!.value)));
+          this.cachedStatistics.push(quad(graph, `${vd}distinctObjects`, xsdInteger(bindings.get('distinctObjects')!.value)));
         }
       } catch (error: any) {
         stdout.write(`[500] Server error in results: ${error.message} \n`);
