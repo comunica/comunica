@@ -349,7 +349,7 @@ export class HttpServiceSparqlEndpoint {
       response.end(JSON.stringify({ message: 'Queries are accepted on /sparql. Redirected.' }));
       return;
     }
-    if (!(requestUrl.pathname === '/sparql')) {
+    if (requestUrl.pathname !== '/sparql') {
       stdout.write('[404] Resource not found. Queries are accepted on /sparql.\n');
       response.writeHead(
         404,
