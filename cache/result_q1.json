@@ -1,0 +1,17 @@
+{
+  "head": {
+    "vars": [ "person", "city" ]
+  },
+  "results": {
+    "bindings": [
+      {
+        "person": { "type": "uri", "value": "http://example.org/Bob" },
+        "city":   { "type": "uri", "value": "http://example.org/Atlantis" }
+      },
+      {
+        "person": { "type": "uri", "value": "http://example.org/Eve" },
+        "city":   { "type": "uri", "value": "http://example.org/ElDorado" }
+      }
+    ]
+  }
+}

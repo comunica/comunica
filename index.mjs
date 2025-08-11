@@ -1,5 +1,6 @@
 import { QueryEngineFactory } from '@comunica/query-sparql';
 import { KeyRemoteCache } from '@comunica/context-entries';
+import {LoggerPretty} from "@comunica/logger-pretty";
 
 /**
  * Sour assignation assignOperationSource
@@ -10,10 +11,14 @@ const configPath = './engines/config-query-sparql/config/config-remote-cache.jso
 const myEngine = await new QueryEngineFactory().create({ configPath });
 
 const query = `
-SELECT * WHERE {
-  ?s ?p ?o.
-  ?s2 ?p2 ?o2.
-  ?s3 ?p3 ? ?o3.
+PREFIX ex: <http://example.org/>
+
+SELECT ?person ?city
+WHERE {
+  ?person ex:livesIn ?city .
+  ?city ex:locatedIn ex:CountryX .
+  ?person ex:hasOccupation ex:Engineer .
+  ?person ex:gender ex:female .
 }
 `;
 
@@ -22,8 +27,8 @@ const cacheLocation = { url: "http://127.0.0.1:9999/cache.ttl" };
 const bindingsStream = await myEngine.queryBindings(query, {
   lenient: true,
   [KeyRemoteCache.location.name]: cacheLocation,
-  sources:["https://ruben.verborgh.org/profile/"]
-
+  sources:["https://ruben.verborgh.org/profile/"],
+  log: new LoggerPretty({ level: 'debug'}),
 });
 
 let i = 0;

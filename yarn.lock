@@ -12132,14 +12132,13 @@ sparql-cache-client@^0.1.4:
     sparqlalgebrajs "^5.0.1"
     sparqljson-parse "^3.0.0"
 
-sparql-cache-client@^0.1.5:
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/sparql-cache-client/-/sparql-cache-client-0.1.5.tgz#8a096be314e584992636aaf8aa70fe46521f3bdb"
-  integrity sha512-4q/25zNlaVmOEyRL3QBODdVAIE0pPBRtc3RD65iw2f3BLRgls0+wu6jbw9B1JL+ipWMnKbvpJ/25lVyzWDKktw==
+sparql-cache-client@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/sparql-cache-client/-/sparql-cache-client-0.2.0.tgz#56c18d396c84a886f99447c3ec35ea0f7fa6d984"
+  integrity sha512-PXry0F+9jnnW9tMbHHlp7shri2bJpOfnlCZ6EQqbTomFgrDMJ3upWlihItJEvccpu0sXgz4JCsX9XDnKpXwdsA==
   dependencies:
     "@rdfjs/types" "^2.0.1"
     "@types/streamify-string" "^1.0.4"
-    p-limit "^6.2.0"
     rdf-data-factory "^2.0.2"
     rdf-dereference "^4.0.0"
     result-interface "^2.3.3"

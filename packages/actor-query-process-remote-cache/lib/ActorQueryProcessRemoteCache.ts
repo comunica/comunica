@@ -1,7 +1,7 @@
 import { ActorQueryProcess, IActionQueryProcess, IActorQueryProcessOutput, IActorQueryProcessArgs } from '@comunica/bus-query-process';
 import { TestResult, IActorTest, passTestVoid, ActionContextKey } from '@comunica/core';
 import { KeyRemoteCache, KeysInitQuery } from '@comunica/context-entries';
-import { Algebra, toSparql, translate, Util } from 'sparqlalgebrajs';
+import { Algebra, toSparql, Factory, translate, Util } from 'sparqlalgebrajs';
 import {
   CacheHitFunction,
   getCachedQuads,
@@ -23,6 +23,7 @@ import * as Z3_SOLVER from "z3-solver";
 
 const RDF_FACTORY: ComunicaDataFactory = new DataFactory();
 const BF = new BindingsFactory(RDF_FACTORY);
+const AF = new Factory(RDF_FACTORY);
 
 /**
  * A comunica Remote Cache Query Process Actor.
@@ -43,6 +44,7 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
   public async run(action: IActionQueryProcess): Promise<IActorQueryProcessOutput> {
     const resultOrError = await this.queryCachedResults(action);
     if (isResult(resultOrError)) {
+      console.log(`using the remote cache from: ${JSON.stringify(action.context.getSafe(KeyRemoteCache.location), null, 2)}`);
       this.logDebug(action.context, `using the remote cache from: ${JSON.stringify(action.context.getSafe(KeyRemoteCache.location), null, 2)}`,)
       if ("stores" in resultOrError.value) {
         action.context = action.context.set(KeysInitQuery.querySourcesUnidentified, resultOrError.value.stores);
@@ -58,7 +60,8 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
         }
       }
     } else {
-      this.logDebug(action.context, "query not found in the cache performing the full execution")
+      console.log("query not found in the cache, performing the full execution")
+      this.logDebug(action.context, "query not found in the cache, performing the full execution")
     }
     return this.fallBackQueryProcess.run(action, undefined);
   }
@@ -92,16 +95,16 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
 
   }
 
-  private async getCacheHitAlgorithm(): SafePromise<{algorithm: CacheHitFunction, time_limit:number}[]> {
+  private async getCacheHitAlgorithm(): SafePromise<CacheHitFunction[]> {
     switch (this.cacheHitAlgorithm) {
       case 'equality':
-        return result([{algorithm: ActorQueryProcessRemoteCache.equalityCacheHit, time_limit:1_000}]);
+        return result([ActorQueryProcessRemoteCache.equalityCacheHit]);
       case 'containment':
-        return result([{algorithm: await this.generateQueryContainmentCacheHitFunction(), time_limit:1_000}]);
+        return result([await this.generateQueryContainmentCacheHitFunction()]);
       case 'all':
         return result([
-          {algorithm: await this.generateQueryContainmentCacheHitFunction(), time_limit:1_000},
-          {algorithm: ActorQueryProcessRemoteCache.equalityCacheHit, time_limit:1_000}
+          ActorQueryProcessRemoteCache.equalityCacheHit,
+          await this.generateQueryContainmentCacheHitFunction()
         ]);
       default:
         return error(new Error(`algorithm ${this.cacheHitAlgorithm} not supported`));
@@ -144,8 +147,6 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
       // Only includes non-SERVICE endpoint(s)
       endpoints,
       cacheHitAlgorithms: cacheHitAlgorithmOrError.value,
-      maxConcurentExecCacheHitAlgorithm: undefined,
-
       outputOption: OutputOption.BINDING_BAG
     } as const;
 
@@ -160,12 +161,12 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
     if (this.cacheHitAlgorithm === 'equality') {
       const bindings = ActorQueryProcessRemoteCache.bindingConvertion(cacheResult.value.cache);
       const it: BindingsStream = new ArrayIterator(bindings, { autoStart: false });
-      return result({bindings:it});
+      return result({ bindings: it });
     }
 
     const store = this.bindingToQuadStore(ActorQueryProcessRemoteCache.bindingConvertion(cacheResult.value.cache), query);
 
-    return result({stores: [store, ...rdfStores]});
+    return result({ stores: [store, ...rdfStores] });
   }
 
   private isRdfStore(source: QuerySourceUnidentified): source is RDF.Store {
@@ -251,6 +252,94 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
     }
 
     return unprojectedVariables;
+  }
+
+  /**
+   * For a subquery to be contained in a superquery,
+   * we need to create a containment mapping that maps the variables of the superquery to those of the subquery so that every goal of the superquery is mapped to a goal of the subquery.
+   * In terms of constraints, this means the superquery’s constraints are a subset of the subquery’s constraints with exactly the same variables. So, we can “color” the subquery to find which parts are not part of the intersection of constraints.
+   * @param superQuery 
+   * @param subQuery 
+   */
+  public static differenceConstraint(superQuery: Algebra.Operation, subQuery: Algebra.Operation): Algebra.Operation {
+    const tps: RDF.Quad[] = [];
+
+    Util.recurseOperation(superQuery, {
+      [Algebra.types.SERVICE]: () => {
+        return false;
+      },
+      [Algebra.types.PATTERN]: (op: Algebra.Pattern) => {
+        const tp = RDF_FACTORY.quad(<any>op.subject, <any>op.predicate, <any>op.object, <any>op.graph);
+        tps.push(tp);
+        return true;
+      }
+    });
+
+    const uncoloredTps = this.colorQuery(subQuery, tps);
+    const patterns = uncoloredTps.map((tp) => {
+      return AF.createPattern(tp.subject, tp.predicate, tp.object);
+    })
+    const bgp = AF.createBgp(patterns);
+    const join = AF.createJoin([bgp]);
+    const project = AF.createProject(join, this.queryVariables(subQuery));
+    return project;
+  }
+
+  private static queryVariables(query: Algebra.Operation): RDF.Variable[] {
+    let variables: RDF.Variable[] = [];
+    Util.recurseOperation(query, {
+      [Algebra.types.PROJECT]: (op: Algebra.Project) => {
+        variables = op.variables;
+        return false;
+      }
+    });
+
+    return variables
+  }
+  
+  public static colorQuery(subQuery: Algebra.Operation, superQueryTps: RDF.Quad[]): RDF.Quad[] {
+    const tps: Map<string, RDF.Quad> = new Map();
+
+    Util.recurseOperation(subQuery, {
+      [Algebra.types.SERVICE]: () => {
+        return false;
+      },
+      [Algebra.types.PATTERN]: (op: Algebra.Pattern) => {
+        const tp = RDF_FACTORY.quad(<any>op.subject, <any>op.predicate, <any>op.object, <any>op.graph);
+        const index = `<${tp.subject.value}> <${tp.predicate.value}> <${tp.object.value}> <${tp.graph.value}>`;
+        tps.set(index, tp);
+        return true;
+      }
+    });
+
+    for (const superTp of superQueryTps) {
+      for (const [key, tp] of tps) {
+        if (this.compatibleTp(superTp, tp)) {
+          tps.delete(key);
+        }
+      }
+    }
+
+    return Array.from(tps.values());
+  }
+
+  public static compatibleTp(superTp: RDF.Quad, subTp: RDF.Quad): boolean {
+    return this.compatibleTerm(superTp.subject, subTp.subject) &&
+      this.compatibleTerm(superTp.predicate, subTp.predicate) &&
+      this.compatibleTerm(superTp.object, subTp.object);
+  }
+
+  /**
+   * We ignore blank node
+   * @param superTerm 
+   * @param subTerm 
+   * @returns 
+   */
+  public static compatibleTerm(superTerm: RDF.Term, subTerm: RDF.Term): boolean {
+    if (superTerm.equals(subTerm)) {
+      return true;
+    }
+    return superTerm.termType === "Variable" && subTerm.termType === "NamedNode";
   }
 }
 

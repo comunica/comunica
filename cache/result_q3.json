@@ -1,0 +1,19 @@
+{
+  "head": {
+    "vars": [ "person", "email", "phone" ]
+  },
+  "results": {
+    "bindings": [
+      {
+        "person": { "type": "uri", "value": "http://example.org/SherlockHolmes" },
+        "email":  { "type": "literal", "value": "detective@bakerstreet.org" },
+        "phone":  { "type": "literal", "value": "+44-0000-221B" }
+      },
+      {
+        "person": { "type": "uri", "value": "http://example.org/WonderWoman" },
+        "email":  { "type": "literal", "value": "diana@themyscira.gov" },
+        "phone":  { "type": "literal", "value": "+1-800-AMAZON" }
+      }
+    ]
+  }
+}
