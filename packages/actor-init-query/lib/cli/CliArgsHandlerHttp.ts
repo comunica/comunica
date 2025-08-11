@@ -56,7 +56,7 @@ export class CliArgsHandlerHttp implements ICliArgsHandler {
         },
         includeVoID: {
           type: 'boolean',
-          describe: 'Include a VoID description, which can be accessed at /void',
+          describe: 'Include a VoID description, which can be found in the service description',
         },
       })
       .check((args) => {

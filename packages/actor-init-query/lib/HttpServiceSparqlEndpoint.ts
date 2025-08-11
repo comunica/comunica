@@ -349,7 +349,7 @@ export class HttpServiceSparqlEndpoint {
       response.end(JSON.stringify({ message: 'Queries are accepted on /sparql. Redirected.' }));
       return;
     }
-    if (!(requestUrl.pathname === '/sparql' || requestUrl.pathname?.startsWith('/void'))) {
+    if (!(requestUrl.pathname === '/sparql')) {
       stdout.write('[404] Resource not found. Queries are accepted on /sparql.\n');
       response.writeHead(
         404,
@@ -432,10 +432,6 @@ export class HttpServiceSparqlEndpoint {
     readOnly: boolean,
     queryId: number,
   ): Promise<void> {
-    if (this.includeVoID && request.url?.split('/').at(-1)?.startsWith('void')) {
-      return this.writeVoIDDescription(engine, stdout, stderr, request, response, mediaType, headOnly);
-    }
-
     if (!queryBody || !queryBody.value) {
       return this.writeServiceDescription(engine, stdout, stderr, request, response, mediaType, headOnly);
     }
@@ -577,8 +573,27 @@ export class HttpServiceSparqlEndpoint {
         quads.push(quad(s, `${sd}extensionFunction`, value));
       }
 
+      if (this.includeVoID) {
+        const dataset = '_:defaultDataset';
+        quads.push(quad(s, `${sd}defaultDatasetDescription`, dataset));
+        quads.push(quad(dataset, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', `${sd}Dataset`));
+        for (const quad of await this.getVoIDQuads(engine, stdout, response)) {
+          quads.push(quad);
+        }
+      }
+
       // Flush results
-      eventEmitter = await this.flushResults(engine, stdout, response, mediaType, quads);
+      const { data } = await engine.resultToString(<QueryQuads>{
+        resultType: 'quads',
+        execute: async() => new ArrayIterator(quads),
+        metadata: <any>undefined,
+      }, mediaType);
+      data.on('error', (error: Error) => {
+        stdout.write(`[500] Server error in results: ${error.message} \n`);
+        response.end('An internal server error occurred.\n');
+      });
+      data.pipe(response);
+      eventEmitter = data;
     } catch {
       stdout.write('[400] Bad request, invalid media type\n');
       response.writeHead(
@@ -591,26 +606,12 @@ export class HttpServiceSparqlEndpoint {
     this.stopResponse(response, 0, process.stderr, eventEmitter);
   }
 
-  public async writeVoIDDescription(
+  public async getVoIDQuads(
     engine: QueryEngineBase,
     stdout: Writable,
-    stderr: Writable,
-    request: http.IncomingMessage,
     response: http.ServerResponse,
-    mediaType: string,
-    headOnly: boolean,
-  ): Promise<void> {
-    stdout.write(`[200] ${request.method} to ${request.url}\n`);
-    stdout.write(`      Requested media type: ${mediaType}\n`);
-    stdout.write('      Received query for VoID description.\n');
-    response.writeHead(200, { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
-
-    if (headOnly) {
-      response.end();
-      return;
-    }
-
-    const s = request.url;
+  ): Promise<RDF.Quad[]> {
+    const dataset = '_:defaultDataset';
     const vd = 'http://rdfs.org/ns/void#';
     const dcterms = 'http://purl.org/dc/terms/';
     const feature = `${vd}feature`;
@@ -618,32 +619,30 @@ export class HttpServiceSparqlEndpoint {
     const vocabulary = `${vd}vocabulary`;
     const quads: RDF.Quad[] = [
       // Basic metadata
-      quad(s, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', `${vd}Dataset`),
-      quad(s, `${vd}sparqlEndpoint`, '/sparql'),
+      quad(dataset, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', `${vd}Dataset`),
+      quad(dataset, `${vd}sparqlEndpoint`, '/sparql'),
 
       // Formats
-      quad(s, vocabulary, formats),
-      quad(s, feature, `${formats}N3`),
-      quad(s, feature, `${formats}N-Triples`),
-      quad(s, feature, `${formats}RDF_XML`),
-      quad(s, feature, `${formats}RDFa`),
-      quad(s, feature, `${formats}Turtle`),
+      quad(dataset, vocabulary, formats),
+      quad(dataset, feature, `${formats}N3`),
+      quad(dataset, feature, `${formats}N-Triples`),
+      quad(dataset, feature, `${formats}RDF_XML`),
+      quad(dataset, feature, `${formats}RDFa`),
+      quad(dataset, feature, `${formats}Turtle`),
     ];
 
-    let eventEmitter: EventEmitter;
-    try {
-      // Dublin Core Metadata Terms
-      if (this.context.dcterms) {
-        quads.push(quad(s, vocabulary, dcterms));
-        for (const key in this.context.dcterms) {
-          quads.push(quad(s, `${dcterms}${key}`, this.context.dcterms[key]));
-        }
+    // Dublin Core Metadata Terms
+    if (this.context.dcterms) {
+      quads.push(quad(dataset, vocabulary, dcterms));
+      for (const key in this.context.dcterms) {
+        quads.push(quad(dataset, `${dcterms}${key}`, this.context.dcterms[key]));
       }
+    }
 
-      // Statistics
-      if (this.cachedStatistics.length === 0) {
-        const bindings = await engine.queryBindings(
-          `
+    // Statistics
+    if (this.cachedStatistics.length === 0) {
+      const bindings = await engine.queryBindings(
+        `
 SELECT 
   (COUNT(?s) AS ?triples)
   (COUNT(DISTINCT ?s) AS ?distinctSubjects)
@@ -652,68 +651,37 @@ WHERE {
   ?s ?p ?o 
 }
           `,
-          this.context,
-        );
-
-        try {
-          await new Promise<void>((resolve, reject) => {
-            bindings.on('data', (binding): void => {
-              const xsdInteger = (n: number): string =>
-                `"${n}"^^http://www.w3.org/2001/XMLSchema#integer`;
-              const triples = binding.get('triples').value;
-              this.cachedStatistics.push(quad(s, `${vd}triples`, xsdInteger(triples)));
-              this.cachedStatistics.push(quad(s, `${vd}properties`, xsdInteger(triples)));
-              this.cachedStatistics.push(quad(s, `${vd}distinctSubjects`, xsdInteger(binding.get('distinctSubjects').value)));
-              this.cachedStatistics.push(quad(s, `${vd}distinctObjects`, xsdInteger(binding.get('distinctObjects').value)));
-            });
-
-            bindings.on('error', reject);
-
-            bindings.on('end', resolve);
-          });
-        } catch (error: any) {
-          stdout.write(`[500] Server error in results: ${error.message} \n`);
-          response.end('An internal server error occurred.\n');
-          return;
-        }
-      }
-
-      for (const q of this.cachedStatistics) {
-        quads.push(q);
-      }
-
-      // Flush results
-      eventEmitter = await this.flushResults(engine, stdout, response, mediaType, quads);
-    } catch {
-      stdout.write('[400] Bad request, invalid media type\n');
-      response.writeHead(
-        400,
-        { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' },
+        this.context,
       );
-      response.end('The response for the given query could not be serialized for the requested media type\n');
-      return;
-    }
-    this.stopResponse(response, 0, process.stderr, eventEmitter);
-  }
 
-  private async flushResults(
-    engine: QueryEngineBase,
-    stdout: Writable,
-    response: http.ServerResponse,
-    mediaType: string,
-    quads: RDF.Quad[],
-  ): Promise<EventEmitter> {
-    const { data } = await engine.resultToString(<QueryQuads>{
-      resultType: 'quads',
-      execute: async() => new ArrayIterator(quads),
-      metadata: <any>undefined,
-    }, mediaType);
-    data.on('error', (error: Error) => {
-      stdout.write(`[500] Server error in results: ${error.message} \n`);
-      response.end('An internal server error occurred.\n');
-    });
-    data.pipe(response);
-    return data;
+      try {
+        await new Promise<void>((resolve, reject) => {
+          bindings.on('data', (binding): void => {
+            const xsdInteger = (n: number): string =>
+              `"${n}"^^http://www.w3.org/2001/XMLSchema#integer`;
+            const triples = binding.get('triples').value;
+            this.cachedStatistics.push(quad(dataset, `${vd}triples`, xsdInteger(triples)));
+            this.cachedStatistics.push(quad(dataset, `${vd}properties`, xsdInteger(triples)));
+            this.cachedStatistics.push(quad(dataset, `${vd}distinctSubjects`, xsdInteger(binding.get('distinctSubjects').value)));
+            this.cachedStatistics.push(quad(dataset, `${vd}distinctObjects`, xsdInteger(binding.get('distinctObjects').value)));
+          });
+
+          bindings.on('error', reject);
+
+          bindings.on('end', resolve);
+        });
+      } catch (error: any) {
+        stdout.write(`[500] Server error in results: ${error.message} \n`);
+        response.end('An internal server error occurred.\n');
+        return [];
+      }
+    }
+
+    for (const q of this.cachedStatistics) {
+      quads.push(q);
+    }
+
+    return quads;
   }
 
   /**
