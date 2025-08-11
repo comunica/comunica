@@ -641,7 +641,7 @@ export class HttpServiceSparqlEndpoint {
 
     // Statistics
     if (this.cachedStatistics.length === 0) {
-      const bindings = await engine.queryBindings(
+      const bindingsStream = await engine.queryBindings(
         `
 SELECT 
   (COUNT(?s) AS ?triples)
@@ -655,21 +655,15 @@ WHERE {
       );
 
       try {
-        await new Promise<void>((resolve, reject) => {
-          bindings.on('data', (binding): void => {
-            const xsdInteger = (n: number): string =>
-              `"${n}"^^http://www.w3.org/2001/XMLSchema#integer`;
-            const triples = binding.get('triples').value;
-            this.cachedStatistics.push(quad(dataset, `${vd}triples`, xsdInteger(triples)));
-            this.cachedStatistics.push(quad(dataset, `${vd}properties`, xsdInteger(triples)));
-            this.cachedStatistics.push(quad(dataset, `${vd}distinctSubjects`, xsdInteger(binding.get('distinctSubjects').value)));
-            this.cachedStatistics.push(quad(dataset, `${vd}distinctObjects`, xsdInteger(binding.get('distinctObjects').value)));
-          });
-
-          bindings.on('error', reject);
-
-          bindings.on('end', resolve);
-        });
+        for await (const bindings of bindingsStream) {
+          const xsdInteger = (n: string): string =>
+            `"${n}"^^http://www.w3.org/2001/XMLSchema#integer`;
+          const triples = bindings.get('triples')!.value;
+          this.cachedStatistics.push(quad(dataset, `${vd}triples`, xsdInteger(triples)));
+          this.cachedStatistics.push(quad(dataset, `${vd}properties`, xsdInteger(triples)));
+          this.cachedStatistics.push(quad(dataset, `${vd}distinctSubjects`, xsdInteger(bindings.get('distinctSubjects')!.value)));
+          this.cachedStatistics.push(quad(dataset, `${vd}distinctObjects`, xsdInteger(bindings.get('distinctObjects')!.value)));
+        }
       } catch (error: any) {
         stdout.write(`[500] Server error in results: ${error.message} \n`);
         response.end('An internal server error occurred.\n');

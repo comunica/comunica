@@ -1474,7 +1474,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         ));
       });
 
-      it('should write the service description when no query was defined for HEAD', async() => {
+      it('should write the service description header when no query was defined for HEAD', async() => {
         // Create spies
         const engine = await new QueryEngineFactoryBase().create();
         const spyWriteServiceDescription = jest.spyOn(instance, 'writeServiceDescription');
@@ -1718,13 +1718,9 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         // Create spies
         const engine = await new QueryEngineFactoryBase().create();
-        engine.queryBindings = (): BindingsStream => <any> {
-          on: (event: string, func: any) => {
-            if (event === 'error') {
-              func(new Error('error'));
-            }
-          },
-        };
+        engine.queryBindings = (): BindingsStream => <BindingsStream>(new ArrayIterator<RDF.Bindings>([ BF.bindings([
+          [ DF.variable('error'), DF.literal('error') ],
+        ]) ]));
         const spyGetVoIDQuads = jest.spyOn(localInstance, 'getVoIDQuads');
         const spyQueryBindings = jest.spyOn(engine, 'queryBindings');
 
