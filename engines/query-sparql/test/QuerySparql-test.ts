@@ -1534,6 +1534,7 @@ WHERE {
         ]);
       });
 
+      // Seems like a stupid test, but this could fail even when the above test succeeded
       it('compare with integer, but also check if datatype is still xsd:untypedAtomic', async() => {
         await expect(engine.queryBindings(`
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
