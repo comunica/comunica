@@ -131,11 +131,10 @@ export class TermTransformer implements ITermTransformer {
       }
       if (TypeURL.XSD_UNTYPED_ATOMIC in superTypeDict) {
         const intVal: number | undefined = P.parseXSDDecimal(lit.value);
-        const doubleVal: number | undefined = P.parseXSDFloat(lit.value);
-        if (intVal === undefined && doubleVal === undefined) {
+        if (intVal === undefined) {
           return new E.Literal<string>(lit.value, TypeURL.XSD_ANY_URI, lit.value);
         }
-        return new E.Literal<number>(intVal ?? doubleVal!, TypeAlias.SPARQL_NUMERIC, lit.value);
+        return new E.Literal<number>(intVal, TypeAlias.SPARQL_NUMERIC, lit.value);
       }
       const isFloat = TypeURL.XSD_FLOAT in superTypeDict;
       const isDouble = TypeURL.XSD_DOUBLE in superTypeDict;
