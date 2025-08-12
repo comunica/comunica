@@ -90,7 +90,8 @@ export class TermFunctionBase extends ExpressionFunctionBase implements ITermFun
         exprEval.context.getSafe(KeysExpressionEvaluator.superTypeProvider),
         exprEval.context.getSafe(KeysInitQuery.functionArgumentsCache),
       ) ?? this.handleInvalidTypes(args);
-    return concreteFunction(exprEval)(args);
+    const res = concreteFunction(exprEval)(args);
+    return res;
   }
 
   protected handleInvalidTypes(args: TermExpression[]): never {
