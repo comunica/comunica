@@ -1520,7 +1520,7 @@ PREFIX ex: <http://example.org/>
 SELECT ?person ?age
 WHERE {
   ?person ex:age ?age .
-  FILTER(?age > 30)
+  FILTER(xsd:decimal(?age) > 30)
 }
         `, context)).resolves.toEqualBindingsStream([
           BF.bindings([
@@ -1543,8 +1543,8 @@ PREFIX ex: <http://example.org/>
 SELECT ?person ?age
 WHERE {
   ?person ex:age ?age .
+  FILTER(xsd:decimal(?age) > 30)
   FILTER(DATATYPE(?age) = xsd:untypedAtomic)
-  FILTER(?age > 30)
 }
         `, context)).resolves.toEqualBindingsStream([
           BF.bindings([

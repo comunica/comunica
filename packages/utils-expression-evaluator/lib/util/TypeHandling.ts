@@ -37,6 +37,11 @@ export const extensionTableInput: Record<KnownLiteralTypes, OverrideType> = {
   [TypeURL.XSD_ENTITY]: TypeURL.XSD_NC_NAME,
   [TypeURL.XSD_ID]: TypeURL.XSD_NC_NAME,
   [TypeURL.XSD_ID_REF]: TypeURL.XSD_NC_NAME,
+  // https://www.w3.org/TR/xpath-functions-31/#casting-from-strings
+  // "If the value is xs:untypedAtomic, it is treated in exactly the same way as a string
+  // containing the same sequence of characters."
+  // So it's not really a subtype by definition, but it works this way.
+  [TypeURL.XSD_UNTYPED_ATOMIC]: TypeURL.XSD_STRING,
 
   // Numeric types
   // https://www.w3.org/TR/sparql11-query/#operandDataTypes
@@ -76,7 +81,6 @@ export const extensionTableInput: Record<KnownLiteralTypes, OverrideType> = {
   [TypeAlias.SPARQL_NUMERIC]: 'term',
   [TypeAlias.SPARQL_STRINGLY]: 'term',
   [TypeURL.XSD_ANY_URI]: 'term',
-  [TypeURL.XSD_UNTYPED_ATOMIC]: 'term',
 };
 type SuperTypeDict = Record<KnownLiteralTypes, number> & { __depth: number };
 type SuperTypeDictTable = Record<KnownLiteralTypes, SuperTypeDict>;

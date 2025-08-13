@@ -4,7 +4,7 @@ import * as RDFString from 'rdf-string';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 import { Algebra } from 'sparqlalgebrajs';
 import * as E from '../expressions';
-import { TypeAlias, TypeURL } from '../util/Consts';
+import { TypeURL } from '../util/Consts';
 import * as Err from '../util/Errors';
 import { isExpressionError } from '../util/Errors';
 import {
@@ -128,13 +128,6 @@ export class TermTransformer implements ITermTransformer {
         }
         // If type is not an integer it's just a decimal.
         return new E.DecimalLiteral(intVal, dataType, lit.value);
-      }
-      if (TypeURL.XSD_UNTYPED_ATOMIC in superTypeDict) {
-        const intVal: number | undefined = P.parseXSDDecimal(lit.value);
-        if (intVal === undefined) {
-          return new E.Literal<string>(lit.value, TypeURL.XSD_ANY_URI, lit.value);
-        }
-        return new E.Literal<number>(intVal, TypeAlias.SPARQL_NUMERIC, lit.value);
       }
       const isFloat = TypeURL.XSD_FLOAT in superTypeDict;
       const isDouble = TypeURL.XSD_DOUBLE in superTypeDict;
