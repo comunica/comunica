@@ -1,0 +1,19 @@
+@prefix ex: <http://example.org/> .
+
+# People and their relationships
+ex:Bob a ex:Person ;
+    ex:livesIn ex:Atlantis ;
+    ex:hasOccupation ex:Engineer ;
+    ex:gender ex:female .
+
+ex:Eve a ex:Person ;
+    ex:livesIn ex:ElDorado ;
+    ex:hasOccupation ex:Engineer ;
+    ex:gender ex:female .
+
+# Cities and their locations
+ex:Atlantis a ex:City ;
+    ex:locatedIn ex:CountryX .
+
+ex:ElDorado a ex:City ;
+    ex:locatedIn ex:CountryX .
