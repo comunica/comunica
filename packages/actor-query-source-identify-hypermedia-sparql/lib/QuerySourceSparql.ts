@@ -76,6 +76,8 @@ export class QuerySourceSparql implements IQuerySource {
     defaultGraph?: string,
     unionDefaultGraph?: boolean,
     datasets?: IDataset[],
+    // TODO: use this to check if SparqlEndpointFetcher should forceDirectPost when the new version is released
+    _postAccepted?: string[],
   ) {
     this.referenceValue = url;
     this.url = url;
