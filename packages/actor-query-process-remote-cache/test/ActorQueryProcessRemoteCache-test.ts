@@ -1,6 +1,6 @@
 import 'jest-rdf';
 import { ActionContext, Bus } from '@comunica/core';
-import { ActorQueryProcessRemoteCache } from '../lib/ActorQueryProcessRemoteCache';
+import { ActorQueryProcessRemoteCache, Algorithm } from '../lib/ActorQueryProcessRemoteCache';
 import { translate } from 'sparqlalgebrajs';
 import '@comunica/utils-jest';
 import { error, isResult, result } from 'result-interface';
@@ -37,7 +37,7 @@ describe(ActorQueryProcessRemoteCache.name, () => {
 
   describe("test", () => {
     it("should always pass the test", () => {
-      const actor = new ActorQueryProcessRemoteCache({ name: 'actor', bus, fallBackQueryProcess: <any>{}, cacheHitAlgorithm: 'equality' });
+      const actor = new ActorQueryProcessRemoteCache({ name: 'actor', bus, fallBackQueryProcess: <any>{}, cacheHitAlgorithm: Algorithm.EQ });
       return expect(actor.test(<any>{})).resolves.toPassTestVoid();
     })
   });
@@ -71,7 +71,7 @@ describe(ActorQueryProcessRemoteCache.name, () => {
     };
 
     beforeEach(() => {
-      actor = new ActorQueryProcessRemoteCache({ name: 'actor', bus, fallBackQueryProcess: <any>fallBackQueryProcess, cacheHitAlgorithm: 'equality' });
+      actor = new ActorQueryProcessRemoteCache({ name: 'actor', bus, fallBackQueryProcess: <any>fallBackQueryProcess, cacheHitAlgorithm: Algorithm.EQ });
       jest.resetAllMocks();
     });
 
@@ -150,7 +150,7 @@ describe(ActorQueryProcessRemoteCache.name, () => {
     let actor: ActorQueryProcessRemoteCache;
 
     beforeEach(() => {
-      actor = new ActorQueryProcessRemoteCache({ name: 'actor', bus, fallBackQueryProcess: <any>{}, cacheHitAlgorithm: 'equality' });
+      actor = new ActorQueryProcessRemoteCache({ name: 'actor', bus, fallBackQueryProcess: <any>{}, cacheHitAlgorithm: Algorithm.EQ });
       jest.clearAllMocks();
     });
 
@@ -250,7 +250,7 @@ describe(ActorQueryProcessRemoteCache.name, () => {
                 }`;
       const bindings = SPARQL_JSON_PARSER.parseJsonResults(JSON.parse(sparqlJsonString));
 
-      mockGetCachedQuads.mockResolvedValue(result({ cache: bindings, algorithmIndex: 0 }));
+      mockGetCachedQuads.mockResolvedValue(result({ cache: bindings, algorithmIndex: 0, query: translate("SELECT * WHERE {?s ?p ?o}") }));
 
       const expectedBinding = new ArrayIterator(ActorQueryProcessRemoteCache.bindingConvertion(bindings), { autoStart: false });
 
@@ -266,8 +266,31 @@ describe(ActorQueryProcessRemoteCache.name, () => {
       expect(resp).toStrictEqual(result({ bindings: expectedBinding }));
     });
 
-    it("should return a store with the bindings converted to triples given the containment algorithm is used ", async () => {
-      actor = new ActorQueryProcessRemoteCache({ name: 'actor', bus, fallBackQueryProcess: <any>{}, cacheHitAlgorithm: 'containment' });
+    it("should return a store with the bindings converted to triples given the containment algorithm is used and complementary quads are needed", async () => {
+      const complementatyResults = {
+        result: {
+          type: 'quad',
+          quadStream: new ArrayIterator([
+            RDF_FACTORY.quad(
+              RDF_FACTORY.namedNode("http://example.org/book/book7"),
+              <any>RDF_FACTORY.blankNode(),
+              RDF_FACTORY.blankNode(),
+            ),
+            RDF_FACTORY.quad(
+              RDF_FACTORY.namedNode("http://example.org/book/book7"),
+              RDF_FACTORY.namedNode("http://example.org/title"),
+              RDF_FACTORY.literal("Harry Potter and the Deathly Hallows"),
+            ),
+          ],
+            {
+              autoStart: false
+            })
+        }
+      };
+      const fallBackQueryProcess: any = {
+        run: jest.fn().mockResolvedValueOnce(complementatyResults)
+      };
+      actor = new ActorQueryProcessRemoteCache({ name: 'actor', bus, fallBackQueryProcess, cacheHitAlgorithm: Algorithm.CONTAINMENT });
 
       const sparqlJsonString = `
                 {
@@ -278,17 +301,20 @@ describe(ActorQueryProcessRemoteCache.name, () => {
                     {
                         "book": { "type": "uri" , "value": "http://example.org/book/book6" } ,
                         "title": { "type": "literal" , "value": "Harry Potter and the Half-Blood Prince" }
-                    } ,
-                    {
-                        "book": { "type": "uri" , "value": "http://example.org/book/book7" } ,
-                        "title": { "type": "literal" , "value": "Harry Potter and the Deathly Hallows" }
                     } 
                     ]
                 }
                 }`;
       const bindings = SPARQL_JSON_PARSER.parseJsonResults(JSON.parse(sparqlJsonString));
 
-      mockGetCachedQuads.mockResolvedValue(result({ cache: bindings, algorithmIndex: 0 }));
+      mockGetCachedQuads.mockResolvedValue(result({
+        cache: bindings, algorithmIndex: 0, query: translate(`
+        PREFIX ex: <http://example.org/>
+
+          SELECT ?book ?title WHERE {
+            ?book ex:title ?title .
+          }`)
+      }));
 
       const expectedQuads = [
         RDF_FACTORY.quad(
@@ -303,16 +329,16 @@ describe(ActorQueryProcessRemoteCache.name, () => {
         ),
         RDF_FACTORY.quad(
           RDF_FACTORY.namedNode("http://example.org/book/book7"),
-          RDF_FACTORY.namedNode("http://example.org/title"),
-          RDF_FACTORY.literal("Harry Potter and the Deathly Hallows"),
+          <any>RDF_FACTORY.blankNode(),
+          RDF_FACTORY.blankNode(),
         ),
         RDF_FACTORY.quad(
           RDF_FACTORY.namedNode("http://example.org/book/book7"),
-          <any>RDF_FACTORY.blankNode(),
-          RDF_FACTORY.blankNode(),
-        )
+          RDF_FACTORY.namedNode("http://example.org/title"),
+          RDF_FACTORY.literal("Harry Potter and the Deathly Hallows"),
+        ),
       ];
-
+      const sources = ["a", "b", "c"];
       const action = {
         query: `
           PREFIX ex: <http://example.org/>
@@ -322,7 +348,8 @@ describe(ActorQueryProcessRemoteCache.name, () => {
             ?book ex:title ?title .
           }`,
         context: new ActionContext({
-          [KeyRemoteCache.location.name]: { path: "path" }
+          [KeyRemoteCache.location.name]: { path: "path" },
+          sources
         })
       };
 
@@ -337,7 +364,7 @@ describe(ActorQueryProcessRemoteCache.name, () => {
     });
 
     it("should return a stores with the bindings converted to triples given the containment algorithm is used and stores are provided as sources", async () => {
-      actor = new ActorQueryProcessRemoteCache({ name: 'actor', bus, fallBackQueryProcess: <any>{}, cacheHitAlgorithm: 'containment' });
+      actor = new ActorQueryProcessRemoteCache({ name: 'actor', bus, fallBackQueryProcess: <any>{}, cacheHitAlgorithm: Algorithm.CONTAINMENT });
 
       const sparqlJsonString = `
                 {
@@ -358,7 +385,16 @@ describe(ActorQueryProcessRemoteCache.name, () => {
                 }`;
       const bindings = SPARQL_JSON_PARSER.parseJsonResults(JSON.parse(sparqlJsonString));
 
-      mockGetCachedQuads.mockResolvedValue(result({ cache: bindings, algorithmIndex: 0 }));
+      mockGetCachedQuads.mockResolvedValue(result({
+        cache: bindings, algorithmIndex: 0, query: translate(`
+        PREFIX ex: <http://example.org/>
+
+          SELECT ?book ?title WHERE {
+            ?book  ?p ?o.
+            ?book ex:title ?title .
+          }
+        `)
+      }));
 
       const expectedQuads = [
         RDF_FACTORY.quad(
@@ -444,9 +480,16 @@ describe(ActorQueryProcessRemoteCache.name, () => {
     });
 
     it('should use all the algoritms when the actor is defined with all algorithms', async () => {
-      actor = new ActorQueryProcessRemoteCache({ name: 'actor', bus, fallBackQueryProcess: <any>{}, cacheHitAlgorithm: 'all' });
+      actor = new ActorQueryProcessRemoteCache({ name: 'actor', bus, fallBackQueryProcess: <any>{}, cacheHitAlgorithm: Algorithm.ALL });
 
-      mockGetCachedQuads.mockResolvedValue(result({ cache: [], algorithmIndex: 0 }));
+      mockGetCachedQuads.mockResolvedValue(result({
+        cache: [], algorithmIndex: 0, query: translate(`PREFIX ex: <http://example.org/>
+
+          SELECT ?book ?title WHERE {
+            ?book  ?p ?o.
+            ?book ex:title ?title .
+          }`)
+      }));
 
       const action = {
         query: `
@@ -500,20 +543,55 @@ describe(ActorQueryProcessRemoteCache.name, () => {
     };
 
     beforeEach(() => {
-      actor = new ActorQueryProcessRemoteCache({ name: 'actor', bus, fallBackQueryProcess: <any>fallBackQueryProcess, cacheHitAlgorithm: 'equality' });
+      actor = new ActorQueryProcessRemoteCache({ name: 'actor', bus, fallBackQueryProcess: <any>fallBackQueryProcess, cacheHitAlgorithm: Algorithm.EQ });
       jest.resetAllMocks();
     });
 
     it("should execute the fallback process given a cache process returning an error", async () => {
-      fallBackQueryProcess.run.mockResolvedValueOnce("done");
+      const mockSetProperty = jest.fn();
+      const fallbackReturnedValue = { result: { type: "bindings", bindingsStream: { setProperty: mockSetProperty } } }
+      fallBackQueryProcess.run.mockResolvedValueOnce(fallbackReturnedValue);
       mockGetCachedQuads.mockResolvedValue(error(new Error("an error")));
 
       const resp = await actor.run(action);
 
       expect(fallBackQueryProcess.run).toHaveBeenCalledTimes(1);
       expect(fallBackQueryProcess.run).toHaveBeenCalledWith(action, undefined);
-      expect(resp).toBe(<any>"done");
+      expect(resp).toEqual(fallbackReturnedValue);
+      expect(mockSetProperty).toHaveBeenCalledWith("provenance", 'query processing');
     });
+
+    it("should throw an error if the query is not found in the cache and failOnCacheMiss key is provided in the context", async () => {
+      const mockSetProperty = jest.fn();
+      const fallbackReturnedValue = { result: { type: "bindings", bindingsStream: { setProperty: mockSetProperty } } }
+      fallBackQueryProcess.run.mockResolvedValueOnce(fallbackReturnedValue);
+      mockGetCachedQuads.mockResolvedValue(error(new Error("an error")));
+      const action = {
+        query: "SELECT * WHERE {?s ?p ?o}",
+        context: new ActionContext({
+          [KeyRemoteCache.location.name]: { path: "path" },
+          [ActorQueryProcessRemoteCache.KEY_FAIL_ON_CACHE_MISS.name]: true
+        })
+      };
+
+      await expect(actor.run(action)).rejects.toEqual(new Error(ActorQueryProcessRemoteCache.ERROR_FAIL_ON_CACHE_MISS));
+    });
+
+    it("should throw if a non SELECT query is send", async () => {
+      const mockSetProperty = jest.fn();
+      const fallbackReturnedValue = { result: { type: "quads", bindingsStream: { setProperty: mockSetProperty } } }
+      fallBackQueryProcess.run.mockResolvedValueOnce(fallbackReturnedValue);
+      mockGetCachedQuads.mockResolvedValue(error(new Error("an error")));
+      const action = {
+        query: "CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }",
+        context: new ActionContext({
+          [KeyRemoteCache.location.name]: { path: "path" }
+        })
+      };
+
+      await expect(actor.run(action)).rejects.toEqual(new Error(ActorQueryProcessRemoteCache.ERROR_ONLY_SELECT_QUERIES_SUPPORTED));
+    });
+
 
     it("should execute return the cache binding given cached bindings are available", async () => {
       const spyQueryCachedResults = jest.spyOn(actor, "queryCachedResults");
@@ -564,13 +642,18 @@ describe(ActorQueryProcessRemoteCache.name, () => {
       expect(fallBackQueryProcess.run).toHaveBeenCalledTimes(0);
       expect(resp.result.type).toBe('bindings');
       expect((<any>resp.result).bindingsStream).toStrictEqual(expectedBinding);
+      expect((<any>resp.result).bindingsStream.getProperty("provenance")).toBe(Algorithm.EQ)
     });
 
     it("should execute the fallback given the cache return an RDF store", async () => {
+      const mockSetProperty = jest.fn();
+      (<any>actor.cacheHitAlgorithm) = Algorithm.CONTAINMENT
+      const fallbackReturnedValue = { result: { type: "bindings", bindingsStream: { setProperty: mockSetProperty } } }
+
       const spyQueryCachedResults = jest.spyOn(actor, "queryCachedResults");
       const stores: any = ["a", "b", "c", "d"]
       spyQueryCachedResults.mockResolvedValueOnce(result({ stores: stores }));
-      fallBackQueryProcess.run.mockResolvedValueOnce("done");
+      fallBackQueryProcess.run.mockResolvedValueOnce(fallbackReturnedValue);
 
       const resp = await actor.run(action);
 
@@ -580,13 +663,394 @@ describe(ActorQueryProcessRemoteCache.name, () => {
       }
       expect(fallBackQueryProcess.run).toHaveBeenCalledTimes(1);
       expect(fallBackQueryProcess.run).toHaveBeenCalledWith(expectedAction, undefined);
-      expect(resp).toBe("done");
+      expect(resp).toEqual(fallbackReturnedValue);
+      expect(mockSetProperty).toHaveBeenCalledWith("provenance", Algorithm.CONTAINMENT);
 
     });
 
   });
 
-  describe(ActorQueryProcessRemoteCache.compatibleTerm.name, ()=>{
+  describe(ActorQueryProcessRemoteCache.compatibleTerms.name, () => {
+    it("should return true given it is the same term", () => {
+      const firstTerm = RDF_FACTORY.namedNode("a");
+      const secondTerm = RDF_FACTORY.namedNode("a");
+
+      const resp = ActorQueryProcessRemoteCache.compatibleTerms(firstTerm, secondTerm);
+
+      expect(resp).toBe(true);
+    });
+
+    it("should return false given it is the different terms", () => {
+      const firstTerm = RDF_FACTORY.namedNode("a");
+      const secondTerm = RDF_FACTORY.namedNode("b");
+
+      const resp = ActorQueryProcessRemoteCache.compatibleTerms(firstTerm, secondTerm);
+
+      expect(resp).toBe(false);
+    });
+
+    it("should return true given the first term is a variable and the second term is an IRI", () => {
+      const firstTerm = RDF_FACTORY.variable("a");
+      const secondTerm = RDF_FACTORY.namedNode("a");
+
+      const resp = ActorQueryProcessRemoteCache.compatibleTerms(firstTerm, secondTerm);
+
+      expect(resp).toBe(true);
+    });
+
+    it("should return false given two different variables", () => {
+      const firstTerm = RDF_FACTORY.variable("a");
+      const secondTerm = RDF_FACTORY.variable("b");
+
+      const resp = ActorQueryProcessRemoteCache.compatibleTerms(firstTerm, secondTerm);
+
+      expect(resp).toBe(false);
+    });
+
+    it("should return false given a variable and a blank node", () => {
+      const firstTerm = RDF_FACTORY.variable("a");
+      const secondTerm = RDF_FACTORY.blankNode("a");
+
+      const resp = ActorQueryProcessRemoteCache.compatibleTerms(firstTerm, secondTerm);
+
+      expect(resp).toBe(false);
+    });
+  });
+
+  describe(ActorQueryProcessRemoteCache.compatibleTriplePatterns.name, () => {
+    it("should return true given 2 compatible triple patterns", () => {
+      const superTp = RDF_FACTORY.quad(
+        RDF_FACTORY.variable("s"),
+        RDF_FACTORY.variable("p"),
+        RDF_FACTORY.variable("o"),
+      );
+
+      const subTp = RDF_FACTORY.quad(
+        RDF_FACTORY.variable("s"),
+        RDF_FACTORY.variable("p"),
+        RDF_FACTORY.variable("o"),
+      );
+
+      const resp = ActorQueryProcessRemoteCache.compatibleTriplePatterns(superTp, subTp);
+
+      expect(resp).toBe(true);
+    });
+
+    it("should return false given 2 triple patterns with an incompatible term", () => {
+      const superTp = RDF_FACTORY.quad(
+        RDF_FACTORY.variable("s"),
+        RDF_FACTORY.variable("p"),
+        RDF_FACTORY.variable("o"),
+      );
+
+      const subTp = RDF_FACTORY.quad(
+        RDF_FACTORY.variable("s"),
+        RDF_FACTORY.variable("p"),
+        RDF_FACTORY.variable("o2"),
+      );
+
+      const resp = ActorQueryProcessRemoteCache.compatibleTriplePatterns(superTp, subTp);
+
+      expect(resp).toBe(false);
+    });
+
+    it("should return false given 2 triple patterns with 2 incompatible terms", () => {
+      const superTp = RDF_FACTORY.quad(
+        RDF_FACTORY.variable("s"),
+        RDF_FACTORY.namedNode("p"),
+        RDF_FACTORY.variable("o"),
+      );
+
+      const subTp = RDF_FACTORY.quad(
+        RDF_FACTORY.variable("s"),
+        RDF_FACTORY.variable("p"),
+        RDF_FACTORY.variable("o2"),
+      );
+
+      const resp = ActorQueryProcessRemoteCache.compatibleTriplePatterns(superTp, subTp);
+
+      expect(resp).toBe(false);
+    });
+
+    it("should return false given 2 triple patterns with 3 incompatible terms", () => {
+      const superTp = RDF_FACTORY.quad(
+        RDF_FACTORY.namedNode("s"),
+        RDF_FACTORY.namedNode("p"),
+        RDF_FACTORY.variable("o"),
+      );
+
+      const subTp = RDF_FACTORY.quad(
+        RDF_FACTORY.namedNode("s2"),
+        RDF_FACTORY.variable("p"),
+        RDF_FACTORY.variable("o2"),
+      );
+
+      const resp = ActorQueryProcessRemoteCache.compatibleTriplePatterns(superTp, subTp);
+
+      expect(resp).toBe(false);
+    });
+  });
+
+  describe(ActorQueryProcessRemoteCache.colorQuery.name, () => {
+    const A_SUB_QUERY = translate(`
+PREFIX ex: <http://example.org/>
+
+SELECT ?person ?city
+WHERE {
+  ?person ex:livesIn ?city .
+  ?city ex:locatedIn ex:CountryX .
+  ?person ex:hasOccupation ex:Engineer .
+  ?person ex:gender ex:female .
+}`);
+
+    it("should return every triple patterns given the super query has no triple patterns", () => {
+      const superQueryTps: RDF.Quad[] = [];
+
+      const expectedTriples = [
+        RDF_FACTORY.quad(
+          RDF_FACTORY.variable("person"),
+          RDF_FACTORY.namedNode("http://example.org/livesIn"),
+          RDF_FACTORY.variable("city")
+        ),
+        RDF_FACTORY.quad(
+          RDF_FACTORY.variable("city"),
+          RDF_FACTORY.namedNode("http://example.org/locatedIn"),
+          RDF_FACTORY.namedNode("http://example.org/CountryX")
+        ),
+        RDF_FACTORY.quad(
+          RDF_FACTORY.variable("person"),
+          RDF_FACTORY.namedNode("http://example.org/hasOccupation"),
+          RDF_FACTORY.namedNode("http://example.org/Engineer")
+        ),
+        RDF_FACTORY.quad(
+          RDF_FACTORY.variable("person"),
+          RDF_FACTORY.namedNode("http://example.org/gender"),
+          RDF_FACTORY.namedNode("http://example.org/female")
+        ),
+      ]
+      const resp = ActorQueryProcessRemoteCache.colorQuery(A_SUB_QUERY, superQueryTps);
+
+      expect(resp).toBeRdfIsomorphic(expectedTriples);
+    });
+
+    it("should no triple patterns given the super query request every patterns", () => {
+      const superQueryTps: RDF.Quad[] = [
+        RDF_FACTORY.quad(
+          RDF_FACTORY.variable("person"),
+          RDF_FACTORY.namedNode("http://example.org/livesIn"),
+          RDF_FACTORY.variable("city")
+        ),
+        RDF_FACTORY.quad(
+          RDF_FACTORY.variable("city"),
+          RDF_FACTORY.namedNode("http://example.org/locatedIn"),
+          RDF_FACTORY.namedNode("http://example.org/CountryX")
+        ),
+        RDF_FACTORY.quad(
+          RDF_FACTORY.variable("person"),
+          RDF_FACTORY.namedNode("http://example.org/hasOccupation"),
+          RDF_FACTORY.namedNode("http://example.org/Engineer")
+        ),
+        RDF_FACTORY.quad(
+          RDF_FACTORY.variable("person"),
+          RDF_FACTORY.namedNode("http://example.org/gender"),
+          RDF_FACTORY.namedNode("http://example.org/female")
+        ),
+      ]
+      const resp = ActorQueryProcessRemoteCache.colorQuery(A_SUB_QUERY, superQueryTps);
+
+      expect(resp).toStrictEqual([]);
+    });
+
+    it("should some triple patterns given the super query request some patterns", () => {
+      const superQueryTps: RDF.Quad[] = [
+        RDF_FACTORY.quad(
+          RDF_FACTORY.variable("person"),
+          RDF_FACTORY.namedNode("http://example.org/livesIn"),
+          RDF_FACTORY.variable("city")
+        ),
+        RDF_FACTORY.quad(
+          RDF_FACTORY.variable("city"),
+          RDF_FACTORY.namedNode("http://example.org/locatedIn"),
+          RDF_FACTORY.namedNode("http://example.org/CountryX")
+        ),
+        RDF_FACTORY.quad(
+          RDF_FACTORY.variable("person"),
+          RDF_FACTORY.namedNode("http://example.org/hasOccupation"),
+          RDF_FACTORY.namedNode("http://example.org/Engineer")
+        ),
+      ];
+
+      const expectedTps = [
+        RDF_FACTORY.quad(
+          RDF_FACTORY.variable("person"),
+          RDF_FACTORY.namedNode("http://example.org/gender"),
+          RDF_FACTORY.namedNode("http://example.org/female")
+        ),
+      ]
+      const resp = ActorQueryProcessRemoteCache.colorQuery(A_SUB_QUERY, superQueryTps);
+
+      expect(resp).toBeRdfIsomorphic(expectedTps);
+    });
+
+    it("should return some triples given a very general super query", () => {
+      const superQueryTps: RDF.Quad[] = [
+        RDF_FACTORY.quad(
+          RDF_FACTORY.variable("s"),
+          RDF_FACTORY.variable("p"),
+          RDF_FACTORY.variable("o")
+        )
+      ];
+
+      const a_query = translate(`
+        PREFIX ex: <http://example.org/>
+
+        SELECT * WHERE{
+          ex:s ex:p ex:o.
+          ?s ?p ex:o.
+        }
+        `);
+
+      const resp = ActorQueryProcessRemoteCache.colorQuery(a_query, superQueryTps);
+
+      expect(resp).toBeRdfIsomorphic([]);
+    });
+  });
+
+  describe(ActorQueryProcessRemoteCache.differenceConstraint.name, () => {
+
+    it("should return an empty query given 2 identical", () => {
+      const superQuery = translate(`SELECT * {?s ?p ?o}`);
+      const subQuery = superQuery;
+
+      const resp = ActorQueryProcessRemoteCache.differenceConstraint(superQuery, subQuery);
+      expect(resp).toBeUndefined();
+    });
+
+    it("should return a query for a difference of one triple pattern", () => {
+      const superQuery = translate(`
+PREFIX ex: <http://example.org/>
+
+SELECT ?person ?city
+WHERE {
+  ?person ex:livesIn ?city .
+  ?city ex:locatedIn ex:CountryX .
+  ?person ex:hasOccupation ex:Engineer .
+}
+      `);
+      const subQuery = translate(`
+PREFIX ex: <http://example.org/>
+
+SELECT ?person ?city
+WHERE {
+  ?person ex:livesIn ?city .
+  ?city ex:locatedIn ex:CountryX .
+  ?person ex:hasOccupation ex:Engineer .
+  ?person ex:gender ex:female .
+}
+        `);
+      const expectedQuery = translate(`
+          PREFIX ex: <http://example.org/>
+
+          CONSTRUCT {
+          ?person ex:gender ex:female .
+          } WHERE{
+           ?person ex:gender ex:female .
+          }
+          `);
+      const resp = ActorQueryProcessRemoteCache.differenceConstraint(superQuery, subQuery);
+      expect(resp).toEqual([{ query: expectedQuery }]);
+    });
+
+    it("should return a query for a difference of some triples with a service clause with no complement", () => {
+      const superQuery = translate(`
+PREFIX ex: <http://example.org/>
+
+SELECT ?person ?city
+WHERE {
+  SERVICE ex:service1 {
+    ?person ex:livesIn ?city .
+  }
+
+  ?city ex:locatedIn ex:CountryX .
+  ?person ex:hasOccupation ex:Engineer .
+}
+      `);
+      const subQuery = translate(`
+PREFIX ex: <http://example.org/>
+
+SELECT ?person ?city
+WHERE {
+  SERVICE ex:service1 {
+    ?person ex:livesIn ?city .
+  }
+  ?city ex:locatedIn ex:CountryX .
+  ?person ex:hasOccupation ex:Engineer .
+  ?person ex:gender ex:female .
+}
+        `);
+      const expectedQuery = translate(`
+          PREFIX ex: <http://example.org/>
+
+          CONSTRUCT {
+          ?person ex:gender ex:female .
+          } WHERE{
+           ?person ex:gender ex:female .
+          }
+          `);
+      const resp = ActorQueryProcessRemoteCache.differenceConstraint(superQuery, subQuery);
+      expect(resp).toEqual([{ query: expectedQuery }]);
+    });
+
+    it("should return a query for a difference of some triples with a service clause with a complement", () => {
+      const superQuery = translate(`
+PREFIX ex: <http://example.org/>
+
+SELECT ?person ?city
+WHERE {
+  SERVICE ex:service1 {
+    ?person ex:livesIn ?city .
+  }
+
+  ?city ex:locatedIn ex:CountryX .
+  ?person ex:hasOccupation ex:Engineer .
+}
+      `);
+      const subQuery = translate(`
+PREFIX ex: <http://example.org/>
+
+SELECT ?person ?city
+WHERE {
+  SERVICE ex:service1 {
+    ?person ex:livesIn ?city .
+    ?person ex:foo ?bar
+  }
+  ?city ex:locatedIn ex:CountryX .
+  ?person ex:hasOccupation ex:Engineer .
+  ?person ex:gender ex:female .
+}
+        `);
+      const expectedQuery = translate(`
+          PREFIX ex: <http://example.org/>
+
+          CONSTRUCT {
+          ?person ex:gender ex:female .
+          } WHERE{
+           ?person ex:gender ex:female .
+          }
+          `);
+
+      const expectedQueryService = translate(`
+          PREFIX ex: <http://example.org/>
+
+          CONSTRUCT {
+          ?person ex:foo ?bar
+          } WHERE{
+           ?person ex:foo ?bar
+          }
+          `);
+      const resp = ActorQueryProcessRemoteCache.differenceConstraint(superQuery, subQuery);
+      expect(resp).toEqual([{ query: expectedQueryService, endpoint: "http://example.org/service1" }, { query: expectedQuery }]);
+    });
 
   });
 });

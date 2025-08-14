@@ -10,7 +10,7 @@ import {LoggerPretty} from "@comunica/logger-pretty";
 const configPath = './engines/config-query-sparql/config/config-remote-cache.json';
 const myEngine = await new QueryEngineFactory().create({ configPath });
 
-const query = `
+let query = `
 PREFIX ex: <http://example.org/>
 
 SELECT ?person ?city
@@ -21,6 +21,7 @@ WHERE {
   ?person ex:gender ex:female .
 }
 `;
+query = `SELECT * WHERE {?s ?p ?o}`;
 
 const cacheLocation = { url: "http://127.0.0.1:9999/cache.ttl" };
  
@@ -28,10 +29,16 @@ const bindingsStream = await myEngine.queryBindings(query, {
   lenient: true,
   [KeyRemoteCache.location.name]: cacheLocation,
   sources:["https://ruben.verborgh.org/profile/"],
-  log: new LoggerPretty({ level: 'debug'}),
+  log: new LoggerPretty({ level: 'info'}),
+  '@comunica/core:log':new LoggerPretty({ level: 'info'})
 });
 
 let i = 0;
+bindingsStream.getProperty("provenance", (val)=>{
+  console.log("getting properties");
+  console.log(val);
+});
+
 bindingsStream.on('data', (_binding) => {
   i += 1;
 });
