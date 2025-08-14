@@ -647,6 +647,7 @@ export class HttpServiceSparqlEndpoint {
 SELECT 
   (COUNT(?s) AS ?triples)
   (COUNT(DISTINCT ?s) AS ?distinctSubjects)
+  (COUNT(DISTINCT ?p) AS ?properties)
   (COUNT(DISTINCT ?o) AS ?distinctObjects)
 WHERE { 
   ?s ?p ?o 
@@ -659,10 +660,9 @@ WHERE {
         for await (const bindings of bindingsStream) {
           const xsdInteger = (n: string): string =>
             `"${n}"^^http://www.w3.org/2001/XMLSchema#integer`;
-          const triples = bindings.get('triples')!.value;
-          this.cachedStatistics.push(quad(graph, `${vd}triples`, xsdInteger(triples)));
-          this.cachedStatistics.push(quad(graph, `${vd}properties`, xsdInteger(triples)));
+          this.cachedStatistics.push(quad(graph, `${vd}triples`, xsdInteger(bindings.get('triples')!.value)));
           this.cachedStatistics.push(quad(graph, `${vd}distinctSubjects`, xsdInteger(bindings.get('distinctSubjects')!.value)));
+          this.cachedStatistics.push(quad(graph, `${vd}properties`, xsdInteger(bindings.get('properties')!.value)));
           this.cachedStatistics.push(quad(graph, `${vd}distinctObjects`, xsdInteger(bindings.get('distinctObjects')!.value)));
         }
       } catch (error: any) {

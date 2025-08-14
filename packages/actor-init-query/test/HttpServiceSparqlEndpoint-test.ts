@@ -1594,6 +1594,7 @@ describe('HttpServiceSparqlEndpoint', () => {
             BF.bindings([
               [ DF.variable('triples'), DF.literal('2', DF.namedNode(`${xsd}integer`)) ],
               [ DF.variable('distinctSubjects'), DF.literal('1', DF.namedNode(`${xsd}integer`)) ],
+              [ DF.variable('properties'), DF.literal('2', DF.namedNode(`${xsd}integer`)) ],
               [ DF.variable('distinctObjects'), DF.literal('2', DF.namedNode(`${xsd}integer`)) ],
             ]),
           ];
@@ -1655,8 +1656,8 @@ describe('HttpServiceSparqlEndpoint', () => {
           quad(dataset, `${sd}defaultGraph`, graph),
           quad(graph, rdfType, `${sd}Graph`),
           quad(graph, `${vd}triples`, `"2"^^${xsd}integer`),
-          quad(graph, `${vd}properties`, `"2"^^${xsd}integer`),
           quad(graph, `${vd}distinctSubjects`, `"1"^^${xsd}integer`),
+          quad(graph, `${vd}properties`, `"2"^^${xsd}integer`),
           quad(graph, `${vd}distinctObjects`, `"2"^^${xsd}integer`),
         ];
         for (const quad of voIDDescriptionQuads) {
@@ -1682,6 +1683,7 @@ describe('HttpServiceSparqlEndpoint', () => {
             BF.bindings([
               [ DF.variable('triples'), DF.literal('5', DF.namedNode(`${xsd}integer`)) ],
               [ DF.variable('distinctSubjects'), DF.literal('3', DF.namedNode(`${xsd}integer`)) ],
+              [ DF.variable('properties'), DF.literal('2', DF.namedNode(`${xsd}integer`)) ],
               [ DF.variable('distinctObjects'), DF.literal('4', DF.namedNode(`${xsd}integer`)) ],
             ]),
           ];
