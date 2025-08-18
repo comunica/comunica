@@ -1,6 +1,6 @@
 {
   "name": "actor-query-process-remote-cache",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A remote-cache query-process actor",
   "lsd:module": true,
   "main": "lib/index.js",
