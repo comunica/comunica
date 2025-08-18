@@ -31,13 +31,13 @@ export class ActorDereferenceFile extends ActorDereference {
 
   public async run({ url, context }: IActionDereference): Promise<IActorDereferenceOutput> {
     const requestTimeStart = Date.now();
-    const fileBaseIRI = context.get(KeysInitQuery.fileBaseIRI);
     return {
       data: createReadStream(getPath(url)),
       // This should always be after the creation of the read stream
       requestTime: Date.now() - requestTimeStart,
       exists: true,
-      url: fileBaseIRI ?? (ActorDereferenceFile.isURI(url) ? url : pathToFileURL(url).href),
+      url: ActorDereferenceFile.isURI(url) ? url : pathToFileURL(url).href,
+      baseIRI: context.get(KeysInitQuery.fileBaseIRI),
     };
   }
 }
