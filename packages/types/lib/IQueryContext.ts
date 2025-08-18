@@ -27,6 +27,7 @@ export interface IQueryContextCommon {
   initialBindings?: RDF.Bindings;
   // Inherited from RDF.QueryStringContext: queryFormat?: string;
   // Inherited from RDF.QueryStringContext: baseIRI?: string;
+  fileBaseIRI?: string;
   log?: Logger;
   datetime?: Date;
   // Inherited from RDF.QueryStringContext: queryTimestamp?: Date;

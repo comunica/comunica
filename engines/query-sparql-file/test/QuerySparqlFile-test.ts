@@ -19,7 +19,9 @@ describe('System test: QuerySparqlFile', () => {
       const query = `SELECT * WHERE { ?s ?p ?o. }`;
 
       it('should return a result for a jsonld file by a relative file path', async() => {
-        const context: QueryStringContext = { sources: [{ value: p }]};
+        const context: QueryStringContext = { sources: [{ value: p }], fileBaseIRI: 'http://example.org/', extensionFunctions: {
+          one: async args => args[0],
+        }};
 
         const result = await arrayifyStream(await engine.queryBindings(query, context));
         expect(result).toHaveLength(2);
