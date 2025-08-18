@@ -11,8 +11,8 @@ import type {
   ComunicaDataFactory,
 } from '@comunica/types';
 import { getSafeBindings } from '@comunica/utils-query-operation';
+import { Algebra, Factory } from '@traqula/algebra-sparql-1-1';
 import { UnionIterator } from 'asynciterator';
-import { Algebra, Factory } from 'sparqlalgebrajs';
 
 /**
  * A comunica Path Alt Query Operation Actor.
@@ -21,7 +21,7 @@ export class ActorQueryOperationPathAlt extends ActorAbstractPath {
   public readonly mediatorRdfMetadataAccumulate: MediatorRdfMetadataAccumulate;
 
   public constructor(args: IActorQueryOperationPathAltArgs) {
-    super(args, Algebra.types.ALT);
+    super(args, Algebra.Types.ALT);
   }
 
   public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryOperationResult> {

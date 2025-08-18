@@ -2,14 +2,14 @@ import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
-import { Algebra, Factory } from 'sparqlalgebrajs';
+import { Algebra, Factory } from '@traqula/algebra-sparql-1-1';
 
 /**
  * A comunica Path Inv Query Operation Actor.
  */
 export class ActorQueryOperationPathInv extends ActorAbstractPath {
   public constructor(args: IActorQueryOperationTypedMediatedArgs) {
-    super(args, Algebra.types.INV);
+    super(args, Algebra.Types.INV);
   }
 
   public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryOperationResult> {

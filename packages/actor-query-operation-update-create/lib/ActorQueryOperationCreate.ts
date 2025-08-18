@@ -4,7 +4,7 @@ import type { MediatorRdfUpdateQuads } from '@comunica/bus-rdf-update-quads';
 import type { IActorTest, TestResult } from '@comunica/core';
 import type { IActionContext, IQueryOperationResult } from '@comunica/types';
 import { testReadOnly } from '@comunica/utils-query-operation';
-import type { Algebra } from 'sparqlalgebrajs';
+import type { Algebra } from '@traqula/algebra-sparql-1-1';
 
 /**
  * A [Query Operation](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation) actor that

@@ -2,7 +2,7 @@ import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import type { Expression, IActionContext, OperatorExpression } from '@comunica/types';
 import * as ExprEval from '@comunica/utils-expression-evaluator';
-import { Algebra as Alg } from 'sparqlalgebrajs';
+import { Algebra as Alg } from '@traqula/algebra-sparql-1-1';
 
 export class AlgebraTransformer extends ExprEval.TermTransformer {
   public constructor(
@@ -31,8 +31,8 @@ export class AlgebraTransformer extends ExprEval.TermTransformer {
     }
   }
 
-  private static transformWildcard(term: Alg.WildcardExpression): Expression {
-    return new ExprEval.NamedNode(term.wildcard.value);
+  private static transformWildcard(_term: Alg.WildcardExpression): Expression {
+    return new ExprEval.NamedNode('*');
   }
 
   private async getOperator(operator: string, expr: Alg.OperatorExpression | Alg.NamedExpression):

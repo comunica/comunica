@@ -1,9 +1,9 @@
 import { Actor, Bus } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
 import { assignOperationSource } from '@comunica/utils-query-operation';
+import { Factory } from '@traqula/algebra-sparql-1-1';
 import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
-import { Factory } from 'sparqlalgebrajs';
 import { ActorAbstractPath } from '../lib/ActorAbstractPath';
 
 const DF = new DataFactory();

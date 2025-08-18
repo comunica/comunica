@@ -9,7 +9,7 @@ import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTest } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { Algebra, Factory } from 'sparqlalgebrajs';
+import { Algebra, Factory } from '@traqula/algebra-sparql-1-1';
 
 /**
  * A comunica Describe To Constructs Subject Optimize Query Operation Actor.
@@ -20,7 +20,7 @@ export class ActorOptimizeQueryOperationDescribeToConstructsSubject extends Acto
   }
 
   public async test(action: IActionOptimizeQueryOperation): Promise<TestResult<IActorTest>> {
-    if (action.operation.type !== Algebra.types.DESCRIBE) {
+    if (action.operation.type !== Algebra.Types.DESCRIBE) {
       return failTest(`Actor ${this.name} only supports describe operations, but got ${action.operation.type}`);
     }
     return passTest(true);
@@ -48,7 +48,7 @@ export class ActorOptimizeQueryOperationDescribeToConstructsSubject extends Acto
         // eslint-disable-next-line unicorn/no-array-for-each
         patterns.forEach((templatePattern: any) => templatePattern.type = 'pattern');
         const templateOperation: Algebra.Operation = {
-          type: Algebra.types.BGP,
+          type: Algebra.Types.BGP,
           patterns: <Algebra.Pattern[]> patterns,
         };
 
@@ -86,14 +86,14 @@ export class ActorOptimizeQueryOperationDescribeToConstructsSubject extends Acto
       // This requires a join between the input pattern and our variable patterns that form a simple BGP
       operations.push({
         input: {
-          type: Algebra.types.JOIN,
+          type: Algebra.Types.JOIN,
           input: [
             operationOriginal.input,
-            { type: Algebra.types.BGP, patterns: variablePatterns },
+            { type: Algebra.Types.BGP, patterns: variablePatterns },
           ],
         },
         template: variablePatterns,
-        type: Algebra.types.CONSTRUCT,
+        type: Algebra.Types.CONSTRUCT,
       });
     }
 

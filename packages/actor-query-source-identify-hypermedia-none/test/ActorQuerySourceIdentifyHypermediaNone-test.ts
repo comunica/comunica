@@ -4,8 +4,8 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { BindingsStream, IActionContext } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
+import { Factory } from '@traqula/algebra-sparql-1-1';
 import { DataFactory } from 'rdf-data-factory';
-import { Factory } from 'sparqlalgebrajs';
 import {
   ActorQuerySourceIdentifyHypermediaNone,
 } from '../lib/ActorQuerySourceIdentifyHypermediaNone';

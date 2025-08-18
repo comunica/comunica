@@ -9,8 +9,8 @@ import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import { Algebra, Factory, Util } from '@traqula/algebra-sparql-1-1';
 import { DataFactory } from 'rdf-data-factory';
-import { Algebra, Factory, Util } from 'sparqlalgebrajs';
 
 const DF = new DataFactory<RDF.BaseQuad>();
 
@@ -31,7 +31,7 @@ export class ActorOptimizeQueryOperationRewriteAdd extends ActorOptimizeQueryOpe
     const algebraFactory = new Factory(dataFactory);
 
     const operation = Util.mapOperation(action.operation, {
-      [Algebra.types.ADD](operationOriginal, factory) {
+      [Algebra.Types.ADD](operationOriginal, factory) {
         // CONSTRUCT all quads from the source, and INSERT them into the destination
         const destination = operationOriginal.destination === 'DEFAULT' ?
           DF.defaultGraph() :

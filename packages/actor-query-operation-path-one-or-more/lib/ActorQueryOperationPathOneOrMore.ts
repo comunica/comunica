@@ -11,8 +11,8 @@ import type {
 } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getSafeBindings } from '@comunica/utils-query-operation';
+import { Algebra, Factory } from '@traqula/algebra-sparql-1-1';
 import { BufferedIterator, MultiTransformIterator, TransformIterator } from 'asynciterator';
-import { Algebra, Factory } from 'sparqlalgebrajs';
 
 /**
  * A comunica Path OneOrMore Query Operation Actor.
@@ -21,7 +21,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   public constructor(args: IActorQueryOperationPathOneOrMoreArgs) {
-    super(args, Algebra.types.ONE_OR_MORE_PATH);
+    super(args, Algebra.Types.ONE_OR_MORE_PATH);
   }
 
   public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryOperationResult> {

@@ -5,10 +5,10 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type { Bindings } from '@comunica/utils-bindings-factory';
 import { assignOperationSource, getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
+import { Algebra, Factory } from '@traqula/algebra-sparql-1-1';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { QUAD_TERM_NAMES } from 'rdf-terms';
-import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationPathOneOrMore } from '../lib/ActorQueryOperationPathOneOrMore';
 import '@comunica/utils-jest';
 
@@ -115,12 +115,12 @@ describe('ActorQueryOperationPathOneOrMore', () => {
     });
 
     it('should test on OneOrMore paths', async() => {
-      const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.ONE_OR_MORE_PATH }}};
+      const op: any = { operation: { type: Algebra.Types.PATH, predicate: { type: Algebra.Types.ONE_OR_MORE_PATH }}};
       await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should test on different paths', async() => {
-      const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }}};
+      const op: any = { operation: { type: Algebra.Types.PATH, predicate: { type: 'dummy' }}};
       await expect(actor.test(op)).resolves.toFailTest(`This Actor only supports OneOrMorePath Path operations.`);
     });
 

@@ -4,14 +4,14 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
 import { getSafeBindings } from '@comunica/utils-query-operation';
-import { Algebra, Factory } from 'sparqlalgebrajs';
+import { Algebra, Factory } from '@traqula/algebra-sparql-1-1';
 
 /**
  * A comunica Path Nps Query Operation Actor.
  */
 export class ActorQueryOperationPathNps extends ActorAbstractPath {
   public constructor(args: IActorQueryOperationTypedMediatedArgs) {
-    super(args, Algebra.types.NPS);
+    super(args, Algebra.Types.NPS);
   }
 
   public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryOperationResult> {

@@ -7,7 +7,7 @@ import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import * as Eval from '@comunica/utils-expression-evaluator';
 import { getSafeBindings, materializeOperation } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
-import { Factory } from 'sparqlalgebrajs';
+import { Factory } from '@traqula/algebra-sparql-1-1';
 import { AlgebraTransformer } from './AlgebraTransformer';
 
 /**

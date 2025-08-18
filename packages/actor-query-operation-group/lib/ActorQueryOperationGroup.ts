@@ -14,8 +14,8 @@ import type {
 } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getSafeBindings } from '@comunica/utils-query-operation';
+import type { Algebra } from '@traqula/algebra-sparql-1-1';
 import { ArrayIterator, TransformIterator } from 'asynciterator';
-import type { Algebra } from 'sparqlalgebrajs';
 import { GroupsState } from './GroupsState';
 
 /**

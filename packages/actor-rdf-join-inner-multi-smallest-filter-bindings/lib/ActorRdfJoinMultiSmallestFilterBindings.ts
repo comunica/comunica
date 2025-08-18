@@ -23,9 +23,9 @@ import { bindingsToString } from '@comunica/utils-bindings-factory';
 import { ChunkedIterator } from '@comunica/utils-iterator';
 import { doesShapeAcceptOperation, getOperationSource, getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
+import { Factory } from '@traqula/algebra-sparql-1-1';
 import type { AsyncIterator } from 'asynciterator';
 import { UnionIterator } from 'asynciterator';
-import { Factory } from 'sparqlalgebrajs';
 
 /**
  * A comunica Inner Multi Smallest Filter Bindings RDF Join Actor.

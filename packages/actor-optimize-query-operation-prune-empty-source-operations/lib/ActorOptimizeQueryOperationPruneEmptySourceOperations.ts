@@ -9,7 +9,7 @@ import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext, IQuerySourceWrapper, MetadataBindings } from '@comunica/types';
 import { doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-query-operation';
-import { Algebra, Factory, Util } from 'sparqlalgebrajs';
+import { Algebra, Factory, Util } from '@traqula/algebra-sparql-1-1';
 
 /**
  * A comunica Prune Empty Source Operations Optimize Query Operation Actor.
@@ -40,15 +40,15 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     // eslint-disable-next-line ts/no-this-alias
     const self = this;
     Util.recurseOperation(operation, {
-      [Algebra.types.UNION](subOperation) {
-        self.collectMultiOperationInputs(subOperation.input, collectedOperations, Algebra.types.PATTERN);
+      [Algebra.Types.UNION](subOperation) {
+        self.collectMultiOperationInputs(subOperation.input, collectedOperations, Algebra.Types.PATTERN);
         return true;
       },
-      [Algebra.types.ALT](subOperation) {
-        self.collectMultiOperationInputs(subOperation.input, collectedOperations, Algebra.types.LINK);
+      [Algebra.Types.ALT](subOperation) {
+        self.collectMultiOperationInputs(subOperation.input, collectedOperations, Algebra.Types.LINK);
         return false;
       },
-      [Algebra.types.SERVICE]() {
+      [Algebra.Types.SERVICE]() {
         return false;
       },
     });
@@ -74,17 +74,17 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
       this.logDebug(action.context, `Pruning ${emptyOperations.size} source-specific operations`);
       // Rewrite operations by removing the empty children
       operation = Util.mapOperation(operation, {
-        [Algebra.types.UNION](subOperation, factory) {
+        [Algebra.Types.UNION](subOperation, factory) {
           return self.mapMultiOperation(subOperation, emptyOperations, children => factory.createUnion(children));
         },
-        [Algebra.types.ALT](subOperation, factory) {
+        [Algebra.Types.ALT](subOperation, factory) {
           return self.mapMultiOperation(subOperation, emptyOperations, children => factory.createAlt(children));
         },
       }, algebraFactory);
 
       // Identify and remove operations that have become empty now due to missing variables
       operation = Util.mapOperation(operation, {
-        [Algebra.types.PROJECT](subOperation, factory) {
+        [Algebra.Types.PROJECT](subOperation, factory) {
           // Remove projections that have become empty now due to missing variables
           if (ActorOptimizeQueryOperationPruneEmptySourceOperations.hasEmptyOperation(subOperation)) {
             return {
@@ -97,7 +97,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
             result: subOperation,
           };
         },
-        [Algebra.types.LEFT_JOIN](subOperation) {
+        [Algebra.Types.LEFT_JOIN](subOperation) {
           // Remove left joins with empty right operation
           if (ActorOptimizeQueryOperationPruneEmptySourceOperations.hasEmptyOperation(subOperation.input[1])) {
             return {
@@ -122,20 +122,20 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     // *all* of the children must be empty before the full operation is considered empty.
     let emptyOperation = false;
     Util.recurseOperation(operation, {
-      [Algebra.types.UNION](subOperation) {
+      [Algebra.Types.UNION](subOperation) {
         if (subOperation.input.every(subSubOperation => ActorOptimizeQueryOperationPruneEmptySourceOperations
           .hasEmptyOperation(subSubOperation))) {
           emptyOperation = true;
         }
         return false;
       },
-      [Algebra.types.ALT](subOperation) {
+      [Algebra.Types.ALT](subOperation) {
         if (subOperation.input.length === 0) {
           emptyOperation = true;
         }
         return false;
       },
-      [Algebra.types.LEFT_JOIN](subOperation) {
+      [Algebra.Types.LEFT_JOIN](subOperation) {
         // Only recurse into left part of left-join
         if (ActorOptimizeQueryOperationPruneEmptySourceOperations.hasEmptyOperation(subOperation.input[0])) {
           emptyOperation = true;

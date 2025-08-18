@@ -21,8 +21,8 @@ import type {
 } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getSafeBindings, materializeOperation } from '@comunica/utils-query-operation';
+import { Factory, Algebra, Util } from '@traqula/algebra-sparql-1-1';
 import { MultiTransformIterator, TransformIterator, UnionIterator } from 'asynciterator';
-import { Factory, Algebra, Util } from 'sparqlalgebrajs';
 
 /**
  * A comunica Multi-way Bind RDF Join Actor.
@@ -171,11 +171,11 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
   public canBindWithOperation(operation: Algebra.Operation): boolean {
     let valid = true;
     Util.recurseOperation(operation, {
-      [Algebra.types.EXTEND](): boolean {
+      [Algebra.Types.EXTEND](): boolean {
         valid = false;
         return false;
       },
-      [Algebra.types.GROUP](): boolean {
+      [Algebra.Types.GROUP](): boolean {
         valid = false;
         return false;
       },

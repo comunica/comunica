@@ -8,9 +8,9 @@ import type {
 } from '@comunica/types';
 import { BlankNodeScoped } from '@comunica/utils-data-factory';
 import type * as RDF from '@rdfjs/types';
+import { Algebra, Factory, Util } from '@traqula/algebra-sparql-1-1';
 import type { AsyncIterator } from 'asynciterator';
 import { mapTermsNested } from 'rdf-terms';
-import { Algebra, Factory, Util } from 'sparqlalgebrajs';
 
 export const SKOLEM_PREFIX = 'urn:comunica_skolem:source_';
 
@@ -216,7 +216,7 @@ export function deskolemizeOperation<O extends Algebra.Operation>(
   const algebraFactory = new Factory();
   try {
     return <O> Util.mapOperation(operation, {
-      [Algebra.types.PATTERN](op, factory) {
+      [Algebra.Types.PATTERN](op, factory) {
         return {
           result: Object.assign(factory.createPattern(
             deskolemizeTermNestedThrowing(dataFactory, op.subject, sourceId),
@@ -227,7 +227,7 @@ export function deskolemizeOperation<O extends Algebra.Operation>(
           recurse: false,
         };
       },
-      [Algebra.types.PATH](op, factory) {
+      [Algebra.Types.PATH](op, factory) {
         return {
           result: Object.assign(factory.createPath(
             deskolemizeTermNestedThrowing(dataFactory, op.subject, sourceId),

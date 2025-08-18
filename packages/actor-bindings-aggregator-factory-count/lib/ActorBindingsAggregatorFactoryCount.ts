@@ -9,7 +9,7 @@ import {
 
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
-import { Algebra } from 'sparqlalgebrajs';
+import { Algebra } from '@traqula/algebra-sparql-1-1';
 import { CountAggregator } from './CountAggregator';
 
 /**

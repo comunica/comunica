@@ -6,7 +6,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { Bindings, IActionContext, IQueryOperationResult, IJoinEntry, ComunicaDataFactory } from '@comunica/types';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
-import { Algebra, Factory } from 'sparqlalgebrajs';
+import { Algebra, Factory } from '@traqula/algebra-sparql-1-1';
 
 /**
  * A comunica Path Seq Query Operation Actor.
@@ -15,7 +15,7 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
   public readonly mediatorJoin: MediatorRdfJoin;
 
   public constructor(args: IActorQueryOperationPathSeq) {
-    super(args, Algebra.types.SEQ);
+    super(args, Algebra.Types.SEQ);
   }
 
   public async runOperation(

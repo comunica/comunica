@@ -4,11 +4,11 @@ import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
+import { Factory } from '@traqula/algebra-sparql-1-1';
 import arrayifyStream from 'arrayify-stream';
 import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
 import { RdfStore } from 'rdf-stores';
-import { Factory } from 'sparqlalgebrajs';
 import { QuerySourceRdfJs } from '../lib';
 import '@comunica/utils-jest';
 

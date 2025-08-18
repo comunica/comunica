@@ -16,6 +16,7 @@ import type {
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
+import type { Algebra, Factory } from '@traqula/algebra-sparql-1-1';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, TransformIterator, wrap } from 'asynciterator';
 import { termToString } from 'rdf-string';
@@ -25,7 +26,6 @@ import {
   mapTerms,
   matchPattern,
 } from 'rdf-terms';
-import type { Algebra, Factory } from 'sparqlalgebrajs';
 
 export class QuerySourceQpf implements IQuerySource {
   protected readonly selectorShape: FragmentSelectorShape;

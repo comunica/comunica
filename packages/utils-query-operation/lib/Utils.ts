@@ -10,7 +10,7 @@ import type {
   IQueryOperationResultVoid,
   IQuerySourceWrapper,
 } from '@comunica/types';
-import type { Algebra } from 'sparqlalgebrajs';
+import type { Algebra } from '@traqula/algebra-sparql-1-1';
 
 /**
  * Safely cast a query operation output to a bindings output.

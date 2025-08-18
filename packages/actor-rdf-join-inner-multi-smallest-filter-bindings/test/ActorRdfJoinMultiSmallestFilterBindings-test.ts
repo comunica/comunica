@@ -9,9 +9,9 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { assignOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
+import { Algebra, Factory } from '@traqula/algebra-sparql-1-1';
 import { ArrayIterator, AsyncIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorRdfJoinMultiSmallestFilterBindings } from '../lib/ActorRdfJoinMultiSmallestFilterBindings';
 import '@comunica/utils-jest';
 
@@ -101,7 +101,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
           getSelectorShape() {
             return {
               type: 'operation',
-              operation: { operationType: 'type', type: Algebra.types.PROJECT },
+              operation: { operationType: 'type', type: Algebra.Types.PROJECT },
             };
           },
           queryBindings: jest.fn((operation: any, ctx: any, options: any) => {
@@ -121,7 +121,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
           getSelectorShape() {
             return {
               type: 'operation',
-              operation: { operationType: 'type', type: Algebra.types.PROJECT },
+              operation: { operationType: 'type', type: Algebra.Types.PROJECT },
               filterBindings: true,
             };
           },

@@ -10,7 +10,7 @@ import type {
 } from '@comunica/types';
 import { getMetadataBindings, getMetadataQuads } from '@comunica/utils-metadata';
 import { getOperationSource } from '@comunica/utils-query-operation';
-import { Algebra, Util } from 'sparqlalgebrajs';
+import { Algebra, Util } from '@traqula/algebra-sparql-1-1';
 
 /**
  * A comunica Source Query Operation Actor.
@@ -68,20 +68,20 @@ export class ActorQueryOperationSource extends ActorQueryOperation {
 
     // eslint-disable-next-line ts/switch-exhaustiveness-check
     switch (action.operation.type) {
-      case Algebra.types.ASK:
+      case Algebra.Types.ASK:
         return {
           type: 'boolean',
           execute: () => sourceWrapper.source.queryBoolean(<Algebra.Ask>action.operation, mergedContext),
         };
-      case Algebra.types.COMPOSITE_UPDATE:
-      case Algebra.types.DELETE_INSERT:
-      case Algebra.types.LOAD:
-      case Algebra.types.CLEAR:
-      case Algebra.types.CREATE:
-      case Algebra.types.DROP:
-      case Algebra.types.ADD:
-      case Algebra.types.MOVE:
-      case Algebra.types.COPY:
+      case Algebra.Types.COMPOSITE_UPDATE:
+      case Algebra.Types.DELETE_INSERT:
+      case Algebra.Types.LOAD:
+      case Algebra.Types.CLEAR:
+      case Algebra.Types.CREATE:
+      case Algebra.Types.DROP:
+      case Algebra.Types.ADD:
+      case Algebra.Types.MOVE:
+      case Algebra.Types.COPY:
         return {
           type: 'void',
           execute: () => sourceWrapper.source.queryVoid(<Algebra.Update>action.operation, mergedContext),

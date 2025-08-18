@@ -1,8 +1,8 @@
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { assignOperationSource } from '@comunica/utils-query-operation';
+import { Algebra, Factory } from '@traqula/algebra-sparql-1-1';
 import { DataFactory } from 'rdf-data-factory';
-import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorOptimizeQueryOperationFilterPushdown } from '../lib/ActorOptimizeQueryOperationFilterPushdown';
 import '@comunica/utils-jest';
 
@@ -293,7 +293,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           type: 'operation',
           operation: {
             operationType: 'type',
-            type: Algebra.types.NOP,
+            type: Algebra.Types.NOP,
           },
         });
         shapes.set(src2, {
@@ -303,21 +303,21 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               type: 'operation',
               operation: {
                 operationType: 'type',
-                type: Algebra.types.FILTER,
+                type: Algebra.Types.FILTER,
               },
             },
             {
               type: 'operation',
               operation: {
                 operationType: 'type',
-                type: Algebra.types.JOIN,
+                type: Algebra.Types.JOIN,
               },
             },
             {
               type: 'operation',
               operation: {
                 operationType: 'type',
-                type: Algebra.types.PATTERN,
+                type: Algebra.Types.PATTERN,
               },
             },
           ],
@@ -346,14 +346,14 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           type: 'operation',
           operation: {
             operationType: 'type',
-            type: Algebra.types.NOP,
+            type: Algebra.Types.NOP,
           },
         });
         shapes.set(src2, {
           type: 'operation',
           operation: {
             operationType: 'type',
-            type: Algebra.types.NOP,
+            type: Algebra.Types.NOP,
           },
         });
         expect(actor.shouldAttemptPushDown(op, [ src1, src2 ], shapes)).toBeFalsy();
@@ -379,7 +379,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           type: 'operation',
           operation: {
             operationType: 'type',
-            type: Algebra.types.PATTERN,
+            type: Algebra.Types.PATTERN,
           },
         });
         expect(actor.shouldAttemptPushDown(op, [], shapes)).toBeFalsy();

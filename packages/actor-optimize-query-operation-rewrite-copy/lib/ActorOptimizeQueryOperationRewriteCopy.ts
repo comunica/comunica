@@ -8,7 +8,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
-import { Algebra, Factory, Util } from 'sparqlalgebrajs';
+import { Algebra, Factory, Util } from '@traqula/algebra-sparql-1-1';
 
 /**
  * A comunica Rewrite Copy Optimize Query Operation Actor.
@@ -27,7 +27,7 @@ export class ActorOptimizeQueryOperationRewriteCopy extends ActorOptimizeQueryOp
     const algebraFactory = new Factory(dataFactory);
 
     const operation = Util.mapOperation(action.operation, {
-      [Algebra.types.COPY](operationOriginal, factory) {
+      [Algebra.Types.COPY](operationOriginal, factory) {
         // No-op if source === destination
         let result: Algebra.CompositeUpdate;
         if ((typeof operationOriginal.destination === 'string' && typeof operationOriginal.source === 'string' &&

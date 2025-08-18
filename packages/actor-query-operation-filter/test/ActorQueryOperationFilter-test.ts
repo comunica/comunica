@@ -18,10 +18,10 @@ import {
   getMockEEActionContext,
   getMockMediatorExpressionEvaluatorFactory,
 } from '@comunica/utils-expression-evaluator/test/util/helpers';
+import type { Algebra } from '@traqula/algebra-sparql-1-1';
+import { translate } from '@traqula/algebra-sparql-1-1';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import type { Algebra } from 'sparqlalgebrajs';
-import { translate } from 'sparqlalgebrajs';
 import { ActorQueryOperationFilter } from '../lib';
 import '@comunica/utils-jest';
 

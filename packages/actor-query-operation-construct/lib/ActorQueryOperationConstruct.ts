@@ -14,9 +14,9 @@ import type {
 } from '@comunica/types';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
+import { Algebra } from '@traqula/algebra-sparql-1-1';
 import type { AsyncIterator } from 'asynciterator';
 import { getTermsNested, getVariables, uniqTerms } from 'rdf-terms';
-import { Algebra } from 'sparqlalgebrajs';
 import { BindingsToQuadsIterator } from './BindingsToQuadsIterator';
 
 /**
@@ -47,7 +47,7 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
 
     // Apply a projection on our CONSTRUCT variables first, as the query may contain other variables as well.
     const variables: RDF.Variable[] = ActorQueryOperationConstruct.getVariables(operationOriginal.template);
-    const operation: Algebra.Operation = { type: Algebra.types.PROJECT, input: operationOriginal.input, variables };
+    const operation: Algebra.Operation = { type: Algebra.Types.PROJECT, input: operationOriginal.input, variables };
 
     // Evaluate the input query
     const output: IQueryOperationResultBindings = getSafeBindings(

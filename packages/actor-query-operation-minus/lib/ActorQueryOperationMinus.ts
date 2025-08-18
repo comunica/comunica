@@ -7,7 +7,7 @@ import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { IActionContext, IQueryOperationResult, IJoinEntry } from '@comunica/types';
 import { getSafeBindings } from '@comunica/utils-query-operation';
-import type { Algebra } from 'sparqlalgebrajs';
+import type { Algebra } from '@traqula/algebra-sparql-1-1';
 
 /**
  * A comunica Minus Query Operation Actor.

@@ -15,18 +15,20 @@ import type {
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
+import type { Factory, Algebra } from '@traqula/algebra-sparql-1-1';
+import { Util, toSparql12 } from '@traqula/algebra-sparql-1-1';
+import { Generator } from '@traqula/generator-sparql-1-2';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator, wrap } from 'asynciterator';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import { LRUCache } from 'lru-cache';
 import { uniqTerms } from 'rdf-terms';
-import type { Factory, Algebra } from 'sparqlalgebrajs';
-import { toSparql, Util } from 'sparqlalgebrajs';
 import type { BindMethod } from './ActorQuerySourceIdentifyHypermediaSparql';
 
 const COUNT_INFINITY: RDF.QueryResultCardinality = { type: 'estimate', value: Number.POSITIVE_INFINITY };
 
 export class QuerySourceSparql implements IQuerySource {
+  protected static readonly queryStringGenerator = new Generator();
   protected static readonly SELECTOR_SHAPE: FragmentSelectorShape = {
     type: 'disjunction',
     children: [
@@ -312,7 +314,7 @@ export class QuerySourceSparql implements IQuerySource {
    * @return {string} A query string.
    */
   public static operationToQuery(operation: Algebra.Operation): string {
-    return toSparql(operation, { sparqlStar: true });
+    return this.queryStringGenerator.generate(toSparql12(operation));
   }
 
   /**

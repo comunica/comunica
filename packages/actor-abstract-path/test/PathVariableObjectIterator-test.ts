@@ -3,10 +3,10 @@ import { ActionContext } from '@comunica/core';
 import type { BindingsStream } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
+import { Factory } from '@traqula/algebra-sparql-1-1';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator, BufferedIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { Factory } from 'sparqlalgebrajs';
 import { PathVariableObjectIterator } from '../lib';
 
 const DF = new DataFactory();

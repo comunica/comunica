@@ -14,7 +14,7 @@ import type { TestResult } from '@comunica/core';
 import { failTest, passTest } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { Factory } from 'sparqlalgebrajs';
+import { Factory } from '@traqula/algebra-sparql-1-1';
 import { QuerySourceSparql } from './QuerySourceSparql';
 
 /**

@@ -3,9 +3,9 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
 import { assignOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
+import { Algebra, Factory } from '@traqula/algebra-sparql-1-1';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { Algebra, Factory } from 'sparqlalgebrajs';
 import {
   ActorOptimizeQueryOperationPruneEmptySourceOperations,
 } from '../lib/ActorOptimizeQueryOperationPruneEmptySourceOperations';
@@ -33,21 +33,21 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
               type: 'operation',
               operation: {
                 operationType: 'type',
-                type: Algebra.types.NOP,
+                type: Algebra.Types.NOP,
               },
             },
             {
               type: 'operation',
               operation: {
                 operationType: 'type',
-                type: Algebra.types.PATTERN,
+                type: Algebra.Types.PATTERN,
               },
             },
             {
               type: 'operation',
               operation: {
                 operationType: 'type',
-                type: Algebra.types.LINK,
+                type: Algebra.Types.LINK,
               },
             },
           ],
@@ -56,13 +56,13 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
           const bindingsStream = new ArrayIterator([], { autoStart: false });
           let card = 0;
           switch (op.type) {
-            case Algebra.types.NOP:
+            case Algebra.Types.NOP:
               card = 10;
               break;
-            case Algebra.types.PATTERN:
+            case Algebra.Types.PATTERN:
               card = op.predicate.value === 'empty' ? 0 : 10;
               break;
-            case Algebra.types.LINK:
+            case Algebra.Types.LINK:
               card = op.value === 'empty' ? 0 : 10;
               break;
           }
@@ -81,14 +81,14 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
               type: 'operation',
               operation: {
                 operationType: 'type',
-                type: Algebra.types.ASK,
+                type: Algebra.Types.ASK,
               },
             },
             {
               type: 'operation',
               operation: {
                 operationType: 'type',
-                type: Algebra.types.NOP,
+                type: Algebra.Types.NOP,
               },
             },
           ],

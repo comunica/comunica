@@ -10,9 +10,9 @@ import type {
   IPhysicalQueryPlanLogger,
 } from '@comunica/types';
 import { assignOperationSource } from '@comunica/utils-query-operation';
+import { Factory } from '@traqula/algebra-sparql-1-1';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationSource } from '../lib/ActorQueryOperationSource';
 import 'jest-rdf';
 import '@comunica/utils-jest';

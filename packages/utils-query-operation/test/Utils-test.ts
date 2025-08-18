@@ -1,4 +1,4 @@
-import { Factory } from 'sparqlalgebrajs';
+import { Factory } from '@traqula/algebra-sparql-1-1';
 import {
   assignOperationSource,
   getOperationSource,

@@ -5,13 +5,13 @@ import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { Algebra, Factory } from 'sparqlalgebrajs';
+import { Algebra, Factory } from '@traqula/algebra-sparql-1-1';
 
 /**
  * A comunica From Query Operation Actor.
  */
 export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediated<Algebra.From> {
-  private static readonly ALGEBRA_TYPES: string[] = Object.keys(Algebra.types).map(key => (<any> Algebra.types)[key]);
+  private static readonly ALGEBRA_TYPES: string[] = Object.keys(Algebra.Types).map(key => (<any> Algebra.Types)[key]);
 
   public constructor(args: IActorQueryOperationTypedMediatedArgs) {
     super(args, 'from');
@@ -129,7 +129,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
       if (patternGraph.termType === 'DefaultGraph') {
         // SPARQL spec (8.2) describes that when FROM NAMED's are used without a FROM, the default graph must be empty.
         // The FROMs are transformed before this step to a named node, so this will not apply to this case anymore.
-        return { type: Algebra.types.BGP, patterns: []};
+        return { type: Algebra.Types.BGP, patterns: []};
       }
       if (patternGraph.termType === 'Variable') {
         if (namedGraphs.length === 1) {
@@ -174,7 +174,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
         return operation;
       }
       // No-op if the pattern's graph was not selected in a FROM NAMED.
-      return { type: Algebra.types.BGP, patterns: []};
+      return { type: Algebra.Types.BGP, patterns: []};
     }
 
     return ActorQueryOperationFromQuad.copyOperation(

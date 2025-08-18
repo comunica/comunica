@@ -12,7 +12,7 @@ import { passTestWithSideData } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { IJoinEntry, ComunicaDataFactory } from '@comunica/types';
 import { getSafeBindings } from '@comunica/utils-query-operation';
-import { Factory } from 'sparqlalgebrajs';
+import { Factory } from '@traqula/algebra-sparql-1-1';
 
 /**
  * A Multi Sequential RDF Join Actor.

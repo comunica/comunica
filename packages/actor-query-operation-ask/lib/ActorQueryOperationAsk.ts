@@ -8,7 +8,7 @@ import type {
   IQueryOperationResultBindings,
 } from '@comunica/types';
 import { getSafeBindings } from '@comunica/utils-query-operation';
-import type { Algebra } from 'sparqlalgebrajs';
+import type { Algebra } from '@traqula/algebra-sparql-1-1';
 
 /**
  * A comunica Ask Query Operation Actor.

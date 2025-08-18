@@ -16,7 +16,7 @@ import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-
 import type { Bindings, BindingsStream, ComunicaDataFactory } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getSafeBindings } from '@comunica/utils-query-operation';
-import { Algebra, Factory } from 'sparqlalgebrajs';
+import { Algebra, Factory } from '@traqula/algebra-sparql-1-1';
 
 /**
  * A comunica Optional Bind RDF Join Actor.
@@ -96,8 +96,8 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
 
     // Reject binding on some operation types
-    if (action.entries[1].operation.type === Algebra.types.EXTEND ||
-      action.entries[1].operation.type === Algebra.types.GROUP) {
+    if (action.entries[1].operation.type === Algebra.Types.EXTEND ||
+      action.entries[1].operation.type === Algebra.Types.GROUP) {
       return failTest(`Actor ${this.name} can not bind on Extend and Group operations`);
     }
 

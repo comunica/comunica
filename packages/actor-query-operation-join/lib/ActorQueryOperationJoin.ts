@@ -10,9 +10,9 @@ import type { IQueryOperationResult, IActionContext, IJoinEntry } from '@comunic
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
+import type { Algebra } from '@traqula/algebra-sparql-1-1';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Join Query Operation Actor.

@@ -14,7 +14,7 @@ import {
   getOperationSource,
   removeOperationSource,
 } from '@comunica/utils-query-operation';
-import { Algebra, Factory } from 'sparqlalgebrajs';
+import { Algebra, Factory } from '@traqula/algebra-sparql-1-1';
 
 /**
  * A comunica Group Sources Optimize Query Operation Actor.
@@ -88,16 +88,16 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
     // If we have multiple clusters, created nested multi-operations
     let multiFactoryMethod: (children: Algebra.Operation[], flatten: boolean) => Algebra.Operation;
     switch (operation.type) {
-      case Algebra.types.JOIN:
+      case Algebra.Types.JOIN:
         multiFactoryMethod = algebraFactory.createJoin.bind(algebraFactory);
         break;
-      case Algebra.types.UNION:
+      case Algebra.Types.UNION:
         multiFactoryMethod = algebraFactory.createUnion.bind(algebraFactory);
         break;
-      case Algebra.types.ALT:
+      case Algebra.Types.ALT:
         multiFactoryMethod = <any> algebraFactory.createAlt.bind(algebraFactory);
         break;
-      case Algebra.types.SEQ:
+      case Algebra.Types.SEQ:
         multiFactoryMethod = <any> algebraFactory.createSeq.bind(algebraFactory);
         break;
       default:

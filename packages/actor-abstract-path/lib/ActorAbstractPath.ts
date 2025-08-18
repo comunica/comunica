@@ -16,6 +16,8 @@ import type {
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { assignOperationSource, getOperationSource, getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
+import type { Factory } from '@traqula/algebra-sparql-1-1';
+import { Algebra } from '@traqula/algebra-sparql-1-1';
 import type { AsyncIterator } from 'asynciterator';
 import {
   BufferedIterator,
@@ -24,8 +26,6 @@ import {
   EmptyIterator,
 } from 'asynciterator';
 import { termToString } from 'rdf-string';
-import type { Factory } from 'sparqlalgebrajs';
-import { Algebra } from 'sparqlalgebrajs';
 import { PathVariableObjectIterator } from './PathVariableObjectIterator';
 
 /**
@@ -385,17 +385,17 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
    */
   public getPathSources(operation: Algebra.PropertyPathSymbol): IQuerySourceWrapper[] {
     switch (operation.type) {
-      case Algebra.types.ALT:
-      case Algebra.types.SEQ:
+      case Algebra.Types.ALT:
+      case Algebra.Types.SEQ:
         return operation.input
           .flatMap((subOp: Algebra.PropertyPathSymbol) => this.getPathSources(subOp));
-      case Algebra.types.INV:
-      case Algebra.types.ONE_OR_MORE_PATH:
-      case Algebra.types.ZERO_OR_MORE_PATH:
-      case Algebra.types.ZERO_OR_ONE_PATH:
+      case Algebra.Types.INV:
+      case Algebra.Types.ONE_OR_MORE_PATH:
+      case Algebra.Types.ZERO_OR_MORE_PATH:
+      case Algebra.Types.ZERO_OR_ONE_PATH:
         return this.getPathSources(operation.path);
-      case Algebra.types.LINK:
-      case Algebra.types.NPS: {
+      case Algebra.Types.LINK:
+      case Algebra.Types.NPS: {
         const source = getOperationSource(operation);
         if (!source) {
           throw new Error(`Could not find a required source on a link path operation`);

@@ -1,4 +1,4 @@
-import type { Algebra } from 'sparqlalgebrajs';
+import type { Algebra } from '@traqula/algebra-sparql-1-1';
 import type { MetadataBindings } from './IMetadata';
 import type { IQueryOperationResultBindings } from './IQueryOperationResult';
 

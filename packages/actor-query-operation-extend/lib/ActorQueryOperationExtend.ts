@@ -8,7 +8,7 @@ import { bindingsToString } from '@comunica/utils-bindings-factory';
 import type { ExpressionError } from '@comunica/utils-expression-evaluator';
 import { isExpressionError } from '@comunica/utils-expression-evaluator';
 import { getSafeBindings } from '@comunica/utils-query-operation';
-import type { Algebra } from 'sparqlalgebrajs';
+import type { Algebra } from '@traqula/algebra-sparql-1-1';
 
 /**
  * A comunica Extend Query Operation Actor.

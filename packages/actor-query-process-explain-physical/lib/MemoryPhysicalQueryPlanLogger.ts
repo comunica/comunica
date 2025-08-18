@@ -1,7 +1,7 @@
 import type { IPhysicalQueryPlanLogger, IPlanNode } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import type { Algebra } from '@traqula/algebra-sparql-1-1';
 import { termToString } from 'rdf-string';
-import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A physical query plan logger that stores everything in memory.

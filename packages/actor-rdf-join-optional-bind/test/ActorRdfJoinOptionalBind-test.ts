@@ -246,7 +246,7 @@ IQueryOperationResultBindings
               },
               {
                 output: <any>{},
-                operation: <any>{ type: Algebra.types.EXTEND },
+                operation: <any>{ type: Algebra.Types.EXTEND },
               },
             ],
             context,
@@ -289,7 +289,7 @@ IQueryOperationResultBindings
               },
               {
                 output: <any> {},
-                operation: <any> { type: Algebra.types.GROUP },
+                operation: <any> { type: Algebra.Types.GROUP },
               },
             ],
             context,
@@ -328,7 +328,7 @@ IQueryOperationResultBindings
             entries: [
               {
                 output: <any> {},
-                operation: <any> { type: Algebra.types.GROUP },
+                operation: <any> { type: Algebra.Types.GROUP },
               },
               {
                 output: <any> {},

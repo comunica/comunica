@@ -1,7 +1,7 @@
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import { Factory } from '@traqula/algebra-sparql-1-1';
 import { DataFactory } from 'rdf-data-factory';
-import { Factory } from 'sparqlalgebrajs';
 import {
   ActorOptimizeQueryOperationDescribeToConstructsSubject,
 } from '../lib/ActorOptimizeQueryOperationDescribeToConstructsSubject';

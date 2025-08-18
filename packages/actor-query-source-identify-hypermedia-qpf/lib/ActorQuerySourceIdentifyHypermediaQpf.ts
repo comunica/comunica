@@ -17,7 +17,7 @@ import { failTest, passTest } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
-import { Factory } from 'sparqlalgebrajs';
+import { Factory } from '@traqula/algebra-sparql-1-1';
 import { QuerySourceQpf } from './QuerySourceQpf';
 
 /**

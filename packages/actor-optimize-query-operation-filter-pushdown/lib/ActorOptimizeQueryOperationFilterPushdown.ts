@@ -10,8 +10,8 @@ import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, FragmentSelectorShape, IActionContext, IQuerySourceWrapper } from '@comunica/types';
 import { doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
+import { Factory, Algebra, Util } from '@traqula/algebra-sparql-1-1';
 import { mapTermsNested, uniqTerms } from 'rdf-terms';
-import { Factory, Algebra, Util } from 'sparqlalgebrajs';
 
 /**
  * A comunica Filter Pushdown Optimize Query Operation Actor.
@@ -108,7 +108,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     if (this.mergeConjunctive) {
       operation = Util.mapOperation(operation, {
         filter(op: Algebra.Filter, factory: Factory) {
-          if (op.input.type === Algebra.types.FILTER) {
+          if (op.input.type === Algebra.Types.FILTER) {
             const { nestedExpressions, input } = self.getNestedFilterExpressions(op);
             self.logDebug(action.context, `Merge ${nestedExpressions.length} nested filters into conjunctive filter`);
             return {
@@ -184,10 +184,10 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
       return false;
     };
     Util.recurseOperation(operation, {
-      [Algebra.types.PATTERN]: sourceAdder,
-      [Algebra.types.LINK]: sourceAdder,
-      [Algebra.types.NPS]: sourceAdder,
-      [Algebra.types.SERVICE]: sourceAdder,
+      [Algebra.Types.PATTERN]: sourceAdder,
+      [Algebra.Types.LINK]: sourceAdder,
+      [Algebra.Types.NPS]: sourceAdder,
+      [Algebra.Types.SERVICE]: sourceAdder,
     });
     return [ ...sources ];
   }
@@ -271,13 +271,13 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     }
 
     // Don't push down (NOT) EXISTS
-    if (expression.type === Algebra.types.EXPRESSION &&
+    if (expression.type === Algebra.Types.EXPRESSION &&
       expression.expressionType === Algebra.expressionTypes.EXISTENCE) {
       return [ false, factory.createFilter(operation, expression) ];
     }
 
     switch (operation.type) {
-      case Algebra.types.EXTEND:
+      case Algebra.Types.EXTEND:
         // Pass if the variable is not part of the expression
         if (!this.variablesIntersect([ operation.variable ], expressionVariables)) {
           return [ true, factory.createExtend(
@@ -287,13 +287,13 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
           ) ];
         }
         return [ false, factory.createFilter(operation, expression) ];
-      case Algebra.types.FILTER: {
+      case Algebra.Types.FILTER: {
         // Always pass
         const [ isModified, result ] = this
           .filterPushdown(expression, expressionVariables, operation.input, factory, context);
         return [ isModified, factory.createFilter(result, operation.expression) ];
       }
-      case Algebra.types.JOIN: {
+      case Algebra.Types.JOIN: {
         // Don't push down for empty join
         if (operation.input.length === 0) {
           return [ false, factory.createFilter(operation, expression) ];
@@ -330,9 +330,9 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
 
         return [ isModified, joins.length === 1 ? joins[0] : factory.createJoin(joins) ];
       }
-      case Algebra.types.NOP:
+      case Algebra.Types.NOP:
         return [ true, operation ];
-      case Algebra.types.PROJECT:
+      case Algebra.Types.PROJECT:
         // Push down if variables overlap
         if (this.variablesIntersect(operation.variables, expressionVariables)) {
           return [ true, factory.createProject(
@@ -342,7 +342,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
         }
         // Void expression otherwise
         return [ true, operation ];
-      case Algebra.types.UNION: {
+      case Algebra.Types.UNION: {
         // Determine overlapping operations
         const {
           fullyOverlapping,
@@ -374,13 +374,13 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
 
         return [ isModified, unions.length === 1 ? unions[0] : factory.createUnion(unions) ];
       }
-      case Algebra.types.VALUES:
+      case Algebra.Types.VALUES:
         // Only keep filter if it overlaps with the variables
         if (this.variablesIntersect(operation.variables, expressionVariables)) {
           return [ false, factory.createFilter(operation, expression) ];
         }
         return [ true, operation ];
-      case Algebra.types.LEFT_JOIN: {
+      case Algebra.Types.LEFT_JOIN: {
         if (this.pushIntoLeftJoins) {
           const rightVariables = Util.inScopeVariables(operation.input[1]);
           if (!this.variablesIntersect(expressionVariables, rightVariables)) {
@@ -397,7 +397,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
         // Don't push down in all other cases
         return [ false, factory.createFilter(operation, expression) ];
       }
-      case Algebra.types.PATTERN: {
+      case Algebra.Types.PATTERN: {
         if (this.pushEqualityIntoPatterns) {
           // Try to push simple FILTER(?s = <iri>) expressions into the pattern
           const pushableResult = this.getEqualityExpressionPushableIntoPattern(expression);
@@ -411,7 +411,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
               }
               return value;
             });
-            operation.type = Algebra.types.PATTERN;
+            operation.type = Algebra.Types.PATTERN;
             operation.metadata = originalMetadata;
             if (isModified) {
               this.logDebug(context, `Push down filter into pattern for ?${pushableResult.variable.value}`);
@@ -429,7 +429,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
         // Don't push down in all other cases
         return [ false, factory.createFilter(operation, expression) ];
       }
-      case Algebra.types.PATH: {
+      case Algebra.Types.PATH: {
         if (this.pushEqualityIntoPatterns) {
           // Try to push simple FILTER(?s = <iri>) expressions into the path
           const pushableResult = this.getEqualityExpressionPushableIntoPattern(expression);
@@ -456,37 +456,37 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
         // Don't push down in all other cases
         return [ false, factory.createFilter(operation, expression) ];
       }
-      case Algebra.types.MINUS:
-      case Algebra.types.ALT:
-      case Algebra.types.ASK:
-      case Algebra.types.BGP:
-      case Algebra.types.CONSTRUCT:
-      case Algebra.types.DESCRIBE:
-      case Algebra.types.DISTINCT:
-      case Algebra.types.EXPRESSION:
-      case Algebra.types.FROM:
-      case Algebra.types.GRAPH:
-      case Algebra.types.GROUP:
-      case Algebra.types.INV:
-      case Algebra.types.LINK:
-      case Algebra.types.NPS:
-      case Algebra.types.ONE_OR_MORE_PATH:
-      case Algebra.types.ORDER_BY:
-      case Algebra.types.REDUCED:
-      case Algebra.types.SEQ:
-      case Algebra.types.SERVICE:
-      case Algebra.types.SLICE:
-      case Algebra.types.ZERO_OR_MORE_PATH:
-      case Algebra.types.ZERO_OR_ONE_PATH:
-      case Algebra.types.COMPOSITE_UPDATE:
-      case Algebra.types.DELETE_INSERT:
-      case Algebra.types.LOAD:
-      case Algebra.types.CLEAR:
-      case Algebra.types.CREATE:
-      case Algebra.types.DROP:
-      case Algebra.types.ADD:
-      case Algebra.types.MOVE:
-      case Algebra.types.COPY:
+      case Algebra.Types.MINUS:
+      case Algebra.Types.ALT:
+      case Algebra.Types.ASK:
+      case Algebra.Types.BGP:
+      case Algebra.Types.CONSTRUCT:
+      case Algebra.Types.DESCRIBE:
+      case Algebra.Types.DISTINCT:
+      case Algebra.Types.EXPRESSION:
+      case Algebra.Types.FROM:
+      case Algebra.Types.GRAPH:
+      case Algebra.Types.GROUP:
+      case Algebra.Types.INV:
+      case Algebra.Types.LINK:
+      case Algebra.Types.NPS:
+      case Algebra.Types.ONE_OR_MORE_PATH:
+      case Algebra.Types.ORDER_BY:
+      case Algebra.Types.REDUCED:
+      case Algebra.Types.SEQ:
+      case Algebra.Types.SERVICE:
+      case Algebra.Types.SLICE:
+      case Algebra.Types.ZERO_OR_MORE_PATH:
+      case Algebra.Types.ZERO_OR_ONE_PATH:
+      case Algebra.Types.COMPOSITE_UPDATE:
+      case Algebra.Types.DELETE_INSERT:
+      case Algebra.Types.LOAD:
+      case Algebra.Types.CLEAR:
+      case Algebra.Types.CREATE:
+      case Algebra.Types.DROP:
+      case Algebra.Types.ADD:
+      case Algebra.Types.MOVE:
+      case Algebra.Types.COPY:
         // Operations that do not support pushing down
         // Left-join and minus might be possible to support in the future.
         return [ false, factory.createFilter(operation, expression) ];
@@ -588,7 +588,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
   public getNestedFilterExpressions(
     op: Algebra.Filter,
   ): { nestedExpressions: Algebra.Expression[]; input: Algebra.Operation } {
-    if (op.input.type === Algebra.types.FILTER) {
+    if (op.input.type === Algebra.Types.FILTER) {
       const childData = this.getNestedFilterExpressions(op.input);
       return { nestedExpressions: [ op.expression, ...childData.nestedExpressions ], input: childData.input };
     }

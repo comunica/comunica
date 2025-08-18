@@ -14,11 +14,11 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
+import { Algebra, Factory } from '@traqula/algebra-sparql-1-1';
 import {
   SingletonIterator,
   UnionIterator,
 } from 'asynciterator';
-import { Algebra, Factory } from 'sparqlalgebrajs';
 
 /**
  * A comunica Path ZeroOrOne Query Operation Actor.
@@ -27,7 +27,7 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   public constructor(args: IActorQueryOperationPathZeroOrOneArgs) {
-    super(args, Algebra.types.ZERO_OR_ONE_PATH);
+    super(args, Algebra.Types.ZERO_OR_ONE_PATH);
   }
 
   public async runOperation(

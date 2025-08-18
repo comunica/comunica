@@ -7,10 +7,10 @@ import type { Bindings } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { assignOperationSource, getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
+import { Algebra, Factory } from '@traqula/algebra-sparql-1-1';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { QUAD_TERM_NAMES } from 'rdf-terms';
-import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationPathZeroOrOne } from '../lib/ActorQueryOperationPathZeroOrOne';
 import '@comunica/utils-jest';
 
@@ -125,7 +125,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
     it('should test on ZeroOrOne paths', async() => {
       const op: any = {
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
-        operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.ZERO_OR_ONE_PATH }},
+        operation: { type: Algebra.Types.PATH, predicate: { type: Algebra.Types.ZERO_OR_ONE_PATH }},
       };
       await expect(actor.test(op)).resolves.toPassTestVoid();
     });
@@ -133,7 +133,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
     it('should test on different paths', async() => {
       const op: any = {
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
-        operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }},
+        operation: { type: Algebra.Types.PATH, predicate: { type: 'dummy' }},
       };
       await expect(actor.test(op)).resolves.toFailTest(`This Actor only supports ZeroOrOnePath Path operations.`);
     });

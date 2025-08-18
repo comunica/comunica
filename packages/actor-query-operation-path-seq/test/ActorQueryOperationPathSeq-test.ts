@@ -7,11 +7,11 @@ import type { Bindings } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
+import { Algebra, Factory } from '@traqula/algebra-sparql-1-1';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { QUAD_TERM_NAMES } from 'rdf-terms';
-import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationPathSeq } from '../lib/ActorQueryOperationPathSeq';
 import '@comunica/utils-jest';
 
@@ -117,12 +117,12 @@ describe('ActorQueryOperationPathSeq', () => {
     });
 
     it('should test on Seq paths', async() => {
-      const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.SEQ }}};
+      const op: any = { operation: { type: Algebra.Types.PATH, predicate: { type: Algebra.Types.SEQ }}};
       await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should test on different paths', async() => {
-      const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }}};
+      const op: any = { operation: { type: Algebra.Types.PATH, predicate: { type: 'dummy' }}};
       await expect(actor.test(op)).resolves.toFailTest(`This Actor only supports seq Path operations.`);
     });
 

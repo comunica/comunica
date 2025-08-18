@@ -8,7 +8,7 @@ import type { Bindings, IActionContext, IJoinEntry, IQueryOperationResult } from
 import { bindingsToString } from '@comunica/utils-bindings-factory';
 import { isExpressionError } from '@comunica/utils-expression-evaluator';
 import { getSafeBindings } from '@comunica/utils-query-operation';
-import type { Algebra } from 'sparqlalgebrajs';
+import type { Algebra } from '@traqula/algebra-sparql-1-1';
 
 /**
  * A comunica LeftJoin Query Operation Actor.

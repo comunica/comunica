@@ -18,8 +18,8 @@ import type {
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { getSafeBindings, getSafeQuads } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
+import type { Algebra } from '@traqula/algebra-sparql-1-1';
 import { UnionIterator } from 'asynciterator';
-import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Union Query Operation Actor.

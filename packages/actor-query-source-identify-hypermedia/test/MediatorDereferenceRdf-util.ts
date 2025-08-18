@@ -19,10 +19,10 @@ import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolv
 import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import type { IQuerySource } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { Factory } from '@traqula/algebra-sparql-1-1';
 import { wrap } from 'asynciterator';
 import 'jest-rdf';
 import { DataFactory } from 'rdf-data-factory';
-import { Factory } from 'sparqlalgebrajs';
 
 const quad = require('rdf-quad');
 const streamifyArray = require('streamify-array');

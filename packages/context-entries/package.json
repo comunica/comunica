@@ -41,7 +41,7 @@
     "@comunica/core": "^4.0.2",
     "@comunica/types": "^4.0.2",
     "@rdfjs/types": "*",
-    "jsonld-context-parser": "^2.2.2",
-    "sparqlalgebrajs": "^5.0.1"
+    "@traqula/algebra-sparql-1-1": "^0.0.3",
+    "jsonld-context-parser": "^2.2.2"
   }
 }

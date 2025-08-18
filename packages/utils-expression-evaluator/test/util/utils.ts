@@ -1,8 +1,8 @@
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { IActionContext } from '@comunica/types';
+import type { Algebra as Alg } from '@traqula/algebra-sparql-1-1';
+import { translate } from '@traqula/algebra-sparql-1-1';
 import { Parser as SparqlParser } from '@traqula/engine-sparql-1-2';
-import type { Algebra as Alg } from 'sparqlalgebrajs';
-import { translate } from 'sparqlalgebrajs';
 import type { AliasMap } from './Aliases';
 import type { Notation } from './TestTable';
 import { ArrayTable, BinaryTable, UnaryTable, VariableTable } from './TestTable';

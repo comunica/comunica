@@ -15,10 +15,9 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { GeneralSuperTypeDict, IActionContext, ISuperTypeProvider } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
+import { Algebra } from '@traqula/algebra-sparql-1-1';
 import { LRUCache } from 'lru-cache';
 import { DataFactory } from 'rdf-data-factory';
-import { Algebra } from 'sparqlalgebrajs';
-import { Wildcard } from 'sparqljs';
 import * as Eval from '../../lib/index';
 
 export const DF = new DataFactory();
@@ -29,17 +28,17 @@ export function makeAggregate(aggregator: string, distinct = false, separator?: 
 Algebra.AggregateExpression {
   const inner: Algebra.Expression = wildcard ?
       {
-        type: Algebra.types.EXPRESSION,
+        type: Algebra.Types.EXPRESSION,
         expressionType: Algebra.expressionTypes.WILDCARD,
-        wildcard: new Wildcard(),
+        wildcard: { type: 'wildcard' },
       } :
       {
-        type: Algebra.types.EXPRESSION,
+        type: Algebra.Types.EXPRESSION,
         expressionType: Algebra.expressionTypes.TERM,
         term: DF.variable('x'),
       };
   return {
-    type: Algebra.types.EXPRESSION,
+    type: Algebra.Types.EXPRESSION,
     expressionType: Algebra.expressionTypes.AGGREGATE,
     aggregator: <any>aggregator,
     distinct,

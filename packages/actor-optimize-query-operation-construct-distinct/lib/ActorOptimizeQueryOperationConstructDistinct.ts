@@ -7,8 +7,8 @@ import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operat
 import { KeysInitQuery } from '@comunica/context-entries/lib/Keys';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
-import type { Algebra, Factory } from 'sparqlalgebrajs';
-import { Util } from 'sparqlalgebrajs';
+import type { Algebra, Factory } from '@traqula/algebra-sparql-1-1';
+import { Util } from '@traqula/algebra-sparql-1-1';
 
 /**
  * A comunica Construct Distinct Optimize Query Operation Actor.

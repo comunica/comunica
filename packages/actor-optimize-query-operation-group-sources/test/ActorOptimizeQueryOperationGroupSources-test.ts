@@ -2,8 +2,8 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
 import { assignOperationSource, getOperationSource } from '@comunica/utils-query-operation';
+import { Algebra, Factory } from '@traqula/algebra-sparql-1-1';
 import { DataFactory } from 'rdf-data-factory';
-import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorOptimizeQueryOperationGroupSources } from '../lib/ActorOptimizeQueryOperationGroupSources';
 import '@comunica/utils-jest';
 
@@ -42,7 +42,7 @@ describe('ActorOptimizeQueryOperationGroupSources', () => {
         type: 'operation',
         operation: {
           operationType: 'type',
-          type: Algebra.types.PATTERN,
+          type: Algebra.Types.PATTERN,
         },
       }),
     },

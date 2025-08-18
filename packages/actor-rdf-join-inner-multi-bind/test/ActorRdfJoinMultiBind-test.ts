@@ -10,9 +10,9 @@ import type { IActionContext, IQueryOperationResultBindings } from '@comunica/ty
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
+import { Factory, Algebra } from '@traqula/algebra-sparql-1-1';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { Factory, Algebra } from 'sparqlalgebrajs';
 import type { IActorRdfJoinMultiBindTestSideData } from '../lib/ActorRdfJoinMultiBind';
 import { ActorRdfJoinMultiBind } from '../lib/ActorRdfJoinMultiBind';
 import '@comunica/utils-jest';
@@ -246,7 +246,7 @@ IQueryOperationResultBindings
                   }),
 
                 },
-                operation: <any>{ type: Algebra.types.EXTEND },
+                operation: <any>{ type: Algebra.Types.EXTEND },
               },
               {
                 output: <any>{
@@ -294,7 +294,7 @@ IQueryOperationResultBindings
             entries: [
               {
                 output: <any> {},
-                operation: <any> { type: Algebra.types.GROUP },
+                operation: <any> { type: Algebra.Types.GROUP },
               },
               {
                 output: <any> {},
@@ -337,7 +337,7 @@ IQueryOperationResultBindings
             entries: [
               {
                 output: <any> {},
-                operation: FACTORY.createProject(<any>{ type: Algebra.types.GROUP }, []),
+                operation: FACTORY.createProject(<any>{ type: Algebra.Types.GROUP }, []),
               },
               {
                 output: <any> {},
@@ -384,7 +384,7 @@ IQueryOperationResultBindings
               },
               {
                 output: <any> {},
-                operation: <any> { type: Algebra.types.GROUP },
+                operation: <any> { type: Algebra.Types.GROUP },
               },
             ],
             context: new ActionContext(),

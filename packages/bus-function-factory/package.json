@@ -40,6 +40,6 @@
     "@comunica/core": "^4.0.2",
     "@comunica/types": "^4.0.2",
     "@comunica/utils-expression-evaluator": "^4.0.2",
-    "sparqlalgebrajs": "^4.2.0"
+    "@traqula/algebra-sparql-1-1": "^0.0.3"
   }
 }

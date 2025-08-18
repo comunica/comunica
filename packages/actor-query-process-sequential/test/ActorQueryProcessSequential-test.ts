@@ -6,9 +6,9 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import type { Algebra } from '@traqula/algebra-sparql-1-1';
+import { Factory } from '@traqula/algebra-sparql-1-1';
 import { DataFactory } from 'rdf-data-factory';
-import type { Algebra } from 'sparqlalgebrajs';
-import { Factory } from 'sparqlalgebrajs';
 import { ActorQueryProcessSequential } from '../lib/ActorQueryProcessSequential';
 import '@comunica/utils-jest';
 

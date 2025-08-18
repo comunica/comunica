@@ -11,9 +11,9 @@ import type { IQueryOperationResult, BindingsStream, IActionContext, ComunicaDat
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getSafeBindings, testReadOnly } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
+import type { Algebra } from '@traqula/algebra-sparql-1-1';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
-import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Update DeleteInsert Query Operation Actor.

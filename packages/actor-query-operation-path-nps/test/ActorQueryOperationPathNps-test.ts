@@ -4,10 +4,10 @@ import { ActionContext, Bus } from '@comunica/core';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
+import { Algebra, Factory } from '@traqula/algebra-sparql-1-1';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { QUAD_TERM_NAMES } from 'rdf-terms';
-import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationPathNps } from '../lib/ActorQueryOperationPathNps';
 import '@comunica/utils-jest';
 
@@ -83,7 +83,7 @@ describe('ActorQueryOperationPathNps', () => {
 
     it('should test on Nps paths', async() => {
       const op: any = {
-        operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.NPS }},
+        operation: { type: Algebra.Types.PATH, predicate: { type: Algebra.Types.NPS }},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       await expect(actor.test(op)).resolves.toPassTestVoid();
@@ -91,7 +91,7 @@ describe('ActorQueryOperationPathNps', () => {
 
     it('should test on different paths', async() => {
       const op: any = {
-        operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }},
+        operation: { type: Algebra.Types.PATH, predicate: { type: 'dummy' }},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       await expect(actor.test(op)).resolves.toFailTest(`This Actor only supports nps Path operations.`);
