@@ -1,17 +1,45 @@
 {
   "head": {
-    "vars": [ "person", "city" ]
+    "vars": [
+      "person",
+      "city"
+    ]
   },
   "results": {
     "bindings": [
       {
-        "person": { "type": "uri", "value": "http://example.org/Bob" },
-        "city":   { "type": "uri", "value": "http://example.org/Atlantis" }
+        "city": {
+          "value": "http://example.org/Atlantis",
+          "type": "uri"
+        },
+        "person": {
+          "value": "http://example.org/Person1",
+          "type": "uri"
+        }
       },
       {
-        "person": { "type": "uri", "value": "http://example.org/Eve" },
-        "city":   { "type": "uri", "value": "http://example.org/ElDorado" }
+        "city": {
+          "value": "http://example.org/Atlantis",
+          "type": "uri"
+        },
+        "person": {
+          "value": "http://example.org/Person10",
+          "type": "uri"
+        }
+      },
+      {
+        "city": {
+          "value": "http://example.org/ElDorado",
+          "type": "uri"
+        },
+        "person": {
+          "value": "http://example.org/Person5",
+          "type": "uri"
+        }
       }
     ]
+  },
+  "metadata": {
+    "httpRequests": 0
   }
 }

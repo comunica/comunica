@@ -18,6 +18,7 @@ WHERE {
   ?person ex:livesIn ?city .
   ?city ex:locatedIn ex:CountryX .
   ?person ex:hasOccupation ex:Engineer .
+  ?person ex:gender ex:female .
 }
 `;
 

@@ -9,7 +9,7 @@ import {
   OutputOption,
 } from 'sparql-cache-client';
 import { KeyRemoteCache, KeysInitQuery } from '@comunica/context-entries';
-import { SparqlJsonParser } from "sparqljson-parse";
+import { IBindings, SparqlJsonParser } from "sparqljson-parse";
 import { ComunicaDataFactory } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ArrayIterator } from 'asynciterator';
@@ -916,13 +916,13 @@ WHERE {
     });
   });
 
-  describe(ActorQueryProcessRemoteCache.differenceConstraint.name, () => {
+  describe(ActorQueryProcessRemoteCache.createComplementaryQuery.name, () => {
 
     it("should return an empty query given 2 identical", () => {
       const superQuery = translate(`SELECT * {?s ?p ?o}`);
       const subQuery = superQuery;
 
-      const resp = ActorQueryProcessRemoteCache.differenceConstraint(superQuery, subQuery);
+      const resp = ActorQueryProcessRemoteCache.createComplementaryQuery(superQuery, subQuery);
       expect(resp).toBeUndefined();
     });
 
@@ -957,8 +957,57 @@ WHERE {
            ?person ex:gender ex:female .
           }
           `);
-      const resp = ActorQueryProcessRemoteCache.differenceConstraint(superQuery, subQuery);
+      const resp = ActorQueryProcessRemoteCache.createComplementaryQuery(superQuery, subQuery);
       expect(resp).toEqual([{ query: expectedQuery }]);
+    });
+
+    it("should return a query for a difference of one triple pattern with bindings", () => {
+      const superQuery = translate(`
+PREFIX ex: <http://example.org/>
+
+SELECT ?person ?city
+WHERE {
+  ?person ex:livesIn ?city .
+  ?city ex:locatedIn ex:CountryX .
+  ?person ex:hasOccupation ex:Engineer .
+}
+      `);
+      const subQuery = translate(`
+PREFIX ex: <http://example.org/>
+
+SELECT ?person ?city
+WHERE {
+  ?person ex:livesIn ?city .
+  ?city ex:locatedIn ex:CountryX .
+  ?person ex:hasOccupation ex:Engineer .
+  ?person ex:gender ex:female .
+}
+        `);
+      const expectedQuery = translate(`
+          PREFIX ex: <http://example.org/>
+
+          CONSTRUCT {
+            ?person ex:gender ex:female .
+          } WHERE {
+           VALUES ?person {
+              ex:person1
+              ex:person2
+            }
+            ?person ex:gender ex:female .
+          }
+          `);
+      const bindings: IBindings[] = [
+        {
+          "person": RDF_FACTORY.namedNode("http://example.org/person1"),
+          "city": RDF_FACTORY.namedNode("http://example.org/city1"),
+        },
+        {
+          "person": RDF_FACTORY.namedNode("http://example.org/person2"),
+          "city": RDF_FACTORY.namedNode("http://example.org/city2"),
+        }
+      ];
+      const resp = ActorQueryProcessRemoteCache.createComplementaryQuery(superQuery, subQuery, bindings);
+      expect(resp).toEqual([{ query: expectedQuery, endpoint: undefined }]);
     });
 
     it("should return a query for a difference of some triples with a service clause with no complement", () => {
@@ -997,7 +1046,7 @@ WHERE {
            ?person ex:gender ex:female .
           }
           `);
-      const resp = ActorQueryProcessRemoteCache.differenceConstraint(superQuery, subQuery);
+      const resp = ActorQueryProcessRemoteCache.createComplementaryQuery(superQuery, subQuery);
       expect(resp).toEqual([{ query: expectedQuery }]);
     });
 
@@ -1048,9 +1097,78 @@ WHERE {
            ?person ex:foo ?bar
           }
           `);
-      const resp = ActorQueryProcessRemoteCache.differenceConstraint(superQuery, subQuery);
+      const resp = ActorQueryProcessRemoteCache.createComplementaryQuery(superQuery, subQuery);
       expect(resp).toEqual([{ query: expectedQueryService, endpoint: "http://example.org/service1" }, { query: expectedQuery }]);
     });
 
+    it("should return a query for a difference of some triples with a service clause with a complement and some bindings", () => {
+      const superQuery = translate(`
+PREFIX ex: <http://example.org/>
+
+SELECT ?person ?city
+WHERE {
+  SERVICE ex:service1 {
+    ?person ex:livesIn ?city .
+  }
+  ?person ex:hasOccupation ex:Engineer .
+}
+      `);
+      const subQuery = translate(`
+PREFIX ex: <http://example.org/>
+
+SELECT ?person ?city
+WHERE {
+  SERVICE ex:service1 {
+    ?person ex:livesIn ?city .
+    ?person ex:foo ?bar.
+    ?city ex:locatedIn ex:CountryX .
+  }
+  ?person ex:hasOccupation ex:Engineer .
+  ?person ex:gender ex:female .
+}
+        `);
+      const expectedQuery = translate(`
+          PREFIX ex: <http://example.org/>
+
+          CONSTRUCT {
+          ?person ex:gender ex:female .
+          } WHERE{
+           VALUES ?person {
+              ex:person1
+              ex:person2
+            }
+           ?person ex:gender ex:female .
+          }
+          `);
+
+      const expectedQueryService = translate(`
+          PREFIX ex: <http://example.org/>
+
+          CONSTRUCT {
+          ?person ex:foo ?bar .
+          ?city ex:locatedIn ex:CountryX .
+          } WHERE{
+           VALUES (?person ?city) {
+              (ex:person1 ex:city1)
+              (ex:person2 ex:city2)
+            }
+              
+           ?person ex:foo ?bar .
+           ?city ex:locatedIn ex:CountryX .
+          }
+          `);
+      const bindings: IBindings[] = [
+        {
+          "person": RDF_FACTORY.namedNode("http://example.org/person1"),
+          "city": RDF_FACTORY.namedNode("http://example.org/city1"),
+        },
+        {
+          "person": RDF_FACTORY.namedNode("http://example.org/person2"),
+          "city": RDF_FACTORY.namedNode("http://example.org/city2"),
+        }
+      ];
+      const resp = ActorQueryProcessRemoteCache.createComplementaryQuery(superQuery, subQuery, bindings);
+      expect(resp).toEqual([{ query: expectedQueryService, endpoint: "http://example.org/service1" }, { query: expectedQuery }]);
+    });
   });
 });

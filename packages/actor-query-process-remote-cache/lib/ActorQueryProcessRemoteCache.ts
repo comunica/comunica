@@ -71,7 +71,7 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
     }
 
     const failOnCacheMiss = action.context.get(ActorQueryProcessRemoteCache.KEY_FAIL_ON_CACHE_MISS);
-    
+
     if (failOnCacheMiss === true && provenance == 'query processing') {
       throw new Error(ActorQueryProcessRemoteCache.ERROR_FAIL_ON_CACHE_MISS);
     }
@@ -185,10 +185,11 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
     }
 
     const store = this.bindingToQuadStore(ActorQueryProcessRemoteCache.bindingConvertion(cachedValues), query);
-    const complementaryQuery = ActorQueryProcessRemoteCache.differenceConstraint(cachedQuery, query);
+    const complementaryQuery = ActorQueryProcessRemoteCache.createComplementaryQuery(cachedQuery, query);
     if (complementaryQuery === undefined) {
       return result({ stores: [store, ...rdfStores] });
     }
+
     for (const { query, endpoint: internalSources } of complementaryQuery) {
       const newAction = {
         ...action,
@@ -297,13 +298,13 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
    * @param superQuery 
    * @param subQuery 
    */
-  public static differenceConstraint(superQuery: Algebra.Operation, subQuery: Algebra.Operation): IComplementaryQuery[] | undefined {
+  public static createComplementaryQuery(superQuery: Algebra.Operation, subQuery: Algebra.Operation, bindings: IBindings[] = []): IComplementaryQuery[] | undefined {
     const resp: IComplementaryQuery[] = [];
-    this.differenceConstraintRecurs(superQuery, subQuery, resp, undefined);
+    this.createComplementaryQueryRecurs(superQuery, subQuery, resp, undefined, bindings);
     return resp.length === 0 ? undefined : resp;
   }
 
-  private static differenceConstraintRecurs(superQuery: Algebra.Operation, subQuery: Algebra.Operation, acc: IComplementaryQuery[], endpoint: string | undefined): void {
+  private static createComplementaryQueryRecurs(superQuery: Algebra.Operation, subQuery: Algebra.Operation, acc: IComplementaryQuery[], endpoint: string | undefined, bindings: IBindings[]): void {
     const tps: RDF.Quad[] = [];
 
     Util.recurseOperation(superQuery, {
@@ -321,7 +322,7 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
         if (subService === undefined) {
           return false;
         } else {
-          this.differenceConstraintRecurs(op.input, subService, acc, op.name.value);
+          this.createComplementaryQueryRecurs(op.input, subService, acc, op.name.value, bindings);
         }
 
         return false;
@@ -342,9 +343,57 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
       return AF.createPattern(tp.subject, tp.predicate, tp.object);
     })
     const bgp = AF.createBgp(patterns);
-    //const join = AF.createJoin([bgp]);
-    const construct = AF.createConstruct(bgp, patterns);
+    const values = this.createValueClauseFromBindings(patterns, bindings);
+    let construct: Algebra.Construct;
+    if (values !== undefined) {
+      const join = AF.createJoin([values, bgp]);
+      construct = AF.createConstruct(join, patterns);
+    } else {
+      construct = AF.createConstruct(bgp, patterns);
+    }
     acc.push({ query: construct, endpoint: endpoint });
+  }
+
+  private static createValueClauseFromBindings(patterns: Algebra.Pattern[], bindings: IBindings[]): Algebra.Values | undefined {
+    const variables: Set<string> = new Set();
+    const validBindings: {
+      [key: string]: RDF.Literal | RDF.NamedNode;
+    }[] = [];
+    const bindingVariables: Set<string> = new Set();
+
+    for (const pattern of patterns) {
+      if (pattern.subject.termType === "Variable") {
+        variables.add(pattern.subject.value);
+      }
+
+      if (pattern.predicate.termType === "Variable") {
+        variables.add(pattern.predicate.value);
+      }
+
+      if (pattern.object.termType === "Variable") {
+        variables.add(pattern.object.value);
+      }
+    }
+
+    for (const binding of bindings) {
+      const currentBinding: IBindings = {};
+      for (const [variable, value] of Object.entries(binding)) {
+        if (variables.has(variable)) {
+          bindingVariables.add(variable);
+          currentBinding["?"+variable] = value;
+        }
+      }
+      if (Object.keys(currentBinding).length > 0) {
+        validBindings.push(<any>currentBinding);
+      }
+    }
+    if (bindingVariables.size === 0) {
+      return undefined;
+    }
+
+    const rdfVariables = Array.from(bindingVariables).map((el) => RDF_FACTORY.variable(el));
+    const values = AF.createValues(rdfVariables, validBindings);
+    return values;
   }
 
   public static colorQuery(subQuery: Algebra.Operation, superQueryTps: RDF.Quad[]): RDF.Quad[] {

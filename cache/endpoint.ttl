@@ -1,15 +1,55 @@
 @prefix ex: <http://example.org/> .
 
 # People and their relationships
-ex:Bob a ex:Person ;
+ex:Person1 a ex:Person ;
     ex:livesIn ex:Atlantis ;
     ex:hasOccupation ex:Engineer ;
     ex:gender ex:female .
 
-ex:Eve a ex:Person ;
+ex:Person2 a ex:Person ;
+    ex:livesIn ex:ElDorado ;
+    ex:hasOccupation ex:Scientist ;
+    ex:gender ex:male .
+
+ex:Person3 a ex:Person ;
+    ex:livesIn ex:ShangriLa ;
+    ex:hasOccupation ex:Artist ;
+    ex:gender ex:female .
+
+ex:Person4 a ex:Person ;
+    ex:livesIn ex:Atlantis ;
+    ex:hasOccupation ex:Scientist ;
+    ex:gender ex:male .
+
+ex:Person5 a ex:Person ;
     ex:livesIn ex:ElDorado ;
     ex:hasOccupation ex:Engineer ;
     ex:gender ex:female .
+
+ex:Person6 a ex:Person ;
+    ex:livesIn ex:ShangriLa ;
+    ex:hasOccupation ex:Engineer ;
+    ex:gender ex:male .
+
+ex:Person7 a ex:Person ;
+    ex:livesIn ex:Atlantis ;
+    ex:hasOccupation ex:Artist ;
+    ex:gender ex:female .
+
+ex:Person8 a ex:Person ;
+    ex:livesIn ex:ElDorado ;
+    ex:hasOccupation ex:Scientist ;
+    ex:gender ex:male .
+
+ex:Person9 a ex:Person ;
+    ex:livesIn ex:ShangriLa ;
+    ex:hasOccupation ex:Artist ;
+    ex:gender ex:female .
+
+ex:Person10 a ex:Person ;
+    ex:livesIn ex:Atlantis ;
+    ex:hasOccupation ex:Engineer ;
+    ex:gender ex:male .
 
 # Cities and their locations
 ex:Atlantis a ex:City ;
@@ -17,3 +57,11 @@ ex:Atlantis a ex:City ;
 
 ex:ElDorado a ex:City ;
     ex:locatedIn ex:CountryX .
+
+ex:ShangriLa a ex:City ;
+    ex:locatedIn ex:CountryY .
+
+# Occupations
+ex:Engineer a ex:Occupation .
+ex:Scientist a ex:Occupation .
+ex:Artist a ex:Occupation .
