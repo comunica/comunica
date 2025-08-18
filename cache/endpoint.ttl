@@ -1,55 +1,86 @@
 @prefix ex: <http://example.org/> .
 
+@prefix ex: <http://example.org/> .
+
 # People and their relationships
 ex:Person1 a ex:Person ;
     ex:livesIn ex:Atlantis ;
     ex:hasOccupation ex:Engineer ;
-    ex:gender ex:female .
+    ex:gender ex:female ;
+    ex:email "person1@atlantis.org" ;
+    ex:phone "+44-0001-0001" .
 
 ex:Person2 a ex:Person ;
     ex:livesIn ex:ElDorado ;
     ex:hasOccupation ex:Scientist ;
-    ex:gender ex:male .
+    ex:gender ex:male ;
+    ex:email "person2@eldorado.org" ;
+    ex:phone "+44-0002-0002" .
 
 ex:Person3 a ex:Person ;
     ex:livesIn ex:ShangriLa ;
     ex:hasOccupation ex:Artist ;
-    ex:gender ex:female .
+    ex:gender ex:female ;
+    ex:email "person3@shangrila.org" ;
+    ex:phone "+44-0003-0003" .
 
 ex:Person4 a ex:Person ;
     ex:livesIn ex:Atlantis ;
     ex:hasOccupation ex:Scientist ;
-    ex:gender ex:male .
+    ex:gender ex:male ;
+    ex:email "person4@atlantis.org" ;
+    ex:phone "+44-0004-0004" .
 
 ex:Person5 a ex:Person ;
     ex:livesIn ex:ElDorado ;
     ex:hasOccupation ex:Engineer ;
-    ex:gender ex:female .
+    ex:gender ex:female ;
+    ex:email "person5@eldorado.org" ;
+    ex:phone "+44-0005-0005" .
 
 ex:Person6 a ex:Person ;
     ex:livesIn ex:ShangriLa ;
     ex:hasOccupation ex:Engineer ;
-    ex:gender ex:male .
+    ex:gender ex:male ;
+    ex:email "person6@shangrila.org" ;
+    ex:phone "+44-0006-0006" .
 
 ex:Person7 a ex:Person ;
     ex:livesIn ex:Atlantis ;
     ex:hasOccupation ex:Artist ;
-    ex:gender ex:female .
+    ex:gender ex:female ;
+    ex:email "person7@atlantis.org" ;
+    ex:phone "+44-0007-0007" .
 
 ex:Person8 a ex:Person ;
     ex:livesIn ex:ElDorado ;
     ex:hasOccupation ex:Scientist ;
-    ex:gender ex:male .
+    ex:gender ex:male ;
+    ex:email "person8@eldorado.org" ;
+    ex:phone "+44-0008-0008" .
 
 ex:Person9 a ex:Person ;
     ex:livesIn ex:ShangriLa ;
     ex:hasOccupation ex:Artist ;
-    ex:gender ex:female .
+    ex:gender ex:female ;
+    ex:email "person9@shangrila.org" ;
+    ex:phone "+44-0009-0009" .
 
 ex:Person10 a ex:Person ;
     ex:livesIn ex:Atlantis ;
     ex:hasOccupation ex:Engineer ;
-    ex:gender ex:male .
+    ex:gender ex:male ;
+    ex:email "person10@atlantis.org" ;
+    ex:phone "+44-0010-0010" .
+
+# Special examples
+ex:SherlockHolmes a ex:Person ;
+    ex:email "detective@bakerstreet.org" ;
+    ex:phone "+44-0000-221B" .
+
+ex:WonderWoman a ex:Person ;
+    ex:email "diana@themyscira.gov" ;
+    ex:phone "+1-800-AMAZON" .
 
 # Cities and their locations
 ex:Atlantis a ex:City ;
@@ -65,3 +96,47 @@ ex:ShangriLa a ex:City ;
 ex:Engineer a ex:Occupation .
 ex:Scientist a ex:Occupation .
 ex:Artist a ex:Occupation .
+
+# Existing entries
+ex:Plato a ex:Author .
+ex:GuideToTimeTravel a ex:Book ;
+    ex:writtenBy ex:Plato ;
+    ex:publishedBy ex:PublishingHouseZ .
+
+ex:PublishingHouseZ a ex:Publisher .
+
+ex:DrSeuss a ex:Author .
+ex:AdvancedQuantumCooking a ex:Book ;
+    ex:writtenBy ex:DrSeuss ;
+    ex:publishedBy ex:PublisherFoo .
+
+ex:PublisherFoo a ex:Publisher .
+
+# Additional entries
+ex:IsaacAsimov a ex:Author .
+ex:RobotsAndEmpires a ex:Book ;
+    ex:writtenBy ex:IsaacAsimov ;
+    ex:publishedBy ex:PublisherBar .
+
+ex:PublisherBar a ex:Publisher .
+
+ex:MaryShelley a ex:Author .
+ex:FrankensteinRevisited a ex:Book ;
+    ex:writtenBy ex:MaryShelley ;
+    ex:publishedBy ex:PublisherBaz .
+
+ex:PublisherBaz a ex:Publisher .
+
+ex:DouglasAdams a ex:Author .
+ex:HitchhikersGuideToTheMultiverse a ex:Book ;
+    ex:writtenBy ex:DouglasAdams ;
+    ex:publishedBy ex:PublisherQux .
+
+ex:PublisherQux a ex:Publisher .
+
+ex:JulesVerne a ex:Author .
+ex:JourneyToTheFuture a ex:Book ;
+    ex:writtenBy ex:JulesVerne ;
+    ex:publishedBy ex:PublisherZeta .
+
+ex:PublisherZeta a ex:Publisher .
