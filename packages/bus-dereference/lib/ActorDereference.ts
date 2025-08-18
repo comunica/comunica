@@ -83,6 +83,10 @@ export interface IActorDereferenceOutput extends IActorOutput {
    */
   url: string;
   /**
+   * BaseIRI.
+   */
+  baseIRI?: string;
+  /**
    * The resulting stream.
    */
   data: IReadableClose;
