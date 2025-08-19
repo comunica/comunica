@@ -83,7 +83,7 @@ export interface IActorDereferenceOutput extends IActorOutput {
    */
   url: string;
   /**
-   * BaseIRI.
+   * BaseIRI, this is used over url when passed to metadata.baseIRI in ActorDereferenceRdfParse.ts
    */
   baseIRI?: string;
   /**

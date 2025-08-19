@@ -37,10 +37,12 @@ WHERE {
 }
         `;
         const baseIRI = 'http://example.org/';
-        const context: QueryStringContext = { sources: [{ value: p }], baseIRI, fileBaseIRI: baseIRI };
+        const fileBaseIRI = 'http://different.org/';
+        const context: QueryStringContext = { sources: [{ value: p }], baseIRI, fileBaseIRI };
 
         const result = await arrayifyStream(await engine.queryBindings(query, context));
-        expect(result).toHaveLength(1);
+        // Result should be length 1 if you use the same baseIRI, which shows that it actually makes a difference
+        expect(result).toHaveLength(0);
       });
     });
   });
