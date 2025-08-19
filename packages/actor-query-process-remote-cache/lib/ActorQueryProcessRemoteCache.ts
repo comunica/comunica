@@ -35,6 +35,7 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
   public static readonly ERROR_FAIL_ON_CACHE_MISS: string = "the engine was configured to fail if a cache entry is missing, but no cached result was found for this query";
   public static readonly ERROR_ONLY_SELECT_QUERIES_SUPPORTED = "the engine in this configuration only support SELECT queries";
   public static readonly KEY_FAIL_ON_CACHE_MISS = new ActionContextKey("failOnCacheMiss");
+  public static readonly STREAM_PROVENANCE_PROPERTY = "provenance";
 
   public constructor(args: IActorQueryProcessRemoteCacheArgs) {
     super(args);
@@ -59,7 +60,7 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
         complementaryQueries = resultOrError.value.complementaryQueries;
         action.context = action.context.set(KeysInitQuery.querySourcesUnidentified, resultOrError.value.stores);
       } else {
-        resultOrError.value.bindings.setProperty("provenance", { algorithm: Algorithm.EQ, id: resultOrError.value.id });
+        resultOrError.value.bindings.setProperty(ActorQueryProcessRemoteCache.STREAM_PROVENANCE_PROPERTY, { algorithm: Algorithm.EQ, id: resultOrError.value.id });
         return {
           result: {
             type: 'bindings',
@@ -84,7 +85,7 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
     if (res.result.type !== 'bindings') {
       throw new Error(ActorQueryProcessRemoteCache.ERROR_ONLY_SELECT_QUERIES_SUPPORTED);
     }
-    res.result.bindingsStream.setProperty("provenance", { algorithm: provenance, id, complementaryQueries });
+    res.result.bindingsStream.setProperty(ActorQueryProcessRemoteCache.STREAM_PROVENANCE_PROPERTY, { algorithm: provenance, id, complementaryQueries });
     return res;
   }
 
