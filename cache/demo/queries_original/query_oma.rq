@@ -1,0 +1,41 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX dc: <http://purl.org/dc/elements/1.1/>
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+PREFIX ensembl: <http://rdf.ebi.ac.uk/resource/ensembl/>
+PREFIX oma: <http://omabrowser.org/ontology/oma#>
+PREFIX orth: <http://purl.org/net/orth#>
+PREFIX sio: <http://semanticscience.org/resource/>
+PREFIX taxon: <http://purl.uniprot.org/taxonomy/>
+PREFIX up: <http://purl.uniprot.org/core/>
+PREFIX void: <http://rdfs.org/ns/void#>
+PREFIX lscr: <http://purl.org/lscr#>
+
+select ?protein2 ?OMA_LINK ?taxon_sci_name
+where {
+
+VALUES (?Uniprot_link) { ( <http://purl.uniprot.org/uniprot/P72156> ) } # here
+#The three that contains Orthologs. The leafs are proteins.
+#This graph pattern defines the relationship protein1 is Orthologs to protein2
+?cluster a orth:OrthologsCluster.
+?cluster orth:hasHomologousMember ?node1.
+?cluster orth:hasHomologousMember ?node2.
+?node2 orth:hasHomologousMember* ?protein2.
+?node1 orth:hasHomologousMember* ?protein1.
+########
+
+#Specify the protein to look for its orthologs
+?protein1 lscr:xrefUniprot ?Uniprot_link.
+########
+
+#The OMA link to the second protein
+?protein2 rdfs:seeAlso ?OMA_LINK.
+?protein2 orth:organism/obo:RO_0002162/up:scientificName ?taxon_sci_name.
+########
+
+filter(?node1 != ?node2)
+}

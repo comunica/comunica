@@ -35,7 +35,7 @@ const bindingsStream = await myEngine.queryBindings(query, {
 
 let i = 0;
 bindingsStream.getProperty("provenance", (val)=>{
-  console.log(`provenance: ${val}`);
+  console.log(`provenance: ${JSON.stringify(val, null, 2)}`);
 });
 
 bindingsStream.on('data', (_binding) => {
