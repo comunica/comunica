@@ -38,8 +38,6 @@ export class ActorTermComparatorFactoryExpressionEvaluator extends ActorTermComp
         ),
       ),
       await this.mediatorFunctionFactory
-        .mediate({ functionName: Eval.SparqlOperator.EQUAL, context, requireTermExpression: true }),
-      await this.mediatorFunctionFactory
         .mediate({ functionName: Eval.SparqlOperator.LT, context, requireTermExpression: true }),
     );
   }
