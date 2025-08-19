@@ -3,7 +3,13 @@ import { exec } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import * as OS from 'node:os';
 import * as Path from 'node:path';
-import { KeysHttp, KeysInitQuery, KeysQueryOperation, KeysRdfUpdateQuads } from '@comunica/context-entries';
+import {
+  KeysExpressionEvaluator,
+  KeysHttp,
+  KeysInitQuery,
+  KeysQueryOperation,
+  KeysRdfUpdateQuads,
+} from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
 import type { IActionContext, ICliArgsHandler } from '@comunica/types';
@@ -150,6 +156,11 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
           type: 'boolean',
           describe: 'If the query engine should deduplicate resulting triples',
         },
+        nonLiteralExpressionComparison: {
+          type: 'boolean',
+          describe: 'When true, compares non literals using their string values in expressions. ' +
+            'Throws an error otherwise.',
+        },
       })
       .exitProcess(false)
       .fail(false)
@@ -270,6 +281,11 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
     // Define if results should be deduplicated
     if (args.distinctConstruct) {
       context[KeysInitQuery.distinctConstruct.name] = true;
+    }
+
+    // Define if non literals should be string compared
+    if (args.nonLiteralExpressionComparison) {
+      context[KeysExpressionEvaluator.nonLiteralExpressionComparison.name] = true;
     }
   }
 }

@@ -2,7 +2,7 @@ import { ActorFunctionFactoryExpressionBnode } from '@comunica/actor-function-fa
 import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-factory-term-equality';
 import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
+import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import * as Eval from '@comunica/utils-expression-evaluator';
 import {
@@ -224,7 +224,7 @@ describe('evaluation of \'<\'', () => {
         earlyN               "a"^^xsd:dateTime   = Invalid lexical form
         "true"^^xsd:boolean  "a"^^xsd:dateTime   = Invalid lexical form
         
-        "abc"^^xsd:integer         "b"^^xsd:decimal           = Invalid lexical form
+        "a"^^xsd:integer           "b"^^xsd:decimal           = Invalid lexical form
         "a"^^xsd:yearMonthDuration "b"^^xsd:yearMonthDuration = Invalid lexical form
         "a"^^xsd:dayTimeDuration   "b"^^xsd:dayTimeDuration   = Invalid lexical form
         "a"^^xsd:time              "b"^^xsd:time              = Invalid lexical form
@@ -249,7 +249,7 @@ describe('evaluation of \'<\'', () => {
         "a"^^xsd:dayTimeDuration   "b"^^xsd:dayTimeDuration   = true
         "a"^^xsd:time              "b"^^xsd:time              = true
       `,
-      config: new ActionContext().set(KeysInitQuery.functionLesserThanNonLexicalBehaviour, 'lexicalCompare'),
+      config: new ActionContext().set(KeysExpressionEvaluator.nonLiteralExpressionComparison, true),
     });
   });
 

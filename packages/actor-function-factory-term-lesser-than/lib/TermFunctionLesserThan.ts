@@ -168,9 +168,7 @@ export class TermFunctionLesserThan extends TermFunctionBase {
   }
 
   private shouldThrowNonLexicalError(exprEval: IInternalEvaluator): boolean {
-    const context = exprEval.context;
-    return !context.has(KeysInitQuery.functionLesserThanNonLexicalBehaviour) ||
-      context.getSafe(KeysInitQuery.functionLesserThanNonLexicalBehaviour) === 'throwsTypeError';
+    return !exprEval.context.get(KeysExpressionEvaluator.nonLiteralExpressionComparison);
   }
 
   private quadComponentTest(left: Term, right: Term, exprEval: IInternalEvaluator): boolean | undefined {

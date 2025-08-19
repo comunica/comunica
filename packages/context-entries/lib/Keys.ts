@@ -215,15 +215,6 @@ export const KeysInitQuery = {
    * A boolean value denoting whether results should be deduplicated or not.
    */
   distinctConstruct: new ActionContextKey<boolean>('@comunica/actor-init-query:distinctConstruct'),
-  /**
-   * An enum denoting the behaviour of the lesser than function when used with non lexical operands.
-   *
-   * throwsError: throws an error (default).
-   * lexicalCompare: treats them as lexicals and compares their string values.
-   */
-  functionLesserThanNonLexicalBehaviour: new ActionContextKey<'throwsTypeError' | 'lexicalCompare'>(
-    '@comunica/actor-init-query:functionsLesserThanNonLexicalBehaviour',
-  ),
 };
 
 export const KeysExpressionEvaluator = {
@@ -235,6 +226,15 @@ export const KeysExpressionEvaluator = {
     '@comunica/utils-expression-evaluator:defaultTimeZone',
   ),
   actionContext: new ActionContextKey<IActionContext>('@comunica/utils-expression-evaluator:actionContext'),
+  /**
+   * A boolean denoting the behaviour of the lesser than function when used with non literals operands.
+   *
+   * true: treats them as literals and compares their string values.
+   * false: throws an error (default).
+   */
+  nonLiteralExpressionComparison: new ActionContextKey<boolean>(
+    '@comunica/utils-expression-evaluator:nonLiteralExpressionComparison',
+  ),
 };
 
 export const KeysQueryOperation = {
