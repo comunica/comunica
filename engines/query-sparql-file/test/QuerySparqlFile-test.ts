@@ -3,11 +3,14 @@
 import * as path from 'node:path';
 import type { QueryStringContext } from '@comunica/types';
 import 'jest-rdf';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'rdf-data-factory';
+import '@comunica/utils-jest';
 import { QueryEngine } from '../lib/QueryEngine';
 
 const DF = new DataFactory();
+const BF = new BindingsFactory(DF);
 
 describe('System test: QuerySparqlFile', () => {
   let engine: QueryEngine;
@@ -44,14 +47,14 @@ WHERE {
         const context: QueryStringContext = { sources: [{ value: p }], baseIRI, fileBaseIRI };
 
         const expectedResult = [
-          [
+          BF.bindings([
             [ DF.variable('name'), DF.literal('Bob', DF.namedNode('http://www.w3.org/2001/XMLSchema#string')) ],
             [ DF.variable('person'), DF.namedNode(`${fileBaseIRI}Bob`) ],
-          ],
+          ]),
         ];
 
         const result = await arrayifyStream(await engine.queryBindings(query, context));
-        expect(result.map(binding => [ ...binding ])).toMatchObject(expectedResult);
+        expect(result).toEqualBindingsArray(expectedResult);
       });
     });
   });
