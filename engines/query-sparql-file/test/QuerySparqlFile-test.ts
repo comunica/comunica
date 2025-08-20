@@ -4,7 +4,10 @@ import * as path from 'node:path';
 import type { QueryStringContext } from '@comunica/types';
 import 'jest-rdf';
 import arrayifyStream from 'arrayify-stream';
+import { DataFactory } from 'rdf-data-factory';
 import { QueryEngine } from '../lib/QueryEngine';
+
+const DF = new DataFactory();
 
 describe('System test: QuerySparqlFile', () => {
   let engine: QueryEngine;
@@ -31,18 +34,24 @@ PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 
 SELECT ?person ?name
 WHERE {
-  <Alice> foaf:knows ?person .
-  ?person a <Person> ;
+  <data/Alice> foaf:knows ?person .
+  ?person a <data/Person> ;
           foaf:name ?name .
 }
         `;
         const baseIRI = 'http://example.org/';
-        const fileBaseIRI = 'http://different.org/';
+        const fileBaseIRI = 'http://example.org/data/';
         const context: QueryStringContext = { sources: [{ value: p }], baseIRI, fileBaseIRI };
 
+        const expectedResult = [
+          [
+            [ DF.variable('name'), DF.literal('Bob', DF.namedNode('http://www.w3.org/2001/XMLSchema#string')) ],
+            [ DF.variable('person'), DF.namedNode(`${fileBaseIRI}Bob`) ],
+          ],
+        ];
+
         const result = await arrayifyStream(await engine.queryBindings(query, context));
-        // Result should be length 1 if you use the same baseIRI, which shows that it actually makes a difference
-        expect(result).toHaveLength(0);
+        expect(result.map(binding => [ ...binding ])).toMatchObject(expectedResult);
       });
     });
   });
