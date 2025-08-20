@@ -1,17 +1,17 @@
 {
   "head": {
-    "vars": [ "author", "book", "publisher" ]
+    "vars": ["author", "book", "publisher"]
   },
   "results": {
     "bindings": [
       {
-        "author":    { "type": "uri", "value": "http://example.org/Plato" },
-        "book":      { "type": "uri", "value": "http://example.org/GuideToTimeTravel" },
+        "author": { "type": "uri", "value": "http://example.org/Plato" },
+        "book": { "type": "uri", "value": "http://example.org/GuideToTimeTravel" },
         "publisher": { "type": "uri", "value": "http://example.org/PublishingHouseZ" }
       },
       {
-        "author":    { "type": "uri", "value": "http://example.org/DrSeuss" },
-        "book":      { "type": "uri", "value": "http://example.org/AdvancedQuantumCooking" },
+        "author": { "type": "uri", "value": "http://example.org/DrSeuss" },
+        "book": { "type": "uri", "value": "http://example.org/AdvancedQuantumCooking" },
         "publisher": { "type": "uri", "value": "http://example.org/PublisherFoo" }
       }
     ]

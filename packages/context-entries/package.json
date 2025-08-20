@@ -42,7 +42,7 @@
     "@comunica/types": "^4.2.0",
     "@rdfjs/types": "*",
     "jsonld-context-parser": "^2.2.2",
-    "sparqlalgebrajs": "^4.3.8",
-    "sparql-cache-client": "^0.1.0"
+    "sparql-cache-client": "^0.1.0",
+    "sparqlalgebrajs": "^4.3.8"
   }
 }

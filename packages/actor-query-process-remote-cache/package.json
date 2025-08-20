@@ -40,16 +40,22 @@
     "arrayify-stream":"^3.0.0"
   },
   "dependencies": {
+    "@comunica/actor-query-operation-construct": "^4.2.0",
+    "@comunica/utils-bindings-factory":"^4.2.0",
     "@comunica/bus-query-process": "^4.2.0",
+    "@comunica/context-entries": "^4.2.0",
     "@comunica/core": "^4.2.0",
     "@rdfjs/types": "*",
-    "sparql-cache-client": "^0.2.2",
-    "result-interface":"^2.3.3",
-    "sparqljson-parse":"^3.1.0",
+    "asynciterator":"^3.9.0",
     "rdf-data-factory": "^1.1.2",
     "rdf-stores": "^2.1.1",
-    "sparql-federated-query-containment":"^0.0.2",
-    "z3-solver": "^4.15.2"
+    "rdf-terms":"^2.0.0",
+    "result-interface": "^2.3.3",
+    "sparql-cache-client": "^0.2.2",
+    "sparql-federated-query-containment": "^0.0.2",
+    "sparqljson-parse": "^3.1.0",
+    "z3-solver": "^4.15.2",
+    "sparqlalgebrajs":"^5.0.1"
   },
   "scripts": {
     "build": "yarn run build:ts && yarn run build:components",

@@ -2860,6 +2860,28 @@ acorn@^8.11.3, acorn@^8.5.0, acorn@^8.7.1, acorn@^8.8.2, acorn@^8.9.0:
   resolved "https://registry.npmjs.org/acorn/-/acorn-8.11.3.tgz"
   integrity sha512-Y9rRfJG5jcKOE0CLisYbojUjIrIEE7AGMzA/Sm4BslANhbS+cDMpgBdcPT91oJ7OuJ9hYJBx59RjbhxVnrF8Xg==
 
+actor-query-process-remote-cache@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/actor-query-process-remote-cache/-/actor-query-process-remote-cache-0.1.0.tgz#5cd5ad391f6f803980c51664c218368e1c32e081"
+  integrity sha512-2u4+fZELUjdJxiiV7KQaODsuw5ftBY6BTIum4pe3Sbbrek+3KpppKhg530MQ+cNqmGUElmBDIjH5QlvtnntNmw==
+  dependencies:
+    "@comunica/actor-query-operation-construct" "^4.2.0"
+    "@comunica/bus-query-process" "^4.2.0"
+    "@comunica/context-entries" "^4.2.0"
+    "@comunica/core" "^4.2.0"
+    "@comunica/utils-bindings-factory" "^4.2.0"
+    "@rdfjs/types" "*"
+    asynciterator "^3.9.0"
+    rdf-data-factory "^1.1.2"
+    rdf-stores "^2.1.1"
+    rdf-terms "^2.0.0"
+    result-interface "^2.3.3"
+    sparql-cache-client "^0.2.2"
+    sparql-federated-query-containment "^0.0.2"
+    sparqlalgebrajs "^5.0.1"
+    sparqljson-parse "^3.1.0"
+    z3-solver "^4.15.2"
+
 add-stream@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/add-stream/-/add-stream-1.0.0.tgz"
