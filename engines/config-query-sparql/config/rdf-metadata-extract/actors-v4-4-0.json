@@ -7,6 +7,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-hydra-pagesize/^4.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-request-time/^4.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-allow-http-methods/^4.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-post-accepted/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-put-accepted/^4.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-patch-sparql-update/^4.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-sparql-service/^4.0.0/components/context.jsonld",
@@ -34,6 +35,10 @@
     {
       "@id": "urn:comunica:default:rdf-metadata-extract/actors#allow-http-methods",
       "@type": "ActorRdfMetadataExtractAllowHttpMethods"
+    },
+    {
+      "@id": "urn:comunica:default:rdf-metadata-extract/actors#post-accepted",
+      "@type": "ActorRdfMetadataExtractPostAccepted"
     },
     {
       "@id": "urn:comunica:default:rdf-metadata-extract/actors#put-accepted",
