@@ -76,8 +76,7 @@ export class QuerySourceSparql implements IQuerySource {
     defaultGraph?: string,
     unionDefaultGraph?: boolean,
     datasets?: IDataset[],
-    // TODO: use this to check if SparqlEndpointFetcher should forceDirectPost when the new version is released
-    _postAccepted?: string[],
+    postAccepted?: string[],
   ) {
     this.referenceValue = url;
     this.url = url;
@@ -95,6 +94,7 @@ export class QuerySourceSparql implements IQuerySource {
       prefixVariableQuestionMark: true,
       dataFactory,
       forceGetIfUrlLengthBelow,
+      directPost: postAccepted && !postAccepted.includes('application/x-www-form-urlencoded'),
     });
     this.cache = cacheSize > 0 ?
       new LRUCache<string, QueryResultCardinality>({ max: cacheSize }) :
