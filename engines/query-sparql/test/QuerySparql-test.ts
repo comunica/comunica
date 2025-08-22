@@ -386,8 +386,8 @@ describe('System test: QuerySparql', () => {
         it('rejects when creator returns null', async() => {
           const context = <any> { sources: [ store ]};
           context.extensionFunctionCreator = () => null;
-          await expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow(
-            `Creation of function evaluator failed: no configured actor was able to evaluate function http://example.org/functions#nonExist`,
+          await expect(engine.query(baseQuery(funcAllow), context)).rejects.toThrow(
+            `Creation of function evaluator failed: no configured actor was able to evaluate function http://example.org/functions#${funcAllow}`,
           );
         });
 
@@ -419,6 +419,80 @@ describe('System test: QuerySparql', () => {
           context.extensionFunctionCreator = baseFunctionCreator;
           await expect(engine.query(baseQuery(funcAllow), context)).rejects
             .toThrow('Illegal simultaneous usage of extensionFunctionCreator and extensionFunctions in context');
+        });
+
+        describe('filter pushdown behaviour with extension functions', () => {
+          let containsFilter: boolean;
+          let endpoint1: string;
+          let endpoint2: string;
+          let createContext: (arg0: boolean, arg1: boolean) => any;
+
+          beforeEach(async() => {
+            await engine.invalidateHttpCache();
+            containsFilter = false;
+            endpoint1 = 'http://example.com/1/sparql';
+            endpoint2 = 'http://example.com/2/sparql';
+            createContext = (endpoint1SupportsFunction: boolean, endpoint2SupportsFunction: boolean) => <any> {
+              sources: [ endpoint1, endpoint2 ],
+              extensionFunctions: baseFunctions,
+              fetch: (input: string) => {
+                if (input.includes('FILTER')) {
+                  containsFilter = true;
+                }
+                const createServiceDescription = (supportsFunction: boolean, endpoint: string): string =>
+                  supportsFunction ?
+                    `
+                    @prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
+                    <${endpoint}> sd:extensionFunction "http://example.org/functions#allowAll" .
+                  ` :
+                    ``;
+                if (input.includes(endpoint1)) {
+                  if (input === endpoint1) {
+                    // Service description fetch on endpoint1
+                    return Promise.resolve(new Response(
+                      createServiceDescription(endpoint1SupportsFunction, endpoint1),
+                      { status: 200, headers: { 'Content-Type': 'text/turtle' }},
+                    ));
+                  }
+                  // Query fetch on endpoint1
+                  return Promise.resolve(new Response(
+                    ``,
+                    { status: 200, headers: { 'Content-Type': 'application/n-quads' }},
+                  ));
+                }
+                if (input === endpoint2) {
+                  // Service description fetch on endpoint2
+                  return Promise.resolve(new Response(
+                    createServiceDescription(endpoint2SupportsFunction, endpoint2),
+                    { status: 200, headers: { 'Content-Type': 'text/turtle' }},
+                  ));
+                }
+                // Query fetch on endpoint2
+                return Promise.resolve(new Response(
+                  ``,
+                  { status: 200, headers: { 'Content-Type': 'application/n-quads' }},
+                ));
+              },
+            };
+          });
+
+          it('do filter pushdown if both endpoints supports the extension function', async() => {
+            await engine.query(baseQuery(funcAllow), createContext(true, true));
+
+            expect(containsFilter).toBeTruthy();
+          });
+
+          it('don\'t filter pushdown if one endpoint doesn\'t support the extension function', async() => {
+            await engine.query(baseQuery(funcAllow), createContext(true, false));
+
+            expect(containsFilter).toBeFalsy();
+          });
+
+          it('don\'t filter pushdown if both endpoints don\'t support the extension function', async() => {
+            await engine.query(baseQuery(funcAllow), createContext(false, false));
+
+            expect(containsFilter).toBeFalsy();
+          });
         });
 
         it('handles complex queries with BIND to', async() => {

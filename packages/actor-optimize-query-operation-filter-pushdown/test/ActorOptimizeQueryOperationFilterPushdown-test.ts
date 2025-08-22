@@ -1,5 +1,7 @@
+import { QuerySourceSparql } from '@comunica/actor-query-source-identify-hypermedia-sparql';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import type { FragmentSelectorShape, IQuerySourceWrapper } from '@comunica/types';
 import { assignOperationSource, getExpressionVariables } from '@comunica/utils-query-operation';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra, Factory } from 'sparqlalgebrajs';
@@ -247,7 +249,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           pushEqualityIntoPatterns: true,
         });
         const op = AF.createFilter(null!, null!);
-        expect(actor.shouldAttemptPushDown(op, [], new Map())).toBeTruthy();
+        expect(actor.shouldAttemptPushDown(op, [], new Map(), new ActionContext())).toBeTruthy();
       });
 
       it('returns true if the filter is extremely selective (1)', () => {
@@ -258,7 +260,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             AF.createTermExpression(DF.namedNode('iri')),
           ],
         ));
-        expect(actor.shouldAttemptPushDown(op, [], new Map())).toBeTruthy();
+        expect(actor.shouldAttemptPushDown(op, [], new Map(), new ActionContext())).toBeTruthy();
       });
 
       it('returns true if the filter is extremely selective (2)', () => {
@@ -269,7 +271,135 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             AF.createTermExpression(DF.variable('s')),
           ],
         ));
-        expect(actor.shouldAttemptPushDown(op, [], new Map())).toBeTruthy();
+        expect(actor.shouldAttemptPushDown(op, [], new Map(), new ActionContext())).toBeTruthy();
+      });
+
+      it('returns false if comunica supports the extensionFunction, but a source doesnt', async() => {
+        const op = AF.createFilter(
+          AF.createNop(),
+          AF.createNamedExpression(DF.namedNode('https://example.com/functions#mock'), [
+            AF.createTermExpression(DF.variable('a')),
+            AF.createTermExpression(DF.variable('b')),
+          ]),
+        );
+        const src = <any> {};
+        const context = new ActionContext().set(KeysInitQuery.extensionFunctions, {
+          'https://example.com/functions#mock': async args => args[0],
+        });
+        expect(actor.shouldAttemptPushDown(op, [ src ], new Map(), context)).toBeFalsy();
+      });
+
+      it('returns true if both comunica and all sources support the extensionFunction', async() => {
+        const op = AF.createFilter(
+          AF.createNop(),
+          AF.createNamedExpression(DF.namedNode('https://example.com/functions#mock'), [
+            AF.createTermExpression(DF.variable('a')),
+            AF.createTermExpression(DF.variable('b')),
+          ]),
+        );
+        const src: IQuerySourceWrapper = {
+          source: new QuerySourceSparql(
+            'https://example.com/src',
+            new ActionContext(),
+            <any> {},
+            'values',
+            <any> {},
+            <any> {},
+            <any> {},
+            false,
+            64,
+            10,
+            true,
+            true,
+            0,
+            undefined,
+            undefined,
+            undefined,
+            [ 'https://example.com/functions#mock' ],
+          ),
+        };
+        const shapes = new Map();
+        shapes.set(src, {
+          type: 'disjunction',
+          children: [
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.FILTER,
+              },
+            },
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.NOP,
+              },
+            },
+          ],
+        } satisfies FragmentSelectorShape);
+        const context = new ActionContext().set(KeysInitQuery.extensionFunctions, {
+          'https://example.com/functions#mock': async args => args[0],
+        });
+        expect(actor.shouldAttemptPushDown(op, [ src ], shapes, context)).toBeTruthy();
+      });
+
+      it('returns false if comunica and some sources support the extensionFunction, but not all sources', async() => {
+        const op = AF.createFilter(
+          AF.createNop(),
+          AF.createNamedExpression(DF.namedNode('https://example.com/functions#mock'), [
+            AF.createTermExpression(DF.variable('a')),
+            AF.createTermExpression(DF.variable('b')),
+          ]),
+        );
+        const src1: IQuerySourceWrapper = {
+          source: new QuerySourceSparql(
+            'https://example.com/src',
+            new ActionContext(),
+            <any> {},
+            'values',
+            <any> {},
+            <any> {},
+            <any> {},
+            false,
+            64,
+            10,
+            true,
+            true,
+            0,
+            undefined,
+            undefined,
+            undefined,
+            [ 'https://example.com/functions#mock' ],
+          ),
+        };
+        const src2 = <any> {};
+        const shape = {
+          type: 'disjunction',
+          children: [
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.FILTER,
+              },
+            },
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.NOP,
+              },
+            },
+          ],
+        } satisfies FragmentSelectorShape;
+        const shapes = new Map();
+        shapes.set(src1, shape);
+        shapes.set(src2, shape);
+        const context = new ActionContext().set(KeysInitQuery.extensionFunctions, {
+          'https://example.com/functions#mock': async args => args[0],
+        });
+        expect(actor.shouldAttemptPushDown(op, [ src1, src2 ], shapes, context)).toBeFalsy();
       });
 
       it('returns true if federated with filter support for one', () => {
@@ -322,7 +452,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             },
           ],
         });
-        expect(actor.shouldAttemptPushDown(op, [ src1, src2 ], shapes)).toBeTruthy();
+        expect(actor.shouldAttemptPushDown(op, [ src1, src2 ], shapes, new ActionContext())).toBeTruthy();
       });
 
       it('returns false if federated with filter support for none', () => {
@@ -356,7 +486,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             type: Algebra.types.NOP,
           },
         });
-        expect(actor.shouldAttemptPushDown(op, [ src1, src2 ], shapes)).toBeFalsy();
+        expect(actor.shouldAttemptPushDown(op, [ src1, src2 ], shapes, new ActionContext())).toBeFalsy();
       });
 
       it('returns false otherwise', () => {
@@ -382,7 +512,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             type: Algebra.types.PATTERN,
           },
         });
-        expect(actor.shouldAttemptPushDown(op, [], shapes)).toBeFalsy();
+        expect(actor.shouldAttemptPushDown(op, [], shapes, new ActionContext())).toBeFalsy();
       });
     });
 

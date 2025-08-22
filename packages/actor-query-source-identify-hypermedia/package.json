@@ -41,6 +41,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
+    "@comunica/actor-query-source-identify-hypermedia-sparql": "^4.2.0",
     "@comunica/actor-query-source-identify-rdfjs": "^4.3.0",
     "@comunica/bus-dereference-rdf": "^4.2.0",
     "@comunica/bus-merge-bindings-context": "^4.2.0",

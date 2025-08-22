@@ -1,3 +1,4 @@
+import { QuerySourceSparql } from '@comunica/actor-query-source-identify-hypermedia-sparql';
 import { QuerySourceRdfJs } from '@comunica/actor-query-source-identify-rdfjs';
 import type { IActorDereferenceRdfOutput, MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
 import type { MediatorQuerySourceIdentifyHypermedia } from '@comunica/bus-query-source-identify-hypermedia';
@@ -48,6 +49,8 @@ export class QuerySourceHypermedia implements IQuerySource {
   private readonly cacheSize: number;
   private readonly maxIterators: number;
 
+  public extensionFunctions: string[];
+
   public constructor(
     cacheSize: number,
     firstUrl: string,
@@ -70,6 +73,7 @@ export class QuerySourceHypermedia implements IQuerySource {
     this.dataFactory = dataFactory;
     this.bindingsFactory = bindingsFactory;
     this.sourcesState = new LRUCache<string, Promise<ISourceState>>({ max: this.cacheSize });
+    this.extensionFunctions = [];
   }
 
   public async getSelectorShape(context: IActionContext): Promise<FragmentSelectorShape> {
@@ -241,6 +245,10 @@ export class QuerySourceHypermedia implements IQuerySource {
       // This is needed to make sure that things like QPF search forms are only applied once,
       // and next page links are followed after that.
       handledDatasets[dataset] = true;
+    }
+
+    if (source instanceof QuerySourceSparql) {
+      this.extensionFunctions = source.extensionFunctions;
     }
 
     return { link, source, metadata: <MetadataBindings> metadata, handledDatasets };

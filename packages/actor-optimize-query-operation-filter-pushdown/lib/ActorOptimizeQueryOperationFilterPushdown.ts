@@ -1,3 +1,6 @@
+import { QuerySourceSkolemized } from '@comunica/actor-context-preprocess-query-source-skolemize';
+import { QuerySourceHypermedia } from '@comunica/actor-query-source-identify-hypermedia';
+import { QuerySourceSparql } from '@comunica/actor-query-source-identify-hypermedia-sparql';
 import type {
   IActionOptimizeQueryOperation,
   IActorOptimizeQueryOperationArgs,
@@ -7,8 +10,14 @@ import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operat
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
-import type { ComunicaDataFactory, FragmentSelectorShape, IActionContext, IQuerySourceWrapper } from '@comunica/types';
-import { doesShapeAcceptOperation, getOperationSource, getExpressionVariables } from '@comunica/utils-query-operation';
+import type {
+  ComunicaDataFactory,
+  FragmentSelectorShape,
+  IActionContext,
+  IQuerySource,
+  IQuerySourceWrapper,
+} from '@comunica/types';
+import { doesShapeAcceptOperation, getExpressionVariables, getOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { mapTermsNested } from 'rdf-terms';
 import { Factory, Algebra, Util } from 'sparqlalgebrajs';
@@ -76,7 +85,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
       operation = Util.mapOperation(operation, {
         filter(op: Algebra.Filter, factory: Factory) {
           // Check if the filter must be pushed down
-          if (!self.shouldAttemptPushDown(op, sources, sourceShapes)) {
+          if (!self.shouldAttemptPushDown(op, sources, sourceShapes, action.context)) {
             return {
               recurse: true,
               result: op,
@@ -135,15 +144,18 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
    * Check if the given filter operation must be attempted to push down, based on the following criteria:
    * - Always push down if aggressive mode is enabled
    * - Push down if the filter is extremely selective
+   * - Don't push down extension functions comunica support, but an endpoint doesn't
    * - Push down if federated and at least one accepts the filter
    * @param operation The filter operation
    * @param sources The query sources in the operation
    * @param sourceShapes A mapping of sources to selector shapes.
+   * @param context The action context.
    */
   public shouldAttemptPushDown(
     operation: Algebra.Filter,
     sources: IQuerySourceWrapper[],
     sourceShapes: Map<IQuerySourceWrapper, FragmentSelectorShape>,
+    context: IActionContext,
   ): boolean {
     // Always push down if aggressive mode is enabled
     if (this.aggressivePushdown) {
@@ -161,12 +173,36 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
       return true;
     }
 
+    // Don't push down extension functions comunica support, but an endpoint doesn't
+    if (expression.expressionType === Algebra.expressionTypes.NAMED && context.has(KeysInitQuery.extensionFunctions)) {
+      const comunicaFunctions = context.getSafe(KeysInitQuery.extensionFunctions);
+      const functionName = expression.name.value;
+      if (
+        functionName in comunicaFunctions &&
+        // Checks if there's a source that does not support the extension function
+        sources.some((source: { source: IQuerySource }) =>
+          !this.sourceSupportsExtensionFunction(source.source, functionName))
+      ) {
+        return false;
+      }
+    }
+
     // Push down if federated and at least one accepts the filter
     if (sources.some(source => doesShapeAcceptOperation(sourceShapes.get(source)!, operation))) {
       return true;
     }
 
     // Don't push down in all other cases
+    return false;
+  }
+
+  private sourceSupportsExtensionFunction(source: IQuerySource, functionName: string): boolean | undefined {
+    if (source instanceof QuerySourceSkolemized) {
+      return this.sourceSupportsExtensionFunction(source.innerSource, functionName);
+    }
+    if (source instanceof QuerySourceSparql || source instanceof QuerySourceHypermedia) {
+      return source.extensionFunctions.includes(functionName);
+    }
     return false;
   }
 
@@ -247,8 +283,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     }
 
     // Don't push down (NOT) EXISTS
-    if (expression.type === Algebra.types.EXPRESSION &&
-      expression.expressionType === Algebra.expressionTypes.EXISTENCE) {
+    if (expression.expressionType === Algebra.expressionTypes.EXISTENCE) {
       return [ false, factory.createFilter(operation, expression) ];
     }
 
