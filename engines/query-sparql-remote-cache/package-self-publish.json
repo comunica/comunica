@@ -319,7 +319,7 @@
     "@comunica/runner": "^4.2.0",
     "@comunica/runner-cli": "^4.2.0",
     "@comunica/types": "^4.2.0",
-    "actor-query-process-remote-cache": "^0.1.0",
+    "actor-query-process-remote-cache": "^0.1.1",
     "process": "^0.11.10"
   },
   "browser": {

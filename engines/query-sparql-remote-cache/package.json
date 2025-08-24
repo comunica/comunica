@@ -1,6 +1,6 @@
 {
-  "name": "@comunica/query-sparql-remote-cache",
-  "version": "4.3.0",
+  "name": "query-sparql-remote-cache",
+  "version": "0.0.8",
   "description": "A SPARQL query engine for querying over decentralized RDF knowledge graphs on the Web",
   "license": "MIT",
   "funding": {
@@ -50,6 +50,7 @@
     "lib/**/*.js.map"
   ],
   "scripts": {
+    "publish-npm": "yarn run build && npm publish",
     "build": "yarn run build:ts",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
     "prepare": "comunica-compile-config config/config-default.json > engine-default.js",
@@ -318,7 +319,7 @@
     "@comunica/runner": "^4.2.0",
     "@comunica/runner-cli": "^4.2.0",
     "@comunica/types": "^4.2.0",
-    "actor-query-process-remote-cache": "^0.1.0",
+    "actor-query-process-remote-cache": "^0.1.1",
     "process": "^0.11.10"
   },
   "browser": {

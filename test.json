@@ -1,0 +1,142 @@
+{
+  "type": "project",
+  "input": {
+    "type": "filter",
+    "input": {
+      "type": "join",
+      "input": [
+        {
+          "type": "values",
+          "variables": [
+            {
+              "termType": "Variable",
+              "value": "interestName"
+            }
+          ],
+          "bindings": [
+            {
+              "?interestName": {
+                "termType": "Literal",
+                "value": "Linked Data",
+                "language": "en",
+                "datatype": {
+                  "termType": "NamedNode",
+                  "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "bgp",
+          "patterns": [
+            {
+              "termType": "Quad",
+              "value": "",
+              "subject": {
+                "termType": "NamedNode",
+                "value": "http://example.org/ruben#me"
+              },
+              "predicate": {
+                "termType": "NamedNode",
+                "value": "http://xmlns.com/foaf/0.1/topic_interest"
+              },
+              "object": {
+                "termType": "Variable",
+                "value": "interest"
+              },
+              "graph": {
+                "termType": "DefaultGraph",
+                "value": ""
+              },
+              "type": "pattern"
+            },
+            {
+              "termType": "Quad",
+              "value": "",
+              "subject": {
+                "termType": "NamedNode",
+                "value": "http://example.org/rubent#me"
+              },
+              "predicate": {
+                "termType": "NamedNode",
+                "value": "http://xmlns.com/foaf/0.1/topic_interest"
+              },
+              "object": {
+                "termType": "Variable",
+                "value": "interest"
+              },
+              "graph": {
+                "termType": "DefaultGraph",
+                "value": ""
+              },
+              "type": "pattern"
+            },
+            {
+              "termType": "Quad",
+              "value": "",
+              "subject": {
+                "termType": "Variable",
+                "value": "interest"
+              },
+              "predicate": {
+                "termType": "NamedNode",
+                "value": "http://www.w3.org/2000/01/rdf-schema#label"
+              },
+              "object": {
+                "termType": "Variable",
+                "value": "interestName"
+              },
+              "graph": {
+                "termType": "DefaultGraph",
+                "value": ""
+              },
+              "type": "pattern"
+            }
+          ]
+        }
+      ]
+    },
+    "expression": {
+      "type": "expression",
+      "expressionType": "operator",
+      "operator": "langmatches",
+      "args": [
+        {
+          "type": "expression",
+          "expressionType": "operator",
+          "operator": "lang",
+          "args": [
+            {
+              "type": "expression",
+              "expressionType": "term",
+              "term": {
+                "termType": "Variable",
+                "value": "interestName"
+              }
+            }
+          ]
+        },
+        {
+          "type": "expression",
+          "expressionType": "term",
+          "term": {
+            "termType": "Literal",
+            "value": "EN",
+            "language": "",
+            "datatype": {
+              "termType": "NamedNode",
+              "value": "http://www.w3.org/2001/XMLSchema#string"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "variables": [
+    {
+      "termType": "Variable",
+      "value": "interestName"
+    }
+  ]
+}

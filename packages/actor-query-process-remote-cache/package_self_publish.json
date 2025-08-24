@@ -52,7 +52,7 @@
     "rdf-stores": "^2.1.1",
     "rdf-terms":"^2.0.0",
     "result-interface": "^2.3.3",
-    "sparql-cache-client": "^0.2.2",
+    "sparql-cache-client": "^0.2.3",
     "sparql-federated-query-containment": "^0.0.2",
     "sparqljson-parse": "^3.1.0",
     "z3-solver": "^4.15.2",

@@ -1,6 +1,6 @@
 {
-  "name": "@comunica/actor-query-process-remote-cache",
-  "version": "1.0.0",
+  "name": "actor-query-process-remote-cache",
+  "version": "0.1.1",
   "description": "A remote-cache query-process actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -31,13 +31,14 @@
   "homepage": "https://comunica.dev/",
   "files": [
     "components",
+    "config",
     "lib/**/*.d.ts",
     "lib/**/*.js",
     "lib/**/*.js.map"
   ],
   "devDependencies": {
     "rdf-stores": "^2.1.1",
-    "arrayify-stream":"^3.0.0"
+    "arrayify-stream": "^3.0.0"
   },
   "dependencies": {
     "@comunica/actor-query-operation-construct": "^4.2.0",
@@ -51,7 +52,7 @@
     "rdf-stores": "^2.1.1",
     "rdf-terms":"^2.0.0",
     "result-interface": "^2.3.3",
-    "sparql-cache-client": "^0.2.2",
+    "sparql-cache-client": "^0.2.3",
     "sparql-federated-query-containment": "^0.0.2",
     "sparqljson-parse": "^3.1.0",
     "z3-solver": "^4.15.2",
@@ -60,6 +61,7 @@
   "scripts": {
     "build": "yarn run build:ts && yarn run build:components",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
-    "build:components": "componentsjs-generator"
+    "build:components": "componentsjs-generator",
+    "publish-npm": "yarn run build && npm publish"
   }
 }

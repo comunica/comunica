@@ -21,7 +21,6 @@ WHERE {
   ?person ex:gender ex:female .
 }
 `;
-
 const cacheLocation = { url: "http://127.0.0.1:9999/cache.ttl" };
  
 const bindingsStream = await myEngine.queryBindings(query, {
@@ -30,6 +29,10 @@ const bindingsStream = await myEngine.queryBindings(query, {
   sources:["http://127.0.0.1:9999/endpoint.ttl"],
   log: new LoggerPretty({ level: 'info'}),
   failOnCacheMiss: true,
+  fetch: (a)=>{
+    console.log(a);
+    return fetch(a);
+  },
   '@comunica/core:log':new LoggerPretty({ level: 'info'})
 });
 
