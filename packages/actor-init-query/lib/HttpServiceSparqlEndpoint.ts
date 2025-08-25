@@ -471,6 +471,13 @@ export class HttpServiceSparqlEndpoint {
       return;
     }
 
+    // If the query was an update query, update the cachedStatistics
+    if (this.includeVoID && queryBody.value.includes('INSERT')) {
+      this.fetchVoIDStatistics(engine).catch(() => {
+        this.cachedStatistics = [];
+      });
+    }
+
     // Default to SPARQL JSON for bindings and boolean
     if (!mediaType) {
       switch (result.resultType) {
@@ -642,29 +649,8 @@ export class HttpServiceSparqlEndpoint {
     quads.push(quad(graph, rdfType, `${sd}Graph`));
 
     if (this.cachedStatistics.length === 0) {
-      const bindingsStream = await engine.queryBindings(
-        `
-SELECT 
-  (COUNT(?s) AS ?triples)
-  (COUNT(DISTINCT ?s) AS ?distinctSubjects)
-  (COUNT(DISTINCT ?p) AS ?properties)
-  (COUNT(DISTINCT ?o) AS ?distinctObjects)
-WHERE { 
-  ?s ?p ?o 
-}
-          `,
-        this.context,
-      );
-
       try {
-        for await (const bindings of bindingsStream) {
-          const xsdInteger = (n: string): string =>
-            `"${n}"^^http://www.w3.org/2001/XMLSchema#integer`;
-          this.cachedStatistics.push(quad(graph, `${vd}triples`, xsdInteger(bindings.get('triples')!.value)));
-          this.cachedStatistics.push(quad(graph, `${vd}distinctSubjects`, xsdInteger(bindings.get('distinctSubjects')!.value)));
-          this.cachedStatistics.push(quad(graph, `${vd}properties`, xsdInteger(bindings.get('properties')!.value)));
-          this.cachedStatistics.push(quad(graph, `${vd}distinctObjects`, xsdInteger(bindings.get('distinctObjects')!.value)));
-        }
+        await this.fetchVoIDStatistics(engine);
       } catch (error: any) {
         stdout.write(`[500] Server error in results: ${error.message} \n`);
         response.end('An internal server error occurred.\n');
@@ -677,6 +663,36 @@ WHERE {
     }
 
     return quads;
+  }
+
+  private async fetchVoIDStatistics(
+    engine: QueryEngineBase,
+  ): Promise<void> {
+    const vd = 'http://rdfs.org/ns/void#';
+    const graph = '_:defaultGraph';
+
+    const bindingsStream = await engine.queryBindings(
+      `
+SELECT 
+  (COUNT(?s) AS ?triples)
+  (COUNT(DISTINCT ?s) AS ?distinctSubjects)
+  (COUNT(DISTINCT ?p) AS ?properties)
+  (COUNT(DISTINCT ?o) AS ?distinctObjects)
+WHERE { 
+  ?s ?p ?o 
+}
+          `,
+      this.context,
+    );
+
+    for await (const bindings of bindingsStream) {
+      const xsdInteger = (n: string): string =>
+        `"${n}"^^http://www.w3.org/2001/XMLSchema#integer`;
+      this.cachedStatistics.push(quad(graph, `${vd}triples`, xsdInteger(bindings.get('triples')!.value)));
+      this.cachedStatistics.push(quad(graph, `${vd}distinctSubjects`, xsdInteger(bindings.get('distinctSubjects')!.value)));
+      this.cachedStatistics.push(quad(graph, `${vd}properties`, xsdInteger(bindings.get('properties')!.value)));
+      this.cachedStatistics.push(quad(graph, `${vd}distinctObjects`, xsdInteger(bindings.get('distinctObjects')!.value)));
+    }
   }
 
   /**

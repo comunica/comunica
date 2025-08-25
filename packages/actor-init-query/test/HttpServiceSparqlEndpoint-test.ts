@@ -1711,6 +1711,118 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(spyQueryBindings).toHaveBeenCalledTimes(1);
       });
 
+      it('should update cachedStatistics when doing an INSERT', async() => {
+        const xsd = 'http://www.w3.org/2001/XMLSchema#';
+
+        const localInstance = new HttpServiceSparqlEndpoint({
+          ...argsDefault,
+          includeVoID: true,
+        });
+
+        // Create spies
+        const engine = await new QueryEngineFactoryBase().create();
+        engine.queryBindings = (): BindingsStream => {
+          const bindingsArray = [
+            BF.bindings([
+              [ DF.variable('triples'), DF.literal('5', DF.namedNode(`${xsd}integer`)) ],
+              [ DF.variable('distinctSubjects'), DF.literal('3', DF.namedNode(`${xsd}integer`)) ],
+              [ DF.variable('properties'), DF.literal('2', DF.namedNode(`${xsd}integer`)) ],
+              [ DF.variable('distinctObjects'), DF.literal('4', DF.namedNode(`${xsd}integer`)) ],
+            ]),
+          ];
+          return <BindingsStream>(new ArrayIterator<RDF.Bindings>(bindingsArray));
+        };
+        const spyQueryBindings = jest.spyOn(engine, 'queryBindings');
+
+        await localInstance.writeQueryResult(
+          engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          { type: 'query', value: `
+INSERT DATA {
+  <http://example.org/s> <http://example.org/p> "o" .
+}
+`, context: undefined },
+          mediaType,
+          false,
+          true,
+          0,
+        );
+
+        // Note that the insert query itself is done using engine.query and not engine.queryBindings,
+        // so this queryBindings was in fact used for the statistics query
+        expect(spyQueryBindings).toHaveBeenCalledTimes(1);
+
+        await localInstance.writeQueryResult(
+          engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          { type: 'query', value: '', context: undefined },
+          mediaType,
+          false,
+          true,
+          0,
+        );
+
+        // Should not have been called a second time
+        expect(spyQueryBindings).toHaveBeenCalledTimes(1);
+      });
+
+      it('should handle errors silently when updating cachedStatistics when doing an INSERT', async() => {
+        const localInstance = new HttpServiceSparqlEndpoint({
+          ...argsDefault,
+          includeVoID: true,
+        });
+
+        // Create spies
+        const engine = await new QueryEngineFactoryBase().create();
+        engine.queryBindings = (): BindingsStream => <BindingsStream> {};
+        const spyQueryBindings = jest.spyOn(engine, 'queryBindings');
+
+        await localInstance.writeQueryResult(
+          engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          { type: 'query', value: `
+INSERT DATA {
+  <http://example.org/s> <http://example.org/p> "o" .
+}
+`, context: undefined },
+          mediaType,
+          false,
+          true,
+          0,
+        );
+
+        expect(spyQueryBindings).toHaveBeenCalledTimes(1);
+        // Empty, since there was an error
+        expect(localInstance.cachedStatistics).toEqual([]);
+        // Errors are handled silently
+        await expect(endCalledPromise).resolves.not.toBe('An internal server error occurred.\n');
+
+        await localInstance.writeQueryResult(
+          engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          { type: 'query', value: '', context: undefined },
+          mediaType,
+          false,
+          true,
+          0,
+        );
+
+        // Should have been called a second time, since cachedStatistics is empty
+        expect(spyQueryBindings).toHaveBeenCalledTimes(2);
+      });
+
       it('should handle errors in VoID description statistics query', async() => {
         const localInstance = new HttpServiceSparqlEndpoint({
           ...argsDefault,
