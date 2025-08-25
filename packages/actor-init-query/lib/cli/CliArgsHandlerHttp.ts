@@ -54,12 +54,19 @@ export class CliArgsHandlerHttp implements ICliArgsHandler {
           type: 'boolean',
           describe: 'If the query context can be overridden through POST requests',
         },
+        includeVoID: {
+          type: 'boolean',
+          describe: 'Include a VoID description, which can be found in the service description',
+        },
       })
       .check((args) => {
         if (args.version) {
           return true;
         }
-        if (args.context ? args.sources.length > 0 : args.sources.length === 0) {
+        if (args.context && args.sources.length > 0) {
+          throw new Error('When a context is provided, the sources should be contained within said context');
+        }
+        if (!args.context && args.sources.length === 0) {
           throw new Error('At least one source must be provided');
         }
         return true;

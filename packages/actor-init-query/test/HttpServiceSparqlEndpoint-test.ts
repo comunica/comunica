@@ -4,9 +4,12 @@ import { PassThrough } from 'node:stream';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
+import type { BindingsStream } from '@comunica/types';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import { Readable } from 'readable-stream';
 
 // @ts-expect-error
@@ -60,6 +63,9 @@ const argsDefault = {
   moduleRootPath: 'moduleRootPath',
   defaultConfigPath: 'defaultConfigPath',
 };
+
+const DF = new DataFactory();
+const BF = new BindingsFactory(DF);
 
 describe('HttpServiceSparqlEndpoint', () => {
   let originalCluster: typeof cluster;
@@ -271,6 +277,24 @@ describe('HttpServiceSparqlEndpoint', () => {
       const err = await stringifyStream(stderr);
       expect(err).toContain('exposes a SPARQL endpoint');
       expect(err).toContain('At least one source must be provided');
+    });
+
+    it('handles a source being passed outside the context when a context is passed', async() => {
+      await HttpServiceSparqlEndpoint.runArgsInProcess(
+        [ source, '-c', context ],
+        stdout,
+        stderr,
+        moduleRootPath,
+        env,
+        defaultConfigPath,
+        exit,
+      );
+
+      expect(exit).toHaveBeenCalledWith(1);
+      stderr.end();
+      const err = await stringifyStream(stderr);
+      expect(err).toContain('exposes a SPARQL endpoint');
+      expect(err).toContain('When a context is provided, the sources should be contained within said context');
     });
   });
 
@@ -1240,6 +1264,11 @@ describe('HttpServiceSparqlEndpoint', () => {
       let query: IQueryBody;
       let mediaType: any;
       let endCalledPromise: any;
+      let serviceDescriptionQuads: RDF.Quad[];
+
+      const s = 'http://example.org/sparql';
+      const sd = 'http://www.w3.org/ns/sparql-service-description#';
+
       beforeEach(() => {
         response = new ServerResponseMock();
         request = Readable.from([ 'default_request_content' ]);
@@ -1251,6 +1280,18 @@ describe('HttpServiceSparqlEndpoint', () => {
         };
         mediaType = 'default_test_mediatype';
         endCalledPromise = new Promise(resolve => response.onEnd = resolve);
+        serviceDescriptionQuads = [
+          quad(s, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', `${sd}Service`),
+          quad(s, `${sd}endpoint`, '/sparql'),
+          quad(s, `${sd}url`, '/sparql'),
+          quad(s, `${sd}feature`, `${sd}BasicFederatedQuery`),
+          quad(s, `${sd}supportedLanguage`, `${sd}SPARQL10Query`),
+          quad(s, `${sd}supportedLanguage`, `${sd}SPARQL11Query`),
+          quad(s, `${sd}resultFormat`, 'ONE'),
+          quad(s, `${sd}resultFormat`, 'TWO'),
+          quad(s, `${sd}resultFormat`, 'THREE'),
+          quad(s, `${sd}resultFormat`, 'FOUR'),
+        ];
       });
 
       it('should end the response with error message content when the query rejects', async() => {
@@ -1426,25 +1467,14 @@ describe('HttpServiceSparqlEndpoint', () => {
         // Check if result to string has been called with the correct arguments
         expect(spyResultToString).toHaveBeenCalledTimes(1);
         expect(spyResultToString.mock.calls[0][1]).toEqual(mediaType);
-        const s = 'http://example.org/sparql';
-        const sd = 'http://www.w3.org/ns/sparql-service-description#';
-        await expect((spyResultToString.mock.calls[0][0]).execute()).resolves.toEqual(new ArrayIterator([
-          quad(s, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', `${sd}Service`),
-          quad(s, `${sd}endpoint`, '/sparql'),
-          quad(s, `${sd}url`, '/sparql'),
-          quad(s, `${sd}feature`, `${sd}BasicFederatedQuery`),
-          quad(s, `${sd}supportedLanguage`, `${sd}SPARQL10Query`),
-          quad(s, `${sd}supportedLanguage`, `${sd}SPARQL11Query`),
-          quad(s, `${sd}resultFormat`, 'ONE'),
-          quad(s, `${sd}resultFormat`, 'TWO'),
-          quad(s, `${sd}resultFormat`, 'THREE'),
-          quad(s, `${sd}resultFormat`, 'FOUR'),
-          quad(s, `${sd}extensionFunction`, 'https://example.org/functions#args0'),
-          quad(s, `${sd}extensionFunction`, 'https://example.org/functions#args1'),
-        ]));
+        serviceDescriptionQuads.push(quad(s, `${sd}extensionFunction`, 'https://example.org/functions#args0'));
+        serviceDescriptionQuads.push(quad(s, `${sd}extensionFunction`, 'https://example.org/functions#args1'));
+        await expect((spyResultToString.mock.calls[0][0]).execute()).resolves.toEqual(new ArrayIterator(
+          serviceDescriptionQuads,
+        ));
       });
 
-      it('should write the service description when no query was defined for HEAD', async() => {
+      it('should write the service description header when no query was defined for HEAD', async() => {
         // Create spies
         const engine = await new QueryEngineFactoryBase().create();
         const spyWriteServiceDescription = jest.spyOn(instance, 'writeServiceDescription');
@@ -1485,6 +1515,9 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       it('should handle errors in service description stringification', async() => {
+        // Create spies
+        const spyWriteServiceDescription = jest.spyOn(instance, 'writeServiceDescription');
+
         mediaType = 'mediatype_queryresultstreamerror';
         await instance.writeQueryResult(
           await new QueryEngineFactoryBase().create(),
@@ -1499,6 +1532,9 @@ describe('HttpServiceSparqlEndpoint', () => {
           0,
         );
 
+        // Check if the SD logic has been called
+        expect(spyWriteServiceDescription).toHaveBeenCalledTimes(1);
+
         await expect(endCalledPromise).resolves.toBe('An internal server error occurred.\n');
         expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(
@@ -1508,6 +1544,9 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       it('should handle an invalid media type in service description', async() => {
+        // Create spies
+        const spyWriteServiceDescription = jest.spyOn(instance, 'writeServiceDescription');
+
         mediaType = 'mediatype_queryresultstreamerror';
         await instance.writeQueryResult(
           await new QueryEngineFactoryBase().create(),
@@ -1522,11 +1561,305 @@ describe('HttpServiceSparqlEndpoint', () => {
           0,
         );
 
+        // Check if the SD logic has been called
+        expect(spyWriteServiceDescription).toHaveBeenCalledTimes(1);
+
         await expect(endCalledPromise).resolves.toBe(
           'The response for the given query could not be serialized for the requested media type\n',
         );
         expect(response.writeHead)
           .toHaveBeenLastCalledWith(400, { 'content-type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
+      });
+
+      it('should append the VoID description in the service description when includeVoid is true', async() => {
+        const xsd = 'http://www.w3.org/2001/XMLSchema#';
+
+        const localInstance = new HttpServiceSparqlEndpoint({
+          ...argsDefault,
+          includeVoID: true,
+          context: {
+            dcterms: {
+              title: 'title',
+              description: 'description',
+              creator: 'creator',
+              created: `"2025/08/07"^^${xsd}date`,
+            },
+          },
+        });
+
+        // Create spies
+        const engine = await new QueryEngineFactoryBase().create();
+        engine.queryBindings = (): BindingsStream => {
+          const bindingsArray = [
+            BF.bindings([
+              [ DF.variable('triples'), DF.literal('2', DF.namedNode(`${xsd}integer`)) ],
+              [ DF.variable('distinctSubjects'), DF.literal('1', DF.namedNode(`${xsd}integer`)) ],
+              [ DF.variable('properties'), DF.literal('2', DF.namedNode(`${xsd}integer`)) ],
+              [ DF.variable('distinctObjects'), DF.literal('2', DF.namedNode(`${xsd}integer`)) ],
+            ]),
+          ];
+          return <BindingsStream>(new ArrayIterator<RDF.Bindings>(bindingsArray));
+        };
+        const spyGetVoIDQuads = jest.spyOn(localInstance, 'getVoIDQuads');
+        const spyResultToString = jest.spyOn(engine, 'resultToString');
+
+        // Invoke writeQueryResult
+        await localInstance.writeQueryResult(
+          engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          { type: 'query', value: '', context: undefined },
+          mediaType,
+          false,
+          true,
+          0,
+        );
+
+        // Check output
+        await expect(endCalledPromise).resolves.toBeFalsy();
+        expect(response.writeHead).toHaveBeenCalledTimes(1);
+        expect(response.writeHead).toHaveBeenLastCalledWith(
+          200,
+          { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' },
+        );
+        response.push(null);
+        const responseString = await stringifyStream(response);
+        expect(responseString).toBe('test_query_result');
+
+        // Check if the VD logic has been called
+        expect(spyGetVoIDQuads).toHaveBeenCalledTimes(1);
+
+        // Check if result to string has been called with the correct arguments
+        expect(spyResultToString).toHaveBeenCalledTimes(1);
+        expect(spyResultToString.mock.calls[0][1]).toEqual(mediaType);
+        const sd = 'http://www.w3.org/ns/sparql-service-description#';
+        const vd = 'http://rdfs.org/ns/void#';
+        const rdf = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';
+        const rdfType = `${rdf}type`;
+        const dataset = '_:defaultDataset';
+        const graph = '_:defaultGraph';
+        const vocabulary = `${vd}vocabulary`;
+        const dcterms = 'http://purl.org/dc/terms/';
+        const voIDDescriptionQuads = [
+          quad(s, `${sd}defaultDataset`, dataset),
+          quad(dataset, rdfType, `${sd}Dataset`),
+          quad(dataset, rdfType, `${vd}Dataset`),
+          quad(dataset, `${vd}sparqlEndpoint`, '/sparql'),
+          quad(dataset, vocabulary, dcterms),
+          quad(dataset, `${dcterms}title`, 'title'),
+          quad(dataset, `${dcterms}description`, 'description'),
+          quad(dataset, `${dcterms}creator`, 'creator'),
+          quad(dataset, `${dcterms}created`, `"2025/08/07"^^${xsd}date`),
+
+          quad(dataset, `${sd}defaultGraph`, graph),
+          quad(graph, rdfType, `${sd}Graph`),
+          quad(graph, `${vd}triples`, `"2"^^${xsd}integer`),
+          quad(graph, `${vd}distinctSubjects`, `"1"^^${xsd}integer`),
+          quad(graph, `${vd}properties`, `"2"^^${xsd}integer`),
+          quad(graph, `${vd}distinctObjects`, `"2"^^${xsd}integer`),
+        ];
+        for (const quad of voIDDescriptionQuads) {
+          serviceDescriptionQuads.push(quad);
+        }
+        await expect((spyResultToString.mock.calls[0][0]).execute()).resolves.toEqual(new ArrayIterator(
+          serviceDescriptionQuads,
+        ));
+      });
+
+      it('should only query statistics once when doing multiple VoID description requests', async() => {
+        const xsd = 'http://www.w3.org/2001/XMLSchema#';
+
+        const localInstance = new HttpServiceSparqlEndpoint({
+          ...argsDefault,
+          includeVoID: true,
+        });
+
+        // Create spies
+        const engine = await new QueryEngineFactoryBase().create();
+        engine.queryBindings = (): BindingsStream => {
+          const bindingsArray = [
+            BF.bindings([
+              [ DF.variable('triples'), DF.literal('5', DF.namedNode(`${xsd}integer`)) ],
+              [ DF.variable('distinctSubjects'), DF.literal('3', DF.namedNode(`${xsd}integer`)) ],
+              [ DF.variable('properties'), DF.literal('2', DF.namedNode(`${xsd}integer`)) ],
+              [ DF.variable('distinctObjects'), DF.literal('4', DF.namedNode(`${xsd}integer`)) ],
+            ]),
+          ];
+          return <BindingsStream>(new ArrayIterator<RDF.Bindings>(bindingsArray));
+        };
+        const spyQueryBindings = jest.spyOn(engine, 'queryBindings');
+
+        const requestVoID = () => localInstance.writeQueryResult(
+          engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          { type: 'query', value: '', context: undefined },
+          mediaType,
+          false,
+          true,
+          0,
+        );
+
+        // Request VoID description twice
+        await requestVoID();
+        await requestVoID();
+
+        expect(spyQueryBindings).toHaveBeenCalledTimes(1);
+      });
+
+      it('should update cachedStatistics when doing an INSERT', async() => {
+        const xsd = 'http://www.w3.org/2001/XMLSchema#';
+
+        const localInstance = new HttpServiceSparqlEndpoint({
+          ...argsDefault,
+          includeVoID: true,
+        });
+
+        // Create spies
+        const engine = await new QueryEngineFactoryBase().create();
+        engine.queryBindings = (): BindingsStream => {
+          const bindingsArray = [
+            BF.bindings([
+              [ DF.variable('triples'), DF.literal('5', DF.namedNode(`${xsd}integer`)) ],
+              [ DF.variable('distinctSubjects'), DF.literal('3', DF.namedNode(`${xsd}integer`)) ],
+              [ DF.variable('properties'), DF.literal('2', DF.namedNode(`${xsd}integer`)) ],
+              [ DF.variable('distinctObjects'), DF.literal('4', DF.namedNode(`${xsd}integer`)) ],
+            ]),
+          ];
+          return <BindingsStream>(new ArrayIterator<RDF.Bindings>(bindingsArray));
+        };
+        const spyQueryBindings = jest.spyOn(engine, 'queryBindings');
+
+        await localInstance.writeQueryResult(
+          engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          { type: 'query', value: `
+INSERT DATA {
+  <http://example.org/s> <http://example.org/p> "o" .
+}
+`, context: undefined },
+          mediaType,
+          false,
+          true,
+          0,
+        );
+
+        // Note that the insert query itself is done using engine.query and not engine.queryBindings,
+        // so this queryBindings was in fact used for the statistics query
+        expect(spyQueryBindings).toHaveBeenCalledTimes(1);
+
+        await localInstance.writeQueryResult(
+          engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          { type: 'query', value: '', context: undefined },
+          mediaType,
+          false,
+          true,
+          0,
+        );
+
+        // Should not have been called a second time
+        expect(spyQueryBindings).toHaveBeenCalledTimes(1);
+      });
+
+      it('should handle errors silently when updating cachedStatistics when doing an INSERT', async() => {
+        const localInstance = new HttpServiceSparqlEndpoint({
+          ...argsDefault,
+          includeVoID: true,
+        });
+
+        // Create spies
+        const engine = await new QueryEngineFactoryBase().create();
+        engine.queryBindings = (): BindingsStream => <BindingsStream> {};
+        const spyQueryBindings = jest.spyOn(engine, 'queryBindings');
+
+        await localInstance.writeQueryResult(
+          engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          { type: 'query', value: `
+INSERT DATA {
+  <http://example.org/s> <http://example.org/p> "o" .
+}
+`, context: undefined },
+          mediaType,
+          false,
+          true,
+          0,
+        );
+
+        expect(spyQueryBindings).toHaveBeenCalledTimes(1);
+        // Empty, since there was an error
+        expect(localInstance.cachedStatistics).toEqual([]);
+        // Errors are handled silently
+        await expect(endCalledPromise).resolves.not.toBe('An internal server error occurred.\n');
+
+        await localInstance.writeQueryResult(
+          engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          { type: 'query', value: '', context: undefined },
+          mediaType,
+          false,
+          true,
+          0,
+        );
+
+        // Should have been called a second time, since cachedStatistics is empty
+        expect(spyQueryBindings).toHaveBeenCalledTimes(2);
+      });
+
+      it('should handle errors in VoID description statistics query', async() => {
+        const localInstance = new HttpServiceSparqlEndpoint({
+          ...argsDefault,
+          includeVoID: true,
+        });
+
+        // Create spies
+        const engine = await new QueryEngineFactoryBase().create();
+        engine.queryBindings = (): BindingsStream => <BindingsStream>(new ArrayIterator<RDF.Bindings>([ BF.bindings([
+          [ DF.variable('error'), DF.literal('error') ],
+        ]) ]));
+        const spyGetVoIDQuads = jest.spyOn(localInstance, 'getVoIDQuads');
+        const spyQueryBindings = jest.spyOn(engine, 'queryBindings');
+
+        await localInstance.writeQueryResult(
+          engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          { type: 'query', value: '', context: undefined },
+          mediaType,
+          false,
+          true,
+          0,
+        );
+
+        // Check if the VD logic has been called
+        expect(spyGetVoIDQuads).toHaveBeenCalledTimes(1);
+        expect(spyQueryBindings).toHaveBeenCalledTimes(1);
+
+        await expect(endCalledPromise).resolves.toBe('An internal server error occurred.\n');
+        expect(response.writeHead).toHaveBeenCalledTimes(1);
+        expect(response.writeHead).toHaveBeenLastCalledWith(
+          200,
+          { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' },
+        );
       });
 
       it('should fallback to SPARQL JSON for bindings if media type is falsy', async() => {
