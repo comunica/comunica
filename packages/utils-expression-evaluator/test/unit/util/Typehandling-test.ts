@@ -92,6 +92,8 @@ describe('TypeHandling', () => {
       const testArray: [OverrideType, KnownLiteralTypes][] = [
         [ TypeURL.XSD_STRING, TypeURL.XSD_STRING ],
         [ TypeURL.XSD_SHORT, TypeURL.XSD_INT ],
+        // Not really a subtype by definition, see the explanation in TypeHandling.ts
+        [ TypeURL.XSD_UNTYPED_ATOMIC, TypeURL.XSD_STRING ],
       ];
       expect(testArray.every(([ baseType, argumentType ]) =>
         isSubTypeOf(baseType, argumentType, getMockSuperTypeProvider()))).toBeTruthy();

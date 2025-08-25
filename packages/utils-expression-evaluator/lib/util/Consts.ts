@@ -79,6 +79,7 @@ export enum TypeURL {
   XSD_DURATION = 'http://www.w3.org/2001/XMLSchema#duration',
   XSD_YEAR_MONTH_DURATION = 'http://www.w3.org/2001/XMLSchema#yearMonthDuration',
   XSD_DAY_TIME_DURATION = 'http://www.w3.org/2001/XMLSchema#dayTimeDuration',
+  XSD_UNTYPED_ATOMIC = 'http://www.w3.org/2001/XMLSchema#untypedAtomic',
 }
 
 // ----------------------------------------------------------------------------
