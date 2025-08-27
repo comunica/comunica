@@ -1,38 +1,50 @@
-import type { IActionQueryProcess, IActorQueryProcessOutput, IActorQueryProcessArgs } from '@comunica/bus-query-process';
-import { ActorQueryProcess } from '@comunica/bus-query-process';
-import { KeysHttp, KeysInitQuery } from '@comunica/context-entries';
-import { passTestVoid, ActionContextKey } from '@comunica/core';
-import type { TestResult, IActorTest } from '@comunica/core';
-import type { Bindings, BindingsStream, ComunicaDataFactory, IQueryOperationResultQuads, QuerySourceUnidentified } from '@comunica/types';
-import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import type * as RDF from '@rdfjs/types';
-import { ArrayIterator } from 'asynciterator';
-import { DataFactory } from 'rdf-data-factory';
-import { RdfStore } from 'rdf-stores';
-import { isError, error, result, isResult } from 'result-interface';
-import type { SafePromise } from 'result-interface';
 import type {
-
-  CacheHitFunction,
-  IOptions,
-} from 'sparql-cache-client';
+  IActionQueryProcess,
+  IActorQueryProcessOutput,
+  IActorQueryProcessArgs,
+} from "@comunica/bus-query-process";
+import { ActorQueryProcess } from "@comunica/bus-query-process";
+import { KeysHttp, KeysInitQuery } from "@comunica/context-entries";
+import { passTestVoid, ActionContextKey } from "@comunica/core";
+import type { TestResult, IActorTest } from "@comunica/core";
+import type {
+  Bindings,
+  BindingsStream,
+  ComunicaDataFactory,
+  IQueryOperationResultBindings,
+  IQueryOperationResultQuads,
+  QuerySourceUnidentified,
+} from "@comunica/types";
+import { BindingsFactory } from "@comunica/utils-bindings-factory";
+import type * as RDF from "@rdfjs/types";
+import { ArrayIterator } from "asynciterator";
+import { DataFactory } from "rdf-data-factory";
+import { RdfStore } from "rdf-stores";
+import { isError, error, result, isResult } from "result-interface";
+import type { SafePromise } from "result-interface";
+import type { CacheHitFunction, IOptions } from "sparql-cache-client";
 import {
   getCachedQuads,
   type CacheLocation,
   OutputOption,
-} from 'sparql-cache-client';
-import type { ISolverOption } from 'sparql-federated-query-containment';
-import { isContained, SEMANTIC } from 'sparql-federated-query-containment';
-import { Algebra, toSparql, Factory, translate, Util } from 'sparqlalgebrajs';
-import { IBindings } from 'sparqljson-parse';
-import * as Z3_SOLVER from 'z3-solver';
-import { bindTemplateWithProjection } from './bindTemplateWithProjection';
+} from "sparql-cache-client";
+import type { ISolverOption } from "sparql-federated-query-containment";
+import { isContained, SEMANTIC } from "sparql-federated-query-containment";
+import { Algebra, toSparql, Factory, translate, Util } from "sparqlalgebrajs";
+import { IBindings } from "sparqljson-parse";
+import * as Z3_SOLVER from "z3-solver";
+import { bindTemplateWithProjection } from "./bindTemplateWithProjection";
 
 export const KeyRemoteCache = {
   /**
    * The url of a remote cache of results
    */
-  location: new ActionContextKey<CacheLocation>('@comunica/remote-cache:location'),
+  location: new ActionContextKey<CacheLocation>(
+    "@comunica/remote-cache:location"
+  ),
+  valueClauseBlockSize: new ActionContextKey<number>(
+    "@comunica/remote-cache:valueClauseBlockSize"
+  ),
 };
 const RDF_FACTORY: ComunicaDataFactory = new DataFactory();
 const BF = new BindingsFactory(RDF_FACTORY);
@@ -45,81 +57,122 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
   private readonly fallBackQueryProcess: ActorQueryProcess;
   public readonly cacheHitAlgorithm: Algorithm;
 
-  public static readonly ERROR_FAIL_ON_CACHE_MISS: string = 'the engine was configured to fail if a cache entry is missing, but no cached result was found for this query';
-  public static readonly ERROR_ONLY_SELECT_QUERIES_SUPPORTED = 'the engine in this configuration only support SELECT queries';
-  public static readonly KEY_FAIL_ON_CACHE_MISS = new ActionContextKey('failOnCacheMiss');
-  public static readonly STREAM_PROVENANCE_PROPERTY = 'provenance';
+  public static readonly ERROR_FAIL_ON_CACHE_MISS: string =
+    "the engine was configured to fail if a cache entry is missing, but no cached result was found for this query";
+  public static readonly ERROR_ONLY_SELECT_QUERIES_SUPPORTED =
+    "the engine in this configuration only support SELECT queries";
+  public static readonly KEY_FAIL_ON_CACHE_MISS = new ActionContextKey(
+    "failOnCacheMiss"
+  );
+  public static readonly STREAM_PROVENANCE_PROPERTY = "provenance";
 
   public constructor(args: IActorQueryProcessRemoteCacheArgs) {
     super(args);
   }
 
-  public async test(_action: IActionQueryProcess): Promise<TestResult<IActorTest>> {
+  public async test(
+    _action: IActionQueryProcess
+  ): Promise<TestResult<IActorTest>> {
     return passTestVoid();
   }
 
-  public async run(action: IActionQueryProcess): Promise<IActorQueryProcessOutput> {
+  public async run(
+    action: IActionQueryProcess
+  ): Promise<IActorQueryProcessOutput> {
     const resultOrError = await this.queryCachedResults(action);
-    let provenance: Provenance = 'query processing';
+    let provenance: Provenance = "query processing";
     let id: RDF.Term | undefined;
     let complementaryQueries: IComplementaryQuery[] | undefined;
 
     if (isResult(resultOrError)) {
-      this.logInfo(action.context, `using the remote cache from: ${JSON.stringify(action.context.getSafe(KeyRemoteCache.location), null, 2)}`);
-      if ('stores' in resultOrError.value) {
+      this.logInfo(
+        action.context,
+        `using the remote cache from: ${JSON.stringify(
+          action.context.getSafe(KeyRemoteCache.location),
+          null,
+          2
+        )}`
+      );
+      if ("stores" in resultOrError.value) {
         provenance = Algorithm.CONTAINMENT;
         id = resultOrError.value.id;
         complementaryQueries = resultOrError.value.complementaryQueries;
-        action.context = action.context.set(KeysInitQuery.querySourcesUnidentified, resultOrError.value.stores);
+        action.context = action.context.set(
+          KeysInitQuery.querySourcesUnidentified,
+          resultOrError.value.stores
+        );
       } else {
-        resultOrError.value.bindings.setProperty(ActorQueryProcessRemoteCache.STREAM_PROVENANCE_PROPERTY, { algorithm: Algorithm.EQ, id: resultOrError.value.id });
+        resultOrError.value.bindings.setProperty(
+          ActorQueryProcessRemoteCache.STREAM_PROVENANCE_PROPERTY,
+          { algorithm: Algorithm.EQ, id: resultOrError.value.id }
+        );
         return {
           result: {
-            type: 'bindings',
+            type: "bindings",
             bindingsStream: resultOrError.value.bindings,
-            metadata: () => new Promise((resolve) => {
-              resolve(<any>'cached bindings');
-            }),
+            metadata: () =>
+              new Promise((resolve) => {
+                resolve(<any>"cached bindings");
+              }),
           },
         };
       }
     } else {
-      this.logInfo(action.context, 'query not found in the cache, performing the full execution');
+      this.logInfo(
+        action.context,
+        "query not found in the cache, performing the full execution"
+      );
     }
 
-    const failOnCacheMiss = action.context.get(ActorQueryProcessRemoteCache.KEY_FAIL_ON_CACHE_MISS);
+    const failOnCacheMiss = action.context.get(
+      ActorQueryProcessRemoteCache.KEY_FAIL_ON_CACHE_MISS
+    );
 
-    if (failOnCacheMiss === true && provenance == 'query processing') {
+    if (failOnCacheMiss === true && provenance == "query processing") {
       throw new Error(ActorQueryProcessRemoteCache.ERROR_FAIL_ON_CACHE_MISS);
     }
 
     const res = await this.fallBackQueryProcess.run(action, undefined);
-    if (res.result.type !== 'bindings') {
-      throw new Error(ActorQueryProcessRemoteCache.ERROR_ONLY_SELECT_QUERIES_SUPPORTED);
+    if (res.result.type !== "bindings") {
+      throw new Error(
+        ActorQueryProcessRemoteCache.ERROR_ONLY_SELECT_QUERIES_SUPPORTED
+      );
     }
-    res.result.bindingsStream.setProperty(ActorQueryProcessRemoteCache.STREAM_PROVENANCE_PROPERTY, { algorithm: provenance, id, complementaryQueries });
+    res.result.bindingsStream.setProperty(
+      ActorQueryProcessRemoteCache.STREAM_PROVENANCE_PROPERTY,
+      { algorithm: provenance, id, complementaryQueries }
+    );
     return res;
   }
 
-  public static async equalityCacheHit(q1: Readonly<Algebra.Operation>, q2: Readonly<Algebra.Operation>, _options?: IOptions): SafePromise<boolean> {
+  public static async equalityCacheHit(
+    q1: Readonly<Algebra.Operation>,
+    q2: Readonly<Algebra.Operation>,
+    _options?: IOptions
+  ): SafePromise<boolean> {
     return result(toSparql(q1) === toSparql(q2));
   }
 
   public async generateQueryContainmentCacheHitFunction(): Promise<CacheHitFunction> {
     const Z3 = await Z3_SOLVER.init();
 
-    return async (q1: Readonly<Algebra.Operation>, q2: Readonly<Algebra.Operation>, options?: IOptions): SafePromise<boolean> => {
-      const option: ISolverOption = options === undefined ?
-        {
-          sources: [],
-          semantic: SEMANTIC.BAG_SET,
-          z3: Z3,
-        } :
-        {
-          ...options,
-          semantic: SEMANTIC.BAG_SET,
-          z3: Z3,
-        };
+    return async (
+      q1: Readonly<Algebra.Operation>,
+      q2: Readonly<Algebra.Operation>,
+      options?: IOptions
+    ): SafePromise<boolean> => {
+      const option: ISolverOption =
+        options === undefined
+          ? {
+              sources: [],
+              semantic: SEMANTIC.BAG_SET,
+              z3: Z3,
+            }
+          : {
+              ...options,
+              semantic: SEMANTIC.BAG_SET,
+              z3: Z3,
+            };
       const resp = await isContained(q1, q2, option);
       if (isError(resp)) {
         return error(new Error(resp.error.error));
@@ -130,36 +183,44 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
 
   private async getCacheHitAlgorithm(): SafePromise<CacheHitFunction[]> {
     switch (this.cacheHitAlgorithm) {
-      case 'equality':
+      case "equality":
         return result([ActorQueryProcessRemoteCache.equalityCacheHit]);
-      case 'containment':
+      case "containment":
         return result([await this.generateQueryContainmentCacheHitFunction()]);
-      case 'all':
+      case "all":
         return result([
           ActorQueryProcessRemoteCache.equalityCacheHit,
           await this.generateQueryContainmentCacheHitFunction(),
         ]);
       default:
-        return error(new Error(`algorithm ${this.cacheHitAlgorithm} not supported`));
+        return error(
+          new Error(`algorithm ${this.cacheHitAlgorithm} not supported`)
+        );
     }
   }
 
-  public async queryCachedResults(action: IActionQueryProcess): SafePromise<CachingResult> {
-    const cacheLocation: CacheLocation | undefined = action.context.get(KeyRemoteCache.location);
+  public async queryCachedResults(
+    action: IActionQueryProcess
+  ): SafePromise<CachingResult> {
+    const cacheLocation: CacheLocation | undefined = action.context.get(
+      KeyRemoteCache.location
+    );
     if (cacheLocation === undefined) {
-      return error(new Error('cache URL does not exist'));
+      return error(new Error("cache URL does not exist"));
     }
 
-    const query: Algebra.Operation = typeof action.query === 'string' ? translate(action.query) : action.query;
+    const query: Algebra.Operation =
+      typeof action.query === "string" ? translate(action.query) : action.query;
 
-    const sources: any[] = action.context.get(new ActionContextKey('sources')) ?? [];
+    const sources: any[] =
+      action.context.get(new ActionContextKey("sources")) ?? [];
     const endpoints: string[] = [];
     const rdfStores: RDF.Store[] = [];
 
     for (const source of sources) {
-      if (typeof source === 'string') {
+      if (typeof source === "string") {
         endpoints.push(source);
-      } else if ('value' in source && typeof source.value === 'string') {
+      } else if ("value" in source && typeof source.value === "string") {
         endpoints.push(source.value);
       } else if (this.isRdfStore(source)) {
         rdfStores.push(source);
@@ -179,7 +240,7 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
       endpoints,
       cacheHitAlgorithms: cacheHitAlgorithmOrError.value,
       outputOption: OutputOption.BINDING_BAG,
-      customFetchFunction: <any>action.context.get(<any>"fetch")
+      customFetchFunction: <any>action.context.get(<any>"fetch"),
     } as const;
 
     const cacheResult = await getCachedQuads(input);
@@ -187,47 +248,169 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
       return cacheResult;
     }
     if (cacheResult.value === undefined) {
-      return error(new Error('no cached value'));
+      return error(new Error("no cached value"));
     }
-    const { value: { cache: cachedValues, query: cachedQuery, algorithmIndex, id } } = cacheResult;
+    const {
+      value: { cache: cachedValues, query: cachedQuery, algorithmIndex, id },
+    } = cacheResult;
 
     // When the all algorithm is selected the index for the equality algorithm is 0
-    if (this.cacheHitAlgorithm === Algorithm.EQ || (this.cacheHitAlgorithm === Algorithm.ALL && algorithmIndex === 0)) {
-      const bindings = ActorQueryProcessRemoteCache.bindingConvertion(cachedValues);
-      const it: BindingsStream = new ArrayIterator(bindings, { autoStart: false });
+    if (
+      this.cacheHitAlgorithm === Algorithm.EQ ||
+      (this.cacheHitAlgorithm === Algorithm.ALL && algorithmIndex === 0)
+    ) {
+      const bindings =
+        ActorQueryProcessRemoteCache.bindingConvertion(cachedValues);
+      const it: BindingsStream = new ArrayIterator(bindings, {
+        autoStart: false,
+      });
       return result({ bindings: it, id });
     }
 
-    const store = this.bindingToQuadStore(ActorQueryProcessRemoteCache.bindingConvertion(cachedValues), query);
-    const complementaryQueries = ActorQueryProcessRemoteCache.createComplementaryQuery(cachedQuery, query);
+    const blockSize: number =
+      action.context.get(KeyRemoteCache.valueClauseBlockSize) ??
+      Number.MAX_SAFE_INTEGER;
+
+    const store = this.bindingToQuadStore(
+      ActorQueryProcessRemoteCache.bindingConvertion(cachedValues),
+      query
+    );
+    const complementaryQueries =
+      ActorQueryProcessRemoteCache.createComplementaryQuery(
+        cachedQuery,
+        query,
+        cachedValues,
+        blockSize
+      );
     if (complementaryQueries === undefined) {
       return result({ stores: [store, ...rdfStores], id });
     }
-
+    const tripleStoreInsertion = [];
     for (const { query, endpoint: internalSources } of complementaryQueries) {
-      const newAction = {
-        ...action,
-        query,
-        context: action.context.set(new ActionContextKey('sources'), internalSources === undefined ? sources : [internalSources])
-        .set(KeysHttp.fetch, action.context.get(<any>"fetch"))
-        ,
-      };
-      const { result: complementaryResult } = await this.fallBackQueryProcess.run(newAction, undefined);
-      const { quadStream } = <IQueryOperationResultQuads>complementaryResult;
-      for await (const quad of quadStream) {
-        store.addQuad(quad);
+      for (const q of Array.isArray(query) ? query : [query]) {
+        const newAction = {
+          ...action,
+          query: q,
+          context: action.context
+            .set(
+              new ActionContextKey("sources"),
+              internalSources === undefined ? sources : [internalSources]
+            )
+            .set(KeysHttp.fetch, action.context.get(<any>"fetch")),
+        };
+        const { result: complementaryResult } =
+          await this.fallBackQueryProcess.run(newAction, undefined);
+        const { quadStream } = <IQueryOperationResultQuads>complementaryResult;
+        const insertionOp = new Promise<void>((resolve, reject) => {
+          quadStream.on("data", (quad) => {
+            store.addQuad(quad);
+          });
+          quadStream.on("end", () => {
+            resolve();
+          });
+          quadStream.on("error", (err) => {
+            reject(err);
+          });
+        });
+
+        tripleStoreInsertion.push(insertionOp);
       }
     }
-
+    await Promise.all(tripleStoreInsertion);
     return result({ stores: [store, ...rdfStores], id, complementaryQueries });
   }
 
+  private async interValueQuery(
+    superQuery: Algebra.Operation,
+    subQuery: Algebra.Operation,
+    values: Algebra.Values[],
+    variables: RDF.Variable[],
+    action: IActionQueryProcess,
+    store: RDF.Store
+  ): Promise<Algebra.Operation> {
+    if (values.length === 0) {
+      return subQuery;
+    }
+
+    const tps: RDF.Quad[] = [];
+    Util.recurseOperation(superQuery, {
+      [Algebra.types.SERVICE]: () => false,
+      [Algebra.types.PATTERN]: (op: Algebra.Pattern) => {
+        const tp = RDF_FACTORY.quad(
+          <any>op.subject,
+          <any>op.predicate,
+          <any>op.object,
+          <any>op.graph
+        );
+        tps.push(tp);
+        return true;
+      },
+    });
+
+    const patterns = tps.map((tp) =>
+      AF.createPattern(tp.subject, tp.predicate, tp.object)
+    );
+    const bgp = AF.createBgp(patterns);
+    const jointedOperation: Algebra.Operation[] = [bgp];
+    for (const value of values) {
+      jointedOperation.push(value);
+    }
+    const join = AF.createJoin(jointedOperation);
+    const selectQuery = AF.createProject(join, variables);
+    const newAction = {
+      ...action,
+      query: selectQuery,
+      context: action.context.set(KeysInitQuery.querySourcesUnidentified, [
+        store,
+      ]),
+    };
+    const res = await this.fallBackQueryProcess.run(newAction, undefined);
+    const bindings = (<IQueryOperationResultBindings>res.result).bindingsStream;
+
+    const newBindings: {
+      [key: string]: RDF.Literal | RDF.NamedNode;
+    }[] = [];
+
+    await new Promise<void>((resolve, reject) => {
+      bindings.on("data", (data: RDF.Bindings) => {
+        const currentBinding: {
+          [key: string]: RDF.Literal | RDF.NamedNode;
+        } = {};
+
+        for (const [variable, value] of data) {
+          currentBinding[variable.value] = <RDF.Literal | RDF.NamedNode>value;
+        }
+        newBindings.push(currentBinding);
+      });
+
+      bindings.on("end", () => resolve());
+
+      bindings.on("error", (err) => reject(err));
+    });
+
+    const resultingValues = AF.createValues(variables, newBindings);
+    const resultingQuery = Util.mapOperation(subQuery, {
+      [Algebra.types.JOIN]: (op: Algebra.Join) => {
+        op.input.push(resultingValues);
+        return {
+          result: op,
+          recurse: false,
+          copyMetadata: true,
+        };
+      },
+    });
+
+    return resultingQuery;
+  }
+
   private isRdfStore(source: QuerySourceUnidentified): source is RDF.Store {
-    return typeof source !== 'string' && ((
-      'value' in source &&
-      typeof source.value !== 'string' &&
-      'match' in source.value) ||
-      ('match' in source));
+    return (
+      typeof source !== "string" &&
+      (("value" in source &&
+        typeof source.value !== "string" &&
+        "match" in source.value) ||
+        "match" in source)
+    );
   }
 
   public static bindingConvertion(bindings: IBindings[]): Bindings[] {
@@ -239,12 +422,21 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
     return resp;
   }
 
-  private bindingToQuadStore(bindings: Bindings[], query: Algebra.Operation): RdfStore {
+  private bindingToQuadStore(
+    bindings: Bindings[],
+    query: Algebra.Operation
+  ): RdfStore {
     const store = RdfStore.createDefault();
     const template = this.queryToTemplate(query);
     const unprojectedVariables = this.getUnprojectedVariables(query);
     for (const [i, binding] of bindings.entries()) {
-      const quads = bindTemplateWithProjection(RDF_FACTORY, binding, template, i, unprojectedVariables);
+      const quads = bindTemplateWithProjection(
+        RDF_FACTORY,
+        binding,
+        template,
+        i,
+        unprojectedVariables
+      );
       for (const quad of quads) {
         store.addQuad(quad);
       }
@@ -262,7 +454,7 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
           <RDF.Quad_Subject>op.subject,
           <RDF.Quad_Predicate>op.predicate,
           <RDF.Quad_Object>op.object,
-          <RDF.Quad_Graph>op.graph,
+          <RDF.Quad_Graph>op.graph
         );
         template.push(quad);
         return true;
@@ -286,13 +478,13 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
         return true;
       },
       [Algebra.types.PATTERN]: (op: Algebra.Pattern) => {
-        if (op.subject.termType === 'Variable') {
+        if (op.subject.termType === "Variable") {
           usedVariables.add(op.subject.value);
         }
-        if (op.predicate.termType === 'Variable') {
+        if (op.predicate.termType === "Variable") {
           usedVariables.add(op.predicate.value);
         }
-        if (op.object.termType === 'Variable') {
+        if (op.object.termType === "Variable") {
           usedVariables.add(op.object.value);
         }
         return false;
@@ -315,17 +507,35 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
    * @param superQuery
    * @param subQuery
    */
-  public static createComplementaryQuery(superQuery: Algebra.Operation, subQuery: Algebra.Operation, bindings: IBindings[] = []): IComplementaryQuery[] | undefined {
+  public static createComplementaryQuery(
+    superQuery: Algebra.Operation,
+    subQuery: Algebra.Operation,
+    bindings: IBindings[] = [],
+    blockSize: number
+  ): IComplementaryQuery[] | undefined {
     const resp: IComplementaryQuery[] = [];
-    this.createComplementaryQueryRecurs(superQuery, subQuery, resp, undefined, bindings);
+    this.createComplementaryQueryRecurs(
+      superQuery,
+      subQuery,
+      resp,
+      undefined,
+      bindings,
+      blockSize
+    );
     return resp.length === 0 ? undefined : resp;
   }
 
-  private static createComplementaryQueryRecurs(superQuery: Algebra.Operation, subQuery: Algebra.Operation, acc: IComplementaryQuery[], endpoint: string | undefined, bindings: IBindings[]): void {
+  private static createComplementaryQueryRecurs(
+    superQuery: Algebra.Operation,
+    subQuery: Algebra.Operation,
+    acc: IComplementaryQuery[],
+    endpoint: string | undefined,
+    bindings: IBindings[],
+    blockSize: number
+  ): void {
     const tps: RDF.Quad[] = [];
 
     Util.recurseOperation(superQuery, {
-
       [Algebra.types.SERVICE]: (op: Algebra.Service) => {
         let subService: Algebra.Operation | undefined;
         Util.recurseOperation(subQuery, {
@@ -339,12 +549,24 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
         if (subService === undefined) {
           return false;
         }
-        this.createComplementaryQueryRecurs(op.input, subService, acc, op.name.value, bindings);
+        this.createComplementaryQueryRecurs(
+          op.input,
+          subService,
+          acc,
+          op.name.value,
+          bindings,
+          blockSize
+        );
 
         return false;
       },
       [Algebra.types.PATTERN]: (op: Algebra.Pattern) => {
-        const tp = RDF_FACTORY.quad(<any>op.subject, <any>op.predicate, <any>op.object, <any>op.graph);
+        const tp = RDF_FACTORY.quad(
+          <any>op.subject,
+          <any>op.predicate,
+          <any>op.object,
+          <any>op.graph
+        );
         tps.push(tp);
         return true;
       },
@@ -356,57 +578,74 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
     }
     const queryValuesClauses = this.extractValueClauses(subQuery);
 
-    const patterns = uncoloredTps.map(tp => AF.createPattern(tp.subject, tp.predicate, tp.object));
+    const patterns = uncoloredTps.map((tp) =>
+      AF.createPattern(tp.subject, tp.predicate, tp.object)
+    );
     const bgp = AF.createBgp(patterns);
-    const values = this.createValueClauseFromBindings(patterns, bindings);
-    let construct: Algebra.Construct;
-    if (values === undefined && queryValuesClauses.length === 0) {
-      construct = AF.createConstruct(bgp, patterns);
-    } else {
-      const jointedOperations = values!== undefined?[values, bgp]: [bgp];
-      for(const value of queryValuesClauses){
-        jointedOperations.push(value);
+    let constructs: Algebra.Construct[] = [];
+    const values = this.createValueClauseFromBindings(
+      patterns,
+      bindings,
+      blockSize
+    );
+    for (const value of values ?? [undefined]) {
+      let construct: Algebra.Construct;
+
+      if (value === undefined && queryValuesClauses.length === 0) {
+        construct = AF.createConstruct(bgp, patterns);
+      } else {
+        const jointedOperations = value !== undefined ? [value, bgp] : [bgp];
+        for (const queryValuesClause of queryValuesClauses) {
+          jointedOperations.push(queryValuesClause);
+        }
+        const join = AF.createJoin(jointedOperations);
+        construct = AF.createConstruct(join, patterns);
       }
-      const join = AF.createJoin(jointedOperations);
-      construct = AF.createConstruct(join, patterns);
+      constructs.push(construct);
     }
-    acc.push({ query: construct, endpoint });
+
+    acc.push({ query: constructs, endpoint, superQuery });
   }
 
-  private static extractValueClauses(query: Algebra.Operation): Algebra.Values[]{
+  private static extractValueClauses(
+    query: Algebra.Operation
+  ): Algebra.Values[] {
     const resp: Algebra.Values[] = [];
     Util.recurseOperation(query, {
-      [Algebra.types.VALUES]: (op:Algebra.Values)=>{
+      [Algebra.types.VALUES]: (op: Algebra.Values) => {
         resp.push(op);
         return true;
       },
-      [Algebra.types.SERVICE]: ()=>{
+      [Algebra.types.SERVICE]: () => {
         return false;
-      }
+      },
     });
 
     return resp;
   }
 
-  private static createValueClauseFromBindings(patterns: Algebra.Pattern[], bindings: IBindings[]): Algebra.Values | undefined {
+  private static createValueClauseFromBindings(
+    patterns: Algebra.Pattern[],
+    bindings: IBindings[],
+    blockSize: number
+  ): Algebra.Values[] | undefined {
     const variables: Set<string> = new Set();
     const validBindings: Record<string, RDF.Literal | RDF.NamedNode>[] = [];
     const bindingVariables: Set<string> = new Set();
 
     for (const pattern of patterns) {
-      if (pattern.subject.termType === 'Variable') {
+      if (pattern.subject.termType === "Variable") {
         variables.add(pattern.subject.value);
       }
 
-      if (pattern.predicate.termType === 'Variable') {
+      if (pattern.predicate.termType === "Variable") {
         variables.add(pattern.predicate.value);
       }
 
-      if (pattern.object.termType === 'Variable') {
+      if (pattern.object.termType === "Variable") {
         variables.add(pattern.object.value);
       }
     }
-
     for (const binding of bindings) {
       const currentBinding: IBindings = {};
       for (const [variable, value] of Object.entries(binding)) {
@@ -423,18 +662,42 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
       return undefined;
     }
 
-    const rdfVariables = [...bindingVariables].map(el => RDF_FACTORY.variable(el));
-    const values = AF.createValues(rdfVariables, validBindings);
+    const rdfVariables = [...bindingVariables].map((el) =>
+      RDF_FACTORY.variable(el)
+    );
+
+    const values: Algebra.Values[] = [];
+    let currentBindings = [];
+    for (const [i, validBinding] of validBindings.entries()) {
+      currentBindings.push(validBinding);
+      if ((i + 1) % blockSize === 0) {
+        const currentValue = AF.createValues(rdfVariables, currentBindings);
+        values.push(currentValue);
+        currentBindings = [];
+      } else if (i === validBindings.length - 1) {
+        const currentValue = AF.createValues(rdfVariables, currentBindings);
+        values.push(currentValue);
+        currentBindings = [];
+      }
+    }
     return values;
   }
 
-  public static colorQuery(subQuery: Algebra.Operation, superQueryTps: RDF.Quad[]): RDF.Quad[] {
+  public static colorQuery(
+    subQuery: Algebra.Operation,
+    superQueryTps: RDF.Quad[]
+  ): RDF.Quad[] {
     const tps: Map<string, RDF.Quad> = new Map();
 
     Util.recurseOperation(subQuery, {
       [Algebra.types.SERVICE]: () => false,
       [Algebra.types.PATTERN]: (op: Algebra.Pattern) => {
-        const tp = RDF_FACTORY.quad(<any>op.subject, <any>op.predicate, <any>op.object, <any>op.graph);
+        const tp = RDF_FACTORY.quad(
+          <any>op.subject,
+          <any>op.predicate,
+          <any>op.object,
+          <any>op.graph
+        );
         const index = `<${tp.subject.value}> <${tp.predicate.value}> <${tp.object.value}> <${tp.graph.value}>`;
         tps.set(index, tp);
         return true;
@@ -458,10 +721,15 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
    * @param subTp
    * @returns
    */
-  public static compatibleTriplePatterns(superTp: RDF.Quad, subTp: RDF.Quad): boolean {
-    return this.compatibleTerms(superTp.subject, subTp.subject) &&
+  public static compatibleTriplePatterns(
+    superTp: RDF.Quad,
+    subTp: RDF.Quad
+  ): boolean {
+    return (
+      this.compatibleTerms(superTp.subject, subTp.subject) &&
       this.compatibleTerms(superTp.predicate, subTp.predicate) &&
-      this.compatibleTerms(superTp.object, subTp.object);
+      this.compatibleTerms(superTp.object, subTp.object)
+    );
   }
 
   /**
@@ -471,38 +739,66 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
    * @param subTerm
    * @returns
    */
-  public static compatibleTerms(superTerm: RDF.Term, subTerm: RDF.Term): boolean {
+  public static compatibleTerms(
+    superTerm: RDF.Term,
+    subTerm: RDF.Term
+  ): boolean {
     if (superTerm.equals(subTerm)) {
       return true;
     }
-    return superTerm.termType === 'Variable' && subTerm.termType === 'NamedNode';
+    return (
+      superTerm.termType === "Variable" && subTerm.termType === "NamedNode"
+    );
+  }
+
+  private static variablesFromConstruct(
+    query: Algebra.Construct
+  ): RDF.Variable[] {
+    const resp: RDF.Variable[] = [];
+
+    for (const tp of query.template) {
+      if (tp.subject.termType === "Variable") {
+        resp.push(tp.subject);
+      }
+      if (tp.predicate.termType === "Variable") {
+        resp.push(tp.predicate);
+      }
+      if (tp.object.termType === "Variable") {
+        resp.push(tp.object);
+      }
+    }
+    return resp;
   }
 }
 
-export type CachingResult = {
-  bindings: BindingsStream;
-  id: RDF.Term;
-} | {
-  stores: RDF.Store[];
-  complementaryQueries?: IComplementaryQuery[];
-  id: RDF.Term;
-};
+export type CachingResult =
+  | {
+      bindings: BindingsStream;
+      id: RDF.Term;
+    }
+  | {
+      stores: RDF.Store[];
+      complementaryQueries?: IComplementaryQuery[];
+      id: RDF.Term;
+    };
 
-export interface IActorQueryProcessRemoteCacheArgs extends IActorQueryProcessArgs {
+export interface IActorQueryProcessRemoteCacheArgs
+  extends IActorQueryProcessArgs {
   fallBackQueryProcess: ActorQueryProcess;
   cacheHitAlgorithm: Algorithm;
 }
 
 export interface IComplementaryQuery {
-  query: Algebra.Operation;
+  query: Algebra.Construct | Algebra.Construct[];
+  superQuery: Algebra.Operation;
   endpoint?: string;
 }
 
 export enum Algorithm {
-  EQ = 'equality',
-  CONTAINMENT = 'containment',
-  ALL = 'all',
+  EQ = "equality",
+  CONTAINMENT = "containment",
+  ALL = "all",
 }
 
-export const QUERY_PROCESSING_LABEL = 'query processing';
+export const QUERY_PROCESSING_LABEL = "query processing";
 type Provenance = Algorithm | typeof QUERY_PROCESSING_LABEL;

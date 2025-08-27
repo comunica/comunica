@@ -1,0 +1,21 @@
+<#q1> a <http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryForm>, <http://www.w3.org/2001/sw/DataAccess/tests/test-query#QuerySelect>, <http://www.w3.org/ns/shacl#SPARQLExecutable>;
+    <http://www.w3.org/2001/sw/DataAccess/tests/test-query#query> <http://localhost:3000/test/querycache/Z8oK7S.rq>;
+    <http://www.w3.org/ns/shacl#select> '''
+PREFIX rh: <http://rdf.rhea-db.org/>
+PREFIX up: <http://purl.uniprot.org/core/>
+
+SELECT ?uniprot ?rhea ?accession ?equation
+WHERE {
+  SERVICE <https://sparql.uniprot.org/sparql> {
+      ?uniprot up:reviewed true .
+      ?uniprot up:organism ?taxid .
+      ?uniprot up:annotation/up:catalyticActivity/up:catalyzedReaction ?rhea . # where ?rhea comes from query upwards
+  }
+  ?rhea rh:accession ?accession .
+  ?rhea rh:equation ?equation .
+}''';
+    <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#result> <http://127.0.0.1:9999/cached_query.json>;
+    <http://www.w3.org/ns/sparql-service-description#endpoint> <#8ee310fc-c4af-42da-921b-b3042544ce83q1>;
+    <http://purl.org/dc/terms/created> "2025-03-27T16:17:07.669Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
+<#8ee310fc-c4af-42da-921b-b3042544ce83q1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <https://sparql.rhea-db.org/sparql/>;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>.

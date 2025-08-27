@@ -1,6 +1,6 @@
 {
-  "name": "actor-query-process-remote-cache",
-  "version": "0.1.1",
+  "name": "@comunica/actor-query-process-remote-cache",
+  "version": "1.0.0",
   "description": "A remote-cache query-process actor",
   "lsd:module": true,
   "main": "lib/index.js",
@@ -53,7 +53,7 @@
     "rdf-terms":"^2.0.0",
     "result-interface": "^2.3.3",
     "sparql-cache-client": "^0.2.3",
-    "sparql-federated-query-containment": "^0.0.2",
+    "sparql-federated-query-containment": "^0.0.3",
     "sparqljson-parse": "^3.1.0",
     "z3-solver": "^4.15.2",
     "sparqlalgebrajs":"^5.0.1"
