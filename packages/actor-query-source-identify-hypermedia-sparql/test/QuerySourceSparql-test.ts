@@ -900,7 +900,7 @@ describe('QuerySourceSparql', () => {
         expect(mediatorHttp.mediate).toHaveBeenCalledWith({
           context: ctx,
           init: {
-            body: expect.any(URLSearchParams),
+            body: new URLSearchParams({ query: 'SELECT (COUNT(*) AS ?count) WHERE { undefined:s ?p undefined:o. }' }),
             headers: expect.anything(),
             method: 'POST',
           },
