@@ -5967,24 +5967,6 @@ fetch-sparql-endpoint@^5.1.0:
     stream-to-string "^1.0.0"
     yargs "^17.0.0"
 
-fetch-sparql-endpoint@^6.1.0:
-  version "6.1.0"
-  resolved "https://registry.npmjs.org/fetch-sparql-endpoint/-/fetch-sparql-endpoint-6.1.0.tgz"
-  integrity sha512-Um/bTmYjkKBe7KLto5hq75zpe/ii4tWQlydvIsB7ssswlN+XywYycQbqKORUaZqnuU6nUqiHp8Ni9JOo3J5JlQ==
-  dependencies:
-    "@types/n3" "^1.0.0"
-    "@types/readable-stream" "^4.0.0"
-    "@types/sparqljs" "^3.0.0"
-    is-stream "^2.0.0"
-    n3 "^1.0.0"
-    rdf-string "^2.0.0"
-    readable-from-web "^1.0.0"
-    sparqljs "^3.0.0"
-    sparqljson-parse "^3.0.0"
-    sparqlxml-parse "^3.0.0"
-    stream-to-string "^1.0.0"
-    yargs "^17.0.0"
-
 fetch-sparql-endpoint@^6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/fetch-sparql-endpoint/-/fetch-sparql-endpoint-6.2.0.tgz#a9989ca5d46ba68824bd64f6b98fba78bf39e0f9"

@@ -852,7 +852,7 @@ describe('QuerySourceSparql', () => {
       });
     });
 
-    describe('acceptPost', () => {
+    describe('when acceptPost is defined', () => {
       let getSource: (arg0: string[]) => QuerySourceSparql;
       let operationIn: Algebra.Operation;
       let expectedResult: RDF.Bindings[];
