@@ -1,6 +1,3 @@
-import { QuerySourceSkolemized } from '@comunica/actor-context-preprocess-query-source-skolemize';
-import { QuerySourceHypermedia } from '@comunica/actor-query-source-identify-hypermedia';
-import { QuerySourceSparql } from '@comunica/actor-query-source-identify-hypermedia-sparql';
 import type {
   IActionOptimizeQueryOperation,
   IActorOptimizeQueryOperationArgs,
@@ -14,10 +11,14 @@ import type {
   ComunicaDataFactory,
   FragmentSelectorShape,
   IActionContext,
-  IQuerySource,
   IQuerySourceWrapper,
 } from '@comunica/types';
-import { doesShapeAcceptOperation, getExpressionVariables, getOperationSource } from '@comunica/utils-query-operation';
+import {
+  doesShapeAcceptExtensionFunction,
+  doesShapeAcceptOperation,
+  getExpressionVariables,
+  getOperationSource,
+} from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { mapTermsNested } from 'rdf-terms';
 import { Factory, Algebra, Util } from 'sparqlalgebrajs';
@@ -176,12 +177,11 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     // Don't push down extension functions comunica support, but an endpoint doesn't
     if (expression.expressionType === Algebra.expressionTypes.NAMED && context.has(KeysInitQuery.extensionFunctions)) {
       const comunicaFunctions = context.getSafe(KeysInitQuery.extensionFunctions);
-      const functionName = expression.name.value;
+      const extensionFunction = expression.name.value;
       if (
-        functionName in comunicaFunctions &&
+        extensionFunction in comunicaFunctions &&
         // Checks if there's a source that does not support the extension function
-        sources.some((source: { source: IQuerySource }) =>
-          !this.sourceSupportsExtensionFunction(source.source, functionName))
+        sources.some(source => !doesShapeAcceptExtensionFunction(sourceShapes.get(source)!, extensionFunction))
       ) {
         return false;
       }
@@ -193,16 +193,6 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     }
 
     // Don't push down in all other cases
-    return false;
-  }
-
-  private sourceSupportsExtensionFunction(source: IQuerySource, functionName: string): boolean | undefined {
-    if (source instanceof QuerySourceSkolemized) {
-      return this.sourceSupportsExtensionFunction(source.innerSource, functionName);
-    }
-    if (source instanceof QuerySourceSparql || source instanceof QuerySourceHypermedia) {
-      return source.extensionFunctions.includes(functionName);
-    }
     return false;
   }
 

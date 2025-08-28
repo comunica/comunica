@@ -194,6 +194,10 @@ export type FragmentSelectorShape = {
    * If bindings can be passed into the source as a filter.
    */
   filterBindings?: true;
+  /**
+   * The extension functions this source supports.
+   */
+  extensionFunctions?: string[];
 } | {
   type: 'conjunction';
   children: FragmentSelectorShape[];

@@ -421,10 +421,16 @@ describe('System test: QuerySparql', () => {
             .toThrow('Illegal simultaneous usage of extensionFunctionCreator and extensionFunctions in context');
         });
 
+        /**
+         * These tests are integration tests to check the correct behaviour of filter pushdown with extension functions.
+         * Comunica should not pushdown when it supports the extension function, but an endpoint doesn't.
+         * If comunica doesn't support it or all parties do, then the filter pushdown is as normal.
+         */
         describe('filter pushdown behaviour with extension functions', () => {
           let containsFilter: boolean;
           let endpoint1: string;
           let endpoint2: string;
+          let createMockedFetch: (arg0: boolean, arg1: boolean) => (input: string) => Promise<Response>;
           let createContext: (arg0: boolean, arg1: boolean) => any;
 
           beforeEach(async() => {
@@ -432,23 +438,21 @@ describe('System test: QuerySparql', () => {
             containsFilter = false;
             endpoint1 = 'http://example.com/1/sparql';
             endpoint2 = 'http://example.com/2/sparql';
-            createContext = (endpoint1SupportsFunction: boolean, endpoint2SupportsFunction: boolean) => <any> {
-              sources: [ endpoint1, endpoint2 ],
-              extensionFunctions: baseFunctions,
-              fetch: (input: string) => {
+            createMockedFetch = (endpoint1SupportsFunction: boolean, endpoint2SupportsFunction: boolean) =>
+              (input: string) => {
                 if (input.includes('FILTER')) {
                   containsFilter = true;
                 }
                 const createServiceDescription = (supportsFunction: boolean, endpoint: string): string =>
                   supportsFunction ?
-                    `
+                  `
                     @prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
                     <${endpoint}> sd:extensionFunction "http://example.org/functions#allowAll" .
                   ` :
-                    ``;
+                  ``;
                 if (input.includes(endpoint1)) {
                   if (input === endpoint1) {
-                    // Service description fetch on endpoint1
+                  // Service description fetch on endpoint1
                     return Promise.resolve(new Response(
                       createServiceDescription(endpoint1SupportsFunction, endpoint1),
                       { status: 200, headers: { 'Content-Type': 'text/turtle' }},
@@ -456,12 +460,12 @@ describe('System test: QuerySparql', () => {
                   }
                   // Query fetch on endpoint1
                   return Promise.resolve(new Response(
-                    ``,
-                    { status: 200, headers: { 'Content-Type': 'application/n-quads' }},
+                  ``,
+                  { status: 200, headers: { 'Content-Type': 'application/n-quads' }},
                   ));
                 }
                 if (input === endpoint2) {
-                  // Service description fetch on endpoint2
+                // Service description fetch on endpoint2
                   return Promise.resolve(new Response(
                     createServiceDescription(endpoint2SupportsFunction, endpoint2),
                     { status: 200, headers: { 'Content-Type': 'text/turtle' }},
@@ -469,10 +473,14 @@ describe('System test: QuerySparql', () => {
                 }
                 // Query fetch on endpoint2
                 return Promise.resolve(new Response(
-                  ``,
-                  { status: 200, headers: { 'Content-Type': 'application/n-quads' }},
+                ``,
+                { status: 200, headers: { 'Content-Type': 'application/n-quads' }},
                 ));
-              },
+              };
+            createContext = (arg0: boolean, arg1: boolean) => <any> {
+              sources: [ endpoint1, endpoint2 ],
+              extensionFunctions: baseFunctions,
+              fetch: createMockedFetch(arg0, arg1),
             };
           });
 
@@ -492,6 +500,16 @@ describe('System test: QuerySparql', () => {
             await engine.query(baseQuery(funcAllow), createContext(false, false));
 
             expect(containsFilter).toBeFalsy();
+          });
+
+          it('do filter pushdown if comunica doesn\'t support the extension function', async() => {
+            const context: QueryStringContext = <QueryStringContext> {
+              sources: [ endpoint1, endpoint2 ],
+              fetch: createMockedFetch(false, false),
+            };
+            await engine.query(baseQuery(funcAllow), context);
+
+            expect(containsFilter).toBeTruthy();
           });
         });
 

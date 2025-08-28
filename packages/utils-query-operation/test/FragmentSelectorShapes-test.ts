@@ -1,5 +1,6 @@
 import { Algebra, Factory } from 'sparqlalgebrajs';
 import {
+  doesShapeAcceptExtensionFunction,
   doesShapeAcceptOperation,
 } from '../lib/FragmentSelectorShapes';
 
@@ -337,6 +338,77 @@ describe('FragmentSelectorShapes', () => {
         AF.createPattern(undefined!, undefined!, undefined!),
         undefined!,
       ))).toBeTruthy();
+    });
+  });
+
+  describe('#doesShapeAcceptExtensionFunction', () => {
+    it('operation type (1)', () => {
+      expect(doesShapeAcceptExtensionFunction({
+        type: 'operation',
+        operation: { operationType: 'wildcard' },
+        joinBindings: true,
+        extensionFunctions: [ 'mock' ],
+      }, 'mock')).toBeTruthy();
+    });
+
+    it('operation type (2)', () => {
+      expect(doesShapeAcceptExtensionFunction({
+        type: 'operation',
+        operation: { operationType: 'wildcard' },
+        joinBindings: true,
+      }, 'mock')).toBeFalsy();
+    });
+
+    it('conjunction type', () => {
+      expect(doesShapeAcceptExtensionFunction({
+        type: 'conjunction',
+        children: [
+          {
+            type: 'operation',
+            operation: { operationType: 'wildcard' },
+            joinBindings: true,
+            extensionFunctions: [ 'mock1' ],
+          },
+          {
+            type: 'operation',
+            operation: { operationType: 'wildcard' },
+            joinBindings: true,
+            extensionFunctions: [ 'mock2' ],
+          },
+        ],
+      }, 'mock1')).toBeFalsy();
+    });
+
+    it('disjunction type', () => {
+      expect(doesShapeAcceptExtensionFunction({
+        type: 'disjunction',
+        children: [
+          {
+            type: 'operation',
+            operation: { operationType: 'wildcard' },
+            joinBindings: true,
+            extensionFunctions: [ 'mock1' ],
+          },
+          {
+            type: 'operation',
+            operation: { operationType: 'wildcard' },
+            joinBindings: true,
+            extensionFunctions: [ 'mock2' ],
+          },
+        ],
+      }, 'mock1')).toBeTruthy();
+    });
+
+    it('arity type', () => {
+      expect(doesShapeAcceptExtensionFunction({
+        type: 'arity',
+        child: {
+          type: 'operation',
+          operation: { operationType: 'wildcard' },
+          joinBindings: true,
+          extensionFunctions: [ 'mock' ],
+        },
+      }, 'mock')).toBeTruthy();
     });
   });
 });

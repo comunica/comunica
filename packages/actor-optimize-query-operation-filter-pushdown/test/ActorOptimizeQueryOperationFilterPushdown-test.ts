@@ -1,7 +1,7 @@
 import { QuerySourceSparql } from '@comunica/actor-query-source-identify-hypermedia-sparql';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import type { FragmentSelectorShape, IQuerySourceWrapper } from '@comunica/types';
+import type { IQuerySourceWrapper } from '@comunica/types';
 import { assignOperationSource, getExpressionVariables } from '@comunica/utils-query-operation';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra, Factory } from 'sparqlalgebrajs';
@@ -283,10 +283,12 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           ]),
         );
         const src = <any> {};
+        const shapes = new Map();
+        shapes.set(src, <any> {});
         const context = new ActionContext().set(KeysInitQuery.extensionFunctions, {
           'https://example.com/functions#mock': async args => args[0],
         });
-        expect(actor.shouldAttemptPushDown(op, [ src ], new Map(), context)).toBeFalsy();
+        expect(actor.shouldAttemptPushDown(op, [ src ], shapes, context)).toBeFalsy();
       });
 
       it('returns true if both comunica and all sources support the extensionFunction', async() => {
@@ -318,29 +320,11 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             [ 'https://example.com/functions#mock' ],
           ),
         };
-        const shapes = new Map();
-        shapes.set(src, {
-          type: 'disjunction',
-          children: [
-            {
-              type: 'operation',
-              operation: {
-                operationType: 'type',
-                type: Algebra.types.FILTER,
-              },
-            },
-            {
-              type: 'operation',
-              operation: {
-                operationType: 'type',
-                type: Algebra.types.NOP,
-              },
-            },
-          ],
-        } satisfies FragmentSelectorShape);
         const context = new ActionContext().set(KeysInitQuery.extensionFunctions, {
           'https://example.com/functions#mock': async args => args[0],
         });
+        const shapes = new Map();
+        shapes.set(src, await src.source.getSelectorShape(context));
         expect(actor.shouldAttemptPushDown(op, [ src ], shapes, context)).toBeTruthy();
       });
 
@@ -374,31 +358,12 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           ),
         };
         const src2 = <any> {};
-        const shape = {
-          type: 'disjunction',
-          children: [
-            {
-              type: 'operation',
-              operation: {
-                operationType: 'type',
-                type: Algebra.types.FILTER,
-              },
-            },
-            {
-              type: 'operation',
-              operation: {
-                operationType: 'type',
-                type: Algebra.types.NOP,
-              },
-            },
-          ],
-        } satisfies FragmentSelectorShape;
-        const shapes = new Map();
-        shapes.set(src1, shape);
-        shapes.set(src2, shape);
         const context = new ActionContext().set(KeysInitQuery.extensionFunctions, {
           'https://example.com/functions#mock': async args => args[0],
         });
+        const shapes = new Map();
+        shapes.set(src1, await src1.source.getSelectorShape(context));
+        shapes.set(src2, <any> {});
         expect(actor.shouldAttemptPushDown(op, [ src1, src2 ], shapes, context)).toBeFalsy();
       });
 

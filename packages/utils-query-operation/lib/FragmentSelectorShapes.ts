@@ -76,11 +76,40 @@ function doesShapeAcceptOperationRecurseOperation(
       return false;
     }
   }
-  if (operation.patterns && !operation.patterns
-    .every((input: Algebra.Pattern) => doesShapeAcceptOperationRecurseShape(shapeTop, shapeTop, input, options))) {
-    return false;
+  return !(operation.patterns && !operation.patterns
+    .every((input: Algebra.Pattern) => doesShapeAcceptOperationRecurseShape(shapeTop, shapeTop, input, options)));
+}
+
+/**
+ * Check if the given shape accepts the given extension Function.
+ * @param shape A shape to test the query operation against.
+ * @param extensionFunction An extension function to test.
+ */
+export function doesShapeAcceptExtensionFunction(
+  shape: FragmentSelectorShape,
+  extensionFunction: string,
+): boolean {
+  return doesShapeAcceptExtensionFunctionRecurse(shape, extensionFunction);
+}
+
+function doesShapeAcceptExtensionFunctionRecurse(
+  shape: FragmentSelectorShape,
+  extensionFunction: string,
+): boolean {
+  // Recurse into the shape
+  if (shape.type === 'conjunction') {
+    return shape.children
+      .every(child => doesShapeAcceptExtensionFunctionRecurse(child, extensionFunction));
   }
-  return true;
+  if (shape.type === 'disjunction') {
+    return shape.children
+      .some(child => doesShapeAcceptExtensionFunctionRecurse(child, extensionFunction));
+  }
+  if (shape.type === 'arity') {
+    return doesShapeAcceptExtensionFunctionRecurse(shape.child, extensionFunction);
+  }
+
+  return <boolean> shape.extensionFunctions?.includes(extensionFunction);
 }
 
 export type FragmentSelectorShapeTestFlags = {
