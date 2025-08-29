@@ -333,7 +333,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
         expect(actor.shouldAttemptPushDown(op, [ src ], shapes, extensionFunctions)).toBeTruthy();
       });
 
-      it('returns false if comunica and some sources support the extensionFunction, but not all sources', async() => {
+      it('returns true if comunica and some sources support the extensionFunction, but not all sources', async() => {
         const op = AF.createFilter(
           AF.createNop(),
           AF.createNamedExpression(DF.namedNode('https://example.com/functions#mock'), [
@@ -374,7 +374,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           operation: { operationType: 'wildcard' },
           joinBindings: true,
         });
-        expect(actor.shouldAttemptPushDown(op, [ src1, src2 ], shapes, extensionFunctions)).toBeFalsy();
+        expect(actor.shouldAttemptPushDown(op, [ src1, src2 ], shapes, extensionFunctions)).toBeTruthy();
       });
 
       it('returns true if federated with filter support for one', () => {

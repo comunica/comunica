@@ -174,12 +174,12 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
       return true;
     }
 
-    // Don't push down extension functions comunica support, but an endpoint doesn't
+    // Don't push down extension functions comunica support, but no endpoint does
     if (extensionFunctions && expression.expressionType === Algebra.expressionTypes.NAMED &&
         expression.name.value in extensionFunctions &&
-        // Checks if there's a source that does not support the extension function
-        sources.some(source =>
-          !doesShapeAcceptOperation(sourceShapes.get(source)!, expression))
+        // Checks if there's not a single source that supports the extension function
+        !sources.some(source =>
+          doesShapeAcceptOperation(sourceShapes.get(source)!, expression))
     ) {
       return false;
     }

@@ -423,8 +423,8 @@ describe('System test: QuerySparql', () => {
 
         /**
          * These tests are integration tests to check the correct behaviour of filter pushdown with extension functions.
-         * Comunica should not pushdown when it supports the extension function, but an endpoint doesn't.
-         * If comunica doesn't support it or all parties do, then the filter pushdown is as normal.
+         * Comunica should not pushdown when it supports the extension function, but no endpoint does.
+         * If comunica doesn't support it, then the filter pushdown behaviour is as normal.
          */
         describe('filter pushdown behaviour with extension functions', () => {
           let containsFilter: boolean;
@@ -490,10 +490,10 @@ describe('System test: QuerySparql', () => {
             expect(containsFilter).toBeTruthy();
           });
 
-          it('don\'t filter pushdown if one endpoint doesn\'t support the extension function', async() => {
+          it('do filter pushdown if one endpoint doesn\'t support the extension function', async() => {
             await engine.query(baseQuery(funcAllow), createContext(true, false));
 
-            expect(containsFilter).toBeFalsy();
+            expect(containsFilter).toBeTruthy();
           });
 
           it('don\'t filter pushdown if both endpoints don\'t support the extension function', async() => {
