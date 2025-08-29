@@ -173,7 +173,8 @@ export type FragmentSelectorShape = {
     extensionFunctions?: string[];
   } | {
     /**
-     * All possible operations, except NamedExpressions (extension functions), are accepted by this shape.
+     * All possible operations are accepted by this shape.
+     * As exception, extension functions are not accepted through wildcards, and must be.
      */
     operationType: 'wildcard';
   };
