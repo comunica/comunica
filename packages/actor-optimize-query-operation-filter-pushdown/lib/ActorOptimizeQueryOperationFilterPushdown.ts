@@ -14,7 +14,6 @@ import type {
   IQuerySourceWrapper,
 } from '@comunica/types';
 import {
-  doesShapeAcceptExtensionFunction,
   doesShapeAcceptOperation,
   getExpressionVariables,
   getOperationSource,
@@ -178,10 +177,17 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     // Don't push down extension functions comunica support, but an endpoint doesn't
     if (comunicaFunctions && expression.expressionType === Algebra.expressionTypes.NAMED) {
       const extensionFunction = expression.name.value;
+      const extensionFunctionExpression: Algebra.NamedExpression = {
+        expressionType: Algebra.expressionTypes.NAMED,
+        name: <RDF.NamedNode> { value: extensionFunction },
+        args: [],
+        type: Algebra.types.EXPRESSION,
+      };
       if (
         extensionFunction in comunicaFunctions &&
         // Checks if there's a source that does not support the extension function
-        sources.some(source => !doesShapeAcceptExtensionFunction(sourceShapes.get(source)!, extensionFunction))
+        sources.some(source =>
+          !doesShapeAcceptOperation(sourceShapes.get(source)!, extensionFunctionExpression))
       ) {
         return false;
       }

@@ -173,7 +173,7 @@ export type FragmentSelectorShape = {
     extensionFunctions?: string[];
   } | {
     /**
-     * All possible operations are accepted by this shape.
+     * All possible operations, except operations including extension functions, are accepted by this shape.
      */
     operationType: 'wildcard';
   };
