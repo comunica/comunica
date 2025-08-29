@@ -460,8 +460,8 @@ describe('System test: QuerySparql', () => {
                   }
                   // Query fetch on endpoint1
                   return Promise.resolve(new Response(
-                  ``,
-                  { status: 200, headers: { 'Content-Type': 'application/n-quads' }},
+                    ``,
+                    { status: 200, headers: { 'Content-Type': 'application/sparql-results+json' }},
                   ));
                 }
                 if (input === endpoint2) {
@@ -473,8 +473,16 @@ describe('System test: QuerySparql', () => {
                 }
                 // Query fetch on endpoint2
                 return Promise.resolve(new Response(
-                ``,
-                { status: 200, headers: { 'Content-Type': 'application/n-quads' }},
+                  JSON.stringify({
+                    head: { vars: [ 's', 'p', 'o' ]},
+                    results: {
+                      bindings: [
+                        { s: { type: 'uri', value: 'http://example.org/2/s1' }, p: { type: 'uri', value: 'http://example.org/2/p' }, o: { type: 'literal', value: '1', datatype: 'http://www.w3.org/2001/XMLSchema#integer' }},
+                        { s: { type: 'uri', value: 'http://example.org/2/s2' }, p: { type: 'uri', value: 'http://example.org/2/p' }, o: { type: 'literal', value: '2', datatype: 'http://www.w3.org/2001/XMLSchema#integer' }},
+                      ],
+                    },
+                  }),
+                  { status: 200, headers: { 'Content-Type': 'application/sparql-results+json' }},
                 ));
               };
             createContext = (arg0: boolean, arg1: boolean) => <any> {
@@ -494,6 +502,36 @@ describe('System test: QuerySparql', () => {
             await engine.query(baseQuery(funcAllow), createContext(true, false));
 
             expect(containsFilter).toBeTruthy();
+          });
+
+          it('should evaluate extension functions client side for the endpoint that doesn\'t support it', async() => {
+            const context: QueryStringContext = <QueryStringContext> {
+              sources: [ endpoint1, endpoint2 ],
+              extensionFunctions: {
+                'http://example.org/functions#allowAll': async(args: RDF.Literal[]): Promise<RDF.Literal> => {
+                  if (args.length < 2) {
+                    return DF.literal('true', booleanType);
+                  }
+                  return DF.literal(args[0].value < args[1].value ? 'true' : 'false', booleanType);
+                },
+              },
+              fetch: createMockedFetch(true, false),
+            };
+            const bindingsStream = await engine.queryBindings(`
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX func: <http://example.org/functions#>
+SELECT * WHERE {
+  ?s ?p ?o .
+  FILTER (func:allowAll(?o, "2"^^xsd:integer))
+}
+            `, context);
+
+            // Client-side, the ex:s2 result should be filtered out
+            await expect(bindingsStream).toEqualBindingsStream([ BF.bindings([
+              [ DF.variable('s'), DF.namedNode('http://example.org/2/s1') ],
+              [ DF.variable('p'), DF.namedNode('http://example.org/2/p') ],
+              [ DF.variable('o'), DF.literal('1', integerType) ],
+            ]) ]);
           });
 
           it('don\'t filter pushdown if both endpoints don\'t support the extension function', async() => {
