@@ -1,25 +1,29 @@
 import "jest-rdf";
 import { ActionContext, Bus } from "@comunica/core";
 import "@comunica/utils-jest";
-import { KeyRemoteCache, KeysInitQuery } from "@comunica/context-entries";
+import { KeysInitQuery } from "@comunica/context-entries";
 import type { ComunicaDataFactory } from "@comunica/types";
 import type * as RDF from "@rdfjs/types";
 import { arrayifyStream } from "arrayify-stream";
-import { ArrayIterator } from "asynciterator";
+import { ArrayIterator, AsyncIterator, fromArray } from "asynciterator";
 import { DataFactory } from "rdf-data-factory";
 import { RdfStore } from "rdf-stores";
 import { error, isResult, result } from "result-interface";
 import { getCachedQuads, OutputOption } from "sparql-cache-client";
-import { translate, Algebra, Util } from "sparqlalgebrajs";
+import { translate, Algebra, Util, Factory } from "sparqlalgebrajs";
 import { SparqlJsonParser } from "sparqljson-parse";
 import type { IBindings } from "sparqljson-parse";
 import {
   ActorQueryProcessRemoteCache,
   Algorithm,
   QUERY_PROCESSING_LABEL,
+  KeyRemoteCache
 } from "../lib/ActorQueryProcessRemoteCache";
+import { BindingsFactory } from "@comunica/utils-bindings-factory";
 
 const RDF_FACTORY: ComunicaDataFactory = new DataFactory();
+const AF = new Factory(<any>RDF_FACTORY);
+const BF = new BindingsFactory(RDF_FACTORY);
 
 const SPARQL_JSON_PARSER = new SparqlJsonParser({
   dataFactory: RDF_FACTORY,
@@ -1089,14 +1093,37 @@ WHERE {
     });
   });
 
-  describe(ActorQueryProcessRemoteCache.createComplementaryQuery.name, () => {
+  describe("createComplementaryQuery", () => {
+    let actor: ActorQueryProcessRemoteCache;
     const blockSize = Number.MAX_SAFE_INTEGER;
 
-    it("should return an empty query given 2 identical", () => {
+    const fallBackQueryProcess = {
+      run: jest.fn(),
+    };
+    const store: any = jest.fn();
+    const action = {
+      query: "SELECT * WHERE {?s ?p ?o}",
+      context: new ActionContext({
+        [KeyRemoteCache.location.name]: { path: "path" },
+        [KeyRemoteCache.valueClauseBlockSize.name]: blockSize
+      }),
+    };
+
+    beforeEach(() => {
+      actor = new ActorQueryProcessRemoteCache({
+        name: "actor",
+        bus,
+        fallBackQueryProcess: <any>fallBackQueryProcess,
+        cacheHitAlgorithm: Algorithm.EQ,
+      });
+      jest.resetAllMocks();
+    });
+
+    it("should return an empty query given 2 identical", async () => {
       const superQuery = translate(`SELECT * {?s ?p ?o}`);
       const subQuery = superQuery;
 
-      const resp = ActorQueryProcessRemoteCache.createComplementaryQuery(
+      const resp = await actor.createComplementaryQuery(
         superQuery,
         subQuery,
         undefined,
@@ -1105,7 +1132,7 @@ WHERE {
       expect(resp).toBeUndefined();
     });
 
-    it("should return a query for a difference of one triple pattern", () => {
+    it("should return a query for a difference of one triple pattern", async () => {
       const superQuery = translate(`
 PREFIX ex: <http://example.org/>
 
@@ -1136,7 +1163,7 @@ WHERE {
            ?person ex:gender ex:female .
           }
           `);
-      const resp = ActorQueryProcessRemoteCache.createComplementaryQuery(
+      const resp = await actor.createComplementaryQuery(
         superQuery,
         subQuery,
         undefined,
@@ -1147,7 +1174,7 @@ WHERE {
       ]);
     });
 
-    it("should return a query for a difference of one triple pattern with value clauses", () => {
+    it("should return a query for a difference of one triple pattern with value clauses", async () => {
       const superQuery = translate(`
 PREFIX ex: <http://example.org/>
 
@@ -1184,7 +1211,7 @@ WHERE {
            VALUES ?person { ex:Alice ex:Bob }
           }
           `);
-      const resp = ActorQueryProcessRemoteCache.createComplementaryQuery(
+      const resp = await actor.createComplementaryQuery(
         superQuery,
         subQuery,
         undefined,
@@ -1194,7 +1221,8 @@ WHERE {
         { query: [<Algebra.Construct>expectedQuery], superQuery },
       ]);
     });
-    it("should return a query for a difference of one triple pattern with bindings", () => {
+
+    it("should return a query for a difference of one triple pattern with bindings", async () => {
       const superQuery = translate(`
 PREFIX ex: <http://example.org/>
 
@@ -1239,7 +1267,7 @@ WHERE {
           city: RDF_FACTORY.namedNode("http://example.org/city2"),
         },
       ];
-      const resp = ActorQueryProcessRemoteCache.createComplementaryQuery(
+      const resp = await actor.createComplementaryQuery(
         superQuery,
         subQuery,
         bindings,
@@ -1254,7 +1282,7 @@ WHERE {
       ]);
     });
 
-    it("should return a query for a difference of some triples with a service clause with no complement", () => {
+    it("should return a query for a difference of some triples with a service clause with no complement", async () => {
       const superQuery = translate(`
 PREFIX ex: <http://example.org/>
 
@@ -1290,7 +1318,7 @@ WHERE {
            ?person ex:gender ex:female .
           }
           `);
-      const resp = ActorQueryProcessRemoteCache.createComplementaryQuery(
+      const resp = await actor.createComplementaryQuery(
         superQuery,
         subQuery,
         undefined,
@@ -1301,7 +1329,7 @@ WHERE {
       ]);
     });
 
-    it("should return a query for a difference of some triples with a service clause with a complement", () => {
+    it("should return a query for a difference of some triples with a service clause with a complement", async () => {
       const superQuery = translate(`
 PREFIX ex: <http://example.org/>
 
@@ -1348,7 +1376,7 @@ WHERE {
            ?person ex:foo ?bar
           }
           `);
-      const resp = ActorQueryProcessRemoteCache.createComplementaryQuery(
+      const resp = await actor.createComplementaryQuery(
         superQuery,
         subQuery,
         undefined,
@@ -1363,7 +1391,7 @@ WHERE {
       });
       expect(resp).toEqual([
         {
-          query: [<Algebra.Construct> expectedQueryService],
+          query: [<Algebra.Construct>expectedQueryService],
           endpoint: "http://example.org/service1",
           superQuery: <any>superQueryService,
         },
@@ -1371,7 +1399,7 @@ WHERE {
       ]);
     });
 
-    it("should return a query for a difference of some triples with a service clause with a complement and some bindings", () => {
+    it("should return a query for a difference of some triples with a service clause with a complement and some bindings", async () => {
       const superQuery = translate(`
 PREFIX ex: <http://example.org/>
 
@@ -1437,7 +1465,7 @@ WHERE {
           city: RDF_FACTORY.namedNode("http://example.org/city2"),
         },
       ];
-      const resp = ActorQueryProcessRemoteCache.createComplementaryQuery(
+      const resp = await actor.createComplementaryQuery(
         superQuery,
         subQuery,
         bindings,
@@ -1452,15 +1480,15 @@ WHERE {
       });
       expect(resp).toEqual([
         {
-          query: [<Algebra.Construct> expectedQueryService],
+          query: [<Algebra.Construct>expectedQueryService],
           endpoint: "http://example.org/service1",
-          superQuery: superQueryService
+          superQuery: superQueryService,
         },
-        { query: [<Algebra.Construct> expectedQuery], superQuery },
+        { query: [<Algebra.Construct>expectedQuery], superQuery },
       ]);
     });
 
-    it("should return a query for a difference of some triples with a service clause with a complement and some bindings and added value clauses", () => {
+    it("should return a query for a difference of some triples with a service clause with a complement and some bindings and added value clauses", async () => {
       const superQuery = translate(`
 PREFIX ex: <http://example.org/>
 
@@ -1535,7 +1563,7 @@ WHERE {
           city: RDF_FACTORY.namedNode("http://example.org/city2"),
         },
       ];
-      const resp = ActorQueryProcessRemoteCache.createComplementaryQuery(
+      const resp = await actor.createComplementaryQuery(
         superQuery,
         subQuery,
         bindings,
@@ -1550,15 +1578,15 @@ WHERE {
       });
       expect(resp).toEqual([
         {
-          query: [<Algebra.Construct> expectedQueryService],
+          query: [<Algebra.Construct>expectedQueryService],
           endpoint: "http://example.org/service1",
-          superQuery: superQueryService
+          superQuery: superQueryService,
         },
-        { query: [<Algebra.Construct> expectedQuery], superQuery },
+        { query: [<Algebra.Construct>expectedQuery], superQuery },
       ]);
     });
 
-    it("should batch the value clauses from the bindings", () => {
+    it("should batch the value clauses from the bindings", async () => {
       const superQuery = translate(`
 PREFIX ex: <http://example.org/>
 
@@ -1597,7 +1625,7 @@ WHERE {
            ?person ex:gender ex:female .
           }
           `);
-        const expectedQuery1 = translate(`
+      const expectedQuery1 = translate(`
           PREFIX ex: <http://example.org/>
 
           CONSTRUCT {
@@ -1627,7 +1655,7 @@ WHERE {
            ?city ex:locatedIn ex:CountryX .
           }
           `);
-        const expectedQueryService2 = translate(`
+      const expectedQueryService2 = translate(`
           PREFIX ex: <http://example.org/>
 
           CONSTRUCT {
@@ -1662,7 +1690,7 @@ WHERE {
           city: RDF_FACTORY.namedNode("http://example.org/city4"),
         },
       ];
-      const resp = ActorQueryProcessRemoteCache.createComplementaryQuery(
+      const resp = await actor.createComplementaryQuery(
         superQuery,
         subQuery,
         bindings,
@@ -1677,12 +1705,153 @@ WHERE {
       });
       expect(resp).toEqual([
         {
-          query: [<Algebra.Construct> expectedQueryService, <Algebra.Construct> expectedQueryService2],
+          query: [
+            <Algebra.Construct>expectedQueryService,
+            <Algebra.Construct>expectedQueryService2,
+          ],
           endpoint: "http://example.org/service1",
-          superQuery: superQueryService
+          superQuery: superQueryService,
         },
-        { query: [<Algebra.Construct> expectedQuery, <Algebra.Construct> expectedQuery1], superQuery },
+        {
+          query: [
+            <Algebra.Construct>expectedQuery,
+            <Algebra.Construct>expectedQuery1,
+          ],
+          superQuery,
+        },
       ]);
+    });
+  });
+
+  describe("valuesClauseReduction", () => {
+    let actor: ActorQueryProcessRemoteCache;
+    const fallBackQueryProcess = {
+      run: jest.fn(),
+    };
+    const store: any = jest.fn();
+    const action = {
+      query: "SELECT * WHERE {?s ?p ?o}",
+      context: new ActionContext({
+        [KeyRemoteCache.location.name]: { path: "path" },
+      }),
+    };
+
+    beforeEach(() => {
+      actor = new ActorQueryProcessRemoteCache({
+        name: "actor",
+        bus,
+        fallBackQueryProcess: <any>fallBackQueryProcess,
+        cacheHitAlgorithm: Algorithm.EQ,
+      });
+      jest.resetAllMocks();
+    });
+
+    it("should return undefined given no sub query values", async () => {
+      const superQuery = translate(`
+PREFIX ex: <http://example.org/>
+
+SELECT ?person ?city
+WHERE {
+  ?person ex:livesIn ?city .
+  ?city ex:locatedIn ex:CountryX .
+  ?person ex:hasOccupation ex:Engineer .
+}
+      `);
+      const resp = await actor.valuesClauseReduction(
+        superQuery,
+        [],
+        [RDF_FACTORY.variable("person")],
+        action,
+        store
+      );
+
+      expect(resp).toBeUndefined();
+    });
+
+    it("should return the value clauses given a sub query values clause", async () => {
+      const superQuery = translate(`
+PREFIX ex: <http://example.org/>
+
+SELECT ?person ?city
+WHERE {
+  ?person ex:livesIn ?city .
+  ?city ex:locatedIn ex:CountryX .
+  ?person ex:hasOccupation ex:Engineer .
+}
+      `);
+      fallBackQueryProcess.run.mockResolvedValue({
+        result: {
+          bindingsStream: fromArray([
+            BF.fromRecord({
+              city: RDF_FACTORY.namedNode("http://example.org/city1"),
+            }),
+          ]),
+        },
+      });
+
+      const subQueryValues: Algebra.Values[] = [
+        AF.createValues(
+          [RDF_FACTORY.variable("person")],
+          [
+            {
+              "?person": RDF_FACTORY.namedNode("http://example.org/person1"),
+            },
+          ]
+        ),
+      ];
+
+      const resp = await actor.valuesClauseReduction(
+        superQuery,
+        subQueryValues,
+        [RDF_FACTORY.variable("city")],
+        action,
+        store
+      );
+
+      const expectedValues = AF.createValues(
+        [RDF_FACTORY.variable("city")],
+        [{ city: RDF_FACTORY.namedNode("http://example.org/city1") }]
+      );
+
+      expect(resp).toEqual(expectedValues);
+    });
+
+    it("should return undefined given the query does not return result", async () => {
+      const superQuery = translate(`
+PREFIX ex: <http://example.org/>
+
+SELECT ?person ?city
+WHERE {
+  ?person ex:livesIn ?city .
+  ?city ex:locatedIn ex:CountryX .
+  ?person ex:hasOccupation ex:Engineer .
+}
+      `);
+      fallBackQueryProcess.run.mockResolvedValue({
+        result: {
+          bindingsStream: new ArrayIterator([], { autoStart: false }),
+        },
+      });
+
+      const subQueryValues: Algebra.Values[] = [
+        AF.createValues(
+          [RDF_FACTORY.variable("person")],
+          [
+            {
+              "?person": RDF_FACTORY.namedNode("http://example.org/person1"),
+            },
+          ]
+        ),
+      ];
+
+      const resp = await actor.valuesClauseReduction(
+        superQuery,
+        subQueryValues,
+        [RDF_FACTORY.variable("city")],
+        action,
+        store
+      );
+      expect(resp).toBeUndefined();
     });
   });
 });

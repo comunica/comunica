@@ -17,7 +17,7 @@ PREFIX up: <http://purl.uniprot.org/core/>
 SELECT ?uniprot ?rhea ?accession ?equation
 WHERE {
   SERVICE <https://sparql.uniprot.org/sparql> {
-      VALUES (?rhea) { (<http://rdf.rhea-db.org/19649>) (<http://rdf.rhea-db.org/11312>)}
+      #VALUES (?rhea) { (<http://rdf.rhea-db.org/19649>) (<http://rdf.rhea-db.org/11312>)}
       ?uniprot up:reviewed true .
       ?uniprot up:organism ?taxid .
       ?uniprot up:annotation/up:catalyticActivity/up:catalyzedReaction ?rhea .
@@ -34,6 +34,7 @@ const bindingsStream = await myEngine.queryBindings(query, {
   lenient: true,
   [KeyRemoteCache.location.name]: cacheLocation,
   [KeyRemoteCache.valueClauseBlockSize.name]: 20_000,
+  [KeyRemoteCache.valueClauseReduction.name]: false,
   sources:["https://sparql.rhea-db.org/sparql/"],
   log: new LoggerPretty({ level: 'info'}),
   //failOnCacheMiss: true,
@@ -43,11 +44,12 @@ const bindingsStream = await myEngine.queryBindings(query, {
 let i = 0;
 bindingsStream.getProperty("provenance", (val)=>{
   //console.log(`provenance: ${JSON.stringify(val, null, 2)}`);
-  console.log("we have the provenance my man!")
+  console.log("we have the provenance!")
 });
 
 bindingsStream.on('data', (_binding) => {
   i += 1;
+  console.log(_binding.toString());
 });
 bindingsStream.on('end', () => {
   console.log(`there are ${i} results`);

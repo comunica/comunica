@@ -45,6 +45,9 @@ export const KeyRemoteCache = {
   valueClauseBlockSize: new ActionContextKey<number>(
     "@comunica/remote-cache:valueClauseBlockSize"
   ),
+  valueClauseReduction: new ActionContextKey<boolean>(
+    "@comunica/remote-cache:valueClauseReduction"
+  ),
 };
 const RDF_FACTORY: ComunicaDataFactory = new DataFactory();
 const BF = new BindingsFactory(RDF_FACTORY);
@@ -267,21 +270,29 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
       return result({ bindings: it, id });
     }
 
-    const blockSize: number =
-      action.context.get(KeyRemoteCache.valueClauseBlockSize) ??
-      Number.MAX_SAFE_INTEGER;
-
     const store = this.bindingToQuadStore(
       ActorQueryProcessRemoteCache.bindingConvertion(cachedValues),
       query
     );
-    const complementaryQueries =
-      ActorQueryProcessRemoteCache.createComplementaryQuery(
-        cachedQuery,
-        query,
-        cachedValues,
-        blockSize
-      );
+
+    const blockSize: number =
+      action.context.get(KeyRemoteCache.valueClauseBlockSize) ??
+      Number.MAX_SAFE_INTEGER;
+    const valueClauseReduction =
+      action.context.get(KeyRemoteCache.valueClauseReduction) === true
+        ? {
+            action,
+            store,
+          }
+        : undefined;
+
+    const complementaryQueries = await this.createComplementaryQuery(
+      cachedQuery,
+      query,
+      cachedValues,
+      blockSize,
+      valueClauseReduction
+    );
     if (complementaryQueries === undefined) {
       return result({ stores: [store, ...rdfStores], id });
     }
@@ -320,19 +331,18 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
     return result({ stores: [store, ...rdfStores], id, complementaryQueries });
   }
 
-  private async interValueQuery(
+  public async valuesClauseReduction(
     superQuery: Algebra.Operation,
-    subQuery: Algebra.Operation,
-    values: Algebra.Values[],
+    subQueryValues: Algebra.Values[],
     variables: RDF.Variable[],
     action: IActionQueryProcess,
     store: RDF.Store
-  ): Promise<Algebra.Operation> {
-    if (values.length === 0) {
-      return subQuery;
+  ): Promise<Algebra.Values | undefined> {
+    if (subQueryValues.length === 0) {
+      return undefined;
     }
-
     const tps: RDF.Quad[] = [];
+
     Util.recurseOperation(superQuery, {
       [Algebra.types.SERVICE]: () => false,
       [Algebra.types.PATTERN]: (op: Algebra.Pattern) => {
@@ -352,15 +362,16 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
     );
     const bgp = AF.createBgp(patterns);
     const jointedOperation: Algebra.Operation[] = [bgp];
-    for (const value of values) {
+    for (const value of subQueryValues) {
       jointedOperation.push(value);
     }
     const join = AF.createJoin(jointedOperation);
     const selectQuery = AF.createProject(join, variables);
+    //console.log(toSparql(selectQuery));
     const newAction = {
       ...action,
       query: selectQuery,
-      context: action.context.set(KeysInitQuery.querySourcesUnidentified, [
+      context: action.context.set(new ActionContextKey("sources"), [
         store,
       ]),
     };
@@ -378,7 +389,7 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
         } = {};
 
         for (const [variable, value] of data) {
-          currentBinding[variable.value] = <RDF.Literal | RDF.NamedNode>value;
+          currentBinding["?"+variable.value] = <RDF.Literal | RDF.NamedNode>value;
         }
         newBindings.push(currentBinding);
       });
@@ -388,19 +399,11 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
       bindings.on("error", (err) => reject(err));
     });
 
+    if (Object.keys(newBindings).length === 0) {
+      return undefined;
+    }
     const resultingValues = AF.createValues(variables, newBindings);
-    const resultingQuery = Util.mapOperation(subQuery, {
-      [Algebra.types.JOIN]: (op: Algebra.Join) => {
-        op.input.push(resultingValues);
-        return {
-          result: op,
-          recurse: false,
-          copyMetadata: true,
-        };
-      },
-    });
-
-    return resultingQuery;
+    return resultingValues;
   }
 
   private isRdfStore(source: QuerySourceUnidentified): source is RDF.Store {
@@ -429,7 +432,10 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
     const store = RdfStore.createDefault();
     const template = this.queryToTemplate(query);
     const unprojectedVariables = this.getUnprojectedVariables(query);
+    const values = ActorQueryProcessRemoteCache.extractValueClauses(query, true);
+    const validBinding:Bindings[] = [];
     for (const [i, binding] of bindings.entries()) {
+      
       const quads = bindTemplateWithProjection(
         RDF_FACTORY,
         binding,
@@ -507,34 +513,43 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
    * @param superQuery
    * @param subQuery
    */
-  public static createComplementaryQuery(
+  public async createComplementaryQuery(
     superQuery: Algebra.Operation,
     subQuery: Algebra.Operation,
     bindings: IBindings[] = [],
-    blockSize: number
-  ): IComplementaryQuery[] | undefined {
+    blockSize: number,
+    valueClauseReduction?: {
+      action: IActionQueryProcess;
+      store: RDF.Store;
+    }
+  ): Promise<IComplementaryQuery[] | undefined> {
     const resp: IComplementaryQuery[] = [];
-    this.createComplementaryQueryRecurs(
+    await this.createComplementaryQueryRecurs(
       superQuery,
       subQuery,
       resp,
       undefined,
       bindings,
-      blockSize
+      blockSize,
+      valueClauseReduction
     );
     return resp.length === 0 ? undefined : resp;
   }
 
-  private static createComplementaryQueryRecurs(
+  private async createComplementaryQueryRecurs(
     superQuery: Algebra.Operation,
     subQuery: Algebra.Operation,
     acc: IComplementaryQuery[],
     endpoint: string | undefined,
     bindings: IBindings[],
-    blockSize: number
-  ): void {
+    blockSize: number,
+    valueClauseReduction?: {
+      action: IActionQueryProcess;
+      store: RDF.Store;
+    }
+  ): Promise<void> {
     const tps: RDF.Quad[] = [];
-
+    const operations: Promise<void>[] = [];
     Util.recurseOperation(superQuery, {
       [Algebra.types.SERVICE]: (op: Algebra.Service) => {
         let subService: Algebra.Operation | undefined;
@@ -549,13 +564,16 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
         if (subService === undefined) {
           return false;
         }
-        this.createComplementaryQueryRecurs(
-          op.input,
-          subService,
-          acc,
-          op.name.value,
-          bindings,
-          blockSize
+        operations.push(
+          this.createComplementaryQueryRecurs(
+            op.input,
+            subService,
+            acc,
+            op.name.value,
+            bindings,
+            blockSize,
+            valueClauseReduction
+          )
         );
 
         return false;
@@ -572,23 +590,48 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
       },
     });
 
-    const uncoloredTps = this.colorQuery(subQuery, tps);
+    await Promise.all(operations);
+
+    const uncoloredTps = ActorQueryProcessRemoteCache.colorQuery(subQuery, tps);
     if (uncoloredTps.length === 0) {
       return undefined;
     }
-    const queryValuesClauses = this.extractValueClauses(subQuery);
+    const queryValuesClauses =
+      ActorQueryProcessRemoteCache.extractValueClauses(subQuery);
 
     const patterns = uncoloredTps.map((tp) =>
       AF.createPattern(tp.subject, tp.predicate, tp.object)
     );
     const bgp = AF.createBgp(patterns);
     let constructs: Algebra.Construct[] = [];
-    const values = this.createValueClauseFromBindings(
-      patterns,
-      bindings,
-      blockSize
-    );
-    for (const value of values ?? [undefined]) {
+    let values: Algebra.Values[] | [undefined] = [undefined];
+    const batchedValues: Algebra.Values[] | [undefined] =
+      ActorQueryProcessRemoteCache.createValueClauseFromBindings(
+        patterns,
+        bindings,
+        blockSize
+      ) ?? [undefined];
+
+    if (
+      valueClauseReduction !== undefined &&
+      batchedValues.length !== 0 &&
+      batchedValues[0] !== undefined
+    ) {
+      // we assume that all the values have the same bindings key
+      const reducedValues = await this.valuesClauseReduction(
+        superQuery,
+        queryValuesClauses,
+        batchedValues[0].variables,
+        valueClauseReduction.action,
+        valueClauseReduction.store
+      );
+      //console.log(JSON.stringify(reducedValues, null, 2));
+      values = reducedValues !== undefined ? [reducedValues] : [undefined];
+    } else {
+      values = batchedValues;
+    }
+
+    for (const value of values) {
       let construct: Algebra.Construct;
 
       if (value === undefined && queryValuesClauses.length === 0) {
@@ -606,9 +649,26 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
 
     acc.push({ query: constructs, endpoint, superQuery });
   }
+  private variablesFromTps(tps: RDF.Quad[]): RDF.Variable[] {
+    const resp: RDF.Variable[] = [];
+    for (const tp of tps) {
+      if (tp.subject.termType === "Variable") {
+        resp.push(tp.subject);
+      }
 
+      if (tp.predicate.termType === "Variable") {
+        resp.push(tp.predicate);
+      }
+
+      if (tp.object.termType === "Variable") {
+        resp.push(tp.object);
+      }
+    }
+    return resp;
+  }
   private static extractValueClauses(
-    query: Algebra.Operation
+    query: Algebra.Operation,
+    allValues?:boolean
   ): Algebra.Values[] {
     const resp: Algebra.Values[] = [];
     Util.recurseOperation(query, {
@@ -617,7 +677,7 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
         return true;
       },
       [Algebra.types.SERVICE]: () => {
-        return false;
+        return allValues??false;
       },
     });
 
