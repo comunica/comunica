@@ -46,6 +46,12 @@ function doesShapeAcceptOperationRecurseShape(
   const shapeOperation = shapeActive.operation;
   switch (shapeOperation.operationType) {
     case 'type': {
+      if (shapeOperation.type === Algebra.types.EXPRESSION &&
+        operation.type === Algebra.types.EXPRESSION && operation.expressionType === Algebra.expressionTypes.NAMED) {
+        // Extension functions check
+        return <boolean> ('extensionFunctions' in shapeOperation &&
+          shapeOperation.extensionFunctions?.includes(operation.name.value));
+      }
       if (!doesShapeAcceptOperationRecurseOperation(shapeTop, shapeActive, operation, options)) {
         return false;
       }
@@ -58,7 +64,7 @@ function doesShapeAcceptOperationRecurseShape(
       return shapeOperation.pattern.type === operation.type;
     }
     case 'wildcard': {
-      return true;
+      return operation.type !== Algebra.types.EXPRESSION || operation.expressionType !== Algebra.expressionTypes.NAMED;
     }
   }
 }
@@ -78,41 +84,6 @@ function doesShapeAcceptOperationRecurseOperation(
   }
   return !(operation.patterns && !operation.patterns
     .every((input: Algebra.Pattern) => doesShapeAcceptOperationRecurseShape(shapeTop, shapeTop, input, options)));
-}
-
-/**
- * Check if the given shape accepts the given extension Function.
- * @param shape A shape to test the query operation against.
- * @param extensionFunction An extension function to test.
- */
-export function doesShapeAcceptExtensionFunction(
-  shape: FragmentSelectorShape,
-  extensionFunction: string,
-): boolean {
-  return doesShapeAcceptExtensionFunctionRecurse(shape, extensionFunction);
-}
-
-function doesShapeAcceptExtensionFunctionRecurse(
-  shape: FragmentSelectorShape,
-  extensionFunction: string,
-): boolean {
-  // Recurse into the shape
-  if (shape.type === 'conjunction') {
-    return shape.children
-      .every(child => doesShapeAcceptExtensionFunctionRecurse(child, extensionFunction));
-  }
-  if (shape.type === 'disjunction') {
-    return shape.children
-      .some(child => doesShapeAcceptExtensionFunctionRecurse(child, extensionFunction));
-  }
-  if (shape.type === 'arity') {
-    return doesShapeAcceptExtensionFunctionRecurse(shape.child, extensionFunction);
-  }
-  if (shape.operation.operationType === 'type' && shape.operation.type === Algebra.types.EXPRESSION) {
-    return <boolean> ('extensionFunctions' in shape.operation &&
-      shape.operation.extensionFunctions?.includes(extensionFunction));
-  }
-  return false;
 }
 
 export type FragmentSelectorShapeTestFlags = {
