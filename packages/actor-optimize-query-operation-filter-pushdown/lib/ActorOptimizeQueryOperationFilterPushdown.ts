@@ -85,8 +85,9 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
       repeat = false;
       operation = Util.mapOperation(operation, {
         filter(op: Algebra.Filter, factory: Factory) {
+          const comunicaFunctions = action.context.get(KeysInitQuery.extensionFunctions);
           // Check if the filter must be pushed down
-          if (!self.shouldAttemptPushDown(op, sources, sourceShapes, action.context)) {
+          if (!self.shouldAttemptPushDown(op, sources, sourceShapes, comunicaFunctions)) {
             return {
               recurse: true,
               result: op,
@@ -150,13 +151,13 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
    * @param operation The filter operation
    * @param sources The query sources in the operation
    * @param sourceShapes A mapping of sources to selector shapes.
-   * @param context The action context.
+   * @param comunicaFunctions The extension functions comunica supports.
    */
   public shouldAttemptPushDown(
     operation: Algebra.Filter,
     sources: IQuerySourceWrapper[],
     sourceShapes: Map<IQuerySourceWrapper, FragmentSelectorShape>,
-    context: IActionContext,
+    comunicaFunctions?: Record<string, any>,
   ): boolean {
     // Always push down if aggressive mode is enabled
     if (this.aggressivePushdown) {
@@ -175,8 +176,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     }
 
     // Don't push down extension functions comunica support, but an endpoint doesn't
-    if (expression.expressionType === Algebra.expressionTypes.NAMED && context.has(KeysInitQuery.extensionFunctions)) {
-      const comunicaFunctions = context.getSafe(KeysInitQuery.extensionFunctions);
+    if (comunicaFunctions && expression.expressionType === Algebra.expressionTypes.NAMED) {
       const extensionFunction = expression.name.value;
       if (
         extensionFunction in comunicaFunctions &&

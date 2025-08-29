@@ -165,6 +165,13 @@ export type FragmentSelectorShape = {
     operationType: 'pattern';
     pattern: Algebra.Operation;
   } | {
+    operationType: 'type';
+    type: Algebra.types.EXPRESSION;
+    /**
+     * The extension functions this source supports.
+     */
+    extensionFunctions?: string[];
+  } | {
     /**
      * All possible operations are accepted by this shape.
      */
@@ -194,10 +201,6 @@ export type FragmentSelectorShape = {
    * If bindings can be passed into the source as a filter.
    */
   filterBindings?: true;
-  /**
-   * The extension functions this source supports.
-   */
-  extensionFunctions?: string[];
 } | {
   type: 'conjunction';
   children: FragmentSelectorShape[];

@@ -98,17 +98,28 @@ export class QuerySourceSparql implements IQuerySource {
   }
 
   public async getSelectorShape(): Promise<FragmentSelectorShape> {
-    return {
+    const shape: FragmentSelectorShape = {
       type: 'disjunction',
       children: [
         {
           type: 'operation',
           operation: { operationType: 'wildcard' },
           joinBindings: true,
-          extensionFunctions: this.extensionFunctions,
         },
       ],
     };
+    if (this.extensionFunctions) {
+      shape.children.push({
+        type: 'operation',
+        operation: {
+          operationType: 'type',
+          type: Algebra.types.EXPRESSION,
+          extensionFunctions: this.extensionFunctions,
+        },
+        joinBindings: true,
+      });
+    }
+    return shape;
   }
 
   public queryBindings(

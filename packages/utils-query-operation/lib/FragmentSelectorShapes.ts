@@ -1,5 +1,5 @@
 import type { FragmentSelectorShape } from '@comunica/types';
-import type { Algebra } from 'sparqlalgebrajs';
+import { Algebra } from 'sparqlalgebrajs';
 
 /**
  * Check if the given shape accepts the given query operation.
@@ -108,8 +108,11 @@ function doesShapeAcceptExtensionFunctionRecurse(
   if (shape.type === 'arity') {
     return doesShapeAcceptExtensionFunctionRecurse(shape.child, extensionFunction);
   }
-
-  return <boolean> shape.extensionFunctions?.includes(extensionFunction);
+  if (shape.operation.operationType === 'type' && shape.operation.type === Algebra.types.EXPRESSION) {
+    return <boolean> ('extensionFunctions' in shape.operation &&
+      shape.operation.extensionFunctions?.includes(extensionFunction));
+  }
+  return false;
 }
 
 export type FragmentSelectorShapeTestFlags = {
