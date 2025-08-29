@@ -345,9 +345,12 @@ describe('FragmentSelectorShapes', () => {
     it('operation type (1)', () => {
       expect(doesShapeAcceptExtensionFunction({
         type: 'operation',
-        operation: { operationType: 'wildcard' },
+        operation: {
+          operationType: 'type',
+          type: Algebra.types.EXPRESSION,
+          extensionFunctions: [ 'mock' ],
+        },
         joinBindings: true,
-        extensionFunctions: [ 'mock' ],
       }, 'mock')).toBeTruthy();
     });
 
@@ -365,15 +368,21 @@ describe('FragmentSelectorShapes', () => {
         children: [
           {
             type: 'operation',
-            operation: { operationType: 'wildcard' },
+            operation: {
+              operationType: 'type',
+              type: Algebra.types.EXPRESSION,
+              extensionFunctions: [ 'mock1' ],
+            },
             joinBindings: true,
-            extensionFunctions: [ 'mock1' ],
           },
           {
             type: 'operation',
-            operation: { operationType: 'wildcard' },
+            operation: {
+              operationType: 'type',
+              type: Algebra.types.EXPRESSION,
+              extensionFunctions: [ 'mock2' ],
+            },
             joinBindings: true,
-            extensionFunctions: [ 'mock2' ],
           },
         ],
       }, 'mock1')).toBeFalsy();
@@ -385,15 +394,21 @@ describe('FragmentSelectorShapes', () => {
         children: [
           {
             type: 'operation',
-            operation: { operationType: 'wildcard' },
+            operation: {
+              operationType: 'type',
+              type: Algebra.types.EXPRESSION,
+              extensionFunctions: [ 'mock1' ],
+            },
             joinBindings: true,
-            extensionFunctions: [ 'mock1' ],
           },
           {
             type: 'operation',
-            operation: { operationType: 'wildcard' },
+            operation: {
+              operationType: 'type',
+              type: Algebra.types.EXPRESSION,
+              extensionFunctions: [ 'mock2' ],
+            },
             joinBindings: true,
-            extensionFunctions: [ 'mock2' ],
           },
         ],
       }, 'mock1')).toBeTruthy();
@@ -404,9 +419,12 @@ describe('FragmentSelectorShapes', () => {
         type: 'arity',
         child: {
           type: 'operation',
-          operation: { operationType: 'wildcard' },
+          operation: {
+            operationType: 'type',
+            type: Algebra.types.EXPRESSION,
+            extensionFunctions: [ 'mock' ],
+          },
           joinBindings: true,
-          extensionFunctions: [ 'mock' ],
         },
       }, 'mock')).toBeTruthy();
     });

@@ -284,11 +284,15 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
         );
         const src = <any> {};
         const shapes = new Map();
-        shapes.set(src, <any> {});
-        const context = new ActionContext().set(KeysInitQuery.extensionFunctions, {
-          'https://example.com/functions#mock': async args => args[0],
+        shapes.set(src, {
+          type: 'operation',
+          operation: { operationType: 'wildcard' },
+          joinBindings: true,
         });
-        expect(actor.shouldAttemptPushDown(op, [ src ], shapes, context)).toBeFalsy();
+        const comunicaFunctions = {
+          'https://example.com/functions#mock': async(args: any) => args[0],
+        };
+        expect(actor.shouldAttemptPushDown(op, [ src ], shapes, comunicaFunctions)).toBeFalsy();
       });
 
       it('returns true if both comunica and all sources support the extensionFunction', async() => {
@@ -320,12 +324,13 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             [ 'https://example.com/functions#mock' ],
           ),
         };
-        const context = new ActionContext().set(KeysInitQuery.extensionFunctions, {
-          'https://example.com/functions#mock': async args => args[0],
-        });
+        const comunicaFunctions = {
+          'https://example.com/functions#mock': async(args: any) => args[0],
+        };
+        const context = new ActionContext().set(KeysInitQuery.extensionFunctions, comunicaFunctions);
         const shapes = new Map();
         shapes.set(src, await src.source.getSelectorShape(context));
-        expect(actor.shouldAttemptPushDown(op, [ src ], shapes, context)).toBeTruthy();
+        expect(actor.shouldAttemptPushDown(op, [ src ], shapes, comunicaFunctions)).toBeTruthy();
       });
 
       it('returns false if comunica and some sources support the extensionFunction, but not all sources', async() => {
@@ -358,13 +363,18 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           ),
         };
         const src2 = <any> {};
-        const context = new ActionContext().set(KeysInitQuery.extensionFunctions, {
-          'https://example.com/functions#mock': async args => args[0],
-        });
+        const comunicaFunctions = {
+          'https://example.com/functions#mock': async(args: any) => args[0],
+        };
+        const context = new ActionContext().set(KeysInitQuery.extensionFunctions, comunicaFunctions);
         const shapes = new Map();
         shapes.set(src1, await src1.source.getSelectorShape(context));
-        shapes.set(src2, <any> {});
-        expect(actor.shouldAttemptPushDown(op, [ src1, src2 ], shapes, context)).toBeFalsy();
+        shapes.set(src2, {
+          type: 'operation',
+          operation: { operationType: 'wildcard' },
+          joinBindings: true,
+        });
+        expect(actor.shouldAttemptPushDown(op, [ src1, src2 ], shapes, comunicaFunctions)).toBeFalsy();
       });
 
       it('returns true if federated with filter support for one', () => {
