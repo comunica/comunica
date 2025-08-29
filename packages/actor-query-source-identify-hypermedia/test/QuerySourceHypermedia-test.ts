@@ -18,6 +18,7 @@ import { DataFactory } from 'rdf-data-factory';
 import { Readable } from 'readable-stream';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
+import { streamifyArray } from 'streamify-array';
 import type { ISourceState } from '../lib/LinkedRdfSourcesAsyncRdfIterator';
 import { MediatedLinkedRdfSourcesAsyncRdfIterator } from '../lib/MediatedLinkedRdfSourcesAsyncRdfIterator';
 import { QuerySourceHypermedia } from '../lib/QuerySourceHypermedia';
@@ -28,7 +29,6 @@ const DF = new DataFactory();
 const AF = new Factory();
 const BF = new BindingsFactory(DF);
 const quad = require('rdf-quad');
-const streamifyArray = require('streamify-array');
 
 describe('QuerySourceHypermedia', () => {
   let context: IActionContext;
@@ -631,7 +631,7 @@ describe('QuerySourceHypermedia', () => {
               j++;
             }
             const data: IActorDereferenceRdfOutput = {
-              data: streamifyArray([
+              data: <any> streamifyArray([
                 quad(`s1${j}`, `p1${j}`, `o1${j}`),
                 quad(`s2${j}`, `p2${j}`, `o2${j}`),
               ]),

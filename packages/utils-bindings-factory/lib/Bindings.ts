@@ -97,12 +97,12 @@ export class Bindings implements RDF.Bindings {
   }
 
   public filter(fn: (value: RDF.Term, key: RDF.Variable) => boolean): Bindings {
-    return new Bindings(this.dataFactory, Map(<any> this.entries
+    return new Bindings(this.dataFactory, Map<string, RDF.Term>(<any> this.entries
       .filter((value, key) => fn(value, this.dataFactory.variable(key)))), this.contextHolder);
   }
 
   public map(fn: (value: RDF.Term, key: RDF.Variable) => RDF.Term): Bindings {
-    return new Bindings(this.dataFactory, Map(<any> this.entries
+    return new Bindings(this.dataFactory, Map<string, RDF.Term>(<any> this.entries
       .map((value, key) => fn(value, this.dataFactory.variable(key)))), this.contextHolder);
   }
 

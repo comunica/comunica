@@ -46,6 +46,7 @@ export interface IActorContextPreprocessConvertShortcutsArgs extends IActorConte
    *   "initialBindings": "@comunica/actor-init-query:initialBindings",
    *   "queryFormat": "@comunica/actor-init-query:queryFormat",
    *   "baseIRI": "@comunica/actor-init-query:baseIRI",
+   *   "fileBaseIRI": "@comunica/actor-init-query:fileBaseIRI",
    *   "log": "@comunica/core:log",
    *   "datetime": "@comunica/actor-http-memento:datetime",
    *   "queryTimestamp": "@comunica/actor-init-query:queryTimestamp",

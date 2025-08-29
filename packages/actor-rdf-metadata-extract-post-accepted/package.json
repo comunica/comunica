@@ -1,7 +1,7 @@
 {
-  "name": "@comunica/actor-dereference-file",
-  "version": "4.2.0",
-  "description": "A file dereference actor",
+  "name": "@comunica/actor-rdf-metadata-extract-post-accepted",
+  "version": "1.0.0",
+  "description": "A post-accepted rdf-metadata-extract actor",
   "lsd:module": true,
   "license": "MIT",
   "funding": {
@@ -12,7 +12,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-dereference-file"
+    "directory": "packages/actor-rdf-metadata-extract-post-accepted"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"
@@ -20,8 +20,8 @@
   "keywords": [
     "comunica",
     "actor",
-    "dereference",
-    "file"
+    "rdf-metadata-extract",
+    "post-accepted"
   ],
   "sideEffects": false,
   "main": "lib/index.js",
@@ -41,8 +41,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-dereference": "^4.2.0",
-    "@comunica/context-entries": "^4.2.0",
+    "@comunica/bus-rdf-metadata-extract": "^4.2.0",
     "@comunica/core": "^4.2.0"
   }
 }

@@ -73,7 +73,7 @@ describe('QuerySourceSparql', () => {
       [KeysCore.log.name]: logger,
       [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
     });
-    source = new QuerySourceSparql(url, ctx, mediatorHttp, 'values', DF, AF, BF, false, 64, 10, true, true, 0);
+    source = new QuerySourceSparql(url, ctx, mediatorHttp, 'values', DF, AF, BF, false, 64, 10000, true, true, 0);
   });
 
   describe('getSelectorShape', () => {
@@ -849,6 +849,80 @@ describe('QuerySourceSparql', () => {
           method: 'GET',
         },
         input: `${url}?query=SELECT%20(COUNT(*)%20AS%20%3Fcount)%20WHERE%20%7B%20undefined%3As%20%3Fp%20undefined%3Ao.%20%7D`,
+      });
+    });
+
+    describe('when acceptPost is defined', () => {
+      let getSource: (arg0: string[]) => QuerySourceSparql;
+      let operationIn: Algebra.Operation;
+      let expectedResult: RDF.Bindings[];
+
+      beforeEach(() => {
+        getSource = (acceptPost: string[]) => new QuerySourceSparql(
+          url,
+          ctx,
+          mediatorHttp,
+          'values',
+          DF,
+          AF,
+          BF,
+          false,
+          64,
+          10,
+          true,
+          true,
+          0,
+          undefined,
+          undefined,
+          undefined,
+          acceptPost,
+        );
+        operationIn = AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'));
+        expectedResult = [
+          BF.fromRecord({
+            p: DF.namedNode('p1'),
+          }),
+          BF.fromRecord({
+            p: DF.namedNode('p2'),
+          }),
+          BF.fromRecord({
+            p: DF.namedNode('p3'),
+          }),
+        ];
+      });
+
+      it('should perform an url encoded HTTP POST request when acceptPost includes the url-encoded type', async() => {
+        source = getSource([ 'application/x-www-form-urlencoded', 'application/sparql-query' ]);
+
+        await expect(source.queryBindings(operationIn, ctx)).toEqualBindingsStream(expectedResult);
+
+        expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
+        expect(mediatorHttp.mediate).toHaveBeenCalledWith({
+          context: ctx,
+          init: {
+            body: new URLSearchParams({ query: 'SELECT (COUNT(*) AS ?count) WHERE { undefined:s ?p undefined:o. }' }),
+            headers: expect.anything(),
+            method: 'POST',
+          },
+          input: url,
+        });
+      });
+
+      it('should perform a direct HTTP POST request when acceptPost doesn\'t include the url-encoded type', async() => {
+        source = getSource([ 'application/sparql-query' ]);
+
+        await expect(source.queryBindings(operationIn, ctx)).toEqualBindingsStream(expectedResult);
+
+        expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
+        expect(mediatorHttp.mediate).toHaveBeenCalledWith({
+          context: ctx,
+          init: {
+            body: 'SELECT (COUNT(*) AS ?count) WHERE { undefined:s ?p undefined:o. }',
+            headers: expect.anything(),
+            method: 'POST',
+          },
+          input: url,
+        });
       });
     });
 

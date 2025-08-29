@@ -40,7 +40,7 @@ export class ActorDereferenceRdfParse extends ActorDereferenceRdf {
   }
 
   public async getMetadata(dereference: IActorDereferenceOutput): Promise<IActionRdfParseMetadata> {
-    return { baseIRI: dereference.url };
+    return { baseIRI: dereference.baseIRI ?? dereference.url };
   }
 }
 

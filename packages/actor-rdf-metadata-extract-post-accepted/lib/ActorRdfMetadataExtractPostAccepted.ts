@@ -4,13 +4,13 @@ import type {
   IActorRdfMetadataExtractArgs,
 } from '@comunica/bus-rdf-metadata-extract';
 import { ActorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
-import type { IActorTest, TestResult } from '@comunica/core';
+import type { TestResult, IActorTest } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 
 /**
- * A comunica PUT Accepted RDF Metadata Extract Actor.
+ * A comunica Post Accepted RDF Metadata Extract Actor.
  */
-export class ActorRdfMetadataExtractPutAccepted extends ActorRdfMetadataExtract {
+export class ActorRdfMetadataExtractPostAccepted extends ActorRdfMetadataExtract {
   public constructor(args: IActorRdfMetadataExtractArgs) {
     super(args);
   }
@@ -21,9 +21,9 @@ export class ActorRdfMetadataExtractPutAccepted extends ActorRdfMetadataExtract 
 
   public async run(action: IActionRdfMetadataExtract): Promise<IActorRdfMetadataExtractOutput> {
     const metadata: IActorRdfMetadataExtractOutput['metadata'] = {};
-    const acceptPutheader = action.headers?.get('accept-put');
-    if (acceptPutheader) {
-      metadata.putAccepted = acceptPutheader.split(/, */u);
+    const acceptPostHeader = action.headers?.get('accept-post');
+    if (acceptPostHeader) {
+      metadata.postAccepted = acceptPostHeader.split(/, */u);
     }
     return { metadata };
   }

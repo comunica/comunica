@@ -12,11 +12,11 @@ import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { PassThrough } from 'readable-stream';
 import { Factory } from 'sparqlalgebrajs';
+import { streamifyArray } from 'streamify-array';
 import { QuerySourceQpf } from '../lib/QuerySourceQpf';
 import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
-const streamifyArray = require('streamify-array');
 
 const DF = new DataFactory();
 const AF = new Factory();
@@ -984,7 +984,7 @@ describe('QuerySourceQpf', () => {
       mediatorDereferenceRdf = {
         mediate: (args: any): Promise<IActorDereferenceRdfOutput> => Promise.resolve({
           url: args.url,
-          data: streamifyArray([
+          data: <any> streamifyArray([
             quad('s1', 'p1', 'o1', 'DEFAULT_GRAPH'),
             quad('s2', 'p2', 'o2', 'DEFAULT_GRAPH'),
             quad('s1', 'p3', 'o1', 'CUSTOM_GRAPH'),
