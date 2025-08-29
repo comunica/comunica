@@ -337,96 +337,21 @@ describe('FragmentSelectorShapes', () => {
         undefined!,
       ))).toBeTruthy();
     });
-  });
 
-  describe('#doesShapeAcceptExtensionFunction', () => {
-    let extensionFunctionExpression: Algebra.NamedExpression;
+    describe('with extension functions', () => {
+      let extensionFunctionExpression: Algebra.NamedExpression;
 
-    beforeAll(() => {
-      extensionFunctionExpression = {
-        expressionType: Algebra.expressionTypes.NAMED,
-        name: <RDF.NamedNode> { value: 'mock1' },
-        args: [],
-        type: Algebra.types.EXPRESSION,
-      };
-    });
-
-    it('operation type (1)', () => {
-      expect(doesShapeAcceptOperation({
-        type: 'operation',
-        operation: {
-          operationType: 'type',
+      beforeAll(() => {
+        extensionFunctionExpression = {
+          expressionType: Algebra.expressionTypes.NAMED,
+          name: <RDF.NamedNode> { value: 'mock1' },
+          args: [],
           type: Algebra.types.EXPRESSION,
-          extensionFunctions: [ 'mock1' ],
-        },
-        joinBindings: true,
-      }, extensionFunctionExpression)).toBeTruthy();
-    });
+        };
+      });
 
-    it('operation type (2)', () => {
-      expect(doesShapeAcceptOperation({
-        type: 'operation',
-        operation: { operationType: 'wildcard' },
-        joinBindings: true,
-      }, extensionFunctionExpression)).toBeFalsy();
-    });
-
-    it('conjunction type', () => {
-      expect(doesShapeAcceptOperation({
-        type: 'conjunction',
-        children: [
-          {
-            type: 'operation',
-            operation: {
-              operationType: 'type',
-              type: Algebra.types.EXPRESSION,
-              extensionFunctions: [ 'mock1' ],
-            },
-            joinBindings: true,
-          },
-          {
-            type: 'operation',
-            operation: {
-              operationType: 'type',
-              type: Algebra.types.EXPRESSION,
-              extensionFunctions: [ 'mock2' ],
-            },
-            joinBindings: true,
-          },
-        ],
-      }, extensionFunctionExpression)).toBeFalsy();
-    });
-
-    it('disjunction type', () => {
-      expect(doesShapeAcceptOperation({
-        type: 'disjunction',
-        children: [
-          {
-            type: 'operation',
-            operation: {
-              operationType: 'type',
-              type: Algebra.types.EXPRESSION,
-              extensionFunctions: [ 'mock1' ],
-            },
-            joinBindings: true,
-          },
-          {
-            type: 'operation',
-            operation: {
-              operationType: 'type',
-              type: Algebra.types.EXPRESSION,
-              extensionFunctions: [ 'mock2' ],
-            },
-            joinBindings: true,
-          },
-        ],
-      }, extensionFunctionExpression)).toBeTruthy();
-    });
-
-    it('arity type', () => {
-      expect(doesShapeAcceptOperation({
-        type: 'arity',
-        child: {
+      it('operation type (1)', () => {
+        expect(doesShapeAcceptOperation({
           type: 'operation',
           operation: {
             operationType: 'type',
@@ -434,8 +359,83 @@ describe('FragmentSelectorShapes', () => {
             extensionFunctions: [ 'mock1' ],
           },
           joinBindings: true,
-        },
-      }, extensionFunctionExpression)).toBeTruthy();
+        }, extensionFunctionExpression)).toBeTruthy();
+      });
+
+      it('operation type (2)', () => {
+        expect(doesShapeAcceptOperation({
+          type: 'operation',
+          operation: { operationType: 'wildcard' },
+          joinBindings: true,
+        }, extensionFunctionExpression)).toBeFalsy();
+      });
+
+      it('conjunction type', () => {
+        expect(doesShapeAcceptOperation({
+          type: 'conjunction',
+          children: [
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.EXPRESSION,
+                extensionFunctions: [ 'mock1' ],
+              },
+              joinBindings: true,
+            },
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.EXPRESSION,
+                extensionFunctions: [ 'mock2' ],
+              },
+              joinBindings: true,
+            },
+          ],
+        }, extensionFunctionExpression)).toBeFalsy();
+      });
+
+      it('disjunction type', () => {
+        expect(doesShapeAcceptOperation({
+          type: 'disjunction',
+          children: [
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.EXPRESSION,
+                extensionFunctions: [ 'mock1' ],
+              },
+              joinBindings: true,
+            },
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.EXPRESSION,
+                extensionFunctions: [ 'mock2' ],
+              },
+              joinBindings: true,
+            },
+          ],
+        }, extensionFunctionExpression)).toBeTruthy();
+      });
+
+      it('arity type', () => {
+        expect(doesShapeAcceptOperation({
+          type: 'arity',
+          child: {
+            type: 'operation',
+            operation: {
+              operationType: 'type',
+              type: Algebra.types.EXPRESSION,
+              extensionFunctions: [ 'mock1' ],
+            },
+            joinBindings: true,
+          },
+        }, extensionFunctionExpression)).toBeTruthy();
+      });
     });
   });
 });
