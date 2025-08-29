@@ -84,9 +84,9 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
       repeat = false;
       operation = Util.mapOperation(operation, {
         filter(op: Algebra.Filter, factory: Factory) {
-          const comunicaFunctions = action.context.get(KeysInitQuery.extensionFunctions);
+          const extensionFunctions = action.context.get(KeysInitQuery.extensionFunctions);
           // Check if the filter must be pushed down
-          if (!self.shouldAttemptPushDown(op, sources, sourceShapes, comunicaFunctions)) {
+          if (!self.shouldAttemptPushDown(op, sources, sourceShapes, extensionFunctions)) {
             return {
               recurse: true,
               result: op,
@@ -150,13 +150,13 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
    * @param operation The filter operation
    * @param sources The query sources in the operation
    * @param sourceShapes A mapping of sources to selector shapes.
-   * @param comunicaFunctions The extension functions comunica supports.
+   * @param extensionFunctions The extension functions comunica supports.
    */
   public shouldAttemptPushDown(
     operation: Algebra.Filter,
     sources: IQuerySourceWrapper[],
     sourceShapes: Map<IQuerySourceWrapper, FragmentSelectorShape>,
-    comunicaFunctions?: Record<string, any>,
+    extensionFunctions?: Record<string, any>,
   ): boolean {
     // Always push down if aggressive mode is enabled
     if (this.aggressivePushdown) {
@@ -175,8 +175,8 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     }
 
     // Don't push down extension functions comunica support, but an endpoint doesn't
-    if (comunicaFunctions && expression.expressionType === Algebra.expressionTypes.NAMED &&
-        expression.name.value in comunicaFunctions &&
+    if (extensionFunctions && expression.expressionType === Algebra.expressionTypes.NAMED &&
+        expression.name.value in extensionFunctions &&
         // Checks if there's a source that does not support the extension function
         sources.some(source =>
           !doesShapeAcceptOperation(sourceShapes.get(source)!, expression))
