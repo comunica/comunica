@@ -249,7 +249,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           pushEqualityIntoPatterns: true,
         });
         const op = AF.createFilter(null!, null!);
-        expect(actor.shouldAttemptPushDown(op, [], new Map(), new ActionContext())).toBeTruthy();
+        expect(actor.shouldAttemptPushDown(op, [], new Map())).toBeTruthy();
       });
 
       it('returns true if the filter is extremely selective (1)', () => {
@@ -260,7 +260,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             AF.createTermExpression(DF.namedNode('iri')),
           ],
         ));
-        expect(actor.shouldAttemptPushDown(op, [], new Map(), new ActionContext())).toBeTruthy();
+        expect(actor.shouldAttemptPushDown(op, [], new Map())).toBeTruthy();
       });
 
       it('returns true if the filter is extremely selective (2)', () => {
@@ -271,7 +271,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             AF.createTermExpression(DF.variable('s')),
           ],
         ));
-        expect(actor.shouldAttemptPushDown(op, [], new Map(), new ActionContext())).toBeTruthy();
+        expect(actor.shouldAttemptPushDown(op, [], new Map())).toBeTruthy();
       });
 
       it('returns false if comunica supports the extensionFunction, but a source doesnt', async() => {
@@ -427,7 +427,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             },
           ],
         });
-        expect(actor.shouldAttemptPushDown(op, [ src1, src2 ], shapes, new ActionContext())).toBeTruthy();
+        expect(actor.shouldAttemptPushDown(op, [ src1, src2 ], shapes)).toBeTruthy();
       });
 
       it('returns false if federated with filter support for none', () => {
@@ -461,7 +461,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             type: Algebra.types.NOP,
           },
         });
-        expect(actor.shouldAttemptPushDown(op, [ src1, src2 ], shapes, new ActionContext())).toBeFalsy();
+        expect(actor.shouldAttemptPushDown(op, [ src1, src2 ], shapes)).toBeFalsy();
       });
 
       it('returns false otherwise', () => {
@@ -487,7 +487,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             type: Algebra.types.PATTERN,
           },
         });
-        expect(actor.shouldAttemptPushDown(op, [], shapes, new ActionContext())).toBeFalsy();
+        expect(actor.shouldAttemptPushDown(op, [], shapes)).toBeFalsy();
       });
     });
 
