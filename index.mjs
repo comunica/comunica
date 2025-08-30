@@ -17,7 +17,7 @@ PREFIX up: <http://purl.uniprot.org/core/>
 SELECT ?uniprot ?rhea ?accession ?equation
 WHERE {
   SERVICE <https://sparql.uniprot.org/sparql> {
-      #VALUES (?rhea) { (<http://rdf.rhea-db.org/19649>) (<http://rdf.rhea-db.org/11312>)}
+      VALUES (?rhea) { (<http://rdf.rhea-db.org/19649>) (<http://rdf.rhea-db.org/11312>)}
       ?uniprot up:reviewed true .
       ?uniprot up:organism ?taxid .
       ?uniprot up:annotation/up:catalyticActivity/up:catalyzedReaction ?rhea .
@@ -36,26 +36,38 @@ const bindingsStream = await myEngine.queryBindings(query, {
   [KeyRemoteCache.valueClauseBlockSize.name]: 20_000,
   [KeyRemoteCache.valueClauseReduction.name]: false,
   sources:["https://sparql.rhea-db.org/sparql/"],
-  log: new LoggerPretty({ level: 'info'}),
+  //log: new LoggerPretty({ level: 'info'}),
   //failOnCacheMiss: true,
-  '@comunica/core:log':new LoggerPretty({ level: 'info'})
+  //'@comunica/core:log':new LoggerPretty({ level: 'info'})
 });
 
 let i = 0;
+let profiling = {}; 
 bindingsStream.getProperty("provenance", (val)=>{
+  profiling = val.profiling;
   //console.log(`provenance: ${JSON.stringify(val, null, 2)}`);
-  console.log("we have the provenance!")
+  //console.log("we have the provenance!")
 });
 
+const start = performance.now();
 bindingsStream.on('data', (_binding) => {
   i += 1;
-  console.log(_binding.toString());
+  //console.log(_binding.toString());
 });
 bindingsStream.on('end', () => {
+  const end = performance.now();
   console.log(`there are ${i} results`);
-
+  profiling["finalResultOutput"] = end - start;
+  outputProfile(profiling);
 });
 bindingsStream.on('error', (error) => {
   console.error(error);
 });
 
+function outputProfile(profiling){
+  const resp = {}
+  for(const [key, value] of Object.entries(profiling)){
+    resp[key] = `${value/1000}s`;
+  }
+  console.log(JSON.stringify(resp, null ,2));
+}

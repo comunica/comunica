@@ -83,6 +83,7 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
     action: IActionQueryProcess
   ): Promise<IActorQueryProcessOutput> {
     const resultOrError = await this.queryCachedResults(action);
+    const start = performance.now();
     let provenance: Provenance = "query processing";
     let id: RDF.Term | undefined;
     let complementaryQueries: IComplementaryQuery[] | undefined;
@@ -96,6 +97,7 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
           2
         )}`
       );
+
       if ("stores" in resultOrError.value) {
         provenance = Algorithm.CONTAINMENT;
         id = resultOrError.value.id;
@@ -107,8 +109,15 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
       } else {
         resultOrError.value.bindings.setProperty(
           ActorQueryProcessRemoteCache.STREAM_PROVENANCE_PROPERTY,
-          { algorithm: Algorithm.EQ, id: resultOrError.value.id }
+          {
+            algorithm: Algorithm.EQ,
+            id: resultOrError.value.id,
+            profiling: resultOrError.value.profiling,
+          }
         );
+        const end = performance.now();
+        resultOrError.value.profiling.finalProcessing = end - start;
+        //console.log(JSON.stringify(resultOrError.value.profiling, null, 2));
         return {
           result: {
             type: "bindings",
@@ -141,10 +150,26 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
         ActorQueryProcessRemoteCache.ERROR_ONLY_SELECT_QUERIES_SUPPORTED
       );
     }
-    res.result.bindingsStream.setProperty(
-      ActorQueryProcessRemoteCache.STREAM_PROVENANCE_PROPERTY,
-      { algorithm: provenance, id, complementaryQueries }
-    );
+
+    const end = performance.now();
+    if (isResult(resultOrError)) {
+      resultOrError.value.profiling.finalProcessing = end - start;
+      //console.log(JSON.stringify(resultOrError.value.profiling, null, 2));
+      res.result.bindingsStream.setProperty(
+        ActorQueryProcessRemoteCache.STREAM_PROVENANCE_PROPERTY,
+        {
+          algorithm: provenance,
+          id,
+          complementaryQueries,
+          profiling: resultOrError.value.profiling,
+        }
+      );
+    } else {
+      res.result.bindingsStream.setProperty(
+        ActorQueryProcessRemoteCache.STREAM_PROVENANCE_PROPERTY,
+        { algorithm: provenance, id, complementaryQueries }
+      );
+    }
     return res;
   }
 
@@ -205,6 +230,7 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
   public async queryCachedResults(
     action: IActionQueryProcess
   ): SafePromise<CachingResult> {
+    const profiling: Partial<IProfiling> = {};
     const cacheLocation: CacheLocation | undefined = action.context.get(
       KeyRemoteCache.location
     );
@@ -229,7 +255,6 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
         rdfStores.push(source);
       }
     }
-
     const cacheHitAlgorithmOrError = await this.getCacheHitAlgorithm();
 
     if (isError(cacheHitAlgorithmOrError)) {
@@ -246,7 +271,11 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
       customFetchFunction: <any>action.context.get(<any>"fetch"),
     } as const;
 
+    const startCacheChecking = performance.now();
     const cacheResult = await getCachedQuads(input);
+    const endCacheChecking = performance.now();
+    profiling.cacheChecking = endCacheChecking - startCacheChecking;
+
     if (isError(cacheResult)) {
       return cacheResult;
     }
@@ -262,18 +291,25 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
       this.cacheHitAlgorithm === Algorithm.EQ ||
       (this.cacheHitAlgorithm === Algorithm.ALL && algorithmIndex === 0)
     ) {
+      const start = performance.now();
       const bindings =
         ActorQueryProcessRemoteCache.bindingConvertion(cachedValues);
       const it: BindingsStream = new ArrayIterator(bindings, {
         autoStart: false,
       });
-      return result({ bindings: it, id });
+      const end = performance.now();
+      profiling.cacheProcessing = end - start;
+
+      return result({ bindings: it, id, profiling });
     }
 
+    const startInitialInjection = performance.now();
     const store = this.bindingToQuadStore(
       ActorQueryProcessRemoteCache.bindingConvertion(cachedValues),
       query
     );
+    const endInitialInjection = performance.now();
+    profiling.initialInjestion = endInitialInjection - startInitialInjection;
 
     const blockSize: number =
       action.context.get(KeyRemoteCache.valueClauseBlockSize) ??
@@ -286,6 +322,7 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
           }
         : undefined;
 
+    const startCacheProcessing = performance.now();
     const complementaryQueries = await this.createComplementaryQuery(
       cachedQuery,
       query,
@@ -294,7 +331,7 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
       valueClauseReduction
     );
     if (complementaryQueries === undefined) {
-      return result({ stores: [store, ...rdfStores], id });
+      return result({ stores: [store, ...rdfStores], id, profiling });
     }
     const tripleStoreInsertion = [];
     for (const { query, endpoint: internalSources } of complementaryQueries) {
@@ -328,7 +365,15 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
       }
     }
     await Promise.all(tripleStoreInsertion);
-    return result({ stores: [store, ...rdfStores], id, complementaryQueries });
+    const endCacheProcessing = performance.now();
+    profiling.cacheProcessing = endCacheProcessing - startCacheProcessing;
+
+    return result({
+      stores: [store, ...rdfStores],
+      id,
+      complementaryQueries,
+      profiling,
+    });
   }
 
   public async valuesClauseReduction(
@@ -371,9 +416,7 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
     const newAction = {
       ...action,
       query: selectQuery,
-      context: action.context.set(new ActionContextKey("sources"), [
-        store,
-      ]),
+      context: action.context.set(new ActionContextKey("sources"), [store]),
     };
     const res = await this.fallBackQueryProcess.run(newAction, undefined);
     const bindings = (<IQueryOperationResultBindings>res.result).bindingsStream;
@@ -389,7 +432,9 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
         } = {};
 
         for (const [variable, value] of data) {
-          currentBinding["?"+variable.value] = <RDF.Literal | RDF.NamedNode>value;
+          currentBinding["?" + variable.value] = <RDF.Literal | RDF.NamedNode>(
+            value
+          );
         }
         newBindings.push(currentBinding);
       });
@@ -432,10 +477,9 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
     const store = RdfStore.createDefault();
     const template = this.queryToTemplate(query);
     const unprojectedVariables = this.getUnprojectedVariables(query);
-    const values = ActorQueryProcessRemoteCache.extractValueClauses(query, true);
-    const validBinding:Bindings[] = [];
+    //const values = ActorQueryProcessRemoteCache.extractValueClauses(query, true);
+    //const validBinding:Bindings[] = [];
     for (const [i, binding] of bindings.entries()) {
-      
       const quads = bindTemplateWithProjection(
         RDF_FACTORY,
         binding,
@@ -668,7 +712,7 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
   }
   private static extractValueClauses(
     query: Algebra.Operation,
-    allValues?:boolean
+    allValues?: boolean
   ): Algebra.Values[] {
     const resp: Algebra.Values[] = [];
     Util.recurseOperation(query, {
@@ -677,7 +721,7 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
         return true;
       },
       [Algebra.types.SERVICE]: () => {
-        return allValues??false;
+        return allValues ?? false;
       },
     });
 
@@ -835,11 +879,13 @@ export type CachingResult =
   | {
       bindings: BindingsStream;
       id: RDF.Term;
+      profiling: Partial<IProfiling>;
     }
   | {
       stores: RDF.Store[];
       complementaryQueries?: IComplementaryQuery[];
       id: RDF.Term;
+      profiling: Partial<IProfiling>;
     };
 
 export interface IActorQueryProcessRemoteCacheArgs
@@ -862,3 +908,10 @@ export enum Algorithm {
 
 export const QUERY_PROCESSING_LABEL = "query processing";
 type Provenance = Algorithm | typeof QUERY_PROCESSING_LABEL;
+
+export interface IProfiling {
+  initialInjestion: number;
+  cacheChecking: number;
+  cacheProcessing: number;
+  finalProcessing: number;
+}
