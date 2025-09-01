@@ -610,6 +610,13 @@ export class HttpServiceSparqlEndpoint {
     this.stopResponse(response, 0, process.stderr, eventEmitter);
   }
 
+  /**
+   * Returns a list of all necessary VoID quads.
+   * @param {QueryEngineBase} engine A SPARQL engine.
+   * @param {module:stream.internal.Writable} stdout
+   * @param {module:http.IncomingMessage} request
+   * @param {module:http.ServerResponse} response
+   */
   public async getVoIDQuads(
     engine: QueryEngineBase,
     stdout: Writable,
@@ -665,34 +672,93 @@ export class HttpServiceSparqlEndpoint {
     return quads;
   }
 
+  /**
+   * Fetches the necessary VoID statistics quads and assigns them to this.cachedStatistics
+   * @param {QueryEngineBase} engine A SPARQL engine.
+   * @private
+   */
   private async fetchVoIDStatistics(
     engine: QueryEngineBase,
   ): Promise<void> {
     const vd = 'http://rdfs.org/ns/void#';
+    const rdf = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';
+    const rdfType = `${rdf}type`;
+    const dataset = '_:defaultDataset';
     const graph = '_:defaultGraph';
 
-    const bindingsStream = await engine.queryBindings(
-      `
+    const [ globalStatistics, classPartitions, propertyPartitions ] = await Promise.all([
+      engine.queryBindings(
+        `
 SELECT 
-  (COUNT(?s) AS ?triples)
+  (COUNT(*) AS ?triples)
+  (COUNT(DISTINCT ?e) AS ?entities)
+  (COUNT(DISTINCT ?c) AS ?classes)
   (COUNT(DISTINCT ?s) AS ?distinctSubjects)
   (COUNT(DISTINCT ?p) AS ?properties)
   (COUNT(DISTINCT ?o) AS ?distinctObjects)
-WHERE { 
-  ?s ?p ?o 
+WHERE {
+  ?s ?p ?o .
+  OPTIONAL { ?s a ?c }
+  BIND(IF(isIRI(?s), ?s, IF(isIRI(?o), ?o, UNDEF)) AS ?e)
 }
-          `,
-      this.context,
-    );
+    `,
+        this.context,
+      ),
+      engine.queryBindings(
+        `
+SELECT ?class (COUNT(*) AS ?count)
+WHERE { ?s a ?class }
+GROUP BY ?class
+    `,
+        this.context,
+      ),
+      engine.queryBindings(
+        `
+SELECT ?property (COUNT(*) AS ?count)
+WHERE { ?s ?property ?o }
+GROUP BY ?property
+    `,
+        this.context,
+      ),
+    ]);
 
-    for await (const bindings of bindingsStream) {
-      const xsdInteger = (n: string): string =>
-        `"${n}"^^http://www.w3.org/2001/XMLSchema#integer`;
-      this.cachedStatistics.push(quad(graph, `${vd}triples`, xsdInteger(bindings.get('triples')!.value)));
-      this.cachedStatistics.push(quad(graph, `${vd}distinctSubjects`, xsdInteger(bindings.get('distinctSubjects')!.value)));
-      this.cachedStatistics.push(quad(graph, `${vd}properties`, xsdInteger(bindings.get('properties')!.value)));
-      this.cachedStatistics.push(quad(graph, `${vd}distinctObjects`, xsdInteger(bindings.get('distinctObjects')!.value)));
-    }
+    const xsdInteger = (n: string): string =>
+      `"${n}"^^http://www.w3.org/2001/XMLSchema#integer`;
+
+    await Promise.all([
+      (async(): Promise<void> => {
+        for await (const bindings of globalStatistics) {
+          this.cachedStatistics.push(quad(graph, `${vd}triples`, xsdInteger(bindings.get('triples')!.value)));
+          this.cachedStatistics.push(quad(graph, `${vd}entities`, xsdInteger(bindings.get('entities')!.value)));
+          this.cachedStatistics.push(quad(graph, `${vd}classes`, xsdInteger(bindings.get('classes')!.value)));
+          this.cachedStatistics.push(quad(graph, `${vd}distinctSubjects`, xsdInteger(bindings.get('distinctSubjects')!.value)));
+          this.cachedStatistics.push(quad(graph, `${vd}properties`, xsdInteger(bindings.get('properties')!.value)));
+          this.cachedStatistics.push(quad(graph, `${vd}distinctObjects`, xsdInteger(bindings.get('distinctObjects')!.value)));
+        }
+      })(),
+      (async(): Promise<void> => {
+        let i = 0;
+        for await (const bindings of classPartitions) {
+          const classPartition = `_:classPartition${i}`;
+          this.cachedStatistics.push(quad(dataset, `${vd}classPartition`, classPartition));
+          this.cachedStatistics.push(quad(classPartition, rdfType, `${vd}ClassPartition`));
+          this.cachedStatistics.push(quad(classPartition, `${vd}class`, bindings.get('class')!.value));
+          this.cachedStatistics.push(quad(classPartition, `${vd}entities`, xsdInteger(bindings.get('count')!.value)));
+          i++;
+        }
+      })(),
+      (async(): Promise<void> => {
+        let i = 0;
+        for await (const bindings of propertyPartitions) {
+          const propertyPartition = `_:propertyPartition${i}`;
+          this.cachedStatistics.push(quad(dataset, `${vd}propertyPartition`, propertyPartition));
+          this.cachedStatistics.push(quad(propertyPartition, rdfType, `${vd}PropertyPartition`));
+          this.cachedStatistics.push(quad(propertyPartition, `${vd}property`, bindings.get('property')!.value));
+          this.cachedStatistics.push(quad(propertyPartition, `${vd}triples`, xsdInteger(bindings.get('count')!.value)));
+          i++;
+        }
+      })(),
+    ]);
   }
 
   /**

@@ -1589,15 +1589,42 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         // Create spies
         const engine = await new QueryEngineFactoryBase().create();
-        engine.queryBindings = (): BindingsStream => {
-          const bindingsArray = [
-            BF.bindings([
-              [ DF.variable('triples'), DF.literal('2', DF.namedNode(`${xsd}integer`)) ],
-              [ DF.variable('distinctSubjects'), DF.literal('1', DF.namedNode(`${xsd}integer`)) ],
-              [ DF.variable('properties'), DF.literal('2', DF.namedNode(`${xsd}integer`)) ],
-              [ DF.variable('distinctObjects'), DF.literal('2', DF.namedNode(`${xsd}integer`)) ],
-            ]),
-          ];
+        engine.queryBindings = (query: string): BindingsStream => {
+          let bindingsArray: RDF.Bindings[];
+          if (query.includes('?triples')) {
+            bindingsArray = [
+              BF.bindings([
+                [ DF.variable('triples'), DF.literal('8', DF.namedNode(`${xsd}integer`)) ],
+                [ DF.variable('entities'), DF.literal('8', DF.namedNode(`${xsd}integer`)) ],
+                [ DF.variable('classes'), DF.literal('2', DF.namedNode(`${xsd}integer`)) ],
+                [ DF.variable('distinctSubjects'), DF.literal('8', DF.namedNode(`${xsd}integer`)) ],
+                [ DF.variable('properties'), DF.literal('5', DF.namedNode(`${xsd}integer`)) ],
+                [ DF.variable('distinctObjects'), DF.literal('4', DF.namedNode(`${xsd}integer`)) ],
+              ]),
+            ];
+          } else if (query.includes('?class ')) {
+            bindingsArray = [
+              BF.bindings([
+                [ DF.variable('class'), DF.namedNode('http://example.org/classA') ],
+                [ DF.variable('count'), DF.literal('5', DF.namedNode(`${xsd}integer`)) ],
+              ]),
+              BF.bindings([
+                [ DF.variable('class'), DF.namedNode('http://example.org/classB') ],
+                [ DF.variable('count'), DF.literal('3', DF.namedNode(`${xsd}integer`)) ],
+              ]),
+            ];
+          } else {
+            bindingsArray = [
+              BF.bindings([
+                [ DF.variable('property'), DF.namedNode('http://example.org/propertyA') ],
+                [ DF.variable('count'), DF.literal('3', DF.namedNode(`${xsd}integer`)) ],
+              ]),
+              BF.bindings([
+                [ DF.variable('property'), DF.namedNode('http://example.org/propertyB') ],
+                [ DF.variable('count'), DF.literal('2', DF.namedNode(`${xsd}integer`)) ],
+              ]),
+            ];
+          }
           return <BindingsStream>(new ArrayIterator<RDF.Bindings>(bindingsArray));
         };
         const spyGetVoIDQuads = jest.spyOn(localInstance, 'getVoIDQuads');
@@ -1640,6 +1667,10 @@ describe('HttpServiceSparqlEndpoint', () => {
         const rdfType = `${rdf}type`;
         const dataset = '_:defaultDataset';
         const graph = '_:defaultGraph';
+        const classPartition0 = '_:classPartition0';
+        const classPartition1 = '_:classPartition1';
+        const propertyPartition0 = '_:propertyPartition0';
+        const propertyPartition1 = '_:propertyPartition1';
         const vocabulary = `${vd}vocabulary`;
         const dcterms = 'http://purl.org/dc/terms/';
         const voIDDescriptionQuads = [
@@ -1655,10 +1686,32 @@ describe('HttpServiceSparqlEndpoint', () => {
 
           quad(dataset, `${sd}defaultGraph`, graph),
           quad(graph, rdfType, `${sd}Graph`),
-          quad(graph, `${vd}triples`, `"2"^^${xsd}integer`),
-          quad(graph, `${vd}distinctSubjects`, `"1"^^${xsd}integer`),
-          quad(graph, `${vd}properties`, `"2"^^${xsd}integer`),
-          quad(graph, `${vd}distinctObjects`, `"2"^^${xsd}integer`),
+          quad(graph, `${vd}triples`, `"8"^^${xsd}integer`),
+          quad(graph, `${vd}entities`, `"8"^^${xsd}integer`),
+          quad(graph, `${vd}classes`, `"2"^^${xsd}integer`),
+          quad(graph, `${vd}distinctSubjects`, `"8"^^${xsd}integer`),
+          quad(graph, `${vd}properties`, `"5"^^${xsd}integer`),
+          quad(graph, `${vd}distinctObjects`, `"4"^^${xsd}integer`),
+
+          quad(dataset, `${vd}classPartition`, classPartition0),
+          quad(classPartition0, rdfType, `${vd}ClassPartition`),
+          quad(classPartition0, `${vd}class`, 'http://example.org/classA'),
+          quad(classPartition0, `${vd}entities`, `"5"^^${xsd}integer`),
+
+          quad(dataset, `${vd}propertyPartition`, propertyPartition0),
+          quad(propertyPartition0, rdfType, `${vd}PropertyPartition`),
+          quad(propertyPartition0, `${vd}property`, 'http://example.org/propertyA'),
+          quad(propertyPartition0, `${vd}triples`, `"3"^^${xsd}integer`),
+
+          quad(dataset, `${vd}classPartition`, classPartition1),
+          quad(classPartition1, rdfType, `${vd}ClassPartition`),
+          quad(classPartition1, `${vd}class`, 'http://example.org/classB'),
+          quad(classPartition1, `${vd}entities`, `"3"^^${xsd}integer`),
+
+          quad(dataset, `${vd}propertyPartition`, propertyPartition1),
+          quad(propertyPartition1, rdfType, `${vd}PropertyPartition`),
+          quad(propertyPartition1, `${vd}property`, 'http://example.org/propertyB'),
+          quad(propertyPartition1, `${vd}triples`, `"2"^^${xsd}integer`),
         ];
         for (const quad of voIDDescriptionQuads) {
           serviceDescriptionQuads.push(quad);
@@ -1708,7 +1761,8 @@ describe('HttpServiceSparqlEndpoint', () => {
         await requestVoID();
         await requestVoID();
 
-        expect(spyQueryBindings).toHaveBeenCalledTimes(1);
+        // Each request does 3 calls
+        expect(spyQueryBindings).toHaveBeenCalledTimes(3);
       });
 
       it('should update cachedStatistics when doing an INSERT', async() => {
@@ -1752,8 +1806,8 @@ INSERT DATA {
         );
 
         // Note that the insert query itself is done using engine.query and not engine.queryBindings,
-        // so this queryBindings was in fact used for the statistics query
-        expect(spyQueryBindings).toHaveBeenCalledTimes(1);
+        // so these queryBindings were in fact used for the statistics and the partitions queries
+        expect(spyQueryBindings).toHaveBeenCalledTimes(3);
 
         await localInstance.writeQueryResult(
           engine,
@@ -1768,8 +1822,8 @@ INSERT DATA {
           0,
         );
 
-        // Should not have been called a second time
-        expect(spyQueryBindings).toHaveBeenCalledTimes(1);
+        // Should not have been called another 3 extra times
+        expect(spyQueryBindings).toHaveBeenCalledTimes(3);
       });
 
       it('should handle errors silently when updating cachedStatistics when doing an INSERT', async() => {
@@ -1800,7 +1854,8 @@ INSERT DATA {
           0,
         );
 
-        expect(spyQueryBindings).toHaveBeenCalledTimes(1);
+        // Each VoID request does 3 calls
+        expect(spyQueryBindings).toHaveBeenCalledTimes(3);
         // Empty, since there was an error
         expect(localInstance.cachedStatistics).toEqual([]);
         // Errors are handled silently
@@ -1819,8 +1874,8 @@ INSERT DATA {
           0,
         );
 
-        // Should have been called a second time, since cachedStatistics is empty
-        expect(spyQueryBindings).toHaveBeenCalledTimes(2);
+        // Should have been called another 3 times, since cachedStatistics is empty
+        expect(spyQueryBindings).toHaveBeenCalledTimes(6);
       });
 
       it('should handle errors in VoID description statistics query', async() => {
@@ -1852,7 +1907,7 @@ INSERT DATA {
 
         // Check if the VD logic has been called
         expect(spyGetVoIDQuads).toHaveBeenCalledTimes(1);
-        expect(spyQueryBindings).toHaveBeenCalledTimes(1);
+        expect(spyQueryBindings).toHaveBeenCalledTimes(3);
 
         await expect(endCalledPromise).resolves.toBe('An internal server error occurred.\n');
         expect(response.writeHead).toHaveBeenCalledTimes(1);
