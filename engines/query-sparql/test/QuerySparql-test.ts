@@ -509,6 +509,7 @@ describe('System test: QuerySparql', () => {
               sources: [ endpoint1, endpoint2 ],
               extensionFunctions: {
                 'http://example.org/functions#allowAll': async(args: RDF.Literal[]): Promise<RDF.Literal> => {
+                  // Doesn't allow all, but reusing this function means I don't need to touch the service description
                   if (args.length < 2) {
                     return DF.literal('true', booleanType);
                   }
@@ -525,6 +526,9 @@ SELECT * WHERE {
   FILTER (func:allowAll(?o, "2"^^xsd:integer))
 }
             `, context);
+
+            // Make sure that the filter was actually pushed down
+            expect(containsFilter).toBeTruthy();
 
             // Client-side, the ex:s2 result should be filtered out
             await expect(bindingsStream).toEqualBindingsStream([ BF.bindings([

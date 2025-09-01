@@ -84,8 +84,8 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
       repeat = false;
       operation = Util.mapOperation(operation, {
         filter(op: Algebra.Filter, factory: Factory) {
-          const extensionFunctions = action.context.get(KeysInitQuery.extensionFunctions);
           // Check if the filter must be pushed down
+          const extensionFunctions = action.context.get(KeysInitQuery.extensionFunctions);
           if (!self.shouldAttemptPushDown(op, sources, sourceShapes, extensionFunctions)) {
             return {
               recurse: true,

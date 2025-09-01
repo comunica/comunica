@@ -7,7 +7,7 @@ import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operat
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
-import type { ComunicaDataFactory, IActionContext, IQuerySourceWrapper } from '@comunica/types';
+import type { ComunicaDataFactory, FragmentSelectorShape, IActionContext, IQuerySourceWrapper } from '@comunica/types';
 import {
   assignOperationSource,
   doesShapeAcceptOperation,
@@ -56,7 +56,8 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
       const groupedInput = await this.groupOperation(operation.input, context);
       if (groupedInput.metadata?.scopedSource) {
         const source: IQuerySourceWrapper = <IQuerySourceWrapper> getOperationSource(groupedInput);
-        if (doesShapeAcceptOperation(await source.source.getSelectorShape(context), operation)) {
+        const shape: FragmentSelectorShape = await source.source.getSelectorShape(context);
+        if (doesShapeAcceptOperation(shape, operation) && doesShapeAcceptOperation(shape, operation.expression)) {
           this.logDebug(context, `Hoist 1 source-specific operation into a single ${operation.type} operation for ${source.source.toString()}`);
           removeOperationSource(groupedInput);
           operation = assignOperationSource(operation, source);
