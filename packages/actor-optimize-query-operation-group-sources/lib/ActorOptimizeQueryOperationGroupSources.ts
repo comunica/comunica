@@ -56,12 +56,7 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
       const groupedInput = await this.groupOperation(operation.input, context);
       if (groupedInput.metadata?.scopedSource) {
         const source: IQuerySourceWrapper = <IQuerySourceWrapper> getOperationSource(groupedInput);
-        const shape: FragmentSelectorShape = await source.source.getSelectorShape(context);
-        if (doesShapeAcceptOperation(shape, operation) && doesShapeAcceptOperation(shape, operation.expression)) {
-          this.logDebug(context, `Hoist 1 source-specific operation into a single ${operation.type} operation for ${source.source.toString()}`);
-          removeOperationSource(groupedInput);
-          operation = assignOperationSource(operation, source);
-        }
+        operation = await this.moveSourceAnnotationUpwardsIfPossible(operation, [ groupedInput ], source, context);
       }
       return <Algebra.Operation> { ...operation, input: groupedInput };
     }
@@ -180,11 +175,23 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
     source: IQuerySourceWrapper | undefined,
     context: IActionContext,
   ): Promise<O> {
-    if (source && doesShapeAcceptOperation(await source.source.getSelectorShape(context), operation)) {
-      this.logDebug(context, `Hoist ${inputs.length} source-specific operations into a single ${operation.type} operation for ${source.source.toString()}`);
-      operation = assignOperationSource(operation, source);
-      for (const input of inputs) {
-        removeOperationSource(input);
+    if (source) {
+      const shape: FragmentSelectorShape = await source.source.getSelectorShape(context);
+      if (doesShapeAcceptOperation(shape, operation)) {
+        // Checks for extension functions:
+        // The first 3 operands in the OR are checks to see if it's an extension function comunica supports
+        // If not, then we're good to go
+        // If it does, then only move the source annotation upwards if the source also supports the extension function
+        const extensionFunctions = context.get(KeysInitQuery.extensionFunctions);
+        const expression: Algebra.Operation | undefined = operation.expression;
+        if (!extensionFunctions || !(expression?.name) || !(expression.name.value in extensionFunctions) ||
+          doesShapeAcceptOperation(shape, expression)) {
+          this.logDebug(context, `Hoist ${inputs.length} source-specific operations into a single ${operation.type} operation for ${source.source.toString()}`);
+          operation = assignOperationSource(operation, source);
+          for (const input of inputs) {
+            removeOperationSource(input);
+          }
+        }
       }
     }
     return operation;
