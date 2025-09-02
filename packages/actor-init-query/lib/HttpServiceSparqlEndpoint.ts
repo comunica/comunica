@@ -691,7 +691,7 @@ export class HttpServiceSparqlEndpoint {
         `
 SELECT 
   (COUNT(*) AS ?triples)
-  (COUNT(DISTINCT ?e) AS ?entities)
+  (COUNT(?e) AS ?entities)
   (COUNT(DISTINCT ?c) AS ?classes)
   (COUNT(DISTINCT ?s) AS ?distinctSubjects)
   (COUNT(DISTINCT ?p) AS ?properties)
@@ -699,7 +699,14 @@ SELECT
 WHERE {
   ?s ?p ?o .
   OPTIONAL { ?s a ?c }
-  BIND(IF(isIRI(?s), ?s, IF(isIRI(?o), ?o, UNDEF)) AS ?e)
+  
+  {
+    SELECT ?e
+    WHERE {
+      ?e ?ep ?eo .
+      FILTER(isIRI(?e))
+    }
+  }
 }
     `,
         this.context,
