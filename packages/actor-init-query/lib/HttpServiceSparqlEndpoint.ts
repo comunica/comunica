@@ -20,7 +20,6 @@ import { QueryEngineBase, QueryEngineFactoryBase } from '..';
 
 import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase';
 import { CliArgsHandlerHttp } from './cli/CliArgsHandlerHttp';
-import {stdout} from "process";
 
 // Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
 const clusterUntyped = require('node:cluster');
