@@ -1596,10 +1596,15 @@ describe('HttpServiceSparqlEndpoint', () => {
               BF.bindings([
                 [ DF.variable('triples'), DF.literal('8', DF.namedNode(`${xsd}integer`)) ],
                 [ DF.variable('entities'), DF.literal('8', DF.namedNode(`${xsd}integer`)) ],
-                [ DF.variable('classes'), DF.literal('2', DF.namedNode(`${xsd}integer`)) ],
                 [ DF.variable('distinctSubjects'), DF.literal('8', DF.namedNode(`${xsd}integer`)) ],
                 [ DF.variable('properties'), DF.literal('5', DF.namedNode(`${xsd}integer`)) ],
                 [ DF.variable('distinctObjects'), DF.literal('4', DF.namedNode(`${xsd}integer`)) ],
+              ]),
+            ];
+          } else if (query.includes('?classes')) {
+            bindingsArray = [
+              BF.bindings([
+                [ DF.variable('classes'), DF.literal('2', DF.namedNode(`${xsd}integer`)) ],
               ]),
             ];
           } else if (query.includes('?class ')) {
@@ -1688,10 +1693,10 @@ describe('HttpServiceSparqlEndpoint', () => {
           quad(graph, rdfType, `${sd}Graph`),
           quad(graph, `${vd}triples`, `"8"^^${xsd}integer`),
           quad(graph, `${vd}entities`, `"8"^^${xsd}integer`),
-          quad(graph, `${vd}classes`, `"2"^^${xsd}integer`),
           quad(graph, `${vd}distinctSubjects`, `"8"^^${xsd}integer`),
           quad(graph, `${vd}properties`, `"5"^^${xsd}integer`),
           quad(graph, `${vd}distinctObjects`, `"4"^^${xsd}integer`),
+          quad(graph, `${vd}classes`, `"2"^^${xsd}integer`),
 
           quad(dataset, `${vd}classPartition`, classPartition0),
           quad(classPartition0, rdfType, `${vd}ClassPartition`),
@@ -1761,8 +1766,8 @@ describe('HttpServiceSparqlEndpoint', () => {
         await requestVoID();
         await requestVoID();
 
-        // Each request does 3 calls
-        expect(spyQueryBindings).toHaveBeenCalledTimes(3);
+        // Each request does 4 calls
+        expect(spyQueryBindings).toHaveBeenCalledTimes(4);
       });
 
       it('should update cachedStatistics when doing an INSERT', async() => {
@@ -1807,7 +1812,7 @@ INSERT DATA {
 
         // Note that the insert query itself is done using engine.query and not engine.queryBindings,
         // so these queryBindings were in fact used for the statistics and the partitions queries
-        expect(spyQueryBindings).toHaveBeenCalledTimes(3);
+        expect(spyQueryBindings).toHaveBeenCalledTimes(4);
 
         await localInstance.writeQueryResult(
           engine,
@@ -1822,8 +1827,8 @@ INSERT DATA {
           0,
         );
 
-        // Should not have been called another 3 extra times
-        expect(spyQueryBindings).toHaveBeenCalledTimes(3);
+        // Should not have been called another 4 extra times
+        expect(spyQueryBindings).toHaveBeenCalledTimes(4);
       });
 
       it('should handle errors silently when updating cachedStatistics when doing an INSERT', async() => {
@@ -1854,8 +1859,8 @@ INSERT DATA {
           0,
         );
 
-        // Each VoID request does 3 calls
-        expect(spyQueryBindings).toHaveBeenCalledTimes(3);
+        // Each VoID request does 4 calls
+        expect(spyQueryBindings).toHaveBeenCalledTimes(4);
         // Empty, since there was an error
         expect(localInstance.cachedStatistics).toEqual([]);
         // Errors are handled silently
@@ -1874,8 +1879,8 @@ INSERT DATA {
           0,
         );
 
-        // Should have been called another 3 times, since cachedStatistics is empty
-        expect(spyQueryBindings).toHaveBeenCalledTimes(6);
+        // Should have been called another 4 times, since cachedStatistics is empty
+        expect(spyQueryBindings).toHaveBeenCalledTimes(8);
       });
 
       it('should handle errors in VoID description statistics query', async() => {
@@ -1907,7 +1912,7 @@ INSERT DATA {
 
         // Check if the VD logic has been called
         expect(spyGetVoIDQuads).toHaveBeenCalledTimes(1);
-        expect(spyQueryBindings).toHaveBeenCalledTimes(3);
+        expect(spyQueryBindings).toHaveBeenCalledTimes(4);
 
         await expect(endCalledPromise).resolves.toBe('An internal server error occurred.\n');
         expect(response.writeHead).toHaveBeenCalledTimes(1);

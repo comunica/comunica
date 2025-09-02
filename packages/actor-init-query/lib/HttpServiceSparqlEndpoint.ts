@@ -20,6 +20,7 @@ import { QueryEngineBase, QueryEngineFactoryBase } from '..';
 
 import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase';
 import { CliArgsHandlerHttp } from './cli/CliArgsHandlerHttp';
+import {stdout} from "process";
 
 // Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
 const clusterUntyped = require('node:cluster');
@@ -686,27 +687,27 @@ export class HttpServiceSparqlEndpoint {
     const dataset = '_:defaultDataset';
     const graph = '_:defaultGraph';
 
-    const [ globalStatistics, classPartitions, propertyPartitions ] = await Promise.all([
+    const [ globalStatistics, classesStatistic, classPartitions, propertyPartitions ] = await Promise.all([
       engine.queryBindings(
         `
-SELECT 
+SELECT
   (COUNT(*) AS ?triples)
-  (COUNT(?e) AS ?entities)
-  (COUNT(DISTINCT ?c) AS ?classes)
+  (SUM(IF(isIRI(?s), 1, 0)) AS ?entities)
   (COUNT(DISTINCT ?s) AS ?distinctSubjects)
   (COUNT(DISTINCT ?p) AS ?properties)
   (COUNT(DISTINCT ?o) AS ?distinctObjects)
 WHERE {
-  ?s ?p ?o .
-  OPTIONAL { ?s a ?c }
-  
-  {
-    SELECT ?e
-    WHERE {
-      ?e ?ep ?eo .
-      FILTER(isIRI(?e))
-    }
-  }
+  ?s ?p ?o
+}
+    `,
+        this.context,
+      ),
+      engine.queryBindings(
+        `
+SELECT
+  (COUNT(DISTINCT ?c) AS ?classes)
+WHERE {
+  ?s a ?c
 }
     `,
         this.context,
@@ -737,10 +738,14 @@ GROUP BY ?property
         for await (const bindings of globalStatistics) {
           this.cachedStatistics.push(quad(graph, `${vd}triples`, xsdInteger(bindings.get('triples')!.value)));
           this.cachedStatistics.push(quad(graph, `${vd}entities`, xsdInteger(bindings.get('entities')!.value)));
-          this.cachedStatistics.push(quad(graph, `${vd}classes`, xsdInteger(bindings.get('classes')!.value)));
           this.cachedStatistics.push(quad(graph, `${vd}distinctSubjects`, xsdInteger(bindings.get('distinctSubjects')!.value)));
           this.cachedStatistics.push(quad(graph, `${vd}properties`, xsdInteger(bindings.get('properties')!.value)));
           this.cachedStatistics.push(quad(graph, `${vd}distinctObjects`, xsdInteger(bindings.get('distinctObjects')!.value)));
+        }
+      })(),
+      (async(): Promise<void> => {
+        for await (const bindings of classesStatistic) {
+          this.cachedStatistics.push(quad(graph, `${vd}classes`, xsdInteger(bindings.get('classes')!.value)));
         }
       })(),
       (async(): Promise<void> => {
