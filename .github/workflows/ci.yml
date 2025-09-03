@@ -295,23 +295,23 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION_HIGHEST }}
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: performance-benchmark-watdiv-file
           path: performance/benchmark-watdiv-file/combinations/combination_0/output/
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: performance-benchmark-watdiv-tpf
           path: performance/benchmark-watdiv-tpf/combinations/combination_0/output/
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: performance-benchmark-bsbm-file
           path: performance/benchmark-bsbm-file/combinations/combination_0/output/
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: performance-benchmark-bsbm-tpf
           path: performance/benchmark-bsbm-tpf/combinations/combination_0/output/
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: performance-benchmark-web
           path: performance/benchmark-web/combinations/combination_0/output/
