@@ -22,6 +22,16 @@ class EngineMock {
     return Promise.resolve({data: result});
   }
 
+  queryBindings() {
+    return {
+      on: (event, func) => {
+        if (event === 'end') {
+          func();
+        }
+      }
+    };
+  }
+
   getResultMediaTypes(context){
     return {
       "mtype_1": 1,"mtype_2": 2,"mtype_3": 3, "mtype_4": 4,
