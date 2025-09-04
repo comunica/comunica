@@ -1,5 +1,7 @@
+import { QuerySourceSparql } from '@comunica/actor-query-source-identify-hypermedia-sparql';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import type { IQuerySourceWrapper } from '@comunica/types';
 import { assignOperationSource, getExpressionVariables } from '@comunica/utils-query-operation';
 import { DataFactory } from 'rdf-data-factory';
 import { Algebra, Factory } from 'sparqlalgebrajs';
@@ -270,6 +272,109 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           ],
         ));
         expect(actor.shouldAttemptPushDown(op, [], new Map())).toBeTruthy();
+      });
+
+      it('returns false if comunica supports the extensionFunction, but a source doesnt', async() => {
+        const op = AF.createFilter(
+          AF.createNop(),
+          AF.createNamedExpression(DF.namedNode('https://example.com/functions#mock'), [
+            AF.createTermExpression(DF.variable('a')),
+            AF.createTermExpression(DF.variable('b')),
+          ]),
+        );
+        const src = <any> {};
+        const shapes = new Map();
+        shapes.set(src, {
+          type: 'operation',
+          operation: { operationType: 'wildcard' },
+          joinBindings: true,
+        });
+        const extensionFunctions = {
+          'https://example.com/functions#mock': async(args: any) => args[0],
+        };
+        expect(actor.shouldAttemptPushDown(op, [ src ], shapes, extensionFunctions)).toBeFalsy();
+      });
+
+      it('returns true if both comunica and all sources support the extensionFunction', async() => {
+        const op = AF.createFilter(
+          AF.createNop(),
+          AF.createNamedExpression(DF.namedNode('https://example.com/functions#mock'), [
+            AF.createTermExpression(DF.variable('a')),
+            AF.createTermExpression(DF.variable('b')),
+          ]),
+        );
+        const src: IQuerySourceWrapper = {
+          source: new QuerySourceSparql(
+            'https://example.com/src',
+            new ActionContext(),
+            <any> {},
+            'values',
+            <any> {},
+            <any> {},
+            <any> {},
+            false,
+            64,
+            10,
+            true,
+            true,
+            0,
+            undefined,
+            undefined,
+            undefined,
+            [ 'https://example.com/functions#mock' ],
+          ),
+        };
+        const extensionFunctions = {
+          'https://example.com/functions#mock': async(args: any) => args[0],
+        };
+        const context = new ActionContext().set(KeysInitQuery.extensionFunctions, extensionFunctions);
+        const shapes = new Map();
+        shapes.set(src, await src.source.getSelectorShape(context));
+        expect(actor.shouldAttemptPushDown(op, [ src ], shapes, extensionFunctions)).toBeTruthy();
+      });
+
+      it('returns true if comunica and some sources support the extensionFunction, but not all sources', async() => {
+        const op = AF.createFilter(
+          AF.createNop(),
+          AF.createNamedExpression(DF.namedNode('https://example.com/functions#mock'), [
+            AF.createTermExpression(DF.variable('a')),
+            AF.createTermExpression(DF.variable('b')),
+          ]),
+        );
+        const src1: IQuerySourceWrapper = {
+          source: new QuerySourceSparql(
+            'https://example.com/src',
+            new ActionContext(),
+            <any> {},
+            'values',
+            <any> {},
+            <any> {},
+            <any> {},
+            false,
+            64,
+            10,
+            true,
+            true,
+            0,
+            undefined,
+            undefined,
+            undefined,
+            [ 'https://example.com/functions#mock' ],
+          ),
+        };
+        const src2 = <any> {};
+        const extensionFunctions = {
+          'https://example.com/functions#mock': async(args: any) => args[0],
+        };
+        const context = new ActionContext().set(KeysInitQuery.extensionFunctions, extensionFunctions);
+        const shapes = new Map();
+        shapes.set(src1, await src1.source.getSelectorShape(context));
+        shapes.set(src2, {
+          type: 'operation',
+          operation: { operationType: 'wildcard' },
+          joinBindings: true,
+        });
+        expect(actor.shouldAttemptPushDown(op, [ src1, src2 ], shapes, extensionFunctions)).toBeTruthy();
       });
 
       it('returns true if federated with filter support for one', () => {
