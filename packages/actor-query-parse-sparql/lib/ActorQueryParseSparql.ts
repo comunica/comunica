@@ -4,7 +4,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
-import { translate12 } from '@traqula/algebra-sparql-1-1';
+import { toAlgebra } from '@traqula/algebra-sparql-1-2';
 import { Parser as SparqlParser } from '@traqula/parser-sparql-1-2';
 import { Factory } from '@traqula/rules-sparql-1-2';
 
@@ -46,7 +46,7 @@ export class ActorQueryParseSparql extends ActorQueryParse {
     }
     return {
       baseIRI,
-      operation: translate12(parsedSyntax, {
+      operation: toAlgebra(parsedSyntax, {
         quads: true,
         prefixes: this.prefixes,
         blankToVariable: true,

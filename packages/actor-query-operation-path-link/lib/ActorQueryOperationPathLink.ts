@@ -2,7 +2,7 @@ import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
-import { Algebra, Factory } from '@traqula/algebra-sparql-1-1';
+import { Algebra, Factory } from '@traqula/algebra-transformations-1-1';
 
 /**
  * A comunica Path Link Query Operation Actor.

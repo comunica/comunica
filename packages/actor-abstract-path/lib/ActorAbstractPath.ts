@@ -16,8 +16,8 @@ import type {
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { assignOperationSource, getOperationSource, getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
-import type { Factory } from '@traqula/algebra-sparql-1-1';
-import { Algebra } from '@traqula/algebra-sparql-1-1';
+import type { Factory } from '@traqula/algebra-transformations-1-1';
+import { Algebra } from '@traqula/algebra-transformations-1-1';
 import type { AsyncIterator } from 'asynciterator';
 import {
   BufferedIterator,

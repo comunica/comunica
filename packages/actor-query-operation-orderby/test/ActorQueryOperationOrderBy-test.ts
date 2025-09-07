@@ -13,7 +13,7 @@ import {
   getMockMediatorExpressionEvaluatorFactory,
 } from '@comunica/utils-expression-evaluator/test/util/helpers';
 import { getSafeBindings } from '@comunica/utils-query-operation';
-import { Algebra } from '@traqula/algebra-sparql-1-1';
+import { Algebra } from '@traqula/algebra-transformations-1-1';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -81,10 +81,10 @@ describe('ActorQueryOperationOrderBy with mixed term types', () => {
         mediatorExpressionEvaluatorFactory,
         mediatorTermComparatorFactory,
       });
-      orderA = { type: Algebra.Types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
+      orderA = { type: Algebra.Types.EXPRESSION, expressionType: Algebra.ExpressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.Types.EXPRESSION,
-        expressionType: Algebra.expressionTypes.OPERATOR,
+        expressionType: Algebra.ExpressionTypes.OPERATOR,
         operator: 'desc',
         args: [ orderA ],
       };
@@ -216,17 +216,17 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
         mediatorExpressionEvaluatorFactory,
         mediatorTermComparatorFactory,
       });
-      orderA = { type: Algebra.Types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
-      orderB = { type: Algebra.Types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('b') };
+      orderA = { type: Algebra.Types.EXPRESSION, expressionType: Algebra.ExpressionTypes.TERM, term: DF.variable('a') };
+      orderB = { type: Algebra.Types.EXPRESSION, expressionType: Algebra.ExpressionTypes.TERM, term: DF.variable('b') };
       descOrderA = {
         type: Algebra.Types.EXPRESSION,
-        expressionType: Algebra.expressionTypes.OPERATOR,
+        expressionType: Algebra.ExpressionTypes.OPERATOR,
         operator: 'desc',
         args: [ orderA ],
       };
       orderA1 = {
         args: [ orderA ],
-        expressionType: Algebra.expressionTypes.OPERATOR,
+        expressionType: Algebra.ExpressionTypes.OPERATOR,
         operator: 'strlen',
         type: Algebra.Types.EXPRESSION,
       };
@@ -430,29 +430,29 @@ describe('ActorQueryOperationOrderBy with multiple comparators', () => {
         mediatorTermComparatorFactory,
         mediatorExpressionEvaluatorFactory,
       });
-      orderA = { type: Algebra.Types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
-      orderB = { type: Algebra.Types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('b') };
+      orderA = { type: Algebra.Types.EXPRESSION, expressionType: Algebra.ExpressionTypes.TERM, term: DF.variable('a') };
+      orderB = { type: Algebra.Types.EXPRESSION, expressionType: Algebra.ExpressionTypes.TERM, term: DF.variable('b') };
       descOrderA = {
         type: Algebra.Types.EXPRESSION,
-        expressionType: Algebra.expressionTypes.OPERATOR,
+        expressionType: Algebra.ExpressionTypes.OPERATOR,
         operator: 'desc',
         args: [ orderA ],
       };
       descOrderB = {
         type: Algebra.Types.EXPRESSION,
-        expressionType: Algebra.expressionTypes.OPERATOR,
+        expressionType: Algebra.ExpressionTypes.OPERATOR,
         operator: 'desc',
         args: [ orderB ],
       };
       orderA1 = {
         args: [ orderA ],
-        expressionType: Algebra.expressionTypes.OPERATOR,
+        expressionType: Algebra.ExpressionTypes.OPERATOR,
         operator: 'strlen',
         type: Algebra.Types.EXPRESSION,
       };
       orderB1 = {
         args: [ orderB ],
-        expressionType: Algebra.expressionTypes.OPERATOR,
+        expressionType: Algebra.ExpressionTypes.OPERATOR,
         operator: 'strlen',
         type: Algebra.Types.EXPRESSION,
       };
@@ -648,10 +648,10 @@ describe('ActorQueryOperationOrderBy with integer type', () => {
         mediatorTermComparatorFactory,
         mediatorExpressionEvaluatorFactory,
       });
-      orderA = { type: Algebra.Types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
+      orderA = { type: Algebra.Types.EXPRESSION, expressionType: Algebra.ExpressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.Types.EXPRESSION,
-        expressionType: Algebra.expressionTypes.OPERATOR,
+        expressionType: Algebra.ExpressionTypes.OPERATOR,
         operator: 'desc',
         args: [ orderA ],
       };
@@ -748,10 +748,10 @@ describe('ActorQueryOperationOrderBy with double type', () => {
         mediatorTermComparatorFactory,
         mediatorExpressionEvaluatorFactory,
       });
-      orderA = { type: Algebra.Types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
+      orderA = { type: Algebra.Types.EXPRESSION, expressionType: Algebra.ExpressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.Types.EXPRESSION,
-        expressionType: Algebra.expressionTypes.OPERATOR,
+        expressionType: Algebra.ExpressionTypes.OPERATOR,
         operator: 'desc',
         args: [ orderA ],
       };
@@ -848,10 +848,10 @@ describe('ActorQueryOperationOrderBy with decimal type', () => {
         mediatorTermComparatorFactory,
         mediatorExpressionEvaluatorFactory,
       });
-      orderA = { type: Algebra.Types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
+      orderA = { type: Algebra.Types.EXPRESSION, expressionType: Algebra.ExpressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.Types.EXPRESSION,
-        expressionType: Algebra.expressionTypes.OPERATOR,
+        expressionType: Algebra.ExpressionTypes.OPERATOR,
         operator: 'desc',
         args: [ orderA ],
       };
@@ -947,10 +947,10 @@ describe('ActorQueryOperationOrderBy with float type', () => {
         mediatorTermComparatorFactory,
         mediatorExpressionEvaluatorFactory,
       });
-      orderA = { type: Algebra.Types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
+      orderA = { type: Algebra.Types.EXPRESSION, expressionType: Algebra.ExpressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.Types.EXPRESSION,
-        expressionType: Algebra.expressionTypes.OPERATOR,
+        expressionType: Algebra.ExpressionTypes.OPERATOR,
         operator: 'desc',
         args: [ orderA ],
       };
@@ -1046,10 +1046,10 @@ describe('ActorQueryOperationOrderBy with mixed literal types', () => {
         mediatorTermComparatorFactory,
         mediatorExpressionEvaluatorFactory,
       });
-      orderA = { type: Algebra.Types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
+      orderA = { type: Algebra.Types.EXPRESSION, expressionType: Algebra.ExpressionTypes.TERM, term: DF.variable('a') };
       descOrderA = {
         type: Algebra.Types.EXPRESSION,
-        expressionType: Algebra.expressionTypes.OPERATOR,
+        expressionType: Algebra.ExpressionTypes.OPERATOR,
         operator: 'desc',
         args: [ orderA ],
       };
@@ -1145,7 +1145,7 @@ describe('Another ActorQueryOperationOrderBy with mixed types', () => {
         mediatorTermComparatorFactory,
         mediatorExpressionEvaluatorFactory,
       });
-      orderA = { type: Algebra.Types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
+      orderA = { type: Algebra.Types.EXPRESSION, expressionType: Algebra.ExpressionTypes.TERM, term: DF.variable('a') };
     });
 
     it('should not sort since its not a literal ascending', async() => {

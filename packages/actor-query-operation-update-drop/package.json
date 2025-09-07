@@ -48,6 +48,6 @@
     "@comunica/types": "^4.0.2",
     "@comunica/utils-query-operation": "^4.0.2",
     "@rdfjs/types": "*",
-    "@traqula/algebra-sparql-1-1": "^0.0.3"
+    "@traqula/algebra-transformations-1-1": "^0.0.7"
   }
 }

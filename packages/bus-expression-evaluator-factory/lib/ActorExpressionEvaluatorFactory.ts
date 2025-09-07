@@ -4,7 +4,7 @@ import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { IExpressionEvaluator } from '@comunica/types';
-import type { Algebra as Alg } from '@traqula/algebra-sparql-1-1';
+import type { Algebra as Alg } from '@traqula/algebra-transformations-1-1';
 
 /**
  * A comunica actor for utils-expression-evaluator-factory events.

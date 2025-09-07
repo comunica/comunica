@@ -1,7 +1,7 @@
 import type { Expression, GeneralSuperTypeDict, ISuperTypeProvider } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra as Alg } from '@traqula/algebra-sparql-1-1';
-import { Algebra } from '@traqula/algebra-sparql-1-1';
+import { Types, ExpressionTypes } from '@traqula/algebra-transformations-1-1';
+import type { Algebra as Alg } from '@traqula/algebra-transformations-1-1';
 import * as RDFString from 'rdf-string';
 import * as E from '../expressions';
 import { TypeURL } from '../util/Consts';
@@ -35,8 +35,8 @@ export class TermTransformer implements ITermTransformer {
   public transformRDFTermUnsafe(term: RDF.Term): E.Term {
     return <E.Term> this.transformTerm({
       term,
-      type: Algebra.Types.EXPRESSION,
-      expressionType: Algebra.expressionTypes.TERM,
+      type: Types.EXPRESSION,
+      expressionType: ExpressionTypes.TERM,
     });
   }
 

@@ -10,7 +10,7 @@ import type {
 } from '@comunica/types';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra } from '@traqula/algebra-sparql-1-1';
+import type { Algebra } from '@traqula/algebra-transformations-1-1';
 import type { AsyncIterator, BufferedIteratorOptions } from 'asynciterator';
 import { BufferedIterator } from 'asynciterator';
 

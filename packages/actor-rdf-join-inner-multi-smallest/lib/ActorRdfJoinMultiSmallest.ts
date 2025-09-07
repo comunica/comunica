@@ -18,7 +18,7 @@ import type {
   ComunicaDataFactory,
 } from '@comunica/types';
 import { getSafeBindings } from '@comunica/utils-query-operation';
-import { Factory } from '@traqula/algebra-sparql-1-1';
+import { Factory } from '@traqula/algebra-transformations-1-1';
 
 /**
  * A Multi Smallest RDF Join Actor.

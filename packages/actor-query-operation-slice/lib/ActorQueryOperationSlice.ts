@@ -13,7 +13,7 @@ import type {
   IMetadata,
   IActionContext,
 } from '@comunica/types';
-import type { Algebra } from '@traqula/algebra-sparql-1-1';
+import type { Algebra } from '@traqula/algebra-transformations-1-1';
 import type { AsyncIterator } from 'asynciterator';
 
 /**

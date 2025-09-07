@@ -2,8 +2,8 @@ import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-e
 import type { IActionContext } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-expression-evaluator/test/util/helpers';
-import { Factory } from '@traqula/algebra-sparql-1-1';
-import type { Algebra } from '@traqula/algebra-sparql-1-1';
+import { Factory } from '@traqula/algebra-transformations-1-1';
+import type { Algebra } from '@traqula/algebra-transformations-1-1';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 

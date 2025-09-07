@@ -1,7 +1,7 @@
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor, Mediator } from '@comunica/core';
 import type { Expression, IEvalContext, IInternalEvaluator, TermExpression } from '@comunica/types';
-import type { Algebra as Alg } from '@traqula/algebra-sparql-1-1';
+import type { Algebra as Alg } from '@traqula/algebra-transformations-1-1';
 
 /**
  * A comunica actor for function factory events.

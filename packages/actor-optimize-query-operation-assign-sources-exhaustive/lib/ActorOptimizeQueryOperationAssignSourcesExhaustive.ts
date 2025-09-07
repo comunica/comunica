@@ -10,7 +10,7 @@ import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, IDataDestination, IQuerySourceWrapper } from '@comunica/types';
 import { assignOperationSource, doesShapeAcceptOperation } from '@comunica/utils-query-operation';
-import { Algebra, Factory, Util } from '@traqula/algebra-sparql-1-1';
+import { Algebra, Factory, utils } from '@traqula/algebra-transformations-1-1';
 
 /**
  * A comunica Assign Sources Exhaustive Optimize Query Operation Actor.
@@ -74,7 +74,7 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
   ): Algebra.Operation {
     // eslint-disable-next-line ts/no-this-alias
     const self = this;
-    return Util.mapOperation(operation, {
+    return utils.mapOperation(operation, {
       [Algebra.Types.PATTERN](subOperation, factory) {
         if (sources.length === 1) {
           return {

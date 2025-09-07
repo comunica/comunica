@@ -1,6 +1,6 @@
 import type { IQuerySource } from '@comunica/types';
 import { assignOperationSource } from '@comunica/utils-query-operation';
-import { Factory } from '@traqula/algebra-sparql-1-1';
+import { Factory } from '@traqula/algebra-transformations-1-1';
 import { DataFactory } from 'rdf-data-factory';
 import { MemoryPhysicalQueryPlanLogger } from '../lib/MemoryPhysicalQueryPlanLogger';
 

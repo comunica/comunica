@@ -4,7 +4,7 @@ import type { IActionRdfParseHandle, MediatorRdfParseHandle } from '@comunica/bu
 import { ActionContext, Bus } from '@comunica/core';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
-import { Factory } from '@traqula/algebra-sparql-1-1';
+import { Factory } from '@traqula/algebra-transformations-1-1';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQuerySourceIdentifySerialized } from '../lib/ActorQuerySourceIdentifySerialized';
 import '@comunica/utils-jest';

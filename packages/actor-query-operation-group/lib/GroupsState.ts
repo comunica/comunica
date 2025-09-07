@@ -4,7 +4,7 @@ import type { Bindings, ComunicaDataFactory, IActionContext } from '@comunica/ty
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { bindingsToCompactString } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra } from '@traqula/algebra-sparql-1-1';
+import type { Algebra } from '@traqula/algebra-transformations-1-1';
 
 /**
  * A simple type alias for strings that should be hashes of Bindings

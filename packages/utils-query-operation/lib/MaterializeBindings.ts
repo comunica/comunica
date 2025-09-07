@@ -1,8 +1,8 @@
 import type { Bindings } from '@comunica/types';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra, Factory } from '@traqula/algebra-sparql-1-1';
-import { Util } from '@traqula/algebra-sparql-1-1';
+import type { Algebra, Factory } from '@traqula/algebra-transformations-1-1';
+import { utils } from '@traqula/algebra-transformations-1-1';
 import type { Variable } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import { mapTermsNested, someTermsNested } from 'rdf-terms';
@@ -66,7 +66,7 @@ export function materializeOperation(
     originalBindings: 'originalBindings' in options ? options.originalBindings : bindings,
   };
 
-  return Util.mapOperation(operation, {
+  return utils.mapOperation(operation, {
     path(op: Algebra.Path, factory: Factory) {
       // Materialize variables in a path expression.
       // The predicate expression will be recursed.

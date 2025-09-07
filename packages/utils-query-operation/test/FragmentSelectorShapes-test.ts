@@ -1,4 +1,4 @@
-import { Algebra, Factory } from '@traqula/algebra-sparql-1-1';
+import { Algebra, Factory } from '@traqula/algebra-transformations-1-1';
 import {
   doesShapeAcceptOperation,
 } from '../lib/FragmentSelectorShapes';

@@ -11,7 +11,7 @@ import type {
   ComunicaDataFactory,
 } from '@comunica/types';
 import { getSafeBindings } from '@comunica/utils-query-operation';
-import { Algebra, Factory } from '@traqula/algebra-sparql-1-1';
+import { Algebra, Factory } from '@traqula/algebra-transformations-1-1';
 import { UnionIterator } from 'asynciterator';
 
 /**

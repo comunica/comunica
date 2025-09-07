@@ -20,8 +20,8 @@ import type {
 } from '@comunica/types';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra } from '@traqula/algebra-sparql-1-1';
-import { Factory } from '@traqula/algebra-sparql-1-1';
+import type { Algebra } from '@traqula/algebra-transformations-1-1';
+import { Factory } from '@traqula/algebra-transformations-1-1';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator } from 'asynciterator';
 import { LRUCache } from 'lru-cache';

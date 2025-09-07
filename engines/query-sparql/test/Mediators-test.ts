@@ -68,7 +68,7 @@ import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-
 import type { Runner } from '@comunica/runner';
 import { instantiateComponent } from '@comunica/runner';
 import type { IActionContext, IQueryOperationResultBindings } from '@comunica/types';
-import { Algebra } from '@traqula/algebra-sparql-1-1';
+import { Algebra } from '@traqula/algebra-transformations-1-1';
 import { DataFactory } from 'rdf-data-factory';
 import { QueryEngineFactory } from '../lib';
 
@@ -92,12 +92,12 @@ describe('System test: mediators', () => {
     'mediatorBindingsAggregatorFactory',
     { expr: {
       type: Algebra.Types.EXPRESSION,
-      expressionType: Algebra.expressionTypes.AGGREGATE,
+      expressionType: Algebra.ExpressionTypes.AGGREGATE,
       aggregator: 'avg',
       distinct: false,
       expression: {
         type: Algebra.Types.EXPRESSION,
-        expressionType: Algebra.expressionTypes.TERM,
+        expressionType: Algebra.ExpressionTypes.TERM,
         term: DF.variable('x'),
       },
     }},
@@ -130,7 +130,7 @@ describe('System test: mediators', () => {
     'mediatorExpressionEvaluatorFactory',
     { algExpr: <any> {
       type: Algebra.Types.EXPRESSION,
-      expressionType: Algebra.expressionTypes.TERM,
+      expressionType: Algebra.ExpressionTypes.TERM,
       term: DF.variable('x'),
     }},
       `Creation of Expression Evaluator failed`,

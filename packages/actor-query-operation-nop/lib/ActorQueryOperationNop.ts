@@ -8,7 +8,7 @@ import type { ComunicaDataFactory, IActionContext, IQueryOperationResult } from 
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra } from '@traqula/algebra-sparql-1-1';
+import type { Algebra } from '@traqula/algebra-transformations-1-1';
 import { SingletonIterator } from 'asynciterator';
 
 /**

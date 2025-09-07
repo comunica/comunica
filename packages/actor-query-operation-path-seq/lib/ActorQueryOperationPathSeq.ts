@@ -6,7 +6,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { Bindings, IActionContext, IQueryOperationResult, IJoinEntry, ComunicaDataFactory } from '@comunica/types';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
-import { Algebra, Factory } from '@traqula/algebra-sparql-1-1';
+import { Algebra, Factory } from '@traqula/algebra-transformations-1-1';
 
 /**
  * A comunica Path Seq Query Operation Actor.

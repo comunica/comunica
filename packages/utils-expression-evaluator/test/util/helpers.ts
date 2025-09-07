@@ -15,7 +15,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { GeneralSuperTypeDict, IActionContext, ISuperTypeProvider } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
-import { Algebra } from '@traqula/algebra-sparql-1-1';
+import { Algebra } from '@traqula/algebra-transformations-1-1';
 import { LRUCache } from 'lru-cache';
 import { DataFactory } from 'rdf-data-factory';
 import * as Eval from '../../lib/index';
@@ -29,17 +29,17 @@ Algebra.AggregateExpression {
   const inner: Algebra.Expression = wildcard ?
       {
         type: Algebra.Types.EXPRESSION,
-        expressionType: Algebra.expressionTypes.WILDCARD,
+        expressionType: Algebra.ExpressionTypes.WILDCARD,
         wildcard: { type: 'wildcard' },
       } :
       {
         type: Algebra.Types.EXPRESSION,
-        expressionType: Algebra.expressionTypes.TERM,
+        expressionType: Algebra.ExpressionTypes.TERM,
         term: DF.variable('x'),
       };
   return {
     type: Algebra.Types.EXPRESSION,
-    expressionType: Algebra.expressionTypes.AGGREGATE,
+    expressionType: Algebra.ExpressionTypes.AGGREGATE,
     aggregator: <any>aggregator,
     distinct,
     separator,

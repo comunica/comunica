@@ -49,7 +49,7 @@
     "@comunica/utils-bindings-factory": "^4.0.2",
     "@comunica/utils-metadata": "^4.0.2",
     "@rdfjs/types": "*",
-    "@traqula/algebra-sparql-1-1": "^0.0.3",
+    "@traqula/algebra-transformations-1-1": "^0.0.7",
     "asynciterator": "^3.9.0",
     "rdf-terms": "^2.0.0"
   }

@@ -10,7 +10,7 @@ import type { IActionContext, IQueryOperationResultBindings } from '@comunica/ty
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
-import { Factory, Algebra } from '@traqula/algebra-sparql-1-1';
+import { Factory, Algebra } from '@traqula/algebra-transformations-1-1';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type { IActorRdfJoinMultiBindTestSideData } from '../lib/ActorRdfJoinMultiBind';

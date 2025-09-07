@@ -6,8 +6,8 @@ import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operat
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
-import type { Algebra } from '@traqula/algebra-sparql-1-1';
-import { Factory, Util } from '@traqula/algebra-sparql-1-1';
+import type { Algebra } from '@traqula/algebra-transformations-1-1';
+import { Factory, utils } from '@traqula/algebra-transformations-1-1';
 
 /**
  * A comunica BGP to Join Optimize Query Operation Actor.
@@ -21,7 +21,7 @@ export class ActorOptimizeQueryOperationBgpToJoin extends ActorOptimizeQueryOper
     const dataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const algebraFactory = new Factory(dataFactory);
 
-    const operation = Util.mapOperation(action.operation, {
+    const operation = utils.mapOperation(action.operation, {
       bgp(op: Algebra.Bgp, factory: Factory) {
         return {
           recurse: false,

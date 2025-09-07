@@ -43,7 +43,7 @@
   },
   "dependencies": {
     "@rdfjs/types": "*",
-    "@traqula/algebra-sparql-1-1": "^0.0.3",
+    "@traqula/algebra-transformations-1-1": "^0.0.7",
     "@types/yargs": "^17.0.24",
     "asynciterator": "^3.9.0",
     "lru-cache": "^10.0.1"

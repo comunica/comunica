@@ -1,7 +1,7 @@
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { QueryFormatType, IQueryExplained, IActionContext, IQueryOperationResult } from '@comunica/types';
-import type { Algebra } from '@traqula/algebra-sparql-1-1';
+import type { Algebra } from '@traqula/algebra-transformations-1-1';
 
 /**
  * A comunica actor for query-process events.

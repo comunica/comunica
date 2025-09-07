@@ -14,7 +14,7 @@ import type {
 } from '@comunica/types';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
-import { Algebra } from '@traqula/algebra-sparql-1-1';
+import { Algebra } from '@traqula/algebra-transformations-1-1';
 import type { AsyncIterator } from 'asynciterator';
 import { getTermsNested, getVariables, uniqTerms } from 'rdf-terms';
 import { BindingsToQuadsIterator } from './BindingsToQuadsIterator';

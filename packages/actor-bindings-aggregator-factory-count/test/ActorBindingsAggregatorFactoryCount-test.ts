@@ -8,8 +8,7 @@ import {
   getMockMediatorExpressionEvaluatorFactory,
   makeAggregate,
 } from '@comunica/utils-expression-evaluator/test/util/helpers';
-import { Algebra } from '@traqula/algebra-sparql-1-1';
-import { Wildcard } from 'sparqljs';
+import { Algebra } from '@traqula/algebra-transformations-1-1';
 import { ActorBindingsAggregatorFactoryCount } from '../lib';
 import '@comunica/utils-jest';
 
@@ -66,14 +65,14 @@ describe('ActorExpressionEvaluatorAggregateCount', () => {
           context,
           expr: {
             type: Algebra.Types.EXPRESSION,
-            expressionType: Algebra.expressionTypes.AGGREGATE,
+            expressionType: Algebra.ExpressionTypes.AGGREGATE,
             aggregator: 'count',
             distinct: false,
             separator: '',
             expression: {
               type: Algebra.Types.EXPRESSION,
-              expressionType: Algebra.expressionTypes.WILDCARD,
-              wildcard: new Wildcard(),
+              expressionType: Algebra.ExpressionTypes.WILDCARD,
+              wildcard: { type: 'wildcard' },
             },
           },
         })).resolves.toFailTest(exception);
