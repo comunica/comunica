@@ -10,7 +10,7 @@ import type {
 } from '@comunica/types';
 import { getMetadataBindings, getMetadataQuads } from '@comunica/utils-metadata';
 import { getOperationSource } from '@comunica/utils-query-operation';
-import { Algebra, utils } from '@traqula/algebra-transformations-1-1';
+import { Algebra, utils } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A comunica Source Query Operation Actor.

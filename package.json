@@ -46,7 +46,7 @@
     "@pollyjs/persister-fs": "^6.0.5",
     "@rubensworks/eslint-config": "^3.0.0",
     "@rubensworks/process-sparql-benchmark-results": "^1.2.2",
-    "@traqula/algebra-transformations-1-1": "^0.0.7",
+    "@traqula/algebra-transformations-1-2": "^0.0.8",
     "@types/benchmark": "^2.0.0",
     "@types/jest": "^29.4.0",
     "@types/md5": "^2.3.5",
@@ -93,5 +93,8 @@
     "typescript": "^5.3.3",
     "webpack": "^5.0.0",
     "webpack-cli": "^6.0.0"
+  },
+  "dependencies": {
+    "@traqula/algebra-transformations-1-1": "^0.0.8"
   }
 }

@@ -21,7 +21,7 @@ import type {
 } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getSafeBindings, materializeOperation } from '@comunica/utils-query-operation';
-import { Factory, Algebra, utils } from '@traqula/algebra-transformations-1-1';
+import { Factory, Algebra, utils } from '@traqula/algebra-transformations-1-2';
 import { MultiTransformIterator, TransformIterator, UnionIterator } from 'asynciterator';
 
 /**

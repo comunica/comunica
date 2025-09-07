@@ -9,7 +9,7 @@ import type {
 } from '@comunica/types';
 import { cachifyMetadata } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra } from '@traqula/algebra-transformations-1-1';
+import type { Algebra } from '@traqula/algebra-transformations-1-2';
 import type { IActionQueryOperation, IActorQueryOperationArgs } from './ActorQueryOperation';
 import { ActorQueryOperation } from './ActorQueryOperation';
 

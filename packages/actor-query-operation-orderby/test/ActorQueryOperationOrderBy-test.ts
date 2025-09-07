@@ -13,7 +13,7 @@ import {
   getMockMediatorExpressionEvaluatorFactory,
 } from '@comunica/utils-expression-evaluator/test/util/helpers';
 import { getSafeBindings } from '@comunica/utils-query-operation';
-import { Algebra } from '@traqula/algebra-transformations-1-1';
+import { Algebra } from '@traqula/algebra-transformations-1-2';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';

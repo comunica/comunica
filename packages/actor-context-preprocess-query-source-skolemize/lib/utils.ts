@@ -8,7 +8,7 @@ import type {
 } from '@comunica/types';
 import { BlankNodeScoped } from '@comunica/utils-data-factory';
 import type * as RDF from '@rdfjs/types';
-import { Algebra, Factory, utils } from '@traqula/algebra-transformations-1-1';
+import { Algebra, Factory, utils } from '@traqula/algebra-transformations-1-2';
 import type { AsyncIterator } from 'asynciterator';
 import { mapTermsNested } from 'rdf-terms';
 

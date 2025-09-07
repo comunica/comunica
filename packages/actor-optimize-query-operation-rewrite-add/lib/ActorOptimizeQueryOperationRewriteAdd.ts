@@ -9,7 +9,7 @@ import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { Algebra, Factory, utils } from '@traqula/algebra-transformations-1-1';
+import { Algebra, Factory, utils } from '@traqula/algebra-transformations-1-2';
 import { DataFactory } from 'rdf-data-factory';
 
 const DF = new DataFactory<RDF.BaseQuad>();

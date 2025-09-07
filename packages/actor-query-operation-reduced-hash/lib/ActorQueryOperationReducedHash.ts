@@ -12,7 +12,7 @@ import type {
 } from '@comunica/types';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra } from '@traqula/algebra-transformations-1-1';
+import type { Algebra } from '@traqula/algebra-transformations-1-2';
 import { LRUCache } from 'lru-cache';
 
 /**

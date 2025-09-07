@@ -1,6 +1,6 @@
 import type { AggregateExpression } from '@comunica/types';
 import { ExpressionType } from '@comunica/types';
-import type { Algebra as Alg } from '@traqula/algebra-transformations-1-1';
+import type { Algebra as Alg } from '@traqula/algebra-transformations-1-2';
 
 export class Aggregate implements AggregateExpression {
   public expressionType: ExpressionType.Aggregate = ExpressionType.Aggregate;

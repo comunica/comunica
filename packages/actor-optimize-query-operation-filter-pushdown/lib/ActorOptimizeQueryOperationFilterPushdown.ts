@@ -10,7 +10,7 @@ import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, FragmentSelectorShape, IActionContext, IQuerySourceWrapper } from '@comunica/types';
 import { doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
-import { Factory, Algebra, utils } from '@traqula/algebra-transformations-1-1';
+import { Factory, Algebra, utils } from '@traqula/algebra-transformations-1-2';
 import { mapTermsNested, uniqTerms } from 'rdf-terms';
 
 /**

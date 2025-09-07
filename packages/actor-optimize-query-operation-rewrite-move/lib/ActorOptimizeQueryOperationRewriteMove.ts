@@ -8,7 +8,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
-import { Algebra, Factory, utils } from '@traqula/algebra-transformations-1-1';
+import { Algebra, Factory, utils } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A comunica Rewrite Move Optimize Query Operation Actor.

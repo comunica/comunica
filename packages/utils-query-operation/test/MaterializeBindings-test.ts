@@ -1,6 +1,6 @@
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
-import { Factory } from '@traqula/algebra-transformations-1-1';
+import { Factory } from '@traqula/algebra-transformations-1-2';
 import { DataFactory } from 'rdf-data-factory';
 import { materializeOperation, materializeTerm } from '../lib/MaterializeBindings';
 

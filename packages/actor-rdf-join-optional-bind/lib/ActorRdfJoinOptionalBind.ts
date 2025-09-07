@@ -16,7 +16,7 @@ import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-
 import type { Bindings, BindingsStream, ComunicaDataFactory } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getSafeBindings } from '@comunica/utils-query-operation';
-import { Algebra, Factory } from '@traqula/algebra-transformations-1-1';
+import { Algebra, Factory } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A comunica Optional Bind RDF Join Actor.

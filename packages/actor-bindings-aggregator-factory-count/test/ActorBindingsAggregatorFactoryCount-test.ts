@@ -8,7 +8,7 @@ import {
   getMockMediatorExpressionEvaluatorFactory,
   makeAggregate,
 } from '@comunica/utils-expression-evaluator/test/util/helpers';
-import { Algebra } from '@traqula/algebra-transformations-1-1';
+import { Algebra } from '@traqula/algebra-transformations-1-2';
 import { ActorBindingsAggregatorFactoryCount } from '../lib';
 import '@comunica/utils-jest';
 

@@ -14,7 +14,7 @@ import type {
 } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getSafeBindings } from '@comunica/utils-query-operation';
-import type { Algebra } from '@traqula/algebra-transformations-1-1';
+import type { Algebra } from '@traqula/algebra-transformations-1-2';
 import { ArrayIterator, TransformIterator } from 'asynciterator';
 import { GroupsState } from './GroupsState';
 

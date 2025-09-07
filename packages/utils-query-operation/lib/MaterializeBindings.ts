@@ -1,8 +1,8 @@
 import type { Bindings } from '@comunica/types';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra, Factory } from '@traqula/algebra-transformations-1-1';
-import { utils } from '@traqula/algebra-transformations-1-1';
+import type { Algebra, Factory } from '@traqula/algebra-transformations-1-2';
+import { utils } from '@traqula/algebra-transformations-1-2';
 import type { Variable } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import { mapTermsNested, someTermsNested } from 'rdf-terms';

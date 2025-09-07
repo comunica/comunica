@@ -1,7 +1,7 @@
 import type { Expression, GeneralSuperTypeDict, ISuperTypeProvider } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { Types, ExpressionTypes } from '@traqula/algebra-transformations-1-1';
-import type { Algebra as Alg } from '@traqula/algebra-transformations-1-1';
+import { Types, ExpressionTypes } from '@traqula/algebra-transformations-1-2';
+import type { Algebra as Alg } from '@traqula/algebra-transformations-1-2';
 import * as RDFString from 'rdf-string';
 import * as E from '../expressions';
 import { TypeURL } from '../util/Consts';

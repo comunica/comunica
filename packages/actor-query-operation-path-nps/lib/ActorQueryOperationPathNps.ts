@@ -4,7 +4,7 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
 import { getSafeBindings } from '@comunica/utils-query-operation';
-import { Algebra, Factory } from '@traqula/algebra-transformations-1-1';
+import { Algebra, Factory } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A comunica Path Nps Query Operation Actor.

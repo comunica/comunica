@@ -45,6 +45,6 @@
     "@comunica/types": "^4.0.2",
     "@comunica/utils-metadata": "^4.0.2",
     "@rdfjs/types": "*",
-    "@traqula/algebra-transformations-1-1": "^0.0.7"
+    "@traqula/algebra-transformations-1-2": "^0.0.8"
   }
 }

@@ -5,7 +5,7 @@ import {
 import type { IActorTest, TestResult } from '@comunica/core';
 import type { IActionContext, IQueryOperationResult } from '@comunica/types';
 import { getSafeVoid, testReadOnly } from '@comunica/utils-query-operation';
-import type { Algebra } from '@traqula/algebra-transformations-1-1';
+import type { Algebra } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A comunica Update CompositeUpdate Query Operation Actor.

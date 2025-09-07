@@ -6,8 +6,8 @@ import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operat
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
-import type { Algebra } from '@traqula/algebra-transformations-1-1';
-import { Factory, utils } from '@traqula/algebra-transformations-1-1';
+import type { Algebra } from '@traqula/algebra-transformations-1-2';
+import { Factory, utils } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A comunica BGP to Join Optimize Query Operation Actor.

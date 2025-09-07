@@ -2,7 +2,7 @@ import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import type { IActionContext } from '@comunica/types';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra, Factory } from '@traqula/algebra-transformations-1-1';
+import type { Algebra, Factory } from '@traqula/algebra-transformations-1-2';
 import type { AsyncIterator } from 'asynciterator';
 import { BufferedIterator } from 'asynciterator';
 import { termToString } from 'rdf-string';

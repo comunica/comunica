@@ -50,7 +50,7 @@
     "@comunica/utils-bindings-factory": "^4.0.2",
     "@comunica/utils-query-operation": "^4.0.2",
     "@rdfjs/types": "*",
-    "@traqula/algebra-transformations-1-1": "^0.0.7",
+    "@traqula/algebra-transformations-1-2": "^0.0.8",
     "asynciterator": "^3.9.0"
   }
 }

@@ -9,7 +9,7 @@ import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext, IQuerySourceWrapper, MetadataBindings } from '@comunica/types';
 import { doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-query-operation';
-import { Algebra, Factory, utils } from '@traqula/algebra-transformations-1-1';
+import { Algebra, Factory, utils } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A comunica Prune Empty Source Operations Optimize Query Operation Actor.

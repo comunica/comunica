@@ -1,6 +1,6 @@
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import type * as RDF from '@rdfjs/types';
-import { Algebra } from '@traqula/algebra-transformations-1-1';
+import { Algebra } from '@traqula/algebra-transformations-1-2';
 import {
   date,
   decimal,

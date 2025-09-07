@@ -16,7 +16,7 @@ import type {
   IDiscoverEventData,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra, Factory } from '@traqula/algebra-transformations-1-1';
+import type { Algebra, Factory } from '@traqula/algebra-transformations-1-2';
 import type { SourceStateGetter, ISourceState } from './LinkedRdfSourcesAsyncRdfIterator';
 import { LinkedRdfSourcesAsyncRdfIterator } from './LinkedRdfSourcesAsyncRdfIterator';
 

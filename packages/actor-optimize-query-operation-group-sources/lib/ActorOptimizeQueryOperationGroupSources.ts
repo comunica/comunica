@@ -14,7 +14,7 @@ import {
   getOperationSource,
   removeOperationSource,
 } from '@comunica/utils-query-operation';
-import { Algebra, Factory } from '@traqula/algebra-transformations-1-1';
+import { Algebra, Factory } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A comunica Group Sources Optimize Query Operation Actor.

@@ -7,8 +7,8 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
-import type { Algebra } from '@traqula/algebra-transformations-1-1';
-import { utils, Factory } from '@traqula/algebra-transformations-1-1';
+import type { Algebra } from '@traqula/algebra-transformations-1-2';
+import { utils, Factory } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A comunica Join BGP Optimize Query Operation Actor.

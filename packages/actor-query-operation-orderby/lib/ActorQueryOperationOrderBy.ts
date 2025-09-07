@@ -8,7 +8,7 @@ import type { Bindings, IActionContext, IQueryOperationResult } from '@comunica/
 import { isExpressionError } from '@comunica/utils-expression-evaluator';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type { Term } from '@rdfjs/types';
-import { Algebra } from '@traqula/algebra-transformations-1-1';
+import { Algebra } from '@traqula/algebra-transformations-1-2';
 import { SortIterator } from './SortIterator';
 
 /**

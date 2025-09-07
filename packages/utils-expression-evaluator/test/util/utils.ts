@@ -1,7 +1,7 @@
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { IActionContext } from '@comunica/types';
-import type { Algebra as Alg } from '@traqula/algebra-transformations-1-1';
 import { toAlgebra } from '@traqula/algebra-sparql-1-2';
+import type { Algebra as Alg } from '@traqula/algebra-transformations-1-2';
 import { Parser as SparqlParser } from '@traqula/parser-sparql-1-2';
 import type { AliasMap } from './Aliases';
 import type { Notation } from './TestTable';

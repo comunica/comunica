@@ -6,8 +6,8 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
 import { assignOperationSource, getSafeQuads, testReadOnly } from '@comunica/utils-query-operation';
-import type { Algebra } from '@traqula/algebra-transformations-1-1';
-import { Factory } from '@traqula/algebra-transformations-1-1';
+import type { Algebra } from '@traqula/algebra-transformations-1-2';
+import { Factory } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A [Query Operation](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation) actor
