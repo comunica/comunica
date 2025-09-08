@@ -40,6 +40,6 @@
     "@comunica/bus-function-factory": "^4.2.0",
     "@comunica/utils-expression-evaluator": "^4.2.0",
     "@types/uuid": "^10.0.0",
-    "uuid": "^11.0.0"
+    "uuid": "^12.0.0"
   }
 }
