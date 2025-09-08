@@ -27,7 +27,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v5
       - name: Use Node.js ${{ env.NODE_VERSION_LOWEST }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION_LOWEST }}
           cache: yarn
@@ -63,7 +63,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v5
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
           cache: yarn
@@ -100,7 +100,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v5
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
           cache: yarn
@@ -144,7 +144,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v5
       - name: Use Node.js ${{ env.NODE_VERSION_LOWEST }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION_LOWEST }}
           cache: yarn
@@ -190,7 +190,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v5
       - name: Use Node.js ${{ env.NODE_VERSION_LOWEST }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION_LOWEST }}
           cache: yarn
@@ -218,7 +218,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v5
       - name: Use Node.js ${{ env.NODE_VERSION_LOWEST }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION_LOWEST }}
           cache: yarn
@@ -262,7 +262,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v5
       - name: Use Node.js ${{ env.NODE_VERSION_HIGHEST }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION_HIGHEST }}
           cache: yarn
@@ -292,7 +292,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v5
       - name: Use Node.js ${{ env.NODE_VERSION_HIGHEST }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION_HIGHEST }}
       - uses: actions/download-artifact@v5
@@ -369,7 +369,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v5
       - name: Use Node.js ${{ env.NODE_VERSION_LOWEST }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION_LOWEST }}
           cache: yarn
