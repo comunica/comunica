@@ -92,14 +92,13 @@ function doesShapeAcceptOperationRecurseOperation(
     .every((input: Algebra.Pattern) => doesShapeAcceptOperationRecurseShape(shapeTop, shapeTop, input, options)));
 }
 
-function isBuiltInFunctionIRI(iri: string): boolean {
-  return iri.includes('w3.org/2005/xpath-functions#') ||
-    iri.includes('w3.org/2001/XMLSchema#');
+function functionIsSparql11Required(iri: string): boolean {
+  return /^https?:\/\/www\.w3\.org\//u.test(iri);
 }
 
 function isExtensionFunction(operation: Algebra.Operation): boolean {
   return operation.type === Algebra.types.EXPRESSION && operation.expressionType === Algebra.expressionTypes.NAMED &&
-    !isBuiltInFunctionIRI(operation.name.value);
+    !functionIsSparql11Required(operation.name.value);
 }
 
 export type FragmentSelectorShapeTestFlags = {
