@@ -45,7 +45,7 @@ export class HttpServiceSparqlEndpoint {
 
   public readonly freshWorkerPerQuery: boolean;
   public readonly contextOverride: boolean;
-  public readonly includeVoID: boolean;
+  public readonly emitVoid: boolean;
 
   public lastQueryId = 0;
 
@@ -58,7 +58,7 @@ export class HttpServiceSparqlEndpoint {
     this.workers = args.workers ?? 1;
     this.freshWorkerPerQuery = Boolean(args.freshWorkerPerQuery);
     this.contextOverride = Boolean(args.contextOverride);
-    this.includeVoID = Boolean(args.includeVoID);
+    this.emitVoid = Boolean(args.emitVoid);
 
     this.engine = new QueryEngineFactoryBase(
       args.moduleRootPath,
@@ -155,7 +155,7 @@ export class HttpServiceSparqlEndpoint {
 
     const freshWorkerPerQuery: boolean = args.freshWorker;
     const contextOverride: boolean = args.contextOverride;
-    const includeVoID: boolean = args.includeVoID;
+    const emitVoid: boolean = args.emitVoid;
     const port = args.port;
     const timeout = args.timeout * 1_000;
     const workers = args.workers;
@@ -169,7 +169,7 @@ export class HttpServiceSparqlEndpoint {
       context,
       freshWorkerPerQuery,
       contextOverride,
-      includeVoID,
+      emitVoid,
       moduleRootPath,
       mainModulePath: moduleRootPath,
       port,
@@ -472,7 +472,7 @@ export class HttpServiceSparqlEndpoint {
     }
 
     // If the query was an update query, update the cachedStatistics
-    if (this.includeVoID && queryBody.value.includes('INSERT')) {
+    if (!this.emitVoid && queryBody.value.includes('INSERT')) {
       this.fetchVoIDStatistics(engine).catch(() => {
         this.cachedStatistics = [];
       });
@@ -580,7 +580,7 @@ export class HttpServiceSparqlEndpoint {
         quads.push(quad(s, `${sd}extensionFunction`, value));
       }
 
-      if (this.includeVoID) {
+      if (!this.emitVoid) {
         for (const quad of await this.getVoIDQuads(engine, stdout, request, response)) {
           quads.push(quad);
         }
@@ -871,7 +871,7 @@ export interface IHttpServiceSparqlEndpointArgs extends IDynamicQueryEngineOptio
   workers?: number;
   freshWorkerPerQuery?: boolean;
   contextOverride?: boolean;
-  includeVoID?: boolean;
+  emitVoid?: boolean;
   moduleRootPath: string;
   defaultConfigPath: string;
 }

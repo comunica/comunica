@@ -54,9 +54,9 @@ export class CliArgsHandlerHttp implements ICliArgsHandler {
           type: 'boolean',
           describe: 'If the query context can be overridden through POST requests',
         },
-        includeVoID: {
+        emitVoid: {
           type: 'boolean',
-          describe: 'Include a VoID description, which can be found in the service description',
+          describe: 'Emit the VoID description, which can normally be found in the service description',
         },
       })
       .check((args) => {

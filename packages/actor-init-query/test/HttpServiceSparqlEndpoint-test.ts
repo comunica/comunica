@@ -511,6 +511,7 @@ describe('HttpServiceSparqlEndpoint', () => {
     let instance: HttpServiceSparqlEndpoint;
     beforeEach(() => {
       instance = new HttpServiceSparqlEndpoint({ ...argsDefault, workers: 4 });
+      instance.cachedStatistics = [];
     });
 
     describe('run', () => {
@@ -1416,6 +1417,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       it('should write the service description when no query was defined', async() => {
         const localInstance = new HttpServiceSparqlEndpoint({
           ...argsDefault,
+          emitVoid: true,
           workers: 4,
           context: new ActionContext().set(KeysInitQuery.extensionFunctions, {
             'https://example.org/functions#args0': async(args: RDF.Term[]) => {
@@ -1544,11 +1546,16 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       it('should handle an invalid media type in service description', async() => {
+        const localInstance = new HttpServiceSparqlEndpoint({
+          ...argsDefault,
+          emitVoid: true,
+        });
+
         // Create spies
-        const spyWriteServiceDescription = jest.spyOn(instance, 'writeServiceDescription');
+        const spyWriteServiceDescription = jest.spyOn(localInstance, 'writeServiceDescription');
 
         mediaType = 'mediatype_queryresultstreamerror';
-        await instance.writeQueryResult(
+        await localInstance.writeQueryResult(
           await new QueryEngineFactoryBase().create(),
           new PassThrough(),
           new PassThrough(),
@@ -1571,12 +1578,11 @@ describe('HttpServiceSparqlEndpoint', () => {
           .toHaveBeenLastCalledWith(400, { 'content-type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
       });
 
-      it('should append the VoID description in the service description when includeVoid is true', async() => {
+      it('should append the VoID description in the service description when emitVoid is not true', async() => {
         const xsd = 'http://www.w3.org/2001/XMLSchema#';
 
         const localInstance = new HttpServiceSparqlEndpoint({
           ...argsDefault,
-          includeVoID: true,
           context: {
             dcterms: {
               title: 'title',
@@ -1729,11 +1735,6 @@ describe('HttpServiceSparqlEndpoint', () => {
       it('should only query statistics once when doing multiple VoID description requests', async() => {
         const xsd = 'http://www.w3.org/2001/XMLSchema#';
 
-        const localInstance = new HttpServiceSparqlEndpoint({
-          ...argsDefault,
-          includeVoID: true,
-        });
-
         // Create spies
         const engine = await new QueryEngineFactoryBase().create();
         engine.queryBindings = (): BindingsStream => {
@@ -1749,7 +1750,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         };
         const spyQueryBindings = jest.spyOn(engine, 'queryBindings');
 
-        const requestVoID = () => localInstance.writeQueryResult(
+        const requestVoID = () => instance.writeQueryResult(
           engine,
           new PassThrough(),
           new PassThrough(),
@@ -1773,11 +1774,6 @@ describe('HttpServiceSparqlEndpoint', () => {
       it('should update cachedStatistics when doing an INSERT', async() => {
         const xsd = 'http://www.w3.org/2001/XMLSchema#';
 
-        const localInstance = new HttpServiceSparqlEndpoint({
-          ...argsDefault,
-          includeVoID: true,
-        });
-
         // Create spies
         const engine = await new QueryEngineFactoryBase().create();
         engine.queryBindings = (): BindingsStream => {
@@ -1793,7 +1789,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         };
         const spyQueryBindings = jest.spyOn(engine, 'queryBindings');
 
-        await localInstance.writeQueryResult(
+        await instance.writeQueryResult(
           engine,
           new PassThrough(),
           new PassThrough(),
@@ -1814,7 +1810,7 @@ INSERT DATA {
         // so these queryBindings were in fact used for the statistics and the partitions queries
         expect(spyQueryBindings).toHaveBeenCalledTimes(4);
 
-        await localInstance.writeQueryResult(
+        await instance.writeQueryResult(
           engine,
           new PassThrough(),
           new PassThrough(),
@@ -1832,17 +1828,12 @@ INSERT DATA {
       });
 
       it('should handle errors silently when updating cachedStatistics when doing an INSERT', async() => {
-        const localInstance = new HttpServiceSparqlEndpoint({
-          ...argsDefault,
-          includeVoID: true,
-        });
-
         // Create spies
         const engine = await new QueryEngineFactoryBase().create();
         engine.queryBindings = (): BindingsStream => <BindingsStream> {};
         const spyQueryBindings = jest.spyOn(engine, 'queryBindings');
 
-        await localInstance.writeQueryResult(
+        await instance.writeQueryResult(
           engine,
           new PassThrough(),
           new PassThrough(),
@@ -1862,11 +1853,11 @@ INSERT DATA {
         // Each VoID request does 4 calls
         expect(spyQueryBindings).toHaveBeenCalledTimes(4);
         // Empty, since there was an error
-        expect(localInstance.cachedStatistics).toEqual([]);
+        expect(instance.cachedStatistics).toEqual([]);
         // Errors are handled silently
         await expect(endCalledPromise).resolves.not.toBe('An internal server error occurred.\n');
 
-        await localInstance.writeQueryResult(
+        await instance.writeQueryResult(
           engine,
           new PassThrough(),
           new PassThrough(),
@@ -1884,20 +1875,15 @@ INSERT DATA {
       });
 
       it('should handle errors in VoID description statistics query', async() => {
-        const localInstance = new HttpServiceSparqlEndpoint({
-          ...argsDefault,
-          includeVoID: true,
-        });
-
         // Create spies
         const engine = await new QueryEngineFactoryBase().create();
         engine.queryBindings = (): BindingsStream => <BindingsStream>(new ArrayIterator<RDF.Bindings>([ BF.bindings([
           [ DF.variable('error'), DF.literal('error') ],
         ]) ]));
-        const spyGetVoIDQuads = jest.spyOn(localInstance, 'getVoIDQuads');
+        const spyGetVoIDQuads = jest.spyOn(instance, 'getVoIDQuads');
         const spyQueryBindings = jest.spyOn(engine, 'queryBindings');
 
-        await localInstance.writeQueryResult(
+        await instance.writeQueryResult(
           engine,
           new PassThrough(),
           new PassThrough(),
