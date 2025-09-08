@@ -64,6 +64,8 @@ function doesShapeAcceptOperationRecurseShape(
       return shapeOperation.pattern.type === operation.type;
     }
     case 'wildcard': {
+      // All possible operations are accepted by this shape.
+      // As exception, extension functions are not accepted through wildcards.
       return !isExtensionFunction(operation);
     }
   }
@@ -81,6 +83,10 @@ function doesShapeAcceptOperationRecurseOperation(
     if (!inputs.every(input => doesShapeAcceptOperationRecurseShape(shapeTop, shapeTop, input, options))) {
       return false;
     }
+  }
+  if (operation.expression && isExtensionFunction(operation.expression) &&
+    !doesShapeAcceptOperationRecurseShape(shapeTop, shapeTop, operation.expression, options)) {
+    return false;
   }
   return !(operation.patterns && !operation.patterns
     .every((input: Algebra.Pattern) => doesShapeAcceptOperationRecurseShape(shapeTop, shapeTop, input, options)));
