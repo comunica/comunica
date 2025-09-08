@@ -175,25 +175,43 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
     source: IQuerySourceWrapper | undefined,
     context: IActionContext,
   ): Promise<O> {
-    if (source) {
-      const shape: FragmentSelectorShape = await source.source.getSelectorShape(context);
-      if (doesShapeAcceptOperation(shape, operation)) {
-        // Checks for extension functions:
-        // The first 3 operands in the OR are checks to see if it's an extension function comunica supports
-        // If not, then we're good to go
-        // If it does, then only move the source annotation upwards if the source also supports the extension function
-        const extensionFunctions = context.get(KeysInitQuery.extensionFunctions);
-        const expression: Algebra.Operation | undefined = operation.expression;
-        if (!extensionFunctions || !(expression?.name) || !(expression.name.value in extensionFunctions) ||
-          doesShapeAcceptOperation(shape, expression)) {
-          this.logDebug(context, `Hoist ${inputs.length} source-specific operations into a single ${operation.type} operation for ${source.source.toString()}`);
-          operation = assignOperationSource(operation, source);
-          for (const input of inputs) {
-            removeOperationSource(input);
-          }
-        }
+    if (source && this.isPossibleToMoveSourceAnnotationUpwards(
+      operation,
+      await source.source.getSelectorShape(context),
+      context,
+    )) {
+      this.logDebug(context, `Hoist ${inputs.length} source-specific operations into a single ${operation.type} operation for ${source.source.toString()}`);
+      operation = assignOperationSource(operation, source);
+      for (const input of inputs) {
+        removeOperationSource(input);
       }
     }
     return operation;
+  }
+
+  /**
+   * Checks if it's possible to move the source annotation upwards using the following rules:
+   * - If the shape doesn't accept the operation, then it's not possible.
+   * - If it does and the operation does not contain extension functions or
+   *   comunica doesn't support them, then it's possible.
+   * - If comunica does support them, then it's possible only if the shape accepts the extension function expressions.
+   * @param operation A grouped operation consisting of all given input operations.
+   * @param shape The common source's shape.
+   * @param context The action context.
+   */
+  public isPossibleToMoveSourceAnnotationUpwards<O extends Algebra.Operation>(
+    operation: O,
+    shape: FragmentSelectorShape,
+    context: IActionContext,
+  ): boolean {
+    if (doesShapeAcceptOperation(shape, operation)) {
+      const extensionFunctions = context.get(KeysInitQuery.extensionFunctions);
+      const expression: Algebra.Expression | undefined = operation.expression;
+      if (!extensionFunctions || expression?.expressionType !== Algebra.expressionTypes.NAMED ||
+        !(expression?.name.value in extensionFunctions) || doesShapeAcceptOperation(shape, expression)) {
+        return true;
+      }
+    }
+    return false;
   }
 }

@@ -145,7 +145,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
    * Check if the given filter operation must be attempted to push down, based on the following criteria:
    * - Always push down if aggressive mode is enabled
    * - Push down if the filter is extremely selective
-   * - Don't push down extension functions comunica support, but an endpoint doesn't
+   * - Don't push down extension functions comunica support, but a source does not
    * - Push down if federated and at least one accepts the filter
    * @param operation The filter operation
    * @param sources The query sources in the operation
@@ -174,7 +174,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
       return true;
     }
 
-    // Don't push down extension functions comunica support, but no endpoint does
+    // Don't push down extension functions comunica support, but no source does
     if (extensionFunctions && expression.expressionType === Algebra.expressionTypes.NAMED &&
         expression.name.value in extensionFunctions &&
         // Checks if there's not a single source that supports the extension function

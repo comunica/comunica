@@ -174,7 +174,8 @@ export type FragmentSelectorShape = {
   } | {
     /**
      * All possible operations are accepted by this shape.
-     * As exception, extension functions are not accepted through wildcards, and must be.
+     * As exception, extension functions are not accepted through wildcards, and must be
+     * explicitly listed via `extensionFunctions`.
      */
     operationType: 'wildcard';
   };
