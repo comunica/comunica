@@ -769,10 +769,22 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
         it('should be false for cardinality === 0', async() => {
           source1.source.queryBindings = () => {
             const bindingsStream = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
-            bindingsStream.setProperty('metadata', { cardinality: { value: 0 }});
+            bindingsStream.setProperty('metadata', { cardinality: { type: 'exact', value: 0 }});
             return bindingsStream;
           };
           await expect(actor.hasSourceResults(AF, source1, AF.createNop(), ctx)).resolves.toBeFalsy();
+        });
+
+        it('should verify cardinality estimates via ASK', async() => {
+          sourceAsk.source.queryBindings = () => {
+            const bindingsStream = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
+            bindingsStream.setProperty('metadata', { cardinality: { type: 'estimate', value: 1 }});
+            return bindingsStream;
+          };
+          jest.spyOn(sourceAsk.source, 'queryBoolean').mockResolvedValueOnce(false);
+          expect(sourceAsk.source.queryBoolean).not.toHaveBeenCalled();
+          await expect(actor.hasSourceResults(AF, sourceAsk, AF.createNop(), ctx)).resolves.toBeFalsy();
+          expect(sourceAsk.source.queryBoolean).toHaveBeenCalledTimes(1);
         });
 
         it('should reject for an erroring query', async() => {
@@ -794,7 +806,7 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
           source1.context = new ActionContext().set(KeysQuerySourceIdentify.traverse, true);
           source1.source.queryBindings = () => {
             const bindingsStream = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
-            bindingsStream.setProperty('metadata', { cardinality: { value: 0 }});
+            bindingsStream.setProperty('metadata', { cardinality: { type: 'exact', value: 0 }});
             return bindingsStream;
           };
           await expect(actor.hasSourceResults(AF, source1, AF.createNop(), ctx)).resolves.toBeTruthy();
@@ -805,7 +817,7 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
           source1.context = new ActionContext();
           source1.source.queryBindings = () => {
             const bindingsStream = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
-            bindingsStream.setProperty('metadata', { cardinality: { value: 0 }});
+            bindingsStream.setProperty('metadata', { cardinality: { type: 'exact', value: 0 }});
             return bindingsStream;
           };
           await expect(actor.hasSourceResults(AF, source1, AF.createNop(), actionContext)).resolves.toBeTruthy();
