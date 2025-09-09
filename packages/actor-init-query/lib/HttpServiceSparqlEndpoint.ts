@@ -474,7 +474,7 @@ export class HttpServiceSparqlEndpoint {
     }
 
     // If the query was an update query, invalidate the void metadata emitter cache
-    if (!this.emitVoid && queryBody.value.includes('INSERT')) {
+    if (this.emitVoid && queryBody.value.includes('INSERT')) {
       this.voidMetadataEmitter.invalidateCache();
     }
 
@@ -580,7 +580,7 @@ export class HttpServiceSparqlEndpoint {
         quads.push(quad(s, `${sd}extensionFunction`, value));
       }
 
-      if (!this.emitVoid) {
+      if (this.emitVoid) {
         for (const quad of await this.voidMetadataEmitter.getVoIDQuads(engine, stdout, request, response)) {
           quads.push(quad);
         }

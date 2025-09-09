@@ -1418,7 +1418,6 @@ describe('HttpServiceSparqlEndpoint', () => {
       it('should write the service description when no query was defined', async() => {
         const localInstance = new HttpServiceSparqlEndpoint({
           ...argsDefault,
-          emitVoid: true,
           workers: 4,
           context: new ActionContext().set(KeysInitQuery.extensionFunctions, {
             'https://example.org/functions#args0': async(args: RDF.Term[]) => {
@@ -1549,7 +1548,6 @@ describe('HttpServiceSparqlEndpoint', () => {
       it('should handle an invalid media type in service description', async() => {
         const localInstance = new HttpServiceSparqlEndpoint({
           ...argsDefault,
-          emitVoid: true,
         });
 
         // Create spies
@@ -1636,6 +1634,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
           const localInstance = new HttpServiceSparqlEndpoint({
             ...argsDefault,
+            emitVoid: true,
             context: {
               dcterms: {
                 title: 'title',
@@ -1692,12 +1691,17 @@ describe('HttpServiceSparqlEndpoint', () => {
         });
 
         it('should invalidate the cached statistics when doing an INSERT', async() => {
+          const localInstance = new HttpServiceSparqlEndpoint({
+            ...argsDefault,
+            emitVoid: true,
+          });
+
           // Create spies
           const engine = await new QueryEngineFactoryBase().create();
           engine.queryBindings = queryBindings;
           const spyQueryBindings = jest.spyOn(engine, 'queryBindings');
 
-          await instance.writeQueryResult(
+          await localInstance.writeQueryResult(
             engine,
             new PassThrough(),
             new PassThrough(),
@@ -1710,11 +1714,11 @@ describe('HttpServiceSparqlEndpoint', () => {
             0,
           );
 
-          expect(instance.voidMetadataEmitter.cachedStatistics).not.toHaveLength(0);
+          expect(localInstance.voidMetadataEmitter.cachedStatistics).not.toHaveLength(0);
           // Each void request does 4 calls for the statistics fetch
           expect(spyQueryBindings).toHaveBeenCalledTimes(4);
 
-          await instance.writeQueryResult(
+          await localInstance.writeQueryResult(
             engine,
             new PassThrough(),
             new PassThrough(),
@@ -1731,7 +1735,7 @@ INSERT DATA {
             0,
           );
 
-          expect(instance.voidMetadataEmitter.cachedStatistics).toHaveLength(0);
+          expect(localInstance.voidMetadataEmitter.cachedStatistics).toHaveLength(0);
           // Should still be 4, insert queries don't fetch again, just invalidate the cache
           expect(spyQueryBindings).toHaveBeenCalledTimes(4);
         });
