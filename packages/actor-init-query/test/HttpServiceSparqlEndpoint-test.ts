@@ -8,6 +8,7 @@ import type { BindingsStream } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import type * as RDF from '@rdfjs/types';
+import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Readable } from 'readable-stream';
@@ -511,7 +512,7 @@ describe('HttpServiceSparqlEndpoint', () => {
     let instance: HttpServiceSparqlEndpoint;
     beforeEach(() => {
       instance = new HttpServiceSparqlEndpoint({ ...argsDefault, workers: 4 });
-      instance.cachedStatistics = [];
+      instance.voidMetadataEmitter.invalidateCache();
     });
 
     describe('run', () => {
@@ -1578,334 +1579,162 @@ describe('HttpServiceSparqlEndpoint', () => {
           .toHaveBeenLastCalledWith(400, { 'content-type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
       });
 
-      it('should append the VoID description in the service description when emitVoid is not true', async() => {
+      describe('VoID description', () => {
         const xsd = 'http://www.w3.org/2001/XMLSchema#';
 
-        const localInstance = new HttpServiceSparqlEndpoint({
-          ...argsDefault,
-          context: {
-            dcterms: {
-              title: 'title',
-              description: 'description',
-              creator: 'creator',
-              created: `"2025/08/07"^^${xsd}date`,
-            },
-          },
+        let queryBindings: (query: string) => BindingsStream;
+
+        beforeEach(() => {
+          instance.voidMetadataEmitter.invalidateCache();
+          queryBindings = (query: string): BindingsStream => {
+            let bindingsArray: RDF.Bindings[];
+            if (query.includes('?triples')) {
+              bindingsArray = [
+                BF.bindings([
+                  [ DF.variable('triples'), DF.literal('8', DF.namedNode(`${xsd}integer`)) ],
+                  [ DF.variable('entities'), DF.literal('8', DF.namedNode(`${xsd}integer`)) ],
+                  [ DF.variable('distinctSubjects'), DF.literal('8', DF.namedNode(`${xsd}integer`)) ],
+                  [ DF.variable('properties'), DF.literal('5', DF.namedNode(`${xsd}integer`)) ],
+                  [ DF.variable('distinctObjects'), DF.literal('4', DF.namedNode(`${xsd}integer`)) ],
+                ]),
+              ];
+            } else if (query.includes('?classes')) {
+              bindingsArray = [
+                BF.bindings([
+                  [ DF.variable('classes'), DF.literal('2', DF.namedNode(`${xsd}integer`)) ],
+                ]),
+              ];
+            } else if (query.includes('?class ')) {
+              bindingsArray = [
+                BF.bindings([
+                  [ DF.variable('class'), DF.namedNode('http://example.org/classA') ],
+                  [ DF.variable('count'), DF.literal('5', DF.namedNode(`${xsd}integer`)) ],
+                ]),
+                BF.bindings([
+                  [ DF.variable('class'), DF.namedNode('http://example.org/classB') ],
+                  [ DF.variable('count'), DF.literal('3', DF.namedNode(`${xsd}integer`)) ],
+                ]),
+              ];
+            } else {
+              bindingsArray = [
+                BF.bindings([
+                  [ DF.variable('property'), DF.namedNode('http://example.org/propertyA') ],
+                  [ DF.variable('count'), DF.literal('3', DF.namedNode(`${xsd}integer`)) ],
+                ]),
+                BF.bindings([
+                  [ DF.variable('property'), DF.namedNode('http://example.org/propertyB') ],
+                  [ DF.variable('count'), DF.literal('2', DF.namedNode(`${xsd}integer`)) ],
+                ]),
+              ];
+            }
+            return <BindingsStream>(new ArrayIterator<RDF.Bindings>(bindingsArray));
+          };
         });
 
-        // Create spies
-        const engine = await new QueryEngineFactoryBase().create();
-        engine.queryBindings = (query: string): BindingsStream => {
-          let bindingsArray: RDF.Bindings[];
-          if (query.includes('?triples')) {
-            bindingsArray = [
-              BF.bindings([
-                [ DF.variable('triples'), DF.literal('8', DF.namedNode(`${xsd}integer`)) ],
-                [ DF.variable('entities'), DF.literal('8', DF.namedNode(`${xsd}integer`)) ],
-                [ DF.variable('distinctSubjects'), DF.literal('8', DF.namedNode(`${xsd}integer`)) ],
-                [ DF.variable('properties'), DF.literal('5', DF.namedNode(`${xsd}integer`)) ],
-                [ DF.variable('distinctObjects'), DF.literal('4', DF.namedNode(`${xsd}integer`)) ],
-              ]),
-            ];
-          } else if (query.includes('?classes')) {
-            bindingsArray = [
-              BF.bindings([
-                [ DF.variable('classes'), DF.literal('2', DF.namedNode(`${xsd}integer`)) ],
-              ]),
-            ];
-          } else if (query.includes('?class ')) {
-            bindingsArray = [
-              BF.bindings([
-                [ DF.variable('class'), DF.namedNode('http://example.org/classA') ],
-                [ DF.variable('count'), DF.literal('5', DF.namedNode(`${xsd}integer`)) ],
-              ]),
-              BF.bindings([
-                [ DF.variable('class'), DF.namedNode('http://example.org/classB') ],
-                [ DF.variable('count'), DF.literal('3', DF.namedNode(`${xsd}integer`)) ],
-              ]),
-            ];
-          } else {
-            bindingsArray = [
-              BF.bindings([
-                [ DF.variable('property'), DF.namedNode('http://example.org/propertyA') ],
-                [ DF.variable('count'), DF.literal('3', DF.namedNode(`${xsd}integer`)) ],
-              ]),
-              BF.bindings([
-                [ DF.variable('property'), DF.namedNode('http://example.org/propertyB') ],
-                [ DF.variable('count'), DF.literal('2', DF.namedNode(`${xsd}integer`)) ],
-              ]),
-            ];
-          }
-          return <BindingsStream>(new ArrayIterator<RDF.Bindings>(bindingsArray));
-        };
-        const spyGetVoIDQuads = jest.spyOn(localInstance, 'getVoIDQuads');
-        const spyResultToString = jest.spyOn(engine, 'resultToString');
+        it('should append the VoID description in the service description when emitVoid is not true', async() => {
+          const xsd = 'http://www.w3.org/2001/XMLSchema#';
 
-        // Invoke writeQueryResult
-        await localInstance.writeQueryResult(
-          engine,
-          new PassThrough(),
-          new PassThrough(),
-          request,
-          response,
-          { type: 'query', value: '', context: undefined },
-          mediaType,
-          false,
-          true,
-          0,
-        );
+          const localInstance = new HttpServiceSparqlEndpoint({
+            ...argsDefault,
+            context: {
+              dcterms: {
+                title: 'title',
+                description: 'description',
+                creator: 'creator',
+                created: `"2025/08/07"^^${xsd}date`,
+              },
+            },
+          });
 
-        // Check output
-        await expect(endCalledPromise).resolves.toBeFalsy();
-        expect(response.writeHead).toHaveBeenCalledTimes(1);
-        expect(response.writeHead).toHaveBeenLastCalledWith(
-          200,
-          { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' },
-        );
-        response.push(null);
-        const responseString = await stringifyStream(response);
-        expect(responseString).toBe('test_query_result');
+          // Create spies
+          const engine = await new QueryEngineFactoryBase().create();
+          engine.queryBindings = queryBindings;
+          const spyGetVoIDQuads = jest.spyOn(localInstance.voidMetadataEmitter, 'getVoIDQuads');
+          const spyResultToString = jest.spyOn(engine, 'resultToString');
 
-        // Check if the VD logic has been called
-        expect(spyGetVoIDQuads).toHaveBeenCalledTimes(1);
+          // Invoke writeQueryResult
+          await localInstance.writeQueryResult(
+            engine,
+            new PassThrough(),
+            new PassThrough(),
+            request,
+            response,
+            { type: 'query', value: '', context: undefined },
+            mediaType,
+            false,
+            true,
+            0,
+          );
 
-        // Check if result to string has been called with the correct arguments
-        expect(spyResultToString).toHaveBeenCalledTimes(1);
-        expect(spyResultToString.mock.calls[0][1]).toEqual(mediaType);
-        const sd = 'http://www.w3.org/ns/sparql-service-description#';
-        const vd = 'http://rdfs.org/ns/void#';
-        const rdf = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';
-        const rdfType = `${rdf}type`;
-        const dataset = '_:defaultDataset';
-        const graph = '_:defaultGraph';
-        const classPartition0 = '_:classPartition0';
-        const classPartition1 = '_:classPartition1';
-        const propertyPartition0 = '_:propertyPartition0';
-        const propertyPartition1 = '_:propertyPartition1';
-        const vocabulary = `${vd}vocabulary`;
-        const dcterms = 'http://purl.org/dc/terms/';
-        const voIDDescriptionQuads = [
-          quad(s, `${sd}defaultDataset`, dataset),
-          quad(dataset, rdfType, `${sd}Dataset`),
-          quad(dataset, rdfType, `${vd}Dataset`),
-          quad(dataset, `${vd}sparqlEndpoint`, '/sparql'),
-          quad(dataset, vocabulary, dcterms),
-          quad(dataset, `${dcterms}title`, 'title'),
-          quad(dataset, `${dcterms}description`, 'description'),
-          quad(dataset, `${dcterms}creator`, 'creator'),
-          quad(dataset, `${dcterms}created`, `"2025/08/07"^^${xsd}date`),
+          // Check output
+          await expect(endCalledPromise).resolves.toBeFalsy();
+          expect(response.writeHead).toHaveBeenCalledTimes(1);
+          expect(response.writeHead).toHaveBeenLastCalledWith(
+            200,
+            { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' },
+          );
+          response.push(null);
+          const responseString = await stringifyStream(response);
+          expect(responseString).toBe('test_query_result');
 
-          quad(dataset, `${sd}defaultGraph`, graph),
-          quad(graph, rdfType, `${sd}Graph`),
-          quad(graph, `${vd}triples`, `"8"^^${xsd}integer`),
-          quad(graph, `${vd}entities`, `"8"^^${xsd}integer`),
-          quad(graph, `${vd}distinctSubjects`, `"8"^^${xsd}integer`),
-          quad(graph, `${vd}properties`, `"5"^^${xsd}integer`),
-          quad(graph, `${vd}distinctObjects`, `"4"^^${xsd}integer`),
-          quad(graph, `${vd}classes`, `"2"^^${xsd}integer`),
+          // Check if the VD logic has been called
+          expect(spyGetVoIDQuads).toHaveBeenCalledTimes(1);
 
-          quad(dataset, `${vd}classPartition`, classPartition0),
-          quad(classPartition0, rdfType, `${vd}ClassPartition`),
-          quad(classPartition0, `${vd}class`, 'http://example.org/classA'),
-          quad(classPartition0, `${vd}entities`, `"5"^^${xsd}integer`),
+          // Check if result to string has been called with the correct arguments
+          expect(spyResultToString).toHaveBeenCalledTimes(1);
+          expect(spyResultToString.mock.calls[0][1]).toEqual(mediaType);
 
-          quad(dataset, `${vd}propertyPartition`, propertyPartition0),
-          quad(propertyPartition0, rdfType, `${vd}PropertyPartition`),
-          quad(propertyPartition0, `${vd}property`, 'http://example.org/propertyA'),
-          quad(propertyPartition0, `${vd}triples`, `"3"^^${xsd}integer`),
+          // Only check the first void quad, the rest is checked in VoidMetadataEmitter-test.ts
+          const sd = 'http://www.w3.org/ns/sparql-service-description#';
+          const dataset = '_:defaultDataset';
+          const result = await (spyResultToString.mock.calls[0][0]).execute();
+          await expect(arrayifyStream(result)).resolves.toContainEqual(quad(s, `${sd}defaultDataset`, dataset));
+        });
 
-          quad(dataset, `${vd}classPartition`, classPartition1),
-          quad(classPartition1, rdfType, `${vd}ClassPartition`),
-          quad(classPartition1, `${vd}class`, 'http://example.org/classB'),
-          quad(classPartition1, `${vd}entities`, `"3"^^${xsd}integer`),
+        it('should invalidate the cached statistics when doing an INSERT', async() => {
+          // Create spies
+          const engine = await new QueryEngineFactoryBase().create();
+          engine.queryBindings = queryBindings;
+          const spyQueryBindings = jest.spyOn(engine, 'queryBindings');
 
-          quad(dataset, `${vd}propertyPartition`, propertyPartition1),
-          quad(propertyPartition1, rdfType, `${vd}PropertyPartition`),
-          quad(propertyPartition1, `${vd}property`, 'http://example.org/propertyB'),
-          quad(propertyPartition1, `${vd}triples`, `"2"^^${xsd}integer`),
-        ];
-        for (const quad of voIDDescriptionQuads) {
-          serviceDescriptionQuads.push(quad);
-        }
-        await expect((spyResultToString.mock.calls[0][0]).execute()).resolves.toEqual(new ArrayIterator(
-          serviceDescriptionQuads,
-        ));
-      });
+          await instance.writeQueryResult(
+            engine,
+            new PassThrough(),
+            new PassThrough(),
+            request,
+            response,
+            { type: 'query', value: '', context: undefined },
+            mediaType,
+            false,
+            true,
+            0,
+          );
 
-      it('should only query statistics once when doing multiple VoID description requests', async() => {
-        const xsd = 'http://www.w3.org/2001/XMLSchema#';
+          expect(instance.voidMetadataEmitter.cachedStatistics).not.toHaveLength(0);
+          // Each void request does 4 calls for the statistics fetch
+          expect(spyQueryBindings).toHaveBeenCalledTimes(4);
 
-        // Create spies
-        const engine = await new QueryEngineFactoryBase().create();
-        engine.queryBindings = (): BindingsStream => {
-          const bindingsArray = [
-            BF.bindings([
-              [ DF.variable('triples'), DF.literal('5', DF.namedNode(`${xsd}integer`)) ],
-              [ DF.variable('distinctSubjects'), DF.literal('3', DF.namedNode(`${xsd}integer`)) ],
-              [ DF.variable('properties'), DF.literal('2', DF.namedNode(`${xsd}integer`)) ],
-              [ DF.variable('distinctObjects'), DF.literal('4', DF.namedNode(`${xsd}integer`)) ],
-            ]),
-          ];
-          return <BindingsStream>(new ArrayIterator<RDF.Bindings>(bindingsArray));
-        };
-        const spyQueryBindings = jest.spyOn(engine, 'queryBindings');
-
-        const requestVoID = () => instance.writeQueryResult(
-          engine,
-          new PassThrough(),
-          new PassThrough(),
-          request,
-          response,
-          { type: 'query', value: '', context: undefined },
-          mediaType,
-          false,
-          true,
-          0,
-        );
-
-        // Request VoID description twice
-        await requestVoID();
-        await requestVoID();
-
-        // Each request does 4 calls
-        expect(spyQueryBindings).toHaveBeenCalledTimes(4);
-      });
-
-      it('should update cachedStatistics when doing an INSERT', async() => {
-        const xsd = 'http://www.w3.org/2001/XMLSchema#';
-
-        // Create spies
-        const engine = await new QueryEngineFactoryBase().create();
-        engine.queryBindings = (): BindingsStream => {
-          const bindingsArray = [
-            BF.bindings([
-              [ DF.variable('triples'), DF.literal('5', DF.namedNode(`${xsd}integer`)) ],
-              [ DF.variable('distinctSubjects'), DF.literal('3', DF.namedNode(`${xsd}integer`)) ],
-              [ DF.variable('properties'), DF.literal('2', DF.namedNode(`${xsd}integer`)) ],
-              [ DF.variable('distinctObjects'), DF.literal('4', DF.namedNode(`${xsd}integer`)) ],
-            ]),
-          ];
-          return <BindingsStream>(new ArrayIterator<RDF.Bindings>(bindingsArray));
-        };
-        const spyQueryBindings = jest.spyOn(engine, 'queryBindings');
-
-        await instance.writeQueryResult(
-          engine,
-          new PassThrough(),
-          new PassThrough(),
-          request,
-          response,
-          { type: 'query', value: `
+          await instance.writeQueryResult(
+            engine,
+            new PassThrough(),
+            new PassThrough(),
+            request,
+            response,
+            { type: 'query', value: `
 INSERT DATA {
   <http://example.org/s> <http://example.org/p> "o" .
 }
 `, context: undefined },
-          mediaType,
-          false,
-          true,
-          0,
-        );
+            mediaType,
+            false,
+            true,
+            0,
+          );
 
-        // Note that the insert query itself is done using engine.query and not engine.queryBindings,
-        // so these queryBindings were in fact used for the statistics and the partitions queries
-        expect(spyQueryBindings).toHaveBeenCalledTimes(4);
-
-        await instance.writeQueryResult(
-          engine,
-          new PassThrough(),
-          new PassThrough(),
-          request,
-          response,
-          { type: 'query', value: '', context: undefined },
-          mediaType,
-          false,
-          true,
-          0,
-        );
-
-        // Should not have been called another 4 extra times
-        expect(spyQueryBindings).toHaveBeenCalledTimes(4);
-      });
-
-      it('should handle errors silently when updating cachedStatistics when doing an INSERT', async() => {
-        // Create spies
-        const engine = await new QueryEngineFactoryBase().create();
-        engine.queryBindings = (): BindingsStream => <BindingsStream> {};
-        const spyQueryBindings = jest.spyOn(engine, 'queryBindings');
-
-        await instance.writeQueryResult(
-          engine,
-          new PassThrough(),
-          new PassThrough(),
-          request,
-          response,
-          { type: 'query', value: `
-INSERT DATA {
-  <http://example.org/s> <http://example.org/p> "o" .
-}
-`, context: undefined },
-          mediaType,
-          false,
-          true,
-          0,
-        );
-
-        // Each VoID request does 4 calls
-        expect(spyQueryBindings).toHaveBeenCalledTimes(4);
-        // Empty, since there was an error
-        expect(instance.cachedStatistics).toEqual([]);
-        // Errors are handled silently
-        await expect(endCalledPromise).resolves.not.toBe('An internal server error occurred.\n');
-
-        await instance.writeQueryResult(
-          engine,
-          new PassThrough(),
-          new PassThrough(),
-          request,
-          response,
-          { type: 'query', value: '', context: undefined },
-          mediaType,
-          false,
-          true,
-          0,
-        );
-
-        // Should have been called another 4 times, since cachedStatistics is empty
-        expect(spyQueryBindings).toHaveBeenCalledTimes(8);
-      });
-
-      it('should handle errors in VoID description statistics query', async() => {
-        // Create spies
-        const engine = await new QueryEngineFactoryBase().create();
-        engine.queryBindings = (): BindingsStream => <BindingsStream>(new ArrayIterator<RDF.Bindings>([ BF.bindings([
-          [ DF.variable('error'), DF.literal('error') ],
-        ]) ]));
-        const spyGetVoIDQuads = jest.spyOn(instance, 'getVoIDQuads');
-        const spyQueryBindings = jest.spyOn(engine, 'queryBindings');
-
-        await instance.writeQueryResult(
-          engine,
-          new PassThrough(),
-          new PassThrough(),
-          request,
-          response,
-          { type: 'query', value: '', context: undefined },
-          mediaType,
-          false,
-          true,
-          0,
-        );
-
-        // Check if the VD logic has been called
-        expect(spyGetVoIDQuads).toHaveBeenCalledTimes(1);
-        expect(spyQueryBindings).toHaveBeenCalledTimes(4);
-
-        await expect(endCalledPromise).resolves.toBe('An internal server error occurred.\n');
-        expect(response.writeHead).toHaveBeenCalledTimes(1);
-        expect(response.writeHead).toHaveBeenLastCalledWith(
-          200,
-          { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' },
-        );
+          expect(instance.voidMetadataEmitter.cachedStatistics).toHaveLength(0);
+          // Should still be 4, insert queries don't fetch again, just invalidate the cache
+          expect(spyQueryBindings).toHaveBeenCalledTimes(4);
+        });
       });
 
       it('should fallback to SPARQL JSON for bindings if media type is falsy', async() => {
