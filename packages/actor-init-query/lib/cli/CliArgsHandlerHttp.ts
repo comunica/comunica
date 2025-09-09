@@ -56,7 +56,7 @@ export class CliArgsHandlerHttp implements ICliArgsHandler {
         },
         emitVoid: {
           type: 'boolean',
-          describe: 'Emit the VoID description, which can normally be found in the service description',
+          describe: 'Generate VoID descriptions and include them in the service description',
         },
       })
       .check((args) => {
