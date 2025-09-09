@@ -982,7 +982,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o1')),
               AF.createValues(
                 [ DF.variable('s') ],
-                [{ '?s': DF.namedNode('s') }],
+                [{ s: DF.namedNode('s') }],
               ),
             ]) ]);
           });
@@ -1000,7 +1000,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
                 .createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o1')), src1),
               AF.createValues(
                 [ DF.variable('s') ],
-                [{ '?s': DF.namedNode('s') }],
+                [{ s: DF.namedNode('s') }],
               ),
             ]) ]);
           });
@@ -1024,7 +1024,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               ),
               AF.createValues(
                 [ DF.variable('s') ],
-                [{ '?s': DF.namedNode('s') }],
+                [{ s: DF.namedNode('s') }],
               ),
             ]) ]);
           });
@@ -1040,7 +1040,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o1')),
               AF.createValues(
                 [ DF.variable('s') ],
-                [{ '?s': DF.namedNode('s') }],
+                [{ s: DF.namedNode('s') }],
               ),
             ]) ]);
           });
@@ -1056,7 +1056,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               AF.createPattern(DF.blankNode('s'), DF.variable('p'), DF.namedNode('o1')),
               AF.createValues(
                 [ DF.variable('s') ],
-                [{ '?s': <any> DF.blankNode('s') }],
+                [{ s: <any> DF.blankNode('s') }],
               ),
             ]) ]);
           });
@@ -1072,7 +1072,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               AF.createPattern(DF.variable('s'), DF.variable('p'), DF.literal('o')),
               AF.createValues(
                 [ DF.variable('o') ],
-                [{ '?o': DF.literal('o') }],
+                [{ o: DF.literal('o') }],
               ),
             ]) ]);
           });
@@ -1088,7 +1088,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               AF.createPattern(DF.variable('s'), DF.variable('p'), DF.literal('o')),
               AF.createValues(
                 [ DF.variable('o') ],
-                [{ '?o': DF.literal('o') }],
+                [{ o: DF.literal('o') }],
               ),
             ]) ]);
           });
@@ -1215,7 +1215,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               AF.createPath(DF.namedNode('s'), AF.createNps([]), DF.namedNode('o1')),
               AF.createValues(
                 [ DF.variable('s') ],
-                [{ '?s': DF.namedNode('s') }],
+                [{ s: DF.namedNode('s') }],
               ),
             ]) ]);
           });
@@ -1231,7 +1231,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               AF.createPath(DF.namedNode('s'), AF.createNps([]), DF.namedNode('o1')),
               AF.createValues(
                 [ DF.variable('s') ],
-                [{ '?s': DF.namedNode('s') }],
+                [{ s: DF.namedNode('s') }],
               ),
             ]) ]);
           });
@@ -1247,7 +1247,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               AF.createPath(DF.variable('s'), AF.createNps([]), DF.literal('o')),
               AF.createValues(
                 [ DF.variable('o') ],
-                [{ '?o': DF.literal('o') }],
+                [{ o: DF.literal('o') }],
               ),
             ]) ]);
           });
@@ -1263,7 +1263,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               AF.createPath(DF.variable('s'), AF.createNps([]), DF.literal('o')),
               AF.createValues(
                 [ DF.variable('o') ],
-                [{ '?o': DF.literal('o') }],
+                [{ o: DF.literal('o') }],
               ),
             ]) ]);
           });

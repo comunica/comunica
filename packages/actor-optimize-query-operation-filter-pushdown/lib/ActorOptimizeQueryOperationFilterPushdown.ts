@@ -419,7 +419,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
                 operation,
                 factory.createValues(
                   [ pushableResult.variable ],
-                  [{ [`?${pushableResult.variable.value}`]: <RDF.NamedNode | RDF.Literal> pushableResult.term }],
+                  [{ [pushableResult.variable.value]: <RDF.NamedNode | RDF.Literal> pushableResult.term }],
                 ),
               ]) ];
             }
@@ -447,7 +447,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
               operation,
               factory.createValues(
                 [ pushableResult.variable ],
-                [{ [`?${pushableResult.variable.value}`]: <RDF.NamedNode | RDF.Literal> pushableResult.term }],
+                [{ [pushableResult.variable.value]: <RDF.NamedNode | RDF.Literal> pushableResult.term }],
               ),
             ]) ];
           }

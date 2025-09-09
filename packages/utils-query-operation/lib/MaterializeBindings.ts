@@ -237,18 +237,17 @@ export function materializeOperation(
         }
       } else {
         const variables = op.variables.filter(variable => !bindings.has(variable));
-        const valueBindings: Record<string, RDF.Literal | RDF.NamedNode>[] = <any> op.bindings.map((binding) => {
+        const valueBindings: Algebra.Values['bindings'] = <any> op.bindings.map((binding) => {
           const newBinding = { ...binding };
           let valid = true;
           // eslint-disable-next-line unicorn/no-array-for-each
           bindings.forEach((value: RDF.Term, key: RDF.Variable) => {
-            const keyString = termToString(key);
-            if (keyString in newBinding) {
-              if (!value.equals(newBinding[keyString])) {
+            if (key.value in newBinding) {
+              if (!value.equals(newBinding[key.value])) {
                 // If the value of the binding is not equal, remove this binding completely from the VALUES clause
                 valid = false;
               }
-              delete newBinding[keyString];
+              delete newBinding[key.value];
             }
           });
           return valid ? newBinding : undefined;
@@ -334,7 +333,7 @@ function createValuesFromBindings(factory: Factory, bindings: Bindings, variable
 
   for (const [ variable, binding ] of bindings) {
     if (!variables || variables.some(v => v.equals(variable))) {
-      const newBinding = { [termToString(variable)]: <RDF.NamedNode | RDF.Literal> binding };
+      const newBinding = { [variable.value]: <RDF.NamedNode | RDF.Literal> binding };
 
       values.push(factory.createValues([ variable ], [ newBinding ]));
     }

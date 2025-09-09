@@ -254,7 +254,7 @@ export class QuerySourceSparql implements IQuerySource {
           algebraFactory.createValues(
             addBindings.metadata.variables.map(v => v.variable),
             bindings.map(binding => Object.fromEntries([ ...binding ]
-              .map(([ key, value ]) => [ `?${key.value}`, <RDF.Literal | RDF.NamedNode> value ]))),
+              .map(([ key, value ]) => [ key.value, <RDF.Literal | RDF.NamedNode> value ]))),
           ),
           operation,
         ], false);
@@ -338,7 +338,7 @@ export class QuerySourceSparql implements IQuerySource {
       },
       values(values: Algebra.Values): boolean {
         for (const variable of values.variables) {
-          if (values.bindings.some(bindings => !(`?${variable.value}` in bindings))) {
+          if (values.bindings.some(bindings => !(variable.value in bindings))) {
             variables.push(variable);
           }
         }
@@ -385,16 +385,17 @@ export class QuerySourceSparql implements IQuerySource {
     const rawStream = await this.endpointFetcher.fetchBindings(endpoint, query);
     this.lastSourceContext = undefined;
 
-    return wrap<any>(rawStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY })
-      .map<RDF.Bindings>((rawData: Record<string, RDF.Term>) => this.bindingsFactory.bindings(variables
-        .map((variable) => {
-          const value = rawData[`?${variable.value}`];
-          if (!undefVariablesIndex.has(variable.value) && !value) {
-            Actor.getContextLogger(this.context)?.warn(`The endpoint ${endpoint} failed to provide a binding for ${variable.value}.`);
-          }
-          return <[RDF.Variable, RDF.Term]>[ variable, value ];
-        })
-        .filter(([ _, v ]) => Boolean(v))));
+    const wrapped = wrap<any>(rawStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY });
+    return wrapped.map<RDF.Bindings>((rawData: Record<string, RDF.Term>) => {
+      const bindings = variables.map((variable) => {
+        const value = rawData[`?${variable.value}`];
+        if (!undefVariablesIndex.has(variable.value) && !value) {
+          Actor.getContextLogger(this.context)?.warn(`The endpoint ${endpoint} failed to provide a binding for ${variable.value}.`);
+        }
+        return <[RDF.Variable, RDF.Term]>[ variable, value ];
+      }).filter(([ _, v ]) => Boolean(v));
+      return this.bindingsFactory.bindings(bindings);
+    });
   }
 
   public toString(): string {

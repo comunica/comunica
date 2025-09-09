@@ -37,9 +37,9 @@ const bindingsAB = BF.bindings([
 ]);
 
 const valuesBindingsA: Record<string, RDF.Literal | RDF.NamedNode> = {};
-valuesBindingsA[`?${termVariableA.value}`] = <RDF.Literal> bindingsA.get(termVariableA);
+valuesBindingsA[termVariableA.value] = <RDF.Literal> bindingsA.get(termVariableA);
 const valuesBindingsB: Record<string, RDF.Literal | RDF.NamedNode> = {};
-valuesBindingsB[`?${termVariableB.value}`] = <RDF.Literal> bindingsAB.get(termVariableB);
+valuesBindingsB[termVariableB.value] = <RDF.Literal> bindingsAB.get(termVariableB);
 
 describe('materializeTerm', () => {
   it('should not materialize a named node with empty bindings', () => {
@@ -618,7 +618,7 @@ describe('materializeOperation', () => {
     expect(materializeOperation(
       AF.createValues(
         [ termVariableB, termVariableD ],
-        [{ '?b': valueC }],
+        [{ b: valueC }],
       ),
       bindingsA,
       AF,
@@ -626,7 +626,7 @@ describe('materializeOperation', () => {
     ))
       .toEqual(AF.createValues(
         [ termVariableB, termVariableD ],
-        [{ '?b': valueC }],
+        [{ b: valueC }],
       ));
   });
 
@@ -634,7 +634,7 @@ describe('materializeOperation', () => {
     expect(materializeOperation(
       AF.createValues(
         [ termVariableB, termVariableD ],
-        [{ '?b': valueC }],
+        [{ b: valueC }],
       ),
       bindingsA,
       AF,
@@ -643,7 +643,7 @@ describe('materializeOperation', () => {
     ))
       .toEqual(AF.createValues(
         [ termVariableB, termVariableD ],
-        [{ '?b': valueC }],
+        [{ b: valueC }],
       ));
   });
 
@@ -652,7 +652,7 @@ describe('materializeOperation', () => {
     expect(() => materializeOperation(
       AF.createValues(
         [ termVariableA, termVariableD ],
-        [{ '?a': valueC, '?d': valueC }],
+        [{ a: valueC, d: valueC }],
       ),
       bindingsA,
       AF,
@@ -665,7 +665,7 @@ describe('materializeOperation', () => {
     expect(materializeOperation(
       AF.createValues(
         [ termVariableA, termVariableD ],
-        [{ '?a': valueA, '?d': valueC }],
+        [{ a: valueA, d: valueC }],
       ),
       bindingsA,
       AF,
@@ -673,7 +673,7 @@ describe('materializeOperation', () => {
     ))
       .toEqual(AF.createValues(
         [ termVariableD ],
-        [{ '?d': valueC }],
+        [{ d: valueC }],
       ));
   });
 
@@ -683,8 +683,8 @@ describe('materializeOperation', () => {
       AF.createValues(
         [ termVariableA, termVariableD ],
         [
-          { '?a': valueA, '?d': valueC },
-          { '?a': valueC, '?d': valueC },
+          { a: valueA, d: valueC },
+          { a: valueC, d: valueC },
         ],
       ),
       bindingsA,
@@ -693,7 +693,7 @@ describe('materializeOperation', () => {
     ))
       .toEqual(AF.createValues(
         [ termVariableD ],
-        [{ '?d': valueC }],
+        [{ d: valueC }],
       ));
   });
 

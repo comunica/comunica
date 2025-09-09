@@ -257,7 +257,7 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.input[0].type).toBe('values');
       expect(result.input[0].variables).toHaveLength(1);
       expect(result.input[0].variables[0]).toEqual(DF.variable('g'));
-      expect(result.input[0].bindings[0]['?g']).toEqual(DF.namedNode('g'));
+      expect(result.input[0].bindings[0].g).toEqual(DF.namedNode('g'));
       expect(result.input[1].type).toBe('bgp');
       expect(quad('s', 'p', 'o', 'g').equals(result.input[1].patterns[0])).toBeTruthy();
     });
@@ -322,7 +322,7 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.input[0].input[0].type).toBe('values');
       expect(result.input[0].input[0].variables).toHaveLength(1);
       expect(result.input[0].input[0].variables[0]).toEqual(DF.variable('g'));
-      expect(result.input[0].input[0].bindings[0]['?g']).toEqual(DF.namedNode('g'));
+      expect(result.input[0].input[0].bindings[0].g).toEqual(DF.namedNode('g'));
       expect(result.input[0].input[1].type).toBe('bgp');
       expect(quad('s', 'p', 'o', 'g').equals(result.input[0].input[1].patterns[0])).toBeTruthy();
 
@@ -330,7 +330,7 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.input[1].input[0].type).toBe('values');
       expect(result.input[1].input[0].variables).toHaveLength(1);
       expect(result.input[1].input[0].variables[0]).toEqual(DF.variable('g'));
-      expect(result.input[1].input[0].bindings[0]['?g']).toEqual(DF.namedNode('h'));
+      expect(result.input[1].input[0].bindings[0].g).toEqual(DF.namedNode('h'));
       expect(result.input[1].input[1].type).toBe('bgp');
       expect(quad('s', 'p', 'o', 'h').equals(result.input[1].input[1].patterns[0])).toBeTruthy();
     });
@@ -381,7 +381,7 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.input[0].type).toBe('values');
       expect(result.input[0].variables).toHaveLength(1);
       expect(result.input[0].variables[0]).toEqual(DF.variable('g'));
-      expect(result.input[0].bindings[0]['?g']).toEqual(DF.namedNode('g'));
+      expect(result.input[0].bindings[0].g).toEqual(DF.namedNode('g'));
       expect(result.input[1].type).toBe('path');
       expect(quad('s', 'p', 'o', 'g').equals(result.input[1])).toBeTruthy();
     });
@@ -434,7 +434,7 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.input[0].input[0].type).toBe('values');
       expect(result.input[0].input[0].variables).toHaveLength(1);
       expect(result.input[0].input[0].variables[0]).toEqual(DF.variable('g'));
-      expect(result.input[0].input[0].bindings[0]['?g']).toEqual(DF.namedNode('g'));
+      expect(result.input[0].input[0].bindings[0].g).toEqual(DF.namedNode('g'));
       expect(result.input[0].input[1].type).toBe('path');
       expect(quad('s', 'p', 'o', 'g').equals(result.input[0].input[1])).toBeTruthy();
 
@@ -442,7 +442,7 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.input[1].input[0].type).toBe('values');
       expect(result.input[1].input[0].variables).toHaveLength(1);
       expect(result.input[1].input[0].variables[0]).toEqual(DF.variable('g'));
-      expect(result.input[1].input[0].bindings[0]['?g']).toEqual(DF.namedNode('h'));
+      expect(result.input[1].input[0].bindings[0].g).toEqual(DF.namedNode('h'));
       expect(result.input[1].input[1].type).toBe('path');
       expect(quad('s', 'p', 'o', 'h').equals(result.input[1].input[1])).toBeTruthy();
     });
@@ -493,7 +493,7 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.input[0].type).toBe('values');
       expect(result.input[0].variables).toHaveLength(1);
       expect(result.input[0].variables[0]).toEqual(DF.variable('g'));
-      expect(result.input[0].bindings[0]['?g']).toEqual(DF.namedNode('g'));
+      expect(result.input[0].bindings[0].g).toEqual(DF.namedNode('g'));
       expect(result.input[1].type).toBe('pattern');
       expect(quad('s', 'p', 'o', 'g').equals(result.input[1])).toBeTruthy();
     });
@@ -546,7 +546,7 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.input[0].input[0].type).toBe('values');
       expect(result.input[0].input[0].variables).toHaveLength(1);
       expect(result.input[0].input[0].variables[0]).toEqual(DF.variable('g'));
-      expect(result.input[0].input[0].bindings[0]['?g']).toEqual(DF.namedNode('g'));
+      expect(result.input[0].input[0].bindings[0].g).toEqual(DF.namedNode('g'));
       expect(result.input[0].input[1].type).toBe('pattern');
       expect(quad('s', 'p', 'o', 'g').equals(result.input[0].input[1])).toBeTruthy();
 
@@ -554,7 +554,7 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.input[1].input[0].type).toBe('values');
       expect(result.input[1].input[0].variables).toHaveLength(1);
       expect(result.input[1].input[0].variables[0]).toEqual(DF.variable('g'));
-      expect(result.input[1].input[0].bindings[0]['?g']).toEqual(DF.namedNode('h'));
+      expect(result.input[1].input[0].bindings[0].g).toEqual(DF.namedNode('h'));
       expect(result.input[1].input[1].type).toBe('pattern');
       expect(quad('s', 'p', 'o', 'h').equals(result.input[1].input[1])).toBeTruthy();
     });
@@ -604,7 +604,7 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.stuff[0].input.input[0].type).toBe('values');
       expect(result.stuff[0].input.input[0].variables).toHaveLength(1);
       expect(result.stuff[0].input.input[0].variables[0]).toEqual(DF.variable('g'));
-      expect(result.stuff[0].input.input[0].bindings[0]['?g']).toEqual(DF.namedNode('g'));
+      expect(result.stuff[0].input.input[0].bindings[0].g).toEqual(DF.namedNode('g'));
       expect(result.stuff[0].input.input[1].type).toBe('path');
       expect(quad('s', 'p', 'o', 'g').equals(result.stuff[0].input.input[1])).toBeTruthy();
 
@@ -762,7 +762,7 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.input[0].type).toBe('values');
       expect(result.input[0].variables).toHaveLength(1);
       expect(result.input[0].variables[0]).toEqual(DF.variable('g'));
-      expect(result.input[0].bindings[0]['?g']).toEqual(DF.namedNode('g'));
+      expect(result.input[0].bindings[0].g).toEqual(DF.namedNode('g'));
       expect(result.input[1].type).toBe('path');
       expect(quad('s', 'p', 'o', 'g').equals(result.input[1])).toBeTruthy();
     });
@@ -805,7 +805,7 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.input[0].input[0].type).toBe('values');
       expect(result.input[0].input[0].variables).toHaveLength(1);
       expect(result.input[0].input[0].variables[0]).toEqual(DF.variable('g'));
-      expect(result.input[0].input[0].bindings[0]['?g']).toEqual(DF.namedNode('g'));
+      expect(result.input[0].input[0].bindings[0].g).toEqual(DF.namedNode('g'));
       expect(result.input[0].input[1].type).toBe('path');
       expect(quad('s', 'p', 'o', 'g').equals(result.input[0].input[1])).toBeTruthy();
 
@@ -813,7 +813,7 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.input[1].input[0].type).toBe('values');
       expect(result.input[1].input[0].variables).toHaveLength(1);
       expect(result.input[1].input[0].variables[0]).toEqual(DF.variable('g'));
-      expect(result.input[1].input[0].bindings[0]['?g']).toEqual(DF.namedNode('h'));
+      expect(result.input[1].input[0].bindings[0].g).toEqual(DF.namedNode('h'));
       expect(result.input[1].input[1].type).toBe('path');
       expect(quad('s', 'p', 'o', 'h').equals(result.input[1].input[1])).toBeTruthy();
     });
@@ -875,7 +875,7 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.input[0].input[0].type).toBe('values');
       expect(result.input[0].input[0].variables).toHaveLength(1);
       expect(result.input[0].input[0].variables[0]).toEqual(DF.variable('g'));
-      expect(result.input[0].input[0].bindings[0]['?g']).toEqual(DF.namedNode('g'));
+      expect(result.input[0].input[0].bindings[0].g).toEqual(DF.namedNode('g'));
       expect(result.input[0].input[1].type).toBe('bgp');
       expect(quad('s', 'p', 'o', 'g').equals(result.input[0].input[1].patterns[0])).toBeTruthy();
 
