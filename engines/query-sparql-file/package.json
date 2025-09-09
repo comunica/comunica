@@ -265,6 +265,7 @@
     "@comunica/actor-rdf-metadata-extract-hydra-count": "^4.2.0",
     "@comunica/actor-rdf-metadata-extract-hydra-pagesize": "^4.2.0",
     "@comunica/actor-rdf-metadata-extract-patch-sparql-update": "^4.2.0",
+    "@comunica/actor-rdf-metadata-extract-post-accepted": "^1.0.0",
     "@comunica/actor-rdf-metadata-extract-put-accepted": "^4.2.0",
     "@comunica/actor-rdf-metadata-extract-request-time": "^4.2.0",
     "@comunica/actor-rdf-metadata-extract-sparql-service": "^4.2.0",
