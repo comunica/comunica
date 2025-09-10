@@ -201,8 +201,10 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     input: Algebra.Operation,
     context: IActionContext,
   ): Promise<boolean> {
-    // Traversal sources should never be considered empty at optimization time.
-    if (source.context?.get(KeysQuerySourceIdentify.traverse) ?? context.get(KeysQuerySourceIdentify.traverse)) {
+    const mergedContext = source.context ? context.merge(source.context) : context;
+
+    // Traversal contexts should never be considered empty at optimization time.
+    if (mergedContext.get(KeysQuerySourceIdentify.traverse)) {
       return true;
     }
 
@@ -211,12 +213,12 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
       const askOperation = algebraFactory.createAsk(input);
       const askSupported = doesShapeAcceptOperation(await source.source.getSelectorShape(context), askOperation);
       if (askSupported) {
-        return source.source.queryBoolean(askOperation, context);
+        return source.source.queryBoolean(askOperation, mergedContext);
       }
     }
 
     // Fall back to sending the full operation, and extracting the cardinality from metadata
-    const bindingsStream = source.source.queryBindings(input, context);
+    const bindingsStream = source.source.queryBindings(input, mergedContext);
     const cardinality = await new Promise<QueryResultCardinality>((resolve, reject) => {
       bindingsStream.on('error', reject);
       bindingsStream.getProperty('metadata', (metadata: MetadataBindings) => {
@@ -232,7 +234,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
       const askOperation = algebraFactory.createAsk(input);
       const askSupported = doesShapeAcceptOperation(await source.source.getSelectorShape(context), askOperation);
       if (askSupported) {
-        return source.source.queryBoolean(askOperation, context);
+        return source.source.queryBoolean(askOperation, mergedContext);
       }
     }
 
