@@ -34,6 +34,7 @@ export class ActorQuerySourceIdentifyHypermedia extends ActorQuerySourceIdentify
   public readonly cacheSize: number;
   public readonly maxIterators: number;
   public readonly aggregateTraversalStore: boolean;
+  public readonly emitPartialCardinalities: boolean;
 
   public constructor(args: IActorQuerySourceIdentifyHypermediaArgs) {
     super(args);
@@ -57,6 +58,7 @@ export class ActorQuerySourceIdentifyHypermedia extends ActorQuerySourceIdentify
           this.maxIterators,
           this.aggregateTraversalStore &&
           Boolean(action.querySourceUnidentified.context?.get(KeysQuerySourceIdentify.traverse)),
+          this.emitPartialCardinalities,
           {
             mediatorMetadata: this.mediatorMetadata,
             mediatorMetadataExtract: this.mediatorMetadataExtract,
@@ -95,6 +97,15 @@ export interface IActorQuerySourceIdentifyHypermediaArgs extends IActorQuerySour
    * @default {true}
    */
   aggregateTraversalStore: boolean;
+  /**
+   * Indicates whether the {@link StreamingStoreMetadata} should emit updated partial
+   * cardinalities for each matching quad.
+   *
+   * Note: Enabling this option may degrade performance due to frequent
+   * {@link MetadataValidationState} invalidations and updates.
+   * @default {false}
+   */
+  emitPartialCardinalities: boolean;
   /**
    * The RDF dereference mediator
    */
