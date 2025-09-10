@@ -526,7 +526,7 @@ describe('QuerySourceSparql', () => {
         BF.fromRecord({}),
       ]);
       expect(logger.warn).toHaveBeenCalledTimes(3);
-      expect(logger.warn).toHaveBeenCalledWith(`The endpoint http://example.org/sparql failed to provide a binding for p.`);
+      expect(logger.warn).toHaveBeenCalledWith(`The endpoint http://example.org/sparql failed to provide a binding for ${testUrl('p')}.`);
     });
 
     it('should not emit an error for undef binding results for optionals', async() => {

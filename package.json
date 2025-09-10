@@ -39,6 +39,9 @@
     "test:spec": "lerna run spec --concurrency 1",
     "version": "manual-git-changelog onversion"
   },
+  "dependencies": {
+    "@traqula/algebra-transformations-1-1": "^0.0.10"
+  },
   "devDependencies": {
     "@playwright/test": "^1.47.2",
     "@pollyjs/adapter-node-http": "^6.0.5",
@@ -93,8 +96,5 @@
     "typescript": "^5.3.3",
     "webpack": "^5.0.0",
     "webpack-cli": "^6.0.0"
-  },
-  "dependencies": {
-    "@traqula/algebra-transformations-1-1": "^0.0.10"
   }
 }
