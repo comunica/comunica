@@ -26,6 +26,10 @@ const iriS = DF.namedNode(testUrl('s'));
 const iriP = DF.namedNode(testUrl('p'));
 const iriO = DF.namedNode(testUrl('o'));
 
+function isCountQuery(query: string): boolean {
+  return query.indexOf('COUNT') > 0;
+}
+
 describe('QuerySourceSparql', () => {
   let logger: any;
   let ctx: IActionContext;
@@ -36,7 +40,7 @@ describe('QuerySourceSparql', () => {
       lastQuery = query;
       return {
         headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-        body: query.indexOf('COUNT') > 0 ?
+        body: isCountQuery(query) ?
           Readable.from([ `{
   "head": { "vars": [ "count" ]
   } ,
@@ -123,7 +127,7 @@ describe('QuerySourceSparql', () => {
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
         context: ctx,
         init: {
-          body: new URLSearchParams({ query: `SELECT ( count( * ) AS ?count ) WHERE { <${testUrl('s')}> ?p <${testUrl('o')}> . }` }),
+          body: new URLSearchParams({ query: `SELECT ( COUNT( * ) AS ?count ) WHERE { <${testUrl('s')}> ?p <${testUrl('o')}> . }` }),
           headers: expect.anything(),
           method: 'POST',
         },
@@ -137,7 +141,7 @@ describe('QuerySourceSparql', () => {
           const query = action.init.body.toString();
           return {
             headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-            body: query.indexOf('COUNT') > 0 ?
+            body: isCountQuery(query) ?
               Readable.from([ `{
   "head": { "vars": [ "count" ]
   } ,
@@ -195,7 +199,7 @@ describe('QuerySourceSparql', () => {
           const query = action.init.body.toString();
           return {
             headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-            body: query.indexOf('COUNT') > 0 ?
+            body: isCountQuery(query) ?
               Readable.from([ `{
   "head": { "vars": [ "count" ]
   } ,
@@ -255,7 +259,7 @@ describe('QuerySourceSparql', () => {
           const query = action.init.body.toString();
           return {
             headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-            body: require('readable-stream-node-to-web')(query.indexOf('COUNT') > 0 ?
+            body: require('readable-stream-node-to-web')(isCountQuery(query) ?
               Readable.from([ `{
   "head": { "vars": [ "count" ]
   } ,
@@ -479,7 +483,7 @@ describe('QuerySourceSparql', () => {
           const query = action.init.body.toString();
           return {
             headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-            body: query.indexOf('COUNT') > 0 ?
+            body: isCountQuery(query) ?
               Readable.from([ `{
   "head": { "vars": [ "count" ]
   } ,
@@ -531,7 +535,7 @@ describe('QuerySourceSparql', () => {
           const query = action.init.body.toString();
           return {
             headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-            body: query.indexOf('COUNT') > 0 ?
+            body: isCountQuery(query) ?
               Readable.from([ `{
   "head": { "vars": [ "count" ]
   } ,
@@ -619,7 +623,7 @@ describe('QuerySourceSparql', () => {
           const query = action.init.body.toString();
           return {
             headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-            body: query.indexOf('COUNT') > 0 ?
+            body: isCountQuery(query) ?
               Readable.from([ `{
   "head": { "vars": [ "count" ]
   } ,
@@ -674,7 +678,7 @@ describe('QuerySourceSparql', () => {
           const query = action.init.body.toString();
           return {
             headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-            body: query.indexOf('COUNT') > 0 ?
+            body: isCountQuery(query) ?
               Readable.from([ `{
   "head": { "vars": [ "count" ]
   } ,
@@ -741,7 +745,7 @@ describe('QuerySourceSparql', () => {
           const query = action.input;
           return {
             headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-            body: query.indexOf('COUNT') > 0 ?
+            body: isCountQuery(query) ?
               Readable.from([ `{
   "head": { "vars": [ "count" ]
   } ,
@@ -816,7 +820,7 @@ describe('QuerySourceSparql', () => {
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
         context: ctx,
         init: {
-          body: new URLSearchParams({ query: `SELECT ( count( * ) AS ?count ) WHERE { VALUES( ){ } <${testUrl('s')}> ?p <${testUrl('o')}> . }` }),
+          body: new URLSearchParams({ query: `SELECT ( COUNT( * ) AS ?count ) WHERE { VALUES( ){ } <${testUrl('s')}> ?p <${testUrl('o')}> . }` }),
           headers: expect.anything(),
           method: 'POST',
         },
@@ -851,7 +855,7 @@ describe('QuerySourceSparql', () => {
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
         context: ctx.set(KeysInitQuery.queryString, 'abc'),
         init: {
-          body: new URLSearchParams({ query: `SELECT ( count( * ) AS ?count ) WHERE { VALUES( ){ } <${testUrl('s')}> ?p <${testUrl('o')}> . }` }),
+          body: new URLSearchParams({ query: `SELECT ( COUNT( * ) AS ?count ) WHERE { VALUES( ){ } <${testUrl('s')}> ?p <${testUrl('o')}> . }` }),
           headers: expect.anything(),
           method: 'POST',
         },
@@ -995,10 +999,10 @@ describe('QuerySourceSparql', () => {
           const query = action.init.body.toString();
           lastQuery = query;
           return {
-            headers: new Headers({ 'Content-Type': query.indexOf('COUNT') > 0 ?
+            headers: new Headers({ 'Content-Type': isCountQuery(query) ?
               'application/sparql-results+json' :
               'text/turtle' }),
-            body: query.indexOf('COUNT') > 0 ?
+            body: isCountQuery(query) ?
               Readable.from([ `{
   "head": { "vars": [ "count" ]
   } ,

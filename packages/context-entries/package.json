@@ -41,7 +41,7 @@
     "@comunica/core": "^4.0.2",
     "@comunica/types": "^4.0.2",
     "@rdfjs/types": "*",
-    "@traqula/algebra-transformations-1-2": "^0.0.8",
+    "@traqula/algebra-transformations-1-2": "^0.0.10",
     "jsonld-context-parser": "^2.2.2"
   }
 }

@@ -47,7 +47,7 @@
     "@comunica/types": "^4.0.2",
     "@comunica/utils-query-operation": "^4.0.2",
     "@rdfjs/types": "*",
-    "@traqula/algebra-transformations-1-2": "^0.0.8",
+    "@traqula/algebra-transformations-1-2": "^0.0.10",
     "asynciterator": "^3.9.0",
     "rdf-terms": "^2.0.0"
   }

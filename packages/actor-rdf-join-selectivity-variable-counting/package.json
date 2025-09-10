@@ -44,6 +44,6 @@
     "@comunica/bus-rdf-join-selectivity": "^4.0.2",
     "@comunica/core": "^4.0.2",
     "@comunica/mediatortype-accuracy": "^4.0.2",
-    "@traqula/algebra-transformations-1-2": "^0.0.8"
+    "@traqula/algebra-transformations-1-2": "^0.0.10"
   }
 }
