@@ -74,7 +74,7 @@ describe('ActorIteratorTransformRecordIntermediateResults', () => {
     });
 
     describe('with quad input', () => {
-      it('the iterator should return the same stream if the statistic tracking is undefined', async() => {
+      test('the iterator should return the same stream if the statistic tracking is undefined', async() => {
         await expect(actor.transformIteratorQuads(actionQuads)).resolves.toEqual({
           stream: actionQuads.stream,
           metadata: actionQuads.metadata,
@@ -113,7 +113,7 @@ describe('ActorIteratorTransformRecordIntermediateResults', () => {
       });
     });
     describe('with bindings input', () => {
-      it('the iterator should return the same stream if the statistic tracking is undefined', async() => {
+      test('the iterator should return the same stream if the statistic tracking is undefined', async() => {
         await expect(actor.transformIteratorBindings(actionBindings)).resolves.toEqual({
           stream: actionBindings.stream,
           metadata: actionBindings.metadata,
