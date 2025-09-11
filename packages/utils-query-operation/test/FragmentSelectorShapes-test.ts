@@ -1,7 +1,6 @@
+import type * as RDF from '@rdfjs/types';
 import { Algebra, Factory } from 'sparqlalgebrajs';
-import {
-  doesShapeAcceptOperation,
-} from '../lib/FragmentSelectorShapes';
+import { doesShapeAcceptOperation } from '../lib/FragmentSelectorShapes';
 
 const AF = new Factory();
 
@@ -337,6 +336,175 @@ describe('FragmentSelectorShapes', () => {
         AF.createPattern(undefined!, undefined!, undefined!),
         undefined!,
       ))).toBeTruthy();
+    });
+
+    describe('with extension function operations', () => {
+      let extensionFunctionExpression: Algebra.NamedExpression;
+
+      beforeAll(() => {
+        extensionFunctionExpression = {
+          expressionType: Algebra.expressionTypes.NAMED,
+          name: <RDF.NamedNode> { value: 'mock1' },
+          args: [],
+          type: Algebra.types.EXPRESSION,
+        };
+      });
+
+      it('operation type with a compatible extension function operation should accept', () => {
+        expect(doesShapeAcceptOperation({
+          type: 'operation',
+          operation: {
+            operationType: 'type',
+            type: Algebra.types.EXPRESSION,
+            extensionFunctions: [ 'mock1' ],
+          },
+          joinBindings: true,
+        }, extensionFunctionExpression)).toBeTruthy();
+      });
+
+      it('operation type with a non-compatible extension function operation should not accept', () => {
+        expect(doesShapeAcceptOperation({
+          type: 'operation',
+          operation: {
+            operationType: 'type',
+            type: Algebra.types.EXPRESSION,
+            extensionFunctions: [ 'mock2' ],
+          },
+          joinBindings: true,
+        }, extensionFunctionExpression)).toBeFalsy();
+      });
+
+      it('operation type with a wildcard operation should should not accept', () => {
+        expect(doesShapeAcceptOperation({
+          type: 'operation',
+          operation: { operationType: 'wildcard' },
+          joinBindings: true,
+        }, extensionFunctionExpression)).toBeFalsy();
+      });
+
+      it('should accept when the expression is contained within a different expression and it\'s compatible', () => {
+        expect(doesShapeAcceptOperation({
+          type: 'disjunction',
+          children: [
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.EXPRESSION,
+                extensionFunctions: [ 'mock1' ],
+              },
+              joinBindings: true,
+            },
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.FILTER,
+              },
+            },
+          ],
+        }, <Algebra.Filter> {
+          expression: extensionFunctionExpression,
+          type: Algebra.types.FILTER,
+        })).toBeTruthy();
+      });
+
+      // eslint-disable-next-line max-len
+      it('should not accept when the expression is contained within a different expression and it\'s not compatible', () => {
+        expect(doesShapeAcceptOperation({
+          type: 'disjunction',
+          children: [
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.EXPRESSION,
+                extensionFunctions: [ 'mock2' ],
+              },
+              joinBindings: true,
+            },
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.FILTER,
+              },
+            },
+          ],
+        }, <Algebra.Filter> {
+          expression: extensionFunctionExpression,
+          type: Algebra.types.FILTER,
+        })).toBeFalsy();
+      });
+
+      // eslint-disable-next-line max-len
+      it('conjunction type with two extension function operations, of which one is compatible, should should not accept', () => {
+        expect(doesShapeAcceptOperation({
+          type: 'conjunction',
+          children: [
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.EXPRESSION,
+                extensionFunctions: [ 'mock1' ],
+              },
+              joinBindings: true,
+            },
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.EXPRESSION,
+                extensionFunctions: [ 'mock2' ],
+              },
+              joinBindings: true,
+            },
+          ],
+        }, extensionFunctionExpression)).toBeFalsy();
+      });
+
+      // eslint-disable-next-line max-len
+      it('disjunction type with two extension function operations, of which one is compatible, should should accept', () => {
+        expect(doesShapeAcceptOperation({
+          type: 'disjunction',
+          children: [
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.EXPRESSION,
+                extensionFunctions: [ 'mock1' ],
+              },
+              joinBindings: true,
+            },
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.EXPRESSION,
+                extensionFunctions: [ 'mock2' ],
+              },
+              joinBindings: true,
+            },
+          ],
+        }, extensionFunctionExpression)).toBeTruthy();
+      });
+
+      it('arity type with a compatible extension function operation should should accept', () => {
+        expect(doesShapeAcceptOperation({
+          type: 'arity',
+          child: {
+            type: 'operation',
+            operation: {
+              operationType: 'type',
+              type: Algebra.types.EXPRESSION,
+              extensionFunctions: [ 'mock1' ],
+            },
+            joinBindings: true,
+          },
+        }, extensionFunctionExpression)).toBeTruthy();
+      });
     });
   });
 });
