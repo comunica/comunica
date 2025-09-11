@@ -74,10 +74,16 @@ describe('ActorIteratorTransformRecordIntermediateResults', () => {
     });
 
     describe('with quad input', () => {
-      it('should throw if no intermediate results statistic exists in context', async() => {
-        await expect(actor.run(actionQuads)).rejects.toThrow(
-          'Context entry @comunica/statistic:intermediateResults is required but not available',
-        );
+      it('the iterator should return the same stream if the statistic tracking is undefined', async() => {
+        await expect(actor.transformIteratorQuads(actionQuads)).resolves.toEqual({
+          stream: actionQuads.stream,
+          metadata: actionQuads.metadata,
+        });
+      });
+      it('should return the same stream if the statistic tracking is undefined', async() => {
+        await expect(actor.run(actionQuads)).resolves.toEqual({
+          ...actionQuads,
+        });
       });
       it('transform iterator should return mapped stream and unchanged metadata', async() => {
         actionQuads.context = actionQuads.context.set(KeysStatistics.intermediateResults, statisticIntermediateResults);
@@ -107,10 +113,16 @@ describe('ActorIteratorTransformRecordIntermediateResults', () => {
       });
     });
     describe('with bindings input', () => {
-      it('should throw if no intermediate results statistic exists in context', async() => {
-        await expect(actor.run(actionBindings)).rejects.toThrow(
-          'Context entry @comunica/statistic:intermediateResults is required but not available',
-        );
+      it('the iterator should return the same stream if the statistic tracking is undefined', async() => {
+        await expect(actor.transformIteratorBindings(actionBindings)).resolves.toEqual({
+          stream: actionBindings.stream,
+          metadata: actionBindings.metadata,
+        });
+      });
+      it('should return the same stream if the statistic tracking is undefined', async() => {
+        await expect(actor.run(actionBindings)).resolves.toEqual({
+          ...actionBindings,
+        });
       });
       it('transform iterator should return mapped stream and unchanged metadata', async() => {
         actionBindings.context = actionBindings.context.set(
