@@ -3,10 +3,10 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultBindings } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { Algebra, Factory } from '@traqula/algebra-transformations-1-2';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationFromQuad } from '../lib/ActorQueryOperationFromQuad';
 import '@comunica/utils-jest';
 
@@ -63,7 +63,7 @@ describe('ActorQueryOperationFromQuad', () => {
       const result = ActorQueryOperationFromQuad
         .applyOperationDefaultGraph(
           AF,
-          { patterns: [ Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }) ], type: Algebra.types.BGP },
+          { patterns: [ Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }) ], type: Algebra.Types.BGP },
           [ DF.namedNode('g') ],
         );
       expect(result.type).toBe('bgp');
@@ -75,7 +75,7 @@ describe('ActorQueryOperationFromQuad', () => {
       const result = ActorQueryOperationFromQuad
         .applyOperationDefaultGraph(
           AF,
-          { patterns: [ Object.assign(quad('s', 'p', 'o'), { type: 'pattern', metadata }) ], type: Algebra.types.BGP },
+          { patterns: [ Object.assign(quad('s', 'p', 'o'), { type: 'pattern', metadata }) ], type: Algebra.Types.BGP },
           [ DF.namedNode('g') ],
         );
       expect(result.type).toBe('bgp');
@@ -87,7 +87,7 @@ describe('ActorQueryOperationFromQuad', () => {
       const result = ActorQueryOperationFromQuad
         .applyOperationDefaultGraph(
           AF,
-          { patterns: [ Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }) ], type: Algebra.types.BGP },
+          { patterns: [ Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }) ], type: Algebra.Types.BGP },
           [ DF.namedNode('g') ],
         );
       expect(result.type).toBe('bgp');
@@ -98,7 +98,7 @@ describe('ActorQueryOperationFromQuad', () => {
       const result = ActorQueryOperationFromQuad
         .applyOperationDefaultGraph(
           AF,
-          { patterns: [ Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }) ], type: Algebra.types.BGP },
+          { patterns: [ Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }) ], type: Algebra.Types.BGP },
           [ DF.namedNode('g'), DF.namedNode('h') ],
         );
       expect(result.type).toBe('union');
@@ -112,7 +112,7 @@ describe('ActorQueryOperationFromQuad', () => {
       const result = ActorQueryOperationFromQuad
         .applyOperationDefaultGraph(
           AF,
-          { patterns: [ Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }) ], type: Algebra.types.BGP },
+          { patterns: [ Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }) ], type: Algebra.Types.BGP },
           [ DF.namedNode('g'), DF.namedNode('h') ],
         );
       expect(result.type).toBe('bgp');
@@ -238,18 +238,18 @@ describe('ActorQueryOperationFromQuad', () => {
       const result = ActorQueryOperationFromQuad
         .applyOperationNamedGraph(
           AF,
-          { patterns: [ Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }) ], type: Algebra.types.BGP },
+          { patterns: [ Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }) ], type: Algebra.Types.BGP },
           [ DF.namedNode('g') ],
           [],
         );
-      expect(result).toEqual({ type: Algebra.types.BGP, patterns: []});
+      expect(result).toEqual({ type: Algebra.Types.BGP, patterns: []});
     });
 
     it('should transform a pattern with a variable graph pattern', () => {
       const result = ActorQueryOperationFromQuad
         .applyOperationNamedGraph(
           AF,
-          { patterns: [ Object.assign(quad('s', 'p', 'o', '?g'), { type: 'pattern' }) ], type: Algebra.types.BGP },
+          { patterns: [ Object.assign(quad('s', 'p', 'o', '?g'), { type: 'pattern' }) ], type: Algebra.Types.BGP },
           [ DF.namedNode('g') ],
           [],
         );
@@ -257,7 +257,7 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.input[0].type).toBe('values');
       expect(result.input[0].variables).toHaveLength(1);
       expect(result.input[0].variables[0]).toEqual(DF.variable('g'));
-      expect(result.input[0].bindings[0]['?g']).toEqual(DF.namedNode('g'));
+      expect(result.input[0].bindings[0].g).toEqual(DF.namedNode('g'));
       expect(result.input[1].type).toBe('bgp');
       expect(quad('s', 'p', 'o', 'g').equals(result.input[1].patterns[0])).toBeTruthy();
     });
@@ -266,18 +266,18 @@ describe('ActorQueryOperationFromQuad', () => {
       const result = ActorQueryOperationFromQuad
         .applyOperationNamedGraph(
           AF,
-          { patterns: [ Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }) ], type: Algebra.types.BGP },
+          { patterns: [ Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }) ], type: Algebra.Types.BGP },
           [ DF.namedNode('g') ],
           [],
         );
-      expect(result).toEqual({ type: Algebra.types.BGP, patterns: []});
+      expect(result).toEqual({ type: Algebra.Types.BGP, patterns: []});
     });
 
     it('should not transform a pattern with a non-available non-default graph pattern but available as default', () => {
       const result = ActorQueryOperationFromQuad
         .applyOperationNamedGraph(
           AF,
-          { patterns: [ Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }) ], type: Algebra.types.BGP },
+          { patterns: [ Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }) ], type: Algebra.Types.BGP },
           [ DF.namedNode('g') ],
           [ DF.namedNode('gother') ],
         );
@@ -289,7 +289,7 @@ describe('ActorQueryOperationFromQuad', () => {
       const result = ActorQueryOperationFromQuad
         .applyOperationNamedGraph(
           AF,
-          { patterns: [ Object.assign(quad('s', 'p', 'o', 'g'), { type: 'pattern' }) ], type: Algebra.types.BGP },
+          { patterns: [ Object.assign(quad('s', 'p', 'o', 'g'), { type: 'pattern' }) ], type: Algebra.Types.BGP },
           [ DF.namedNode('g') ],
           [],
         );
@@ -301,18 +301,18 @@ describe('ActorQueryOperationFromQuad', () => {
       const result = ActorQueryOperationFromQuad
         .applyOperationNamedGraph(
           AF,
-          { patterns: [ Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }) ], type: Algebra.types.BGP },
+          { patterns: [ Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }) ], type: Algebra.Types.BGP },
           [ DF.namedNode('g'), DF.namedNode('h') ],
           [],
         );
-      expect(result).toEqual({ type: Algebra.types.BGP, patterns: []});
+      expect(result).toEqual({ type: Algebra.Types.BGP, patterns: []});
     });
 
     it('should transform a pattern with variable graph patterns', () => {
       const result = ActorQueryOperationFromQuad
         .applyOperationNamedGraph(
           AF,
-          { patterns: [ Object.assign(quad('s', 'p', 'o', '?g'), { type: 'pattern' }) ], type: Algebra.types.BGP },
+          { patterns: [ Object.assign(quad('s', 'p', 'o', '?g'), { type: 'pattern' }) ], type: Algebra.Types.BGP },
           [ DF.namedNode('g'), DF.namedNode('h') ],
           [],
         );
@@ -322,7 +322,7 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.input[0].input[0].type).toBe('values');
       expect(result.input[0].input[0].variables).toHaveLength(1);
       expect(result.input[0].input[0].variables[0]).toEqual(DF.variable('g'));
-      expect(result.input[0].input[0].bindings[0]['?g']).toEqual(DF.namedNode('g'));
+      expect(result.input[0].input[0].bindings[0].g).toEqual(DF.namedNode('g'));
       expect(result.input[0].input[1].type).toBe('bgp');
       expect(quad('s', 'p', 'o', 'g').equals(result.input[0].input[1].patterns[0])).toBeTruthy();
 
@@ -330,7 +330,7 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.input[1].input[0].type).toBe('values');
       expect(result.input[1].input[0].variables).toHaveLength(1);
       expect(result.input[1].input[0].variables[0]).toEqual(DF.variable('g'));
-      expect(result.input[1].input[0].bindings[0]['?g']).toEqual(DF.namedNode('h'));
+      expect(result.input[1].input[0].bindings[0].g).toEqual(DF.namedNode('h'));
       expect(result.input[1].input[1].type).toBe('bgp');
       expect(quad('s', 'p', 'o', 'h').equals(result.input[1].input[1].patterns[0])).toBeTruthy();
     });
@@ -339,18 +339,18 @@ describe('ActorQueryOperationFromQuad', () => {
       const result = ActorQueryOperationFromQuad
         .applyOperationNamedGraph(
           AF,
-          { patterns: [ Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }) ], type: Algebra.types.BGP },
+          { patterns: [ Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }) ], type: Algebra.Types.BGP },
           [ DF.namedNode('g'), DF.namedNode('h') ],
           [],
         );
-      expect(result).toEqual({ type: Algebra.types.BGP, patterns: []});
+      expect(result).toEqual({ type: Algebra.Types.BGP, patterns: []});
     });
 
     it('should transform a pattern with available non-default graph patterns', () => {
       const result = ActorQueryOperationFromQuad
         .applyOperationNamedGraph(
           AF,
-          { patterns: [ Object.assign(quad('s', 'p', 'o', 'g'), { type: 'pattern' }) ], type: Algebra.types.BGP },
+          { patterns: [ Object.assign(quad('s', 'p', 'o', 'g'), { type: 'pattern' }) ], type: Algebra.Types.BGP },
           [ DF.namedNode('g'), DF.namedNode('h') ],
           [],
         );
@@ -366,7 +366,7 @@ describe('ActorQueryOperationFromQuad', () => {
           [ DF.namedNode('g') ],
           [],
         );
-      expect(result).toEqual({ type: Algebra.types.BGP, patterns: []});
+      expect(result).toEqual({ type: Algebra.Types.BGP, patterns: []});
     });
 
     it('should transform a Path with a variable graph pattern', () => {
@@ -381,7 +381,7 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.input[0].type).toBe('values');
       expect(result.input[0].variables).toHaveLength(1);
       expect(result.input[0].variables[0]).toEqual(DF.variable('g'));
-      expect(result.input[0].bindings[0]['?g']).toEqual(DF.namedNode('g'));
+      expect(result.input[0].bindings[0].g).toEqual(DF.namedNode('g'));
       expect(result.input[1].type).toBe('path');
       expect(quad('s', 'p', 'o', 'g').equals(result.input[1])).toBeTruthy();
     });
@@ -394,7 +394,7 @@ describe('ActorQueryOperationFromQuad', () => {
           [ DF.namedNode('g') ],
           [],
         );
-      expect(result).toEqual({ type: Algebra.types.BGP, patterns: []});
+      expect(result).toEqual({ type: Algebra.Types.BGP, patterns: []});
     });
 
     it('should transform a Path with an available non-default graph pattern', () => {
@@ -417,7 +417,7 @@ describe('ActorQueryOperationFromQuad', () => {
           [ DF.namedNode('g'), DF.namedNode('h') ],
           [],
         );
-      expect(result).toEqual({ type: Algebra.types.BGP, patterns: []});
+      expect(result).toEqual({ type: Algebra.Types.BGP, patterns: []});
     });
 
     it('should transform a Path with variable graph patterns', () => {
@@ -434,7 +434,7 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.input[0].input[0].type).toBe('values');
       expect(result.input[0].input[0].variables).toHaveLength(1);
       expect(result.input[0].input[0].variables[0]).toEqual(DF.variable('g'));
-      expect(result.input[0].input[0].bindings[0]['?g']).toEqual(DF.namedNode('g'));
+      expect(result.input[0].input[0].bindings[0].g).toEqual(DF.namedNode('g'));
       expect(result.input[0].input[1].type).toBe('path');
       expect(quad('s', 'p', 'o', 'g').equals(result.input[0].input[1])).toBeTruthy();
 
@@ -442,7 +442,7 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.input[1].input[0].type).toBe('values');
       expect(result.input[1].input[0].variables).toHaveLength(1);
       expect(result.input[1].input[0].variables[0]).toEqual(DF.variable('g'));
-      expect(result.input[1].input[0].bindings[0]['?g']).toEqual(DF.namedNode('h'));
+      expect(result.input[1].input[0].bindings[0].g).toEqual(DF.namedNode('h'));
       expect(result.input[1].input[1].type).toBe('path');
       expect(quad('s', 'p', 'o', 'h').equals(result.input[1].input[1])).toBeTruthy();
     });
@@ -467,7 +467,7 @@ describe('ActorQueryOperationFromQuad', () => {
           [ DF.namedNode('g'), DF.namedNode('h') ],
           [],
         );
-      expect(result).toEqual({ type: Algebra.types.BGP, patterns: []});
+      expect(result).toEqual({ type: Algebra.Types.BGP, patterns: []});
     });
 
     it('should transform a Pattern with a default graph pattern to a no-op', () => {
@@ -478,7 +478,7 @@ describe('ActorQueryOperationFromQuad', () => {
           [ DF.namedNode('g') ],
           [],
         );
-      expect(result).toEqual({ type: Algebra.types.BGP, patterns: []});
+      expect(result).toEqual({ type: Algebra.Types.BGP, patterns: []});
     });
 
     it('should transform a Pattern with a variable graph pattern', () => {
@@ -493,7 +493,7 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.input[0].type).toBe('values');
       expect(result.input[0].variables).toHaveLength(1);
       expect(result.input[0].variables[0]).toEqual(DF.variable('g'));
-      expect(result.input[0].bindings[0]['?g']).toEqual(DF.namedNode('g'));
+      expect(result.input[0].bindings[0].g).toEqual(DF.namedNode('g'));
       expect(result.input[1].type).toBe('pattern');
       expect(quad('s', 'p', 'o', 'g').equals(result.input[1])).toBeTruthy();
     });
@@ -506,7 +506,7 @@ describe('ActorQueryOperationFromQuad', () => {
           [ DF.namedNode('g') ],
           [],
         );
-      expect(result).toEqual({ type: Algebra.types.BGP, patterns: []});
+      expect(result).toEqual({ type: Algebra.Types.BGP, patterns: []});
     });
 
     it('should transform a Pattern with an available non-default graph pattern', () => {
@@ -529,7 +529,7 @@ describe('ActorQueryOperationFromQuad', () => {
           [ DF.namedNode('g'), DF.namedNode('h') ],
           [],
         );
-      expect(result).toEqual({ type: Algebra.types.BGP, patterns: []});
+      expect(result).toEqual({ type: Algebra.Types.BGP, patterns: []});
     });
 
     it('should transform a Pattern with variable graph patterns', () => {
@@ -546,7 +546,7 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.input[0].input[0].type).toBe('values');
       expect(result.input[0].input[0].variables).toHaveLength(1);
       expect(result.input[0].input[0].variables[0]).toEqual(DF.variable('g'));
-      expect(result.input[0].input[0].bindings[0]['?g']).toEqual(DF.namedNode('g'));
+      expect(result.input[0].input[0].bindings[0].g).toEqual(DF.namedNode('g'));
       expect(result.input[0].input[1].type).toBe('pattern');
       expect(quad('s', 'p', 'o', 'g').equals(result.input[0].input[1])).toBeTruthy();
 
@@ -554,7 +554,7 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.input[1].input[0].type).toBe('values');
       expect(result.input[1].input[0].variables).toHaveLength(1);
       expect(result.input[1].input[0].variables[0]).toEqual(DF.variable('g'));
-      expect(result.input[1].input[0].bindings[0]['?g']).toEqual(DF.namedNode('h'));
+      expect(result.input[1].input[0].bindings[0].g).toEqual(DF.namedNode('h'));
       expect(result.input[1].input[1].type).toBe('pattern');
       expect(quad('s', 'p', 'o', 'h').equals(result.input[1].input[1])).toBeTruthy();
     });
@@ -579,7 +579,7 @@ describe('ActorQueryOperationFromQuad', () => {
           [ DF.namedNode('g'), DF.namedNode('h') ],
           [],
         );
-      expect(result).toEqual({ type: Algebra.types.BGP, patterns: []});
+      expect(result).toEqual({ type: Algebra.Types.BGP, patterns: []});
     });
 
     it('should transform other types of operations', () => {
@@ -604,7 +604,7 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.stuff[0].input.input[0].type).toBe('values');
       expect(result.stuff[0].input.input[0].variables).toHaveLength(1);
       expect(result.stuff[0].input.input[0].variables[0]).toEqual(DF.variable('g'));
-      expect(result.stuff[0].input.input[0].bindings[0]['?g']).toEqual(DF.namedNode('g'));
+      expect(result.stuff[0].input.input[0].bindings[0].g).toEqual(DF.namedNode('g'));
       expect(result.stuff[0].input.input[1].type).toBe('path');
       expect(quad('s', 'p', 'o', 'g').equals(result.stuff[0].input.input[1])).toBeTruthy();
 
@@ -619,7 +619,7 @@ describe('ActorQueryOperationFromQuad', () => {
     });
 
     it('should transform an array with length 1', () => {
-      expect(ActorQueryOperationFromQuad.joinOperations(AF, [{ type: Algebra.types.NOP }])).toEqual({ type: 'nop' });
+      expect(ActorQueryOperationFromQuad.joinOperations(AF, [{ type: Algebra.Types.NOP }])).toEqual({ type: 'nop' });
     });
 
     it('should transform two operations', () => {
@@ -654,7 +654,7 @@ describe('ActorQueryOperationFromQuad', () => {
     });
 
     it('should transform an array with length 1', () => {
-      expect(ActorQueryOperationFromQuad.unionOperations(AF, [{ type: Algebra.types.NOP }])).toEqual({ type: 'nop' });
+      expect(ActorQueryOperationFromQuad.unionOperations(AF, [{ type: Algebra.Types.NOP }])).toEqual({ type: 'nop' });
     });
 
     it('should transform two operations', () => {
@@ -720,7 +720,7 @@ describe('ActorQueryOperationFromQuad', () => {
         input: { patterns: [
           Object.assign(quad('s', 'p', 'o1'), { type: 'pattern' }),
           Object.assign(quad('s', 'p', 'o2'), { type: 'pattern' }),
-        ], type: Algebra.types.BGP },
+        ], type: Algebra.Types.BGP },
         named: [],
         type: 'from',
       };
@@ -762,7 +762,7 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.input[0].type).toBe('values');
       expect(result.input[0].variables).toHaveLength(1);
       expect(result.input[0].variables[0]).toEqual(DF.variable('g'));
-      expect(result.input[0].bindings[0]['?g']).toEqual(DF.namedNode('g'));
+      expect(result.input[0].bindings[0].g).toEqual(DF.namedNode('g'));
       expect(result.input[1].type).toBe('path');
       expect(quad('s', 'p', 'o', 'g').equals(result.input[1])).toBeTruthy();
     });
@@ -805,7 +805,7 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.input[0].input[0].type).toBe('values');
       expect(result.input[0].input[0].variables).toHaveLength(1);
       expect(result.input[0].input[0].variables[0]).toEqual(DF.variable('g'));
-      expect(result.input[0].input[0].bindings[0]['?g']).toEqual(DF.namedNode('g'));
+      expect(result.input[0].input[0].bindings[0].g).toEqual(DF.namedNode('g'));
       expect(result.input[0].input[1].type).toBe('path');
       expect(quad('s', 'p', 'o', 'g').equals(result.input[0].input[1])).toBeTruthy();
 
@@ -813,7 +813,7 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.input[1].input[0].type).toBe('values');
       expect(result.input[1].input[0].variables).toHaveLength(1);
       expect(result.input[1].input[0].variables[0]).toEqual(DF.variable('g'));
-      expect(result.input[1].input[0].bindings[0]['?g']).toEqual(DF.namedNode('h'));
+      expect(result.input[1].input[0].bindings[0].g).toEqual(DF.namedNode('h'));
       expect(result.input[1].input[1].type).toBe('path');
       expect(quad('s', 'p', 'o', 'h').equals(result.input[1].input[1])).toBeTruthy();
     });
@@ -853,13 +853,13 @@ describe('ActorQueryOperationFromQuad', () => {
               patterns: [
                 Object.assign(quad('s', 'p', 'o', '?g'), { type: 'pattern' }),
               ],
-              type: Algebra.types.BGP,
+              type: Algebra.Types.BGP,
             },
             {
               patterns: [
                 Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }),
               ],
-              type: Algebra.types.BGP,
+              type: Algebra.Types.BGP,
             },
           ],
           type: 'join',
@@ -875,7 +875,7 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.input[0].input[0].type).toBe('values');
       expect(result.input[0].input[0].variables).toHaveLength(1);
       expect(result.input[0].input[0].variables[0]).toEqual(DF.variable('g'));
-      expect(result.input[0].input[0].bindings[0]['?g']).toEqual(DF.namedNode('g'));
+      expect(result.input[0].input[0].bindings[0].g).toEqual(DF.namedNode('g'));
       expect(result.input[0].input[1].type).toBe('bgp');
       expect(quad('s', 'p', 'o', 'g').equals(result.input[0].input[1].patterns[0])).toBeTruthy();
 
@@ -892,13 +892,13 @@ describe('ActorQueryOperationFromQuad', () => {
               patterns: [
                 Object.assign(quad('s', 'p', 'o', 'g'), { type: 'pattern' }),
               ],
-              type: Algebra.types.BGP,
+              type: Algebra.Types.BGP,
             },
             {
               patterns: [
                 Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }),
               ],
-              type: Algebra.types.BGP,
+              type: Algebra.Types.BGP,
             },
           ],
           type: 'join',
@@ -925,13 +925,13 @@ describe('ActorQueryOperationFromQuad', () => {
               patterns: [
                 Object.assign(quad('s', 'p', 'o', 'g1'), { type: 'pattern' }),
               ],
-              type: Algebra.types.BGP,
+              type: Algebra.Types.BGP,
             },
             {
               patterns: [
                 Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }),
               ],
-              type: Algebra.types.BGP,
+              type: Algebra.Types.BGP,
             },
           ],
           type: 'join',

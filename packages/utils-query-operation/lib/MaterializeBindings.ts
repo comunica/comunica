@@ -1,11 +1,11 @@
 import type { Bindings } from '@comunica/types';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
+import type { Algebra, Factory } from '@traqula/algebra-transformations-1-2';
+import { utils } from '@traqula/algebra-transformations-1-2';
 import type { Variable } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import { mapTermsNested, someTermsNested } from 'rdf-terms';
-import type { Algebra, Factory } from 'sparqlalgebrajs';
-import { Util } from 'sparqlalgebrajs';
 
 /**
  * Materialize a term with the given binding.
@@ -66,7 +66,7 @@ export function materializeOperation(
     originalBindings: 'originalBindings' in options ? options.originalBindings : bindings,
   };
 
-  return Util.mapOperation(operation, {
+  return utils.mapOperation(operation, {
     path(op: Algebra.Path, factory: Factory) {
       // Materialize variables in a path expression.
       // The predicate expression will be recursed.
@@ -237,18 +237,17 @@ export function materializeOperation(
         }
       } else {
         const variables = op.variables.filter(variable => !bindings.has(variable));
-        const valueBindings: Record<string, RDF.Literal | RDF.NamedNode>[] = <any> op.bindings.map((binding) => {
+        const valueBindings: Algebra.Values['bindings'] = <any> op.bindings.map((binding) => {
           const newBinding = { ...binding };
           let valid = true;
           // eslint-disable-next-line unicorn/no-array-for-each
           bindings.forEach((value: RDF.Term, key: RDF.Variable) => {
-            const keyString = termToString(key);
-            if (keyString in newBinding) {
-              if (!value.equals(newBinding[keyString])) {
+            if (key.value in newBinding) {
+              if (!value.equals(newBinding[key.value])) {
                 // If the value of the binding is not equal, remove this binding completely from the VALUES clause
                 valid = false;
               }
-              delete newBinding[keyString];
+              delete newBinding[key.value];
             }
           });
           return valid ? newBinding : undefined;
@@ -334,7 +333,7 @@ function createValuesFromBindings(factory: Factory, bindings: Bindings, variable
 
   for (const [ variable, binding ] of bindings) {
     if (!variables || variables.some(v => v.equals(variable))) {
-      const newBinding = { [termToString(variable)]: <RDF.NamedNode | RDF.Literal> binding };
+      const newBinding = { [variable.value]: <RDF.NamedNode | RDF.Literal> binding };
 
       values.push(factory.createValues([ variable ], [ newBinding ]));
     }
