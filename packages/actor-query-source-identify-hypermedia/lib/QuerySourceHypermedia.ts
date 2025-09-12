@@ -48,16 +48,20 @@ export class QuerySourceHypermedia implements IQuerySource {
   private readonly cacheSize: number;
   private readonly maxIterators: number;
 
+  private readonly emitPartialCardinalities: boolean;
+
   public constructor(
     cacheSize: number,
     firstUrl: string,
     forceSourceType: string | undefined,
     maxIterators: number,
     aggregateStore: boolean,
+    emitPartialCardinalities: boolean,
     mediators: IMediatorArgs,
     logWarning: (warningMessage: string) => void,
     dataFactory: ComunicaDataFactory,
     bindingsFactory: BindingsFactory,
+
   ) {
     this.referenceValue = firstUrl;
     this.cacheSize = cacheSize;
@@ -66,6 +70,7 @@ export class QuerySourceHypermedia implements IQuerySource {
     this.maxIterators = maxIterators;
     this.mediators = mediators;
     this.aggregateStore = aggregateStore;
+    this.emitPartialCardinalities = emitPartialCardinalities;
     this.logWarning = logWarning;
     this.dataFactory = dataFactory;
     this.bindingsFactory = bindingsFactory;
@@ -288,6 +293,7 @@ export class QuerySourceHypermedia implements IQuerySource {
                 appendingMetadata,
                 context,
               })).metadata,
+            this.emitPartialCardinalities,
           );
           aggregatedStores.set(this.firstUrl, aggregatedStore);
         }
