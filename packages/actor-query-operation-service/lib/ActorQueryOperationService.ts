@@ -1,3 +1,4 @@
+import type { ActorHttpInvalidateListenable, IActionHttpInvalidate } from '@comunica/bus-http-invalidate';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
@@ -10,12 +11,15 @@ import type {
   IActionContext,
   IQueryOperationResult,
   IQueryOperationResultBindings,
+  IQuerySource,
+  IQuerySourceWrapper,
 } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { assignOperationSource, getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { SingletonIterator } from 'asynciterator';
+import { LRUCache } from 'lru-cache';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -27,8 +31,18 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
   public readonly mediatorQuerySourceIdentify: MediatorQuerySourceIdentify;
 
+  // TODO: Remove the cache as unneeded when service clauses are rewritten into source-annotated operations.
+  // For further details, see https://github.com/comunica/comunica/issues/1537
+  private readonly cache?: LRUCache<string, IQuerySourceWrapper<IQuerySource>>;
+  public readonly httpInvalidator: ActorHttpInvalidateListenable;
+
   public constructor(args: IActorQueryOperationServiceArgs) {
     super(args, 'service');
+    if (args.cacheSize && args.httpInvalidator && args.cacheSize > 0) {
+      this.cache = new LRUCache({ max: args.cacheSize });
+      args.httpInvalidator.addInvalidateListener((action: IActionHttpInvalidate) =>
+        this.handleHttpInvalidateEvent(action));
+    }
   }
 
   public async testOperation(operation: Algebra.Service, _context: IActionContext): Promise<TestResult<IActorTest>> {
@@ -38,16 +52,19 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
     return passTestVoid();
   }
 
-  public async runOperation(operation: Algebra.Service, context: IActionContext):
-  Promise<IQueryOperationResult> {
+  public async runOperation(operation: Algebra.Service, context: IActionContext): Promise<IQueryOperationResult> {
     // Identify the SERVICE target as query source
-    const { querySource } = await this.mediatorQuerySourceIdentify.mediate({
-      querySourceUnidentified: {
-        value: operation.name.value,
-        type: this.forceSparqlEndpoint ? 'sparql' : undefined,
-      },
-      context,
-    });
+    let querySource = this.cache?.get(operation.name.value);
+    if (!querySource) {
+      querySource = (await this.mediatorQuerySourceIdentify.mediate({
+        querySourceUnidentified: {
+          value: operation.name.value,
+          type: this.forceSparqlEndpoint ? 'sparql' : undefined,
+        },
+        context,
+      })).querySource;
+      this.cache?.set(operation.name.value, querySource);
+    }
 
     // Attach the source to the operation, and execute
     let output: IQueryOperationResultBindings;
@@ -82,6 +99,18 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
 
     return output;
   }
+
+  /**
+   * Handles HTTP cache invalidation events.
+   * @param {IActionHttpInvalidate} action The invalidation action
+   */
+  public handleHttpInvalidateEvent(action: IActionHttpInvalidate): void {
+    if (action.url) {
+      this.cache?.delete(action.url);
+    } else {
+      this.cache?.clear();
+    }
+  }
 }
 
 export interface IActorQueryOperationServiceArgs extends IActorQueryOperationTypedMediatedArgs {
@@ -98,4 +127,17 @@ export interface IActorQueryOperationServiceArgs extends IActorQueryOperationTyp
    * The mediator for identifying query sources.
    */
   mediatorQuerySourceIdentify: MediatorQuerySourceIdentify;
+  /* eslint-disable max-len */
+  /**
+   * An actor that listens to HTTP invalidation events
+   * @default {<default_invalidator> a <npmd:@comunica/bus-http-invalidate/^4.0.0/components/ActorHttpInvalidateListenable.jsonld#ActorHttpInvalidateListenable>}
+   * TODO: make required in next-major.
+   */
+  httpInvalidator?: ActorHttpInvalidateListenable;
+  /* eslint-enable max-len */
+  /**
+   * The cache size for sources, to mitigate the overhead of multiple identifications for the same source.
+   * @default {32}
+   */
+  cacheSize?: number;
 }
