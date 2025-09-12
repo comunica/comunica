@@ -802,6 +802,15 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
           expect(source1.source.queryBindings).toHaveBeenCalledWith(AF.createNop(), ctx);
         });
 
+        it('should merge action and source contexts', async() => {
+          const sourceContext = new ActionContext({ 'urn:sckey': true });
+          const actionContext = new ActionContext({ 'urn:ackey': false });
+          const mergedContext = sourceContext.merge(actionContext);
+          const op = AF.createNop();
+          await actor.hasSourceResults(AF, { ...source1, context: sourceContext }, op, actionContext);
+          expect(source1.source.queryBindings).toHaveBeenCalledWith(op, mergedContext);
+        });
+
         it('should be true for 0 cardinality on source with traversal enabled', async() => {
           source1.context = new ActionContext().set(KeysQuerySourceIdentify.traverse, true);
           source1.source.queryBindings = () => {
