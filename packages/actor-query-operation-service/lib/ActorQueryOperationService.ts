@@ -38,7 +38,7 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
 
   public constructor(args: IActorQueryOperationServiceArgs) {
     super(args, 'service');
-    if (args.cacheSize > 0) {
+    if (args.cacheSize && args.httpInvalidator && args.cacheSize > 0) {
       this.cache = new LRUCache({ max: args.cacheSize });
       args.httpInvalidator.addInvalidateListener((action: IActionHttpInvalidate) =>
         this.handleHttpInvalidateEvent(action));
@@ -132,11 +132,11 @@ export interface IActorQueryOperationServiceArgs extends IActorQueryOperationTyp
    * An actor that listens to HTTP invalidation events
    * @default {<default_invalidator> a <npmd:@comunica/bus-http-invalidate/^4.0.0/components/ActorHttpInvalidateListenable.jsonld#ActorHttpInvalidateListenable>}
    */
-  httpInvalidator: ActorHttpInvalidateListenable;
+  httpInvalidator?: ActorHttpInvalidateListenable;
   /* eslint-enable max-len */
   /**
    * The cache size for sources, to mitigate the overhead of multiple identifications for the same source.
    * @default {32}
    */
-  cacheSize: number;
+  cacheSize?: number;
 }
