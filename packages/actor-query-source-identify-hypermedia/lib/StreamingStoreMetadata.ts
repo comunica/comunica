@@ -18,6 +18,13 @@ export class StreamingStoreMetadata extends StreamingStore implements IAggregate
   protected readonly metadataAccumulator:
   (accumulatedMetadata: MetadataBindings, appendingMetadata: MetadataBindings) => Promise<MetadataBindings>;
 
+  /**
+   * Whether the StreamingStoreMetadata should emit updated partial cardinalities
+   * for each matching quad. Enabling this option may impact performance due to
+   * frequent {@link MetadataValidationState} invalidations and updates
+   */
+  private readonly emitPartialCardinalities: boolean;
+
   protected baseMetadata: MetadataBindings = {
     state: new MetadataValidationState(),
     cardinality: { type: 'exact', value: 0 },
@@ -28,9 +35,11 @@ export class StreamingStoreMetadata extends StreamingStore implements IAggregate
     store: RDF.Store | undefined,
     metadataAccumulator:
     (accumulatedMetadata: MetadataBindings, appendingMetadata: MetadataBindings) => Promise<MetadataBindings>,
+    emitPartialCardinalities: boolean,
   ) {
     super(store);
     this.metadataAccumulator = metadataAccumulator;
+    this.emitPartialCardinalities = emitPartialCardinalities;
   }
 
   public override import(stream: RDF.Stream): EventEmitter {
@@ -75,11 +84,13 @@ export class StreamingStoreMetadata extends StreamingStore implements IAggregate
     iterator.setProperty('metadata', metadata);
     iterator.setProperty('lastCount', count);
 
-    // Every time a new quad is pushed into the iterator, update the metadata
-    rawStream.on('quad', () => {
-      iterator.setProperty('lastCount', ++count);
-      this.updateMetadataState(iterator, count);
-    });
+    if (this.emitPartialCardinalities) {
+      // Every time a new quad is pushed into the iterator, update the metadata
+      rawStream.on('quad', () => {
+        iterator.setProperty('lastCount', ++count);
+        this.updateMetadataState(iterator, count);
+      });
+    }
 
     // Store all running iterators until they close or are destroyed
     this.runningIterators.add(iterator);
