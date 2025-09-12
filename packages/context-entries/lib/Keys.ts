@@ -226,6 +226,15 @@ export const KeysExpressionEvaluator = {
     '@comunica/utils-expression-evaluator:defaultTimeZone',
   ),
   actionContext: new ActionContextKey<IActionContext>('@comunica/utils-expression-evaluator:actionContext'),
+  /**
+   * A boolean denoting the behaviour of the lesser than function when used with non literals operands.
+   *
+   * true: treats them as literals and compares their string values.
+   * false: throws an error (default).
+   */
+  nonLiteralExpressionComparison: new ActionContextKey<boolean>(
+    '@comunica/utils-expression-evaluator:nonLiteralExpressionComparison',
+  ),
 };
 
 export const KeysQueryOperation = {

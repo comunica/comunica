@@ -29,7 +29,7 @@ export interface ITestTableConfigBase {
    * Configuration that'll we provided to the Evaluator.
    * If the type is sync, the test will be preformed both sync and async.
    */
-  config?: IActionContext;
+  evaluationActionContext?: IActionContext;
   aliases?: AliasMap;
   /**
    * Additional prefixes can be provided if the defaultPrefixes in ./Aliases.ts are not enough.

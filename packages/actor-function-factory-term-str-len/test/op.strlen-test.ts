@@ -32,7 +32,7 @@ describe('evaluation of \'strlen\' like', () => {
   });
   runFuncTestTable({
     ...baseConfig,
-    config: new ActionContext().set(KeysExpressionEvaluator.superTypeProvider, {
+    evaluationActionContext: new ActionContext().set(KeysExpressionEvaluator.superTypeProvider, {
       cache: new LRUCache<string, any>({ max: 1_000 }),
       discoverer(unknownType: string) {
         if (unknownType.includes('specialString')) {

@@ -38,7 +38,7 @@ describe('extension functions:', () => {
         arity: 2,
         notation: Notation.Function,
         operation: '<https://example.org/functions#equal>',
-        config: new ActionContext().set(KeysInitQuery.extensionFunctionCreator, extensionFunctions),
+        evaluationActionContext: new ActionContext().set(KeysInitQuery.extensionFunctionCreator, extensionFunctions),
         aliases: merge(numeric, bool),
         testTable: `
           3i 3i = true
@@ -110,7 +110,7 @@ describe('extension functions:', () => {
         arity: 1,
         notation: Notation.Function,
         operation: '<https://example.org/functions#bad>',
-        config: new ActionContext({
+        evaluationActionContext: new ActionContext({
           [KeysInitQuery.extensionFunctionCreator.name]: extensionFunctions,
         }),
         aliases: merge(numeric, bool),
@@ -129,7 +129,7 @@ describe('extension functions:', () => {
         arity: 1,
         notation: Notation.Function,
         operation: '<http://example.org/functions#to-upper-case>',
-        config: new ActionContext({
+        evaluationActionContext: new ActionContext({
           [KeysInitQuery.extensionFunctionCreator.name]: () => async(args: RDF.Term[]) => {
             const arg = args[0];
             if (arg.termType === 'Literal' && arg.datatype.equals(DF.literal('', stringType).datatype)) {

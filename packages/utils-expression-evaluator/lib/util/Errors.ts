@@ -98,8 +98,8 @@ export class InError extends ExpressionError {
  * Literals were passed to an operator that doesn't support their datatypes.
  */
 export class InvalidArgumentTypes extends ExpressionError {
-  public constructor(public args: Expression[], public op: C.GeneralOperator) {
-    super(`Argument types not valid for operator: '${pp(op)}' with '${pp(args)}`);
+  public constructor(public args: Expression[], public op: C.GeneralOperator, etc = '') {
+    super(`Argument types not valid for operator: '${pp(op)}' with '${pp(args)}${etc}`);
   }
 }
 

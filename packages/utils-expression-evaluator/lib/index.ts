@@ -83,6 +83,7 @@ export {
   NonLexicalLiteral,
   StringLiteral,
   isNonLexicalLiteral,
+  ISerializable,
 } from './expressions';
 export { addDurationToDateTime, elapsedDuration } from './util/SpecAlgos';
 export {

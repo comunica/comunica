@@ -2,6 +2,7 @@ import * as Path from 'node:path';
 import { ProxyHandlerStatic } from '@comunica/actor-http-proxy';
 import type { MediatorQueryProcess } from '@comunica/bus-query-process';
 import {
+  KeysExpressionEvaluator,
   KeysHttp,
   KeysHttpMemento,
   KeysHttpProxy,
@@ -745,6 +746,22 @@ LIMIT 100
           sources: [{ value: sourceHypermedia }],
           log: expect.any(LoggerPretty),
           [KeysInitQuery.distinctConstruct.name]: true,
+        });
+      });
+
+      it('handles the --nonLiteralExpressionComparison flag', async() => {
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-q', queryString, '--nonLiteralExpressionComparison' ],
+          env: {},
+          stdin: <Readable><any> new PassThrough(),
+          context,
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
+          sources: [{ value: sourceHypermedia }],
+          log: expect.any(LoggerPretty),
+          [KeysExpressionEvaluator.nonLiteralExpressionComparison.name]: true,
         });
       });
 
