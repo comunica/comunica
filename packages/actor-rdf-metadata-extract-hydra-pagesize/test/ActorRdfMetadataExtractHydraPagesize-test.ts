@@ -1,11 +1,11 @@
 import type { Readable } from 'node:stream';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import { streamifyArray } from 'streamify-array';
 import { ActorRdfMetadataExtractHydraPagesize } from '../lib/ActorRdfMetadataExtractHydraPagesize';
 import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
-const stream = require('streamify-array');
 
 describe('ActorRdfMetadataExtractHydraPagesize', () => {
   let bus: any;
@@ -22,13 +22,13 @@ describe('ActorRdfMetadataExtractHydraPagesize', () => {
 
     beforeEach(() => {
       actor = new ActorRdfMetadataExtractHydraPagesize({ name: 'actor', bus, predicates: [ 'px', 'py' ]});
-      input = stream([
+      input = streamifyArray([
         quad('s1', 'p1', 'o1', ''),
         quad('g1', 'py', '12345', ''),
         quad('s2', 'px', '5678', ''),
         quad('s3', 'p3', 'o3', ''),
       ]);
-      inputNone = stream([
+      inputNone = streamifyArray([
         quad('s1', 'p1', 'o1', ''),
       ]);
       context = new ActionContext();

@@ -83,6 +83,10 @@ export interface IActorDereferenceOutput extends IActorOutput {
    */
   url: string;
   /**
+   * BaseIRI, this is used over url when passed to metadata.baseIRI in ActorDereferenceRdfParse.ts
+   */
+  baseIRI?: string;
+  /**
    * The resulting stream.
    */
   data: IReadableClose;

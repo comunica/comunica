@@ -20,6 +20,7 @@ import { QueryEngineBase, QueryEngineFactoryBase } from '..';
 
 import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase';
 import { CliArgsHandlerHttp } from './cli/CliArgsHandlerHttp';
+import { VoidMetadataEmitter } from './VoidMetadataEmitter';
 
 // Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
 const clusterUntyped = require('node:cluster');
@@ -45,6 +46,9 @@ export class HttpServiceSparqlEndpoint {
 
   public readonly freshWorkerPerQuery: boolean;
   public readonly contextOverride: boolean;
+  public readonly emitVoid: boolean;
+
+  public readonly voidMetadataEmitter: VoidMetadataEmitter;
 
   public lastQueryId = 0;
 
@@ -55,6 +59,8 @@ export class HttpServiceSparqlEndpoint {
     this.workers = args.workers ?? 1;
     this.freshWorkerPerQuery = Boolean(args.freshWorkerPerQuery);
     this.contextOverride = Boolean(args.contextOverride);
+    this.emitVoid = Boolean(args.emitVoid);
+    this.voidMetadataEmitter = new VoidMetadataEmitter(this.context);
 
     this.engine = new QueryEngineFactoryBase(
       args.moduleRootPath,
@@ -151,6 +157,7 @@ export class HttpServiceSparqlEndpoint {
 
     const freshWorkerPerQuery: boolean = args.freshWorker;
     const contextOverride: boolean = args.contextOverride;
+    const emitVoid: boolean = args.emitVoid;
     const port = args.port;
     const timeout = args.timeout * 1_000;
     const workers = args.workers;
@@ -164,6 +171,7 @@ export class HttpServiceSparqlEndpoint {
       context,
       freshWorkerPerQuery,
       contextOverride,
+      emitVoid,
       moduleRootPath,
       mainModulePath: moduleRootPath,
       port,
@@ -338,7 +346,7 @@ export class HttpServiceSparqlEndpoint {
     // eslint-disable-next-line node/no-deprecated-api
     const requestUrl = url.parse(request.url ?? '', true);
     if (requestUrl.pathname === '/' || request.url === '/') {
-      stdout.write('[301] Permanently moved. Redirected to /sparql.');
+      stdout.write('[301] Permanently moved. Redirected to /sparql.\n');
       response.writeHead(301, { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*', Location: `http://localhost:${this.port}/sparql${requestUrl.search ?? ''}` });
       response.end(JSON.stringify({ message: 'Queries are accepted on /sparql. Redirected.' }));
       return;
@@ -465,6 +473,11 @@ export class HttpServiceSparqlEndpoint {
       return;
     }
 
+    // If the query was an update query, invalidate the void metadata emitter cache
+    if (this.emitVoid && queryBody.value.includes('INSERT')) {
+      this.voidMetadataEmitter.invalidateCache();
+    }
+
     // Default to SPARQL JSON for bindings and boolean
     if (!mediaType) {
       switch (result.resultType) {
@@ -567,11 +580,17 @@ export class HttpServiceSparqlEndpoint {
         quads.push(quad(s, `${sd}extensionFunction`, value));
       }
 
+      if (this.emitVoid) {
+        for (const quad of await this.voidMetadataEmitter.getVoIDQuads(engine, stdout, request, response)) {
+          quads.push(quad);
+        }
+      }
+
       // Flush results
-      const { data } = await engine.resultToString(<QueryQuads> {
+      const { data } = await engine.resultToString(<QueryQuads>{
         resultType: 'quads',
         execute: async() => new ArrayIterator(quads),
-        metadata: <any> undefined,
+        metadata: <any>undefined,
       }, mediaType);
       data.on('error', (error: Error) => {
         stdout.write(`[500] Server error in results: ${error.message} \n`);
@@ -690,6 +709,7 @@ export interface IHttpServiceSparqlEndpointArgs extends IDynamicQueryEngineOptio
   workers?: number;
   freshWorkerPerQuery?: boolean;
   contextOverride?: boolean;
+  emitVoid?: boolean;
   moduleRootPath: string;
   defaultConfigPath: string;
 }

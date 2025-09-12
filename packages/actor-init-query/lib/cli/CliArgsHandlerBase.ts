@@ -94,6 +94,10 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
           type: 'string',
           describe: 'base IRI for the query (e.g., http://example.org/)',
         },
+        fileBaseIRI: {
+          type: 'string',
+          describe: 'base IRI for the file (e.g., http://example.org/), useful when using comunica-sparql-file',
+        },
         dateTime: {
           alias: 'd',
           type: 'string',
@@ -216,6 +220,11 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
     // Define the base IRI
     if (args.baseIRI) {
       context[KeysInitQuery.baseIRI.name] = args.baseIRI;
+    }
+
+    // Define the file base IRI
+    if (args.fileBaseIRI) {
+      context[KeysInitQuery.fileBaseIRI.name] = args.fileBaseIRI;
     }
 
     // Define lenient-mode
