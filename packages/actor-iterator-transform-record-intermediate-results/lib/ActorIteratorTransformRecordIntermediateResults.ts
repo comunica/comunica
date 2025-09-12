@@ -31,7 +31,7 @@ export class ActorIteratorTransformRecordIntermediateResults extends ActorIterat
     const statisticIntermediateResults = <StatisticIntermediateResults>(
       action.context.get(KeysStatistics.intermediateResults)
     );
-    if (statisticIntermediateResults !== undefined) {
+    if (statisticIntermediateResults) {
       const output = action.stream.map((data) => {
         statisticIntermediateResults.updateStatistic({
           type: action.type,
