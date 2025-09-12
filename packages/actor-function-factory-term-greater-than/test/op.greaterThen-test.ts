@@ -3,6 +3,8 @@ import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-facto
 import { ActorFunctionFactoryTermLesserThan } from '@comunica/actor-function-factory-term-lesser-than';
 import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
+import { KeysExpressionEvaluator } from '@comunica/context-entries';
+import { ActionContext } from '@comunica/core';
 import {
   bool,
   dateTime,
@@ -26,6 +28,13 @@ const config: FuncTestTableConfig<object> = {
   operation: '>',
   aliases: merge(numeric, str, dateTime, bool),
   notation: Notation.Infix,
+};
+
+const nonLiteralEvalContext: FuncTestTableConfig<object> = {
+  ...config,
+  evaluationActionContext: new ActionContext({
+    [KeysExpressionEvaluator.nonLiteralExpressionComparison.name]: true,
+  }),
 };
 
 describe('evaluation of \'>\'', () => {
@@ -150,6 +159,20 @@ describe('evaluation of \'>\'', () => {
   describe('with literals of unknown types like', () => {
     runFuncTestTable({
       ...config,
+      errorTable: `    
+        "2"^^example:int "0"^^example:int = 'Argument types not valid'
+        "abc"^^example:string "def"^^example:string = 'Argument types not valid'
+        "2"^^example:int "abc"^^example:string = 'Argument types not valid'
+        "2"^^example:int "2"^^example:string = 'Argument types not valid'
+        "2"^^example:string "2"^^example:int = 'Argument types not valid'
+        "2"^^example:string "2"^^example:string = 'Argument types not valid'
+      `,
+    });
+  });
+
+  describe('with literals of unknown types and nonLiteralCompare like', () => {
+    runFuncTestTable({
+      ...nonLiteralEvalContext,
       testTable: `    
         "2"^^example:int "0"^^example:int = true
         "abc"^^example:string "def"^^example:string = false
@@ -179,6 +202,18 @@ describe('evaluation of \'>\'', () => {
   describe('with named nodes operands like', () => {
     runFuncTestTable({
       ...config,
+      errorArray: [
+        [ '<ex:ab>', '<ex:cd>', 'Argument types not valid' ],
+        [ '<ex:ad>', '<ex:bc>', 'Argument types not valid' ],
+        [ '<ex:ba>', '<ex:ab>', 'Argument types not valid' ],
+        [ '<ex:ab>', '<ex:ab>', 'Argument types not valid' ],
+      ],
+    });
+  });
+
+  describe('with named nodes operands and nonLiteralCompare like', () => {
+    runFuncTestTable({
+      ...nonLiteralEvalContext,
       testArray: [
         [ '<ex:ab>', '<ex:cd>', 'false' ],
         [ '<ex:ad>', '<ex:bc>', 'false' ],
@@ -191,6 +226,18 @@ describe('evaluation of \'>\'', () => {
   describe('with blank nodes operands like', () => {
     runFuncTestTable({
       ...config,
+      errorArray: [
+        [ 'BNODE("ab")', 'BNODE("cd")', 'Argument types not valid' ],
+        [ 'BNODE("ad")', 'BNODE("bc")', 'Argument types not valid' ],
+        [ 'BNODE("ba")', 'BNODE("ab")', 'Argument types not valid' ],
+        [ 'BNODE("ab")', 'BNODE("ab")', 'Argument types not valid' ],
+      ],
+    });
+  });
+
+  describe('with blank nodes operands and nonLiteralCompare like', () => {
+    runFuncTestTable({
+      ...nonLiteralEvalContext,
       testArray: [
         [ 'BNODE("ab")', 'BNODE("cd")', 'false' ],
         [ 'BNODE("ad")', 'BNODE("bc")', 'false' ],
@@ -203,6 +250,18 @@ describe('evaluation of \'>\'', () => {
   describe('with mixed terms operands like', () => {
     runFuncTestTable({
       ...config,
+      errorArray: [
+        [ 'BNODE("ab")', '<ex:ab>', 'Argument types not valid' ],
+        [ '<<(<ex:a> <ex:b> 123)>>', '123', 'Argument types not valid' ],
+        [ '<ex:ab>', '"ab"', 'Argument types not valid' ],
+        [ 'BNODE("ab")', '<<(<ex:a> <ex:b> 123)>>', 'Argument types not valid' ],
+      ],
+    });
+  });
+
+  describe('with mixed terms operands and nonLiteralCompare like', () => {
+    runFuncTestTable({
+      ...nonLiteralEvalContext,
       testArray: [
         [ 'BNODE("ab")', '<ex:ab>', 'false' ],
         [ '<<(<ex:a> <ex:b> 123)>>', '123', 'true' ],

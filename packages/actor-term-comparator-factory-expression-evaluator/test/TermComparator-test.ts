@@ -46,12 +46,13 @@ function dateTime(value: string): RDF.Literal {
 }
 
 function orderByFactory(typeDiscoveryCallback?: SuperTypeCallback): ITermComparator {
-  const context = typeDiscoveryCallback ?
+  const context = (typeDiscoveryCallback ?
     getMockEEActionContext().set(KeysExpressionEvaluator.superTypeProvider, {
       discoverer: typeDiscoveryCallback,
       cache: new LRUCache<string, any>({ max: 1_000 }),
     }) :
-    getMockEEActionContext();
+    getMockEEActionContext())
+    .set(KeysExpressionEvaluator.nonLiteralExpressionComparison, true);
   const equal = new TermFunctionEquality();
   return new TermComparatorExpressionEvaluator(
     getMockInternalEvaluator(undefined, context),

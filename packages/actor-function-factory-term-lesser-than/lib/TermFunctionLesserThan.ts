@@ -1,3 +1,4 @@
+import exp = require('node:constants');
 import type { ITermFunction } from '@comunica/bus-function-factory';
 import { TermFunctionBase } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
@@ -9,6 +10,7 @@ import {
   defaultedDateTimeRepresentation,
   defaultedDayTimeDurationRepresentation,
   defaultedYearMonthDurationRepresentation,
+  InvalidArgumentTypes,
   NonLexicalLiteral,
   SparqlOperator,
   toUTCDate,
@@ -18,17 +20,20 @@ import {
 import type {
   BooleanLiteral,
   Term,
-  DayTimeDurationLiteral,
   Quad,
   BlankNode,
   Literal,
-  TimeLiteral,
   YearMonthDurationLiteral,
   LangStringLiteral,
   DateTimeLiteral,
+  DayTimeDurationLiteral,
+  TimeLiteral,
+  ISerializable,
 } from '@comunica/utils-expression-evaluator';
 import * as C from '@comunica/utils-expression-evaluator/lib/util/Consts';
 import * as Err from '@comunica/utils-expression-evaluator/lib/util/Errors';
+
+type Tuple<T> = readonly [T, T];
 
 export class TermFunctionLesserThan extends TermFunctionBase {
   public constructor(private readonly equalityFunction: ITermFunction) {
@@ -38,7 +43,7 @@ export class TermFunctionLesserThan extends TermFunctionBase {
       overloads: declare(SparqlOperator.LT)
         .set(
           [ C.TypeAlias.SPARQL_NUMERIC, C.TypeAlias.SPARQL_NUMERIC ],
-          exprEval => this.handleLiterals(exprEval),
+          exprEval => this.compareLiterals(exprEval),
           false,
         )
         // No non-lexical handling for strings, since they can't have invalid lexicals
@@ -54,17 +59,13 @@ export class TermFunctionLesserThan extends TermFunctionBase {
         )
         .set(
           [ C.TypeURL.XSD_BOOLEAN, C.TypeURL.XSD_BOOLEAN ],
-          exprEval => this.handleLiterals(exprEval),
+          exprEval => this.compareLiterals(exprEval),
           false,
         ).set(
           [ C.TypeURL.XSD_DATE_TIME, C.TypeURL.XSD_DATE_TIME ],
-          (exprEval) => {
-            const func = ([ left, right ]: DateTimeLiteral[]): BooleanLiteral => bool(
-              toUTCDate(left.typedValue, exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone)).getTime() <
-              toUTCDate(right.typedValue, exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone)).getTime(),
-            );
-            return this.handleLiterals(exprEval, func);
-          },
+          exprEval => this.compareLiterals<DateTimeLiteral>(exprEval, ([ left, right ]) =>
+            toUTCDate(left.typedValue, exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone)).getTime() <
+              toUTCDate(right.typedValue, exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone)).getTime()),
           false,
         ).copy({
           // https://www.w3.org/TR/xpath-functions/#func-date-less-than
@@ -73,46 +74,36 @@ export class TermFunctionLesserThan extends TermFunctionBase {
         })
         .set(
           [ TypeURL.XSD_YEAR_MONTH_DURATION, TypeURL.XSD_YEAR_MONTH_DURATION ],
-          (exprEval) => {
-            const func = ([ dur1L, dur2L ]: YearMonthDurationLiteral[]): BooleanLiteral =>
-              // https://www.w3.org/TR/xpath-functions/#func-yearMonthDuration-less-than
-              bool(yearMonthDurationsToMonths(defaultedYearMonthDurationRepresentation(dur1L.typedValue)) <
-                yearMonthDurationsToMonths(defaultedYearMonthDurationRepresentation(dur2L.typedValue)));
-            return this.handleLiterals(exprEval, func);
-          },
+          exprEval => this.compareLiterals<YearMonthDurationLiteral>(exprEval, ([ dur1L, dur2L ]) =>
+          // https://www.w3.org/TR/xpath-functions/#func-yearMonthDuration-less-than
+            yearMonthDurationsToMonths(defaultedYearMonthDurationRepresentation(dur1L.typedValue)) <
+                yearMonthDurationsToMonths(defaultedYearMonthDurationRepresentation(dur2L.typedValue))),
           false,
         ).set(
           [ TypeURL.XSD_DAY_TIME_DURATION, TypeURL.XSD_DAY_TIME_DURATION ],
-          (exprEval) => {
-            const func = ([ dur1, dur2 ]: DayTimeDurationLiteral[]): BooleanLiteral =>
-              // https://www.w3.org/TR/xpath-functions/#func-dayTimeDuration-greater-than
-              bool(dayTimeDurationsToSeconds(defaultedDayTimeDurationRepresentation(dur1.typedValue)) <
-                dayTimeDurationsToSeconds(defaultedDayTimeDurationRepresentation(dur2.typedValue)));
-            return this.handleLiterals(exprEval, func);
-          },
+          exprEval => this.compareLiterals<DayTimeDurationLiteral>(exprEval, ([ dur1, dur2 ]) =>
+          // https://www.w3.org/TR/xpath-functions/#func-dayTimeDuration-greater-than
+            dayTimeDurationsToSeconds(defaultedDayTimeDurationRepresentation(dur1.typedValue)) <
+                dayTimeDurationsToSeconds(defaultedDayTimeDurationRepresentation(dur2.typedValue))),
           false,
         )
         .set(
           [ TypeURL.XSD_TIME, TypeURL.XSD_TIME ],
-          (exprEval) => {
-            const func = ([ time1, time2 ]: TimeLiteral[]): BooleanLiteral =>
-              // https://www.w3.org/TR/xpath-functions/#func-time-less-than
-              bool(
-                toUTCDate(
-                  defaultedDateTimeRepresentation(time1.typedValue),
-                  exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone),
-                ).getTime() <
+          exprEval => this.compareLiterals<TimeLiteral>(exprEval, ([ time1, time2 ]) =>
+          // https://www.w3.org/TR/xpath-functions/#func-time-less-than
+            toUTCDate(
+              defaultedDateTimeRepresentation(time1.typedValue),
+              exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone),
+            ).getTime() <
                 toUTCDate(
                   defaultedDateTimeRepresentation(time2.typedValue),
                   exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone),
-                ).getTime(),
-              );
-            return this.handleLiterals(exprEval, func);
-          },
+                ).getTime()),
           false,
         ).set(
           [ 'quad', 'quad' ],
           exprEval => ([ left, right ]: [Quad, Quad]) => {
+            // Test subject, predicate and object with shortcutting. If any comparison errors, this also errors.
             const subjectTest = this.quadComponentTest(left.subject, right.subject, exprEval);
             if (subjectTest !== undefined) {
               return bool(subjectTest);
@@ -138,33 +129,36 @@ export class TermFunctionLesserThan extends TermFunctionBase {
     });
   }
 
-  private handleLiterals(
+  /**
+   * Compare the value of two literals, given a comparator, comparator default to JS `<`.
+   */
+  private compareLiterals<LiteralType extends Literal<ISerializable>>(
     exprEval: IInternalEvaluator,
-    func: ([ left, right ]: Literal<any>[]) => BooleanLiteral =
-      ([ left, right ]: Literal<any>[]): BooleanLiteral => bool(left.typedValue < right.typedValue),
-  ): ([ left, right ]: Literal<any>[]) => (BooleanLiteral) {
-    return ([ left, right ]: Literal<any>[]) => {
-      const args = [ left, right ];
-      const nonLexical = args.find(arg => arg instanceof NonLexicalLiteral);
-      if (nonLexical) {
-        return bool(this.handleNonLexicals(left, right, nonLexical, exprEval));
-      }
-      return func(args);
-    };
+    comparator: (arg: Tuple<LiteralType>) => boolean = ([ left, right ]) => left.typedValue < right.typedValue,
+  ): ([ left, right ]: Tuple<LiteralType>) => BooleanLiteral {
+    return (args: Tuple<LiteralType>) => bool(this.nonLexicalWrapper<LiteralType>(
+      exprEval,
+      comparator,
+    )(args));
   }
 
-  private handleNonLexicals(
-    left: Literal<any>,
-    right: Literal<any>,
-    nonLexical: Literal<any>,
+  private nonLexicalWrapper<LiteralType extends Literal<ISerializable>, ReturnType = boolean>(
     exprEval: IInternalEvaluator,
-  ): boolean {
-    if (this.shouldThrowNonLexicalError(exprEval)) {
-      throw new Err.InvalidLexicalForm(
-        nonLexical.toRDF(exprEval.context.getSafe(KeysInitQuery.dataFactory)),
-      );
-    }
-    return this.comparePrimitives(left.str(), right.str()) === -1;
+    comparator: (arg: Tuple<LiteralType>) => ReturnType,
+  ): (arg: Tuple<LiteralType>) => ReturnType | boolean {
+    return (args) => {
+      const nonLexical = args.find(arg => arg instanceof NonLexicalLiteral);
+      if (nonLexical) {
+        if (this.shouldThrowNonLexicalError(exprEval)) {
+          throw new Err.InvalidLexicalForm(
+            nonLexical.toRDF(exprEval.context.getSafe(KeysInitQuery.dataFactory)),
+          );
+        }
+        const [ left, right ] = args;
+        return this.comparePrimitives(left.str(), right.str()) === -1;
+      }
+      return comparator(args);
+    };
   }
 
   private shouldThrowNonLexicalError(exprEval: IInternalEvaluator): boolean {
@@ -189,6 +183,10 @@ export class TermFunctionLesserThan extends TermFunctionBase {
   }
 
   private lesserThanTerms(termA: Term, termB: Term, exprEval: IInternalEvaluator): boolean {
+    if (this.shouldThrowNonLexicalError(exprEval)) {
+      throw new InvalidArgumentTypes([ termA, termB ], SparqlOperator.LT, `
+To enable comparison, set the ${KeysExpressionEvaluator.nonLiteralExpressionComparison.name} flag to true.`);
+    }
     // Order different types according to a priority mapping
     if (termA.termType !== termB.termType) {
       return this._TERM_ORDERING_PRIORITY[termA.termType] < this._TERM_ORDERING_PRIORITY[termB.termType];
@@ -196,19 +194,20 @@ export class TermFunctionLesserThan extends TermFunctionBase {
 
     // If both are literals, try compare data type first (or handle non-lexical behaviour in case of non lexicals)
     if (termA.termType === 'literal' && termB.termType === 'literal') {
-      const litA: Literal<any> = <Literal<any>> termA;
-      const litB: Literal<any> = <Literal<any>> termB;
-
-      // Doesn't use handleLiterals since there's no real function to pass on.
-      const nonLexical = [ litA, litB ].find(arg => arg instanceof NonLexicalLiteral);
-      if (nonLexical) {
-        return this.handleNonLexicals(litA, litB, nonLexical, exprEval);
-      }
-
-      const compareType =
-        this.comparePrimitives(litA.dataType, litB.dataType);
-      if (compareType !== 0) {
-        return compareType === -1;
+      const litA = <Literal<ISerializable>> termA;
+      const litB = <Literal<ISerializable>> termB;
+      const evaluated = this.nonLexicalWrapper(
+        exprEval,
+        ([ litA, litB ]) => {
+          const compareType =
+            this.comparePrimitives(litA.dataType, litB.dataType);
+          if (compareType !== 0) {
+            return compareType === -1;
+          }
+        },
+      )([ litA, litB ]);
+      if (evaluated !== undefined) {
+        return evaluated;
       }
     }
 

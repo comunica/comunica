@@ -23,9 +23,9 @@ export class TermFunctionLesserThanEqual extends TermFunctionBase {
           // Because both NaN < NaN and NaN = NaN would return false, which is the correct output
           // But !(Nan < NaN) would return true, which is incorrect
           left < right || left === right)
-        .set([ 'term', 'term' ], exprEval => ([ first, second ]) =>
+        .set([ 'term', 'term' ], exprEval => ([ left, right ]) =>
           // X <= Y -> !(X > Y) -> !(Y < X)
-          bool(!(<BooleanLiteral> this.lessThanFunction.applyOnTerms([ second, first ], exprEval)).typedValue))
+          bool(!(<BooleanLiteral> this.lessThanFunction.applyOnTerms([ right, left ], exprEval)).typedValue))
         .collect(),
     });
   }

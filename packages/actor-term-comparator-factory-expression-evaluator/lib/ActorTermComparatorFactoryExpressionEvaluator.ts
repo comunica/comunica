@@ -4,7 +4,7 @@ import type {
   IActorTermComparatorFactoryOutput,
 } from '@comunica/bus-term-comparator-factory';
 import { ActorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
@@ -25,7 +25,8 @@ export class ActorTermComparatorFactoryExpressionEvaluator extends ActorTermComp
    * @param context.context IActionContext
    */
   public async run({ context }: IActionTermComparatorFactory): Promise<IActorTermComparatorFactoryOutput> {
-    context = Eval.prepareEvaluatorActionContext(context);
+    context = Eval.prepareEvaluatorActionContext(context)
+      .set(KeysExpressionEvaluator.nonLiteralExpressionComparison, true);
     return new TermComparatorExpressionEvaluator(
       new InternalEvaluator(
         context,
