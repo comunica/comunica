@@ -48,7 +48,7 @@ describe('System test: QuerySparql', () => {
       it('with results', async() => {
         const result = <QueryBindings> await engine.query(`SELECT * WHERE {
       ?s ?p ?o.
-    }`, { sources: [ 'https://www.rubensworks.net/' ]});
+    }`, { sources: <string[]> [ 'https://www.rubensworks.net/' ]});
         expect((await arrayifyStream(await result.execute())).length).toBeGreaterThan(100);
       });
 

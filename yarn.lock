@@ -12031,9 +12031,9 @@ spark-md5@^3.0.1:
   integrity sha512-wcFzz9cDfbuqe0FZzfi2or1sgyIrsDwmPwfZC4hiNidPdPINjeUwNfv5kldczoEAcjl9Y1L3SM7Uz2PUEQzxQw==
 
 sparql-benchmark-runner@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/sparql-benchmark-runner/-/sparql-benchmark-runner-5.0.0.tgz#ac4bfdc58e65f03b9805809044d116c067b23f19"
-  integrity sha512-UdxG/pCLQqRgo2DMctLRY3nxXknSVR8ofW4VSx6CaynTpBV4hpXE+5MYgSjPYIJWNao7prrSOgGmKE2P3OSTxA==
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/sparql-benchmark-runner/-/sparql-benchmark-runner-5.0.1.tgz#ffda1f7a8af6ba4c3eb7241e55d50dc3dfa358ac"
+  integrity sha512-H2H9pSKhYZwg3UnTvYX1xektza6HZEaxKXK0dCDgJem7BHQix9+dSjwoJrh5EybkWkUmUrjP3leEPNRAo+yp7A==
   dependencies:
     fetch-sparql-endpoint "^5.1.0"
     rdf-string "^1.0.0"

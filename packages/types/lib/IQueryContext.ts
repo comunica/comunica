@@ -6,14 +6,17 @@ import type { SourceType } from './IQueryEngine';
 import type { QueryExplainMode } from './IQueryOperationResult';
 import type { Logger } from './Logger';
 
+// We omit `& RDF.QuerySourceContext<SourceType>` in the following two types
+// as the QuerySourceContext proved to be too developer-unfriendly.
+
 /**
  * Query context when a string-based query was passed.
  */
-export type QueryStringContext = RDF.QueryStringContext & RDF.QuerySourceContext<SourceType> & IQueryContextCommon;
+export type QueryStringContext = RDF.QueryStringContext & IQueryContextCommon;
 /**
  * Query context when an algebra-based query was passed.
  */
-export type QueryAlgebraContext = RDF.QueryAlgebraContext & RDF.QuerySourceContext<SourceType> & IQueryContextCommon;
+export type QueryAlgebraContext = RDF.QueryAlgebraContext & IQueryContextCommon;
 
 /**
  * Common query context interface
@@ -49,4 +52,6 @@ export interface IQueryContextCommon {
   explain?: QueryExplainMode;
   recoverBrokenLinks?: boolean;
   distinctConstruct?: boolean;
+
+  sources: SourceType[];
 }
