@@ -12,16 +12,12 @@ const quad = require('rdf-quad');
  */
 export class VoidMetadataEmitter {
   public readonly context: any;
-  public readonly port: number;
-
   public cachedStatistics: RDF.Quad[] = [];
 
   public constructor(
     context: any,
-    port?: number,
   ) {
     this.context = context;
-    this.port = port ?? 3_000;
   }
 
   public invalidateCache(): void {
@@ -41,7 +37,7 @@ export class VoidMetadataEmitter {
     request: http.IncomingMessage,
     response: http.ServerResponse,
   ): Promise<RDF.Quad[]> {
-    const s = `http://localhost:${this.port}${request.url}`;
+    const s = `http://${request.headers.host}${request.url}`;
     const sd = 'http://www.w3.org/ns/sparql-service-description#';
     const vd = 'http://rdfs.org/ns/void#';
     const rdf = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';

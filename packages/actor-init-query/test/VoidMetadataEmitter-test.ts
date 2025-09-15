@@ -49,6 +49,7 @@ describe('VoidMetadataEmitter', () => {
     emitter.invalidateCache();
     request = Readable.from([ 'content' ]);
     request.url = '/sparql';
+    request.headers = { host: 'localhost:3000' };
     response = new ServerResponseMock();
     endCalledPromise = new Promise(resolve => response.onEnd = resolve);
     queryBindings = (query: string): BindingsStream => {

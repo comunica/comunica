@@ -60,7 +60,7 @@ export class HttpServiceSparqlEndpoint {
     this.freshWorkerPerQuery = Boolean(args.freshWorkerPerQuery);
     this.contextOverride = Boolean(args.contextOverride);
     this.emitVoid = Boolean(args.emitVoid);
-    this.voidMetadataEmitter = new VoidMetadataEmitter(this.context, this.port);
+    this.voidMetadataEmitter = new VoidMetadataEmitter(this.context);
 
     this.engine = new QueryEngineFactoryBase(
       args.moduleRootPath,
@@ -550,7 +550,7 @@ export class HttpServiceSparqlEndpoint {
       return;
     }
 
-    const s = `http://localhost:${this.port}${request.url}`;
+    const s = `http://${request.headers.host}${request.url}`;
     const sd = 'http://www.w3.org/ns/sparql-service-description#';
     const quads: RDF.Quad[] = [
       // Basic metadata

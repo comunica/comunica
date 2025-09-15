@@ -1275,6 +1275,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         response = new ServerResponseMock();
         request = Readable.from([ 'default_request_content' ]);
         request.url = '/sparql';
+        request.headers = { host: 'localhost:3000' };
         query = {
           type: 'query',
           value: 'default_test_query',
