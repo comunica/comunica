@@ -60,7 +60,7 @@ export class HttpServiceSparqlEndpoint {
     this.freshWorkerPerQuery = Boolean(args.freshWorkerPerQuery);
     this.contextOverride = Boolean(args.contextOverride);
     this.emitVoid = Boolean(args.emitVoid);
-    this.voidMetadataEmitter = new VoidMetadataEmitter(this.context);
+    this.voidMetadataEmitter = new VoidMetadataEmitter(this.context, this.port);
 
     this.engine = new QueryEngineFactoryBase(
       args.moduleRootPath,
@@ -550,13 +550,13 @@ export class HttpServiceSparqlEndpoint {
       return;
     }
 
-    const s = request.url;
+    const s = `http://localhost:${this.port}${request.url}`;
     const sd = 'http://www.w3.org/ns/sparql-service-description#';
     const quads: RDF.Quad[] = [
       // Basic metadata
       quad(s, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', `${sd}Service`),
-      quad(s, `${sd}endpoint`, '/sparql'),
-      quad(s, `${sd}url`, '/sparql'),
+      quad(s, `${sd}endpoint`, s),
+      quad(s, `${sd}url`, s),
 
       // Features
       quad(s, `${sd}feature`, `${sd}BasicFederatedQuery`),

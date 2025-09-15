@@ -21,7 +21,7 @@ const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
 
 // Urls
-const s = 'http://example.org/sparql';
+const s = 'http://localhost:3000/sparql';
 const xsd = 'http://www.w3.org/2001/XMLSchema#';
 const sd = 'http://www.w3.org/ns/sparql-service-description#';
 const vd = 'http://rdfs.org/ns/void#';
@@ -40,15 +40,15 @@ describe('VoidMetadataEmitter', () => {
   beforeEach(() => {
     emitter = new VoidMetadataEmitter({
       dcterms: {
-        title: 'title',
-        description: 'description',
-        creator: 'creator',
+        title: '"title"',
+        description: '"description"',
+        creator: 'http://example.com/creator',
         created: `"2025/08/07"^^${xsd}date`,
       },
     });
     emitter.invalidateCache();
     request = Readable.from([ 'content' ]);
-    request.url = 'http://example.org/sparql';
+    request.url = '/sparql';
     response = new ServerResponseMock();
     endCalledPromise = new Promise(resolve => response.onEnd = resolve);
     queryBindings = (query: string): BindingsStream => {
@@ -97,7 +97,7 @@ describe('VoidMetadataEmitter', () => {
   });
 
   it('invalidateCache', () => {
-    emitter.cachedStatistics = [ quad('http://example.org/s', 'http://example.org/p', 'o') ];
+    emitter.cachedStatistics = [ quad('http://example.org/s', 'http://example.org/p', '"o"') ];
     expect(emitter.cachedStatistics).toHaveLength(1);
     emitter.invalidateCache();
     expect(emitter.cachedStatistics).toHaveLength(0);
@@ -127,11 +127,11 @@ describe('VoidMetadataEmitter', () => {
       quad(s, `${sd}defaultDataset`, dataset),
       quad(dataset, rdfType, `${sd}Dataset`),
       quad(dataset, rdfType, `${vd}Dataset`),
-      quad(dataset, `${vd}sparqlEndpoint`, '/sparql'),
+      quad(dataset, `${vd}sparqlEndpoint`, s),
       quad(dataset, vocabulary, dcterms),
-      quad(dataset, `${dcterms}title`, 'title'),
-      quad(dataset, `${dcterms}description`, 'description'),
-      quad(dataset, `${dcterms}creator`, 'creator'),
+      quad(dataset, `${dcterms}title`, '"title"'),
+      quad(dataset, `${dcterms}description`, '"description"'),
+      quad(dataset, `${dcterms}creator`, 'http://example.com/creator'),
       quad(dataset, `${dcterms}created`, `"2025/08/07"^^${xsd}date`),
 
       quad(dataset, `${sd}defaultGraph`, graph),
