@@ -1,4 +1,5 @@
 const stringToStream = require('streamify-string');
+const { ActionContext } = require('@comunica/core');
 
 class EngineMock {
   constructor(){
@@ -9,7 +10,7 @@ class EngineMock {
     if (sparql === "query_reject"){
       return Promise.reject(new Error("Rejected query"));
     }
-    return Promise.resolve({ type: 'bindings' });
+    return Promise.resolve({ type: 'bindings', context: ActionContext.ensureActionContext(context) });
   }
 
   resultToString(queryResult, mediaType){

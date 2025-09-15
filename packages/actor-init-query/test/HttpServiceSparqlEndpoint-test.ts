@@ -12,6 +12,7 @@ import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Readable } from 'readable-stream';
+import { translate } from 'sparqlalgebrajs';
 
 // @ts-expect-error
 import { QueryEngineFactoryBase, QueryEngineBase } from '../__mocks__';
@@ -1694,6 +1695,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           const localInstance = new HttpServiceSparqlEndpoint({
             ...argsDefault,
             emitVoid: true,
+            contextOverride: true,
           });
 
           // Create spies
@@ -1718,17 +1720,20 @@ describe('HttpServiceSparqlEndpoint', () => {
           // Each void request does 4 calls for the statistics fetch
           expect(spyQueryBindings).toHaveBeenCalledTimes(4);
 
+          const query = `
+INSERT DATA {
+  <http://example.org/s> <http://example.org/p> "o" .
+}
+`;
+
+          // Without context
           await localInstance.writeQueryResult(
             engine,
             new PassThrough(),
             new PassThrough(),
             request,
             response,
-            { type: 'query', value: `
-INSERT DATA {
-  <http://example.org/s> <http://example.org/p> "o" .
-}
-`, context: undefined },
+            { type: 'query', value: query, context: undefined },
             mediaType,
             false,
             true,
@@ -1737,6 +1742,31 @@ INSERT DATA {
 
           expect(localInstance.voidMetadataEmitter.cachedStatistics).toHaveLength(0);
           // Should still be 4, insert queries don't fetch again, just invalidate the cache
+          expect(spyQueryBindings).toHaveBeenCalledTimes(4);
+
+          localInstance.voidMetadataEmitter.cachedStatistics = [ <any> {} ];
+
+          expect(localInstance.voidMetadataEmitter.cachedStatistics).not.toHaveLength(0);
+
+          // With context
+          await localInstance.writeQueryResult(
+            engine,
+            new PassThrough(),
+            new PassThrough(),
+            request,
+            response,
+            {
+              type: 'query',
+              value: query,
+              context: { [KeysQueryOperation.operation.name]: translate(query, { quads: true }) },
+            },
+            mediaType,
+            false,
+            true,
+            0,
+          );
+
+          expect(localInstance.voidMetadataEmitter.cachedStatistics).toHaveLength(0);
           expect(spyQueryBindings).toHaveBeenCalledTimes(4);
         });
       });
