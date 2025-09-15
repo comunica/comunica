@@ -40,10 +40,10 @@ describe('VoidMetadataEmitter', () => {
   beforeEach(() => {
     emitter = new VoidMetadataEmitter({
       dcterms: {
-        title: '"title"',
-        description: '"description"',
+        title: 'title',
+        description: 'description',
         creator: 'http://example.org/creator',
-        created: `"2025/08/07"^^${xsd}date`,
+        created: '2025/08/07',
       },
     });
     emitter.invalidateCache();

@@ -59,7 +59,7 @@ export class VoidMetadataEmitter {
     if (this.context.dcterms) {
       quads.push(quad(dataset, vocabulary, dcterms));
       for (const key in this.context.dcterms) {
-        quads.push(quad(dataset, `${dcterms}${key}`, this.context.dcterms[key]));
+        quads.push(quad(dataset, `${dcterms}${key}`, this.convertValue(key, this.context.dcterms[key])));
       }
     }
 
@@ -84,6 +84,32 @@ export class VoidMetadataEmitter {
     }
 
     return quads;
+  }
+
+  private convertValue(
+    key: string,
+    value: string,
+  ): string {
+    const xsd = 'http://www.w3.org/2001/XMLSchema#';
+    const stringLiterals = new Set([ 'alternative', 'description', 'title' ]);
+    const dateLiterals = new Set([
+      'available',
+      'created',
+      'date',
+      'dateAccepted',
+      'dateCopyrighted',
+      'dateSubmitted',
+      'issued',
+      'modified',
+      'valid',
+    ]);
+    if (stringLiterals.has(key)) {
+      return `"${value}"`;
+    }
+    if (dateLiterals.has(key)) {
+      return `"${value}"^^${xsd}date`;
+    }
+    return value;
   }
 
   /**
