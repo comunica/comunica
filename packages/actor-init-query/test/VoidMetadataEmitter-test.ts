@@ -42,7 +42,7 @@ describe('VoidMetadataEmitter', () => {
       dcterms: {
         title: '"title"',
         description: '"description"',
-        creator: 'http://example.com/creator',
+        creator: 'http://example.org/creator',
         created: `"2025/08/07"^^${xsd}date`,
       },
     });
@@ -131,7 +131,7 @@ describe('VoidMetadataEmitter', () => {
       quad(dataset, vocabulary, dcterms),
       quad(dataset, `${dcterms}title`, '"title"'),
       quad(dataset, `${dcterms}description`, '"description"'),
-      quad(dataset, `${dcterms}creator`, 'http://example.com/creator'),
+      quad(dataset, `${dcterms}creator`, 'http://example.org/creator'),
       quad(dataset, `${dcterms}created`, `"2025/08/07"^^${xsd}date`),
 
       quad(dataset, `${sd}defaultGraph`, graph),
