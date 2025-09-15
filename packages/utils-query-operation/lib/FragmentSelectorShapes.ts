@@ -92,13 +92,13 @@ function doesShapeAcceptOperationRecurseOperation(
     .every((input: Algebra.Pattern) => doesShapeAcceptOperationRecurseShape(shapeTop, shapeTop, input, options)));
 }
 
-function functionIsSparql11Required(iri: string): boolean {
+function isStandardSparqlFunction(iri: string): boolean {
   return /^https?:\/\/www\.w3\.org\//u.test(iri);
 }
 
 function isExtensionFunction(operation: Algebra.Operation): boolean {
   return operation.type === Algebra.types.EXPRESSION && operation.expressionType === Algebra.expressionTypes.NAMED &&
-    !functionIsSparql11Required(operation.name.value);
+    !isStandardSparqlFunction(operation.name.value);
 }
 
 export type FragmentSelectorShapeTestFlags = {
