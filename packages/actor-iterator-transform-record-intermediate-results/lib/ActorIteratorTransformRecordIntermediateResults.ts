@@ -23,24 +23,6 @@ export class ActorIteratorTransformRecordIntermediateResults extends ActorIterat
     super(args);
   }
 
-  public override async test(
-    action: ActionIteratorTransform,
-  ): Promise<TestResult<IActorTest>> {
-    const superTest = await super.test(action);
-    if (superTest.isFailed()) {
-      return superTest;
-    }
-    const statisticIntermediateResults = <StatisticIntermediateResults>(
-      action.context.get(KeysStatistics.intermediateResults)
-    );
-    if (!statisticIntermediateResults) {
-      return failTest(
-        `Missing required context value: ${KeysStatistics.intermediateResults.name}. It must be defined before running ${this.name}.`,
-      );
-    }
-    return superTest;
-  }
-
   public async transformIteratorBindings(action: IActionIteratorTransformBindings):
   Promise<ITransformIteratorOutput<AsyncIterator<RDF.Bindings>, MetadataBindings>> {
     const statisticIntermediateResults = <StatisticIntermediateResults> action.context
@@ -82,8 +64,16 @@ export class ActorIteratorTransformRecordIntermediateResults extends ActorIterat
   }
 
   public async testIteratorTransform(
-    _action: ActionIteratorTransform,
+    action: ActionIteratorTransform,
   ): Promise<TestResult<IActorTest>> {
+    const statisticIntermediateResults = <StatisticIntermediateResults>(
+      action.context.get(KeysStatistics.intermediateResults)
+    );
+    if (!statisticIntermediateResults) {
+      return failTest(
+        `Missing required context value: ${KeysStatistics.intermediateResults.name}. It must be defined before running ${this.name}.`,
+      );
+    }
     return passTestVoid();
   }
 }
