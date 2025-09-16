@@ -430,7 +430,8 @@ describe('System test: QuerySparql', () => {
           let containsFilter: boolean;
           let endpoint1: string;
           let endpoint2: string;
-          let createMockedFetch: (arg0: boolean, arg1: boolean) => (input: string) => Promise<Response>;
+          let createMockedFetch: (arg0: boolean, arg1: boolean) => (input: string) =>
+          Promise<Response>;
           let createContext: (arg0: boolean, arg1: boolean) => any;
 
           beforeEach(async() => {
@@ -452,10 +453,17 @@ describe('System test: QuerySparql', () => {
                   ``;
                 if (input.includes(endpoint1)) {
                   if (input === endpoint1) {
-                  // Service description fetch on endpoint1
+                    // Service description fetch on endpoint1
                     return Promise.resolve(new Response(
                       createServiceDescription(endpoint1SupportsFunction, endpoint1),
                       { status: 200, headers: { 'Content-Type': 'text/turtle' }},
+                    ));
+                  }
+                  if (input.includes('ASK')) {
+                    // ASK on endpoint1
+                    return Promise.resolve(new Response(
+                      JSON.stringify({ head: {}, boolean: true }),
+                      { status: 200, headers: { 'Content-Type': 'application/sparql-results+json' }},
                     ));
                   }
                   // Query fetch on endpoint1
@@ -465,10 +473,17 @@ describe('System test: QuerySparql', () => {
                   ));
                 }
                 if (input === endpoint2) {
-                // Service description fetch on endpoint2
+                  // Service description fetch on endpoint2
                   return Promise.resolve(new Response(
                     createServiceDescription(endpoint2SupportsFunction, endpoint2),
                     { status: 200, headers: { 'Content-Type': 'text/turtle' }},
+                  ));
+                }
+                if (input.includes('ASK')) {
+                  // ASK on endpoint2
+                  return Promise.resolve(new Response(
+                    JSON.stringify({ head: {}, boolean: true }),
+                    { status: 200, headers: { 'Content-Type': 'application/sparql-results+json' }},
                   ));
                 }
                 // Query fetch on endpoint2
