@@ -1,5 +1,5 @@
 import type { FragmentSelectorShape } from '@comunica/types';
-import type { Algebra } from 'sparqlalgebrajs';
+import { Algebra } from 'sparqlalgebrajs';
 
 /**
  * Check if the given shape accepts the given query operation.
@@ -46,6 +46,12 @@ function doesShapeAcceptOperationRecurseShape(
   const shapeOperation = shapeActive.operation;
   switch (shapeOperation.operationType) {
     case 'type': {
+      if (shapeOperation.type === Algebra.types.EXPRESSION &&
+        isExtensionFunction(operation)) {
+        // Extension functions check
+        return <boolean> ('extensionFunctions' in shapeOperation &&
+          shapeOperation.extensionFunctions?.includes(operation.name.value));
+      }
       if (!doesShapeAcceptOperationRecurseOperation(shapeTop, shapeActive, operation, options)) {
         return false;
       }
@@ -58,7 +64,9 @@ function doesShapeAcceptOperationRecurseShape(
       return shapeOperation.pattern.type === operation.type;
     }
     case 'wildcard': {
-      return true;
+      // All possible operations are accepted by this shape.
+      // As exception, extension functions are not accepted through wildcards.
+      return !isExtensionFunction(operation);
     }
   }
 }
@@ -76,11 +84,21 @@ function doesShapeAcceptOperationRecurseOperation(
       return false;
     }
   }
-  if (operation.patterns && !operation.patterns
-    .every((input: Algebra.Pattern) => doesShapeAcceptOperationRecurseShape(shapeTop, shapeTop, input, options))) {
+  if (operation.expression && isExtensionFunction(operation.expression) &&
+    !doesShapeAcceptOperationRecurseShape(shapeTop, shapeTop, operation.expression, options)) {
     return false;
   }
-  return true;
+  return !(operation.patterns && !operation.patterns
+    .every((input: Algebra.Pattern) => doesShapeAcceptOperationRecurseShape(shapeTop, shapeTop, input, options)));
+}
+
+function isStandardSparqlFunction(iri: string): boolean {
+  return /^https?:\/\/www\.w3\.org\//u.test(iri);
+}
+
+function isExtensionFunction(operation: Algebra.Operation): boolean {
+  return operation.type === Algebra.types.EXPRESSION && operation.expressionType === Algebra.expressionTypes.NAMED &&
+    !isStandardSparqlFunction(operation.name.value);
 }
 
 export type FragmentSelectorShapeTestFlags = {
