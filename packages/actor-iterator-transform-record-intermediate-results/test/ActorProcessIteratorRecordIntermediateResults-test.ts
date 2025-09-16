@@ -83,6 +83,13 @@ describe('ActorIteratorTransformRecordIntermediateResults', () => {
       await expect(actor.test(actionBindings)).resolves.toEqual(passTestVoid());
     });
 
+    it('should not test if there is no wrap is in the context', async() => {
+      actor.wraps = [];
+      await expect(actor.test(actionBindings)).resolves.toEqual(failTest(
+        'Operation type not supported in configuration of actor',
+      ));
+    });
+
     describe('with quad input', () => {
       it('should throw if no intermediate results statistic exists in context', async() => {
         await expect(actor.run(actionQuads)).rejects.toThrow(
