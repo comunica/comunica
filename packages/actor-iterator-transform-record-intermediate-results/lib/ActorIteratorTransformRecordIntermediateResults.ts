@@ -4,15 +4,15 @@ import type {
   IActionIteratorTransformQuads,
   IActorIteratorTransformArgs,
   ITransformIteratorOutput,
-} from "@comunica/bus-iterator-transform";
-import { ActorIteratorTransform } from "@comunica/bus-iterator-transform";
-import { KeysStatistics } from "@comunica/context-entries";
-import type { IActorTest, TestResult } from "@comunica/core";
-import { failTest, passTestVoid } from "@comunica/core";
-import type { StatisticIntermediateResults } from "@comunica/statistic-intermediate-results";
-import type { MetadataBindings, MetadataQuads } from "@comunica/types";
-import type * as RDF from "@rdfjs/types";
-import type { AsyncIterator } from "asynciterator";
+} from '@comunica/bus-iterator-transform';
+import { ActorIteratorTransform } from '@comunica/bus-iterator-transform';
+import { KeysStatistics } from '@comunica/context-entries';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
+import type { StatisticIntermediateResults } from '@comunica/statistic-intermediate-results';
+import type { MetadataBindings, MetadataQuads } from '@comunica/types';
+import type * as RDF from '@rdfjs/types';
+import type { AsyncIterator } from 'asynciterator';
 
 /**
  * A comunica Record Intermediate Results Iterator Transform Actor.
@@ -24,7 +24,7 @@ export class ActorIteratorTransformRecordIntermediateResults extends ActorIterat
   }
 
   public override async test(
-    action: ActionIteratorTransform
+    action: ActionIteratorTransform,
   ): Promise<TestResult<IActorTest>> {
     const superTest = await super.test(action);
     if (superTest.isFailed()) {
@@ -35,7 +35,7 @@ export class ActorIteratorTransformRecordIntermediateResults extends ActorIterat
     );
     if (!statisticIntermediateResults) {
       return failTest(
-        `Missing required context value: ${KeysStatistics.intermediateResults.name}. It must be defined before running ${this.name}.`
+        `Missing required context value: ${KeysStatistics.intermediateResults.name}. It must be defined before running ${this.name}.`,
       );
     }
     return superTest;
@@ -82,7 +82,7 @@ export class ActorIteratorTransformRecordIntermediateResults extends ActorIterat
   }
 
   public async testIteratorTransform(
-    _action: ActionIteratorTransform
+    _action: ActionIteratorTransform,
   ): Promise<TestResult<IActorTest>> {
     return passTestVoid();
   }

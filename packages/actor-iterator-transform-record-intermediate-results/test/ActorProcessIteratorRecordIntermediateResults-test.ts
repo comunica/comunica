@@ -71,12 +71,15 @@ describe('ActorIteratorTransformRecordIntermediateResults', () => {
 
     it ('should not test without statistic tracking in the context', async() => {
       await expect(actor.test(actionBindings)).resolves.toEqual(failTest(
-        `Missing required context value: ${KeysStatistics.intermediateResults.name}. It must be defined before running actor.`
+        `Missing required context value: ${KeysStatistics.intermediateResults.name}. It must be defined before running actor.`,
       ));
     });
 
     it ('should test with statistic tracking in the context', async() => {
-      actionBindings.context = actionBindings.context.set(KeysStatistics.intermediateResults, statisticIntermediateResults);
+      actionBindings.context = actionBindings.context.set(
+        KeysStatistics.intermediateResults,
+        statisticIntermediateResults,
+      );
       await expect(actor.test(actionBindings)).resolves.toEqual(passTestVoid());
     });
 
