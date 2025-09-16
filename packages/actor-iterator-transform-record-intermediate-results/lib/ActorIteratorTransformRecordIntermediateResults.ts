@@ -4,15 +4,15 @@ import type {
   IActionIteratorTransformQuads,
   IActorIteratorTransformArgs,
   ITransformIteratorOutput,
-} from '@comunica/bus-iterator-transform';
-import { ActorIteratorTransform } from '@comunica/bus-iterator-transform';
-import { KeysStatistics } from '@comunica/context-entries';
-import type { IActorTest, TestResult } from '@comunica/core';
-import { passTestVoid } from '@comunica/core';
-import type { StatisticIntermediateResults } from '@comunica/statistic-intermediate-results';
-import type { MetadataBindings, MetadataQuads } from '@comunica/types';
-import type * as RDF from '@rdfjs/types';
-import type { AsyncIterator } from 'asynciterator';
+} from "@comunica/bus-iterator-transform";
+import { ActorIteratorTransform } from "@comunica/bus-iterator-transform";
+import { KeysStatistics } from "@comunica/context-entries";
+import type { IActorTest, TestResult } from "@comunica/core";
+import { failTest, passTestVoid } from "@comunica/core";
+import type { StatisticIntermediateResults } from "@comunica/statistic-intermediate-results";
+import type { MetadataBindings, MetadataQuads } from "@comunica/types";
+import type * as RDF from "@rdfjs/types";
+import type { AsyncIterator } from "asynciterator";
 
 /**
  * A comunica Record Intermediate Results Iterator Transform Actor.
@@ -23,56 +23,66 @@ export class ActorIteratorTransformRecordIntermediateResults extends ActorIterat
     super(args);
   }
 
-  public async transformIteratorBindings(
-    action: IActionIteratorTransformBindings,
-  ): Promise<
-    ITransformIteratorOutput<AsyncIterator<RDF.Bindings>, MetadataBindings>
-  > {
+  public override async test(
+    action: ActionIteratorTransform
+  ): Promise<TestResult<IActorTest>> {
+    const superTest = await super.test(action);
+    if (superTest.isFailed()) {
+      return superTest;
+    }
     const statisticIntermediateResults = <StatisticIntermediateResults>(
       action.context.get(KeysStatistics.intermediateResults)
     );
-    if (statisticIntermediateResults !== undefined) {
-      const output = action.stream.map((data) => {
-        statisticIntermediateResults.updateStatistic({
-          type: action.type,
-          data,
-          metadata: {
-            operation: action.operation,
-            metadata: action.metadata,
-          },
-        });
-        return data;
-      });
-      return { stream: output, metadata: action.metadata };
+    if (!statisticIntermediateResults) {
+      return failTest(
+        `Missing required context value: ${KeysStatistics.intermediateResults.name}. It must be defined before running ${this.name}.`
+      );
     }
-    return { stream: action.stream, metadata: action.metadata };
+    return superTest;
   }
 
-  public async transformIteratorQuads(
-    action: IActionIteratorTransformQuads,
-  ): Promise<ITransformIteratorOutput<AsyncIterator<RDF.Quad>, MetadataQuads>> {
-    const statisticIntermediateResults = <StatisticIntermediateResults>(
-      action.context.get(KeysStatistics.intermediateResults)
-    );
-    if (statisticIntermediateResults !== undefined) {
-      const output = action.stream.map((data) => {
-        statisticIntermediateResults.updateStatistic({
+  public async transformIteratorBindings(action: IActionIteratorTransformBindings):
+  Promise<ITransformIteratorOutput<AsyncIterator<RDF.Bindings>, MetadataBindings>> {
+    const statisticIntermediateResults = <StatisticIntermediateResults> action.context
+      .getSafe(KeysStatistics.intermediateResults);
+    const output = action.stream.map((data) => {
+      statisticIntermediateResults.updateStatistic(
+        {
           type: action.type,
           data,
           metadata: {
             operation: action.operation,
             metadata: action.metadata,
           },
-        });
-        return data;
-      });
-      return { stream: output, metadata: action.metadata };
-    }
-    return { stream: action.stream, metadata: action.metadata };
+        },
+      );
+      return data;
+    });
+    return { stream: output, metadata: action.metadata };
+  }
+
+  public async transformIteratorQuads(action: IActionIteratorTransformQuads):
+  Promise<ITransformIteratorOutput<AsyncIterator<RDF.Quad>, MetadataQuads>> {
+    const statisticIntermediateResults = <StatisticIntermediateResults> action.context
+      .getSafe(KeysStatistics.intermediateResults);
+    const output = action.stream.map((data) => {
+      statisticIntermediateResults.updateStatistic(
+        {
+          type: action.type,
+          data,
+          metadata: {
+            operation: action.operation,
+            metadata: action.metadata,
+          },
+        },
+      );
+      return data;
+    });
+    return { stream: output, metadata: action.metadata };
   }
 
   public async testIteratorTransform(
-    _action: ActionIteratorTransform,
+    _action: ActionIteratorTransform
   ): Promise<TestResult<IActorTest>> {
     return passTestVoid();
   }

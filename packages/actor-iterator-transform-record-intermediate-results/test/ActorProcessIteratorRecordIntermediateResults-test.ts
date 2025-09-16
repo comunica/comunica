@@ -3,7 +3,7 @@ import type {
   IActionIteratorTransformQuads,
 } from '@comunica/bus-iterator-transform';
 import { KeysStatistics } from '@comunica/context-entries';
-import { ActionContext, Bus, passTestVoid } from '@comunica/core';
+import { ActionContext, Bus, failTest, passTestVoid } from '@comunica/core';
 import { StatisticIntermediateResults } from '@comunica/statistic-intermediate-results';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
@@ -69,21 +69,22 @@ describe('ActorIteratorTransformRecordIntermediateResults', () => {
       };
     });
 
-    it ('should test', async() => {
+    it ('should not test without statistic tracking in the context', async() => {
+      await expect(actor.test(actionBindings)).resolves.toEqual(failTest(
+        `Missing required context value: ${KeysStatistics.intermediateResults.name}. It must be defined before running actor.`
+      ));
+    });
+
+    it ('should test with statistic tracking in the context', async() => {
+      actionBindings.context = actionBindings.context.set(KeysStatistics.intermediateResults, statisticIntermediateResults);
       await expect(actor.test(actionBindings)).resolves.toEqual(passTestVoid());
     });
 
     describe('with quad input', () => {
-      test('the iterator should return the same stream if the statistic tracking is undefined', async() => {
-        await expect(actor.transformIteratorQuads(actionQuads)).resolves.toEqual({
-          stream: actionQuads.stream,
-          metadata: actionQuads.metadata,
-        });
-      });
-      it('should return the same stream if the statistic tracking is undefined', async() => {
-        await expect(actor.run(actionQuads)).resolves.toEqual({
-          ...actionQuads,
-        });
+      it('should throw if no intermediate results statistic exists in context', async() => {
+        await expect(actor.run(actionQuads)).rejects.toThrow(
+          'Context entry @comunica/statistic:intermediateResults is required but not available',
+        );
       });
       it('transform iterator should return mapped stream and unchanged metadata', async() => {
         actionQuads.context = actionQuads.context.set(KeysStatistics.intermediateResults, statisticIntermediateResults);
@@ -113,16 +114,10 @@ describe('ActorIteratorTransformRecordIntermediateResults', () => {
       });
     });
     describe('with bindings input', () => {
-      test('the iterator should return the same stream if the statistic tracking is undefined', async() => {
-        await expect(actor.transformIteratorBindings(actionBindings)).resolves.toEqual({
-          stream: actionBindings.stream,
-          metadata: actionBindings.metadata,
-        });
-      });
-      it('should return the same stream if the statistic tracking is undefined', async() => {
-        await expect(actor.run(actionBindings)).resolves.toEqual({
-          ...actionBindings,
-        });
+      it('should throw if no intermediate results statistic exists in context', async() => {
+        await expect(actor.run(actionBindings)).rejects.toThrow(
+          'Context entry @comunica/statistic:intermediateResults is required but not available',
+        );
       });
       it('transform iterator should return mapped stream and unchanged metadata', async() => {
         actionBindings.context = actionBindings.context.set(
