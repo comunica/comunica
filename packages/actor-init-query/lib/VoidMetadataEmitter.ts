@@ -1,6 +1,7 @@
 /* eslint-disable import/no-nodejs-modules,ts/no-require-imports,ts/no-var-requires */
 import type * as http from 'node:http';
 import type { Writable } from 'node:stream';
+import { TLSSocket } from 'node:tls';
 import type * as RDF from '@rdfjs/types';
 
 import type { QueryEngineBase } from '..';
@@ -11,6 +12,24 @@ const quad = require('rdf-quad');
  * A VoID metadata emitter that emits metadata used in VoID description of the HTTP service sparql endpoint.
  */
 export class VoidMetadataEmitter {
+  private static readonly STRING_LITERALS = new Set([
+    'alternative',
+    'description',
+    'title',
+  ]);
+
+  private static readonly DATE_LITERALS = new Set([
+    'available',
+    'created',
+    'date',
+    'dateAccepted',
+    'dateCopyrighted',
+    'dateSubmitted',
+    'issued',
+    'modified',
+    'valid',
+  ]);
+
   public readonly context: any;
   public cachedStatistics: RDF.Quad[] = [];
 
@@ -37,7 +56,8 @@ export class VoidMetadataEmitter {
     request: http.IncomingMessage,
     response: http.ServerResponse,
   ): Promise<RDF.Quad[]> {
-    const s = `http://${request.headers.host}${request.url}`;
+    const protocol = request.socket instanceof TLSSocket && request.socket.encrypted ? 'https' : 'http';
+    const s = `${protocol}://${request.headers.host}${request.url}`;
     const sd = 'http://www.w3.org/ns/sparql-service-description#';
     const vd = 'http://rdfs.org/ns/void#';
     const rdf = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';
@@ -90,24 +110,11 @@ export class VoidMetadataEmitter {
     key: string,
     value: string,
   ): string {
-    const xsd = 'http://www.w3.org/2001/XMLSchema#';
-    const stringLiterals = new Set([ 'alternative', 'description', 'title' ]);
-    const dateLiterals = new Set([
-      'available',
-      'created',
-      'date',
-      'dateAccepted',
-      'dateCopyrighted',
-      'dateSubmitted',
-      'issued',
-      'modified',
-      'valid',
-    ]);
-    if (stringLiterals.has(key)) {
+    if (VoidMetadataEmitter.STRING_LITERALS.has(key)) {
       return `"${value}"`;
     }
-    if (dateLiterals.has(key)) {
-      return `"${value}"^^${xsd}date`;
+    if (VoidMetadataEmitter.DATE_LITERALS.has(key)) {
+      return `"${value}"^^http://www.w3.org/2001/XMLSchema#date`;
     }
     return value;
   }

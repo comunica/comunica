@@ -5,6 +5,7 @@ import * as http from 'node:http';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import * as querystring from 'node:querystring';
 import type { Writable } from 'node:stream';
+import { TLSSocket } from 'node:tls';
 import * as url from 'node:url';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
@@ -550,7 +551,8 @@ export class HttpServiceSparqlEndpoint {
       return;
     }
 
-    const s = `http://${request.headers.host}${request.url}`;
+    const protocol = request.socket instanceof TLSSocket && request.socket.encrypted ? 'https' : 'http';
+    const s = `${protocol}://${request.headers.host}${request.url}`;
     const sd = 'http://www.w3.org/ns/sparql-service-description#';
     const quads: RDF.Quad[] = [
       // Basic metadata

@@ -43,7 +43,7 @@ describe('VoidMetadataEmitter', () => {
         title: 'title',
         description: 'description',
         creator: 'http://example.org/creator',
-        created: '2025/08/07',
+        created: '2025-08-07',
       },
     });
     emitter.invalidateCache();
@@ -133,7 +133,7 @@ describe('VoidMetadataEmitter', () => {
       quad(dataset, `${dcterms}title`, '"title"'),
       quad(dataset, `${dcterms}description`, '"description"'),
       quad(dataset, `${dcterms}creator`, 'http://example.org/creator'),
-      quad(dataset, `${dcterms}created`, `"2025/08/07"^^${xsd}date`),
+      quad(dataset, `${dcterms}created`, `"2025-08-07"^^${xsd}date`),
 
       quad(dataset, `${sd}defaultGraph`, graph),
       quad(graph, rdfType, `${sd}Graph`),
