@@ -70,7 +70,7 @@ export class VoidMetadataEmitter {
 
       // Basic VoID metadata
       quad(dataset, rdfType, `${vd}Dataset`),
-      quad(dataset, `${vd}sparqlEndpoint`, s),
+      quad(dataset, `${vd}sparqlEndpoint`, '/sparql'),
     ];
 
     // Dublin Core Metadata Terms

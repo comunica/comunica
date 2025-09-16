@@ -555,8 +555,8 @@ export class HttpServiceSparqlEndpoint {
     const quads: RDF.Quad[] = [
       // Basic metadata
       quad(s, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', `${sd}Service`),
-      quad(s, `${sd}endpoint`, s),
-      quad(s, `${sd}url`, s),
+      quad(s, `${sd}endpoint`, '/sparql'),
+      quad(s, `${sd}url`, '/sparql'),
 
       // Features
       quad(s, `${sd}feature`, `${sd}BasicFederatedQuery`),
