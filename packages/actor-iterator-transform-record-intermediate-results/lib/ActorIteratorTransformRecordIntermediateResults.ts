@@ -66,10 +66,7 @@ export class ActorIteratorTransformRecordIntermediateResults extends ActorIterat
   public async testIteratorTransform(
     action: ActionIteratorTransform,
   ): Promise<TestResult<IActorTest>> {
-    const statisticIntermediateResults = <StatisticIntermediateResults>(
-      action.context.get(KeysStatistics.intermediateResults)
-    );
-    if (!statisticIntermediateResults) {
+    if (!action.context.has(KeysStatistics.intermediateResults)) {
       return failTest(
         `Missing required context value: ${KeysStatistics.intermediateResults.name}. It must be defined before running ${this.name}.`,
       );
