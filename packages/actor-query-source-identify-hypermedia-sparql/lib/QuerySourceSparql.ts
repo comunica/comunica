@@ -29,12 +29,31 @@ import type { BindMethod } from './ActorQuerySourceIdentifyHypermediaSparql';
 
 export class QuerySourceSparql implements IQuerySource {
   protected static readonly SELECTOR_SHAPE: FragmentSelectorShape = {
-    type: 'disjunction',
+    type: 'conjunction',
     children: [
       {
-        type: 'operation',
-        operation: { operationType: 'wildcard' },
-        joinBindings: true,
+        type: 'disjunction',
+        children: [
+          {
+            type: 'operation',
+            operation: { operationType: 'wildcard' },
+            joinBindings: true,
+          },
+        ],
+      },
+      {
+        // DISTINCT CONSTRUCT is not allowed in SPARQL 1.1, so we explicitly disallowed it.
+        type: 'negation',
+        child: {
+          type: 'operation',
+          operation: { operationType: 'type', type: Algebra.types.DISTINCT },
+          children: [
+            {
+              type: 'operation',
+              operation: { operationType: 'type', type: Algebra.types.CONSTRUCT },
+            },
+          ],
+        },
       },
     ],
   };

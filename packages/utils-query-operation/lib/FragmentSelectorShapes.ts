@@ -32,6 +32,9 @@ function doesShapeAcceptOperationRecurseShape(
     return shapeActive.children
       .some(child => doesShapeAcceptOperationRecurseShape(shapeTop, child, operation, options));
   }
+  if (shapeActive.type === 'negation') {
+    return !doesShapeAcceptOperationRecurseShape(shapeActive.child, shapeActive.child, operation, options);
+  }
   if (shapeActive.type === 'arity') {
     return doesShapeAcceptOperationRecurseShape(shapeTop, shapeActive.child, operation, options);
   }
@@ -46,13 +49,15 @@ function doesShapeAcceptOperationRecurseShape(
   const shapeOperation = shapeActive.operation;
   switch (shapeOperation.operationType) {
     case 'type': {
-      if (!doesShapeAcceptOperationRecurseOperation(shapeTop, shapeActive, operation, options)) {
+      if (!doesShapeAcceptOperationRecurseOperationAndShape(shapeTop, shapeActive.children, operation, options) &&
+        !doesShapeAcceptOperationRecurseOperation(shapeTop, operation, options)) {
         return false;
       }
       return shapeOperation.type === operation.type;
     }
     case 'pattern': {
-      if (!doesShapeAcceptOperationRecurseOperation(shapeTop, shapeActive, operation, options)) {
+      if (doesShapeAcceptOperationRecurseOperationAndShape(shapeTop, shapeActive.children, operation, options) &&
+        !doesShapeAcceptOperationRecurseOperation(shapeTop, operation, options)) {
         return false;
       }
       return shapeOperation.pattern.type === operation.type;
@@ -63,9 +68,28 @@ function doesShapeAcceptOperationRecurseShape(
   }
 }
 
+function doesShapeAcceptOperationRecurseOperationAndShape(
+  shapeTop: FragmentSelectorShape,
+  shapeActiveChildren: FragmentSelectorShape[] | undefined,
+  operation: Algebra.Operation,
+  options?: FragmentSelectorShapeTestFlags,
+): boolean {
+  if (shapeActiveChildren) {
+    const operationInputs: Algebra.Operation[] = operation.input ?
+        (Array.isArray(operation.input) ? operation.input : [ operation.input ]) :
+      operation.patterns ?? [];
+    for (const [ i, shapeActiveChild ] of shapeActiveChildren.entries()) {
+      if (!operationInputs[i] ||
+        !doesShapeAcceptOperationRecurseShape(shapeTop, shapeActiveChild, operationInputs[i], options)) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
 function doesShapeAcceptOperationRecurseOperation(
   shapeTop: FragmentSelectorShape,
-  shapeActive: FragmentSelectorShape,
   operation: Algebra.Operation,
   options?: FragmentSelectorShapeTestFlags,
 ): boolean {
