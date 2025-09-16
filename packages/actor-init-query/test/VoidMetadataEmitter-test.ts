@@ -168,6 +168,9 @@ describe('VoidMetadataEmitter', () => {
   });
 
   it('should only query statistics once when doing multiple VoID description requests', async() => {
+    // Make this a https request for coverage
+    request.socket = { encrypted: true };
+
     // Create spies
     const engine = await new QueryEngineFactoryBase().create();
     engine.queryBindings = queryBindings;

@@ -1518,6 +1518,9 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       it('should handle errors in service description stringification', async() => {
+        // Make this a https request for coverage
+        request.socket = { encrypted: true };
+
         // Create spies
         const spyWriteServiceDescription = jest.spyOn(instance, 'writeServiceDescription');
 

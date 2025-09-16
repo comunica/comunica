@@ -1,7 +1,6 @@
 /* eslint-disable import/no-nodejs-modules,ts/no-require-imports,ts/no-var-requires */
 import type * as http from 'node:http';
 import type { Writable } from 'node:stream';
-import { TLSSocket } from 'node:tls';
 import type * as RDF from '@rdfjs/types';
 
 import type { QueryEngineBase } from '..';
@@ -56,7 +55,7 @@ export class VoidMetadataEmitter {
     request: http.IncomingMessage,
     response: http.ServerResponse,
   ): Promise<RDF.Quad[]> {
-    const protocol = request.socket instanceof TLSSocket && request.socket.encrypted ? 'https' : 'http';
+    const protocol = request.socket && 'encrypted' in request.socket && request.socket.encrypted ? 'https' : 'http';
     const s = `${protocol}://${request.headers.host}${request.url}`;
     const sd = 'http://www.w3.org/ns/sparql-service-description#';
     const vd = 'http://rdfs.org/ns/void#';
