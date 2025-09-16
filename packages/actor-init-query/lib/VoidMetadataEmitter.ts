@@ -55,8 +55,7 @@ export class VoidMetadataEmitter {
     request: http.IncomingMessage,
     response: http.ServerResponse,
   ): Promise<RDF.Quad[]> {
-    const protocol = request.socket && 'encrypted' in request.socket && request.socket.encrypted ? 'https' : 'http';
-    const s = `${protocol}://${request.headers.host}${request.url}`;
+    const s = request.url;
     const sd = 'http://www.w3.org/ns/sparql-service-description#';
     const vd = 'http://rdfs.org/ns/void#';
     const rdf = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';

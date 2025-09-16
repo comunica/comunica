@@ -21,7 +21,7 @@ const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
 
 // Urls
-const s = 'http://localhost:3000/sparql';
+const s = '/sparql';
 const xsd = 'http://www.w3.org/2001/XMLSchema#';
 const sd = 'http://www.w3.org/ns/sparql-service-description#';
 const vd = 'http://rdfs.org/ns/void#';

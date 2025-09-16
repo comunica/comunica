@@ -550,8 +550,7 @@ export class HttpServiceSparqlEndpoint {
       return;
     }
 
-    const protocol = request.socket && 'encrypted' in request.socket && request.socket.encrypted ? 'https' : 'http';
-    const s = `${protocol}://${request.headers.host}${request.url}`;
+    const s = request.url;
     const sd = 'http://www.w3.org/ns/sparql-service-description#';
     const quads: RDF.Quad[] = [
       // Basic metadata

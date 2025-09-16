@@ -1268,7 +1268,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       let endCalledPromise: any;
       let serviceDescriptionQuads: RDF.Quad[];
 
-      const s = 'http://localhost:3000/sparql';
+      const s = '/sparql';
       const sd = 'http://www.w3.org/ns/sparql-service-description#';
 
       beforeEach(() => {
