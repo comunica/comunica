@@ -38,6 +38,7 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
       const resultFormats = new Set<string>();
       const supportedLanguages = new Set<string>();
       const extensionFunctions = new Set<string>();
+      const propertyFeatures = new Set<string>();
 
       action.metadata.on('data', (quad: RDF.Quad) => {
         if (quad.predicate.value === 'http://rdfs.org/ns/void#subset' && quad.object.value === action.url) {
@@ -78,6 +79,9 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
             case `${ActorRdfMetadataExtractSparqlService.SD}supportedLanguage`:
               supportedLanguages.add(quad.object.value);
               break;
+            case `${ActorRdfMetadataExtractSparqlService.SD}propertyFeature`:
+              propertyFeatures.add(quad.object.value);
+              break;
             case `${ActorRdfMetadataExtractSparqlService.SD}feature`:
               if (quad.object.value === `${ActorRdfMetadataExtractSparqlService.SD}UnionDefaultGraph`) {
                 metadata.unionDefaultGraph = true;
@@ -100,6 +104,7 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
           ...resultFormats.size > 0 ? { resultFormats: [ ...resultFormats.values() ]} : {},
           ...supportedLanguages.size > 0 ? { supportedLanguages: [ ...supportedLanguages.values() ]} : {},
           ...extensionFunctions.size > 0 ? { extensionFunctions: [ ...extensionFunctions.values() ]} : {},
+          ...propertyFeatures.size > 0 ? { propertyFeatures: [ ...propertyFeatures.values() ]} : {},
         }});
       });
     });
