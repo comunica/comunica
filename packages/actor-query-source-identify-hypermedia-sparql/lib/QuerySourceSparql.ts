@@ -39,7 +39,7 @@ export class QuerySourceSparql implements IQuerySource {
   private readonly defaultGraph?: string;
   private readonly unionDefaultGraph: boolean;
   private readonly datasets?: IDataset[];
-  public readonly extensionFunctions?: string[];
+  private readonly extensionFunctions?: string[];
   private readonly dataFactory: ComunicaDataFactory;
   private readonly algebraFactory: Factory;
   private readonly bindingsFactory: BindingsFactory;
@@ -66,8 +66,8 @@ export class QuerySourceSparql implements IQuerySource {
     defaultGraph?: string,
     unionDefaultGraph?: boolean,
     datasets?: IDataset[],
-    postAccepted?: string[],
     extensionFunctions?: string[],
+    postAccepted?: string[],
   ) {
     this.referenceValue = url;
     this.url = url;
