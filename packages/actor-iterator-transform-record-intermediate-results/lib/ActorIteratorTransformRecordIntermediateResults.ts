@@ -3,12 +3,12 @@ import type {
   IActionIteratorTransformBindings,
   IActionIteratorTransformQuads,
   IActorIteratorTransformArgs,
-  ITransformIteratorOutput }
-  from '@comunica/bus-iterator-transform';
+  ITransformIteratorOutput,
+} from '@comunica/bus-iterator-transform';
 import { ActorIteratorTransform } from '@comunica/bus-iterator-transform';
 import { KeysStatistics } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
-import { passTestVoid } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import type { StatisticIntermediateResults } from '@comunica/statistic-intermediate-results';
 import type { MetadataBindings, MetadataQuads } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -63,8 +63,14 @@ export class ActorIteratorTransformRecordIntermediateResults extends ActorIterat
     return { stream: output, metadata: action.metadata };
   }
 
-  public async testIteratorTransform(_action: ActionIteratorTransform):
-  Promise<TestResult<IActorTest>> {
+  public async testIteratorTransform(
+    action: ActionIteratorTransform,
+  ): Promise<TestResult<IActorTest>> {
+    if (!action.context.has(KeysStatistics.intermediateResults)) {
+      return failTest(
+        `Missing required context value: ${KeysStatistics.intermediateResults.name}. It must be defined before running ${this.name}.`,
+      );
+    }
     return passTestVoid();
   }
 }

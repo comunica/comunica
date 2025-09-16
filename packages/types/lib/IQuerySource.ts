@@ -210,6 +210,9 @@ export type FragmentSelectorShape = {
   type: 'disjunction';
   children: FragmentSelectorShape[];
 } | {
+  type: 'negation';
+  child: FragmentSelectorShape;
+} | {
   type: 'arity';
   min?: number;
   max?: number;

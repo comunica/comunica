@@ -100,7 +100,7 @@ export class QuerySourceSparql implements IQuerySource {
   }
 
   public async getSelectorShape(): Promise<FragmentSelectorShape> {
-    const shape: FragmentSelectorShape = {
+    const innerDisjunction: FragmentSelectorShape = {
       type: 'disjunction',
       children: [
         {
@@ -111,7 +111,7 @@ export class QuerySourceSparql implements IQuerySource {
       ],
     };
     if (this.extensionFunctions) {
-      shape.children.push({
+      innerDisjunction.children.push({
         type: 'operation',
         operation: {
           operationType: 'type',
@@ -121,7 +121,26 @@ export class QuerySourceSparql implements IQuerySource {
         joinBindings: true,
       });
     }
-    return shape;
+    return {
+      type: 'conjunction',
+      children: [
+        innerDisjunction,
+        {
+          // DISTINCT CONSTRUCT is not allowed in SPARQL 1.1, so we explicitly disallowed it.
+          type: 'negation',
+          child: {
+            type: 'operation',
+            operation: { operationType: 'type', type: Algebra.types.DISTINCT },
+            children: [
+              {
+                type: 'operation',
+                operation: { operationType: 'type', type: Algebra.types.CONSTRUCT },
+              },
+            ],
+          },
+        },
+      ],
+    };
   }
 
   public queryBindings(

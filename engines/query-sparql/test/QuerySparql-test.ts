@@ -988,6 +988,20 @@ WHERE {
           sources: [{ type: 'file', value: 'https://lov.linkeddata.es/dataset/lov/sparql' }],
         })).rejects.toThrow('RDF parsing failed');
       });
+
+      it('should not push distinct construct into a SPARQL endpoint (no browser)', async() => {
+        const quadsStream = await engine.queryQuads(`
+PREFIX dcat: <http://www.w3.org/ns/dcat#>
+construct { ?s a dcat:Dataset }
+where {
+  ?s a dcat:Dataset ;
+    dcat:distribution ?distro . FILTER(?s = <http://data.bibliotheken.nl/id/dataset/rise-alba>)
+}`, {
+          distinctConstruct: true,
+          sources: [{ type: 'sparql', value: 'https://datasetregister.netwerkdigitaalerfgoed.nl/sparql' }],
+        });
+        await expect((quadsStream.toArray())).resolves.toHaveLength(1);
+      });
     });
 
     describe('property paths', () => {

@@ -3,7 +3,7 @@ import type {
   IActionIteratorTransformQuads,
 } from '@comunica/bus-iterator-transform';
 import { KeysStatistics } from '@comunica/context-entries';
-import { ActionContext, Bus, passTestVoid } from '@comunica/core';
+import { ActionContext, Bus, failTest, passTestVoid } from '@comunica/core';
 import { StatisticIntermediateResults } from '@comunica/statistic-intermediate-results';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
@@ -69,8 +69,25 @@ describe('ActorIteratorTransformRecordIntermediateResults', () => {
       };
     });
 
-    it ('should test', async() => {
+    it ('should not test without statistic tracking in the context', async() => {
+      await expect(actor.test(actionBindings)).resolves.toEqual(failTest(
+        `Missing required context value: ${KeysStatistics.intermediateResults.name}. It must be defined before running actor.`,
+      ));
+    });
+
+    it ('should test with statistic tracking in the context', async() => {
+      actionBindings.context = actionBindings.context.set(
+        KeysStatistics.intermediateResults,
+        statisticIntermediateResults,
+      );
       await expect(actor.test(actionBindings)).resolves.toEqual(passTestVoid());
+    });
+
+    it('should not test if there is no wrap is in the context', async() => {
+      actor.wraps = [];
+      await expect(actor.test(actionBindings)).resolves.toEqual(failTest(
+        'Operation type not supported in configuration of actor',
+      ));
     });
 
     describe('with quad input', () => {
