@@ -7,8 +7,17 @@ import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operat
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
-import type { ComunicaDataFactory, FragmentSelectorShape, IActionContext, IQuerySourceWrapper } from '@comunica/types';
-import { doesShapeAcceptOperation, getOperationSource, getExpressionVariables } from '@comunica/utils-query-operation';
+import type {
+  ComunicaDataFactory,
+  FragmentSelectorShape,
+  IActionContext,
+  IQuerySourceWrapper,
+} from '@comunica/types';
+import {
+  doesShapeAcceptOperation,
+  getExpressionVariables,
+  getOperationSource,
+} from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { mapTermsNested } from 'rdf-terms';
 import { Factory, Algebra, Util } from 'sparqlalgebrajs';
@@ -76,7 +85,8 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
       operation = Util.mapOperation(operation, {
         filter(op: Algebra.Filter, factory: Factory) {
           // Check if the filter must be pushed down
-          if (!self.shouldAttemptPushDown(op, sources, sourceShapes)) {
+          const extensionFunctions = action.context.get(KeysInitQuery.extensionFunctions);
+          if (!self.shouldAttemptPushDown(op, sources, sourceShapes, extensionFunctions)) {
             return {
               recurse: true,
               result: op,
@@ -135,15 +145,18 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
    * Check if the given filter operation must be attempted to push down, based on the following criteria:
    * - Always push down if aggressive mode is enabled
    * - Push down if the filter is extremely selective
+   * - Don't push down extension functions comunica support, but a source does not
    * - Push down if federated and at least one accepts the filter
    * @param operation The filter operation
    * @param sources The query sources in the operation
    * @param sourceShapes A mapping of sources to selector shapes.
+   * @param extensionFunctions The extension functions comunica supports.
    */
   public shouldAttemptPushDown(
     operation: Algebra.Filter,
     sources: IQuerySourceWrapper[],
     sourceShapes: Map<IQuerySourceWrapper, FragmentSelectorShape>,
+    extensionFunctions?: Record<string, any>,
   ): boolean {
     // Always push down if aggressive mode is enabled
     if (this.aggressivePushdown) {
@@ -159,6 +172,16 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
         (expression.args[0].expressionType === 'term' && expression.args[0].term.termType === 'Variable' &&
           expression.args[1].expressionType === 'term' && expression.args[1].term.termType !== 'Variable'))) {
       return true;
+    }
+
+    // Don't push down extension functions comunica support, but no source does
+    if (extensionFunctions && expression.expressionType === Algebra.expressionTypes.NAMED &&
+        expression.name.value in extensionFunctions &&
+        // Checks if there's not a single source that supports the extension function
+        !sources.some(source =>
+          doesShapeAcceptOperation(sourceShapes.get(source)!, expression))
+    ) {
+      return false;
     }
 
     // Push down if federated and at least one accepts the filter
@@ -247,8 +270,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     }
 
     // Don't push down (NOT) EXISTS
-    if (expression.type === Algebra.types.EXPRESSION &&
-      expression.expressionType === Algebra.expressionTypes.EXISTENCE) {
+    if (expression.expressionType === Algebra.expressionTypes.EXISTENCE) {
       return [ false, factory.createFilter(operation, expression) ];
     }
 

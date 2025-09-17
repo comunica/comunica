@@ -892,6 +892,7 @@ describe('QuerySourceSparql', () => {
           undefined,
           undefined,
           undefined,
+          undefined,
           acceptPost,
         );
         operationIn = AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'));

@@ -28,36 +28,6 @@ import { toSparql, Algebra, Util } from 'sparqlalgebrajs';
 import type { BindMethod } from './ActorQuerySourceIdentifyHypermediaSparql';
 
 export class QuerySourceSparql implements IQuerySource {
-  protected static readonly SELECTOR_SHAPE: FragmentSelectorShape = {
-    type: 'conjunction',
-    children: [
-      {
-        type: 'disjunction',
-        children: [
-          {
-            type: 'operation',
-            operation: { operationType: 'wildcard' },
-            joinBindings: true,
-          },
-        ],
-      },
-      {
-        // DISTINCT CONSTRUCT is not allowed in SPARQL 1.1, so we explicitly disallowed it.
-        type: 'negation',
-        child: {
-          type: 'operation',
-          operation: { operationType: 'type', type: Algebra.types.DISTINCT },
-          children: [
-            {
-              type: 'operation',
-              operation: { operationType: 'type', type: Algebra.types.CONSTRUCT },
-            },
-          ],
-        },
-      },
-    ],
-  };
-
   public readonly referenceValue: string;
   private readonly url: string;
   private readonly context: IActionContext;
@@ -69,6 +39,7 @@ export class QuerySourceSparql implements IQuerySource {
   private readonly defaultGraph?: string;
   private readonly unionDefaultGraph: boolean;
   private readonly datasets?: IDataset[];
+  public readonly extensionFunctions?: string[];
   private readonly dataFactory: ComunicaDataFactory;
   private readonly algebraFactory: Factory;
   private readonly bindingsFactory: BindingsFactory;
@@ -95,6 +66,7 @@ export class QuerySourceSparql implements IQuerySource {
     defaultGraph?: string,
     unionDefaultGraph?: boolean,
     datasets?: IDataset[],
+    extensionFunctions?: string[],
     postAccepted?: string[],
   ) {
     this.referenceValue = url;
@@ -124,10 +96,51 @@ export class QuerySourceSparql implements IQuerySource {
     this.defaultGraph = defaultGraph;
     this.unionDefaultGraph = unionDefaultGraph ?? false;
     this.datasets = datasets;
+    this.extensionFunctions = extensionFunctions;
   }
 
   public async getSelectorShape(): Promise<FragmentSelectorShape> {
-    return QuerySourceSparql.SELECTOR_SHAPE;
+    const innerDisjunction: FragmentSelectorShape = {
+      type: 'disjunction',
+      children: [
+        {
+          type: 'operation',
+          operation: { operationType: 'wildcard' },
+          joinBindings: true,
+        },
+      ],
+    };
+    if (this.extensionFunctions) {
+      innerDisjunction.children.push({
+        type: 'operation',
+        operation: {
+          operationType: 'type',
+          type: Algebra.types.EXPRESSION,
+          extensionFunctions: this.extensionFunctions,
+        },
+        joinBindings: true,
+      });
+    }
+    return {
+      type: 'conjunction',
+      children: [
+        innerDisjunction,
+        {
+          // DISTINCT CONSTRUCT is not allowed in SPARQL 1.1, so we explicitly disallowed it.
+          type: 'negation',
+          child: {
+            type: 'operation',
+            operation: { operationType: 'type', type: Algebra.types.DISTINCT },
+            children: [
+              {
+                type: 'operation',
+                operation: { operationType: 'type', type: Algebra.types.CONSTRUCT },
+              },
+            ],
+          },
+        },
+      ],
+    };
   }
 
   public queryBindings(
