@@ -18,6 +18,7 @@ import {
 } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
 import { ActorFunctionFactoryTermGreaterThanEqual } from '../lib';
+import {ActorFunctionFactoryTermTriple} from "@comunica/actor-function-factory-term-triple";
 
 const config: FuncTestTableConfig<object> = {
   registeredActors: [
@@ -25,6 +26,7 @@ const config: FuncTestTableConfig<object> = {
     args => new ActorFunctionFactoryTermLesserThanEqual(args),
     args => new ActorFunctionFactoryTermLesserThan(args),
     args => new ActorFunctionFactoryTermEquality(args),
+    args => new ActorFunctionFactoryTermTriple(args),
   ],
   arity: 2,
   operation: '>=',

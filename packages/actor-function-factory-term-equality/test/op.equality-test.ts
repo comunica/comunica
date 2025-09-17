@@ -15,10 +15,12 @@ import {
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
 import { LRUCache } from 'lru-cache';
 import { ActorFunctionFactoryTermEquality } from '../lib';
+import {ActorFunctionFactoryTermTriple} from "@comunica/actor-function-factory-term-triple";
 
 const config: FuncTestTableConfig<object> = {
   registeredActors: [
     args => new ActorFunctionFactoryTermEquality(args),
+    args => new ActorFunctionFactoryTermTriple(args),
   ],
   arity: 2,
   operation: '=',

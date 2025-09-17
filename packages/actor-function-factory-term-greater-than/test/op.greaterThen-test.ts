@@ -13,12 +13,14 @@ import {
 } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
 import { ActorFunctionFactoryTermGreaterThan } from '../lib';
+import {ActorFunctionFactoryTermTriple} from "@comunica/actor-function-factory-term-triple";
 
 const config: FuncTestTableConfig<object> = {
   registeredActors: [
     args => new ActorFunctionFactoryTermGreaterThan(args),
     args => new ActorFunctionFactoryTermLesserThan(args),
     args => new ActorFunctionFactoryTermEquality(args),
+    args => new ActorFunctionFactoryTermTriple(args),
   ],
   arity: 2,
   operation: '>',
