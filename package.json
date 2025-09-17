@@ -39,9 +39,6 @@
     "test:spec": "lerna run spec --concurrency 1",
     "version": "manual-git-changelog onversion"
   },
-  "dependencies": {
-    "@traqula/algebra-transformations-1-1": "^0.0.10"
-  },
   "devDependencies": {
     "@playwright/test": "^1.47.2",
     "@pollyjs/adapter-node-http": "^6.0.5",
@@ -49,7 +46,7 @@
     "@pollyjs/persister-fs": "^6.0.5",
     "@rubensworks/eslint-config": "^3.0.0",
     "@rubensworks/process-sparql-benchmark-results": "^1.2.2",
-    "@traqula/algebra-transformations-1-2": "^0.0.10",
+    "@traqula/algebra-transformations-1-2": "^0.0.13",
     "@types/benchmark": "^2.0.0",
     "@types/jest": "^29.4.0",
     "@types/md5": "^2.3.5",

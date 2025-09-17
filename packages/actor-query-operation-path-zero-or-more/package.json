@@ -48,7 +48,7 @@
     "@comunica/types": "^4.0.2",
     "@comunica/utils-bindings-factory": "^4.0.2",
     "@comunica/utils-query-operation": "^4.0.2",
-    "@traqula/algebra-transformations-1-2": "^0.0.10",
+    "@traqula/algebra-transformations-1-2": "^0.0.13",
     "asynciterator": "^3.9.0",
     "rdf-string": "^2.0.1"
   }
