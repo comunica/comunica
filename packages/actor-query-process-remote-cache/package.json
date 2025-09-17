@@ -56,7 +56,9 @@
     "sparql-federated-query-containment": "^0.0.3",
     "sparqljson-parse": "^3.1.0",
     "z3-solver": "^4.15.2",
-    "sparqlalgebrajs":"^5.0.1"
+    "sparqlalgebrajs":"^5.0.1",
+    "@inrupt/solid-client-authn-node": "^3.1.0",
+    "@inrupt/solid-client": "2.1.2"
   },
   "scripts": {
     "build": "yarn run build:ts && yarn run build:components",

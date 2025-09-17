@@ -34,6 +34,13 @@ import { Algebra, toSparql, Factory, translate, Util } from "sparqlalgebrajs";
 import { IBindings } from "sparqljson-parse";
 import * as Z3_SOLVER from "z3-solver";
 import { bindTemplateWithProjection } from "./bindTemplateWithProjection";
+import {
+  updateQueriesTTL,
+  uploadQueryFile,
+  uploadResults,
+  ensureCacheContainer,
+  bindingsStreamToSparqlJson,
+} from "./WriteResultsToCache";
 
 export const KeyRemoteCache = {
   /**
@@ -169,6 +176,43 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
         ActorQueryProcessRemoteCache.STREAM_PROVENANCE_PROPERTY,
         { algorithm: provenance, id, complementaryQueries }
       );
+    }
+
+    // <-- Place save-to-querycache logic here -->
+    // TODO: Wrap this in a condition if a context flag is set (bool === true)
+    // query cache url
+    const cacheLocation = action.context.getSafe(KeyRemoteCache.location);
+    // query
+    const queryString =
+      typeof action.query === "string" ? action.query : toSparql(action.query);
+    // sources
+    const sources: any[] =
+      action.context.getSafe(new ActionContextKey("sources")) ?? [];
+    const endpoints: string[] = [];
+    for (const source of sources) {
+      if (typeof source === "string") {
+        endpoints.push(source);
+      } else if ("value" in source && typeof source.value === "string") {
+        endpoints.push(source.value);
+      }
+    }
+    if (await ensureCacheContainer(cacheLocation.toString())) {
+      // TODO: Check to make sure all this works ...
+      const queryResult = await bindingsStreamToSparqlJson(res.result);
+      const hash = await updateQueriesTTL(
+        cacheLocation.toString(),
+        queryString,
+        endpoints
+      );
+      await uploadQueryFile(cacheLocation.toString(), queryString, hash);
+      await uploadResults(
+        cacheLocation.toString(),
+        JSON.stringify(queryResult, null, 2),
+        hash
+      );
+      console.log(`Saved query result to cache with hash: ${hash}`);
+    } else {
+      console.log(`Failed to save query result to cache`);
     }
     return res;
   }
