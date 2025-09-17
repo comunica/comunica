@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-metadata-extract-post-accepted",
-  "version": "1.0.0",
+  "version": "4.2.0",
   "description": "A post-accepted rdf-metadata-extract actor",
   "lsd:module": true,
   "license": "MIT",
