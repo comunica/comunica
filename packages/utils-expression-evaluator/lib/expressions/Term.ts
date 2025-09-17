@@ -282,7 +282,8 @@ export class LangStringLiteral extends Literal<string> {
   }
 
   public override coerceEBV(): boolean {
-    return this.str().length > 0;
+    // Throws in [SPARQL 1.2](https://www.w3.org/TR/sparql12-query/#ebv), and [1.1](https://www.w3.org/TR/sparql11-query/#ebv)
+    return super.coerceEBV();
   }
 }
 
@@ -424,13 +425,9 @@ export class NonLexicalLiteral extends Literal<{ toString: () => 'undefined' }> 
   }
 
   public override coerceEBV(): boolean {
-    const isNumericOrBool =
-      isSubTypeOf(this.dataType, TypeURL.XSD_BOOLEAN, this.openWorldType) ||
-      isSubTypeOf(this.dataType, TypeAlias.SPARQL_NUMERIC, this.openWorldType);
-    if (isNumericOrBool) {
-      return false;
-    }
-    throw new Err.EBVCoercionError(this);
+    // Always throws in [SPARQL 1.2](https://www.w3.org/TR/sparql12-query/#ebv),
+    // and sometimes throws in [1.1](https://www.w3.org/TR/sparql11-query/#ebv)
+    return super.coerceEBV();
   }
 
   public override toRDF(dataFactory: ComunicaDataFactory): RDF.Literal {
