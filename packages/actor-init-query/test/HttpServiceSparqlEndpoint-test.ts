@@ -1269,13 +1269,14 @@ describe('HttpServiceSparqlEndpoint', () => {
       let endCalledPromise: any;
       let serviceDescriptionQuads: RDF.Quad[];
 
-      const s = 'http://example.org/sparql';
+      const s = '/sparql';
       const sd = 'http://www.w3.org/ns/sparql-service-description#';
 
       beforeEach(() => {
         response = new ServerResponseMock();
         request = Readable.from([ 'default_request_content' ]);
-        request.url = 'http://example.org/sparql';
+        request.url = '/sparql';
+        request.headers = { host: 'localhost:3000' };
         query = {
           type: 'query',
           value: 'default_test_query',
@@ -1285,8 +1286,8 @@ describe('HttpServiceSparqlEndpoint', () => {
         endCalledPromise = new Promise(resolve => response.onEnd = resolve);
         serviceDescriptionQuads = [
           quad(s, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', `${sd}Service`),
-          quad(s, `${sd}endpoint`, '/sparql'),
-          quad(s, `${sd}url`, '/sparql'),
+          quad(s, `${sd}endpoint`, s),
+          quad(s, `${sd}url`, s),
           quad(s, `${sd}feature`, `${sd}BasicFederatedQuery`),
           quad(s, `${sd}supportedLanguage`, `${sd}SPARQL10Query`),
           quad(s, `${sd}supportedLanguage`, `${sd}SPARQL11Query`),
