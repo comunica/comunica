@@ -20,11 +20,6 @@
     "removeComments": false,
     "sourceMap": true
   },
-  "references": [
-    {
-      "path": "../../../PhD/code/traqula"
-    }
-  ],
   "include": [
     "engines/*/bin/**/*",
     "engines/*/lib/**/*",

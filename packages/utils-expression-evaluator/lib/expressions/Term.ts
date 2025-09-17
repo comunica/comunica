@@ -295,10 +295,6 @@ export class DirLangStringLiteral extends Literal<string> {
   ) {
     super(typedValue, dataType ?? TypeURL.RDF_DIR_LANG_STRING, typedValue, language, direction);
   }
-
-  public override coerceEBV(): boolean {
-    return this.str().length > 0;
-  }
 }
 
 // https://www.w3.org/TR/2004/REC-rdf-concepts-20040210/#dfn-plain-literal
