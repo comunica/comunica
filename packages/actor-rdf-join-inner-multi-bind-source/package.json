@@ -49,7 +49,7 @@
     "@comunica/types": "^4.0.2",
     "@comunica/utils-iterator": "^4.0.1",
     "@comunica/utils-query-operation": "^4.0.2",
-    "@traqula/algebra-transformations-1-2": "^0.0.14",
+    "@traqula/algebra-transformations-1-2": "^0.0.15",
     "asynciterator": "^3.9.0"
   }
 }

@@ -121,6 +121,37 @@ describe('System test: QuerySparql', () => {
           expect(result).toMatchObject(expectedResult);
         });
 
+        it('my mock test', async() => {
+          const turtleValue = `
+PREFIX : <http://example/>
+:s :p :o1 .
+GRAPH :g {
+     <<:s :p :o1 >> :q1 :z1 .
+     <<:s :p :o2 >> :q2 :z2 .
+}
+GRAPH :g1 { _:b :r :o3 . _:b :r :o4 . } 
+GRAPH :g2 { << _:b :r :o3 >> :pb "abc" . }
+`;
+          const context: QueryStringContext = { sources: [
+            { type: 'serialized', value: turtleValue, mediaType: 'application/trig', baseIRI: 'http://example.org/' },
+          ]};
+          const query = `
+PREFIX : <http://example/>
+
+CONSTRUCT {
+  ?g :graphContains ?t .
+} WHERE {
+  GRAPH ?g {
+    ?s ?p ?o .
+    BIND(<<(?s ?p  ?o)>> AS ?t)
+  }
+}`;
+
+          const result = await arrayifyStream(await engine.queryQuads(query, context));
+          expect(result).toHaveLength(expectedResult.length);
+          expect(result).toMatchObject(expectedResult);
+        });
+
         it('should return the valid result with a json-ld data source', async() => {
           const context: QueryStringContext = { sources: [
             { type: 'serialized', value, mediaType: 'application/ld+json', baseIRI: 'http://example.org/' },
