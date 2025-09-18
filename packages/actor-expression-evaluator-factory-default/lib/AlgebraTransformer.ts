@@ -2,9 +2,10 @@ import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import type { Expression, IActionContext, OperatorExpression } from '@comunica/types';
 import * as ExprEval from '@comunica/utils-expression-evaluator';
-import { Algebra as Alg, ExpressionTypes, Types } from '@traqula/algebra-transformations-1-2';
+import { Algebra as Alg, Factory } from '@traqula/algebra-transformations-1-2';
 
 export class AlgebraTransformer extends ExprEval.TermTransformer {
+  private readonly AF = new Factory();
   public constructor(
     private readonly context: IActionContext,
     private readonly mediatorFunctionFactory: MediatorFunctionFactory,
@@ -18,26 +19,14 @@ export class AlgebraTransformer extends ExprEval.TermTransformer {
     switch (expr.expressionType) {
       case types.TERM:
         // A triple term is actually not a term since it itself can contain
-        // variables thereby having the properties of an operator.
+        // variables thereby having the properties of an operator, we therefore map it to the triple operator here.
+        // Not that this is needed because the EE has a shortcut for terms and sees them as distinct from operators.
         if (expr.term.termType === 'Quad') {
-          return await this.transformOperator({
-            type: Types.EXPRESSION,
-            expressionType: ExpressionTypes.OPERATOR,
-            operator: 'triple',
-            args: [{
-              type: Types.EXPRESSION,
-              expressionType: ExpressionTypes.TERM,
-              term: expr.term.subject,
-            }, {
-              type: Types.EXPRESSION,
-              expressionType: ExpressionTypes.TERM,
-              term: expr.term.predicate,
-            }, {
-              type: Types.EXPRESSION,
-              expressionType: ExpressionTypes.TERM,
-              term: expr.term.object,
-            }],
-          });
+          return await this.transformOperator(this.AF.createOperatorExpression('triple', [
+            this.AF.createTermExpression(expr.term.subject),
+            this.AF.createTermExpression(expr.term.predicate),
+            this.AF.createTermExpression(expr.term.object),
+          ]));
         }
         return this.transformTerm(expr);
       case types.OPERATOR:

@@ -121,111 +121,6 @@ describe('System test: QuerySparql', () => {
           expect(result).toMatchObject(expectedResult);
         });
 
-        it.skip('my mock test', async() => {
-          const turtleValue = `
-PREFIX : <http://example/>
-:s :p :o1 .
-GRAPH :g {
-     <<:s :p :o1 >> :q1 :z1 .
-     <<:s :p :o2 >> :q2 :z2 .
-}
-GRAPH :g1 { _:b :r :o3 . _:b :r :o4 . } 
-GRAPH :g2 { << _:b :r :o3 >> :pb "abc" . }
-`;
-          const expectedResult: RDF.Quad[] = [
-            DF.quad(
-              DF.namedNode(':g'),
-              DF.namedNode(':graphContains'),
-              DF.quad(
-                DF.blankNode(),
-                DF.namedNode('rdf:reifies'),
-                DF.quad(DF.namedNode(':s'), DF.namedNode(':p'), DF.namedNode(':o1')),
-              ),
-            ),
-            DF.quad(
-              DF.namedNode(':g'),
-              DF.namedNode(':graphContains'),
-              DF.quad(
-                DF.blankNode(),
-                DF.namedNode(':q1'),
-                DF.namedNode(':z1'),
-              ),
-            ),
-            DF.quad(
-              DF.namedNode(':g'),
-              DF.namedNode(':graphContains'),
-              DF.quad(
-                DF.blankNode(),
-                DF.namedNode('rdf:reifies'),
-                DF.quad(DF.namedNode(':s'), DF.namedNode(':p'), DF.namedNode(':o2')),
-              ),
-            ),
-            DF.quad(
-              DF.namedNode(':g'),
-              DF.namedNode(':graphContains'),
-              DF.quad(
-                DF.blankNode(),
-                DF.namedNode(':q2'),
-                DF.namedNode(':z2'),
-              ),
-            ),
-            DF.quad(
-              DF.namedNode(':g1'),
-              DF.namedNode(':graphContains'),
-              DF.quad(
-                DF.blankNode(),
-                DF.namedNode(':r'),
-                DF.namedNode(':o3'),
-              ),
-            ),
-            DF.quad(
-              DF.namedNode(':g1'),
-              DF.namedNode(':graphContains'),
-              DF.quad(
-                DF.blankNode(),
-                DF.namedNode(':r'),
-                DF.namedNode(':o4'),
-              ),
-            ),
-            DF.quad(
-              DF.namedNode(':g'),
-              DF.namedNode(':graphContains'),
-              DF.quad(
-                DF.blankNode(),
-                DF.namedNode('rdf:reifies'),
-                DF.quad(DF.blankNode(), DF.namedNode(':r'), DF.namedNode(':o3')),
-              ),
-            ),
-            DF.quad(
-              DF.namedNode(':g1'),
-              DF.namedNode(':graphContains'),
-              DF.quad(
-                DF.blankNode(),
-                DF.namedNode(':pb'),
-                DF.literal('abc'),
-              ),
-            ),
-          ];
-
-          const context: QueryStringContext = { sources: [
-            { type: 'serialized', value: turtleValue, mediaType: 'application/trig', baseIRI: 'http://example.org/' },
-          ]};
-          const query = `
-PREFIX : <http://example/>
-CONSTRUCT {
-  ?g :graphContains ?t .
-} WHERE {
-  GRAPH ?g {
-    ?s ?p ?o .
-    BIND(<<(?s ?p  ?o)>> AS ?t)
-  }
-}`;
-
-          const result = await arrayifyStream(await engine.queryQuads(query, context));
-          // Expect(result).toHaveLength(expectedResult.length);
-          expect(result).toMatchObject(expectedResult);
-        });
-
         it('should return the valid result with a json-ld data source', async() => {
           const context: QueryStringContext = { sources: [
             { type: 'serialized', value, mediaType: 'application/ld+json', baseIRI: 'http://example.org/' },
@@ -999,6 +894,64 @@ SELECT ?obsId {
         expect(bindings2).toMatchObject(expectedResult);
       });
     });
+  });
+
+  it('recursive triple term creation', async() => {
+    const turtleValue = `
+PREFIX : <http://example/>
+:s :p :o1 .
+GRAPH :g {
+     <<:s :p :o1 >> :q1 :z1 .
+}
+GRAPH :g1 { << _:b :r :o3 >> :pb :z3 . }
+`;
+    const expectedResult: RDF.Quad[] = [
+      DF.quad(
+        DF.namedNode('http://example/g'),
+        DF.namedNode('http://example/graphContains'),
+        DF.quad(
+          DF.blankNode(),
+          DF.namedNode('http://example/q1'),
+          DF.quad(
+            DF.namedNode('http://example/z1'),
+            DF.namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#reifies'),
+            DF.quad(DF.namedNode('http://example/s'), DF.namedNode('http://example/p'), DF.namedNode('http://example/o1')),
+          ),
+        ),
+      ),
+      DF.quad(
+        DF.namedNode('http://example/g1'),
+        DF.namedNode('http://example/graphContains'),
+        DF.quad(
+          DF.blankNode(),
+          DF.namedNode('http://example/pb'),
+          DF.quad(
+            DF.namedNode('http://example/z3'),
+            DF.namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#reifies'),
+            DF.quad(DF.blankNode(), DF.namedNode('http://example/r'), DF.namedNode('http://example/o3')),
+          ),
+        ),
+      ),
+    ];
+
+    const context: QueryStringContext = { sources: [
+      { type: 'serialized', value: turtleValue, mediaType: 'application/trig', baseIRI: 'http://example.org/' },
+    ]};
+    const query = `
+PREFIX : <http://example/>
+CONSTRUCT {
+  ?g :graphContains ?t .
+} WHERE {
+  GRAPH ?g {
+    ?s ?p1 ?o1 ;
+       ?p2 ?o2 .
+    FILTER (!isTriple(?o1) && !(?p1 = ?p2 && ?o1 = ?o2)) .
+    BIND(<<( ?s ?p1  <<( ?o1 ?p2 ?o2 )>> )>> AS ?t) .
+  }
+}`;
+
+    await expect(arrayifyStream(await engine.queryQuads(query, context))).resolves
+      .toBeRdfIsomorphic(expectedResult);
   });
 
   // We skip these tests in browsers due to CORS issues
