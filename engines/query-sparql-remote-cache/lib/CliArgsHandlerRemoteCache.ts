@@ -8,7 +8,7 @@ import {
 const { interactiveLogin } = require('solid-node-interactive-auth');
 
 /**
- * Adds and handles CLI options for Solid authentication.
+ * Adds and handles CLI options for remote cache.
  */
 export class CliArgsHandlerRemoteCache implements ICliArgsHandler {
   public populateYargs(argumentsBuilder: Argv<any>): Argv<any> {
@@ -42,5 +42,18 @@ export class CliArgsHandlerRemoteCache implements ICliArgsHandler {
           group: 'Advanced options:',
         },
       });
+  }
+
+  public async handleArgs(args: Record<string, any>, context: Record<string, any>): Promise<void> {
+    context['@comunica/actor-query-process-remote-cache:location'] = args.location as CacheLocation;
+    if (args.valueClauseBlockSize !== 'void') {
+      context['@comunica/actor-query-process-remote-cache:valueClauseBlockSize'] = args.valueClauseBlockSize as number;
+    }
+    if (args.valueClauseReduction !== 'void') {
+      context['@comunica/actor-query-process-remote-cache:valueClauseReduction'] = args.valueClauseReduction as boolean;
+    }
+    if (args.saveToCache !== 'void') {
+      context['@comunica/actor-query-process-remote-cache:saveToCache'] = args.saveToCache as boolean;
+    }
   }
 }
