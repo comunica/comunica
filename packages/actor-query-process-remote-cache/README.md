@@ -39,3 +39,11 @@ After installing, this package can be added to your engine's configuration as fo
 TODO: fill in parameters (this section can be removed if there are none)
 
 * `someParam`: Description of the param
+
+
+## How to use (CLI)
+
+```bash
+$ yarn install
+$ node comunica/engines/query-sparql-remote-cache/bin/query.js [sources] ...
+```
