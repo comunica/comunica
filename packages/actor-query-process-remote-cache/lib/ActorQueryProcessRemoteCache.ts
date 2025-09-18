@@ -55,6 +55,9 @@ export const KeyRemoteCache = {
   valueClauseReduction: new ActionContextKey<boolean>(
     "@comunica/remote-cache:valueClauseReduction"
   ),
+  saveToCache: new ActionContextKey<boolean>(
+    "@comunica/remote-cache:saveToCache"
+  ),
 };
 const RDF_FACTORY: ComunicaDataFactory = new DataFactory();
 const BF = new BindingsFactory(RDF_FACTORY);
