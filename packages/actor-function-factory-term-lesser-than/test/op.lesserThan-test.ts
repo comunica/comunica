@@ -1,4 +1,5 @@
 import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-factory-term-equality';
+import { ActorFunctionFactoryTermTriple } from '@comunica/actor-function-factory-term-triple';
 import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
@@ -14,7 +15,6 @@ import {
 } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
 import { ActorFunctionFactoryTermLesserThan } from '../lib';
-import {ActorFunctionFactoryTermTriple} from "@comunica/actor-function-factory-term-triple";
 
 const config: FuncTestTableConfig<object> = {
   registeredActors: [

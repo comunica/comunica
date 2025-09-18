@@ -3,6 +3,7 @@ import { ActorFunctionFactoryTermLesserThan } from '@comunica/actor-function-fac
 import {
   ActorFunctionFactoryTermLesserThanEqual,
 } from '@comunica/actor-function-factory-term-lesser-than-equal';
+import { ActorFunctionFactoryTermTriple } from '@comunica/actor-function-factory-term-triple';
 import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import {
@@ -18,7 +19,6 @@ import {
 } from '@comunica/utils-expression-evaluator/test/util/Aliases';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
 import { ActorFunctionFactoryTermGreaterThanEqual } from '../lib';
-import {ActorFunctionFactoryTermTriple} from "@comunica/actor-function-factory-term-triple";
 
 const config: FuncTestTableConfig<object> = {
   registeredActors: [

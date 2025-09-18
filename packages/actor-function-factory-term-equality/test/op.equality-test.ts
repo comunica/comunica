@@ -1,3 +1,4 @@
+import { ActorFunctionFactoryTermTriple } from '@comunica/actor-function-factory-term-triple';
 import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
@@ -15,7 +16,6 @@ import {
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
 import { LRUCache } from 'lru-cache';
 import { ActorFunctionFactoryTermEquality } from '../lib';
-import {ActorFunctionFactoryTermTriple} from "@comunica/actor-function-factory-term-triple";
 
 const config: FuncTestTableConfig<object> = {
   registeredActors: [
