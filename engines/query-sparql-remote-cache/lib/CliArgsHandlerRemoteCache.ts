@@ -34,6 +34,13 @@ export class CliArgsHandlerRemoteCache implements ICliArgsHandler {
           describe: 'Whether to reduce the number of VALUES clauses sent to the remote cache by removing those that are already contained in the query.',
           group: 'Advanced options:',
         },
+        failOnCacheMiss: {
+          alias: 'focm',
+          type: 'boolean',
+          default: false,
+          describe: 'Whether to return an error if a query cannot be found in the remote cache.',
+          group: 'Advanced options:',
+        },
         saveToCache: {
           alias: 'stc',
           type: 'boolean',
@@ -45,15 +52,18 @@ export class CliArgsHandlerRemoteCache implements ICliArgsHandler {
   }
 
   public async handleArgs(args: Record<string, any>, context: Record<string, any>): Promise<void> {
-    context['@comunica/actor-query-process-remote-cache:location'] = args.location as CacheLocation;
+    context['@comunica/remote-cache:location'] = args.location as CacheLocation;
     if (args.valueClauseBlockSize !== 'void') {
-      context['@comunica/actor-query-process-remote-cache:valueClauseBlockSize'] = args.valueClauseBlockSize as number;
+      context['@comunica/remote-cache:valueClauseBlockSize'] = args.valueClauseBlockSize as number;
     }
     if (args.valueClauseReduction !== 'void') {
-      context['@comunica/actor-query-process-remote-cache:valueClauseReduction'] = args.valueClauseReduction as boolean;
+      context['@comunica/remote-cache:valueClauseReduction'] = args.valueClauseReduction as boolean;
+    }
+    if (args.failOnCacheMiss !== 'void') {
+      context['@comunica/remote-cache:failOnCacheMiss'] = args.failOnCacheMiss as boolean;
     }
     if (args.saveToCache !== 'void') {
-      context['@comunica/actor-query-process-remote-cache:saveToCache'] = args.saveToCache as boolean;
+      context['@comunica/remote-cache:saveToCache'] = args.saveToCache as boolean;
     }
   }
 }

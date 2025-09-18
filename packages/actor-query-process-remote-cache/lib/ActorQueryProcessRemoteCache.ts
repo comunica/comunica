@@ -55,6 +55,9 @@ export const KeyRemoteCache = {
   valueClauseReduction: new ActionContextKey<boolean>(
     "@comunica/remote-cache:valueClauseReduction"
   ),
+  failOnCacheMiss: new ActionContextKey<boolean>(
+    "@comunica/remote-cache:failOnCacheMiss"
+  ),
   saveToCache: new ActionContextKey<boolean>(
     "@comunica/remote-cache:saveToCache"
   ),
@@ -74,9 +77,6 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
     "the engine was configured to fail if a cache entry is missing, but no cached result was found for this query";
   public static readonly ERROR_ONLY_SELECT_QUERIES_SUPPORTED =
     "the engine in this configuration only support SELECT queries";
-  public static readonly KEY_FAIL_ON_CACHE_MISS = new ActionContextKey(
-    "failOnCacheMiss"
-  );
   public static readonly STREAM_PROVENANCE_PROPERTY = "provenance";
 
   public constructor(args: IActorQueryProcessRemoteCacheArgs) {
@@ -146,8 +146,11 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
       );
     }
 
-    const failOnCacheMiss = action.context.get(
-      ActorQueryProcessRemoteCache.KEY_FAIL_ON_CACHE_MISS
+    const failOnCacheMiss = action.context.getSafe<boolean>(
+      KeyRemoteCache.failOnCacheMiss
+    );
+    const saveToCache = action.context.getSafe<boolean>(
+      KeyRemoteCache.saveToCache
     );
 
     if (failOnCacheMiss === true && provenance == "query processing") {
@@ -159,6 +162,46 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
       throw new Error(
         ActorQueryProcessRemoteCache.ERROR_ONLY_SELECT_QUERIES_SUPPORTED
       );
+    }
+
+    // Save to cache logic
+    if (saveToCache === true && provenance !== Algorithm.CONTAINMENT) {
+      // cache location
+      const cacheLocation = action.context.getSafe(KeyRemoteCache.location);
+      // query
+      const queryString =
+        typeof action.query === "string"
+          ? action.query
+          : toSparql(action.query);
+      // sources
+      const sources: any[] =
+        action.context.getSafe(new ActionContextKey("sources")) ?? [];
+      const endpoints: string[] = [];
+      for (const source of sources) {
+        if (typeof source === "string") {
+          endpoints.push(source);
+        } else if ("value" in source && typeof source.value === "string") {
+          endpoints.push(source.value);
+        }
+      }
+      if (await ensureCacheContainer(cacheLocation.toString())) {
+        // TODO: Check to make sure all this works ...
+        const queryResult = await bindingsStreamToSparqlJson(res.result);
+        const hash = await updateQueriesTTL(
+          cacheLocation.toString(),
+          queryString,
+          endpoints
+        );
+        await uploadQueryFile(cacheLocation.toString(), queryString, hash);
+        await uploadResults(
+          cacheLocation.toString(),
+          JSON.stringify(queryResult, null, 2),
+          hash
+        );
+        console.log(`Saved query result to cache with hash: ${hash}`);
+      } else {
+        console.log(`Failed to save query result to cache`);
+      }
     }
 
     const end = performance.now();
@@ -179,43 +222,6 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
         ActorQueryProcessRemoteCache.STREAM_PROVENANCE_PROPERTY,
         { algorithm: provenance, id, complementaryQueries }
       );
-    }
-
-    // <-- Place save-to-querycache logic here -->
-    // TODO: Wrap this in a condition if a context flag is set (bool === true)
-    // query cache url
-    const cacheLocation = action.context.getSafe(KeyRemoteCache.location);
-    // query
-    const queryString =
-      typeof action.query === "string" ? action.query : toSparql(action.query);
-    // sources
-    const sources: any[] =
-      action.context.getSafe(new ActionContextKey("sources")) ?? [];
-    const endpoints: string[] = [];
-    for (const source of sources) {
-      if (typeof source === "string") {
-        endpoints.push(source);
-      } else if ("value" in source && typeof source.value === "string") {
-        endpoints.push(source.value);
-      }
-    }
-    if (await ensureCacheContainer(cacheLocation.toString())) {
-      // TODO: Check to make sure all this works ...
-      const queryResult = await bindingsStreamToSparqlJson(res.result);
-      const hash = await updateQueriesTTL(
-        cacheLocation.toString(),
-        queryString,
-        endpoints
-      );
-      await uploadQueryFile(cacheLocation.toString(), queryString, hash);
-      await uploadResults(
-        cacheLocation.toString(),
-        JSON.stringify(queryResult, null, 2),
-        hash
-      );
-      console.log(`Saved query result to cache with hash: ${hash}`);
-    } else {
-      console.log(`Failed to save query result to cache`);
     }
     return res;
   }
