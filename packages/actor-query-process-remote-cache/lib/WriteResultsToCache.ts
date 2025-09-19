@@ -280,31 +280,6 @@ export function parseSparqlQuery(queryString: string): string[] {
   }
 }
 
-export async function bindingsStreamToSparqlJson(queryResult: IQueryOperationResultBindings): Promise<any> {
-  const vars = queryResult.variables.map(v => v.value);
-  const bindings: any[] = [];
-  for await (const binding of queryResult.bindingsStream) {
-    const row: any = {};
-    for (const [key, value] of binding) {
-      row[key] = {
-        type: value.termType === "Literal" ? "literal" : "uri",
-        value: value.value,
-      };
-      if ('language' in value && value.language) {
-        row[key]["xml:lang"] = value.language;
-      }
-      if ('datatype' in value && value.datatype && value.datatype.value !== "http://www.w3.org/2001/XMLSchema#string") {
-        row[key].datatype = value.datatype.value;
-      }
-    }
-    bindings.push(row);
-  }
-  return {
-    head: { vars },
-    results: { bindings }
-  };
-}
-
 /**
  * Creates and uploads a JSON file (e.g., hash1.sparqljson) into the container.
  *

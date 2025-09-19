@@ -1,10 +1,10 @@
 {
   "compileOnSave": true,
   "compilerOptions": {
-    "target": "es2021",
+    "target": "es2022",
     "lib": [
-      "es2021",
-      "dom"
+      "es2022",
+      "dom",
     ],
     "module": "commonjs",
     "resolveJsonModule": true,
