@@ -5,7 +5,7 @@ import type {
 } from "@comunica/bus-query-process";
 import { ActorQueryProcess } from "@comunica/bus-query-process";
 import { KeysHttp, KeysInitQuery } from "@comunica/context-entries";
-import type { IActionAbstractMediaTypedHandle } from '@comunica/actor-abstract-mediatyped';
+import type { IActionAbstractMediaTypedHandle } from "@comunica/actor-abstract-mediatyped";
 import { passTestVoid, ActionContext, ActionContextKey } from "@comunica/core";
 import type { TestResult, IActorTest } from "@comunica/core";
 import type {
@@ -19,8 +19,8 @@ import type {
 import type {
   IActionSparqlSerialize,
   IActorQueryResultSerializeOutput,
-} from '@comunica/bus-query-result-serialize';
-import type { MediatorQueryResultSerializeHandle } from '@comunica/bus-query-result-serialize';
+} from "@comunica/bus-query-result-serialize";
+import type { MediatorQueryResultSerializeHandle } from "@comunica/bus-query-result-serialize";
 import { BindingsFactory } from "@comunica/utils-bindings-factory";
 import type * as RDF from "@rdfjs/types";
 import { ArrayIterator } from "asynciterator";
@@ -99,13 +99,13 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
     action: IActionQueryProcess
   ): Promise<IActorQueryProcessOutput> {
     const [res, provenance] = await this.processQuery(action);
-    
-
-    // this.saveToCache(action, provenance);
+    await this.handleResultAndCacheSave(res, action, provenance);
     return res;
   }
 
-  public async processQuery(action: IActionQueryProcess): Promise<[IActorQueryProcessOutput, Provenance]> {
+  public async processQuery(
+    action: IActionQueryProcess
+  ): Promise<[IActorQueryProcessOutput, Provenance]> {
     const resultOrError = await this.queryCachedResults(action);
     const start = performance.now();
     let provenance: Provenance = "query processing";
@@ -153,7 +153,8 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
                 }),
             },
           },
-          provenance];
+          provenance,
+        ];
       }
     } else {
       this.logInfo(
@@ -901,78 +902,97 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
   }
 
   private async handleResultAndCacheSave(
-  res: IActorQueryProcessOutput,
-  action: IActionQueryProcess,   // or the exact type you use for `run(action)`
-  provenance: Provenance,
-): Promise<IActorQueryProcessOutput> {
-  // Try to clone the stream so we can both return and cache
-  const original = (<IQueryOperationResultBindings>res.result).bindingsStream;
-  const returnStream = (original as any).clone ? (original as any).clone() : undefined;
-  const cacheStream  = (original as any).clone ? (original as any).clone() : undefined;
+    res: IActorQueryProcessOutput,
+    action: IActionQueryProcess, // or the exact type you use for `run(action)`
+    provenance: Provenance
+  ): Promise<void> {
+    // Try to clone the stream so we can both return and cache
+    const original = (<IQueryOperationResultBindings>res.result).bindingsStream;
+    const returnStream = (original as any).clone
+      ? (original as any).clone()
+      : undefined;
+    const cacheStream = (original as any).clone
+      ? (original as any).clone()
+      : undefined;
 
-  if (!returnStream || !cacheStream) {
-    this.logWarn(action.context, 'BindingsStream.clone() not available; skipping JSON caching.');
-    return res;
+    if (!returnStream || !cacheStream) {
+      this.logWarn(
+        action.context,
+        "BindingsStream.clone() not available; skipping JSON caching."
+      );
+    }
+
+    type SerializeBindingsHandle = IActionSparqlSerialize &
+      IQueryOperationResultBindings;
+
+    const handle: SerializeBindingsHandle = {
+      type: "bindings",
+      context: action.context,
+      bindingsStream: cacheStream,
+      metadata: res.result.metadata,
+    };
+
+    // Build the media-typed action for the serialize mediator
+    const serializeAction: IActionAbstractMediaTypedHandle<IActionSparqlSerialize> =
+      {
+        context: action.context,
+        handle,
+        handleMediaType: "application/sparql-results+json",
+      };
+
+    // Mediate to get the serializer output
+    const data: IActorQueryResultSerializeOutput =
+      await this.mediatorQueryResultSerialize.mediate(serializeAction);
+
+    // Buffer JSON result
+    const jsonPromise = this.streamToString(data);
+
+    jsonPromise
+      .then(async (json) => {
+        const shouldSave = action.context.getSafe<boolean>(
+          KeyRemoteCache.saveToCache
+        );
+        if (shouldSave) {
+          try {
+            await this.saveToCache(json, action, provenance);
+          } catch (e) {
+            this.logWarn(
+              action.context,
+              `saveToCache failed: ${(e as Error).message}`
+            );
+          }
+        }
+      })
+      .catch((e) => {
+        this.logWarn(
+          action.context,
+          `SPARQL JSON serialization failed: ${(e as Error).message}`
+        );
+      });
   }
 
-  // Determine variables (Comunica bindings outputs usually provide them)
-  const variables =
-    (res as any).variables
-  
-    type SerializeBindingsHandle = IActionSparqlSerialize & IQueryOperationResultBindings;
-
-  const handle: SerializeBindingsHandle = {
-  type: 'bindings',
-  context: action.context,
-  bindingsStream: cacheStream,
-  metadata: res.result.metadata,
-};
-
-// Build the media-typed action for the serialize mediator
-const serializeAction: IActionAbstractMediaTypedHandle<IActionSparqlSerialize> = {
-  context: action.context,
-  handle,
-  handleMediaType: 'application/sparql-results+json',
-};
-
-// Mediate to get the serializer output
-const data: IActorQueryResultSerializeOutput =
-  await this.mediatorQueryResultSerialize.mediate(serializeAction);
-
-// Buffer JSON result
-const jsonPromise = this.streamToString(data);
-
-  jsonPromise
-    .then(async (json) => {
-      const shouldSave = action.context.getSafe<boolean>(KeyRemoteCache.saveToCache);
-      if (shouldSave) {
-        try {
-          await this.saveToCache(json, action, provenance);
-        } catch (e) {
-          this.logWarn(action.context, `saveToCache failed: ${(e as Error).message}`);
-        }
-      }
-    })
-    .catch(e => {
-      this.logWarn(action.context, `SPARQL JSON serialization failed: ${(e as Error).message}`);
+  private streamToString(stream: NodeJS.ReadableStream): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const chunks: Buffer[] = [];
+      stream.on("data", (c: any) =>
+        chunks.push(Buffer.isBuffer(c) ? c : Buffer.from(String(c)))
+      );
+      stream.on("error", reject);
+      stream.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
     });
-
-  return res;
-}
-
-private streamToString(stream: NodeJS.ReadableStream): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const chunks: Buffer[] = [];
-    stream.on('data', (c: any) => chunks.push(Buffer.isBuffer(c) ? c : Buffer.from(String(c))));
-    stream.on('error', reject);
-    stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
-  });
-}
+  }
 
   // TODO: Fix results parameter
-  public async saveToCache(result: string, action: IActionQueryProcess, provenance: Provenance): Promise<void> {
+  public async saveToCache(
+    result: string,
+    action: IActionQueryProcess,
+    provenance: Provenance
+  ): Promise<void> {
     // Save to cache logic
-    if (action.context.getSafe<boolean>(KeyRemoteCache.saveToCache) === true && provenance !== Algorithm.CONTAINMENT) {
+    if (
+      action.context.getSafe<boolean>(KeyRemoteCache.saveToCache) === true &&
+      provenance !== Algorithm.CONTAINMENT
+    ) {
       // cache location
       const cacheLocation = action.context.getSafe(KeyRemoteCache.location);
       // query
@@ -999,13 +1019,9 @@ private streamToString(stream: NodeJS.ReadableStream): Promise<string> {
           endpoints
         );
         await uploadQueryFile(cacheLocation.toString(), queryString, hash);
-        
+
         // TODO: FIX THIS MESS
-        await uploadResults(
-          cacheLocation.toString(),
-          result,
-          hash
-        );
+        await uploadResults(cacheLocation.toString(), result, hash);
         console.log(`Saved query result to cache with hash: ${hash}`);
       } else {
         console.log(`Failed to save query result to cache`);
@@ -1013,7 +1029,6 @@ private streamToString(stream: NodeJS.ReadableStream): Promise<string> {
     }
   }
 }
-
 
 export type CachingResult =
   | {
