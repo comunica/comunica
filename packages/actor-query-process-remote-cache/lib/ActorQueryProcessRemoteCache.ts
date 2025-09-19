@@ -18,7 +18,6 @@ import type {
 } from "@comunica/types";
 import type {
   IActionSparqlSerialize,
-  IActorQueryResultSerializeOutput,
 } from "@comunica/bus-query-result-serialize";
 import type { MediatorQueryResultSerializeHandle } from "@comunica/bus-query-result-serialize";
 import { BindingsFactory } from "@comunica/utils-bindings-factory";
