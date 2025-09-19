@@ -925,11 +925,16 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
     type SerializeBindingsHandle = IActionSparqlSerialize &
       IQueryOperationResultBindings;
 
+    let metadata: (() => Promise<any>) = async () => ({});
+    if ('metadata' in res.result && typeof res.result.metadata === 'function') {
+      metadata = res.result.metadata;
+    }
+
     const handle: SerializeBindingsHandle = {
       type: "bindings",
       context: action.context,
       bindingsStream: cacheStream,
-      metadata: res.result.metadata,
+      metadata,
     };
 
     // Build the media-typed action for the serialize mediator
@@ -941,11 +946,11 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
       };
 
     // Mediate to get the serializer output
-    const data: IActorQueryResultSerializeOutput =
+    const serializeOutput =
       await this.mediatorQueryResultSerialize.mediate(serializeAction);
 
     // Buffer JSON result
-    const jsonPromise = this.streamToString(data);
+    const jsonPromise = this.streamToString(serializeOutput.handle.data);
 
     jsonPromise
       .then(async (json) => {
