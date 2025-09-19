@@ -440,6 +440,7 @@ describe('System test: QuerySparql', () => {
             endpoint2 = 'http://example.com/2/sparql';
             createMockedFetch = (endpoint1SupportsFunction: boolean, endpoint2SupportsFunction: boolean) =>
               (input: string) => {
+                console.log(input);
                 if (input.includes('FILTER')) {
                   containsFilter = true;
                 }
@@ -1001,6 +1002,29 @@ where {
           sources: [{ type: 'sparql', value: 'https://datasetregister.netwerkdigitaalerfgoed.nl/sparql' }],
         });
         await expect((quadsStream.toArray())).resolves.toHaveLength(1);
+      });
+
+      it('should not push unsupported extension functions into a SPARQL endpoint (no browser)', async() => {
+        const bindingsStream = await engine.queryBindings(`
+PREFIX dbr: <http://dbpedia.org/resource/>
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX tfn: <https://w3id.org/time-fn#>
+
+SELECT ?birthDate
+WHERE {
+  dbr:Haren_Das dbo:birthDate ?date;
+                 dbo:birthPlace ?birthPlace.
+  ?birthPlace dbo:utcOffset ?timezone.
+  BIND (tfn:bindDefaultTimezone(?date, ?timezone) AS ?birthDate)
+}`, {
+          sources: [ 'https://dbpedia.org/sparql' ],
+          extensionFunctions: {
+            'https://w3id.org/time-fn#bindDefaultTimezone': async function(args: RDF.Term[]) {
+              return args[0];
+            },
+          },
+        });
+        await expect((bindingsStream.toArray())).resolves.toHaveLength(1);
       });
     });
 
