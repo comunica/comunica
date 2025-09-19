@@ -41,6 +41,7 @@ import {
   ensureCacheContainer,
   bindingsStreamToSparqlJson,
 } from "./WriteResultsToCache";
+import { on } from "events";
 
 export const KeyRemoteCache = {
   /**
@@ -93,6 +94,15 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
     action: IActionQueryProcess
   ): Promise<IActorQueryProcessOutput> {
     const [res, provenance] = await this.processQuery(action);
+    
+    
+    if (res.result.type === "bindings") {
+      res.result.bindingsStream.map((bindings) => {
+        return bindings;
+      });
+      
+    }
+
     this.saveToCache(action, provenance);
     return res;
   }
@@ -134,16 +144,18 @@ export class ActorQueryProcessRemoteCache extends ActorQueryProcess {
         const end = performance.now();
         resultOrError.value.profiling.finalProcessing = end - start;
         //console.log(JSON.stringify(resultOrError.value.profiling, null, 2));
-        return {
-          result: {
-            type: "bindings",
-            bindingsStream: resultOrError.value.bindings,
-            metadata: () =>
-              new Promise((resolve) => {
-                resolve(<any>"cached bindings");
-              }),
+        return [
+          {
+            result: {
+              type: "bindings",
+              bindingsStream: resultOrError.value.bindings,
+              metadata: () =>
+                new Promise((resolve) => {
+                  resolve(<any>"cached bindings");
+                }),
+            },
           },
-        };
+          provenance];
       }
     } else {
       this.logInfo(
