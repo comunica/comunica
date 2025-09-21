@@ -8,7 +8,7 @@ import type {
 } from '@comunica/types';
 import { BlankNodeScoped } from '@comunica/utils-data-factory';
 import type * as RDF from '@rdfjs/types';
-import { Algebra, Factory, utils } from '@traqula/algebra-transformations-1-2';
+import { Algebra, AlgebraFactory, algebraUtils } from '@traqula/algebra-transformations-1-2';
 import type { AsyncIterator } from 'asynciterator';
 import { mapTermsNested } from 'rdf-terms';
 
@@ -213,9 +213,9 @@ export function deskolemizeOperation<O extends Algebra.Operation>(
   operation: O,
   sourceId: string,
 ): O | undefined {
-  const algebraFactory = new Factory();
+  const algebraFactory = new AlgebraFactory();
   try {
-    return <O> utils.mapOperation(operation, {
+    return <O> algebraUtils.mapOperation(operation, {
       [Algebra.Types.PATTERN](op, factory) {
         return {
           result: Object.assign(factory.createPattern(

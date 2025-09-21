@@ -2,7 +2,7 @@ import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import type { IActionContext } from '@comunica/types';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra, Factory } from '@traqula/algebra-transformations-1-2';
+import type { Algebra, AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import type { AsyncIterator } from 'asynciterator';
 import { BufferedIterator } from 'asynciterator';
 import { termToString } from 'rdf-string';
@@ -17,7 +17,7 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
   private readonly pendingOperations: { variable: RDF.Variable; operation: Algebra.Path }[] = [];
 
   public constructor(
-    private readonly algebraFactory: Factory,
+    private readonly algebraFactory: AlgebraFactory,
     private readonly subject: RDF.Term,
     private readonly predicate: Algebra.PropertyPathSymbol,
     private readonly graph: RDF.Term,

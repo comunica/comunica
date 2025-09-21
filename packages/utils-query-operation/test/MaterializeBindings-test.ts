@@ -1,11 +1,11 @@
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
-import { Factory } from '@traqula/algebra-transformations-1-2';
+import { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import { DataFactory } from 'rdf-data-factory';
 import { materializeOperation, materializeTerm } from '../lib/MaterializeBindings';
 
 const DF = new DataFactory();
-const AF = new Factory();
+const AF = new AlgebraFactory();
 const BF = new BindingsFactory(DF);
 
 const termNamedNode = DF.namedNode('a');

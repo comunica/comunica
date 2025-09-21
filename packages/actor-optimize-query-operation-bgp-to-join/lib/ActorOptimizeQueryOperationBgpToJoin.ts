@@ -7,7 +7,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { Algebra } from '@traqula/algebra-transformations-1-2';
-import { Factory, utils } from '@traqula/algebra-transformations-1-2';
+import { AlgebraFactory, algebraUtils } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A comunica BGP to Join Optimize Query Operation Actor.
@@ -19,10 +19,10 @@ export class ActorOptimizeQueryOperationBgpToJoin extends ActorOptimizeQueryOper
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
     const dataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
 
-    const operation = utils.mapOperation(action.operation, {
-      bgp(op: Algebra.Bgp, factory: Factory) {
+    const operation = algebraUtils.mapOperation(action.operation, {
+      bgp(op: Algebra.Bgp, factory: AlgebraFactory) {
         return {
           recurse: false,
           result: factory.createJoin(op.patterns),

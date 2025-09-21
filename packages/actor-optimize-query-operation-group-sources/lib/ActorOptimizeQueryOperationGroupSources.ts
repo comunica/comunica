@@ -14,7 +14,7 @@ import {
   getOperationSource,
   removeOperationSource,
 } from '@comunica/utils-query-operation';
-import { Algebra, Factory } from '@traqula/algebra-transformations-1-2';
+import { Algebra, AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A comunica Group Sources Optimize Query Operation Actor.
@@ -44,7 +44,7 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
    */
   public async groupOperation(operation: Algebra.Operation, context: IActionContext): Promise<Algebra.Operation> {
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
 
     // Return operation as-is if the operation already has a single source, or if the operation has no children.
     if (getOperationSource(operation) ?? !('input' in operation)) {

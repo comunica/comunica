@@ -6,7 +6,7 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type { Bindings } from '@comunica/utils-bindings-factory';
 import { assignOperationSource, getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
-import { Algebra, Factory } from '@traqula/algebra-transformations-1-2';
+import { Algebra, AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
@@ -16,7 +16,7 @@ import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
-const AF = new Factory();
+const AF = new AlgebraFactory();
 
 describe('ActorQueryOperationPathZeroOrMore', () => {
   let bus: any;
@@ -24,7 +24,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
   let mediatorMergeBindingsContext: any;
   let source1: IQuerySourceWrapper;
   let source2: IQuerySourceWrapper;
-  const factory: Factory = new Factory();
+  const factory: AlgebraFactory = new AlgebraFactory();
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });

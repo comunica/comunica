@@ -16,7 +16,7 @@ import type {
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra, Factory } from '@traqula/algebra-transformations-1-2';
+import type { Algebra, AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, TransformIterator, wrap } from 'asynciterator';
 import { termToString } from 'rdf-string';
@@ -36,7 +36,7 @@ export class QuerySourceQpf implements IQuerySource {
   private readonly mediatorMetadataExtract: MediatorRdfMetadataExtract;
   private readonly mediatorDereferenceRdf: MediatorDereferenceRdf;
   private readonly dataFactory: ComunicaDataFactory;
-  private readonly algebraFactory: Factory;
+  private readonly algebraFactory: AlgebraFactory;
   private readonly bindingsFactory: BindingsFactory;
 
   public readonly referenceValue: string;
@@ -54,7 +54,7 @@ export class QuerySourceQpf implements IQuerySource {
     mediatorMetadataExtract: MediatorRdfMetadataExtract,
     mediatorDereferenceRdf: MediatorDereferenceRdf,
     dataFactory: ComunicaDataFactory,
-    algebraFactory: Factory,
+    algebraFactory: AlgebraFactory,
     bindingsFactory: BindingsFactory,
     subjectUri: string,
     predicateUri: string,

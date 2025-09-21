@@ -19,7 +19,7 @@ import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolv
 import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import type { IQuerySource } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { Factory } from '@traqula/algebra-transformations-1-2';
+import { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import { wrap } from 'asynciterator';
 import 'jest-rdf';
 import { DataFactory } from 'rdf-data-factory';
@@ -29,7 +29,7 @@ const streamifyArray = require('streamify-array');
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
-const AF = new Factory();
+const AF = new AlgebraFactory();
 
 // @ts-expect-error
 const mediatorDereferenceRdf: MediatorDereferenceRdf = {

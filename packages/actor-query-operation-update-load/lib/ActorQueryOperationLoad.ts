@@ -7,7 +7,7 @@ import type { IActorTest, TestResult } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
 import { assignOperationSource, getSafeQuads, testReadOnly } from '@comunica/utils-query-operation';
 import type { Algebra } from '@traqula/algebra-transformations-1-2';
-import { Factory } from '@traqula/algebra-transformations-1-2';
+import { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A [Query Operation](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation) actor
@@ -28,7 +28,7 @@ export class ActorQueryOperationLoad extends ActorQueryOperationTypedMediated<Al
   public async runOperation(operation: Algebra.Load, context: IActionContext):
   Promise<IQueryOperationResult> {
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
 
     // Determine query source
     let subContext = context;

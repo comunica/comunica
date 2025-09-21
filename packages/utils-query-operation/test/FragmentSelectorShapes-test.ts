@@ -1,9 +1,9 @@
-import { Algebra, Factory } from '@traqula/algebra-transformations-1-2';
+import { Algebra, AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import {
   doesShapeAcceptOperation,
 } from '../lib/FragmentSelectorShapes';
 
-const AF = new Factory();
+const AF = new AlgebraFactory();
 
 describe('FragmentSelectorShapes', () => {
   describe('#doesShapeAcceptOperation', () => {

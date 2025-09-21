@@ -3,7 +3,7 @@ import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultVoid } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { Factory } from '@traqula/algebra-transformations-1-2';
+import { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -11,7 +11,7 @@ import { ActorQueryOperationUpdateDeleteInsert } from '../lib/ActorQueryOperatio
 import 'jest-rdf';
 import '@comunica/utils-jest';
 
-const factory = new Factory();
+const factory = new AlgebraFactory();
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
 

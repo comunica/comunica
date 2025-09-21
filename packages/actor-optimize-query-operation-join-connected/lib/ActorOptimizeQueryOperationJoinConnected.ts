@@ -8,7 +8,7 @@ import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
 import type { Algebra } from '@traqula/algebra-transformations-1-2';
-import { utils, Factory } from '@traqula/algebra-transformations-1-2';
+import { algebraUtils, AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A comunica Join Connected Optimize Query Operation Actor.
@@ -20,10 +20,10 @@ export class ActorOptimizeQueryOperationJoinConnected extends ActorOptimizeQuery
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
 
-    const operation = utils.mapOperation(action.operation, {
-      join(op: Algebra.Join, factory: Factory) {
+    const operation = algebraUtils.mapOperation(action.operation, {
+      join(op: Algebra.Join, factory: AlgebraFactory) {
         return {
           recurse: false,
           result: ActorOptimizeQueryOperationJoinConnected.cluster(op, factory),
@@ -38,10 +38,11 @@ export class ActorOptimizeQueryOperationJoinConnected extends ActorOptimizeQuery
    * @param op A join operation.
    * @param factory An algebra factory.
    */
-  public static cluster(op: Algebra.Join, factory: Factory): Algebra.Operation {
+  public static cluster(op: Algebra.Join, factory: AlgebraFactory): Algebra.Operation {
     // Initialize each entry to be in a separate cluster
     const initialClusters: IJoinCluster[] = op.input.map(subOp => ({
-      inScopeVariables: Object.fromEntries(utils.inScopeVariables(subOp).map(variable => [ variable.value, true ])),
+      inScopeVariables: Object.fromEntries(algebraUtils.inScopeVariables(subOp)
+        .map(variable => [ variable.value, true ])),
       entries: [ subOp ],
     }));
 

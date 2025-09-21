@@ -4,7 +4,7 @@ import type { IQuerySource } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { BlankNodeScoped } from '@comunica/utils-data-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
-import { Factory } from '@traqula/algebra-transformations-1-2';
+import { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { QuerySourceSkolemized } from '../lib/QuerySourceSkolemized';
@@ -13,7 +13,7 @@ import 'jest-rdf';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
-const AF = new Factory();
+const AF = new AlgebraFactory();
 
 describe('QuerySourceSkolemized', () => {
   let sourceInner: IQuerySource;

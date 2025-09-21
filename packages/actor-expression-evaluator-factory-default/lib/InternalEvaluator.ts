@@ -7,7 +7,7 @@ import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import * as Eval from '@comunica/utils-expression-evaluator';
 import { getSafeBindings, materializeOperation } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
-import { Factory } from '@traqula/algebra-transformations-1-2';
+import { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import { AlgebraTransformer } from './AlgebraTransformer';
 
 /**
@@ -66,7 +66,7 @@ export class InternalEvaluator {
 
   private async evalExistence(expr: Eval.Existence, mapping: RDF.Bindings): Promise<Eval.Term> {
     const dataFactory: ComunicaDataFactory = this.context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
     const operation = materializeOperation(expr.expression.input, mapping, algebraFactory, this.bindingsFactory);
 
     const outputRaw = await this.mediatorQueryOperation.mediate({ operation, context: this.context });

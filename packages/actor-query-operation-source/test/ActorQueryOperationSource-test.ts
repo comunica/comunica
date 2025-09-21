@@ -10,14 +10,14 @@ import type {
   IPhysicalQueryPlanLogger,
 } from '@comunica/types';
 import { assignOperationSource } from '@comunica/utils-query-operation';
-import { Factory } from '@traqula/algebra-transformations-1-2';
+import { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationSource } from '../lib/ActorQueryOperationSource';
 import 'jest-rdf';
 import '@comunica/utils-jest';
 
-const AF = new Factory();
+const AF = new AlgebraFactory();
 const DF = new DataFactory();
 
 describe('ActorQueryOperationSource', () => {

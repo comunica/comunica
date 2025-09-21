@@ -2,7 +2,7 @@ import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
-import { Algebra, Factory } from '@traqula/algebra-transformations-1-2';
+import { Algebra, AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A comunica Path Inv Query Operation Actor.
@@ -14,7 +14,7 @@ export class ActorQueryOperationPathInv extends ActorAbstractPath {
 
   public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryOperationResult> {
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
 
     const predicate = <Algebra.Inv> operation.predicate;
     const invPath = algebraFactory.createPath(operation.object, predicate.path, operation.subject, operation.graph);

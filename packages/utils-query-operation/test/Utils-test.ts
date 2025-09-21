@@ -1,4 +1,4 @@
-import { Factory } from '@traqula/algebra-transformations-1-2';
+import { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import {
   assignOperationSource,
   getOperationSource,
@@ -9,7 +9,7 @@ import {
   validateQueryOutput,
 } from '../lib/Utils';
 
-const AF = new Factory();
+const AF = new AlgebraFactory();
 
 describe('utils', () => {
   describe('#getSafeBindings', () => {

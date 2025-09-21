@@ -16,8 +16,8 @@ import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import { toAst } from '@traqula/algebra-sparql-1-2';
-import type { Factory, Algebra } from '@traqula/algebra-transformations-1-2';
-import { utils } from '@traqula/algebra-transformations-1-2';
+import type { AlgebraFactory, Algebra } from '@traqula/algebra-transformations-1-2';
+import { algebraUtils } from '@traqula/algebra-transformations-1-2';
 import { Generator } from '@traqula/generator-sparql-1-2';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator, wrap } from 'asynciterator';
@@ -48,7 +48,7 @@ export class QuerySourceSparql implements IQuerySource {
   private readonly bindMethod: BindMethod;
   private readonly countTimeout: number;
   private readonly dataFactory: ComunicaDataFactory;
-  private readonly algebraFactory: Factory;
+  private readonly algebraFactory: AlgebraFactory;
   private readonly bindingsFactory: BindingsFactory;
 
   private readonly endpointFetcher: SparqlEndpointFetcher;
@@ -62,7 +62,7 @@ export class QuerySourceSparql implements IQuerySource {
     mediatorHttp: MediatorHttp,
     bindMethod: BindMethod,
     dataFactory: ComunicaDataFactory,
-    algebraFactory: Factory,
+    algebraFactory: AlgebraFactory,
     bindingsFactory: BindingsFactory,
     forceHttpGet: boolean,
     cacheSize: number,
@@ -115,7 +115,7 @@ export class QuerySourceSparql implements IQuerySource {
     const bindings: BindingsStream = new TransformIterator(async() => {
       // Prepare queries
       const operation = await operationPromise;
-      const variables: RDF.Variable[] = utils.inScopeVariables(operation);
+      const variables: RDF.Variable[] = algebraUtils.inScopeVariables(operation);
       const queryString = context.get<string>(KeysInitQuery.queryString);
       const selectQuery: string = !options?.joinBindings && queryString ?
         queryString :
@@ -174,7 +174,7 @@ export class QuerySourceSparql implements IQuerySource {
       let countQuery: string;
       try {
         const operation = await operationPromise;
-        const variablesScoped = utils.inScopeVariables(operation);
+        const variablesScoped = algebraUtils.inScopeVariables(operation);
         countQuery = QuerySourceSparql.operationToCountQuery(this.dataFactory, this.algebraFactory, operation);
         const undefVariables = QuerySourceSparql.getOperationUndefs(operation);
         variablesCount = variablesScoped.map(variable => ({
@@ -241,7 +241,7 @@ export class QuerySourceSparql implements IQuerySource {
    * @param addBindings.metadata The bindings metadata.
    */
   public static async addBindingsToOperation(
-    algebraFactory: Factory,
+    algebraFactory: AlgebraFactory,
     bindMethod: BindMethod,
     operation: Algebra.Operation,
     addBindings: { bindings: BindingsStream; metadata: MetadataBindings },
@@ -271,7 +271,7 @@ export class QuerySourceSparql implements IQuerySource {
    * @return {string} A select query string.
    */
   public static operationToSelectQuery(
-    algebraFactory: Factory,
+    algebraFactory: AlgebraFactory,
     operation: Algebra.Operation,
     variables: RDF.Variable[],
   ): string {
@@ -287,7 +287,7 @@ export class QuerySourceSparql implements IQuerySource {
    */
   public static operationToCountQuery(
     dataFactory: ComunicaDataFactory,
-    algebraFactory: Factory,
+    algebraFactory: AlgebraFactory,
     operation: Algebra.Operation,
   ): string {
     return QuerySourceSparql.operationToQuery(algebraFactory.createProject(
@@ -316,7 +316,8 @@ export class QuerySourceSparql implements IQuerySource {
    */
   public static operationToQuery(operation: Algebra.Operation): string {
     const ast = toAst(operation);
-    return this.queryStringGenerator.generate(ast);
+    return this.queryStringGenerator.generate(ast)
+      .replaceAll(/[\n \t]+/gu, ' ').trim();
   }
 
   /**
@@ -325,10 +326,10 @@ export class QuerySourceSparql implements IQuerySource {
    */
   public static getOperationUndefs(operation: Algebra.Operation): RDF.Variable[] {
     const variables: RDF.Variable[] = [];
-    utils.recurseOperation(operation, {
+    algebraUtils.recurseOperation(operation, {
       leftjoin(subOperation): boolean {
-        const left = utils.inScopeVariables(subOperation.input[0]);
-        const right = utils.inScopeVariables(subOperation.input[1]);
+        const left = algebraUtils.inScopeVariables(subOperation.input[0]);
+        const right = algebraUtils.inScopeVariables(subOperation.input[1]);
         for (const varRight of right) {
           if (!left.some(varLeft => varLeft.equals(varRight))) {
             variables.push(varRight);
@@ -346,7 +347,7 @@ export class QuerySourceSparql implements IQuerySource {
       },
       union(union: Algebra.Union): boolean {
         // Determine variables in scope of the union branches that are not occurring in every branch
-        const scopedVariables = union.input.map(utils.inScopeVariables);
+        const scopedVariables = union.input.map(algebraUtils.inScopeVariables);
         for (const variable of uniqTerms(scopedVariables.flat())) {
           if (!scopedVariables.every(input => input.some(inputVar => inputVar.equals(variable)))) {
             variables.push(variable);

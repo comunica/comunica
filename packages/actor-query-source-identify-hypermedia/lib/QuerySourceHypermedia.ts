@@ -21,7 +21,7 @@ import type {
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from '@traqula/algebra-transformations-1-2';
-import { Factory } from '@traqula/algebra-transformations-1-2';
+import { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator } from 'asynciterator';
 import { LRUCache } from 'lru-cache';
@@ -99,7 +99,7 @@ export class QuerySourceHypermedia implements IQuerySource {
     }
 
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
     const it: MediatedLinkedRdfSourcesAsyncRdfIterator = new MediatedLinkedRdfSourcesAsyncRdfIterator(
       this.cacheSize,
       operation,

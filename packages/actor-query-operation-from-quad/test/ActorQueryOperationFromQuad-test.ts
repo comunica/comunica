@@ -3,7 +3,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultBindings } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { Algebra, Factory } from '@traqula/algebra-transformations-1-2';
+import { Algebra, AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -13,7 +13,7 @@ import '@comunica/utils-jest';
 const quad = require('rdf-quad');
 
 const DF = new DataFactory();
-const AF = new Factory();
+const AF = new AlgebraFactory();
 const BF = new BindingsFactory(DF);
 
 describe('ActorQueryOperationFromQuad', () => {

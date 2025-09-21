@@ -9,7 +9,7 @@ import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTest } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { Algebra, Factory } from '@traqula/algebra-transformations-1-2';
+import { Algebra, AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A comunica Describe To Constructs Subject Optimize Query Operation Actor.
@@ -28,7 +28,7 @@ export class ActorOptimizeQueryOperationDescribeToConstructsSubject extends Acto
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
 
     const operationOriginal: Algebra.Describe = <Algebra.Describe> action.operation;
 

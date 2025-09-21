@@ -4,7 +4,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
-import { Algebra, Factory } from '@traqula/algebra-transformations-1-2';
+import { Algebra, AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { QUAD_TERM_NAMES } from 'rdf-terms';
@@ -13,12 +13,12 @@ import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
-const AF = new Factory();
+const AF = new AlgebraFactory();
 
 describe('ActorQueryOperationPathNps', () => {
   let bus: any;
   let mediatorQueryOperation: any;
-  const factory: Factory = new Factory();
+  const factory: AlgebraFactory = new AlgebraFactory();
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });

@@ -1,6 +1,6 @@
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import { Factory } from '@traqula/algebra-transformations-1-2';
+import { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import { DataFactory } from 'rdf-data-factory';
 import {
   ActorOptimizeQueryOperationDescribeToConstructsSubject,
@@ -8,7 +8,7 @@ import {
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
-const AF = new Factory();
+const AF = new AlgebraFactory();
 
 describe('ActorOptimizeQueryOperationDescribeToConstructsSubject', () => {
   let bus: any;

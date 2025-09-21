@@ -10,7 +10,7 @@ import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, IDataDestination, IQuerySourceWrapper } from '@comunica/types';
 import { assignOperationSource, doesShapeAcceptOperation } from '@comunica/utils-query-operation';
-import { Algebra, Factory, utils } from '@traqula/algebra-transformations-1-2';
+import { Algebra, AlgebraFactory, algebraUtils } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A comunica Assign Sources Exhaustive Optimize Query Operation Actor.
@@ -26,7 +26,7 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
 
     const sources: IQuerySourceWrapper[] = action.context.get(KeysQueryOperation.querySources) ?? [];
     if (sources.length === 0) {
@@ -68,13 +68,13 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
    * @param sources The sources to assign.
    */
   public assignExhaustive(
-    algebraFactory: Factory,
+    algebraFactory: AlgebraFactory,
     operation: Algebra.Operation,
     sources: IQuerySourceWrapper[],
   ): Algebra.Operation {
     // eslint-disable-next-line ts/no-this-alias
     const self = this;
-    return utils.mapOperation(operation, {
+    return algebraUtils.mapOperation(operation, {
       [Algebra.Types.PATTERN](subOperation, factory) {
         if (sources.length === 1) {
           return {

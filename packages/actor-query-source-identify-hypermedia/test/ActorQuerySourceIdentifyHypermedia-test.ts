@@ -11,7 +11,7 @@ import type { IActionContext, QuerySourceUnidentifiedExpanded } from '@comunica/
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type { Algebra } from '@traqula/algebra-transformations-1-2';
-import { Factory } from '@traqula/algebra-transformations-1-2';
+import { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQuerySourceIdentifyHypermedia } from '../lib/ActorQuerySourceIdentifyHypermedia';
 import { mediators as utilMediators } from './MediatorDereferenceRdf-util';
@@ -19,7 +19,7 @@ import 'jest-rdf';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
-const AF = new Factory();
+const AF = new AlgebraFactory();
 const BF = new BindingsFactory(DF);
 
 const mediatorMergeBindingsContext: any = {

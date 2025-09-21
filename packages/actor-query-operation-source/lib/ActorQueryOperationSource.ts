@@ -10,7 +10,7 @@ import type {
 } from '@comunica/types';
 import { getMetadataBindings, getMetadataQuads } from '@comunica/utils-metadata';
 import { getOperationSource } from '@comunica/utils-query-operation';
-import { Algebra, utils } from '@traqula/algebra-transformations-1-2';
+import { Algebra, algebraUtils } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A comunica Source Query Operation Actor.
@@ -49,7 +49,7 @@ export class ActorQueryOperationSource extends ActorQueryOperation {
     // Check if the operation is a CONSTRUCT query
     // We recurse because it may be wrapped in other operations such as SLICE and FROM
     let construct = false;
-    utils.recurseOperation(action.operation, {
+    algebraUtils.recurseOperation(action.operation, {
       construct(): boolean {
         construct = true;
         return false;

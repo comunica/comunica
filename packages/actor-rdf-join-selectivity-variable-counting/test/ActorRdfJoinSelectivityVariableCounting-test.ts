@@ -1,12 +1,12 @@
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type { Algebra } from '@traqula/algebra-transformations-1-2';
-import { Factory } from '@traqula/algebra-transformations-1-2';
+import { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinSelectivityVariableCounting, JoinTypes } from '../lib/ActorRdfJoinSelectivityVariableCounting';
 import '@comunica/utils-jest';
 
-const F = new Factory();
+const F = new AlgebraFactory();
 const DF = new DataFactory();
 
 describe('ActorRdfJoinSelectivityVariableCounting', () => {

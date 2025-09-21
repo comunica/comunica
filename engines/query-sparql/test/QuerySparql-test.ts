@@ -8,7 +8,7 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { BlankNodeScoped } from '@comunica/utils-data-factory';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import type * as RDF from '@rdfjs/types';
-import { Factory } from '@traqula/algebra-transformations-1-2';
+import { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import arrayifyStream from 'arrayify-stream';
 import 'jest-rdf';
 import '@comunica/utils-jest';
@@ -19,7 +19,7 @@ import { fetch as cachedFetch } from './util';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
-const factory = new Factory();
+const factory = new AlgebraFactory();
 
 globalThis.fetch = cachedFetch;
 

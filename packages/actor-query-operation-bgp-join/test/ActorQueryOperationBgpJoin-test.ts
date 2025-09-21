@@ -2,7 +2,7 @@ import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultBindings } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { Factory } from '@traqula/algebra-transformations-1-2';
+import { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationBgpJoin } from '../lib/ActorQueryOperationBgpJoin';
@@ -10,7 +10,7 @@ import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
-const FACTORY = new Factory();
+const FACTORY = new AlgebraFactory();
 
 describe('ActorQueryOperationBgpJoin', () => {
   let bus: any;

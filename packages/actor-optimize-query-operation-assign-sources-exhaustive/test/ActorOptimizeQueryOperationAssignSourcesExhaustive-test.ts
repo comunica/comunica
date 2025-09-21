@@ -2,14 +2,14 @@ import { KeysInitQuery, KeysQueryOperation, KeysRdfUpdateQuads } from '@comunica
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
 import { getOperationSource } from '@comunica/utils-query-operation';
-import { Algebra, Factory } from '@traqula/algebra-transformations-1-2';
+import { Algebra, AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import { DataFactory } from 'rdf-data-factory';
 import {
   ActorOptimizeQueryOperationAssignSourcesExhaustive,
 } from '../lib/ActorOptimizeQueryOperationAssignSourcesExhaustive';
 import '@comunica/utils-jest';
 
-const AF = new Factory();
+const AF = new AlgebraFactory();
 const DF = new DataFactory();
 
 describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {

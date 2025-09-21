@@ -1,13 +1,13 @@
 import { KeysInitQuery } from '@comunica/context-entries/lib/Keys';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
-import { Factory } from '@traqula/algebra-transformations-1-2';
+import { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorOptimizeQueryOperationConstructDistinct } from '../lib/ActorOptimizeQueryOperationConstructDistinct';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
-const factory = new Factory();
+const factory = new AlgebraFactory();
 
 describe('ActorOptimizeQueryOperationConstructDistinct', () => {
   let bus: any;

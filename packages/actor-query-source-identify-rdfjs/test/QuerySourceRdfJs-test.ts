@@ -4,7 +4,7 @@ import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
-import { Factory } from '@traqula/algebra-transformations-1-2';
+import { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import arrayifyStream from 'arrayify-stream';
 import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
@@ -13,7 +13,7 @@ import { QuerySourceRdfJs } from '../lib';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
-const AF = new Factory();
+const AF = new AlgebraFactory();
 const BF = new BindingsFactory(DF);
 
 describe('QuerySourceRdfJs', () => {

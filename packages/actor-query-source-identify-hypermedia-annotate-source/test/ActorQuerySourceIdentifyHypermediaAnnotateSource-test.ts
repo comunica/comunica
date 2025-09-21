@@ -3,7 +3,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { BindingsStream, IActionContext } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
-import { Factory } from '@traqula/algebra-transformations-1-2';
+import { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import { DataFactory } from 'rdf-data-factory';
 import {
   ActorQuerySourceIdentifyHypermediaAnnotateSource,
@@ -16,7 +16,7 @@ const quad = require('rdf-quad');
 const streamifyArray = require('streamify-array');
 
 const DF = new DataFactory();
-const AF = new Factory();
+const AF = new AlgebraFactory();
 const BF = new BindingsFactory(DF);
 const v1 = DF.variable('v1');
 const v2 = DF.variable('v2');

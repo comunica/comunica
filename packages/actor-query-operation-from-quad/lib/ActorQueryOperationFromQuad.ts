@@ -5,7 +5,7 @@ import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { Algebra, Factory } from '@traqula/algebra-transformations-1-2';
+import { Algebra, AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A comunica From Query Operation Actor.
@@ -55,7 +55,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
    * @return {Operation} A new operation.
    */
   public static applyOperationDefaultGraph(
-    algebraFactory: Factory,
+    algebraFactory: AlgebraFactory,
     operation: Algebra.Operation,
     defaultGraphs: RDF.Term[],
   ): Algebra.Operation {
@@ -116,7 +116,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
    * @return {Operation} A new operation.
    */
   public static applyOperationNamedGraph(
-    algebraFactory: Factory,
+    algebraFactory: AlgebraFactory,
     operation: Algebra.Operation,
     namedGraphs: RDF.NamedNode[],
     defaultGraphs: RDF.Term[],
@@ -191,7 +191,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
    * @param {Operation[]} operations An array of operations, must contain at least one operation.
    * @return {Join} A join operation.
    */
-  public static joinOperations(algebraFactory: Factory, operations: Algebra.Operation[]): Algebra.Operation {
+  public static joinOperations(algebraFactory: AlgebraFactory, operations: Algebra.Operation[]): Algebra.Operation {
     if (operations.length === 1) {
       return operations[0];
     }
@@ -208,7 +208,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
    * @param {Operation[]} operations An array of operations, must contain at least one operation.
    * @return {Union} A union operation.
    */
-  public static unionOperations(algebraFactory: Factory, operations: Algebra.Operation[]): Algebra.Operation {
+  public static unionOperations(algebraFactory: AlgebraFactory, operations: Algebra.Operation[]): Algebra.Operation {
     if (operations.length === 1) {
       return operations[0];
     }
@@ -232,7 +232,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
    * @param {From} pattern A from operation.
    * @return {Operation} The transformed operation.
    */
-  public static createOperation(algebraFactory: Factory, pattern: Algebra.From): Algebra.Operation {
+  public static createOperation(algebraFactory: AlgebraFactory, pattern: Algebra.From): Algebra.Operation {
     let operation: Algebra.Operation = pattern.input;
     if (pattern.default.length > 0) {
       operation = ActorQueryOperationFromQuad.applyOperationDefaultGraph(algebraFactory, operation, pattern.default);
@@ -253,7 +253,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
     context: IActionContext,
   ): Promise<IQueryOperationResult> {
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
 
     const operation: Algebra.Operation = ActorQueryOperationFromQuad.createOperation(algebraFactory, operationOriginal);
     return this.mediatorQueryOperation.mediate({ operation, context });

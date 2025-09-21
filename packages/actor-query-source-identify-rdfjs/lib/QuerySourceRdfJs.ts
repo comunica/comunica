@@ -11,7 +11,7 @@ import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from '@traqula/algebra-transformations-1-2';
-import { Factory } from '@traqula/algebra-transformations-1-2';
+import { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import { AsyncIterator, wrap as wrapAsyncIterator } from 'asynciterator';
 import { someTermsNested, filterTermsNested, someTerms, uniqTerms } from 'rdf-terms';
 import type { IRdfJsSourceExtended } from './IRdfJsSourceExtended';
@@ -28,7 +28,7 @@ export class QuerySourceRdfJs implements IQuerySource {
     this.referenceValue = source;
     this.dataFactory = dataFactory;
     this.bindingsFactory = bindingsFactory;
-    const AF = new Factory(<RDF.DataFactory> this.dataFactory);
+    const AF = new AlgebraFactory(<RDF.DataFactory> this.dataFactory);
     this.selectorShape = {
       type: 'operation',
       operation: {

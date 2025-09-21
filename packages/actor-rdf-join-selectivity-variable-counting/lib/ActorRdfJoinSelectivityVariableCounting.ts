@@ -3,7 +3,7 @@ import { ActorRdfJoinSelectivity } from '@comunica/bus-rdf-join-selectivity';
 import type { IActorArgs, TestResult } from '@comunica/core';
 import { passTest } from '@comunica/core';
 import type { IMediatorTypeAccuracy } from '@comunica/mediatortype-accuracy';
-import { Algebra, utils } from '@traqula/algebra-transformations-1-2';
+import { Algebra, algebraUtils } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A comunica Variable Counting RDF Join Selectivity Actor.
@@ -282,7 +282,7 @@ export class ActorRdfJoinSelectivityVariableCounting extends ActorRdfJoinSelecti
     // Determine all operations that select values (patterns and paths)
     const patterns: (Algebra.Pattern | Algebra.Path)[] = [];
     for (const operation of operations) {
-      utils.recurseOperation(operation, {
+      algebraUtils.recurseOperation(operation, {
         [Algebra.Types.PATTERN](pattern: Algebra.Pattern): boolean {
           patterns.push(pattern);
           return false;

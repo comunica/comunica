@@ -14,7 +14,7 @@ import type { TestResult } from '@comunica/core';
 import { failTest, passTest } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { Factory } from '@traqula/algebra-transformations-1-2';
+import { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import { QuerySourceSparql } from './QuerySourceSparql';
 
 /**
@@ -47,7 +47,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
     this.logInfo(action.context, `Identified ${action.url} as sparql source with service URL: ${action.metadata.sparqlService || action.url}`);
 
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
     const source = new QuerySourceSparql(
       action.forceSourceType ? action.url : action.metadata.sparqlService || action.url,
       action.context,

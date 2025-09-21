@@ -6,7 +6,7 @@ import { failTest, passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
 import { toAlgebra } from '@traqula/algebra-sparql-1-2';
 import { Parser as SparqlParser } from '@traqula/parser-sparql-1-2';
-import { Factory } from '@traqula/rules-sparql-1-2';
+import { AstFactory } from '@traqula/rules-sparql-1-2';
 
 /**
  * A comunica Algebra SPARQL Parse Actor.
@@ -30,11 +30,11 @@ export class ActorQueryParseSparql extends ActorQueryParse {
 
   public async run(action: IActionQueryParse): Promise<IActorQueryParseOutput> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
-    const astFactory = new Factory();
+    const astFactory = new AstFactory();
     const parsedSyntax = this.parser.parse(action.query, {
       prefixes: this.prefixes,
       baseIRI: action.baseIRI,
-      factory: astFactory,
+      astFactory,
     });
     let baseIRI: string | undefined;
     if (astFactory.isQuery(parsedSyntax)) {

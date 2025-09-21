@@ -17,7 +17,7 @@ import { failTest, passTest } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
-import { Factory } from '@traqula/algebra-transformations-1-2';
+import { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import { QuerySourceQpf } from './QuerySourceQpf';
 
 /**
@@ -89,7 +89,7 @@ export class ActorQuerySourceIdentifyHypermediaQpf extends ActorQuerySourceIdent
     quads?: RDF.Stream,
   ): Promise<QuerySourceQpf> {
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
     return new QuerySourceQpf(
       this.mediatorMetadata,
       this.mediatorMetadataExtract,

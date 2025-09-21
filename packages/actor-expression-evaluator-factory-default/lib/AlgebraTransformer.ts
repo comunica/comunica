@@ -2,10 +2,10 @@ import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import type { Expression, IActionContext, OperatorExpression } from '@comunica/types';
 import * as ExprEval from '@comunica/utils-expression-evaluator';
-import { Algebra as Alg, Factory } from '@traqula/algebra-transformations-1-2';
+import { Algebra as Alg, AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 
 export class AlgebraTransformer extends ExprEval.TermTransformer {
-  private readonly AF = new Factory();
+  private readonly AF = new AlgebraFactory();
   public constructor(
     private readonly context: IActionContext,
     private readonly mediatorFunctionFactory: MediatorFunctionFactory,

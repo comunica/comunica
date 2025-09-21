@@ -14,7 +14,7 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
-import { Algebra, Factory } from '@traqula/algebra-transformations-1-2';
+import { Algebra, AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import {
   SingletonIterator,
   UnionIterator,
@@ -35,7 +35,7 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
     context: IActionContext,
   ): Promise<IQueryOperationResult> {
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
     const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context, dataFactory);
     const predicate = <Algebra.ZeroOrOnePath> operation.predicate;
     const sources = this.getPathSources(predicate);

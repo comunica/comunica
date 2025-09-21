@@ -9,7 +9,7 @@ import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext, IQuerySourceWrapper, MetadataBindings } from '@comunica/types';
 import { doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-query-operation';
-import { Algebra, Factory, utils } from '@traqula/algebra-transformations-1-2';
+import { Algebra, AlgebraFactory, algebraUtils } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A comunica Prune Empty Source Operations Optimize Query Operation Actor.
@@ -30,7 +30,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
 
     let operation = action.operation;
 
@@ -39,7 +39,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     const collectedOperations: (Algebra.Pattern | Algebra.Link)[] = [];
     // eslint-disable-next-line ts/no-this-alias
     const self = this;
-    utils.recurseOperation(operation, {
+    algebraUtils.recurseOperation(operation, {
       [Algebra.Types.UNION](subOperation) {
         self.collectMultiOperationInputs(subOperation.input, collectedOperations, Algebra.Types.PATTERN);
         return true;
@@ -73,7 +73,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     if (emptyOperations.size > 0) {
       this.logDebug(action.context, `Pruning ${emptyOperations.size} source-specific operations`);
       // Rewrite operations by removing the empty children
-      operation = utils.mapOperation(operation, {
+      operation = algebraUtils.mapOperation(operation, {
         [Algebra.Types.UNION](subOperation, factory) {
           return self.mapMultiOperation(subOperation, emptyOperations, children => factory.createUnion(children));
         },
@@ -83,7 +83,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
       }, algebraFactory);
 
       // Identify and remove operations that have become empty now due to missing variables
-      operation = utils.mapOperation(operation, {
+      operation = algebraUtils.mapOperation(operation, {
         [Algebra.Types.PROJECT](subOperation, factory) {
           // Remove projections that have become empty now due to missing variables
           if (ActorOptimizeQueryOperationPruneEmptySourceOperations.hasEmptyOperation(subOperation)) {
@@ -121,7 +121,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     // But if we find a union with multiple children,
     // *all* of the children must be empty before the full operation is considered empty.
     let emptyOperation = false;
-    utils.recurseOperation(operation, {
+    algebraUtils.recurseOperation(operation, {
       [Algebra.Types.UNION](subOperation) {
         if (subOperation.input.every(subSubOperation => ActorOptimizeQueryOperationPruneEmptySourceOperations
           .hasEmptyOperation(subSubOperation))) {
@@ -190,7 +190,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
    * @param context The query context.
    */
   public async hasSourceResults(
-    algebraFactory: Factory,
+    algebraFactory: AlgebraFactory,
     source: IQuerySourceWrapper,
     input: Algebra.Operation,
     context: IActionContext,

@@ -11,7 +11,7 @@ import type {
   ComunicaDataFactory,
 } from '@comunica/types';
 import { getSafeBindings } from '@comunica/utils-query-operation';
-import { Algebra, Factory } from '@traqula/algebra-transformations-1-2';
+import { Algebra, AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import { UnionIterator } from 'asynciterator';
 
 /**
@@ -26,7 +26,7 @@ export class ActorQueryOperationPathAlt extends ActorAbstractPath {
 
   public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryOperationResult> {
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
 
     const predicate = <Algebra.Alt> operation.predicate;
 

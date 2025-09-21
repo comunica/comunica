@@ -7,7 +7,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultBindings, Bindings, IActionContext } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
-import { Algebra, Factory } from '@traqula/algebra-transformations-1-2';
+import { Algebra, AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinOptionalBind } from '../lib/ActorRdfJoinOptionalBind';
@@ -15,7 +15,7 @@ import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
-const FACTORY = new Factory();
+const FACTORY = new AlgebraFactory();
 const mediatorMergeBindingsContext: any = {
   mediate: () => ({}),
 };
