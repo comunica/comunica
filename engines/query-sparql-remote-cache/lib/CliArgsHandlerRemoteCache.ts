@@ -1,11 +1,5 @@
 import type { ICliArgsHandler } from '@comunica/types';
 import type { Argv } from 'yargs';
-import {
-  type CacheLocation
-} from "sparql-cache-client";
-
-// eslint-disable-next-line ts/no-require-imports,ts/no-var-requires
-const { interactiveLogin } = require('solid-node-interactive-auth');
 
 /**
  * Adds and handles CLI options for remote cache.
@@ -52,18 +46,18 @@ export class CliArgsHandlerRemoteCache implements ICliArgsHandler {
   }
 
   public async handleArgs(args: Record<string, any>, context: Record<string, any>): Promise<void> {
-    context['@comunica/remote-cache:location'] = args.location as CacheLocation;
+    context['@comunica/remote-cache:location'] = args.location;
     if (args.valueClauseBlockSize !== 'void') {
-      context['@comunica/remote-cache:valueClauseBlockSize'] = args.valueClauseBlockSize as number;
+      context['@comunica/remote-cache:valueClauseBlockSize'] = args.valueClauseBlockSize;
     }
     if (args.valueClauseReduction !== 'void') {
-      context['@comunica/remote-cache:valueClauseReduction'] = args.valueClauseReduction as boolean;
+      context['@comunica/remote-cache:valueClauseReduction'] = args.valueClauseReduction;
     }
     if (args.failOnCacheMiss !== 'void') {
-      context['@comunica/remote-cache:failOnCacheMiss'] = args.failOnCacheMiss as boolean;
+      context['@comunica/remote-cache:failOnCacheMiss'] = args.failOnCacheMiss;
     }
     if (args.saveToCache !== 'void') {
-      context['@comunica/remote-cache:saveToCache'] = args.saveToCache as boolean;
+      context['@comunica/remote-cache:saveToCache'] = args.saveToCache;
     }
   }
 }

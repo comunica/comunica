@@ -3,7 +3,8 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^4.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-process-remote-cache/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-process-sequential/^4.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-query/^4.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-query/^4.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/config-query-sparql/^4.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:default:Runner",
   "@type": "Runner",
@@ -31,7 +32,7 @@
           "@id": "urn:comunica:default:merge-bindings-context/mediators#main"
         },
         "mediatorQueryResultSerialize": { 
-          "@id": "urn:comunica:default:query-result-serialize/mediators#serialize" 
+          "@id": "urn:comunica:default:query-result-serialize/mediators#serialize"
         }
       },
       "cacheHitAlgorithm": "all"
