@@ -282,7 +282,7 @@ export function materializeOperation(
       }
       if (op.expressionType === 'operator') {
         if (op.operator === 'bound' && op.args.length === 1 && op.args[0].expressionType === 'term' &&
-          [ ...bindings.keys() ].some(variable => op.args[0].term.equals(variable))) {
+          [ ...bindings.keys() ].some(variable => (<Algebra.TermExpression>op.args[0]).term.equals(variable))) {
           return {
             recurse: false,
             result: factory.createTermExpression(factory.dataFactory.literal(
@@ -298,7 +298,7 @@ export function materializeOperation(
       }
       if (op.expressionType === 'aggregate' &&
         'variable' in op &&
-        bindings.has(<RDF.Variable> op.variable)) {
+        bindings.has(op.variable)) {
         // Materialize a bound aggregate operation.
         // If strictTargetVariables is true, we throw if the expression target variable is attempted to be bound.
         // Otherwise, we ignore this operation.

@@ -133,7 +133,7 @@ IActionBindingsAggregatorFactory):
     context,
   }, undefined);
   if (expr.aggregator === 'count') {
-    if (expr.expression.wildcard) {
+    if ((<Algebra.WildcardExpression>expr.expression).wildcard) {
       return new WildcardCountAggregator(evaluator, expr.distinct);
     }
     return new CountAggregator(evaluator, expr.distinct);
@@ -1297,7 +1297,7 @@ describe('ActorQueryOperationGroup', () => {
         inputOp: simpleXYZinput,
         aggregates: [ aggregateOn('group_concat', 'x', 'g') ],
       });
-      op.operation.aggregates[0].separator = ';';
+      (<Algebra.Group>op.operation).aggregates[0].separator = ';';
 
       const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([

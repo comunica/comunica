@@ -27,7 +27,7 @@ export class ActorOptimizeQueryOperationJoinBgp extends ActorOptimizeQueryOperat
         if (op.input.every(subInput => subInput.type === 'bgp')) {
           return {
             recurse: false,
-            result: factory.createBgp(op.input.flatMap(subInput => subInput.patterns)),
+            result: factory.createBgp(op.input.flatMap(subInput => (<Algebra.Bgp> subInput).patterns)),
           };
         }
         return {

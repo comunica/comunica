@@ -137,7 +137,7 @@ export class QuerySourceSparql implements IQuerySource {
     );
     this.lastSourceContext = undefined;
     const quads = wrap<any>(rawStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY });
-    this.attachMetadata(quads, context, Promise.resolve(operation.input));
+    this.attachMetadata(quads, context, Promise.resolve((<Algebra.Operation & { input: any }>operation).input));
     return quads;
   }
 

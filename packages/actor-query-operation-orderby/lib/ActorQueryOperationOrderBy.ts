@@ -94,21 +94,21 @@ export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated
 
   // Remove descending operator if necessary
   private extractSortExpression(expr: Algebra.Expression): Algebra.Expression {
-    const { expressionType, operator } = expr;
+    const { expressionType } = expr;
     if (expressionType !== Algebra.ExpressionTypes.OPERATOR) {
       return expr;
     }
-    return operator === 'desc' ?
+    return expr.operator === 'desc' ?
       expr.args[0] :
       expr;
   }
 
   private isAscending(expr: Algebra.Expression): boolean {
-    const { expressionType, operator } = expr;
+    const { expressionType } = expr;
     if (expressionType !== Algebra.ExpressionTypes.OPERATOR) {
       return true;
     }
-    return operator !== 'desc';
+    return expr.operator !== 'desc';
   }
 }
 

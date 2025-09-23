@@ -1,7 +1,7 @@
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { IActionContext } from '@comunica/types';
 import { toAlgebra } from '@traqula/algebra-sparql-1-2';
-import type { Algebra as Alg } from '@traqula/algebra-transformations-1-2';
+import type { Algebra, Algebra as Alg } from '@traqula/algebra-transformations-1-2';
 import { Parser as SparqlParser } from '@traqula/parser-sparql-1-2';
 import type { AliasMap } from './Aliases';
 import type { Notation } from './TestTable';
@@ -10,7 +10,8 @@ import { ArrayTable, BinaryTable, UnaryTable, VariableTable } from './TestTable'
 const parser = new SparqlParser();
 export function getMockExpression(expr = '1+1'): Alg.Expression {
   const parsedSyntax = parser.parse(`SELECT * WHERE { ?s ?p ?o FILTER (${expr})}`);
-  return toAlgebra(<any> parsedSyntax).input.expression;
+  const algebra = <Algebra.Project> toAlgebra(parsedSyntax);
+  return (<Algebra.Filter> algebra.input).expression;
 }
 
 export interface ITestTableConfigBase {

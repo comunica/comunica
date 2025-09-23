@@ -65,7 +65,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
     if (operation.subject.termType === 'Variable' && operation.object.termType === 'Variable') {
       // Get all the results of subjects with same predicate, but once, then fill in first variable for those
       const single = algebraFactory.createDistinct(
-        algebraFactory.createPath(operation.subject, operation.predicate.path, operation.object, operation.graph),
+        algebraFactory.createPath(operation.subject, predicate.path, operation.object, operation.graph),
       );
       const results = getSafeBindings(
         await this.mediatorQueryOperation.mediate({ context, operation: single }),

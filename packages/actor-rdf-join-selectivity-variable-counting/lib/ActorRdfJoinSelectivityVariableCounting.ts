@@ -29,7 +29,8 @@ export class ActorRdfJoinSelectivityVariableCounting extends ActorRdfJoinSelecti
     if (pattern.subject.termType === 'Variable') {
       cost += 4;
     }
-    if (pattern.predicate.termType === 'Variable' || pattern.type === Algebra.Types.PATH) {
+    if (('termType' in pattern.predicate && pattern.predicate.termType === 'Variable') ||
+      pattern.type === Algebra.Types.PATH) {
       cost += 1;
     }
     if (pattern.object.termType === 'Variable') {

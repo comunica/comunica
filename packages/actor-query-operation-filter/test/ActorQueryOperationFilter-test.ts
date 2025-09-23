@@ -42,9 +42,9 @@ SELECT * WHERE { ?s ?p ?o FILTER (${expr})}
 }
 
 function parse(query: string): Algebra.Expression {
-  const sparqlQuery = toAlgebra(parser.parse(template(query)));
+  const sparqlQuery = <Algebra.Project> toAlgebra(parser.parse(template(query)));
   // Extract filter expression from complete query
-  return sparqlQuery.input.expression;
+  return (<Algebra.Filter>sparqlQuery.input).expression;
 }
 
 describe('ActorQueryOperationFilter', () => {

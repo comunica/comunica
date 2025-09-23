@@ -217,7 +217,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
   }
 
   protected getOverlappingOperations(
-    operation: Algebra.Operation,
+    operation: Algebra.Union | Algebra.Join,
     expressionVariables: RDF.Variable[],
   ): {
       fullyOverlapping: Algebra.Operation[];
@@ -577,7 +577,8 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
    * @param expression An expression.
    */
   public isExpressionFalse(expression: Algebra.Expression): boolean {
-    return (expression.term && expression.term.termType === 'Literal' && expression.term.value === 'false');
+    const casted = <Extract<Algebra.Expression, { term?: unknown }>> expression;
+    return (casted.term && casted.term.termType === 'Literal' && casted.term.value === 'false');
   }
 
   /**

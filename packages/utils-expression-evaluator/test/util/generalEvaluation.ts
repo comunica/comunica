@@ -6,6 +6,7 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-expression-evaluator/test/util/helpers';
 import type * as RDF from '@rdfjs/types';
 import { toAlgebra } from '@traqula/algebra-sparql-1-2';
+import type { Algebra } from '@traqula/algebra-transformations-1-2';
 import { Parser as SparqlParser } from '@traqula/parser-sparql-1-2';
 import { DataFactory } from 'rdf-data-factory';
 
@@ -57,9 +58,9 @@ Promise<{ asyncError: unknown; syncError?: unknown } | undefined> {
 const parser = new SparqlParser();
 function parse(query: string) {
   const parsedSyntax = parser.parse(query);
-  const sparqlQuery = toAlgebra(parsedSyntax);
+  const sparqlQuery = <Algebra.Project> toAlgebra(parsedSyntax);
   // Extract filter expression from complete query
-  return sparqlQuery.input.expression;
+  return (<Algebra.Filter> sparqlQuery.input).expression;
 }
 
 async function evaluateAsync(

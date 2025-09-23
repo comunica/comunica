@@ -41,7 +41,7 @@
     "@comunica/context-entries": "^4.0.2",
     "@comunica/types": "^4.0.2",
     "@rdfjs/types": "*",
-    "@traqula/algebra-transformations-1-2": "^0.0.16",
+    "@traqula/algebra-transformations-1-2": "^0.0.17",
     "lru-cache": "^10.0.0",
     "rdf-data-factory": "^2.0.0",
     "rdf-string": "^2.0.1"

@@ -58,7 +58,7 @@
     "@comunica/utils-iterator": "^4.0.1",
     "@comunica/utils-metadata": "^4.0.2",
     "@rdfjs/types": "*",
-    "@traqula/algebra-transformations-1-2": "^0.0.16",
+    "@traqula/algebra-transformations-1-2": "^0.0.17",
     "asynciterator": "^3.9.0",
     "lru-cache": "^10.0.0",
     "rdf-streaming-store": "^1.1.4",

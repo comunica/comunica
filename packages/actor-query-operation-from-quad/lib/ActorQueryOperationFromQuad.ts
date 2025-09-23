@@ -28,18 +28,19 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
     recursiveCb: (subOperation: Algebra.Operation) => Algebra.Operation,
   ): Algebra.Operation {
     const copiedOperation: Algebra.Operation = <any> {};
-    for (const key of Object.keys(operation)) {
-      if (Array.isArray(operation[key]) && key !== 'template') {
+    for (const [ key, value ] of Object.entries(operation)) {
+      const castedKey = <keyof typeof operation> key;
+      if (Array.isArray(value) && key !== 'template') {
         // We exclude the 'template' entry, as we don't want to modify the template value of construct operations
         if (key === 'variables') {
-          copiedOperation[key] = operation[key];
+          copiedOperation[castedKey] = <any> value;
         } else {
-          copiedOperation[key] = operation[key].map(recursiveCb);
+          copiedOperation[castedKey] = <any> value.map(recursiveCb);
         }
-      } else if (ActorQueryOperationFromQuad.ALGEBRA_TYPES.includes(operation[key].type)) {
-        copiedOperation[key] = recursiveCb(operation[key]);
+      } else if (ActorQueryOperationFromQuad.ALGEBRA_TYPES.includes(value.type)) {
+        copiedOperation[castedKey] = <any> recursiveCb(value);
       } else {
-        copiedOperation[key] = operation[key];
+        copiedOperation[castedKey] = value;
       }
     }
     return copiedOperation;
