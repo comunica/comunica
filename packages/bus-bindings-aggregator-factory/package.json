@@ -42,7 +42,7 @@
     "@comunica/types": "^4.0.2",
     "@comunica/utils-expression-evaluator": "^4.0.2",
     "@rdfjs/types": "*",
-    "rdf-string": "^2.0.1",
-    "sparqlalgebrajs": "^4.2.0"
+    "@traqula/algebra-transformations-1-2": "^0.0.17",
+    "rdf-string": "^2.0.1"
   }
 }

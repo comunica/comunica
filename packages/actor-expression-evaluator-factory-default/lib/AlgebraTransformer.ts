@@ -2,9 +2,10 @@ import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import type { Expression, IActionContext, OperatorExpression } from '@comunica/types';
 import * as ExprEval from '@comunica/utils-expression-evaluator';
-import { Algebra as Alg } from 'sparqlalgebrajs';
+import { Algebra as Alg, AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 
 export class AlgebraTransformer extends ExprEval.TermTransformer {
+  private readonly AF = new AlgebraFactory();
   public constructor(
     private readonly context: IActionContext,
     private readonly mediatorFunctionFactory: MediatorFunctionFactory,
@@ -13,10 +14,20 @@ export class AlgebraTransformer extends ExprEval.TermTransformer {
   }
 
   public async transformAlgebra(expr: Alg.Expression): Promise<Expression> {
-    const types = Alg.expressionTypes;
+    const types = Alg.ExpressionTypes;
 
     switch (expr.expressionType) {
       case types.TERM:
+        // A triple term is actually not a term since it itself can contain
+        // variables thereby having the properties of an operator, we therefore map it to the triple operator here.
+        // Not that this is needed because the EE has a shortcut for terms and sees them as distinct from operators.
+        if (expr.term.termType === 'Quad') {
+          return await this.transformOperator(this.AF.createOperatorExpression('triple', [
+            this.AF.createTermExpression(expr.term.subject),
+            this.AF.createTermExpression(expr.term.predicate),
+            this.AF.createTermExpression(expr.term.object),
+          ]));
+        }
         return this.transformTerm(expr);
       case types.OPERATOR:
         return await this.transformOperator(expr);
@@ -31,8 +42,8 @@ export class AlgebraTransformer extends ExprEval.TermTransformer {
     }
   }
 
-  private static transformWildcard(term: Alg.WildcardExpression): Expression {
-    return new ExprEval.NamedNode(term.wildcard.value);
+  private static transformWildcard(_term: Alg.WildcardExpression): Expression {
+    return new ExprEval.NamedNode('*');
   }
 
   private async getOperator(operator: string, expr: Alg.OperatorExpression | Alg.NamedExpression):

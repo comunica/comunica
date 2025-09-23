@@ -1,6 +1,6 @@
 import type * as RDF from '@rdfjs/types';
+import type { Algebra } from '@traqula/algebra-transformations-1-2';
 import type { LRUCache } from 'lru-cache';
-import type { Algebra } from 'sparqlalgebrajs';
 import type { ComunicaDataFactory } from './ComunicaDataFactory';
 import type { IActionContext } from './IActionContext';
 

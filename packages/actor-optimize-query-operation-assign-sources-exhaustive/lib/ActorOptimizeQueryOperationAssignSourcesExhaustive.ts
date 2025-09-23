@@ -10,7 +10,7 @@ import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, IDataDestination, IQuerySourceWrapper } from '@comunica/types';
 import { assignOperationSource, doesShapeAcceptOperation } from '@comunica/utils-query-operation';
-import { Algebra, Factory, Util } from 'sparqlalgebrajs';
+import { Algebra, AlgebraFactory, algebraUtils } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A comunica Assign Sources Exhaustive Optimize Query Operation Actor.
@@ -26,7 +26,7 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
 
     const sources: IQuerySourceWrapper[] = action.context.get(KeysQueryOperation.querySources) ?? [];
     if (sources.length === 0) {
@@ -68,14 +68,14 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
    * @param sources The sources to assign.
    */
   public assignExhaustive(
-    algebraFactory: Factory,
+    algebraFactory: AlgebraFactory,
     operation: Algebra.Operation,
     sources: IQuerySourceWrapper[],
   ): Algebra.Operation {
     // eslint-disable-next-line ts/no-this-alias
     const self = this;
-    return Util.mapOperation(operation, {
-      [Algebra.types.PATTERN](subOperation, factory) {
+    return algebraUtils.mapOperation(operation, {
+      [Algebra.Types.PATTERN](subOperation, factory) {
         if (sources.length === 1) {
           return {
             result: assignOperationSource(subOperation, sources[0]),
@@ -88,7 +88,7 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
           recurse: false,
         };
       },
-      [Algebra.types.LINK](subOperation, factory) {
+      [Algebra.Types.LINK](subOperation, factory) {
         if (sources.length === 1) {
           return {
             result: assignOperationSource(subOperation, sources[0]),
@@ -101,7 +101,7 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
           recurse: false,
         };
       },
-      [Algebra.types.NPS](subOperation, factory) {
+      [Algebra.Types.NPS](subOperation, factory) {
         if (sources.length === 1) {
           return {
             result: assignOperationSource(subOperation, sources[0]),
@@ -114,13 +114,13 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
           recurse: false,
         };
       },
-      [Algebra.types.SERVICE](subOperation) {
+      [Algebra.Types.SERVICE](subOperation) {
         return {
           result: subOperation,
           recurse: false,
         };
       },
-      [Algebra.types.CONSTRUCT](subOperation, factory) {
+      [Algebra.Types.CONSTRUCT](subOperation, factory) {
         return {
           result: factory.createConstruct(
             self.assignExhaustive(algebraFactory, subOperation.input, sources),
@@ -129,7 +129,7 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
           recurse: false,
         };
       },
-      [Algebra.types.DELETE_INSERT](subOperation, factory) {
+      [Algebra.Types.DELETE_INSERT](subOperation, factory) {
         return {
           result: factory.createDeleteInsert(
             subOperation.delete,

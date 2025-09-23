@@ -12,8 +12,8 @@ import type {
 } from '@comunica/types';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
+import type { Algebra } from '@traqula/algebra-transformations-1-2';
 import { LRUCache } from 'lru-cache';
-import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Reduced Hash Query Operation Actor.
