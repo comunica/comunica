@@ -386,8 +386,8 @@ describe('System test: QuerySparql', () => {
         it('rejects when creator returns null', async() => {
           const context = <any> { sources: [ store ]};
           context.extensionFunctionCreator = () => null;
-          await expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow(
-            `Creation of function evaluator failed: no configured actor was able to evaluate function http://example.org/functions#nonExist`,
+          await expect(engine.query(baseQuery(funcAllow), context)).rejects.toThrow(
+            `Creation of function evaluator failed: no configured actor was able to evaluate function http://example.org/functions#${funcAllow}`,
           );
         });
 
@@ -419,6 +419,154 @@ describe('System test: QuerySparql', () => {
           context.extensionFunctionCreator = baseFunctionCreator;
           await expect(engine.query(baseQuery(funcAllow), context)).rejects
             .toThrow('Illegal simultaneous usage of extensionFunctionCreator and extensionFunctions in context');
+        });
+
+        /**
+         * These tests are integration tests to check the correct behaviour of filter pushdown with extension functions.
+         * Comunica should not pushdown when it supports the extension function, but no endpoint does.
+         * If comunica doesn't support it, then the filter pushdown behaviour is as normal.
+         */
+        describe('filter pushdown behaviour with extension functions', () => {
+          let containsFilter: boolean;
+          let endpoint1: string;
+          let endpoint2: string;
+          let createMockedFetch: (arg0: boolean, arg1: boolean) => (input: string) => Promise<Response>;
+          let createContext: (arg0: boolean, arg1: boolean) => any;
+
+          beforeEach(async() => {
+            await engine.invalidateHttpCache();
+            containsFilter = false;
+            endpoint1 = 'http://example.com/1/sparql';
+            endpoint2 = 'http://example.com/2/sparql';
+            createMockedFetch = (endpoint1SupportsFunction: boolean, endpoint2SupportsFunction: boolean) =>
+              (input: string) => {
+                if (input.includes('FILTER')) {
+                  containsFilter = true;
+                }
+                const createServiceDescription = (supportsFunction: boolean, endpoint: string): string =>
+                  supportsFunction ?
+                  `
+                    @prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
+                    <${endpoint}> sd:extensionFunction "http://example.org/functions#allowAll" .
+                  ` :
+                  ``;
+                if (input.includes(endpoint1)) {
+                  if (input === endpoint1) {
+                    // Service description fetch on endpoint1
+                    return Promise.resolve(new Response(
+                      createServiceDescription(endpoint1SupportsFunction, endpoint1),
+                      { status: 200, headers: { 'Content-Type': 'text/turtle' }},
+                    ));
+                  }
+                  if (input.includes('ASK')) {
+                    // ASK on endpoint1
+                    return Promise.resolve(new Response(
+                      JSON.stringify({ head: {}, boolean: true }),
+                      { status: 200, headers: { 'Content-Type': 'application/sparql-results+json' }},
+                    ));
+                  }
+                  // Query fetch on endpoint1
+                  return Promise.resolve(new Response(
+                    ``,
+                    { status: 200, headers: { 'Content-Type': 'application/sparql-results+json' }},
+                  ));
+                }
+                if (input === endpoint2) {
+                  // Service description fetch on endpoint2
+                  return Promise.resolve(new Response(
+                    createServiceDescription(endpoint2SupportsFunction, endpoint2),
+                    { status: 200, headers: { 'Content-Type': 'text/turtle' }},
+                  ));
+                }
+                if (input.includes('ASK')) {
+                  // ASK on endpoint2
+                  return Promise.resolve(new Response(
+                    JSON.stringify({ head: {}, boolean: true }),
+                    { status: 200, headers: { 'Content-Type': 'application/sparql-results+json' }},
+                  ));
+                }
+                // Query fetch on endpoint2
+                return Promise.resolve(new Response(
+                  JSON.stringify({
+                    head: { vars: [ 's', 'p', 'o' ]},
+                    results: {
+                      bindings: [
+                        { s: { type: 'uri', value: 'http://example.org/2/s1' }, p: { type: 'uri', value: 'http://example.org/2/p' }, o: { type: 'literal', value: '1', datatype: 'http://www.w3.org/2001/XMLSchema#integer' }},
+                        { s: { type: 'uri', value: 'http://example.org/2/s2' }, p: { type: 'uri', value: 'http://example.org/2/p' }, o: { type: 'literal', value: '2', datatype: 'http://www.w3.org/2001/XMLSchema#integer' }},
+                      ],
+                    },
+                  }),
+                  { status: 200, headers: { 'Content-Type': 'application/sparql-results+json' }},
+                ));
+              };
+            createContext = (arg0: boolean, arg1: boolean) => <any> {
+              sources: [ endpoint1, endpoint2 ],
+              extensionFunctions: baseFunctions,
+              fetch: createMockedFetch(arg0, arg1),
+            };
+          });
+
+          it('do filter pushdown if both endpoints supports the extension function', async() => {
+            await engine.query(baseQuery(funcAllow), createContext(true, true));
+
+            expect(containsFilter).toBeTruthy();
+          });
+
+          it('do filter pushdown if one endpoint doesn\'t support the extension function', async() => {
+            await engine.query(baseQuery(funcAllow), createContext(true, false));
+
+            expect(containsFilter).toBeTruthy();
+          });
+
+          it('should evaluate extension functions client side for the endpoint that doesn\'t support it', async() => {
+            const context: QueryStringContext = <QueryStringContext> {
+              sources: [ endpoint1, endpoint2 ],
+              extensionFunctions: {
+                'http://example.org/functions#allowAll': async(args: RDF.Literal[]): Promise<RDF.Literal> => {
+                  // Doesn't allow all, but reusing this function means I don't need to touch the service description
+                  if (args.length < 2) {
+                    return DF.literal('true', booleanType);
+                  }
+                  return DF.literal(args[0].value < args[1].value ? 'true' : 'false', booleanType);
+                },
+              },
+              fetch: createMockedFetch(true, false),
+            };
+            const bindingsStream = await engine.queryBindings(`
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX func: <http://example.org/functions#>
+SELECT * WHERE {
+  ?s ?p ?o .
+  FILTER (func:allowAll(?o, "2"^^xsd:integer))
+}
+            `, context);
+
+            // Make sure that the filter was actually pushed down
+            expect(containsFilter).toBeTruthy();
+
+            // Client-side, the ex:s2 result should be filtered out
+            await expect(bindingsStream).toEqualBindingsStream([ BF.bindings([
+              [ DF.variable('s'), DF.namedNode('http://example.org/2/s1') ],
+              [ DF.variable('p'), DF.namedNode('http://example.org/2/p') ],
+              [ DF.variable('o'), DF.literal('1', integerType) ],
+            ]) ]);
+          });
+
+          it('don\'t filter pushdown if both endpoints don\'t support the extension function', async() => {
+            await engine.query(baseQuery(funcAllow), createContext(false, false));
+
+            expect(containsFilter).toBeFalsy();
+          });
+
+          it('do filter pushdown if comunica doesn\'t support the extension function', async() => {
+            const context: QueryStringContext = <QueryStringContext> {
+              sources: [ endpoint1, endpoint2 ],
+              fetch: createMockedFetch(false, false),
+            };
+            await engine.query(baseQuery(funcAllow), context);
+
+            expect(containsFilter).toBeTruthy();
+          });
         });
 
         it('handles complex queries with BIND to', async() => {
@@ -839,6 +987,20 @@ WHERE {
 } ORDER BY ?sq`, {
           sources: [{ type: 'file', value: 'https://lov.linkeddata.es/dataset/lov/sparql' }],
         })).rejects.toThrow('RDF parsing failed');
+      });
+
+      it('should not push distinct construct into a SPARQL endpoint (no browser)', async() => {
+        const quadsStream = await engine.queryQuads(`
+PREFIX dcat: <http://www.w3.org/ns/dcat#>
+construct { ?s a dcat:Dataset }
+where {
+  ?s a dcat:Dataset ;
+    dcat:distribution ?distro . FILTER(?s = <http://data.bibliotheken.nl/id/dataset/rise-alba>)
+}`, {
+          distinctConstruct: true,
+          sources: [{ type: 'sparql', value: 'https://datasetregister.netwerkdigitaalerfgoed.nl/sparql' }],
+        });
+        await expect((quadsStream.toArray())).resolves.toHaveLength(1);
       });
     });
 

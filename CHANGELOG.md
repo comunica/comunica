@@ -1,6 +1,36 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v4.4.0"></a>
+## [v4.4.0](https://github.com/comunica/comunica/compare/v4.3.0...v4.4.0) - 2025-09-17
+
+### Added
+* [Accept RDF/JS datasets as sources](https://github.com/comunica/comunica/commit/c1d626779a8a91900d8907788875db1aee3948c6)
+* [Include VoID metadata in SPARQL endpoint, Closes #1545](https://github.com/comunica/comunica/commit/a601c5f67f47dd8a3c29b24703cf36286eb127ce)
+* [Add automatic type casting for xs:untypedAtomic](https://github.com/comunica/comunica/commit/ffd96bdedea8ff40c589136bfa92b44bb106e3a9)
+* [Vary requests to SPARQL endpoints using Accept-Post header](https://github.com/comunica/comunica/commit/e38903387b11d25626eb3c4f1a5c28250bd116c5)
+* [Allow fileBaseIRI to be set, Closes #1540](https://github.com/comunica/comunica/commit/3c6498ce65634f8294a0aa4418c1947e91ff945e)
+* Send extension functions to remote SPARQL endpoints if supported.
+  * [Only push down extension functions to sources if allowed](https://github.com/comunica/comunica/commit/3b0f16a79ba799661fb110c30fa839bf6ec388b9)
+  * [List and detect extension functions in service descriptions](https://github.com/comunica/comunica/commit/51c6569bdc9e72b5bd923fea3a081e0a85386d9a)
+
+### Changed
+* [Make sources field type in context less strict, Closes #1615](https://github.com/comunica/comunica/commit/8d954feaab0d395be559be7879896a3475495797)
+* [Make partial cardinality emission optional (#1618)](https://github.com/comunica/comunica/commit/c03294cec8e8138436d146906def6353752afcd3)
+* [Cache identified sources in service operation actor](https://github.com/comunica/comunica/commit/0b8fa6fa11a2eceb11fedcf9b43ca5fd44a1318f)
+* [Send short SPARQL endpoint requests as GET](https://github.com/comunica/comunica/commit/66532fd2bbb2f22493b8388cc578a6ed7dba9a50)
+* [Update to immutable v5](https://github.com/comunica/comunica/commit/184894894a299188f201e623b474ec5e834a6960)
+* Optimizations:
+  * [Optimize OPTIONALs with expressions applying to only left or right](https://github.com/comunica/comunica/commit/9d23aa6457a1f28363ce8f4c801b785595d26dd6)
+  * [Avoid cartesian products in actor-rdf-join-inner-multi-smallest](https://github.com/comunica/comunica/commit/24962de0ce971a002896e19a99767013d6d930a7)
+
+### Fixed
+* [Fix wrong handling of FILTER in OPTIONAL](https://github.com/comunica/comunica/commit/6050c078ccae6ba16968dd087ab60e2b90ab2e54)
+* [Fix distinctConstruct not working when over a single SPARQL endpoint](https://github.com/comunica/comunica/commit/e1248f3edc2a59cd9f36ba4c854cee805b9e6d42)
+* [Skip ActorIteratorTransformRecordIntermediateResults if context entry is missing](https://github.com/comunica/comunica/commit/c4cb33a896700f01105fb739a7f080508feaa404)
+* [Fix incorrect context being used during empty source pruning](https://github.com/comunica/comunica/commit/3c36924689b861c31d6910d82bd4796713e8b0c4)
+* [Use ASK to verify cardinality estimate-based source assignments (#1587)](https://github.com/comunica/comunica/commit/021887f27f5dcb0d83cdd7f99ff3c221d9655964)
+
 <a name="v4.3.0"></a>
 ## [v4.3.0](https://github.com/comunica/comunica/compare/v4.2.0...v4.3.0) - 2025-06-17
 

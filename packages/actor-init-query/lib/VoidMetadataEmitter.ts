@@ -11,6 +11,24 @@ const quad = require('rdf-quad');
  * A VoID metadata emitter that emits metadata used in VoID description of the HTTP service sparql endpoint.
  */
 export class VoidMetadataEmitter {
+  private static readonly STRING_LITERALS = new Set([
+    'alternative',
+    'description',
+    'title',
+  ]);
+
+  private static readonly DATE_LITERALS = new Set([
+    'available',
+    'created',
+    'date',
+    'dateAccepted',
+    'dateCopyrighted',
+    'dateSubmitted',
+    'issued',
+    'modified',
+    'valid',
+  ]);
+
   public readonly context: any;
   public cachedStatistics: RDF.Quad[] = [];
 
@@ -59,7 +77,7 @@ export class VoidMetadataEmitter {
     if (this.context.dcterms) {
       quads.push(quad(dataset, vocabulary, dcterms));
       for (const key in this.context.dcterms) {
-        quads.push(quad(dataset, `${dcterms}${key}`, this.context.dcterms[key]));
+        quads.push(quad(dataset, `${dcterms}${key}`, this.convertValue(key, this.context.dcterms[key])));
       }
     }
 
@@ -84,6 +102,19 @@ export class VoidMetadataEmitter {
     }
 
     return quads;
+  }
+
+  private convertValue(
+    key: string,
+    value: string,
+  ): string {
+    if (VoidMetadataEmitter.STRING_LITERALS.has(key)) {
+      return `"${value}"`;
+    }
+    if (VoidMetadataEmitter.DATE_LITERALS.has(key)) {
+      return `"${value}"^^http://www.w3.org/2001/XMLSchema#date`;
+    }
+    return value;
   }
 
   /**

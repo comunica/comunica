@@ -1,6 +1,6 @@
 {
   "name": "@comunica/utils-query-operation",
-  "version": "4.2.0",
+  "version": "4.4.0",
   "description": "Query operation utilities",
   "license": "MIT",
   "funding": {
@@ -40,10 +40,10 @@
     "build": "node \"../../node_modules/typescript/bin/tsc\""
   },
   "dependencies": {
-    "@comunica/context-entries": "^4.2.0",
-    "@comunica/core": "^4.2.0",
-    "@comunica/types": "^4.2.0",
-    "@comunica/utils-bindings-factory": "^4.2.0",
+    "@comunica/context-entries": "^4.4.0",
+    "@comunica/core": "^4.4.0",
+    "@comunica/types": "^4.4.0",
+    "@comunica/utils-bindings-factory": "^4.4.0",
     "@rdfjs/types": "*",
     "rdf-data-factory": "^1.1.2",
     "rdf-string": "^1.6.1",

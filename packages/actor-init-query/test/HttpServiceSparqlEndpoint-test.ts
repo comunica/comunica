@@ -12,6 +12,7 @@ import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Readable } from 'readable-stream';
+import { translate } from 'sparqlalgebrajs';
 
 // @ts-expect-error
 import { QueryEngineFactoryBase, QueryEngineBase } from '../__mocks__';
@@ -1268,13 +1269,14 @@ describe('HttpServiceSparqlEndpoint', () => {
       let endCalledPromise: any;
       let serviceDescriptionQuads: RDF.Quad[];
 
-      const s = 'http://example.org/sparql';
+      const s = '/sparql';
       const sd = 'http://www.w3.org/ns/sparql-service-description#';
 
       beforeEach(() => {
         response = new ServerResponseMock();
         request = Readable.from([ 'default_request_content' ]);
-        request.url = 'http://example.org/sparql';
+        request.url = '/sparql';
+        request.headers = { host: 'localhost:3000' };
         query = {
           type: 'query',
           value: 'default_test_query',
@@ -1284,8 +1286,8 @@ describe('HttpServiceSparqlEndpoint', () => {
         endCalledPromise = new Promise(resolve => response.onEnd = resolve);
         serviceDescriptionQuads = [
           quad(s, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', `${sd}Service`),
-          quad(s, `${sd}endpoint`, '/sparql'),
-          quad(s, `${sd}url`, '/sparql'),
+          quad(s, `${sd}endpoint`, s),
+          quad(s, `${sd}url`, s),
           quad(s, `${sd}feature`, `${sd}BasicFederatedQuery`),
           quad(s, `${sd}supportedLanguage`, `${sd}SPARQL10Query`),
           quad(s, `${sd}supportedLanguage`, `${sd}SPARQL11Query`),
@@ -1694,6 +1696,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           const localInstance = new HttpServiceSparqlEndpoint({
             ...argsDefault,
             emitVoid: true,
+            contextOverride: true,
           });
 
           // Create spies
@@ -1718,17 +1721,20 @@ describe('HttpServiceSparqlEndpoint', () => {
           // Each void request does 4 calls for the statistics fetch
           expect(spyQueryBindings).toHaveBeenCalledTimes(4);
 
+          const query = `
+INSERT DATA {
+  <http://example.org/s> <http://example.org/p> "o" .
+}
+`;
+
+          // Without context
           await localInstance.writeQueryResult(
             engine,
             new PassThrough(),
             new PassThrough(),
             request,
             response,
-            { type: 'query', value: `
-INSERT DATA {
-  <http://example.org/s> <http://example.org/p> "o" .
-}
-`, context: undefined },
+            { type: 'query', value: query, context: undefined },
             mediaType,
             false,
             true,
@@ -1737,6 +1743,31 @@ INSERT DATA {
 
           expect(localInstance.voidMetadataEmitter.cachedStatistics).toHaveLength(0);
           // Should still be 4, insert queries don't fetch again, just invalidate the cache
+          expect(spyQueryBindings).toHaveBeenCalledTimes(4);
+
+          localInstance.voidMetadataEmitter.cachedStatistics = [ <any> {} ];
+
+          expect(localInstance.voidMetadataEmitter.cachedStatistics).not.toHaveLength(0);
+
+          // With context
+          await localInstance.writeQueryResult(
+            engine,
+            new PassThrough(),
+            new PassThrough(),
+            request,
+            response,
+            {
+              type: 'query',
+              value: query,
+              context: { [KeysQueryOperation.operation.name]: translate(query, { quads: true }) },
+            },
+            mediaType,
+            false,
+            true,
+            0,
+          );
+
+          expect(localInstance.voidMetadataEmitter.cachedStatistics).toHaveLength(0);
           expect(spyQueryBindings).toHaveBeenCalledTimes(4);
         });
       });

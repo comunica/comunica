@@ -165,8 +165,17 @@ export type FragmentSelectorShape = {
     operationType: 'pattern';
     pattern: Algebra.Operation;
   } | {
+    operationType: 'type';
+    type: Algebra.types.EXPRESSION;
+    /**
+     * The extension functions this source supports.
+     */
+    extensionFunctions?: string[];
+  } | {
     /**
      * All possible operations are accepted by this shape.
+     * As exception, extension functions are not accepted through wildcards, and must be
+     * explicitly listed via `extensionFunctions`.
      */
     operationType: 'wildcard';
   };
@@ -200,6 +209,9 @@ export type FragmentSelectorShape = {
 } | {
   type: 'disjunction';
   children: FragmentSelectorShape[];
+} | {
+  type: 'negation';
+  child: FragmentSelectorShape;
 } | {
   type: 'arity';
   min?: number;

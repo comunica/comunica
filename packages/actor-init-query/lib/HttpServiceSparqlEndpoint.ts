@@ -11,6 +11,7 @@ import { ActionContext } from '@comunica/core';
 import type { ICliArgsHandler, QueryQuads, QueryType } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
+import { Algebra } from 'sparqlalgebrajs';
 
 import yargs from 'yargs';
 
@@ -474,7 +475,13 @@ export class HttpServiceSparqlEndpoint {
     }
 
     // If the query was an update query, invalidate the void metadata emitter cache
-    if (this.emitVoid && queryBody.value.includes('INSERT')) {
+    if (this.emitVoid &&
+      // Try to check parsed operation
+      ((result.context && result.context.has(KeysQueryOperation.operation) &&
+          // eslint-disable-next-line ts/prefer-nullish-coalescing
+          result.context.getSafe(KeysQueryOperation.operation).type === Algebra.types.DELETE_INSERT) ||
+        // Fallback to query string
+        /(INSERT|DELETE)/iu.test(queryBody.value))) {
       this.voidMetadataEmitter.invalidateCache();
     }
 

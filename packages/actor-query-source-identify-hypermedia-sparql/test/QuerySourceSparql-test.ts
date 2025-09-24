@@ -11,8 +11,7 @@ import { DataFactory } from 'rdf-data-factory';
 // Needed to load Headers
 import 'jest-rdf';
 import { Readable } from 'readable-stream';
-import type { Algebra } from 'sparqlalgebrajs';
-import { Factory } from 'sparqlalgebrajs';
+import { Algebra, Factory } from 'sparqlalgebrajs';
 import { QuerySourceSparql } from '../lib/QuerySourceSparql';
 import '@comunica/utils-jest';
 
@@ -79,12 +78,30 @@ describe('QuerySourceSparql', () => {
   describe('getSelectorShape', () => {
     it('should return a selector shape', async() => {
       await expect(source.getSelectorShape()).resolves.toEqual({
-        type: 'disjunction',
+        type: 'conjunction',
         children: [
           {
-            type: 'operation',
-            operation: { operationType: 'wildcard' },
-            joinBindings: true,
+            type: 'disjunction',
+            children: [
+              {
+                type: 'operation',
+                operation: { operationType: 'wildcard' },
+                joinBindings: true,
+              },
+            ],
+          },
+          {
+            type: 'negation',
+            child: {
+              type: 'operation',
+              operation: { operationType: 'type', type: Algebra.types.DISTINCT },
+              children: [
+                {
+                  type: 'operation',
+                  operation: { operationType: 'type', type: Algebra.types.CONSTRUCT },
+                },
+              ],
+            },
           },
         ],
       });
@@ -872,6 +889,7 @@ describe('QuerySourceSparql', () => {
           true,
           true,
           0,
+          undefined,
           undefined,
           undefined,
           undefined,
