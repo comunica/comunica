@@ -64,6 +64,7 @@ export interface IActorContextPreprocessConvertShortcutsArgs extends IActorConte
    *   "recoverBrokenLinks": "@comunica/bus-http-wayback:recover-broken-links",
    *   "readOnly": "@comunica/bus-query-operation:readOnly",
    *   "extensionFunctions": "@comunica/actor-init-query:extensionFunctions",
+   *   "extensionFunctionsAlwaysPushdown": "@comunica/actor-init-query:extensionFunctionsAlwaysPushdown",
    *   "extensionFunctionCreator": "@comunica/actor-init-query:extensionFunctionCreator",
    *   "functionArgumentsCache": "@comunica/actor-init-query:functionArgumentsCache",
    *   "explain": "@comunica/actor-init-query:explain",

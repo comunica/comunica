@@ -565,6 +565,17 @@ SELECT * WHERE {
             };
             await expect(engine.query(baseQuery(funcAllow), context)).rejects.toThrow(`no configured actor was able to evaluate function http://example.org/functions#allowAll`);
           });
+
+          it(`do filter pushdown if comunica doesn't support the extension function but extensionFunctionsAlwaysPushdown is enabled`, async() => {
+            const context: QueryStringContext = <QueryStringContext> {
+              sources: [ endpoint1, endpoint2 ],
+              fetch: createMockedFetch(false, false),
+              extensionFunctionsAlwaysPushdown: true,
+            };
+            await engine.query(baseQuery(funcAllow), context);
+
+            expect(containsFilter).toBeTruthy();
+          });
         });
 
         it('handles complex queries with BIND to', async() => {

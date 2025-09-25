@@ -70,15 +70,18 @@ function doesShapeAcceptOperationRecurseShape(
     case 'wildcard': {
       // All possible operations are accepted by this shape.
       // As exception, extension functions are not accepted through wildcards.
+      if (options?.wildcardAcceptAllExtensionFunctions) {
+        return true;
+      }
       if (isExtensionFunction(operation)) {
         return false;
       }
       // Also check for nested extension functions,
-      // /and only accept the wildcard if all nested extension functions are supported by the query shape.
+      // and only accept the wildcard if all nested extension functions are supported by the query shape.
       let hasUnsupportedExtensionFunction = false;
       Util.recurseOperation(operation, {
         [Algebra.types.EXPRESSION](subOp) {
-          if (isExtensionFunction(subOp) && !doesShapeAcceptOperation(shapeTop, subOp)) {
+          if (isExtensionFunction(subOp) && !doesShapeAcceptOperation(shapeTop, subOp, options)) {
             hasUnsupportedExtensionFunction = true;
             return false;
           }
@@ -145,4 +148,5 @@ function isExtensionFunction(operation: Algebra.Operation): boolean {
 export type FragmentSelectorShapeTestFlags = {
   joinBindings?: boolean;
   filterBindings?: boolean;
+  wildcardAcceptAllExtensionFunctions?: boolean;
 };

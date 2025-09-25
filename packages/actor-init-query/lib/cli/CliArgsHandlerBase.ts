@@ -154,6 +154,10 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
           type: 'boolean',
           describe: 'If the query engine should deduplicate resulting triples',
         },
+        extensionFunctionsAlwaysPushdown: {
+          type: 'boolean',
+          describe: 'If extension functions must always be pushed down',
+        },
       })
       .exitProcess(false)
       .fail(false)
@@ -279,6 +283,11 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
     // Define if results should be deduplicated
     if (args.distinctConstruct) {
       context[KeysInitQuery.distinctConstruct.name] = true;
+    }
+
+    // Pushing down of extension functions
+    if (args.extensionFunctionsAlwaysPushdown) {
+      context[KeysInitQuery.extensionFunctionsAlwaysPushdown.name] = true;
     }
   }
 }

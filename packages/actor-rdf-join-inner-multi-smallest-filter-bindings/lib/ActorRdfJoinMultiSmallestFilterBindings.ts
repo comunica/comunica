@@ -214,7 +214,11 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
     }
     const testingOperation = second.operation;
     const selectorShape = await sourceWrapper.source.getSelectorShape(action.context);
-    if (!doesShapeAcceptOperation(selectorShape, testingOperation, { filterBindings: true })) {
+    const wildcardAcceptAllExtensionFunctions = action.context.get(KeysInitQuery.extensionFunctionsAlwaysPushdown);
+    if (!doesShapeAcceptOperation(selectorShape, testingOperation, {
+      filterBindings: true,
+      wildcardAcceptAllExtensionFunctions,
+    })) {
       return failTest(`Actor ${this.name} can only process if entries[1] accept filterBindings`);
     }
 

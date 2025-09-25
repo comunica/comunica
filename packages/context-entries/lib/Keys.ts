@@ -186,6 +186,13 @@ export const KeysInitQuery = {
   Record<string, (args: RDF.Term[]) => Promise<RDF.Term>>
     >('@comunica/actor-init-query:extensionFunctions'),
   /**
+   * If extension functions must always be pushed down to sources that support expressions,
+   * even if those sources to not explicitly declare support for these extension functions.
+   */
+  extensionFunctionsAlwaysPushdown: new ActionContextKey<boolean>(
+    '@comunica/actor-init-query:extensionFunctionsAlwaysPushdown',
+  ),
+  /**
    * Enables manipulation of the CLI arguments and their processing.
    */
   cliArgsHandlers: new ActionContextKey<ICliArgsHandler[]>('@comunica/actor-init-query:cliArgsHandlers'),
