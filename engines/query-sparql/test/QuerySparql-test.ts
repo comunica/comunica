@@ -558,14 +558,12 @@ SELECT * WHERE {
             expect(containsFilter).toBeFalsy();
           });
 
-          it('do filter pushdown if comunica doesn\'t support the extension function', async() => {
+          it('don\'t filter pushdown if comunica doesn\'t support the extension function', async() => {
             const context: QueryStringContext = <QueryStringContext> {
               sources: [ endpoint1, endpoint2 ],
               fetch: createMockedFetch(false, false),
             };
-            await engine.query(baseQuery(funcAllow), context);
-
-            expect(containsFilter).toBeTruthy();
+            await expect(engine.query(baseQuery(funcAllow), context)).rejects.toThrow(`no configured actor was able to evaluate function http://example.org/functions#allowAll`);
           });
         });
 
@@ -1001,6 +999,29 @@ where {
           sources: [{ type: 'sparql', value: 'https://datasetregister.netwerkdigitaalerfgoed.nl/sparql' }],
         });
         await expect((quadsStream.toArray())).resolves.toHaveLength(1);
+      });
+
+      it('should not push unsupported extension functions into a SPARQL endpoint (no browser)', async() => {
+        const bindingsStream = await engine.queryBindings(`
+PREFIX dbr: <http://dbpedia.org/resource/>
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX tfn: <https://w3id.org/time-fn#>
+
+SELECT ?birthDate
+WHERE {
+  dbr:Haren_Das dbo:birthDate ?date;
+                 dbo:birthPlace ?birthPlace.
+  ?birthPlace dbo:utcOffset ?timezone.
+  BIND (tfn:bindDefaultTimezone(?date, ?timezone) AS ?birthDate)
+}`, {
+          sources: [ 'https://dbpedia.org/sparql' ],
+          extensionFunctions: {
+            'https://w3id.org/time-fn#bindDefaultTimezone': async function(args: RDF.Term[]) {
+              return args[0];
+            },
+          },
+        });
+        await expect((bindingsStream.toArray())).resolves.toHaveLength(1);
       });
     });
 
