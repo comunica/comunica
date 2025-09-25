@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-expression-evaluator-factory-default",
-  "version": "4.4.0",
+  "version": "4.4.1",
   "description": "A default expression-evaluator-factory actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,15 +37,15 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-expression-evaluator-factory": "^4.4.0",
-    "@comunica/bus-function-factory": "^4.4.0",
-    "@comunica/bus-query-operation": "^4.4.0",
-    "@comunica/context-entries": "^4.4.0",
+    "@comunica/bus-expression-evaluator-factory": "^4.4.1",
+    "@comunica/bus-function-factory": "^4.4.1",
+    "@comunica/bus-query-operation": "^4.4.1",
+    "@comunica/context-entries": "^4.4.1",
     "@comunica/core": "^4.4.0",
     "@comunica/types": "^4.4.0",
     "@comunica/utils-bindings-factory": "^4.4.0",
-    "@comunica/utils-expression-evaluator": "^4.4.0",
-    "@comunica/utils-query-operation": "^4.4.0",
+    "@comunica/utils-expression-evaluator": "^4.4.1",
+    "@comunica/utils-query-operation": "^4.4.1",
     "@rdfjs/types": "*",
     "sparqlalgebrajs": "^4.3.7"
   }

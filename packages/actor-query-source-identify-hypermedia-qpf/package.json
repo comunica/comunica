@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-source-identify-hypermedia-qpf",
-  "version": "4.4.0",
+  "version": "4.4.1",
   "description": "A qpf query-source-identify-hypermedia actor",
   "lsd:module": true,
   "license": "MIT",
@@ -42,13 +42,13 @@
   },
   "dependencies": {
     "@comunica/actor-rdf-metadata-extract-hydra-controls": "^4.4.0",
-    "@comunica/bus-dereference-rdf": "^4.4.0",
+    "@comunica/bus-dereference-rdf": "^4.4.1",
     "@comunica/bus-merge-bindings-context": "^4.4.0",
     "@comunica/bus-query-source-identify": "^4.4.0",
     "@comunica/bus-query-source-identify-hypermedia": "^4.4.0",
     "@comunica/bus-rdf-metadata": "^4.4.0",
     "@comunica/bus-rdf-metadata-extract": "^4.4.0",
-    "@comunica/context-entries": "^4.4.0",
+    "@comunica/context-entries": "^4.4.1",
     "@comunica/core": "^4.4.0",
     "@comunica/types": "^4.4.0",
     "@comunica/utils-bindings-factory": "^4.4.0",

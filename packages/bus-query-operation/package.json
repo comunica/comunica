@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-query-operation",
-  "version": "4.4.0",
+  "version": "4.4.1",
   "description": "A comunica bus for query-operation events.",
   "lsd:module": true,
   "license": "MIT",
@@ -40,7 +40,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/context-entries": "^4.4.0",
+    "@comunica/context-entries": "^4.4.1",
     "@comunica/core": "^4.4.0",
     "@comunica/types": "^4.4.0",
     "@comunica/utils-metadata": "^4.4.0",

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-http-memento",
-  "version": "4.4.0",
+  "version": "4.4.1",
   "description": "A memento http actor",
   "lsd:module": true,
   "license": "MIT",
@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "@comunica/bus-http": "^4.4.0",
-    "@comunica/context-entries": "^4.4.0",
+    "@comunica/context-entries": "^4.4.1",
     "@comunica/core": "^4.4.0",
     "@types/http-link-header": "^1.0.7",
     "http-link-header": "^1.1.3"

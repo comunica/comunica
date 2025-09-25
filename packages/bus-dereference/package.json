@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-dereference",
-  "version": "4.4.0",
+  "version": "4.4.1",
   "description": "A bus for dereferencing a path or URL into a (generic) stream.",
   "lsd:module": true,
   "license": "MIT",
@@ -42,7 +42,7 @@
   "dependencies": {
     "@comunica/actor-abstract-mediatyped": "^4.4.0",
     "@comunica/actor-abstract-parse": "^4.4.0",
-    "@comunica/context-entries": "^4.4.0",
+    "@comunica/context-entries": "^4.4.1",
     "@comunica/core": "^4.4.0",
     "@comunica/types": "^4.4.0",
     "readable-stream": "^4.5.2"

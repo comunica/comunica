@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-update-quads-rdfjs-store",
-  "version": "4.4.0",
+  "version": "4.4.1",
   "description": "A rdfjs-store rdf-update-quads actor",
   "lsd:module": true,
   "license": "MIT",
@@ -41,8 +41,8 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-rdf-update-quads": "^4.4.0",
-    "@comunica/context-entries": "^4.4.0",
+    "@comunica/bus-rdf-update-quads": "^4.4.1",
+    "@comunica/context-entries": "^4.4.1",
     "@comunica/core": "^4.4.0",
     "@comunica/types": "^4.4.0",
     "@rdfjs/types": "*",
