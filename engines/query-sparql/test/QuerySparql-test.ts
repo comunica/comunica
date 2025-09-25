@@ -562,15 +562,15 @@ SELECT * WHERE {
             const context: QueryStringContext = <QueryStringContext> {
               sources: [ endpoint1, endpoint2 ],
               fetch: createMockedFetch(false, false),
+              extensionFunctions: {},
             };
             await expect(engine.query(baseQuery(funcAllow), context)).rejects.toThrow(`no configured actor was able to evaluate function http://example.org/functions#allowAll`);
           });
 
-          it(`do filter pushdown if comunica doesn't support the extension function but extensionFunctionsAlwaysPushdown is enabled`, async() => {
+          it(`do filter pushdown if comunica doesn't define extension functions`, async() => {
             const context: QueryStringContext = <QueryStringContext> {
               sources: [ endpoint1, endpoint2 ],
               fetch: createMockedFetch(false, false),
-              extensionFunctionsAlwaysPushdown: true,
             };
             await engine.query(baseQuery(funcAllow), context);
 

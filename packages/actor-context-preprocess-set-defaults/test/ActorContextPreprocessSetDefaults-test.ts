@@ -41,12 +41,14 @@ describe('ActorContextPreprocessSetDefaults', () => {
           [KeysInitQuery.functionArgumentsCache.name]: {},
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
           [KeysQuerySourceIdentify.hypermediaSourcesAggregatedStores.name]: new Map(),
+          [KeysInitQuery.extensionFunctionsAlwaysPushdown.name]: true,
         }));
       });
 
       it('with a non-empty context', async() => {
         const contextIn = new ActionContext({
           [KeysInitQuery.queryFormat.name]: { language: 'graphql', version: '1.1' },
+          [KeysInitQuery.extensionFunctions.name]: {},
         });
         const { context: contextOut } = await actor.run({ context: contextIn, initialize: true });
         expect(contextOut).toEqual(new ActionContext({
@@ -59,6 +61,7 @@ describe('ActorContextPreprocessSetDefaults', () => {
           [KeysInitQuery.queryFormat.name]: { language: 'graphql', version: '1.1' },
           [KeysInitQuery.graphqlSingularizeVariables.name]: {},
           [KeysQuerySourceIdentify.hypermediaSourcesAggregatedStores.name]: new Map(),
+          [KeysInitQuery.extensionFunctions.name]: {},
         }));
       });
     });
