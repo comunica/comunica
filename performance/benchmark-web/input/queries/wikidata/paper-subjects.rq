@@ -1,0 +1,9 @@
+# https://www.wikidata.org/wiki/Wikidata:SPARQL_query_service/WDQS_graph_split/Internal_Federation_Guide#How_to_deal_with_linked_entities_spread_across_multiple_graphs?
+# Datasource: https://query-main.wikidata.org/bigdata/namespace/wdq/sparql https://query-scholarly.wikidata.org/bigdata/namespace/wdq/sparql
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+SELECT ?subject ?subjectType WHERE {
+  VALUES ?paper { wd:Q59458901 }
+  ?paper wdt:P921 ?subject .
+  ?subject wdt:P31 ?subjectType .
+} LIMIT 10
