@@ -3,9 +3,9 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getSafeBindings } from '@comunica/utils-query-operation';
+import { Algebra, AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationPathLink } from '../lib/ActorQueryOperationPathLink';
 import '@comunica/utils-jest';
 
@@ -15,7 +15,7 @@ const BF = new BindingsFactory(DF);
 describe('ActorQueryOperationPathLink', () => {
   let bus: any;
   let mediatorQueryOperation: any;
-  const factory: Factory = new Factory();
+  const factory: AlgebraFactory = new AlgebraFactory();
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -61,13 +61,13 @@ describe('ActorQueryOperationPathLink', () => {
     });
 
     it('should test on Link paths', async() => {
-      const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.LINK }}};
+      const op: any = { operation: { type: Algebra.Types.PATH, predicate: { type: Algebra.Types.LINK }}};
       await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should test on different paths', async() => {
       const op: any = {
-        operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }},
+        operation: { type: Algebra.Types.PATH, predicate: { type: 'dummy' }},
         context: new ActionContext(),
       };
       await expect(actor.test(op)).resolves.toFailTest(`This Actor only supports link Path operations.`);

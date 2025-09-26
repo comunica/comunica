@@ -8,7 +8,7 @@ import type { Bindings, IActionContext, IQueryOperationResult } from '@comunica/
 import { isExpressionError } from '@comunica/utils-expression-evaluator';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type { Term } from '@rdfjs/types';
-import { Algebra } from 'sparqlalgebrajs';
+import { Algebra } from '@traqula/algebra-transformations-1-2';
 import { SortIterator } from './SortIterator';
 
 /**
@@ -94,21 +94,21 @@ export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated
 
   // Remove descending operator if necessary
   private extractSortExpression(expr: Algebra.Expression): Algebra.Expression {
-    const { expressionType, operator } = expr;
-    if (expressionType !== Algebra.expressionTypes.OPERATOR) {
+    const { expressionType } = expr;
+    if (expressionType !== Algebra.ExpressionTypes.OPERATOR) {
       return expr;
     }
-    return operator === 'desc' ?
+    return expr.operator === 'desc' ?
       expr.args[0] :
       expr;
   }
 
   private isAscending(expr: Algebra.Expression): boolean {
-    const { expressionType, operator } = expr;
-    if (expressionType !== Algebra.expressionTypes.OPERATOR) {
+    const { expressionType } = expr;
+    if (expressionType !== Algebra.ExpressionTypes.OPERATOR) {
       return true;
     }
-    return operator !== 'desc';
+    return expr.operator !== 'desc';
   }
 }
 

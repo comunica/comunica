@@ -1,4 +1,5 @@
 import { Readable, Transform } from 'node:stream';
+import { toComunicaAlgebra, ComunicaSparqlParser as Parser } from '@comunica/aa-comunica-parser';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
 import type {
@@ -19,7 +20,6 @@ import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { translate } from 'sparqlalgebrajs';
 import { QueryEngineBase } from '../lib';
 import { ActorInitQuery } from '../lib/ActorInitQuery';
 import { ActorInitQueryBase } from '../lib/ActorInitQueryBase';
@@ -28,6 +28,7 @@ import 'jest-rdf';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF, {});
+const parser = new Parser();
 
 describe('ActorInitQueryBase', () => {
   it('should not allow invoking its run method', async() => {
@@ -174,7 +175,7 @@ describe('QueryEngineBase', () => {
       });
 
       it('should allow a parsed query to be passed', async() => {
-        await expect(queryEngine.query(translate('SELECT * WHERE { ?s ?p ?o }')))
+        await expect(queryEngine.query(toComunicaAlgebra(parser.parse('SELECT * WHERE { ?s ?p ?o }'))))
           .resolves.toBeTruthy();
       });
 

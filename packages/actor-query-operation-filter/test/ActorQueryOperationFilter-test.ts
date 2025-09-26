@@ -1,3 +1,4 @@
+import { ComunicaSparqlParser as Parser } from '@comunica/aa-comunica-parser';
 import {
   ActorFunctionFactoryExpressionConcat,
 } from '@comunica/actor-function-factory-expression-concat';
@@ -18,15 +19,16 @@ import {
   getMockEEActionContext,
   getMockMediatorExpressionEvaluatorFactory,
 } from '@comunica/utils-expression-evaluator/test/util/helpers';
+import { toAlgebra } from '@traqula/algebra-sparql-1-2';
+import type { Algebra } from '@traqula/algebra-transformations-1-2';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import type { Algebra } from 'sparqlalgebrajs';
-import { translate } from 'sparqlalgebrajs';
 import { ActorQueryOperationFilter } from '../lib';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF, {});
+const parser = new Parser();
 
 function template(expr: string) {
   return `
@@ -40,9 +42,9 @@ SELECT * WHERE { ?s ?p ?o FILTER (${expr})}
 }
 
 function parse(query: string): Algebra.Expression {
-  const sparqlQuery = translate(template(query));
+  const sparqlQuery = <Algebra.Project> toAlgebra(parser.parse(template(query)));
   // Extract filter expression from complete query
-  return sparqlQuery.input.expression;
+  return (<Algebra.Filter>sparqlQuery.input).expression;
 }
 
 describe('ActorQueryOperationFilter', () => {

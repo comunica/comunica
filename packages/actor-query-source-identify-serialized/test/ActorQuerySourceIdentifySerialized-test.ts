@@ -4,15 +4,15 @@ import type { IActionRdfParseHandle, MediatorRdfParseHandle } from '@comunica/bu
 import { ActionContext, Bus } from '@comunica/core';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
+import { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import { DataFactory } from 'rdf-data-factory';
-import { Factory } from 'sparqlalgebrajs';
 import { ActorQuerySourceIdentifySerialized } from '../lib/ActorQuerySourceIdentifySerialized';
 import '@comunica/utils-jest';
 
 const streamifyArray = require('streamify-array');
 
 const DF = new DataFactory();
-const AF = new Factory(DF);
+const AF = new AlgebraFactory(DF);
 const BF = new BindingsFactory(DF);
 
 describe('ActorQuerySourceIdentifySerialized', () => {

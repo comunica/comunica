@@ -10,8 +10,8 @@ import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, FragmentSelectorShape, IActionContext, IQuerySourceWrapper } from '@comunica/types';
 import { doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
+import { AlgebraFactory, Algebra, algebraUtils } from '@traqula/algebra-transformations-1-2';
 import { mapTermsNested, uniqTerms } from 'rdf-terms';
-import { Factory, Algebra, Util } from 'sparqlalgebrajs';
 
 /**
  * A comunica Filter Pushdown Optimize Query Operation Actor.
@@ -34,7 +34,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
     let operation: Algebra.Operation = action.operation;
 
     // eslint-disable-next-line ts/no-this-alias
@@ -42,10 +42,10 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
 
     // Split conjunctive filters into nested filters
     if (this.splitConjunctive) {
-      operation = Util.mapOperation(operation, {
-        filter(op: Algebra.Filter, factory: Factory) {
+      operation = algebraUtils.mapOperation(operation, {
+        filter(op: Algebra.Filter, factory: AlgebraFactory) {
           // Split conjunctive filters into separate filters
-          if (op.expression.expressionType === Algebra.expressionTypes.OPERATOR && op.expression.operator === '&&') {
+          if (op.expression.expressionType === Algebra.ExpressionTypes.OPERATOR && op.expression.operator === '&&') {
             self.logDebug(action.context, `Split conjunctive filter into ${op.expression.args.length} nested filters`);
             return {
               recurse: true,
@@ -73,8 +73,8 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     let iterations = 0;
     while (repeat && iterations < this.maxIterations) {
       repeat = false;
-      operation = Util.mapOperation(operation, {
-        filter(op: Algebra.Filter, factory: Factory) {
+      operation = algebraUtils.mapOperation(operation, {
+        filter(op: Algebra.Filter, factory: AlgebraFactory) {
           // Check if the filter must be pushed down
           if (!self.shouldAttemptPushDown(op, sources, sourceShapes)) {
             return {
@@ -106,9 +106,9 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
 
     // Merge nested filters into conjunctive filters
     if (this.mergeConjunctive) {
-      operation = Util.mapOperation(operation, {
-        filter(op: Algebra.Filter, factory: Factory) {
-          if (op.input.type === Algebra.types.FILTER) {
+      operation = algebraUtils.mapOperation(operation, {
+        filter(op: Algebra.Filter, factory: AlgebraFactory) {
+          if (op.input.type === Algebra.Types.FILTER) {
             const { nestedExpressions, input } = self.getNestedFilterExpressions(op);
             self.logDebug(action.context, `Merge ${nestedExpressions.length} nested filters into conjunctive filter`);
             return {
@@ -152,7 +152,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
 
     // Push down if the filter is extremely selective
     const expression = operation.expression;
-    if (expression.expressionType === Algebra.expressionTypes.OPERATOR &&
+    if (expression.expressionType === Algebra.ExpressionTypes.OPERATOR &&
       expression.operator === '=' &&
       ((expression.args[0].expressionType === 'term' && expression.args[0].term.termType !== 'Variable' &&
           expression.args[1].expressionType === 'term' && expression.args[1].term.termType === 'Variable') ||
@@ -183,11 +183,11 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
       }
       return false;
     };
-    Util.recurseOperation(operation, {
-      [Algebra.types.PATTERN]: sourceAdder,
-      [Algebra.types.LINK]: sourceAdder,
-      [Algebra.types.NPS]: sourceAdder,
-      [Algebra.types.SERVICE]: sourceAdder,
+    algebraUtils.recurseOperation(operation, {
+      [Algebra.Types.PATTERN]: sourceAdder,
+      [Algebra.Types.LINK]: sourceAdder,
+      [Algebra.Types.NPS]: sourceAdder,
+      [Algebra.Types.SERVICE]: sourceAdder,
     });
     return [ ...sources ];
   }
@@ -199,16 +199,16 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
    */
   public getExpressionVariables(expression: Algebra.Expression): RDF.Variable[] {
     switch (expression.expressionType) {
-      case Algebra.expressionTypes.AGGREGATE:
-      case Algebra.expressionTypes.WILDCARD:
+      case Algebra.ExpressionTypes.AGGREGATE:
+      case Algebra.ExpressionTypes.WILDCARD:
         throw new Error(`Getting expression variables is not supported for ${expression.expressionType}`);
-      case Algebra.expressionTypes.EXISTENCE:
-        return Util.inScopeVariables(expression.input);
-      case Algebra.expressionTypes.NAMED:
+      case Algebra.ExpressionTypes.EXISTENCE:
+        return algebraUtils.inScopeVariables(expression.input);
+      case Algebra.ExpressionTypes.NAMED:
         return [];
-      case Algebra.expressionTypes.OPERATOR:
+      case Algebra.ExpressionTypes.OPERATOR:
         return uniqTerms(expression.args.flatMap(arg => this.getExpressionVariables(arg)));
-      case Algebra.expressionTypes.TERM:
+      case Algebra.ExpressionTypes.TERM:
         if (expression.term.termType === 'Variable') {
           return [ expression.term ];
         }
@@ -217,7 +217,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
   }
 
   protected getOverlappingOperations(
-    operation: Algebra.Operation,
+    operation: Algebra.Union | Algebra.Join,
     expressionVariables: RDF.Variable[],
   ): {
       fullyOverlapping: Algebra.Operation[];
@@ -228,7 +228,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     const partiallyOverlapping: Algebra.Operation[] = [];
     const notOverlapping: Algebra.Operation[] = [];
     for (const input of operation.input) {
-      const inputVariables = Util.inScopeVariables(input);
+      const inputVariables = algebraUtils.inScopeVariables(input);
       if (this.variablesSubSetOf(expressionVariables, inputVariables)) {
         fullyOverlapping.push(input);
       } else if (this.variablesIntersect(expressionVariables, inputVariables)) {
@@ -262,7 +262,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     expression: Algebra.Expression,
     expressionVariables: RDF.Variable[],
     operation: Algebra.Operation,
-    factory: Factory,
+    factory: AlgebraFactory,
     context: IActionContext,
   ): [ boolean, Algebra.Operation ] {
     // Void false expressions
@@ -271,13 +271,13 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     }
 
     // Don't push down (NOT) EXISTS
-    if (expression.type === Algebra.types.EXPRESSION &&
-      expression.expressionType === Algebra.expressionTypes.EXISTENCE) {
+    if (expression.type === Algebra.Types.EXPRESSION &&
+      expression.expressionType === Algebra.ExpressionTypes.EXISTENCE) {
       return [ false, factory.createFilter(operation, expression) ];
     }
 
     switch (operation.type) {
-      case Algebra.types.EXTEND:
+      case Algebra.Types.EXTEND:
         // Pass if the variable is not part of the expression
         if (!this.variablesIntersect([ operation.variable ], expressionVariables)) {
           return [ true, factory.createExtend(
@@ -287,13 +287,13 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
           ) ];
         }
         return [ false, factory.createFilter(operation, expression) ];
-      case Algebra.types.FILTER: {
+      case Algebra.Types.FILTER: {
         // Always pass
         const [ isModified, result ] = this
           .filterPushdown(expression, expressionVariables, operation.input, factory, context);
         return [ isModified, factory.createFilter(result, operation.expression) ];
       }
-      case Algebra.types.JOIN: {
+      case Algebra.Types.JOIN: {
         // Don't push down for empty join
         if (operation.input.length === 0) {
           return [ false, factory.createFilter(operation, expression) ];
@@ -330,9 +330,9 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
 
         return [ isModified, joins.length === 1 ? joins[0] : factory.createJoin(joins) ];
       }
-      case Algebra.types.NOP:
+      case Algebra.Types.NOP:
         return [ true, operation ];
-      case Algebra.types.PROJECT:
+      case Algebra.Types.PROJECT:
         // Push down if variables overlap
         if (this.variablesIntersect(operation.variables, expressionVariables)) {
           return [ true, factory.createProject(
@@ -342,7 +342,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
         }
         // Void expression otherwise
         return [ true, operation ];
-      case Algebra.types.UNION: {
+      case Algebra.Types.UNION: {
         // Determine overlapping operations
         const {
           fullyOverlapping,
@@ -374,15 +374,15 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
 
         return [ isModified, unions.length === 1 ? unions[0] : factory.createUnion(unions) ];
       }
-      case Algebra.types.VALUES:
+      case Algebra.Types.VALUES:
         // Only keep filter if it overlaps with the variables
         if (this.variablesIntersect(operation.variables, expressionVariables)) {
           return [ false, factory.createFilter(operation, expression) ];
         }
         return [ true, operation ];
-      case Algebra.types.LEFT_JOIN: {
+      case Algebra.Types.LEFT_JOIN: {
         if (this.pushIntoLeftJoins) {
-          const rightVariables = Util.inScopeVariables(operation.input[1]);
+          const rightVariables = algebraUtils.inScopeVariables(operation.input[1]);
           if (!this.variablesIntersect(expressionVariables, rightVariables)) {
             // If filter *only* applies to left entry of optional, push it down into that.
             this.logDebug(context, `Push down filter into left join`);
@@ -397,7 +397,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
         // Don't push down in all other cases
         return [ false, factory.createFilter(operation, expression) ];
       }
-      case Algebra.types.PATTERN: {
+      case Algebra.Types.PATTERN: {
         if (this.pushEqualityIntoPatterns) {
           // Try to push simple FILTER(?s = <iri>) expressions into the pattern
           const pushableResult = this.getEqualityExpressionPushableIntoPattern(expression);
@@ -411,7 +411,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
               }
               return value;
             });
-            operation.type = Algebra.types.PATTERN;
+            operation.type = Algebra.Types.PATTERN;
             operation.metadata = originalMetadata;
             if (isModified) {
               this.logDebug(context, `Push down filter into pattern for ?${pushableResult.variable.value}`);
@@ -419,7 +419,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
                 operation,
                 factory.createValues(
                   [ pushableResult.variable ],
-                  [{ [`?${pushableResult.variable.value}`]: <RDF.NamedNode | RDF.Literal> pushableResult.term }],
+                  [{ [pushableResult.variable.value]: <RDF.NamedNode | RDF.Literal> pushableResult.term }],
                 ),
               ]) ];
             }
@@ -429,7 +429,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
         // Don't push down in all other cases
         return [ false, factory.createFilter(operation, expression) ];
       }
-      case Algebra.types.PATH: {
+      case Algebra.Types.PATH: {
         if (this.pushEqualityIntoPatterns) {
           // Try to push simple FILTER(?s = <iri>) expressions into the path
           const pushableResult = this.getEqualityExpressionPushableIntoPattern(expression);
@@ -447,7 +447,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
               operation,
               factory.createValues(
                 [ pushableResult.variable ],
-                [{ [`?${pushableResult.variable.value}`]: <RDF.NamedNode | RDF.Literal> pushableResult.term }],
+                [{ [pushableResult.variable.value]: <RDF.NamedNode | RDF.Literal> pushableResult.term }],
               ),
             ]) ];
           }
@@ -456,37 +456,37 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
         // Don't push down in all other cases
         return [ false, factory.createFilter(operation, expression) ];
       }
-      case Algebra.types.MINUS:
-      case Algebra.types.ALT:
-      case Algebra.types.ASK:
-      case Algebra.types.BGP:
-      case Algebra.types.CONSTRUCT:
-      case Algebra.types.DESCRIBE:
-      case Algebra.types.DISTINCT:
-      case Algebra.types.EXPRESSION:
-      case Algebra.types.FROM:
-      case Algebra.types.GRAPH:
-      case Algebra.types.GROUP:
-      case Algebra.types.INV:
-      case Algebra.types.LINK:
-      case Algebra.types.NPS:
-      case Algebra.types.ONE_OR_MORE_PATH:
-      case Algebra.types.ORDER_BY:
-      case Algebra.types.REDUCED:
-      case Algebra.types.SEQ:
-      case Algebra.types.SERVICE:
-      case Algebra.types.SLICE:
-      case Algebra.types.ZERO_OR_MORE_PATH:
-      case Algebra.types.ZERO_OR_ONE_PATH:
-      case Algebra.types.COMPOSITE_UPDATE:
-      case Algebra.types.DELETE_INSERT:
-      case Algebra.types.LOAD:
-      case Algebra.types.CLEAR:
-      case Algebra.types.CREATE:
-      case Algebra.types.DROP:
-      case Algebra.types.ADD:
-      case Algebra.types.MOVE:
-      case Algebra.types.COPY:
+      case Algebra.Types.MINUS:
+      case Algebra.Types.ALT:
+      case Algebra.Types.ASK:
+      case Algebra.Types.BGP:
+      case Algebra.Types.CONSTRUCT:
+      case Algebra.Types.DESCRIBE:
+      case Algebra.Types.DISTINCT:
+      case Algebra.Types.EXPRESSION:
+      case Algebra.Types.FROM:
+      case Algebra.Types.GRAPH:
+      case Algebra.Types.GROUP:
+      case Algebra.Types.INV:
+      case Algebra.Types.LINK:
+      case Algebra.Types.NPS:
+      case Algebra.Types.ONE_OR_MORE_PATH:
+      case Algebra.Types.ORDER_BY:
+      case Algebra.Types.REDUCED:
+      case Algebra.Types.SEQ:
+      case Algebra.Types.SERVICE:
+      case Algebra.Types.SLICE:
+      case Algebra.Types.ZERO_OR_MORE_PATH:
+      case Algebra.Types.ZERO_OR_ONE_PATH:
+      case Algebra.Types.COMPOSITE_UPDATE:
+      case Algebra.Types.DELETE_INSERT:
+      case Algebra.Types.LOAD:
+      case Algebra.Types.CLEAR:
+      case Algebra.Types.CREATE:
+      case Algebra.Types.DROP:
+      case Algebra.Types.ADD:
+      case Algebra.Types.MOVE:
+      case Algebra.Types.COPY:
         // Operations that do not support pushing down
         // Left-join and minus might be possible to support in the future.
         return [ false, factory.createFilter(operation, expression) ];
@@ -502,7 +502,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
   public getEqualityExpressionPushableIntoPattern(
     expression: Algebra.Expression,
   ): { variable: RDF.Variable; term: RDF.Term } | undefined {
-    if (expression.expressionType === Algebra.expressionTypes.OPERATOR && expression.operator === '=') {
+    if (expression.expressionType === Algebra.ExpressionTypes.OPERATOR && expression.operator === '=') {
       if (expression.args[0].expressionType === 'term' && expression.args[0].term.termType !== 'Variable' &&
         (expression.args[0].term.termType !== 'Literal' ||
           this.isLiteralWithCanonicalLexicalForm(expression.args[0].term)) &&
@@ -577,7 +577,8 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
    * @param expression An expression.
    */
   public isExpressionFalse(expression: Algebra.Expression): boolean {
-    return (expression.term && expression.term.termType === 'Literal' && expression.term.value === 'false');
+    const casted = <Extract<Algebra.Expression, { term?: unknown }>> expression;
+    return (casted.term && casted.term.termType === 'Literal' && casted.term.value === 'false');
   }
 
   /**
@@ -588,7 +589,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
   public getNestedFilterExpressions(
     op: Algebra.Filter,
   ): { nestedExpressions: Algebra.Expression[]; input: Algebra.Operation } {
-    if (op.input.type === Algebra.types.FILTER) {
+    if (op.input.type === Algebra.Types.FILTER) {
       const childData = this.getNestedFilterExpressions(op.input);
       return { nestedExpressions: [ op.expression, ...childData.nestedExpressions ], input: childData.input };
     }

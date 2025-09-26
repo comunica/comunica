@@ -2,13 +2,13 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import { DataFactory } from 'rdf-data-factory';
-import { Factory } from 'sparqlalgebrajs';
 import { ActorOptimizeQueryOperationRewriteMove } from '../lib/ActorOptimizeQueryOperationRewriteMove';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory<RDF.BaseQuad>();
-const AF = new Factory();
+const AF = new AlgebraFactory();
 
 describe('ActorOptimizeQueryOperationRewriteMove', () => {
   let bus: any;

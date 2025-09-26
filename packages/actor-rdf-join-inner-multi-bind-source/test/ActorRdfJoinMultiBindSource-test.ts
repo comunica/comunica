@@ -8,9 +8,9 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { assignOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
+import { Algebra, AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import { ArrayIterator, AsyncIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { Algebra, Factory } from 'sparqlalgebrajs';
 import type {
   IActorRdfJoinMultiBindSourceTestSideData,
 } from '../lib/ActorRdfJoinMultiBindSource';
@@ -19,7 +19,7 @@ import {
 } from '../lib/ActorRdfJoinMultiBindSource';
 import '@comunica/utils-jest';
 
-const AF = new Factory();
+const AF = new AlgebraFactory();
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
 
@@ -99,7 +99,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
           getSelectorShape() {
             return {
               type: 'operation',
-              operation: { operationType: 'type', type: Algebra.types.PATTERN },
+              operation: { operationType: 'type', type: Algebra.Types.PATTERN },
               joinBindings: true,
             };
           },

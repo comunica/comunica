@@ -1,3 +1,4 @@
+import { ComunicaSparqlGenerator } from '@comunica/aa-comunica-parser';
 import type { MediatorHttp } from '@comunica/bus-http';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { Actor } from '@comunica/core';
@@ -15,18 +16,20 @@ import type {
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
+import { toAst } from '@traqula/algebra-sparql-1-2';
+import type { AlgebraFactory, Algebra } from '@traqula/algebra-transformations-1-2';
+import { algebraUtils } from '@traqula/algebra-transformations-1-2';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator, wrap } from 'asynciterator';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import { LRUCache } from 'lru-cache';
 import { uniqTerms } from 'rdf-terms';
-import type { Factory, Algebra } from 'sparqlalgebrajs';
-import { toSparql, Util } from 'sparqlalgebrajs';
 import type { BindMethod } from './ActorQuerySourceIdentifyHypermediaSparql';
 
 const COUNT_INFINITY: RDF.QueryResultCardinality = { type: 'estimate', value: Number.POSITIVE_INFINITY };
 
 export class QuerySourceSparql implements IQuerySource {
+  protected static readonly queryStringGenerator = new ComunicaSparqlGenerator();
   protected static readonly SELECTOR_SHAPE: FragmentSelectorShape = {
     type: 'disjunction',
     children: [
@@ -45,7 +48,7 @@ export class QuerySourceSparql implements IQuerySource {
   private readonly bindMethod: BindMethod;
   private readonly countTimeout: number;
   private readonly dataFactory: ComunicaDataFactory;
-  private readonly algebraFactory: Factory;
+  private readonly algebraFactory: AlgebraFactory;
   private readonly bindingsFactory: BindingsFactory;
 
   private readonly endpointFetcher: SparqlEndpointFetcher;
@@ -59,7 +62,7 @@ export class QuerySourceSparql implements IQuerySource {
     mediatorHttp: MediatorHttp,
     bindMethod: BindMethod,
     dataFactory: ComunicaDataFactory,
-    algebraFactory: Factory,
+    algebraFactory: AlgebraFactory,
     bindingsFactory: BindingsFactory,
     forceHttpGet: boolean,
     cacheSize: number,
@@ -112,7 +115,7 @@ export class QuerySourceSparql implements IQuerySource {
     const bindings: BindingsStream = new TransformIterator(async() => {
       // Prepare queries
       const operation = await operationPromise;
-      const variables: RDF.Variable[] = Util.inScopeVariables(operation);
+      const variables: RDF.Variable[] = algebraUtils.inScopeVariables(operation);
       const queryString = context.get<string>(KeysInitQuery.queryString);
       const selectQuery: string = !options?.joinBindings && queryString ?
         queryString :
@@ -134,7 +137,7 @@ export class QuerySourceSparql implements IQuerySource {
     );
     this.lastSourceContext = undefined;
     const quads = wrap<any>(rawStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY });
-    this.attachMetadata(quads, context, Promise.resolve(operation.input));
+    this.attachMetadata(quads, context, Promise.resolve((<Algebra.Operation & { input: any }>operation).input));
     return quads;
   }
 
@@ -171,7 +174,7 @@ export class QuerySourceSparql implements IQuerySource {
       let countQuery: string;
       try {
         const operation = await operationPromise;
-        const variablesScoped = Util.inScopeVariables(operation);
+        const variablesScoped = algebraUtils.inScopeVariables(operation);
         countQuery = QuerySourceSparql.operationToCountQuery(this.dataFactory, this.algebraFactory, operation);
         const undefVariables = QuerySourceSparql.getOperationUndefs(operation);
         variablesCount = variablesScoped.map(variable => ({
@@ -238,7 +241,7 @@ export class QuerySourceSparql implements IQuerySource {
    * @param addBindings.metadata The bindings metadata.
    */
   public static async addBindingsToOperation(
-    algebraFactory: Factory,
+    algebraFactory: AlgebraFactory,
     bindMethod: BindMethod,
     operation: Algebra.Operation,
     addBindings: { bindings: BindingsStream; metadata: MetadataBindings },
@@ -251,7 +254,7 @@ export class QuerySourceSparql implements IQuerySource {
           algebraFactory.createValues(
             addBindings.metadata.variables.map(v => v.variable),
             bindings.map(binding => Object.fromEntries([ ...binding ]
-              .map(([ key, value ]) => [ `?${key.value}`, <RDF.Literal | RDF.NamedNode> value ]))),
+              .map(([ key, value ]) => [ key.value, <RDF.Literal | RDF.NamedNode> value ]))),
           ),
           operation,
         ], false);
@@ -268,7 +271,7 @@ export class QuerySourceSparql implements IQuerySource {
    * @return {string} A select query string.
    */
   public static operationToSelectQuery(
-    algebraFactory: Factory,
+    algebraFactory: AlgebraFactory,
     operation: Algebra.Operation,
     variables: RDF.Variable[],
   ): string {
@@ -284,7 +287,7 @@ export class QuerySourceSparql implements IQuerySource {
    */
   public static operationToCountQuery(
     dataFactory: ComunicaDataFactory,
-    algebraFactory: Factory,
+    algebraFactory: AlgebraFactory,
     operation: Algebra.Operation,
   ): string {
     return QuerySourceSparql.operationToQuery(algebraFactory.createProject(
@@ -312,7 +315,9 @@ export class QuerySourceSparql implements IQuerySource {
    * @return {string} A query string.
    */
   public static operationToQuery(operation: Algebra.Operation): string {
-    return toSparql(operation, { sparqlStar: true });
+    const ast = toAst(operation);
+    return this.queryStringGenerator.generate(ast)
+      .replaceAll(/[\n \t]+/gu, ' ').trim();
   }
 
   /**
@@ -321,10 +326,10 @@ export class QuerySourceSparql implements IQuerySource {
    */
   public static getOperationUndefs(operation: Algebra.Operation): RDF.Variable[] {
     const variables: RDF.Variable[] = [];
-    Util.recurseOperation(operation, {
+    algebraUtils.recurseOperation(operation, {
       leftjoin(subOperation): boolean {
-        const left = Util.inScopeVariables(subOperation.input[0]);
-        const right = Util.inScopeVariables(subOperation.input[1]);
+        const left = algebraUtils.inScopeVariables(subOperation.input[0]);
+        const right = algebraUtils.inScopeVariables(subOperation.input[1]);
         for (const varRight of right) {
           if (!left.some(varLeft => varLeft.equals(varRight))) {
             variables.push(varRight);
@@ -334,7 +339,7 @@ export class QuerySourceSparql implements IQuerySource {
       },
       values(values: Algebra.Values): boolean {
         for (const variable of values.variables) {
-          if (values.bindings.some(bindings => !(`?${variable.value}` in bindings))) {
+          if (values.bindings.some(bindings => !(variable.value in bindings))) {
             variables.push(variable);
           }
         }
@@ -342,7 +347,7 @@ export class QuerySourceSparql implements IQuerySource {
       },
       union(union: Algebra.Union): boolean {
         // Determine variables in scope of the union branches that are not occurring in every branch
-        const scopedVariables = union.input.map(Util.inScopeVariables);
+        const scopedVariables = union.input.map(algebraUtils.inScopeVariables);
         for (const variable of uniqTerms(scopedVariables.flat())) {
           if (!scopedVariables.every(input => input.some(inputVar => inputVar.equals(variable)))) {
             variables.push(variable);
@@ -381,16 +386,17 @@ export class QuerySourceSparql implements IQuerySource {
     const rawStream = await this.endpointFetcher.fetchBindings(endpoint, query);
     this.lastSourceContext = undefined;
 
-    return wrap<any>(rawStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY })
-      .map<RDF.Bindings>((rawData: Record<string, RDF.Term>) => this.bindingsFactory.bindings(variables
-        .map((variable) => {
-          const value = rawData[`?${variable.value}`];
-          if (!undefVariablesIndex.has(variable.value) && !value) {
-            Actor.getContextLogger(this.context)?.warn(`The endpoint ${endpoint} failed to provide a binding for ${variable.value}.`);
-          }
-          return <[RDF.Variable, RDF.Term]>[ variable, value ];
-        })
-        .filter(([ _, v ]) => Boolean(v))));
+    const wrapped = wrap<any>(rawStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY });
+    return wrapped.map<RDF.Bindings>((rawData: Record<string, RDF.Term>) => {
+      const bindings = variables.map((variable) => {
+        const value = rawData[`?${variable.value}`];
+        if (!undefVariablesIndex.has(variable.value) && !value) {
+          Actor.getContextLogger(this.context)?.warn(`The endpoint ${endpoint} failed to provide a binding for ${variable.value}.`);
+        }
+        return <[RDF.Variable, RDF.Term]>[ variable, value ];
+      }).filter(([ _, v ]) => Boolean(v));
+      return this.bindingsFactory.bindings(bindings);
+    });
   }
 
   public toString(): string {

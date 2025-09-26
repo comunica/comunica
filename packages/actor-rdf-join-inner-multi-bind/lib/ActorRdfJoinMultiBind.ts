@@ -21,8 +21,8 @@ import type {
 } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getSafeBindings, materializeOperation } from '@comunica/utils-query-operation';
+import { AlgebraFactory, Algebra, algebraUtils } from '@traqula/algebra-transformations-1-2';
 import { MultiTransformIterator, TransformIterator, UnionIterator } from 'asynciterator';
-import { Factory, Algebra, Util } from 'sparqlalgebrajs';
 
 /**
  * A comunica Multi-way Bind RDF Join Actor.
@@ -62,7 +62,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     operationBinder: (boundOperations: Algebra.Operation[], operationBindings: Bindings)
     => Promise<BindingsStream>,
     optional: boolean,
-    algebraFactory: Factory,
+    algebraFactory: AlgebraFactory,
     bindingsFactory: BindingsFactory,
   ): BindingsStream {
     // Enable auto-start on sub-bindings during depth-first binding for best performance.
@@ -104,7 +104,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     sideData: IActorRdfJoinMultiBindTestSideData,
   ): Promise<IActorRdfJoinOutputInner> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
     const bindingsFactory = await BindingsFactory.create(
       this.mediatorMergeBindingsContext,
       action.context,
@@ -170,12 +170,12 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
 
   public canBindWithOperation(operation: Algebra.Operation): boolean {
     let valid = true;
-    Util.recurseOperation(operation, {
-      [Algebra.types.EXTEND](): boolean {
+    algebraUtils.recurseOperation(operation, {
+      [Algebra.Types.EXTEND](): boolean {
         valid = false;
         return false;
       },
-      [Algebra.types.GROUP](): boolean {
+      [Algebra.Types.GROUP](): boolean {
         valid = false;
         return false;
       },

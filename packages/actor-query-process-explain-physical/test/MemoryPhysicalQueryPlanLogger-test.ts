@@ -1,10 +1,10 @@
 import type { IQuerySource } from '@comunica/types';
 import { assignOperationSource } from '@comunica/utils-query-operation';
+import { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import { DataFactory } from 'rdf-data-factory';
-import { Factory } from 'sparqlalgebrajs';
 import { MemoryPhysicalQueryPlanLogger } from '../lib/MemoryPhysicalQueryPlanLogger';
 
-const factory = new Factory();
+const factory = new AlgebraFactory();
 const DF = new DataFactory();
 
 describe('MemoryPhysicalQueryPlanLogger', () => {
