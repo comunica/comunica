@@ -1,3 +1,8 @@
+/* eslint-disable import/first */
+(<any> window).process = {
+  env: {},
+};
+
 import expect from 'expect';
 import jest from 'jest-mock';
 

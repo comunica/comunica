@@ -212,6 +212,15 @@ describe('ActorHttpFetch', () => {
       expect(actor.prepareRequestHeaders({ input, context }).get('user-agent')).toBe(userAgent);
     });
 
+    it('should not re-assign user-agent header when one has been provided', () => {
+      const userAgent = 'actor-determined agent';
+      jest.spyOn(ActorHttp, 'isBrowser').mockReturnValue(false);
+      jest.replaceProperty(<any>ActorHttpFetch, 'userAgent', userAgent);
+      expect(globalThis.window).toBeUndefined();
+      expect(actor.prepareRequestHeaders({ input, init: { headers: new Headers({ 'user-agent': 'UA' }) }, context })
+        .get('user-agent')).toBe('UA');
+    });
+
     it('should remove custom user-agent header in browser environments', () => {
       const init = { headers: { 'user-agent': 'custom agent' }};
       jest.spyOn(ActorHttp, 'isBrowser').mockReturnValue(true);

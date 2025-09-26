@@ -125,9 +125,7 @@ export function estimateUnionCardinality(
     if (cardinality.type === 'estimate' && estimate.type === 'exact') {
       estimate.type = cardinality.type;
     }
-    if (cardinality.value > 0) {
-      estimate.value += cardinality.value;
-    }
+    estimate.value += cardinality.value;
   }
   return estimate;
 }

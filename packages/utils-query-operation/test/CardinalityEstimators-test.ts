@@ -22,6 +22,9 @@ describe('CardinalityEstimators', () => {
           if (operation.type === Algebra.types.PATTERN) {
             return { type: 'estimate', value: 2, dataset: datasetUri };
           }
+          if (operation.type === Algebra.types.NOP) {
+            return { type: 'exact', value: 0, dataset: datasetUri };
+          }
         },
       ),
       source: datasetUri,
@@ -172,6 +175,30 @@ describe('CardinalityEstimators', () => {
       expect(estimateCardinality(operation, dataset)).toEqual({
         type: 'estimate',
         value: 1,
+        dataset: datasetUri,
+      });
+      expect(dataset.getCardinality).toHaveBeenCalledTimes(2);
+      expect(dataset.getCardinality).toHaveBeenNthCalledWith(1, operation);
+      expect(dataset.getCardinality).toHaveBeenNthCalledWith(2, operation.input);
+    });
+
+    it('should return estimate for slice without length', () => {
+      const operation = AF.createSlice(pattern1, 1);
+      expect(estimateCardinality(operation, dataset)).toEqual({
+        type: 'estimate',
+        value: 1,
+        dataset: datasetUri,
+      });
+      expect(dataset.getCardinality).toHaveBeenCalledTimes(2);
+      expect(dataset.getCardinality).toHaveBeenNthCalledWith(1, operation);
+      expect(dataset.getCardinality).toHaveBeenNthCalledWith(2, operation.input);
+    });
+
+    it('should return estimate for slice over nop', () => {
+      const operation = AF.createSlice(AF.createNop(), 1, 2);
+      expect(estimateCardinality(operation, dataset)).toEqual({
+        type: 'exact',
+        value: 0,
         dataset: datasetUri,
       });
       expect(dataset.getCardinality).toHaveBeenCalledTimes(2);

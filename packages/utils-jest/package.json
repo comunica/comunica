@@ -44,7 +44,7 @@
     "@comunica/core": "^4.4.0",
     "@comunica/types": "^4.4.0",
     "@comunica/utils-bindings-factory": "^4.4.0",
-    "@jest/expect-utils": "^29.7.0",
+    "@jest/expect-utils": "^30.2.0",
     "@rdfjs/types": "*",
     "@types/object-inspect": "^1.13.0",
     "arrayify-stream": "^2.0.1",

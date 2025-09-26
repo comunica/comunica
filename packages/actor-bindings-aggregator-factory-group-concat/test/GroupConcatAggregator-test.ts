@@ -64,6 +64,18 @@ describe('CountAggregator', () => {
       await expect(runAggregator(aggregator, input)).resolves.toEqual(DF.literal('1 2 3 4'));
     });
 
+    it('a list of mixed bindings', async() => {
+      const input = [
+        BF.bindings([[ DF.variable('x'), DF.namedNode('ex:iri') ]]),
+        BF.bindings([[ DF.variable('x'), int('1') ]]),
+        BF.bindings([[ DF.variable('x'), int('2') ]]),
+        BF.bindings([[ DF.variable('x'), int('3') ]]),
+        BF.bindings([[ DF.variable('x'), int('4') ]]),
+      ];
+
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(DF.literal('ex:iri 1 2 3 4'));
+    });
+
     it('with respect to empty input', async() => {
       await expect(runAggregator(aggregator, [])).resolves.toEqual(DF.literal(''));
     });

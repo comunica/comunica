@@ -64,6 +64,7 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
         DF.quad(serviceDescriptionIri, serviceDescriptionEndpoint, endpointService),
         DF.quad(serviceDescriptionIri, serviceDescriptionFeature, serviceDescriptionBasicFederatedQuery),
         DF.quad(serviceDescriptionIri, serviceDescriptionFeature, serviceDescriptionUnionDefaultGraph),
+        DF.quad(serviceDescriptionIri, serviceDescriptionFeature, DF.namedNode('unknown')),
         DF.quad(serviceDescriptionIri, serviceDescriptionSupportedLanguage, sparql11Query),
         DF.quad(serviceDescriptionIri, serviceDescriptionInputFormat, sparqlResultsJson),
         DF.quad(serviceDescriptionIri, serviceDescriptionResultFormat, sparqlResultsXml),

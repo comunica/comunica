@@ -172,17 +172,16 @@ export function materializeOperation(
       );
 
       // Recursively materialize the filter input
-      let recursionResultInput: Algebra.Operation = materializeOperation(
-        op.input,
-        bindings,
-        algebraFactory,
-        bindingsFactory,
-        options,
-      );
-
-      if (values.length > 0) {
-        recursionResultInput = factory.createJoin([ ...values, recursionResultInput ]);
-      }
+      const recursionResultInput: Algebra.Operation = factory.createJoin([
+        ...values,
+        materializeOperation(
+          op.input,
+          bindings,
+          algebraFactory,
+          bindingsFactory,
+          options,
+        ),
+      ]);
 
       return {
         // Recursion already taken care of above.

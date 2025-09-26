@@ -541,6 +541,30 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
           expect(opOut).toEqual(AF.createUnion([]));
         });
 
+        it('should not prune if the projection now has partial missing variables in alt', async() => {
+          const opIn = AF.createProject(
+            AF.createAlt([
+              assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+              assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+              assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
+              assignOperationSource(AF.createLink(DF.namedNode('p2')), source1),
+            ]),
+            [
+              DF.variable('o'),
+            ],
+          );
+          const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
+          expect(opOut).toEqual(AF.createProject(
+            AF.createAlt([
+              assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
+              assignOperationSource(AF.createLink(DF.namedNode('p2')), source1),
+            ]),
+            [
+              DF.variable('o'),
+            ],
+          ));
+        });
+
         it('should not prune if the projection has no missing variables', async() => {
           const opIn = AF.createProject(
             AF.createUnion([
@@ -785,6 +809,30 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
           expect(sourceAsk.source.queryBoolean).not.toHaveBeenCalled();
           await expect(actor.hasSourceResults(AF, sourceAsk, AF.createNop(), ctx)).resolves.toBeFalsy();
           expect(sourceAsk.source.queryBoolean).toHaveBeenCalledTimes(1);
+        });
+
+        it('should not verify cardinality estimates via ASK if source does not support it', async() => {
+          sourceAsk.source.queryBindings = () => {
+            const bindingsStream = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
+            bindingsStream.setProperty('metadata', { cardinality: { type: 'estimate', value: 1 }});
+            return bindingsStream;
+          };
+          sourceAsk.source.getSelectorShape = async() => ({
+            type: 'operation',
+            operation: {
+              operationType: 'pattern',
+              pattern: AF.createPattern(
+                DF.variable('s'),
+                DF.variable('p'),
+                DF.variable('o'),
+                DF.variable('g'),
+              ),
+            },
+          });
+          jest.spyOn(sourceAsk.source, 'queryBoolean').mockResolvedValueOnce(false);
+          expect(sourceAsk.source.queryBoolean).not.toHaveBeenCalled();
+          await expect(actor.hasSourceResults(AF, sourceAsk, AF.createNop(), ctx)).resolves.toBeTruthy();
+          expect(sourceAsk.source.queryBoolean).not.toHaveBeenCalled();
         });
 
         it('should reject for an erroring query', async() => {
