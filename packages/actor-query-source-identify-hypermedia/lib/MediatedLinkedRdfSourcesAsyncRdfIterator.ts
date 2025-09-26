@@ -130,9 +130,13 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   protected override canStartNewIterator(): boolean {
     // Also allow sub-iterators to be started if the aggregated store has at least one running iterator.
     // We need this because there are cases where these running iterators will be consumed before this linked iterator.
-    return (!this.wasForcefullyClosed &&
-      // eslint-disable-next-line ts/prefer-nullish-coalescing
-      (this.aggregatedStore && this.aggregatedStore.hasRunningIterators())) || super.canStartNewIterator();
+    // We can keep traversing if the iterator was forcefully closed and there are still running iterators on the
+    // aggregated store, as this might happen when sub-queries are spawned by the bind-join.
+    // Whenever the store is forcefully closed (like due to a limit being reached) and there are no iterators on the
+    // store, traversal should stop.
+    return (!this.wasForcefullyClosed ||
+      (this.aggregatedStore !== undefined && this.aggregatedStore.hasRunningIterators())) &&
+      super.canStartNewIterator();
   }
 
   protected override canStartNewIteratorConsiderReadable(): boolean {

@@ -12,6 +12,7 @@ import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
 import type { ISourceState, SourceStateGetter } from '../lib/LinkedRdfSourcesAsyncRdfIterator';
 import { MediatedLinkedRdfSourcesAsyncRdfIterator } from '../lib/MediatedLinkedRdfSourcesAsyncRdfIterator';
+import { StreamingStoreMetadata } from '../lib/StreamingStoreMetadata';
 
 const DF = new DataFactory();
 const AF = new Factory();
@@ -270,6 +271,70 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         source.destroy();
         await expect(new Promise((resolve, reject) => source.on('error', reject)))
           .rejects.toThrow('getLinkQueue reject');
+      });
+
+      it('should make canStartNewIterator return false when no running iterators exists on store', async() => {
+        // When there are no running .match calls and destroy is called, no new iterators should be
+        // started.
+        const aggregatedStore = new StreamingStoreMetadata(
+          undefined,
+          jest.fn(),
+          false,
+        );
+
+        const source: any = new MediatedLinkedRdfSourcesAsyncRdfIterator(
+          10,
+          operation,
+          {},
+          context,
+          'forcedType',
+          'first',
+          64,
+          sourceStateGetter,
+          aggregatedStore,
+          mediatorMetadataAccumulate,
+          mediatorRdfResolveHypermediaLinks,
+          mediatorRdfResolveHypermediaLinksQueue,
+          DF,
+          AF,
+        );
+        source.getLinkQueue = async() => ({ isEmpty: () => false });
+        source.on('error', jest.fn());
+        source.destroy();
+        await new Promise(setImmediate);
+        expect(source.canStartNewIterator()).toBeFalsy();
+      });
+      it('should make canStartNewIterator return false when running iterators exists on store', async() => {
+        // This tests whether a premature destroy call will not stop traversal.
+        // This happens when subqueries (like with bind join) end but the main query has not
+        // yet finished.
+        const aggregatedStore = new StreamingStoreMetadata(
+          undefined,
+          jest.fn(),
+          false,
+        );
+        const source: any = new MediatedLinkedRdfSourcesAsyncRdfIterator(
+          10,
+          operation,
+          {},
+          context,
+          'forcedType',
+          'first',
+          64,
+          sourceStateGetter,
+          aggregatedStore,
+          mediatorMetadataAccumulate,
+          mediatorRdfResolveHypermediaLinks,
+          mediatorRdfResolveHypermediaLinksQueue,
+          DF,
+          AF,
+        );
+        source.getLinkQueue = async() => ({ isEmpty: () => false });
+        source.on('error', jest.fn());
+        source.aggregatedStore.match(null, null, null, null);
+        source.destroy();
+        await new Promise(setImmediate);
+        expect(source.canStartNewIterator()).toBeTruthy();
       });
     });
 
