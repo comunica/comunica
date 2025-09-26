@@ -208,11 +208,10 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
     if (doesShapeAcceptOperation(shape, operation, { wildcardAcceptAllExtensionFunctions })) {
       const extensionFunctions = context.get(KeysInitQuery.extensionFunctions);
       const expression: Algebra.Expression | undefined = operation.expression;
-      if (!extensionFunctions || expression?.expressionType !== Algebra.expressionTypes.NAMED ||
+      return !extensionFunctions ||
+        expression?.expressionType !== Algebra.expressionTypes.NAMED ||
         !(expression?.name.value in extensionFunctions) ||
-        doesShapeAcceptOperation(shape, expression, { wildcardAcceptAllExtensionFunctions })) {
-        return true;
-      }
+        doesShapeAcceptOperation(shape, expression, { wildcardAcceptAllExtensionFunctions });
     }
     return false;
   }

@@ -90,9 +90,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
       .then((linkQueue) => {
         if (this.isCloseable(linkQueue, false)) {
           // Wait a tick before ending the aggregatedStore, to ensure that pending match() calls to it have started.
-          if (this.aggregatedStore) {
-            setTimeout(() => this.aggregatedStore!.end());
-          }
+          setTimeout(() => this.aggregatedStore!.end());
           super.close();
         } else {
           this.wasForcefullyClosed = true;
@@ -111,9 +109,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
       .then((linkQueue) => {
         if (cause ?? this.isCloseable(linkQueue, false)) {
           // Wait a tick before ending the aggregatedStore, to ensure that pending match() calls to it have started.
-          if (this.aggregatedStore) {
-            setTimeout(() => this.aggregatedStore!.end());
-          }
+          setTimeout(() => this.aggregatedStore!.end());
           super.destroy(cause);
         } else {
           this.wasForcefullyClosed = true;

@@ -1232,5 +1232,62 @@ sources:
         join compacted-occurrences:1
           pattern (ex:s2 ex:p2 ?o2 ex:g2)`);
     });
+
+    it('for two patterns with the same source', () => {
+      const source = <IQuerySource> { toString: () => 'SRC' };
+      const parent = factory.createPattern(
+        DF.namedNode('ex:s1'),
+        DF.namedNode('ex:p1'),
+        DF.variable('o1'),
+        DF.namedNode('ex:g1'),
+      );
+      logger.logOperation(
+        'pattern',
+        undefined,
+        parent,
+        undefined,
+        'actor-pattern',
+        {},
+      );
+      logger.logOperation(
+        'pattern',
+        undefined,
+        assignOperationSource(
+          factory.createPattern(
+            DF.namedNode('ex:s1'),
+            DF.namedNode('ex:p1'),
+            DF.variable('o1'),
+            DF.namedNode('ex:g1'),
+          ),
+          { source },
+        ),
+        parent,
+        'actor-pattern',
+        {},
+      );
+      logger.logOperation(
+        'pattern',
+        undefined,
+        assignOperationSource(
+          factory.createPattern(
+            DF.namedNode('ex:s1'),
+            DF.namedNode('ex:p1'),
+            DF.variable('o1'),
+            DF.namedNode('ex:g1'),
+          ),
+          { source },
+        ),
+        parent,
+        'actor-pattern',
+        {},
+      );
+
+      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1)
+  pattern (ex:s1 ex:p1 ?o1 ex:g1) src:0
+  pattern (ex:s1 ex:p1 ?o1 ex:g1) src:0
+
+sources:
+  0: SRC`);
+    });
   });
 });

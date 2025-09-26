@@ -238,14 +238,7 @@ export class Bindings implements RDF.Bindings {
 
       // If key doesn't occur in own context, it must be in other context
       // (if we get to this point, the key doesn't occur in both)
-      if (!context.get(key)) {
-        newContextData[key.name] = otherContext.get(key);
-        continue;
-      }
-      // This could likely be else statement, but don't want to risk it
-      if (!otherContext.get(key)) {
-        newContextData[key.name] = context.get(key);
-      }
+      newContextData[key.name] = context.get(key) || otherContext.get(key);
     }
     return new ActionContext(newContextData);
   }

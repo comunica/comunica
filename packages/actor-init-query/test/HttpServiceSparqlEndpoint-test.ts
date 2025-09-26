@@ -1385,6 +1385,33 @@ describe('HttpServiceSparqlEndpoint', () => {
         );
 
         await expect(endCalledPromise).resolves.toBe('An internal server error occurred.\n');
+        expect(response.end).toHaveBeenCalledTimes(1);
+        expect(response.writeHead).toHaveBeenCalledTimes(1);
+        expect(response.writeHead).toHaveBeenLastCalledWith(
+          200,
+          { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' },
+        );
+      });
+
+      it(`should not re-end the response when already ended and the queryresult stream emits an error`, async() => {
+        mediaType = 'mediatype_queryresultstreamerror';
+        response.end('ENDED EARLY');
+        Object.defineProperty(response, 'writableEnded', { value: true });
+        await instance.writeQueryResult(
+          await new QueryEngineFactoryBase().create(),
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          query,
+          mediaType,
+          false,
+          true,
+          0,
+        );
+
+        await expect(endCalledPromise).resolves.toBe('ENDED EARLY');
+        expect(response.end).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(
           200,

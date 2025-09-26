@@ -113,11 +113,9 @@ export class QuerySourceRdfJs implements IQuerySource {
       }
 
       // Determine metadata
-      if (!it.getProperty('metadata')) {
-        const variables = getVariables(operation).map(variable => ({ variable, canBeUndef: false }));
-        this.setMetadata(it, operation, context, forceEstimateCardinality, { variables })
-          .catch(error => it.destroy(error));
-      }
+      const variables = getVariables(operation).map(variable => ({ variable, canBeUndef: false }));
+      this.setMetadata(it, operation, context, forceEstimateCardinality, { variables })
+        .catch(error => it.destroy(error));
 
       return it;
     }

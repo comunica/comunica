@@ -538,22 +538,20 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
    * @param term An RDF term.
    * @protected
    */
-  protected isLiteralWithCanonicalLexicalForm(term: RDF.Term): boolean {
-    if (term.termType === 'Literal') {
-      switch (term.datatype.value) {
-        case 'http://www.w3.org/2001/XMLSchema#string':
-        case 'http://www.w3.org/1999/02/22-rdf-syntax-ns#langString':
-        case 'http://www.w3.org/2001/XMLSchema#normalizedString':
-        case 'http://www.w3.org/2001/XMLSchema#anyURI':
-        case 'http://www.w3.org/2001/XMLSchema#base64Binary':
-        case 'http://www.w3.org/2001/XMLSchema#language':
-        case 'http://www.w3.org/2001/XMLSchema#Name':
-        case 'http://www.w3.org/2001/XMLSchema#NCName':
-        case 'http://www.w3.org/2001/XMLSchema#NMTOKEN':
-        case 'http://www.w3.org/2001/XMLSchema#token':
-        case 'http://www.w3.org/2001/XMLSchema#hexBinary':
-          return true;
-      }
+  protected isLiteralWithCanonicalLexicalForm(term: RDF.Literal): boolean {
+    switch (term.datatype.value) {
+      case 'http://www.w3.org/2001/XMLSchema#string':
+      case 'http://www.w3.org/1999/02/22-rdf-syntax-ns#langString':
+      case 'http://www.w3.org/2001/XMLSchema#normalizedString':
+      case 'http://www.w3.org/2001/XMLSchema#anyURI':
+      case 'http://www.w3.org/2001/XMLSchema#base64Binary':
+      case 'http://www.w3.org/2001/XMLSchema#language':
+      case 'http://www.w3.org/2001/XMLSchema#Name':
+      case 'http://www.w3.org/2001/XMLSchema#NCName':
+      case 'http://www.w3.org/2001/XMLSchema#NMTOKEN':
+      case 'http://www.w3.org/2001/XMLSchema#token':
+      case 'http://www.w3.org/2001/XMLSchema#hexBinary':
+        return true;
     }
     return false;
   }

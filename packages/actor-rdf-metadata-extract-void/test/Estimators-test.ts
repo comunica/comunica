@@ -69,6 +69,7 @@ const ignoredPatternExamples = {
 
 describe('Estimators', () => {
   let dataset: IVoidDataset;
+  let datasetEmpty: IVoidDataset;
 
   const datasetTripleCount = 4321;
 
@@ -87,12 +88,29 @@ describe('Estimators', () => {
       uriRegexPattern: /^ex:/u,
       vocabularies: [ 'ex:' ],
     };
+    datasetEmpty = {
+      classes: 0,
+      classPartitions: {},
+      distinctObjects: 0,
+      distinctSubjects: 0,
+      entities: 0,
+      identifier: 'ex:g',
+      propertyPartitions: {},
+      triples: 0,
+      uriRegexPattern: /^ex:/u,
+      vocabularies: [ 'ex:' ],
+    };
   });
 
   describe('estimatePatternCardinality', () => {
     it('should return the estimated cardinality', () => {
       const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
       expect(estimatePatternCardinality(dataset, pattern)).toEqual({ type: 'estimate', value: datasetTripleCount });
+    });
+
+    it('should return the estimated cardinality for an empty dataset', () => {
+      const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
+      expect(estimatePatternCardinality(datasetEmpty, pattern)).toEqual({ type: 'exact', value: 0 });
     });
 
     it('should return 0 when resource URIs are not found in the dataset', () => {

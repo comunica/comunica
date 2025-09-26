@@ -1198,6 +1198,22 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             ]) ]);
           });
 
+          it('is not pushed down for ?sother=<sother>', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('sother')),
+                AF.createTermExpression(DF.namedNode('sother')),
+              ]),
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+            )).toEqual([ false, AF.createFilter(
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('sother')),
+                AF.createTermExpression(DF.namedNode('sother')),
+              ]),
+            ) ]);
+          });
+
           it('is not pushed down for ?o="01"^xsd:number', async() => {
             expect(filterPushdown(
               AF.createOperatorExpression('=', [
@@ -1404,15 +1420,15 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             });
           });
 
-          it('is pushed down for ?s=<s>', async() => {
+          it('is not pushed down for ?s=<s>', async() => {
             expect(filterPushdown(
               AF.createOperatorExpression('=', [
                 AF.createTermExpression(DF.variable('s')),
                 AF.createTermExpression(DF.namedNode('s')),
               ]),
-              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+              AF.createPath(DF.variable('s'), AF.createNps([]), DF.namedNode('o1')),
             )).toEqual([ false, AF.createFilter(
-              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+              AF.createPath(DF.variable('s'), AF.createNps([]), DF.namedNode('o1')),
               AF.createOperatorExpression('=', [
                 AF.createTermExpression(DF.variable('s')),
                 AF.createTermExpression(DF.namedNode('s')),
