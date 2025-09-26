@@ -1,3 +1,4 @@
+import { ComunicaSparqlGenerator } from '@comunica/aa-comunica-parser';
 import type { MediatorHttp } from '@comunica/bus-http';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { Actor } from '@comunica/core';
@@ -18,7 +19,6 @@ import type * as RDF from '@rdfjs/types';
 import { toAst } from '@traqula/algebra-sparql-1-2';
 import type { AlgebraFactory, Algebra } from '@traqula/algebra-transformations-1-2';
 import { algebraUtils } from '@traqula/algebra-transformations-1-2';
-import { Generator } from '@traqula/generator-sparql-1-2';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator, wrap } from 'asynciterator';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
@@ -29,7 +29,7 @@ import type { BindMethod } from './ActorQuerySourceIdentifyHypermediaSparql';
 const COUNT_INFINITY: RDF.QueryResultCardinality = { type: 'estimate', value: Number.POSITIVE_INFINITY };
 
 export class QuerySourceSparql implements IQuerySource {
-  protected static readonly queryStringGenerator = new Generator();
+  protected static readonly queryStringGenerator = new ComunicaSparqlGenerator();
   protected static readonly SELECTOR_SHAPE: FragmentSelectorShape = {
     type: 'disjunction',
     children: [

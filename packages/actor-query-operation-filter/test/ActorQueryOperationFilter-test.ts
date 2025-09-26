@@ -1,3 +1,4 @@
+import { ComunicaSparqlParser as Parser } from '@comunica/aa-comunica-parser';
 import {
   ActorFunctionFactoryExpressionConcat,
 } from '@comunica/actor-function-factory-expression-concat';
@@ -20,7 +21,6 @@ import {
 } from '@comunica/utils-expression-evaluator/test/util/helpers';
 import { toAlgebra } from '@traqula/algebra-sparql-1-2';
 import type { Algebra } from '@traqula/algebra-transformations-1-2';
-import { Parser } from '@traqula/parser-sparql-1-2';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationFilter } from '../lib';

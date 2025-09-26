@@ -46,7 +46,7 @@
     "@comunica/core": "^4.0.2",
     "@comunica/types": "^4.0.2",
     "@rdfjs/types": "*",
-    "@traqula/algebra-transformations-1-2": "^0.0.17",
+    "@traqula/algebra-transformations-1-2": "^0.0.19",
     "rdf-data-factory": "^2.0.0"
   }
 }

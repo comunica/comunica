@@ -48,7 +48,7 @@
     "@comunica/utils-data-factory": "^4.0.1",
     "@comunica/utils-metadata": "^4.0.2",
     "@rdfjs/types": "*",
-    "@traqula/algebra-transformations-1-2": "^0.0.17",
+    "@traqula/algebra-transformations-1-2": "^0.0.19",
     "asynciterator": "^3.9.0",
     "rdf-terms": "^2.0.0"
   }
