@@ -86,7 +86,9 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
         filter(op: Algebra.Filter, factory: Factory) {
           // Check if the filter must be pushed down
           const extensionFunctions = action.context.get(KeysInitQuery.extensionFunctions);
-          if (!self.shouldAttemptPushDown(op, sources, sourceShapes, extensionFunctions)) {
+          const extensionFunctionsAlwaysPushdown = action.context.get(KeysInitQuery.extensionFunctionsAlwaysPushdown);
+          if (!self
+            .shouldAttemptPushDown(op, sources, sourceShapes, extensionFunctions, extensionFunctionsAlwaysPushdown)) {
             return {
               recurse: true,
               result: op,
@@ -151,12 +153,16 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
    * @param sources The query sources in the operation
    * @param sourceShapes A mapping of sources to selector shapes.
    * @param extensionFunctions The extension functions comunica supports.
+   * @param extensionFunctionsAlwaysPushdown If extension functions must always be pushed down to sources that support
+   *                                         expressions, even if those sources to not explicitly declare support for
+   *                                         these extension functions.
    */
   public shouldAttemptPushDown(
     operation: Algebra.Filter,
     sources: IQuerySourceWrapper[],
     sourceShapes: Map<IQuerySourceWrapper, FragmentSelectorShape>,
     extensionFunctions?: Record<string, any>,
+    extensionFunctionsAlwaysPushdown?: boolean,
   ): boolean {
     // Always push down if aggressive mode is enabled
     if (this.aggressivePushdown) {
@@ -185,7 +191,9 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     }
 
     // Push down if federated and at least one accepts the filter
-    if (sources.some(source => doesShapeAcceptOperation(sourceShapes.get(source)!, operation))) {
+    if (sources.some(source => doesShapeAcceptOperation(sourceShapes.get(source)!, operation, {
+      wildcardAcceptAllExtensionFunctions: extensionFunctionsAlwaysPushdown,
+    }))) {
       return true;
     }
 

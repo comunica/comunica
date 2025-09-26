@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-context-preprocess-convert-shortcuts",
-  "version": "4.4.0",
+  "version": "4.4.1",
   "description": "A convert-shortcuts context-preprocess actor",
   "lsd:module": true,
   "license": "MIT",

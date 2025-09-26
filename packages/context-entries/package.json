@@ -1,6 +1,6 @@
 {
   "name": "@comunica/context-entries",
-  "version": "4.4.0",
+  "version": "4.4.1",
   "description": "A collection of reusable Comunica context key definitions.",
   "license": "MIT",
   "funding": {

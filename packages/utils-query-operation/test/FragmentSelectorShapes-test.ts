@@ -485,6 +485,7 @@ describe('FragmentSelectorShapes', () => {
 
     describe('with extension function operations', () => {
       let extensionFunctionExpression: Algebra.NamedExpression;
+      let operationWithextensionFunctionExpression: Algebra.Join;
 
       beforeAll(() => {
         extensionFunctionExpression = {
@@ -493,6 +494,10 @@ describe('FragmentSelectorShapes', () => {
           args: [],
           type: Algebra.types.EXPRESSION,
         };
+        operationWithextensionFunctionExpression = AF.createJoin([
+          AF.createNop(),
+          extensionFunctionExpression,
+        ]);
       });
 
       it('operation type with a compatible extension function operation should accept', () => {
@@ -517,6 +522,102 @@ describe('FragmentSelectorShapes', () => {
           },
           joinBindings: true,
         }, extensionFunctionExpression)).toBeFalsy();
+      });
+
+      it('operation type with a non-compatible extension function operation child should not accept', () => {
+        expect(doesShapeAcceptOperation({
+          type: 'operation',
+          operation: {
+            operationType: 'type',
+            type: Algebra.types.EXPRESSION,
+            extensionFunctions: [ 'mock2' ],
+          },
+          joinBindings: true,
+        }, operationWithextensionFunctionExpression)).toBeFalsy();
+      });
+
+      it(`disjunction with a non-compatible extension function operation not should accept`, () => {
+        expect(doesShapeAcceptOperation({
+          type: 'disjunction',
+          children: [
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.EXPRESSION,
+                extensionFunctions: [ 'mock2' ],
+              },
+              joinBindings: true,
+            },
+            {
+              type: 'operation',
+              operation: { operationType: 'wildcard' },
+            },
+          ],
+        }, extensionFunctionExpression)).toBeFalsy();
+      });
+
+      it(`disjunction with a non-compatible extension function operation child should not accept`, () => {
+        expect(doesShapeAcceptOperation({
+          type: 'disjunction',
+          children: [
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.EXPRESSION,
+                extensionFunctions: [ 'mock2' ],
+              },
+              joinBindings: true,
+            },
+            {
+              type: 'operation',
+              operation: { operationType: 'wildcard' },
+            },
+          ],
+        }, operationWithextensionFunctionExpression)).toBeFalsy();
+      });
+
+      it(`disjunction with a non-compatible extension function operation should accept if wildcardAcceptAllExtensionFunctions`, () => {
+        expect(doesShapeAcceptOperation({
+          type: 'disjunction',
+          children: [
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.EXPRESSION,
+                extensionFunctions: [ 'mock2' ],
+              },
+              joinBindings: true,
+            },
+            {
+              type: 'operation',
+              operation: { operationType: 'wildcard' },
+            },
+          ],
+        }, extensionFunctionExpression, { wildcardAcceptAllExtensionFunctions: true })).toBeTruthy();
+      });
+
+      it(`disjunction with a non-compatible extension function operation child should accept if wildcardAcceptAllExtensionFunctions`, () => {
+        expect(doesShapeAcceptOperation({
+          type: 'disjunction',
+          children: [
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.types.EXPRESSION,
+                extensionFunctions: [ 'mock2' ],
+              },
+              joinBindings: true,
+            },
+            {
+              type: 'operation',
+              operation: { operationType: 'wildcard' },
+            },
+          ],
+        }, operationWithextensionFunctionExpression, { wildcardAcceptAllExtensionFunctions: true })).toBeTruthy();
       });
 
       it('operation type with a NOP operation should not accept, but also not throw an error', () => {

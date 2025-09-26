@@ -1,5 +1,5 @@
 import type { FragmentSelectorShape } from '@comunica/types';
-import { Algebra } from 'sparqlalgebrajs';
+import { Algebra, Util } from 'sparqlalgebrajs';
 
 /**
  * Check if the given shape accepts the given query operation.
@@ -49,11 +49,10 @@ function doesShapeAcceptOperationRecurseShape(
   const shapeOperation = shapeActive.operation;
   switch (shapeOperation.operationType) {
     case 'type': {
-      if (shapeOperation.type === Algebra.types.EXPRESSION &&
-        isExtensionFunction(operation)) {
-        // Extension functions check
-        return <boolean> ('extensionFunctions' in shapeOperation &&
-          shapeOperation.extensionFunctions?.includes(operation.name.value));
+      if (shapeOperation.type === Algebra.types.EXPRESSION && isExtensionFunction(operation) &&
+        !('extensionFunctions' in shapeOperation &&
+        shapeOperation.extensionFunctions?.includes(operation.name.value))) {
+        return false;
       }
       if (!doesShapeAcceptOperationRecurseOperationAndShape(shapeTop, shapeActive.children, operation, options) &&
         !doesShapeAcceptOperationRecurseOperation(shapeTop, operation, options)) {
@@ -71,7 +70,25 @@ function doesShapeAcceptOperationRecurseShape(
     case 'wildcard': {
       // All possible operations are accepted by this shape.
       // As exception, extension functions are not accepted through wildcards.
-      return !isExtensionFunction(operation);
+      if (options?.wildcardAcceptAllExtensionFunctions) {
+        return true;
+      }
+      if (isExtensionFunction(operation)) {
+        return false;
+      }
+      // Also check for nested extension functions,
+      // and only accept the wildcard if all nested extension functions are supported by the query shape.
+      let hasUnsupportedExtensionFunction = false;
+      Util.recurseOperation(operation, {
+        [Algebra.types.EXPRESSION](subOp) {
+          if (isExtensionFunction(subOp) && !doesShapeAcceptOperation(shapeTop, subOp, options)) {
+            hasUnsupportedExtensionFunction = true;
+            return false;
+          }
+          return true;
+        },
+      });
+      return !hasUnsupportedExtensionFunction;
     }
   }
 }
@@ -131,4 +148,5 @@ function isExtensionFunction(operation: Algebra.Operation): boolean {
 export type FragmentSelectorShapeTestFlags = {
   joinBindings?: boolean;
   filterBindings?: boolean;
+  wildcardAcceptAllExtensionFunctions?: boolean;
 };

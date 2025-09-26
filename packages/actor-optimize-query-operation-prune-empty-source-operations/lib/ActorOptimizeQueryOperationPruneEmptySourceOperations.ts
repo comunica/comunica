@@ -202,6 +202,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     context: IActionContext,
   ): Promise<boolean> {
     const mergedContext = source.context ? context.merge(source.context) : context;
+    const wildcardAcceptAllExtensionFunctions = mergedContext.get(KeysInitQuery.extensionFunctionsAlwaysPushdown);
 
     // Traversal contexts should never be considered empty at optimization time.
     if (mergedContext.get(KeysQuerySourceIdentify.traverse)) {
@@ -211,7 +212,11 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     // Prefer ASK over COUNT when instructed to, and the source allows it
     if (this.useAskIfSupported) {
       const askOperation = algebraFactory.createAsk(input);
-      const askSupported = doesShapeAcceptOperation(await source.source.getSelectorShape(context), askOperation);
+      const askSupported = doesShapeAcceptOperation(
+        await source.source.getSelectorShape(context),
+        askOperation,
+        { wildcardAcceptAllExtensionFunctions },
+      );
       if (askSupported) {
         return source.source.queryBoolean(askOperation, mergedContext);
       }
@@ -232,7 +237,11 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     // Since the VoID estimators in Comunica cannot produce false negatives, only positive assignments must be verified.
     if (cardinality.type === 'estimate' && cardinality.value > 0) {
       const askOperation = algebraFactory.createAsk(input);
-      const askSupported = doesShapeAcceptOperation(await source.source.getSelectorShape(context), askOperation);
+      const askSupported = doesShapeAcceptOperation(
+        await source.source.getSelectorShape(context),
+        askOperation,
+        { wildcardAcceptAllExtensionFunctions },
+      );
       if (askSupported) {
         return source.source.queryBoolean(askOperation, mergedContext);
       }

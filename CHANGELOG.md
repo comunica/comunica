@@ -1,6 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v4.4.1"></a>
+## [v4.4.1](https://github.com/comunica/comunica/compare/v4.4.0...v4.4.1) - 2025-09-25
+
+### Fixed
+* [Fix unsupported extension functions always being pushed to endpoints](https://github.com/comunica/comunica/commit/b24c9372172337b500adcfe0eb61e0e777c746fc)
+    * [Add option to always push down extension functions](https://github.com/comunica/comunica/commit/fbbf7d03bef75c451e38ab6731464ff8570cc117)
+    * [If extension functions are undefined, always push them down](https://github.com/comunica/comunica/commit/b1863b2d3bfd854737fd752b72b1a29b0e9b9b25)
+
 <a name="v4.4.0"></a>
 ## [v4.4.0](https://github.com/comunica/comunica/compare/v4.3.0...v4.4.0) - 2025-09-17
 
