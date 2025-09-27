@@ -87,23 +87,21 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
       bindings => <RDF.Term> bindings.get(pendingOperation.variable),
     );
 
-    if (!runningOperation.done) {
-      this.runningOperations.push(runningOperation);
-      runningOperation.on('error', error => this.destroy(error));
-      runningOperation.on('readable', () => {
-        if (fillBuffer) {
-          this._fillBufferAsync();
-        }
-        this.readable = true;
-      });
-      runningOperation.on('end', () => {
-        this.runningOperations.splice(this.runningOperations.indexOf(runningOperation), 1);
-        if (fillBuffer) {
-          this._fillBufferAsync();
-        }
-        this.readable = true;
-      });
-    }
+    this.runningOperations.push(runningOperation);
+    runningOperation.on('error', error => this.destroy(error));
+    runningOperation.on('readable', () => {
+      if (fillBuffer) {
+        this._fillBufferAsync();
+      }
+      this.readable = true;
+    });
+    runningOperation.on('end', () => {
+      this.runningOperations.splice(this.runningOperations.indexOf(runningOperation), 1);
+      if (fillBuffer) {
+        this._fillBufferAsync();
+      }
+      this.readable = true;
+    });
 
     if (!this.getProperty('metadata')) {
       this.setProperty('metadata', results.metadata);

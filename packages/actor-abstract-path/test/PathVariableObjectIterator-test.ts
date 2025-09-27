@@ -182,4 +182,23 @@ describe('PathVariableObjectIterator', () => {
       iterator.on('error', reject);
     })).rejects.toThrow('mediatorQueryOperation rejection in PathVariableObjectIterator');
   });
+
+  it('handles immediately ending mediation results', async() => {
+    mediatorQueryOperation.mediate = <any> (() => {
+      const bindingsStream = new ArrayIterator<RDF.Bindings>([]);
+      createdBindingsStreams.push(bindingsStream);
+      return { type: 'bindings', bindingsStream };
+    });
+
+    iterator = new PathVariableObjectIterator(
+      AF,
+      DF.namedNode('ex:s'),
+      AF.createLink(DF.namedNode('ex:p')),
+      DF.namedNode('ex:g'),
+      new ActionContext(),
+      mediatorQueryOperation,
+      true,
+    );
+    await expect(iterator.toArray()).resolves.toEqual([ DF.namedNode('ex:s') ]);
+  });
 });

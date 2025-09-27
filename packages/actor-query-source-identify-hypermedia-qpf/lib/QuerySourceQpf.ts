@@ -265,8 +265,9 @@ export class QuerySourceQpf implements IQuerySource {
           });
           return quads;
         }
-      } else if (Object.keys(this.searchForm.mappings).length === 3) {
+      } else {
         // If have a TPF endpoint, set graph to variable so we could get the cached triples
+        // In this case: Object.keys(this.searchForm.mappings).length === 3
         graph = this.dataFactory.variable('g');
       }
     }

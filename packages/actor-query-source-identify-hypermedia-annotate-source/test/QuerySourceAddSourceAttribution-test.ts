@@ -68,6 +68,7 @@ describe('QuerySourcAddSourceAttribution', () => {
     ]);
     expect(sourceInner.queryBindings).toHaveBeenCalledWith(op, context, opts);
   });
+
   it('should add source to bindings', async() => {
     const op = AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o'));
     const context = new ActionContext();
@@ -77,6 +78,23 @@ describe('QuerySourcAddSourceAttribution', () => {
     const bindingSources = producedBindings.map(x => (<Bindings> x)
       .getContextEntry(KeysMergeBindingsContext.sourcesBinding));
     expect(bindingSources).toEqual([[ 'REF' ], [ 'REF' ], [ 'REF' ]]);
+  });
+
+  it('should not add source to unsupported bindings', async() => {
+    sourceInner.queryBindings = <any> jest.fn(() => {
+      const it = new ArrayIterator([
+        { a: DF.namedNode('a0') },
+        { a: DF.blankNode('a1') },
+        { a: DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.blankNode('a2')) },
+      ], { autoStart: false });
+      it.setProperty('metadata', { state: new MetadataValidationState() });
+      return it;
+    });
+    const op = AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o'));
+    const context = new ActionContext();
+    const opts: any = {};
+    const sourceAttributionBindingsStream = source.queryBindings(op, context, opts);
+    await expect(sourceAttributionBindingsStream.toArray()).resolves.toHaveLength(3);
   });
 
   it('should delegate queryBoolean', async() => {

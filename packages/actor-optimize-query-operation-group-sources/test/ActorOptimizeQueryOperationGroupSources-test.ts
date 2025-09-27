@@ -633,5 +633,74 @@ describe('ActorOptimizeQueryOperationGroupSources', () => {
         expect(getOperationSource(inputs[1])).toBeUndefined();
       });
     });
+
+    describe('isPossibleToMoveSourceAnnotationUpwards', () => {
+      it('should return true for supported shape without extension functions', () => {
+        const ctx = new ActionContext();
+        expect(actor.isPossibleToMoveSourceAnnotationUpwards(
+          AF.createNop(),
+          { type: 'operation', operation: { operationType: 'wildcard' }},
+          ctx,
+        )).toBeTruthy();
+      });
+
+      it('should return true for supported shape with extension functions on non-expression', () => {
+        const ctx = new ActionContext({ [KeysInitQuery.extensionFunctions.name]: {}});
+        expect(actor.isPossibleToMoveSourceAnnotationUpwards(
+          AF.createNop(),
+          { type: 'operation', operation: { operationType: 'wildcard' }},
+          ctx,
+        )).toBeTruthy();
+      });
+
+      it('should return true for supported shape with extension functions on local named expression', () => {
+        const ctx = new ActionContext({ [KeysInitQuery.extensionFunctions.name]: {
+          'ex:f': true,
+        }});
+        expect(actor.isPossibleToMoveSourceAnnotationUpwards(
+          AF.createFilter(AF.createNop(), AF.createNamedExpression(DF.namedNode('ex:f'), [])),
+          {
+            type: 'disjunction',
+            children: [
+              { type: 'operation', operation: { operationType: 'wildcard' }},
+              {
+                type: 'operation',
+                operation: { operationType: 'type', type: Algebra.types.EXPRESSION, extensionFunctions: [ 'ex:f' ]},
+              },
+            ],
+          },
+          ctx,
+        )).toBeTruthy();
+      });
+
+      it('should return false for supported shape with extension functions on local term expression', () => {
+        const ctx = new ActionContext({ [KeysInitQuery.extensionFunctions.name]: {
+          'ex:f': true,
+        }});
+        expect(actor.isPossibleToMoveSourceAnnotationUpwards(
+          AF.createFilter(AF.createNop(), AF.createTermExpression(DF.namedNode('ex:f'))),
+          {
+            type: 'disjunction',
+            children: [
+              { type: 'operation', operation: { operationType: 'wildcard' }},
+              {
+                type: 'operation',
+                operation: { operationType: 'type', type: Algebra.types.EXPRESSION, extensionFunctions: [ 'ex:f' ]},
+              },
+            ],
+          },
+          ctx,
+        )).toBeTruthy();
+      });
+
+      it('should return false for supported shape with extension functions on expression', () => {
+        const ctx = new ActionContext({ [KeysInitQuery.extensionFunctions.name]: {}});
+        expect(actor.isPossibleToMoveSourceAnnotationUpwards(
+          AF.createNamedExpression(DF.namedNode('ex:f'), []),
+          { type: 'operation', operation: { operationType: 'wildcard' }},
+          ctx,
+        )).toBeFalsy();
+      });
+    });
   });
 });
