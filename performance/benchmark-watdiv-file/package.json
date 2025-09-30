@@ -13,7 +13,7 @@
     "@jbr-experiment/watdiv": "^6.0.0",
     "@jbr-hook/cli": "^6.0.0",
     "@jbr-hook/sparql-endpoint-comunica": "^6.0.0",
-    "cross-env": "^7.0.3",
+    "cross-env": "^10.0.0",
     "jbr": "^6.0.0"
   }
 }
