@@ -1713,6 +1713,27 @@ WHERE { undefined:s ?p undefined:o. }` }),
       expect(source.operationUsesPropertyFeatures(AF.createNop())).toBeFalsy();
     });
 
+    it('should return false if source and query do not share property features', () => {
+      source = new QuerySourceSparql(
+        url,
+        ctx,
+        mediatorHttp,
+        'values',
+        DF,
+        AF,
+        BF,
+        false,
+        64,
+        10000,
+        true,
+        true,
+        0,
+        { propertyFeatures: [ propertyFeature.value ]},
+      );
+      const operation = AF.createPattern(DF.variable('s'), DF.namedNode('ex:p'), DF.variable('o'));
+      expect(source.operationUsesPropertyFeatures(operation)).toBeFalsy();
+    });
+
     it('should return true if source and query share property features', () => {
       source = new QuerySourceSparql(
         url,
