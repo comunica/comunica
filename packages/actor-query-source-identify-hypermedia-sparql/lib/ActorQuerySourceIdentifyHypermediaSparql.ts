@@ -68,11 +68,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
       this.cardinalityCountQueries && !isSingularSource,
       this.cardinalityEstimateConstruction,
       this.forceGetIfUrlLengthBelow,
-      action.metadata.defaultGraph,
-      action.metadata.unionDefaultGraph,
-      action.metadata.datasets,
-      action.metadata.extensionFunctions,
-      action.metadata.postAccepted,
+      action.metadata,
     );
     return { source };
   }

@@ -318,10 +318,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             true,
             true,
             0,
-            undefined,
-            undefined,
-            undefined,
-            [ 'https://example.com/functions#mock' ],
+            { extensionFunctions: [ 'https://example.com/functions#mock' ]},
           ),
         };
         const extensionFunctions = {
@@ -356,10 +353,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             true,
             true,
             0,
-            undefined,
-            undefined,
-            undefined,
-            [ 'https://example.com/functions#mock' ],
+            { extensionFunctions: [ 'https://example.com/functions#mock' ]},
           ),
         };
         const src2 = <any> {};

@@ -41,10 +41,13 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
     const sparqlResultsXml = DF.namedNode('http://www.w3.org/ns/formats/SPARQL_Results_XML');
     const sparql11Query = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}SPARQL11Query`);
 
+    const propertyFeature = DF.namedNode('ex:propertyFeatureExample');
+
     const serviceDescriptionFeature = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}feature`);
     const serviceDescriptionEndpoint = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}endpoint`);
     const serviceDescriptionInputFormat = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}inputFormat`);
     const serviceDescriptionResultFormat = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}resultFormat`);
+    const serviceDescriptionPropertyFeature = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}propertyFeature`);
     const serviceDescriptionSupportedLanguage = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}supportedLanguage`);
     const serviceDescriptionDefaultDataset = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}defaultDataset`);
     const serviceDescriptionDefaultGraph = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}defaultGraph`);
@@ -66,6 +69,7 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
         DF.quad(serviceDescriptionIri, serviceDescriptionFeature, serviceDescriptionUnionDefaultGraph),
         DF.quad(serviceDescriptionIri, serviceDescriptionFeature, DF.namedNode('unknown')),
         DF.quad(serviceDescriptionIri, serviceDescriptionSupportedLanguage, sparql11Query),
+        DF.quad(serviceDescriptionIri, serviceDescriptionPropertyFeature, propertyFeature),
         DF.quad(serviceDescriptionIri, serviceDescriptionInputFormat, sparqlResultsJson),
         DF.quad(serviceDescriptionIri, serviceDescriptionResultFormat, sparqlResultsXml),
         DF.quad(serviceDescriptionIri, serviceDescriptionDefaultDataset, endpointDefaultDataset),
@@ -83,6 +87,7 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
           resultFormats: [ sparqlResultsXml.value ],
           supportedLanguages: [ sparql11Query.value ],
           extensionFunctions: [ endpointExtensionFunction.value ],
+          propertyFeatures: [ propertyFeature.value ],
         },
       });
     });
