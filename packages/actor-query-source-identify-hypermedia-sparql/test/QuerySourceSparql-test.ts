@@ -1794,7 +1794,7 @@ WHERE { undefined:s ?p undefined:o. }` }),
         { propertyFeatures: [ propertyFeature.value ]},
       );
       const operation = AF.createPath(DF.variable('s'), AF.createLink(DF.namedNode('.ex:p')), DF.variable('params'));
-      expect(source.operationUsesPropertyFeatures(operation)).toBeTruthy();
+      expect(source.operationUsesPropertyFeatures(operation)).toBeFalsy();
     });
 
     it('should return true if source and query share property features in property path nps', () => {
@@ -1836,7 +1836,7 @@ WHERE { undefined:s ?p undefined:o. }` }),
         { propertyFeatures: [ propertyFeature.value ]},
       );
       const operation = AF.createPath(DF.variable('s'), AF.createNps([ DF.namedNode('ex:p') ]), DF.variable('params'));
-      expect(source.operationUsesPropertyFeatures(operation)).toBeTruthy();
+      expect(source.operationUsesPropertyFeatures(operation)).toBeFalsy();
     });
   });
 });
