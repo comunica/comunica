@@ -1776,6 +1776,27 @@ WHERE { undefined:s ?p undefined:o. }` }),
       expect(source.operationUsesPropertyFeatures(operation)).toBeTruthy();
     });
 
+    it('should return false if source and query do not share property features in property path links', () => {
+      source = new QuerySourceSparql(
+        url,
+        ctx,
+        mediatorHttp,
+        'values',
+        DF,
+        AF,
+        BF,
+        false,
+        64,
+        10000,
+        true,
+        true,
+        0,
+        { propertyFeatures: [ propertyFeature.value ]},
+      );
+      const operation = AF.createPath(DF.variable('s'), AF.createLink(DF.namedNode('.ex:p')), DF.variable('params'));
+      expect(source.operationUsesPropertyFeatures(operation)).toBeTruthy();
+    });
+
     it('should return true if source and query share property features in property path nps', () => {
       source = new QuerySourceSparql(
         url,
@@ -1794,6 +1815,27 @@ WHERE { undefined:s ?p undefined:o. }` }),
         { propertyFeatures: [ propertyFeature.value ]},
       );
       const operation = AF.createPath(DF.variable('s'), AF.createNps([ propertyFeature ]), DF.variable('params'));
+      expect(source.operationUsesPropertyFeatures(operation)).toBeTruthy();
+    });
+
+    it('should return false if source and query do not share property features in property path nps', () => {
+      source = new QuerySourceSparql(
+        url,
+        ctx,
+        mediatorHttp,
+        'values',
+        DF,
+        AF,
+        BF,
+        false,
+        64,
+        10000,
+        true,
+        true,
+        0,
+        { propertyFeatures: [ propertyFeature.value ]},
+      );
+      const operation = AF.createPath(DF.variable('s'), AF.createNps([ DF.namedNode('ex:p') ]), DF.variable('params'));
       expect(source.operationUsesPropertyFeatures(operation)).toBeTruthy();
     });
   });
