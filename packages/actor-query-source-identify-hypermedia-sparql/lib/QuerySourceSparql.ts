@@ -377,17 +377,14 @@ export class QuerySourceSparql implements IQuerySource {
           }
           return false;
         },
-        [Algebra.types.PATH]: (op) => {
-          if (
-            (
-              op.predicate.type === Algebra.types.LINK &&
-              this.propertyFeatures!.has(op.predicate.iri.value)
-            ) ||
-            (
-              op.predicate.type === Algebra.types.NPS &&
-              op.predicate.iris.some(iri => this.propertyFeatures!.has(iri.value))
-            )
-          ) {
+        [Algebra.types.LINK]: (op) => {
+          if (this.propertyFeatures!.has(op.iri.value)) {
+            propertyFeaturesUsed = true;
+          }
+          return false;
+        },
+        [Algebra.types.NPS]: (op) => {
+          if (op.iris.some(iri => this.propertyFeatures!.has(iri.value))) {
             propertyFeaturesUsed = true;
           }
           return false;
