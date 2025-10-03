@@ -1,10 +1,10 @@
+import type { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { IBindingsAggregator, MediatorBindingsAggregatorFactory } from '@comunica/bus-bindings-aggregator-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { Bindings, ComunicaDataFactory, IActionContext } from '@comunica/types';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { bindingsToCompactString } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A simple type alias for strings that should be hashes of Bindings

@@ -1,3 +1,4 @@
+import { Algebra } from '@comunica/algebra-sparql-comunica';
 import type {
   IActionBindingsAggregatorFactory,
   IActorBindingsAggregatorFactoryOutput,
@@ -68,7 +69,6 @@ import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-
 import type { Runner } from '@comunica/runner';
 import { instantiateComponent } from '@comunica/runner';
 import type { IActionContext, IQueryOperationResultBindings } from '@comunica/types';
-import { Algebra } from '@traqula/algebra-transformations-1-2';
 import { DataFactory } from 'rdf-data-factory';
 import { QueryEngineFactory } from '../lib';
 

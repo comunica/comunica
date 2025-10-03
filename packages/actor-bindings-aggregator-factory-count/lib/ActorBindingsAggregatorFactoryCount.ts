@@ -1,3 +1,4 @@
+import { Algebra } from '@comunica/algebra-sparql-comunica';
 import type {
   IActionBindingsAggregatorFactory,
   IActorBindingsAggregatorFactoryArgs,
@@ -9,7 +10,6 @@ import {
 
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
-import { Algebra } from '@traqula/algebra-transformations-1-2';
 import { CountAggregator } from './CountAggregator';
 
 /**
@@ -22,7 +22,7 @@ export class ActorBindingsAggregatorFactoryCount extends ActorBindingsAggregator
 
   public async test(action: IActionBindingsAggregatorFactory): Promise<TestResult<IActorTest>> {
     if (action.expr.aggregator !== 'count' ||
-      action.expr.expression.expressionType === Algebra.ExpressionTypes.WILDCARD) {
+      action.expr.expression.subType === Algebra.ExpressionTypes.WILDCARD) {
       return failTest('This actor only supports the \'count\' aggregator without wildcard.');
     }
     return passTestVoid();

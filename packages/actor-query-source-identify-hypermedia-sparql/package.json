@@ -41,7 +41,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/aa-comunica-parser": "^4.0.2",
+    "@comunica/algebra-comunica-proto-extension-and-parser": "^4.0.2",
     "@comunica/bus-http": "^4.0.2",
     "@comunica/bus-merge-bindings-context": "^4.0.2",
     "@comunica/bus-query-source-identify-hypermedia": "^4.0.2",
@@ -52,7 +52,7 @@
     "@comunica/utils-metadata": "^4.0.2",
     "@rdfjs/types": "*",
     "@traqula/algebra-sparql-1-2": "^0.0.19",
-    "@traqula/algebra-transformations-1-2": "^0.0.19",
+    "@comunica/algebra-sparql-comunica": "^4.0.2",
     "@traqula/generator-sparql-1-2": "^0.0.19",
     "asynciterator": "^3.9.0",
     "fetch-sparql-endpoint": "^6.0.0",

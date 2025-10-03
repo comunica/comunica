@@ -1,7 +1,7 @@
 {
-  "name": "@comunica/aa-comunica-parser",
+  "name": "@comunica/algebra-sparql-comunica",
   "version": "4.0.2",
-  "description": "An abstract actor for handling mediatypes",
+  "description": "Self maintained Algebra that Comunica views as its base",
   "lsd:module": true,
   "license": "MIT",
   "funding": {
@@ -41,12 +41,11 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@traqula/algebra-transformations-1-1": "^0.0.19",
     "@traqula/algebra-transformations-1-2": "^0.0.19",
+    "@traqula/algebra-sparql-1-2": "^0.0.19",
     "@traqula/core": "^0.0.19",
-    "@traqula/generator-sparql-1-1": "^0.0.19",
     "@traqula/generator-sparql-1-2": "^0.0.19",
-    "@traqula/rules-sparql-1-1": "^0.0.19",
+    "@traqula/parser-sparql-1-2": "^0.0.19",
     "@traqula/rules-sparql-1-2": "^0.0.19"
   }
 }

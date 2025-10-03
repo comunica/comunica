@@ -1,10 +1,10 @@
+import { ExpressionTypes, Types } from '@comunica/algebra-sparql-comunica';
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import * as Eval from '@comunica/utils-expression-evaluator';
 import { generalEvaluate } from '@comunica/utils-expression-evaluator/test/util/generalEvaluation';
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-expression-evaluator/test/util/helpers';
-import { ExpressionTypes, Types } from '@traqula/algebra-transformations-1-2';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorFunctionFactoryExpressionBound } from '../lib';
 

@@ -1,4 +1,4 @@
-import { ComunicaSparqlParser as SparqlParser } from '@comunica/aa-comunica-parser';
+import { ComunicaSparqlParser as SparqlParser } from '@comunica/algebra-comunica-proto-extension-and-parser';
 import type { IActionQueryParse, IActorQueryParseArgs, IActorQueryParseOutput } from '@comunica/bus-query-parse';
 import { ActorQueryParse } from '@comunica/bus-query-parse';
 import { KeysInitQuery } from '@comunica/context-entries';

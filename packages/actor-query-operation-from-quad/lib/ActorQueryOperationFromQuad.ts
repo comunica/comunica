@@ -1,3 +1,4 @@
+import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
@@ -5,7 +6,6 @@ import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { Algebra, AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A comunica From Query Operation Actor.
@@ -61,12 +61,12 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
     defaultGraphs: RDF.Term[],
   ): Algebra.Operation {
     // If the operation is a BGP or Path, change the graph.
-    if ((operation.type === 'bgp' && operation.patterns.length > 0) ||
-      operation.type === 'path' ||
-      operation.type === 'pattern') {
-      if (operation.type === 'bgp') {
+    if ((Algebra.isKnownOperation(operation, Algebra.Types.BGP) && operation.patterns.length > 0) ||
+      Algebra.isKnownOperation(operation, Algebra.Types.PATH) ||
+      Algebra.isKnownOperation(operation, Algebra.Types.PATTERN)) {
+      if (Algebra.isKnownOperation(operation, Algebra.Types.BGP)) {
         return ActorQueryOperationFromQuad
-          .joinOperations(algebraFactory, operation.patterns.map((pattern: Algebra.Pattern) => {
+          .joinOperations(algebraFactory, operation.patterns.map((pattern) => {
             if (pattern.graph.termType !== 'DefaultGraph') {
               return algebraFactory.createBgp([ pattern ]);
             }
@@ -84,7 +84,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
       }
       const paths = defaultGraphs.map(
         (graph: RDF.Term) => {
-          if (operation.type === 'path') {
+          if (Algebra.isKnownOperation(operation, Algebra.Types.PATH)) {
             return algebraFactory
               .createPath(operation.subject, operation.predicate, operation.object, graph);
           }
@@ -102,7 +102,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
 
     return ActorQueryOperationFromQuad.copyOperation(
       operation,
-      (subOperation: Algebra.Operation) => this.applyOperationDefaultGraph(algebraFactory, subOperation, defaultGraphs),
+      subOperation => this.applyOperationDefaultGraph(algebraFactory, subOperation, defaultGraphs),
     );
   }
 
@@ -123,14 +123,14 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
     defaultGraphs: RDF.Term[],
   ): Algebra.Operation {
     // If the operation is a BGP or Path, change the graph.
-    if ((operation.type === 'bgp' && operation.patterns.length > 0) ||
-      operation.type === 'path' ||
-      operation.type === 'pattern') {
+    if ((Algebra.isKnownOperation(operation, Algebra.Types.BGP) && operation.patterns.length > 0) ||
+      Algebra.isKnownOperation(operation, Algebra.Types.PATH) ||
+      Algebra.isKnownOperation(operation, Algebra.Types.PATTERN)) {
       const patternGraph: RDF.Term = operation.type === 'bgp' ? operation.patterns[0].graph : operation.graph;
       if (patternGraph.termType === 'DefaultGraph') {
         // SPARQL spec (8.2) describes that when FROM NAMED's are used without a FROM, the default graph must be empty.
         // The FROMs are transformed before this step to a named node, so this will not apply to this case anymore.
-        return { type: Algebra.Types.BGP, patterns: []};
+        return algebraFactory.createBgp([]);
       }
       if (patternGraph.termType === 'Variable') {
         if (namedGraphs.length === 1) {
@@ -175,7 +175,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
         return operation;
       }
       // No-op if the pattern's graph was not selected in a FROM NAMED.
-      return { type: Algebra.Types.BGP, patterns: []};
+      return algebraFactory.createBgp([]);
     }
 
     return ActorQueryOperationFromQuad.copyOperation(

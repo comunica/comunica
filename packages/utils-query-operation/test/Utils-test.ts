@@ -1,4 +1,4 @@
-import { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
+import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import {
   assignOperationSource,
   getOperationSource,

@@ -1,5 +1,6 @@
 import { ActorFunctionFactoryTermStrLen } from '@comunica/actor-function-factory-term-str-len';
 import { createTermCompMediator } from '@comunica/actor-term-comparator-factory-expression-evaluator/test/util';
+import { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
@@ -13,7 +14,6 @@ import {
   getMockMediatorExpressionEvaluatorFactory,
 } from '@comunica/utils-expression-evaluator/test/util/helpers';
 import { getSafeBindings } from '@comunica/utils-query-operation';
-import { Algebra } from '@traqula/algebra-transformations-1-2';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';

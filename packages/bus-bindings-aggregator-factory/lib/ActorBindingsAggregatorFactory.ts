@@ -1,10 +1,10 @@
+import type { Algebra } from '@comunica/algebra-sparql-comunica';
 import type {
   MediatorExpressionEvaluatorFactory,
 } from '@comunica/bus-expression-evaluator-factory';
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A comunica actor for creating Binding-Aggregator-factories.

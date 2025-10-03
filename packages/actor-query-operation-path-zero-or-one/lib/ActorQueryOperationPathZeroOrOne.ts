@@ -1,4 +1,5 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
+import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
@@ -14,7 +15,6 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
-import { Algebra, AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import {
   SingletonIterator,
   UnionIterator,
@@ -27,7 +27,7 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   public constructor(args: IActorQueryOperationPathZeroOrOneArgs) {
-    super(args, Algebra.Types.ZERO_OR_ONE_PATH);
+    super(args, Algebra.PropertyPathSymbolTypes.ZERO_OR_ONE_PATH);
   }
 
   public async runOperation(

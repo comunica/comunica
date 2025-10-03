@@ -1,3 +1,4 @@
+import type { Algebra } from '@comunica/algebra-sparql-comunica';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
@@ -10,7 +11,6 @@ import type {
   IQueryOperationResultVoid,
   IQuerySourceWrapper,
 } from '@comunica/types';
-import type { Algebra } from '@traqula/algebra-transformations-1-2';
 
 /**
  * Safely cast a query operation output to a bindings output.

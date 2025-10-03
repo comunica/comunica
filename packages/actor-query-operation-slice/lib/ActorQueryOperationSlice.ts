@@ -1,3 +1,4 @@
+import type { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperationTypedMediated,
@@ -13,7 +14,6 @@ import type {
   IMetadata,
   IActionContext,
 } from '@comunica/types';
-import type { Algebra } from '@traqula/algebra-transformations-1-2';
 import type { AsyncIterator } from 'asynciterator';
 
 /**

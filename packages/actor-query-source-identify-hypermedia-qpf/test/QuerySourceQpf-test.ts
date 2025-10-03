@@ -1,5 +1,6 @@
 import 'jest-rdf';
 import { Readable } from 'node:stream';
+import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { IActorDereferenceRdfOutput } from '@comunica/bus-dereference-rdf';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
@@ -7,7 +8,6 @@ import type { IActionContext } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
-import { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';

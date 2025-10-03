@@ -1,10 +1,10 @@
+import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import { KeysMergeBindingsContext } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IQuerySource } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type { Bindings } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
-import { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { QuerySourceAddSourceAttribution } from '../lib/QuerySourceAddSourceAttribution';

@@ -1,4 +1,6 @@
 import type { ISearchForm } from '@comunica/actor-rdf-metadata-extract-hydra-controls';
+import { Algebra } from '@comunica/algebra-sparql-comunica';
+import type { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
 import { filterMatchingQuotedQuads, quadsToBindings } from '@comunica/bus-query-source-identify';
 import type { MediatorRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
@@ -16,7 +18,6 @@ import type {
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra, AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, TransformIterator, wrap } from 'asynciterator';
 import { termToString } from 'rdf-string';
@@ -146,7 +147,7 @@ export class QuerySourceQpf implements IQuerySource {
     context: IActionContext,
     options?: IQueryBindingsOptions,
   ): BindingsStream {
-    if (operation.type !== 'pattern') {
+    if (!Algebra.isKnownOperation(operation, Algebra.Types.PATTERN)) {
       throw new Error(`Attempted to pass non-pattern operation '${operation.type}' to QuerySourceQpf`);
     }
 

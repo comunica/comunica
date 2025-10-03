@@ -1,9 +1,9 @@
+import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext } from '@comunica/core';
 import type { BindingsStream } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
-import { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator, BufferedIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';

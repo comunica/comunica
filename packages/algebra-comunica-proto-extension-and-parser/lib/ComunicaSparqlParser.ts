@@ -2,10 +2,7 @@ import type { RuleDefReturn } from '@traqula/core';
 import { createToken, GeneratorBuilder, LexerBuilder, ParserBuilder } from '@traqula/core';
 import { sparql12GeneratorBuilder } from '@traqula/generator-sparql-1-2';
 import { sparql12ParserBuilder } from '@traqula/parser-sparql-1-2';
-import { gram as g11 } from '@traqula/rules-sparql-1-1';
-import type * as T11 from '@traqula/rules-sparql-1-1';
 import { lex as l12, completeParseContext } from '@traqula/rules-sparql-1-2';
-import type { SparqlQuery } from '@traqula/rules-sparql-1-2';
 import type * as T12 from '@traqula/rules-sparql-1-2';
 import type { PatternLateral } from './ComunicaSparqlAst';
 
@@ -15,29 +12,35 @@ const lateralLexer = LexerBuilder
   .create(l12.sparql12LexerBuilder)
   .add(lateral);
 
+const origGraphPatternNotTriplesParserRule = sparql12ParserBuilder.getRule('graphPatternNotTriples');
+const origGraphPatternNotTriplesGeneratorRule = sparql12GeneratorBuilder.getRule('graphPatternNotTriples');
+
 const graphPatternNotTriples: T12.SparqlRule<
-  (typeof g11.graphPatternNotTriples)['name'],
-Exclude<T11.Pattern, T11.SubSelect | T11.PatternBgp> | PatternLateral
+  typeof origGraphPatternNotTriplesParserRule['name'],
+  RuleDefReturn<typeof origGraphPatternNotTriplesParserRule> | PatternLateral
 > = {
   name: 'graphPatternNotTriples',
   impl: $ => C => $.OR2<RuleDefReturn<typeof graphPatternNotTriples>>([
     { ALT: () => $.SUBRULE(lateralGraphPattern) },
-    { ALT: () => g11.graphPatternNotTriples.impl($)(C) },
+    { ALT: () => origGraphPatternNotTriplesParserRule.impl($)(C) },
   ]),
   gImpl: $ => (ast, c) => {
     if (ast.subType === 'lateral') {
       $.SUBRULE(lateralGraphPattern, ast);
     } else {
-      g11.graphPatternNotTriples.gImpl($)(ast, c);
+      origGraphPatternNotTriplesGeneratorRule.gImpl($)(ast, c);
     }
   },
 };
+
+const origGroupGraphPatternParserRule = sparql12ParserBuilder.getRule('groupGraphPattern');
+const origGroupGraphPatternGeneratorRule = sparql12GeneratorBuilder.getRule('groupGraphPattern');
 
 const lateralGraphPattern: T12.SparqlRule<'lateralGraphPattern', PatternLateral> = {
   name: 'lateralGraphPattern',
   impl: ({ CONSUME, SUBRULE, ACTION }) => (C) => {
     const token = CONSUME(lateral);
-    const group = SUBRULE(g11.groupGraphPattern);
+    const group = SUBRULE(origGroupGraphPatternParserRule);
     return ACTION(() => ({
       type: 'pattern',
       subType: 'lateral',
@@ -47,7 +50,12 @@ const lateralGraphPattern: T12.SparqlRule<'lateralGraphPattern', PatternLateral>
   },
   gImpl: ({ SUBRULE, PRINT_WORD }) => (ast, { astFactory: F }) => {
     F.printFilter(ast, () => PRINT_WORD('LATERAL'));
-    SUBRULE(g11.groupGraphPattern, F.patternGroup(<T11.Pattern[]>ast.patterns, ast.loc));
+    SUBRULE(origGroupGraphPatternGeneratorRule, {
+      type: 'pattern',
+      subType: 'group',
+      patterns: <T12.Pattern[]> ast.patterns,
+      loc: ast.loc,
+    });
   },
 };
 
@@ -70,7 +78,7 @@ export class ComunicaSparqlParser {
     });
   }
 
-  public parse(query: string, context: Partial<T12.SparqlContext> = {}): SparqlQuery {
+  public parse(query: string, context: Partial<T12.SparqlContext> = {}): T12.SparqlQuery {
     return this.parser.queryOrUpdate(query, completeParseContext(context));
   }
 }

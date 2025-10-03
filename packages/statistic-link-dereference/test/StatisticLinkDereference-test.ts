@@ -1,3 +1,4 @@
+import type { Algebra as Alg } from '@comunica/algebra-sparql-comunica';
 import type {
   ILink,
   BindingsStream,
@@ -8,7 +9,6 @@ import type {
   QuerySourceReference,
 } from '@comunica/types';
 import type { Quad } from '@rdfjs/types';
-import type { Algebra as Alg } from '@traqula/algebra-transformations-1-2';
 import type { AsyncIterator } from 'asynciterator';
 import { StatisticLinkDereference } from '../lib/StatisticLinkDereference';
 

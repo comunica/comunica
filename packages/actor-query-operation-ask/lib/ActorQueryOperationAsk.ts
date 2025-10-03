@@ -1,3 +1,4 @@
+import type { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { IActorTest, TestResult } from '@comunica/core';
@@ -8,7 +9,6 @@ import type {
   IQueryOperationResultBindings,
 } from '@comunica/types';
 import { getSafeBindings } from '@comunica/utils-query-operation';
-import type { Algebra } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A comunica Ask Query Operation Actor.

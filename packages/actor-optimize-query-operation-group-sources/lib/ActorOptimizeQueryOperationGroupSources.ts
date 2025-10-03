@@ -1,3 +1,4 @@
+import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type {
   IActionOptimizeQueryOperation,
   IActorOptimizeQueryOperationOutput,
@@ -14,7 +15,6 @@ import {
   getOperationSource,
   removeOperationSource,
 } from '@comunica/utils-query-operation';
-import { Algebra, AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A comunica Group Sources Optimize Query Operation Actor.
@@ -47,7 +47,7 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
     const algebraFactory = new AlgebraFactory(dataFactory);
 
     // Return operation as-is if the operation already has a single source, or if the operation has no children.
-    if (getOperationSource(operation) ?? !('input' in operation)) {
+    if (getOperationSource(operation) ?? !(operation.input)) {
       return operation;
     }
 
@@ -82,32 +82,31 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
 
     // If the number of clusters is equal to the number of original inputs, do nothing.
     if (clusters.length === inputs.length) {
-      return <Algebra.Operation> { ...operation, input: inputs };
+      return { ...operation, input: inputs };
     }
 
     // If we have multiple clusters, created nested multi-operations
     let multiFactoryMethod: (children: Algebra.Operation[], flatten: boolean) => Algebra.Operation;
-    switch (operation.type) {
-      case Algebra.Types.JOIN:
-        multiFactoryMethod = algebraFactory.createJoin.bind(algebraFactory);
-        break;
-      case Algebra.Types.UNION:
-        multiFactoryMethod = algebraFactory.createUnion.bind(algebraFactory);
-        break;
-      case Algebra.Types.ALT:
+    if (Algebra.isKnownOperation(operation, Algebra.Types.JOIN)) {
+      multiFactoryMethod = algebraFactory.createJoin.bind(algebraFactory);
+    } else if (Algebra.isKnownOperation(operation, Algebra.Types.UNION)) {
+      multiFactoryMethod = algebraFactory.createUnion.bind(algebraFactory);
+    } else if (Algebra.isKnownOperation(operation, Algebra.Types.PROPERTY_PATH_SYMBOL)) {
+      if (Algebra.isKnownSub(operation, Algebra.PropertyPathSymbolTypes.ALT)) {
         multiFactoryMethod = <any> algebraFactory.createAlt.bind(algebraFactory);
-        break;
-      case Algebra.Types.SEQ:
+      } else if (Algebra.isKnownSub(operation, Algebra.PropertyPathSymbolTypes.SEQ)) {
         multiFactoryMethod = <any> algebraFactory.createSeq.bind(algebraFactory);
-        break;
-      default:
-        // While LeftJoin and Minus are also multi-operations,
-        // these can never occur because they only have 2 inputs,
-        // so these cases will always be captured by one of the 2 if-cases above
-        // (clusters.length === 1 or clusters.length === input.length)
+      } else {
+        throw new Error(`Unsupported operation '${operation.type}' with subType ${operation.subType} detected while grouping sources`);
+      }
+    } else {
+      // While LeftJoin and Minus are also multi-operations,
+      // these can never occur because they only have 2 inputs,
+      // so these cases will always be captured by one of the 2 if-cases above
+      // (clusters.length === 1 or clusters.length === input.length)
 
-        // In all other cases, error
-        throw new Error(`Unsupported operation '${operation.type}' detected while grouping sources`);
+      // In all other cases, error
+      throw new Error(`Unsupported operation '${operation.type}' detected while grouping sources`);
     }
     return await this.groupOperationMulti(clusters, multiFactoryMethod, context);
   }

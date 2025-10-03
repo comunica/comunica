@@ -2,6 +2,7 @@ import {
   ActorExpressionEvaluatorFactoryDefault,
 } from '@comunica/actor-expression-evaluator-factory-default';
 import { InternalEvaluator } from '@comunica/actor-expression-evaluator-factory-default/lib/InternalEvaluator';
+import { Algebra } from '@comunica/algebra-sparql-comunica';
 import type {
   ActorExpressionEvaluatorFactory,
   IActorExpressionEvaluatorFactoryArgs,
@@ -15,7 +16,6 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { GeneralSuperTypeDict, IActionContext, ISuperTypeProvider } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
-import { Algebra } from '@traqula/algebra-transformations-1-2';
 import { LRUCache } from 'lru-cache';
 import { DataFactory } from 'rdf-data-factory';
 import * as Eval from '../../lib/index';

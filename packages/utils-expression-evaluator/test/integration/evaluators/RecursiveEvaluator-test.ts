@@ -1,6 +1,6 @@
+import { Algebra } from '@comunica/algebra-sparql-comunica';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getMockInternalEvaluator } from '@comunica/utils-expression-evaluator/test/util/helpers';
-import { Algebra } from '@traqula/algebra-transformations-1-2';
 import { DataFactory } from 'rdf-data-factory';
 import * as E from '../../../lib/expressions';
 import * as Err from '../../../lib/util/Errors';

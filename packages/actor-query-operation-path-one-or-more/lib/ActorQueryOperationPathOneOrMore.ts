@@ -1,4 +1,6 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
+import type { KnownAlgebra } from '@comunica/algebra-sparql-comunica';
+import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
@@ -11,7 +13,6 @@ import type {
 } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getSafeBindings } from '@comunica/utils-query-operation';
-import { Algebra, AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import { BufferedIterator, MultiTransformIterator, TransformIterator } from 'asynciterator';
 
 /**
@@ -21,7 +22,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   public constructor(args: IActorQueryOperationPathOneOrMoreArgs) {
-    super(args, Algebra.Types.ONE_OR_MORE_PATH);
+    super(args, Algebra.PropertyPathSymbolTypes.ONE_OR_MORE_PATH);
   }
 
   public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryOperationResult> {
@@ -40,7 +41,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
 
     context = distinct.context;
 
-    const predicate = <Algebra.OneOrMorePath> operation.predicate;
+    const predicate = <KnownAlgebra.OneOrMorePath> operation.predicate;
 
     if (operation.subject.termType !== 'Variable' && operation.object.termType === 'Variable') {
       const objectVar = operation.object;

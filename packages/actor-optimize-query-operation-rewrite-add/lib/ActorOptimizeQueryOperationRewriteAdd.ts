@@ -1,3 +1,4 @@
+import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/algebra-sparql-comunica';
 import type {
   IActionOptimizeQueryOperation,
   IActorOptimizeQueryOperationOutput,
@@ -9,7 +10,6 @@ import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { Algebra, AlgebraFactory, algebraUtils } from '@traqula/algebra-transformations-1-2';
 import { DataFactory } from 'rdf-data-factory';
 
 const DF = new DataFactory<RDF.BaseQuad>();
@@ -28,11 +28,12 @@ export class ActorOptimizeQueryOperationRewriteAdd extends ActorOptimizeQueryOpe
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new AlgebraFactory(dataFactory);
+    const factory = new AlgebraFactory(dataFactory);
+    const transformer = new algebraUtils.AlgebraTransformer();
 
-    const operation = algebraUtils.mapOperation(action.operation, {
-      [Algebra.Types.ADD](operationOriginal, factory) {
-        // CONSTRUCT all quads from the source, and INSERT them into the destination
+    const operation = transformer.transformNodeSpecific<'unsafe', typeof action.operation>(action.operation, {}, {
+      [Algebra.Types.UPDATE]: { [Algebra.UpdateTypes.ADD]: { transform: (operationOriginal) => {
+      // CONSTRUCT all quads from the source, and INSERT them into the destination
         const destination = operationOriginal.destination === 'DEFAULT' ?
           DF.defaultGraph() :
           operationOriginal.destination;
@@ -46,8 +47,9 @@ export class ActorOptimizeQueryOperationRewriteAdd extends ActorOptimizeQueryOpe
           result,
           recurse: false,
         };
+      } },
       },
-    }, algebraFactory);
+    });
 
     return { operation, context: action.context };
   }

@@ -1,3 +1,4 @@
+import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import { filterMatchingQuotedQuads, quadsToBindings } from '@comunica/bus-query-source-identify';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type {
@@ -10,8 +11,6 @@ import type {
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra } from '@traqula/algebra-transformations-1-2';
-import { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import { AsyncIterator, wrap as wrapAsyncIterator } from 'asynciterator';
 import { someTermsNested, filterTermsNested, someTerms, uniqTerms } from 'rdf-terms';
 import type { IRdfJsSourceExtended } from './IRdfJsSourceExtended';
@@ -64,7 +63,7 @@ export class QuerySourceRdfJs implements IQuerySource {
   }
 
   public queryBindings(operation: Algebra.Operation, context: IActionContext): BindingsStream {
-    if (operation.type !== 'pattern') {
+    if (!Algebra.isKnownOperation(operation, Algebra.Types.PATTERN)) {
       throw new Error(`Attempted to pass non-pattern operation '${operation.type}' to QuerySourceRdfJs`);
     }
 

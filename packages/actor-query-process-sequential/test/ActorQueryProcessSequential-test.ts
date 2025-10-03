@@ -1,3 +1,5 @@
+import type { Algebra } from '@comunica/algebra-sparql-comunica';
+import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { MediatorContextPreprocess } from '@comunica/bus-context-preprocess';
 import type { MediatorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
@@ -6,8 +8,6 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import type { Algebra } from '@traqula/algebra-transformations-1-2';
-import { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryProcessSequential } from '../lib/ActorQueryProcessSequential';
 import '@comunica/utils-jest';

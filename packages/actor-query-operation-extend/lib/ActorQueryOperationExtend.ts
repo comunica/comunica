@@ -1,3 +1,4 @@
+import type { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
@@ -8,7 +9,6 @@ import { bindingsToString } from '@comunica/utils-bindings-factory';
 import type { ExpressionError } from '@comunica/utils-expression-evaluator';
 import { isExpressionError } from '@comunica/utils-expression-evaluator';
 import { getSafeBindings } from '@comunica/utils-query-operation';
-import type { Algebra } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A comunica Extend Query Operation Actor.

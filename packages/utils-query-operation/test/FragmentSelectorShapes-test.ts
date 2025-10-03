@@ -1,4 +1,4 @@
-import { Algebra, AlgebraFactory } from '@traqula/algebra-transformations-1-2';
+import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import {
   doesShapeAcceptOperation,
 } from '../lib/FragmentSelectorShapes';

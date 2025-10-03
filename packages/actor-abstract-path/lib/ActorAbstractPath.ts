@@ -1,3 +1,5 @@
+import type { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
+import { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperationTypedMediated,
@@ -16,8 +18,6 @@ import type {
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { assignOperationSource, getOperationSource, getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
-import type { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
-import { Algebra } from '@traqula/algebra-transformations-1-2';
 import type { AsyncIterator } from 'asynciterator';
 import {
   BufferedIterator,
@@ -387,25 +387,26 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
    * @param operation
    */
   public getPathSources(operation: Algebra.PropertyPathSymbol): IQuerySourceWrapper[] {
-    switch (operation.type) {
-      case Algebra.Types.ALT:
-      case Algebra.Types.SEQ:
-        return operation.input
-          .flatMap((subOp: Algebra.PropertyPathSymbol) => this.getPathSources(subOp));
-      case Algebra.Types.INV:
-      case Algebra.Types.ONE_OR_MORE_PATH:
-      case Algebra.Types.ZERO_OR_MORE_PATH:
-      case Algebra.Types.ZERO_OR_ONE_PATH:
-        return this.getPathSources(operation.path);
-      case Algebra.Types.LINK:
-      case Algebra.Types.NPS: {
-        const source = getOperationSource(operation);
-        if (!source) {
-          throw new Error(`Could not find a required source on a link path operation`);
-        }
-        return [ source ];
-      }
+    if (Algebra.isKnownSub(operation, Algebra.PropertyPathSymbolTypes.ALT) ||
+      Algebra.isKnownSub(operation, Algebra.PropertyPathSymbolTypes.SEQ)) {
+      return operation.input.flatMap(subOp => this.getPathSources(subOp));
     }
+    if (Algebra.isKnownSub(operation, Algebra.PropertyPathSymbolTypes.INV) ||
+      Algebra.isKnownSub(operation, Algebra.PropertyPathSymbolTypes.ONE_OR_MORE_PATH) ||
+      Algebra.isKnownSub(operation, Algebra.PropertyPathSymbolTypes.ZERO_OR_MORE_PATH) ||
+      Algebra.isKnownSub(operation, Algebra.PropertyPathSymbolTypes.ZERO_OR_ONE_PATH)) {
+      return this.getPathSources(operation.path);
+    }
+    if (Algebra.isKnownSub(operation, Algebra.PropertyPathSymbolTypes.LINK) ||
+      Algebra.isKnownSub(operation, Algebra.PropertyPathSymbolTypes.NPS)) {
+      const source = getOperationSource(operation);
+      if (!source) {
+        throw new Error(`Could not find a required source on a link path operation`);
+      }
+      return [ source ];
+    }
+    // TODO: @RT what does this do? Do we throw an error? Or is empty list good?
+    return [];
   }
 
   public assignPatternSources(

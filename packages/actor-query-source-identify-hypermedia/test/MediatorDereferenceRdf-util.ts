@@ -1,4 +1,5 @@
 import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
+import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type {
   IActionDereferenceRdf,
   IActorDereferenceRdfOutput,
@@ -19,7 +20,6 @@ import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolv
 import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import type { IQuerySource } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import { wrap } from 'asynciterator';
 import 'jest-rdf';
 import { DataFactory } from 'rdf-data-factory';

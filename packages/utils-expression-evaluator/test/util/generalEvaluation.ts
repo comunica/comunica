@@ -1,4 +1,5 @@
-import { ComunicaSparqlParser as SparqlParser, toComunicaAlgebra } from '@comunica/aa-comunica-parser';
+import { ComunicaSparqlParser as SparqlParser, toComunicaAlgebra } from '@comunica/algebra-comunica-proto-extension-and-parser';
+import type { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
@@ -6,7 +7,6 @@ import type { IActionContext } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-expression-evaluator/test/util/helpers';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra } from '@traqula/algebra-transformations-1-2';
 import { DataFactory } from 'rdf-data-factory';
 
 const DF = new DataFactory();

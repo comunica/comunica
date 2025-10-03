@@ -1,3 +1,4 @@
+import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type {
   IActionRdfJoin,
   IActorRdfJoinOutputInner,
@@ -18,7 +19,6 @@ import type {
   ComunicaDataFactory,
 } from '@comunica/types';
 import { getSafeBindings } from '@comunica/utils-query-operation';
-import { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A Multi Smallest RDF Join Actor.

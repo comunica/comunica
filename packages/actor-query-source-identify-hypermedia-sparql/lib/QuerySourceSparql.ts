@@ -1,4 +1,6 @@
-import { ComunicaSparqlGenerator } from '@comunica/aa-comunica-parser';
+import { ComunicaSparqlGenerator } from '@comunica/algebra-comunica-proto-extension-and-parser';
+import type { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
+import { Algebra, algebraUtils } from '@comunica/algebra-sparql-comunica';
 import type { MediatorHttp } from '@comunica/bus-http';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { Actor } from '@comunica/core';
@@ -17,8 +19,6 @@ import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import { toAst } from '@traqula/algebra-sparql-1-2';
-import type { AlgebraFactory, Algebra } from '@traqula/algebra-transformations-1-2';
-import { algebraUtils } from '@traqula/algebra-transformations-1-2';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator, wrap } from 'asynciterator';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
@@ -315,7 +315,11 @@ export class QuerySourceSparql implements IQuerySource {
    * @return {string} A query string.
    */
   public static operationToQuery(operation: Algebra.Operation): string {
-    const ast = toAst(operation);
+    // This query source only handles the Known Algebra from @comunica/algebra-sparql-comunica.
+    // It will likely throw when unknown algebra operations are being translated
+    // or the translation will not happen correctly.
+    const ast = toAst(Algebra.asKnown(operation));
+    // 'Minify' pretty printed string
     return this.queryStringGenerator.generate(ast)
       .replaceAll(/[\n \t]+/gu, ' ').trim();
   }

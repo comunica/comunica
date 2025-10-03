@@ -1,17 +1,17 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
+import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
 import { getSafeBindings } from '@comunica/utils-query-operation';
-import { Algebra, AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A comunica Path Nps Query Operation Actor.
  */
 export class ActorQueryOperationPathNps extends ActorAbstractPath {
   public constructor(args: IActorQueryOperationTypedMediatedArgs) {
-    super(args, Algebra.Types.NPS);
+    super(args, Algebra.PropertyPathSymbolTypes.NPS);
   }
 
   public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryOperationResult> {

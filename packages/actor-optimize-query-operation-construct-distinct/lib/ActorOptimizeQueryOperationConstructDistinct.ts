@@ -1,3 +1,4 @@
+import { algebraUtils } from '@comunica/algebra-sparql-comunica';
 import type {
   IActionOptimizeQueryOperation,
   IActorOptimizeQueryOperationOutput,
@@ -7,8 +8,6 @@ import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operat
 import { KeysInitQuery } from '@comunica/context-entries/lib/Keys';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
-import type { Algebra, AlgebraFactory } from '@traqula/algebra-transformations-1-2';
-import { algebraUtils } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A comunica Construct Distinct Optimize Query Operation Actor.
@@ -27,10 +26,10 @@ export class ActorOptimizeQueryOperationConstructDistinct extends ActorOptimizeQ
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
     const operation = algebraUtils.mapOperation(action.operation, {
-      construct(op: Algebra.Construct, factory: AlgebraFactory) {
+      construct(constructOp, factory) {
         return {
           recurse: false,
-          result: factory.createDistinct(factory.createConstruct(op.input, op.template)),
+          result: factory.createDistinct(factory.createConstruct(constructOp.input, constructOp.template)),
         };
       },
     });

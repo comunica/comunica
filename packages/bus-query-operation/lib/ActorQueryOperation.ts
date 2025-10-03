@@ -1,3 +1,4 @@
+import type { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { IActorArgs, IActorTest, IAction, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type {
@@ -7,7 +8,6 @@ import type {
   FunctionArgumentsCache,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A comunica actor for query-operation events.

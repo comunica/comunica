@@ -1,4 +1,5 @@
 import { BindingsToQuadsIterator } from '@comunica/actor-query-operation-construct';
+import type { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
@@ -11,7 +12,6 @@ import type { IQueryOperationResult, BindingsStream, IActionContext, ComunicaDat
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getSafeBindings, testReadOnly } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra } from '@traqula/algebra-transformations-1-2';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
 

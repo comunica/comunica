@@ -1,3 +1,4 @@
+import type { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
 import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type {
@@ -16,7 +17,6 @@ import type {
   IDiscoverEventData,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra, AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import type { SourceStateGetter, ISourceState } from './LinkedRdfSourcesAsyncRdfIterator';
 import { LinkedRdfSourcesAsyncRdfIterator } from './LinkedRdfSourcesAsyncRdfIterator';
 

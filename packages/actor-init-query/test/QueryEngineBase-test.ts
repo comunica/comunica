@@ -1,5 +1,5 @@
 import { Readable, Transform } from 'node:stream';
-import { toComunicaAlgebra, ComunicaSparqlParser as Parser } from '@comunica/aa-comunica-parser';
+import { toAlgebra, Parser } from '@comunica/algebra-sparql-comunica';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
 import type {
@@ -175,7 +175,7 @@ describe('QueryEngineBase', () => {
       });
 
       it('should allow a parsed query to be passed', async() => {
-        await expect(queryEngine.query(toComunicaAlgebra(parser.parse('SELECT * WHERE { ?s ?p ?o }'))))
+        await expect(queryEngine.query(toAlgebra(parser.parse('SELECT * WHERE { ?s ?p ?o }'))))
           .resolves.toBeTruthy();
       });
 

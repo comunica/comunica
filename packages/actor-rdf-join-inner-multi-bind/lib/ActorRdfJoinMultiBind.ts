@@ -1,3 +1,4 @@
+import { AlgebraFactory, Algebra, algebraUtils } from '@comunica/algebra-sparql-comunica';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import type {
@@ -21,7 +22,6 @@ import type {
 } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getSafeBindings, materializeOperation } from '@comunica/utils-query-operation';
-import { AlgebraFactory, Algebra, algebraUtils } from '@traqula/algebra-transformations-1-2';
 import { MultiTransformIterator, TransformIterator, UnionIterator } from 'asynciterator';
 
 /**

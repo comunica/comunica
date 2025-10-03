@@ -1,3 +1,4 @@
+import type { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
@@ -7,7 +8,6 @@ import type { Bindings, IActionContext, IQueryOperationResult } from '@comunica/
 import { bindingsToString } from '@comunica/utils-bindings-factory';
 import { isExpressionError } from '@comunica/utils-expression-evaluator';
 import { getSafeBindings, validateQueryOutput } from '@comunica/utils-query-operation';
-import type { Algebra } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A comunica Filter Sparqlee Query Operation Actor.

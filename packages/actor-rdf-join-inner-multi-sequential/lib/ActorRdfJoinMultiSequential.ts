@@ -1,3 +1,4 @@
+import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type {
   IActionRdfJoin,
   IActorRdfJoinOutputInner,
@@ -12,7 +13,6 @@ import { passTestWithSideData } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { IJoinEntry, ComunicaDataFactory } from '@comunica/types';
 import { getSafeBindings } from '@comunica/utils-query-operation';
-import { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A Multi Sequential RDF Join Actor.

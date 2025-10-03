@@ -1,3 +1,4 @@
+import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type {
   IActionOptimizeQueryOperation,
   IActorOptimizeQueryOperationOutput,
@@ -9,7 +10,6 @@ import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTest } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { Algebra, AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 
 /**
  * A comunica Describe To Constructs Subject Optimize Query Operation Actor.
@@ -47,17 +47,10 @@ export class ActorOptimizeQueryOperationDescribeToConstructsSubject extends Acto
 
         // eslint-disable-next-line unicorn/no-array-for-each
         patterns.forEach((templatePattern: any) => templatePattern.type = 'pattern');
-        const templateOperation: Algebra.Operation = {
-          type: Algebra.Types.BGP,
-          patterns: <Algebra.Pattern[]> patterns,
-        };
+        const templateOperation = algebraFactory.createBgp(<Algebra.Pattern[]> patterns);
 
         // Create a construct query
-        return <Algebra.Construct> {
-          input: templateOperation,
-          template: <Algebra.Pattern[]> patterns,
-          type: 'construct',
-        };
+        return algebraFactory.createConstruct(templateOperation, <Algebra.Pattern[]> patterns);
       });
 
     // If we have variables in the term list,
@@ -84,17 +77,10 @@ export class ActorOptimizeQueryOperationDescribeToConstructsSubject extends Acto
 
       // Add a single construct for the variables
       // This requires a join between the input pattern and our variable patterns that form a simple BGP
-      operations.push({
-        input: {
-          type: Algebra.Types.JOIN,
-          input: [
-            operationOriginal.input,
-            { type: Algebra.Types.BGP, patterns: variablePatterns },
-          ],
-        },
-        template: variablePatterns,
-        type: Algebra.Types.CONSTRUCT,
-      });
+      operations.push(algebraFactory.createConstruct(
+        algebraFactory.createJoin([ operationOriginal.input, algebraFactory.createBgp(variablePatterns) ]),
+        variablePatterns,
+      ));
     }
 
     // Union the construct operations

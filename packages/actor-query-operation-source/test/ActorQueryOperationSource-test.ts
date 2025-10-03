@@ -1,3 +1,4 @@
+import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type {
@@ -10,7 +11,6 @@ import type {
   IPhysicalQueryPlanLogger,
 } from '@comunica/types';
 import { assignOperationSource } from '@comunica/utils-query-operation';
-import { AlgebraFactory } from '@traqula/algebra-transformations-1-2';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationSource } from '../lib/ActorQueryOperationSource';

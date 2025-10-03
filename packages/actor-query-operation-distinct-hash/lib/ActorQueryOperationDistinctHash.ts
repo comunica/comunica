@@ -1,3 +1,4 @@
+import type { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { MediatorHashBindings } from '@comunica/bus-hash-bindings';
 import type { MediatorHashQuads } from '@comunica/bus-hash-quads';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
@@ -16,7 +17,6 @@ import type {
 } from '@comunica/types';
 import { getSafeBindings, getSafeQuads } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra } from '@traqula/algebra-transformations-1-2';
 import type { AsyncIterator } from 'asynciterator';
 
 /**
