@@ -1,14 +1,14 @@
+import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { DataFactory } from 'rdf-data-factory';
-import { Factory } from 'sparqlalgebrajs';
 import {
   ActorOptimizeQueryOperationDescribeToConstructsSubject,
 } from '../lib/ActorOptimizeQueryOperationDescribeToConstructsSubject';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
-const AF = new Factory();
+const AF = new AlgebraFactory();
 
 describe('ActorOptimizeQueryOperationDescribeToConstructsSubject', () => {
   let bus: any;

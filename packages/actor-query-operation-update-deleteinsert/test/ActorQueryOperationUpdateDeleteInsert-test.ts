@@ -1,3 +1,4 @@
+import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
@@ -6,12 +7,11 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationUpdateDeleteInsert } from '../lib/ActorQueryOperationUpdateDeleteInsert';
 import 'jest-rdf';
 import '@comunica/utils-jest';
 
-const factory = new Factory();
+const factory = new AlgebraFactory();
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
 

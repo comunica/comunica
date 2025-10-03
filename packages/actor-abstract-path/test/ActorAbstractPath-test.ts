@@ -1,17 +1,17 @@
+import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import { Actor, Bus } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
 import { assignOperationSource } from '@comunica/utils-query-operation';
 import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
-import { Factory } from 'sparqlalgebrajs';
 import { ActorAbstractPath } from '../lib/ActorAbstractPath';
 
 const DF = new DataFactory();
-const AF = new Factory();
+const AF = new AlgebraFactory();
 
 describe('ActorAbstractPath', () => {
   const bus = new Bus({ name: 'bus' });
-  const factory: Factory = new Factory();
+  const factory: AlgebraFactory = new AlgebraFactory();
 
   describe('The ActorAbstractPath module', () => {
     it('should be a function', () => {

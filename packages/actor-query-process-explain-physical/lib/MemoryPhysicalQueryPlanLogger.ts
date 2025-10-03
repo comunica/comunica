@@ -1,7 +1,7 @@
+import { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { IPhysicalQueryPlanLogger, IPlanNode } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { termToString } from 'rdf-string';
-import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A physical query plan logger that stores everything in memory.
@@ -165,14 +165,10 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
         data.source = (<any> operation.metadata.scopedSource).source.toString();
       }
 
-      // eslint-disable-next-line ts/switch-exhaustiveness-check
-      switch (operation.type) {
-        case 'pattern':
-          data.pattern = this.quadToString(operation);
-          break;
-        case 'project':
-          data.variables = operation.variables.map(variable => variable.value);
-          break;
+      if (Algebra.isKnownOperation(operation, Algebra.Types.PATTERN)) {
+        data.pattern = this.quadToString(operation);
+      } else if (Algebra.isKnownOperation(operation, Algebra.Types.PROJECT)) {
+        data.variables = operation.variables.map(variable => variable.value);
       }
     }
 

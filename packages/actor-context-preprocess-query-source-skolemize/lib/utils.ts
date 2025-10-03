@@ -1,3 +1,4 @@
+import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/algebra-sparql-comunica';
 import type {
   BindingsStream,
   ComunicaDataFactory,
@@ -10,7 +11,6 @@ import { BlankNodeScoped } from '@comunica/utils-data-factory';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { mapTermsNested } from 'rdf-terms';
-import { Algebra, Factory, Util } from 'sparqlalgebrajs';
 
 export const SKOLEM_PREFIX = 'urn:comunica_skolem:source_';
 
@@ -213,10 +213,10 @@ export function deskolemizeOperation<O extends Algebra.Operation>(
   operation: O,
   sourceId: string,
 ): O | undefined {
-  const algebraFactory = new Factory();
+  const algebraFactory = new AlgebraFactory();
   try {
-    return <O> Util.mapOperation(operation, {
-      [Algebra.types.PATTERN](op, factory) {
+    return <O> algebraUtils.mapOperation(operation, {
+      [Algebra.Types.PATTERN](op, factory) {
         return {
           result: Object.assign(factory.createPattern(
             deskolemizeTermNestedThrowing(dataFactory, op.subject, sourceId),
@@ -227,7 +227,7 @@ export function deskolemizeOperation<O extends Algebra.Operation>(
           recurse: false,
         };
       },
-      [Algebra.types.PATH](op, factory) {
+      [Algebra.Types.PATH](op, factory) {
         return {
           result: Object.assign(factory.createPath(
             deskolemizeTermNestedThrowing(dataFactory, op.subject, sourceId),

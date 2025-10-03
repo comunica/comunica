@@ -1,7 +1,6 @@
+import { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import type * as RDF from '@rdfjs/types';
-import { Algebra } from 'sparqlalgebrajs';
-import { Wildcard } from 'sparqljs';
 import {
   date,
   decimal,
@@ -19,14 +18,14 @@ describe('The Expression evaluator util function', () => {
   describe('makeAggregate', () => {
     it('creates basic count aggregator', () => {
       expect(makeAggregate('count')).toMatchObject({
-        type: Algebra.types.EXPRESSION,
-        expressionType: Algebra.expressionTypes.AGGREGATE,
+        type: Algebra.Types.EXPRESSION,
+        expressionType: Algebra.ExpressionTypes.AGGREGATE,
         aggregator: 'count',
         distinct: false,
         separator: undefined,
         expression: {
-          type: Algebra.types.EXPRESSION,
-          expressionType: Algebra.expressionTypes.TERM,
+          type: Algebra.Types.EXPRESSION,
+          expressionType: Algebra.ExpressionTypes.TERM,
           term: DF.variable('x'),
         },
       });
@@ -34,14 +33,14 @@ describe('The Expression evaluator util function', () => {
 
     it('creates distinct count aggregator', () => {
       expect(makeAggregate('count', true)).toMatchObject({
-        type: Algebra.types.EXPRESSION,
-        expressionType: Algebra.expressionTypes.AGGREGATE,
+        type: Algebra.Types.EXPRESSION,
+        expressionType: Algebra.ExpressionTypes.AGGREGATE,
         aggregator: 'count',
         distinct: true,
         separator: undefined,
         expression: {
-          type: Algebra.types.EXPRESSION,
-          expressionType: Algebra.expressionTypes.TERM,
+          type: Algebra.Types.EXPRESSION,
+          expressionType: Algebra.ExpressionTypes.TERM,
           term: DF.variable('x'),
         },
       });
@@ -49,29 +48,29 @@ describe('The Expression evaluator util function', () => {
 
     it('creates wildcard count aggregator', () => {
       expect(makeAggregate('count', false, undefined, true)).toMatchObject({
-        type: Algebra.types.EXPRESSION,
-        expressionType: Algebra.expressionTypes.AGGREGATE,
+        type: Algebra.Types.EXPRESSION,
+        expressionType: Algebra.ExpressionTypes.AGGREGATE,
         aggregator: 'count',
         distinct: false,
         separator: undefined,
         expression: {
-          type: Algebra.types.EXPRESSION,
-          expressionType: Algebra.expressionTypes.WILDCARD,
-          wildcard: new Wildcard(),
+          type: Algebra.Types.EXPRESSION,
+          expressionType: Algebra.ExpressionTypes.WILDCARD,
+          wildcard: { type: 'wildcard' },
         },
       });
     });
 
     it('creates group concat with different separator aggregator', () => {
       expect(makeAggregate('group_concat', false, ', ')).toMatchObject({
-        type: Algebra.types.EXPRESSION,
-        expressionType: Algebra.expressionTypes.AGGREGATE,
+        type: Algebra.Types.EXPRESSION,
+        expressionType: Algebra.ExpressionTypes.AGGREGATE,
         aggregator: 'group_concat',
         distinct: false,
         separator: ', ',
         expression: {
-          type: Algebra.types.EXPRESSION,
-          expressionType: Algebra.expressionTypes.TERM,
+          type: Algebra.Types.EXPRESSION,
+          expressionType: Algebra.ExpressionTypes.TERM,
           term: DF.variable('x'),
         },
       });

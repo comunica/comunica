@@ -1,3 +1,4 @@
+import { Algebra, algebraUtils } from '@comunica/algebra-sparql-comunica';
 import type { IActionQueryOperation, IActorQueryOperationArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
@@ -10,7 +11,6 @@ import type {
 } from '@comunica/types';
 import { getMetadataBindings, getMetadataQuads } from '@comunica/utils-metadata';
 import { getOperationSource } from '@comunica/utils-query-operation';
-import { Algebra, Util } from 'sparqlalgebrajs';
 
 /**
  * A comunica Source Query Operation Actor.
@@ -49,7 +49,7 @@ export class ActorQueryOperationSource extends ActorQueryOperation {
     // Check if the operation is a CONSTRUCT query
     // We recurse because it may be wrapped in other operations such as SLICE and FROM
     let construct = false;
-    Util.recurseOperation(action.operation, {
+    algebraUtils.recurseOperation(action.operation, {
       construct(): boolean {
         construct = true;
         return false;
@@ -66,26 +66,18 @@ export class ActorQueryOperationSource extends ActorQueryOperation {
       };
     }
 
-    // eslint-disable-next-line ts/switch-exhaustiveness-check
-    switch (action.operation.type) {
-      case Algebra.types.ASK:
-        return {
-          type: 'boolean',
-          execute: () => sourceWrapper.source.queryBoolean(<Algebra.Ask>action.operation, mergedContext),
-        };
-      case Algebra.types.COMPOSITE_UPDATE:
-      case Algebra.types.DELETE_INSERT:
-      case Algebra.types.LOAD:
-      case Algebra.types.CLEAR:
-      case Algebra.types.CREATE:
-      case Algebra.types.DROP:
-      case Algebra.types.ADD:
-      case Algebra.types.MOVE:
-      case Algebra.types.COPY:
-        return {
-          type: 'void',
-          execute: () => sourceWrapper.source.queryVoid(<Algebra.Update>action.operation, mergedContext),
-        };
+    if (Algebra.isKnownOperation(action.operation, Algebra.Types.ASK)) {
+      return {
+        type: 'boolean',
+        execute: () => sourceWrapper.source.queryBoolean(<Algebra.Ask>action.operation, mergedContext),
+      };
+    }
+    if (Algebra.isKnownOperation(action.operation, Algebra.Types.COMPOSITE_UPDATE) ||
+      Algebra.isKnownOperation(action.operation, Algebra.Types.UPDATE)) {
+      return {
+        type: 'void',
+        execute: () => sourceWrapper.source.queryVoid(<Algebra.Update>action.operation, mergedContext),
+      };
     }
 
     const bindingsStream = sourceWrapper.source.queryBindings(action.operation, mergedContext);

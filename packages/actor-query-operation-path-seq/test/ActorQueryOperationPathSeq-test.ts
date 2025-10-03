@@ -1,3 +1,4 @@
+import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
@@ -11,7 +12,6 @@ import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { QUAD_TERM_NAMES } from 'rdf-terms';
-import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationPathSeq } from '../lib/ActorQueryOperationPathSeq';
 import '@comunica/utils-jest';
 
@@ -22,7 +22,7 @@ describe('ActorQueryOperationPathSeq', () => {
   let bus: any;
   let mediatorQueryOperation: any;
   let mediatorJoin: any;
-  const factory: Factory = new Factory();
+  const factory: AlgebraFactory = new AlgebraFactory();
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -117,12 +117,12 @@ describe('ActorQueryOperationPathSeq', () => {
     });
 
     it('should test on Seq paths', async() => {
-      const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.SEQ }}};
+      const op: any = { operation: { type: Algebra.Types.PATH, predicate: { type: Algebra.Types.SEQ }}};
       await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should test on different paths', async() => {
-      const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }}};
+      const op: any = { operation: { type: Algebra.Types.PATH, predicate: { type: 'dummy' }}};
       await expect(actor.test(op)).resolves.toFailTest(`This Actor only supports seq Path operations.`);
     });
 

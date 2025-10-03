@@ -1,3 +1,4 @@
+import type { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTyped } from '@comunica/bus-query-operation';
@@ -15,7 +16,6 @@ import type {
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { ArrayIterator } from 'asynciterator';
-import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Values Query Operation Actor.
@@ -38,13 +38,13 @@ export class ActorQueryOperationValues extends ActorQueryOperationTyped<Algebra.
 
     const bindingsStream: BindingsStream = new ArrayIterator<Bindings>(operation.bindings
       .map(x => bindingsFactory.bindings(Object.entries(x)
-        .map(([ key, value ]) => [ dataFactory.variable(key.slice(1)), value ]))));
+        .map(([ key, value ]) => [ dataFactory.variable(key), value ]))));
     const metadata = (): Promise<MetadataBindings> => Promise.resolve({
       state: new MetadataValidationState(),
       cardinality: { type: 'exact', value: operation.bindings.length },
       variables: operation.variables.map(variable => ({
         variable,
-        canBeUndef: operation.bindings.some(bindings => !(`?${variable.value}` in bindings)),
+        canBeUndef: operation.bindings.some(bindings => !(variable.value in bindings)),
       })),
     });
     return { type: 'bindings', bindingsStream, metadata };

@@ -1,3 +1,4 @@
+import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import { KeysMergeBindingsContext } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IQuerySource } from '@comunica/types';
@@ -6,14 +7,13 @@ import type { Bindings } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { Factory } from 'sparqlalgebrajs';
 import { QuerySourceAddSourceAttribution } from '../lib/QuerySourceAddSourceAttribution';
 import '@comunica/utils-jest';
 import 'jest-rdf';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
-const AF = new Factory();
+const AF = new AlgebraFactory();
 
 describe('QuerySourcAddSourceAttribution', () => {
   let sourceInner: IQuerySource;

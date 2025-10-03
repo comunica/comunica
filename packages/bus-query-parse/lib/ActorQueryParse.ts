@@ -1,7 +1,7 @@
+import type { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica actor for query-parse events.

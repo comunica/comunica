@@ -1,3 +1,5 @@
+import { ComunicaSparqlParser as SparqlParser, toComunicaAlgebra } from '@comunica/algebra-comunica-proto-extension-and-parser';
+import type { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
@@ -5,9 +7,7 @@ import type { IActionContext } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-expression-evaluator/test/util/helpers';
 import type * as RDF from '@rdfjs/types';
-import { Parser as SparqlParser } from '@traqula/engine-sparql-1-2';
 import { DataFactory } from 'rdf-data-factory';
-import { translate } from 'sparqlalgebrajs';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -56,11 +56,10 @@ Promise<{ asyncError: unknown; syncError?: unknown } | undefined> {
 
 const parser = new SparqlParser();
 function parse(query: string) {
-  // TODO: remove custom parsing once sparqlalgebrajs is ported to traqula
   const parsedSyntax = parser.parse(query);
-  const sparqlQuery = translate(<any> parsedSyntax, { sparqlStar: true });
+  const sparqlQuery = <Algebra.Project> toComunicaAlgebra(parsedSyntax);
   // Extract filter expression from complete query
-  return sparqlQuery.input.expression;
+  return (<Algebra.Filter> sparqlQuery.input).expression;
 }
 
 async function evaluateAsync(

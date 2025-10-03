@@ -1,3 +1,4 @@
+import type { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
@@ -16,7 +17,6 @@ import { MetadataValidationState } from '@comunica/utils-metadata';
 import { assignOperationSource, getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { SingletonIterator } from 'asynciterator';
-import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Service Query Operation Actor.

@@ -1,3 +1,4 @@
+import type { Algebra } from '@comunica/algebra-sparql-comunica';
 import { KeysMergeBindingsContext } from '@comunica/context-entries';
 import type {
   BindingsStream,
@@ -10,7 +11,6 @@ import type {
 import { Bindings } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A IQuerySource wrapper that skolemizes outgoing quads and bindings.

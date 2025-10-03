@@ -1,3 +1,4 @@
+import { ExpressionTypes, Types } from '@comunica/algebra-sparql-comunica';
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
@@ -5,7 +6,6 @@ import * as Eval from '@comunica/utils-expression-evaluator';
 import { generalEvaluate } from '@comunica/utils-expression-evaluator/test/util/generalEvaluation';
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-expression-evaluator/test/util/helpers';
 import { DataFactory } from 'rdf-data-factory';
-import { expressionTypes, types } from 'sparqlalgebrajs/lib/algebra';
 import { ActorFunctionFactoryExpressionBound } from '../lib';
 
 const DF = new DataFactory();
@@ -48,12 +48,12 @@ describe('evaluation of \'bound\'', () => {
       mediatorFunctionFactory,
     }).run({
       algExpr: {
-        type: types.EXPRESSION,
-        expressionType: expressionTypes.OPERATOR,
+        type: Types.EXPRESSION,
+        expressionType: ExpressionTypes.OPERATOR,
         operator: 'bound',
         args: [{
-          type: types.EXPRESSION,
-          expressionType: expressionTypes.TERM,
+          type: Types.EXPRESSION,
+          expressionType: ExpressionTypes.TERM,
           term: DF.namedNode('http://example.com'),
         }],
       },

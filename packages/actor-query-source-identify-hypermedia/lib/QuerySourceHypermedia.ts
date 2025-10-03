@@ -1,4 +1,6 @@
 import { QuerySourceRdfJs } from '@comunica/actor-query-source-identify-rdfjs';
+import type { Algebra } from '@comunica/algebra-sparql-comunica';
+import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { IActorDereferenceRdfOutput, MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
 import type { MediatorQuerySourceIdentifyHypermedia } from '@comunica/bus-query-source-identify-hypermedia';
 import type { IActorRdfMetadataOutput, MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
@@ -24,8 +26,6 @@ import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator } from 'asynciterator';
 import { LRUCache } from 'lru-cache';
 import { Readable } from 'readable-stream';
-import type { Algebra } from 'sparqlalgebrajs';
-import { Factory } from 'sparqlalgebrajs';
 import type { ISourceState } from './LinkedRdfSourcesAsyncRdfIterator';
 import { MediatedLinkedRdfSourcesAsyncRdfIterator } from './MediatedLinkedRdfSourcesAsyncRdfIterator';
 import { StreamingStoreMetadata } from './StreamingStoreMetadata';
@@ -99,7 +99,7 @@ export class QuerySourceHypermedia implements IQuerySource {
     }
 
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
     const it: MediatedLinkedRdfSourcesAsyncRdfIterator = new MediatedLinkedRdfSourcesAsyncRdfIterator(
       this.cacheSize,
       operation,

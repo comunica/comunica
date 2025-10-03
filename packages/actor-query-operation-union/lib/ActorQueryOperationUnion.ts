@@ -1,3 +1,4 @@
+import type { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperationTypedMediated,
@@ -19,7 +20,6 @@ import { MetadataValidationState } from '@comunica/utils-metadata';
 import { getSafeBindings, getSafeQuads } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { UnionIterator } from 'asynciterator';
-import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Union Query Operation Actor.

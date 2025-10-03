@@ -1,3 +1,4 @@
+import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type {
   IActionRdfJoin,
   IActorRdfJoinArgs,
@@ -25,7 +26,6 @@ import { doesShapeAcceptOperation, getOperationSource, getSafeBindings } from '@
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { UnionIterator } from 'asynciterator';
-import { Factory } from 'sparqlalgebrajs';
 
 /**
  * A comunica Inner Multi Smallest Filter Bindings RDF Join Actor.
@@ -104,7 +104,7 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
 
   public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
 
     // Determine the two smallest streams by sorting (e.g. via cardinality)
     const entriesUnsorted = await ActorRdfJoin.getEntriesWithMetadatas([ ...action.entries ]);

@@ -1,3 +1,4 @@
+import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultVoid } from '@comunica/types';
@@ -5,12 +6,11 @@ import { assignOperationSource } from '@comunica/utils-query-operation';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationLoad } from '../lib/ActorQueryOperationLoad';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
-const AF = new Factory();
+const AF = new AlgebraFactory();
 
 describe('ActorQueryOperationLoad', () => {
   let bus: any;

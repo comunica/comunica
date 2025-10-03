@@ -1,4 +1,5 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
+import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
@@ -18,7 +19,6 @@ import {
   SingletonIterator,
   UnionIterator,
 } from 'asynciterator';
-import { Algebra, Factory } from 'sparqlalgebrajs';
 
 /**
  * A comunica Path ZeroOrOne Query Operation Actor.
@@ -27,7 +27,7 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   public constructor(args: IActorQueryOperationPathZeroOrOneArgs) {
-    super(args, Algebra.types.ZERO_OR_ONE_PATH);
+    super(args, Algebra.PropertyPathSymbolTypes.ZERO_OR_ONE_PATH);
   }
 
   public async runOperation(
@@ -35,7 +35,7 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
     context: IActionContext,
   ): Promise<IQueryOperationResult> {
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
     const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context, dataFactory);
     const predicate = <Algebra.ZeroOrOnePath> operation.predicate;
     const sources = this.getPathSources(predicate);

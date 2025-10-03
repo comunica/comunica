@@ -1,9 +1,9 @@
+import { Algebra, algebraUtils } from '@comunica/algebra-sparql-comunica';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
 import { ActorRdfJoinSelectivity } from '@comunica/bus-rdf-join-selectivity';
 import type { IActorArgs, TestResult } from '@comunica/core';
 import { passTest } from '@comunica/core';
 import type { IMediatorTypeAccuracy } from '@comunica/mediatortype-accuracy';
-import { Algebra, Util } from 'sparqlalgebrajs';
 
 /**
  * A comunica Variable Counting RDF Join Selectivity Actor.
@@ -29,7 +29,8 @@ export class ActorRdfJoinSelectivityVariableCounting extends ActorRdfJoinSelecti
     if (pattern.subject.termType === 'Variable') {
       cost += 4;
     }
-    if (pattern.predicate.termType === 'Variable' || pattern.type === Algebra.types.PATH) {
+    if (('termType' in pattern.predicate && pattern.predicate.termType === 'Variable') ||
+      pattern.type === Algebra.Types.PATH) {
       cost += 1;
     }
     if (pattern.object.termType === 'Variable') {
@@ -282,12 +283,12 @@ export class ActorRdfJoinSelectivityVariableCounting extends ActorRdfJoinSelecti
     // Determine all operations that select values (patterns and paths)
     const patterns: (Algebra.Pattern | Algebra.Path)[] = [];
     for (const operation of operations) {
-      Util.recurseOperation(operation, {
-        [Algebra.types.PATTERN](pattern: Algebra.Pattern): boolean {
+      algebraUtils.recurseOperation(operation, {
+        [Algebra.Types.PATTERN](pattern: Algebra.Pattern): boolean {
           patterns.push(pattern);
           return false;
         },
-        [Algebra.types.PATH](path: Algebra.Path): boolean {
+        [Algebra.Types.PATH](path: Algebra.Path): boolean {
           patterns.push(path);
           return false;
         },

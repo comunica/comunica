@@ -1,3 +1,5 @@
+import type { Algebra } from '@comunica/algebra-sparql-comunica';
+import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { MediatorContextPreprocess } from '@comunica/bus-context-preprocess';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { MediatorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
@@ -24,10 +26,7 @@ import type {
 } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { materializeOperation } from '@comunica/utils-query-operation';
-
 import type * as RDF from '@rdfjs/types';
-import type { Algebra } from 'sparqlalgebrajs';
-import { Factory } from 'sparqlalgebrajs';
 
 /**
  * A comunica Sequential Query Process Actor.
@@ -84,7 +83,7 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
     // Apply initial bindings in context
     if (context.has(KeysInitQuery.initialBindings)) {
       const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
-      const algebraFactory = new Factory(dataFactory);
+      const algebraFactory = new AlgebraFactory(dataFactory);
       const bindingsFactory = await BindingsFactory
         .create(this.mediatorMergeBindingsContext, context, dataFactory);
       operation = materializeOperation(
