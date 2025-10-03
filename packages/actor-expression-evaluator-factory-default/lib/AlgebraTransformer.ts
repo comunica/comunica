@@ -1,4 +1,3 @@
-import type { KnownAlgebra } from '@comunica/algebra-sparql-comunica';
 import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
@@ -50,7 +49,7 @@ export class AlgebraTransformer extends ExprEval.TermTransformer {
     return new ExprEval.NamedNode('*');
   }
 
-  private async getOperator(operator: string, expr: KnownAlgebra.OperatorExpression | KnownAlgebra.NamedExpression):
+  private async getOperator(operator: string, expr: Algebra.OperatorExpression | Algebra.NamedExpression):
   Promise<OperatorExpression> {
     const operatorFunc = await this.mediatorFunctionFactory.mediate({
       functionName: operator,
@@ -64,20 +63,20 @@ export class AlgebraTransformer extends ExprEval.TermTransformer {
     return new ExprEval.Operator(operator, operatorArgs, operatorFunc.apply);
   }
 
-  private async transformOperator(expr: KnownAlgebra.OperatorExpression): Promise<OperatorExpression> {
+  private async transformOperator(expr: Algebra.OperatorExpression): Promise<OperatorExpression> {
     return this.getOperator(expr.operator.toLowerCase(), expr);
   }
 
-  private async transformNamed(expr: KnownAlgebra.NamedExpression): Promise<OperatorExpression> {
+  private async transformNamed(expr: Algebra.NamedExpression): Promise<OperatorExpression> {
     return this.getOperator(expr.name.value, expr);
   }
 
-  public static transformAggregate(expr: KnownAlgebra.AggregateExpression): ExprEval.Aggregate {
+  public static transformAggregate(expr: Algebra.AggregateExpression): ExprEval.Aggregate {
     const name = expr.aggregator;
     return new ExprEval.Aggregate(name, expr);
   }
 
-  public static transformExistence(expr: KnownAlgebra.ExistenceExpression): ExprEval.Existence {
+  public static transformExistence(expr: Algebra.ExistenceExpression): ExprEval.Existence {
     return new ExprEval.Existence(expr);
   }
 }

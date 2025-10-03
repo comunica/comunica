@@ -1,4 +1,3 @@
-import type { KnownAlgebra } from '@comunica/algebra-sparql-comunica';
 import { AlgebraFactory, Algebra, algebraUtils } from '@comunica/algebra-sparql-comunica';
 import type {
   IActionOptimizeQueryOperation,
@@ -155,10 +154,14 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     const expression = operation.expression;
     if (Algebra.isKnownSub(expression, Algebra.ExpressionTypes.OPERATOR) &&
       expression.operator === '=' &&
-      ((expression.args[0].subType === 'term' && expression.args[0].term.termType !== 'Variable' &&
-          expression.args[1].subType === 'term' && expression.args[1].term.termType === 'Variable') ||
-        (expression.args[0].subType === 'term' && expression.args[0].term.termType === 'Variable' &&
-          expression.args[1].subType === 'term' && expression.args[1].term.termType !== 'Variable'))) {
+      ((Algebra.isKnownSub(expression.args[0], Algebra.ExpressionTypes.TERM) &&
+          expression.args[0].term.termType !== 'Variable' &&
+          Algebra.isKnownSub(expression.args[1], Algebra.ExpressionTypes.TERM) &&
+          expression.args[1].term.termType === 'Variable') ||
+        (Algebra.isKnownSub(expression.args[0], Algebra.ExpressionTypes.TERM) &&
+          expression.args[0].term.termType === 'Variable' &&
+          Algebra.isKnownSub(expression.args[1], Algebra.ExpressionTypes.TERM) &&
+          expression.args[1].term.termType !== 'Variable'))) {
       return true;
     }
 
@@ -223,16 +226,16 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
   }
 
   protected getOverlappingOperations(
-    operation: KnownAlgebra.Union | KnownAlgebra.Join,
+    operation: Algebra.Union | Algebra.Join,
     expressionVariables: RDF.Variable[],
   ): {
-      fullyOverlapping: KnownAlgebra.Operation[];
-      partiallyOverlapping: KnownAlgebra.Operation[];
-      notOverlapping: KnownAlgebra.Operation[];
+      fullyOverlapping: Algebra.Operation[];
+      partiallyOverlapping: Algebra.Operation[];
+      notOverlapping: Algebra.Operation[];
     } {
-    const fullyOverlapping: KnownAlgebra.Operation[] = [];
-    const partiallyOverlapping: KnownAlgebra.Operation[] = [];
-    const notOverlapping: KnownAlgebra.Operation[] = [];
+    const fullyOverlapping: Algebra.Operation[] = [];
+    const partiallyOverlapping: Algebra.Operation[] = [];
+    const notOverlapping: Algebra.Operation[] = [];
     for (const input of operation.input) {
       const inputVariables = algebraUtils.inScopeVariables(input);
       if (this.variablesSubSetOf(expressionVariables, inputVariables)) {
@@ -480,22 +483,23 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     expression: Algebra.Expression,
   ): { variable: RDF.Variable; term: RDF.Term } | undefined {
     if (Algebra.isKnownSub(expression, Algebra.ExpressionTypes.OPERATOR) && expression.operator === '=') {
-      if (expression.args[0].subType === 'term' && expression.args[0].term.termType !== 'Variable' &&
-        (expression.args[0].term.termType !== 'Literal' ||
-          this.isLiteralWithCanonicalLexicalForm(expression.args[0].term)) &&
-        expression.args[1].subType === 'term' && expression.args[1].term.termType === 'Variable') {
+      const arg0 = expression.args[0];
+      const arg1 = expression.args[1];
+      if (Algebra.isKnownSub(arg0, Algebra.ExpressionTypes.TERM) && arg0.term.termType !== 'Variable' &&
+        (arg0.term.termType !== 'Literal' || this.isLiteralWithCanonicalLexicalForm(arg0.term)) &&
+        Algebra.isKnownSub(arg1, Algebra.ExpressionTypes.TERM) &&
+        arg1.term.termType === 'Variable') {
         return {
-          variable: expression.args[1].term,
-          term: expression.args[0].term,
+          variable: arg1.term,
+          term: arg0.term,
         };
       }
-      if (expression.args[0].subType === 'term' && expression.args[0].term.termType === 'Variable' &&
-        expression.args[1].subType === 'term' && expression.args[1].term.termType !== 'Variable' &&
-        (expression.args[1].term.termType !== 'Literal' ||
-          this.isLiteralWithCanonicalLexicalForm(expression.args[1].term))) {
+      if (Algebra.isKnownSub(arg0, Algebra.ExpressionTypes.TERM) && arg0.term.termType === 'Variable' &&
+        Algebra.isKnownSub(arg1, Algebra.ExpressionTypes.TERM) && arg1.term.termType !== 'Variable' &&
+        (arg1.term.termType !== 'Literal' || this.isLiteralWithCanonicalLexicalForm(arg1.term))) {
         return {
-          variable: expression.args[0].term,
-          term: expression.args[1].term,
+          variable: arg0.term,
+          term: arg1.term,
         };
       }
     }

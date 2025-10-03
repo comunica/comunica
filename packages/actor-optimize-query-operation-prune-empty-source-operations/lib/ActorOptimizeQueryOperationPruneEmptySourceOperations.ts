@@ -151,17 +151,21 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
   }
 
   protected collectMultiOperationInputs(
-    inputs: KnownAlgebra.Operation[],
-    collectedOperations: (KnownAlgebra.Pattern | KnownAlgebra.Link)[],
-    inputType: (KnownAlgebra.Pattern | KnownAlgebra.Link)['type'],
+    inputs: Algebra.Operation[],
+    collectedOperations: (Algebra.Pattern | Algebra.Link)[],
+    inputType: (Algebra.Pattern | Algebra.Link)['type'],
   ): void {
     for (const input of inputs) {
       if (getOperationSource(input)) {
-        if (input.type === Algebra.Types.PROPERTY_PATH_SYMBOL) {
-          if (input.subType === Algebra.PropertyPathSymbolTypes.LINK) {
+        if (inputType === Algebra.Types.PROPERTY_PATH_SYMBOL) {
+          if (Algebra.isKnownOperationSub(
+            input,
+            Algebra.Types.PROPERTY_PATH_SYMBOL,
+            Algebra.PropertyPathSymbolTypes.LINK,
+          )) {
             collectedOperations.push(input);
           }
-        } else if (input.type === inputType) {
+        } else if (Algebra.isKnownOperation(input, inputType)) {
           collectedOperations.push(input);
         }
       }
