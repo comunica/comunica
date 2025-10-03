@@ -10,6 +10,7 @@
     {
       "import": [
         "ccqs:config/query-source-identify/actors/hypermedia.json",
+        "ccqs:config/query-source-identify/actors/link-traversal.json",
         "ccqs:config/query-source-identify/actors/rdfjs.json",
         "ccqs:config/query-source-identify/actors/serialized.json"
       ]

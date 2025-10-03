@@ -5,6 +5,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-context-preprocess-convert-shortcuts/^4.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-context-preprocess-set-defaults/^4.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-context-preprocess-source-to-destination/^4.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-context-preprocess-initialize-link-traversal-manager/^4.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-context-preprocess-query-source-identify/^4.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-context-preprocess-query-source-skolemize/^4.0.0/components/context.jsonld"
   ],
@@ -22,6 +23,13 @@
     {
       "@id": "urn:comunica:default:context-preprocess/actors#source-to-destination",
       "@type": "ActorContextPreprocessSourceToDestination"
+    },
+    {
+      "@id": "urn:comunica:default:context-preprocess/actors#initialize-link-traversal-manager",
+      "@type": "ActorContextPreprocessInitializeLinkTraversalManager",
+      "mediatorRdfResolveHypermediaLinks": { "@id": "urn:comunica:default:rdf-resolve-hypermedia-links/mediators#main" },
+      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" },
+      "beforeActors": { "@id": "urn:comunica:default:context-preprocess/actors#query-source-identify" }
     },
     {
       "@id": "urn:comunica:default:context-preprocess/actors#query-source-identify",

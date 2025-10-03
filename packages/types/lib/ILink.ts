@@ -11,6 +11,10 @@ export interface ILink {
    */
   url: string;
   /**
+   * If the source type must be set to something.
+   */
+  forceSourceType?: string;
+  /**
    * An optional stream modifier.
    * This transformation will be applied on the stream of data quads that is obtained from dereferencing the given URL.
    * @param input The stream of data quads on the given URL.

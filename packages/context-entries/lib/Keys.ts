@@ -22,6 +22,7 @@ import type {
   PartialResult,
   ILink,
 } from '@comunica/types';
+import type { ILinkTraversalManager } from '@comunica/types/lib/ILinkTraversalManager';
 import type * as RDF from '@rdfjs/types';
 import type { IDocumentLoader } from 'jsonld-context-parser';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -315,16 +316,22 @@ export const KeysQuerySourceIdentify = {
     '@comunica/bus-query-source-identify:sourceIds',
   ),
   /**
-   * Hypermedia sources mapping to their aggregated store.
-   */
-  hypermediaSourcesAggregatedStores: new ActionContextKey<Map<string, IAggregatedStore>>(
-    '@comunica/bus-query-source-identify:hypermediaSourcesAggregatedStores',
-  ),
-  /**
    * If links may be traversed from this source.
    * This means that sources annotated with this flag are considered incomplete until all links have been traversed.
    */
   traverse: new ActionContextKey<boolean>('@comunica/bus-query-source-identify:traverse'),
+  /**
+   * Aggregated store for a traversal link traversal source.
+   */
+  linkTraversalAggregatedStore: new ActionContextKey<IAggregatedStore>(
+    '@comunica/bus-query-source-identify:linkTraversalAggregatedStore',
+  ),
+  /**
+   * Manager for the link traversal.
+   */
+  linkTraversalManager: new ActionContextKey<ILinkTraversalManager>(
+    '@comunica/bus-query-source-identify:linkTraversalManager',
+  ),
 };
 
 export const KeysRdfUpdateQuads = {

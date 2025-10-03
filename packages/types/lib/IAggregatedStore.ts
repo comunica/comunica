@@ -3,6 +3,8 @@ import type { EventEmitter } from 'node:events';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { MetadataBindings } from './IMetadata';
+import {IQuerySource} from "./IQuerySource";
+import {IActionContext} from "./IActionContext";
 
 /**
  * A StreamingStore allows data lookup and insertion to happen in parallel.
@@ -68,10 +70,30 @@ export interface IAggregatedStore<Q extends RDF.BaseQuad = RDF.Quad>
    */
   removeIteratorCreatedListener: (listener: () => void) => void;
 
+  /**
+   * Register a listener that will be invoked when all match iterators were closed (either through ending this store,
+   * or through external calls to `.close()` or `.destroy()` on the match iterator).
+   * @param listener A listener.
+   */
+  addAllIteratorsClosedListener: (listener: () => void) => void;
+  /**
+   * Remove the given iterators closed listener.
+   * @param listener A listener.
+   */
+  removeAllIteratorsClosedListener: (listener: () => void) => void;
+
   match: (
     subject?: RDF.Term | null,
     predicate?: RDF.Term | null,
     object?: RDF.Term | null,
     graph?: RDF.Term | null,
   ) => AsyncIterator<Q>;
+
+  /**
+   * Import the given query source into the store.
+   * @param url The URL of the source.
+   * @param source The query source.
+   * @param context The context.
+   */
+  importSource: (url: string, source: IQuerySource, context: IActionContext) => EventEmitter;
 }

@@ -1,0 +1,30 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^4.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-source-hypermedia-resolve-force-sparql/^4.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-source-hypermedia-resolve-dereference/^4.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:default:Runner",
+  "@type": "Runner",
+  "actors": [
+    {
+      "@id": "urn:comunica:default:query-source-hypermedia-resolve/actors#force-sparql",
+      "@type": "ActorQuerySourceHypermediaResolveForceSparql",
+      "mediatorMetadataAccumulate": { "@id": "urn:comunica:default:rdf-metadata-accumulate/mediators#main" },
+      "mediatorQuerySourceIdentifyHypermedia": { "@id": "urn:comunica:default:query-source-identify-hypermedia/mediators#main" },
+      "beforeActors": [
+        { "@id": "urn:comunica:default:query-source-hypermedia-resolve/actors#dereference" }
+      ]
+    },
+    {
+      "@id": "urn:comunica:default:query-source-hypermedia-resolve/actors#dereference",
+      "@type": "ActorQuerySourceHypermediaResolveDereference",
+      "mediatorDereferenceRdf": { "@id": "urn:comunica:default:dereference-rdf/mediators#main" },
+      "mediatorMetadata": { "@id": "urn:comunica:default:rdf-metadata/mediators#main" },
+      "mediatorMetadataExtract": { "@id": "urn:comunica:default:rdf-metadata-extract/mediators#main" },
+      "mediatorMetadataAccumulate": { "@id": "urn:comunica:default:rdf-metadata-accumulate/mediators#main" },
+      "mediatorQuerySourceIdentifyHypermedia": { "@id": "urn:comunica:default:query-source-identify-hypermedia/mediators#main" }
+    }
+  ]
+}

@@ -3,6 +3,8 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/config-query-sparql/^4.0.0/components/context.jsonld"
   ],
   "import": [
+    "ccqs:config/aggregated-store-factory/actors.json",
+    "ccqs:config/aggregated-store-factory/mediators.json",
     "ccqs:config/bindings-aggregator-factory/actors.json",
     "ccqs:config/bindings-aggregator-factory/mediators.json",
     "ccqs:config/context-preprocess/actors.json",
