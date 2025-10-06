@@ -1,5 +1,5 @@
-import type { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
-import { algebraUtils } from '@comunica/algebra-sparql-comunica';
+import type { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
+import { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { Bindings } from '@comunica/types';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
@@ -52,7 +52,7 @@ export function materializeTerm(term: RDF.Term, bindings: Bindings): RDF.Term {
 export function materializeOperation(
   operation: Algebra.Operation,
   bindings: Bindings,
-  algebraFactory: AlgebraFactory,
+  factory: AlgebraFactory,
   bindingsFactory: BindingsFactory,
   options: {
     strictTargetVariables?: boolean;
@@ -66,33 +66,31 @@ export function materializeOperation(
     originalBindings: 'originalBindings' in options ? options.originalBindings : bindings,
   };
 
-  return algebraUtils.mapOperation(operation, {
-    path(pathOp, factory) {
-      // Materialize variables in a path expression.
-      // The predicate expression will be recursed.
-      return {
-        recurse: false,
-        result: Object.assign(factory.createPath(
+  return Algebra.mapOperationReplace<'unsafe', typeof operation>(operation, {
+    [Algebra.Types.PATH]: {
+      preVisitor: () => ({ continue: false }),
+      transform: pathOp =>
+        // Materialize variables in a path expression.
+        // The predicate expression will be recursed.
+        Object.assign(factory.createPath(
           materializeTerm(pathOp.subject, bindings),
           pathOp.predicate,
           materializeTerm(pathOp.object, bindings),
           materializeTerm(pathOp.graph, bindings),
         ), { metadata: pathOp.metadata }),
-      };
     },
-    pattern(patternOp, factory) {
-      // Materialize variables in the quad pattern.
-      return {
-        recurse: false,
-        result: Object.assign(factory.createPattern(
+    [Algebra.Types.PATTERN]: {
+      preVisitor: () => ({ continue: false }),
+      transform: patternOp =>
+        // Materialize variables in the quad pattern.
+        Object.assign(factory.createPattern(
           materializeTerm(patternOp.subject, bindings),
           materializeTerm(patternOp.predicate, bindings),
           materializeTerm(patternOp.object, bindings),
           materializeTerm(patternOp.graph, bindings),
         ), { metadata: patternOp.metadata }),
-      };
     },
-    extend(extendOp) {
+    [Algebra.Types.EXTEND]: { transform: (extendOp) => {
       // Materialize an extend operation.
       // If strictTargetVariables is true, we throw if the extension target variable is attempted to be bound.
       // Otherwise, we remove the extend operation.
@@ -100,142 +98,126 @@ export function materializeOperation(
         if (options.strictTargetVariables) {
           throw new Error(`Tried to bind variable ${termToString(extendOp.variable)} in a BIND operator.`);
         } else {
-          return {
-            recurse: true,
-            result: materializeOperation(extendOp.input, bindings, algebraFactory, bindingsFactory, options),
-          };
+          return materializeOperation(extendOp.input, bindings, factory, bindingsFactory, options);
         }
       }
-      return {
-        recurse: true,
-        result: extendOp,
-      };
-    },
-    group(groupOp, factory) {
-      // Materialize a group operation.
-      // If strictTargetVariables is true, we throw if the group target variable is attempted to be bound.
-      // Otherwise, we just filter out the bound variables.
+      return extendOp;
+    } },
+    [Algebra.Types.GROUP]: { transform: (groupOp) => {
+    // Materialize a group operation.
+    // If strictTargetVariables is true, we throw if the group target variable is attempted to be bound.
+    // Otherwise, we just filter out the bound variables.
       if (options.strictTargetVariables) {
         for (const variable of groupOp.variables) {
           if (bindings.has(variable)) {
             throw new Error(`Tried to bind variable ${termToString(variable)} in a GROUP BY operator.`);
           }
         }
-        return {
-          recurse: true,
-          result: groupOp,
-        };
+        return groupOp;
       }
       const variables = groupOp.variables.filter(variable => !bindings.has(variable));
-      return {
-        recurse: true,
-        result: factory.createGroup(
-          groupOp.input,
-          variables,
-          groupOp.aggregates,
-        ),
-      };
-    },
-    filter(filterOp, factory) {
-      const originalBindings: Bindings = <Bindings> options.originalBindings;
-      if (filterOp.expression.subType !== 'operator' || originalBindings.size === 0) {
-        return {
-          recurse: false,
-          result: filterOp,
-        };
-      }
-
-      // Make a values clause using all the variables from originalBindings.
-      const values: Algebra.Operation[] = createValuesFromBindings(factory, originalBindings);
-
-      // Recursively materialize the filter expression
-      const recursionResultExpression: Algebra.Expression = <Algebra.Expression> materializeOperation(
-        filterOp.expression,
-        bindings,
-        algebraFactory,
-        bindingsFactory,
-        options,
+      return factory.createGroup(
+        groupOp.input,
+        variables,
+        groupOp.aggregates,
       );
+    } },
+    [Algebra.Types.FILTER]: {
+      preVisitor: () => ({ continue: false }),
+      transform: (filterOp) => {
+        const originalBindings: Bindings = <Bindings> options.originalBindings;
+        if (filterOp.expression.subType !== 'operator' || originalBindings.size === 0) {
+          return filterOp;
+        }
 
-      // Recursively materialize the filter input
-      let recursionResultInput: Algebra.Operation = materializeOperation(
-        filterOp.input,
-        bindings,
-        algebraFactory,
-        bindingsFactory,
-        options,
-      );
+        // Make a values clause using all the variables from originalBindings.
+        const values: Algebra.Operation[] = createValuesFromBindings(factory, originalBindings);
 
-      if (values.length > 0) {
-        recursionResultInput = factory.createJoin([ ...values, recursionResultInput ]);
-      }
+        // Recursively materialize the filter expression
+        const recursionResultExpression: Algebra.Expression = <Algebra.Expression> materializeOperation(
+          filterOp.expression,
+          bindings,
+          factory,
+          bindingsFactory,
+          options,
+        );
 
-      return {
-        // Recursion already taken care of above.
-        recurse: false,
-        result: factory.createFilter(recursionResultInput, recursionResultExpression),
-      };
+        // Recursively materialize the filter input
+        let recursionResultInput: Algebra.Operation = materializeOperation(
+          filterOp.input,
+          bindings,
+          factory,
+          bindingsFactory,
+          options,
+        );
+
+        if (values.length > 0) {
+          recursionResultInput = factory.createJoin([ ...values, recursionResultInput ]);
+        }
+
+        return factory.createFilter(recursionResultInput, recursionResultExpression);
+      },
     },
-    project(projectOp, factory) {
+    [Algebra.Types.PROJECT]: {
       // Materialize a project operation.
       // If strictTargetVariables is true, we throw if the project target variable is attempted to be bound.
       // Otherwise, we make a values clause out of the target variable and its value in InitialBindings.
-      if (options.strictTargetVariables) {
-        for (const variable of projectOp.variables) {
-          if (bindings.has(variable)) {
-            throw new Error(`Tried to bind variable ${termToString(variable)} in a SELECT operator.`);
+      preVisitor: () => ({ continue: options.strictTargetVariables }),
+      transform: (projectOp) => {
+        if (options.strictTargetVariables) {
+          for (const variable of projectOp.variables) {
+            if (bindings.has(variable)) {
+              throw new Error(`Tried to bind variable ${termToString(variable)} in a SELECT operator.`);
+            }
+          }
+          return projectOp;
+        }
+
+        // Only include non-projected variables in the bindings that will be passed down recursively.
+        // This will result in non-projected variables being replaced with their InitialBindings values.
+        for (const bindingKey of bindings.keys()) {
+          for (const curVariable of projectOp.variables) {
+            if (curVariable.equals(bindingKey)) {
+              bindings = bindings.delete(bindingKey);
+              break;
+            }
           }
         }
-        return {
-          recurse: true,
-          result: projectOp,
-        };
-      }
 
-      // Only include non-projected variables in the bindings that will be passed down recursively.
-      // This will result in non-projected variables being replaced with their InitialBindings values.
-      for (const bindingKey of bindings.keys()) {
-        for (const curVariable of projectOp.variables) {
-          if (curVariable.equals(bindingKey)) {
-            bindings = bindings.delete(bindingKey);
-            break;
-          }
+        // Find projected variables which are present in the originalBindings.
+        // This will result in projected variables being handled via a values clause.
+        const values: Algebra.Operation[] =
+          createValuesFromBindings(factory, <Bindings> options.originalBindings, projectOp.variables);
+
+        let recursionResult: Algebra.Operation = materializeOperation(
+          projectOp.input,
+          bindings,
+          factory,
+          bindingsFactory,
+          options,
+        );
+
+        if (values.length > 0) {
+          recursionResult = factory.createJoin([ ...values, recursionResult ]);
         }
-      }
 
-      // Find projected variables which are present in the originalBindings.
-      // This will result in projected variables being handled via a values clause.
-      const values: Algebra.Operation[] =
-      createValuesFromBindings(factory, <Bindings> options.originalBindings, projectOp.variables);
-
-      let recursionResult: Algebra.Operation = materializeOperation(
-        projectOp.input,
-        bindings,
-        algebraFactory,
-        bindingsFactory,
-        options,
-      );
-
-      if (values.length > 0) {
-        recursionResult = factory.createJoin([ ...values, recursionResult ]);
-      }
-
-      return {
-        recurse: false,
-        result: factory.createProject(recursionResult, projectOp.variables),
-      };
+        return factory.createProject(recursionResult, projectOp.variables);
+      },
     },
-    values(valuesOp, factory) {
-      // Materialize a values operation.
-      // If strictTargetVariables is true, we throw if the values target variable is attempted to be bound.
-      // Otherwise, we just filter out the bound variables and their bindings.
-      if (options.strictTargetVariables) {
-        for (const variable of valuesOp.variables) {
-          if (bindings.has(variable)) {
-            throw new Error(`Tried to bind variable ${termToString(variable)} in a VALUES operator.`);
+    [Algebra.Types.VALUES]: {
+      preVisitor: () => ({ continue: !options.strictTargetVariables }),
+      transform: (valuesOp) => {
+        // Materialize a values operation.
+        // If strictTargetVariables is true, we throw if the values target variable is attempted to be bound.
+        // Otherwise, we just filter out the bound variables and their bindings.
+        if (options.strictTargetVariables) {
+          for (const variable of valuesOp.variables) {
+            if (bindings.has(variable)) {
+              throw new Error(`Tried to bind variable ${termToString(variable)} in a VALUES operator.`);
+            }
           }
+          return valuesOp;
         }
-      } else {
         const variables = valuesOp.variables.filter(variable => !bindings.has(variable));
         const valueBindings: Algebra.Values['bindings'] = <any> valuesOp.bindings.map((binding) => {
           const newBinding = { ...binding };
@@ -252,72 +234,61 @@ export function materializeOperation(
           });
           return valid ? newBinding : undefined;
         }).filter(Boolean);
-        return {
-          recurse: true,
-          result: factory.createValues(
-            variables,
-            valueBindings,
-          ),
-        };
-      }
-      return {
-        recurse: false,
-        result: valuesOp,
-      };
+        return factory.createValues(variables, valueBindings);
+      },
     },
-    expression(expressionOp, factory) {
-      if (!options.bindFilter) {
-        return {
-          recurse: false,
-          result: expressionOp,
-        };
-      }
+    [Algebra.Types.EXPRESSION]: {
+      preVisitor: (expressionOp) => {
+        if (!options.bindFilter) {
+          return { continue: false };
+        }
+        if (expressionOp.subType === 'term') {
+          return { continue: false };
+        }
+        if (expressionOp.subType === 'operator' &&
+          (expressionOp.operator === 'bound' && expressionOp.args.length === 1 &&
+            expressionOp.args[0].subType === 'term' && [ ...bindings.keys() ]
+            .some(variable => (<Algebra.TermExpression>expressionOp.args[0]).term.equals(variable)))) {
+          return { continue: false };
+        }
+        return { continue: true };
+      },
+      transform: (expressionOp) => {
+        if (!options.bindFilter) {
+          return expressionOp;
+        }
 
-      if (expressionOp.subType === 'term') {
-        // Materialize a term expression
-        return {
-          recurse: false,
-          result: factory.createTermExpression(materializeTerm(expressionOp.term, bindings)),
-        };
-      }
-      if (expressionOp.subType === 'operator') {
-        if (expressionOp.operator === 'bound' && expressionOp.args.length === 1 &&
-          expressionOp.args[0].subType === 'term' && [ ...bindings.keys() ]
-          .some(variable => (<Algebra.TermExpression>expressionOp.args[0]).term.equals(variable))) {
-          return {
-            recurse: false,
-            result: factory.createTermExpression(factory.dataFactory.literal(
+        if (expressionOp.subType === 'term') {
+          // Materialize a term expression
+          return factory.createTermExpression(materializeTerm(expressionOp.term, bindings));
+        }
+        if (expressionOp.subType === 'operator') {
+          if (expressionOp.operator === 'bound' && expressionOp.args.length === 1 &&
+        expressionOp.args[0].subType === 'term' && [ ...bindings.keys() ]
+            .some(variable => (<Algebra.TermExpression>expressionOp.args[0]).term.equals(variable))) {
+            return factory.createTermExpression(factory.dataFactory.literal(
               'true',
               factory.dataFactory.namedNode('http://www.w3.org/2001/XMLSchema#boolean'),
-            )),
-          };
+            ));
+          }
+          return expressionOp;
         }
-        return {
-          recurse: true,
-          result: expressionOp,
-        };
-      }
-      if (expressionOp.subType === 'aggregate' &&
-        'variable' in expressionOp &&
-        bindings.has(expressionOp.variable)) {
-        // Materialize a bound aggregate operation.
-        // If strictTargetVariables is true, we throw if the expression target variable is attempted to be bound.
-        // Otherwise, we ignore this operation.
-        if (options.strictTargetVariables) {
-          throw new Error(`Tried to bind ${termToString(expressionOp.variable)} in a ${expressionOp.aggregator} aggregate.`);
-        } else {
-          return {
-            recurse: true,
-            result: expressionOp,
-          };
+        if (expressionOp.subType === 'aggregate' &&
+      'variable' in expressionOp &&
+      bindings.has(expressionOp.variable)) {
+          // Materialize a bound aggregate operation.
+          // If strictTargetVariables is true, we throw if the expression target variable is attempted to be bound.
+          // Otherwise, we ignore this operation.
+          if (options.strictTargetVariables) {
+            throw new Error(`Tried to bind ${termToString(expressionOp.variable)} in a ${expressionOp.aggregator} aggregate.`);
+          } else {
+            return expressionOp;
+          }
         }
-      }
-      return {
-        recurse: true,
-        result: expressionOp,
-      };
+        return expressionOp;
+      },
     },
-  }, algebraFactory);
+  });
 }
 
 /**

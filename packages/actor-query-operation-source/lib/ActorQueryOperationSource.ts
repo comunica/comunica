@@ -1,4 +1,4 @@
-import { Algebra, algebraUtils } from '@comunica/algebra-sparql-comunica';
+import { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { IActionQueryOperation, IActorQueryOperationArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
@@ -49,11 +49,11 @@ export class ActorQueryOperationSource extends ActorQueryOperation {
     // Check if the operation is a CONSTRUCT query
     // We recurse because it may be wrapped in other operations such as SLICE and FROM
     let construct = false;
-    algebraUtils.recurseOperation(action.operation, {
-      construct(): boolean {
+    Algebra.recurseOperationReplace(action.operation, {
+      [Algebra.Types.CONSTRUCT]: { preVisitor: () => {
         construct = true;
-        return false;
-      },
+        return { shortcut: true };
+      } },
     });
     // If so, delegate to queryQuads
     if (construct) {

@@ -1,4 +1,4 @@
-import { AlgebraFactory, algebraUtils } from '@comunica/algebra-sparql-comunica';
+import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type {
   IActionOptimizeQueryOperation,
   IActorOptimizeQueryOperationOutput,
@@ -20,14 +20,12 @@ export class ActorOptimizeQueryOperationBgpToJoin extends ActorOptimizeQueryOper
     const dataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const algebraFactory = new AlgebraFactory(dataFactory);
 
-    const operation = algebraUtils.mapOperation(action.operation, {
-      bgp(bgpOp, factory) {
-        return {
-          recurse: false,
-          result: factory.createJoin(bgpOp.patterns),
-        };
+    const operation = Algebra.mapOperationReplace<'unsafe', typeof action.operation>(action.operation, {
+      [Algebra.Types.BGP]: {
+        preVisitor: () => ({ continue: false }),
+        transform: bgpOp => algebraFactory.createJoin(bgpOp.patterns),
       },
-    }, algebraFactory);
+    });
     return { operation, context: action.context };
   }
 }

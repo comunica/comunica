@@ -1,4 +1,4 @@
-import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/algebra-sparql-comunica';
+import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type {
   IActionOptimizeQueryOperation,
   IActorOptimizeQueryOperationOutput,
@@ -25,34 +25,28 @@ export class ActorOptimizeQueryOperationRewriteMove extends ActorOptimizeQueryOp
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const factory = new AlgebraFactory(dataFactory);
-    const algebraTransformer = new algebraUtils.AlgebraTransformer();
 
-    const operation = algebraTransformer.transformNodeSpecific<'unsafe', typeof action.operation>(
+    const operation = Algebra.mapOperationSubReplace<'unsafe', typeof action.operation>(
       action.operation,
       {},
-      { [Algebra.Types.UPDATE]: { [Algebra.UpdateTypes.MOVE]: { transform: (operationOriginal) => {
+      { [Algebra.Types.UPDATE]: { [Algebra.UpdateTypes.MOVE]: {
+        preVisitor: () => ({ continue: false }),
+        transform: (operationOriginal) => {
         // No-op if source === destination
-        let result: Algebra.CompositeUpdate;
-        if ((typeof operationOriginal.destination === 'string' && typeof operationOriginal.source === 'string' &&
+          if ((typeof operationOriginal.destination === 'string' && typeof operationOriginal.source === 'string' &&
                   operationOriginal.destination === operationOriginal.source) ||
                 (typeof operationOriginal.destination !== 'string' && typeof operationOriginal.source !== 'string' &&
                   operationOriginal.destination.equals(operationOriginal.source))) {
-          result = factory.createCompositeUpdate([]);
-        } else {
+            return factory.createCompositeUpdate([]);
+          }
           // MOVE is equivalent to drop destination, add, and drop source
           const updates = [
             factory.createDrop(operationOriginal.destination, true),
             factory.createAdd(operationOriginal.source, operationOriginal.destination, operationOriginal.silent),
             factory.createDrop(operationOriginal.source),
           ];
-          result = factory.createCompositeUpdate(updates);
-        }
-
-        return {
-          result,
-          recurse: false,
-        };
-      },
+          return factory.createCompositeUpdate(updates);
+        },
       }}},
     );
 

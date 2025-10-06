@@ -1,4 +1,4 @@
-import { AlgebraFactory, Algebra, algebraUtils } from '@comunica/algebra-sparql-comunica';
+import { AlgebraFactory, Algebra } from '@comunica/algebra-sparql-comunica';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import type {
@@ -170,15 +170,15 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
 
   public canBindWithOperation(operation: Algebra.Operation): boolean {
     let valid = true;
-    algebraUtils.recurseOperation(operation, {
-      [Algebra.Types.EXTEND](): boolean {
+    Algebra.recurseOperationReplace(operation, {
+      [Algebra.Types.EXTEND]: { preVisitor: () => {
         valid = false;
-        return false;
-      },
-      [Algebra.Types.GROUP](): boolean {
+        return { shortcut: true };
+      } },
+      [Algebra.Types.GROUP]: { preVisitor: () => {
         valid = false;
-        return false;
-      },
+        return { shortcut: true };
+      } },
     });
 
     return valid;

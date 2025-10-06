@@ -330,8 +330,8 @@ export class QuerySourceSparql implements IQuerySource {
    */
   public static getOperationUndefs(operation: Algebra.Operation): RDF.Variable[] {
     const variables: RDF.Variable[] = [];
-    algebraUtils.recurseOperation(operation, {
-      leftjoin(subOperation): boolean {
+    Algebra.recurseOperationReplace(operation, {
+      [Algebra.Types.LEFT_JOIN]: { preVisitor: (subOperation) => {
         const left = algebraUtils.inScopeVariables(subOperation.input[0]);
         const right = algebraUtils.inScopeVariables(subOperation.input[1]);
         for (const varRight of right) {
@@ -339,17 +339,17 @@ export class QuerySourceSparql implements IQuerySource {
             variables.push(varRight);
           }
         }
-        return false;
-      },
-      values(values: Algebra.Values): boolean {
+        return { continue: false };
+      } },
+      [Algebra.Types.VALUES]: { preVisitor: (values) => {
         for (const variable of values.variables) {
           if (values.bindings.some(bindings => !(variable.value in bindings))) {
             variables.push(variable);
           }
         }
-        return false;
-      },
-      union(union: Algebra.Union): boolean {
+        return { continue: false };
+      } },
+      [Algebra.Types.UNION]: { preVisitor: (union) => {
         // Determine variables in scope of the union branches that are not occurring in every branch
         const scopedVariables = union.input.map(algebraUtils.inScopeVariables);
         for (const variable of uniqTerms(scopedVariables.flat())) {
@@ -357,9 +357,8 @@ export class QuerySourceSparql implements IQuerySource {
             variables.push(variable);
           }
         }
-
-        return true;
-      },
+        return {};
+      } },
     });
     return uniqTerms(variables);
   }

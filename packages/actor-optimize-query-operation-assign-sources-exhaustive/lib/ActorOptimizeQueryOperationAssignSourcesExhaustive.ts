@@ -1,4 +1,4 @@
-import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/algebra-sparql-comunica';
+import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type {
   IActionOptimizeQueryOperation,
   IActorOptimizeQueryOperationOutput,
@@ -74,75 +74,60 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
   ): Algebra.Operation {
     // eslint-disable-next-line ts/no-this-alias
     const self = this;
-    const transformer = new algebraUtils.AlgebraTransformer();
-    return transformer.transformNodeSpecific<'unsafe', typeof operation>(
-      operation,
-      {
-        [Algebra.Types.PATTERN]: { transform: (subOperation) => {
+    return Algebra.mapOperationSubReplace<'unsafe', typeof operation>(operation, {
+      [Algebra.Types.PATTERN]: {
+        preVisitor: () => ({ continue: false }),
+        transform: (patternOp) => {
           if (sources.length === 1) {
-            return {
-              result: assignOperationSource(subOperation, sources[0]),
-              recurse: false,
-            };
+            return assignOperationSource(patternOp, sources[0]);
           }
-          return {
-            result: factory.createUnion(sources
-              .map(source => assignOperationSource(subOperation, source))),
-            recurse: false,
-          };
-        } },
-        [Algebra.Types.SERVICE]: { transform: subOperation => ({
-          result: subOperation,
-          recurse: false,
-        }) },
-        [Algebra.Types.CONSTRUCT]: { transform: subOperation => ({
-          result: factory.createConstruct(
-            self.assignExhaustive(factory, subOperation.input, sources),
-            subOperation.template,
+          return factory.createUnion(sources
+            .map(source => assignOperationSource(patternOp, source)));
+        },
+      },
+      [Algebra.Types.SERVICE]: {
+        preVisitor: () => ({ continue: false }),
+      },
+      [Algebra.Types.CONSTRUCT]: {
+        preVisitor: () => ({ continue: false }),
+        transform: constructOp => factory.createConstruct(
+          self.assignExhaustive(factory, constructOp.input, sources),
+          constructOp.template,
+        ),
+      },
+    }, {
+      [Algebra.Types.PROPERTY_PATH_SYMBOL]: {
+        [Algebra.PropertyPathSymbolTypes.LINK]: {
+          preVisitor: () => ({ continue: false }),
+          transform: (linkOp) => {
+            if (sources.length === 1) {
+              return assignOperationSource(linkOp, sources[0]);
+            }
+            return factory.createAlt(sources
+              .map(source => assignOperationSource(linkOp, source)));
+          },
+        },
+        [Algebra.PropertyPathSymbolTypes.NPS]: {
+          preVisitor: () => ({ continue: false }),
+          transform: (npsOp) => {
+            if (sources.length === 1) {
+              return assignOperationSource(npsOp, sources[0]);
+            }
+            return factory.createAlt(sources
+              .map(source => assignOperationSource(npsOp, source)));
+          },
+        },
+      },
+      [Algebra.Types.UPDATE]: {
+        [Algebra.UpdateTypes.DELETE_INSERT]: {
+          preVisitor: () => ({ continue: false }),
+          transform: delInsOp => factory.createDeleteInsert(
+            delInsOp.delete,
+            delInsOp.insert,
+            delInsOp.where ? self.assignExhaustive(factory, delInsOp.where, sources) : undefined,
           ),
-          recurse: false,
-        }) },
-      },
-      {
-        [Algebra.Types.PROPERTY_PATH_SYMBOL]: {
-          [Algebra.PropertyPathSymbolTypes.LINK]: { transform: (subOperation) => {
-            if (sources.length === 1) {
-              return {
-                result: assignOperationSource(subOperation, sources[0]),
-                recurse: false,
-              };
-            }
-            return {
-              result: factory.createAlt(sources
-                .map(source => assignOperationSource(subOperation, source))),
-              recurse: false,
-            };
-          } },
-          [Algebra.PropertyPathSymbolTypes.NPS]: { transform: (subOperation) => {
-            if (sources.length === 1) {
-              return {
-                result: assignOperationSource(subOperation, sources[0]),
-                recurse: false,
-              };
-            }
-            return {
-              result: factory.createAlt(sources
-                .map(source => assignOperationSource(subOperation, source))),
-              recurse: false,
-            };
-          } },
-        },
-        [Algebra.Types.UPDATE]: {
-          [Algebra.UpdateTypes.DELETE_INSERT]: { transform: subOperation => ({
-            result: factory.createDeleteInsert(
-              subOperation.delete,
-              subOperation.insert,
-              subOperation.where ? self.assignExhaustive(factory, subOperation.where, sources) : undefined,
-            ),
-            recurse: false,
-          }) },
         },
       },
-    );
+    });
   }
 }

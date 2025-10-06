@@ -1,4 +1,4 @@
-import { algebraUtils } from '@comunica/algebra-sparql-comunica';
+import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type {
   IActionOptimizeQueryOperation,
   IActorOptimizeQueryOperationOutput,
@@ -25,12 +25,12 @@ export class ActorOptimizeQueryOperationConstructDistinct extends ActorOptimizeQ
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
-    const operation = algebraUtils.mapOperation(action.operation, {
-      construct(constructOp, factory) {
-        return {
-          recurse: false,
-          result: factory.createDistinct(factory.createConstruct(constructOp.input, constructOp.template)),
-        };
+    const factory = new AlgebraFactory();
+    const operation = Algebra.mapOperationReplace<'unsafe', typeof action.operation>(action.operation, {
+      [Algebra.Types.CONSTRUCT]: {
+        preVisitor: () => ({ continue: false }),
+        transform: constructOp =>
+          factory.createDistinct(factory.createConstruct(constructOp.input, constructOp.template)),
       },
     });
     return { operation, context: action.context.delete(KeysInitQuery.distinctConstruct) };

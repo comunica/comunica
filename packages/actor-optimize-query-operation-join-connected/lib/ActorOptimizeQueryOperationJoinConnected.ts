@@ -1,5 +1,4 @@
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
-import { algebraUtils, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
+import { Algebra, algebraUtils, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type {
   IActionOptimizeQueryOperation,
   IActorOptimizeQueryOperationOutput,
@@ -20,16 +19,14 @@ export class ActorOptimizeQueryOperationJoinConnected extends ActorOptimizeQuery
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new AlgebraFactory(dataFactory);
+    const factory = new AlgebraFactory(dataFactory);
 
-    const operation = algebraUtils.mapOperation(action.operation, {
-      join(op: Algebra.Join, factory: AlgebraFactory) {
-        return {
-          recurse: false,
-          result: ActorOptimizeQueryOperationJoinConnected.cluster(op, factory),
-        };
+    const operation = Algebra.mapOperationReplace<'unsafe', typeof action.operation>(action.operation, {
+      [Algebra.Types.JOIN]: {
+        preVisitor: () => ({ continue: false }),
+        transform: op => ActorOptimizeQueryOperationJoinConnected.cluster(op, factory),
       },
-    }, algebraFactory);
+    });
     return { operation, context: action.context };
   }
 

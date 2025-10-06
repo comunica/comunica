@@ -1,5 +1,5 @@
 import type { KnownAlgebra } from '@comunica/algebra-sparql-comunica';
-import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/algebra-sparql-comunica';
+import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type {
   IActionOptimizeQueryOperation,
   IActorOptimizeQueryOperationOutput,
@@ -40,9 +40,8 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     const collectedOperations: (KnownAlgebra.Pattern | KnownAlgebra.Link)[] = [];
     // eslint-disable-next-line ts/no-this-alias
     const self = this;
-    const transformer = new algebraUtils.AlgebraTransformer();
 
-    transformer.visitNodeSpecific(operation, {
+    Algebra.recurseOperationSubReplace(operation, {
       [Algebra.Types.UNION]: { preVisitor: (subOperation) => {
         self.collectMultiOperationInputs(subOperation.input, collectedOperations, Algebra.Types.PATTERN);
         return { continue: true };
@@ -75,7 +74,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     if (emptyOperations.size > 0) {
       this.logDebug(action.context, `Pruning ${emptyOperations.size} source-specific operations`);
       // Rewrite operations by removing the empty children
-      operation = transformer.transformNodeSpecific<'unsafe', typeof operation>(operation, {
+      operation = Algebra.mapOperationSubReplace<'unsafe', typeof operation>(operation, {
         [Algebra.Types.UNION]: { transform: subOperation =>
           self.mapMultiOperation(subOperation, emptyOperations, children => algebraFactory.createUnion(children)) },
       }, {
@@ -85,34 +84,28 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
       });
 
       // Identify and remove operations that have become empty now due to missing variables
-      operation = algebraUtils.mapOperation(operation, {
-        [Algebra.Types.PROJECT](subOperation, factory) {
-          // Remove projections that have become empty now due to missing variables
-          if (ActorOptimizeQueryOperationPruneEmptySourceOperations.hasEmptyOperation(subOperation)) {
-            return {
-              recurse: false,
-              result: factory.createUnion([]),
-            };
-          }
-          return {
-            recurse: true,
-            result: subOperation,
-          };
+      // TODO: @RT why do we have 2 manipulations back to back? (NOTE: our transformer will first transform children!)
+      //  (that's why the preVisitor exists, it will ask whether you want to reverse deeper.
+      operation = Algebra.mapOperationReplace<'unsafe', typeof operation>(operation, {
+        [Algebra.Types.PROJECT]: {
+          preVisitor: subOperation =>
+            ({ continue: !ActorOptimizeQueryOperationPruneEmptySourceOperations.hasEmptyOperation(subOperation) }),
+          transform: (subOperation) => {
+            // Remove projections that have become empty now due to missing variables
+            if (ActorOptimizeQueryOperationPruneEmptySourceOperations.hasEmptyOperation(subOperation)) {
+              return algebraFactory.createUnion([]);
+            }
+            return subOperation;
+          },
         },
-        [Algebra.Types.LEFT_JOIN](subOperation) {
-          // Remove left joins with empty right operation
+        [Algebra.Types.LEFT_JOIN]: { transform: (subOperation) => {
+        // Remove left joins with empty right operation
           if (ActorOptimizeQueryOperationPruneEmptySourceOperations.hasEmptyOperation(subOperation.input[1])) {
-            return {
-              recurse: true,
-              result: subOperation.input[0],
-            };
+            return subOperation.input[0];
           }
-          return {
-            recurse: true,
-            result: subOperation,
-          };
-        },
-      }, algebraFactory);
+          return subOperation;
+        } },
+      });
     }
 
     return { operation, context: action.context };
@@ -123,8 +116,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     // But if we find a union with multiple children,
     // *all* of the children must be empty before the full operation is considered empty.
     let emptyOperation = false;
-    const transformer = new algebraUtils.AlgebraTransformer();
-    transformer.visitNodeSpecific(operation, {
+    Algebra.recurseOperationSubReplace(operation, {
       [Algebra.Types.UNION]: { preVisitor: (subOperation) => {
         if (subOperation.input.every(subSubOperation => ActorOptimizeQueryOperationPruneEmptySourceOperations
           .hasEmptyOperation(subSubOperation))) {

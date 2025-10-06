@@ -1,4 +1,4 @@
-import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/algebra-sparql-comunica';
+import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type {
   IActionOptimizeQueryOperation,
   IActorOptimizeQueryOperationOutput,
@@ -25,30 +25,25 @@ export class ActorOptimizeQueryOperationRewriteCopy extends ActorOptimizeQueryOp
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const factory = new AlgebraFactory(dataFactory);
-    const transformer = new algebraUtils.AlgebraTransformer();
 
-    const operation = transformer.transformNodeSpecific<'unsafe', typeof action.operation>(action.operation, {}, {
-      [Algebra.Types.UPDATE]: { [Algebra.UpdateTypes.COPY]: { transform: (operationOriginal) => {
+    const operation = Algebra.mapOperationSubReplace<'unsafe', typeof action.operation>(action.operation, {}, {
+      [Algebra.Types.UPDATE]: { [Algebra.UpdateTypes.COPY]: {
+        preVisitor: () => ({ continue: false }),
+        transform: (operationOriginal) => {
         // No-op if source === destination
-        let result: Algebra.CompositeUpdate;
-        if ((typeof operationOriginal.destination === 'string' && typeof operationOriginal.source === 'string' &&
+          if ((typeof operationOriginal.destination === 'string' && typeof operationOriginal.source === 'string' &&
           operationOriginal.destination === operationOriginal.source) ||
         (typeof operationOriginal.destination !== 'string' && typeof operationOriginal.source !== 'string' &&
           operationOriginal.destination.equals(operationOriginal.source))) {
-          result = factory.createCompositeUpdate([]);
-        } else {
-        // COPY is equivalent to drop destination, and add
-          result = factory.createCompositeUpdate([
+            return factory.createCompositeUpdate([]);
+          }
+          // COPY is equivalent to drop destination, and add
+          return factory.createCompositeUpdate([
             factory.createDrop(operationOriginal.destination, true),
             factory.createAdd(operationOriginal.source, operationOriginal.destination, operationOriginal.silent),
           ]);
-        }
-
-        return {
-          result,
-          recurse: false,
-        };
-      } },
+        },
+      },
       },
     });
 
