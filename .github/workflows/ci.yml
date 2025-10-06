@@ -356,7 +356,7 @@ jobs:
       - name: Prepare comment on commit with link to performance results
         run: echo -e "Performance benchmarks succeeded! 🚀\n\n\[[Summarized results](https://comunica.github.io/comunica-performance-results/comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-total/)\] \[[Detailed results](https://comunica.github.io/comunica-performance-results/comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-detail/)\]" > ./commit-comment-body.txt
       - name: Comment on commit with link to performance results
-        uses: peter-evans/commit-comment@v3
+        uses: peter-evans/commit-comment@v4
         with:
           body-path: ./commit-comment-body.txt
 
