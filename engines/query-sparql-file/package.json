@@ -212,6 +212,7 @@
     "@comunica/actor-query-operation-slice": "^4.0.2",
     "@comunica/actor-query-operation-source": "^4.0.2",
     "@comunica/actor-query-operation-union": "^4.0.2",
+    "@comunica/actor-query-operation-lateral": "^4.0.2",
     "@comunica/actor-query-operation-update-clear": "^4.0.2",
     "@comunica/actor-query-operation-update-compositeupdate": "^4.0.2",
     "@comunica/actor-query-operation-update-create": "^4.0.2",

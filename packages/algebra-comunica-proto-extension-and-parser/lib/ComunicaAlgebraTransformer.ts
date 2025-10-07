@@ -4,25 +4,24 @@ import { createAlgebraContext } from '@traqula/algebra-transformations-1-2';
 import type { AlgebraIndir, ContextConfigs, Algebra } from '@traqula/algebra-transformations-1-2';
 import { IndirBuilder } from '@traqula/core';
 import type * as T12 from '@traqula/rules-sparql-1-2';
-import type { Lateral, LateralKnownOperation } from './ComunicaAlgebra';
+import type { Lateral } from './ComunicaAlgebra';
 import type { Pattern } from './ComunicaSparqlAst';
 
 const origAccumulateGroupGraphPattern = toAlgebra12Builder.getRule('accumulateGroupGraphPattern');
 const origTranslateGraphPattern = toAlgebra12Builder.getRule('translateGraphPattern');
 
 export const accumulateGroupGraphPatternNew:
-AlgebraIndir<'accumulateGroupGraphPattern', LateralKnownOperation, [KnownAlgebra.Operation, Pattern]> = {
+AlgebraIndir<'accumulateGroupGraphPattern', Algebra.Operation | Lateral, [KnownAlgebra.Operation, Pattern]> = {
   name: 'accumulateGroupGraphPattern',
   fun: $ => (C, algebraOp, pattern) => {
     if (pattern.subType === 'lateral') {
       return {
         type: 'lateral',
-        metadata: {},
         input: [
           algebraOp,
           $.SUBRULE(origTranslateGraphPattern, C.astFactory.patternGroup(<any[]> pattern.patterns, pattern.loc)),
         ],
-      }satisfies Lateral;
+      } satisfies Lateral;
     }
     return origAccumulateGroupGraphPattern.fun($)(C, algebraOp, pattern);
   },

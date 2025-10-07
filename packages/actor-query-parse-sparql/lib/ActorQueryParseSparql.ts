@@ -1,11 +1,13 @@
-import { ComunicaSparqlParser as SparqlParser } from '@comunica/algebra-comunica-proto-extension-and-parser';
+import {
+  ComunicaSparqlParser as SparqlParser,
+  toComunicaAlgebra,
+} from '@comunica/algebra-comunica-proto-extension-and-parser';
 import type { IActionQueryParse, IActorQueryParseArgs, IActorQueryParseOutput } from '@comunica/bus-query-parse';
 import { ActorQueryParse } from '@comunica/bus-query-parse';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
-import { toAlgebra } from '@traqula/algebra-sparql-1-2';
 import { AstFactory } from '@traqula/rules-sparql-1-2';
 
 /**
@@ -46,7 +48,7 @@ export class ActorQueryParseSparql extends ActorQueryParse {
     }
     return {
       baseIRI,
-      operation: toAlgebra(parsedSyntax, {
+      operation: toComunicaAlgebra(parsedSyntax, {
         quads: true,
         prefixes: this.prefixes,
         blankToVariable: true,

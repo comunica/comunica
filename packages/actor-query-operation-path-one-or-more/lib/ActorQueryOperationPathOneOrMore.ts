@@ -1,5 +1,4 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
-import type { KnownAlgebra } from '@comunica/algebra-sparql-comunica';
 import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
@@ -41,7 +40,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
 
     context = distinct.context;
 
-    const predicate = <KnownAlgebra.OneOrMorePath> operation.predicate;
+    const predicate = <Algebra.OneOrMorePath> operation.predicate;
 
     if (operation.subject.termType !== 'Variable' && operation.object.termType === 'Variable') {
       const objectVar = operation.object;
