@@ -113,12 +113,12 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
         });
         expect(operationOut).toEqual(AF.createJoin([
           AF.createFilter(
-            AF.createPattern(DF.variable('s1'), DF.namedNode('p'), DF.namedNode('o')),
-            AF.createTermExpression(DF.variable('s1')),
-          ),
-          AF.createFilter(
             AF.createPattern(DF.variable('s2'), DF.namedNode('p'), DF.namedNode('o')),
             AF.createTermExpression(DF.variable('s2')),
+          ),
+          AF.createFilter(
+            AF.createPattern(DF.variable('s1'), DF.namedNode('p'), DF.namedNode('o')),
+            AF.createTermExpression(DF.variable('s1')),
           ),
         ]));
       });
@@ -173,11 +173,11 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
         expect(operationOut).toEqual(AF.createFilter(
           AF.createPattern(DF.variable('s1'), DF.variable('s2'), DF.variable('s3')),
           AF.createOperatorExpression('&&', [
+            AF.createTermExpression(DF.variable('s3')),
             AF.createOperatorExpression('&&', [
               AF.createTermExpression(DF.variable('s2')),
               AF.createTermExpression(DF.variable('s1')),
             ]),
-            AF.createTermExpression(DF.variable('s3')),
           ]),
         ));
       });
@@ -212,11 +212,11 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           AF.createFilter(
             AF.createFilter(
               AF.createPattern(DF.variable('s1'), DF.variable('s2'), DF.variable('s3')),
-              AF.createTermExpression(DF.variable('s3')),
+              AF.createTermExpression(DF.variable('s1')),
             ),
-            AF.createTermExpression(DF.variable('s1')),
+            AF.createTermExpression(DF.variable('s2')),
           ),
-          AF.createTermExpression(DF.variable('s2')),
+          AF.createTermExpression(DF.variable('s3')),
         ));
       });
     });

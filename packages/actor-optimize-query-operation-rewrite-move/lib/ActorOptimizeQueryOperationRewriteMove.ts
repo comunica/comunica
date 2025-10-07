@@ -26,10 +26,9 @@ export class ActorOptimizeQueryOperationRewriteMove extends ActorOptimizeQueryOp
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const factory = new AlgebraFactory(dataFactory);
 
-    const operation = Algebra.mapOperationSubReplace<'unsafe', typeof action.operation>(
+    const operation = Algebra.mapOperationReplace<'unsafe', typeof action.operation>(
       action.operation,
-      {},
-      { [Algebra.Types.UPDATE]: { [Algebra.UpdateTypes.MOVE]: {
+      { [Algebra.Types.MOVE]: {
         preVisitor: () => ({ continue: false }),
         transform: (operationOriginal) => {
         // No-op if source === destination
@@ -47,7 +46,7 @@ export class ActorOptimizeQueryOperationRewriteMove extends ActorOptimizeQueryOp
           ];
           return factory.createCompositeUpdate(updates);
         },
-      }}},
+      }},
     );
 
     return { operation, context: action.context };

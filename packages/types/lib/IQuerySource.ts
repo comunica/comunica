@@ -119,7 +119,7 @@ export interface IQuerySource {
    * @return {Promise<boolean>}           The void response.
    */
   queryVoid: (
-    operation: Algebra.Update,
+    operation: Algebra.Operation,
     context: IActionContext,
   ) => Promise<void>;
 

@@ -15,7 +15,7 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
   public readonly mediatorJoin: MediatorRdfJoin;
 
   public constructor(args: IActorQueryOperationPathSeq) {
-    super(args, Algebra.PropertyPathSymbolTypes.SEQ);
+    super(args, Algebra.Types.SEQ);
   }
 
   public async runOperation(

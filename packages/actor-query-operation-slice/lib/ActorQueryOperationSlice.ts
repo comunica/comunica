@@ -1,4 +1,4 @@
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
+import { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperationTypedMediated,
@@ -21,7 +21,7 @@ import type { AsyncIterator } from 'asynciterator';
  */
 export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<Algebra.Slice> {
   public constructor(args: IActorQueryOperationTypedMediatedArgs) {
-    super(args, 'slice');
+    super(args, Algebra.Types.SLICE);
   }
 
   public async testOperation(_operation: Algebra.Slice, _context: IActionContext): Promise<TestResult<IActorTest>> {

@@ -11,11 +11,11 @@ import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
+const AF = new AlgebraFactory(DF);
 
 describe('ActorQueryOperationPathInv', () => {
   let bus: any;
   let mediatorQueryOperation: any;
-  const factory: AlgebraFactory = new AlgebraFactory();
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -75,9 +75,9 @@ describe('ActorQueryOperationPathInv', () => {
     });
 
     it('should support Inv paths', async() => {
-      const op: any = { operation: factory.createPath(
+      const op: any = { operation: AF.createPath(
         DF.namedNode('s'),
-        factory.createInv(factory.createLink(DF.namedNode('p'))),
+        AF.createInv(AF.createLink(DF.namedNode('p'))),
         DF.variable('x'),
       ), context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }) };
       const output = getSafeBindings(await actor.run(op, undefined));
@@ -88,7 +88,7 @@ describe('ActorQueryOperationPathInv', () => {
         BF.bindings([[ DF.variable('x'), DF.literal('3') ]]),
       ]);
       expect((<any> output).operated.operation).toEqual(
-        factory.createPath(DF.variable('x'), factory.createLink(DF.namedNode('p')), DF.namedNode('s')),
+        AF.createPath(DF.variable('x'), AF.createLink(DF.namedNode('p')), DF.namedNode('s')),
       );
     });
   });

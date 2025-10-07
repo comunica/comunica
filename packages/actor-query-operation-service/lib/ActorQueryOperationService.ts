@@ -1,4 +1,4 @@
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
+import { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
@@ -28,7 +28,7 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
   public readonly mediatorQuerySourceIdentify: MediatorQuerySourceIdentify;
 
   public constructor(args: IActorQueryOperationServiceArgs) {
-    super(args, 'service');
+    super(args, Algebra.Types.SERVICE);
   }
 
   public async testOperation(operation: Algebra.Service, _context: IActionContext): Promise<TestResult<IActorTest>> {

@@ -37,20 +37,18 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     const algebraFactory = new AlgebraFactory(dataFactory);
     let operation: Algebra.Operation = action.operation;
 
-    // eslint-disable-next-line ts/no-this-alias
-    const self = this;
-
     // Split conjunctive filters into nested filters
     if (this.splitConjunctive) {
       operation = Algebra.mapOperationReplace<'unsafe', typeof operation>(operation, {
-        [Algebra.Types.FILTER]: { transform: (op) => {
+        [Algebra.Types.FILTER]: { transform: (filterOp) => {
           // Split conjunctive filters into separate filters
-          if (Algebra.isKnownSub(op.expression, Algebra.ExpressionTypes.OPERATOR) && op.expression.operator === '&&') {
-            self.logDebug(action.context, `Split conjunctive filter into ${op.expression.args.length} nested filters`);
-            return op.expression.args
-              .reduce((operation, expression) => algebraFactory.createFilter(operation, expression), op.input);
+          if (Algebra.isKnownSub(filterOp.expression, Algebra.ExpressionTypes.OPERATOR) &&
+            filterOp.expression.operator === '&&') {
+            this.logDebug(action.context, `Split conjunctive filter into ${filterOp.expression.args.length} nested filters`);
+            return filterOp.expression.args
+              .reduce((operation, expression) => algebraFactory.createFilter(operation, expression), filterOp.input);
           }
-          return op;
+          return filterOp;
         } },
       });
     }
@@ -68,17 +66,17 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     while (repeat && iterations < this.maxIterations) {
       repeat = false;
       operation = Algebra.mapOperationReplace<'unsafe', typeof operation>(operation, {
-        [Algebra.Types.FILTER]: { transform: (op) => {
+        [Algebra.Types.FILTER]: { transform: (filterOp) => {
           // Check if the filter must be pushed down
-          if (!self.shouldAttemptPushDown(op, sources, sourceShapes)) {
-            return op;
+          if (!this.shouldAttemptPushDown(filterOp, sources, sourceShapes)) {
+            return filterOp;
           }
 
           // For all filter expressions in the operation,
           // we attempt to push them down as deep as possible into the algebra.
-          const variables = self.getExpressionVariables(op.expression);
-          const [ isModified, result ] = self
-            .filterPushdown(op.expression, variables, op.input, algebraFactory, action.context);
+          const variables = this.getExpressionVariables(filterOp.expression);
+          const [ isModified, result ] = this
+            .filterPushdown(filterOp.expression, variables, filterOp.input, algebraFactory, action.context);
           if (isModified) {
             repeat = true;
           }
@@ -89,17 +87,16 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     }
 
     if (iterations > 1) {
-      self.logDebug(action.context, `Pushed down filters in ${iterations} iterations`);
+      this.logDebug(action.context, `Pushed down filters in ${iterations} iterations`);
     }
 
     // Merge nested filters into conjunctive filters
     if (this.mergeConjunctive) {
-      // TODO: @RT: this only merges 2 layers?
       operation = Algebra.mapOperationReplace<'unsafe', typeof operation>(operation, {
         [Algebra.Types.FILTER]: { transform: (op) => {
           if (op.input.type === Algebra.Types.FILTER) {
-            const { nestedExpressions, input } = self.getNestedFilterExpressions(op);
-            self.logDebug(action.context, `Merge ${nestedExpressions.length} nested filters into conjunctive filter`);
+            const { nestedExpressions, input } = this.getNestedFilterExpressions(op);
+            this.logDebug(action.context, `Merge ${nestedExpressions.length} nested filters into conjunctive filter`);
             return algebraFactory.createFilter(
               input,
               nestedExpressions.slice(1).reduce((previous, current) =>
@@ -170,14 +167,11 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
       }
       return false;
     };
-    Algebra.recurseOperationSubReplace(operation, {
+    Algebra.recurseOperationReplace(operation, {
       [Algebra.Types.PATTERN]: { visitor: sourceAdder },
       [Algebra.Types.SERVICE]: { visitor: sourceAdder },
-    }, {
-      [Algebra.Types.PROPERTY_PATH_SYMBOL]: {
-        [Algebra.PropertyPathSymbolTypes.LINK]: { visitor: sourceAdder },
-        [Algebra.PropertyPathSymbolTypes.NPS]: { visitor: sourceAdder },
-      },
+      [Algebra.Types.LINK]: { visitor: sourceAdder },
+      [Algebra.Types.NPS]: { visitor: sourceAdder },
     });
     return [ ...sources ];
   }
@@ -261,7 +255,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     }
 
     // Don't push down (NOT) EXISTS
-    if (Algebra.isKnownSub(expression, Algebra.ExpressionTypes.EXISTENCE)) {
+    if (Algebra.isKnownOperationSub(expression, Algebra.Types.EXPRESSION, Algebra.ExpressionTypes.EXISTENCE)) {
       return [ false, factory.createFilter(operation, expression) ];
     }
 

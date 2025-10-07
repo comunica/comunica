@@ -14,7 +14,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
   private static readonly ALGEBRA_TYPES: string[] = Object.keys(Algebra.Types).map(key => (<any> Algebra.Types)[key]);
 
   public constructor(args: IActorQueryOperationTypedMediatedArgs) {
-    super(args, 'from');
+    super(args, Algebra.Types.FROM);
   }
 
   /**

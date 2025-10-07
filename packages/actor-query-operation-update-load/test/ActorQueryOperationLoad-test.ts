@@ -10,7 +10,7 @@ import { ActorQueryOperationLoad } from '../lib/ActorQueryOperationLoad';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
-const AF = new AlgebraFactory();
+const AF = new AlgebraFactory(DF);
 
 describe('ActorQueryOperationLoad', () => {
   let bus: any;
@@ -75,11 +75,8 @@ describe('ActorQueryOperationLoad', () => {
     });
 
     it('should run', async() => {
-      const op: any = {
-        operation: {
-          type: 'load',
-          source: DF.namedNode('URL'),
-        },
+      const op = {
+        operation: AF.createLoad(DF.namedNode('URL')),
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
@@ -105,11 +102,8 @@ describe('ActorQueryOperationLoad', () => {
     });
 
     it('should run with a given context', async() => {
-      const op: any = {
-        operation: {
-          type: 'load',
-          source: DF.namedNode('URL'),
-        },
+      const op = {
+        operation: AF.createLoad(DF.namedNode('URL')),
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
@@ -129,11 +123,8 @@ describe('ActorQueryOperationLoad', () => {
     });
 
     it('should run and allow updateResult to be awaited layer', async() => {
-      const op: any = {
-        operation: {
-          type: 'load',
-          source: DF.namedNode('URL'),
-        },
+      const op = {
+        operation: AF.createLoad(DF.namedNode('URL')),
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
@@ -146,12 +137,8 @@ describe('ActorQueryOperationLoad', () => {
     });
 
     it('should run with destination', async() => {
-      const op: any = {
-        operation: {
-          type: 'load',
-          source: DF.namedNode('URL'),
-          destination: DF.namedNode('GRAPH'),
-        },
+      const op = {
+        operation: AF.createLoad(DF.namedNode('URL'), DF.namedNode('GRAPH')),
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
@@ -164,11 +151,8 @@ describe('ActorQueryOperationLoad', () => {
     });
 
     it('should run for an empty source', async() => {
-      const op: any = {
-        operation: {
-          type: 'load',
-          source: DF.namedNode('URL'),
-        },
+      const op = {
+        operation: AF.createLoad(DF.namedNode('URL')),
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       mediatorQueryOperation.mediate = () => Promise.resolve({
@@ -184,12 +168,8 @@ describe('ActorQueryOperationLoad', () => {
     });
 
     it('should run in silent mode', async() => {
-      const op: any = {
-        operation: {
-          type: 'load',
-          source: DF.namedNode('URL'),
-          silent: true,
-        },
+      const op = {
+        operation: AF.createLoad(DF.namedNode('URL'), undefined, true),
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op, undefined);

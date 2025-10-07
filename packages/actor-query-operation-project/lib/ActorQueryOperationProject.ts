@@ -1,4 +1,4 @@
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
+import { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
@@ -22,7 +22,7 @@ import type * as RDF from '@rdfjs/types';
  */
 export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated<Algebra.Project> {
   public constructor(args: IActorQueryOperationTypedMediatedArgs) {
-    super(args, 'project');
+    super(args, Algebra.Types.PROJECT);
   }
 
   public async testOperation(_operation: Algebra.Project, _context: IActionContext): Promise<TestResult<IActorTest>> {

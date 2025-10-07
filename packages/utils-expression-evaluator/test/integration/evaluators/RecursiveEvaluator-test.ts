@@ -1,4 +1,4 @@
-import { Algebra } from '@comunica/algebra-sparql-comunica';
+import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getMockInternalEvaluator } from '@comunica/utils-expression-evaluator/test/util/helpers';
 import { DataFactory } from 'rdf-data-factory';
@@ -7,6 +7,7 @@ import * as Err from '../../../lib/util/Errors';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
+const AF = new AlgebraFactory(DF);
 
 describe('recursive evaluators', () => {
   describe('AsyncRecursiveEvaluator', () => {
@@ -18,17 +19,11 @@ describe('recursive evaluators', () => {
     });
 
     it('is not able to evaluate aggregates by default', async() => {
-      await expect(evaluator.evaluatorExpressionEvaluation(new E.Aggregate('count', {
-        type: Algebra.Types.EXPRESSION,
-        expressionType: Algebra.ExpressionTypes.AGGREGATE,
-        aggregator: 'count',
-        distinct: false,
-        expression: {
-          type: Algebra.Types.EXPRESSION,
-          expressionType: Algebra.ExpressionTypes.WILDCARD,
-          wildcard: { type: 'wildcard' },
-        },
-      }), BF.bindings())).rejects.toThrow(Err.NoAggregator);
+      await expect(evaluator.evaluatorExpressionEvaluation(new E.Aggregate('count', AF.createAggregateExpression(
+        'count',
+        AF.createWildcardExpression(),
+        false,
+      )), BF.bindings())).rejects.toThrow(Err.NoAggregator);
     });
   });
 });

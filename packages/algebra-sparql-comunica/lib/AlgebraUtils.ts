@@ -1,6 +1,7 @@
 import { toAst as traqulaToAst, toAlgebra as traqualToAlgebra } from '@traqula/algebra-sparql-1-2';
 import type { SparqlQuery } from '@traqula/rules-sparql-1-2';
-import type { KnownAlgebra, Algebra } from './Algebra';
+import type * as Algebra from './Algebra';
+import type * as KnownAlgebra from './KnownAlgebra';
 
 export { AlgebraFactory, algebraUtils } from '@traqula/algebra-transformations-1-2';
 

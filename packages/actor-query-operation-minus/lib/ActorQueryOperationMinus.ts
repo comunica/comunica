@@ -1,4 +1,4 @@
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
+import { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperationTypedMediated,
@@ -16,7 +16,7 @@ export class ActorQueryOperationMinus extends ActorQueryOperationTypedMediated<A
   public readonly mediatorJoin: MediatorRdfJoin;
 
   public constructor(args: IActorQueryOperationMinusArgs) {
-    super(args, 'minus');
+    super(args, Algebra.Types.MINUS);
   }
 
   public async testOperation(_operation: Algebra.Minus, _context: IActionContext): Promise<TestResult<IActorTest>> {

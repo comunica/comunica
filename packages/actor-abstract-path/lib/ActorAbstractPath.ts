@@ -86,7 +86,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
   private async predicateStarGraphVariable(
     subject: RDF.Term,
     object: RDF.Variable,
-    predicate: Algebra.PropertyPathSymbol,
+    predicate: Algebra.Operation,
     graph: RDF.Variable,
     context: IActionContext,
     algebraFactory: AlgebraFactory,
@@ -160,7 +160,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
    */
   public async getObjectsPredicateStarEval(
     subject: RDF.Term,
-    predicate: Algebra.PropertyPathSymbol,
+    predicate: Algebra.Operation,
     object: RDF.Variable,
     graph: RDF.Term,
     context: IActionContext,
@@ -220,7 +220,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
   public async getObjectsPredicateStar(
     algebraFactory: AlgebraFactory,
     object: RDF.Term,
-    predicate: Algebra.PropertyPathSymbol,
+    predicate: Algebra.Operation,
     graph: RDF.Term,
     context: IActionContext,
     termHashes: Record<string, RDF.Term>,
@@ -283,7 +283,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     objectVar: RDF.Variable,
     subjectVal: RDF.Term,
     objectVal: RDF.Term,
-    predicate: Algebra.PropertyPathSymbol,
+    predicate: Algebra.Operation,
     graph: RDF.Term,
     context: IActionContext,
     termHashesGlobal: Record<string, Promise<RDF.Term[]>>,
@@ -386,19 +386,19 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
    * Find all sources recursively contained in the given path operation.
    * @param operation
    */
-  public getPathSources(operation: Algebra.PropertyPathSymbol): IQuerySourceWrapper[] {
-    if (Algebra.isKnownSub(operation, Algebra.PropertyPathSymbolTypes.ALT) ||
-      Algebra.isKnownSub(operation, Algebra.PropertyPathSymbolTypes.SEQ)) {
+  public getPathSources(operation: Algebra.Operation): IQuerySourceWrapper[] {
+    if (Algebra.isKnownOperation(operation, Algebra.Types.ALT) ||
+      Algebra.isKnownOperation(operation, Algebra.Types.SEQ)) {
       return operation.input.flatMap(subOp => this.getPathSources(subOp));
     }
-    if (Algebra.isKnownSub(operation, Algebra.PropertyPathSymbolTypes.INV) ||
-      Algebra.isKnownSub(operation, Algebra.PropertyPathSymbolTypes.ONE_OR_MORE_PATH) ||
-      Algebra.isKnownSub(operation, Algebra.PropertyPathSymbolTypes.ZERO_OR_MORE_PATH) ||
-      Algebra.isKnownSub(operation, Algebra.PropertyPathSymbolTypes.ZERO_OR_ONE_PATH)) {
+    if (Algebra.isKnownOperation(operation, Algebra.Types.INV) ||
+      Algebra.isKnownOperation(operation, Algebra.Types.ONE_OR_MORE_PATH) ||
+      Algebra.isKnownOperation(operation, Algebra.Types.ZERO_OR_MORE_PATH) ||
+      Algebra.isKnownOperation(operation, Algebra.Types.ZERO_OR_ONE_PATH)) {
       return this.getPathSources(operation.path);
     }
-    if (Algebra.isKnownSub(operation, Algebra.PropertyPathSymbolTypes.LINK) ||
-      Algebra.isKnownSub(operation, Algebra.PropertyPathSymbolTypes.NPS)) {
+    if (Algebra.isKnownOperation(operation, Algebra.Types.LINK) ||
+      Algebra.isKnownOperation(operation, Algebra.Types.NPS)) {
       const source = getOperationSource(operation);
       if (!source) {
         throw new Error(`Could not find a required source on a link path operation`);

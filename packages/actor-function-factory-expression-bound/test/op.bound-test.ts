@@ -1,4 +1,4 @@
-import { ExpressionTypes, Types } from '@comunica/algebra-sparql-comunica';
+import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
@@ -10,6 +10,7 @@ import { ActorFunctionFactoryExpressionBound } from '../lib';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
+const AF = new AlgebraFactory(DF);
 
 describe('evaluation of \'bound\'', () => {
   let mediatorFunctionFactory: MediatorFunctionFactory;
@@ -44,19 +45,11 @@ describe('evaluation of \'bound\'', () => {
   });
 
   it('\'bound\' on term returns error', async() => {
+    const algExpr = AF.createOperatorExpression('bound', [ AF.createTermExpression(DF.namedNode('http://example.com')) ]);
     const evaluator = await getMockEEFactory({
       mediatorFunctionFactory,
     }).run({
-      algExpr: {
-        type: Types.EXPRESSION,
-        expressionType: ExpressionTypes.OPERATOR,
-        operator: 'bound',
-        args: [{
-          type: Types.EXPRESSION,
-          expressionType: ExpressionTypes.TERM,
-          term: DF.namedNode('http://example.com'),
-        }],
-      },
+      algExpr,
       context: getMockEEActionContext(),
     }, undefined);
     await expect(evaluator.evaluate(BF.bindings())).rejects.toThrow(Eval.InvalidArgumentTypes);

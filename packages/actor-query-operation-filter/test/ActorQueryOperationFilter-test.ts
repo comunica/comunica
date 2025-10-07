@@ -5,6 +5,8 @@ import { ActorFunctionFactoryTermAddition } from '@comunica/actor-function-facto
 import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-factory-term-equality';
 import { ActorFunctionFactoryTermIri } from '@comunica/actor-function-factory-term-iri';
 import { ActorFunctionFactoryTermStr } from '@comunica/actor-function-factory-term-str';
+import { ComunicaSparqlParser as Parser } from '@comunica/algebra-comunica-proto-extension-and-parser';
+import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
@@ -21,13 +23,13 @@ import {
 } from '@comunica/utils-expression-evaluator/test/util/helpers';
 import { toAlgebra } from '@traqula/algebra-sparql-1-2';
 import { ArrayIterator } from 'asynciterator';
-import { ComunicaSparqlParser as Parser } from 'packages/algebra-comunica-proto-extension-and-parser';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationFilter } from '../lib';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF, {});
+const AF = new AlgebraFactory(DF);
 const parser = new Parser();
 
 function template(expr: string) {
@@ -54,11 +56,7 @@ describe('ActorQueryOperationFilter', () => {
   const truthyExpression = parse('"nonemptystring"');
   const falsyExpression = parse('""');
   const erroringExpression = parse('?a + ?a');
-  const unknownExpression = {
-    args: [],
-    expressionType: 'operator',
-    operator: 'DUMMY',
-  };
+  const unknownExpression = AF.createOperatorExpression('DUMMY', []);
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -125,12 +123,12 @@ describe('ActorQueryOperationFilter', () => {
     });
 
     it('should test on filter', async() => {
-      const op: any = { operation: { type: 'filter', expression: truthyExpression }, context };
+      const op = { operation: AF.createFilter(AF.createBgp([]), truthyExpression), context };
       await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should pass test but not run on unsupported operators', async() => {
-      const op: any = { operation: { type: 'filter', expression: unknownExpression }, context };
+      const op = { operation: AF.createFilter(AF.createBgp([]), unknownExpression), context };
       await expect(actor.test(op)).resolves.toPassTestVoid();
       await expect(actor.run(op, undefined)).rejects.toThrow(
         `No actors are able to reply to a message`,
@@ -143,8 +141,8 @@ describe('ActorQueryOperationFilter', () => {
     });
 
     it('should return the full stream for a truthy filter', async() => {
-      const op: any = {
-        operation: { type: 'filter', input: {}, expression: truthyExpression },
+      const op = {
+        operation: AF.createFilter(AF.createBgp([]), truthyExpression),
         context,
       };
       const output: IQueryOperationResultBindings = <any> await actor.run(op, undefined);
@@ -159,8 +157,8 @@ describe('ActorQueryOperationFilter', () => {
     });
 
     it('should return an empty stream for a falsy filter', async() => {
-      const op: any = {
-        operation: { type: 'filter', input: {}, expression: falsyExpression },
+      const op = {
+        operation: AF.createFilter(AF.createBgp([]), falsyExpression),
         context,
       };
       const output: IQueryOperationResultBindings = <any> await actor.run(op, undefined);
@@ -171,8 +169,8 @@ describe('ActorQueryOperationFilter', () => {
     });
 
     it('should return an empty stream when the expressions error', async() => {
-      const op: any = {
-        operation: { type: 'filter', input: {}, expression: erroringExpression },
+      const op = {
+        operation: AF.createFilter(AF.createBgp([]), erroringExpression),
         context,
       };
       const output: IQueryOperationResultBindings = <any> await actor.run(op, undefined);
@@ -185,8 +183,8 @@ describe('ActorQueryOperationFilter', () => {
     it('Should log warning for an expressionError', async() => {
       // The order is very important. This item requires isExpressionError to still have it's right definition.
       const logWarnSpy = jest.spyOn(<any> actor, 'logWarn');
-      const op: any = {
-        operation: { type: 'filter', input: {}, expression: erroringExpression },
+      const op = {
+        operation: AF.createFilter(AF.createBgp([]), erroringExpression),
         context,
       };
       const output: IQueryOperationResultBindings = <any> await actor.run(op, undefined);
@@ -213,8 +211,8 @@ describe('ActorQueryOperationFilter', () => {
       Object.defineProperty(sparqlee, 'isExpressionError', { writable: true });
       // eslint-disable-next-line jest/prefer-spy-on
       (<any> sparqlee).isExpressionError = jest.fn(() => false);
-      const op: any = {
-        operation: { type: 'filter', input: {}, expression: erroringExpression },
+      const op = {
+        operation: AF.createFilter(AF.createBgp([]), erroringExpression),
         context,
       };
       const output: IQueryOperationResultBindings = <any> await actor.run(op, undefined);
@@ -227,7 +225,7 @@ describe('ActorQueryOperationFilter', () => {
     it('should use and respect the baseIRI from the expression context', async() => {
       const expression = parse('str(IRI(?a)) = concat("http://example.com/", ?a)');
       const op: any = {
-        operation: { type: 'filter', input: {}, expression },
+        operation: AF.createFilter(AF.createBgp([]), expression),
         context: getMockEEActionContext(new ActionContext({ [KeysInitQuery.baseIRI.name]: 'http://example.com' })),
       };
       const output: IQueryOperationResultBindings = <any> await actor.run(op, undefined);

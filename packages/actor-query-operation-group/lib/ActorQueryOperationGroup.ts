@@ -1,4 +1,4 @@
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
+import { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { MediatorBindingsAggregatorFactory } from '@comunica/bus-bindings-aggregator-factory';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
@@ -26,7 +26,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
   private readonly mediatorBindingsAggregatorFactory: MediatorBindingsAggregatorFactory;
 
   public constructor(args: IActorQueryOperationGroupArgs) {
-    super(args, 'group');
+    super(args, Algebra.Types.GROUP);
     this.mediatorBindingsAggregatorFactory = args.mediatorBindingsAggregatorFactory;
   }
 

@@ -77,7 +77,7 @@ export class QuerySourceSkolemized implements IQuerySource {
     return skolemizeQuadStream(dataFactory, this.innerSource.queryQuads(operationMapped, context), this.sourceId);
   }
 
-  public queryVoid(operation: Algebra.Update, context: IActionContext): Promise<void> {
+  public queryVoid(operation: Algebra.Operation, context: IActionContext): Promise<void> {
     return this.innerSource.queryVoid(operation, context);
   }
 

@@ -19,7 +19,7 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
   public constructor(
     private readonly algebraFactory: AlgebraFactory,
     private readonly subject: RDF.Term,
-    private readonly predicate: Algebra.PropertyPathSymbol,
+    private readonly predicate: Algebra.Operation,
     private readonly graph: RDF.Term,
     private readonly context: IActionContext,
     private readonly mediatorQueryOperation: MediatorQueryOperation,

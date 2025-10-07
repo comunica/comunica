@@ -1,4 +1,4 @@
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
+import { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { IActorTest, TestResult } from '@comunica/core';
@@ -15,7 +15,7 @@ import { getSafeBindings } from '@comunica/utils-query-operation';
  */
 export class ActorQueryOperationAsk extends ActorQueryOperationTypedMediated<Algebra.Ask> {
   public constructor(args: IActorQueryOperationTypedMediatedArgs) {
-    super(args, 'ask');
+    super(args, Algebra.Types.ASK);
   }
 
   public async testOperation(_operation: Algebra.Ask, _context: IActionContext): Promise<TestResult<IActorTest>> {

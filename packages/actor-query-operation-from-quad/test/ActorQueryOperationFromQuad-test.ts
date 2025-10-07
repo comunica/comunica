@@ -63,7 +63,7 @@ describe('ActorQueryOperationFromQuad', () => {
       const result = <Algebra.Bgp> ActorQueryOperationFromQuad
         .applyOperationDefaultGraph(
           AF,
-          { patterns: [ Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }) ], type: Algebra.Types.BGP },
+          AF.createBgp([ Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }) ]),
           [ DF.namedNode('g') ],
         );
       expect(result.type).toBe('bgp');
@@ -75,7 +75,7 @@ describe('ActorQueryOperationFromQuad', () => {
       const result = <Algebra.Bgp> ActorQueryOperationFromQuad
         .applyOperationDefaultGraph(
           AF,
-          { patterns: [ Object.assign(quad('s', 'p', 'o'), { type: 'pattern', metadata }) ], type: Algebra.Types.BGP },
+          AF.createBgp([ Object.assign(quad('s', 'p', 'o'), { type: 'pattern', metadata }) ]),
           [ DF.namedNode('g') ],
         );
       expect(result.type).toBe('bgp');
@@ -87,7 +87,7 @@ describe('ActorQueryOperationFromQuad', () => {
       const result = <Algebra.Bgp> ActorQueryOperationFromQuad
         .applyOperationDefaultGraph(
           AF,
-          { patterns: [ Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }) ], type: Algebra.Types.BGP },
+          AF.createBgp([ Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }) ]),
           [ DF.namedNode('g') ],
         );
       expect(result.type).toBe('bgp');
@@ -98,7 +98,7 @@ describe('ActorQueryOperationFromQuad', () => {
       const result = <Algebra.Union> ActorQueryOperationFromQuad
         .applyOperationDefaultGraph(
           AF,
-          { patterns: [ Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }) ], type: Algebra.Types.BGP },
+          AF.createBgp([ Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }) ]),
           [ DF.namedNode('g'), DF.namedNode('h') ],
         );
       expect(result.type).toBe('union');
@@ -112,7 +112,7 @@ describe('ActorQueryOperationFromQuad', () => {
       const result = <Algebra.Bgp>ActorQueryOperationFromQuad
         .applyOperationDefaultGraph(
           AF,
-          { patterns: [ Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }) ], type: Algebra.Types.BGP },
+          AF.createBgp([ Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }) ]),
           [ DF.namedNode('g'), DF.namedNode('h') ],
         );
       expect(result.type).toBe('bgp');
@@ -238,7 +238,7 @@ describe('ActorQueryOperationFromQuad', () => {
       const result = ActorQueryOperationFromQuad
         .applyOperationNamedGraph(
           AF,
-          { patterns: [ Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }) ], type: Algebra.Types.BGP },
+          AF.createBgp([ Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }) ]),
           [ DF.namedNode('g') ],
           [],
         );
@@ -249,7 +249,7 @@ describe('ActorQueryOperationFromQuad', () => {
       const result = <Algebra.Join>ActorQueryOperationFromQuad
         .applyOperationNamedGraph(
           AF,
-          { patterns: [ Object.assign(quad('s', 'p', 'o', '?g'), { type: 'pattern' }) ], type: Algebra.Types.BGP },
+          AF.createBgp([ Object.assign(quad('s', 'p', 'o', '?g'), { type: 'pattern' }) ]),
           [ DF.namedNode('g') ],
           [],
         );
@@ -266,7 +266,7 @@ describe('ActorQueryOperationFromQuad', () => {
       const result = ActorQueryOperationFromQuad
         .applyOperationNamedGraph(
           AF,
-          { patterns: [ Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }) ], type: Algebra.Types.BGP },
+          AF.createBgp([ Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }) ]),
           [ DF.namedNode('g') ],
           [],
         );
@@ -277,7 +277,7 @@ describe('ActorQueryOperationFromQuad', () => {
       const result = <Algebra.Bgp> ActorQueryOperationFromQuad
         .applyOperationNamedGraph(
           AF,
-          { patterns: [ Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }) ], type: Algebra.Types.BGP },
+          AF.createBgp([ Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }) ]),
           [ DF.namedNode('g') ],
           [ DF.namedNode('gother') ],
         );
@@ -289,7 +289,7 @@ describe('ActorQueryOperationFromQuad', () => {
       const result = <Algebra.Bgp>ActorQueryOperationFromQuad
         .applyOperationNamedGraph(
           AF,
-          { patterns: [ Object.assign(quad('s', 'p', 'o', 'g'), { type: 'pattern' }) ], type: Algebra.Types.BGP },
+          AF.createBgp([ Object.assign(quad('s', 'p', 'o', 'g'), { type: 'pattern' }) ]),
           [ DF.namedNode('g') ],
           [],
         );
@@ -301,7 +301,7 @@ describe('ActorQueryOperationFromQuad', () => {
       const result = ActorQueryOperationFromQuad
         .applyOperationNamedGraph(
           AF,
-          { patterns: [ Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }) ], type: Algebra.Types.BGP },
+          AF.createBgp([ Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }) ]),
           [ DF.namedNode('g'), DF.namedNode('h') ],
           [],
         );
@@ -312,7 +312,7 @@ describe('ActorQueryOperationFromQuad', () => {
       const result = <Algebra.Union> ActorQueryOperationFromQuad
         .applyOperationNamedGraph(
           AF,
-          { patterns: [ Object.assign(quad('s', 'p', 'o', '?g'), { type: 'pattern' }) ], type: Algebra.Types.BGP },
+          AF.createBgp([ Object.assign(quad('s', 'p', 'o', '?g'), { type: 'pattern' }) ]),
           [ DF.namedNode('g'), DF.namedNode('h') ],
           [],
         );
@@ -346,7 +346,7 @@ describe('ActorQueryOperationFromQuad', () => {
       const result = ActorQueryOperationFromQuad
         .applyOperationNamedGraph(
           AF,
-          { patterns: [ Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }) ], type: Algebra.Types.BGP },
+          AF.createBgp([ Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }) ]),
           [ DF.namedNode('g'), DF.namedNode('h') ],
           [],
         );
@@ -357,7 +357,7 @@ describe('ActorQueryOperationFromQuad', () => {
       const result = <Algebra.Bgp> ActorQueryOperationFromQuad
         .applyOperationNamedGraph(
           AF,
-          { patterns: [ Object.assign(quad('s', 'p', 'o', 'g'), { type: 'pattern' }) ], type: Algebra.Types.BGP },
+          AF.createBgp([ Object.assign(quad('s', 'p', 'o', 'g'), { type: 'pattern' }) ]),
           [ DF.namedNode('g'), DF.namedNode('h') ],
           [],
         );

@@ -4,8 +4,10 @@ import type { IQueryOperationResultVoid } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationClear } from '../lib/ActorQueryOperationClear';
 import '@comunica/utils-jest';
+import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 
 const DF = new DataFactory();
+const AF = new AlgebraFactory(DF);
 
 describe('ActorQueryOperationClear', () => {
   let bus: any;
@@ -53,11 +55,8 @@ describe('ActorQueryOperationClear', () => {
     });
 
     it('should run for default graph', async() => {
-      const op: any = {
-        operation: {
-          type: 'clear',
-          source: 'DEFAULT',
-        },
+      const op = {
+        operation: AF.createClear('DEFAULT'),
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
@@ -71,12 +70,8 @@ describe('ActorQueryOperationClear', () => {
     });
 
     it('should run for default graph in silent mode', async() => {
-      const op: any = {
-        operation: {
-          type: 'clear',
-          source: 'DEFAULT',
-          silent: true,
-        },
+      const op = {
+        operation: AF.createClear('DEFAULT', true),
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
@@ -90,11 +85,8 @@ describe('ActorQueryOperationClear', () => {
     });
 
     it('should run for all graphs', async() => {
-      const op: any = {
-        operation: {
-          type: 'clear',
-          source: 'ALL',
-        },
+      const op = {
+        operation: AF.createClear('ALL'),
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
@@ -108,11 +100,8 @@ describe('ActorQueryOperationClear', () => {
     });
 
     it('should run for all named graphs', async() => {
-      const op: any = {
-        operation: {
-          type: 'clear',
-          source: 'NAMED',
-        },
+      const op = {
+        operation: AF.createClear('NAMED'),
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
@@ -126,11 +115,8 @@ describe('ActorQueryOperationClear', () => {
     });
 
     it('should run for a named graph', async() => {
-      const op: any = {
-        operation: {
-          type: 'clear',
-          source: DF.namedNode('g1'),
-        },
+      const op = {
+        operation: AF.createClear(DF.namedNode('g1')),
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op, undefined);

@@ -67,7 +67,7 @@ export class QuerySourceAddSourceAttribution implements IQuerySource {
     return this.innerSource.queryQuads(operation, context);
   }
 
-  public queryVoid(operation: Algebra.Update, context: IActionContext): Promise<void> {
+  public queryVoid(operation: Algebra.Operation, context: IActionContext): Promise<void> {
     return this.innerSource.queryVoid(operation, context);
   }
 

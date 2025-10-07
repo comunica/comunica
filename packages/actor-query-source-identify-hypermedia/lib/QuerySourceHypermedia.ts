@@ -141,7 +141,7 @@ export class QuerySourceHypermedia implements IQuerySource {
     return await source.source.queryBoolean(operation, context);
   }
 
-  public async queryVoid(operation: Algebra.Update, context: IActionContext): Promise<void> {
+  public async queryVoid(operation: Algebra.Operation, context: IActionContext): Promise<void> {
     const source = await this.getSourceCached({ url: this.firstUrl }, {}, context, this.getAggregateStore(context));
     return await source.source.queryVoid(operation, context);
   }

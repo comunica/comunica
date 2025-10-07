@@ -47,13 +47,13 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
     const algebraFactory = new AlgebraFactory(dataFactory);
 
     // Return operation as-is if the operation already has a single source, or if the operation has no children.
-    if (getOperationSource(operation) ?? !(operation.input)) {
+    if (getOperationSource(operation) ?? !('input' in operation)) {
       return operation;
     }
 
     // If operation has a single input, move source annotation upwards if the source can handle it.
     if (!Array.isArray(operation.input)) {
-      const groupedInput = await this.groupOperation(operation.input, context);
+      const groupedInput = await this.groupOperation(<Algebra.Operation> operation.input, context);
       if (groupedInput.metadata?.scopedSource) {
         const source: IQuerySourceWrapper = <IQuerySourceWrapper> getOperationSource(groupedInput);
         if (doesShapeAcceptOperation(await source.source.getSelectorShape(context), operation)) {
@@ -82,7 +82,8 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
 
     // If the number of clusters is equal to the number of original inputs, do nothing.
     if (clusters.length === inputs.length) {
-      return { ...operation, input: inputs };
+      const result: Algebra.Multi = { ...operation, input: inputs };
+      return result;
     }
 
     // If we have multiple clusters, created nested multi-operations
@@ -91,14 +92,10 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
       multiFactoryMethod = algebraFactory.createJoin.bind(algebraFactory);
     } else if (Algebra.isKnownOperation(operation, Algebra.Types.UNION)) {
       multiFactoryMethod = algebraFactory.createUnion.bind(algebraFactory);
-    } else if (Algebra.isKnownOperation(operation, Algebra.Types.PROPERTY_PATH_SYMBOL)) {
-      if (Algebra.isKnownSub(operation, Algebra.PropertyPathSymbolTypes.ALT)) {
-        multiFactoryMethod = <any> algebraFactory.createAlt.bind(algebraFactory);
-      } else if (Algebra.isKnownSub(operation, Algebra.PropertyPathSymbolTypes.SEQ)) {
-        multiFactoryMethod = <any> algebraFactory.createSeq.bind(algebraFactory);
-      } else {
-        throw new Error(`Unsupported operation '${operation.type}' with subType ${operation.subType} detected while grouping sources`);
-      }
+    } else if (Algebra.isKnownOperation(operation, Algebra.Types.ALT)) {
+      multiFactoryMethod = <any> algebraFactory.createAlt.bind(algebraFactory);
+    } else if (Algebra.isKnownOperation(operation, Algebra.Types.SEQ)) {
+      multiFactoryMethod = <any> algebraFactory.createSeq.bind(algebraFactory);
     } else {
       // While LeftJoin and Minus are also multi-operations,
       // these can never occur because they only have 2 inputs,

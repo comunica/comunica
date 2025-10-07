@@ -9,7 +9,7 @@ import { WildcardCountAggregator } from '@comunica/actor-bindings-aggregator-fac
 import { ActorFunctionFactoryTermAddition } from '@comunica/actor-function-factory-term-addition';
 import { ActorFunctionFactoryTermDivision } from '@comunica/actor-function-factory-term-division';
 import { createTermCompMediator } from '@comunica/actor-term-comparator-factory-expression-evaluator/test/util';
-import { Algebra } from '@comunica/algebra-sparql-comunica';
+import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type {
   IActionBindingsAggregatorFactory,
   IActorBindingsAggregatorFactoryOutput,
@@ -36,6 +36,7 @@ import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF, {});
+const AF = new AlgebraFactory(DF);
 const mediatorMergeBindingsContext: any = {
   mediate: () => ({}),
 };
@@ -61,31 +62,19 @@ const simpleXYZinput = {
   ],
 };
 
-const countY: Algebra.BoundAggregate = {
-  type: Algebra.Types.EXPRESSION,
-  expressionType: Algebra.ExpressionTypes.AGGREGATE,
-  aggregator: 'count',
-  expression: {
-    type: Algebra.Types.EXPRESSION,
-    expressionType: Algebra.ExpressionTypes.TERM,
-    term: DF.variable('y'),
-  },
-  distinct: false,
-  variable: DF.variable('count'),
-};
+const countY: Algebra.BoundAggregate = AF.createBoundAggregate(
+  DF.variable('count'),
+  'count',
+  AF.createTermExpression(DF.variable('y')),
+  false,
+);
 
-const sumZ: Algebra.BoundAggregate = {
-  type: Algebra.Types.EXPRESSION,
-  expressionType: Algebra.ExpressionTypes.AGGREGATE,
-  aggregator: 'sum',
-  expression: {
-    type: Algebra.Types.EXPRESSION,
-    expressionType: Algebra.ExpressionTypes.TERM,
-    term: DF.variable('z'),
-  },
-  distinct: false,
-  variable: DF.variable('sum'),
-};
+const sumZ = AF.createBoundAggregate(
+  DF.variable('sum'),
+  'sum',
+  AF.createTermExpression(DF.variable('z')),
+  false,
+);
 
 const mediatorFunctionFactory: MediatorFunctionFactory = createFuncMediator([
   args => new ActorFunctionFactoryTermAddition(args),
@@ -667,18 +656,12 @@ describe('ActorQueryOperationGroup', () => {
 
     // https://www.w3.org/TR/sparql11-query/#aggregateExample2
     it('should handle aggregate errors', async() => {
-      const sumY: Algebra.BoundAggregate = {
-        type: Algebra.Types.EXPRESSION,
-        expressionType: Algebra.ExpressionTypes.AGGREGATE,
-        aggregator: 'sum',
-        expression: {
-          type: Algebra.Types.EXPRESSION,
-          expressionType: Algebra.ExpressionTypes.TERM,
-          term: DF.variable('y'),
-        },
-        distinct: false,
-        variable: DF.variable('sum'),
-      };
+      const sumY = AF.createBoundAggregate(
+        DF.variable('sum'),
+        'sum',
+        AF.createTermExpression(DF.variable('y')),
+        false,
+      );
 
       const { op, actor } = constructCase({
         inputBindings: [
@@ -830,18 +813,12 @@ describe('ActorQueryOperationGroup', () => {
     });
 
     const aggregateOn = (aggregator: string, inVar: string, outVar: string): Algebra.BoundAggregate => {
-      return {
-        type: Algebra.Types.EXPRESSION,
-        expressionType: Algebra.ExpressionTypes.AGGREGATE,
-        aggregator: <any> aggregator,
-        expression: {
-          type: Algebra.Types.EXPRESSION,
-          expressionType: Algebra.ExpressionTypes.TERM,
-          term: DF.variable(inVar),
-        },
-        distinct: false,
-        variable: DF.variable(outVar),
-      };
+      return AF.createBoundAggregate(
+        DF.variable(outVar),
+        aggregator,
+        AF.createTermExpression(DF.variable(inVar)),
+        false,
+      );
     };
 
     it('should be able to count', async() => {

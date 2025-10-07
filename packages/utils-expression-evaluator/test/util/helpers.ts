@@ -2,7 +2,8 @@ import {
   ActorExpressionEvaluatorFactoryDefault,
 } from '@comunica/actor-expression-evaluator-factory-default';
 import { InternalEvaluator } from '@comunica/actor-expression-evaluator-factory-default/lib/InternalEvaluator';
-import { Algebra } from '@comunica/algebra-sparql-comunica';
+import type { Algebra } from '@comunica/algebra-sparql-comunica';
+import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type {
   ActorExpressionEvaluatorFactory,
   IActorExpressionEvaluatorFactoryArgs,
@@ -21,30 +22,15 @@ import { DataFactory } from 'rdf-data-factory';
 import * as Eval from '../../lib/index';
 
 export const DF = new DataFactory();
-
 export const BF = new BindingsFactory(DF);
+const AF = new AlgebraFactory(DF);
 
 export function makeAggregate(aggregator: string, distinct = false, separator?: string, wildcard = false):
 Algebra.AggregateExpression {
   const inner: Algebra.Expression = wildcard ?
-      {
-        type: Algebra.Types.EXPRESSION,
-        expressionType: Algebra.ExpressionTypes.WILDCARD,
-        wildcard: { type: 'wildcard' },
-      } :
-      {
-        type: Algebra.Types.EXPRESSION,
-        expressionType: Algebra.ExpressionTypes.TERM,
-        term: DF.variable('x'),
-      };
-  return {
-    type: Algebra.Types.EXPRESSION,
-    expressionType: Algebra.ExpressionTypes.AGGREGATE,
-    aggregator: <any>aggregator,
-    distinct,
-    separator,
-    expression: inner,
-  };
+    AF.createWildcardExpression() :
+    AF.createTermExpression(DF.variable('x'));
+  return AF.createAggregateExpression(aggregator, inner, distinct, separator);
 }
 
 export function int(value: string): RDF.Term {

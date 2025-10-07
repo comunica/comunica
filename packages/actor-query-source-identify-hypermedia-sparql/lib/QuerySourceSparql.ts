@@ -151,7 +151,7 @@ export class QuerySourceSparql implements IQuerySource {
     return promise;
   }
 
-  public queryVoid(operation: Algebra.Update, context: IActionContext): Promise<void> {
+  public queryVoid(operation: Algebra.Operation, context: IActionContext): Promise<void> {
     this.lastSourceContext = this.context.merge(context);
     const promise = this.endpointFetcher.fetchUpdate(
       this.url,

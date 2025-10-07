@@ -1,4 +1,3 @@
-import type { KnownAlgebra } from '@comunica/algebra-sparql-comunica';
 import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type {
   IActionOptimizeQueryOperation,
@@ -37,27 +36,23 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
 
     // Collect all operations with source types
     // Only consider unions of patterns or alts of links, since these are created during exhaustive source assignment.
-    const collectedOperations: (KnownAlgebra.Pattern | KnownAlgebra.Link)[] = [];
-    // eslint-disable-next-line ts/no-this-alias
-    const self = this;
-
-    Algebra.recurseOperationSubReplace(operation, {
+    const collectedOperations: (Algebra.Pattern | Algebra.Link)[] = [];
+    Algebra.recurseOperationReplace(operation, {
       [Algebra.Types.UNION]: { preVisitor: (subOperation) => {
-        self.collectMultiOperationInputs(subOperation.input, collectedOperations, Algebra.Types.PATTERN);
-        return { continue: true };
+        this.collectMultiOperationInputs(subOperation.input, collectedOperations, Algebra.Types.PATTERN);
+        return {};
+      } },
+      [Algebra.Types.ALT]: { preVisitor: (subOperation) => {
+        this.collectMultiOperationInputs(subOperation.input, collectedOperations, Algebra.Types.LINK);
+        return { continue: false };
       } },
       [Algebra.Types.SERVICE]: { preVisitor: () => ({ continue: false }) },
-    }, {
-      [Algebra.Types.PROPERTY_PATH_SYMBOL]: { [Algebra.PropertyPathSymbolTypes.ALT]: { preVisitor: (subOperation) => {
-        self.collectMultiOperationInputs(subOperation.input, collectedOperations, Algebra.Types.PROPERTY_PATH_SYMBOL);
-        return { continue: false };
-      } }},
     });
 
     // Determine in an async manner whether or not these sources return non-empty results
     const emptyOperations: Set<Algebra.Operation> = new Set();
     await Promise.all(collectedOperations.map(async(collectedOperation) => {
-      const checkOperation = collectedOperation.type === Algebra.Types.PROPERTY_PATH_SYMBOL ?
+      const checkOperation = collectedOperation.type === Algebra.Types.LINK ?
         algebraFactory.createPattern(dataFactory.variable('?s'), collectedOperation.iri, dataFactory.variable('?o')) :
         collectedOperation;
       if (!await this.hasSourceResults(
@@ -74,22 +69,16 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     if (emptyOperations.size > 0) {
       this.logDebug(action.context, `Pruning ${emptyOperations.size} source-specific operations`);
       // Rewrite operations by removing the empty children
-      operation = Algebra.mapOperationSubReplace<'unsafe', typeof operation>(operation, {
-        [Algebra.Types.UNION]: { transform: subOperation =>
-          self.mapMultiOperation(subOperation, emptyOperations, children => algebraFactory.createUnion(children)) },
-      }, {
-        [Algebra.Types.PROPERTY_PATH_SYMBOL]: { [Algebra.PropertyPathSymbolTypes.ALT]: { transform: subOperation =>
-          self.mapMultiOperation(subOperation, emptyOperations, children => algebraFactory.createAlt(children)) },
-        },
-      });
-
-      // Identify and remove operations that have become empty now due to missing variables
-      // TODO: @RT why do we have 2 manipulations back to back? (NOTE: our transformer will first transform children!)
-      //  (that's why the preVisitor exists, it will ask whether you want to reverse deeper.
       operation = Algebra.mapOperationReplace<'unsafe', typeof operation>(operation, {
+        [Algebra.Types.UNION]: { transform: (subOperation, origOp) =>
+          this.mapMultiOperation(subOperation, origOp, emptyOperations, children =>
+            algebraFactory.createUnion(children)) },
+        [Algebra.Types.ALT]: { transform: (subOperation, origOp) =>
+          this.mapMultiOperation(subOperation, origOp, emptyOperations, children =>
+            algebraFactory.createAlt(children)) },
+
+        // Remove operations that have become empty now due to missing variables
         [Algebra.Types.PROJECT]: {
-          preVisitor: subOperation =>
-            ({ continue: !ActorOptimizeQueryOperationPruneEmptySourceOperations.hasEmptyOperation(subOperation) }),
           transform: (subOperation) => {
             // Remove projections that have become empty now due to missing variables
             if (ActorOptimizeQueryOperationPruneEmptySourceOperations.hasEmptyOperation(subOperation)) {
@@ -99,7 +88,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
           },
         },
         [Algebra.Types.LEFT_JOIN]: { transform: (subOperation) => {
-        // Remove left joins with empty right operation
+          // Remove left joins with empty right operation
           if (ActorOptimizeQueryOperationPruneEmptySourceOperations.hasEmptyOperation(subOperation.input[1])) {
             return subOperation.input[0];
           }
@@ -116,28 +105,30 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     // But if we find a union with multiple children,
     // *all* of the children must be empty before the full operation is considered empty.
     let emptyOperation = false;
-    Algebra.recurseOperationSubReplace(operation, {
-      [Algebra.Types.UNION]: { preVisitor: (subOperation) => {
-        if (subOperation.input.every(subSubOperation => ActorOptimizeQueryOperationPruneEmptySourceOperations
+    Algebra.recurseOperationReplace(operation, {
+      [Algebra.Types.UNION]: { preVisitor: (unionOp) => {
+        if (unionOp.input.every(subSubOperation => ActorOptimizeQueryOperationPruneEmptySourceOperations
           .hasEmptyOperation(subSubOperation))) {
           emptyOperation = true;
+          return { shortcut: true };
         }
         return { continue: false };
       } },
-      [Algebra.Types.LEFT_JOIN]: { preVisitor: (subOperation) => {
+      [Algebra.Types.LEFT_JOIN]: { preVisitor: (leftJoinOp) => {
         // Only recurse into left part of left-join
-        if (ActorOptimizeQueryOperationPruneEmptySourceOperations.hasEmptyOperation(subOperation.input[0])) {
+        if (ActorOptimizeQueryOperationPruneEmptySourceOperations.hasEmptyOperation(leftJoinOp.input[0])) {
           emptyOperation = true;
+          return { shortcut: true };
         }
         return { continue: false };
       } },
-    }, {
-      [Algebra.Types.PROPERTY_PATH_SYMBOL]: { [Algebra.PropertyPathSymbolTypes.ALT]: { preVisitor: (subOperation) => {
-        if (subOperation.input.length === 0) {
+      [Algebra.Types.ALT]: { preVisitor: (altOp) => {
+        if (altOp.input.length === 0) {
           emptyOperation = true;
+          return { shortcut: true };
         }
         return { continue: false };
-      } }},
+      } },
     });
     return emptyOperation;
   }
@@ -148,44 +139,37 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     inputType: (Algebra.Pattern | Algebra.Link)['type'],
   ): void {
     for (const input of inputs) {
-      if (getOperationSource(input)) {
-        if (inputType === Algebra.Types.PROPERTY_PATH_SYMBOL) {
-          if (Algebra.isKnownOperationSub(
-            input,
-            Algebra.Types.PROPERTY_PATH_SYMBOL,
-            Algebra.PropertyPathSymbolTypes.LINK,
-          )) {
-            collectedOperations.push(input);
-          }
-        } else if (Algebra.isKnownOperation(input, inputType)) {
-          collectedOperations.push(input);
-        }
+      if (getOperationSource(input) && Algebra.isKnownOperation(input, inputType)) {
+        collectedOperations.push(input);
       }
     }
   }
 
   protected mapMultiOperation<O extends Algebra.Union | Algebra.Alt>(
-    operation: O,
+    operationCopy: O,
+    origOp: O,
     emptyOperations: Set<Algebra.Operation>,
     multiOperationFactory: (input: O['input']) => Algebra.Operation,
-  ): {
-      result: Algebra.Operation;
-      recurse: boolean;
-    } {
+  ): Algebra.Operation {
     // Determine which operations return non-empty results
-    const nonEmptyInputs = operation.input.filter(input => !emptyOperations.has(input));
+    const nonEmptyInputs: Algebra.Operation[] = [];
+    for (const [ idx, input ] of operationCopy.input.entries()) {
+      if (!emptyOperations.has(origOp.input[idx])) {
+        nonEmptyInputs.push(input);
+      }
+    }
 
     // Remove empty operations
-    if (nonEmptyInputs.length === operation.input.length) {
-      return { result: operation, recurse: true };
+    if (nonEmptyInputs.length === operationCopy.input.length) {
+      return operationCopy;
     }
     if (nonEmptyInputs.length === 0) {
-      return { result: multiOperationFactory([]), recurse: false };
+      return multiOperationFactory([]);
     }
     if (nonEmptyInputs.length === 1) {
-      return { result: nonEmptyInputs[0], recurse: true };
+      return nonEmptyInputs[0];
     }
-    return { result: multiOperationFactory(nonEmptyInputs), recurse: true };
+    return multiOperationFactory(nonEmptyInputs);
   }
 
   /**

@@ -66,18 +66,26 @@ export class ActorQueryOperationSource extends ActorQueryOperation {
       };
     }
 
-    if (Algebra.isKnownOperation(action.operation, Algebra.Types.ASK)) {
-      return {
-        type: 'boolean',
-        execute: () => sourceWrapper.source.queryBoolean(<Algebra.Ask>action.operation, mergedContext),
-      };
-    }
-    if (Algebra.isKnownOperation(action.operation, Algebra.Types.COMPOSITE_UPDATE) ||
-      Algebra.isKnownOperation(action.operation, Algebra.Types.UPDATE)) {
-      return {
-        type: 'void',
-        execute: () => sourceWrapper.source.queryVoid(<Algebra.Update>action.operation, mergedContext),
-      };
+    // eslint-disable-next-line ts/switch-exhaustiveness-check
+    switch (action.operation.type) {
+      case Algebra.Types.ASK:
+        return {
+          type: 'boolean',
+          execute: () => sourceWrapper.source.queryBoolean(<Algebra.Ask>action.operation, mergedContext),
+        };
+      case Algebra.Types.COMPOSITE_UPDATE:
+      case Algebra.Types.DELETE_INSERT:
+      case Algebra.Types.LOAD:
+      case Algebra.Types.CLEAR:
+      case Algebra.Types.CREATE:
+      case Algebra.Types.DROP:
+      case Algebra.Types.ADD:
+      case Algebra.Types.MOVE:
+      case Algebra.Types.COPY:
+        return {
+          type: 'void',
+          execute: () => sourceWrapper.source.queryVoid(action.operation, mergedContext),
+        };
     }
 
     const bindingsStream = sourceWrapper.source.queryBindings(action.operation, mergedContext);

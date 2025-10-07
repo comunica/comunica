@@ -1,4 +1,4 @@
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
+import { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperationTypedMediated,
@@ -13,7 +13,7 @@ import { getSafeVoid, testReadOnly } from '@comunica/utils-query-operation';
 export class ActorQueryOperationUpdateCompositeUpdate
   extends ActorQueryOperationTypedMediated<Algebra.CompositeUpdate> {
   public constructor(args: IActorQueryOperationTypedMediatedArgs) {
-    super(args, 'compositeupdate');
+    super(args, Algebra.Types.COMPOSITE_UPDATE);
   }
 
   public async testOperation(

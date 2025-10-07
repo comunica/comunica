@@ -11,7 +11,7 @@ import { getSafeBindings } from '@comunica/utils-query-operation';
  */
 export class ActorQueryOperationPathNps extends ActorAbstractPath {
   public constructor(args: IActorQueryOperationTypedMediatedArgs) {
-    super(args, Algebra.PropertyPathSymbolTypes.NPS);
+    super(args, Algebra.Types.NPS);
   }
 
   public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryOperationResult> {

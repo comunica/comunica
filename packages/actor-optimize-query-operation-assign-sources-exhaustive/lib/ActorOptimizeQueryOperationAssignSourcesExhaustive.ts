@@ -74,7 +74,7 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
   ): Algebra.Operation {
     // eslint-disable-next-line ts/no-this-alias
     const self = this;
-    return Algebra.mapOperationSubReplace<'unsafe', typeof operation>(operation, {
+    return Algebra.mapOperationReplace<'unsafe', typeof operation>(operation, {
       [Algebra.Types.PATTERN]: {
         preVisitor: () => ({ continue: false }),
         transform: (patternOp) => {
@@ -95,38 +95,33 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
           constructOp.template,
         ),
       },
-    }, {
-      [Algebra.Types.PROPERTY_PATH_SYMBOL]: {
-        [Algebra.PropertyPathSymbolTypes.LINK]: {
-          preVisitor: () => ({ continue: false }),
-          transform: (linkOp) => {
-            if (sources.length === 1) {
-              return assignOperationSource(linkOp, sources[0]);
-            }
-            return factory.createAlt(sources
-              .map(source => assignOperationSource(linkOp, source)));
-          },
-        },
-        [Algebra.PropertyPathSymbolTypes.NPS]: {
-          preVisitor: () => ({ continue: false }),
-          transform: (npsOp) => {
-            if (sources.length === 1) {
-              return assignOperationSource(npsOp, sources[0]);
-            }
-            return factory.createAlt(sources
-              .map(source => assignOperationSource(npsOp, source)));
-          },
+      [Algebra.Types.LINK]: {
+        preVisitor: () => ({ continue: false }),
+        transform: (linkOp) => {
+          if (sources.length === 1) {
+            return assignOperationSource(linkOp, sources[0]);
+          }
+          return factory.createAlt(sources
+            .map(source => assignOperationSource(linkOp, source)));
         },
       },
-      [Algebra.Types.UPDATE]: {
-        [Algebra.UpdateTypes.DELETE_INSERT]: {
-          preVisitor: () => ({ continue: false }),
-          transform: delInsOp => factory.createDeleteInsert(
-            delInsOp.delete,
-            delInsOp.insert,
-            delInsOp.where ? self.assignExhaustive(factory, delInsOp.where, sources) : undefined,
-          ),
+      [Algebra.Types.NPS]: {
+        preVisitor: () => ({ continue: false }),
+        transform: (npsOp) => {
+          if (sources.length === 1) {
+            return assignOperationSource(npsOp, sources[0]);
+          }
+          return factory.createAlt(sources
+            .map(source => assignOperationSource(npsOp, source)));
         },
+      },
+      [Algebra.Types.DELETE_INSERT]: {
+        preVisitor: () => ({ continue: false }),
+        transform: delInsOp => factory.createDeleteInsert(
+          delInsOp.delete,
+          delInsOp.insert,
+          delInsOp.where ? self.assignExhaustive(factory, delInsOp.where, sources) : undefined,
+        ),
       },
     });
   }

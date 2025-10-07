@@ -16,9 +16,11 @@ import { ArrayIterator, UnionIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationLeftJoin } from '../lib';
 import '@comunica/utils-jest';
+import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
+const AF = new AlgebraFactory(DF);
 
 describe('ActorQueryOperationLeftJoin', () => {
   let bus: any;
@@ -131,11 +133,7 @@ describe('ActorQueryOperationLeftJoin', () => {
     });
 
     it('should correctly handle truthy expressions', async() => {
-      const expression = {
-        expressionType: 'term',
-        term: DF.literal('nonemptystring'),
-        type: 'expression',
-      };
+      const expression = AF.createTermExpression(DF.literal('nonemptystring'));
       const op: any = { operation: { type: 'leftjoin', input: [{}, {}], expression }, context };
       const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.bindingsStream).toEqualBindingsStream([
@@ -191,11 +189,7 @@ describe('ActorQueryOperationLeftJoin', () => {
     });
 
     it('should correctly handle falsy expressions', async() => {
-      const expression = {
-        expressionType: 'term',
-        term: DF.literal(''),
-        type: 'expression',
-      };
+      const expression = AF.createTermExpression(DF.literal(''));
       const op: any = { operation: { type: 'leftjoin', input: [{}, {}], expression }, context };
       const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.bindingsStream).toEqualBindingsStream([]);
@@ -211,23 +205,10 @@ describe('ActorQueryOperationLeftJoin', () => {
 
     it('should correctly handle erroring expressions', async() => {
       const logWarnSpy = jest.spyOn(<any> actor, 'logWarn');
-      const expression = {
-        type: 'expression',
-        expressionType: 'operator',
-        operator: '+',
-        args: [
-          {
-            type: 'expression',
-            expressionType: 'term',
-            term: DF.variable('a'),
-          },
-          {
-            type: 'expression',
-            expressionType: 'term',
-            term: DF.variable('a'),
-          },
-        ],
-      };
+      const expression = AF.createOperatorExpression(
+        '+',
+        [ AF.createTermExpression(DF.variable('a')), AF.createTermExpression(DF.variable('a')) ],
+      );
       const op: any = { operation: { type: 'leftjoin', input: [{}, {}], expression }, context };
       const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.bindingsStream).toEqualBindingsStream([]);
@@ -259,23 +240,10 @@ describe('ActorQueryOperationLeftJoin', () => {
       // eslint-disable-next-line jest/prefer-spy-on
       (<any> sparqlee).isExpressionError = jest.fn(() => false);
 
-      const expression = {
-        type: 'expression',
-        expressionType: 'operator',
-        operator: '+',
-        args: [
-          {
-            type: 'expression',
-            expressionType: 'term',
-            term: DF.variable('a'),
-          },
-          {
-            type: 'expression',
-            expressionType: 'term',
-            term: DF.variable('a'),
-          },
-        ],
-      };
+      const expression = AF.createOperatorExpression(
+        '+',
+        [ AF.createTermExpression(DF.variable('a')), AF.createTermExpression(DF.variable('a')) ],
+      );
       const op: any = { operation: { type: 'leftjoin', input: [{}, {}], expression }, context };
       const output: IQueryOperationResultBindings = <IQueryOperationResultBindings> await actor.run(op, undefined);
       await new Promise<void>((resolve) => {

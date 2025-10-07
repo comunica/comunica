@@ -1,4 +1,4 @@
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
+import { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperationTypedMediated,
@@ -28,7 +28,7 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
   public readonly mediatorRdfMetadataAccumulate: MediatorRdfMetadataAccumulate;
 
   public constructor(args: IActorQueryOperationUnionArgs) {
-    super(args, 'union');
+    super(args, Algebra.Types.UNION);
   }
 
   /**

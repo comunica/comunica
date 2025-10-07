@@ -5,8 +5,10 @@ import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryParseSparql } from '..';
 import '@comunica/utils-jest';
+import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 
 const DF = new DataFactory();
+const AF = new AlgebraFactory(DF);
 
 describe('ActorQueryParseSparql', () => {
   let bus: any;
@@ -68,30 +70,13 @@ describe('ActorQueryParseSparql', () => {
 
     it('should run', async() => {
       const result = await actor.run({ query: 'SELECT * WHERE { ?a a ?b }', context });
-      expect(result).toMatchObject(
-        {
-          operation: {
-            input: { patterns: [
-              {
-                graph: { value: '' },
-                object: { value: 'b' },
-                predicate: { value: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type' },
-                subject: { value: 'a' },
-                type: 'pattern',
-              },
-            ], type: 'bgp' },
-            type: 'project',
-            variables: [
-              {
-                value: 'a',
-              },
-              {
-                value: 'b',
-              },
-            ],
-          },
-        },
-      );
+      expect(result).toMatchObject({
+        operation: AF.createProject(AF.createBgp([ AF.createPattern(
+          DF.variable('a'),
+          DF.namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'),
+          DF.variable('b'),
+        ) ]), [ DF.variable('a'), DF.variable('b') ]),
+      });
     });
 
     it('should run for a SPARQL-star query', async() => {
@@ -105,18 +90,11 @@ describe('ActorQueryParseSparql', () => {
         context,
       });
       expect(result).toMatchObject({
-        operation: {
-          insert: [
-            {
-              graph: { value: '' },
-              object: { value: 'A' },
-              predicate: { value: 'http://ex.org/p' },
-              subject: { value: 'http://example/egbook' },
-              type: 'pattern',
-            },
-          ],
-          type: 'deleteinsert',
-        },
+        operation: AF.createDeleteInsert(undefined, [ AF.createPattern(
+          DF.namedNode('http://example/egbook'),
+          DF.namedNode('http://ex.org/p'),
+          DF.literal('A'),
+        ) ]),
       });
     });
 
@@ -127,26 +105,11 @@ describe('ActorQueryParseSparql', () => {
       });
       expect(result).toMatchObject({
         baseIRI: 'http://example.org/book/',
-        operation: {
-          input: { patterns: [
-            {
-              graph: { value: '' },
-              object: { value: 'b' },
-              predicate: { value: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type' },
-              subject: { value: 'a' },
-              type: 'pattern',
-            },
-          ], type: 'bgp' },
-          type: 'project',
-          variables: [
-            {
-              value: 'a',
-            },
-            {
-              value: 'b',
-            },
-          ],
-        },
+        operation: AF.createProject(AF.createBgp([ AF.createPattern(
+          DF.variable('a'),
+          DF.namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'),
+          DF.variable('b'),
+        ) ]), [ DF.variable('a'), DF.variable('b') ]),
       });
     });
   });

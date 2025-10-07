@@ -1,4 +1,4 @@
-import { Algebra } from '@comunica/algebra-sparql-comunica';
+import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type {
   IActionBindingsAggregatorFactory,
   IActorBindingsAggregatorFactoryOutput,
@@ -74,6 +74,7 @@ import { QueryEngineFactory } from '../lib';
 
 const queryEngineFactory = new QueryEngineFactory();
 const DF = new DataFactory();
+const AF = new AlgebraFactory(DF);
 
 describe('System test: mediators', () => {
   let runner: Runner;
@@ -90,17 +91,7 @@ describe('System test: mediators', () => {
     'bindings-aggregator-factory',
     ':query-operation/actors#group',
     'mediatorBindingsAggregatorFactory',
-    { expr: {
-      type: Algebra.Types.EXPRESSION,
-      expressionType: Algebra.ExpressionTypes.AGGREGATE,
-      aggregator: 'avg',
-      distinct: false,
-      expression: {
-        type: Algebra.Types.EXPRESSION,
-        expressionType: Algebra.ExpressionTypes.TERM,
-        term: DF.variable('x'),
-      },
-    }},
+    { expr: AF.createAggregateExpression('avg', AF.createTermExpression(DF.variable('x')), false) },
       `Creation of Aggregator failed: none of the configured actors were able to handle avg`,
   );
   addTest<IActionContextPreprocess, IActorContextPreprocessOutput>(

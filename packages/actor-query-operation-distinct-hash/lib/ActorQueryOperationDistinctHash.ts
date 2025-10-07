@@ -1,4 +1,4 @@
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
+import { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { MediatorHashBindings } from '@comunica/bus-hash-bindings';
 import type { MediatorHashQuads } from '@comunica/bus-hash-quads';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
@@ -27,7 +27,7 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
   public readonly mediatorHashQuads: MediatorHashQuads;
 
   public constructor(args: IActorQueryOperationDistinctHashArgs) {
-    super(args, 'distinct');
+    super(args, Algebra.Types.DISTINCT);
   }
 
   public async testOperation(_operation: Algebra.Distinct, _context: IActionContext): Promise<TestResult<IActorTest>> {

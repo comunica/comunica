@@ -161,7 +161,7 @@ export class QuerySourceRdfJs implements IQuerySource {
   }
 
   public queryVoid(
-    _operation: Algebra.Update,
+    _operation: Algebra.Operation,
     _context: IActionContext,
   ): Promise<void> {
     throw new Error('queryVoid is not implemented in QuerySourceRdfJs');

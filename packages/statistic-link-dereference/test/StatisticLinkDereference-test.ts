@@ -25,7 +25,7 @@ class MockQuerySource implements IQuerySource {
 
   public queryQuads: (operation: Alg.Operation, context: IActionContext) => AsyncIterator<Quad>;
   public queryBoolean: (operation: Alg.Ask, context: IActionContext) => Promise<boolean>;
-  public queryVoid: (operation: Alg.Update, context: IActionContext) => Promise<void>;
+  public queryVoid: (operation: Alg.Operation, context: IActionContext) => Promise<void>;
   public toString: () => string;
 }
 

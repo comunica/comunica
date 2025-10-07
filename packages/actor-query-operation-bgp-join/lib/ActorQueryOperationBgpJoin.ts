@@ -1,5 +1,4 @@
-import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
+import { AlgebraFactory, Algebra } from '@comunica/algebra-sparql-comunica';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
@@ -13,7 +12,7 @@ import type { ComunicaDataFactory, IActionContext, IQueryOperationResult } from 
  */
 export class ActorQueryOperationBgpJoin extends ActorQueryOperationTypedMediated<Algebra.Bgp> {
   public constructor(args: IActorQueryOperationTypedMediatedArgs) {
-    super(args, 'bgp');
+    super(args, Algebra.Types.BGP);
   }
 
   public async testOperation(_operation: Algebra.Bgp, _context: IActionContext): Promise<TestResult<IActorTest>> {

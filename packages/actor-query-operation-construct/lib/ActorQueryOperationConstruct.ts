@@ -1,5 +1,4 @@
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
-import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
+import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperationTypedMediated,
@@ -25,7 +24,7 @@ import { BindingsToQuadsIterator } from './BindingsToQuadsIterator';
  */
 export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediated<Algebra.Construct> {
   public constructor(args: IActorQueryOperationTypedMediatedArgs) {
-    super(args, 'construct');
+    super(args, Algebra.Types.CONSTRUCT);
   }
 
   /**

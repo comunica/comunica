@@ -1,5 +1,6 @@
 import { ActorFunctionFactoryTermAddition } from '@comunica/actor-function-factory-term-addition';
 import { ActorFunctionFactoryTermStrLen } from '@comunica/actor-function-factory-term-str-len';
+import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type {
   MediatorExpressionEvaluatorFactory,
 } from '@comunica/bus-expression-evaluator-factory';
@@ -21,6 +22,7 @@ import { ActorQueryOperationExtend } from '../lib';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF, {});
+const AF = new AlgebraFactory(DF);
 
 describe('ActorQueryOperationExtend', () => {
   let bus: any;
@@ -28,53 +30,19 @@ describe('ActorQueryOperationExtend', () => {
   let mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
   let context: IActionContext;
 
-  const example = (expression: any) => ({
-    type: 'extend',
-    input: {
-      type: 'bgp',
-      patterns: [{
-        subject: { value: 's' },
-        predicate: { value: 'p' },
-        object: { value: 'o' },
-        graph: { value: '' },
-        type: 'pattern',
-      }],
-    },
-    variable: { termType: 'Variable', value: 'l' },
+  const example = (expression: any) => AF.createExtend(
+    AF.createBgp([ AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')) ]),
+    DF.variable('l'),
     expression,
-  });
+  );
 
-  const defaultExpression = {
-    type: 'expression',
-    expressionType: 'operator',
-    operator: 'strlen',
-    args: [
-      {
-        type: 'expression',
-        expressionType: 'term',
-        term: { termType: 'Variable', value: 'a' },
-      },
-    ],
-  };
+  const defaultExpression = AF.createOperatorExpression('strlen', [ AF.createTermExpression(DF.variable('a')) ]);
 
   // We sum 2 strings, which should error
-  const faultyExpression = {
-    type: 'expression',
-    expressionType: 'operator',
-    operator: '+',
-    args: [
-      {
-        type: 'expression',
-        expressionType: 'term',
-        term: { termType: 'Variable', value: 'a' },
-      },
-      {
-        type: 'expression',
-        expressionType: 'term',
-        term: { termType: 'Variable', value: 'a' },
-      },
-    ],
-  };
+  const faultyExpression = AF.createOperatorExpression(
+    '+',
+    [ AF.createTermExpression(DF.variable('a')), AF.createTermExpression(DF.variable('a')) ],
+  );
 
   const input = [
     BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
@@ -148,25 +116,11 @@ describe('ActorQueryOperationExtend', () => {
 
     it('should test but not run on unsupported operators', async() => {
       const op: any = {
-        operation: {
-          type: 'extend',
-          input: {
-            type: 'bgp',
-            patterns: [{
-              subject: { value: 's' },
-              predicate: { value: 'p' },
-              object: { value: 'o' },
-              graph: { value: '' },
-              type: 'pattern',
-            }],
-          },
-          variable: { termType: 'Variable', value: 'l' },
-          expression: {
-            args: [],
-            expressionType: 'operator',
-            operator: 'DUMMY',
-          },
-        },
+        operation: AF.createExtend(
+          AF.createBgp([ AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')) ]),
+          DF.variable('l'),
+          AF.createOperatorExpression('DUMMY', []),
+        ),
         context,
       };
       await expect(actor.test(op)).resolves.toPassTestVoid();

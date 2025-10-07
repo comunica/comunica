@@ -1,4 +1,4 @@
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
+import { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { MediatorHashBindings } from '@comunica/bus-hash-bindings';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
@@ -23,7 +23,7 @@ export class ActorQueryOperationReducedHash extends ActorQueryOperationTypedMedi
   public readonly cacheSize: number;
 
   public constructor(args: IActorQueryOperationReducedHashArgs) {
-    super(args, 'reduced');
+    super(args, Algebra.Types.REDUCED);
   }
 
   public async testOperation(_operation: Algebra.Reduced, _context: IActionContext): Promise<TestResult<IActorTest>> {

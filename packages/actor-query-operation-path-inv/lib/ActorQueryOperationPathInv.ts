@@ -9,7 +9,7 @@ import type { ComunicaDataFactory, IActionContext, IQueryOperationResult } from 
  */
 export class ActorQueryOperationPathInv extends ActorAbstractPath {
   public constructor(args: IActorQueryOperationTypedMediatedArgs) {
-    super(args, Algebra.PropertyPathSymbolTypes.INV);
+    super(args, Algebra.Types.INV);
   }
 
   public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryOperationResult> {

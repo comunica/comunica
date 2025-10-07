@@ -20,7 +20,7 @@ export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated
   private readonly mediatorTermComparatorFactory: MediatorTermComparatorFactory;
 
   public constructor(args: IActorQueryOperationOrderBySparqleeArgs) {
-    super(args, 'orderby');
+    super(args, Algebra.Types.ORDER_BY);
     this.window = args.window ?? Number.POSITIVE_INFINITY;
     this.mediatorExpressionEvaluatorFactory = args.mediatorExpressionEvaluatorFactory;
     this.mediatorTermComparatorFactory = args.mediatorTermComparatorFactory;

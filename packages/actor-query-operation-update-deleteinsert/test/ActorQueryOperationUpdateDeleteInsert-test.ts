@@ -11,9 +11,9 @@ import { ActorQueryOperationUpdateDeleteInsert } from '../lib/ActorQueryOperatio
 import 'jest-rdf';
 import '@comunica/utils-jest';
 
-const factory = new AlgebraFactory();
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
+const AF = new AlgebraFactory(DF);
 
 const mediatorMergeBindingsContext: any = {
   mediate: () => ({}),
@@ -115,13 +115,11 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
     });
 
     it('should run with insert', async() => {
-      const op: any = {
-        operation: {
-          type: 'deleteinsert',
-          insert: [
-            factory.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
-          ],
-        },
+      const op = {
+        operation: AF.createDeleteInsert(
+          undefined,
+          [ AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')) ],
+        ),
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
@@ -134,13 +132,10 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
     });
 
     it('should run with delete', async() => {
-      const op: any = {
-        operation: {
-          type: 'deleteinsert',
-          delete: [
-            factory.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
-          ],
-        },
+      const op = {
+        operation: AF.createDeleteInsert([
+          AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
+        ]),
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
@@ -153,16 +148,11 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
     });
 
     it('should run with insert and delete', async() => {
-      const op: any = {
-        operation: {
-          type: 'deleteinsert',
-          insert: [
-            factory.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
-          ],
-          delete: [
-            factory.createPattern(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
-          ],
-        },
+      const op = {
+        operation: AF.createDeleteInsert(
+          [ AF.createPattern(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')) ],
+          [ AF.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')) ],
+        ),
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
@@ -177,14 +167,12 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
     });
 
     it('should run with insert and where', async() => {
-      const op: any = {
-        operation: {
-          type: 'deleteinsert',
-          insert: [
-            factory.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.variable('a')),
-          ],
-          where: factory.createBgp([]), // Dummy operation
-        },
+      const op = {
+        operation: AF.createDeleteInsert(
+          undefined,
+          [ AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.variable('a')) ],
+          AF.createBgp([]), // Dummy operation
+        ),
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
@@ -202,11 +190,12 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
     it('should run with delete and where', async() => {
       const op: any = {
         operation: {
-          type: 'deleteinsert',
+          type: 'update',
+          subType: 'deleteinsert',
           delete: [
-            factory.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.variable('a')),
+            AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.variable('a')),
           ],
-          where: factory.createBgp([]), // Dummy operation
+          where: AF.createBgp([]), // Dummy operation
         },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
@@ -223,17 +212,12 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
     });
 
     it('should run with insert, delete and where', async() => {
-      const op: any = {
-        operation: {
-          type: 'deleteinsert',
-          insert: [
-            factory.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.variable('a')),
-          ],
-          delete: [
-            factory.createPattern(DF.namedNode('s2'), DF.namedNode('p2'), DF.variable('a')),
-          ],
-          where: factory.createBgp([]), // Dummy operation
-        },
+      const op = {
+        operation: AF.createDeleteInsert(
+          [ AF.createPattern(DF.namedNode('s2'), DF.namedNode('p2'), DF.variable('a')) ],
+          [ AF.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.variable('a')) ],
+          AF.createBgp([]), // Dummy operation
+        ),
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
@@ -259,10 +243,8 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
         execute: () => Promise.reject(error),
       });
 
-      const op: any = {
-        operation: {
-          type: 'deleteinsert',
-        },
+      const op = {
+        operation: AF.createDeleteInsert(),
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
@@ -279,14 +261,10 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
         variables: [ '?a' ],
       });
 
-      const op: any = {
-        operation: {
-          type: 'deleteinsert',
-          insert: [
-            factory.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.variable('a')),
-          ],
-          where: factory.createBgp([]), // Dummy operation
-        },
+      const op = {
+        operation: AF.createDeleteInsert(undefined, [
+          AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.variable('a')),
+        ], AF.createBgp([])), // Dummy operation
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
@@ -305,14 +283,10 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
         variables: [ '?a' ],
       });
 
-      const op: any = {
-        operation: {
-          type: 'deleteinsert',
-          delete: [
-            factory.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.variable('a')),
-          ],
-          where: factory.createBgp([]), // Dummy operation
-        },
+      const op = {
+        operation: AF.createDeleteInsert([
+          AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.variable('a')),
+        ], undefined, AF.createBgp([])), // Dummy operation
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
@@ -331,17 +305,12 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
         variables: [ '?a' ],
       });
 
-      const op: any = {
-        operation: {
-          type: 'deleteinsert',
-          insert: [
-            factory.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.variable('a')),
-          ],
-          delete: [
-            factory.createPattern(DF.namedNode('s2'), DF.namedNode('p2'), DF.variable('a')),
-          ],
-          where: factory.createBgp([]), // Dummy operation
-        },
+      const op = {
+        operation: AF.createDeleteInsert(
+          [ AF.createPattern(DF.namedNode('s2'), DF.namedNode('p2'), DF.variable('a')) ],
+          [ AF.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.variable('a')) ],
+          AF.createBgp([]), // Dummy operation
+        ),
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op, undefined);

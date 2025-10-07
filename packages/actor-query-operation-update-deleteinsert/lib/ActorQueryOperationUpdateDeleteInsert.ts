@@ -1,5 +1,5 @@
 import { BindingsToQuadsIterator } from '@comunica/actor-query-operation-construct';
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
+import { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
@@ -25,7 +25,7 @@ export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTy
   protected blankNodeCounter = 0;
 
   public constructor(args: IActorQueryOperationUpdateDeleteInsertArgs) {
-    super(args, 'deleteinsert');
+    super(args, Algebra.Types.DELETE_INSERT);
   }
 
   public async testOperation(

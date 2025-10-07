@@ -30,8 +30,8 @@ export class ActorOptimizeQueryOperationRewriteAdd extends ActorOptimizeQueryOpe
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const factory = new AlgebraFactory(dataFactory);
 
-    const operation = Algebra.mapOperationSubReplace<'unsafe', typeof action.operation>(action.operation, {}, {
-      [Algebra.Types.UPDATE]: { [Algebra.UpdateTypes.ADD]: {
+    const operation = Algebra.mapOperationReplace<'unsafe', typeof action.operation>(action.operation, {
+      [Algebra.Types.ADD]: {
         preVisitor: () => ({ shortcut: true }),
         transform: (operationOriginal) => {
           // CONSTRUCT all quads from the source, and INSERT them into the destination
@@ -44,7 +44,6 @@ export class ActorOptimizeQueryOperationRewriteAdd extends ActorOptimizeQueryOpe
             factory.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'), destination),
           ], factory.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'), source));
         },
-      },
       },
     });
 
