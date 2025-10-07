@@ -1,4 +1,3 @@
-import type { KnownAlgebra } from '@comunica/algebra-sparql-comunica';
 import { toAlgebra12Builder } from '@traqula/algebra-sparql-1-2';
 import { createAlgebraContext } from '@traqula/algebra-transformations-1-2';
 import type { AlgebraIndir, ContextConfigs, Algebra } from '@traqula/algebra-transformations-1-2';
@@ -11,7 +10,7 @@ const origAccumulateGroupGraphPattern = toAlgebra12Builder.getRule('accumulateGr
 const origTranslateGraphPattern = toAlgebra12Builder.getRule('translateGraphPattern');
 
 export const accumulateGroupGraphPatternNew:
-AlgebraIndir<'accumulateGroupGraphPattern', Algebra.Operation | Lateral, [KnownAlgebra.Operation, Pattern]> = {
+AlgebraIndir<'accumulateGroupGraphPattern', Algebra.Operation | Lateral, [Algebra.Operation, Pattern]> = {
   name: 'accumulateGroupGraphPattern',
   fun: $ => (C, algebraOp, pattern) => {
     if (pattern.subType === 'lateral') {

@@ -6,3 +6,6 @@ Using a comunica package allows the monorepo to have more independent evolution 
 
 
 TODO: write more
+
+
+Many Comunica packages rely on algebra manipulations. This package serves as a common ground to what that algebra looks like. Each package is free to decide how they construct a compatible algebra Operation.

@@ -5,7 +5,6 @@ import { ActorFunctionFactoryTermAddition } from '@comunica/actor-function-facto
 import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-factory-term-equality';
 import { ActorFunctionFactoryTermIri } from '@comunica/actor-function-factory-term-iri';
 import { ActorFunctionFactoryTermStr } from '@comunica/actor-function-factory-term-str';
-import { ComunicaSparqlParser as Parser } from '@comunica/algebra-comunica-proto-extension-and-parser';
 import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
@@ -22,6 +21,7 @@ import {
   getMockMediatorExpressionEvaluatorFactory,
 } from '@comunica/utils-expression-evaluator/test/util/helpers';
 import { toAlgebra } from '@traqula/algebra-sparql-1-2';
+import { Parser } from '@traqula/parser-sparql-1-2';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationFilter } from '../lib';
