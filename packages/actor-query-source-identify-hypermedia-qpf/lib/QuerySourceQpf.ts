@@ -13,7 +13,7 @@ import type {
   MetadataBindings,
   ComunicaDataFactory,
 } from '@comunica/types';
-import type { AlgebraFactory } from '@comunica/utils-algebra';
+import {AlgebraFactory, isKnownOperation} from '@comunica/utils-algebra';
 import { Algebra } from '@comunica/utils-algebra';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
@@ -147,7 +147,7 @@ export class QuerySourceQpf implements IQuerySource {
     context: IActionContext,
     options?: IQueryBindingsOptions,
   ): BindingsStream {
-    if (!Algebra.isKnownOperation(operation, Algebra.Types.PATTERN)) {
+    if (!isKnownOperation(operation, Algebra.Types.PATTERN)) {
       throw new Error(`Attempted to pass non-pattern operation '${operation.type}' to QuerySourceQpf`);
     }
 

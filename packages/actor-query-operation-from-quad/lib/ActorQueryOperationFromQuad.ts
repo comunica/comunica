@@ -4,7 +4,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
-import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
+import { Algebra, AlgebraFactory, isKnownOperation } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 
 /**
@@ -61,10 +61,9 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
     defaultGraphs: RDF.Term[],
   ): Algebra.Operation {
     // If the operation is a BGP or Path, change the graph.
-    if ((Algebra.isKnownOperation(operation, Algebra.Types.BGP) && operation.patterns.length > 0) ||
-      Algebra.isKnownOperation(operation, Algebra.Types.PATH) ||
-      Algebra.isKnownOperation(operation, Algebra.Types.PATTERN)) {
-      if (Algebra.isKnownOperation(operation, Algebra.Types.BGP)) {
+    if ((isKnownOperation(operation, Algebra.Types.BGP) && operation.patterns.length > 0) ||
+      isKnownOperation(operation, Algebra.Types.PATH) || isKnownOperation(operation, Algebra.Types.PATTERN)) {
+      if (isKnownOperation(operation, Algebra.Types.BGP)) {
         return ActorQueryOperationFromQuad
           .joinOperations(algebraFactory, operation.patterns.map((pattern) => {
             if (pattern.graph.termType !== 'DefaultGraph') {
@@ -84,7 +83,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
       }
       const paths = defaultGraphs.map(
         (graph: RDF.Term) => {
-          if (Algebra.isKnownOperation(operation, Algebra.Types.PATH)) {
+          if (isKnownOperation(operation, Algebra.Types.PATH)) {
             return algebraFactory
               .createPath(operation.subject, operation.predicate, operation.object, graph);
           }
@@ -123,9 +122,8 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
     defaultGraphs: RDF.Term[],
   ): Algebra.Operation {
     // If the operation is a BGP or Path, change the graph.
-    if ((Algebra.isKnownOperation(operation, Algebra.Types.BGP) && operation.patterns.length > 0) ||
-      Algebra.isKnownOperation(operation, Algebra.Types.PATH) ||
-      Algebra.isKnownOperation(operation, Algebra.Types.PATTERN)) {
+    if ((isKnownOperation(operation, Algebra.Types.BGP) && operation.patterns.length > 0) ||
+      isKnownOperation(operation, Algebra.Types.PATH) || isKnownOperation(operation, Algebra.Types.PATTERN)) {
       const patternGraph: RDF.Term = operation.type === 'bgp' ? operation.patterns[0].graph : operation.graph;
       if (patternGraph.termType === 'DefaultGraph') {
         // SPARQL spec (8.2) describes that when FROM NAMED's are used without a FROM, the default graph must be empty.

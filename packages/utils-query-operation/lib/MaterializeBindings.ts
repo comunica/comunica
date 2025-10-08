@@ -1,6 +1,6 @@
 import type { Bindings } from '@comunica/types';
 import type { AlgebraFactory } from '@comunica/utils-algebra';
-import { Algebra } from '@comunica/utils-algebra';
+import { Algebra, algebraUtils } from '@comunica/utils-algebra';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import type { Variable } from 'rdf-data-factory';
@@ -66,7 +66,7 @@ export function materializeOperation(
     originalBindings: 'originalBindings' in options ? options.originalBindings : bindings,
   };
 
-  return Algebra.mapOperation<'unsafe', typeof operation>(operation, {
+  return algebraUtils.mapOperation(operation, {
     [Algebra.Types.PATH]: {
       preVisitor: () => ({ continue: false }),
       transform: pathOp =>

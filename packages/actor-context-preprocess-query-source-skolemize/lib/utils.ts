@@ -6,7 +6,7 @@ import type {
   MetadataQuads,
   QuerySourceReference,
 } from '@comunica/types';
-import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
+import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';
 import { BlankNodeScoped } from '@comunica/utils-data-factory';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -215,7 +215,7 @@ export function deskolemizeOperation<O extends Algebra.Operation>(
 ): O | undefined {
   const factory = new AlgebraFactory();
   try {
-    return Algebra.mapOperation<'unsafe', O>(operation, {
+    return <O> algebraUtils.mapOperation(operation, {
       [Algebra.Types.PATTERN]: {
         preVisitor: () => ({ continue: false }),
         transform: op => Object.assign(factory.createPattern(

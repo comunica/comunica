@@ -8,7 +8,7 @@ import type {
   IQueryOperationResult,
   IQuerySourceWrapper,
 } from '@comunica/types';
-import { Algebra } from '@comunica/utils-algebra';
+import { Algebra, algebraUtils } from '@comunica/utils-algebra';
 import { getMetadataBindings, getMetadataQuads } from '@comunica/utils-metadata';
 import { getOperationSource } from '@comunica/utils-query-operation';
 
@@ -49,7 +49,7 @@ export class ActorQueryOperationSource extends ActorQueryOperation {
     // Check if the operation is a CONSTRUCT query
     // We recurse because it may be wrapped in other operations such as SLICE and FROM
     let construct = false;
-    Algebra.visitOperation(action.operation, {
+    algebraUtils.visitOperation(action.operation, {
       [Algebra.Types.CONSTRUCT]: { preVisitor: () => {
         construct = true;
         return { shortcut: true };

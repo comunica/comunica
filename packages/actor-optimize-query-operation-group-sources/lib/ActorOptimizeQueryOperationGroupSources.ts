@@ -8,7 +8,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext, IQuerySourceWrapper } from '@comunica/types';
-import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
+import { Algebra, AlgebraFactory, isKnownOperation } from '@comunica/utils-algebra';
 import {
   assignOperationSource,
   doesShapeAcceptOperation,
@@ -88,13 +88,13 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
 
     // If we have multiple clusters, created nested multi-operations
     let multiFactoryMethod: (children: Algebra.Operation[], flatten: boolean) => Algebra.Operation;
-    if (Algebra.isKnownOperation(operation, Algebra.Types.JOIN)) {
+    if (isKnownOperation(operation, Algebra.Types.JOIN)) {
       multiFactoryMethod = algebraFactory.createJoin.bind(algebraFactory);
-    } else if (Algebra.isKnownOperation(operation, Algebra.Types.UNION)) {
+    } else if (isKnownOperation(operation, Algebra.Types.UNION)) {
       multiFactoryMethod = algebraFactory.createUnion.bind(algebraFactory);
-    } else if (Algebra.isKnownOperation(operation, Algebra.Types.ALT)) {
+    } else if (isKnownOperation(operation, Algebra.Types.ALT)) {
       multiFactoryMethod = <any> algebraFactory.createAlt.bind(algebraFactory);
-    } else if (Algebra.isKnownOperation(operation, Algebra.Types.SEQ)) {
+    } else if (isKnownOperation(operation, Algebra.Types.SEQ)) {
       multiFactoryMethod = <any> algebraFactory.createSeq.bind(algebraFactory);
     } else {
       // While LeftJoin and Minus are also multi-operations,

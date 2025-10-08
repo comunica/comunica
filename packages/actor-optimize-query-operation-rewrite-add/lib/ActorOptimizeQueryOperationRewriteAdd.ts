@@ -8,7 +8,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
-import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
+import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 
@@ -30,7 +30,7 @@ export class ActorOptimizeQueryOperationRewriteAdd extends ActorOptimizeQueryOpe
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const factory = new AlgebraFactory(dataFactory);
 
-    const operation = Algebra.mapOperation<'unsafe', typeof action.operation>(action.operation, {
+    const operation = algebraUtils.mapOperation(action.operation, {
       [Algebra.Types.ADD]: {
         preVisitor: () => ({ shortcut: true }),
         transform: (operationOriginal) => {

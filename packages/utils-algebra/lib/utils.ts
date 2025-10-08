@@ -1,6 +1,11 @@
 import type { Algebra as TraqulaAlgebra } from '@traqula/algebra-transformations-1-2';
+import { algebraUtils } from '@traqula/algebra-transformations-1-2';
 import { TransformerSubType } from '@traqula/core';
-import type { KnownOperation, Operation } from './remapping';
+import type { KnownOperation, Operation } from './Algebra';
+
+export const resolveIRI = algebraUtils.resolveIRI;
+export const objectify = algebraUtils.objectify;
+export const inScopeVariables = algebraUtils.inScopeVariables;
 
 /**
  * Type guard that checks if an operation is of a certain type known by Comunica.
@@ -24,7 +29,7 @@ export function isKnownOperation<Type extends KnownOperation['type']>(val: Opera
  */
 export function isKnownSub<
   SubType extends KnownOperation['subType'],
-Obj extends Operation,
+  Obj extends Operation,
 >(val: Obj, subType: SubType):
   val is Extract<KnownOperation, { type: Obj['type']; subType: SubType }> extends object ?
     Obj & Extract<KnownOperation, { type: Obj['type']; subType: SubType }> : Obj & { subType: SubType } {
@@ -41,7 +46,7 @@ Obj extends Operation,
  */
 export function isKnownOperationSub<
   Type extends KnownOperation['type'],
-SubType extends Extract<KnownOperation, { type: Type }>['subType'],
+  SubType extends Extract<KnownOperation, { type: Type }>['subType'],
 >(
   val: Operation,
   type: Type,
@@ -65,7 +70,15 @@ const transformer = new TransformerSubType<KnownOperation>({
   shallowKeys: [ 'metadata' ],
   ignoreKeys: [ 'metadata' ],
 });
-export const mapOperation = transformer.transformNode.bind(transformer);
-export const mapOperationSub = transformer.transformNodeSpecific.bind(transformer);
+
+export const mapOperation: (typeof transformer.transformNode<'unsafe', Operation>) = <any>
+  transformer.transformNode.bind(transformer);
+
+export const mapOperationStrict = transformer.transformNode.bind(transformer);
+
+export const mapOperationSub: (typeof transformer.transformNodeSpecific<'unsafe', Operation>) = <any>
+  transformer.transformNodeSpecific.bind(transformer);
+export const mapOperationSubStrict = transformer.transformNodeSpecific.bind(transformer);
+
 export const visitOperation = transformer.visitNode.bind(transformer);
 export const visitOperationSub = transformer.visitNodeSpecific.bind(transformer);

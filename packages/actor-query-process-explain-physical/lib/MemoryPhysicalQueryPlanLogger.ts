@@ -1,5 +1,5 @@
 import type { IPhysicalQueryPlanLogger, IPlanNode } from '@comunica/types';
-import { Algebra } from '@comunica/utils-algebra';
+import {Algebra, isKnownOperation} from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 import { termToString } from 'rdf-string';
 
@@ -165,9 +165,9 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
         data.source = (<any> operation.metadata.scopedSource).source.toString();
       }
 
-      if (Algebra.isKnownOperation(operation, Algebra.Types.PATTERN)) {
+      if (isKnownOperation(operation, Algebra.Types.PATTERN)) {
         data.pattern = this.quadToString(operation);
-      } else if (Algebra.isKnownOperation(operation, Algebra.Types.PROJECT)) {
+      } else if (isKnownOperation(operation, Algebra.Types.PROJECT)) {
         data.variables = operation.variables.map(variable => variable.value);
       }
     }

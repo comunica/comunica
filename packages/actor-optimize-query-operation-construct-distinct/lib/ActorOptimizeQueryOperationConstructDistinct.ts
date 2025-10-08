@@ -7,7 +7,7 @@ import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operat
 import { KeysInitQuery } from '@comunica/context-entries/lib/Keys';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
-import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
+import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';
 
 /**
  * A comunica Construct Distinct Optimize Query Operation Actor.
@@ -26,7 +26,7 @@ export class ActorOptimizeQueryOperationConstructDistinct extends ActorOptimizeQ
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
     const factory = new AlgebraFactory();
-    const operation = Algebra.mapOperation<'unsafe', typeof action.operation>(action.operation, {
+    const operation = algebraUtils.mapOperation(action.operation, {
       [Algebra.Types.CONSTRUCT]: {
         preVisitor: () => ({ continue: false }),
         transform: constructOp =>

@@ -13,7 +13,7 @@ import type {
   IQuerySourceWrapper,
   ComunicaDataFactory,
 } from '@comunica/types';
-import { Algebra } from '@comunica/utils-algebra';
+import { Algebra, isKnownOperation } from '@comunica/utils-algebra';
 import type { AlgebraFactory } from '@comunica/utils-algebra';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { assignOperationSource, getOperationSource, getSafeBindings } from '@comunica/utils-query-operation';
@@ -387,18 +387,15 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
    * @param operation
    */
   public getPathSources(operation: Algebra.Operation): IQuerySourceWrapper[] {
-    if (Algebra.isKnownOperation(operation, Algebra.Types.ALT) ||
-      Algebra.isKnownOperation(operation, Algebra.Types.SEQ)) {
+    if (isKnownOperation(operation, Algebra.Types.ALT) || isKnownOperation(operation, Algebra.Types.SEQ)) {
       return operation.input.flatMap(subOp => this.getPathSources(subOp));
     }
-    if (Algebra.isKnownOperation(operation, Algebra.Types.INV) ||
-      Algebra.isKnownOperation(operation, Algebra.Types.ONE_OR_MORE_PATH) ||
-      Algebra.isKnownOperation(operation, Algebra.Types.ZERO_OR_MORE_PATH) ||
-      Algebra.isKnownOperation(operation, Algebra.Types.ZERO_OR_ONE_PATH)) {
+    if (isKnownOperation(operation, Algebra.Types.INV) || isKnownOperation(operation, Algebra.Types.ONE_OR_MORE_PATH) ||
+      isKnownOperation(operation, Algebra.Types.ZERO_OR_MORE_PATH) ||
+      isKnownOperation(operation, Algebra.Types.ZERO_OR_ONE_PATH)) {
       return this.getPathSources(operation.path);
     }
-    if (Algebra.isKnownOperation(operation, Algebra.Types.LINK) ||
-      Algebra.isKnownOperation(operation, Algebra.Types.NPS)) {
+    if (isKnownOperation(operation, Algebra.Types.LINK) || isKnownOperation(operation, Algebra.Types.NPS)) {
       const source = getOperationSource(operation);
       if (!source) {
         throw new Error(`Could not find a required source on a link path operation`);

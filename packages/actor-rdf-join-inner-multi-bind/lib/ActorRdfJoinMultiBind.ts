@@ -19,7 +19,7 @@ import type {
   IJoinEntryWithMetadata,
   IQueryOperationResultBindings,
 } from '@comunica/types';
-import { AlgebraFactory, Algebra } from '@comunica/utils-algebra';
+import { AlgebraFactory, Algebra, algebraUtils } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getSafeBindings, materializeOperation } from '@comunica/utils-query-operation';
 import { MultiTransformIterator, TransformIterator, UnionIterator } from 'asynciterator';
@@ -170,7 +170,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
 
   public canBindWithOperation(operation: Algebra.Operation): boolean {
     let valid = true;
-    Algebra.visitOperation(operation, {
+    algebraUtils.visitOperation(operation, {
       [Algebra.Types.EXTEND]: { preVisitor: () => {
         valid = false;
         return { shortcut: true };

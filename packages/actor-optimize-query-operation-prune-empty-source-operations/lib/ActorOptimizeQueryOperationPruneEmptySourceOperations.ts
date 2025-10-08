@@ -8,7 +8,7 @@ import { KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entrie
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext, IQuerySourceWrapper, MetadataBindings } from '@comunica/types';
-import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
+import {Algebra, AlgebraFactory, algebraUtils, isKnownOperation} from '@comunica/utils-algebra';
 import { doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-query-operation';
 
 /**
@@ -37,7 +37,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     // Collect all operations with source types
     // Only consider unions of patterns or alts of links, since these are created during exhaustive source assignment.
     const collectedOperations: (Algebra.Pattern | Algebra.Link)[] = [];
-    Algebra.visitOperation(operation, {
+    algebraUtils.visitOperation(operation, {
       [Algebra.Types.UNION]: { preVisitor: (subOperation) => {
         this.collectMultiOperationInputs(subOperation.input, collectedOperations, Algebra.Types.PATTERN);
         return {};
@@ -69,7 +69,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     if (emptyOperations.size > 0) {
       this.logDebug(action.context, `Pruning ${emptyOperations.size} source-specific operations`);
       // Rewrite operations by removing the empty children
-      operation = Algebra.mapOperation<'unsafe', typeof operation>(operation, {
+      operation = algebraUtils.mapOperation(operation, {
         [Algebra.Types.UNION]: { transform: (subOperation, origOp) =>
           this.mapMultiOperation(subOperation, origOp, emptyOperations, children =>
             algebraFactory.createUnion(children)) },
@@ -105,7 +105,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     // But if we find a union with multiple children,
     // *all* of the children must be empty before the full operation is considered empty.
     let emptyOperation = false;
-    Algebra.visitOperation(operation, {
+    algebraUtils.visitOperation(operation, {
       [Algebra.Types.UNION]: { preVisitor: (unionOp) => {
         if (unionOp.input.every(subSubOperation => ActorOptimizeQueryOperationPruneEmptySourceOperations
           .hasEmptyOperation(subSubOperation))) {
@@ -139,7 +139,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     inputType: (Algebra.Pattern | Algebra.Link)['type'],
   ): void {
     for (const input of inputs) {
-      if (getOperationSource(input) && Algebra.isKnownOperation(input, inputType)) {
+      if (getOperationSource(input) && isKnownOperation(input, inputType)) {
         collectedOperations.push(input);
       }
     }

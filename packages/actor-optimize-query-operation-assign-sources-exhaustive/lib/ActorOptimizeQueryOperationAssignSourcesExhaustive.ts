@@ -9,7 +9,7 @@ import { KeysInitQuery, KeysQueryOperation, KeysRdfUpdateQuads } from '@comunica
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, IDataDestination, IQuerySourceWrapper } from '@comunica/types';
-import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
+import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';
 import { assignOperationSource, doesShapeAcceptOperation } from '@comunica/utils-query-operation';
 
 /**
@@ -72,9 +72,7 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
     operation: Algebra.Operation,
     sources: IQuerySourceWrapper[],
   ): Algebra.Operation {
-    // eslint-disable-next-line ts/no-this-alias
-    const self = this;
-    return Algebra.mapOperation<'unsafe', typeof operation>(operation, {
+    return algebraUtils.mapOperation(operation, {
       [Algebra.Types.PATTERN]: {
         preVisitor: () => ({ continue: false }),
         transform: (patternOp) => {
@@ -91,7 +89,7 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
       [Algebra.Types.CONSTRUCT]: {
         preVisitor: () => ({ continue: false }),
         transform: constructOp => factory.createConstruct(
-          self.assignExhaustive(factory, constructOp.input, sources),
+          this.assignExhaustive(factory, constructOp.input, sources),
           constructOp.template,
         ),
       },
@@ -120,7 +118,7 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
         transform: delInsOp => factory.createDeleteInsert(
           delInsOp.delete,
           delInsOp.insert,
-          delInsOp.where ? self.assignExhaustive(factory, delInsOp.where, sources) : undefined,
+          delInsOp.where ? this.assignExhaustive(factory, delInsOp.where, sources) : undefined,
         ),
       },
     });
