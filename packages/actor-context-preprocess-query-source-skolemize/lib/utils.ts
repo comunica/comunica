@@ -215,7 +215,7 @@ export function deskolemizeOperation<O extends Algebra.Operation>(
 ): O | undefined {
   const factory = new AlgebraFactory();
   try {
-    return Algebra.mapOperationReplace<'unsafe', O>(operation, {
+    return Algebra.mapOperation<'unsafe', O>(operation, {
       [Algebra.Types.PATTERN]: {
         preVisitor: () => ({ continue: false }),
         transform: op => Object.assign(factory.createPattern(

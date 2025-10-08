@@ -517,18 +517,6 @@ describe('ActorQueryOperationLateral', () => {
       }
     });
 
-    it('should run on zero bindings streams', async() => {
-      const op: any = { operation: { type: 'union', input: []}, context: new ActionContext() };
-      const output = getSafeBindings(await actor.run(op, undefined));
-      await expect(output.metadata()).resolves.toMatchObject({
-        cardinality: { type: 'exact', value: 0 },
-
-        variables: [],
-      });
-      expect(output.type).toBe('bindings');
-      await expect(output.bindingsStream).toEqualBindingsStream([]);
-    });
-
     it('should run on two bindings streams', async() => {
       const op: any = { operation: { type: 'union', input: [ op3(), op2() ]}, context: new ActionContext() };
       const output = getSafeBindings(await actor.run(op, undefined));

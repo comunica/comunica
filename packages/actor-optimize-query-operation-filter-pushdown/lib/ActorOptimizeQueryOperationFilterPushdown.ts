@@ -39,7 +39,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
 
     // Split conjunctive filters into nested filters
     if (this.splitConjunctive) {
-      operation = Algebra.mapOperationReplace<'unsafe', typeof operation>(operation, {
+      operation = Algebra.mapOperation<'unsafe', typeof operation>(operation, {
         [Algebra.Types.FILTER]: { transform: (filterOp) => {
           // Split conjunctive filters into separate filters
           if (Algebra.isKnownSub(filterOp.expression, Algebra.ExpressionTypes.OPERATOR) &&
@@ -65,7 +65,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     let iterations = 0;
     while (repeat && iterations < this.maxIterations) {
       repeat = false;
-      operation = Algebra.mapOperationReplace<'unsafe', typeof operation>(operation, {
+      operation = Algebra.mapOperation<'unsafe', typeof operation>(operation, {
         [Algebra.Types.FILTER]: { transform: (filterOp) => {
           // Check if the filter must be pushed down
           if (!this.shouldAttemptPushDown(filterOp, sources, sourceShapes)) {
@@ -92,7 +92,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
 
     // Merge nested filters into conjunctive filters
     if (this.mergeConjunctive) {
-      operation = Algebra.mapOperationReplace<'unsafe', typeof operation>(operation, {
+      operation = Algebra.mapOperation<'unsafe', typeof operation>(operation, {
         [Algebra.Types.FILTER]: { transform: (op) => {
           if (op.input.type === Algebra.Types.FILTER) {
             const { nestedExpressions, input } = this.getNestedFilterExpressions(op);
@@ -167,7 +167,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
       }
       return false;
     };
-    Algebra.recurseOperationReplace(operation, {
+    Algebra.visitOperation(operation, {
       [Algebra.Types.PATTERN]: { visitor: sourceAdder },
       [Algebra.Types.SERVICE]: { visitor: sourceAdder },
       [Algebra.Types.LINK]: { visitor: sourceAdder },

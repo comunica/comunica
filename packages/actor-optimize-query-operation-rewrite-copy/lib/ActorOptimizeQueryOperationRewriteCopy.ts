@@ -26,7 +26,7 @@ export class ActorOptimizeQueryOperationRewriteCopy extends ActorOptimizeQueryOp
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const factory = new AlgebraFactory(dataFactory);
 
-    const operation = Algebra.mapOperationReplace<'unsafe', typeof action.operation>(action.operation, {
+    const operation = Algebra.mapOperation<'unsafe', typeof action.operation>(action.operation, {
       [Algebra.Types.COPY]: {
         preVisitor: () => ({ continue: false }),
         transform: (operationOriginal) => {

@@ -26,7 +26,7 @@ export class ActorOptimizeQueryOperationConstructDistinct extends ActorOptimizeQ
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
     const factory = new AlgebraFactory();
-    const operation = Algebra.mapOperationReplace<'unsafe', typeof action.operation>(action.operation, {
+    const operation = Algebra.mapOperation<'unsafe', typeof action.operation>(action.operation, {
       [Algebra.Types.CONSTRUCT]: {
         preVisitor: () => ({ continue: false }),
         transform: constructOp =>

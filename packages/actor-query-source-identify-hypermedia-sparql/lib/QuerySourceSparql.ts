@@ -330,7 +330,7 @@ export class QuerySourceSparql implements IQuerySource {
    */
   public static getOperationUndefs(operation: Algebra.Operation): RDF.Variable[] {
     const variables: RDF.Variable[] = [];
-    Algebra.recurseOperationReplace(operation, {
+    Algebra.visitOperation(operation, {
       [Algebra.Types.LEFT_JOIN]: { preVisitor: (subOperation) => {
         const left = algebraUtils.inScopeVariables(subOperation.input[0]);
         const right = algebraUtils.inScopeVariables(subOperation.input[1]);

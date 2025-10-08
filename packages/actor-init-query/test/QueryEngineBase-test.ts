@@ -1,5 +1,4 @@
 import { Readable, Transform } from 'node:stream';
-import { toAlgebra, Parser } from '@comunica/algebra-sparql-comunica';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
 import type {
@@ -17,6 +16,8 @@ import type {
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
+import { toAlgebra } from '@traqula/algebra-sparql-1-2';
+import { Parser } from '@traqula/parser-sparql-1-2';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';

@@ -21,7 +21,7 @@ export class ActorOptimizeQueryOperationJoinBgp extends ActorOptimizeQueryOperat
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const algebraFactory = new AlgebraFactory(dataFactory);
 
-    const operation = Algebra.mapOperationReplace<'unsafe', typeof action.operation>(action.operation, {
+    const operation = Algebra.mapOperation<'unsafe', typeof action.operation>(action.operation, {
       [Algebra.Types.JOIN]: {
         preVisitor: () => ({ continue: false }),
         transform: (op) => {

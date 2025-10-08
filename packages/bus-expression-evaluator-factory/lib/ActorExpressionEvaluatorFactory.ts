@@ -1,4 +1,4 @@
-import type { Algebra as Alg } from '@comunica/algebra-sparql-comunica';
+import type { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { MediatorFunctionFactory, MediatorFunctionFactoryUnsafe } from '@comunica/bus-function-factory';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
@@ -37,7 +37,7 @@ export abstract class ActorExpressionEvaluatorFactory<TS = undefined> extends
 }
 
 export interface IActionExpressionEvaluatorFactory extends IAction {
-  algExpr: Alg.Expression;
+  algExpr: Algebra.Expression;
 }
 
 export interface IActorExpressionEvaluatorFactoryOutput extends IActorOutput, IExpressionEvaluator {}

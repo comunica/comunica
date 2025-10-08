@@ -74,7 +74,7 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
   ): Algebra.Operation {
     // eslint-disable-next-line ts/no-this-alias
     const self = this;
-    return Algebra.mapOperationReplace<'unsafe', typeof operation>(operation, {
+    return Algebra.mapOperation<'unsafe', typeof operation>(operation, {
       [Algebra.Types.PATTERN]: {
         preVisitor: () => ({ continue: false }),
         transform: (patternOp) => {

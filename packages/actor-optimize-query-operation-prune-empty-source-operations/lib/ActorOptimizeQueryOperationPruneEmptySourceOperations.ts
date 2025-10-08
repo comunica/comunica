@@ -37,7 +37,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     // Collect all operations with source types
     // Only consider unions of patterns or alts of links, since these are created during exhaustive source assignment.
     const collectedOperations: (Algebra.Pattern | Algebra.Link)[] = [];
-    Algebra.recurseOperationReplace(operation, {
+    Algebra.visitOperation(operation, {
       [Algebra.Types.UNION]: { preVisitor: (subOperation) => {
         this.collectMultiOperationInputs(subOperation.input, collectedOperations, Algebra.Types.PATTERN);
         return {};
@@ -69,7 +69,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     if (emptyOperations.size > 0) {
       this.logDebug(action.context, `Pruning ${emptyOperations.size} source-specific operations`);
       // Rewrite operations by removing the empty children
-      operation = Algebra.mapOperationReplace<'unsafe', typeof operation>(operation, {
+      operation = Algebra.mapOperation<'unsafe', typeof operation>(operation, {
         [Algebra.Types.UNION]: { transform: (subOperation, origOp) =>
           this.mapMultiOperation(subOperation, origOp, emptyOperations, children =>
             algebraFactory.createUnion(children)) },
@@ -105,7 +105,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     // But if we find a union with multiple children,
     // *all* of the children must be empty before the full operation is considered empty.
     let emptyOperation = false;
-    Algebra.recurseOperationReplace(operation, {
+    Algebra.visitOperation(operation, {
       [Algebra.Types.UNION]: { preVisitor: (unionOp) => {
         if (unionOp.input.every(subSubOperation => ActorOptimizeQueryOperationPruneEmptySourceOperations
           .hasEmptyOperation(subSubOperation))) {

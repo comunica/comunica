@@ -66,7 +66,7 @@ export function materializeOperation(
     originalBindings: 'originalBindings' in options ? options.originalBindings : bindings,
   };
 
-  return Algebra.mapOperationReplace<'unsafe', typeof operation>(operation, {
+  return Algebra.mapOperation<'unsafe', typeof operation>(operation, {
     [Algebra.Types.PATH]: {
       preVisitor: () => ({ continue: false }),
       transform: pathOp =>

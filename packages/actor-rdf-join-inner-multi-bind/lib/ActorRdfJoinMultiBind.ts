@@ -170,7 +170,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
 
   public canBindWithOperation(operation: Algebra.Operation): boolean {
     let valid = true;
-    Algebra.recurseOperationReplace(operation, {
+    Algebra.visitOperation(operation, {
       [Algebra.Types.EXTEND]: { preVisitor: () => {
         valid = false;
         return { shortcut: true };

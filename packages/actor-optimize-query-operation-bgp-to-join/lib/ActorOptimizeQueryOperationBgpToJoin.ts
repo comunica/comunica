@@ -20,7 +20,7 @@ export class ActorOptimizeQueryOperationBgpToJoin extends ActorOptimizeQueryOper
     const dataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const algebraFactory = new AlgebraFactory(dataFactory);
 
-    const operation = Algebra.mapOperationReplace<'unsafe', typeof action.operation>(action.operation, {
+    const operation = Algebra.mapOperation<'unsafe', typeof action.operation>(action.operation, {
       [Algebra.Types.BGP]: {
         preVisitor: () => ({ continue: false }),
         transform: bgpOp => algebraFactory.createJoin(bgpOp.patterns),
