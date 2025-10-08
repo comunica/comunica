@@ -1,5 +1,4 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
-import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
@@ -11,6 +10,7 @@ import type {
   ComunicaDataFactory,
   MetadataBindings,
 } from '@comunica/types';
+import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { getSafeBindings } from '@comunica/utils-query-operation';

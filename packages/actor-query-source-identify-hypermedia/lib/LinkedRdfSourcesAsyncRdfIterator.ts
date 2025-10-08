@@ -1,4 +1,3 @@
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { ILinkQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import { KeysStatistics } from '@comunica/context-entries';
 import type {
@@ -9,6 +8,7 @@ import type {
   IQueryBindingsOptions,
   IStatisticBase,
 } from '@comunica/types';
+import type { Algebra } from '@comunica/utils-algebra';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator, BufferedIteratorOptions } from 'asynciterator';

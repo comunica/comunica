@@ -1,10 +1,10 @@
-import { AlgebraFactory, Algebra } from '@comunica/algebra-sparql-comunica';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
+import { AlgebraFactory, Algebra } from '@comunica/utils-algebra';
 
 /**
  * A [Query Operation](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation) actor

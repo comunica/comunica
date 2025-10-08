@@ -1,5 +1,3 @@
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
-import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type {
   MediatorDereferenceRdf,
   IActionDereferenceRdf,
@@ -9,6 +7,8 @@ import type { IActionQuerySourceIdentifyHypermedia } from '@comunica/bus-query-s
 import { KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext, MetadataQuads } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
+import type { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';

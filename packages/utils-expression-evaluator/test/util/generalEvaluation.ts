@@ -1,8 +1,8 @@
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import type { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-expression-evaluator/test/util/helpers';
 import type * as RDF from '@rdfjs/types';

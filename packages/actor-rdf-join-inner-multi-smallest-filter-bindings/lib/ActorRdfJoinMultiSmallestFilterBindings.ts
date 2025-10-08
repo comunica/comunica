@@ -1,4 +1,3 @@
-import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type {
   IActionRdfJoin,
   IActorRdfJoinArgs,
@@ -20,6 +19,7 @@ import type {
   IJoinEntryWithMetadata,
   IQuerySourceWrapper,
 } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { bindingsToString } from '@comunica/utils-bindings-factory';
 import { ChunkedIterator } from '@comunica/utils-iterator';
 import { doesShapeAcceptOperation, getOperationSource, getSafeBindings } from '@comunica/utils-query-operation';

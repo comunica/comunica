@@ -1,4 +1,3 @@
-import { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperationTypedMediated,
@@ -8,6 +7,7 @@ import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { IQueryOperationResult, IActionContext, IJoinEntry } from '@comunica/types';
+import { Algebra } from '@comunica/utils-algebra';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';

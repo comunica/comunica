@@ -1,0 +1,71 @@
+import type { Algebra as TraqulaAlgebra } from '@traqula/algebra-transformations-1-2';
+import { TransformerSubType } from '@traqula/core';
+import type { KnownOperation, Operation } from './remapping';
+
+/**
+ * Type guard that checks if an operation is of a certain type known by Comunica.
+ * In case the type matches one known by Comunica,
+ * the type guard will conclude the operation contains all member Comunica expects from this operation-type
+ * @param val
+ * @param type
+ */
+export function isKnownOperation<Type extends KnownOperation['type']>(val: Operation, type: Type):
+  val is Extract<KnownOperation, { type: Type }> extends object ?
+    Extract<KnownOperation, { type: Type }> : { type: Type } {
+  return val.type === type;
+}
+
+/**
+ * Type guard that checks if an operation is of a certain subType known by Comunica.
+ * In case the subtype matches one known by Comunica,
+ * the type guard will conclude the operation contains all member Comunica expects from this operation-subtype
+ * @param val
+ * @param subType
+ */
+export function isKnownSub<
+  SubType extends KnownOperation['subType'],
+Obj extends Operation,
+>(val: Obj, subType: SubType):
+  val is Extract<KnownOperation, { type: Obj['type']; subType: SubType }> extends object ?
+    Obj & Extract<KnownOperation, { type: Obj['type']; subType: SubType }> : Obj & { subType: SubType } {
+  return val.subType === subType;
+}
+
+/**
+ * Type guard that checks if an operation is of a certain type and subType known by Comunica.
+ * In case the type and subtype matches one known by Comunica,
+ * the type guard will conclude the operation contains all member Comunica expects from this operation-type and subtype.
+ * @param val
+ * @param type
+ * @param subType
+ */
+export function isKnownOperationSub<
+  Type extends KnownOperation['type'],
+SubType extends Extract<KnownOperation, { type: Type }>['subType'],
+>(
+  val: Operation,
+  type: Type,
+  subType: SubType,
+):
+  val is Extract<KnownOperation, { type: Type; subType: SubType }> extends object ?
+    Extract<KnownOperation, { type: Type; subType: SubType }> : { type: Type; subType: SubType } {
+  return val.type === type && val.subType === subType;
+}
+
+// ----------------------- manipulators --------------------
+
+type _NeedRefForReusabilityWithoutExplicitTypeDefinition = TraqulaAlgebra.Operation;
+const transformer = new TransformerSubType<KnownOperation>({
+  /**
+   * Metadata often contains references to actors,
+   * the transformer should not copy these actors, nor should it traverse the actors when visitingOperations.
+   * (since there can be cycles involved).
+   * It should however still make a shallowCopy from the metadata object, but not map over it.
+   */
+  shallowKeys: [ 'metadata' ],
+  ignoreKeys: [ 'metadata' ],
+});
+export const mapOperation = transformer.transformNode.bind(transformer);
+export const mapOperationSub = transformer.transformNodeSpecific.bind(transformer);
+export const visitOperation = transformer.visitNode.bind(transformer);
+export const visitOperationSub = transformer.visitNodeSpecific.bind(transformer);

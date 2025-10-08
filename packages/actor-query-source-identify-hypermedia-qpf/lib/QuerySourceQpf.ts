@@ -1,6 +1,4 @@
 import type { ISearchForm } from '@comunica/actor-rdf-metadata-extract-hydra-controls';
-import { Algebra } from '@comunica/algebra-sparql-comunica';
-import type { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
 import { filterMatchingQuotedQuads, quadsToBindings } from '@comunica/bus-query-source-identify';
 import type { MediatorRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
@@ -15,6 +13,8 @@ import type {
   MetadataBindings,
   ComunicaDataFactory,
 } from '@comunica/types';
+import type { AlgebraFactory } from '@comunica/utils-algebra';
+import { Algebra } from '@comunica/utils-algebra';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';

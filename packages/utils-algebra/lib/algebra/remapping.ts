@@ -17,17 +17,31 @@ export type Operation = BaseOperation;
 export type Expression = BaseExpression;
 
 // https://www.typescriptlang.org/docs/handbook/2/conditional-types.html#distributive-conditional-types
+/**
+ * Maps algebra operation (as union types) Algebra.baseOperations (as interface) as values,
+ * staying as precises as possible, and also working on arrays.
+ */
 export type OpenSingle<T> = [T] extends [any[]] ? OpenSingle<T[number]>[] :
     [T] extends [Algebra.Pattern] ? Algebra.Pattern & withMeta :
         [T] extends [Algebra.Expression] ? Expression :
             [T] extends [Algebra.Operation] ? Operation : T;
 
+/**
+ * Reverse operation of OpenSingle
+ */
 export type CloseSingle<T> = T extends any[] ? CloseSingle<T[number]>[] :
   T extends BoundAggregate ? Algebra.BoundAggregate :
     T extends Algebra.BaseExpression ? Algebra.Expression :
       T extends Algebra.BaseOperation ? Algebra.Operation : T;
 
+/**
+ * Maps a single object or array containing values of type algebra operation (as union types)
+ * the same type but having Algebra.baseOperations (as interface) as values.
+ */
 export type Opened<T extends object> = {[K in keyof T]: OpenSingle<T[K]> } & withMeta;
+/**
+ * Reversed of Opened
+ */
 export type Closed<T extends object > = {[K in keyof T]: CloseSingle<T[K]> };
 
 // Redefinitions of types

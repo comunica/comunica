@@ -1,7 +1,7 @@
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { IBindingsAggregator, MediatorBindingsAggregatorFactory } from '@comunica/bus-bindings-aggregator-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { Bindings, ComunicaDataFactory, IActionContext } from '@comunica/types';
+import type { Algebra } from '@comunica/utils-algebra';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { bindingsToCompactString } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';

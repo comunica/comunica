@@ -1,5 +1,5 @@
-import { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { Expression, GeneralSuperTypeDict, ISuperTypeProvider } from '@comunica/types';
+import { Algebra } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 import * as RDFString from 'rdf-string';
 import * as E from '../expressions';

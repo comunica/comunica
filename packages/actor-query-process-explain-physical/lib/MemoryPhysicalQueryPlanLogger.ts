@@ -1,5 +1,5 @@
-import { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { IPhysicalQueryPlanLogger, IPlanNode } from '@comunica/types';
+import { Algebra } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 import { termToString } from 'rdf-string';
 

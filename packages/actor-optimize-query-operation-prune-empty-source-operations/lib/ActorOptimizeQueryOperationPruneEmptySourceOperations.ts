@@ -1,4 +1,3 @@
-import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type {
   IActionOptimizeQueryOperation,
   IActorOptimizeQueryOperationOutput,
@@ -9,6 +8,7 @@ import { KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entrie
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext, IQuerySourceWrapper, MetadataBindings } from '@comunica/types';
+import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-query-operation';
 
 /**

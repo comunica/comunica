@@ -1,6 +1,6 @@
-import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { assignOperationSource } from '@comunica/utils-query-operation';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorOptimizeQueryOperationFilterPushdown } from '../lib/ActorOptimizeQueryOperationFilterPushdown';

@@ -1,4 +1,4 @@
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
+import type { Algebra } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 import type { LRUCache } from 'lru-cache';
 import type { ComunicaDataFactory } from './ComunicaDataFactory';

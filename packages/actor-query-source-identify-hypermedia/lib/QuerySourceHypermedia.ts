@@ -1,6 +1,4 @@
 import { QuerySourceRdfJs } from '@comunica/actor-query-source-identify-rdfjs';
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
-import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { IActorDereferenceRdfOutput, MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
 import type { MediatorQuerySourceIdentifyHypermedia } from '@comunica/bus-query-source-identify-hypermedia';
 import type { IActorRdfMetadataOutput, MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
@@ -20,6 +18,8 @@ import type {
   MetadataBindings,
   ILink,
 } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
+import type { Algebra } from '@comunica/utils-algebra';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';

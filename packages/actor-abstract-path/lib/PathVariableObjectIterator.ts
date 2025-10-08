@@ -1,6 +1,6 @@
-import type { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import type { IActionContext } from '@comunica/types';
+import type { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';

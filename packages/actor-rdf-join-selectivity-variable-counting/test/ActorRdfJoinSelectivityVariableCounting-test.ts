@@ -1,7 +1,7 @@
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
-import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import type { Algebra } from '@comunica/utils-algebra';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinSelectivityVariableCounting, JoinTypes } from '../lib/ActorRdfJoinSelectivityVariableCounting';
 import '@comunica/utils-jest';

@@ -1,11 +1,11 @@
 import { ActorRdfJoinNestedLoop } from '@comunica/actor-rdf-join-inner-nestedloop';
-import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { MediatorRdfJoin, IActionRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinEntriesSort, MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
 import type { MediatorRdfJoinSelectivity } from '@comunica/bus-rdf-join-selectivity';
 import { KeysInitQuery, KeysRdfJoin } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext, IQuerySourceWrapper, IJoinEntryWithMetadata } from '@comunica/types';
+import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { assignOperationSource } from '@comunica/utils-query-operation';

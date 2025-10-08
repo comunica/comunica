@@ -36,7 +36,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/algebra-sparql-comunica": "^4.0.2",
+    "@comunica/utils-algebra": "^4.0.2",
     "@comunica/bus-function-factory": "^4.0.2",
     "@comunica/bus-merge-bindings-context": "^4.0.2",
     "@comunica/bus-query-operation": "^4.0.2",

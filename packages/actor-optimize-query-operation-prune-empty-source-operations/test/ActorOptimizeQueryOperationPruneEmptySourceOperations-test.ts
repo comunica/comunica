@@ -1,7 +1,7 @@
-import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import { KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
+import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { assignOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';

@@ -1,5 +1,3 @@
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
-import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type {
   IActionRdfJoin,
   IActorRdfJoinArgs,
@@ -19,6 +17,8 @@ import type {
   IActionContext,
   ComunicaDataFactory,
 } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
+import type { Algebra } from '@comunica/utils-algebra';
 import { ChunkedIterator } from '@comunica/utils-iterator';
 import { doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';

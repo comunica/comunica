@@ -1,4 +1,3 @@
-import { Algebra } from '@comunica/algebra-sparql-comunica';
 import type {
   IActionBindingsAggregatorFactory,
   IActorBindingsAggregatorFactoryArgs,
@@ -10,6 +9,7 @@ import {
 
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
+import { Algebra } from '@comunica/utils-algebra';
 import { CountAggregator } from './CountAggregator';
 
 /**

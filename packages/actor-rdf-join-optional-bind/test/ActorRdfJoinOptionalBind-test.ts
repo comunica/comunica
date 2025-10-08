@@ -1,4 +1,3 @@
-import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
@@ -6,6 +5,7 @@ import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultBindings, Bindings, IActionContext } from '@comunica/types';
+import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { ArrayIterator } from 'asynciterator';

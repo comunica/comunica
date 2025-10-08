@@ -5,14 +5,14 @@ import { ActorFunctionFactoryTermAddition } from '@comunica/actor-function-facto
 import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-factory-term-equality';
 import { ActorFunctionFactoryTermIri } from '@comunica/actor-function-factory-term-iri';
 import { ActorFunctionFactoryTermStr } from '@comunica/actor-function-factory-term-str';
-import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultBindings, Bindings, IActionContext } from '@comunica/types';
+import type { Algebra } from '@comunica/utils-algebra';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import * as sparqlee from '@comunica/utils-expression-evaluator';
 import { isExpressionError } from '@comunica/utils-expression-evaluator';

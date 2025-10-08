@@ -1,4 +1,4 @@
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
+import type { Algebra } from '@comunica/utils-algebra';
 import type { MetadataBindings } from './IMetadata';
 import type { IQueryOperationResultBindings } from './IQueryOperationResult';
 

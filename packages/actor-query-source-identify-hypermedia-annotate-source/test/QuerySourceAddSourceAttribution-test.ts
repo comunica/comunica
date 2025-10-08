@@ -1,7 +1,7 @@
-import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import { KeysMergeBindingsContext } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IQuerySource } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type { Bindings } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';

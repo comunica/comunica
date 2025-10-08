@@ -1,4 +1,3 @@
-import { AlgebraFactory, Algebra, algebraUtils } from '@comunica/algebra-sparql-comunica';
 import type {
   IActionOptimizeQueryOperation,
   IActorOptimizeQueryOperationArgs,
@@ -9,6 +8,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, FragmentSelectorShape, IActionContext, IQuerySourceWrapper } from '@comunica/types';
+import { AlgebraFactory, Algebra, algebraUtils } from '@comunica/utils-algebra';
 import { doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { mapTermsNested, uniqTerms } from 'rdf-terms';

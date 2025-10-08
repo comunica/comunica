@@ -1,7 +1,7 @@
-import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultVoid } from '@comunica/types';
+import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationCreate } from '../lib/ActorQueryOperationCreate';
 import '@comunica/utils-jest';

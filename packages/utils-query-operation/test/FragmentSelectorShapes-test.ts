@@ -1,4 +1,4 @@
-import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
+import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import {
   doesShapeAcceptOperation,
 } from '../lib/FragmentSelectorShapes';

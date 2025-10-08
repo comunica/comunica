@@ -1,8 +1,8 @@
 import { Readable } from 'node:stream';
-import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { BindingsStream, IActionContext } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { DataFactory } from 'rdf-data-factory';

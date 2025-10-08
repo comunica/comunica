@@ -1,4 +1,3 @@
-import { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type {
@@ -7,6 +6,7 @@ import type {
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
+import { Algebra } from '@comunica/utils-algebra';
 import { testReadOnly } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 

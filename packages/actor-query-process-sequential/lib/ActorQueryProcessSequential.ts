@@ -1,5 +1,3 @@
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
-import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { MediatorContextPreprocess } from '@comunica/bus-context-preprocess';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { MediatorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
@@ -24,6 +22,8 @@ import type {
   IQueryOperationResult,
   QueryFormatType,
 } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
+import type { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { materializeOperation } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';

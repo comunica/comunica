@@ -1,5 +1,3 @@
-import type { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
-import { Algebra, algebraUtils } from '@comunica/algebra-sparql-comunica';
 import type { MediatorHttp } from '@comunica/bus-http';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { Actor } from '@comunica/core';
@@ -14,10 +12,13 @@ import type {
   MetadataBindings,
   MetadataVariable,
 } from '@comunica/types';
+import { Algebra, algebraUtils } from '@comunica/utils-algebra';
+import type { AlgebraFactory } from '@comunica/utils-algebra';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import { toAst } from '@traqula/algebra-sparql-1-2';
+import type { Algebra as TraqualAlgebra } from '@traqula/algebra-transformations-1-2';
 import { Generator } from '@traqula/generator-sparql-1-2';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator, wrap } from 'asynciterator';
@@ -315,13 +316,12 @@ export class QuerySourceSparql implements IQuerySource {
    * @return {string} A query string.
    */
   public static operationToQuery(operation: Algebra.Operation): string {
-    // This query source only handles the Known Algebra from @comunica/algebra-sparql-comunica.
+    // This query source only handles the Known Algebra from @comunica/utils-algebra.
     // It will likely throw when unknown algebra operations are being translated
     // or the translation will not happen correctly.
-    const ast = toAst(Algebra.asKnown(operation));
-    // 'Minify' pretty printed string
-    return this.queryStringGenerator.generate(ast)
-      .replaceAll(/[\n \t]+/gu, ' ').trim();
+    // TODO: add a query generation bus to Comunica to mitigate this problem.
+    const ast = toAst(<TraqualAlgebra.Operation> operation);
+    return this.queryStringGenerator.generate(ast).trim();
   }
 
   /**

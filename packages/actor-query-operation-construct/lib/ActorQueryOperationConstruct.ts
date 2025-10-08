@@ -1,4 +1,3 @@
-import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperationTypedMediated,
@@ -13,6 +12,7 @@ import type {
   MetadataQuads,
   ComunicaDataFactory,
 } from '@comunica/types';
+import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';

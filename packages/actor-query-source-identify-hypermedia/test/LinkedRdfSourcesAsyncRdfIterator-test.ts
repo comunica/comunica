@@ -1,12 +1,12 @@
 import { Readable } from 'node:stream';
 import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
-import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { ILinkQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import { KeysStatistics } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { StatisticLinkDereference } from '@comunica/statistic-link-dereference';
 import type { ILink, IActionContext, IQueryBindingsOptions, MetadataBindings } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
+import type { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';

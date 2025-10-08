@@ -1,5 +1,5 @@
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { BindingsStream, ComunicaDataFactory, MetadataBindings, MetadataQuads, TermsOrder } from '@comunica/types';
+import type { Algebra } from '@comunica/utils-algebra';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { ClosableIterator } from '@comunica/utils-iterator';
 import { validateMetadataQuads } from '@comunica/utils-metadata';

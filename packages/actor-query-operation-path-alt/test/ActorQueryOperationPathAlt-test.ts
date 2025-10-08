@@ -1,4 +1,3 @@
-import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type {
   IActionRdfMetadataAccumulate,
@@ -6,6 +5,7 @@ import type {
 } from '@comunica/bus-rdf-metadata-accumulate';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { getSafeBindings } from '@comunica/utils-query-operation';

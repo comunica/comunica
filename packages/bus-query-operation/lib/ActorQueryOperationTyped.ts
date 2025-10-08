@@ -1,4 +1,3 @@
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest } from '@comunica/core';
@@ -8,6 +7,7 @@ import type {
   IActionContext,
   IMetadata,
 } from '@comunica/types';
+import type { Algebra } from '@comunica/utils-algebra';
 import { cachifyMetadata } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import type { IActionQueryOperation, IActorQueryOperationArgs } from './ActorQueryOperation';

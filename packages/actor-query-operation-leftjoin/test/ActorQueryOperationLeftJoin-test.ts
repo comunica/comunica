@@ -1,10 +1,10 @@
 import { ActorFunctionFactoryTermAddition } from '@comunica/actor-function-factory-term-addition';
-import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
 import type { Bindings, IActionContext, IJoinEntry, IQueryOperationResultBindings } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory, bindingsToString } from '@comunica/utils-bindings-factory';
 import * as sparqlee from '@comunica/utils-expression-evaluator';
 import { isExpressionError } from '@comunica/utils-expression-evaluator';

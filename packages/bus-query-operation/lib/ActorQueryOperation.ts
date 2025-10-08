@@ -1,4 +1,3 @@
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { IActorArgs, IActorTest, IAction, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type {
@@ -7,6 +6,7 @@ import type {
   IActionContext,
   FunctionArgumentsCache,
 } from '@comunica/types';
+import type { Algebra } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 
 /**

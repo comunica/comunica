@@ -1,8 +1,8 @@
 import { Readable } from 'node:stream';
-import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import arrayifyStream from 'arrayify-stream';

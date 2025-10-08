@@ -1,7 +1,7 @@
-import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
+import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type { Bindings } from '@comunica/utils-bindings-factory';
 import { assignOperationSource, getSafeBindings } from '@comunica/utils-query-operation';

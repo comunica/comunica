@@ -1,4 +1,4 @@
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
+import type { Algebra } from '@comunica/utils-algebra';
 import type { IActorQueryOperationArgs, MediatorQueryOperation } from './ActorQueryOperation';
 import { ActorQueryOperationTyped } from './ActorQueryOperationTyped';
 

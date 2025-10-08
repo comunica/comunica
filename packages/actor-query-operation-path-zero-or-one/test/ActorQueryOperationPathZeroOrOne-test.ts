@@ -1,8 +1,8 @@
-import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
+import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type { Bindings } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';

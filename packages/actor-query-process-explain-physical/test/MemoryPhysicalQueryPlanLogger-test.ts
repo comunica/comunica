@@ -1,5 +1,5 @@
-import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { IQuerySource } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { assignOperationSource } from '@comunica/utils-query-operation';
 import { DataFactory } from 'rdf-data-factory';
 import { MemoryPhysicalQueryPlanLogger } from '../lib/MemoryPhysicalQueryPlanLogger';

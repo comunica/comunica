@@ -1,6 +1,6 @@
-import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import { Actor, Bus } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { assignOperationSource } from '@comunica/utils-query-operation';
 import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';

@@ -1,9 +1,9 @@
-import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { ComunicaDataFactory, Expression, IActionContext, TermExpression } from '@comunica/types';
 import { ExpressionType } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import * as Eval from '@comunica/utils-expression-evaluator';
 import { getSafeBindings, materializeOperation } from '@comunica/utils-query-operation';

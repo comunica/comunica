@@ -1,4 +1,3 @@
-import { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
@@ -13,6 +12,7 @@ import type {
   IQueryOperationResultBindings,
   MetadataVariable,
 } from '@comunica/types';
+import { Algebra } from '@comunica/utils-algebra';
 import { BlankNodeBindingsScoped } from '@comunica/utils-data-factory';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';

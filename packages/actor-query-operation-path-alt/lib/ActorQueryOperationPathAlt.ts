@@ -1,6 +1,5 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import { ActorQueryOperationUnion } from '@comunica/actor-query-operation-union';
-import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
 import { KeysInitQuery } from '@comunica/context-entries';
@@ -11,6 +10,7 @@ import type {
   MetadataBindings,
   ComunicaDataFactory,
 } from '@comunica/types';
+import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import { UnionIterator } from 'asynciterator';
 

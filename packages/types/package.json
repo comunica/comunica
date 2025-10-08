@@ -42,7 +42,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/algebra-sparql-comunica": "^4.0.2",
+    "@comunica/utils-algebra": "^4.0.2",
     "@rdfjs/types": "*",
     "@types/yargs": "^17.0.24",
     "asynciterator": "^3.9.0",

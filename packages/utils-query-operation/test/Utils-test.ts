@@ -1,5 +1,5 @@
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
-import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
+import type { Algebra } from '@comunica/utils-algebra';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import {
   assignOperationSource,
   getOperationSource,

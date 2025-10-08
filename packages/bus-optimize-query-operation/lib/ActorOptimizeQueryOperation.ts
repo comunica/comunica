@@ -1,7 +1,7 @@
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import type { Algebra } from '@comunica/utils-algebra';
 
 /**
  * A comunica actor for optimize-query-operation events.

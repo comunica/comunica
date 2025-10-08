@@ -40,7 +40,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/algebra-sparql-comunica": "^4.0.2",
+    "@comunica/utils-algebra": "^4.0.2",
     "@comunica/core": "^4.0.2",
     "@comunica/types": "^4.0.2",
     "@comunica/utils-bindings-factory": "^4.0.2",

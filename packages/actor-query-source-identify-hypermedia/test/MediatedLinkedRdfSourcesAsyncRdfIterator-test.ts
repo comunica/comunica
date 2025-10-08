@@ -1,6 +1,4 @@
 import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
-import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
 import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
@@ -8,6 +6,8 @@ import { KeysStatistics } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { StatisticLinkDiscovery } from '@comunica/statistic-link-discovery';
 import type { IActionContext, IQuerySource, ILink } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
+import type { Algebra } from '@comunica/utils-algebra';
 import { setTaskScheduler } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type { ISourceState, SourceStateGetter } from '../lib/LinkedRdfSourcesAsyncRdfIterator';

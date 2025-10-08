@@ -1,6 +1,6 @@
-import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import * as Eval from '@comunica/utils-expression-evaluator';
 import { generalEvaluate } from '@comunica/utils-expression-evaluator/test/util/generalEvaluation';

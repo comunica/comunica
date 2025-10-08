@@ -1,4 +1,3 @@
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
 import { ActionContextKey, CONTEXT_KEY_LOGGER } from '@comunica/core';
 import type {
   AsyncExtensionFunctionCreator,
@@ -22,6 +21,7 @@ import type {
   IDiscoverEventData,
   ILink,
 } from '@comunica/types';
+import type { Algebra } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 import type { IDocumentLoader } from 'jsonld-context-parser';
 

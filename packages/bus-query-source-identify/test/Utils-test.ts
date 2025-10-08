@@ -1,4 +1,4 @@
-import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';

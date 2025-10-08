@@ -1,13 +1,13 @@
 import { ActorFunctionFactoryTermStrLen } from '@comunica/actor-function-factory-term-str-len';
 import { createTermCompMediator } from '@comunica/actor-term-comparator-factory-expression-evaluator/test/util';
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
-import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import { Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
+import type { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import * as sparqlee from '@comunica/utils-expression-evaluator';
 import {

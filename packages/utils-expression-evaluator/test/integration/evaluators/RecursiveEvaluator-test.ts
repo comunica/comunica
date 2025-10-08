@@ -1,4 +1,4 @@
-import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getMockInternalEvaluator } from '@comunica/utils-expression-evaluator/test/util/helpers';
 import { DataFactory } from 'rdf-data-factory';

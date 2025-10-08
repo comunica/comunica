@@ -1,4 +1,3 @@
-import { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { MediatorHashBindings } from '@comunica/bus-hash-bindings';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
@@ -11,6 +10,7 @@ import type {
   IQueryOperationResult,
   IQueryOperationResultBindings,
 } from '@comunica/types';
+import { Algebra } from '@comunica/utils-algebra';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';

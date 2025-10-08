@@ -1,8 +1,8 @@
 import { QuerySourceRdfJs } from '@comunica/actor-query-source-identify-rdfjs';
-import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { IActionQuerySourceIdentify, MediatorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
 import type { IActionRdfParseHandle, MediatorRdfParseHandle } from '@comunica/bus-rdf-parse';
 import { ActionContext, Bus } from '@comunica/core';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';

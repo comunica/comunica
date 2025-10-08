@@ -1,4 +1,3 @@
-import { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { IActionQueryOperation, IActorQueryOperationArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
@@ -9,6 +8,7 @@ import type {
   IQueryOperationResult,
   IQuerySourceWrapper,
 } from '@comunica/types';
+import { Algebra } from '@comunica/utils-algebra';
 import { getMetadataBindings, getMetadataQuads } from '@comunica/utils-metadata';
 import { getOperationSource } from '@comunica/utils-query-operation';
 

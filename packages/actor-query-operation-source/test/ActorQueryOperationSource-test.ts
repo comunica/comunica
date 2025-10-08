@@ -1,4 +1,3 @@
-import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type {
@@ -10,6 +9,7 @@ import type {
   IQuerySourceWrapper,
   IPhysicalQueryPlanLogger,
 } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { assignOperationSource } from '@comunica/utils-query-operation';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';

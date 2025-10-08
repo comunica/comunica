@@ -1,6 +1,6 @@
-import type { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
-import { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { Bindings } from '@comunica/types';
+import type { AlgebraFactory } from '@comunica/utils-algebra';
+import { Algebra } from '@comunica/utils-algebra';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import type { Variable } from 'rdf-data-factory';

@@ -1,5 +1,5 @@
-import type { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { FragmentSelectorShape } from '@comunica/types';
+import type { Algebra } from '@comunica/utils-algebra';
 
 /**
  * Check if the given shape accepts the given query operation.

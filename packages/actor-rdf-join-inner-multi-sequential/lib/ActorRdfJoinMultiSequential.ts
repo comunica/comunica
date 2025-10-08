@@ -1,4 +1,3 @@
-import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type {
   IActionRdfJoin,
   IActorRdfJoinOutputInner,
@@ -12,6 +11,7 @@ import type { TestResult } from '@comunica/core';
 import { passTestWithSideData } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { IJoinEntry, ComunicaDataFactory } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 
 /**

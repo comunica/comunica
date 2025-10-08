@@ -1,7 +1,7 @@
-import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorOptimizeQueryOperationRewriteCopy } from '../lib/ActorOptimizeQueryOperationRewriteCopy';

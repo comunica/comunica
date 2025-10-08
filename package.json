@@ -40,7 +40,7 @@
     "version": "manual-git-changelog onversion"
   },
   "devDependencies": {
-    "@comunica/algebra-sparql-comunica": "^4.0.2",
+    "@comunica/utils-algebra": "^4.0.2",
     "@playwright/test": "^1.47.2",
     "@pollyjs/adapter-node-http": "^6.0.5",
     "@pollyjs/core": "^6.0.5",

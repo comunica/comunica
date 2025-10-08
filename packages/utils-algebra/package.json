@@ -1,7 +1,7 @@
 {
-  "name": "@comunica/algebra-sparql-comunica",
+  "name": "@comunica/utils-algebra",
   "version": "4.0.2",
-  "description": "Self maintained Algebra that Comunica views as its base",
+  "description": "Query algebra definitions and utilities",
   "lsd:module": true,
   "license": "MIT",
   "funding": {

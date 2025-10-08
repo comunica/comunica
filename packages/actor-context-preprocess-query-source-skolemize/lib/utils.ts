@@ -1,4 +1,3 @@
-import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type {
   BindingsStream,
   ComunicaDataFactory,
@@ -7,6 +6,7 @@ import type {
   MetadataQuads,
   QuerySourceReference,
 } from '@comunica/types';
+import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { BlankNodeScoped } from '@comunica/utils-data-factory';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';

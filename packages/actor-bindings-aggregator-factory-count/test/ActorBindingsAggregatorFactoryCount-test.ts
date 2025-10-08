@@ -1,9 +1,9 @@
-import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type {
   MediatorExpressionEvaluatorFactory,
 } from '@comunica/bus-expression-evaluator-factory';
 import { Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import {
   getMockEEActionContext,
   getMockMediatorExpressionEvaluatorFactory,

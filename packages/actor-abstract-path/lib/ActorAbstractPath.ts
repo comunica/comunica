@@ -1,5 +1,3 @@
-import type { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
-import { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperationTypedMediated,
@@ -15,6 +13,8 @@ import type {
   IQuerySourceWrapper,
   ComunicaDataFactory,
 } from '@comunica/types';
+import { Algebra } from '@comunica/utils-algebra';
+import type { AlgebraFactory } from '@comunica/utils-algebra';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { assignOperationSource, getOperationSource, getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
@@ -405,8 +405,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
       }
       return [ source ];
     }
-    // TODO: @RT what does this do? Do we throw an error? Or is empty list good?
-    return [];
+    throw new Error(`Can not extract path sources from operation of type ${operation.type}`);
   }
 
   public assignPatternSources(

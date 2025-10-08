@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "@comunica/actor-query-source-identify-rdfjs": "^4.0.2",
-    "@comunica/algebra-sparql-comunica": "^4.0.2",
+    "@comunica/utils-algebra": "^4.0.2",
     "@comunica/bus-dereference-rdf": "^4.0.2",
     "@comunica/bus-merge-bindings-context": "^4.0.2",
     "@comunica/bus-query-source-identify": "^4.0.2",
