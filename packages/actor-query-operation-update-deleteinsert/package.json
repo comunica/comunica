@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "@comunica/actor-query-operation-construct": "^4.0.2",
+    "@comunica/algebra-sparql-comunica": "^4.0.2",
     "@comunica/bus-merge-bindings-context": "^4.0.2",
     "@comunica/bus-query-operation": "^4.0.2",
     "@comunica/bus-rdf-update-quads": "^4.0.2",
@@ -47,7 +48,6 @@
     "@comunica/utils-bindings-factory": "^4.0.2",
     "@comunica/utils-query-operation": "^4.0.2",
     "@rdfjs/types": "*",
-    "@comunica/algebra-sparql-comunica": "^4.0.2",
     "asynciterator": "^3.9.0"
   }
 }

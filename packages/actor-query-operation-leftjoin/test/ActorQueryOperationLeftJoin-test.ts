@@ -1,4 +1,5 @@
 import { ActorFunctionFactoryTermAddition } from '@comunica/actor-function-factory-term-addition';
+import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
@@ -16,7 +17,6 @@ import { ArrayIterator, UnionIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationLeftJoin } from '../lib';
 import '@comunica/utils-jest';
-import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);

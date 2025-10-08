@@ -52,7 +52,7 @@ export function materializeTerm(term: RDF.Term, bindings: Bindings): RDF.Term {
 export function materializeOperation(
   operation: Algebra.Operation,
   bindings: Bindings,
-  factory: AlgebraFactory,
+  algebraFactory: AlgebraFactory,
   bindingsFactory: BindingsFactory,
   options: {
     strictTargetVariables?: boolean;
@@ -72,7 +72,7 @@ export function materializeOperation(
       transform: pathOp =>
         // Materialize variables in a path expression.
         // The predicate expression will be recursed.
-        Object.assign(factory.createPath(
+        Object.assign(algebraFactory.createPath(
           materializeTerm(pathOp.subject, bindings),
           pathOp.predicate,
           materializeTerm(pathOp.object, bindings),
@@ -83,7 +83,7 @@ export function materializeOperation(
       preVisitor: () => ({ continue: false }),
       transform: patternOp =>
         // Materialize variables in the quad pattern.
-        Object.assign(factory.createPattern(
+        Object.assign(algebraFactory.createPattern(
           materializeTerm(patternOp.subject, bindings),
           materializeTerm(patternOp.predicate, bindings),
           materializeTerm(patternOp.object, bindings),
@@ -98,7 +98,7 @@ export function materializeOperation(
         if (options.strictTargetVariables) {
           throw new Error(`Tried to bind variable ${termToString(extendOp.variable)} in a BIND operator.`);
         } else {
-          return materializeOperation(extendOp.input, bindings, factory, bindingsFactory, options);
+          return materializeOperation(extendOp.input, bindings, algebraFactory, bindingsFactory, options);
         }
       }
       return extendOp;
@@ -116,7 +116,7 @@ export function materializeOperation(
         return groupOp;
       }
       const variables = groupOp.variables.filter(variable => !bindings.has(variable));
-      return factory.createGroup(
+      return algebraFactory.createGroup(
         groupOp.input,
         variables,
         groupOp.aggregates,
@@ -131,13 +131,13 @@ export function materializeOperation(
         }
 
         // Make a values clause using all the variables from originalBindings.
-        const values: Algebra.Operation[] = createValuesFromBindings(factory, originalBindings);
+        const values: Algebra.Operation[] = createValuesFromBindings(algebraFactory, originalBindings);
 
         // Recursively materialize the filter expression
         const recursionResultExpression: Algebra.Expression = <Algebra.Expression> materializeOperation(
           filterOp.expression,
           bindings,
-          factory,
+          algebraFactory,
           bindingsFactory,
           options,
         );
@@ -146,16 +146,16 @@ export function materializeOperation(
         let recursionResultInput: Algebra.Operation = materializeOperation(
           filterOp.input,
           bindings,
-          factory,
+          algebraFactory,
           bindingsFactory,
           options,
         );
 
         if (values.length > 0) {
-          recursionResultInput = factory.createJoin([ ...values, recursionResultInput ]);
+          recursionResultInput = algebraFactory.createJoin([ ...values, recursionResultInput ]);
         }
 
-        return factory.createFilter(recursionResultInput, recursionResultExpression);
+        return algebraFactory.createFilter(recursionResultInput, recursionResultExpression);
       },
     },
     [Algebra.Types.PROJECT]: {
@@ -187,21 +187,21 @@ export function materializeOperation(
         // Find projected variables which are present in the originalBindings.
         // This will result in projected variables being handled via a values clause.
         const values: Algebra.Operation[] =
-          createValuesFromBindings(factory, <Bindings> options.originalBindings, projectOp.variables);
+          createValuesFromBindings(algebraFactory, <Bindings> options.originalBindings, projectOp.variables);
 
         let recursionResult: Algebra.Operation = materializeOperation(
           projectOp.input,
           bindings,
-          factory,
+          algebraFactory,
           bindingsFactory,
           options,
         );
 
         if (values.length > 0) {
-          recursionResult = factory.createJoin([ ...values, recursionResult ]);
+          recursionResult = algebraFactory.createJoin([ ...values, recursionResult ]);
         }
 
-        return factory.createProject(recursionResult, projectOp.variables);
+        return algebraFactory.createProject(recursionResult, projectOp.variables);
       },
     },
     [Algebra.Types.VALUES]: {
@@ -234,7 +234,7 @@ export function materializeOperation(
           });
           return valid ? newBinding : undefined;
         }).filter(Boolean);
-        return factory.createValues(variables, valueBindings);
+        return algebraFactory.createValues(variables, valueBindings);
       },
     },
     [Algebra.Types.EXPRESSION]: {
@@ -260,15 +260,15 @@ export function materializeOperation(
 
         if (expressionOp.subType === 'term') {
           // Materialize a term expression
-          return factory.createTermExpression(materializeTerm(expressionOp.term, bindings));
+          return algebraFactory.createTermExpression(materializeTerm(expressionOp.term, bindings));
         }
         if (expressionOp.subType === 'operator') {
           if (expressionOp.operator === 'bound' && expressionOp.args.length === 1 &&
         expressionOp.args[0].subType === 'term' && [ ...bindings.keys() ]
             .some(variable => (<Algebra.TermExpression>expressionOp.args[0]).term.equals(variable))) {
-            return factory.createTermExpression(factory.dataFactory.literal(
+            return algebraFactory.createTermExpression(algebraFactory.dataFactory.literal(
               'true',
-              factory.dataFactory.namedNode('http://www.w3.org/2001/XMLSchema#boolean'),
+              algebraFactory.dataFactory.namedNode('http://www.w3.org/2001/XMLSchema#boolean'),
             ));
           }
           return expressionOp;

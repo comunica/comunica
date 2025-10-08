@@ -21,6 +21,12 @@
     "sourceMap": true,
     "skipLibCheck": true
   },
+  "references": [
+    { "path": "../../../PhD/code/traqula/packages/core" },
+    { "path": "../../../PhD/code/traqula/packages/algebra-transformations-1-1" },
+    { "path": "../../../PhD/code/traqula/packages/algebra-transformations-1-2" },
+    { "path": "../../../PhD/code/traqula/packages/rules-sparql-1-1" }
+  ],
   "include": [
     "engines/*/bin/**/*",
     "engines/*/lib/**/*",
@@ -32,11 +38,5 @@
   "exclude": [
     "**/node_modules",
     "../../../PhD/**"
-  ],
-  "references": [
-    { "path": "../../../PhD/code/traqula/packages/core" },
-    { "path": "../../../PhD/code/traqula/packages/algebra-transformations-1-1" },
-    { "path": "../../../PhD/code/traqula/packages/algebra-transformations-1-2" },
-    { "path": "../../../PhD/code/traqula/packages/rules-sparql-1-1" }
   ]
 }

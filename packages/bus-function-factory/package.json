@@ -36,10 +36,10 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
+    "@comunica/algebra-sparql-comunica": "^4.0.2",
     "@comunica/context-entries": "^4.0.2",
     "@comunica/core": "^4.0.2",
     "@comunica/types": "^4.0.2",
-    "@comunica/utils-expression-evaluator": "^4.0.2",
-    "@comunica/algebra-sparql-comunica": "^4.0.2"
+    "@comunica/utils-expression-evaluator": "^4.0.2"
   }
 }

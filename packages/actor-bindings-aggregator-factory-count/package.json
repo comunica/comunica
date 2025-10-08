@@ -37,11 +37,11 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
+    "@comunica/algebra-sparql-comunica": "^4.0.2",
     "@comunica/bus-bindings-aggregator-factory": "^4.0.2",
     "@comunica/core": "^4.0.2",
     "@comunica/types": "^4.0.2",
     "@comunica/utils-expression-evaluator": "^4.0.2",
-    "@rdfjs/types": "*",
-    "@comunica/algebra-sparql-comunica": "^4.0.2"
+    "@rdfjs/types": "*"
   }
 }

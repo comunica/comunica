@@ -42,6 +42,7 @@
   },
   "dependencies": {
     "@comunica/actor-rdf-metadata-extract-hydra-controls": "^4.0.2",
+    "@comunica/algebra-sparql-comunica": "^4.0.2",
     "@comunica/bus-dereference-rdf": "^4.0.2",
     "@comunica/bus-merge-bindings-context": "^4.0.2",
     "@comunica/bus-query-source-identify": "^4.0.2",
@@ -54,7 +55,6 @@
     "@comunica/utils-bindings-factory": "^4.0.2",
     "@comunica/utils-metadata": "^4.0.2",
     "@rdfjs/types": "*",
-    "@comunica/algebra-sparql-comunica": "^4.0.2",
     "asynciterator": "^3.9.0",
     "rdf-string": "^2.0.1",
     "rdf-string-ttl": "^2.0.1",

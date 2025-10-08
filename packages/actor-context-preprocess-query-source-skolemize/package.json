@@ -41,6 +41,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
+    "@comunica/algebra-sparql-comunica": "^4.0.2",
     "@comunica/bus-context-preprocess": "^4.0.2",
     "@comunica/context-entries": "^4.0.2",
     "@comunica/core": "^4.0.2",
@@ -48,7 +49,6 @@
     "@comunica/utils-data-factory": "^4.0.1",
     "@comunica/utils-metadata": "^4.0.2",
     "@rdfjs/types": "*",
-    "@comunica/algebra-sparql-comunica": "^4.0.2",
     "asynciterator": "^3.9.0",
     "rdf-terms": "^2.0.0"
   }

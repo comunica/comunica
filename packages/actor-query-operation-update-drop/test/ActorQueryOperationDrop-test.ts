@@ -1,10 +1,10 @@
+import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultVoid } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationDrop } from '../lib/ActorQueryOperationDrop';
 import '@comunica/utils-jest';
-import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 
 const DF = new DataFactory();
 const AF = new AlgebraFactory(DF);

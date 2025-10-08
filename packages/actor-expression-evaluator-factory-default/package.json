@@ -37,6 +37,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
+    "@comunica/algebra-sparql-comunica": "^4.0.2",
     "@comunica/bus-expression-evaluator-factory": "^4.0.2",
     "@comunica/bus-function-factory": "^4.0.2",
     "@comunica/bus-query-operation": "^4.0.2",
@@ -46,7 +47,6 @@
     "@comunica/utils-bindings-factory": "^4.0.2",
     "@comunica/utils-expression-evaluator": "^4.0.2",
     "@comunica/utils-query-operation": "^4.0.2",
-    "@rdfjs/types": "*",
-    "@comunica/algebra-sparql-comunica": "^4.0.2"
+    "@rdfjs/types": "*"
   }
 }
