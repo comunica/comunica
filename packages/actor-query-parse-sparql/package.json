@@ -41,7 +41,6 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/algebra-comunica-proto-extension-and-parser": "^4.0.2",
     "@comunica/bus-query-parse": "^4.0.2",
     "@comunica/context-entries": "^4.0.2",
     "@comunica/core": "^4.0.2",

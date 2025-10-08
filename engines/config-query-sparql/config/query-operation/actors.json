@@ -21,7 +21,6 @@
     "ccqs:config/query-operation/actors/query/service.json",
     "ccqs:config/query-operation/actors/query/slice.json",
     "ccqs:config/query-operation/actors/query/source.json",
-    "ccqs:config/query-operation/actors/query/lateral.json",
     "ccqs:config/query-operation/actors/query/union.json",
     "ccqs:config/query-operation/actors/query/values.json",
 

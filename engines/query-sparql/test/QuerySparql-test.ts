@@ -787,21 +787,6 @@ SELECT * WHERE {
         });
         expect((await bindingsStream.toArray()).length > 0).toBeTruthy();
       });
-
-      it('with join over lateral', async() => {
-        const bindingsStream = await engine.queryBindings(`
-SELECT * WHERE {
-  <https://api.community.hubl.world/skills/> <http://www.w3.org/ns/ldp#contains> ?contains.
-  {
-    { ?contains <http://www.w3.org/2000/01/rdf-schema#label> ?preload_0. }
-    LATERAL
-    { ?contains <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?preload_1. }
-  }
-}`, {
-          sources: [ 'https://api.community.hubl.world/skills/' ],
-        });
-        expect((await bindingsStream.toArray()).length > 0).toBeTruthy();
-      });
     });
 
     describe('property paths', () => {

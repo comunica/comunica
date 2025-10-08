@@ -2034,25 +2034,6 @@
     "@traqula/rules-sparql-1-1" "^0.0.19"
     "@traqula/rules-sparql-1-2" "^0.0.19"
 
-"@traqula/parser-sparql-1-1@^0.0.19":
-  version "0.0.19"
-  resolved "https://registry.yarnpkg.com/@traqula/parser-sparql-1-1/-/parser-sparql-1-1-0.0.19.tgz#2bfd36f97f63cf703a0cc03148862f1e9b46d5c9"
-  integrity sha512-M+vGFaR5OYerSA6fhAz1EdVM5qomoE7P90VyGL/yzEX98BvfKuIMuPpLkJ0kQDn03JdWO0KvWQfQ816wjd8XJQ==
-  dependencies:
-    "@traqula/core" "^0.0.19"
-    "@traqula/rules-sparql-1-1" "^0.0.19"
-
-"@traqula/parser-sparql-1-2@^0.0.19":
-  version "0.0.19"
-  resolved "https://registry.yarnpkg.com/@traqula/parser-sparql-1-2/-/parser-sparql-1-2-0.0.19.tgz#5a734118784421c05836fe963ce084933bcd9253"
-  integrity sha512-v+uxrlY1DJ/AcL1JiCdaSopGFftpnUkgDxRvJlLDXp0aCBW+9itWuNjYikVlbvj8xx/LwqnHOtUwx+zBHSGpXw==
-  dependencies:
-    "@traqula/core" "^0.0.19"
-    "@traqula/parser-sparql-1-1" "^0.0.19"
-    "@traqula/rules-sparql-1-1" "^0.0.19"
-    "@traqula/rules-sparql-1-2" "^0.0.19"
-    rdf-data-factory "^2.0.1"
-
 "@traqula/rules-sparql-1-1@^0.0.19":
   version "0.0.19"
   resolved "https://registry.yarnpkg.com/@traqula/rules-sparql-1-1/-/rules-sparql-1-1-0.0.19.tgz#5ad9f127556e1c7bba92223c0ee8940839525607"
