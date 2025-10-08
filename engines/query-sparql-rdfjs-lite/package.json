@@ -178,6 +178,7 @@
     "@comunica/actor-query-operation-from-quad": "^4.0.2",
     "@comunica/actor-query-operation-group": "^4.0.2",
     "@comunica/actor-query-operation-join": "^4.0.2",
+    "@comunica/actor-query-operation-lateral": "^4.0.2",
     "@comunica/actor-query-operation-leftjoin": "^4.0.2",
     "@comunica/actor-query-operation-minus": "^4.0.2",
     "@comunica/actor-query-operation-nop": "^4.0.2",
