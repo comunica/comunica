@@ -1,3 +1,4 @@
+import { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
@@ -8,7 +9,6 @@ import type { Bindings, IActionContext, IQueryOperationResult } from '@comunica/
 import { isExpressionError } from '@comunica/utils-expression-evaluator';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type { Term } from '@rdfjs/types';
-import { Algebra } from 'sparqlalgebrajs';
 import { SortIterator } from './SortIterator';
 
 /**
@@ -20,7 +20,7 @@ export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated
   private readonly mediatorTermComparatorFactory: MediatorTermComparatorFactory;
 
   public constructor(args: IActorQueryOperationOrderBySparqleeArgs) {
-    super(args, 'orderby');
+    super(args, Algebra.Types.ORDER_BY);
     this.window = args.window ?? Number.POSITIVE_INFINITY;
     this.mediatorExpressionEvaluatorFactory = args.mediatorExpressionEvaluatorFactory;
     this.mediatorTermComparatorFactory = args.mediatorTermComparatorFactory;
@@ -94,21 +94,19 @@ export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated
 
   // Remove descending operator if necessary
   private extractSortExpression(expr: Algebra.Expression): Algebra.Expression {
-    const { expressionType, operator } = expr;
-    if (expressionType !== Algebra.expressionTypes.OPERATOR) {
-      return expr;
+    if (Algebra.isKnownSub(expr, Algebra.ExpressionTypes.OPERATOR)) {
+      return expr.operator === 'desc' ?
+        expr.args[0] :
+        expr;
     }
-    return operator === 'desc' ?
-      expr.args[0] :
-      expr;
+    return expr;
   }
 
   private isAscending(expr: Algebra.Expression): boolean {
-    const { expressionType, operator } = expr;
-    if (expressionType !== Algebra.expressionTypes.OPERATOR) {
-      return true;
+    if (Algebra.isKnownSub(expr, Algebra.ExpressionTypes.OPERATOR)) {
+      return expr.operator !== 'desc';
     }
-    return operator !== 'desc';
+    return true;
   }
 }
 

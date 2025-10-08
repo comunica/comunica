@@ -1,3 +1,4 @@
+import { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
@@ -8,7 +9,6 @@ import type { Bindings, IActionContext, IJoinEntry, IQueryOperationResult } from
 import { bindingsToString } from '@comunica/utils-bindings-factory';
 import { isExpressionError } from '@comunica/utils-expression-evaluator';
 import { getSafeBindings } from '@comunica/utils-query-operation';
-import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica LeftJoin Query Operation Actor.
@@ -18,7 +18,7 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
   private readonly mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
 
   public constructor(args: IActorQueryOperationLeftJoinArgs) {
-    super(args, 'leftjoin');
+    super(args, Algebra.Types.LEFT_JOIN);
     this.mediatorExpressionEvaluatorFactory = args.mediatorExpressionEvaluatorFactory;
   }
 

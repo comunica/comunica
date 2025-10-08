@@ -1,4 +1,5 @@
 import { Readable } from 'node:stream';
+import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
@@ -8,12 +9,11 @@ import arrayifyStream from 'arrayify-stream';
 import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
 import { RdfStore } from 'rdf-stores';
-import { Factory } from 'sparqlalgebrajs';
 import { QuerySourceRdfJs } from '../lib';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
-const AF = new Factory();
+const AF = new AlgebraFactory();
 const BF = new BindingsFactory(DF);
 
 describe('QuerySourceRdfJs', () => {

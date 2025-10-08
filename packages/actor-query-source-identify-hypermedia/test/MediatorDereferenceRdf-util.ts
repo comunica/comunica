@@ -1,4 +1,5 @@
 import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
+import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type {
   IActionDereferenceRdf,
   IActorDereferenceRdfOutput,
@@ -22,14 +23,13 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { wrap } from 'asynciterator';
 import 'jest-rdf';
 import { DataFactory } from 'rdf-data-factory';
-import { Factory } from 'sparqlalgebrajs';
 
 const quad = require('rdf-quad');
 const streamifyArray = require('streamify-array');
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
-const AF = new Factory();
+const AF = new AlgebraFactory();
 
 // @ts-expect-error
 const mediatorDereferenceRdf: MediatorDereferenceRdf = {

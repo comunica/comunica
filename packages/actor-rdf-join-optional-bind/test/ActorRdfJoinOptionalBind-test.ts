@@ -1,3 +1,4 @@
+import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
@@ -9,13 +10,12 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { Algebra, Factory } from 'sparqlalgebrajs/index';
 import { ActorRdfJoinOptionalBind } from '../lib/ActorRdfJoinOptionalBind';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
-const FACTORY = new Factory();
+const FACTORY = new AlgebraFactory();
 const mediatorMergeBindingsContext: any = {
   mediate: () => ({}),
 };
@@ -246,7 +246,7 @@ IQueryOperationResultBindings
               },
               {
                 output: <any>{},
-                operation: <any>{ type: Algebra.types.EXTEND },
+                operation: <any>{ type: Algebra.Types.EXTEND },
               },
             ],
             context,
@@ -289,7 +289,7 @@ IQueryOperationResultBindings
               },
               {
                 output: <any> {},
-                operation: <any> { type: Algebra.types.GROUP },
+                operation: <any> { type: Algebra.Types.GROUP },
               },
             ],
             context,
@@ -328,7 +328,7 @@ IQueryOperationResultBindings
             entries: [
               {
                 output: <any> {},
-                operation: <any> { type: Algebra.types.GROUP },
+                operation: <any> { type: Algebra.Types.GROUP },
               },
               {
                 output: <any> {},

@@ -1,4 +1,5 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
+import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 
 import type { MediatorRdfJoin } from '@comunica/bus-rdf-join';
@@ -6,7 +7,6 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { Bindings, IActionContext, IQueryOperationResult, IJoinEntry, ComunicaDataFactory } from '@comunica/types';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
-import { Algebra, Factory } from 'sparqlalgebrajs';
 
 /**
  * A comunica Path Seq Query Operation Actor.
@@ -15,7 +15,7 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
   public readonly mediatorJoin: MediatorRdfJoin;
 
   public constructor(args: IActorQueryOperationPathSeq) {
-    super(args, Algebra.types.SEQ);
+    super(args, Algebra.Types.SEQ);
   }
 
   public async runOperation(
@@ -23,7 +23,7 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
     context: IActionContext,
   ): Promise<IQueryOperationResult> {
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
     const predicate = <Algebra.Seq> operationOriginal.predicate;
 
     let joiner: RDF.Term = operationOriginal.subject;

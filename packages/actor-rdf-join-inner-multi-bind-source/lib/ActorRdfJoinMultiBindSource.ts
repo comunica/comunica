@@ -1,3 +1,5 @@
+import type { Algebra } from '@comunica/algebra-sparql-comunica';
+import { AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type {
   IActionRdfJoin,
   IActorRdfJoinArgs,
@@ -22,8 +24,6 @@ import { doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-qu
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { UnionIterator } from 'asynciterator';
-import type { Algebra } from 'sparqlalgebrajs';
-import { Factory } from 'sparqlalgebrajs';
 
 /**
  * A comunica Inner Multi Bind Source RDF Join Actor.
@@ -46,7 +46,7 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
     sideData: IActorRdfJoinMultiBindSourceTestSideData,
   ): Promise<IActorRdfJoinOutputInner> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
 
     // Order the entries so we can pick the first one (usually the one with the lowest cardinality)
     const entries = sideData.entriesSorted;
@@ -129,7 +129,7 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
     let { metadatas } = sideData;
 
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
 
     // Order the entries so we can pick the first one (usually the one with the lowest cardinality)
     const entriesUnsorted = action.entries.map((entry, i) => ({ ...entry, metadata: metadatas[i] }));
@@ -192,7 +192,7 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
   }
 
   public createOperationFromEntries(
-    algebraFactory: Factory,
+    algebraFactory: AlgebraFactory,
     remainingEntries: IJoinEntryWithMetadata[],
   ): Algebra.Operation {
     if (remainingEntries.length === 1) {

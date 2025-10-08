@@ -1,10 +1,10 @@
+import type { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { MediatorFunctionFactory, MediatorFunctionFactoryUnsafe } from '@comunica/bus-function-factory';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { IExpressionEvaluator } from '@comunica/types';
-import type { Algebra as Alg } from 'sparqlalgebrajs';
 
 /**
  * A comunica actor for utils-expression-evaluator-factory events.
@@ -37,7 +37,7 @@ export abstract class ActorExpressionEvaluatorFactory<TS = undefined> extends
 }
 
 export interface IActionExpressionEvaluatorFactory extends IAction {
-  algExpr: Alg.Expression;
+  algExpr: Algebra.Expression;
 }
 
 export interface IActorExpressionEvaluatorFactoryOutput extends IActorOutput, IExpressionEvaluator {}

@@ -1,3 +1,4 @@
+import { Algebra, AlgebraFactory } from '@comunica/algebra-sparql-comunica';
 import type {
   IActionOptimizeQueryOperation,
   IActorOptimizeQueryOperationOutput,
@@ -7,8 +8,6 @@ import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operat
 import { KeysInitQuery } from '@comunica/context-entries/lib/Keys';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
-import type { Algebra, Factory } from 'sparqlalgebrajs';
-import { Util } from 'sparqlalgebrajs';
 
 /**
  * A comunica Construct Distinct Optimize Query Operation Actor.
@@ -26,12 +25,12 @@ export class ActorOptimizeQueryOperationConstructDistinct extends ActorOptimizeQ
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
-    const operation = Util.mapOperation(action.operation, {
-      construct(op: Algebra.Construct, factory: Factory) {
-        return {
-          recurse: false,
-          result: factory.createDistinct(factory.createConstruct(op.input, op.template)),
-        };
+    const factory = new AlgebraFactory();
+    const operation = Algebra.mapOperation<'unsafe', typeof action.operation>(action.operation, {
+      [Algebra.Types.CONSTRUCT]: {
+        preVisitor: () => ({ continue: false }),
+        transform: constructOp =>
+          factory.createDistinct(factory.createConstruct(constructOp.input, constructOp.template)),
       },
     });
     return { operation, context: action.context.delete(KeysInitQuery.distinctConstruct) };

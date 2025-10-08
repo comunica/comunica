@@ -1,3 +1,4 @@
+import type { Algebra } from '@comunica/algebra-sparql-comunica';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type {
   BindingsStream,
@@ -11,7 +12,6 @@ import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
-import type { Algebra } from 'sparqlalgebrajs';
 import { deskolemizeOperation, skolemizeBindingsStream, skolemizeQuadStream } from './utils';
 
 /**
@@ -77,7 +77,7 @@ export class QuerySourceSkolemized implements IQuerySource {
     return skolemizeQuadStream(dataFactory, this.innerSource.queryQuads(operationMapped, context), this.sourceId);
   }
 
-  public queryVoid(operation: Algebra.Update, context: IActionContext): Promise<void> {
+  public queryVoid(operation: Algebra.Operation, context: IActionContext): Promise<void> {
     return this.innerSource.queryVoid(operation, context);
   }
 

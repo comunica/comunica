@@ -1,4 +1,5 @@
 import { BindingsToQuadsIterator } from '@comunica/actor-query-operation-construct';
+import { Algebra } from '@comunica/algebra-sparql-comunica';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
@@ -13,7 +14,6 @@ import { getSafeBindings, testReadOnly } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
-import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Update DeleteInsert Query Operation Actor.
@@ -25,7 +25,7 @@ export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTy
   protected blankNodeCounter = 0;
 
   public constructor(args: IActorQueryOperationUpdateDeleteInsertArgs) {
-    super(args, 'deleteinsert');
+    super(args, Algebra.Types.DELETE_INSERT);
   }
 
   public async testOperation(
