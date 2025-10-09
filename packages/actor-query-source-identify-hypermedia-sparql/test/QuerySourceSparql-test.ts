@@ -127,9 +127,7 @@ describe('QuerySourceSparql', () => {
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
         context: ctx,
         init: {
-          body: new URLSearchParams({ query: `SELECT ( COUNT( * ) AS ?count ) WHERE {
-  <${testUrl('s')}> ?p <${testUrl('o')}> .  
-}` }),
+          body: new URLSearchParams({ query: `SELECT ( COUNT( * ) AS ?count ) WHERE { <${testUrl('s')}> ?p <${testUrl('o')}> . }` }),
           headers: expect.anything(),
           method: 'POST',
         },
@@ -817,16 +815,12 @@ describe('QuerySourceSparql', () => {
             p: DF.namedNode('p3'),
           }),
         ]);
-      expect(lastQuery).toBe(`query=SELECT+%3Fp+WHERE+%7B++%0A++VALUES%28+%29%7B++++%0A++%7D%0A++%3Chttps%3A%2F%2Fex%2Fs%3E+%3Fp+%3Chttps%3A%2F%2Fex%2Fo%3E+.++%0A%7D`);
+      expect(lastQuery).toBe(`query=SELECT+%3Fp+WHERE+%7B+VALUES%28+%29%7B+%7D%3Chttps%3A%2F%2Fex%2Fs%3E+%3Fp+%3Chttps%3A%2F%2Fex%2Fo%3E+.+%7D`);
 
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
         context: ctx,
         init: {
-          body: new URLSearchParams({ query: `SELECT ( COUNT( * ) AS ?count ) WHERE {  
-  VALUES( ){    
-  }
-  <${testUrl('s')}> ?p <${testUrl('o')}> .  
-}` }),
+          body: new URLSearchParams({ query: `SELECT ( COUNT( * ) AS ?count ) WHERE { VALUES( ){ }<${testUrl('s')}> ?p <${testUrl('o')}> . }` }),
           headers: expect.anything(),
           method: 'POST',
         },
@@ -856,16 +850,12 @@ describe('QuerySourceSparql', () => {
             p: DF.namedNode('p3'),
           }),
         ]);
-      expect(lastQuery).toBe(`query=SELECT+%3Fp+WHERE+%7B++%0A++VALUES%28+%29%7B++++%0A++%7D%0A++%3Chttps%3A%2F%2Fex%2Fs%3E+%3Fp+%3Chttps%3A%2F%2Fex%2Fo%3E+.++%0A%7D`);
+      expect(lastQuery).toBe(`query=SELECT+%3Fp+WHERE+%7B+VALUES%28+%29%7B+%7D%3Chttps%3A%2F%2Fex%2Fs%3E+%3Fp+%3Chttps%3A%2F%2Fex%2Fo%3E+.+%7D`);
 
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
         context: ctx.set(KeysInitQuery.queryString, 'abc'),
         init: {
-          body: new URLSearchParams({ query: `SELECT ( COUNT( * ) AS ?count ) WHERE {  
-  VALUES( ){    
-  }
-  <${testUrl('s')}> ?p <${testUrl('o')}> .  
-}` }),
+          body: new URLSearchParams({ query: `SELECT ( COUNT( * ) AS ?count ) WHERE { VALUES( ){ }<${testUrl('s')}> ?p <${testUrl('o')}> . }` }),
           headers: expect.anything(),
           method: 'POST',
         },
@@ -995,11 +985,7 @@ describe('QuerySourceSparql', () => {
       expect(thisMediator.mediate).toHaveBeenCalledWith({
         context: ctx,
         init: {
-          body: new URLSearchParams({ query: `CONSTRUCT {  
-}
-WHERE {
-  <${testUrl('s')}> ?p <${testUrl('o')}> .  
-}` }),
+          body: new URLSearchParams({ query: `CONSTRUCT { } WHERE { <${testUrl('s')}> ?p <${testUrl('o')}> . }` }),
           headers: expect.anything(),
           method: 'POST',
         },
@@ -1108,9 +1094,7 @@ WHERE {
       expect(thisMediator.mediate).toHaveBeenCalledWith({
         context: ctx,
         init: {
-          body: new URLSearchParams({ query: `ASK WHERE {
-  <${testUrl('s')}> ?p <${testUrl('o')}> .  
-}` }),
+          body: new URLSearchParams({ query: `ASK WHERE { <${testUrl('s')}> ?p <${testUrl('o')}> . }` }),
           headers: expect.anything(),
           method: 'POST',
         },

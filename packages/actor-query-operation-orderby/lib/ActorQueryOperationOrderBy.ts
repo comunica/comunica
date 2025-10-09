@@ -5,7 +5,7 @@ import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparato
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { Bindings, IActionContext, IQueryOperationResult } from '@comunica/types';
-import { Algebra, isKnownSub } from '@comunica/utils-algebra';
+import { Algebra, isKnownSubType } from '@comunica/utils-algebra';
 import { isExpressionError } from '@comunica/utils-expression-evaluator';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type { Term } from '@rdfjs/types';
@@ -94,7 +94,7 @@ export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated
 
   // Remove descending operator if necessary
   private extractSortExpression(expr: Algebra.Expression): Algebra.Expression {
-    if (isKnownSub(expr, Algebra.ExpressionTypes.OPERATOR)) {
+    if (isKnownSubType(expr, Algebra.ExpressionTypes.OPERATOR)) {
       return expr.operator === 'desc' ?
         expr.args[0] :
         expr;
@@ -103,7 +103,7 @@ export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated
   }
 
   private isAscending(expr: Algebra.Expression): boolean {
-    if (isKnownSub(expr, Algebra.ExpressionTypes.OPERATOR)) {
+    if (isKnownSubType(expr, Algebra.ExpressionTypes.OPERATOR)) {
       return expr.operator !== 'desc';
     }
     return true;

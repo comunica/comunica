@@ -2,7 +2,6 @@
   "name": "@comunica/utils-algebra",
   "version": "4.0.2",
   "description": "Query algebra definitions and utilities",
-  "lsd:module": true,
   "license": "MIT",
   "funding": {
     "type": "opencollective",
@@ -12,16 +11,14 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-abstract-mediatyped"
+    "directory": "packages/utils-algebra"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"
   },
   "keywords": [
     "comunica",
-    "actor",
-    "abstract",
-    "mediatype"
+    "algebra"
   ],
   "sideEffects": false,
   "main": "lib/index.js",
@@ -30,15 +27,13 @@
     "access": "public"
   },
   "files": [
-    "components",
     "lib/**/*.d.ts",
     "lib/**/*.js",
     "lib/**/*.js.map"
   ],
   "scripts": {
-    "build": "yarn run build:ts && yarn run build:components",
-    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
-    "build:components": "componentsjs-generator"
+    "build": "yarn run build:ts",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\""
   },
   "dependencies": {
     "@traqula/algebra-transformations-1-2": "^0.0.19",

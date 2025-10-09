@@ -19,6 +19,7 @@ import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import { toAst } from '@traqula/algebra-sparql-1-2';
 import type { Algebra as TraqualAlgebra } from '@traqula/algebra-transformations-1-2';
+import { traqulaIndentation } from '@traqula/core';
 import { Generator } from '@traqula/generator-sparql-1-2';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator, wrap } from 'asynciterator';
@@ -30,7 +31,13 @@ import type { BindMethod } from './ActorQuerySourceIdentifyHypermediaSparql';
 const COUNT_INFINITY: RDF.QueryResultCardinality = { type: 'estimate', value: Number.POSITIVE_INFINITY };
 
 export class QuerySourceSparql implements IQuerySource {
-  protected static readonly queryStringGenerator = new Generator();
+  /**
+   * A query string generator that has an indentation of -1,
+   * meaning it does not print newlines as part of its query structure.
+   * We also put the indentIncrements to 0 so it does not change the indentation.
+   * @protected
+   */
+  protected static readonly queryStringGenerator = new Generator({ [traqulaIndentation]: -1, indentInc: 0 });
   protected static readonly SELECTOR_SHAPE: FragmentSelectorShape = {
     type: 'disjunction',
     children: [

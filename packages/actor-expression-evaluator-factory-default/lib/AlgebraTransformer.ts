@@ -1,7 +1,7 @@
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import type { Expression, IActionContext, OperatorExpression } from '@comunica/types';
-import { Algebra, AlgebraFactory, isKnownSub } from '@comunica/utils-algebra';
+import { Algebra, AlgebraFactory, isKnownSubType } from '@comunica/utils-algebra';
 import * as ExprEval from '@comunica/utils-expression-evaluator';
 
 export class AlgebraTransformer extends ExprEval.TermTransformer {
@@ -14,7 +14,7 @@ export class AlgebraTransformer extends ExprEval.TermTransformer {
   }
 
   public async transformAlgebra(expr: Algebra.Expression): Promise<Expression> {
-    if (isKnownSub(expr, Algebra.ExpressionTypes.TERM)) {
+    if (isKnownSubType(expr, Algebra.ExpressionTypes.TERM)) {
       // A triple term is actually not a term since it itself can contain
       // variables thereby having the properties of an operator, we therefore map it to the triple operator here.
       // Not that this is needed because the EE has a shortcut for terms and sees them as distinct from operators.
@@ -27,19 +27,19 @@ export class AlgebraTransformer extends ExprEval.TermTransformer {
       }
       return this.transformTerm(expr);
     }
-    if (isKnownSub(expr, Algebra.ExpressionTypes.OPERATOR)) {
+    if (isKnownSubType(expr, Algebra.ExpressionTypes.OPERATOR)) {
       return await this.transformOperator(expr);
     }
-    if (isKnownSub(expr, Algebra.ExpressionTypes.NAMED)) {
+    if (isKnownSubType(expr, Algebra.ExpressionTypes.NAMED)) {
       return await this.transformNamed(expr);
     }
-    if (isKnownSub(expr, Algebra.ExpressionTypes.EXISTENCE)) {
+    if (isKnownSubType(expr, Algebra.ExpressionTypes.EXISTENCE)) {
       return AlgebraTransformer.transformExistence(expr);
     }
-    if (isKnownSub(expr, Algebra.ExpressionTypes.AGGREGATE)) {
+    if (isKnownSubType(expr, Algebra.ExpressionTypes.AGGREGATE)) {
       return AlgebraTransformer.transformAggregate(expr);
     }
-    if (isKnownSub(expr, Algebra.ExpressionTypes.WILDCARD)) {
+    if (isKnownSubType(expr, Algebra.ExpressionTypes.WILDCARD)) {
       return AlgebraTransformer.transformWildcard(expr);
     }
     throw new Error(`Expression of type ${expr.subType} cannot be converted into internal representation of expression.`);

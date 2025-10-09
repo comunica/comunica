@@ -12,9 +12,7 @@ import {
   AlgebraFactory,
   Algebra,
   algebraUtils,
-  isKnownSub,
-  isKnownOperationSub,
-  isKnownOperation,
+  isKnownOperation, isKnownSubType,
 } from '@comunica/utils-algebra';
 import { doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
@@ -49,7 +47,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
       operation = algebraUtils.mapOperation(operation, {
         [Algebra.Types.FILTER]: { transform: (filterOp) => {
           // Split conjunctive filters into separate filters
-          if (isKnownSub(filterOp.expression, Algebra.ExpressionTypes.OPERATOR) &&
+          if (isKnownSubType(filterOp.expression, Algebra.ExpressionTypes.OPERATOR) &&
             filterOp.expression.operator === '&&') {
             this.logDebug(action.context, `Split conjunctive filter into ${filterOp.expression.args.length} nested filters`);
             return filterOp.expression.args
@@ -139,14 +137,14 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
 
     // Push down if the filter is extremely selective
     const expression = operation.expression;
-    if (isKnownSub(expression, Algebra.ExpressionTypes.OPERATOR) && expression.operator === '=' &&
-      ((isKnownSub(expression.args[0], Algebra.ExpressionTypes.TERM) &&
+    if (isKnownSubType(expression, Algebra.ExpressionTypes.OPERATOR) && expression.operator === '=' &&
+      ((isKnownSubType(expression.args[0], Algebra.ExpressionTypes.TERM) &&
           expression.args[0].term.termType !== 'Variable' &&
-          isKnownSub(expression.args[1], Algebra.ExpressionTypes.TERM) &&
+          isKnownSubType(expression.args[1], Algebra.ExpressionTypes.TERM) &&
           expression.args[1].term.termType === 'Variable') ||
-        (isKnownSub(expression.args[0], Algebra.ExpressionTypes.TERM) &&
+        (isKnownSubType(expression.args[0], Algebra.ExpressionTypes.TERM) &&
           expression.args[0].term.termType === 'Variable' &&
-          isKnownSub(expression.args[1], Algebra.ExpressionTypes.TERM) &&
+          isKnownSubType(expression.args[1], Algebra.ExpressionTypes.TERM) &&
           expression.args[1].term.termType !== 'Variable'))) {
       return true;
     }
@@ -188,16 +186,16 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
    * @return An array of variables, or undefined if the expression is unsupported for pushdown.
    */
   public getExpressionVariables(expression: Algebra.Expression): RDF.Variable[] {
-    if (isKnownSub(expression, Algebra.ExpressionTypes.EXISTENCE)) {
+    if (isKnownSubType(expression, Algebra.ExpressionTypes.EXISTENCE)) {
       return algebraUtils.inScopeVariables(expression.input);
     }
-    if (isKnownSub(expression, Algebra.ExpressionTypes.NAMED)) {
+    if (isKnownSubType(expression, Algebra.ExpressionTypes.NAMED)) {
       return [];
     }
-    if (isKnownSub(expression, Algebra.ExpressionTypes.OPERATOR)) {
+    if (isKnownSubType(expression, Algebra.ExpressionTypes.OPERATOR)) {
       return uniqTerms(expression.args.flatMap(arg => this.getExpressionVariables(arg)));
     }
-    if (isKnownSub(expression, Algebra.ExpressionTypes.TERM)) {
+    if (isKnownSubType(expression, Algebra.ExpressionTypes.TERM)) {
       if (expression.term.termType === 'Variable') {
         return [ expression.term ];
       }
@@ -261,7 +259,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     }
 
     // Don't push down (NOT) EXISTS
-    if (isKnownOperationSub(expression, Algebra.Types.EXPRESSION, Algebra.ExpressionTypes.EXISTENCE)) {
+    if (isKnownOperation(expression, Algebra.Types.EXPRESSION, Algebra.ExpressionTypes.EXISTENCE)) {
       return [ false, factory.createFilter(operation, expression) ];
     }
 
@@ -463,20 +461,20 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
   public getEqualityExpressionPushableIntoPattern(
     expression: Algebra.Expression,
   ): { variable: RDF.Variable; term: RDF.Term } | undefined {
-    if (isKnownSub(expression, Algebra.ExpressionTypes.OPERATOR) && expression.operator === '=') {
+    if (isKnownSubType(expression, Algebra.ExpressionTypes.OPERATOR) && expression.operator === '=') {
       const arg0 = expression.args[0];
       const arg1 = expression.args[1];
-      if (isKnownSub(arg0, Algebra.ExpressionTypes.TERM) && arg0.term.termType !== 'Variable' &&
+      if (isKnownSubType(arg0, Algebra.ExpressionTypes.TERM) && arg0.term.termType !== 'Variable' &&
         (arg0.term.termType !== 'Literal' || this.isLiteralWithCanonicalLexicalForm(arg0.term)) &&
-        isKnownSub(arg1, Algebra.ExpressionTypes.TERM) &&
+        isKnownSubType(arg1, Algebra.ExpressionTypes.TERM) &&
         arg1.term.termType === 'Variable') {
         return {
           variable: arg1.term,
           term: arg0.term,
         };
       }
-      if (isKnownSub(arg0, Algebra.ExpressionTypes.TERM) && arg0.term.termType === 'Variable' &&
-        isKnownSub(arg1, Algebra.ExpressionTypes.TERM) && arg1.term.termType !== 'Variable' &&
+      if (isKnownSubType(arg0, Algebra.ExpressionTypes.TERM) && arg0.term.termType === 'Variable' &&
+        isKnownSubType(arg1, Algebra.ExpressionTypes.TERM) && arg1.term.termType !== 'Variable' &&
         (arg1.term.termType !== 'Literal' || this.isLiteralWithCanonicalLexicalForm(arg1.term))) {
         return {
           variable: arg0.term,
@@ -539,7 +537,7 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
    * @param expression An expression.
    */
   public isExpressionFalse(expression: Algebra.Expression): boolean {
-    return isKnownSub(expression, Algebra.ExpressionTypes.TERM) &&
+    return isKnownSubType(expression, Algebra.ExpressionTypes.TERM) &&
       expression.term.termType === 'Literal' && expression.term.value === 'false';
   }
 
