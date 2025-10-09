@@ -4,8 +4,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
-import { Factory } from 'sparqlalgebrajs';
-import type { Algebra } from 'sparqlalgebrajs';
+import { AlgebraFactory, Algebra } from '@comunica/utils-algebra';
 
 /**
  * A [Query Operation](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation) actor
@@ -13,7 +12,7 @@ import type { Algebra } from 'sparqlalgebrajs';
  */
 export class ActorQueryOperationBgpJoin extends ActorQueryOperationTypedMediated<Algebra.Bgp> {
   public constructor(args: IActorQueryOperationTypedMediatedArgs) {
-    super(args, 'bgp');
+    super(args, Algebra.Types.BGP);
   }
 
   public async testOperation(_operation: Algebra.Bgp, _context: IActionContext): Promise<TestResult<IActorTest>> {
@@ -23,7 +22,7 @@ export class ActorQueryOperationBgpJoin extends ActorQueryOperationTypedMediated
   public async runOperation(operation: Algebra.Bgp, context: IActionContext):
   Promise<IQueryOperationResult> {
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
 
     return this.mediatorQueryOperation.mediate({
       operation: algebraFactory.createJoin(operation.patterns),

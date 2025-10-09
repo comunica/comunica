@@ -1,10 +1,10 @@
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
+import type { Algebra } from '@comunica/utils-algebra';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-expression-evaluator/test/util/helpers';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import type { Algebra } from 'sparqlalgebrajs';
-import { Factory } from 'sparqlalgebrajs';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -13,7 +13,7 @@ describe('MaterializedEvaluatorContext', () => {
   let mediatorQueryOperation: any;
 
   let expressionEvaluatorFactory: ActorExpressionEvaluatorFactory;
-  let factory: Factory;
+  let factory: AlgebraFactory;
 
   beforeEach(() => {
     mediatorQueryOperation = {
@@ -31,7 +31,7 @@ describe('MaterializedEvaluatorContext', () => {
     expressionEvaluatorFactory = getMockEEFactory({
       mediatorQueryOperation,
     });
-    factory = new Factory();
+    factory = new AlgebraFactory();
   });
 
   describe('should be able to handle EXIST filters', () => {

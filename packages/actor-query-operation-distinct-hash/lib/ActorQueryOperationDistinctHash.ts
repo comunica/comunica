@@ -14,10 +14,10 @@ import type {
   IQueryOperationResultBindings,
   IQueryOperationResultQuads,
 } from '@comunica/types';
+import { Algebra } from '@comunica/utils-algebra';
 import { getSafeBindings, getSafeQuads } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Distinct Hash Query Operation Actor.
@@ -27,7 +27,7 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
   public readonly mediatorHashQuads: MediatorHashQuads;
 
   public constructor(args: IActorQueryOperationDistinctHashArgs) {
-    super(args, 'distinct');
+    super(args, Algebra.Types.DISTINCT);
   }
 
   public async testOperation(_operation: Algebra.Distinct, _context: IActionContext): Promise<TestResult<IActorTest>> {

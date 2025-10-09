@@ -12,10 +12,10 @@ import type {
   IQueryOperationResult,
   MetadataVariable,
 } from '@comunica/types';
+import { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import { ArrayIterator, TransformIterator } from 'asynciterator';
-import type { Algebra } from 'sparqlalgebrajs';
 import { GroupsState } from './GroupsState';
 
 /**
@@ -26,7 +26,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
   private readonly mediatorBindingsAggregatorFactory: MediatorBindingsAggregatorFactory;
 
   public constructor(args: IActorQueryOperationGroupArgs) {
-    super(args, 'group');
+    super(args, Algebra.Types.GROUP);
     this.mediatorBindingsAggregatorFactory = args.mediatorBindingsAggregatorFactory;
   }
 

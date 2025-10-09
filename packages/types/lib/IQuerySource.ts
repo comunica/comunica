@@ -1,6 +1,6 @@
+import type { Algebra } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import type { Algebra } from 'sparqlalgebrajs';
 import type { BindingsStream } from './Bindings';
 import type { IActionContext } from './IActionContext';
 import type { MetadataBindings } from './IMetadata';
@@ -119,7 +119,7 @@ export interface IQuerySource {
    * @return {Promise<boolean>}           The void response.
    */
   queryVoid: (
-    operation: Algebra.Update,
+    operation: Algebra.Operation,
     context: IActionContext,
   ) => Promise<void>;
 
@@ -160,7 +160,7 @@ export type FragmentSelectorShape = {
    */
   operation: {
     operationType: 'type';
-    type: Algebra.types;
+    type: Algebra.Types;
   } | {
     operationType: 'pattern';
     pattern: Algebra.Operation;
@@ -247,23 +247,23 @@ export type FragmentSelectorShape = {
 //   children: [
 //     {
 //       type: 'operation',
-//       operation: { type: Algebra.types.PROJECT },
+//       operation: { type: Algebra.Types.PROJECT },
 //     },
 //     {
 //       type: 'operation',
-//       operation: { type: Algebra.types.CONSTRUCT },
+//       operation: { type: Algebra.Types.CONSTRUCT },
 //     },
 //     {
 //       type: 'operation',
-//       operation: { type: Algebra.types.DESCRIBE },
+//       operation: { type: Algebra.Types.DESCRIBE },
 //     },
 //     {
 //       type: 'operation',
-//       operation: { type: Algebra.types.ASK },
+//       operation: { type: Algebra.Types.ASK },
 //     },
 //     {
 //       type: 'operation',
-//       operation: { type: Algebra.types.COMPOSITE_UPDATE },
+//       operation: { type: Algebra.Types.COMPOSITE_UPDATE },
 //     },
 //   ],
 // };
@@ -272,7 +272,7 @@ export type FragmentSelectorShape = {
 // //   Find ?s matching "?s dbo:country dbr:norway. ?s dbo:award ?o2. ?s dbo:birthDate ?o3."
 // const shapeSpf: FragmentSelectorShape = {
 //   type: 'operation',
-//   operation: { type: Algebra.types.BGP },
+//   operation: { type: Algebra.Types.BGP },
 //   scopedVariables: [
 //     DF.variable('s'),
 //   ],
@@ -312,7 +312,7 @@ export type FragmentSelectorShape = {
 //     },
 //     {
 //       type: 'operation',
-//       operation: { type: Algebra.types.BGP },
+//       operation: { type: Algebra.Types.BGP },
 //       children: [
 //         {
 //           type: 'arity',

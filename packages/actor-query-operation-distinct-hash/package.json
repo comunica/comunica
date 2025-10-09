@@ -41,6 +41,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
+    "@comunica/utils-algebra": "^4.0.2",
     "@comunica/bus-hash-bindings": "^4.0.2",
     "@comunica/bus-hash-quads": "^4.0.2",
     "@comunica/bus-query-operation": "^4.0.2",
@@ -48,7 +49,6 @@
     "@comunica/types": "^4.0.2",
     "@comunica/utils-query-operation": "^4.0.2",
     "@rdfjs/types": "*",
-    "asynciterator": "^3.9.0",
-    "sparqlalgebrajs": "^5.0.1"
+    "asynciterator": "^3.9.0"
   }
 }

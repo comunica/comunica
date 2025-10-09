@@ -1,4 +1,5 @@
 import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-factory-term-equality';
+import { ActorFunctionFactoryTermTriple } from '@comunica/actor-function-factory-term-triple';
 import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import {
@@ -18,6 +19,7 @@ const config: FuncTestTableConfig<object> = {
   registeredActors: [
     args => new ActorFunctionFactoryTermInequality(args),
     args => new ActorFunctionFactoryTermEquality(args),
+    args => new ActorFunctionFactoryTermTriple(args),
   ],
   arity: 2,
   operation: '!=',

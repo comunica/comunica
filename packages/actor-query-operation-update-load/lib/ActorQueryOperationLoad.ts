@@ -5,9 +5,8 @@ import type { MediatorRdfUpdateQuads } from '@comunica/bus-rdf-update-quads';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
+import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { assignOperationSource, getSafeQuads, testReadOnly } from '@comunica/utils-query-operation';
-import type { Algebra } from 'sparqlalgebrajs';
-import { Factory } from 'sparqlalgebrajs';
 
 /**
  * A [Query Operation](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation) actor
@@ -18,7 +17,7 @@ export class ActorQueryOperationLoad extends ActorQueryOperationTypedMediated<Al
   public readonly mediatorQuerySourceIdentify: MediatorQuerySourceIdentify;
 
   public constructor(args: IActorQueryOperationLoadArgs) {
-    super(args, 'load');
+    super(args, Algebra.Types.LOAD);
   }
 
   public async testOperation(operation: Algebra.Load, context: IActionContext): Promise<TestResult<IActorTest>> {
@@ -28,7 +27,7 @@ export class ActorQueryOperationLoad extends ActorQueryOperationTypedMediated<Al
   public async runOperation(operation: Algebra.Load, context: IActionContext):
   Promise<IQueryOperationResult> {
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
 
     // Determine query source
     let subContext = context;
